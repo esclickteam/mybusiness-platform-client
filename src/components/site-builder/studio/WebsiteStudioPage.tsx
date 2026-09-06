@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import { useTranslation } from "react-i18next";
+import i18n from "../../../i18n/i18n";
+import { getIntlLocale } from "../../../i18n/localeUtils";
 
 import type {
   DeviceMode,
@@ -257,37 +259,11 @@ function summarizeStudioPagesForDebug(pages: Array<any>) {
   }));
 }
 
-const sectionKindLabels: Record<string, string> = {
-  header: "Header",
-  hero: "פתיח",
-  welcome: "Welcome",
-  about: "אודות",
-  team: "צוות",
-  services: "שירותים",
-  gallery: "גלריה",
-  contact: "יצירת קשר",
-  promotion: "מבצע",
-  subscribe: "הרשמה",
-  testimonials: "המלצות",
-  reviews: "ביקורות",
-  clients: "לקוחות",
-  store: "חנות / מוצרים",
-  booking: "תיאום תורים",
-  bookings: "תיאום תורים",
-  events: "אירועים",
-  club: "מועדון לקוחות",
-  bot: "בוט חכם",
-  social: "רשתות חברתיות",
-  course: "קורס",
-  miniSaas: "Mini SaaS",
-  basic: "בסיסי",
-  text: "טקסט",
-  list: "רשימה",
-  form: "טופס",
-  forms: "טופס",
-  section: "סקשן",
-  footer: "Footer",
-};
+function getSectionKindLabel(kind: string) {
+  const key = `studio.kind.${kind}`;
+  const translated = i18n.t(key);
+  return translated === key ? String(kind) : translated;
+}
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -691,7 +667,7 @@ function extractSectionsFromEditor(
       component?.find?.("h3")?.[0];
 
     const headingText = heading ? getComponentText(heading) : "";
-    const label = sectionKindLabels[String(kind)] || String(kind);
+    const label = getSectionKindLabel(String(kind));
 
     return {
       id,
@@ -1529,7 +1505,7 @@ function normalizeRendererSectionKind(value: unknown) {
 function normalizeRendererSectionTitle(value: unknown) {
   const clean = String(value || "").trim();
   if (!clean) return "Section";
-  return sectionKindLabels[clean] || clean;
+  return getSectionKindLabel(clean);
 }
 
 function ensureEditableSectionMarkers(
@@ -5464,7 +5440,7 @@ export default function WebsiteStudioPage({
 
         if (!res.ok) {
           setSlugAvailable(false);
-          setSlugError(data?.error || "שגיאה בבדיקת הסאב דומיין");
+          setSlugError(data?.error || t("studio.slugBar.checkError"));
           return;
         }
 
@@ -5472,18 +5448,18 @@ export default function WebsiteStudioPage({
 
         setSlugAvailable(available);
         setSlugError(
-          available ? "" : data?.error || "הסאב דומיין הזה כבר תפוס",
+          available ? "" : data?.error || t("studio.slugBar.taken"),
         );
       } catch {
         setSlugAvailable(false);
-        setSlugError("שגיאה בבדיקת הסאב דומיין");
+        setSlugError(t("studio.slugBar.checkError"));
       } finally {
         setSlugChecking(false);
       }
     }, 450);
 
     return () => window.clearTimeout(timeout);
-  }, [businessId, siteId, slug, slugValid]);
+  }, [businessId, siteId, slug, slugValid, t]);
 
   const syncSections = (editor: Editor | null | undefined) => {
     window.setTimeout(() => {
@@ -6503,12 +6479,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   }) => {
     const id = String(pageSettingsModal.pageId || "").trim();
     if (!id) {
-      throw new Error("לא נמצא עמוד לשמירה");
+      throw new Error(t("studio.alerts.pageNotFound"));
     }
 
     const cleanTitle = String(nextTitle || "").trim();
     if (!cleanTitle) {
-      throw new Error("שם העמוד לא יכול להיות ריק");
+      throw new Error(t("studio.alerts.pageTitleRequired"));
     }
 
     const nextSiteSeo = siteSeo
@@ -6579,7 +6555,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     );
     const payload = await res.json().catch(() => null);
     if (!res.ok || !payload?.success) {
-      throw new Error(payload?.error || "שמירת SEO נכשלה");
+      throw new Error(payload?.error || t("studio.alerts.seoSaveFailed"));
     }
   };
 
@@ -6700,7 +6676,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "subpage") {
       if (target.isHome) {
-        window.alert("לא ניתן להפוך את דף הבית לעמוד משנה.");
+        window.alert(t("studio.alerts.cannotNestHome"));
         return;
       }
 
@@ -6854,10 +6830,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "delete") {
       if (target.isHome) {
-        window.alert("לא ניתן למחוק את דף הבית. הגדירי קודם עמוד אחר כדף הבית.");
+        window.alert(t("studio.alerts.cannotDeleteHome"));
         return;
       }
-      const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
+      const ok = window.confirm(
+        t("studio.alerts.deletePageConfirm", { title: target.title }),
+      );
       if (!ok) return;
 
       markPageDeleted(id);
@@ -6887,7 +6865,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (action === "dynamic") {
       if (!clientPortalPluginEnabled) {
         window.alert(
-          "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+          t("studio.alerts.portalPluginRequired"),
         );
         return;
       }
@@ -6900,7 +6878,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "background" || action === "copy") {
       window.alert(
-        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, דינמי/אזור אישי, שינוי שם, שכפול, דף בית, הסתרה מתפריט, עמוד משנה ומחיקה.",
+        t("studio.alerts.pageMenuComingSoon"),
       );
     }
   };
@@ -6977,7 +6955,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       if (!found) return;
 
-      const ok = window.confirm("למחוק את הסקשן מהעמוד הזה?");
+      const ok = window.confirm(t("studio.alerts.deleteSectionConfirm"));
       if (!ok) return;
 
       found.remove();
@@ -7149,7 +7127,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleReset = () => {
-    const ok = window.confirm("למחוק את כל העיצוב של העמוד הפעיל?");
+    const ok = window.confirm(t("studio.alerts.resetDesignConfirm"));
     if (!ok) return;
 
     runEditor((editor) => {
@@ -7191,27 +7169,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   ) => {
     if (!editorRef.current || !slugValid || saving) {
       if (overrides) {
-        throw new Error("לא ניתן לשמור כרגע. בדקי שהעורך מוכן ונסי שוב.");
+        throw new Error(t("studio.alerts.cannotSaveNow"));
       }
       return;
     }
 
     if (slugChecking) {
-      const message = "רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.";
+      const message = t("studio.alerts.slugStillChecking");
       if (overrides) throw new Error(message);
       alert(message);
       return;
     }
 
     if (published && slug === "your-business") {
-      const message = "בחרי סאב דומיין אמיתי לפני פרסום.";
+      const message = t("studio.alerts.chooseRealSlug");
       if (overrides) throw new Error(message);
       alert(message);
       return;
     }
 
     if (published && slugAvailable === false) {
-      const message = slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.";
+      const message = slugError || t("studio.alerts.slugTakenChooseAnother");
       if (overrides) throw new Error(message);
       alert(message);
       return;
@@ -7309,7 +7287,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
+        throw new Error(responseData?.error || t("studio.alerts.serverSaveFailed"));
       }
 
       if (published && responseData?.site) {
@@ -7335,7 +7313,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       await onSave?.(payload);
 
       setSavedAt(
-        new Date().toLocaleTimeString("he-IL", {
+        new Date().toLocaleTimeString(getIntlLocale(i18n.language), {
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -7343,7 +7321,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       void payload;
     } catch (error: any) {
-      const message = error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.";
+      const message = error?.message || t("studio.alerts.saveFailedRetry");
       if (overrides) throw new Error(message);
       alert(message);
     } finally {
@@ -7357,7 +7335,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert("בחרי אלמנט באתר כדי לערוך אותו");
+        alert(t("studio.alerts.selectElementToEdit"));
         return;
       }
 
@@ -7380,7 +7358,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי טקסט או אלמנט כדי לערוך");
+        alert(t("studio.alerts.selectTextToEdit"));
         return;
       }
 
@@ -7404,7 +7382,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי כפתור או לינק כדי להגדיר קישור");
+        alert(t("studio.alerts.selectLinkToEdit"));
         return;
       }
 
@@ -7437,7 +7415,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected() || getSelectedOrWrapper(editor);
 
       if (!selected) {
-        alert("בחרי תמונה או סקשן כדי להחליף תמונה");
+        alert(t("studio.alerts.selectImageToReplace"));
         return;
       }
 
@@ -7465,7 +7443,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט לשכפול");
+        alert(t("studio.alerts.selectElementToDuplicate"));
         return;
       }
 
@@ -7488,11 +7466,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט למחיקה");
+        alert(t("studio.alerts.selectElementToDelete"));
         return;
       }
 
-      const ok = window.confirm("למחוק את האלמנט הנבחר?");
+      const ok = window.confirm(t("studio.alerts.deleteElementConfirm"));
       if (!ok) return;
 
       selected.remove();
@@ -7506,7 +7484,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט");
+        alert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7527,7 +7505,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט");
+        alert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7551,7 +7529,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert("בחרי סקשן כדי להגדיר לו תמונת רקע");
+        alert(t("studio.alerts.selectSectionBackground"));
         return;
       }
 
@@ -7572,7 +7550,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט / סקשן כדי להוסיף לו תנועה");
+        alert(t("studio.alerts.selectForAnimation"));
         return;
       }
 
@@ -7596,7 +7574,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט / סקשן כדי להסיר ממנו תנועה");
+        alert(t("studio.alerts.selectToClearAnimation"));
         return;
       }
 
@@ -7626,7 +7604,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return {
         ok: false,
         slug: clean,
-        message: "כתובת האתר חייבת להיות באנגלית, מספרים ומקף בלבד",
+        message: t("studio.alerts.slugEnglishOnly"),
       };
     }
 
@@ -7652,7 +7630,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           ok: false,
           slug: clean,
-          message: data?.error || "שגיאה בבדיקת כתובת האתר",
+          message: data?.error || t("studio.alerts.slugCheckFailed"),
         };
       }
 
@@ -7660,7 +7638,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           ok: false,
           slug: clean,
-          message: data?.error || "הכתובת הזאת כבר תפוסה. בחרי שם אחר.",
+          message: data?.error || t("studio.alerts.addressTakenChooseAnother"),
         };
       }
 
@@ -7673,7 +7651,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return {
         ok: false,
         slug: clean,
-        message: "שגיאה בבדיקת כתובת האתר. נסי שוב.",
+        message: t("studio.alerts.slugCheckRetry"),
       };
     }
   }
@@ -8320,7 +8298,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           homeHtmlLength: getTextLength(homePage?.html),
         });
         throw new Error(
-          "הפרסום נעצר: לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
+          t("studio.alerts.publishNoContent"),
         );
       }
 
@@ -8515,7 +8493,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
+        throw new Error(responseData?.error || t("studio.alerts.serverSaveFailed"));
       }
 
       rememberPersistedPageIds(pagesForSave);
@@ -8569,7 +8547,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       await onSave?.(safePayload as any);
 
       setSavedAt(
-        new Date().toLocaleTimeString("he-IL", {
+        new Date().toLocaleTimeString(getIntlLocale(i18n.language), {
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -8672,7 +8650,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!visualPayload.autosave) {
-        alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+        alert(error?.message || t("studio.alerts.saveFailedRetry"));
       }
       throw error;
     } finally {
@@ -8860,17 +8838,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             <div className="w-full max-w-[560px] overflow-hidden rounded-[32px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
               <div className="border-b border-slate-100 px-7 py-6">
                 <div className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
-                  פרסום האתר
+                  {t("studio.publishModal.title")}
                 </div>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-800">
                   {publishCustomDomainPhase === "active"
-                    ? "פרסום האתר בכתובת שלך"
-                    : "בחרי כתובת לאתר שלך"}
+                    ? t("studio.publishModal.publishAtYourAddress")
+                    : t("studio.publishModal.chooseAddress")}
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
                   {publishCustomDomainPhase === "active"
-                    ? "האתר יפורסם בדומיין המחובר. כתובת Bizuply נשמרת ככתובת חלופית."
-                    : "כדי לפרסם אתר חי צריך לבחור כתובת קצרה וברורה. השמירה נשארת כטיוטה גם בלי כתובת."}
+                    ? t("studio.publishModal.customDomainHint")
+                    : t("studio.publishModal.chooseAddressHint")}
                 </p>
               </div>
 
@@ -8878,7 +8856,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 {publishCustomDomainPhase === "active" ? (
                   <>
                     <label className="text-sm font-black text-slate-700">
-                      כתובת האתר
+                      {t("studio.publishModal.siteAddress")}
                     </label>
                     <div
                       className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4 text-left text-base font-black text-slate-800"
@@ -8889,7 +8867,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                     <div className="mt-5">
                       <label className="text-xs font-black text-slate-500">
-                        כתובת Bizuply חלופית
+                        {t("studio.publishModal.bizuplyBackup")}
                       </label>
                       <div className="mt-2 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
                         <span className="hidden shrink-0 items-center border-l border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
@@ -8928,7 +8906,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 ) : (
                   <>
                     <label className="text-sm font-black text-slate-700">
-                      כתובת האתר
+                      {t("studio.publishModal.siteAddress")}
                     </label>
 
                     <div className="mt-3 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -8960,10 +8938,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                 <div className="mt-3 min-h-6 text-sm font-bold">
                   {publishSlugChecking ? (
-                    <span className="text-sky-600">בודק זמינות...</span>
+                    <span className="text-sky-600">
+                      {t("studio.publishModal.checkingAvailability")}
+                    </span>
                   ) : publishSlugAvailable === true ? (
                     <span className="text-emerald-600">
-                      הכתובת פנויה: {buildPublicSiteUrl(publishSlugDraft)}
+                      {t("studio.publishModal.addressAvailable", {
+                        url: buildPublicSiteUrl(publishSlugDraft),
+                      })}
                     </span>
                   ) : publishSlugError ? (
                     <span className="text-rose-600">{publishSlugError}</span>
@@ -8974,7 +8956,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   {publishCustomDomainPhase === "active" ? (
                     <>
                       <p className="text-sm font-black text-emerald-700">
-                        דומיין מחובר
+                        {t("studio.publishModal.domainConnected")}
                       </p>
                       <p
                         className="mt-1 text-sm font-black text-slate-800"
@@ -8987,13 +8969,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : publishCustomDomainPhase === "provisioning" ? (
                     <>
                       <p className="text-sm font-black text-amber-700">
-                        הדומיין בתהליך חיבור
+                        {t("studio.publishModal.domainProvisioning")}
                       </p>
                       <p
                         className="mt-1 text-sm font-bold text-slate-700"
@@ -9002,20 +8984,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         {customDomain}
                       </p>
                       <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
-                        עד שהחיבור יושלם האתר יפורסם בכתובת Bizuply.
+                        {t("studio.publishModal.domainProvisioningHint")}
                       </p>
                       <button
                         type="button"
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : publishCustomDomainPhase === "failed" ? (
                     <>
                       <p className="text-sm font-black text-rose-700">
-                        חיבור הדומיין נכשל
+                        {t("studio.publishModal.domainFailed")}
                       </p>
                       <p
                         className="mt-1 text-sm font-bold text-slate-700"
@@ -9024,20 +9006,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         {customDomain}
                       </p>
                       <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
-                        האתר יפורסם בינתיים בכתובת Bizuply.
+                        {t("studio.publishModal.domainFailedHint")}
                       </p>
                       <button
                         type="button"
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : (
                     <>
                       <p className="text-sm font-bold leading-6 text-slate-600">
-                        רוצים כתובת משלכם במקום{" "}
+                        {t("studio.publishModal.wantOwnAddress")}{" "}
                         <span dir="ltr" className="font-black text-slate-800">
                           .{getPublicSiteDomain()}
                         </span>
@@ -9048,7 +9030,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        חיבור דומיין מותאם
+                        {t("studio.connectCustomDomain")}
                       </button>
                     </>
                   )}
@@ -9066,7 +9048,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   }}
                   className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-600 transition hover:bg-slate-100"
                 >
-                  ביטול
+                  {t("studio.cancel")}
                 </button>
 
                 <button
@@ -9075,7 +9057,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   onClick={() => void handleConfirmVisualPublishSlug()}
                   className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 py-3 text-sm font-black text-black shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {publishSlugChecking ? "בודק..." : "בדיקת זמינות ופרסום"}
+                  {publishSlugChecking
+                    ? t("studio.checking")
+                    : t("studio.publishModal.checkAndPublish")}
                 </button>
               </div>
             </div>
@@ -9346,13 +9330,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         {!slugValid && (
           <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
-            מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty
+            {t("studio.slugBar.invalid")}
           </div>
         )}
 
         {slugValid && slug && slug !== "your-business" && slugChecking && (
           <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
-            בודק אם הסאב דומיין פנוי...
+            {t("studio.slugBar.checking")}
           </div>
         )}
 
@@ -9362,7 +9346,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slugAvailable === true &&
           !slugChecking && (
             <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-              הסאב דומיין פנוי: {buildPublicSiteUrl(slug)}
+              {t("studio.slugBar.available", { url: buildPublicSiteUrl(slug) })}
             </div>
           )}
 
@@ -9372,21 +9356,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slugAvailable === false &&
           !slugChecking && (
             <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
-              {slugError || "הסאב דומיין הזה כבר תפוס"}
+              {slugError || t("studio.slugBar.taken")}
             </div>
           )}
 
-        {loadingSite && <BizuplyLoader fullScreen overlay label="טוען אתר מהשרת..." />}
+        {loadingSite && (
+          <BizuplyLoader
+            fullScreen
+            overlay
+            label={t("studio.slugBar.loadingFromServer")}
+          />
+        )}
 
         {saving && (
           <div className="z-40 border-b border-violet-100 bg-violet-50 px-4 py-2 text-center text-xs font-black text-violet-700">
-            שומר את האתר...
+            {t("studio.slugBar.savingSite")}
           </div>
         )}
 
         {savedAt && !saving && (
           <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-            נשמר בהצלחה בשעה {savedAt} · {publicUrl}
+            {t("studio.slugBar.savedAt", { time: savedAt, url: publicUrl })}
           </div>
         )}
 
@@ -9398,7 +9388,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         <div className={editorStageClass}>
           <StudioWixRail
             activePanel={activePanel}
-            activePageTitle={activePage?.title || "עמוד"}
+            activePageTitle={activePage?.title || t("studio.page")}
             clientPortalEnabled={activePageClientPortal.enabled}
             clientPortalPluginEnabled={clientPortalPluginEnabled}
             onOpenAdd={() => setActivePanel("sections")}
@@ -9408,7 +9398,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             onOpenClientPortal={() => {
               if (!clientPortalPluginEnabled) {
                 window.alert(
-                  "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+                  t("studio.alerts.portalPluginRequired"),
                 );
                 return;
               }
@@ -9423,7 +9413,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             >
               <button
                 type="button"
-                aria-label="סגירת פאנל"
+                aria-label={t("studio.closePanel")}
                 data-studio-dismiss-backdrop="true"
                 onClick={() => setActivePanel(null)}
                 className="pointer-events-auto absolute bottom-0 left-[110px] right-0 top-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
@@ -9444,7 +9434,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         BizUply Studio
                       </p>
                       <p className="truncate text-sm font-black text-slate-800">
-                        {activePanel === "pages" ? "דפים וניהול אתר" : "הוספת סקשנים ובלוקים"}
+                        {activePanel === "pages" ? t("studio.sitePages.manageTitle") : t("studio.addLayers.panelTitle")}
                       </p>
                     </div>
 
@@ -9486,7 +9476,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                           pages[0]?.id ||
                           "";
                         if (!pageId) {
-                          window.alert("אין עמוד פתוח להגדרות SEO.");
+                          window.alert(t("studio.alerts.noPageForSeo"));
                           return;
                         }
                         setActivePanel(null);

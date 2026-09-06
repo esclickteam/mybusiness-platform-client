@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import {
   sectionLayoutVariants,
   type SectionKind,
@@ -11,37 +13,47 @@ type Props = {
   onSelect: (variant: SectionLayoutVariant) => void;
 };
 
-const sectionTabs: { kind: SectionKind; label: string; icon: string }[] = [
-  { kind: "header", label: "הידר", icon: "▤" },
-  { kind: "hero", label: "דף הבית", icon: "★" },
-  { kind: "welcome", label: "Welcome", icon: "✦" },
-  { kind: "about", label: "אודות", icon: "ℹ" },
-  { kind: "team", label: "צוות", icon: "◉" },
-  { kind: "services", label: "שירותים", icon: "✦" },
-  { kind: "gallery", label: "גלריה", icon: "▧" },
-  { kind: "contact", label: "יצירת קשר", icon: "@" },
-  { kind: "promotion", label: "מבצע", icon: "%" },
-  { kind: "subscribe", label: "הרשמה", icon: "+" },
-  { kind: "testimonials", label: "המלצות", icon: "❝" },
-  { kind: "reviews", label: "ביקורות", icon: "★" },
-  { kind: "clients", label: "לקוחות", icon: "◫" },
-  { kind: "store", label: "חנות", icon: "₪" },
-  { kind: "booking", label: "תורים", icon: "◷" },
-  { kind: "events", label: "אירועים", icon: "◇" },
-  { kind: "club", label: "מועדון", icon: "♛" },
-  { kind: "bot", label: "בוט חכם", icon: "AI" },
-  { kind: "social", label: "סושיאל", icon: "#" },
-  { kind: "course", label: "קורס", icon: "▶" },
-  { kind: "miniSaas", label: "Mini SaaS", icon: "S" },
-  { kind: "basic", label: "בסיסי", icon: "+" },
-  { kind: "text", label: "טקסט", icon: "T" },
-  { kind: "list", label: "רשימה", icon: "☰" },
-  { kind: "form", label: "טופס", icon: "▣" },
+const SECTION_TAB_KINDS: Array<{ kind: SectionKind; icon: string }> = [
+  { kind: "header", icon: "▤" },
+  { kind: "hero", icon: "★" },
+  { kind: "welcome", icon: "✦" },
+  { kind: "about", icon: "ℹ" },
+  { kind: "team", icon: "◉" },
+  { kind: "services", icon: "✦" },
+  { kind: "gallery", icon: "▧" },
+  { kind: "contact", icon: "@" },
+  { kind: "promotion", icon: "%" },
+  { kind: "subscribe", icon: "+" },
+  { kind: "testimonials", icon: "❝" },
+  { kind: "reviews", icon: "★" },
+  { kind: "clients", icon: "◫" },
+  { kind: "store", icon: "₪" },
+  { kind: "booking", icon: "◷" },
+  { kind: "events", icon: "◇" },
+  { kind: "club", icon: "♛" },
+  { kind: "bot", icon: "AI" },
+  { kind: "social", icon: "#" },
+  { kind: "course", icon: "▶" },
+  { kind: "miniSaas", icon: "S" },
+  { kind: "basic", icon: "+" },
+  { kind: "text", icon: "T" },
+  { kind: "list", icon: "☰" },
+  { kind: "form", icon: "▣" },
 ];
 
 export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [activeKind, setActiveKind] = useState<SectionKind>("hero");
   const [query, setQuery] = useState("");
+  const sectionTabs = useMemo(
+    () =>
+      SECTION_TAB_KINDS.map((tab) => ({
+        ...tab,
+        label: t(`studio.kind.${tab.kind}`),
+      })),
+    [t],
+  );
 
   const variants = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -60,13 +72,14 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
   }, [activeKind, query]);
 
   const activeLabel =
-    sectionTabs.find((tab) => tab.kind === activeKind)?.label || "סקשנים";
+    sectionTabs.find((tab) => tab.kind === activeKind)?.label ||
+    t("studio.sections");
 
   if (!open) return null;
 
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="fixed inset-0 z-[999999] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-sm"
     >
       <div className="relative flex h-[92vh] w-full max-w-[1680px] overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-[0_50px_180px_rgba(15,23,42,0.28)]">
@@ -77,7 +90,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                 SECTIONS
               </p>
               <h2 className="mt-2 text-2xl font-black text-slate-800">
-                הוספת סקשן
+                {t("studio.sectionPicker.addSection")}
               </h2>
             </div>
 
@@ -147,10 +160,10 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                   {activeLabel}
                 </p>
                 <h3 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-800">
-                  בחרי מבנה מקצועי להוספה לעמוד
+                  {t("studio.sectionPicker.chooseLayout")}
                 </h3>
                 <p className="mt-1 text-sm font-bold text-slate-400">
-                  כל מבנה נכנס לעמוד וניתן לעריכה מלאה דרך האינספקטור.
+                  {t("studio.sectionPicker.layoutHint")}
                 </p>
               </div>
 
@@ -158,7 +171,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="חיפוש מבנה..."
+                  placeholder={t("studio.sectionPicker.searchPlaceholder")}
                   className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm font-bold outline-none placeholder:text-slate-400 focus:border-violet-400 focus:bg-white sm:w-[320px]"
                 />
 
@@ -167,7 +180,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                   onClick={onClose}
                   className="lg:hidden min-h-12 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                 >
-                  סגירה
+                  {t("studio.close")}
                 </button>
               </div>
             </div>
@@ -208,10 +221,10 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                     +
                   </div>
                   <h4 className="mt-5 text-2xl font-black text-slate-800">
-                    אין מבנים בקטגוריה הזו
+                    {t("studio.sectionPicker.emptyCategory")}
                   </h4>
                   <p className="mt-2 text-sm font-bold text-slate-400">
-                    צריך לוודא שהקובץ שלה מחובר ב־sectionLayoutVariants.
+                    {t("studio.sectionPicker.emptyHint")}
                   </p>
                 </div>
               </div>
@@ -267,7 +280,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                           onClick={() => onSelect(variant)}
                           className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition group-hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                         >
-                          הוספה לעמוד
+                          {t("studio.sectionPicker.addToPage")}
                         </button>
                       </div>
                     </div>

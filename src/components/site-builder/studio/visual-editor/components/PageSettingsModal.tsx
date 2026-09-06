@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../../hooks/useLocaleDir";
 import { createPortal } from "react-dom";
 import {
   AlertTriangle,
@@ -78,14 +80,13 @@ import {
 
 const ROBOTS_DIRECTIVE_OPTIONS: Array<{
   value: SeoRobotsDirective;
-  label: string;
-  hint: string;
+  hintKey: string;
 }> = [
-  { value: "nofollow", label: "nofollow", hint: "לא לעקוב אחרי הקישורים בעמוד" },
-  { value: "noarchive", label: "noarchive", hint: "לא לשמור עותק שמור (cache)" },
-  { value: "nosnippet", label: "nosnippet", hint: "לא להציג תקציר טקסט בתוצאות" },
-  { value: "noimageindex", label: "noimageindex", hint: "לא לאנדקס תמונות מהעמוד" },
-  { value: "notranslate", label: "notranslate", hint: "לא להציע תרגום בתוצאות" },
+  { value: "nofollow", hintKey: "studio.pageSettings.robotsNofollow" },
+  { value: "noarchive", hintKey: "studio.pageSettings.robotsNoarchive" },
+  { value: "nosnippet", hintKey: "studio.pageSettings.robotsNosnippet" },
+  { value: "noimageindex", hintKey: "studio.pageSettings.robotsNoimageindex" },
+  { value: "notranslate", hintKey: "studio.pageSettings.robotsNotranslate" },
 ];
 
 export type PageSettingsModalTab =
@@ -118,16 +119,16 @@ type PageSettingsModalProps = {
   }) => void | Promise<void>;
 };
 
-const TABS: Array<{
+const TAB_DEFS: Array<{
   id: PageSettingsModalTab;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
 }> = [
-  { id: "settings", label: "הגדרות", icon: <Settings2 className="h-4 w-4" /> },
-  { id: "site", label: "הגדרות אתר", icon: <Building2 className="h-4 w-4" /> },
-  { id: "seo", label: "SEO בסיסי", icon: <Search className="h-4 w-4" /> },
-  { id: "advanced", label: "SEO מתקדם", icon: <Sparkles className="h-4 w-4" /> },
-  { id: "social", label: "שיתוף ברשתות", icon: <Share2 className="h-4 w-4" /> },
+  { id: "settings", labelKey: "studio.pageSettings.tabSettings", icon: <Settings2 className="h-4 w-4" /> },
+  { id: "site", labelKey: "studio.pageSettings.tabSite", icon: <Building2 className="h-4 w-4" /> },
+  { id: "seo", labelKey: "studio.pageSettings.tabSeo", icon: <Search className="h-4 w-4" /> },
+  { id: "advanced", labelKey: "studio.pageSettings.tabAdvanced", icon: <Sparkles className="h-4 w-4" /> },
+  { id: "social", labelKey: "studio.pageSettings.tabSocial", icon: <Share2 className="h-4 w-4" /> },
 ];
 
 export default function PageSettingsModal({
@@ -146,6 +147,12 @@ export default function PageSettingsModal({
   onClose,
   onSave,
 }: PageSettingsModalProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const tabs = useMemo(
+    () => TAB_DEFS.map((item) => ({ ...item, label: t(item.labelKey) })),
+    [t],
+  );
   const [tab, setTab] = useState<PageSettingsModalTab>(initialTab);
   const [smartHint, setSmartHint] = useState("");
   const [title, setTitle] = useState("");
@@ -259,8 +266,8 @@ export default function PageSettingsModal({
     const raw = String(seoDraft.canonicalUrl || "").trim();
     if (!raw) return "";
     if (isSafeHttpUrl(raw)) return "";
-    return "מותר רק כתובת http/https תקינה. javascript:, data:, file: או URL פגום נחסמים.";
-  }, [seoDraft.canonicalUrl]);
+    return t("studio.pageSettings.invalidCanonical");
+  }, [seoDraft.canonicalUrl, t]);
 
   const seoScore = useMemo(() => {
     // Score only explicit draft fields — never credit template/fallback title.
@@ -281,48 +288,48 @@ export default function PageSettingsModal({
     return computeSeoScore([
       {
         id: "title",
-        label: "כותרת לגוגל",
+        label: t("studio.pageSettings.googleTitle"),
         done: titleValue.length >= 20 && titleValue.length <= 70,
-        hint: "50–60 תווים מומלצים",
+        hint: t("studio.pageSettings.googleTitleHint"),
       },
       {
         id: "description",
-        label: "תיאור Meta",
+        label: t("studio.pageSettings.metaLabel"),
         done: descValue.length >= 50 && descValue.length <= 160,
-        hint: "120–160 תווים מומלצים",
+        hint: t("studio.pageSettings.metaHint"),
       },
       {
         id: "index",
-        label: "פתוח לאינדוקס",
+        label: t("studio.pageSettings.openToIndexShort"),
         done: pageIndexingEnabled,
       },
       {
         id: "schema",
-        label: "כרטיס Schema",
+        label: t("studio.pageSettings.schemaCard"),
         done: hasSchema,
       },
       {
         id: "keywords",
-        label: "מילות מפתח",
+        label: t("studio.pageSettings.keywords"),
         done: hasKeywords,
       },
       {
         id: "social",
-        label: "תמונת שיתוף",
+        label: t("studio.pageSettings.shareImageShort"),
         done: hasOgImage,
       },
       {
         id: "favicon",
-        label: "פאביקון לאתר",
+        label: t("studio.pageSettings.siteFavicon"),
         done: Boolean(String(siteBrandDraft.faviconUrl || "").trim()),
       },
       {
         id: "gsc",
-        label: "הכנת אימות Google Search Console",
+        label: t("studio.pageSettings.gscPrep"),
         done: hasGscMeta || hasGscHtml,
       },
     ]);
-  }, [seoDraft, pageIndexingEnabled, siteSeo, siteBrandDraft, siteSeoDraft]);
+  }, [seoDraft, pageIndexingEnabled, siteSeo, siteBrandDraft, siteSeoDraft, t]);
 
   if (!open || !page || typeof document === "undefined") return null;
 
@@ -347,13 +354,13 @@ export default function PageSettingsModal({
       const normalizedHtmlFile = normalizeGoogleHtmlFileName(rawHtmlFile);
       if (!normalizedHtmlFile) {
         setSaveError(
-          "שם קובץ האימות של Google לא תקין. השתמשו בשם כמו google123.html",
+          t("studio.pageSettings.invalidGoogleFile"),
         );
         setTab("advanced");
         return;
       }
       if (!rawHtmlContent) {
-        setSaveError("חסר תוכן קובץ האימות. העלו את הקובץ מגוגל או הדביקו את התוכן.");
+        setSaveError(t("studio.pageSettings.missingVerifyFile"));
         setTab("advanced");
         return;
       }
@@ -390,7 +397,7 @@ export default function PageSettingsModal({
       await Promise.resolve(pending);
     } catch (error) {
       setSaveError(
-        getApiErrorMessage(error, "שמירת ההגדרות נכשלה. נסי שוב."),
+        getApiErrorMessage(error, t("studio.pageSettings.saveFailed")),
       );
     } finally {
       setIsSaving(false);
@@ -425,41 +432,47 @@ export default function PageSettingsModal({
     });
 
     const filled: string[] = [];
-    if (smart.titleTag) filled.push("כותרת");
-    if (smart.metaDescription) filled.push("תיאור");
+    if (smart.titleTag) filled.push(t("studio.pageSettings.filledTitle"));
+    if (smart.metaDescription) filled.push(t("studio.pageSettings.filledDescription"));
     const keywordCount = (smart.keywords || "")
       .split(",")
       .map((word) => word.trim())
       .filter(Boolean).length;
-    if (keywordCount) filled.push(`${keywordCount} מילות מפתח`);
+    if (keywordCount) filled.push(t("studio.pageSettings.filledKeywords", { count: keywordCount }));
     if (smart.social?.ogTitle || smart.social?.ogDescription) {
-      filled.push("שיתוף ברשתות");
+      filled.push(t("studio.pageSettings.filledSocial"));
     }
     if ((smart.structuredData || []).length > beforeSchemaCount) {
-      filled.push("כרטיס Schema");
+      filled.push(t("studio.pageSettings.filledSchema"));
     }
 
     setSeoDraft(smart);
     setSmartHint(
       filled.length
-        ? `מולא אוטומטית: ${filled.join(" · ")}. עברי על הטאבים וערכי מה שצריך.`
-        : "לא נמצא מספיק תוכן בעמוד. הוסיפי טקסט לעמוד ונסי שוב.",
+        ? t("studio.pageSettings.smartFilled", { items: filled.join(" · ") })
+        : t("studio.pageSettings.smartEmpty"),
     );
     window.setTimeout(() => setSmartHint(""), 8000);
   };
 
   const fillExample = (field: "titleTag" | "metaDescription" | "keywords") => {
-    const exampleSiteName = siteName || "העסק שלי";
-    const examplePage = title || page?.title || "עמוד";
+    const exampleSiteName = siteName || t("studio.pageSettings.exampleSiteName");
+    const examplePage = title || page?.title || t("studio.page");
     if (field === "titleTag") {
       updateSeo({ titleTag: `${examplePage} | ${exampleSiteName}` });
     } else if (field === "metaDescription") {
       updateSeo({
-        metaDescription: `${examplePage} של ${exampleSiteName} — שירות מקצועי, איכותי ואמין. צרו קשר עוד היום לפרטים והצעת מחיר.`,
+        metaDescription: t("studio.pageSettings.exampleMeta", {
+          page: examplePage,
+          site: exampleSiteName,
+        }),
       });
     } else {
       updateSeo({
-        keywords: `${examplePage}, ${exampleSiteName}, שירות, מקצועי, המלצות`,
+        keywords: t("studio.pageSettings.exampleKeywords", {
+          page: examplePage,
+          site: exampleSiteName,
+        }),
       });
     }
   };
@@ -623,7 +636,7 @@ export default function PageSettingsModal({
   return createPortal(
     <div
       className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
-      dir="rtl"
+      dir={dir}
       data-testid="page-settings-backdrop"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) requestClose();
@@ -632,7 +645,7 @@ export default function PageSettingsModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`הגדרות עמוד (${page.title || "עמוד"})`}
+        aria-label={`${t("studio.pageSettings.title")} (${page.title || t("studio.page")})`}
         data-testid="page-settings-modal"
         className="relative my-auto flex h-[min(780px,calc(100vh-24px))] w-full max-w-[900px] flex-col overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_32px_120px_rgba(15,23,42,0.28)] sm:h-[min(780px,calc(100vh-48px))]"
         onMouseDown={(event) => event.stopPropagation()}
@@ -647,21 +660,21 @@ export default function PageSettingsModal({
 
             <div className="min-w-0">
               <p className="text-[11px] font-black uppercase tracking-wider text-blue-600">
-                הגדרות עמוד
+                {t("studio.pageSettings.title")}
               </p>
               <h2 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-800 sm:text-2xl">
-                {page.title || "עמוד"}
+{page.title || t("studio.page")}
               </h2>
               <p className="mt-1 truncate text-xs font-semibold text-slate-400">
                 {tab === "settings"
-                  ? "שם וכתובת"
+                  ? t("studio.pageSettings.subtitleNameUrl")
                   : tab === "site"
-                    ? "פאביקון, לוגו ותמונת שיתוף ברמת האתר"
+                    ? t("studio.pageSettings.subtitleSite")
                     : tab === "seo"
-                    ? "SEO בסיסי — כותרת, תיאור ואינדוקס"
+                    ? t("studio.pageSettings.subtitleSeo")
                     : tab === "advanced"
-                      ? "SEO מתקדם — Schema, גוגל ומטא"
-                      : "שיתוף ברשתות חברתיות"}
+                      ? t("studio.pageSettings.subtitleAdvanced")
+                      : t("studio.pageSettings.subtitleSocial")}
               </p>
             </div>
           </div>
@@ -670,14 +683,14 @@ export default function PageSettingsModal({
             type="button"
             onClick={requestClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-            aria-label="סגירה"
+            aria-label={t("studio.pageSettings.close")}
           >
             <X className="h-5 w-5" />
           </button>
         </header>
 
         <div className="relative shrink-0 border-b border-slate-100/80 bg-slate-50/40">
-          <SeoTabBar<PageSettingsModalTab> tabs={TABS} active={tab} onChange={setTab} />
+          <SeoTabBar<PageSettingsModalTab> tabs={tabs} active={tab} onChange={setTab} />
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-gradient-to-b from-slate-50/30 to-white px-5 py-5 text-right sm:px-7 sm:py-6">
@@ -696,12 +709,12 @@ export default function PageSettingsModal({
               {tab === "seo" ? (
                 <GooglePreviewCard
                   title={
-                    truncateForPreview(previewMeta.titleTag, 70) || "כותרת העמוד"
+                    truncateForPreview(previewMeta.titleTag, 70) || t("studio.pageSettings.pageTitleFallback")
                   }
                   url={previewUrl}
                   description={
                     truncateForPreview(previewMeta.metaDescription, 160) ||
-                    "מנועי החיפוש עשויים להציג תיאור שונה."
+                    t("studio.pageSettings.searchMayDiffer")
                   }
                 />
               ) : (
@@ -721,24 +734,24 @@ export default function PageSettingsModal({
           {tab === "settings" ? (
             <SeoSection
               icon={<Settings2 className="h-5 w-5" />}
-              title="פרטי העמוד"
-              subtitle="שם העמוד וכתובת URL — הבסיס לכל הגדרות ה-SEO"
+              title={t("studio.pageSettings.pageDetails")}
+              subtitle={t("studio.pageSettings.pageDetailsHint")}
             >
               <label className="block space-y-2">
-                <span className="text-sm font-black text-slate-800">שם העמוד</span>
+                <span className="text-sm font-black text-slate-800">{t("studio.pageSettings.pageName")}</span>
                 <input
                   name="title"
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
                   className={seoFieldClass}
-                  placeholder="לדוגמה: שירותים"
+                  placeholder={t("studio.pageSettings.pageNamePlaceholder")}
                 />
               </label>
 
               {!page.isHome ? (
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
-                    כתובת URL (slug)
+                    {t("studio.pageSettings.urlSlug")}
                   </span>
                   <div className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3">
                     <span className="text-sm font-bold text-slate-400">/</span>
@@ -759,19 +772,17 @@ export default function PageSettingsModal({
           {tab === "site" ? (
             <div className="space-y-5">
               <SeoHelpNote>
-                ההגדרות כאן חלות על <span className="font-black">כל האתר</span>{" "}
-                — לא רק על העמוד הנוכחי. הפאביקון יופיע בלשונית הדפדפן, והתמונות
-                ישמשו כברירת מחדל לכל העמודים.
+                {t("studio.pageSettings.siteWideNote")}
               </SeoHelpNote>
 
               <SeoSection
                 icon={<Building2 className="h-5 w-5" />}
-                title="זהות האתר"
-                subtitle="פאביקון ולוגו — ייחודיים לעסק שלך, לא למערכת BizUply"
+                title={t("studio.pageSettings.siteIdentity")}
+                subtitle={t("studio.pageSettings.siteIdentityHint")}
               >
                 <SeoImageUploader
-                  label="פאביקון (Favicon)"
-                  hint="ICO, PNG או JPG — מומלץ 32×32 או 64×64 פיקסלים"
+                  label={t("studio.pageSettings.favicon")}
+                  hint={t("studio.pageSettings.faviconHint")}
                   value={siteBrandDraft.faviconUrl || ""}
                   onChange={(url) =>
                     setSiteBrandDraft((current) => ({ ...current, faviconUrl: url }))
@@ -781,8 +792,8 @@ export default function PageSettingsModal({
                 />
 
                 <SeoImageUploader
-                  label="לוגו העסק"
-                  hint="יופיע ב-Schema ובמקומות שדורשים לוגו"
+                  label={t("studio.pageSettings.businessLogo")}
+                  hint={t("studio.pageSettings.businessLogoHint")}
                   value={siteBrandDraft.logoUrl || ""}
                   onChange={(url) =>
                     setSiteBrandDraft((current) => ({ ...current, logoUrl: url }))
@@ -794,12 +805,12 @@ export default function PageSettingsModal({
 
               <SeoSection
                 icon={<Share2 className="h-5 w-5" />}
-                title="ברירת מחדל לשיתוף"
-                subtitle="תמונה שתוצג כשעמוד לא הגדיר תמונה משלו"
+                title={t("studio.pageSettings.defaultShare")}
+                subtitle={t("studio.pageSettings.defaultShareHint")}
               >
                 <SeoImageUploader
-                  label="תמונת שיתוף ברירת מחדל"
-                  hint="יחס מומלץ 1.91:1 (1200×630) — לפייסבוק, וואטסאפ ולינקדאין"
+                  label={t("studio.pageSettings.defaultShareImage")}
+                  hint={t("studio.pageSettings.defaultShareImageHint")}
                   value={siteSeoDraft.defaultOgImage || siteSeoDraft.ogImage || ""}
                   onChange={(url) =>
                     setSiteSeoDraft((current) => ({
@@ -819,12 +830,12 @@ export default function PageSettingsModal({
             <div className="space-y-5">
               <SeoSection
                 icon={<Search className="h-5 w-5" />}
-                title="מבנה וכתובת"
-                subtitle="היררכיית האתר וכתובת העמוד — משפיעים על הנראות בגוגל"
+                title={t("studio.pageSettings.structureAddress")}
+                subtitle={t("studio.pageSettings.structureAddressHint")}
               >
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
-                    עמוד אב (היררכיית האתר)
+                    {t("studio.pageSettings.parentPage")}
                   </span>
                   <select
                     value={seoDraft.parentPageId || ""}
@@ -833,7 +844,7 @@ export default function PageSettingsModal({
                     }
                     className={seoFieldClass}
                   >
-                    <option value="">דף הבית</option>
+                    <option value="">{t("studio.pageSettings.homePageOption")}</option>
                     {parentPageOptions.map((parentPage) => (
                       <option key={parentPage.id} value={parentPage.id}>
                         {parentPage.title}
@@ -845,7 +856,7 @@ export default function PageSettingsModal({
                 {!page.isHome ? (
                   <label className="block space-y-2">
                     <span className="text-sm font-black text-slate-800">
-                      כתובת URL (slug)
+                      {t("studio.pageSettings.urlSlug")}
                     </span>
                     <div className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3">
                       <span className="text-sm font-bold text-slate-400">/</span>
@@ -862,12 +873,12 @@ export default function PageSettingsModal({
 
               <SeoSection
                 icon={<Sparkles className="h-5 w-5" />}
-                title="תוכן SEO"
-                subtitle="מה שגוגל מציג בתוצאות החיפוש — כותרת ותיאור"
+                title={t("studio.pageSettings.seoContent")}
+                subtitle={t("studio.pageSettings.seoContentHint")}
               >
                 <label className="block space-y-2">
                   <SeoFieldLabel
-                    label="Title tag (כותרת בתוצאות החיפוש)"
+                    label={t("studio.pageSettings.titleTag")}
                     actions={
                       <>
                         <SeoExampleButton onClick={() => fillExample("titleTag")} />
@@ -885,13 +896,13 @@ export default function PageSettingsModal({
                       updateSeo({ titleTag: event.target.value })
                     }
                     className={seoFieldClass}
-                    placeholder={previewMeta?.titleTag || "שם העמוד | שם האתר"}
+                    placeholder={previewMeta?.titleTag || t("studio.pageSettings.titlePlaceholder")}
                   />
                 </label>
 
                 <label className="block space-y-2">
                   <SeoFieldLabel
-                    label="Meta description (תיאור קצר)"
+                    label={t("studio.pageSettings.metaDescription")}
                     actions={
                       <>
                         <SeoExampleButton
@@ -911,40 +922,39 @@ export default function PageSettingsModal({
                       updateSeo({ metaDescription: event.target.value })
                     }
                     className={seoTextareaClass}
-                    placeholder="תיאור קצר שמסביר על מה העמוד. מנועי החיפוש עשויים להציג תיאור שונה."
+                    placeholder={t("studio.pageSettings.metaDescriptionPlaceholder")}
                   />
                 </label>
               </SeoSection>
 
               <SeoSection
                 icon={<Globe className="h-5 w-5" />}
-                title="אינדוקס בגוגל"
-                subtitle="שליטה על הופעת העמוד בתוצאות החיפוש"
+                title={t("studio.pageSettings.googleIndex")}
+                subtitle={t("studio.pageSettings.googleIndexHint")}
               >
                 <SeoToggle
                   checked={pageIndexingEnabled}
                   onChange={() => updateSeo({ indexable: !pageIndexingEnabled })}
-                  label="לאפשר למנועי חיפוש לאנדקס את העמוד"
-                  description="כשהאפשרות כבויה, העמוד לא יופיע בתוצאות החיפוש."
+                  label={t("studio.pageSettings.allowIndex")}
+                  description={t("studio.pageSettings.allowIndexHint")}
                 />
 
                 {siteSeo.siteIndexingEnabled === false ? (
                   <p className="rounded-xl border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
-                    כיביתם אינדוקס לכל האתר בהגדרות האתר. כדי שהעמוד יופיע בגוגל,
-                    יש להפעיל אינדוקס ברמת האתר.
+                    {t("studio.pageSettings.siteIndexOff")}
                   </p>
                 ) : null}
               </SeoSection>
 
               <SeoSection
                 icon={<Globe className="h-5 w-5" />}
-                title="בדיקה וחיבור לגוגל"
-                subtitle="מפת אתר + בדיקות. מדריך האימות המלא נמצא ב־SEO מתקדם"
+                title={t("studio.pageSettings.googleCheck")}
+                subtitle={t("studio.pageSettings.googleCheckHint")}
               >
                 <SeoStatusPill tone={pageIndexingEnabled ? "success" : "danger"}>
                   {pageIndexingEnabled
-                    ? "העמוד פתוח לאינדוקס — גוגל יכול להציג אותו"
-                    : "העמוד חסום מאינדוקס — הפעילי את המתג למעלה"}
+                    ? t("studio.pageSettings.openToIndex")
+                    : t("studio.pageSettings.blockedFromIndex")}
                 </SeoStatusPill>
 
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -954,7 +964,7 @@ export default function PageSettingsModal({
                     )}`}
                     icon={<Search className="h-4 w-4" />}
                   >
-                    בדיקת תצוגה בגוגל
+                    {t("studio.pageSettings.googlePreviewCheck")}
                   </SeoActionLink>
                   <SeoActionLink
                     href={`https://www.google.com/search?q=${encodeURIComponent(
@@ -965,31 +975,24 @@ export default function PageSettingsModal({
                     )}`}
                     icon={<Globe className="h-4 w-4" />}
                   >
-                    האם האתר כבר בגוגל?
+                    {t("studio.pageSettings.alreadyOnGoogle")}
                   </SeoActionLink>
                   <SeoActionLink
                     href={`${siteBaseUrl}/sitemap.xml`}
                     icon={<ExternalLink className="h-4 w-4" />}
                   >
-                    מפת אתר (sitemap.xml)
+                    {t("studio.pageSettings.sitemap")}
                   </SeoActionLink>
                   <SeoActionLink
                     href="https://search.google.com/search-console"
                     icon={<ExternalLink className="h-4 w-4" />}
                   >
-                    פתיחת Google Search Console
+                    {t("studio.pageSettings.openGsc")}
                   </SeoActionLink>
                 </div>
 
                 <p className="text-[11px] font-semibold leading-5 text-slate-500">
-                  לאימות האתר מול גוגל עברו לטאב{" "}
-                  <span className="font-black text-slate-700">"SEO מתקדם"</span>
-                  — שם יש מדריך שלבים ברור: העתקת כתובת, בחירת שיטת אימות, שמירה,
-                  ושליחת{" "}
-                  <span className="font-black" dir="ltr">
-                    sitemap.xml
-                  </span>
-                  . אין חיבור אוטומטי ל־Google בשלב זה.
+                  {t("studio.pageSettings.verifyInAdvanced")}
                 </p>
               </SeoSection>
             </div>
@@ -1003,27 +1006,23 @@ export default function PageSettingsModal({
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-black text-slate-900">
-                    הגדרות למתקדמים — לא חובה
+                    {t("studio.pageSettings.advancedOptionalTitle")}
                   </p>
                   <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
-                    אפשר להשאיר הכל ריק והאתר יופיע בגוגל מצוין. הכלים כאן נועדו
-                    למי שרוצה שליטה מקצועית. לא בטוחים? דלגו — מה שחשוב באמת נמצא
-                    בטאב{" "}
-                    <span className="font-black text-blue-700">"SEO בסיסי"</span>.
+                    {t("studio.pageSettings.advancedOptionalText")}
                   </p>
                 </div>
               </div>
 
               <SeoAdvancedSection
                 icon={<Braces className="h-5 w-5" />}
-                title="כרטיס חכם בגוגל (Schema)"
-                description="עוזר לגוגל להציג כוכבי דירוג, שעות פתיחה, שאלות ותשובות — וגם ל-AI להבין את העסק."
-                badge={{ label: "מומלץ", tone: "recommended" }}
+                title={t("studio.pageSettings.schemaTitle")}
+                description={t("studio.pageSettings.schemaDescription")}
+                badge={{ label: t("studio.pageSettings.recommended"), tone: "recommended" }}
                 defaultOpen
               >
                 <SeoHelpNote>
-                  בחרו סוג שמתאים לעמוד — נבנה עבורכם טופס ידידותי שממלא את
-                  הקוד לבד. אפשר גם לפתוח "עריכה מתקדמת" ולערוך את ה-JSON ידנית.
+                  {t("studio.pageSettings.schemaHelp")}
                 </SeoHelpNote>
 
                 <SchemaBuilder
@@ -1035,12 +1034,12 @@ export default function PageSettingsModal({
 
               <SeoAdvancedSection
                 icon={<Bot className="h-5 w-5" />}
-                title="שליטה בהופעה בגוגל (Robots)"
-                description="מה גוגל יציג מהעמוד. ברירת המחדל מצוינת לרוב העסקים."
-                badge={{ label: "לא חובה", tone: "optional" }}
+                title={t("studio.pageSettings.robotsTitle")}
+                description={t("studio.pageSettings.robotsDescription")}
+                badge={{ label: t("studio.pageSettings.optional"), tone: "optional" }}
               >
                 <SeoHelpNote>
-                  סמנו כאן רק אם יש סיבה ברורה. אם לא בטוחים — אל תשנו כלום.
+                  {t("studio.pageSettings.robotsHelp")}
                 </SeoHelpNote>
 
                 <div className="space-y-2">
@@ -1072,10 +1071,10 @@ export default function PageSettingsModal({
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-sm font-black text-slate-900">
-                            {option.hint}
+                            {t(option.hintKey)}
                           </span>
                           <span className="block font-mono text-[11px] font-semibold text-slate-400">
-                            {option.label}
+                            {option.value}
                           </span>
                         </span>
                       </button>
@@ -1086,7 +1085,7 @@ export default function PageSettingsModal({
                 <details className="group/adv rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
                     <ChevronDown className="h-4 w-4 transition group-open/adv:rotate-180" />
-                    אפשרויות תצוגה נוספות (למומחים)
+                    {t("studio.pageSettings.moreDisplayOptions")}
                   </summary>
                   <div className="grid gap-3 border-t border-slate-100 px-3.5 py-3 sm:grid-cols-3">
                     <label className="block space-y-1.5">
@@ -1103,7 +1102,7 @@ export default function PageSettingsModal({
                         }
                         className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
                       >
-                        <option value="">ברירת מחדל</option>
+                        <option value="">{t("studio.pageSettings.defaultOption")}</option>
                         <option value="none">none</option>
                         <option value="standard">standard</option>
                         <option value="large">large</option>
@@ -1159,13 +1158,13 @@ export default function PageSettingsModal({
                     </label>
                   </div>
                   <p className="px-3.5 pb-3 text-[11px] font-semibold text-slate-500">
-                    ריק = ברירת מחדל · ‎-1‎ = ללא הגבלה
+                    {t("studio.pageSettings.emptyDefaultNoLimit")}
                   </p>
                 </details>
 
                 <div className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-3">
                   <p className="text-[11px] font-black uppercase tracking-wide text-slate-400">
-                    תג robots שייווצר אוטומטית
+                    {t("studio.pageSettings.robotsTagPreview")}
                   </p>
                   <code
                     className="mt-1 block break-all font-mono text-xs text-emerald-300"
@@ -1178,14 +1177,12 @@ export default function PageSettingsModal({
 
               <SeoAdvancedSection
                 icon={<Globe className="h-5 w-5" />}
-                title="כתובת רשמית ומילות מפתח"
-                description="למניעת תוכן כפול כשאותו עמוד נגיש מכמה כתובות."
-                badge={{ label: "לא חובה", tone: "optional" }}
+                title={t("studio.pageSettings.canonicalTitle")}
+                description={t("studio.pageSettings.canonicalDescription")}
+                badge={{ label: t("studio.pageSettings.optional"), tone: "optional" }}
               >
                 <SeoHelpNote>
-                  Canonical אומר לגוגל מהי הכתובת ה״רשמית״ של העמוד. הכתובת נקבעת
-                  אוטומטית לפי האתר המפורסם + שם העמוד ומתעדכנת לבד — השאירו ריק
-                  אלא אם יש סיבה מיוחדת.
+                  {t("studio.pageSettings.canonicalHelp")}
                 </SeoHelpNote>
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
@@ -1209,7 +1206,7 @@ export default function PageSettingsModal({
 
                 <label className="block space-y-2">
                   <SeoFieldLabel
-                    label="מילות מפתח"
+                    label={t("studio.pageSettings.keywords")}
                     actions={
                       <SeoExampleButton onClick={() => fillExample("keywords")} />
                     }
@@ -1220,19 +1217,19 @@ export default function PageSettingsModal({
                       updateSeo({ keywords: event.target.value })
                     }
                     className={seoFieldClass}
-                    placeholder="מילה1, מילה2, מילה3"
+                    placeholder={t("studio.pageSettings.keywordsPlaceholder")}
                   />
                 </label>
               </SeoAdvancedSection>
 
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
-                title="אימות ב-Google Search Console"
-                description="מדריך שלבים: פתיחת GSC → העתקת כתובת → בחירת שיטת אימות → שמירה → Verify בגוגל → Sitemap."
+                title={t("studio.pageSettings.gscTitle")}
+                description={t("studio.pageSettings.gscDescription")}
                 badge={
                   verificationCode || hasGscHtmlReady
-                    ? { label: "מוכן לאימות", tone: "recommended" }
-                    : { label: "מומלץ", tone: "recommended" }
+                    ? { label: t("studio.pageSettings.readyToVerify"), tone: "recommended" }
+                    : { label: t("studio.pageSettings.recommended"), tone: "recommended" }
                 }
                 defaultOpen
               >
@@ -1248,7 +1245,7 @@ export default function PageSettingsModal({
                 <details className="group/meta rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
                     <ChevronDown className="h-4 w-4 transition group-open/meta:rotate-180" />
-                    תגי מטא נוספים (למומחים)
+                    {t("studio.pageSettings.extraMetaTitle")}
                   </summary>
                   <div className="space-y-2 border-t border-slate-100 px-3.5 py-3">
                     {(seoDraft.customMetaTags || [])
@@ -1292,13 +1289,13 @@ export default function PageSettingsModal({
                               })
                             }
                             className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
-                            placeholder="הערך של התג"
+                            placeholder={t("studio.pageSettings.tagValuePlaceholder")}
                           />
                           <button
                             type="button"
                             onClick={() => removeCustomMetaTag(meta.id)}
                             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                            aria-label="מחיקת תג"
+                            aria-label={t("studio.pageSettings.deleteTag")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -1322,7 +1319,7 @@ export default function PageSettingsModal({
                         onClick={() => addCustomMetaTag()}
                         className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
                       >
-                        <Plus className="h-4 w-4" /> תג חדש
+<Plus className="h-4 w-4" /> {t("studio.pageSettings.newTag")}
                       </button>
                     </div>
                   </div>
@@ -1331,17 +1328,16 @@ export default function PageSettingsModal({
 
               <SeoAdvancedSection
                 icon={<Languages className="h-5 w-5" />}
-                title="שפות ואזורים (hreflang)"
-                description="קישור בין גרסאות של העמוד בשפות או מדינות שונות."
-                badge={{ label: "לא חובה", tone: "optional" }}
+                title={t("studio.pageSettings.hreflangTitle")}
+                description={t("studio.pageSettings.hreflangDescription")}
+                badge={{ label: t("studio.pageSettings.optional"), tone: "optional" }}
               >
                 <SeoHelpNote>
-                  רלוונטי רק אם יש לעמוד גרסה בשפה אחרת. לדוגמה: he-IL לעברית,
-                  en-US לאנגלית.
+                  {t("studio.pageSettings.hreflangHelp")}
                 </SeoHelpNote>
                 {(seoDraft.hreflang || []).length === 0 ? (
                   <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-4 text-center text-xs font-semibold text-slate-400">
-                    אין שפות נוספות. הוסיפו רק אם קיימת גרסה בשפה/מדינה אחרת.
+                    {t("studio.pageSettings.noExtraLanguages")}
                   </p>
                 ) : null}
                 {(seoDraft.hreflang || []).map((entry) => (
@@ -1371,7 +1367,7 @@ export default function PageSettingsModal({
                       type="button"
                       onClick={() => removeHreflang(entry.id)}
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                      aria-label="מחיקת שפה"
+                      aria-label={t("studio.pageSettings.deleteLanguage")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1382,7 +1378,7 @@ export default function PageSettingsModal({
                   onClick={addHreflang}
                   className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
                 >
-                  <Plus className="h-4 w-4" /> הוספת שפה
+<Plus className="h-4 w-4" /> {t("studio.pageSettings.addLanguage")}
                 </button>
               </SeoAdvancedSection>
             </div>
@@ -1391,12 +1387,12 @@ export default function PageSettingsModal({
           {tab === "social" ? (
             <SeoSection
               icon={<Share2 className="h-5 w-5" />}
-              title="שיתוף ברשתות חברתיות"
-              subtitle="איך העמוד נראה כשמשתפים אותו בפייסבוק, וואטסאפ ולינקדאין"
+              title={t("studio.pageSettings.socialTitle")}
+              subtitle={t("studio.pageSettings.socialSubtitle")}
             >
               <label className="block space-y-2">
                 <span className="text-sm font-black text-slate-800">
-                  כותרת לשיתוף
+                  {t("studio.pageSettings.shareTitle")}
                 </span>
                 <input
                   value={seoDraft.social?.ogTitle || ""}
@@ -1410,7 +1406,7 @@ export default function PageSettingsModal({
 
               <label className="block space-y-2">
                 <span className="text-sm font-black text-slate-800">
-                  תיאור לשיתוף
+                  {t("studio.pageSettings.shareDescription")}
                 </span>
                 <textarea
                   value={seoDraft.social?.ogDescription || ""}
@@ -1423,8 +1419,8 @@ export default function PageSettingsModal({
               </label>
 
               <SeoImageUploader
-                label="תמונת שיתוף"
-                hint="תמונה ייעודית לעמוד זה — דורסת את ברירת המחדל של האתר"
+                label={t("studio.pageSettings.shareImage")}
+                hint={t("studio.pageSettings.shareImageHint")}
                 value={seoDraft.social?.ogImage || ""}
                 onChange={(url) => updateSocial({ ogImage: url })}
                 businessId={businessId}
@@ -1441,8 +1437,8 @@ export default function PageSettingsModal({
           <div className="flex items-center justify-between gap-3">
             <p className="hidden text-xs font-semibold text-slate-400 sm:block">
               {tab !== "settings"
-                ? `ציון SEO: ${seoScore.score}% · שמירה מעדכנת את השרת`
-                : "שמירה מעדכנת את ההגדרות בשרת (טיוטה)"}
+                ? t("studio.pageSettings.seoScoreSaving", { score: seoScore.score })
+                : t("studio.pageSettings.savingUpdatesServer")}
             </p>
             <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
               <button
@@ -1450,7 +1446,7 @@ export default function PageSettingsModal({
                 onClick={requestClose}
                 className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
               >
-                ביטול
+                {t("studio.cancel")}
               </button>
               <button
                 type="button"
@@ -1461,7 +1457,7 @@ export default function PageSettingsModal({
                 disabled={isSaving || Boolean(canonicalUrlError)}
                 className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-black shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600 disabled:opacity-50"
               >
-                {isSaving ? "שומר..." : "שמירה"}
+{isSaving ? t("studio.saving") : t("studio.save")}
               </button>
             </div>
           </div>

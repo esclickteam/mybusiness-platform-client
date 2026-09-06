@@ -1,5 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import {
   ChevronDown,
   FileText,
@@ -60,53 +62,17 @@ type LinkSettingsModalProps = {
   onRemove: () => void;
 };
 
-const MAIN_MODES: Array<{
-  mode: LinkMode;
-  label: string;
-  icon: React.ReactNode;
-}> = [
-  {
-    mode: "page",
-    label: "דף",
-    icon: <FileText className="h-5 w-5" />,
-  },
-  {
-    mode: "section",
-    label: "סקשן",
-    icon: <Layers className="h-5 w-5" />,
-  },
-  {
-    mode: "url",
-    label: "כתובת",
-    icon: <Globe2 className="h-5 w-5" />,
-  },
+const MAIN_MODE_KEYS: Array<{ mode: LinkMode; labelKey: string; icon: React.ReactNode }> = [
+  { mode: "page", labelKey: "studio.linkSettings.page", icon: <FileText className="h-5 w-5" /> },
+  { mode: "section", labelKey: "studio.linkSettings.section", icon: <Layers className="h-5 w-5" /> },
+  { mode: "url", labelKey: "studio.linkSettings.url", icon: <Globe2 className="h-5 w-5" /> },
 ];
 
-const MORE_MODES: Array<{
-  mode: LinkMode;
-  label: string;
-  icon: React.ReactNode;
-}> = [
-  {
-    mode: "email",
-    label: "אימייל",
-    icon: <Mail className="h-5 w-5" />,
-  },
-  {
-    mode: "phone",
-    label: "מספר טלפון",
-    icon: <Phone className="h-5 w-5" />,
-  },
-  {
-    mode: "whatsapp",
-    label: "וואטסאפ",
-    icon: <MessageCircle className="h-5 w-5" />,
-  },
-  {
-    mode: "address",
-    label: "כתובת",
-    icon: <MapPin className="h-5 w-5" />,
-  },
+const MORE_MODE_KEYS: Array<{ mode: LinkMode; labelKey: string; icon: React.ReactNode }> = [
+  { mode: "email", labelKey: "studio.linkSettings.email", icon: <Mail className="h-5 w-5" /> },
+  { mode: "phone", labelKey: "studio.linkSettings.phone", icon: <Phone className="h-5 w-5" /> },
+  { mode: "whatsapp", labelKey: "studio.linkSettings.whatsapp", icon: <MessageCircle className="h-5 w-5" /> },
+  { mode: "address", labelKey: "studio.linkSettings.address", icon: <MapPin className="h-5 w-5" /> },
 ];
 
 function normalizeVisualIdPart(value: string) {
@@ -310,12 +276,11 @@ function getSafeTarget(value: LinkTarget | undefined): "_self" | "_blank" {
   return value === "_blank" ? "_blank" : "_self";
 }
 
-function getModeLabel(mode: LinkMode) {
-  return (
-    MAIN_MODES.find((item) => item.mode === mode)?.label ||
-    MORE_MODES.find((item) => item.mode === mode)?.label ||
-    "קישור"
-  );
+function getModeLabel(mode: LinkMode, t: (key: string) => string) {
+  const item =
+    MAIN_MODE_KEYS.find((entry) => entry.mode === mode) ||
+    MORE_MODE_KEYS.find((entry) => entry.mode === mode);
+  return item ? t(item.labelKey) : t("studio.linkSettings.linkFallback");
 }
 
 export default function LinkSettingsModal({
@@ -329,6 +294,8 @@ export default function LinkSettingsModal({
   onSave,
   onRemove,
 }: LinkSettingsModalProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const safePages = Array.isArray(pages) ? pages : [];
   const safeSections = Array.isArray(sections) ? sections : [];
 
@@ -449,7 +416,7 @@ export default function LinkSettingsModal({
   function getPreviewHref() {
     const href = buildHref();
 
-    return href || "לא הוגדר קישור";
+    return href || t("studio.linkSettings.notSet");
   }
 
   function saveLink() {
@@ -475,7 +442,7 @@ export default function LinkSettingsModal({
 
   return createPortal(
     <div
-      dir="rtl"
+      dir={dir}
       className="pointer-events-auto fixed inset-0 z-[2147483647] grid place-items-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 p-6 backdrop-blur-[2px]"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
@@ -485,10 +452,10 @@ export default function LinkSettingsModal({
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-3xl font-black text-slate-800">
-              קישור לכפתור / טקסט
+              {t("studio.linkSettings.title")}
             </h2>
             <p className="mt-2 text-sm font-bold text-slate-500">
-              בחרי דף, סקשן, כתובת חיצונית, וואטסאפ, טלפון, מייל ועוד.
+              {t("studio.linkSettings.subtitle")}
             </p>
           </div>
 
@@ -496,7 +463,7 @@ export default function LinkSettingsModal({
             type="button"
             onClick={onClose}
             className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
-            aria-label="סגירה"
+            aria-label={t("studio.close")}
           >
             <X className="h-6 w-6" />
           </button>
@@ -504,7 +471,7 @@ export default function LinkSettingsModal({
 
         <div className="relative mb-6">
           <div className="grid grid-cols-4 gap-2 rounded-[24px] bg-slate-100 p-1">
-            {MAIN_MODES.map((item) => (
+            {MAIN_MODE_KEYS.map((item) => (
               <button
                 key={item.mode}
                 type="button"
@@ -515,10 +482,10 @@ export default function LinkSettingsModal({
                     ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
                     : "text-slate-500 hover:text-slate-800",
                 ].join(" ")}
-                title={item.label}
+                title={t(item.labelKey)}
               >
                 {item.icon}
-                <span className="hidden sm:inline">{item.label}</span>
+                <span className="hidden sm:inline">{t(item.labelKey)}</span>
               </button>
             ))}
 
@@ -527,21 +494,21 @@ export default function LinkSettingsModal({
               onClick={() => setShowMoreMenu((value) => !value)}
               className={[
                 "flex h-16 items-center justify-center gap-2 rounded-[20px] text-sm font-black transition",
-                MORE_MODES.some((item) => item.mode === mode)
+                MORE_MODE_KEYS.some((item) => item.mode === mode)
                   ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
                   : "text-slate-500 hover:text-slate-800",
               ].join(" ")}
-              title="עוד"
+              title={t("studio.linkSettings.more")}
             >
               <MoreHorizontal className="h-6 w-6" />
-              <span className="hidden sm:inline">עוד</span>
+              <span className="hidden sm:inline">{t("studio.linkSettings.more")}</span>
             </button>
           </div>
 
           {showMoreMenu ? (
             <div className="absolute left-0 top-[76px] z-50 w-[min(340px,calc(100vw-64px))] rounded-[24px] border border-slate-200 bg-white p-3 shadow-[0_24px_80px_rgba(15,23,42,0.20)]">
               <div className="space-y-1">
-                {MORE_MODES.map((item) => (
+                {MORE_MODE_KEYS.map((item) => (
                   <button
                     key={item.mode}
                     type="button"
@@ -552,10 +519,10 @@ export default function LinkSettingsModal({
                         ? "bg-blue-50 text-blue-700"
                         : "text-slate-800 hover:bg-slate-50",
                     ].join(" ")}
-                    dir="rtl"
+                    dir={dir}
                   >
                     {item.icon}
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </button>
                 ))}
               </div>
@@ -566,18 +533,18 @@ export default function LinkSettingsModal({
         <div className="min-h-[210px] rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h3 className="text-xl font-black text-slate-800">
-              {getModeLabel(mode)}
+              {getModeLabel(mode, t)}
             </h3>
 
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
-              סוג קישור
+              {t("studio.linkSettings.linkType")}
             </span>
           </div>
 
           {mode === "page" ? (
             <label className="block">
               <span className="mb-2 block text-xs font-black text-slate-600">
-                בחירת דף
+                {t("studio.linkSettings.choosePage")}
               </span>
               <select
                 value={pageId}
@@ -601,7 +568,7 @@ export default function LinkSettingsModal({
             <div className="space-y-4">
               <label className="block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  בחירת סקשן בעמוד
+                  {t("studio.linkSettings.chooseSection")}
                 </span>
                 <select
                   value={sectionId}
@@ -625,7 +592,7 @@ export default function LinkSettingsModal({
           {mode === "url" ? (
             <label className="block">
               <span className="mb-2 block text-xs font-black text-slate-600">
-                כתובת אתר
+                {t("studio.linkSettings.websiteUrl")}
               </span>
               <input
                 value={urlValue}
@@ -633,7 +600,7 @@ export default function LinkSettingsModal({
                 onKeyDown={(event) => {
                   if (event.key === "Enter") saveLink();
                 }}
-                placeholder="https://example.com או /about או #contact"
+                placeholder={t("studio.linkSettings.urlPlaceholder")}
                 dir="ltr"
                 className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-left text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
               />
@@ -644,7 +611,7 @@ export default function LinkSettingsModal({
             <div className="space-y-4">
               <label className="block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  כתובת אימייל
+                  {t("studio.linkSettings.emailAddress")}
                 </span>
                 <input
                   value={emailValue}
@@ -657,12 +624,12 @@ export default function LinkSettingsModal({
 
               <label className="block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  נושא, אופציונלי
+                  {t("studio.linkSettings.subjectOptional")}
                 </span>
                 <input
                   value={emailSubject}
                   onChange={(event) => setאימיילSubject(event.target.value)}
-                  placeholder="אשמח לקבל פרטים"
+                  placeholder={t("studio.linkSettings.subjectPlaceholder")}
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
               </label>
@@ -672,7 +639,7 @@ export default function LinkSettingsModal({
           {mode === "phone" ? (
             <label className="block">
               <span className="mb-2 block text-xs font-black text-slate-600">
-                מספר טלפון
+                {t("studio.linkSettings.phoneNumber")}
               </span>
               <input
                 value={phoneValue}
@@ -688,7 +655,7 @@ export default function LinkSettingsModal({
             <div className="space-y-4">
               <label className="block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  מספר וואטסאפ
+                  {t("studio.linkSettings.whatsappNumber")}
                 </span>
                 <div className="relative">
                   <Smartphone className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
@@ -701,18 +668,18 @@ export default function LinkSettingsModal({
                   />
                 </div>
                 <span className="mt-2 block text-xs font-bold text-slate-400">
-                  אפשר להזין 0501234567 או 972501234567.
+                  {t("studio.linkSettings.whatsappHint")}
                 </span>
               </label>
 
               <label className="block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  הודעה מוכנה, אופציונלי
+                  {t("studio.linkSettings.presetMessage")}
                 </span>
                 <textarea
                   value={whatsappMessage}
                   onChange={(event) => setWhatsappMessage(event.target.value)}
-                  placeholder="היי, אשמח לקבל פרטים"
+                  placeholder={t("studio.linkSettings.messagePlaceholder")}
                   className="min-h-[100px] w-full resize-y rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
               </label>
@@ -722,14 +689,14 @@ export default function LinkSettingsModal({
           {mode === "address" ? (
             <label className="block">
               <span className="mb-2 block text-xs font-black text-slate-600">
-                כתובת
+                {t("studio.linkSettings.address")}
               </span>
               <div className="relative">
                 <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                 <input
                   value={addressValue}
                   onChange={(event) => setכתובתValue(event.target.value)}
-                  placeholder="רחוב הרצל 1, תל אביב"
+                  placeholder={t("studio.linkSettings.addressPlaceholder")}
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 pr-12 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
               </div>
@@ -752,7 +719,7 @@ export default function LinkSettingsModal({
                 : "text-slate-500",
             ].join(" ")}
           >
-            אותה לשונית
+            {t("studio.linkSettings.sameTab")}
           </button>
 
           <button
@@ -765,7 +732,7 @@ export default function LinkSettingsModal({
                 : "text-slate-500",
             ].join(" ")}
           >
-            לשונית חדשה
+            {t("studio.linkSettings.newTab")}
           </button>
         </div>
 
@@ -776,7 +743,7 @@ export default function LinkSettingsModal({
             className="inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-sm font-black text-blue-700 transition hover:bg-blue-50"
           >
             <Trash2 className="h-4 w-4" />
-            הסרת קישור
+            {t("studio.linkSettings.removeLink")}
           </button>
 
           <div className="flex items-center gap-2">
@@ -785,7 +752,7 @@ export default function LinkSettingsModal({
               onClick={onClose}
               className="h-12 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              ביטול
+              {t("studio.cancel")}
             </button>
 
             <button
@@ -799,7 +766,7 @@ export default function LinkSettingsModal({
                   : "cursor-not-allowed bg-slate-300",
               ].join(" ")}
             >
-              שמירה
+              {t("studio.save")}
             </button>
           </div>
         </div>

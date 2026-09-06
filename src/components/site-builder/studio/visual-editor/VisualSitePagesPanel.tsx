@@ -49,6 +49,7 @@ import {
   X,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
 import type { VisualSitePageItem } from "./SitePageCardPreview";
 import {
   applyDragToDisplayRows,
@@ -138,6 +139,7 @@ const MENU_GAP = 10;
 function buildMenuItems(
   page: VisualSitePageItem,
   options: { clientPortalPluginEnabled?: boolean } = {},
+  t: (key: string, opts?: Record<string, unknown>) => string,
 ): MenuItem[] {
   const isHome = Boolean(page.isHome);
   const hidden = Boolean(page.hiddenFromMenu);
@@ -147,27 +149,27 @@ function buildMenuItems(
   return [
     {
       action: "settings",
-      label: "הגדרות",
-      hint: "שם העמוד, כתובת URL והגדרות בסיס",
+      label: t("studio.sitePages.settings"),
+      hint: t("studio.sitePages.settingsHint"),
       icon: <Settings2 className="h-4 w-4" />,
     },
     {
       action: "seo",
-      label: "יסודות SEO",
-      hint: "כותרת ותיאור שמופיעים בגוגל",
+      label: t("studio.sitePages.seoBasics"),
+      hint: t("studio.sitePages.seoBasicsHint"),
       icon: <Search className="h-4 w-4" />,
     },
     {
       action: "social",
-      label: "שיתוף ברשתות",
-      hint: "תצוגה כשמשתפים את הקישור",
+      label: t("studio.sitePages.socialShare"),
+      hint: t("studio.sitePages.socialShareHint"),
       icon: <Share2 className="h-4 w-4" />,
       dividerAfter: true,
     },
     {
       action: "background",
-      label: "רקע העמוד",
-      hint: "צבע, תמונה או וידאו ברקע העמוד",
+      label: t("studio.sitePages.pageBackground"),
+      hint: t("studio.sitePages.pageBackgroundHint"),
       icon: <SquareDashed className="h-4 w-4" />,
       dividerAfter: !clientPortalPluginEnabled,
     },
@@ -175,8 +177,8 @@ function buildMenuItems(
       ? [
           {
             action: "dynamic" as const,
-            label: "עמוד דינמי / אזור אישי",
-            hint: "נתונים אישיים לפי לקוח מחובר — מתיק ה-CRM שלו בלבד",
+            label: t("studio.sitePages.dynamicPage"),
+            hint: t("studio.sitePages.dynamicPageHint"),
             icon: <ArrowRightLeft className="h-4 w-4" />,
             dividerAfter: true,
           },
@@ -184,43 +186,43 @@ function buildMenuItems(
       : []),
     {
       action: "addSubpage",
-      label: "הוספת עמוד משנה",
-      hint: `יצירת עמוד חדש תחת "${page.title || "עמוד"}"`,
+      label: t("studio.sitePages.addSubpage"),
+      hint: t("studio.sitePages.addSubpageHint", { title: page.title || t("studio.page") }),
       icon: <Plus className="h-4 w-4" />,
       dividerAfter: true,
     },
     {
       action: "rename",
-      label: "שינוי שם",
-      hint: "שינוי שם התצוגה של העמוד",
+      label: t("studio.sitePages.rename"),
+      hint: t("studio.sitePages.renameHint"),
       icon: <Type className="h-4 w-4" />,
     },
     {
       action: "duplicate",
-      label: "שכפול",
-      hint: "יצירת עותק מלא של העמוד",
+      label: t("studio.sitePages.duplicate"),
+      hint: t("studio.sitePages.duplicateHint"),
       icon: <FileStack className="h-4 w-4" />,
     },
     {
       action: "copy",
-      label: "העתקה",
-      hint: "העתקה להדבקה באתר/פרויקט אחר (בקרוב)",
+      label: t("studio.sitePages.copy"),
+      hint: t("studio.sitePages.copyHint"),
       icon: <Copy className="h-4 w-4" />,
       disabled: true,
     },
     {
       action: "setHome",
-      label: "הגדרה כדף הבית",
-      hint: "העמוד יהיה העמוד הראשי של האתר",
+      label: t("studio.sitePages.setHome"),
+      hint: t("studio.sitePages.setHomeHint"),
       icon: <Home className="h-4 w-4" />,
       disabled: isHome,
     },
     {
       action: "hideMenu",
-      label: hidden ? "הצגה בתפריט" : "הסתרה מהתפריט",
+      label: hidden ? t("studio.sitePages.showInMenu") : t("studio.sitePages.hideFromMenu"),
       hint: hidden
-        ? "החזרת העמוד לתפריט הניווט"
-        : "העמוד נשאר באתר אבל לא מופיע בתפריט",
+        ? t("studio.sitePages.showInMenuHint")
+        : t("studio.sitePages.hideFromMenuHint"),
       icon: <EyeOff className="h-4 w-4" />,
       disabled: isHome,
     },
@@ -228,8 +230,8 @@ function buildMenuItems(
       ? [
           {
             action: "subpage" as const,
-            label: "הפוך לעמוד ראשי",
-            hint: "הסרת הקינון והחזרה לרשימת העמודים הראשיים",
+            label: t("studio.sitePages.makeMain"),
+            hint: t("studio.sitePages.makeMainHint"),
             icon: <CornerDownLeft className="h-4 w-4" />,
             dividerAfter: true,
           },
@@ -237,8 +239,8 @@ function buildMenuItems(
       : [
           {
             action: "subpage" as const,
-            label: "עמוד משנה",
-            hint: "קינון העמוד הקיים תחת עמוד אב בתפריט",
+            label: t("studio.sitePages.subpage"),
+            hint: t("studio.sitePages.subpageHint"),
             icon: <CornerDownLeft className="h-4 w-4" />,
             dividerAfter: true,
             disabled: isHome,
@@ -246,8 +248,8 @@ function buildMenuItems(
         ]),
     {
       action: "delete",
-      label: "מחיקה",
-      hint: "מחיקת העמוד מהאתר",
+      label: t("studio.sitePages.delete"),
+      hint: t("studio.sitePages.deleteHint"),
       icon: <Trash2 className="h-4 w-4" />,
       danger: true,
       disabled: isHome,
@@ -300,10 +302,13 @@ const pageListCollisionDetection: CollisionDetection = (args) => {
 
 const DEPTH_INDENT = 28;
 
-function getDropPlacementLabel(placement: PageTreeMovePlacement | null) {
-  if (placement === "before") return "שחררו לפני";
-  if (placement === "after") return "שחררו אחרי";
-  if (placement === "inside") return "שחררו כעמוד משנה";
+function getDropPlacementLabel(
+  placement: PageTreeMovePlacement | null,
+  t: (key: string) => string,
+) {
+  if (placement === "before") return t("studio.sitePages.dropBefore");
+  if (placement === "after") return t("studio.sitePages.dropAfter");
+  if (placement === "inside") return t("studio.sitePages.dropInside");
   return "";
 }
 
@@ -316,6 +321,7 @@ function SectionListItem({
   isActive: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -336,10 +342,10 @@ function SectionListItem({
         </span>
         <span className="block truncate text-[10px] font-bold text-slate-400">
           {section.pinned
-            ? "קבוע"
+            ? t("studio.sitePages.fixed")
             : section.inserted
-              ? "סקשן לעריכה"
-              : "תבנית · ניתן לעריכה"}
+              ? t("studio.sitePages.editableSection")
+              : t("studio.sitePages.templateEditable")}
         </span>
       </span>
     </button>
@@ -381,6 +387,7 @@ function SortablePageRow({
   onOpenMenu: (event: React.MouseEvent) => void;
   buttonRef: (node: HTMLButtonElement | null) => void;
 }) {
+  const { t } = useTranslation();
   const canDrag = !page.isHome;
   const isSubpage = depth > 0 || Boolean(resolvePageParentId(page));
 
@@ -427,7 +434,7 @@ function SortablePageRow({
           <div className="pointer-events-none absolute inset-x-0 -top-1 z-10 flex items-center gap-2">
             <div className="h-0.5 flex-1 rounded-full bg-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.8)]" />
             <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2 py-0.5 text-[10px] font-black text-black">
-              {getDropPlacementLabel("before")}
+              {getDropPlacementLabel("before", t)}
             </span>
           </div>
         ) : null}
@@ -435,7 +442,7 @@ function SortablePageRow({
           <div className="pointer-events-none absolute inset-x-0 -bottom-1 z-10 flex items-center gap-2">
             <div className="h-0.5 flex-1 rounded-full bg-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.8)]" />
             <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2 py-0.5 text-[10px] font-black text-black">
-              {getDropPlacementLabel("after")}
+              {getDropPlacementLabel("after", t)}
             </span>
           </div>
         ) : null}
@@ -457,7 +464,7 @@ function SortablePageRow({
           {dropHint === "inside" ? (
             <div className="pointer-events-none absolute inset-x-3 top-2 flex justify-center">
               <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-0.5 text-[10px] font-black text-black shadow-sm">
-                {getDropPlacementLabel("inside")}
+                {getDropPlacementLabel("inside", t)}
               </span>
             </div>
           ) : null}
@@ -469,7 +476,7 @@ function SortablePageRow({
               onToggleExpand();
             }}
             className="flex h-9 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-violet-600"
-            aria-label={expanded ? "כיווץ סקשנים" : "הצגת סקשנים"}
+            aria-label={expanded ? t("studio.sitePages.collapseSections") : t("studio.sitePages.showSections")}
           >
             {expanded ? (
               <ChevronDown className="h-4 w-4" />
@@ -486,8 +493,8 @@ function SortablePageRow({
                 ? "cursor-grab text-slate-400 opacity-100 hover:bg-slate-100 hover:text-violet-600 active:cursor-grabbing"
                 : "cursor-default text-slate-200",
             ].join(" ")}
-            title={canDrag ? "גררו לשינוי מיקום והיררכיה" : "דף הבית נשאר בראש"}
-            aria-label={canDrag ? "גרירת עמוד" : "דף הבית"}
+            title={canDrag ? t("studio.sitePages.dragHierarchy") : t("studio.sitePages.homeStaysTop")}
+            aria-label={canDrag ? t("studio.sitePages.dragPage") : t("studio.sitePages.homePage")}
             {...(canDrag ? { ...attributes, ...listeners } : {})}
           >
             <GripVertical className="h-4 w-4" />
@@ -521,20 +528,20 @@ function SortablePageRow({
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-1.5">
                 <span className="truncate text-sm font-black text-slate-800">
-                  {page.title || "עמוד"}
+                  {page.title || t("studio.page")}
                 </span>
                 {page.hiddenFromMenu ? (
                   <EyeOff className="h-3.5 w-3.5 shrink-0 text-slate-400" />
                 ) : null}
                 {isSubpage ? (
                   <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black text-violet-700">
-                    משנה
+                    {t("studio.sitePages.child")}
                   </span>
                 ) : null}
               </span>
               {isSubpage && parentTitle ? (
                 <span className="mt-0.5 block truncate text-[11px] font-bold text-violet-500/90">
-                  תחת: {parentTitle}
+                  {t("studio.sitePages.under", { title: parentTitle })}
                 </span>
               ) : null}
             </span>
@@ -544,7 +551,7 @@ function SortablePageRow({
             ref={buttonRef}
             type="button"
             data-testid="visual-page-actions"
-            aria-label={`פעולות עבור ${page.title || "עמוד"}`}
+            aria-label={t("studio.sitePages.actionsFor", { title: page.title || t("studio.page") })}
             aria-expanded={menuOpen}
             onClick={onOpenMenu}
             className={[
@@ -562,18 +569,18 @@ function SortablePageRow({
           <div className="mr-3 mt-2 border-r border-slate-200 pr-3">
             <div className="mb-2 flex items-center justify-between px-1">
               <span className="text-[11px] font-black text-slate-500">
-                סקשנים ({sections.length})
+                {t("studio.sitePages.sectionsCount", { count: sections.length })}
               </span>
               {!isActive ? (
                 <span className="text-[10px] font-bold text-violet-500">
-                  תצוגה מקדימה
+                  {t("studio.sitePages.preview")}
                 </span>
               ) : null}
             </div>
 
             {sectionsLoading ? (
               <div className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-4 text-center text-[11px] font-bold text-slate-400">
-                טוען סקשנים...
+                {t("studio.sitePages.loadingSections")}
               </div>
             ) : sections.length ? (
               <div className="space-y-1.5">
@@ -600,8 +607,8 @@ function SortablePageRow({
               <div className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-4 text-center">
                 <p className="text-[11px] font-bold text-slate-500">
                   {isActive
-                    ? "אין סקשנים בעמוד הזה"
-                    : "פתחי את העמוד כדי לראות את הסקשנים"}
+                    ? t("studio.sitePages.noSections")
+                    : t("studio.sitePages.openToSeeSections")}
                 </p>
                 {!isActive ? (
                   <button
@@ -609,7 +616,7 @@ function SortablePageRow({
                     onClick={onSelectPage}
                     className="mt-2 text-[11px] font-black text-violet-600 hover:underline"
                   >
-                    פתיחת העמוד
+                    {t("studio.sitePages.openPage")}
                   </button>
                 ) : null}
               </div>
@@ -632,6 +639,7 @@ export default function VisualSitePagesPanel({
   onAddPage,
   onPageAction,
 }: VisualSitePagesPanelProps) {
+  const { t } = useTranslation();
   const [menuPageId, setMenuPageId] = useState("");
   const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
   const [parentPickerPageId, setParentPickerPageId] = useState("");
@@ -982,14 +990,14 @@ export default function VisualSitePagesPanel({
               className="w-full max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_64px_rgba(15,23,42,0.28)]"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
-              aria-label="בחירת עמוד אב"
+              aria-label={t("studio.sitePages.chooseParent")}
             >
               <div className="border-b border-slate-100 px-4 py-3">
                 <h3 className="text-sm font-black text-slate-800">
-                  בחירת עמוד אב
+                  {t("studio.sitePages.chooseParent")}
                 </h3>
                 <p className="mt-1 text-[12px] font-bold leading-5 text-slate-500">
-                  "{parentPickerPage.title}" יהיה עמוד משנה תחת העמוד שתבחרו
+                  {t("studio.sitePages.willBeChild", { title: parentPickerPage.title })}
                 </p>
               </div>
               <div className="max-h-[50vh] overflow-y-auto p-2">
@@ -1014,13 +1022,13 @@ export default function VisualSitePagesPanel({
                         )}
                       </span>
                       <span className="min-w-0 flex-1 truncate">
-                        {page.title || "עמוד"}
+                        {page.title || t("studio.page")}
                       </span>
                     </button>
                   ))
                 ) : (
                   <p className="px-3 py-4 text-center text-[12px] font-bold text-slate-500">
-                    אין עמודים זמינים לקינון
+                    {t("studio.sitePages.noNestTargets")}
                   </p>
                 )}
               </div>
@@ -1030,7 +1038,7 @@ export default function VisualSitePagesPanel({
                   onClick={() => setParentPickerPageId("")}
                   className="flex h-10 w-full items-center justify-center rounded-xl bg-slate-50 text-sm font-black text-slate-600 transition hover:bg-slate-100"
                 >
-                  ביטול
+                  {t("studio.cancel")}
                 </button>
               </div>
             </div>
@@ -1051,9 +1059,9 @@ export default function VisualSitePagesPanel({
               left: menuPosition.left,
             }}
             role="menu"
-            aria-label={`פעולות עבור ${menuPage.title || "עמוד"}`}
+            aria-label={t("studio.sitePages.actionsFor", { title: menuPage.title || t("studio.page") })}
           >
-            {buildMenuItems(menuPage, { clientPortalPluginEnabled }).map((item) => (
+            {buildMenuItems(menuPage, { clientPortalPluginEnabled }, t).map((item) => (
               <React.Fragment key={item.action}>
                 <button
                   type="button"
@@ -1113,32 +1121,32 @@ export default function VisualSitePagesPanel({
                     Site Architecture
                   </p>
                   <h2 className="mt-1 text-lg font-black tracking-tight text-slate-900">
-                    מבנה האתר
+                    {t("studio.sitePages.siteStructure")}
                   </h2>
                   <p className="mt-1.5 text-[11px] font-bold leading-5 text-slate-500">
                     {singlePageMode
-                      ? "כל סקשן ניתן לעריכה מלאה — לא טבלה קבועה"
-                      : `${pages.length} עמודים · כל עמוד וסקשן נפתחים לעריכה חופשית`}
+                      ? t("studio.sitePages.everySectionEditable")
+                      : t("studio.sitePages.pagesAndSections", { count: pages.length })}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-500 backdrop-blur transition hover:bg-white"
-                  aria-label="סגירה"
+                  aria-label={t("studio.close")}
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
-                  עריכה חופשית
+                  {t("studio.sitePages.freeEditing")}
                 </span>
                 <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
-                  נתונים מה-CRM
+                  {t("studio.sitePages.crmData")}
                 </span>
                 <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
-                  גרירה להיררכיה
+                  {t("studio.sitePages.dragHierarchyBadge")}
                 </span>
               </div>
             </div>
@@ -1150,10 +1158,10 @@ export default function VisualSitePagesPanel({
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-sm font-black text-white shadow-[0_10px_28px_rgba(15,23,42,0.22)] transition hover:bg-slate-800"
               >
                 <Plus className="h-4 w-4" />
-                עמוד חדש ריק לעריכה
+                {t("studio.sitePages.newBlankPage")}
               </button>
               <p className="mt-2 text-center text-[10px] font-bold text-slate-400">
-                או הוסיפו תבנית מספריית העמודים — ואז ערכו הכל
+                {t("studio.sitePages.orAddTemplate")}
               </p>
             </div>
           </div>
@@ -1183,7 +1191,7 @@ export default function VisualSitePagesPanel({
                       : null;
                   const parentId = resolvePageParentId(page);
                   const parentTitle = parentId
-                    ? pageById.get(parentId)?.title || "עמוד"
+                    ? pageById.get(parentId)?.title || t("studio.page")
                     : undefined;
                   const sections = expanded
                     ? getSectionsForPage(page as VisualSitePageItem)
@@ -1245,11 +1253,11 @@ export default function VisualSitePagesPanel({
                   <GripVertical className="h-4 w-4 text-violet-500" />
                   <div className="min-w-0">
                     <span className="block truncate text-sm font-black text-slate-800">
-                      {draggingRow.page.title || "עמוד"}
+                      {draggingRow.page.title || t("studio.page")}
                     </span>
                     {dropPlacement ? (
                       <span className="mt-0.5 block text-[10px] font-bold text-violet-600">
-                        {getDropPlacementLabel(dropPlacement)}
+                        {getDropPlacementLabel(dropPlacement, t)}
                       </span>
                     ) : null}
                   </div>
@@ -1260,9 +1268,9 @@ export default function VisualSitePagesPanel({
 
           {displayRows.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center">
-              <p className="text-sm font-black text-slate-700">אין עמודים עדיין</p>
+              <p className="text-sm font-black text-slate-700">{t("studio.sitePages.noPagesYet")}</p>
               <p className="mt-1 text-xs font-bold text-slate-400">
-                הוסיפו עמוד חדש מהספרייה
+                {t("studio.sitePages.addFromLibrary")}
               </p>
             </div>
           ) : null}

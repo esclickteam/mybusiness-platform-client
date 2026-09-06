@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import {
   normalizeCondition,
   normalizeSteps,
@@ -139,64 +141,19 @@ type DragPayload =
 
 const FIELD_TYPES: Array<{
   type: BizuplyFormFieldType;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: React.ReactNode;
 }> = [
-  {
-    type: "text",
-    title: "טקסט קצר",
-    subtitle: "שם, עיר או תפקיד",
-    icon: <Type className="h-5 w-5" />,
-  },
-  {
-    type: "email",
-    title: "אימייל",
-    subtitle: "כתובת אימייל",
-    icon: <Mail className="h-5 w-5" />,
-  },
-  {
-    type: "phone",
-    title: "טלפון",
-    subtitle: "מספר ליצירת קשר",
-    icon: <Phone className="h-5 w-5" />,
-  },
-  {
-    type: "textarea",
-    title: "טקסט ארוך",
-    subtitle: "הודעה או פירוט",
-    icon: <MessageSquareText className="h-5 w-5" />,
-  },
-  {
-    type: "number",
-    title: "מספר",
-    subtitle: "כמות או תקציב",
-    icon: <Hash className="h-5 w-5" />,
-  },
-  {
-    type: "date",
-    title: "תאריך",
-    subtitle: "בחירת תאריך",
-    icon: <CalendarDays className="h-5 w-5" />,
-  },
-  {
-    type: "select",
-    title: "בחירה",
-    subtitle: "רשימת אפשרויות",
-    icon: <ChevronDown className="h-5 w-5" />,
-  },
-  {
-    type: "checkbox",
-    title: "צ׳קבוקס",
-    subtitle: "אישור או הסכמה",
-    icon: <Check className="h-5 w-5" />,
-  },
-  {
-    type: "file",
-    title: "קובץ",
-    subtitle: "העלאת מסמך",
-    icon: <FileUp className="h-5 w-5" />,
-  },
+  { type: "text", titleKey: "studio.formBuilder.typeText", subtitleKey: "studio.formBuilder.typeTextHint", icon: <Type className="h-5 w-5" /> },
+  { type: "email", titleKey: "studio.formBuilder.typeEmail", subtitleKey: "studio.formBuilder.typeEmailHint", icon: <Mail className="h-5 w-5" /> },
+  { type: "phone", titleKey: "studio.formBuilder.typePhone", subtitleKey: "studio.formBuilder.typePhoneHint", icon: <Phone className="h-5 w-5" /> },
+  { type: "textarea", titleKey: "studio.formBuilder.typeTextarea", subtitleKey: "studio.formBuilder.typeTextareaHint", icon: <MessageSquareText className="h-5 w-5" /> },
+  { type: "number", titleKey: "studio.formBuilder.typeNumber", subtitleKey: "studio.formBuilder.typeNumberHint", icon: <Hash className="h-5 w-5" /> },
+  { type: "date", titleKey: "studio.formBuilder.typeDate", subtitleKey: "studio.formBuilder.typeDateHint", icon: <CalendarDays className="h-5 w-5" /> },
+  { type: "select", titleKey: "studio.formBuilder.typeSelect", subtitleKey: "studio.formBuilder.typeSelectHint", icon: <ChevronDown className="h-5 w-5" /> },
+  { type: "checkbox", titleKey: "studio.formBuilder.typeCheckbox", subtitleKey: "studio.formBuilder.typeCheckboxHint", icon: <Check className="h-5 w-5" /> },
+  { type: "file", titleKey: "studio.formBuilder.typeFile", subtitleKey: "studio.formBuilder.typeFileHint", icon: <FileUp className="h-5 w-5" /> },
 ];
 
 function normalizeFieldType(value: unknown): BizuplyFormFieldType {
@@ -388,8 +345,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   };
 }
 
-function getFieldTypeLabel(type: BizuplyFormFieldType) {
-  return FIELD_TYPES.find((item) => item.type === type)?.title || "טקסט קצר";
+function getFieldTypeLabel(type: BizuplyFormFieldType, t: (key: string) => string) {
+  const item = FIELD_TYPES.find((entry) => entry.type === type);
+  return item ? t(item.titleKey) : t("studio.formBuilder.typeText");
 }
 
 function parseOptions(value: string) {
@@ -529,6 +487,7 @@ function FieldPreviewInput({
   field: BizuplyFormField;
   selected: boolean;
 }) {
+  const { t } = useTranslation();
   if (field.type === "textarea") {
     return (
       <textarea
@@ -588,7 +547,7 @@ function FieldPreviewInput({
       >
         <span className="text-2xl font-black text-slate-400">{field.label}</span>
         <span className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-black text-slate-700">
-          העלאה
+          {t("studio.formBuilder.upload")}
         </span>
       </div>
     );
@@ -630,6 +589,8 @@ export default function FormBuilderModal({
   onDeleteField,
   onMoveField,
 }: FormBuilderModalProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const safeForm = React.useMemo(() => normalizeForm(form), [form]);
   const [selectedFieldId, setSelectedFieldId] = React.useState("");
   const [dragOverBeside, setDragOverBeside] = React.useState<{
@@ -800,7 +761,7 @@ export default function FormBuilderModal({
 
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/60 p-3 backdrop-blur-md sm:p-6"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
@@ -815,9 +776,9 @@ export default function FormBuilderModal({
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-              <h2 className="text-[26px] font-black tracking-tight text-slate-800">עריכת טופס</h2>
+              <h2 className="text-[26px] font-black tracking-tight text-slate-800">{t("studio.formBuilder.title")}</h2>
               <p className="mt-1 text-xs font-bold text-slate-500">
-                עיצוב, סידור והגדרות במקום אחד
+                {t("studio.formBuilder.subtitle")}
               </p>
               </div>
             </div>
@@ -833,7 +794,7 @@ export default function FormBuilderModal({
 
           <div className="flex-1 overflow-y-auto px-5 py-5">
             <div className="rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-              <h3 className="mb-4 text-lg font-black text-slate-800">הוספת שדות</h3>
+              <h3 className="mb-4 text-lg font-black text-slate-800">{t("studio.formBuilder.addFields")}</h3>
 
               <div className="grid grid-cols-2 gap-3">
                 {FIELD_TYPES.map((item) => (
@@ -854,10 +815,10 @@ export default function FormBuilderModal({
                       {item.icon}
                     </span>
                     <span className="block text-sm font-black text-slate-900">
-                      {item.title}
+                      {t(item.titleKey)}
                     </span>
                     <span className="mt-1 block text-xs font-bold text-slate-400">
-                      {item.subtitle}
+                      {t(item.subtitleKey)}
                     </span>
                   </button>
                 ))}
@@ -866,13 +827,13 @@ export default function FormBuilderModal({
 
             <div className="mt-5 rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
               <h3 className="mb-4 text-lg font-black text-slate-800">
-                הגדרות כלליות
+                {t("studio.formBuilder.generalSettings")}
               </h3>
 
               <div className="space-y-4">
                 <label className="block">
                   <span className="mb-2 block text-xs font-black text-slate-600">
-                    כותרת הטופס
+                    {t("studio.formBuilder.formTitle")}
                   </span>
                   <input
                     value={safeForm.title}
@@ -883,7 +844,7 @@ export default function FormBuilderModal({
 
                 <label className="block">
                   <span className="mb-2 block text-xs font-black text-slate-600">
-                    טקסט כפתור שליחה
+                    {t("studio.formBuilder.submitButton")}
                   </span>
                   <input
                     value={safeForm.submitText}
@@ -896,7 +857,7 @@ export default function FormBuilderModal({
 
                 <label className="block">
                   <span className="mb-2 block text-xs font-black text-slate-600">
-                    הודעת הצלחה
+                    {t("studio.formBuilder.successMessage")}
                   </span>
                   <input
                     value={safeForm.successMessage}
@@ -913,7 +874,7 @@ export default function FormBuilderModal({
                   </div>
                   <label className="block">
                     <span className="mb-2 block text-xs font-black text-slate-600">
-                      הפניה אחרי שליחה
+                      {t("studio.formBuilder.redirectAfter")}
                     </span>
                     <input
                       dir="ltr"
@@ -921,13 +882,13 @@ export default function FormBuilderModal({
                       onChange={(event) =>
                         updateWholeForm({ redirectUrl: event.target.value })
                       }
-                      placeholder="https://... או /thanks"
+                      placeholder={t("studio.formBuilder.redirectPlaceholder")}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </label>
                   <label className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
                     <span className="text-sm font-black text-slate-700">
-                      טופס רב־שלבי
+                      {t("studio.formBuilder.multiStep")}
                     </span>
                     <input
                       type="checkbox"
@@ -956,23 +917,23 @@ export default function FormBuilderModal({
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
                   <div className="mb-3 text-xs font-black text-slate-700">
-                    צבעים פנימיים של הטופס
+                    {t("studio.formBuilder.innerColors")}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {(
                       [
-                        ["formBg", "רקע טופס"],
-                        ["formBorder", "מסגרת טופס"],
-                        ["titleColor", "כותרת"],
-                        ["subtitleColor", "תיאור"],
-                        ["labelColor", "תוויות"],
-                        ["fieldBg", "רקע שדות"],
-                        ["fieldBorder", "מסגרת שדות"],
-                        ["fieldText", "טקסט שדות"],
-                        ["buttonBg", "רקע כפתור"],
-                        ["buttonText", "טקסט כפתור"],
-                        ["buttonBorder", "מסגרת כפתור"],
-                        ["accent", "צבע הדגשה"],
+                        ["formBg", t("studio.formBuilder.colorFormBg")],
+                        ["formBorder", t("studio.formBuilder.colorFormBorder")],
+                        ["titleColor", t("studio.formBuilder.colorTitle")],
+                        ["subtitleColor", t("studio.formBuilder.colorSubtitle")],
+                        ["labelColor", t("studio.formBuilder.colorLabel")],
+                        ["fieldBg", t("studio.formBuilder.colorFieldBg")],
+                        ["fieldBorder", t("studio.formBuilder.colorFieldBorder")],
+                        ["fieldText", t("studio.formBuilder.colorFieldText")],
+                        ["buttonBg", t("studio.formBuilder.colorButtonBg")],
+                        ["buttonText", t("studio.formBuilder.colorButtonText")],
+                        ["buttonBorder", t("studio.formBuilder.colorButtonBorder")],
+                        ["accent", t("studio.formBuilder.colorAccent")],
                       ] as Array<[keyof BizuplyFormColors, string]>
                     ).map(([key, label]) => (
                       <label key={key} className="block">
@@ -1023,26 +984,26 @@ export default function FormBuilderModal({
             <div className="mt-5 rounded-[26px] border border-slate-200/80 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-black text-slate-800">עריכת שדה</h3>
+                  <h3 className="text-lg font-black text-slate-800">{t("studio.formBuilder.editField")}</h3>
                   <p className="mt-1 text-xs font-bold text-slate-500">
-                    לחצי על שדה בתצוגת הטופס
+                    {t("studio.formBuilder.clickFieldHint")}
                   </p>
                 </div>
 
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
-                  {safeForm.fields.length} שדות
+                  {t("studio.formBuilder.fieldCount", { count: safeForm.fields.length })}
                 </span>
               </div>
 
               {selectedField ? (
                 <div className="space-y-4">
                   <div className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-700">
-                    {selectedField.label} · {getFieldTypeLabel(selectedField.type)}
+                    {selectedField.label} · {getFieldTypeLabel(selectedField.type, t)}
                   </div>
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-black text-slate-600">
-                      שם שדה
+                      {t("studio.formBuilder.fieldName")}
                     </span>
                     <input
                       value={selectedField.label}
@@ -1069,7 +1030,7 @@ export default function FormBuilderModal({
                   <div className="grid grid-cols-2 gap-3">
                     <label className="block">
                       <span className="mb-2 block text-xs font-black text-slate-600">
-                        סוג
+                        {t("studio.formBuilder.type")}
                       </span>
                       <select
                         value={selectedField.type}
@@ -1082,7 +1043,7 @@ export default function FormBuilderModal({
                       >
                         {FIELD_TYPES.map((item) => (
                           <option key={item.type} value={item.type}>
-                            {item.title}
+                            {t(item.titleKey)}
                           </option>
                         ))}
                       </select>
@@ -1090,7 +1051,7 @@ export default function FormBuilderModal({
 
                     <label className="block">
                       <span className="mb-2 block text-xs font-black text-slate-600">
-                        רוחב
+                        {t("studio.formBuilder.width")}
                       </span>
                       <select
                         value={selectedField.width || "half"}
@@ -1101,15 +1062,15 @@ export default function FormBuilderModal({
                         }
                         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                       >
-                        <option value="half">חצי שורה</option>
-                        <option value="full">שורה מלאה</option>
+                        <option value="half">{t("studio.formBuilder.halfRow")}</option>
+                        <option value="full">{t("studio.formBuilder.fullRow")}</option>
                       </select>
                     </label>
                   </div>
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-black text-slate-600">
-                      מזהה שדה
+                      {t("studio.formBuilder.fieldId")}
                     </span>
                     <input
                       dir="ltr"
@@ -1124,7 +1085,7 @@ export default function FormBuilderModal({
                   {selectedField.type === "select" ? (
                     <label className="block">
                       <span className="mb-2 block text-xs font-black text-slate-600">
-                        אפשרויות, כל אפשרות בשורה
+                        {t("studio.formBuilder.optionsOnePerLine")}
                       </span>
                       <textarea
                         value={(selectedField.options || []).join("\n")}
@@ -1137,7 +1098,7 @@ export default function FormBuilderModal({
                   ) : null}
 
                   <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    <span className="text-sm font-black text-slate-700">שדה חובה</span>
+                    <span className="text-sm font-black text-slate-700">{t("studio.formBuilder.requiredField")}</span>
                     <input
                       type="checkbox"
                       checked={Boolean(selectedField.required)}
@@ -1151,7 +1112,7 @@ export default function FormBuilderModal({
                   {(safeForm.steps || []).length > 1 ? (
                     <label className="block">
                       <span className="mb-2 block text-xs font-black text-slate-600">
-                        שלב
+                        {t("studio.formBuilder.step")}
                       </span>
                       <select
                         value={String(selectedField.step || 1)}
@@ -1173,7 +1134,7 @@ export default function FormBuilderModal({
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-black text-slate-600">
-                      הצג רק אם שדה
+                      {t("studio.formBuilder.showOnlyIf")}
                     </span>
                     <select
                       value={selectedField.visibleWhen?.fieldId || ""}
@@ -1191,7 +1152,7 @@ export default function FormBuilderModal({
                       }
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none"
                     >
-                      <option value="">תמיד מוצג</option>
+                      <option value="">{t("studio.formBuilder.alwaysShown")}</option>
                       {safeForm.fields
                         .filter((field) => field.id !== selectedField.id)
                         .map((field) => (
@@ -1220,9 +1181,9 @@ export default function FormBuilderModal({
                         }
                         className="h-12 rounded-2xl border border-slate-200 bg-white px-3 text-right text-sm font-black"
                       >
-                        <option value="equals">שווה ל</option>
-                        <option value="notEquals">שונה מ</option>
-                        <option value="contains">מכיל</option>
+                        <option value="equals">{t("studio.formBuilder.equals")}</option>
+                        <option value="notEquals">{t("studio.formBuilder.notEquals")}</option>
+                        <option value="contains">{t("studio.formBuilder.contains")}</option>
                       </select>
                       <input
                         value={selectedField.visibleWhen.value}
@@ -1249,7 +1210,7 @@ export default function FormBuilderModal({
                     >
                       <span className="inline-flex items-center justify-center gap-2">
                         <ArrowUp className="h-4 w-4" />
-                        למעלה
+                        {t("studio.formBuilder.moveUp")}
                       </span>
                     </button>
 
@@ -1260,7 +1221,7 @@ export default function FormBuilderModal({
                     >
                       <span className="inline-flex items-center justify-center gap-2">
                         <ArrowDown className="h-4 w-4" />
-                        למטה
+                        {t("studio.formBuilder.moveDown")}
                       </span>
                     </button>
 
@@ -1278,14 +1239,14 @@ export default function FormBuilderModal({
                     >
                       <span className="inline-flex items-center justify-center gap-2">
                         <Trash2 className="h-4 w-4" />
-                        מחק
+                        {t("studio.delete")}
                       </span>
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm font-bold text-slate-500">
-                  אין שדה נבחר
+                  {t("studio.formBuilder.noFieldSelected")}
                 </div>
               )}
             </div>
@@ -1299,7 +1260,7 @@ export default function FormBuilderModal({
             >
               <span className="inline-flex items-center gap-2">
                 <X className="h-4 w-4" />
-                סגור
+                {t("studio.close")}
               </span>
             </button>
 
@@ -1310,7 +1271,7 @@ export default function FormBuilderModal({
             >
               <span className="inline-flex items-center gap-2">
                 <Save className="h-4 w-4" />
-                שמירת הטופס
+                {t("studio.formBuilder.saveForm")}
               </span>
             </button>
           </div>
@@ -1320,9 +1281,9 @@ export default function FormBuilderModal({
           <div className="border-b border-slate-200/80 bg-white/95 px-8 py-5 backdrop-blur">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-[26px] font-black tracking-tight text-slate-800">תצוגת הטופס 1:1</h3>
+                <h3 className="text-[26px] font-black tracking-tight text-slate-800">{t("studio.formBuilder.previewTitle")}</h3>
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  בלי כרטיסים. השדות נראים וממוקמים כמו בטופס עצמו.
+                  {t("studio.formBuilder.previewHint")}
                 </p>
               </div>
 
@@ -1330,7 +1291,7 @@ export default function FormBuilderModal({
                 <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70" />
                 <GripVertical className="h-4 w-4 text-violet-600" />
                 <span className="text-sm font-black text-slate-700">
-                  גרירה וסידור פעילים
+                  {t("studio.formBuilder.dragActive")}
                 </span>
               </div>
             </div>
@@ -1421,10 +1382,10 @@ export default function FormBuilderModal({
                     onDrop={(event) => handleDropAtIndex(event, 0)}
                   >
                     <p className="text-xl font-black text-violet-800">
-                      גררי לכאן שדה מהצד השמאלי
+                      {t("studio.formBuilder.dropHere")}
                     </p>
                     <p className="mt-2 text-sm font-bold text-violet-500">
-                      או לחצי על סוג שדה כדי להוסיף אותו
+                      {t("studio.formBuilder.orClickType")}
                     </p>
                   </div>
                 ) : null}
@@ -1507,14 +1468,14 @@ export default function FormBuilderModal({
                           "relative block w-full cursor-grab rounded-[22px] text-right transition duration-200 hover:-translate-y-0.5 active:cursor-grabbing focus:outline-none",
                           dragging ? "opacity-40" : "opacity-100",
                         ].join(" ")}
-                        title="לחצי לבחירה / גררי לשינוי מיקום"
+                        title={t("studio.formBuilder.dragToSelect")}
                       >
                         <FieldSideDropOverlay activeSide={sideActive} />
 
                         {selected ? (
                           <div className="absolute -top-12 right-0 z-30 flex items-center gap-2 rounded-2xl border border-violet-200 bg-white/95 px-3 py-2 text-xs font-black text-violet-700 shadow-[0_12px_34px_rgba(124,58,237,0.18)] backdrop-blur">
                             <GripVertical className="h-4 w-4" />
-                            <span>שדה נבחר</span>
+                            <span>{t("studio.formBuilder.selectedField")}</span>
                             <button
                               type="button"
                               data-bizuply-form-field-action="true"
@@ -1533,7 +1494,7 @@ export default function FormBuilderModal({
                               }}
                               className="rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-600 transition hover:bg-rose-100"
                             >
-                              מחק
+                              {t("studio.delete")}
                             </button>
                           </div>
                         ) : null}
@@ -1556,7 +1517,7 @@ export default function FormBuilderModal({
                       handleDropAtIndex(event, safeForm.fields.length)
                     }
                   >
-                    גררי לכאן כדי להעביר לסוף הטופס
+                    {t("studio.formBuilder.dropToEnd")}
                   </div>
                 ) : null}
               </div>
