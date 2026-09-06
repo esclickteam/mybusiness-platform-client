@@ -11,6 +11,7 @@ import {
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 import { LEAD_WELCOME_EMAIL_DEFAULTS } from "./leadWelcomeEmail";
+import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -194,7 +195,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
         actionKey: "connected_email",
         label: "אימייל אישור פגישה",
         defaults: {
-          ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+          ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
         },
       },
     ],
@@ -248,7 +249,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
         actionKey: "connected_email",
         label: "אימייל לליד",
         defaults: {
-          ...LEAD_WELCOME_EMAIL_DEFAULTS,
+          ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
         },
       },
       { actionKey: "create_task", label: "משימת מעקב" },

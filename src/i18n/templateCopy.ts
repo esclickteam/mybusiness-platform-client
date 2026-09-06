@@ -1,5 +1,5 @@
 import i18n from "./i18n";
-import { getTextDirection, normalizeLanguage } from "./languages";
+import { getHtmlLang, getTextDirection, normalizeLanguage } from "./languages";
 import { resolveTemplateLanguage } from "./templateDir";
 import phrasebook from "./templateSeedPhrasebook.json";
 import generatedExactLexicon from "./templateExactLexicon.generated.json";
@@ -26,6 +26,7 @@ import unique11ExactLexicon from "./templateExactLexicon.unique11.json";
 import unique12ExactLexicon from "./templateExactLexicon.unique12.json";
 import unique13ExactLexicon from "./templateExactLexicon.unique13.json";
 import unique14ExactLexicon from "./templateExactLexicon.unique14.json";
+import unique15ExactLexicon from "./templateExactLexicon.unique15.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -64,6 +65,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique12ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique13ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique14ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique15ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -164,6 +166,12 @@ const STORE_BUILD_RE =
   /^אנחנו בונים חנות (.+) שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות\.$/;
 const BEAUTY_PROTOCOL_RE =
   /^(.+?)\s+כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו\.$/;
+const FOOD_TEAM_RE =
+  /^(.+?)\s+מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון\.$/;
+const STORE_BUILT_LARGE_RE =
+  /^([A-Za-z][\w.-]*) נבנתה כחנות גדולה עם עשרות סקשנים, עמודי תוכן וחיבור מלא לתוסף החנות של Bizuply\.$/;
+const AGENCY_CLOSE_RE =
+  /^צוות סוכנות (.+) שעובד צמוד ללקוח: אבחון, תכנון, ביצוע ומדידה — בלי רעש מיותר\.$/;
 const STORE_EXPERIENCE_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית חנות מלאה\.$/;
 const STORE_POWERED_RE = /^([A-Za-z][\w.-]*) · (.+) · Powered by Bizuply$/;
 const PROJECT_CODE_RE = /^פרויקט (Alpha|Beta|Gamma)$/;
@@ -621,6 +629,56 @@ function localizeBeautyProtocolLine(text: string, locale: string): string {
   return `${prefix} Includes a short diagnosis, a personal match, precise work, and written aftercare so the result stays beautiful after you leave the studio.`;
 }
 
+function localizeFoodTeamLine(text: string, locale: string): string {
+  const match = text.match(FOOD_TEAM_RE);
+  if (!match) return "";
+  const prefix = localizeFragment(match[1], locale);
+  if (!prefix) return "";
+  if (locale === "es") {
+    return `${prefix} Detrás de cada plato hay un equipo que conoce la materia prima por su nombre, prepara mise en place a ritmo diario y mantiene una hospitalidad cálida desde que entras hasta el último postre.`;
+  }
+  if (locale === "pt-BR") {
+    return `${prefix} Por trás de cada prato há uma equipe que conhece os ingredientes pelo nome, faz mise en place no ritmo diário e mantém uma hospitalidade quente desde a entrada até a última sobremesa.`;
+  }
+  if (locale === "ar") {
+    return `${prefix} خلف كل طبق فريق يعرف المواد باسمها، يبني تحضيرات يومية ويحافظ على ضيافة دافئة من لحظة الدخول حتى آخر حلوى.`;
+  }
+  return `${prefix} Behind every dish stands a team that knows the ingredients by name, builds daily mise en place, and keeps hospitality warm from the moment you walk in through the last dessert.`;
+}
+
+function localizeStoreBuiltLargeLine(text: string, locale: string): string {
+  const match = text.match(STORE_BUILT_LARGE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `${brand} se construyó como una tienda grande con decenas de secciones, páginas de contenido y una conexión completa al extra de tienda de Bizuply.`;
+  }
+  if (locale === "pt-BR") {
+    return `${brand} foi construída como uma loja grande com dezenas de seções, páginas de conteúdo e uma ligação completa ao extra da loja da Bizuply.`;
+  }
+  if (locale === "ar") {
+    return `${brand} بُنيت كمتجر كبير بعشرات الأقسام وصفحات المحتوى وربط كامل بإضافة متجر Bizuply.`;
+  }
+  return `${brand} was built as a large store with dozens of sections, content pages, and a full connection to the Bizuply store add-on.`;
+}
+
+function localizeAgencyCloseLine(text: string, locale: string): string {
+  const match = text.match(AGENCY_CLOSE_RE);
+  if (!match) return "";
+  const kind = localizeFragment(match[1], locale);
+  if (!kind) return "";
+  if (locale === "es") {
+    return `Un equipo de agencia de ${kind} que trabaja junto al cliente: diagnóstico, planificación, ejecución y medición — sin ruido de más.`;
+  }
+  if (locale === "pt-BR") {
+    return `Uma equipe de agência de ${kind} que trabalha junto ao cliente: diagnóstico, planejamento, execução e medição — sem barulho extra.`;
+  }
+  if (locale === "ar") {
+    return `فريق وكالة ${kind} يعمل ملاصقاً للزبون: تشخيص وتخطيط وتنفيذ وقياس — بلا ضجيج زائد.`;
+  }
+  return `A ${kind} agency team that works close to the client: diagnosis, planning, execution, and measurement — without extra noise.`;
+}
+
 function isUsableTranslation(source: string, translated: string, locale: string): boolean {
   if (!translated || translated === source) return false;
   if (locale === "he") return true;
@@ -636,11 +694,32 @@ const bookKeys = Object.keys(book).sort((a, b) => b.length - a.length);
 
 function adaptBuiltInDirectionalCss(text: string, locale: string): string {
   if (locale === "he") return text;
-  if (!/direction\s*:|text-align\s*:/i.test(text)) return text;
+  if (!/direction\s*:|text-align\s*:|lang=|dir=/i.test(text)) return text;
   const dir = getTextDirection(locale);
+  const htmlLang = getHtmlLang(locale);
   return text
     .replace(/direction:\s*rtl/gi, `direction:${dir}`)
-    .replace(/text-align:\s*right/gi, "text-align:start");
+    .replace(/text-align:\s*right/gi, "text-align:start")
+    .replace(/\blang=(["'])he\1/gi, `lang=$1${htmlLang}$1`)
+    .replace(/\bdir=(["'])rtl\1/gi, `dir=$1${dir}$1`);
+}
+
+function looksLikeHtml(text: string): boolean {
+  return /<[a-zA-Z][\s\S]*?>/.test(text) || /<\/[a-zA-Z]/.test(text);
+}
+
+function localizeHtmlDocument(html: string, locale: string): string {
+  const localized = html.replace(
+    /(>)([^<]*[\u0590-\u05FF][^<]*)(<)/g,
+    (full, open: string, text: string, close: string) => {
+      const leading = text.match(/^\s*/)[0];
+      const trailing = text.match(/\s*$/)[0];
+      const core = text.slice(leading.length, text.length - trailing.length);
+      if (!core) return full;
+      return `${open}${leading}${localizePlainBuiltInText(core, locale)}${trailing}${close}`;
+    },
+  );
+  return adaptBuiltInDirectionalCss(localized, locale);
 }
 
 /** Rewrite baked-in RTL library styles so new inserts follow the dashboard language. */
@@ -662,9 +741,8 @@ export function localizeLibraryInsertStyle<T extends Record<string, any>>(
   return next;
 }
 
-export function localizeBuiltInText(text: string, language?: string): string {
+function localizePlainBuiltInText(text: string, locale: string): string {
   if (!text) return text;
-  const locale = localeKey(language);
   if (locale === "he") return text;
   if (!HE.test(text)) return adaptBuiltInDirectionalCss(text, locale);
 
@@ -763,6 +841,21 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(beautyProtocolLine, locale);
   }
 
+  const foodTeamLine = localizeFoodTeamLine(text, locale);
+  if (isUsableTranslation(text, foodTeamLine, locale)) {
+    return adaptBuiltInDirectionalCss(foodTeamLine, locale);
+  }
+
+  const storeBuiltLargeLine = localizeStoreBuiltLargeLine(text, locale);
+  if (isUsableTranslation(text, storeBuiltLargeLine, locale)) {
+    return adaptBuiltInDirectionalCss(storeBuiltLargeLine, locale);
+  }
+
+  const agencyCloseLine = localizeAgencyCloseLine(text, locale);
+  if (isUsableTranslation(text, agencyCloseLine, locale)) {
+    return adaptBuiltInDirectionalCss(agencyCloseLine, locale);
+  }
+
   const storeExperienceLine = localizeStoreExperienceLine(text, locale);
   if (isUsableTranslation(text, storeExperienceLine, locale)) {
     return adaptBuiltInDirectionalCss(storeExperienceLine, locale);
@@ -823,6 +916,14 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(out, locale);
   }
   return adaptBuiltInDirectionalCss(text, locale);
+}
+
+export function localizeBuiltInText(text: string, language?: string): string {
+  if (!text) return text;
+  const locale = localeKey(language);
+  if (locale === "he") return text;
+  if (looksLikeHtml(text)) return localizeHtmlDocument(text, locale);
+  return localizePlainBuiltInText(text, locale);
 }
 
 export function localizeBuiltInTemplateSeed<T>(data: T, language?: string): T {

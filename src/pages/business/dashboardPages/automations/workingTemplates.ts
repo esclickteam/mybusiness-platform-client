@@ -33,6 +33,7 @@ import {
   LEAD_OPENING_EMAIL_DEFAULTS,
   LEAD_WELCOME_EMAIL_DEFAULTS,
 } from "./leadWelcomeEmail";
+import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -831,7 +832,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -865,7 +866,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "create_task", label: "משימת מעקב לנציג", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
@@ -896,7 +897,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "create_task", label: "משימת מעקב", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
@@ -926,7 +927,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל פתיחה",
             defaults: {
-              ...LEAD_OPENING_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_OPENING_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -959,7 +960,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "send_email",
             label: "אימייל אישור הזמנה",
             defaults: {
-              ...STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS),
               actionKey: "send_email",
             },
           },
@@ -1102,7 +1103,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -1130,7 +1131,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "notify", label: "התראה על פגישה חדשה" },
@@ -1189,7 +1190,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           {
@@ -1225,7 +1226,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           {

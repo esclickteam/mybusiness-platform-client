@@ -99,6 +99,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(he).toMatch(/פריט/);
   });
 
+  it("localizes HTML text nodes without letting leftover names block the rest", () => {
+    const html =
+      '<html lang="he" dir="rtl"><p>הדר עשת ביוטי</p><a>צור קשר</a></html>';
+    const en = localizeBuiltInText(html, "en");
+    expect(en).toMatch(/lang="en"/);
+    expect(en).toMatch(/dir="ltr"/);
+    expect(en).toMatch(/Contact/);
+    expect(en).toMatch(/הדר עשת ביוטי/);
+    expect(en).not.toMatch(/צור קשר/);
+  });
+
   it("does not smash short hero lines into broken word-by-word English", () => {
     expect(localizeBuiltInText("לילה קטן. טעמים גדולים.", "en")).toBe(
       "A small night. Big flavors.",
@@ -427,6 +438,50 @@ describe("localizeBuiltInTemplateSeed", () => {
         "en",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "חידוש צבע אחרי החלמה או שנה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.",
+        "en",
+      ),
+    ).toMatch(/Color refresh after healing/i);
+    expect(
+      localizeBuiltInText(
+        "חידוש צבע אחרי החלמה או שנה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.",
+        "pt-BR",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "מנות קטנות, שיחות ארוכות ויין שנשפך בנדיבות — ככה אנחנו אוהבים לילות. מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון.",
+        "en",
+      ),
+    ).toMatch(/Small plates|hospitality/i);
+    expect(
+      localizeBuiltInText(
+        "מנות קטנות, שיחות ארוכות ויין שנשפך בנדיבות — ככה אנחנו אוהבים לילות. מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון.",
+        "ar",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "Playora נבנתה כחנות גדולה עם עשרות סקשנים, עמודי תוכן וחיבור מלא לתוסף החנות של Bizuply.",
+        "es",
+      ),
+    ).toMatch(/tienda grande/i);
+    expect(
+      localizeBuiltInText(
+        "Justora נבנתה למשרדי עורכי דין שרוצים לשדר אמינות, עוצמה ומקצועיות — בלי אתר כבד, מיושן או עמוס. המבנה מוביל את הלקוח מהבעיה, דרך תחומי ההתמחות, ועד קביעת ייעוץ.",
+        "en",
+      ),
+    ).toMatch(/law firms/i);
+    expect(
+      localizeBuiltInText(
+        "Justora נבנתה למשרדי עורכי דין שרוצים לשדר אמינות, עוצמה ומקצועיות — בלי אתר כבד, מיושן או עמוס. המבנה מוביל את הלקוח מהבעיה, דרך תחומי ההתמחות, ועד קביעת ייעוץ.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קיבלנו את פנייתך", "en")).toBe("We received your inquiry");
+    expect(localizeBuiltInText('<p>מופעל באמצעות Bizuply</p>', "es")).toMatch(/Funciona con Bizuply/);
     expect(
       localizeBuiltInText(
         "Craftora מזמינה מבוגרים ויוצרים לעבוד עם קרמיקה, צבע, נייר והדפס. הסדנאות קטנות, החומרים איכותיים, והאווירה מאפשרת לטעות, לחזור ולגלות סגנון.",
