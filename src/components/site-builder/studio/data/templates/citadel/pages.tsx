@@ -522,7 +522,7 @@ function AboutSection({ data }: { data: TemplateData }) {
         </div>
         <div>
           <SectionHeading
-            label="ארכיטקטורה"
+            label={tx("ארכיטקטורה")}
             title={getValue(data, "aboutTitle")}
             text={getValue(data, "aboutText")}
           />
@@ -559,7 +559,7 @@ function ServicesSection({ data }: { data: TemplateData }) {
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="שירותים"
+          label={tx("שירותים")}
           title={getValue(data, "servicesTitle")}
           text={tx("תוכניות ייעוץ, יישום ותגובה בשכבות — שנועדו להקטין חשיפה בלי להאט את המסירה.")}
           center
@@ -605,7 +605,7 @@ function WorkSection({ data }: { data: TemplateData }) {
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border, background: citadelTheme.surface }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="תיקים"
+          label={tx("תיקים")}
           title={getValue(data, "workTitle")}
           text={tx("פרויקטים נבחרים עם דגש על חוסן, כיסוי בקרות וזמן תגובה מהיר יותר בסביבות סיכון גבוה.")}
         />
@@ -650,7 +650,7 @@ function ProcessSection({ data }: { data: TemplateData }) {
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="תהליך"
+          label={tx("תהליך")}
           title={getValue(data, "processTitle")}
           text={tx("מודל תפעול ממושמע שעובר מגילוי חשיפות לחיזוק, אימות ושיפור מתמשך.")}
         />
@@ -692,7 +692,7 @@ function InsightsSection({ data }: { data: TemplateData }) {
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border, background: citadelTheme.surface }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="מודיעין"
+          label={tx("מודיעין")}
           title={getValue(data, "insightsTitle")}
           text={tx("ניתוח מעשי לצוותים שצריכים לתדרך הנהלה, לתעדף תיקון ולהישאר לפני סטייה תפעולית.")}
         />
@@ -726,7 +726,7 @@ function ContactSection({ data }: { data: TemplateData }) {
       <div className="mx-auto grid max-w-7xl gap-8 xl:grid-cols-[0.9fr_1.1fr]">
         <div>
           <SectionHeading
-            label="יצירת קשר"
+            label={tx("יצירת קשר")}
             title={getValue(data, "contactTitle")}
             text={getValue(data, "contactText")}
           />
@@ -757,7 +757,7 @@ function ContactSection({ data }: { data: TemplateData }) {
           data-visual-editable="true"
           data-visual-edit-id="contact.form"
           data-visual-edit-type="box"
-          data-visual-edit-label="טופס יצירת קשר"
+          data-visual-edit-label={tx("טופס יצירת קשר")}
           className="citadel-panel grid gap-0 rounded-sm border md:grid-cols-2"
           style={{ borderColor: citadelTheme.border }}
         >
@@ -785,7 +785,7 @@ function ContactSection({ data }: { data: TemplateData }) {
             data-visual-editable="true"
             data-visual-edit-id="contact.form.message"
             data-visual-edit-type="control"
-            data-visual-edit-label="הודעה"
+            data-visual-edit-label={tx("הודעה")}
           />
           <button
             type="submit"
@@ -799,7 +799,7 @@ function ContactSection({ data }: { data: TemplateData }) {
             data-visual-editable="true"
             data-visual-edit-id="contact.form.submit"
             data-visual-edit-type="button"
-            data-visual-edit-label="כפתור שליחה"
+            data-visual-edit-label={tx("כפתור שליחה")}
           >
             {formatBracketLabel(getValue(data, "contactButton") || "transmit")}
           </button>
@@ -821,7 +821,7 @@ function CtaSection({
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 xl:flex-row xl:items-center">
         <div className="max-w-3xl text-start">
           <div className="mb-5">
-            <TerminalLabel label="הצעד_הבא" />
+            <TerminalLabel label={tx("הצעד_הבא")} />
           </div>
           <TemplateText as="h2" className="text-3xl font-bold md:text-5xl" style={{ color: citadelTheme.light }}>
             {getValue(data, "ctaTitle")}
@@ -905,7 +905,7 @@ function CitadelFooter({
         </div>
         <div>
           <div className="mb-4">
-            <TerminalLabel label="ניווט" />
+            <TerminalLabel label={tx("ניווט")} />
           </div>
           <div className="grid gap-2">
             {nav.map(([pageId, label]) => (
@@ -923,7 +923,7 @@ function CitadelFooter({
         </div>
         <div>
           <div className="mb-4">
-            <TerminalLabel label="צור_קשר" />
+            <TerminalLabel label={tx("צור_קשר")} />
           </div>
           <div className="space-y-2 text-sm leading-7" style={{ color: citadelTheme.muted }}>
             <TemplateText as="div">{getValue(data, "phone")}</TemplateText>

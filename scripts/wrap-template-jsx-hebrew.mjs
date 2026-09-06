@@ -44,7 +44,7 @@ function wrapFile(filePath) {
   });
 
   src = src.replace(
-    /(placeholder|aria-label|title|alt|data-bizuply-success-message)=(["'])([^"']*[\u0590-\u05FF][^"']*)\2/g,
+    /(placeholder|aria-label|title|alt|label|text|data-visual-edit-label|data-bizuply-success-message)=(["'])([^"']*[\u0590-\u05FF][^"']*)\2/g,
     (full, attr, _quote, value) => {
       if (value.includes("tx(")) return full;
       changed += 1;

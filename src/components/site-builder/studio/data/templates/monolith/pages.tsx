@@ -202,7 +202,7 @@ function MonolithMark({ data }: { data: Record<string, any> }) {
         <EditableText
           data={data}
           dataKey="logoText"
-          label="טקסט לוגו"
+          label={tx("טקסט לוגו")}
           as="span"
           className="text-sm"
         />
@@ -211,14 +211,14 @@ function MonolithMark({ data }: { data: Record<string, any> }) {
         <EditableText
           data={data}
           dataKey="brandName"
-          label="שם המותג"
+          label={tx("שם המותג")}
           as="div"
           className="text-xl font-semibold tracking-[0.08em] text-white"
         />
         <EditableText
           data={data}
           dataKey="tagline"
-          label="שורת תיאור"
+          label={tx("שורת תיאור")}
           as="div"
           className="text-[11px] uppercase tracking-[0.34em] text-[#c8a96a]"
         />
@@ -422,21 +422,21 @@ function Hero({
           <EditableText
             data={data}
             dataKey="heroEyebrow"
-            label="אייברו הירו"
+            label={tx("אייברו הירו")}
             as="p"
             className="text-xs uppercase tracking-[0.42em] text-[#c8a96a]"
           />
           <EditableText
             data={data}
             dataKey="heroTitle"
-            label="כותרת ראשית הירו"
+            label={tx("כותרת ראשית הירו")}
             as="h1"
             className="mx-auto mt-8 max-w-5xl text-5xl font-semibold leading-[0.95] text-[#f6f1e7] md:text-7xl lg:text-8xl"
           />
           <EditableText
             data={data}
             dataKey="heroSubtitle"
-            label="טקסט משנה הירו"
+            label={tx("טקסט משנה הירו")}
             as="p"
             className="mx-auto mt-8 max-w-3xl text-base leading-8 text-white/72 md:text-lg"
           />
@@ -475,21 +475,21 @@ function Hero({
             <EditableText
               data={data}
               dataKey="heroPanelBadge"
-              label="תג הירו"
+              label={tx("תג הירו")}
               as="p"
               className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]"
             />
             <EditableText
               data={data}
               dataKey="heroPanelTitle"
-              label="כותרת פאנל הירו"
+              label={tx("כותרת פאנל הירו")}
               as="h3"
               className="mt-6 text-3xl font-semibold leading-[1.15] text-[#f6f1e7]"
             />
             <EditableText
               data={data}
               dataKey="heroPanelText"
-              label="טקסט פאנל הירו"
+              label={tx("טקסט פאנל הירו")}
               as="p"
               className="mt-5 text-base leading-8 text-white/72"
             />
@@ -500,7 +500,7 @@ function Hero({
                 <EditableText
                   data={data}
                   dataKey="tagline"
-                  label="תג ליין"
+                  label={tx("תג ליין")}
                   as="p"
                   className="text-lg text-[#f6f1e7]"
                 />
@@ -533,7 +533,7 @@ function Hero({
             <EditableImage
               data={data}
               dataKey="heroImage"
-              label="תמונת הירו"
+              label={tx("תמונת הירו")}
                 alt={tx("הירו Monolith")}
               className="relative h-[420px] w-full object-cover lg:h-[640px]"
             />
@@ -670,7 +670,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           <EditableImage
             data={data}
             dataKey="aboutImage"
-            label="תמונת אודות"
+            label={tx("תמונת אודות")}
                 alt={tx("אודות Monolith")}
             className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
           />
@@ -957,21 +957,21 @@ function ContactSection({
           <EditableText
             data={data}
             dataKey="contactEyebrow"
-            label="אייברו יצירת קשר"
+            label={tx("אייברו יצירת קשר")}
             as="p"
             className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]"
           />
           <EditableText
             data={data}
             dataKey={titleKey}
-            label="כותרת יצירת קשר"
+            label={tx("כותרת יצירת קשר")}
             as="h2"
             className="mt-6 text-4xl font-semibold leading-[1.08] text-[#f6f1e7] md:text-5xl"
           />
           <EditableText
             data={data}
             dataKey={textKey}
-            label="טקסט יצירת קשר"
+            label={tx("טקסט יצירת קשר")}
             as="p"
             className="mt-5 text-base leading-8 text-white/72"
           />
@@ -1010,7 +1010,7 @@ function ContactSection({
             data-visual-editable="true"
             data-visual-edit-id="contact.form"
             data-visual-edit-type="box"
-            data-visual-edit-label="טופס יצירת קשר"
+            data-visual-edit-label={tx("טופס יצירת קשר")}
             className="grid gap-0 border border-[#d7c7a5] bg-white"
           >
             <input
@@ -1019,7 +1019,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.name"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה שם"
+              data-visual-edit-label={tx("שדה שם")}
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
@@ -1027,7 +1027,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.phone"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה טלפון"
+              data-visual-edit-label={tx("שדה טלפון")}
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:border-l"
@@ -1035,7 +1035,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.email"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה אימייל"
+              data-visual-edit-label={tx("שדה אימייל")}
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
@@ -1043,7 +1043,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.topic"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה תחום ייעוץ"
+              data-visual-edit-label={tx("שדה תחום ייעוץ")}
             />
             <textarea
               className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
@@ -1051,7 +1051,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.message"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה הודעה"
+              data-visual-edit-label={tx("שדה הודעה")}
             />
             <button
               type="submit"
@@ -1060,7 +1060,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.submit"
               data-visual-edit-type="button"
-              data-visual-edit-label="כפתור שליחת טופס"
+              data-visual-edit-label={tx("כפתור שליחת טופס")}
             >
               <TemplateText
                 as="span"
@@ -1095,14 +1095,14 @@ function CtaSection({
             <EditableText
               data={data}
               dataKey="ctaTitle"
-              label="כותרת קריאה לפעולה"
+              label={tx("כותרת קריאה לפעולה")}
               as="h2"
               className="mt-6 text-4xl font-semibold leading-[1.08] text-[#f6f1e7] md:text-5xl"
             />
             <EditableText
               data={data}
               dataKey="ctaText"
-              label="טקסט קריאה לפעולה"
+              label={tx("טקסט קריאה לפעולה")}
               as="p"
               className="mt-5 max-w-2xl text-base leading-8 text-white/72"
             />
@@ -1167,7 +1167,7 @@ function Footer({
             <EditableText
               data={data}
               dataKey="footerText"
-              label="טקסט פוטר"
+              label={tx("טקסט פוטר")}
               as="p"
               className="mt-5 max-w-xl text-sm leading-7 text-white/68"
             />

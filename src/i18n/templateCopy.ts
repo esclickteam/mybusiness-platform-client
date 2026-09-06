@@ -5,6 +5,7 @@ import phrasebook from "./templateSeedPhrasebook.json";
 import generatedExactLexicon from "./templateExactLexicon.generated.json";
 import studioExactLexicon from "./templateExactLexicon.studio.json";
 import storeExactLexicon from "./templateExactLexicon.store.json";
+import sharedExactLexicon from "./templateExactLexicon.shared.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -22,6 +23,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(generatedExactLexicon as Record<string, PhraseTranslation>),
   ...(studioExactLexicon as Record<string, PhraseTranslation>),
   ...(storeExactLexicon as Record<string, PhraseTranslation>),
+  ...(sharedExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 

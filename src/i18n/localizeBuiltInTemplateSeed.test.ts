@@ -99,6 +99,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(he).toMatch(/פריט/);
   });
 
+  it("translates shared restaurant and course defaultData sentences", () => {
+    expect(
+      localizeBuiltInText("ספרו לנו מתי אתם מגיעים, כמה סועדים ומה חשוב לכם — ואנחנו נכין את השולחן.", "en"),
+    ).toMatch(/Tell us when you are coming/i);
+    expect(localizeBuiltInText("איך נרשמים?", "es")).toBe("¿Cómo me inscribo?");
+    expect(localizeBuiltInText("אפשר ללמוד מרחוק?", "pt-BR")).toBe("Dá para estudar à distância?");
+    expect(
+      localizeBuiltInText("מהתוסף חנות בניהול העסק — ברגע שמוסיפים מוצרים הם נמשכים אוטומטית.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("translates store hero copy without leftover Hebrew hybrids", () => {
     const hero = localizeBuiltInText(
       "מצעים ובדים שנבחרים לפי מגע, לא רק לפי צבע.",

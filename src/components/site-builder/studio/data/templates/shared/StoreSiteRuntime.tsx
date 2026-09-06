@@ -860,7 +860,7 @@ export default function StoreSiteRuntime({
               {["SYNC", "4K READY", "FAST CHARGE", "SMART HOME"].map((value, i) => <StatPill key={value} value={value} label={`מפרט 0${i + 1}`} className="bg-cyan-300/5" />)}
             </div>
           </section>
-          <ProductRail id="cinema-scroll" label="סקרולר מוצרים" title={g("productsTitle")} text={g("productsText")} className="bg-[#03080d] text-white" railClassName="flex snap-x overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[280px]" />
+          <ProductRail id="cinema-scroll" label={tx("סקרולר מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[#03080d] text-white" railClassName="flex snap-x overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[280px]" />
           <section {...sectionProps("cinema-categories", "categories", "קטגוריות")} className="bg-black px-5 py-20 lg:px-8">
             <div className="mx-auto max-w-7xl">
               <SectionHeading eyebrow={g("categoriesEyebrow")} title={g("categoriesTitle")} text={g("categoriesText")} />
@@ -920,7 +920,7 @@ export default function StoreSiteRuntime({
               <p className="store-display text-4xl font-black">{g("promoText")}</p>
             </div>
           </section>
-          <ProductRail id="market-products" label="דוכני מוצרים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ProductRail id="market-products" label={tx("דוכני מוצרים")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <section {...sectionProps("harvest-story", "about", "סיפור הקטיף")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-2">
               <StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[5/4] rounded-[2rem] object-cover" />
@@ -929,10 +929,10 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("market-stats", "features", "מדדי טריות")} className="px-5 py-16 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
-              <StatPill value="06:00" label="קטיף בוקר" className="rounded-[2rem]" />
-              <StatPill value="4" label="משקי מקור" className="rounded-[2rem]" />
-              <StatPill value="24h" label="עד הסל" className="rounded-[2rem]" />
-              <StatPill value="0" label="אריזות מיותרות" className="rounded-[2rem]" />
+              <StatPill value="06:00" label={tx("קטיף בוקר")} className="rounded-[2rem]" />
+              <StatPill value="4" label={tx("משקי מקור")} className="rounded-[2rem]" />
+              <StatPill value="24h" label={tx("עד הסל")} className="rounded-[2rem]" />
+              <StatPill value="0" label={tx("אריזות מיותרות")} className="rounded-[2rem]" />
             </div>
           </section>
           <ValuesStrip cardClassName="rounded-[2rem]" />
@@ -968,10 +968,10 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("athletic-stats", "features", "סטטיסטיקות")} className="px-5 py-12 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
-              <StatPill value="+42%" label="קצב אימון" />
-              <StatPill value="8" label="קטגוריות כוח" />
-              <StatPill value="24/7" label="מוכנות" />
-              <StatPill value="0" label="פשרות" />
+              <StatPill value="+42%" label={tx("קצב אימון")} />
+              <StatPill value="8" label={tx("קטגוריות כוח")} />
+              <StatPill value="24/7" label={tx("מוכנות")} />
+              <StatPill value="0" label={tx("פשרות")} />
             </div>
           </section>
           {spotlights.map((product, index) => (
@@ -991,7 +991,7 @@ export default function StoreSiteRuntime({
           <section {...sectionProps("athletic-cats", "categories", "מחלקות אימון")} className="bg-[var(--dark)] px-5 py-20 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/3]" />)}</div>
           </section>
-          <ProductRail id="athletic-grid" label="גריד ציוד" title={g("productsTitle")} text={g("productsText")} />
+          <ProductRail id="athletic-grid" label={tx("גריד ציוד")} title={g("productsTitle")} text={g("productsText")} />
           <ValuesStrip className="bg-[var(--bg-soft)]" />
           <Testimonials />
           <JournalCards />
@@ -1023,7 +1023,7 @@ export default function StoreSiteRuntime({
               {["להרגיע", "לעטוף", "לשחק", "לגדול"].map((step, index) => <StatPill key={step} value={`0${index + 1}`} label={step} className="rounded-[2rem]" />)}
             </div>
           </section>
-          <ProductRail id="gentle-carousel" label="קרוסלת מוצרים עדינה" title={g("productsTitle")} text={g("productsText")} railClassName="flex overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[260px]" />
+          <ProductRail id="gentle-carousel" label={tx("קרוסלת מוצרים עדינה")} title={g("productsTitle")} text={g("productsText")} railClassName="flex overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[260px]" />
           <section {...sectionProps("nursery-categories", "categories", "חדרי תינוקות")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
               {categoryTiles.slice(0, 6).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[40%_60%_50%_50%]" />)}
@@ -1069,7 +1069,7 @@ export default function StoreSiteRuntime({
               <StoreImage src={g("lookThree")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[4/5] w-full object-cover md:col-span-5" />
             </div>
           </section>
-          <ProductRail id="editor-picks" label="בחירות מערכת" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" railClassName="lg:grid-cols-3" />
+          <ProductRail id="editor-picks" label={tx("בחירות מערכת")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" railClassName="lg:grid-cols-3" />
           <section {...sectionProps("editorial-categories", "categories", "מדורי הבית")} className="px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4]" />)}</div>
           </section>
@@ -1112,7 +1112,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("paw-stats", "features", "טביעות כף")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["כיף", "נשנוש", "טיול", "שינה"].map((x, i) => <StatPill key={x} value="PAW" label={`${x} 0${i + 1}`} className="rounded-[2rem]" />)}</div></section>
           <section {...sectionProps("pet-rounded-tiles", "categories", "אריחי חיות")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[2.5rem]" />)}</div></section>
-          <ProductRail id="pet-toy-products" label="צעצועים ומוצרים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
+          <ProductRail id="pet-toy-products" label={tx("צעצועים ומוצרים")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
           <section {...sectionProps("pet-story", "about", "סיפור להקה")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 rounded-[3rem] bg-[var(--accent)]/30 p-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-square rounded-[2rem] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <ValuesStrip cardClassName="rounded-[2rem]" />
           <Testimonials />
@@ -1137,7 +1137,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("quote-interlude", "quote", "ציטוט")} className="bg-[var(--dark)] px-5 py-16 text-white lg:px-8"><blockquote className="mx-auto max-w-4xl text-center store-display text-4xl leading-tight">"{g("tagline")}"</blockquote></section>
           <section {...sectionProps("shelf-categories", "categories", "מדפי קטגוריות")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[16/4]" />)}</div></section>
-          <ProductRail id="book-shelves" label="שורות מדף" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
+          <ProductRail id="book-shelves" label={tx("שורות מדף")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
           <section {...sectionProps("reading-path", "features", "מסלול קריאה")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-0 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((x, i) => <div key={x} className="border border-[var(--line)] bg-[var(--surface)] p-8 text-start"><p className="store-display text-5xl text-[var(--p)]">{i + 1}</p><h3 className="mt-4 font-black">{x}</h3></div>)}</div></section>
           <section {...sectionProps("author-story", "about", "הערת העורך")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.7fr_1.3fr]"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[3/4] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <section {...sectionProps("book-lookbook", "gallery", "עמודי השראה")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">{[g("lookOne"), g("lookTwo"), g("lookThree")].map((image) => <StoreImage key={image} src={image} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] object-cover" />)}</div></section>
@@ -1162,7 +1162,7 @@ export default function StoreSiteRuntime({
             </div>
           </section>
           <section {...sectionProps("ritual-split", "features", "טקסים מפוצלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((title, i) => <Reveal key={title} delayMs={i * 90}><div className="rounded-[2rem] bg-[var(--bg-soft)] p-8 text-start"><p className="text-[var(--p)]">RITUAL 0{i + 1}</p><h3 className="store-display mt-3 text-3xl font-black">{title}</h3></div></Reveal>)}</div></section>
-          <ProductRail id="gloss-portraits" label="פורטרטים מוצר" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ProductRail id="gloss-portraits" label={tx("פורטרטים מוצר")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <section {...sectionProps("beauty-categories", "categories", "טקסי יופי")} className="bg-[var(--dark)] px-5 py-20 text-white lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[2rem]" />)}</div></section>
           <section {...sectionProps("ingredient-glow", "features", "מרכיבים")} className="px-5 py-20 lg:px-8"><div className="mx-auto max-w-4xl text-center"><p className="store-display text-5xl font-black">{g("productDetailOne")}</p><p className="mt-5 text-[var(--muted)]">{g("productDetailTwo")}</p></div></section>
           <section {...sectionProps("gloss-gallery", "gallery", "גלוס")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-12"><StoreImage src={g("lookOne")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[16/9] object-cover md:col-span-8" /><StoreImage src={g("lookTwo")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-square object-cover md:col-span-4" /></div></section>
@@ -1186,7 +1186,7 @@ export default function StoreSiteRuntime({
             </div>
           </section>
           <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={x} />)}</div></section>
-          <ProductRail id="tool-benches" label="ספסלי מוצרים" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
+          <ProductRail id="tool-benches" label={tx("ספסלי מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
           <section {...sectionProps("yard-categories", "categories", "קירות כלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
           <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={text} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{text}</p></div>)}</div></section>
           <section {...sectionProps("project-story", "about", "סיפור פרויקט")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[16/10] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
@@ -1515,7 +1515,7 @@ export default function StoreSiteRuntime({
           </div>
         </div>
       </section>
-      <ProductRail id="lookbook-products" label="מוצרים מתוך הלוקבוק" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" />
+      <ProductRail id="lookbook-products" label={tx("מוצרים מתוך הלוקבוק")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" />
       {Footer}
     </div>
   );

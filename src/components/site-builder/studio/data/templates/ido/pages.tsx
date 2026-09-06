@@ -1047,28 +1047,28 @@ function Booking({
           data-visual-editable="true"
           data-visual-edit-id="booking.formBox"
           data-visual-edit-type="box"
-          data-visual-edit-label="טופס יצירת קשר"
+          data-visual-edit-label={tx("טופס יצירת קשר")}
           className={[
             revealClass(formVisible, editMode ? "" : "delay-100"),
             "relative overflow-visible rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8",
           ].join(" ")}
         >
           <div className="ido-form-fields relative flex flex-col gap-4">
-            <FormFieldSlot id="booking.form.name" label="שדה שם מלא">
+            <FormFieldSlot id="booking.form.name" label={tx("שדה שם מלא")}>
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
                 placeholder={tx("שם מלא")}
               />
             </FormFieldSlot>
 
-            <FormFieldSlot id="booking.form.phone" label="שדה טלפון">
+            <FormFieldSlot id="booking.form.phone" label={tx("שדה טלפון")}>
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
                 placeholder={tx("טלפון")}
               />
             </FormFieldSlot>
 
-            <FormFieldSlot id="booking.form.interest" label="שדה בחירת שירות">
+            <FormFieldSlot id="booking.form.interest" label={tx("שדה בחירת שירות")}>
               <select className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
                 <option>{tx("מה מעניין אותך?")}</option>
                 <option>{tx("ניהול סושיאל")}</option>
@@ -1078,21 +1078,21 @@ function Booking({
               </select>
             </FormFieldSlot>
 
-            <FormFieldSlot id="booking.form.budget" label="שדה תקציב">
+            <FormFieldSlot id="booking.form.budget" label={tx("שדה תקציב")}>
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
                 placeholder={tx("תקציב חודשי משוער")}
               />
             </FormFieldSlot>
 
-            <FormFieldSlot id="booking.form.message" label="שדה הודעה">
+            <FormFieldSlot id="booking.form.message" label={tx("שדה הודעה")}>
               <textarea
                 className="min-h-32 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
                 placeholder={tx("ספרו בקצרה על העסק והמטרה")}
               />
             </FormFieldSlot>
 
-            <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
+            <FormFieldSlot id="booking.form.submit" label={tx("כפתור שליחה")}>
               <button
                 type="submit"
                 data-bizuply-lead-submit="true"

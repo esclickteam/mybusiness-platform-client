@@ -946,7 +946,7 @@ export default function PulsecorePages({
             {
               id: "programs",
               content: (
-                <SimplePage title={tx("תוכניות אימון לכל רמה וקצב")} label="תוכניות">
+                <SimplePage title={tx("תוכניות אימון לכל רמה וקצב")} label={tx("תוכניות")}>
                   <ProgramsSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -954,7 +954,7 @@ export default function PulsecorePages({
             {
               id: "trainers",
               content: (
-                <SimplePage title={tx("מאמנים שמלווים אתכם עד התוצאה")} label="מאמנים">
+                <SimplePage title={tx("מאמנים שמלווים אתכם עד התוצאה")} label={tx("מאמנים")}>
                   <TrainersSection />
                 </SimplePage>
               ),
@@ -962,7 +962,7 @@ export default function PulsecorePages({
             {
               id: "pricing",
               content: (
-                <SimplePage title={tx("מנויים גמישים לפי מטרה")} label="מחירים">
+                <SimplePage title={tx("מנויים גמישים לפי מטרה")} label={tx("מחירים")}>
                   <PricingSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -970,7 +970,7 @@ export default function PulsecorePages({
             {
               id: "schedule",
               content: (
-                <SimplePage title={tx("מערכת שעות שבועית")} label="מערכת שעות">
+                <SimplePage title={tx("מערכת שעות שבועית")} label={tx("מערכת שעות")}>
                   <ScheduleSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -978,7 +978,7 @@ export default function PulsecorePages({
             {
               id: "contact",
               content: (
-                <SimplePage title={tx("קבעו אימון ניסיון")} label="הצטרפות">
+                <SimplePage title={tx("קבעו אימון ניסיון")} label={tx("הצטרפות")}>
                   <ContactSection />
                 </SimplePage>
               ),

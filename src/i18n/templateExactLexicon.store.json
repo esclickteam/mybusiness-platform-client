@@ -226,5 +226,57 @@
     "es": "A la tienda",
     "pt-BR": "Para a loja",
     "ar": "إلى المتجر"
+  },
+  "מפה": { "en": "Map", "es": "Mapa", "pt-BR": "Mapa", "ar": "خريطة" },
+  "שעות": { "en": "Hours", "es": "Horario", "pt-BR": "Horário", "ar": "ساعات" },
+  "עסקי": { "en": "Business", "es": "Empresa", "pt-BR": "Empresarial", "ar": "أعمال" },
+  "פגישה": { "en": "Meeting", "es": "Reunión", "pt-BR": "Reunião", "ar": "لقاء" },
+  "זמינים לשאלות": {
+    "en": "Available for questions",
+    "es": "Disponibles para preguntas",
+    "pt-BR": "Disponíveis para perguntas",
+    "ar": "متاحون للأسئلة"
+  },
+  "ראשון עד חמישי, 09:00-18:00.": {
+    "en": "Sunday to Thursday, 09:00-18:00.",
+    "es": "Domingo a jueves, 09:00-18:00.",
+    "pt-BR": "Domingo a quinta, 09:00-18:00.",
+    "ar": "الأحد إلى الخميس، 09:00-18:00."
+  },
+  "מפה אינטראקטיבית תתחבר כאן בפרסום האתר.": {
+    "en": "An interactive map will connect here when the site is published.",
+    "es": "Un mapa interactivo se conectará aquí al publicar el sitio.",
+    "pt-BR": "Um mapa interativo liga-se aqui quando o site for publicado.",
+    "ar": "ستُربط خريطة تفاعلية هنا عند نشر الموقع."
+  },
+  "שילוח מיוחד": {
+    "en": "Special shipping",
+    "es": "Envío especial",
+    "pt-BR": "Envio especial",
+    "ar": "شحن خاص"
+  },
+  "אפשר לתאם פתרונות שילוח לפי יעד ומוצר.": {
+    "en": "We can arrange shipping solutions by destination and product.",
+    "es": "Podemos coordinar envíos según destino y producto.",
+    "pt-BR": "Podemos coordenar envios conforme destino e produto.",
+    "ar": "يمكن تنسيق حلول شحن حسب الوجهة والمنتج."
+  },
+  "הזמנות מרוכזות": {
+    "en": "Bulk orders",
+    "es": "Pedidos mayoristas",
+    "pt-BR": "Encomendas em volume",
+    "ar": "طلبات مجمّعة"
+  },
+  "ייעוץ אישי": {
+    "en": "Personal consultation",
+    "es": "Consulta personal",
+    "pt-BR": "Consultoria pessoal",
+    "ar": "استشارة شخصية"
+  },
+  "שאלה מהירה": {
+    "en": "A quick question",
+    "es": "Una pregunta rápida",
+    "pt-BR": "Uma pergunta rápida",
+    "ar": "سؤال سريع"
   }
 }

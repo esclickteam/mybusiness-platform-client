@@ -1260,7 +1260,7 @@ export default function AelinePages({
               content: (
                 <SimplePage
                   title={tx("פתרונות דיגיטליים שמסדרים מכירות ושירות")}
-                  label="פתרונות"
+                  label={tx("פתרונות")}
                   icon={<Bot className="h-4 w-4" />}
                 >
                   <ServicesSection onPageChange={setActivePage} />
@@ -1273,7 +1273,7 @@ export default function AelinePages({
               content: (
                 <SimplePage
                   title={tx("סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה")}
-                  label="הסטודיו"
+                  label={tx("הסטודיו")}
                   icon={<Globe2 className="h-4 w-4" />}
                 >
                   <AboutSection />
@@ -1285,7 +1285,7 @@ export default function AelinePages({
               content: (
                 <SimplePage
                   title={tx("חבילות שמתאימות לקצב הצמיחה שלכם")}
-                  label="חבילות"
+                  label={tx("חבילות")}
                   icon={<BarChart3 className="h-4 w-4" />}
                 >
                   <PricingSection onPageChange={setActivePage} />
@@ -1297,7 +1297,7 @@ export default function AelinePages({
               content: (
                 <SimplePage
                   title={tx("רעיונות לעסק שעובד חכם יותר")}
-                  label="מגזין"
+                  label={tx("מגזין")}
                   icon={<DatabaseZap className="h-4 w-4" />}
                 >
                   <BlogSection onPageChange={setActivePage} />
@@ -1309,7 +1309,7 @@ export default function AelinePages({
               content: (
                 <SimplePage
                   title={tx("בואו נבנה לכם תהליך שמייצר יותר פניות")}
-                  label="שיחה ראשונה"
+                  label={tx("שיחה ראשונה")}
                   icon={<Mail className="h-4 w-4" />}
                 >
                   <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
