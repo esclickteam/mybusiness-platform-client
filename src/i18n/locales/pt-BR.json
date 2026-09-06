@@ -13085,6 +13085,29 @@
       "category": "Categoria",
       "layout": "Estrutura",
       "blockCount": "{{count}} blocos"
+    },
+    "templates": {
+      "categories": {
+        "all": "Tudo",
+        "landing": "Landing pages",
+        "business": "Negócios e serviços",
+        "real-estate": "Imobiliário",
+        "portfolio": "Portfólio e agência",
+        "store": "Lojas e comércio",
+        "food": "Comida e restaurantes",
+        "education": "Educação e cursos",
+        "beauty": "Beleza e cuidado",
+        "travel": "Turismo e praia",
+        "technology": "Tecnologia",
+        "medical": "Medicina e saúde",
+        "fitness": "Fitness e esporte",
+        "architecture": "Arquitetura e construção",
+        "finance": "Finanças e contabilidade",
+        "events": "Eventos e casamentos",
+        "hospitality": "Hospitalidade e hotéis",
+        "legal": "Escritórios de advocacia",
+        "security": "Cibersegurança"
+      }
     }
   },
   "partnerNav": {

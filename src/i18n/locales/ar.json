@@ -13085,6 +13085,29 @@
       "category": "الفئة",
       "layout": "الهيكل",
       "blockCount": "{{count}} كتل"
+    },
+    "templates": {
+      "categories": {
+        "all": "الكل",
+        "landing": "صفحات هبوط",
+        "business": "أعمال وخدمات",
+        "real-estate": "عقارات",
+        "portfolio": "معرض أعمال ووكالة",
+        "store": "متاجر وتجارة",
+        "food": "طعام ومطاعم",
+        "education": "تعليم ودورات",
+        "beauty": "جمال وعناية",
+        "travel": "سياحة وشاطئ",
+        "technology": "تكنولوجيا",
+        "medical": "طب وصحة",
+        "fitness": "لياقة ورياضة",
+        "architecture": "عمارة وبناء",
+        "finance": "مالية ومحاسبة",
+        "events": "فعاليات وأعراس",
+        "hospitality": "ضيافة وفنادق",
+        "legal": "مكاتب محاماة",
+        "security": "أمن سيبراني"
+      }
     }
   },
   "partnerNav": {

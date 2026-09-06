@@ -13074,6 +13074,29 @@
       "category": "קטגוריה",
       "layout": "מבנה",
       "blockCount": "{{count}} בלוקים"
+    },
+    "templates": {
+      "categories": {
+        "all": "הכול",
+        "landing": "דפי נחיתה",
+        "business": "עסקים ושירותים",
+        "real-estate": "נדל״ן",
+        "portfolio": "פורטפוליו וסוכנות",
+        "store": "חנויות ומסחר",
+        "food": "אוכל ומסעדות",
+        "education": "חינוך וקורסים",
+        "beauty": "יופי וטיפוח",
+        "travel": "תיירות וחוף",
+        "technology": "טכנולוגיה",
+        "medical": "רפואה ובריאות",
+        "fitness": "כושר וספורט",
+        "architecture": "אדריכלות ובנייה",
+        "finance": "פיננסים וחשבונאות",
+        "events": "אירועים וחתונות",
+        "hospitality": "אירוח ומלונאות",
+        "legal": "עורכי דין",
+        "security": "סייבר ואבטחה"
+      }
     }
   },
   "partnerNav": {

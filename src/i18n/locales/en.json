@@ -13085,6 +13085,29 @@
       "category": "Category",
       "layout": "Layout",
       "blockCount": "{{count}} blocks"
+    },
+    "templates": {
+      "categories": {
+        "all": "All",
+        "landing": "Landing pages",
+        "business": "Business and services",
+        "real-estate": "Real estate",
+        "portfolio": "Portfolio and agency",
+        "store": "Stores and commerce",
+        "food": "Food and restaurants",
+        "education": "Education and courses",
+        "beauty": "Beauty and care",
+        "travel": "Travel and beach",
+        "technology": "Technology",
+        "medical": "Medicine and health",
+        "fitness": "Fitness and sport",
+        "architecture": "Architecture and construction",
+        "finance": "Finance and accounting",
+        "events": "Events and weddings",
+        "hospitality": "Hospitality and hotels",
+        "legal": "Law firms",
+        "security": "Cyber and security"
+      }
     }
   },
   "partnerNav": {
