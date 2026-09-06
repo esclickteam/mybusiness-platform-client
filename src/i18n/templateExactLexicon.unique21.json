@@ -1,0 +1,848 @@
+{
+  "רגעים של אנשים, צוותים וחיבורים.": {
+    "en": "Moments of people, teams, and connections.",
+    "es": "Momentos de personas, equipos y conexiones.",
+    "pt-BR": "Momentos de pessoas, equipes e conexões.",
+    "ar": "لحظات من ناس وفرق وروابط."
+  },
+  "קבצי קמפיין חיים מתוך חדר הבקרה.": {
+    "en": "Live campaign files from the control room.",
+    "es": "Archivos de campaña en vivo desde la sala de control.",
+    "pt-BR": "Arquivos de campanha ao vivo da sala de controle.",
+    "ar": "ملفات حملة حية من غرفة التحكم."
+  },
+  "חזרות פיץ' עם התנגדויות אמיתיות.": {
+    "en": "Pitch rehearsals with real objections.",
+    "es": "Ensayos de pitch con objeciones reales.",
+    "pt-BR": "Ensaios de pitch com objeções reais.",
+    "ar": "بروفات عرض مع اعتراضات حقيقية."
+  },
+  "למידה מהירה לפי פורמט, קהל וזמן.": {
+    "en": "Fast learning by format, audience, and time.",
+    "es": "Aprendizaje rápido según formato, audiencia y tiempo.",
+    "pt-BR": "Aprendizado rápido por formato, público e tempo.",
+    "ar": "تعلّم سريع حسب الصيغة والجمهور والوقت."
+  },
+  "בריפים שמאפשרים ליוצר להיות הוא.": {
+    "en": "Briefs that let the creator stay themselves.",
+    "es": "Briefs que permiten al creador ser él mismo.",
+    "pt-BR": "Briefs que permitem ao criador ser ele mesmo.",
+    "ar": "بريفات تتيح لصانع المحتوى أن يكون نفسه."
+  },
+  "מדידה לפי קודים, לינקים ומכירות.": {
+    "en": "Measurement by codes, links, and sales.",
+    "es": "Medición por códigos, enlaces y ventas.",
+    "pt-BR": "Medição por códigos, links e vendas.",
+    "ar": "قياس حسب الرموز والروابط والمبيعات."
+  },
+  "יוצרי נישה הביאו דמוים איכותיים.": {
+    "en": "Niche creators brought quality demos.",
+    "es": "Creadores de nicho trajeron demos de calidad.",
+    "pt-BR": "Criadores de nicho trouxeram demos de qualidade.",
+    "ar": "صنّاع نيش جلبوا عروضًا جيدة."
+  },
+  "איך להשאיר ליוצר מקום להביא אמת.": {
+    "en": "How to leave the creator room to bring truth.",
+    "es": "Cómo dejarle al creador espacio para traer verdad.",
+    "pt-BR": "Como deixar ao criador espaço para trazer verdade.",
+    "ar": "كيف تتركون للصانع مكانًا ليحضر حقيقة."
+  },
+  "אריזת פיצ'רים שיצרה קו מוצר חדש.": {
+    "en": "A feature pack that created a new product line.",
+    "es": "Un empaquetado de features que creó una línea de producto nueva.",
+    "pt-BR": "Uma embalagem de features que criou uma linha de produto nova.",
+    "ar": "حزمة ميزات أنشأت خط منتج جديد."
+  },
+  "השקה מנוהלת לפי נתונים בזמן אמת.": {
+    "en": "A launch managed by real-time data.",
+    "es": "Un lanzamiento gestionado con datos en tiempo real.",
+    "pt-BR": "Um lançamento gerido com dados em tempo real.",
+    "ar": "إطلاق يُدار ببيانات فورية."
+  },
+  "איך ליצור סקרנות בלי לחשוף הכול.": {
+    "en": "How to create curiosity without revealing everything.",
+    "es": "Cómo crear curiosidad sin revelar todo.",
+    "pt-BR": "Como criar curiosidade sem revelar tudo.",
+    "ar": "كيف تصنعون فضولًا دون كشف كل شيء."
+  },
+  "כניסות מגיעות מהמלצה ולא מהפרעה.": {
+    "en": "Entries come from a recommendation, not an interruption.",
+    "es": "Las entradas llegan por recomendación y no por interrupción.",
+    "pt-BR": "As entradas vêm de recomendação, não de interrupção.",
+    "ar": "الدخول يأتي من توصية لا من إزعاج."
+  },
+  "שותפים פעילים מייצרים לאורך זמן.": {
+    "en": "Active partners produce over the long term.",
+    "es": "Los socios activos producen a lo largo del tiempo.",
+    "pt-BR": "Parceiros ativos produzem ao longo do tempo.",
+    "ar": "شركاء نشطون ينتجون على المدى."
+  },
+  "ראיונות הגדירו פלח לקוחות רווחי.": {
+    "en": "Interviews defined a profitable customer segment.",
+    "es": "Las entrevistas definieron un segmento de clientes rentable.",
+    "pt-BR": "Entrevistas definiram um segmento de clientes lucrativo.",
+    "ar": "المقابلات حدّدت شريحة عملاء مربحة."
+  },
+  "דשבורד מורכב הפך לפעולות יומיות.": {
+    "en": "A complex dashboard became daily actions.",
+    "es": "Un dashboard complejo se convirtió en acciones diarias.",
+    "pt-BR": "Um dashboard complexo virou ações diárias.",
+    "ar": "لوحة معقدة تحولت إلى أفعال يومية."
+  },
+  "בדיקות לפני ואחרי מראות התקדמות.": {
+    "en": "Before-and-after tests show progress.",
+    "es": "Pruebas de antes y después muestran progreso.",
+    "pt-BR": "Testes de antes e depois mostram progresso.",
+    "ar": "اختبارات قبل وبعد تُظهر التقدّم."
+  },
+  "סדרת וידאו הביאה הזמנות שבועיות.": {
+    "en": "A video series brought weekly orders.",
+    "es": "Una serie de video trajo pedidos semanales.",
+    "pt-BR": "Uma série de vídeo trouxe pedidos semanais.",
+    "ar": "سلسلة فيديو جلبت طلبات أسبوعية."
+  },
+  "מכל יום צילום יוצאים נכסים רבים.": {
+    "en": "Many assets come out of every shoot day.",
+    "es": "De cada día de rodaje salen muchos activos.",
+    "pt-BR": "De cada dia de filmagem saem muitos ativos.",
+    "ar": "من كل يوم تصوير تخرج أصول كثيرة."
+  },
+  "מיפוי אינטרסים, רגולציה ושחקנים.": {
+    "en": "Mapping interests, regulation, and players.",
+    "es": "Mapear intereses, regulación y actores.",
+    "pt-BR": "Mapear interesses, regulação e atores.",
+    "ar": "رسم المصالح والتنظيم واللاعبين."
+  },
+  "חיבור שותפים סביב אינטרס ציבורי.": {
+    "en": "Connecting partners around a public interest.",
+    "es": "Conectar socios alrededor de un interés público.",
+    "pt-BR": "Ligar parceiros em torno de um interesse público.",
+    "ar": "ربط شركاء حول مصلحة عامة."
+  },
+  "מפת בעלי עניין פתחה ערוצי פעולה.": {
+    "en": "A stakeholder map opened action channels.",
+    "es": "Un mapa de partes interesadas abrió canales de acción.",
+    "pt-BR": "Um mapa de partes interessadas abriu canais de ação.",
+    "ar": "خريطة أصحاب مصلحة فتحت قنوات عمل."
+  },
+  "מסמך שמנהל סניף, לא קלסר על מדף.": {
+    "en": "A document that runs a branch, not a binder on a shelf.",
+    "es": "Un documento que gestiona una sucursal, no una carpeta en un estante.",
+    "pt-BR": "Um documento que gerencia uma filial, não uma pasta na prateleira.",
+    "ar": "مستند يدير فرعًا لا ملفًا على رف."
+  },
+  "קרוסלה עדינה של פריטים לקטנטנים.": {
+    "en": "A gentle carousel of items for little ones.",
+    "es": "Un carrusel suave de artículos para peques.",
+    "pt-BR": "Um carrossel suave de itens para os pequeninos.",
+    "ar": "كاروسيل لطيف لقطع الصغار."
+  },
+  "צעצועים, מזון ואביזרים בקצב זנב.": {
+    "en": "Toys, food, and accessories at a wagging pace.",
+    "es": "Juguetes, comida y accesorios al ritmo de una cola.",
+    "pt-BR": "Brinquedos, comida e acessórios no ritmo do rabo.",
+    "ar": "ألعاب وطعام وإكسسوارات بوتيرة ذيل."
+  },
+  "מדפים אנכיים לפי מצב רוח ספרותי.": {
+    "en": "Vertical shelves by literary mood.",
+    "es": "Estantes verticales según el ánimo literario.",
+    "pt-BR": "Prateleiras verticais segundo o humor literário.",
+    "ar": "رفوف عمودية حسب مزاج أدبي."
+  },
+  "מדריך עבודה לפני שמתחילים לקדוח.": {
+    "en": "A work guide before you start drilling.",
+    "es": "Una guía de trabajo antes de empezar a taladrar.",
+    "pt-BR": "Um guia de trabalho antes de começar a furar.",
+    "ar": "دليل عمل قبل أن تبدأوا الحفر."
+  },
+  "אוצרות קטנות על תכשיטים ושעונים.": {
+    "en": "Small treasures of jewelry and watches.",
+    "es": "Pequeños tesoros de joyas y relojes.",
+    "pt-BR": "Pequenos tesouros de joias e relógios.",
+    "ar": "كنوز صغيرة من مجوهرات وساعات."
+  },
+  "כלי מטבח שנראים כמו פרק בספר שף.": {
+    "en": "Kitchen tools that look like a chapter in a chef book.",
+    "es": "Utensilios de cocina que parecen un capítulo de un libro de chef.",
+    "pt-BR": "Utensílios de cozinha que parecem um capítulo de um livro de chef.",
+    "ar": "أدوات مطبخ تبدو كفصل في كتاب شيف."
+  },
+  "מבצעים משימה קצרה עם משוב ממוקד.": {
+    "en": "You complete a short task with focused feedback.",
+    "es": "Hacen una tarea corta con feedback enfocado.",
+    "pt-BR": "Fazem uma tarefa curta com feedback focado.",
+    "ar": "تنجزون مهمة قصيرة مع ملاحظات مركّزة."
+  },
+  "שלוש סיבות שמנטור טוב משנה מסלול": {
+    "en": "Three reasons a good mentor changes a path",
+    "es": "Tres razones por las que un buen mentor cambia un rumbo",
+    "pt-BR": "Três razões pelas quais um bom mentor muda um rumo",
+    "ar": "ثلاثة أسباب تجعل مرشدًا جيدًا يغيّر مسارًا"
+  },
+  "מסלול ממוצע עד פריצת דרך ראשונה.": {
+    "en": "Average path until a first breakthrough.",
+    "es": "Ruta media hasta un primer avance.",
+    "pt-BR": "Percurso médio até um primeiro avanço.",
+    "ar": "مسار متوسط حتى أول اختراق."
+  },
+  "עד שיחת היכרות רציפה בשפה החדשה.": {
+    "en": "Until a fluent intro conversation in the new language.",
+    "es": "Hasta una conversación de presentación fluida en el idioma nuevo.",
+    "pt-BR": "Até uma conversa de apresentação fluente no idioma novo.",
+    "ar": "حتى حديث تعارف متواصل باللغة الجديدة."
+  },
+  "למה כדאי לטעות בקול כבר מההתחלה.": {
+    "en": "Why it is worth making vocal mistakes from the start.",
+    "es": "Por qué conviene equivocarse con la voz desde el principio.",
+    "pt-BR": "Por que vale errar com a voz desde o começo.",
+    "ar": "لماذا يستحق الخطأ بالصوت من البداية."
+  },
+  "נגינה עם אחרים כבר במהלך המסלול.": {
+    "en": "Playing with others already during the track.",
+    "es": "Tocar con otros ya durante el recorrido.",
+    "pt-BR": "Tocar com outros já durante o percurso.",
+    "ar": "العزف مع آخرين أثناء المسار أصلًا."
+  },
+  "מגדירים כלי, רמה וסגנון מוזיקלי.": {
+    "en": "You define an instrument, level, and musical style.",
+    "es": "Definen instrumento, nivel y estilo musical.",
+    "pt-BR": "Definem instrumento, nível e estilo musical.",
+    "ar": "تحددون آلة ومستوى وأسلوبًا موسيقيًا."
+  },
+  "תרגילי נשימה ותשומת לב לפני במה.": {
+    "en": "Breath and attention exercises before a stage.",
+    "es": "Ejercicios de respiración y atención antes del escenario.",
+    "pt-BR": "Exercícios de respiração e atenção antes do palco.",
+    "ar": "تمارين تنفس وانتباه قبل المنصة."
+  },
+  "מה לשמוע בשיר לפני שמנגנים אותו.": {
+    "en": "What to hear in a song before you play it.",
+    "es": "Qué escuchar en una canción antes de tocarla.",
+    "pt-BR": "O que ouvir numa música antes de tocá-la.",
+    "ar": "ماذا تسمعون في أغنية قبل عزفها."
+  },
+  "האמן עובד לידכם ומראה תהליך מלא.": {
+    "en": "The artist works beside you and shows a full process.",
+    "es": "El artista trabaja a su lado y muestra un proceso completo.",
+    "pt-BR": "O artista trabalha ao lado de vocês e mostra um processo completo.",
+    "ar": "الفنان يعمل بجانبكم ويُظهر مسارًا كاملًا."
+  },
+  "קרמיקה, צבע, הדפס, בד, נייר ועץ.": {
+    "en": "Ceramics, paint, print, fabric, paper, and wood.",
+    "es": "Cerámica, pintura, estampado, tela, papel y madera.",
+    "pt-BR": "Cerâmica, tinta, estampa, tecido, papel e madeira.",
+    "ar": "خزف وطلاء وطباعة وقماش وورق وخشب."
+  },
+  "משומן, קצוות שרופים, רוטב עצמות.": {
+    "en": "Glazed, burnt edges, bone sauce.",
+    "es": "Glaseado, bordes quemados, salsa de huesos.",
+    "pt-BR": "Glaceado, bordas queimadas, molho de ossos.",
+    "ar": "مُلمّع وحواف محروقة وصلصة عظام."
+  },
+  "בנו מערכות חכמות יותר לעסק שלכם": {
+    "en": "Build smarter systems for your business",
+    "es": "Construyan sistemas más inteligentes para su negocio",
+    "pt-BR": "Construam sistemas mais inteligentes para o negócio de vocês",
+    "ar": "ابنوا أنظمة أذكى لعملكم"
+  },
+  "מהשיחה הראשונה ועד החלטה בטוחה.": {
+    "en": "From the first conversation to a confident decision.",
+    "es": "Desde la primera conversación hasta una decisión segura.",
+    "pt-BR": "Da primeira conversa até uma decisão segura.",
+    "ar": "من الحديث الأول حتى قرار واثق."
+  },
+  "זה מתאים גם לקונים וגם למוכרים?": {
+    "en": "Does this fit buyers and sellers alike?",
+    "es": "¿Esto encaja tanto para compradores como para vendedores?",
+    "pt-BR": "Isso serve tanto para compradores quanto para vendedores?",
+    "ar": "هل هذا يناسب المشترين والبائعين معًا؟"
+  },
+  "מה קונים חייבים לבדוק לפני הצעה": {
+    "en": "What buyers must check before an offer",
+    "es": "Qué deben revisar los compradores antes de una oferta",
+    "pt-BR": "O que compradores precisam checar antes de uma oferta",
+    "ar": "ما يجب على المشترين فحصه قبل عرض"
+  },
+  "מה חשוב לבדוק לפני שמפרסמים נכס": {
+    "en": "What matters to check before listing a property",
+    "es": "Qué es importante revisar antes de publicar un inmueble",
+    "pt-BR": "O que é importante checar antes de anunciar um imóvel",
+    "ar": "ما المهم فحصه قبل نشر عقار"
+  },
+  "האם הפגישה הראשונה מחייבת המשך?": {
+    "en": "Does the first meeting require a follow-up?",
+    "es": "¿La primera reunión obliga a un seguimiento?",
+    "pt-BR": "A primeira reunião obriga a uma continuação?",
+    "ar": "هل الاجتماع الأول يلزم بمتابعة؟"
+  },
+  "איך נערכים לפגישת ייעוץ ראשונה?": {
+    "en": "How do you prepare for a first consulting meeting?",
+    "es": "¿Cómo se preparan para una primera reunión de consultoría?",
+    "pt-BR": "Como se preparar para uma primeira reunião de consultoria?",
+    "ar": "كيف تستعدون لاجتماع استشارة أول؟"
+  },
+  "ערב שמתחיל בצלחת ונגמר בזיכרון.": {
+    "en": "An evening that starts on a plate and ends as a memory.",
+    "es": "Una noche que empieza en un plato y termina en un recuerdo.",
+    "pt-BR": "Uma noite que começa no prato e termina numa memória.",
+    "ar": "مساء يبدأ في طبق وينتهي كذكرى."
+  },
+  "תוכניות שקופות שגדלות יחד אתכם.": {
+    "en": "Transparent plans that grow with you.",
+    "es": "Planes transparentes que crecen junto a ustedes.",
+    "pt-BR": "Planos transparentes que crescem junto com vocês.",
+    "ar": "خطط شفافة تنمو معكم."
+  },
+  "למפתחים שרוצים להישאר מעודכנים.": {
+    "en": "For developers who want to stay current.",
+    "es": "Para desarrolladores que quieren mantenerse al día.",
+    "pt-BR": "Para desenvolvedores que querem se manter atualizados.",
+    "ar": "للمطورين الذين يريدون البقاء محدَّثين."
+  },
+  "שולחנות מסעדה ערוכים לארוחת ערב": {
+    "en": "Restaurant tables set for dinner",
+    "es": "Mesas de restaurante dispuestas para la cena",
+    "pt-BR": "Mesas de restaurante preparadas para o jantar",
+    "ar": "طاولات مطعم مرتبة لعشاء"
+  },
+  "מדווחות על תחושת עור רגועה יותר": {
+    "en": "They report calmer-feeling skin",
+    "es": "Reportan una piel que se siente más calmada",
+    "pt-BR": "Relatam uma pele com sensação mais calma",
+    "ar": "يبلّغن عن إحساس جلد أكثر هدوءًا"
+  },
+  "האם הטיפולים מתאימים לעור רגיש?": {
+    "en": "Are the treatments suitable for sensitive skin?",
+    "es": "¿Los tratamientos encajan con piel sensible?",
+    "pt-BR": "Os tratamentos servem para pele sensível?",
+    "ar": "هل العلاجات تناسب البشرة الحساسة؟"
+  },
+  "סטנדרט קליני שמרגישים בכל ביקור": {
+    "en": "A clinical standard you feel at every visit",
+    "es": "Un estándar clínico que se siente en cada visita",
+    "pt-BR": "Um padrão clínico que se sente em cada visita",
+    "ar": "معيار سريري يُحس في كل زيارة"
+  },
+  "לפני ואחרי - לא מצגת, אתר עבודה": {
+    "en": "Before and after — not a deck, a working site",
+    "es": "Antes y después — no una presentación, un sitio de trabajo",
+    "pt-BR": "Antes e depois — não uma apresentação, um site de trabalho",
+    "ar": "قبل وبعد — ليست عرضًا، موقع عمل"
+  },
+  "קיר רטוב, חשמל חשוף וריצוף פתוח": {
+    "en": "A wet wall, exposed electrics, and open flooring",
+    "es": "Pared húmeda, electricidad expuesta y suelo abierto",
+    "pt-BR": "Parede molhada, elétrica exposta e piso aberto",
+    "ar": "جدار رطب وكهرباء مكشوفة وبلاط مفتوح"
+  },
+  "טיפוח שמכבד את הפרווה ואת האופי": {
+    "en": "Grooming that respects the coat and the character",
+    "es": "Cuidado que respeta el pelaje y el carácter",
+    "pt-BR": "Cuidado que respeita o pelo e o caráter",
+    "ar": "عناية تحترم الفراء والطباع"
+  },
+  "אדמוניות, ורדים וענפי אקליפטוס.": {
+    "en": "Peonies, roses, and eucalyptus branches.",
+    "es": "Peonías, rosas y ramas de eucalipto.",
+    "pt-BR": "Peônias, rosas e ramos de eucalipto.",
+    "ar": "فاوانيا وورود وأغصان كافور."
+  },
+  "ורדי גן, נוריות ונגיעות מג׳נטה.": {
+    "en": "Garden roses, ranunculus, and magenta accents.",
+    "es": "Rosas de jardín, ranúnculos y toques magenta.",
+    "pt-BR": "Rosas de jardim, ranúnculos e toques magenta.",
+    "ar": "ورود حديقة ونوريات ولمسات ماجنتا."
+  },
+  "פרחי שדה, טוליפים ועלים ירוקים.": {
+    "en": "Field flowers, tulips, and green leaves.",
+    "es": "Flores de campo, tulipanes y hojas verdes.",
+    "pt-BR": "Flores do campo, tulipas e folhas verdes.",
+    "ar": "زهور برية وتوليب وأوراق خضراء."
+  },
+  "איך בונים קצב הנהלה בתקופות לחץ": {
+    "en": "How to build a management cadence in high-pressure periods",
+    "es": "Cómo construir un ritmo de dirección en periodos de presión",
+    "pt-BR": "Como construir um ritmo de gestão em períodos de pressão",
+    "ar": "كيف تبنون إيقاع إدارة في فترات ضغط"
+  },
+  "כתבו — נחזור עם תשובות ונתונים.": {
+    "en": "Write to us — we will return with answers and numbers.",
+    "es": "Escriban — volveremos con respuestas y datos.",
+    "pt-BR": "Escrevam — voltaremos com respostas e dados.",
+    "ar": "اكتبوا — سنعود بإجابات وأرقام."
+  },
+  "נכס נבחר השבוע — וילה עם בריכה.": {
+    "en": "Property of the week — a villa with a pool.",
+    "es": "Inmueble elegido esta semana — una villa con piscina.",
+    "pt-BR": "Imóvel escolhido nesta semana — uma villa com piscina.",
+    "ar": "عقار الأسبوع — فيلا مع مسبح."
+  },
+  "קמפיין ארצי עם ויראליות אמיתית.": {
+    "en": "A national campaign with real virality.",
+    "es": "Una campaña nacional con viralidad real.",
+    "pt-BR": "Uma campanha nacional com viralidade de verdade.",
+    "ar": "حملة وطنية بفيروسية حقيقية."
+  },
+  "פריימים מהערב כשהקהל נכנס לקצב.": {
+    "en": "Frames from the evening as the crowd finds the beat.",
+    "es": "Fotogramas de la noche cuando el público entra en el ritmo.",
+    "pt-BR": "Frames da noite quando o público entra no ritmo.",
+    "ar": "لقطات من المساء حين يدخل الجمهور الإيقاع."
+  },
+  "לינקדאין הפך לערוץ פגישות יציב.": {
+    "en": "LinkedIn became a stable meeting channel.",
+    "es": "LinkedIn se convirtió en un canal estable de reuniones.",
+    "pt-BR": "O LinkedIn virou um canal estável de reuniões.",
+    "ar": "لينكدإن صار قناة اجتماعات ثابتة."
+  },
+  "קהילה יכולה להפוך לערוץ מכירות.": {
+    "en": "A community can become a sales channel.",
+    "es": "Una comunidad puede convertirse en un canal de ventas.",
+    "pt-BR": "Uma comunidade pode virar um canal de vendas.",
+    "ar": "مجتمع يمكن أن يتحول إلى قناة مبيعات."
+  },
+  "המסר עובר בלי להישמע כמו מודעה.": {
+    "en": "The message lands without sounding like an ad.",
+    "es": "El mensaje pasa sin sonar como un anuncio.",
+    "pt-BR": "A mensagem passa sem parecer um anúncio.",
+    "ar": "الرسالة تصل دون أن تبدو إعلانًا."
+  },
+  "אינדוקס, ביצועים, מבנה ותקינות.": {
+    "en": "Indexing, performance, structure, and health.",
+    "es": "Indexación, rendimiento, estructura y solidez.",
+    "pt-BR": "Indexação, desempenho, estrutura e sanidade.",
+    "ar": "فهرسة وأداء وهيكل وسلامة."
+  },
+  "אשכולות לפי כוונת חיפוש ותחרות.": {
+    "en": "Clusters by search intent and competition.",
+    "es": "Clústeres según intención de búsqueda y competencia.",
+    "pt-BR": "Clusters por intenção de busca e concorrência.",
+    "ar": "عناقيد حسب نية البحث والمنافسة."
+  },
+  "אין הפרדה בין קוד, מבנה וסיפור.": {
+    "en": "There is no split between code, structure, and story.",
+    "es": "No hay separación entre código, estructura e historia.",
+    "pt-BR": "Não há separação entre código, estrutura e história.",
+    "ar": "لا فصل بين الكود والهيكل والقصة."
+  },
+  "עדכון נכסים קיימים לפי ביצועים.": {
+    "en": "Updating existing assets by performance.",
+    "es": "Actualizar activos existentes según el rendimiento.",
+    "pt-BR": "Atualizar ativos existentes segundo o desempenho.",
+    "ar": "تحديث أصول قائمة حسب الأداء."
+  },
+  "מגזין מותג הגדיל רכישות חוזרות.": {
+    "en": "A brand magazine grew repeat purchases.",
+    "es": "Una revista de marca aumentó las compras repetidas.",
+    "pt-BR": "Uma revista de marca aumentou as compras recorrentes.",
+    "ar": "مجلة علامة زادت المشتريات المتكررة."
+  },
+  "נכס שנצבר ולא נעלם אחרי קמפיין.": {
+    "en": "An asset that accumulates and does not vanish after a campaign.",
+    "es": "Un activo que se acumula y no desaparece después de una campaña.",
+    "pt-BR": "Um ativo que se acumula e não some depois de uma campanha.",
+    "ar": "أصل يتراكم ولا يختفي بعد حملة."
+  },
+  "פתיחה שמכבדת קורא ועדיין מושכת.": {
+    "en": "An opening that respects the reader and still pulls them in.",
+    "es": "Una apertura que respeta al lector y aún así atrae.",
+    "pt-BR": "Uma abertura que respeita o leitor e ainda puxa.",
+    "ar": "افتتاح يحترم القارئ ويجذب مع ذلك."
+  },
+  "היום הראשון מגיע עם ביקוש קיים.": {
+    "en": "Day one arrives with existing demand.",
+    "es": "El primer día llega con demanda existente.",
+    "pt-BR": "O primeiro dia chega com demanda já existente.",
+    "ar": "اليوم الأول يأتي بطلب قائم."
+  },
+  "מחקר אזורי בחר 6 מיקומים חדשים.": {
+    "en": "Regional research chose 6 new locations.",
+    "es": "Una investigación regional eligió 6 ubicaciones nuevas.",
+    "pt-BR": "Uma pesquisa regional escolheu 6 locais novos.",
+    "ar": "بحث مناطقي اختار 6 مواقع جديدة."
+  },
+  "כל מסקנה מחוברת למקור ולביטחון.": {
+    "en": "Every conclusion is tied to a source and to confidence.",
+    "es": "Cada conclusión está unida a una fuente y a la confianza.",
+    "pt-BR": "Cada conclusão está ligada a uma fonte e à confiança.",
+    "ar": "كل خلاصة مربوطة بمصدر وبالثقة."
+  },
+  "מה מכינים כדי לא לבזבז שעות סט.": {
+    "en": "What to prepare so you do not waste studio hours.",
+    "es": "Qué preparar para no desperdiciar horas de set.",
+    "pt-BR": "O que preparar para não desperdiçar horas de set.",
+    "ar": "ماذا تحضّرون حتى لا تضيع ساعات تصوير."
+  },
+  "תוכן מומחים יצר לידים איכותיים.": {
+    "en": "Expert content created quality leads.",
+    "es": "El contenido de expertos creó leads de calidad.",
+    "pt-BR": "Conteúdo de especialistas criou leads de qualidade.",
+    "ar": "محتوى خبراء أنشأ عملاء محتملين جيدين."
+  },
+  "סדרה טובה לא נשענת על אורח אחד.": {
+    "en": "A good series does not lean on one guest.",
+    "es": "Una buena serie no se apoya en un solo invitado.",
+    "pt-BR": "Uma boa série não se apoia em um único convidado.",
+    "ar": "سلسلة جيدة لا تستند إلى ضيف واحد."
+  },
+  "מסרים, שאלות עיתונאים ותדרוכים.": {
+    "en": "Messages, journalist questions, and briefings.",
+    "es": "Mensajes, preguntas de periodistas y briefings.",
+    "pt-BR": "Mensagens, perguntas de jornalistas e briefings.",
+    "ar": "رسائل وأسئلة صحفيين وتوجيهات."
+  },
+  "לקוחות, עובדים, רגולטור וקהילה.": {
+    "en": "Customers, employees, regulator, and community.",
+    "es": "Clientes, empleados, regulador y comunidad.",
+    "pt-BR": "Clientes, colaboradores, regulador e comunidade.",
+    "ar": "عملاء وموظفون ومنظّم ومجتمع."
+  },
+  "מה חייב להיאמר ומה אסור להבטיח.": {
+    "en": "What must be said and what must not be promised.",
+    "es": "Qué debe decirse y qué no se debe prometer.",
+    "pt-BR": "O que precisa ser dito e o que não se deve prometer.",
+    "ar": "ما يجب قوله وما يُحظر وعده."
+  },
+  "עובדות, שקיפות וקשרים מקצועיים.": {
+    "en": "Facts, transparency, and professional relationships.",
+    "es": "Hechos, transparencia y relaciones profesionales.",
+    "pt-BR": "Fatos, transparência e relações profissionais.",
+    "ar": "وقائع وشفافية وعلاقات مهنية."
+  },
+  "יודעים מי מחליט, מי משפיע ומתי.": {
+    "en": "You know who decides, who influences, and when.",
+    "es": "Saben quién decide, quién influye y cuándo.",
+    "pt-BR": "Vocês sabem quem decide, quem influencia e quando.",
+    "ar": "تعرفون من يقرر ومن يؤثر ومتى."
+  },
+  "אינטרס עסקי מתורגם לערך ציבורי.": {
+    "en": "A business interest translated into public value.",
+    "es": "Un interés empresarial traducido a valor público.",
+    "pt-BR": "Um interesse empresarial traduzido em valor público.",
+    "ar": "مصلحة تجارية تُترجم إلى قيمة عامة."
+  },
+  "איך לכתוב למקבלי החלטות עסוקים.": {
+    "en": "How to write for busy decision-makers.",
+    "es": "Cómo escribir para tomadores de decisiones ocupados.",
+    "pt-BR": "Como escrever para tomadores de decisão ocupados.",
+    "ar": "كيف تكتبون لصنّاع قرار مشغولين."
+  },
+  "ליווי זכיין ראשון והטמעת מערכת.": {
+    "en": "Support for a first franchisee and system rollout.",
+    "es": "Acompañamiento al primer franquiciado e implantación del sistema.",
+    "pt-BR": "Acompanhamento do primeiro franqueado e implantação do sistema.",
+    "ar": "مرافقة صاحب الامتياز الأول وتثبيت النظام."
+  },
+  "מודל זכיינות ל-12 סניפים חדשים.": {
+    "en": "A franchise model for 12 new branches.",
+    "es": "Un modelo de franquicia para 12 sucursales nuevas.",
+    "pt-BR": "Um modelo de franquia para 12 filiais novas.",
+    "ar": "نموذج امتياز لـ12 فرعًا جديدًا."
+  },
+  "מערכות מחוברות לפי תרחיש שימוש.": {
+    "en": "Connected systems by usage scenario.",
+    "es": "Sistemas conectados según el escenario de uso.",
+    "pt-BR": "Sistemas ligados segundo o cenário de uso.",
+    "ar": "أنظمة متصلة حسب سيناريو الاستخدام."
+  },
+  "דוכני שוק מסודרים בארגזי תוצרת.": {
+    "en": "Market stalls arranged in produce crates.",
+    "es": "Puestos de mercado ordenados en cajas de producto.",
+    "pt-BR": "Barracas de mercado arrumadas em caixas de produção.",
+    "ar": "أكشاك سوق مرتبة في صناديق محصول."
+  },
+  "ריטואלים מבריקים לפי שלב בשגרה.": {
+    "en": "Glossy rituals by stage of the routine.",
+    "es": "Rituales brillantes según la etapa de la rutina.",
+    "pt-BR": "Rituais brilhantes segundo a etapa da rotina.",
+    "ar": "طقوس لامعة حسب مرحلة الروتين."
+  },
+  "פסי שימר, פורטרטים וטקסי טיפוח.": {
+    "en": "Shimmer strips, portraits, and grooming rites.",
+    "es": "Bandas de shimmer, retratos y ritos de cuidado.",
+    "pt-BR": "Faixas de shimmer, retratos e ritos de cuidado.",
+    "ar": "شرائط لمعة وبورتريهات وطقوس عناية."
+  },
+  "איך לבחור צבע שמאיר בלי להשתלט.": {
+    "en": "How to choose a color that lights up without taking over.",
+    "es": "Cómo elegir un color que ilumine sin apoderarse.",
+    "pt-BR": "Como escolher uma cor que ilumine sem tomar conta.",
+    "ar": "كيف تختارون لونًا يضيء دون أن يسيطر."
+  },
+  "פרויקטים קטנים ופרויקט גמר אחד.": {
+    "en": "Small projects and one final project.",
+    "es": "Proyectos pequeños y un proyecto final.",
+    "pt-BR": "Projetos pequenos e um projeto final.",
+    "ar": "مشاريع صغيرة ومشروع تخرج واحد."
+  },
+  "רעיונות לפינת חומרי יצירה בבית.": {
+    "en": "Ideas for a home craft-materials corner.",
+    "es": "Ideas para un rincón de materiales creativos en casa.",
+    "pt-BR": "Ideias para um canto de materiais criativos em casa.",
+    "ar": "أفكار لزاوية مواد إبداع في البيت."
+  },
+  "שלוש בדיקות לפני שמגישים תשובה.": {
+    "en": "Three checks before you submit an answer.",
+    "es": "Tres comprobaciones antes de entregar una respuesta.",
+    "pt-BR": "Três checagens antes de entregar uma resposta.",
+    "ar": "ثلاث فحوصات قبل تسليم جواب."
+  },
+  "הסמסטר הבא יכול להיות רגוע יותר": {
+    "en": "Next semester can be calmer",
+    "es": "El próximo semestre puede ser más tranquilo",
+    "pt-BR": "O próximo semestre pode ser mais calmo",
+    "ar": "الفصل القادم يمكن أن يكون أهدأ"
+  },
+  "תרגיל עריכה שהופך ידע לטקסט חי.": {
+    "en": "An editing exercise that turns knowledge into living text.",
+    "es": "Un ejercicio de edición que convierte saber en texto vivo.",
+    "pt-BR": "Um exercício de edição que transforma saber em texto vivo.",
+    "ar": "تمرين تحرير يحوّل المعرفة إلى نص حي."
+  },
+  "אורז בשכבות ותבליני גארם מסאלה.": {
+    "en": "Layered rice and garam masala spices.",
+    "es": "Arroz en capas y especias garam masala.",
+    "pt-BR": "Arroz em camadas e especiarias garam masala.",
+    "ar": "أرز بطبقات وتوابل غارام ماسالا."
+  },
+  "הסמאש קורה בשנייה — והטעם נשאר.": {
+    "en": "The smash happens in a second — and the flavor stays.",
+    "es": "El smash ocurre en un segundo — y el sabor se queda.",
+    "pt-BR": "O smash acontece num segundo — e o sabor fica.",
+    "ar": "السماش يحدث في ثانية — والطعم يبقى."
+  },
+  "5 אוטומציות שכל עסק צריך לבנות": {
+    "en": "5 automations every business should build",
+    "es": "5 automatizaciones que todo negocio debería construir",
+    "pt-BR": "5 automações que todo negócio deveria construir",
+    "ar": "5 أتمتات يجب على كل عمل بناؤها"
+  },
+  "שיחת אפיון והבנת מטרות הפרויקט": {
+    "en": "A scoping call and understanding project goals",
+    "es": "Una llamada de definición y comprensión de objetivos del proyecto",
+    "pt-BR": "Uma chamada de definição e entendimento das metas do projeto",
+    "ar": "مكالمة توصيف وفهم أهداف المشروع"
+  },
+  "פורטרט אופנה יוקרתי מינימליסטי": {
+    "en": "A luxury minimalist fashion portrait",
+    "es": "Un retrato de moda de lujo minimalista",
+    "pt-BR": "Um retrato de moda de luxo minimalista",
+    "ar": "بورتريه أزياء فاخر بسيط"
+  },
+  "האם אפשר להציג נכסים בלי מחיר?": {
+    "en": "Can properties be shown without a price?",
+    "es": "¿Se pueden mostrar inmuebles sin precio?",
+    "pt-BR": "Dá para mostrar imóveis sem preço?",
+    "ar": "هل يمكن عرض عقارات بلا سعر؟"
+  },
+  "איך להפחית עומס רגשי ביום־יום?": {
+    "en": "How to reduce emotional load day to day?",
+    "es": "¿Cómo reducir la carga emocional en el día a día?",
+    "pt-BR": "Como reduzir a carga emocional no dia a dia?",
+    "ar": "كيف تخفّضون الحمل العاطفي يوميًا؟"
+  },
+  "כל מה שחשוב לדעת לפני שקובעים.": {
+    "en": "Everything that matters to know before you book.",
+    "es": "Todo lo importante que saber antes de reservar.",
+    "pt-BR": "Tudo o que importa saber antes de marcar.",
+    "ar": "كل ما يهم معرفته قبل الحجز."
+  },
+  "האם אפשר לקיים פגישות אונליין?": {
+    "en": "Can meetings happen online?",
+    "es": "¿Se pueden hacer reuniones online?",
+    "pt-BR": "Dá para fazer reuniões online?",
+    "ar": "هل يمكن عقد اجتماعات أونلاين؟"
+  },
+  "שקוף, הוגן, וגדל יחד עם הצוות.": {
+    "en": "Transparent, fair, and growing with the team.",
+    "es": "Transparente, justo y que crece junto al equipo.",
+    "pt-BR": "Transparente, justo e que cresce junto com a equipe.",
+    "ar": "شفاف وعادل وينمو مع الفريق."
+  },
+  "שף מקצועי מכין מנה במטבח מסעדה": {
+    "en": "A professional chef plating in a restaurant kitchen",
+    "es": "Un chef profesional prepara un plato en una cocina de restaurante",
+    "pt-BR": "Um chef profissional prepara um prato numa cozinha de restaurante",
+    "ar": "شيف محترف يجهّز طبقًا في مطبخ مطعم"
+  },
+  "צנרת חדשה, בידוד תקני וגמר נקי": {
+    "en": "New plumbing, code insulation, and a clean finish",
+    "es": "Tubería nueva, aislamiento normativo y un acabado limpio",
+    "pt-BR": "Encanamento novo, isolamento normativo e um acabamento limpo",
+    "ar": "تمديدات جديدة وعزل معياري وتشطيب نظيف"
+  },
+  "לאירועים, מסיבות וצילומי תוכן.": {
+    "en": "For events, parties, and content shoots.",
+    "es": "Para eventos, fiestas y rodajes de contenido.",
+    "pt-BR": "Para eventos, festas e filmagens de conteúdo.",
+    "ar": "للمناسبات والحفلات وتصوير محتوى."
+  },
+  "בואו נבדוק את הצעד המשפטי הבא.": {
+    "en": "Let's review the next legal step.",
+    "es": "Revisemos el siguiente paso jurídico.",
+    "pt-BR": "Vamos revisar o próximo passo jurídico.",
+    "ar": "لنراجع الخطوة القانونية التالية."
+  },
+  "אחוז לקוחות שממשיכים לשלב נוסף": {
+    "en": "Share of customers who continue to the next stage",
+    "es": "Porcentaje de clientes que siguen a una etapa más",
+    "pt-BR": "Porcentagem de clientes que seguem para a etapa seguinte",
+    "ar": "نسبة العملاء الذين يكملون لمرحلة تالية"
+  },
+  "לא עוד חנות. מערכת לבוש אישית.": {
+    "en": "Not another shop. A personal dressing system.",
+    "es": "Ya no una tienda. Un sistema de vestir personal.",
+    "pt-BR": "Não mais uma loja. Um sistema de vestir pessoal.",
+    "ar": "ليست متجرًا آخر. نظام لباس شخصي."
+  },
+  "אנשים חוזרים בשביל הכוס השנייה": {
+    "en": "People come back for the second cup",
+    "es": "La gente vuelve por la segunda taza",
+    "pt-BR": "As pessoas voltam pela segunda xícara",
+    "ar": "الناس يعودون من أجل الكأس الثانية"
+  },
+  "6 חד׳ · חצר גדולה · חניה כפולה": {
+    "en": "6 rooms · large yard · double parking",
+    "es": "6 hab. · patio grande · parking doble",
+    "pt-BR": "6 cômodos · quintal grande · vaga dupla",
+    "ar": "6 غرف · فناء كبير · موقف مزدوج"
+  },
+  "5 חד׳ · עצי פרי · שכנים קבועים": {
+    "en": "5 rooms · fruit trees · settled neighbors",
+    "es": "5 hab. · árboles frutales · vecinos estables",
+    "pt-BR": "5 cômodos · árvores frutíferas · vizinhos estáveis",
+    "ar": "5 غرف · أشجار فاكهة · جيران ثابتون"
+  },
+  "תהליך ברור שמכניס אתכם לשליטה.": {
+    "en": "A clear process that puts you in control.",
+    "es": "Un proceso claro que les mete en el control.",
+    "pt-BR": "Um processo claro que coloca vocês no controle.",
+    "ar": "مسار واضح يُدخلكم في السيطرة."
+  },
+  "מגוון טיפולים תחת קורת גג אחת.": {
+    "en": "A range of treatments under one roof.",
+    "es": "Una variedad de tratamientos bajo un mismo techo.",
+    "pt-BR": "Uma variedade de tratamentos sob o mesmo teto.",
+    "ar": "تنوع علاجات تحت سقف واحد."
+  },
+  "החיוך הבא שלכם מתחיל בתור אחד.": {
+    "en": "Your next smile starts in one queue.",
+    "es": "Su próxima sonrisa empieza en una sola fila.",
+    "pt-BR": "O próximo sorriso de vocês começa numa fila só.",
+    "ar": "ابتسامتكم التالية تبدأ في طابور واحد."
+  },
+  "חדרי ילדים נפרדים, מחסן וחניה.": {
+    "en": "Separate kids' rooms, storage, and parking.",
+    "es": "Habitaciones infantiles separadas, trastero y parking.",
+    "pt-BR": "Quartos infantis separados, depósito e vaga.",
+    "ar": "غرف أطفال منفصلة ومخزن وموقف."
+  },
+  "נוף עירוני, מעלית פרטית וטרסה.": {
+    "en": "A city view, a private elevator, and a terrace.",
+    "es": "Vista urbana, ascensor privado y terraza.",
+    "pt-BR": "Vista urbana, elevador privado e terraço.",
+    "ar": "إطلالة مدينة ومصعد خاص وتراس."
+  },
+  "דירה עם פוטנציאל, דורשת עדכון.": {
+    "en": "An apartment with potential that needs an update.",
+    "es": "Un piso con potencial que requiere una actualización.",
+    "pt-BR": "Um apartamento com potencial que pede atualização.",
+    "ar": "شقة بإمكان تحتاج تحديثًا."
+  },
+  "השקה ל-900 אורחים עם שידור חי.": {
+    "en": "A launch for 900 guests with a live stream.",
+    "es": "Un lanzamiento para 900 invitados con emisión en vivo.",
+    "pt-BR": "Um lançamento para 900 convidados com transmissão ao vivo.",
+    "ar": "إطلاق لـ900 ضيف مع بث مباشر."
+  },
+  "סדרת רילס העלתה שמירות ב-220%.": {
+    "en": "A Reels series raised saves by 220%.",
+    "es": "Una serie de Reels subió los guardados un 220%.",
+    "pt-BR": "Uma série de Reels subiu os salvamentos em 220%.",
+    "ar": "سلسلة ريلز رفعت الحفظ 220%."
+  },
+  "כל תגובה היא נקודת מגע מסחרית.": {
+    "en": "Every reply is a commercial touchpoint.",
+    "es": "Cada respuesta es un punto de contacto comercial.",
+    "pt-BR": "Cada resposta é um ponto de contato comercial.",
+    "ar": "كل رد نقطة تلامس تجارية."
+  },
+  "מבינים מה עובד לפני סוף החודש.": {
+    "en": "You know what works before month-end.",
+    "es": "Entienden qué funciona antes de fin de mes.",
+    "pt-BR": "Vocês entendem o que funciona antes do fim do mês.",
+    "ar": "تفهمون ما يعمل قبل نهاية الشهر."
+  },
+  "היוצר הנכון הופך קמפיין לשיחה.": {
+    "en": "The right creator turns a campaign into a conversation.",
+    "es": "El creador correcto convierte una campaña en una conversación.",
+    "pt-BR": "O criador certo transforma uma campanha numa conversa.",
+    "ar": "الصانع الصحيح يحوّل حملة إلى حديث."
+  },
+  "קישורים, אזכורים וסמכות ענפית.": {
+    "en": "Links, mentions, and industry authority.",
+    "es": "Enlaces, menciones y autoridad de sector.",
+    "pt-BR": "Links, menções e autoridade de setor.",
+    "ar": "روابط وإشارات وسلطة قطاع."
+  },
+  "קטגוריות אורגניות צמחו פי 3.1.": {
+    "en": "Organic categories grew 3.1x.",
+    "es": "Las categorías orgánicas crecieron 3,1 veces.",
+    "pt-BR": "As categorias orgânicas cresceram 3,1 vezes.",
+    "ar": "الفئات العضوية نمت 3.1 أضعاف."
+  },
+  "מתי לשכתב ומתי לבנות עמוד חדש.": {
+    "en": "When to rewrite and when to build a new page.",
+    "es": "Cuándo reescribir y cuándo construir una página nueva.",
+    "pt-BR": "Quando reescrever e quando construir uma página nova.",
+    "ar": "متى تعيدون الكتابة ومتى تبنون صفحة جديدة."
+  },
+  "תוכן מומחים יצר אמון לפני דמו.": {
+    "en": "Expert content built trust before a demo.",
+    "es": "El contenido de expertos creó confianza antes del demo.",
+    "pt-BR": "Conteúdo de especialistas criou confiança antes da demo.",
+    "ar": "محتوى خبراء صنع ثقة قبل العرض."
+  },
+  "תוכנית השקה לפי קהלים וערוצים.": {
+    "en": "A launch plan by audiences and channels.",
+    "es": "Un plan de lanzamiento según audiencias y canales.",
+    "pt-BR": "Um plano de lançamento por públicos e canais.",
+    "ar": "خطة إطلاق حسب الجماهير والقنوات."
+  },
+  "תוכן, מכירות ומוצר יוצאים יחד.": {
+    "en": "Content, sales, and product ship together.",
+    "es": "Contenido, ventas y producto salen juntos.",
+    "pt-BR": "Conteúdo, vendas e produto saem juntos.",
+    "ar": "المحتوى والمبيعات والمنتج تخرج معًا."
+  },
+  "אירועי השקה פיזיים ודיגיטליים.": {
+    "en": "Physical and digital launch events.",
+    "es": "Eventos de lanzamiento físicos y digitales.",
+    "pt-BR": "Eventos de lançamento físicos e digitais.",
+    "ar": "فعاليات إطلاق حضورية ورقمية."
+  },
+  "ההבדל בין אימיילים לבין קהילה.": {
+    "en": "The difference between emails and a community.",
+    "es": "La diferencia entre emails y una comunidad.",
+    "pt-BR": "A diferença entre e-mails e uma comunidade.",
+    "ar": "الفرق بين رسائل البريد ومجتمع."
+  },
+  "דוח שמוביל פעולה, לא רק גרפים.": {
+    "en": "A report that leads to action, not only charts.",
+    "es": "Un informe que lleva a la acción, no solo a gráficos.",
+    "pt-BR": "Um relatório que leva à ação, não só a gráficos.",
+    "ar": "تقرير يقود إلى فعل لا رسومًا فقط."
+  },
+  "מסכים, קומפוננטות ומיקרו-קופי.": {
+    "en": "Screens, components, and microcopy.",
+    "es": "Pantallas, componentes y microcopy.",
+    "pt-BR": "Telas, componentes e microcopy.",
+    "ar": "شاشات ومكوّنات ونصوص صغيرة."
+  },
+  "משתמשים מוצאים פעולה מהר יותר.": {
+    "en": "Users find an action faster.",
+    "es": "Los usuarios encuentran una acción más rápido.",
+    "pt-BR": "Os usuários encontram uma ação mais rápido.",
+    "ar": "المستخدمون يجدون فعلًا أسرع."
+  }
+}
