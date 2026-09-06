@@ -1629,6 +1629,207 @@
       "viewPlans": "View plans",
       "estimateOnlyNoUpgrade": "This is an estimate only — there is no automatic upgrade.",
       "estimateNote": "Estimate only, based on the most expensive path and the selected frequency."
+    },
+    "working": {
+      "wa_new_lead_welcome": {
+        "name": "New lead → WhatsApp opening only",
+        "description": "Immediate opening message only (no follow-ups). For opening + reply-based follow-ups, use “New lead → opening + follow-ups by reply”.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp opening message"
+      },
+      "wa_new_lead_owner_alert": {
+        "name": "New lead → WhatsApp alert to the owner",
+        "description": "A lead enters the CRM → internal WhatsApp alert to the business owner.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp alert to the owner"
+      },
+      "wa_appointment_reminder_1_day": {
+        "name": "Appointment reminder — 1 day before",
+        "description": "One day before the appointment → WhatsApp reminder to the client (enabled immediately).",
+        "trigger": "Upcoming appointment (1 day before)",
+        "result1": "WhatsApp reminder"
+      },
+      "wa_appointment_reminder_2_days": {
+        "name": "Appointment reminder — 2 days before",
+        "description": "48 hours before the appointment → WhatsApp reminder (enabled immediately).",
+        "trigger": "Upcoming appointment (2 days before)",
+        "result1": "WhatsApp reminder"
+      },
+      "wa_appointment_reminder_3_days": {
+        "name": "Appointment reminder — 3 days before",
+        "description": "72 hours before the appointment → early WhatsApp reminder (enabled immediately).",
+        "trigger": "Upcoming appointment (3 days before)",
+        "result1": "WhatsApp reminder"
+      },
+      "wa_appointment_reminder_2_hours": {
+        "name": "Appointment reminder — 2 hours before",
+        "description": "Two hours before the appointment → WhatsApp reminder (enabled immediately).",
+        "trigger": "Upcoming appointment (2 hours before)",
+        "result1": "WhatsApp reminder"
+      },
+      "wa_appointment_reminder_1_hour": {
+        "name": "Appointment reminder — 1 hour before",
+        "description": "One hour before the appointment → last WhatsApp reminder (enabled immediately).",
+        "trigger": "Upcoming appointment (1 hour before)",
+        "result1": "WhatsApp reminder"
+      },
+      "wa_appointment_thanks": {
+        "name": "Thank you after the appointment (WhatsApp)",
+        "description": "After the appointment ends → WhatsApp thank-you (timed from the appointment, not from creation).",
+        "trigger": "Appointment ended",
+        "result1": "Thank-you message"
+      },
+      "wa_appointment_review": {
+        "name": "Review request after the appointment",
+        "description": "One day after the appointment ends → WhatsApp review request (timed from the appointment, not from creation).",
+        "trigger": "Appointment ended",
+        "result1": "Review request"
+      },
+      "wa_lead_no_response": {
+        "name": "Follow-up to a lead who did not reply → WhatsApp",
+        "description": "Merged into the unified path “New lead → opening + follow-ups by reply”. Not shown as a separate card.",
+        "trigger": "Lead who did not reply on WhatsApp",
+        "result1": "WhatsApp follow-up"
+      },
+      "wa_lead_followup_2": {
+        "name": "Second follow-up to a lead",
+        "description": "Merged into the unified path “New lead → opening + follow-ups by reply”. Not shown as a separate card.",
+        "trigger": "Lead without conversion",
+        "result1": "Second follow-up"
+      },
+      "wa_new_client_welcome": {
+        "name": "New client → welcome",
+        "description": "New client in the CRM → WhatsApp opening message (enabled immediately).",
+        "trigger": "New client",
+        "result1": "Opening message"
+      },
+      "wa_inactive_client": {
+        "name": "Inactive client → check-in",
+        "description": "Client with no activity for ~30 days → check-in message (enabled immediately).",
+        "trigger": "Inactive client",
+        "result1": "Check-in message"
+      },
+      "wf_lead_multi": {
+        "name": "New lead → WhatsApp + task + alert",
+        "description": "Immediate opening only: WhatsApp + task + alert. No reply-based follow-ups — see “opening + follow-ups by reply” for the full path.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp",
+        "result2": "Task",
+        "result3": "Alert"
+      },
+      "wf_lead_wa_email": {
+        "name": "New lead → WhatsApp + email",
+        "description": "Immediate opening only: WhatsApp + email. Does not include WhatsApp follow-ups by reply.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp",
+        "result2": "Email"
+      },
+      "wf_lead_full_onboarding": {
+        "name": "New lead → WhatsApp + email + task + alert",
+        "description": "Immediate onboarding pack across channels. Does not include WhatsApp follow-ups by reply — see “opening + follow-ups by reply” for the full path.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp",
+        "result2": "Email",
+        "result3": "Task",
+        "result4": "Alert"
+      },
+      "wf_lead_email_task": {
+        "name": "New lead → email + task",
+        "description": "Without WhatsApp: email via Gmail, Outlook, or business email + a CRM follow-up task.",
+        "trigger": "New CRM lead",
+        "result1": "Email",
+        "result2": "Follow-up task"
+      },
+      "wf_lead_email_only": {
+        "name": "New lead → opening email",
+        "description": "A new lead receives an opening email via Gmail, Outlook, or business email.",
+        "trigger": "New CRM lead",
+        "result1": "Email"
+      },
+      "wf_store_order_confirmation": {
+        "name": "Store order confirmation",
+        "description": "A store order arrived → send a designed confirmation email to the customer.",
+        "trigger": "Store order received",
+        "result1": "Order confirmation email"
+      },
+      "wf_lead_desk_alert": {
+        "name": "New lead → task + team alert",
+        "description": "No messages to the customer: a task and an internal alert when a lead arrives.",
+        "trigger": "New CRM lead",
+        "result1": "Task",
+        "result2": "Alert"
+      },
+      "wf_lead_no_response_pack": {
+        "name": "New lead → opening + follow-ups by reply",
+        "description": "The opening message is sent immediately. If the lead does not reply, a follow-up is sent after 24 hours and another after 3 days.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp opening",
+        "result2": "Follow-up #1",
+        "result3": "Follow-up #2"
+      },
+      "wf_lead_status_sales": {
+        "name": "Lead status change → task + alert",
+        "description": "When a lead status changes — the team gets a task and an alert.",
+        "trigger": "Lead status changed",
+        "result1": "Task",
+        "result2": "Alert"
+      },
+      "wf_new_client_pack": {
+        "name": "New client → WhatsApp + email + retention task",
+        "description": "New-client intake: opening message, email, and a retention task.",
+        "trigger": "New client",
+        "result1": "WhatsApp",
+        "result2": "Email",
+        "result3": "Retention task"
+      },
+      "wf_appointment_email": {
+        "name": "New appointment → confirmation email",
+        "description": "An appointment is created → confirmation email to the client via Gmail or Outlook.",
+        "trigger": "New appointment",
+        "result1": "Confirmation email"
+      },
+      "wf_appointment_email_notify": {
+        "name": "New appointment → client email + team alert",
+        "description": "Confirmation to the client by email + an internal alert to the business owner.",
+        "trigger": "New appointment",
+        "result1": "Confirmation email",
+        "result2": "Alert"
+      },
+      "wf_appointment_gcal": {
+        "name": "New appointment → Google Calendar",
+        "description": "New appointment → Google Calendar event (requires a connected calendar).",
+        "trigger": "New appointment",
+        "result1": "Google Calendar event"
+      },
+      "wf_appointment_email_gcal": {
+        "name": "New appointment → email + Google Calendar",
+        "description": "Email confirmation + calendar event together.",
+        "trigger": "New appointment",
+        "result1": "Confirmation email",
+        "result2": "Calendar event"
+      },
+      "wf_appointment_confirm_pack": {
+        "name": "New appointment → email + task + alert",
+        "description": "Appointment confirmation pack for the team and the client, without WhatsApp.",
+        "trigger": "New appointment",
+        "result1": "Email",
+        "result2": "Task",
+        "result3": "Alert"
+      },
+      "wf_appointment_done_email": {
+        "name": "After the appointment → thank-you email",
+        "description": "When the appointment ends, a thank-you email is sent to the client.",
+        "trigger": "Appointment ended",
+        "result1": "Thank-you email"
+      },
+      "wf_appointment_duo": {
+        "name": "New appointment → WhatsApp confirmation + reminder + task",
+        "description": "When an appointment is created: WhatsApp confirmation to the client, a prep task, and a reminder before the time (no thank-you after it ends).",
+        "trigger": "New appointment / reminder beforehand",
+        "result1": "WhatsApp confirmation",
+        "result2": "Reminder beforehand",
+        "result3": "Task"
+      }
     }
   },
   "layout": {

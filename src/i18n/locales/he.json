@@ -1629,6 +1629,207 @@
       "viewPlans": "צפייה בחבילות",
       "estimateOnlyNoUpgrade": "זו הערכה בלבד — אין שדרוג אוטומטי.",
       "estimateNote": "הערכה בלבד לפי המסלול היקר ביותר והתדירות שנבחרה."
+    },
+    "working": {
+      "wa_new_lead_welcome": {
+        "name": "ליד חדש → WhatsApp פתיחה בלבד",
+        "description": "הודעת פתיחה מיידית בלבד (ללא פולואפים). למסלול פתיחה + פולואפים לפי תגובה — השתמשו בתבנית «ליד חדש → פתיחה + פולואפים לפי תגובה».",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "הודעת פתיחה WhatsApp"
+      },
+      "wa_new_lead_owner_alert": {
+        "name": "ליד חדש → התראת WhatsApp לבעל העסק",
+        "description": "ליד נכנס ל-CRM → התראה פנימית ב-WhatsApp לבעל העסק.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "התראת WhatsApp לבעל העסק"
+      },
+      "wa_appointment_reminder_1_day": {
+        "name": "תזכורת פגישה — יום לפני",
+        "description": "יום לפני הפגישה → תזכורת WhatsApp ללקוח (מופעל מיד).",
+        "trigger": "פגישה קרובה (יום לפני)",
+        "result1": "תזכורת WhatsApp"
+      },
+      "wa_appointment_reminder_2_days": {
+        "name": "תזכורת פגישה — יומיים לפני",
+        "description": "48 שעות לפני הפגישה → תזכורת WhatsApp (מופעל מיד).",
+        "trigger": "פגישה קרובה (יומיים לפני)",
+        "result1": "תזכורת WhatsApp"
+      },
+      "wa_appointment_reminder_3_days": {
+        "name": "תזכורת פגישה — 3 ימים לפני",
+        "description": "72 שעות לפני הפגישה → תזכורת WhatsApp מוקדמת (מופעל מיד).",
+        "trigger": "פגישה קרובה (3 ימים לפני)",
+        "result1": "תזכורת WhatsApp"
+      },
+      "wa_appointment_reminder_2_hours": {
+        "name": "תזכורת פגישה — שעתיים לפני",
+        "description": "שעתיים לפני הפגישה → תזכורת WhatsApp (מופעל מיד).",
+        "trigger": "פגישה קרובה (שעתיים לפני)",
+        "result1": "תזכורת WhatsApp"
+      },
+      "wa_appointment_reminder_1_hour": {
+        "name": "תזכורת פגישה — שעה לפני",
+        "description": "שעה לפני הפגישה → תזכורת WhatsApp אחרונה (מופעל מיד).",
+        "trigger": "פגישה קרובה (שעה לפני)",
+        "result1": "תזכורת WhatsApp"
+      },
+      "wa_appointment_thanks": {
+        "name": "תודה אחרי פגישה (WhatsApp)",
+        "description": "אחרי סיום הפגישה → הודעת תודה ב-WhatsApp (מתוזמן לפי מועד הפגישה, לא לפי יצירה).",
+        "trigger": "פגישה הסתיימה",
+        "result1": "הודעת תודה"
+      },
+      "wa_appointment_review": {
+        "name": "בקשת ביקורת אחרי פגישה",
+        "description": "יום אחרי סיום הפגישה → בקשת ביקורת ב-WhatsApp (מתוזמן לפי מועד הפגישה, לא לפי יצירה).",
+        "trigger": "פגישה הסתיימה",
+        "result1": "בקשת ביקורת"
+      },
+      "wa_lead_no_response": {
+        "name": "פולואפ לליד שלא ענה → WhatsApp",
+        "description": "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
+        "trigger": "ליד שלא ענה ב-WhatsApp",
+        "result1": "פולואפ WhatsApp"
+      },
+      "wa_lead_followup_2": {
+        "name": "פולואפ שני לליד",
+        "description": "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
+        "trigger": "ליד ללא המרה",
+        "result1": "פולואפ שני"
+      },
+      "wa_new_client_welcome": {
+        "name": "לקוח חדש → ברוכים הבאים",
+        "description": "לקוח חדש ב-CRM → הודעת פתיחה ב-WhatsApp (מופעל מיד).",
+        "trigger": "לקוח חדש",
+        "result1": "הודעת פתיחה"
+      },
+      "wa_inactive_client": {
+        "name": "לקוח לא פעיל → נגיעה",
+        "description": "לקוח ללא פעילות ~30 יום → הודעת נגיעה (מופעל מיד).",
+        "trigger": "לקוח לא פעיל",
+        "result1": "הודעת נגיעה"
+      },
+      "wf_lead_multi": {
+        "name": "ליד חדש → WhatsApp + משימה + התראה",
+        "description": "פתיחה מיידית בלבד: WhatsApp + משימה + התראה. לא כולל פולואפים לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "WhatsApp",
+        "result2": "משימה",
+        "result3": "התראה"
+      },
+      "wf_lead_wa_email": {
+        "name": "ליד חדש → WhatsApp + אימייל",
+        "description": "פתיחה מיידית בלבד: WhatsApp + אימייל. לא כולל פולואפים לפי תגובת WhatsApp.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "WhatsApp",
+        "result2": "אימייל"
+      },
+      "wf_lead_full_onboarding": {
+        "name": "ליד חדש → WhatsApp + אימייל + משימה + התראה",
+        "description": "חבילת קליטה מיידית בכל הערוצים. לא כוללת פולואפי WhatsApp לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "WhatsApp",
+        "result2": "אימייל",
+        "result3": "משימה",
+        "result4": "התראה"
+      },
+      "wf_lead_email_task": {
+        "name": "ליד חדש → אימייל + משימה",
+        "description": "בלי WhatsApp: אימייל דרך Gmail, Outlook או מייל עסקי + משימת מעקב ב-CRM.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "אימייל",
+        "result2": "משימת מעקב"
+      },
+      "wf_lead_email_only": {
+        "name": "ליד חדש → אימייל פתיחה",
+        "description": "ליד חדש מקבל אימייל פתיחה דרך Gmail, Outlook או מייל עסקי.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "אימייל"
+      },
+      "wf_store_order_confirmation": {
+        "name": "אישור הזמנה בחנות",
+        "description": "התקבלה הזמנה בחנות → שליחת מייל אישור מעוצב ללקוח.",
+        "trigger": "התקבלה הזמנה בחנות",
+        "result1": "אימייל אישור הזמנה"
+      },
+      "wf_lead_desk_alert": {
+        "name": "ליד חדש → משימה + התראה לצוות",
+        "description": "בלי הודעות ללקוח: משימה והתראה פנימית כשנכנס ליד.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "משימה",
+        "result2": "התראה"
+      },
+      "wf_lead_no_response_pack": {
+        "name": "ליד חדש → פתיחה + פולואפים לפי תגובה",
+        "description": "הודעת פתיחה נשלחת מיד. אם הליד לא מגיב, נשלח פולואפ לאחר 24 שעות ופולואפ נוסף לאחר 3 ימים.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "פתיחה WhatsApp",
+        "result2": "פולואפ #1",
+        "result3": "פולואפ #2"
+      },
+      "wf_lead_status_sales": {
+        "name": "שינוי סטטוס ליד → משימה + התראה",
+        "description": "כשסטטוס ליד משתנה — הצוות מקבל משימה והתראה.",
+        "trigger": "שינוי סטטוס ליד",
+        "result1": "משימה",
+        "result2": "התראה"
+      },
+      "wf_new_client_pack": {
+        "name": "לקוח חדש → WhatsApp + אימייל + משימת שימור",
+        "description": "קליטת לקוח חדש: הודעת פתיחה, אימייל ומשימת שימור.",
+        "trigger": "לקוח חדש",
+        "result1": "WhatsApp",
+        "result2": "אימייל",
+        "result3": "משימת שימור"
+      },
+      "wf_appointment_email": {
+        "name": "פגישה חדשה → אימייל אישור",
+        "description": "פגישה נוצרת → אימייל אישור ללקוח דרך Gmail או Outlook.",
+        "trigger": "פגישה חדשה",
+        "result1": "אימייל אישור"
+      },
+      "wf_appointment_email_notify": {
+        "name": "פגישה חדשה → אימייל ללקוח + התראה לצוות",
+        "description": "אישור ללקוח במייל + התראה פנימית לבעל העסק.",
+        "trigger": "פגישה חדשה",
+        "result1": "אימייל אישור",
+        "result2": "התראה"
+      },
+      "wf_appointment_gcal": {
+        "name": "פגישה חדשה → Google Calendar",
+        "description": "פגישה חדשה → אירוע ביומן Google (דורש חיבור יומן).",
+        "trigger": "פגישה חדשה",
+        "result1": "אירוע ביומן Google"
+      },
+      "wf_appointment_email_gcal": {
+        "name": "פגישה חדשה → אימייל + Google Calendar",
+        "description": "אישור במייל + יצירת אירוע ביומן יחד.",
+        "trigger": "פגישה חדשה",
+        "result1": "אימייל אישור",
+        "result2": "אירוע ביומן"
+      },
+      "wf_appointment_confirm_pack": {
+        "name": "פגישה חדשה → אימייל + משימה + התראה",
+        "description": "חבילת אישור פגישה לצוות וללקוח בלי WhatsApp.",
+        "trigger": "פגישה חדשה",
+        "result1": "אימייל",
+        "result2": "משימה",
+        "result3": "התראה"
+      },
+      "wf_appointment_done_email": {
+        "name": "אחרי פגישה → אימייל תודה",
+        "description": "בסיום פגישה נשלח אימייל תודה ללקוח.",
+        "trigger": "פגישה הסתיימה",
+        "result1": "אימייל תודה"
+      },
+      "wf_appointment_duo": {
+        "name": "פגישה חדשה → אישור WhatsApp + תזכורת + משימה",
+        "description": "כשנוצרת פגישה: אישור WhatsApp ללקוח, משימת הכנה, ותזכורת לפני המועד (ללא הודעת תודה אחרי סיום).",
+        "trigger": "פגישה חדשה / תזכורת לפני",
+        "result1": "אישור WhatsApp",
+        "result2": "תזכורת לפני",
+        "result3": "משימה"
+      }
     }
   },
   "layout": {

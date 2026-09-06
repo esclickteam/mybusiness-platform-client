@@ -58,6 +58,10 @@ import {
   aiTemplateTitle,
 } from "../../../../i18n/aiAutomationLabels";
 import {
+  workingTemplateCopy,
+  workingTemplateSearchHaystack,
+} from "../../../../i18n/workingTemplateCopy";
+import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
@@ -355,14 +359,7 @@ export default function AutomationsTemplatesPage() {
         if (seen.has(template.key)) return false;
         seen.add(template.key);
         if (!q) return true;
-        return [
-          template.name,
-          template.description,
-          template.triggerLabel,
-          template.resultLabels.join(" "),
-          ...(template.keywords || []),
-        ]
-          .join(" ")
+        return workingTemplateSearchHaystack(t, template)
           .toLowerCase()
           .includes(q);
       })
@@ -372,7 +369,7 @@ export default function AutomationsTemplatesPage() {
         if (aiA !== aiB) return aiA - aiB;
         return a.template.rank - b.template.rank;
       });
-  }, [cards, category, query]);
+  }, [cards, category, query, t]);
 
   const visibleCategories = useMemo(() => TEMPLATE_CATEGORIES.filter((item) => item.id === "all" || cards.some(({ template }) => template.categories.includes(item.id))), [cards]);
 
@@ -491,8 +488,8 @@ export default function AutomationsTemplatesPage() {
 
     const created = await createAutomationWorkflow(businessId, {
       useStarter: false,
-      name: template.name,
-      description: template.description,
+      name: workingTemplateCopy(t, template).name,
+      description: workingTemplateCopy(t, template).description,
       nodes,
       edges: graph.edges,
     });
@@ -539,7 +536,7 @@ export default function AutomationsTemplatesPage() {
     ) {
       const created = await createAutomationWorkflow(businessId, {
         recipe: readiness.recipe.key,
-        name: template.name,
+        name: workingTemplateCopy(t, template).name,
       });
       if (!isAi) try {
         await publishAutomationWorkflow(businessId, created._id);
@@ -644,8 +641,8 @@ export default function AutomationsTemplatesPage() {
 
     const created = await createAutomationWorkflow(businessId, {
       useStarter: false,
-      name: template.name,
-      description: template.description,
+      name: workingTemplateCopy(t, template).name,
+      description: workingTemplateCopy(t, template).description,
       nodes,
       edges: graph.edges,
     });
@@ -950,7 +947,7 @@ export default function AutomationsTemplatesPage() {
                     );
                     return catalog
                       ? aiTemplateTitle(t, catalog)
-                      : template.name;
+                      : workingTemplateCopy(t, template).name;
                   })()}
                 </h3>
                 <p className="ax-template-card__desc">
@@ -960,21 +957,21 @@ export default function AutomationsTemplatesPage() {
                     );
                     return catalog
                       ? aiTemplateDescription(t, catalog)
-                      : template.description;
+                      : workingTemplateCopy(t, template).description;
                   })()}
                 </p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>{t("automations.templates.trigger")}</em>
-                    {template.triggerLabel}
+                    {workingTemplateCopy(t, template).triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>{t("automations.templates.result")}</em>
-                    {template.resultLabels.join(" · ")}
+                    {workingTemplateCopy(t, template).resultLabels.join(" · ")}
                   </span>
                 </div>
 
@@ -1119,7 +1116,7 @@ export default function AutomationsTemplatesPage() {
             >
               <X size={16} />
             </button>
-            <h2>{t("automations.templates.activateTitle", { name: picker.template.name })}</h2>
+            <h2>{t("automations.templates.activateTitle", { name: workingTemplateCopy(t, picker.template).name })}</h2>
             {picker.template.engine === "whatsapp_simple" ||
             picker.template.requiresWaTemplate ? (
               <>

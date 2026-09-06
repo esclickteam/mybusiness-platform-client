@@ -27,6 +27,7 @@ import unique12ExactLexicon from "./templateExactLexicon.unique12.json";
 import unique13ExactLexicon from "./templateExactLexicon.unique13.json";
 import unique14ExactLexicon from "./templateExactLexicon.unique14.json";
 import unique15ExactLexicon from "./templateExactLexicon.unique15.json";
+import unique16ExactLexicon from "./templateExactLexicon.unique16.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -66,6 +67,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique13ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique14ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique15ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique16ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -180,6 +182,7 @@ const MONTH_YEAR_RE = /^([א-ת׳']+)\s+(\d{4})$/;
 const WEEKDAY_TIME_RE = /^(ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)\s+(\d{1,2}:\d{2})$/;
 const DURATION_RE = /^(\d+)\s*(דק׳|דקות|ש׳|שעות)$/;
 const DURATION_STUCK_RE = /^(\d+)(ד׳|ש׳)$/;
+const FROM_PRICE_RE = /^החל מ[־\-]?₪(\d+)$/;
 const BURGER_SMASH_RE = /^(.+) — לחמנייה, בשר, גבינה — בלי פילוסופיה\.$/;
 const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהליך חד ותוצאות מדידות\.$/;
 const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
@@ -259,6 +262,7 @@ const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   ניווט: { en: "Nav", es: "Navegación", "pt-BR": "Navegação", ar: "تنقل" },
   "פתיחת שאלה": { en: "Question open", es: "Apertura de pregunta", "pt-BR": "Abertura da pergunta", ar: "فتح السؤال" },
   "תגית מוצר": { en: "Product tag", es: "Etiqueta de producto", "pt-BR": "Tag do produto", ar: "وسم المنتج" },
+  תוצאה: { en: "Result", es: "Resultado", "pt-BR": "Resultado", ar: "نتيجة" },
 };
 
 const HEBREW_MONTHS: Record<string, PhraseTranslation> = {
@@ -427,6 +431,16 @@ function localizeDuration(text: string, locale: string): string {
   if (locale === "pt-BR") return isMin ? `${n} min` : `${n} h`;
   if (locale === "ar") return isMin ? `${n} د` : `${n} س`;
   return isMin ? `${n} min` : `${n} h`;
+}
+
+function localizeFromPrice(text: string, locale: string): string {
+  const match = text.match(FROM_PRICE_RE);
+  if (!match) return "";
+  const amount = `₪${match[1]}`;
+  if (locale === "es") return `Desde ${amount}`;
+  if (locale === "pt-BR") return `A partir de ${amount}`;
+  if (locale === "ar") return `ابتداءً من ${amount}`;
+  return `From ${amount}`;
 }
 
 function localizeBurgerSmash(text: string, locale: string): string {
@@ -784,6 +798,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const duration = localizeDuration(text, locale);
   if (isUsableTranslation(text, duration, locale)) {
     return adaptBuiltInDirectionalCss(duration, locale);
+  }
+
+  const fromPrice = localizeFromPrice(text, locale);
+  if (isUsableTranslation(text, fromPrice, locale)) {
+    return adaptBuiltInDirectionalCss(fromPrice, locale);
   }
 
   const openingHours = localizeOpeningHours(text, locale);

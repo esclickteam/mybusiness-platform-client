@@ -1629,6 +1629,207 @@
       "viewPlans": "Ver planos",
       "estimateOnlyNoUpgrade": "É só uma estimativa — não há upgrade automático.",
       "estimateNote": "Só estimativa pelo caminho mais caro e a frequência."
+    },
+    "working": {
+      "wa_new_lead_welcome": {
+        "name": "Novo lead → só abertura no WhatsApp",
+        "description": "Só a mensagem de abertura imediata (sem follow-ups). Para abertura + follow-ups por resposta, usem “Novo lead → abertura + follow-ups por resposta”.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Mensagem de abertura no WhatsApp"
+      },
+      "wa_new_lead_owner_alert": {
+        "name": "Novo lead → alerta de WhatsApp ao dono",
+        "description": "Um lead entra no CRM → alerta interno no WhatsApp para o dono.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Alerta de WhatsApp ao dono"
+      },
+      "wa_appointment_reminder_1_day": {
+        "name": "Lembrete de agendamento — 1 dia antes",
+        "description": "Um dia antes do agendamento → lembrete no WhatsApp para o cliente (ativado na hora).",
+        "trigger": "Agendamento próximo (1 dia antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_2_days": {
+        "name": "Lembrete de agendamento — 2 dias antes",
+        "description": "48 horas antes do agendamento → lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (2 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_3_days": {
+        "name": "Lembrete de agendamento — 3 dias antes",
+        "description": "72 horas antes do agendamento → lembrete antecipado no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (3 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_2_hours": {
+        "name": "Lembrete de agendamento — 2 horas antes",
+        "description": "Duas horas antes do agendamento → lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (2 horas antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_1_hour": {
+        "name": "Lembrete de agendamento — 1 hora antes",
+        "description": "Uma hora antes do agendamento → último lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (1 hora antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_thanks": {
+        "name": "Agradecimento após o agendamento (WhatsApp)",
+        "description": "Após o fim do agendamento → agradecimento no WhatsApp (pelo horário do agendamento, não pela criação).",
+        "trigger": "Agendamento encerrado",
+        "result1": "Mensagem de agradecimento"
+      },
+      "wa_appointment_review": {
+        "name": "Pedir avaliação após o agendamento",
+        "description": "Um dia após o fim do agendamento → pedido de avaliação no WhatsApp (pelo horário do agendamento).",
+        "trigger": "Agendamento encerrado",
+        "result1": "Pedido de avaliação"
+      },
+      "wa_lead_no_response": {
+        "name": "Follow-up para lead que não respondeu → WhatsApp",
+        "description": "Unido à rota unificada “Novo lead → abertura + follow-ups por resposta”. Não aparece como cartão separado.",
+        "trigger": "Lead que não respondeu no WhatsApp",
+        "result1": "Follow-up no WhatsApp"
+      },
+      "wa_lead_followup_2": {
+        "name": "Segundo follow-up para o lead",
+        "description": "Unido à rota unificada “Novo lead → abertura + follow-ups por resposta”. Não aparece como cartão separado.",
+        "trigger": "Lead sem conversão",
+        "result1": "Segundo follow-up"
+      },
+      "wa_new_client_welcome": {
+        "name": "Novo cliente → boas-vindas",
+        "description": "Novo cliente no CRM → mensagem de abertura no WhatsApp (ativado na hora).",
+        "trigger": "Novo cliente",
+        "result1": "Mensagem de abertura"
+      },
+      "wa_inactive_client": {
+        "name": "Cliente inativo → contato",
+        "description": "Cliente sem atividade há ~30 dias → mensagem de contato (ativado na hora).",
+        "trigger": "Cliente inativo",
+        "result1": "Mensagem de contato"
+      },
+      "wf_lead_multi": {
+        "name": "Novo lead → WhatsApp + tarefa + alerta",
+        "description": "Só abertura imediata: WhatsApp + tarefa + alerta. Sem follow-ups por resposta — para o caminho completo vejam “abertura + follow-ups por resposta”.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "Tarefa",
+        "result3": "Alerta"
+      },
+      "wf_lead_wa_email": {
+        "name": "Novo lead → WhatsApp + e-mail",
+        "description": "Só abertura imediata: WhatsApp + e-mail. Sem follow-ups de WhatsApp por resposta.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "E-mail"
+      },
+      "wf_lead_full_onboarding": {
+        "name": "Novo lead → WhatsApp + e-mail + tarefa + alerta",
+        "description": "Pacote de onboarding imediato em todos os canais. Sem follow-ups de WhatsApp por resposta.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "E-mail",
+        "result3": "Tarefa",
+        "result4": "Alerta"
+      },
+      "wf_lead_email_task": {
+        "name": "Novo lead → e-mail + tarefa",
+        "description": "Sem WhatsApp: e-mail pelo Gmail, Outlook ou e-mail comercial + tarefa de acompanhamento no CRM.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail",
+        "result2": "Tarefa de acompanhamento"
+      },
+      "wf_lead_email_only": {
+        "name": "Novo lead → e-mail de abertura",
+        "description": "Um lead novo recebe um e-mail de abertura pelo Gmail, Outlook ou e-mail comercial.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail"
+      },
+      "wf_store_order_confirmation": {
+        "name": "Confirmação de pedido da loja",
+        "description": "Chegou um pedido da loja → enviar um e-mail de confirmação formatado ao cliente.",
+        "trigger": "Pedido da loja recebido",
+        "result1": "E-mail de confirmação do pedido"
+      },
+      "wf_lead_desk_alert": {
+        "name": "Novo lead → tarefa + alerta à equipe",
+        "description": "Sem mensagens ao cliente: tarefa e alerta interno quando entra um lead.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Tarefa",
+        "result2": "Alerta"
+      },
+      "wf_lead_no_response_pack": {
+        "name": "Novo lead → abertura + follow-ups por resposta",
+        "description": "A mensagem de abertura é enviada na hora. Se o lead não responder, um follow-up sai após 24 horas e outro após 3 dias.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Abertura no WhatsApp",
+        "result2": "Follow-up nº 1",
+        "result3": "Follow-up nº 2"
+      },
+      "wf_lead_status_sales": {
+        "name": "Mudança de status do lead → tarefa + alerta",
+        "description": "Quando o status de um lead muda, a equipe recebe uma tarefa e um alerta.",
+        "trigger": "Status do lead alterado",
+        "result1": "Tarefa",
+        "result2": "Alerta"
+      },
+      "wf_new_client_pack": {
+        "name": "Novo cliente → WhatsApp + e-mail + tarefa de retenção",
+        "description": "Entrada de novo cliente: mensagem de abertura, e-mail e tarefa de retenção.",
+        "trigger": "Novo cliente",
+        "result1": "WhatsApp",
+        "result2": "E-mail",
+        "result3": "Tarefa de retenção"
+      },
+      "wf_appointment_email": {
+        "name": "Novo agendamento → e-mail de confirmação",
+        "description": "Um agendamento é criado → e-mail de confirmação ao cliente pelo Gmail ou Outlook.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação"
+      },
+      "wf_appointment_email_notify": {
+        "name": "Novo agendamento → e-mail ao cliente + alerta à equipe",
+        "description": "Confirmação ao cliente por e-mail + alerta interno ao dono.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação",
+        "result2": "Alerta"
+      },
+      "wf_appointment_gcal": {
+        "name": "Novo agendamento → Google Agenda",
+        "description": "Novo agendamento → evento no Google Agenda (exige calendário conectado).",
+        "trigger": "Novo agendamento",
+        "result1": "Evento no Google Agenda"
+      },
+      "wf_appointment_email_gcal": {
+        "name": "Novo agendamento → e-mail + Google Agenda",
+        "description": "Confirmação por e-mail + evento no calendário juntos.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação",
+        "result2": "Evento no calendário"
+      },
+      "wf_appointment_confirm_pack": {
+        "name": "Novo agendamento → e-mail + tarefa + alerta",
+        "description": "Pacote de confirmação de agendamento para a equipe e o cliente, sem WhatsApp.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail",
+        "result2": "Tarefa",
+        "result3": "Alerta"
+      },
+      "wf_appointment_done_email": {
+        "name": "Após o agendamento → e-mail de agradecimento",
+        "description": "Ao encerrar o agendamento é enviado um e-mail de agradecimento ao cliente.",
+        "trigger": "Agendamento encerrado",
+        "result1": "E-mail de agradecimento"
+      },
+      "wf_appointment_duo": {
+        "name": "Novo agendamento → confirmação WhatsApp + lembrete + tarefa",
+        "description": "Ao criar um agendamento: confirmação no WhatsApp ao cliente, tarefa de preparação e lembrete antes do horário (sem agradecimento ao encerrar).",
+        "trigger": "Novo agendamento / lembrete antecipado",
+        "result1": "Confirmação no WhatsApp",
+        "result2": "Lembrete antecipado",
+        "result3": "Tarefa"
+      }
     }
   },
   "layout": {

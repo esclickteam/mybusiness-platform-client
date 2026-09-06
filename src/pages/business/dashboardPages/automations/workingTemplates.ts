@@ -34,6 +34,7 @@ import {
   LEAD_WELCOME_EMAIL_DEFAULTS,
 } from "./leadWelcomeEmail";
 import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -141,6 +142,29 @@ type GraphAction = {
   defaults?: Record<string, unknown>;
 };
 
+function localizeGraphCopy(graph: {
+  nodes: AutomationFlowNode[];
+  edges: AutomationFlowEdge[];
+}): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
+  return {
+    nodes: graph.nodes.map((node) => {
+      const data = { ...(node.data || {}) } as Record<string, unknown>;
+      if (typeof data.label === "string") {
+        data.label = localizeBuiltInText(data.label);
+      }
+      if (typeof data.title === "string") {
+        data.title = localizeBuiltInText(data.title);
+      }
+      return { ...node, data };
+    }),
+    edges: graph.edges.map((edge) =>
+      typeof edge.label === "string"
+        ? { ...edge, label: localizeBuiltInText(edge.label) }
+        : edge
+    ),
+  };
+}
+
 function resultGraph(opts: {
   triggerKey: string;
   triggerLabel: string;
@@ -190,7 +214,7 @@ function resultGraph(opts: {
       label: "תוצאה",
     });
   });
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 function waEdgeGraph(opts: {
@@ -231,7 +255,7 @@ function buildAppointmentDuoGraph(opts: {
     language: "he",
     blueprintKey: "wf_appointment_duo",
   };
-  return {
+  const graph = {
     nodes: [
       {
         id: "trigger_1",
@@ -314,6 +338,7 @@ function buildAppointmentDuoGraph(opts: {
       { id: "e_delay_remind", source: "d_remind", target: "a_remind" },
     ],
   };
+  return localizeGraphCopy(graph);
 }
 
 /**
@@ -440,7 +465,7 @@ export function buildLeadReplySequenceGraph(opts: {
       label: "כן — לא ענה",
     },
   ];
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 /** Map legacy WhatsAppAutomation trigger → publishable workflow trigger keys. */
@@ -571,7 +596,7 @@ export function buildWhatsAppSimpleGraph(
     label: "תוצאה",
   });
 
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 /**

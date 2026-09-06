@@ -29,6 +29,7 @@ import {
   buildLocalAutomationGraph,
 } from "./localTemplateGraphs";
 import { WORKING_TEMPLATES } from "./workingTemplates";
+import { workingTemplateCopy } from "../../../../i18n/workingTemplateCopy";
 import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import { useAutomationsRealtime } from "./useAutomationsRealtime";
 import "./automationFlow.css";
@@ -183,8 +184,8 @@ export default function AutomationsLayout() {
             });
             const created = await createAutomationWorkflow(businessId, {
               useStarter: false,
-              name: working.name,
-              description: working.description,
+              name: workingTemplateCopy(t, working).name,
+              description: workingTemplateCopy(t, working).description,
               nodes: graph.nodes,
               edges: graph.edges,
             });

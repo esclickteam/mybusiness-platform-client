@@ -496,6 +496,22 @@ describe("localizeBuiltInTemplateSeed", () => {
     ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique16 leftover demo titles and from-price labels", () => {
+    expect(localizeBuiltInText("שקית בית", "en")).toBe("Home tote bag");
+    expect(localizeBuiltInText("דברו איתי", "es")).toBe("Háblame");
+    expect(localizeBuiltInText("חזר למלאי", "pt-BR")).toBe("De volta ao estoque");
+    expect(localizeBuiltInText("ג׳קט רחוב", "ar")).toBe("جاكيت شارع");
+    expect(localizeBuiltInText("שקית בית", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("החל מ־₪180", "en")).toBe("From ₪180");
+    expect(localizeBuiltInText("החל מ־₪240", "es")).toBe("Desde ₪240");
+    expect(localizeBuiltInText("החל מ־₪160", "pt-BR")).toBe("A partir de ₪160");
+    expect(localizeBuiltInText("החל מ־₪390", "ar")).toMatch(/₪390/);
+    expect(localizeBuiltInText("החל מ־₪180", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("תאריך:", "en")).toBe("Date:");
+    expect(localizeBuiltInText("משימה לנציג", "en")).toBe("Task for the agent");
+    expect(localizeBuiltInText("תוצאה 1", "en")).toBe("Result 1");
+  });
+
   it("does not rewrite saved customer copy over localized defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { heroTitle: "צור קשר", heroPrimary: "הזמינו פיצה" },

@@ -12,6 +12,7 @@ import {
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 import { LEAD_WELCOME_EMAIL_DEFAULTS } from "./leadWelcomeEmail";
 import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -57,7 +58,7 @@ function actionNode(
     type: "action",
     position,
     data: {
-      label: action.label,
+      label: localizeBuiltInText(action.label),
       actionKey: action.actionKey,
       templateId: "",
       ...(action.defaults || {}),
@@ -370,7 +371,7 @@ export function buildLocalAutomationGraph(
       type: "trigger",
       position: { x: 80, y: 160 },
       data: {
-        label: template.triggerLabel,
+        label: localizeBuiltInText(template.triggerLabel),
         triggerKey,
         routeCount,
         ...(template.hoursBefore != null
@@ -392,7 +393,7 @@ export function buildLocalAutomationGraph(
       target: id,
       sourceHandle: `route_${index + 1}`,
       targetHandle: null,
-      label: `תוצאה ${index + 1}`,
+      label: localizeBuiltInText(`תוצאה ${index + 1}`),
     });
   });
 
