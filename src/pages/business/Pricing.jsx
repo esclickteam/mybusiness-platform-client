@@ -44,6 +44,14 @@ import {
 } from "../../utils/pendingPurchaseIntent";
 import { getActivePricingPlan } from "../../utils/servicePurchaseFlow";
 import { coerceSupportedLanguage } from "../../i18n/languages";
+import { getIntlLocale } from "../../i18n/localeUtils";
+import { useBillingMarket } from "../../billing/useBillingMarket";
+import {
+  formatMarketMoney,
+  persistBillingCountry,
+  planAmount,
+  readStoredBillingCountry,
+} from "../../billing/billingMarkets";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -80,8 +88,8 @@ function AddonIcon({ name, accent }) {
   );
 }
 
-function formatIls(amount) {
-  return `₪${Number(amount).toLocaleString("he-IL")}`;
+function formatPlanPrice(amount, currency, language) {
+  return formatMarketMoney(amount, currency, getIntlLocale(language));
 }
 
 function localizeService(addon, t, language) {
@@ -151,6 +159,7 @@ export default function Plans() {
   const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
   const isHe = coerceSupportedLanguage(i18n.language) === "he";
+  const billingMarket = useBillingMarket();
   const initialPendingIntent = useMemo(() => loadPendingPurchaseIntent(), []);
   const initialPurchaseKey = initialPendingIntent
     ? findServiceCatalogKey(initialPendingIntent.serviceKey)
@@ -240,9 +249,18 @@ export default function Plans() {
       const res = await API.post("/stripe/create-checkout-session", {
         plan: plan.checkoutPlan,
         includeWebsiteAddon: wantsWebsiteAddon,
+        billingCountry: persistBillingCountry(
+          user?.billingCountry || readStoredBillingCountry()
+        ),
       });
 
       const data = res.data || {};
+
+      if (data.code === "REGIONAL_PRICE_UNAVAILABLE") {
+        alert(t("billing.regional.unavailable"));
+        setLoadingPlan(null);
+        return;
+      }
 
       if (!data.url) {
         alert(t("pricing.alertCheckoutFailed"));
@@ -253,7 +271,12 @@ export default function Plans() {
       window.location.href = data.url;
     } catch (err) {
       console.error(err);
-      alert(t("pricing.alertGenericError"));
+      const code = err?.response?.data?.code;
+      alert(
+        code === "REGIONAL_PRICE_UNAVAILABLE"
+          ? t("billing.regional.unavailable")
+          : t("pricing.alertGenericError")
+      );
       setLoadingPlan(null);
     }
   };
@@ -265,14 +288,25 @@ export default function Plans() {
           t(`pricing.packages.${pkg.type}.${suffix}`, {
             defaultValue: isHe ? he : en,
           });
+        const checkoutPlan = pkg.checkoutPlan || pkg.type;
+        const regionalPrice =
+          checkoutPlan === "website"
+            ? billingMarket.prices.websiteAnnual
+            : checkoutPlan === "yearly"
+              ? planAmount("yearly", billingMarket)
+              : billingMarket.prices.businessMonthly;
         return {
           ...pkg,
+          price: regionalPrice,
+          currency: billingMarket.currency,
           name: tx("name", pkg.nameHe, pkg.nameEn),
           badge: tx("badge", pkg.badgeHe, pkg.badgeEn),
           description: tx("description", pkg.descriptionHe, pkg.descriptionEn),
           note: tx("note", pkg.noteHe, pkg.noteEn),
           button: tx("button", pkg.buttonHe, pkg.buttonEn),
           pricePeriod: tx("pricePeriod", pkg.pricePeriodHe, pkg.pricePeriodEn),
+          allowsWebsiteAddon:
+            pkg.allowsWebsiteAddon && billingMarket.id === "israel",
           features: (isHe ? pkg.featuresHe : pkg.featuresEn).map((item, index) =>
             t(`pricing.packages.${pkg.type}.features.${index}`, {
               defaultValue: item,
@@ -280,7 +314,7 @@ export default function Plans() {
           ),
         };
       }),
-    [isHe, t]
+    [billingMarket, isHe, t]
   );
 
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
@@ -601,7 +635,7 @@ export default function Plans() {
 
                       <div className="mt-7 flex items-end gap-2">
                         <span className="text-5xl font-black tracking-[-0.05em] sm:text-6xl">
-                          {formatIls(plan.price)}
+                          {formatPlanPrice(plan.price, plan.currency, i18n.language)}
                         </span>
                         <span className="pb-2 text-sm font-black text-slate-500">
                           {plan.pricePeriod}
@@ -611,9 +645,17 @@ export default function Plans() {
                       {websiteAddonChecked && (
                         <p className="mt-2 text-base font-black text-emerald-700">
                           {t("pricing.websiteAddonStripeNote", {
-                            packagePrice: formatIls(plan.price),
+                            packagePrice: formatPlanPrice(
+                              plan.price,
+                              plan.currency,
+                              i18n.language
+                            ),
                             period: plan.pricePeriod,
-                            websitePrice: formatIls(WEBSITE_ADDON.price),
+                            websitePrice: formatPlanPrice(
+                              WEBSITE_ADDON.price,
+                              "ILS",
+                              i18n.language
+                            ),
                           })}
                         </p>
                       )}

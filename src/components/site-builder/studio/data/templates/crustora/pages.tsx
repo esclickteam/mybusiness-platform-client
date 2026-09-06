@@ -4,6 +4,7 @@ import { crustoraDefaultData } from "./defaultData";
 import { crustoraEditorCss } from "./editorCss";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 export const crustoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = crustoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = crustoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#faf4ebf5", borderColor: "rgba(42,24,16,0.12)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -47,7 +48,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
           ))}
         </nav>
         <button type="button" onClick={() => { setNavOpen(false); onCta(); }} className="px-5 py-2.5 text-sm font-bold" style={{ background: "#c1121f", color: "#ffffff" }}>{v(data, "heroPrimary")}</button>
-        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
           <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
         </button>
       </div>
@@ -91,7 +92,7 @@ function TriMasonryMenu({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(42,24,16,0.12)", background: "#ffffff" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">משולשי תפריט</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">{tx("משולשי תפריט")}</h2></Reveal>
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {cards.map(([title, meta, text, img], i) => (
             <Reveal key={title} delayMs={i * 100} variant="up">
@@ -115,7 +116,7 @@ function OvenHeatStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="tpl-heat-shimmer relative overflow-hidden border-y py-10" style={{ borderColor: "rgba(42,24,16,0.12)", background: `linear-gradient(90deg, #c1121f22, #ffffff, #c1121f22)` }}>
       <Reveal>
-        <p className="text-center tpl-display text-2xl font-black md:text-3xl">450° · 90 שניות · תנור עצים</p>
+        <p className="text-center tpl-display text-2xl font-black md:text-3xl">{tx("450° · 90 שניות · תנור עצים")}</p>
       </Reveal>
     </section>
   );
@@ -326,7 +327,7 @@ function VisitBlock({ data }: { data: Record<string, any> }) {
 }
 
 function Insights({ data }: { data: Record<string, any> }) {
-  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`), tag: i === 1 ? "מדריך" : i === 2 ? "סיפור" : "טיפים" }));
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`), tag: i === 1 ? tx("מדריך") : i === 2 ? tx("סיפור") : tx("טיפים") }));
   const [featured, ...rest] = posts;
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(42,24,16,0.12)" }}>
@@ -390,7 +391,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
       ))}
       <div className="relative z-10 mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="text-xs font-bold tracking-[0.24em]" style={{ color: "#c1121f" }}>אודות</p>
+          <p className="text-xs font-bold tracking-[0.24em]" style={{ color: "#c1121f" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-black md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#8b6b52" }}>{v(data, "aboutText")}</p>
         </div>
@@ -408,10 +409,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="text-center text-xs font-black tracking-[0.3em]">ORDER TICKET</p>
           <h2 className="tpl-display mt-3 text-center text-3xl font-black">{v(data, "contactTitle")}</h2>
           <p className="mt-3 text-center text-sm" style={{ color: "#8b6b52" }}>{v(data, "contactText")}</p>
-          <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="crustora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="כתובת" name="other" data-bizuply-form-field-id="other" />
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="crustora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder={tx("כתובת")} name="other" data-bizuply-form-field-id="other" />
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <button type="submit" className="mt-2 px-6 py-3 text-sm font-bold" style={{ background: "#c1121f", color: "#ffffff" }}>{v(data, "cta")}</button>
           </form>
           <p className="mt-4 text-center text-xs" style={{ color: "#8b6b52" }}>{v(data, "address")}</p>

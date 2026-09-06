@@ -2079,6 +2079,32 @@
     "websiteAddon": {
       "label": "₪550 one-time — self-serve website as a business-plan add-on",
       "hint": "One-time payment, no auto-renewal · templates and visual editor, linked to CRM — includes free domain for 1 year"
+    },
+    "packages": {
+      "website": {
+        "name": "Website only",
+        "badge": "Self-serve",
+        "description": "Build a professional site yourself from a template — publish, get inquiries, and everything links to the CRM.",
+        "note": "One-time payment — no commitment and no auto-renewal",
+        "button": "Start with a website",
+        "pricePeriod": "/year"
+      },
+      "monthly": {
+        "name": "BizUply Business",
+        "badge": "Flexible",
+        "description": "Access to the BizUply business system — CRM, appointments, collaborations, automations, and AI. Website not included.",
+        "note": "Renewing monthly billing",
+        "button": "Start monthly",
+        "pricePeriod": "/month"
+      },
+      "yearly": {
+        "name": "BizUply Business yearly",
+        "badge": "Best value",
+        "description": "The business system at a better yearly price — CRM, appointments, collaborations, and AI. Website not included.",
+        "note": "Renewing yearly billing",
+        "button": "Start yearly",
+        "pricePeriod": "/year"
+      }
     }
   },
   "howItWorks": {
@@ -4816,6 +4842,18 @@
       "text": "Your current plan includes website and domain management only.\nTo get CRM, leads, appointments, collaborations, automations, and business AI — upgrade to the business plan.",
       "upgradeCta": "Upgrade to the business plan",
       "backToWebsite": "Back to website management"
+    },
+    "markets": {
+      "israel": "Israel (ILS)",
+      "usa": "United States (USD)",
+      "europe": "Europe (EUR)",
+      "brazil": "Brazil (BRL)",
+      "uae": "United Arab Emirates (AED)",
+      "latam": "Latin America (USD)",
+      "global": "International (USD)"
+    },
+    "regional": {
+      "unavailable": "This regional price is not configured for checkout yet. Contact support — we will not charge a different currency."
     }
   },
   "collab": {
@@ -18425,6 +18463,10 @@
       "defaultCategory": "Website template",
       "defaultHeroTitle": "Ready business website",
       "defaultHeroSubtitle": "A ready website template you can fully edit."
+    },
+    "upgradeBanner": {
+      "text": "This feature is included only in advanced plans.",
+      "cta": "Upgrade now"
     }
   }
 }

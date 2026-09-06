@@ -298,7 +298,7 @@ export default function TemplateVisualEditor({
     // Header CTA scalars (heroPrimaryButton) must win over defaultData before
     // React paints, or page switches revert "התחברות" back to "תאמו ניסיון".
     return applySharedChromeScalarsToVisualData(withoutStoreOverrides);
-  }, [renderer.defaultData, renderer.key, initialData, businessId]);
+  }, [renderer.defaultData, renderer.key, initialData, businessId, i18n.language]);
 
   const activePageId = React.useMemo(() => {
     const fromProps = String(activeSitePageId || "").trim();

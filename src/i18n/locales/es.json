@@ -2079,6 +2079,32 @@
     "websiteAddon": {
       "label": "₪550 único — sitio de autoservicio como extra del plan",
       "hint": "Pago único, sin renovación automática · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año"
+    },
+    "packages": {
+      "website": {
+        "name": "Solo sitio web",
+        "badge": "Autoservicio",
+        "description": "Crea un sitio profesional desde una plantilla — publica, recibe consultas y todo se conecta al CRM.",
+        "note": "Pago único — sin compromiso ni renovación automática",
+        "button": "Empezar con un sitio",
+        "pricePeriod": "/año"
+      },
+      "monthly": {
+        "name": "BizUply Business",
+        "badge": "Flexible",
+        "description": "Acceso al sistema de negocio BizUply — CRM, citas, colaboraciones, automatizaciones e IA. El sitio no está incluido.",
+        "note": "Facturación mensual renovable",
+        "button": "Empezar mensual",
+        "pricePeriod": "/mes"
+      },
+      "yearly": {
+        "name": "BizUply Business anual",
+        "badge": "Mejor valor",
+        "description": "El sistema de negocio a un mejor precio anual — CRM, citas, colaboraciones e IA. El sitio no está incluido.",
+        "note": "Facturación anual renovable",
+        "button": "Empezar anual",
+        "pricePeriod": "/año"
+      }
     }
   },
   "howItWorks": {
@@ -4812,10 +4838,22 @@
       "customPrice": "Importe a cobrar (₪)"
     },
     "upgrade": {
-      "title": "Este módulo no está en tu plan",
-      "text": "Tu plan actual solo incluye la gestión del sitio y el dominio.\nPara CRM, leads, citas, colaboraciones, automatizaciones e IA de negocio, mejora al plan business.",
-      "upgradeCta": "Mejorar al plan business",
-      "backToWebsite": "Volver a la gestión del sitio"
+      "title": "Este módulo no está incluido en tu plan",
+      "text": "Tu plan actual incluye solo la web y el dominio.\nPara CRM, leads, citas, colaboraciones, automatizaciones e IA — mejora al plan Business.",
+      "upgradeCta": "Mejorar al plan Business",
+      "backToWebsite": "Volver a la web"
+    },
+    "markets": {
+      "israel": "Israel (ILS)",
+      "usa": "Estados Unidos (USD)",
+      "europe": "Europa (EUR)",
+      "brazil": "Brasil (BRL)",
+      "uae": "Emiratos Árabes Unidos (AED)",
+      "latam": "Latinoamérica (USD)",
+      "global": "Internacional (USD)"
+    },
+    "regional": {
+      "unavailable": "Este precio regional aún no está configurado para el pago. Contacta con soporte — no cobraremos otra moneda."
     }
   },
   "collab": {
@@ -18425,6 +18463,10 @@
       "defaultCategory": "Plantilla de sitio",
       "defaultHeroTitle": "Sitio de negocio listo",
       "defaultHeroSubtitle": "Plantilla de sitio lista para editar por completo."
+    },
+    "upgradeBanner": {
+      "text": "Esta función solo está incluida en planes avanzados.",
+      "cta": "Mejorar ahora"
     }
   }
 }

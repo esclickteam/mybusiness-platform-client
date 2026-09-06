@@ -28,4 +28,23 @@ describe("localizeBuiltInTemplateSeed", () => {
       ),
     ).toEqual({ nav: { contact: "Contacto" }, title: "Servicios" });
   });
+
+  it("localizes a restaurant template seed for each dashboard language", () => {
+    const seed = {
+      heroEyebrow: "פיצה · תנור עצים",
+      heroPrimary: "הזמינו פיצה",
+      navContact: "צור קשר",
+    };
+    expect(localizeBuiltInTemplateSeed(seed, "en").heroPrimary).toBe("Order pizza");
+    expect(localizeBuiltInTemplateSeed(seed, "es").navContact).toBe("Contacto");
+    expect(localizeBuiltInTemplateSeed(seed, "pt-BR").heroEyebrow).toBe("Pizza · forno a lenha");
+    expect(localizeBuiltInTemplateSeed(seed, "ar").heroPrimary).toBe("اطلبوا البيتزا");
+    expect(localizeBuiltInTemplateSeed(seed, "he").heroPrimary).toBe("הזמינו פיצה");
+  });
+
+  it("uses quality lexicon copy instead of leftover-Hebrew phrasebook rows", () => {
+    expect(localizeBuiltInText("הזמינו פיצה", "en")).toBe("Order pizza");
+    expect(localizeBuiltInText("פיצה · תנור עצים", "en")).toBe("Pizza · wood oven");
+    expect(localizeBuiltInText("הזמינו פיצה", "ar")).toBe("اطلبوا البيتزا");
+  });
 });
