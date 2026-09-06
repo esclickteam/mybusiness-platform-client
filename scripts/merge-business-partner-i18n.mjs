@@ -20,6 +20,7 @@ import { extraPublicWidgetsLocaleObject } from "./i18n-batch-public-widgets.mjs"
 import { extraTemplateMetaLocaleObject } from "./i18n-batch-template-meta.mjs";
 import { extraFinalChromeLocaleObject } from "./i18n-batch-final-chrome.mjs";
 import { extraStudioLeftoverLocaleObject } from "./i18n-batch-studio-leftover.mjs";
+import { extraETailLocaleObject } from "./i18n-batch-e-tail.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -370,6 +371,7 @@ for (const locale of LOCALES) {
     extraGrapesChromeLocaleObject(locale),
     extraFinalChromeLocaleObject(locale),
     extraStudioLeftoverLocaleObject(locale),
+    extraETailLocaleObject(locale),
   ].reduce((acc, patch) => deepMerge(acc, patch), current);
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   resolveNavLabelFromSitePages,
@@ -55,10 +56,11 @@ export function SiteTemplateNav({
   as = "button",
   getHref,
 }: SiteTemplateNavProps) {
+  const { t } = useTranslation();
   const list = Array.isArray(items) ? items : [];
 
   return (
-    <nav className={className} aria-label="ניווט ראשי">
+    <nav className={className} aria-label={t("leftover.nav.main")}>
       {list.map((item, index) => {
         const pageId = getPageId(item) || "home";
         const active = Boolean(currentPage && currentPage === pageId);

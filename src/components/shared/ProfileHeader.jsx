@@ -1,8 +1,10 @@
 import React from "react";
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 import "./ProfileHeader.css";
 
 const ProfileHeader = ({ businessDetails }) => {
+  const { t } = useTranslation();
   if (!businessDetails) return null;
 
   const getImageUrl = (item) => {
@@ -22,13 +24,13 @@ const ProfileHeader = ({ businessDetails }) => {
       <div className="profile-header__logo">
         <img
           src={getImageUrl(logo) || "/images/placeholder.jpg"}
-          alt={businessName ? `${businessName} Logo` : "לוגו העסק"}
+          alt={businessName ? `${businessName} Logo` : t("leftover.profile.logo")}
           className="profile-header__img"
         />
       </div>
       <div className="profile-header__info">
         <h1 className="profile-header__name">
-          {businessName || "שם העסק"}
+          {businessName || t("leftover.profile.businessName")}
         </h1>
 
         {averageRating && (

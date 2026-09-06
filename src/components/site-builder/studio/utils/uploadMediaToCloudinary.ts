@@ -1,3 +1,5 @@
+import i18n from "../../../../i18n/i18n";
+
 const RAW_API_BASE =
   String(
     (import.meta as any).env?.VITE_API_BASE_URL ||
@@ -81,11 +83,11 @@ export async function uploadMediaToCloudinary({
   );
 
   if (!signData?.ok && !signData?.success) {
-    throw new Error(signData?.message || signData?.error || "יצירת חתימת העלאה נכשלה");
+    throw new Error(signData?.message || signData?.error || i18n.t("leftover.errors.signFail"));
   }
 
   if (!signData.apiKey || !signData.timestamp || !signData.signature || !signData.uploadUrl) {
-    throw new Error("לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.");
+    throw new Error(i18n.t("leftover.errors.uploadStart"));
   }
 
   const formData = new FormData();
@@ -107,7 +109,7 @@ export async function uploadMediaToCloudinary({
     (await cloudinaryResponse.json().catch(() => null)) as CloudinaryUploadResult | null;
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
+    throw new Error(i18n.t("leftover.errors.uploadRetry"));
   }
 
   const secureUrl = String(cloudinaryResult.secure_url || cloudinaryResult.url || "");

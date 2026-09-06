@@ -1,3 +1,5 @@
+import i18n from "../i18n/i18n";
+
 const PENDING_NOTIFICATION_URL_KEY = "bizuply_pending_notification_url";
 
 export function normalizeBusinessId(value: unknown): string {
@@ -32,7 +34,7 @@ export function pickNotificationText(...candidates: unknown[]): string {
     }
   }
 
-  return "התראה חדשה";
+  return i18n.t("leftover.errors.newNotification");
 }
 
 export function toDisplayString(value: unknown, fallback = ""): string {

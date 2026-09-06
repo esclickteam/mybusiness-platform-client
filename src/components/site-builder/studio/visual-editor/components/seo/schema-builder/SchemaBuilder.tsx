@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { SeoStructuredDataEntry } from "../../../../types";
 import { createSeoId } from "../../../../utils/pageSeoUtils";
@@ -20,6 +21,7 @@ type Props = {
 const MAX_SCHEMAS = 20;
 
 export default function SchemaBuilder({ entries, context, onChange }: Props) {
+  const { t } = useTranslation();
   const list = Array.isArray(entries) ? entries : [];
   const [lastAddedId, setLastAddedId] = useState<string>("");
 
@@ -30,7 +32,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
   const removeEntry = (id: string) => {
     const target = list.find((item) => item.id === id);
     const ok = window.confirm(
-      `למחוק את ה‑Schema "${target?.name || ""}"?`,
+      t("leftover.schema.deleteConfirm", { name: target?.name || "" }),
     );
     if (!ok) return;
     onChange(list.filter((item) => item.id !== id));
@@ -43,7 +45,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
     const copy: SeoStructuredDataEntry = {
       ...source,
       id: createSeoId("ld"),
-      name: `${source.name || ""} (עותק)`.trim(),
+      name: t("leftover.schema.copyName", { name: source.name || "" }).trim(),
     };
     const next = [...list];
     next.splice(index + 1, 0, copy);
@@ -53,7 +55,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
 
   const addSchema = (def: SchemaTypeDef) => {
     if (list.length >= MAX_SCHEMAS) {
-      window.alert("הגעת למספר המרבי של סכימות לעמוד.");
+      window.alert(t("leftover.schema.maxReached"));
       return;
     }
 
@@ -61,7 +63,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
       const existing = list.some((item) => item.schemaType === def.id);
       if (existing) {
         const ok = window.confirm(
-          `כבר קיים Schema מסוג "${def.label}" בעמוד. מומלץ אחד בלבד. להוסיף בכל זאת?`,
+          t("leftover.schema.singletonConfirm", { type: def.label }),
         );
         if (!ok) return;
       }
@@ -87,7 +89,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
     <div className="space-y-4">
       <div>
         <p className="mb-2 text-xs font-black text-slate-700">
-          בחרו סוג Schema להוספה
+          {t("leftover.schema.pickType")}
         </p>
         <SchemaTypePicker onPick={addSchema} />
       </div>
@@ -95,7 +97,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
       {list.length ? (
         <div className="space-y-2">
           <p className="text-xs font-black text-slate-700">
-            הסכימות בעמוד ({list.length})
+            {t("leftover.schema.pageList", { count: list.length })}
           </p>
           {list.map((entry) => {
             const isKnown = Boolean(
@@ -116,7 +118,7 @@ export default function SchemaBuilder({ entries, context, onChange }: Props) {
         </div>
       ) : (
         <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-4 text-center text-xs font-semibold text-slate-400">
-          אין עדיין סכימות. בחרו סוג למעלה — נבנה עבורכם טופס וקוד JSON-LD מוכן.
+          {t("leftover.schema.empty")}
         </p>
       )}
     </div>

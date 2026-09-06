@@ -1,3 +1,4 @@
+import i18n from "../i18n/i18n";
 import { isIos } from "./push";
 
 export type PushSupportBannerKind = "ios-webview" | "ios-install" | "unsupported";
@@ -19,27 +20,25 @@ export function resolvePushSupportBanner(input: {
   if (!input.supported && input.ios) {
     const extra =
       input.deviceCount > 0
-        ? " ההתראות כבר פעילות מהאייקון במסך הבית."
+        ? ` ${i18n.t("leftover.pushBanner.alreadyActive")}`
         : "";
     return {
       kind: "ios-webview",
-      text:
-        "באייפון Push עובד רק מ-Safari אחרי הוספה למסך הבית, ואז פתיחה מהאייקון. Chrome/Edge באייפון לא תומכים." +
-        extra,
+      text: i18n.t("leftover.pushBanner.iosSafari") + extra,
     };
   }
 
   if (!input.supported) {
     return {
       kind: "unsupported",
-      text: "הדפדפן לא תומך בהתראות Push. נסה/י Chrome / Edge / Firefox מעודכן.",
+      text: i18n.t("leftover.pushBanner.unsupported"),
     };
   }
 
   if (input.ios && !input.standalone) {
     return {
       kind: "ios-install",
-      text: "באייפון חייבים להתקין את BizUply למסך הבית (Safari → שיתוף → הוסף למסך הבית) ואז לפתוח מהאייקון — אחרת Push לטלפון לא יעבוד.",
+      text: i18n.t("leftover.pushBanner.iosInstall"),
     };
   }
 

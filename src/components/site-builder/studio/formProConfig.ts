@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type BizuplyFormConditionOperator = "equals" | "notEquals" | "contains";
 
 export type BizuplyFormCondition = {
@@ -34,7 +36,7 @@ export function normalizeSteps(value: unknown): BizuplyFormStep[] {
   return value
     .map((step, index) => ({
       id: String(step?.id || `step-${index + 1}`),
-      title: String(step?.title || `שלב ${index + 1}`),
+      title: String(step?.title || i18n.t("leftover.formPro.stepN", { n: index + 1 })),
     }))
     .filter((step) => step.id);
 }

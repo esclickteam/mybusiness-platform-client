@@ -101,6 +101,7 @@ function TemplateMiniPreview({
   template: ReadyWebsiteTemplate;
   tone: PreviewTone;
 }) {
+  const { t } = useTranslation();
   const mode = getPreviewMode(template);
   const shellClass = getShellClass(tone);
 
@@ -114,7 +115,7 @@ function TemplateMiniPreview({
         </div>
 
         <div className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-700">
-          תצוגת תבנית
+          {t("leftover.studioChrome.templateView")}
         </div>
       </div>
 
@@ -124,7 +125,7 @@ function TemplateMiniPreview({
         </div>
 
         <div className="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1 text-[11px] font-black text-slate-800 shadow-sm">
-          {template.blocks.length} סקשנים
+          {t("leftover.studioChrome.sections", { count: template.blocks.length })}
         </div>
 
         <div className="absolute inset-x-4 top-[58px] overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.16)]">

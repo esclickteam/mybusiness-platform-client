@@ -1,6 +1,8 @@
 /** Shared booking-form email normalize + validate (public BookingWidget / ClientCalendar). */
 
-export const BOOKING_EMAIL_ERROR_HE = "יש להזין כתובת אימייל תקינה";
+import i18n from "../i18n/i18n";
+
+export const BOOKING_EMAIL_ERROR_HE = i18n.t("leftover.errors.emailInvalid");
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

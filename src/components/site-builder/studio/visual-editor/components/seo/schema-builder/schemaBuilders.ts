@@ -1,3 +1,4 @@
+import i18n from "../../../../../../../i18n/i18n";
 import type { SeoSchemaType } from "../../../../types";
 import type {
   BreadcrumbFormData,
@@ -159,7 +160,7 @@ export function defaultFormData(
       const items = [] as Array<{ id: string; name: string; url: string }>;
       items.push({
         id: newLocalId("bc"),
-        name: "דף הבית",
+        name: i18n.t("leftover.schema.home"),
         url: ctx.homeUrl || ctx.publicUrl || "",
       });
       if (ctx.parentPageTitle && ctx.parentPageUrl) {
@@ -171,7 +172,7 @@ export function defaultFormData(
       }
       items.push({
         id: newLocalId("bc"),
-        name: ctx.pageTitle || "עמוד",
+        name: ctx.pageTitle || i18n.t("leftover.schema.page"),
         url: ctx.previewUrl || "",
       });
       return { items } as BreadcrumbFormData as unknown as Record<

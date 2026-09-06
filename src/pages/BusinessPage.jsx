@@ -1,10 +1,12 @@
 // src/pages/BusinessPage.jsx
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import Profile from "./business/dashboardPages/Profile";
 
 export default function BusinessPage() {
+  const { t } = useTranslation();
   const { businessId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -29,7 +31,7 @@ export default function BusinessPage() {
               fontSize: "16px"
             }}
           >
-            ✏️ ערוך פרופיל
+            ✏️ {t("leftover.profile.editProfile")}
           </button>
         </div>
       )}

@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import i18n from "./i18n/i18n";
 import { getHtmlLang, getTextDirection } from "./i18n/localeUtils";
 
 import PreLoginBot from "./components/PreLoginBot";
@@ -283,6 +284,7 @@ function isInternalAppPath(pathname) {
 }
 
 function PublicMiniSitePage() {
+  const { t, i18n: i18nInst } = useTranslation();
   const location = useLocation();
 
   const [loading, setLoading] = useState(true);
@@ -440,7 +442,7 @@ function PublicMiniSitePage() {
       });
 
       if (!res.ok || !data?.success || !data?.site) {
-        throw new Error(data?.error || "האתר לא נמצא או עדיין לא פורסם");
+        throw new Error(data?.error || i18n.t("leftover.errors.siteNotFound"));
       }
 
       const freshSite = {
@@ -458,7 +460,7 @@ function PublicMiniSitePage() {
       console.error("BIZUPLY PUBLIC MINI SITE LOAD ERROR:", err);
 
       if (!silent || !siteRef.current) {
-        setError(err?.message || "שגיאה בטעינת האתר");
+        setError(err?.message || i18n.t("leftover.errors.loadSite"));
         siteRef.current = null;
         setSite(null);
       }
@@ -693,16 +695,16 @@ function PublicMiniSitePage() {
 
     return (
       <div
-        dir="rtl"
+        dir={getTextDirection(i18nInst.language)}
         className="flex min-h-screen items-center justify-center bg-white p-6"
       >
         <div className="w-full max-w-xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
           <h1 className="text-3xl font-black text-slate-800">
-            האתר עדיין לא זמין
+            {t("leftover.errors.siteUnavailable")}
           </h1>
 
           <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
-            לא מצאנו אתר מפורסם עבור הדומיין:
+            {t("leftover.errors.siteDomainMissing")}
           </p>
 
           <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-black text-slate-700">

@@ -1,8 +1,10 @@
+import i18n from "../i18n/i18n";
+
 export const SW_SCOPE = "/";
 export const SW_SCRIPT_VERSION = 11;
 export const SW_URL = `/service-worker.js?v=${SW_SCRIPT_VERSION}`;
 export const LEGACY_GENERIC_TAG = "bizuply-notification";
-export const LEGACY_GENERIC_BODY = "יש לך התראה חדשה";
+export const LEGACY_GENERIC_BODY = i18n.t("leftover.errors.newPush");
 
 export function shouldForceRebindOnSwMessage(type: unknown): boolean {
   // Browser rotated the endpoint. Do not force-rebind on SW_ACTIVATED —
@@ -74,6 +76,7 @@ export function isLegacyGenericBanner(note: {
   return (
     tag === LEGACY_GENERIC_TAG ||
     body === LEGACY_GENERIC_BODY ||
+    body === i18n.t("leftover.errors.newPush", { lng: "he" }) ||
     (title === "BizUply" && !title.includes("·"))
   );
 }

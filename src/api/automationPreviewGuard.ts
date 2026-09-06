@@ -7,11 +7,15 @@
  * Optionally also set VITE_VERCEL_ENV=preview in the Vercel Preview env.
  */
 
-export const AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE =
-  "פעולות כתיבה באוטומציות חסומות בסביבת Preview";
+import i18n from "../i18n/i18n";
 
-export const AUTOMATION_PREVIEW_ACTION_TOOLTIP =
-  "הפעולה אינה זמינה בסביבת Preview";
+export const AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE = i18n.t(
+  "leftover.errors.previewWrites"
+);
+
+export const AUTOMATION_PREVIEW_ACTION_TOOLTIP = i18n.t(
+  "leftover.errors.previewAction"
+);
 
 export function isAutomationsReadOnly(): boolean {
   return (

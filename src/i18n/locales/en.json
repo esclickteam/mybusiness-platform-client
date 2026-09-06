@@ -18242,7 +18242,11 @@
       "locating": "The city was selected, but there is still no point on the map. Looking up coordinates…"
     },
     "profile": {
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "logo": "Business logo",
+      "businessName": "Business name",
+      "editProfile": "Edit profile",
+      "myMessages": "My messages"
     },
     "upgrade": {
       "title": "Upgrade subscription"
@@ -18287,6 +18291,127 @@
       "title": "A temporary error occurred",
       "body": "We could not load the page. Refresh and try again.",
       "refresh": "Refresh the page"
+    },
+    "errors": {
+      "portalArea": "Personal area error",
+      "loadMembers": "Could not load members",
+      "createMember": "Could not create the member",
+      "updateMember": "Could not update the member",
+      "deleteMember": "Could not delete the member",
+      "createInvite": "Could not create the invitation",
+      "siteNotFound": "The site was not found or is not published yet",
+      "loadSite": "Could not load the site",
+      "siteUnavailable": "The site is not available yet",
+      "siteDomainMissing": "We could not find a published site for this domain:",
+      "reauth": "Please sign in again",
+      "network": "Network problem — check your connection",
+      "loadData": "Could not load the data",
+      "connectDomain": "Domain connection failed",
+      "disconnectDomain": "Domain disconnect failed",
+      "previewWrites": "Automation write actions are blocked in Preview",
+      "previewAction": "This action is not available in Preview",
+      "checkoutUnavailable": "Could not open the payment screen right now",
+      "tryAgainSoon": "Something went wrong. Try again in a moment",
+      "signFail": "Could not create the upload signature",
+      "signMissing": "Upload signature details are missing",
+      "uploadRetry": "The file upload failed. Try again.",
+      "uploadFailed": "The file upload failed",
+      "uploadStart": "The upload cannot start right now. Try again.",
+      "mediaUploading": "An image or video is still uploading. Wait for it to finish and try again.",
+      "mediaUploadingShort": "Media is still uploading. Wait for it to finish and try again.",
+      "publishFailed": "Publish failed",
+      "saveFailed": "Save failed",
+      "chatConnect": "We could not connect to chat. Try again.",
+      "emailInvalid": "Enter a valid email address",
+      "newNotification": "New notification",
+      "newPush": "You have a new notification",
+      "refreshOrSupport": "Refresh the page. If it continues, contact support."
+    },
+    "schema": {
+      "deleteConfirm": "Delete the schema \"{{name}}\"?",
+      "copyName": "{{name}} (copy)",
+      "maxReached": "You reached the maximum number of schemas for this page.",
+      "singletonConfirm": "A \"{{type}}\" schema already exists on this page. One is recommended. Add another anyway?",
+      "pickType": "Choose a schema type to add",
+      "pageList": "Schemas on this page ({{count}})",
+      "empty": "No schemas yet. Choose a type above — we will build a form and ready JSON-LD.",
+      "displayName": "Display name",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "delete": "Delete",
+      "breadcrumbHint": "Steps were created from the site structure. You can change the name, URL, and order.",
+      "addStep": "Add step",
+      "valid": "Valid",
+      "missingRecommended": "Recommended fields are missing",
+      "needsFix": "Needs a fix",
+      "home": "Home",
+      "page": "Page"
+    },
+    "nav": {
+      "home": "Home",
+      "services": "Services",
+      "gallery": "Work",
+      "pricing": "Pricing",
+      "contact": "Contact",
+      "main": "Main navigation",
+      "menu": "Menu",
+      "page": "Page"
+    },
+    "studioChrome": {
+      "livePreview": "Live site preview",
+      "canvasActive": "Canvas active",
+      "freeEdit": "Free editing",
+      "font": "Font",
+      "templateView": "Template preview",
+      "sections": "{{count}} sections",
+      "imageVideo": "Image / video",
+      "noMedia": "No media",
+      "link": "Link",
+      "section": "Section",
+      "text": "Text"
+    },
+    "countdown": {
+      "title": "Countdown",
+      "plugin": "Bizuply plugin",
+      "dragHint": "Drag and resize in the editor"
+    },
+    "pushBanner": {
+      "alreadyActive": "Notifications are already active from the home-screen icon.",
+      "iosSafari": "On iPhone, Push works only from Safari after adding to the home screen, then opening from the icon. Chrome/Edge on iPhone are not supported.",
+      "unsupported": "This browser does not support Push notifications. Try an updated Chrome / Edge / Firefox.",
+      "iosInstall": "On iPhone you must add BizUply to the home screen (Safari → Share → Add to Home Screen) and then open it from the icon — otherwise phone Push will not work."
+    },
+    "hours": {
+      "loading": "Loading...",
+      "noneSet": "Hours are not set — add them to book meetings",
+      "openDays": "{{count}} working days"
+    },
+    "timePicker": {
+      "start": "Start time:",
+      "end": "End time:"
+    },
+    "editable": {
+      "save": "Save",
+      "saved": "Saved"
+    },
+    "formPro": {
+      "previous": "Previous",
+      "next": "Next",
+      "stepN": "Step {{n}}"
+    },
+    "chat": {
+      "openAssistant": "Open the Bizuply smart assistant"
+    },
+    "wheel": {
+      "title": "Benefits wheel",
+      "subtitle": "Spin and see what you won!",
+      "trigger": "Benefits wheel",
+      "sale10": "10% off",
+      "freeShip": "Free shipping",
+      "gift": "Gift",
+      "sale20": "20% off",
+      "upgrade": "Free upgrade",
+      "tryAgain": "Try again"
     }
   }
 }

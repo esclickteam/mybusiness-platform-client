@@ -1,3 +1,5 @@
+import i18n from "../../../../../i18n/i18n";
+
 export type PageHierarchyItem = {
   id: string;
   title?: string;
@@ -559,7 +561,7 @@ export function buildHierarchicalLinkTargets(
 
   return buildPageTreeRows(pages).map(({ page, depth }) => ({
     id: page.id,
-    label: String(page.title || page.id || "עמוד").trim(),
+    label: String(page.title || page.id || i18n.t("leftover.nav.page")).trim(),
     href: resolveHref(page),
     depth,
     parentPageId: safeString(page.parentPageId) || undefined,

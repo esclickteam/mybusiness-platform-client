@@ -1,5 +1,6 @@
 import { createRoot, type Root } from "react-dom/client";
 import React from "react";
+import i18n from "../../../i18n/i18n";
 
 import BookingWidget, {
   type BookingWidgetChrome,
@@ -30,7 +31,7 @@ const LIBRARY_INSERT_SELECTOR = [
 
 const BOOKING_REMOVED_ATTR = "data-bizuply-booking-removed";
 
-export function buildBookingWidgetMarker(label = "יומן פגישות") {
+export function buildBookingWidgetMarker(label = i18n.t("leftover.siteBooking.calendarSection")) {
   // Mounts must NOT use data-bizuply-block="booking" — that attr marks real
   // <section> wrappers. Putting it on mounts makes the editor treat the
   // calendar as a page section (shared delete id / whole-page delete).

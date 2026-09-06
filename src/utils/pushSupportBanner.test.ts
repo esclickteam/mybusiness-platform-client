@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import i18n from "../i18n/i18n";
 import {
   isPushOnFromServerOnly,
   resolvePushSupportBanner,
@@ -15,7 +16,7 @@ describe("resolvePushSupportBanner", () => {
     expect(banner?.kind).toBe("ios-webview");
     expect(banner?.text).toContain("Safari");
     expect(banner?.text).not.toMatch(/נסה\/?י Chrome/);
-    expect(banner?.text).toContain("ההתראות כבר פעילות");
+    expect(banner?.text).toContain(i18n.t("leftover.pushBanner.alreadyActive"));
   });
 
   it("keeps the generic browser hint off iOS", () => {

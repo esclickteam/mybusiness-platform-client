@@ -18242,7 +18242,11 @@
       "locating": "A cidade foi escolhida, mas ainda sem ponto. A localizar coordenadas…"
     },
     "profile": {
-      "loading": "A carregar..."
+      "loading": "A carregar...",
+      "logo": "Logótipo do negócio",
+      "businessName": "Nome do negócio",
+      "editProfile": "Editar perfil",
+      "myMessages": "As minhas mensagens"
     },
     "upgrade": {
       "title": "Atualizar assinatura"
@@ -18287,6 +18291,127 @@
       "title": "Ocorreu um erro temporário",
       "body": "Não foi possível carregar a página. Atualize e tente de novo.",
       "refresh": "Atualizar a página"
+    },
+    "errors": {
+      "portalArea": "Erro na área pessoal",
+      "loadMembers": "Não foi possível carregar os membros",
+      "createMember": "Não foi possível criar o membro",
+      "updateMember": "Não foi possível atualizar o membro",
+      "deleteMember": "Não foi possível eliminar o membro",
+      "createInvite": "Não foi possível criar o convite",
+      "siteNotFound": "O site não foi encontrado ou ainda não foi publicado",
+      "loadSite": "Não foi possível carregar o site",
+      "siteUnavailable": "O site ainda não está disponível",
+      "siteDomainMissing": "Não encontrámos um site publicado para este domínio:",
+      "reauth": "Inicie sessão novamente",
+      "network": "Problema de rede — verifique a ligação",
+      "loadData": "Não foi possível carregar os dados",
+      "connectDomain": "A ligação do domínio falhou",
+      "disconnectDomain": "A desligação do domínio falhou",
+      "previewWrites": "As escritas de automação estão bloqueadas no Preview",
+      "previewAction": "Esta ação não está disponível no Preview",
+      "checkoutUnavailable": "Não foi possível abrir o pagamento agora",
+      "tryAgainSoon": "Algo falhou. Tente daqui a pouco",
+      "signFail": "Não foi possível criar a assinatura de envio",
+      "signMissing": "Faltam os dados da assinatura de envio",
+      "uploadRetry": "O envio falhou. Tente de novo.",
+      "uploadFailed": "O envio do ficheiro falhou",
+      "uploadStart": "Não dá para iniciar o envio agora. Tente de novo.",
+      "mediaUploading": "Ainda há uma imagem ou vídeo a enviar. Espere e tente de novo.",
+      "mediaUploadingShort": "Ainda há média a enviar. Espere e tente de novo.",
+      "publishFailed": "A publicação falhou",
+      "saveFailed": "Falha ao salvar",
+      "chatConnect": "Não ligámos o chat. Tente de novo.",
+      "emailInvalid": "Introduza um e-mail válido",
+      "newNotification": "Nova notificação",
+      "newPush": "Tem uma notificação nova",
+      "refreshOrSupport": "Atualize a página. Se continuar, contacte o suporte."
+    },
+    "schema": {
+      "deleteConfirm": "Eliminar o schema \"{{name}}\"?",
+      "copyName": "{{name}} (cópia)",
+      "maxReached": "Chegou ao máximo de schemas desta página.",
+      "singletonConfirm": "Já existe um schema \"{{type}}\" na página. Recomenda-se um. Adicionar outro?",
+      "pickType": "Escolha um tipo de schema",
+      "pageList": "Schemas nesta página ({{count}})",
+      "empty": "Ainda sem schemas. Escolha um tipo acima — criamos o formulário e o JSON-LD.",
+      "displayName": "Nome de apresentação",
+      "moveUp": "Subir",
+      "moveDown": "Descer",
+      "delete": "Eliminar",
+      "breadcrumbHint": "Os passos foram criados pela estrutura. Pode alterar nome, URL e ordem.",
+      "addStep": "Adicionar passo",
+      "valid": "Válido",
+      "missingRecommended": "Faltam campos recomendados",
+      "needsFix": "Precisa de correção",
+      "home": "Início",
+      "page": "Página"
+    },
+    "nav": {
+      "home": "Início",
+      "services": "Serviços",
+      "gallery": "Trabalhos",
+      "pricing": "Preços",
+      "contact": "Contacto",
+      "main": "Navegação principal",
+      "menu": "Menu",
+      "page": "Página"
+    },
+    "studioChrome": {
+      "livePreview": "Pré-visualização ao vivo",
+      "canvasActive": "Canvas ativo",
+      "freeEdit": "Edição livre",
+      "font": "Fonte",
+      "templateView": "Vista do modelo",
+      "sections": "{{count}} secções",
+      "imageVideo": "Imagem / vídeo",
+      "noMedia": "Sem média",
+      "link": "Ligação",
+      "section": "Secção",
+      "text": "Texto"
+    },
+    "countdown": {
+      "title": "Contagem decrescente",
+      "plugin": "Extra Bizuply",
+      "dragHint": "Arraste e redimensione no editor"
+    },
+    "pushBanner": {
+      "alreadyActive": "As notificações já estão ativas pelo ícone no ecrã inicial.",
+      "iosSafari": "No iPhone, o Push só funciona no Safari depois de adicionar ao ecrã inicial e abrir pelo ícone. Chrome/Edge não são suportados.",
+      "unsupported": "Este navegador não suporta Push. Tente Chrome / Edge / Firefox atualizado.",
+      "iosInstall": "No iPhone deve adicionar o BizUply ao ecrã inicial (Safari → Partilhar → Adicionar ao ecrã inicial) e abrir pelo ícone."
+    },
+    "hours": {
+      "loading": "A carregar...",
+      "noneSet": "Sem horário — defina para marcar reuniões",
+      "openDays": "{{count}} dias de atividade"
+    },
+    "timePicker": {
+      "start": "Hora de início:",
+      "end": "Hora de fim:"
+    },
+    "editable": {
+      "save": "Guardar",
+      "saved": "Salvo"
+    },
+    "formPro": {
+      "previous": "Anterior",
+      "next": "Seguinte",
+      "stepN": "Passo {{n}}"
+    },
+    "chat": {
+      "openAssistant": "Abrir o assistente inteligente da Bizuply"
+    },
+    "wheel": {
+      "title": "Roda de benefícios",
+      "subtitle": "Gire e veja o que ganhou!",
+      "trigger": "Roda de benefícios",
+      "sale10": "10% de desconto",
+      "freeShip": "Envio grátis",
+      "gift": "Presente",
+      "sale20": "20% de desconto",
+      "upgrade": "Upgrade grátis",
+      "tryAgain": "Tente de novo"
     }
   }
 }

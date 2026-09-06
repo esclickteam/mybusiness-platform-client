@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   editorRefContainer: React.RefObject<HTMLDivElement | null>;
@@ -11,6 +12,7 @@ export default function StudioCanvas({
   publicUrl,
   layersRef,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <main className="relative min-h-0 overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(236,72,153,0.12),transparent_30%),linear-gradient(135deg,#f8f7ff,#ffffff)] p-4 lg:p-5">
       {/* TOP CANVAS BAR */}
@@ -19,7 +21,7 @@ export default function StudioCanvas({
           <div className="mb-1 flex items-center gap-2">
             <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_0_5px_rgba(16,185,129,0.12)]" />
             <p className="text-xs font-black text-violet-700">
-              תצוגת אתר חיה
+              {t("leftover.studioChrome.livePreview")}
             </p>
           </div>
 
@@ -33,8 +35,8 @@ export default function StudioCanvas({
         </div>
 
         <div className="hidden shrink-0 items-center gap-2 xl:flex">
-          <StatusBadge tone="emerald">Canvas פעיל</StatusBadge>
-          <StatusBadge tone="violet">עריכה חופשית</StatusBadge>
+          <StatusBadge tone="emerald">{t("leftover.studioChrome.canvasActive")}</StatusBadge>
+          <StatusBadge tone="violet">{t("leftover.studioChrome.freeEdit")}</StatusBadge>
           <StatusBadge tone="slate">Drag & Drop</StatusBadge>
         </div>
       </div>

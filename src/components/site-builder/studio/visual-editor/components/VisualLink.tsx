@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../../../i18n/i18n";
 
 import { readVisualContent } from "../utils/visualData";
 
@@ -52,7 +53,7 @@ export default function VisualLink({
   className,
   style,
   editable = true,
-  label = "קישור",
+  label = i18n.t("leftover.studioChrome.link"),
   onClick,
   ...props
 }: VisualLinkProps) {

@@ -30,9 +30,9 @@ function ProviderLogo({ item }: { item: PaymentProviderCatalogItem }) {
 }
 
 const BADGE_KEYS: Record<string, string> = {
-  "תומך בהוראות קבע": "badgeRecurring",
-  "בינלאומי": "badgeIntl",
-  "תומך בתשלומים": "badgePayments",
+  recurring: "badgeRecurring",
+  intl: "badgeIntl",
+  payments: "badgePayments",
 };
 
 export default function PaymentsProviderGallery({

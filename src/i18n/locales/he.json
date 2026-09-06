@@ -18231,7 +18231,11 @@
       "locating": "העיר נבחרה, אבל עדיין אין נקודה על המפה. מנסים לאתר קואורדינטות…"
     },
     "profile": {
-      "loading": "טוען..."
+      "loading": "טוען...",
+      "logo": "לוגו העסק",
+      "businessName": "שם העסק",
+      "editProfile": "ערוך פרופיל",
+      "myMessages": "ההודעות שלי"
     },
     "upgrade": {
       "title": "שדרוג מנוי"
@@ -18276,6 +18280,127 @@
       "title": "אירעה שגיאה זמנית",
       "body": "לא הצלחנו לטעון את העמוד. רעננו ונסו שוב.",
       "refresh": "רענון העמוד"
+    },
+    "errors": {
+      "portalArea": "שגיאה באזור האישי",
+      "loadMembers": "שגיאה בטעינת חברים",
+      "createMember": "שגיאה ביצירת חבר",
+      "updateMember": "שגיאה בעדכון חבר",
+      "deleteMember": "שגיאה במחיקת חבר",
+      "createInvite": "שגיאה ביצירת הזמנה",
+      "siteNotFound": "האתר לא נמצא או עדיין לא פורסם",
+      "loadSite": "שגיאה בטעינת האתר",
+      "siteUnavailable": "האתר עדיין לא זמין",
+      "siteDomainMissing": "לא מצאנו אתר מפורסם עבור הדומיין:",
+      "reauth": "יש להתחבר מחדש",
+      "network": "בעיית רשת — בדקו את החיבור",
+      "loadData": "שגיאה בטעינת הנתונים",
+      "connectDomain": "חיבור הדומיין נכשל",
+      "disconnectDomain": "ניתוק הדומיין נכשל",
+      "previewWrites": "פעולות כתיבה באוטומציות חסומות בסביבת Preview",
+      "previewAction": "הפעולה אינה זמינה בסביבת Preview",
+      "checkoutUnavailable": "לא ניתן לפתוח את מסך התשלום כרגע",
+      "tryAgainSoon": "אירעה שגיאה, נסה שוב בעוד רגע",
+      "signFail": "יצירת חתימת העלאה נכשלה",
+      "signMissing": "חסרים פרטי חתימה להעלאה",
+      "uploadRetry": "העלאת הקובץ נכשלה. נסו שוב.",
+      "uploadFailed": "העלאת הקובץ נכשלה",
+      "uploadStart": "לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.",
+      "mediaUploading": "יש תמונה או וידאו שעדיין לא סיימו לעלות. המתיני לסיום ההעלאה ונסי שוב.",
+      "mediaUploadingShort": "יש מדיה שעדיין עולה. המתיני לסיום ההעלאה ונסי שוב.",
+      "publishFailed": "הפרסום נכשל",
+      "saveFailed": "השמירה נכשלה",
+      "chatConnect": "לא הצלחנו להתחבר לצ׳אט. נסו שוב.",
+      "emailInvalid": "יש להזין כתובת אימייל תקינה",
+      "newNotification": "התראה חדשה",
+      "newPush": "יש לך התראה חדשה",
+      "refreshOrSupport": "נסו לרענן את העמוד. אם הבעיה נמשכת, פנו לתמיכה."
+    },
+    "schema": {
+      "deleteConfirm": "למחוק את ה‑Schema \"{{name}}\"?",
+      "copyName": "{{name}} (עותק)",
+      "maxReached": "הגעת למספר המרבי של סכימות לעמוד.",
+      "singletonConfirm": "כבר קיים Schema מסוג \"{{type}}\" בעמוד. מומלץ אחד בלבד. להוסיף בכל זאת?",
+      "pickType": "בחרו סוג Schema להוספה",
+      "pageList": "הסכימות בעמוד ({{count}})",
+      "empty": "אין עדיין סכימות. בחרו סוג למעלה — נבנה עבורכם טופס וקוד JSON-LD מוכן.",
+      "displayName": "שם התצוגה",
+      "moveUp": "למעלה",
+      "moveDown": "למטה",
+      "delete": "מחיקה",
+      "breadcrumbHint": "השלבים נוצרו אוטומטית לפי מבנה האתר. אפשר לשנות שם, כתובת וסדר.",
+      "addStep": "הוספת שלב",
+      "valid": "תקין",
+      "missingRecommended": "חסרים שדות מומלצים",
+      "needsFix": "לתיקון",
+      "home": "דף הבית",
+      "page": "עמוד"
+    },
+    "nav": {
+      "home": "ראשי",
+      "services": "שירותים",
+      "gallery": "עבודות",
+      "pricing": "מחירים",
+      "contact": "צור קשר",
+      "main": "ניווט ראשי",
+      "menu": "תפריט",
+      "page": "עמוד"
+    },
+    "studioChrome": {
+      "livePreview": "תצוגת אתר חיה",
+      "canvasActive": "Canvas פעיל",
+      "freeEdit": "עריכה חופשית",
+      "font": "גופן",
+      "templateView": "תצוגת תבנית",
+      "sections": "{{count}} סקשנים",
+      "imageVideo": "תמונה / וידאו",
+      "noMedia": "אין מדיה",
+      "link": "קישור",
+      "section": "סקשן",
+      "text": "טקסט"
+    },
+    "countdown": {
+      "title": "ספירה לאחור",
+      "plugin": "תוסף Bizuply",
+      "dragHint": "גררו ושנו גודל בעורך"
+    },
+    "pushBanner": {
+      "alreadyActive": "ההתראות כבר פעילות מהאייקון במסך הבית.",
+      "iosSafari": "באייפון Push עובד רק מ-Safari אחרי הוספה למסך הבית, ואז פתיחה מהאייקון. Chrome/Edge באייפון לא תומכים.",
+      "unsupported": "הדפדפן לא תומך בהתראות Push. נסה/י Chrome / Edge / Firefox מעודכן.",
+      "iosInstall": "באייפון חייבים להתקין את BizUply למסך הבית (Safari → שיתוף → הוסף למסך הבית) ואז לפתוח מהאייקון — אחרת Push לטלפון לא יעבוד."
+    },
+    "hours": {
+      "loading": "טוען...",
+      "noneSet": "לא הוגדרו שעות — הגדר כדי לתאם פגישות",
+      "openDays": "{{count}} ימי פעילות"
+    },
+    "timePicker": {
+      "start": "שעת התחלה:",
+      "end": "שעת סיום:"
+    },
+    "editable": {
+      "save": "שמור",
+      "saved": "נשמר"
+    },
+    "formPro": {
+      "previous": "הקודם",
+      "next": "הבא",
+      "stepN": "שלב {{n}}"
+    },
+    "chat": {
+      "openAssistant": "פתיחת העוזר החכם של Bizuply"
+    },
+    "wheel": {
+      "title": "גלגל ההטבות",
+      "subtitle": "סובבו וגלו מה זכיתם!",
+      "trigger": "גלגל הטבות",
+      "sale10": "10% הנחה",
+      "freeShip": "משלוח חינם",
+      "gift": "מתנה",
+      "sale20": "20% הנחה",
+      "upgrade": "שדרוג חינם",
+      "tryAgain": "נסו שוב"
     }
   }
 }

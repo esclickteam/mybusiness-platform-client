@@ -1,4 +1,6 @@
 import React from 'react';
+import i18n from '../i18n/i18n';
+import { getTextDirection } from '../i18n/localeUtils';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -17,9 +19,9 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div dir="rtl" style={{ padding: "2rem", textAlign: "center" }}>
-          <h1>אירעה שגיאה זמנית</h1>
-          <p>נסו לרענן את העמוד. אם הבעיה נמשכת, פנו לתמיכה.</p>
+        <div dir={getTextDirection(i18n.language)} style={{ padding: "2rem", textAlign: "center" }}>
+          <h1>{i18n.t("leftover.appError.title")}</h1>
+          <p>{i18n.t("leftover.errors.refreshOrSupport")}</p>
         </div>
       );
     }
