@@ -8,6 +8,7 @@ import {
   uploadPartnerComplianceDocument,
 } from "../../lib/partnerApi";
 import type { PartnerCompliance, PartnerMe } from "../../types/partner";
+import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import PartnerBrandingCard from "../../components/partner/PartnerBrandingCard";
 import {
@@ -168,7 +169,9 @@ export default function PartnerSettings() {
             {t(`partner.settings.kyc.${kycKey}`, { defaultValue: status })}
           </PartnerBadge>
           <p className="text-sm font-bold text-slate-500">
-            {t("partner.settings.planLabel", { name: partner?.plan?.nameHe || partner?.planKey })}
+            {t("partner.settings.planLabel", {
+              name: partnerPlanDisplayName(t, partner?.plan) || partner?.planKey,
+            })}
           </p>
         </div>
         {form.adminFeedback ? (

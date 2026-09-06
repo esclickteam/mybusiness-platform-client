@@ -114,7 +114,9 @@ export default function AutomationPlanModal({
 
   const heading = useMemo(() => {
     if (confirm?.kind === "upgrade") {
-      return t("automations.billing.upgradeTo", { plan: confirm.plan.name });
+      return t("automations.billing.upgradeTo", {
+        plan: getAutomationPlanDisplayName(confirm.plan.key, t),
+      });
     }
     if (confirm?.kind === "downgrade") return t("automations.billing.downgradeTitle");
     if (mode === "manage" && hasPlan) return t("automations.billing.manageTitle");
@@ -156,7 +158,11 @@ export default function AutomationPlanModal({
       if (kind === "downgrade" || result.action === "downgrade_scheduled") {
         toast.success(t("automations.billing.changeScheduled"));
       } else {
-        toast.success(t("automations.billing.changedTo", { plan: plan.name }));
+        toast.success(
+          t("automations.billing.changedTo", {
+            plan: getAutomationPlanDisplayName(plan.key, t),
+          })
+        );
       }
       setConfirm(null);
       await onUsageUpdated();
@@ -262,7 +268,7 @@ export default function AutomationPlanModal({
                 <p>{t("automations.billing.keepQuotaUntilThen")}</p>
                 <p>
                   {t("automations.billing.newPlanLine", {
-                    plan: confirm.plan.name,
+                    plan: getAutomationPlanDisplayName(confirm.plan.key, t),
                     count: formatHeNumber(confirm.plan.executionLimit),
                   })}
                 </p>
@@ -319,7 +325,7 @@ export default function AutomationPlanModal({
                         {t("automations.billing.currentPlan")}
                       </span>
                     ) : null}
-                    <h3>{plan.name}</h3>
+                    <h3>{getAutomationPlanDisplayName(plan.key, t)}</h3>
                     <p className="ax-billing-plan__price">
                       <strong>{formatHeNumber(plan.priceIls)}</strong>
                       <span> {t("automations.billing.perMonth")}</span>
@@ -356,7 +362,7 @@ export default function AutomationPlanModal({
             {pendingKey ? (
               <p className="ax-billing-card__note" role="status">
                 {t("automations.billing.nextRenewal", {
-                  plan: getAutomationPlanDisplayName(pendingKey),
+                  plan: getAutomationPlanDisplayName(pendingKey, t),
                 })}
               </p>
             ) : null}

@@ -11,6 +11,7 @@ import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
 import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
+import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
 
 function billingKey(billing?: string) {
   if (billing === "recurring_month") return "partner.billing.monthly";
@@ -123,9 +124,11 @@ export default function PartnerPublicPlans() {
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="text-xl font-black">{product.nameHe}</h2>
-                {product.descriptionHe ? (
-                  <p className="mt-1 text-sm font-bold text-slate-500">{product.descriptionHe}</p>
+                <h2 className="text-xl font-black">{catalogProductName(t, product)}</h2>
+                {product.descriptionHe || product.descriptionEn ? (
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    {catalogProductDescription(t, product)}
+                  </p>
                 ) : null}
                 <p className="mt-2 text-xs font-bold text-slate-400">{t(billingKey(product.billing))}</p>
                 {product.humanService ? (
@@ -155,7 +158,7 @@ export default function PartnerPublicPlans() {
       {selected ? (
         <form onSubmit={buy} className="mt-8 space-y-3 rounded-3xl border border-violet-100 bg-white p-5">
           <h3 className="text-lg font-black">
-            {t("partner.public.customerDetails", { name: selected.nameHe })}
+            {t("partner.public.customerDetails", { name: catalogProductName(t, selected) })}
           </h3>
           <p className="text-sm font-bold text-slate-500">
             {t("partner.public.toPay", { amount: formatPublicCustomerPrice(selected) })}

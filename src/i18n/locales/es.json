@@ -1453,6 +1453,11 @@
         "continueHint": "Puedes volver y seguir con las automatizaciones.",
         "timeoutTitle": "Pago recibido y la actualización sigue en curso.",
         "timeoutHint": "La mayoría termina enseguida."
+      },
+      "planNames": {
+        "automation_basic_39_ils": "Automatización Basic",
+        "automation_growth_79_ils": "Automatización Growth",
+        "automation_pro_149_ils": "Automatización Pro"
       }
     },
     "runs": {
@@ -2480,6 +2485,291 @@
           "5": "Panel de rendimiento y analítica",
           "6": "Opción de añadir el sitio por separado",
           "7": "Opción de añadir más servicios de negocio"
+        }
+      }
+    },
+    "addons": {
+      "automations-setup": {
+        "name": "Configuración de automatizaciones",
+        "description": "Creamos flujos automáticos que siguen cuidando leads y clientes aunque no estés en el sistema.",
+        "price": "Desde ₪390 único",
+        "details": {
+          "0": "Una automatización simple: ₪390",
+          "1": "Paquete de 3: ₪890",
+          "2": "Paquete de 6: ₪1,490",
+          "3": "Proceso complejo: presupuesto a medida"
+        },
+        "tracks": {
+          "0": {
+            "label": "Una automatización simple",
+            "price": "₪390"
+          },
+          "1": {
+            "label": "Paquete de 3 automatizaciones",
+            "price": "₪890"
+          },
+          "2": {
+            "label": "Paquete de 6 automatizaciones",
+            "price": "₪1,490"
+          },
+          "3": {
+            "label": "Proceso complejo",
+            "price": "Presupuesto a medida"
+          }
+        },
+        "examples": {
+          "0": "Entra un lead nuevo",
+          "1": "Mensaje de WhatsApp automático",
+          "2": "Email automático",
+          "3": "Abrir una tarea para un agente",
+          "4": "Recordatorio si no hubo acción",
+          "5": "Seguimiento automático a los pocos días",
+          "6": "Cambio de estado según una acción",
+          "7": "Recordatorio de reunión",
+          "8": "Mensaje postcompra",
+          "9": "Petición de reseña automática"
+        },
+        "note": "No incluye costes de WhatsApp, SMS, email ni servicios de terceros."
+      },
+      "website-build": {
+        "name": "Sitio creado por un experto",
+        "description": "Un experto de Bizuply crea y publica un sitio profesional con las plantillas y herramientas de la plataforma.",
+        "price": "Desde ₪1,490 único",
+        "details": {
+          "0": "Sitio de hasta 5 páginas",
+          "1": "Elección de plantilla existente",
+          "2": "Contenido e imágenes que aporta el cliente",
+          "3": "Adaptación a móvil",
+          "4": "Formulario de leads",
+          "5": "Conexión al CRM",
+          "6": "Conexión de dominio",
+          "7": "Hasta 2 rondas de correcciones"
+        },
+        "extras": {
+          "0": {
+            "label": "Página extra",
+            "price": "₪190"
+          },
+          "1": {
+            "label": "Redacción de contenido",
+            "price": "₪590"
+          },
+          "2": {
+            "label": "Tienda básica",
+            "price": "+ ₪1,490"
+          },
+          "3": {
+            "label": "Diseño personalizado avanzado",
+            "price": "Desde ₪2,990"
+          }
+        }
+      },
+      "crm-migration": {
+        "name": "Migración desde otro CRM",
+        "description": "Especialmente útil si el cliente se cambia a ti — migrarmos clientes, leads y estados, y mapeamos campos para que el negocio siga fluido.",
+        "price": "Desde ₪790 único",
+        "details": {
+          "0": "Traslado de clientes y leads",
+          "1": "Traslado de estados",
+          "2": "Mapeo de campos",
+          "3": "Comprobación de calidad",
+          "4": "Formación tras la migración"
+        },
+        "tracks": {
+          "0": {
+            "label": "Migración básica",
+            "price": "Desde ₪790"
+          }
+        },
+        "note": "El alcance y el precio final dependen del volumen de registros y de la complejidad del sistema actual."
+      },
+      "store-products-upload": {
+        "name": "Subida de productos a la tienda",
+        "description": "Para clientes que montan una tienda contigo — subimos productos con imágenes, descripciones, categorías, precios, variantes y envío.",
+        "price": "Desde ₪490 único",
+        "details": {
+          "0": "Subida de productos",
+          "1": "Imágenes y descripciones",
+          "2": "Categorías",
+          "3": "Precios y variantes",
+          "4": "Ajustes de envío"
+        },
+        "tracks": {
+          "0": {
+            "label": "Hasta 20 productos",
+            "price": "₪490"
+          },
+          "1": {
+            "label": "Hasta 50 productos",
+            "price": "₪990"
+          },
+          "2": {
+            "label": "Más allá",
+            "price": "Presupuesto a medida"
+          }
+        }
+      },
+      "paid-campaign-setup": {
+        "name": "Configuración de campaña de pago",
+        "description": "Un experto lanza una campaña profesional en Meta y conecta los leads directo a Bizuply.",
+        "price": "Desde ₪690 único",
+        "details": {
+          "0": "Configuración de campaña en Meta",
+          "1": "Definición de audiencia",
+          "2": "Creación de conjunto de anuncios",
+          "3": "Hasta 3 anuncios",
+          "4": "Formulario de leads o landing existente",
+          "5": "Leads conectados a Bizuply",
+          "6": "Instalación de seguimiento básico",
+          "7": "Control de calidad antes del lanzamiento"
+        },
+        "tracks": {
+          "0": {
+            "label": "Configuración de campaña en Meta",
+            "price": "₪690"
+          },
+          "1": {
+            "label": "Campaña avanzada en Meta",
+            "price": "₪990"
+          }
+        },
+        "note": "El precio cubre solo la configuración — no incluye gestión continua ni presupuesto publicitario. Ahora solo en Meta."
+      },
+      "content-creation": {
+        "name": "Creación de contenido",
+        "description": "El equipo de Bizuply crea contenido diseñado y listo para publicar en Facebook e Instagram.",
+        "price": "Desde ₪990 / mes",
+        "details": {
+          "0": "8 publicaciones al mes",
+          "1": "Redacción y diseño",
+          "2": "Adaptación a Facebook e Instagram",
+          "3": "Plan de contenido mensual",
+          "4": "Informe básico"
+        },
+        "tracks": {
+          "0": {
+            "label": "8 publicaciones",
+            "price": "₪990 / mes"
+          },
+          "1": {
+            "label": "12 publicaciones",
+            "price": "₪1,390 / mes"
+          },
+          "2": {
+            "label": "8 publicaciones + 4 vídeos con material del cliente",
+            "price": "₪1,790 / mes"
+          }
+        },
+        "note": "La fotografía profesional y la programación de publicaciones no están incluidas ahora."
+      },
+      "collab-manager": {
+        "name": "Gestor personal de colaboraciones",
+        "description": "Un gestor que encuentra negocios relevantes, presenta a las partes y acompaña la comunicación.",
+        "price": "Desde ₪790 / mes",
+        "details": {
+          "0": "Encontrar hasta 10 negocios encajados",
+          "1": "Primer contacto",
+          "2": "Propuesta de idea de colaboración",
+          "3": "Conectar a ambas partes",
+          "4": "Seguimiento del avance",
+          "5": "Informe mensual"
+        },
+        "tracks": {
+          "0": {
+            "label": "Hasta 10 negocios",
+            "price": "Desde ₪790 / mes"
+          },
+          "1": {
+            "label": "Itinerario ampliado hasta 25 contactos",
+            "price": "₪1,290 / mes"
+          }
+        },
+        "note": "El servicio no garantiza un número concreto de colaboraciones cerradas."
+      },
+      "lead-first-response": {
+        "name": "Primera respuesta a leads",
+        "description": "Un agente humano llama a leads nuevos, hace un primer filtro y actualiza cada detalle en el CRM.",
+        "price": "Desde ₪690 / mes",
+        "details": {
+          "0": "Hasta 40 leads al mes",
+          "1": "Hasta 3 intentos de llamada por lead",
+          "2": "Cuestionario inicial adaptado al negocio",
+          "3": "Filtrado de leads",
+          "4": "Actualización de estado y resumen de llamada",
+          "5": "Informe mensual de actividad",
+          "6": "Lead extra: ₪15"
+        }
+      },
+      "personal-sales-rep": {
+        "name": "Comercial personal",
+        "description": "Un comercial que hace llamadas de venta, envía propuestas, trata objeciones y acompaña hasta la decisión.",
+        "price": "₪1,490 / mes + 5% de éxito",
+        "details": {
+          "0": "Hasta 40 leads calientes al mes",
+          "1": "Llamadas de venta",
+          "2": "Seguimientos",
+          "3": "Envío de presupuestos listos",
+          "4": "Resultados actualizados en el CRM",
+          "5": "Informe mensual de ventas",
+          "6": "Lead extra: ₪25"
+        }
+      },
+      "old-leads-followup": {
+        "name": "Seguimiento de leads antiguos",
+        "description": "Reactivar leads sin cerrar — defines qué es un lead antiguo en el CRM y pasan solos a una pestaña de seguimiento.",
+        "price": "₪590 único",
+        "details": {
+          "0": "Definir leads antiguos por días sin actividad",
+          "1": "Paso automático a la pestaña de leads antiguos",
+          "2": "Tratar hasta 50 leads",
+          "3": "Hasta 2 intentos de llamada",
+          "4": "Comprobar relevancia y volver al proceso de venta"
+        },
+        "tracks": {
+          "0": {
+            "label": "Paquete de 50 leads",
+            "price": "₪590"
+          },
+          "1": {
+            "label": "Hasta 100 leads",
+            "price": "₪990"
+          }
+        }
+      },
+      "crm-manager": {
+        "name": "Gestor personal de CRM",
+        "description": "Un gestor que revisa leads, ordena estados, abre tareas y evita que se olvide a ningún cliente.",
+        "price": "Desde ₪490 / mes",
+        "details": {
+          "0": "Revisión del sistema dos veces por semana",
+          "1": "Orden de estados",
+          "2": "Encontrar leads sin tratar",
+          "3": "Abrir tareas y recordatorios",
+          "4": "Limpieza básica de duplicados",
+          "5": "Informe mensual"
+        },
+        "tracks": {
+          "0": {
+            "label": "Revisión dos veces por semana",
+            "price": "Desde ₪490 / mes"
+          },
+          "1": {
+            "label": "Itinerario de revisión diaria",
+            "price": "₪890 / mes"
+          }
+        }
+      },
+      "external-support": {
+        "name": "Atención al cliente externa",
+        "description": "Un agente atiende consultas de clientes actuales por teléfono, WhatsApp o tu sistema de tickets.",
+        "price": "Desde ₪1,290 / mes",
+        "details": {
+          "0": "Hasta 10 horas de atención al mes",
+          "1": "Respuestas según los procedimientos del negocio",
+          "2": "Tickets actualizados en el sistema",
+          "3": "Casos complejos derivados al dueño",
+          "4": "Informe mensual de servicio",
+          "5": "Hora extra: ₪75"
         }
       }
     }
@@ -14652,7 +14942,158 @@
       "package": "Paquete",
       "remove": "Quitar",
       "search": "Buscar servicios...",
-      "selected": "Seleccionado"
+      "selected": "Seleccionado",
+      "categories": {
+        "website": "Sitio y presencia digital",
+        "crm": "CRM y gestión de clientes",
+        "automations": "Automatizaciones",
+        "whatsapp": "WhatsApp y comunicación",
+        "ai": "IA",
+        "store": "Ventas y tienda",
+        "personal": "Área personal",
+        "marketing": "Marketing",
+        "plugins": "Complementos",
+        "professional": "Servicios profesionales"
+      },
+      "products": {
+        "monthly": {
+          "name": "Licencia del sistema de negocio",
+          "description": "₪149 al mes — facturación mensual renovable",
+          "tagline": "Licencia completa de gestión — CRM, leads, citas, automatizaciones y más.",
+          "included": {
+            "0": "CRM",
+            "1": "Leads",
+            "2": "Citas",
+            "3": "Automatizaciones",
+            "4": "Asistente de IA",
+            "5": "WhatsApp gestionado",
+            "6": "Colaboraciones"
+          }
+        },
+        "yearly": {
+          "name": "Licencia del sistema (anual)",
+          "description": "₪1,490 al año — facturación anual renovable",
+          "tagline": "La misma licencia del sistema, facturada anualmente.",
+          "included": {
+            "0": "CRM",
+            "1": "Leads",
+            "2": "Citas",
+            "3": "Automatizaciones",
+            "4": "Asistente de IA",
+            "5": "WhatsApp gestionado",
+            "6": "Colaboraciones"
+          }
+        },
+        "crm_only_monthly": {
+          "name": "Solo CRM",
+          "description": "₪89 al mes — facturación mensual · solo CRM"
+        },
+        "earlybird": {
+          "name": "Mensual Early Bird (inactivo)",
+          "description": "Precio de lanzamiento — desactivado, no se puede comprar"
+        },
+        "website_only": {
+          "name": "Solo sitio",
+          "description": "₪600 al año — pago único, sin compromiso ni renovación automática · incluye dominio gratis el primer año",
+          "tagline": "Creación de sitio y dominio — sin módulos de CRM.",
+          "included": {
+            "0": "Constructor de sitios",
+            "1": "Dominio"
+          }
+        },
+        "website_addon": {
+          "name": "Complemento de sitio",
+          "description": "₪550 único — sitio de autoservicio como extra del plan · incluye dominio gratis 1 año"
+        },
+        "push_notifications_monthly_29_ils": {
+          "name": "Notificaciones push — mensual",
+          "description": "₪29 / mes — 7 días de prueba, facturación mensual"
+        },
+        "push_notifications_annual_228_ils": {
+          "name": "Notificaciones push — anual",
+          "description": "₪228 / año (equiv. ₪19/mes) — 7 días de prueba, anual"
+        },
+        "client_portal_monthly_199_ils": {
+          "name": "Área personal",
+          "description": "₪199 / mes — extra de área personal renovable"
+        },
+        "automations_setup_1_390_ils": {
+          "name": "Configuración de 1 automatización",
+          "description": "Configuración de una automatización de negocio"
+        },
+        "automations_setup_3_890_ils": {
+          "name": "Paquete de 3 automatizaciones",
+          "description": "Configuración de tres automatizaciones"
+        },
+        "automations_setup_6_1490_ils": {
+          "name": "Paquete de 6 automatizaciones",
+          "description": "Configuración de seis automatizaciones"
+        },
+        "crm_migration_790_ils": {
+          "name": "Migración de CRM",
+          "description": "Traslado de clientes, leads y estados desde un CRM existente"
+        },
+        "expert_website_build_1490_ils": {
+          "name": "Sitio creado por un experto",
+          "description": "Sitio profesional creado por un experto de BizUply"
+        },
+        "store_products_upload_490_ils": {
+          "name": "Subida de productos (hasta 20)",
+          "description": "Sube hasta 20 productos con imágenes, categorías y precios"
+        },
+        "store_products_upload_50_990_ils": {
+          "name": "Subida de productos (hasta 50)",
+          "description": "Sube hasta 50 productos con imágenes, categorías y precios"
+        },
+        "old_leads_followup_590_ils": {
+          "name": "Seguimiento de leads antiguos (50)",
+          "description": "Reactivar leads antiguos y comprobar relevancia — hasta 50"
+        },
+        "old_leads_followup_100_990_ils": {
+          "name": "Seguimiento de leads antiguos (hasta 100)",
+          "description": "Reactivar leads antiguos y comprobar relevancia — hasta 100"
+        },
+        "lead_response_690_ils_monthly": {
+          "name": "Primera respuesta a leads (mensual)",
+          "description": "Un agente humano responde a leads nuevos y actualiza el CRM"
+        },
+        "collaboration_manager_790_ils_monthly": {
+          "name": "Gestor de colaboraciones (mensual)",
+          "description": "Encontrar socios y gestionar colaboraciones"
+        },
+        "personal_sales_rep_1490_ils_monthly": {
+          "name": "Comercial personal (mensual)",
+          "description": "Comercial personal hasta el cierre"
+        },
+        "automation_basic_39_ils": {
+          "name": "Automatización Basic",
+          "description": "2.500 acciones de automatización al mes"
+        },
+        "automation_growth_79_ils": {
+          "name": "Automatización Growth",
+          "description": "10.000 acciones de automatización al mes"
+        },
+        "automation_pro_149_ils": {
+          "name": "Automatización Pro",
+          "description": "30.000 acciones de automatización al mes"
+        },
+        "expert_website_extra_page_190_ils": {
+          "name": "Página extra del sitio",
+          "description": "Página adicional en el sitio creado por un experto"
+        },
+        "expert_website_content_writing_590_ils": {
+          "name": "Redacción de contenido del sitio",
+          "description": "Redacción de contenido de marketing para las páginas"
+        },
+        "expert_website_basic_store_1490_ils": {
+          "name": "Tienda online básica",
+          "description": "Tienda online básica añadida al sitio"
+        },
+        "expert_website_advanced_design_2990_ils": {
+          "name": "Diseño avanzado del sitio",
+          "description": "Diseño avanzado y a medida del sitio"
+        }
+      }
     },
     "markup": {
       "retailCompare": "Precio habitual solo para comparar: {{amount}} — no entra en el cálculo",
@@ -15135,7 +15576,13 @@
       }
     },
     "licenseFallback": "Licencia de uso de un sistema completo de gestión empresarial",
-    "statusLabel": "Estado"
+    "statusLabel": "Estado",
+    "planNames": {
+      "partner_basic": "Partner",
+      "partner_pro": "Partner Pro",
+      "partner_premium": "Partner Premium",
+      "partner_percent": "Solo porcentaje"
+    }
   },
   "storeManager": {
     "noBusinessId": "No se encontró el ID del negocio. Inicie sesión como dueño para gestionar la tienda.",

@@ -126,10 +126,10 @@ export default function AutomationCheckoutProcessing({
 
   if (!open) return null;
 
-  const planName =
-    usage?.plan?.nameHe ||
-    usage?.plan?.name ||
-    getAutomationPlanDisplayName(expectedPlanKey || usage?.plan?.key);
+  const planName = getAutomationPlanDisplayName(
+    expectedPlanKey || usage?.plan?.key,
+    t
+  );
 
   return (
     <div

@@ -5,6 +5,7 @@ import AuthShell, { AuthCard } from "../../components/auth/AuthShell";
 import { fetchPartnerPlans, registerPartner } from "../../lib/partnerApi";
 import type { PartnerPlan } from "../../types/partner";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
 
 export default function PartnerRegister() {
   const { t, i18n } = useTranslation();
@@ -75,7 +76,7 @@ export default function PartnerRegister() {
                   checked={form.planKey === plan.planKey}
                   onChange={() => setForm({ ...form, planKey: plan.planKey })}
                 />{" "}
-                <strong>{plan.nameHe}</strong>
+                <strong>{partnerPlanDisplayName(t, plan)}</strong>
                 {plan.commissionModel === "percent_of_sale" || plan.planKey === "partner_percent"
                   ? ` · ${t("partner.register.freePlan", {
                       percent: Math.round((plan.saleCommissionRate || 0.15) * 100),

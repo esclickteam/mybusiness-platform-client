@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { formatIls, formatPct, quotePreviewLine } from "../../lib/partnerMoney";
+import { catalogProductName } from "../../i18n/partnerCatalogCopy";
 
 export type MarkupLineInput = {
   sku?: string;
@@ -49,7 +50,7 @@ export default function PartnerMarkupBreakdown({
       {showTitle && (line.nameHe || line.nameEn || line.sku) ? (
         <div>
           <h3 className="text-base font-black text-slate-900">
-            {line.nameHe || line.nameEn || line.sku}
+            {catalogProductName(t, line)}
           </h3>
           {line.sku ? (
             <p className="text-[11px] font-bold tracking-wide text-slate-400">{line.sku}</p>

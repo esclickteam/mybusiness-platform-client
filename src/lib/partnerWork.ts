@@ -1,4 +1,5 @@
 import type { PartnerClient, PartnerTask } from "../types/partner";
+import { catalogProductName, type TranslateFn } from "../i18n/partnerCatalogCopy";
 
 export type PartnerWorkItem = {
   clientId: string;
@@ -78,7 +79,9 @@ export function formatPartnerDateTime(value?: string | null, locale = "he-IL"): 
   });
 }
 
-export function eventTypeLabel(client: PartnerClient): string {
+export function eventTypeLabel(client: PartnerClient, t?: TranslateFn): string {
   const sku = client.selectedSkus?.[0];
-  return sku?.displayNameHe || sku?.nameHe || sku?.sku || "—";
+  if (!sku) return "—";
+  if (t) return catalogProductName(t, sku);
+  return sku.displayNameHe || sku.nameHe || sku.sku || "—";
 }

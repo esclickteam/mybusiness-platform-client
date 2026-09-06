@@ -28,6 +28,8 @@ import { extraWorkingTemplatesLocaleObject } from "./i18n-batch-working-template
 import { extraAiConfigLocaleObject } from "./i18n-batch-ai-config.mjs";
 import { extraLocalTemplatesLocaleObject } from "./i18n-batch-local-templates.mjs";
 import { extraMetaCampaignsRestLocaleObject } from "./i18n-batch-meta-campaigns-rest.mjs";
+import { extraPartnerCatalogProductsLocaleObject } from "./i18n-batch-partner-catalog-products.mjs";
+import { extraPricingAddonsLocaleObject } from "./i18n-batch-pricing-addons.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -386,6 +388,8 @@ for (const locale of LOCALES) {
     extraAiConfigLocaleObject(locale),
     extraLocalTemplatesLocaleObject(locale),
     extraMetaCampaignsRestLocaleObject(locale),
+    extraPartnerCatalogProductsLocaleObject(locale),
+    extraPricingAddonsLocaleObject(locale),
   ].reduce((acc, patch) => deepMerge(acc, patch), current);
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {

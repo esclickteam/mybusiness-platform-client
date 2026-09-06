@@ -75,6 +75,7 @@ import {
 } from "./automationUiHelpers";
 import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
+import { getAutomationPlanDisplayName } from "./billing/automationPlanCatalog";
 import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
 import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
 import {
@@ -1954,7 +1955,7 @@ function EditorInner({
               null
             }
             planName={
-              billingUsage?.plan?.nameHe || billingUsage?.plan?.name || null
+              getAutomationPlanDisplayName(billingUsage?.plan?.key, t) || null
             }
             onOpenPlans={() => openBillingGateModal("manage")}
           />

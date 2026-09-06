@@ -650,6 +650,11 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("נתחיל בשיחה", "es")).not.toMatch(/[\u0590-\u05FF]/);
     expect(localizeBuiltInText("עיסוי קטיפה", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
     expect(localizeBuiltInText("ברסקט מעושן", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עיסוי פנים", "en")).toMatch(/facial/i);
+    expect(localizeBuiltInText("עיסוי פנים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שלחו דרישה", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חומוס ביתי", "pt-BR")).toMatch(/homus|hummus/i);
+    expect(localizeBuiltInText("שמפו בוטני", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {

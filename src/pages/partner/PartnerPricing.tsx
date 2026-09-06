@@ -4,6 +4,7 @@ import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi
 import { formatIls, quotePreviewComponents, skuAllowsRecurringMarkup } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
 
 export default function PartnerPricing() {
   const { t } = useTranslation();
@@ -137,9 +138,11 @@ function PriceRow({
     <article className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-black">{item.nameHe || item.sku}</h3>
-          {item.descriptionHe ? (
-            <p className="mt-1 max-w-2xl text-sm font-bold text-slate-500">{item.descriptionHe}</p>
+          <h3 className="text-lg font-black">{catalogProductName(t, item)}</h3>
+          {item.descriptionHe || item.descriptionEn ? (
+            <p className="mt-1 max-w-2xl text-sm font-bold text-slate-500">
+              {catalogProductDescription(t, item)}
+            </p>
           ) : null}
           {item.category === "human_service" ? (
             <p className="mt-1 text-xs font-black text-amber-700">

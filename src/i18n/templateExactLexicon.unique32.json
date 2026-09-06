@@ -1,0 +1,320 @@
+{
+  "הזמנת שקית": {
+    "en": "Order a bag",
+    "es": "Pedir una bolsa",
+    "pt-BR": "Pedir uma sacola",
+    "ar": "طلب كيس"
+  },
+  "אחרי גילוח": {
+    "en": "After shave",
+    "es": "Después del afeitado",
+    "pt-BR": "Após o barbear",
+    "ar": "بعد الحلاقة"
+  },
+  "מגרש אימון": {
+    "en": "A training field",
+    "es": "Un campo de entrenamiento",
+    "pt-BR": "Um campo de treino",
+    "ar": "ملعب تدريب"
+  },
+  "רשתות נישה": {
+    "en": "Niche networks",
+    "es": "Redes de nicho",
+    "pt-BR": "Redes de nicho",
+    "ar": "شبكات متخصصة"
+  },
+  "שאלה נקייה": {
+    "en": "A clean question",
+    "es": "Una pregunta limpia",
+    "pt-BR": "Uma pergunta limpa",
+    "ar": "سؤال نظيف"
+  },
+  "פחות סיכון": {
+    "en": "Less risk",
+    "es": "Menos riesgo",
+    "pt-BR": "Menos risco",
+    "ar": "مخاطرة أقل"
+  },
+  "ציון פעולה": {
+    "en": "An action score",
+    "es": "Una nota de acción",
+    "pt-BR": "Uma nota de ação",
+    "ar": "درجة إجراء"
+  },
+  "גישה נכונה": {
+    "en": "The right approach",
+    "es": "El enfoque correcto",
+    "pt-BR": "A abordagem certa",
+    "ar": "النهج الصحيح"
+  },
+  "בנייה חדשה": {
+    "en": "New construction",
+    "es": "Obra nueva",
+    "pt-BR": "Construção nova",
+    "ar": "بناء جديد"
+  },
+  "עיסוי פנים": {
+    "en": "A facial massage",
+    "es": "Un masaje facial",
+    "pt-BR": "Uma massagem facial",
+    "ar": "مساج وجه"
+  },
+  "תמיכת סדנה": {
+    "en": "Workshop support",
+    "es": "Soporte de taller",
+    "pt-BR": "Suporte de oficina",
+    "ar": "دعم الورشة"
+  },
+  "לחות משקמת": {
+    "en": "Restorative moisture",
+    "es": "Hidratación reparadora",
+    "pt-BR": "Hidratação reparadora",
+    "ar": "ترطيب مرمّم"
+  },
+  "צריבת הבשר": {
+    "en": "Searing the meat",
+    "es": "Sellado de la carne",
+    "pt-BR": "Selagem da carne",
+    "ar": "تحمير اللحم"
+  },
+  "סלסה יומית": {
+    "en": "Daily salsa",
+    "es": "Salsa diaria",
+    "pt-BR": "Salsa diária",
+    "ar": "صلصة يومية"
+  },
+  "עמוד גירוד": {
+    "en": "A scratching post",
+    "es": "Un rascador",
+    "pt-BR": "Um arranhador",
+    "ar": "عمود خدش"
+  },
+  "שמיכת פליז": {
+    "en": "A fleece blanket",
+    "es": "Una manta polar",
+    "pt-BR": "Um cobertor de fleece",
+    "ar": "بطانية فليس"
+  },
+  "שיחה קבועה": {
+    "en": "A regular call",
+    "es": "Una llamada fija",
+    "pt-BR": "Uma conversa regular",
+    "ar": "مكالمة ثابتة"
+  },
+  "האזנה מלאה": {
+    "en": "Full listening",
+    "es": "Escucha plena",
+    "pt-BR": "Escuta plena",
+    "ar": "إنصات كامل"
+  },
+  "סקיצה מלאה": {
+    "en": "A full sketch",
+    "es": "Un boceto completo",
+    "pt-BR": "Um esboço completo",
+    "ar": "مسودة كاملة"
+  },
+  "רענון שנתי": {
+    "en": "An annual refresh",
+    "es": "Una renovación anual",
+    "pt-BR": "Uma renovação anual",
+    "ar": "تحديث سنوي"
+  },
+  "מוצר ומסחר": {
+    "en": "Product and commerce",
+    "es": "Producto y comercio",
+    "pt-BR": "Produto e comércio",
+    "ar": "منتج وتجارة"
+  },
+  "מומחה עסקי": {
+    "en": "A business expert",
+    "es": "Un experto de negocio",
+    "pt-BR": "Um especialista de negócio",
+    "ar": "خبير أعمال"
+  },
+  "עורכי תחום": {
+    "en": "Field editors",
+    "es": "Editores del ámbito",
+    "pt-BR": "Editores da área",
+    "ar": "محرّرو المجال"
+  },
+  "יומן הורים": {
+    "en": "A parents journal",
+    "es": "Una agenda de padres",
+    "pt-BR": "Um diário de pais",
+    "ar": "دفتر أهل"
+  },
+  "ערכות רכות": {
+    "en": "Soft kits",
+    "es": "Kits suaves",
+    "pt-BR": "Kits macios",
+    "ar": "أطقم ناعمة"
+  },
+  "מנורת לילה": {
+    "en": "A night lamp",
+    "es": "Una lámpara de noche",
+    "pt-BR": "Uma luminária noturna",
+    "ar": "مصباح ليلي"
+  },
+  "שמיכת עגלה": {
+    "en": "A stroller blanket",
+    "es": "Una manta de carrito",
+    "pt-BR": "Um cobertor de carrinho",
+    "ar": "بطانية عربة"
+  },
+  "קהילה קודם": {
+    "en": "Community first",
+    "es": "Comunidad primero",
+    "pt-BR": "Comunidade primeiro",
+    "ar": "المجتمع أولاً"
+  },
+  "שליחת בריף": {
+    "en": "Send a brief",
+    "es": "Enviar un brief",
+    "pt-BR": "Enviar um brief",
+    "ar": "إرسال موجز"
+  },
+  "חתונה מלאה": {
+    "en": "A full wedding",
+    "es": "Una boda completa",
+    "pt-BR": "Um casamento completo",
+    "ar": "زفاف كامل"
+  },
+  "תיאום הגעה": {
+    "en": "Arrival coordination",
+    "es": "Coordinación de llegada",
+    "pt-BR": "Coordenação de chegada",
+    "ar": "تنسيق الوصول"
+  },
+  "אופק השבחה": {
+    "en": "An appreciation horizon",
+    "es": "Un horizonte de revalorización",
+    "pt-BR": "Um horizonte de valorização",
+    "ar": "أفق رفع القيمة"
+  },
+  "תסריט אישי": {
+    "en": "A personal script",
+    "es": "Un guion personal",
+    "pt-BR": "Um roteiro pessoal",
+    "ar": "سيناريو شخصي"
+  },
+  "חיבור מהיר": {
+    "en": "A fast connection",
+    "es": "Una conexión rápida",
+    "pt-BR": "Uma conexão rápida",
+    "ar": "اتصال سريع"
+  },
+  "כריות פשתן": {
+    "en": "Linen pillows",
+    "es": "Cojines de lino",
+    "pt-BR": "Almofadas de linho",
+    "ar": "وسائد كتان"
+  },
+  "אגרטל קרמי": {
+    "en": "A ceramic vase",
+    "es": "Un jarrón de cerámica",
+    "pt-BR": "Um vaso de cerâmica",
+    "ar": "مزهرية خزف"
+  },
+  "נרות ארומה": {
+    "en": "Aroma candles",
+    "es": "Velas de aroma",
+    "pt-BR": "Velas de aroma",
+    "ar": "شموع عطر"
+  },
+  "מדדי קמפוס": {
+    "en": "Campus metrics",
+    "es": "Indicadores de campus",
+    "pt-BR": "Indicadores de campus",
+    "ar": "مؤشرات الحرم"
+  },
+  "הסרה בטוחה": {
+    "en": "Safe removal",
+    "es": "Eliminación segura",
+    "pt-BR": "Remoção segura",
+    "ar": "إزالة آمنة"
+  },
+  "עגילי טיפה": {
+    "en": "Drop earrings",
+    "es": "Pendientes de gota",
+    "pt-BR": "Brincos de gota",
+    "ar": "أقراط قطرة"
+  },
+  "מדיה מוכנה": {
+    "en": "Ready media",
+    "es": "Medios listos",
+    "pt-BR": "Mídia pronta",
+    "ar": "وسائط جاهزة"
+  },
+  "השקות בשנה": {
+    "en": "Launches per year",
+    "es": "Lanzamientos al año",
+    "pt-BR": "Lançamentos por ano",
+    "ar": "إطلاقات في السنة"
+  },
+  "מדפי קריאה": {
+    "en": "Reading shelves",
+    "es": "Estantes de lectura",
+    "pt-BR": "Prateleiras de leitura",
+    "ar": "رفوف قراءة"
+  },
+  "פינת קריאה": {
+    "en": "A reading nook",
+    "es": "Un rincón de lectura",
+    "pt-BR": "Um canto de leitura",
+    "ar": "ركن قراءة"
+  },
+  "מחברת פשתן": {
+    "en": "A linen notebook",
+    "es": "Un cuaderno de lino",
+    "pt-BR": "Um caderno de linho",
+    "ar": "دفتر كتان"
+  },
+  "הרגעה אחרי": {
+    "en": "After calming",
+    "es": "Después de calmar",
+    "pt-BR": "Depois de acalmar",
+    "ar": "بعد التهدئة"
+  },
+  "נישות עומק": {
+    "en": "Depth niches",
+    "es": "Nichos de profundidad",
+    "pt-BR": "Nichos de profundidade",
+    "ar": "منافذ عمق"
+  },
+  "שלחו דרישה": {
+    "en": "Send a request",
+    "es": "Enviar una solicitud",
+    "pt-BR": "Enviar uma solicitação",
+    "ar": "أرسلوا طلباً"
+  },
+  "גבות הצללה": {
+    "en": "Brow shading",
+    "es": "Sombreado de cejas",
+    "pt-BR": "Sombreamento de sobrancelhas",
+    "ar": "تظليل الحواجب"
+  },
+  "חומוס ביתי": {
+    "en": "Homemade hummus",
+    "es": "Hummus casero",
+    "pt-BR": "Homus caseiro",
+    "ar": "حمّص منزلي"
+  },
+  "שמפו בוטני": {
+    "en": "Botanical shampoo",
+    "es": "Champú botánico",
+    "pt-BR": "Shampoo botânico",
+    "ar": "شامبو نباتي"
+  },
+  "מסכה משקמת": {
+    "en": "A restorative mask",
+    "es": "Una mascarilla reparadora",
+    "pt-BR": "Uma máscara reparadora",
+    "ar": "قناع مرمّم"
+  },
+  "שינויים שמדווחים מנטיז": {
+    "en": "Changes reported from the field",
+    "es": "Cambios reportados desde el terreno",
+    "pt-BR": "Mudanças relatadas do campo",
+    "ar": "تغييرات تُبلَّغ من الميدان"
+  }
+}
