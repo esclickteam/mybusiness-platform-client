@@ -683,6 +683,16 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("בקבוקי וינטג'", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique35 leftover insert-default section chrome", () => {
+    expect(localizeBuiltInText("השאירו פרטים ונחזור אליכם.", "en")).toMatch(/details|get back/i);
+    expect(localizeBuiltInText("השאירו פרטים ונחזור אליכם.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("ללא ספאם. אפשר להסיר הרשמה בכל רגע.", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("איך זה עובד?", "pt-BR")).toMatch(/funciona/i);
+    expect(localizeBuiltInText("לחצי כדי להחליף, להוסיף או לערוך מדיה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קבלת פרטים", "en")).toMatch(/detail/i);
+    expect(localizeBuiltInText("אזור וידאו", "pt-BR")).toMatch(/v[ií]deo/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
