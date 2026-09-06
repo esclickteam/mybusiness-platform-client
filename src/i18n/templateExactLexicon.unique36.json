@@ -1,0 +1,266 @@
+{
+  "החל מ־": {
+    "en": "From",
+    "es": "Desde",
+    "pt-BR": "A partir de",
+    "ar": "ابتداءً من"
+  },
+  "החל מ-": {
+    "en": "From",
+    "es": "Desde",
+    "pt-BR": "A partir de",
+    "ar": "ابتداءً من"
+  },
+  "וידאו הסבר": {
+    "en": "Explainer video",
+    "es": "Vídeo explicativo",
+    "pt-BR": "Vídeo explicativo",
+    "ar": "فيديو شرح"
+  },
+  "מהיר להתחלה": {
+    "en": "Quick to start",
+    "es": "Rápido para empezar",
+    "pt-BR": "Rápido para começar",
+    "ar": "سريع للبداية"
+  },
+  "מותאם לנייד": {
+    "en": "Mobile-ready",
+    "es": "Adaptado al móvil",
+    "pt-BR": "Adaptado ao celular",
+    "ar": "متوافق مع الجوال"
+  },
+  "שליטה מלאה": {
+    "en": "Full control",
+    "es": "Control total",
+    "pt-BR": "Controle total",
+    "ar": "سيطرة كاملة"
+  },
+  "מוכן לקידום": {
+    "en": "SEO-ready",
+    "es": "Listo para SEO",
+    "pt-BR": "Pronto para SEO",
+    "ar": "جاهز للترويج"
+  },
+  "עיצוב ממותג": {
+    "en": "Branded design",
+    "es": "Diseño de marca",
+    "pt-BR": "Design da marca",
+    "ar": "تصميم بعلامتكم"
+  },
+  "תמיכה בעברית": {
+    "en": "Hebrew support",
+    "es": "Soporte en hebreo",
+    "pt-BR": "Suporte em hebraico",
+    "ar": "دعم العبرية"
+  },
+  "מעלים אתר מקצועי תוך זמן קצר.": {
+    "en": "Launch a professional site in a short time.",
+    "es": "Publicad una web profesional en poco tiempo.",
+    "pt-BR": "Publiquem um site profissional em pouco tempo.",
+    "ar": "أطلقوا موقعاً احترافياً في وقت قصير."
+  },
+  "כל סקשן נראה מעולה גם במובייל.": {
+    "en": "Every section looks great on mobile too.",
+    "es": "Cada sección se ve genial también en el móvil.",
+    "pt-BR": "Cada seção fica ótima também no celular.",
+    "ar": "كل قسم يبدو ممتازاً أيضاً على الجوال."
+  },
+  "מבנה נקי שעוזר להופיע בגוגל.": {
+    "en": "A clean structure that helps you show up on Google.",
+    "es": "Una estructura limpia que ayuda a aparecer en Google.",
+    "pt-BR": "Uma estrutura limpa que ajuda a aparecer no Google.",
+    "ar": "بنية نظيفة تساعد على الظهور في Google."
+  },
+  "RTL מלא ותוכן בעברית מההתחלה.": {
+    "en": "Full RTL and Hebrew content from the start.",
+    "es": "RTL completo y contenido en hebreo desde el inicio.",
+    "pt-BR": "RTL completo e conteúdo em hebraico desde o início.",
+    "ar": "اتجاه RTL كامل ومحتوى بالعبرية من البداية."
+  },
+  "עמוד בסיס": {
+    "en": "A base page",
+    "es": "Una página base",
+    "pt-BR": "Uma página base",
+    "ar": "صفحة أساسية"
+  },
+  "עריכה מלאה": {
+    "en": "Full editing",
+    "es": "Edición completa",
+    "pt-BR": "Edição completa",
+    "ar": "تحرير كامل"
+  },
+  "תמיכה במייל": {
+    "en": "Email support",
+    "es": "Soporte por email",
+    "pt-BR": "Suporte por e-mail",
+    "ar": "دعم بالبريد"
+  },
+  "עד 5 עמודים": {
+    "en": "Up to 5 pages",
+    "es": "Hasta 5 páginas",
+    "pt-BR": "Até 5 páginas",
+    "ar": "حتى 5 صفحات"
+  },
+  "ספריית סקשנים": {
+    "en": "Section library",
+    "es": "Biblioteca de secciones",
+    "pt-BR": "Biblioteca de seções",
+    "ar": "مكتبة أقسام"
+  },
+  "AI מובנה": {
+    "en": "Built-in AI",
+    "es": "IA integrada",
+    "pt-BR": "IA integrada",
+    "ar": "ذكاء اصطناعي مدمج"
+  },
+  "ללא הגבלה": {
+    "en": "Unlimited",
+    "es": "Sin límite",
+    "pt-BR": "Sem limite",
+    "ar": "بلا حد"
+  },
+  "דומיין מותאם": {
+    "en": "Custom domain",
+    "es": "Dominio personalizado",
+    "pt-BR": "Domínio personalizado",
+    "ar": "نطاق مخصّص"
+  },
+  "עדיפות בתמיכה": {
+    "en": "Priority support",
+    "es": "Soporte prioritario",
+    "pt-BR": "Suporte prioritário",
+    "ar": "أولوية في الدعم"
+  },
+  "עמוד בסיס\nעריכה מלאה\nתמיכה במייל": {
+    "en": "A base page\nFull editing\nEmail support",
+    "es": "Una página base\nEdición completa\nSoporte por email",
+    "pt-BR": "Uma página base\nEdição completa\nSuporte por e-mail",
+    "ar": "صفحة أساسية\nتحرير كامل\nدعم بالبريد"
+  },
+  "עד 5 עמודים\nספריית סקשנים\nAI מובנה": {
+    "en": "Up to 5 pages\nSection library\nBuilt-in AI",
+    "es": "Hasta 5 páginas\nBiblioteca de secciones\nIA integrada",
+    "pt-BR": "Até 5 páginas\nBiblioteca de seções\nIA integrada",
+    "ar": "حتى 5 صفحات\nمكتبة أقسام\nذكاء اصطناعي مدمج"
+  },
+  "ללא הגבלה\nדומיין מותאם\nעדיפות בתמיכה": {
+    "en": "Unlimited\nCustom domain\nPriority support",
+    "es": "Sin límite\nDominio personalizado\nSoporte prioritario",
+    "pt-BR": "Sem limite\nDomínio personalizado\nSuporte prioritário",
+    "ar": "بلا حد\nنطاق مخصّص\nأولوية في الدعم"
+  },
+  "עבודות חשמל מסודרות ומקצועיות": {
+    "en": "Tidy, professional electrical work",
+    "es": "Trabajos eléctricos ordenados y profesionales",
+    "pt-BR": "Serviços elétricos organizados e profissionais",
+    "ar": "أعمال كهرباء مرتّبة واحترافية"
+  },
+  "תיאור קצר של החבילה או השירות.": {
+    "en": "A short description of the pack or service.",
+    "es": "Una descripción breve del pack o el servicio.",
+    "pt-BR": "Uma descrição curta do pacote ou serviço.",
+    "ar": "وصف قصير للباقة أو الخدمة."
+  },
+  "כותרת חזקה, מסר ברור וכפתור אחד שמוביל לפעולה.": {
+    "en": "A strong headline, a clear message, and one button that leads to action.",
+    "es": "Un titular fuerte, un mensaje claro y un botón que lleva a la acción.",
+    "pt-BR": "Um título forte, uma mensagem clara e um botão que leva à ação.",
+    "ar": "عنوان قوي ورسالة واضحة وزر واحد يقود إلى الإجراء."
+  },
+  "בונים נוכחות דיגיטלית שמביאה לקוחות": {
+    "en": "Build a digital presence that brings customers",
+    "es": "Construid una presencia digital que trae clientes",
+    "pt-BR": "Construam uma presença digital que traz clientes",
+    "ar": "ابنوا حضوراً رقمياً يجلب العملاء"
+  },
+  "אתר מקצועי בעברית, עם סקשנים מוכנים שמותאמים בדיוק לעסק שלכם.": {
+    "en": "A professional Hebrew site, with ready sections tailored to your business.",
+    "es": "Una web profesional en hebreo, con secciones listas adaptadas a vuestro negocio.",
+    "pt-BR": "Um site profissional em hebraico, com seções prontas alinhadas ao seu negócio.",
+    "ar": "موقع احترافي بالعبرية، مع أقسام جاهزة مكيّفة لنشاطكم."
+  },
+  "אישי לפי לקוח מחובר": {
+    "en": "Personal for the signed-in client",
+    "es": "Personal según el cliente conectado",
+    "pt-BR": "Pessoal conforme o cliente conectado",
+    "ar": "شخصي حسب العميل المسجّل"
+  },
+  "כמות טיפולים - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Treatments left - a value from the signed-in client's CRM",
+    "es": "Tratamientos restantes - un valor del CRM del cliente conectado",
+    "pt-BR": "Tratamentos restantes - um valor do CRM do cliente conectado",
+    "ar": "جلسات متبقية - قيمة من CRM للعميل المسجّل"
+  },
+  "משקל אחרון ממעקב CRM (תאריך/שעה/ערך) של הלקוח המחובר": {
+    "en": "Latest weight from CRM tracking (date/time/value) for the signed-in client",
+    "es": "Último peso del seguimiento CRM (fecha/hora/valor) del cliente conectado",
+    "pt-BR": "Último peso do acompanhamento CRM (data/hora/valor) do cliente conectado",
+    "ar": "آخر وزن من تتبع CRM (تاريخ/وقت/قيمة) للعميل المسجّل"
+  },
+  "מפגשים שבוצעו - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Sessions completed - a value from the signed-in client's CRM",
+    "es": "Sesiones realizadas - un valor del CRM del cliente conectado",
+    "pt-BR": "Sessões realizadas - um valor do CRM do cliente conectado",
+    "ar": "جلسات منفّذة - قيمة من CRM للعميل المسجّل"
+  },
+  "יתרה - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Balance - a value from the signed-in client's CRM",
+    "es": "Saldo - un valor del CRM del cliente conectado",
+    "pt-BR": "Saldo - um valor do CRM do cliente conectado",
+    "ar": "رصيد - قيمة من CRM للعميل المسجّل"
+  },
+  "סיכום - ערך מהתיק ב-CRM": {
+    "en": "Summary - a value from the CRM file",
+    "es": "Resumen - un valor del expediente CRM",
+    "pt-BR": "Resumo - um valor do dossiê no CRM",
+    "ar": "ملخص - قيمة من ملف CRM"
+  },
+  "תכנית טיפול - מה-CRM": {
+    "en": "Treatment plan - from the CRM",
+    "es": "Plan de tratamiento - del CRM",
+    "pt-BR": "Plano de tratamento - do CRM",
+    "ar": "خطة علاج - من CRM"
+  },
+  "תוכנית המשך - מה-CRM": {
+    "en": "Follow-on plan - from the CRM",
+    "es": "Plan de continuación - del CRM",
+    "pt-BR": "Plano de continuação - do CRM",
+    "ar": "خطة متابعة - من CRM"
+  },
+  "תכנית מעקב - מה-CRM": {
+    "en": "Tracking plan - from the CRM",
+    "es": "Plan de seguimiento - del CRM",
+    "pt-BR": "Plano de acompanhamento - do CRM",
+    "ar": "خطة تتبّع - من CRM"
+  },
+  "שם הלקוח מהאזור האישי / CRM": {
+    "en": "Client name from the personal area / CRM",
+    "es": "Nombre del cliente del área personal / CRM",
+    "pt-BR": "Nome do cliente da área pessoal / CRM",
+    "ar": "اسم العميل من المنطقة الشخصية / CRM"
+  },
+  "טלפון הלקוח מה-CRM": {
+    "en": "Client phone from the CRM",
+    "es": "Teléfono del cliente del CRM",
+    "pt-BR": "Telefone do cliente no CRM",
+    "ar": "هاتف العميل من CRM"
+  },
+  "כתובת המייל של הלקוח מה-CRM": {
+    "en": "Client email from the CRM",
+    "es": "Email del cliente del CRM",
+    "pt-BR": "E-mail do cliente no CRM",
+    "ar": "بريد العميل من CRM"
+  },
+  "הפגישה הבאה - מהיומן": {
+    "en": "Next appointment - from the calendar",
+    "es": "Próxima cita - del calendario",
+    "pt-BR": "Próximo agendamento - do calendário",
+    "ar": "الموعد التالي - من التقويم"
+  },
+  "ברכה אישית — אחרי התחברות מוצג שם הלקוח מהאזור האישי / CRM": {
+    "en": "A personal greeting — after sign-in the client name from the personal area / CRM is shown",
+    "es": "Un saludo personal — tras iniciar sesión se muestra el nombre del cliente del área personal / CRM",
+    "pt-BR": "Uma saudação pessoal — depois do login aparece o nome do cliente da área pessoal / CRM",
+    "ar": "تحية شخصية — بعد تسجيل الدخول يظهر اسم العميل من المنطقة الشخصية / CRM"
+  }
+}

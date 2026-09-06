@@ -107,7 +107,7 @@ function crmTextElement(field: CrmRawField): VisualLibraryElementItem {
     tab: "elements",
     category: "dynamic",
     title: field.label,
-    description: `${text} · אישי לפי לקוח מחובר`,
+    description: field.description,
     keywords: [
       field.label,
       "crm",

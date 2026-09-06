@@ -693,6 +693,18 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("אזור וידאו", "pt-BR")).toMatch(/v[ií]deo/i);
   });
 
+  it("localizes unique36 leftover insert-default feature and CRM chrome", () => {
+    expect(localizeBuiltInText("החל מ־", "en")).toMatch(/from/i);
+    expect(localizeBuiltInText("החל מ־", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("החל מ־₪350", "en")).toMatch(/350/);
+    expect(localizeBuiltInText("החל מ־₪350", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("כל סקשן נראה מעולה גם במובייל.", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מעלים אתר מקצועי תוך זמן קצר.", "pt-BR")).toMatch(/site|profissional/i);
+    expect(localizeBuiltInText("וידאו הסבר", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שם הלקוח מהאזור האישי / CRM", "en")).toMatch(/client name|CRM/i);
+    expect(localizeBuiltInText("עבודות חשמל מסודרות ומקצועיות", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
