@@ -106,7 +106,7 @@ export default function StudioSidebar({
     { key: "club", label: t("studio.club"), icon: "♛", hint: t("studio.clubHint") },
     { key: "leads", label: t("studio.leads"), icon: "✉", hint: t("studio.leadsHint") },
     { key: "animations", label: t("studio.motion"), icon: "✺", hint: t("studio.motionHint") },
-    { key: "seo", label: t("studio.seo"), icon: "⌕", hint: t("studio.seoHint") },
+    { key: "seo", label: t("studio.seo.label"), icon: "⌕", hint: t("studio.seoHint") },
     { key: "settings", label: t("studio.settings"), icon: "⚙", hint: t("studio.settingsHint") },
   ];
 
@@ -160,7 +160,7 @@ export default function StudioSidebar({
       subtitle: t("studio.motionSubtitle"),
     },
     seo: {
-      title: t("studio.seo"),
+      title: t("studio.seo.label"),
       subtitle: t("studio.seoSubtitle"),
     },
     settings: {

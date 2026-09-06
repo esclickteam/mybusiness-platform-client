@@ -45,14 +45,26 @@ function walk(dir, out = []) {
   return out;
 }
 
-function extractHebrewStrings(source) {
+function isTranslationFallbackHit(source, value) {
+  const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const patterns = [
+    new RegExp(String.raw`\bt\(\s*(['"\`])[^'"\`]+?\1\s*,\s*(['"\`])${escaped}\2`),
+    new RegExp(String.raw`defaultValue\s*:\s*(['"\`])${escaped}\1`),
+    new RegExp(String.raw`fallback\s*:\s*(['"\`])${escaped}\1`),
+  ];
+  return patterns.some((pattern) => pattern.test(source));
+}
+
+function extractHebrewStrings(source, { ignoreTranslationFallbacks = false } = {}) {
   const hits = [];
   const quoted = /(["'`])((?:\\.|(?!\1).)*?)\1/g;
   let match;
   while ((match = quoted.exec(source))) {
     const value = match[2];
     if (HE.test(value) && value.trim().length > 1) {
-      hits.push(value.replace(/\s+/g, " ").trim().slice(0, 160));
+      const normalized = value.replace(/\s+/g, " ").trim().slice(0, 160);
+      if (ignoreTranslationFallbacks && isTranslationFallbackHit(source, value)) continue;
+      hits.push(normalized);
     }
   }
   const jsx = />([^<>{]*[\u0590-\u05FF][^<>{]*)</g;
@@ -71,7 +83,7 @@ for (const file of files) {
   const cat = classify(rel);
   const raw = fs.readFileSync(file, "utf8");
   const source = cat === "D" ? raw : stripComments(raw);
-  const hits = extractHebrewStrings(source);
+  const hits = extractHebrewStrings(source, { ignoreTranslationFallbacks: cat === "E" });
   if (cat === "E") {
     const chromeHits = hits.filter((value) => !isDefaultSiteContentString(value));
     const contentHits = hits.filter((value) => isDefaultSiteContentString(value));

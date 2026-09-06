@@ -10,6 +10,10 @@ import { extraLocaleObject } from "./i18n-batch-site-studio-faqs.mjs";
 import { extraPanelsLocaleObject } from "./i18n-batch-panels-faqs.mjs";
 import { extraAiHelpStudioLocaleObject } from "./i18n-batch-ai-help-studio.mjs";
 import { extraChromeELocaleObject } from "./i18n-batch-chrome-e.mjs";
+import { extraPartnerBillingLocaleObject } from "./i18n-batch-partner-billing.mjs";
+import { extraAutomationsRestLocaleObject } from "./i18n-batch-automations-rest.mjs";
+import { extraStudioRestLocaleObject } from "./i18n-batch-studio-rest.mjs";
+import { extraBusinessRestLocaleObject } from "./i18n-batch-business-rest.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -314,16 +318,17 @@ for (const locale of LOCALES) {
   const file = path.join(ROOT, "src/i18n/locales", `${locale}.json`);
   const current = JSON.parse(fs.readFileSync(file, "utf8"));
   const beforePartner = current?.partner?.register?.title;
-  const merged = deepMerge(
-    deepMerge(
-      deepMerge(
-        deepMerge(deepMerge(current, localeObject(locale)), extraLocaleObject(locale)),
-        extraPanelsLocaleObject(locale)
-      ),
-      extraAiHelpStudioLocaleObject(locale)
-    ),
-    extraChromeELocaleObject(locale)
-  );
+  const merged = [
+    localeObject(locale),
+    extraLocaleObject(locale),
+    extraPanelsLocaleObject(locale),
+    extraAiHelpStudioLocaleObject(locale),
+    extraChromeELocaleObject(locale),
+    extraPartnerBillingLocaleObject(locale),
+    extraAutomationsRestLocaleObject(locale),
+    extraStudioRestLocaleObject(locale),
+    extraBusinessRestLocaleObject(locale),
+  ].reduce((acc, patch) => deepMerge(acc, patch), current);
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {
     throw new Error(`Refusing to write ${locale}.json — partner.register.title changed`);
