@@ -551,6 +551,25 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("בורגר עדשים — מהאדמה לצלחת — בלי פשרות על טעם.", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique19 leftover sentences, juice/melt/perfect-dish, and ASCII total", () => {
+    expect(localizeBuiltInText("גזר כורכום — סחוט עכשיו — נשתייה מיד.", "en")).toMatch(/carrot/i);
+    expect(localizeBuiltInText("גזר כורכום — סחוט עכשיו — נשתייה מיד.", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("וניל מדגסקר — ההמסה היא חלק מהחוויה.", "es")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("המנה של לימון אמלפי הייתה מושלמת.", "pt-BR")).toMatch(/perfeito/i);
+    expect(localizeBuiltInText("צלעות Baby — עשן נמוך, חום ארוך, טעם עמוק.", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText('סה"כ', "en")).toBe("Total");
+    expect(localizeBuiltInText("איפה שתובנה אנושית פוגשת טכנולוגיה חכמה", "en")).toMatch(/insight/i);
+    expect(localizeBuiltInText("מפגשים קצרים, AMA וסדנאות שמתאימות ליומן העמוס.", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },

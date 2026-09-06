@@ -1130,7 +1130,7 @@ export default function StoreSiteRuntime({
           {Header}
           <section {...sectionProps("chapter-hero", "hero", "פרק ראשון")} className="px-5 py-20 lg:px-8 lg:py-28">
             <div className="mx-auto max-w-5xl border-x border-[var(--line)] px-8 text-center">
-              <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">פרק 01 / {g("heroEyebrow")}</p>
+              <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{tx("פרק")} 01 / {g("heroEyebrow")}</p>
               <h1 className="store-display mt-6 text-6xl font-black leading-tight md:text-8xl">{g("heroTitle")}</h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p>
             </div>
@@ -1486,7 +1486,7 @@ export default function StoreSiteRuntime({
           </div>
           {cart.length > 0 ? (
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
-              <p className="text-xl font-black">סה"כ: {formatStorePrice(cartTotal, currency)}</p>
+              <p className="text-xl font-black">{tx('סה"כ')}: {formatStorePrice(cartTotal, currency)}</p>
               <button
                 type="button"
                 onClick={openCheckout}

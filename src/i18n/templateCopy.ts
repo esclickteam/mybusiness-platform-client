@@ -30,6 +30,7 @@ import unique15ExactLexicon from "./templateExactLexicon.unique15.json";
 import unique16ExactLexicon from "./templateExactLexicon.unique16.json";
 import unique17ExactLexicon from "./templateExactLexicon.unique17.json";
 import unique18ExactLexicon from "./templateExactLexicon.unique18.json";
+import unique19ExactLexicon from "./templateExactLexicon.unique19.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -72,6 +73,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique16ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique17ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique18ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique19ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -200,6 +202,9 @@ const LOW_SMOKE_RE = /^(.+) — עשן נמוך, חום ארוך, טעם עמו�
 const SEA_PLATE_RE = /^(.+) — הים מגיע לצלחת — בלי עיכובים\.$/;
 const SPIT_TASTE_RE = /^(.+) — השיפוד מסתובב — הטעם נשאר\.$/;
 const BOWL_PATH_RE = /^(.+) — כל קערה היא מסלול טעמים\.$/;
+const JUICE_NOW_RE = /^(.+) — סחוט עכשיו — נשתייה מיד\.$/;
+const MELT_EXPERIENCE_RE = /^(.+) — ההמסה היא חלק מהחוויה\.$/;
+const PERFECT_DISH_RE = /^המנה של (.+) הייתה מושלמת\.$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -606,6 +611,29 @@ const BOWL_PATH_COPY: PhraseTranslation = {
   "pt-BR": "cada tigela é um caminho de sabor.",
   ar: "كل وعاء مسار نكهات.",
 };
+const JUICE_NOW_COPY: PhraseTranslation = {
+  en: "squeezed now — drink it immediately.",
+  es: "exprimido ahora — a beber de inmediato.",
+  "pt-BR": "espremido agora — bebam na hora.",
+  ar: "يُعصر الآن — يُشرب فورًا.",
+};
+const MELT_EXPERIENCE_COPY: PhraseTranslation = {
+  en: "the melt is part of the experience.",
+  es: "el fundido es parte de la experiencia.",
+  "pt-BR": "o derretimento faz parte da experiência.",
+  ar: "الذوبان جزء من التجربة.",
+};
+
+function localizePerfectDish(text: string, locale: string): string {
+  const match = text.match(PERFECT_DISH_RE);
+  if (!match) return "";
+  const dish = localizeFragment(match[1], locale) || (HE.test(match[1]) ? "" : match[1]);
+  if (!dish) return "";
+  if (locale === "es") return `El plato de ${dish} estaba perfecto.`;
+  if (locale === "pt-BR") return `O prato de ${dish} estava perfeito.`;
+  if (locale === "ar") return `طبق ${dish} كان مثاليًا.`;
+  return `The ${dish} was perfect.`;
+}
 
 function localizeOpeningHours(text: string, locale: string): string {
   if (!/א[׳']/.test(text) || !/\d{1,2}:\d{2}/.test(text)) return "";
@@ -1001,6 +1029,18 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const bowlPath = localizeDishSuffix(text, locale, BOWL_PATH_RE, BOWL_PATH_COPY);
   if (isUsableTranslation(text, bowlPath, locale)) {
     return adaptBuiltInDirectionalCss(bowlPath, locale);
+  }
+  const juiceNow = localizeDishSuffix(text, locale, JUICE_NOW_RE, JUICE_NOW_COPY);
+  if (isUsableTranslation(text, juiceNow, locale)) {
+    return adaptBuiltInDirectionalCss(juiceNow, locale);
+  }
+  const meltExperience = localizeDishSuffix(text, locale, MELT_EXPERIENCE_RE, MELT_EXPERIENCE_COPY);
+  if (isUsableTranslation(text, meltExperience, locale)) {
+    return adaptBuiltInDirectionalCss(meltExperience, locale);
+  }
+  const perfectDish = localizePerfectDish(text, locale);
+  if (isUsableTranslation(text, perfectDish, locale)) {
+    return adaptBuiltInDirectionalCss(perfectDish, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);
