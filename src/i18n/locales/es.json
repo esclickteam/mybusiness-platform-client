@@ -1830,6 +1830,59 @@
         "result2": "Recordatorio previo",
         "result3": "Tarea"
       }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "¿Qué importa en la puntuación?",
+        "default": "Encaje con el servicio, urgencia y potencial de compra"
+      },
+      "fieldsHint": {
+        "label": "¿Qué datos del lead debe analizar la IA?",
+        "default": "Nombre, origen, mensaje, estado y etiquetas existentes"
+      },
+      "scoreMin": {
+        "label": "Puntuación mínima"
+      },
+      "scoreMax": {
+        "label": "Puntuación máxima"
+      },
+      "saveAsTag": {
+        "label": "¿Dónde guardar el resultado (etiqueta)?"
+      },
+      "categories": {
+        "label": "Categorías"
+      },
+      "maxTags": {
+        "label": "Máximo de etiquetas"
+      },
+      "threshold": {
+        "label": "Umbral de detección"
+      },
+      "style": {
+        "label": "Tono"
+      },
+      "channel": {
+        "label": "Canal"
+      },
+      "createTask": {
+        "label": "Crear una tarea"
+      },
+      "dueInHours": {
+        "label": "Para hacer en horas"
+      },
+      "lookbackHours": {
+        "label": "Mirada atrás (horas)"
+      },
+      "title": {
+        "label": "Título",
+        "default": "Resumen diario"
+      },
+      "extraInstructions": {
+        "label": "Instrucciones extra para la IA"
+      },
+      "option1": "Caliente",
+      "option2": "Medio",
+      "option3": "Frío"
     }
   },
   "layout": {

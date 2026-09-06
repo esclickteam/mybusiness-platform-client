@@ -1830,6 +1830,59 @@
         "result2": "תזכורת לפני",
         "result3": "משימה"
       }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "מה חשוב לך בדירוג?",
+        "default": "התאמה לשירות, דחיפות ופוטנציאל רכישה"
+      },
+      "fieldsHint": {
+        "label": "אילו נתוני ליד לנתח?",
+        "default": "שם, מקור, הודעה, סטטוס ותגיות קיימות"
+      },
+      "scoreMin": {
+        "label": "ציון מינימום"
+      },
+      "scoreMax": {
+        "label": "ציון מקסימום"
+      },
+      "saveAsTag": {
+        "label": "איפה לשמור את התוצאה (תגית)?"
+      },
+      "categories": {
+        "label": "קטגוריות"
+      },
+      "maxTags": {
+        "label": "מספר תגיות מרבי"
+      },
+      "threshold": {
+        "label": "סף זיהוי"
+      },
+      "style": {
+        "label": "סגנון"
+      },
+      "channel": {
+        "label": "ערוץ"
+      },
+      "createTask": {
+        "label": "ליצור משימה"
+      },
+      "dueInHours": {
+        "label": "לביצוע תוך שעות"
+      },
+      "lookbackHours": {
+        "label": "מבט לאחור (שעות)"
+      },
+      "title": {
+        "label": "כותרת",
+        "default": "תקציר יומי"
+      },
+      "extraInstructions": {
+        "label": "הנחיות נוספות ל-AI"
+      },
+      "option1": "חם",
+      "option2": "בינוני",
+      "option3": "קר"
     }
   },
   "layout": {

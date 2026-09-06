@@ -512,6 +512,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תוצאה 1", "en")).toBe("Result 1");
   });
 
+  it("localizes unique17 rich-store demo copy and AI inspector phrases", () => {
+    expect(localizeBuiltInText("סטודיו מסחר עשיר", "en")).toBe("Rich commerce studio");
+    expect(localizeBuiltInText("בחירות החנות", "es")).toBe("Selección de la tienda");
+    expect(localizeBuiltInText("פתיחת החנות", "pt-BR")).toBe("Abrir a loja");
+    expect(localizeBuiltInText("מה חשוב לך בדירוג?", "en")).toBe("What matters in the score?");
+    expect(localizeBuiltInText("כשנכנס ליד חדש", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("סטודיו מסחר עשיר", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("does not rewrite saved customer copy over localized defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { heroTitle: "צור קשר", heroPrimary: "הזמינו פיצה" },
@@ -528,5 +537,19 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("Custom headline from the client", "en")).toBe(
       "Custom headline from the client",
     );
+  });
+
+  it("keeps a saved rich-store headline over localized unique17 defaults", () => {
+    const defaults = localizeBuiltInTemplateSeed(
+      { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
+      "en",
+    );
+    expect(defaults.brandName).toBe("Rich commerce studio");
+    const merged = {
+      ...defaults,
+      brandName: "Our boutique name",
+    };
+    expect(merged.brandName).toBe("Our boutique name");
+    expect(merged.productsEyebrow).toBe("Store picks");
   });
 });

@@ -28,3 +28,32 @@ export function localizedAutomationName(
   if (!key) return fallback;
   return t(`automations.aiTemplates.${key}.title`, { defaultValue: fallback });
 }
+
+export function aiConfigFieldLabel(
+  t: TranslateFn,
+  field: { key: string; label: string }
+) {
+  return t(`automations.aiConfig.${field.key}.label`, {
+    defaultValue: field.label,
+  });
+}
+
+export function aiConfigFieldDefault(
+  t: TranslateFn,
+  field: { key: string; defaultValue?: unknown }
+) {
+  const value = field.defaultValue;
+  if (typeof value === "string" && value) {
+    return t(`automations.aiConfig.${field.key}.default`, {
+      defaultValue: value,
+    });
+  }
+  if (Array.isArray(value)) {
+    return value.map((item, index) =>
+      t(`automations.aiConfig.option${index + 1}`, {
+        defaultValue: String(item),
+      })
+    );
+  }
+  return value;
+}

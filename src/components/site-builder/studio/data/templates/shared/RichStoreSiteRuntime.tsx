@@ -86,18 +86,6 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function getValue(
-  data: Record<string, any>,
-  fallback: Record<string, any>,
-  key: string,
-) {
-  const value = data?.[key];
-  if (value === undefined || value === null || value === "") {
-    return fallback?.[key] ?? "";
-  }
-  return value;
-}
-
 function textProps(id: string, label?: string) {
   return {
     "data-visual-edit-id": id,
@@ -928,7 +916,15 @@ export default function RichStoreSiteRuntime({
         return String(contentItem.text ?? "");
       }
     }
-    return String(getValue(mergedData, RICH_DEFAULTS, key) || "");
+    const fromSaved = data?.[key];
+    if (fromSaved !== undefined && fromSaved !== null && fromSaved !== "") {
+      return String(fromSaved);
+    }
+    const fromDefault = defaultData?.[key];
+    if (fromDefault !== undefined && fromDefault !== null && fromDefault !== "") {
+      return String(fromDefault);
+    }
+    return tx(String(RICH_DEFAULTS[key] || ""));
   };
 
   const allowedPages = pageItems.map((p) => p.id);
@@ -940,7 +936,15 @@ export default function RichStoreSiteRuntime({
   const { products, categories, loading, fromPlugin, currency } =
     useStorePluginCatalog({
       businessId,
-      demoProducts: demoProducts?.length ? demoProducts : FALLBACK_DEMO_PRODUCTS,
+      demoProducts: demoProducts?.length
+        ? demoProducts
+        : FALLBACK_DEMO_PRODUCTS.map((product) => ({
+            ...product,
+            name: tx(product.name),
+            category: tx(product.category),
+            badge: product.badge ? tx(product.badge) : product.badge,
+            shortDescription: tx(product.shortDescription),
+          })),
       enabled: !isStudioStatic,
     });
 

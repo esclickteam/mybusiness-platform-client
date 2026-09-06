@@ -1830,6 +1830,59 @@
         "result2": "Lembrete antecipado",
         "result3": "Tarefa"
       }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "O que importa na pontuação?",
+        "default": "Ajuste ao serviço, urgência e potencial de compra"
+      },
+      "fieldsHint": {
+        "label": "Quais dados do lead a IA deve analisar?",
+        "default": "Nome, origem, mensagem, status e tags existentes"
+      },
+      "scoreMin": {
+        "label": "Pontuação mínima"
+      },
+      "scoreMax": {
+        "label": "Pontuação máxima"
+      },
+      "saveAsTag": {
+        "label": "Onde salvar o resultado (tag)?"
+      },
+      "categories": {
+        "label": "Categorias"
+      },
+      "maxTags": {
+        "label": "Máximo de tags"
+      },
+      "threshold": {
+        "label": "Limiar de detecção"
+      },
+      "style": {
+        "label": "Tom"
+      },
+      "channel": {
+        "label": "Canal"
+      },
+      "createTask": {
+        "label": "Criar uma tarefa"
+      },
+      "dueInHours": {
+        "label": "Prazo em horas"
+      },
+      "lookbackHours": {
+        "label": "Olhar para trás (horas)"
+      },
+      "title": {
+        "label": "Título",
+        "default": "Resumo diário"
+      },
+      "extraInstructions": {
+        "label": "Instruções extra para a IA"
+      },
+      "option1": "Quente",
+      "option2": "Médio",
+      "option3": "Frio"
     }
   },
   "layout": {

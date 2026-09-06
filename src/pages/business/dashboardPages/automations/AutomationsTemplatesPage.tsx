@@ -61,6 +61,7 @@ import {
   workingTemplateCopy,
   workingTemplateSearchHaystack,
 } from "../../../../i18n/workingTemplateCopy";
+import { localizeBuiltInText } from "../../../../i18n/localizeBuiltInTemplateSeed";
 import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
@@ -964,14 +965,16 @@ export default function AutomationsTemplatesPage() {
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>{t("automations.templates.trigger")}</em>
-                    {workingTemplateCopy(t, template).triggerLabel}
+                    {localizeBuiltInText(workingTemplateCopy(t, template).triggerLabel)}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>{t("automations.templates.result")}</em>
-                    {workingTemplateCopy(t, template).resultLabels.join(" · ")}
+                    {workingTemplateCopy(t, template)
+                      .resultLabels.map((label) => localizeBuiltInText(label))
+                      .join(" · ")}
                   </span>
                 </div>
 

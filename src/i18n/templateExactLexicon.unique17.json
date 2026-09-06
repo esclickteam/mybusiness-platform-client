@@ -1,0 +1,806 @@
+{
+  "סטודיו מסחר עשיר": {
+    "en": "Rich commerce studio",
+    "es": "Estudio de comercio rico",
+    "pt-BR": "Estúdio de comércio rico",
+    "ar": "استوديو تجارة غني"
+  },
+  "חנות חווייתית שנבנתה לעריכה מלאה": {
+    "en": "An experiential store built for full editing",
+    "es": "Una tienda experiencial hecha para editarse por completo",
+    "pt-BR": "Uma loja experiencial feita para edição completa",
+    "ar": "متجر تجريبي بُني للتحرير الكامل"
+  },
+  "מרחב קניות עם סיפור, קצב ומוצרים שנראים נהדר": {
+    "en": "A shopping space with story, rhythm, and products that look great",
+    "es": "Un espacio de compra con historia, ritmo y productos que se ven genial",
+    "pt-BR": "Um espaço de compra com história, ritmo e produtos que ficam ótimos",
+    "ar": "مساحة تسوق بقصة وإيقاع ومنتجات تبدو رائعة"
+  },
+  "תבנית חנות עשירה עם ניווט מלא, קטלוג חי, עגלת קניות ועיצוב משתנה לכל נישה.": {
+    "en": "A rich store template with full navigation, a live catalog, a cart, and a look that changes per niche.",
+    "es": "Una plantilla de tienda rica con navegación completa, catálogo en vivo, carrito y un look que cambia por nicho.",
+    "pt-BR": "Um modelo de loja rico com navegação completa, catálogo ao vivo, carrinho e um visual que muda por nicho.",
+    "ar": "قالب متجر غني بتنقل كامل وكتالوج حي وسلة ومظهر يتغير حسب المجال."
+  },
+  "משלוח מהיר · מלאי מוגבל · קולקציה חדשה באתר": {
+    "en": "Fast shipping · limited stock · new collection on the site",
+    "es": "Envío rápido · stock limitado · nueva colección en el sitio",
+    "pt-BR": "Envio rápido · estoque limitado · nova coleção no site",
+    "ar": "شحن سريع · مخزون محدود · مجموعة جديدة في الموقع"
+  },
+  "בחירות החנות": {
+    "en": "Store picks",
+    "es": "Selección de la tienda",
+    "pt-BR": "Escolhas da loja",
+    "ar": "اختيارات المتجر"
+  },
+  "מוצרים שמובילים את הסיפור": {
+    "en": "Products that lead the story",
+    "es": "Productos que lideran la historia",
+    "pt-BR": "Produtos que lideram a história",
+    "ar": "منتجات تقود القصة"
+  },
+  "הקטלוג נטען מתוסף החנות או מנתוני הדמו של התבנית.": {
+    "en": "The catalog loads from the store add-on or from the template demo data.",
+    "es": "El catálogo se carga del complemento de tienda o de los datos demo.",
+    "pt-BR": "O catálogo carrega do complemento da loja ou dos dados de demonstração.",
+    "ar": "يُحمَّل الكتالوج من إضافة المتجر أو من بيانات العرض."
+  },
+  "אוספים לפי מצב רוח": {
+    "en": "Collections by mood",
+    "es": "Colecciones según el ánimo",
+    "pt-BR": "Coleções por clima",
+    "ar": "مجموعات حسب المزاج"
+  },
+  "כל קטגוריה מובילה לעמוד החנות עם סינון פעיל.": {
+    "en": "Each category leads to the shop page with active filters.",
+    "es": "Cada categoría lleva a la tienda con filtros activos.",
+    "pt-BR": "Cada categoria leva à loja com filtros ativos.",
+    "ar": "كل فئة تؤدي إلى صفحة المتجر مع تصفية نشطة."
+  },
+  "מהדורות חדשות": {
+    "en": "New editions",
+    "es": "Nuevas ediciones",
+    "pt-BR": "Novas edições",
+    "ar": "إصدارات جديدة"
+  },
+  "קלאסיקות": {
+    "en": "Classics",
+    "es": "Clásicos",
+    "pt-BR": "Clássicos",
+    "ar": "كلاسيكيات"
+  },
+  "מתנות": {
+    "en": "Gifts",
+    "es": "Regalos",
+    "pt-BR": "Presentes",
+    "ar": "هدايا"
+  },
+  "מאחורי המותג": {
+    "en": "Behind the brand",
+    "es": "Detrás de la marca",
+    "pt-BR": "Por trás da marca",
+    "ar": "خلف العلامة"
+  },
+  "סטודיו שמחבר מוצר, שירות ואווירה": {
+    "en": "A studio that connects product, service, and atmosphere",
+    "es": "Un estudio que une producto, servicio y atmósfera",
+    "pt-BR": "Um estúdio que une produto, serviço e atmosfera",
+    "ar": "استوديو يربط المنتج والخدمة والأجواء"
+  },
+  "אנחנו בונים חוויית קנייה שמרגישה אישית: בחירה מדויקת, שפה חזותית ברורה ושירות שממשיך אחרי ההזמנה.": {
+    "en": "We build a shopping experience that feels personal: precise selection, a clear visual language, and service that continues after the order.",
+    "es": "Construimos una compra que se siente personal: selección precisa, lenguaje visual claro y servicio después del pedido.",
+    "pt-BR": "Construímos uma compra que parece pessoal: escolha precisa, linguagem visual clara e serviço depois do pedido.",
+    "ar": "نبني تجربة شراء تبدو شخصية: اختيار دقيق ولغة بصرية واضحة وخدمة تستمر بعد الطلب."
+  },
+  "כל מוצר נבחר סביב שימוש אמיתי, חומרים טובים והבטחה ברורה ללקוח.": {
+    "en": "Every product is chosen around real use, good materials, and a clear promise to the customer.",
+    "es": "Cada producto se elige por uso real, buenos materiales y una promesa clara.",
+    "pt-BR": "Cada produto é escolhido por uso real, bons materiais e uma promessa clara.",
+    "ar": "يُختار كل منتج حول استخدام حقيقي ومواد جيدة ووعد واضح للعميل."
+  },
+  "אוצרות מדויקת": {
+    "en": "Precise curation",
+    "es": "Curaduría precisa",
+    "pt-BR": "Curadoria precisa",
+    "ar": "اختيار دقيق"
+  },
+  "מבחר קטן וחכם שמקל על קבלת החלטה.": {
+    "en": "A small, smart selection that makes deciding easier.",
+    "es": "Una selección pequeña e inteligente que facilita decidir.",
+    "pt-BR": "Uma seleção pequena e inteligente que facilita decidir.",
+    "ar": "تشكيلة صغيرة وذكية تسهّل اتخاذ القرار."
+  },
+  "שירות אנושי": {
+    "en": "Human service",
+    "es": "Servicio humano",
+    "pt-BR": "Atendimento humano",
+    "ar": "خدمة إنسانية"
+  },
+  "מענה מהיר לפני ההזמנה ואחריה.": {
+    "en": "A fast reply before the order and after it.",
+    "es": "Respuesta rápida antes y después del pedido.",
+    "pt-BR": "Resposta rápida antes e depois do pedido.",
+    "ar": "رد سريع قبل الطلب وبعده."
+  },
+  "משלוח מוקפד": {
+    "en": "Careful shipping",
+    "es": "Envío cuidadoso",
+    "pt-BR": "Envio caprichado",
+    "ar": "شحن متقن"
+  },
+  "אריזה יפה, מעקב ברור והחלפות פשוטות.": {
+    "en": "Beautiful packaging, clear tracking, and simple exchanges.",
+    "es": "Embalaje bonito, seguimiento claro y cambios simples.",
+    "pt-BR": "Embalagem bonita, rastreio claro e trocas simples.",
+    "ar": "تغليف جميل وتتبع واضح واستبدالات بسيطة."
+  },
+  "רעיונות, מדריכים וסיפורי מוצר": {
+    "en": "Ideas, guides, and product stories",
+    "es": "Ideas, guías e historias de producto",
+    "pt-BR": "Ideias, guias e histórias de produto",
+    "ar": "أفكار وأدلة وقصص منتج"
+  },
+  "תוכן קצר שמסביר איך לבחור, להשתמש ולשלב.": {
+    "en": "Short content that explains how to choose, use, and combine.",
+    "es": "Contenido breve que explica cómo elegir, usar y combinar.",
+    "pt-BR": "Conteúdo curto que explica como escolher, usar e combinar.",
+    "ar": "محتوى قصير يشرح كيف تختارون وتستخدمون وتدمجون."
+  },
+  "איך בוחרים את הפריט הבא": {
+    "en": "How to choose the next piece",
+    "es": "Cómo elegir la próxima pieza",
+    "pt-BR": "Como escolher a próxima peça",
+    "ar": "كيف تختارون القطعة التالية"
+  },
+  "מדריך קצר לבחירה לפי שימוש, תקציב וסגנון אישי.": {
+    "en": "A short guide to choosing by use, budget, and personal style.",
+    "es": "Una guía breve para elegir por uso, presupuesto y estilo.",
+    "pt-BR": "Um guia curto para escolher por uso, orçamento e estilo.",
+    "ar": "دليل قصير للاختيار حسب الاستخدام والميزانية والأسلوب."
+  },
+  "מאחורי הקולקציה": {
+    "en": "Behind the collection",
+    "es": "Detrás de la colección",
+    "pt-BR": "Por trás da coleção",
+    "ar": "خلف المجموعة"
+  },
+  "החומרים, הצבעים והבדיקות שהובילו לקו הנוכחי.": {
+    "en": "The materials, colors, and tests that led to the current line.",
+    "es": "Los materiales, colores y pruebas que llevaron a la línea actual.",
+    "pt-BR": "Os materiais, cores e testes que levaram à linha atual.",
+    "ar": "المواد والألوان والاختبارات التي أدت إلى الخط الحالي."
+  },
+  "שלוש דרכים לשדרג את היום": {
+    "en": "Three ways to upgrade the day",
+    "es": "Tres formas de mejorar el día",
+    "pt-BR": "Três jeitos de melhorar o dia",
+    "ar": "ثلاث طرق لترقية اليوم"
+  },
+  "רעיונות מהירים שמחברים מוצר להרגל יומיומי.": {
+    "en": "Quick ideas that connect a product to a daily habit.",
+    "es": "Ideas rápidas que unen un producto a un hábito diario.",
+    "pt-BR": "Ideias rápidas que ligam um produto a um hábito diário.",
+    "ar": "أفكار سريعة تربط منتجًا بعادة يومية."
+  },
+  "מועדון": {
+    "en": "Club",
+    "es": "Club",
+    "pt-BR": "Clube",
+    "ar": "نادي"
+  },
+  "עדכונים לפני כולם": {
+    "en": "Updates before everyone else",
+    "es": "Novedades antes que nadie",
+    "pt-BR": "Novidades antes de todo mundo",
+    "ar": "تحديثات قبل الجميع"
+  },
+  "מבצעים, מהדורות מוגבלות ותוכן שימושי ישירות למייל.": {
+    "en": "Deals, limited editions, and useful content straight to email.",
+    "es": "Ofertas, ediciones limitadas y contenido útil al email.",
+    "pt-BR": "Ofertas, edições limitadas e conteúdo útil no e-mail.",
+    "ar": "عروض وإصدارات محدودة ومحتوى مفيد مباشرة إلى البريد."
+  },
+  "להצטרפות": {
+    "en": "Join",
+    "es": "Unirse",
+    "pt-BR": "Entrar",
+    "ar": "للانضمام"
+  },
+  "מה אומרים אחרי הרכישה": {
+    "en": "What people say after buying",
+    "es": "Qué dicen después de comprar",
+    "pt-BR": "O que dizem depois da compra",
+    "ar": "ماذا يقولون بعد الشراء"
+  },
+  "האתר ברור, המשלוח הגיע מהר והמוצר נראה בדיוק כמו בתמונה.": {
+    "en": "The site is clear, shipping arrived fast, and the product looks exactly like the photo.",
+    "es": "El sitio es claro, el envío llegó rápido y el producto se ve igual que en la foto.",
+    "pt-BR": "O site é claro, o envio chegou rápido e o produto parece exatamente a foto.",
+    "ar": "الموقع واضح والشحن وصل بسرعة والمنتج يبدو تمامًا كما في الصورة."
+  },
+  "הצלחתי להשוות, לשאול ולקבל המלצה מדויקת תוך כמה דקות.": {
+    "en": "I could compare, ask, and get a precise recommendation in a few minutes.",
+    "es": "Pude comparar, preguntar y recibir una recomendación precisa en minutos.",
+    "pt-BR": "Consegui comparar, perguntar e receber uma recomendação precisa em minutos.",
+    "ar": "استطعت المقارنة والسؤال والحصول على توصية دقيقة خلال دقائق."
+  },
+  "האריזה הייתה מוקפדת והחוויה הרגישה כמו בוטיק אמיתי.": {
+    "en": "The packaging was careful and the experience felt like a real boutique.",
+    "es": "El embalaje fue cuidado y la experiencia se sintió como un boutique real.",
+    "pt-BR": "A embalagem foi caprichada e a experiência pareceu um boutique de verdade.",
+    "ar": "كان التغليف متقنًا وبدت التجربة كبوتيك حقيقي."
+  },
+  "חומרים שנבחרו לעמידות ושימוש יומיומי.": {
+    "en": "Materials chosen for durability and everyday use.",
+    "es": "Materiales elegidos por durabilidad y uso diario.",
+    "pt-BR": "Materiais escolhidos para durabilidade e uso diário.",
+    "ar": "مواد اختيرت للمتانة والاستخدام اليومي."
+  },
+  "בדיקות איכות לפני אריזה ומשלוח.": {
+    "en": "Quality checks before packing and shipping.",
+    "es": "Controles de calidad antes de empacar y enviar.",
+    "pt-BR": "Checagens de qualidade antes de embalar e enviar.",
+    "ar": "فحوصات جودة قبل التغليف والشحن."
+  },
+  "החלפה פשוטה ותמיכה אנושית בכל שאלה.": {
+    "en": "A simple exchange and human support for every question.",
+    "es": "Cambio simple y soporte humano para cada pregunta.",
+    "pt-BR": "Troca simples e suporte humano para cada pergunta.",
+    "ar": "استبدال بسيط ودعم إنساني لكل سؤال."
+  },
+  "פריט נבחר מהקטלוג עם תיאור קצר, מחיר וכפתורי פעולה מלאים.": {
+    "en": "A catalog pick with a short description, price, and full action buttons.",
+    "es": "Una pieza del catálogo con descripción corta, precio y botones de acción.",
+    "pt-BR": "Um item do catálogo com descrição curta, preço e botões de ação.",
+    "ar": "قطعة من الكتالوج مع وصف قصير وسعر وأزرار إجراء كاملة."
+  },
+  "קטלוג חי": {
+    "en": "Live catalog",
+    "es": "Catálogo en vivo",
+    "pt-BR": "Catálogo ao vivo",
+    "ar": "كتالوج حي"
+  },
+  "כל המוצרים במקום אחד": {
+    "en": "Every product in one place",
+    "es": "Todos los productos en un solo lugar",
+    "pt-BR": "Todos os produtos em um só lugar",
+    "ar": "كل المنتجات في مكان واحد"
+  },
+  "חיפוש, סינון ומיון עובדים בזמן אמת ומחוברים למוצרי תוסף החנות.": {
+    "en": "Search, filters, and sort work in real time and connect to store add-on products.",
+    "es": "Búsqueda, filtros y orden funcionan en tiempo real y se conectan a los productos.",
+    "pt-BR": "Busca, filtros e ordenação funcionam em tempo real e ligam aos produtos.",
+    "ar": "البحث والتصفية والترتيب تعمل فورًا وتتصل بمنتجات إضافة المتجر."
+  },
+  "אוספים": {
+    "en": "Collections",
+    "es": "Colecciones",
+    "pt-BR": "Coleções",
+    "ar": "مجموعات"
+  },
+  "מסלולי קנייה מוכנים": {
+    "en": "Ready shopping paths",
+    "es": "Rutas de compra listas",
+    "pt-BR": "Caminhos de compra prontos",
+    "ar": "مسارات شراء جاهزة"
+  },
+  "כל אוסף מציג מוצרים רלוונטיים, סיפור קצר וכניסה לחנות.": {
+    "en": "Each collection shows relevant products, a short story, and an entry to the shop.",
+    "es": "Cada colección muestra productos, una historia corta y entrada a la tienda.",
+    "pt-BR": "Cada coleção mostra produtos, uma história curta e entrada na loja.",
+    "ar": "كل مجموعة تعرض منتجات ذات صلة وقصة قصيرة ومدخلًا للمتجر."
+  },
+  "רגעים מתוך העולם של המותג": {
+    "en": "Moments from the brand’s world",
+    "es": "Momentos del mundo de la marca",
+    "pt-BR": "Momentos do mundo da marca",
+    "ar": "لحظات من عالم العلامة"
+  },
+  "תמונות, סצנות ומוצרים שמראים איך הכל מתחבר.": {
+    "en": "Photos, scenes, and products that show how it all connects.",
+    "es": "Fotos, escenas y productos que muestran cómo encaja todo.",
+    "pt-BR": "Fotos, cenas e produtos que mostram como tudo se conecta.",
+    "ar": "صور ومشاهد ومنتجات تُظهر كيف يتصل كل شيء."
+  },
+  "נשמח לעזור": {
+    "en": "Happy to help",
+    "es": "Encantados de ayudar",
+    "pt-BR": "Felizes em ajudar",
+    "ar": "يسعدنا المساعدة"
+  },
+  "יצירת קשר עם החנות": {
+    "en": "Contact the store",
+    "es": "Contactar con la tienda",
+    "pt-BR": "Falar com a loja",
+    "ar": "التواصل مع المتجر"
+  },
+  "שאלות על מוצרים, משלוחים, התאמה אישית או הזמנה מיוחדת.": {
+    "en": "Questions about products, shipping, personalization, or a special order.",
+    "es": "Preguntas sobre productos, envíos, personalización o un pedido especial.",
+    "pt-BR": "Perguntas sobre produtos, envios, personalização ou um pedido especial.",
+    "ar": "أسئلة عن المنتجات والشحن والتخصيص أو طلب خاص."
+  },
+  "כל מה שכדאי לדעת לפני ואחרי ההזמנה.": {
+    "en": "Everything worth knowing before and after the order.",
+    "es": "Todo lo que conviene saber antes y después del pedido.",
+    "pt-BR": "Tudo o que vale saber antes e depois do pedido.",
+    "ar": "كل ما يجدر معرفته قبل الطلب وبعده."
+  },
+  "איך יודעים שהמוצר במלאי?": {
+    "en": "How do I know the product is in stock?",
+    "es": "¿Cómo sé que el producto está en stock?",
+    "pt-BR": "Como sei que o produto está em estoque?",
+    "ar": "كيف أعرف أن المنتج متوفر؟"
+  },
+  "המלאי מתעדכן דרך תוסף החנות ובתצוגת הדמו מוצגים מוצרי דוגמה.": {
+    "en": "Stock updates through the store add-on, and the demo view shows sample products.",
+    "es": "El stock se actualiza con el complemento y la demo muestra productos de ejemplo.",
+    "pt-BR": "O estoque atualiza pelo complemento e a demo mostra produtos de exemplo.",
+    "ar": "يتحدّث المخزون عبر إضافة المتجر وتعرض التجربة منتجات نموذجية."
+  },
+  "אפשר להחליף מוצר?": {
+    "en": "Can I exchange a product?",
+    "es": "¿Se puede cambiar un producto?",
+    "pt-BR": "Dá para trocar um produto?",
+    "ar": "هل يمكن استبدال منتج؟"
+  },
+  "כן, ניתן לתאם החלפה בהתאם למדיניות המשלוחים וההחזרות.": {
+    "en": "Yes, you can arrange an exchange according to the shipping and returns policy.",
+    "es": "Sí, se puede coordinar un cambio según la política de envíos y devoluciones.",
+    "pt-BR": "Sim, dá para combinar uma troca conforme a política de envio e devolução.",
+    "ar": "نعم، يمكن تنسيق استبدال وفق سياسة الشحن والإرجاع."
+  },
+  "כמה זמן לוקח משלוח?": {
+    "en": "How long does shipping take?",
+    "es": "¿Cuánto tarda el envío?",
+    "pt-BR": "Quanto tempo leva o envio?",
+    "ar": "كم يستغرق الشحن؟"
+  },
+  "רוב המשלוחים מגיעים בתוך כמה ימי עסקים, לפי אזור היעד.": {
+    "en": "Most shipments arrive within a few business days, depending on the destination.",
+    "es": "La mayoría llega en unos días hábiles, según el destino.",
+    "pt-BR": "A maioria chega em alguns dias úteis, conforme o destino.",
+    "ar": "تصل معظم الشحنات خلال أيام عمل حسب منطقة الوجهة."
+  },
+  "אפשר לקבל עזרה בבחירה?": {
+    "en": "Can I get help choosing?",
+    "es": "¿Puedo recibir ayuda para elegir?",
+    "pt-BR": "Dá para receber ajuda na escolha?",
+    "ar": "هل يمكن الحصول على مساعدة في الاختيار؟"
+  },
+  "כן, אפשר לפנות אלינו ונמליץ לפי צורך, תקציב וסגנון.": {
+    "en": "Yes, reach out and we will recommend by need, budget, and style.",
+    "es": "Sí, escríbenos y recomendaremos según necesidad, presupuesto y estilo.",
+    "pt-BR": "Sim, falem conosco e recomendaremos por necessidade, orçamento e estilo.",
+    "ar": "نعم، تواصلوا معنا وسنوصي حسب الحاجة والميزانية والأسلوب."
+  },
+  "האם המחירים כוללים מעמ?": {
+    "en": "Do prices include VAT?",
+    "es": "¿Los precios incluyen IVA?",
+    "pt-BR": "Os preços incluem impostos?",
+    "ar": "هل الأسعار تشمل الضريبة؟"
+  },
+  "כן, המחירים מוצגים בשקלים וכוללים מעמ אלא אם צוין אחרת.": {
+    "en": "Yes, prices are shown in ILS and include VAT unless noted otherwise.",
+    "es": "Sí, los precios se muestran en ILS e incluyen IVA salvo que se indique lo contrario.",
+    "pt-BR": "Sim, os preços aparecem em ILS e incluem impostos, salvo indicação em contrário.",
+    "ar": "نعم، تُعرض الأسعار بالشيكل وتشمل الضريبة إلا إذا ذُكر خلاف ذلك."
+  },
+  "משלוחים והחזרות": {
+    "en": "Shipping and returns",
+    "es": "Envíos y devoluciones",
+    "pt-BR": "Envios e devoluções",
+    "ar": "الشحن والإرجاع"
+  },
+  "תהליך ברור מהסל ועד הדלת, עם עדכון בכל שלב.": {
+    "en": "A clear process from cart to door, with an update at every step.",
+    "es": "Un proceso claro del carrito a la puerta, con aviso en cada paso.",
+    "pt-BR": "Um processo claro do carrinho até a porta, com atualização em cada etapa.",
+    "ar": "مسار واضح من السلة إلى الباب مع تحديث في كل خطوة."
+  },
+  "אריזה": {
+    "en": "Packing",
+    "es": "Embalaje",
+    "pt-BR": "Embalagem",
+    "ar": "تغليف"
+  },
+  "כל הזמנה נארזת בצורה בטוחה ויפה.": {
+    "en": "Every order is packed safely and beautifully.",
+    "es": "Cada pedido se empaca con seguridad y belleza.",
+    "pt-BR": "Cada pedido é embalado com segurança e capricho.",
+    "ar": "تُغلَّف كل طلبية بأمان وجمال."
+  },
+  "שילוח": {
+    "en": "Dispatch",
+    "es": "Despacho",
+    "pt-BR": "Despacho",
+    "ar": "إرسال"
+  },
+  "מספר מעקב נשלח לאחר יציאת ההזמנה.": {
+    "en": "A tracking number is sent after the order leaves.",
+    "es": "Se envía un número de seguimiento cuando sale el pedido.",
+    "pt-BR": "Um código de rastreio é enviado depois que o pedido sai.",
+    "ar": "يُرسل رقم تتبع بعد خروج الطلب."
+  },
+  "החלפות": {
+    "en": "Exchanges",
+    "es": "Cambios",
+    "pt-BR": "Trocas",
+    "ar": "استبدالات"
+  },
+  "אפשר לתאם החלפה קלה דרך שירות הלקוחות.": {
+    "en": "You can arrange an easy exchange through customer service.",
+    "es": "Se puede coordinar un cambio fácil con atención al cliente.",
+    "pt-BR": "Dá para combinar uma troca fácil pelo atendimento.",
+    "ar": "يمكن تنسيق استبدال سهل عبر خدمة العملاء."
+  },
+  "איסוף": {
+    "en": "Pickup",
+    "es": "Recogida",
+    "pt-BR": "Retirada",
+    "ar": "استلام"
+  },
+  "בחלק מהאזורים ניתן לתאם איסוף עצמי.": {
+    "en": "In some areas you can arrange self-pickup.",
+    "es": "En algunas zonas se puede coordinar recogida.",
+    "pt-BR": "Em algumas regiões dá para combinar retirada.",
+    "ar": "في بعض المناطق يمكن تنسيق الاستلام الذاتي."
+  },
+  "החלפה פשוטה": {
+    "en": "Simple exchange",
+    "es": "Cambio simple",
+    "pt-BR": "Troca simples",
+    "ar": "استبدال بسيط"
+  },
+  "סל הקניות": {
+    "en": "Shopping cart",
+    "es": "Carrito",
+    "pt-BR": "Carrinho",
+    "ar": "سلة التسوق"
+  },
+  "עדכנו כמויות, הסירו מוצרים או המשיכו לתיאום הזמנה.": {
+    "en": "Update quantities, remove products, or continue to place the order.",
+    "es": "Actualicen cantidades, quiten productos o sigan para coordinar el pedido.",
+    "pt-BR": "Atualizem quantidades, removam produtos ou sigam para fechar o pedido.",
+    "ar": "حدّثوا الكميات أو أزيلوا منتجات أو تابعوا لتنسيق الطلب."
+  },
+  "מוכנים לבחור?": {
+    "en": "Ready to choose?",
+    "es": "¿Listos para elegir?",
+    "pt-BR": "Prontos para escolher?",
+    "ar": "جاهزون للاختيار؟"
+  },
+  "עברו לחנות, סננו לפי קטגוריה והוסיפו פריטים לסל.": {
+    "en": "Go to the shop, filter by category, and add items to the cart.",
+    "es": "Vayan a la tienda, filtren por categoría y añadan al carrito.",
+    "pt-BR": "Vão à loja, filtrem por categoria e adicionem ao carrinho.",
+    "ar": "انتقلوا إلى المتجر وصَفّوا حسب الفئة وأضيفوا إلى السلة."
+  },
+  "פתיחת החנות": {
+    "en": "Open the shop",
+    "es": "Abrir la tienda",
+    "pt-BR": "Abrir a loja",
+    "ar": "فتح المتجر"
+  },
+  "מהדורת חתימה": {
+    "en": "Signature edition",
+    "es": "Edición firma",
+    "pt-BR": "Edição assinatura",
+    "ar": "إصدار التوقيع"
+  },
+  "הפריט שמוביל את הקולקציה הנוכחית.": {
+    "en": "The piece that leads the current collection.",
+    "es": "La pieza que lidera la colección actual.",
+    "pt-BR": "A peça que lidera a coleção atual.",
+    "ar": "القطعة التي تقود المجموعة الحالية."
+  },
+  "ערכת מתנה": {
+    "en": "Gift set",
+    "es": "Set de regalo",
+    "pt-BR": "Kit presente",
+    "ar": "طقم هدية"
+  },
+  "אריזה מוכנה למתנה עם שילוב פריטים מדויק.": {
+    "en": "Gift-ready packaging with a precise mix of items.",
+    "es": "Embalaje listo para regalo con una mezcla precisa.",
+    "pt-BR": "Embalagem pronta para presente com uma combinação precisa.",
+    "ar": "تغليف جاهز للهدية مع مزج دقيق للقطع."
+  },
+  "קלאסיקה יומית": {
+    "en": "Everyday classic",
+    "es": "Clásico de cada día",
+    "pt-BR": "Clássico do dia a dia",
+    "ar": "كلاسيكية يومية"
+  },
+  "מוצר בסיס איכותי שחוזרים אליו שוב ושוב.": {
+    "en": "A quality staple you come back to again and again.",
+    "es": "Un básico de calidad al que se vuelve una y otra vez.",
+    "pt-BR": "Um básico de qualidade ao qual se volta sempre.",
+    "ar": "منتج أساسي عالي الجودة تعودون إليه مرارًا."
+  },
+  "אביזר משלים": {
+    "en": "Finishing accessory",
+    "es": "Accesorio complementario",
+    "pt-BR": "Acessório complementar",
+    "ar": "إكسسوار مكمّل"
+  },
+  "תוספת קטנה שמסדרת את כל החוויה.": {
+    "en": "A small add-on that completes the whole experience.",
+    "es": "Un extra pequeño que ordena toda la experiencia.",
+    "pt-BR": "Um extra pequeno que completa a experiência.",
+    "ar": "إضافة صغيرة تُرتّب التجربة كلها."
+  },
+  "סט פרימיום": {
+    "en": "Premium set",
+    "es": "Set premium",
+    "pt-BR": "Kit premium",
+    "ar": "طقم فاخر"
+  },
+  "סט עשיר ללקוחות שרוצים את כל הסיפור.": {
+    "en": "A rich set for customers who want the whole story.",
+    "es": "Un set rico para quienes quieren toda la historia.",
+    "pt-BR": "Um kit rico para quem quer a história completa.",
+    "ar": "طقم غني للعملاء الذين يريدون القصة كاملة."
+  },
+  "בחירת הצוות": {
+    "en": "Staff pick",
+    "es": "Elección del equipo",
+    "pt-BR": "Escolha da equipe",
+    "ar": "اختيار الفريق"
+  },
+  "הפריט שהצוות ממליץ עליו לכניסה ראשונה למותג.": {
+    "en": "The piece the team recommends for a first step into the brand.",
+    "es": "La pieza que el equipo recomienda para entrar a la marca.",
+    "pt-BR": "A peça que a equipe recomenda para a primeira entrada na marca.",
+    "ar": "القطعة التي يوصي بها الفريق للدخول الأول إلى العلامة."
+  },
+  "מלאי מוגבל": {
+    "en": "Limited stock",
+    "es": "Stock limitado",
+    "pt-BR": "Estoque limitado",
+    "ar": "مخزون محدود"
+  },
+  "נבחר": {
+    "en": "Picked",
+    "es": "Elegido",
+    "pt-BR": "Escolhido",
+    "ar": "مختار"
+  },
+  "לוקבוק": {
+    "en": "Lookbook",
+    "es": "Lookbook",
+    "pt-BR": "Lookbook",
+    "ar": "لوك بوك"
+  },
+  "מגזין": {
+    "en": "Journal",
+    "es": "Revista",
+    "pt-BR": "Revista",
+    "ar": "مجلة"
+  },
+  "מה חשוב לך בדירוג?": {
+    "en": "What matters in the score?",
+    "es": "¿Qué importa en la puntuación?",
+    "pt-BR": "O que importa na pontuação?",
+    "ar": "ما الأهم في التقييم؟"
+  },
+  "התאמה לשירות, דחיפות ופוטנציאל רכישה": {
+    "en": "Fit to the service, urgency, and purchase potential",
+    "es": "Encaje con el servicio, urgencia y potencial de compra",
+    "pt-BR": "Ajuste ao serviço, urgência e potencial de compra",
+    "ar": "الملاءمة للخدمة والإلحاح وإمكانية الشراء"
+  },
+  "אילו נתוני ליד לנתח?": {
+    "en": "Which lead fields should AI analyze?",
+    "es": "¿Qué datos del lead debe analizar la IA?",
+    "pt-BR": "Quais dados do lead a IA deve analisar?",
+    "ar": "أي بيانات للعميل المحتمل يجب تحليلها؟"
+  },
+  "שם, מקור, הודעה, סטטוס ותגיות קיימות": {
+    "en": "Name, source, message, status, and existing tags",
+    "es": "Nombre, origen, mensaje, estado y etiquetas existentes",
+    "pt-BR": "Nome, origem, mensagem, status e tags existentes",
+    "ar": "الاسم والمصدر والرسالة والحالة والوسوم الحالية"
+  },
+  "ציון מינימום": {
+    "en": "Minimum score",
+    "es": "Puntuación mínima",
+    "pt-BR": "Pontuação mínima",
+    "ar": "الحد الأدنى للدرجة"
+  },
+  "ציון מקסימום": {
+    "en": "Maximum score",
+    "es": "Puntuación máxima",
+    "pt-BR": "Pontuação máxima",
+    "ar": "الحد الأقصى للدرجة"
+  },
+  "איפה לשמור את התוצאה (תגית)?": {
+    "en": "Where should the result be saved (tag)?",
+    "es": "¿Dónde guardar el resultado (etiqueta)?",
+    "pt-BR": "Onde salvar o resultado (tag)?",
+    "ar": "أين تُحفظ النتيجة (وسم)؟"
+  },
+  "מספר תגיות מרבי": {
+    "en": "Maximum tags",
+    "es": "Máximo de etiquetas",
+    "pt-BR": "Máximo de tags",
+    "ar": "الحد الأقصى للوسوم"
+  },
+  "סף זיהוי": {
+    "en": "Detection threshold",
+    "es": "Umbral de detección",
+    "pt-BR": "Limiar de detecção",
+    "ar": "عتبة الكشف"
+  },
+  "סגנון": {
+    "en": "Tone",
+    "es": "Tono",
+    "pt-BR": "Tom",
+    "ar": "أسلوب"
+  },
+  "ערוץ": {
+    "en": "Channel",
+    "es": "Canal",
+    "pt-BR": "Canal",
+    "ar": "قناة"
+  },
+  "ליצור משימה": {
+    "en": "Create a task",
+    "es": "Crear una tarea",
+    "pt-BR": "Criar uma tarefa",
+    "ar": "إنشاء مهمة"
+  },
+  "לביצוע תוך שעות": {
+    "en": "Due in hours",
+    "es": "Para hacer en horas",
+    "pt-BR": "Prazo em horas",
+    "ar": "للتنفيذ خلال ساعات"
+  },
+  "מבט לאחור (שעות)": {
+    "en": "Lookback (hours)",
+    "es": "Mirada atrás (horas)",
+    "pt-BR": "Olhar para trás (horas)",
+    "ar": "نظرة للخلف (ساعات)"
+  },
+  "הנחיות נוספות ל-AI": {
+    "en": "Extra instructions for AI",
+    "es": "Instrucciones extra para la IA",
+    "pt-BR": "Instruções extra para a IA",
+    "ar": "تعليمات إضافية للذكاء"
+  },
+  "תקציר יומי": {
+    "en": "Daily digest",
+    "es": "Resumen diario",
+    "pt-BR": "Resumo diário",
+    "ar": "ملخص يومي"
+  },
+  "חם": {
+    "en": "Hot",
+    "es": "Caliente",
+    "pt-BR": "Quente",
+    "ar": "ساخن"
+  },
+  "בינוני": {
+    "en": "Medium",
+    "es": "Medio",
+    "pt-BR": "Médio",
+    "ar": "متوسط"
+  },
+  "קר": {
+    "en": "Cold",
+    "es": "Frío",
+    "pt-BR": "Frio",
+    "ar": "بارد"
+  },
+  "כל יום ב-08:00": {
+    "en": "Every day at 08:00",
+    "es": "Todos los días a las 08:00",
+    "pt-BR": "Todos os dias às 08:00",
+    "ar": "كل يوم في 08:00"
+  },
+  "כשמשתנה סטטוס ליד": {
+    "en": "When a lead status changes",
+    "es": "Cuando cambia el estado de un lead",
+    "pt-BR": "Quando o status de um lead muda",
+    "ar": "عند تغير حالة العميل المحتمل"
+  },
+  "כשנכנס ליד חדש": {
+    "en": "When a new lead arrives",
+    "es": "Cuando entra un lead nuevo",
+    "pt-BR": "Quando entra um lead novo",
+    "ar": "عند دخول عميل محتمل جديد"
+  },
+  "שולח התראה לבעל העסק": {
+    "en": "Sends an alert to the business owner",
+    "es": "Envía un aviso al dueño",
+    "pt-BR": "Envia um alerta ao dono",
+    "ar": "يرسل تنبيهًا لصاحب النشاط"
+  },
+  "התראות": {
+    "en": "Alerts",
+    "es": "Avisos",
+    "pt-BR": "Alertas",
+    "ar": "تنبيهات"
+  },
+  "ליד חדש": {
+    "en": "New lead",
+    "es": "Lead nuevo",
+    "pt-BR": "Lead novo",
+    "ar": "عميل محتمل جديد"
+  },
+  "AI — דירוג ליד": {
+    "en": "AI — lead scoring",
+    "es": "IA — puntuación de lead",
+    "pt-BR": "IA — pontuação de lead",
+    "ar": "ذكاء — تقييم العميل المحتمل"
+  },
+  "AI — סיווג ליד": {
+    "en": "AI — lead classification",
+    "es": "IA — clasificación de lead",
+    "pt-BR": "IA — classificação de lead",
+    "ar": "ذكاء — تصنيف العميل المحتمل"
+  },
+  "AI — תיוג ליד": {
+    "en": "AI — lead tagging",
+    "es": "IA — etiquetado de lead",
+    "pt-BR": "IA — tags de lead",
+    "ar": "ذكاء — وسم العميل المحتمل"
+  },
+  "AI — זיהוי ליד חם": {
+    "en": "AI — hot lead detection",
+    "es": "IA — detección de lead caliente",
+    "pt-BR": "IA — detecção de lead quente",
+    "ar": "ذكاء — كشف عميل محتمل ساخن"
+  },
+  "AI — תקציר ליד": {
+    "en": "AI — lead brief",
+    "es": "IA — resumen de lead",
+    "pt-BR": "IA — resumo de lead",
+    "ar": "ذكاء — موجز العميل المحتمل"
+  },
+  "AI — טיוטת Follow-up": {
+    "en": "AI — follow-up draft",
+    "es": "IA — borrador de seguimiento",
+    "pt-BR": "IA — rascunho de follow-up",
+    "ar": "ذكاء — مسودة متابعة"
+  },
+  "AI — טיוטת מייל": {
+    "en": "AI — email draft",
+    "es": "IA — borrador de email",
+    "pt-BR": "IA — rascunho de e-mail",
+    "ar": "ذكاء — مسودة بريد"
+  },
+  "AI — הצעת פעולה": {
+    "en": "AI — next action",
+    "es": "IA — siguiente acción",
+    "pt-BR": "IA — próxima ação",
+    "ar": "ذكاء — اقتراح الإجراء"
+  },
+  "AI — תקציר לידים יומי": {
+    "en": "AI — daily leads digest",
+    "es": "IA — resumen diario de leads",
+    "pt-BR": "IA — resumo diário de leads",
+    "ar": "ذكاء — ملخص يومي للعملاء المحتملين"
+  },
+  "AI — תקציר אג׳נדה יומי": {
+    "en": "AI — daily agenda digest",
+    "es": "IA — resumen diario de agenda",
+    "pt-BR": "IA — resumo diário da agenda",
+    "ar": "ذكاء — ملخص يومي للأجندة"
+  },
+  "מדרג את הליד ומציע תגית תוצאה": {
+    "en": "Scores the lead and suggests a result tag",
+    "es": "Puntúa el lead y sugiere una etiqueta",
+    "pt-BR": "Pontua o lead e sugere uma tag",
+    "ar": "يقيّم العميل المحتمل ويقترح وسم نتيجة"
+  },
+  "רחוב הרצל 12, תל אביב": {
+    "en": "12 Herzl St, Tel Aviv",
+    "es": "Calle Herzl 12, Tel Aviv",
+    "pt-BR": "Rua Herzl 12, Tel Aviv",
+    "ar": "شارع هرتسل 12، تل أبيب"
+  }
+}

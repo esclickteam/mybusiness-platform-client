@@ -1830,6 +1830,59 @@
         "result2": "Reminder beforehand",
         "result3": "Task"
       }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "What matters in the score?",
+        "default": "Fit to the service, urgency, and purchase potential"
+      },
+      "fieldsHint": {
+        "label": "Which lead fields should AI analyze?",
+        "default": "Name, source, message, status, and existing tags"
+      },
+      "scoreMin": {
+        "label": "Minimum score"
+      },
+      "scoreMax": {
+        "label": "Maximum score"
+      },
+      "saveAsTag": {
+        "label": "Where should the result be saved (tag)?"
+      },
+      "categories": {
+        "label": "Categories"
+      },
+      "maxTags": {
+        "label": "Maximum tags"
+      },
+      "threshold": {
+        "label": "Detection threshold"
+      },
+      "style": {
+        "label": "Tone"
+      },
+      "channel": {
+        "label": "Channel"
+      },
+      "createTask": {
+        "label": "Create a task"
+      },
+      "dueInHours": {
+        "label": "Due in hours"
+      },
+      "lookbackHours": {
+        "label": "Lookback (hours)"
+      },
+      "title": {
+        "label": "Title",
+        "default": "Daily digest"
+      },
+      "extraInstructions": {
+        "label": "Extra instructions for AI"
+      },
+      "option1": "Hot",
+      "option2": "Medium",
+      "option3": "Cold"
     }
   },
   "layout": {

@@ -1830,6 +1830,59 @@
         "result2": "تذكير مسبق",
         "result3": "مهمة"
       }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "ما الأهم في التقييم؟",
+        "default": "الملاءمة للخدمة والإلحاح وإمكانية الشراء"
+      },
+      "fieldsHint": {
+        "label": "أي بيانات للعميل المحتمل يجب تحليلها؟",
+        "default": "الاسم والمصدر والرسالة والحالة والوسوم الحالية"
+      },
+      "scoreMin": {
+        "label": "الحد الأدنى للدرجة"
+      },
+      "scoreMax": {
+        "label": "الحد الأقصى للدرجة"
+      },
+      "saveAsTag": {
+        "label": "أين تُحفظ النتيجة (وسم)؟"
+      },
+      "categories": {
+        "label": "فئات"
+      },
+      "maxTags": {
+        "label": "الحد الأقصى للوسوم"
+      },
+      "threshold": {
+        "label": "عتبة الكشف"
+      },
+      "style": {
+        "label": "أسلوب"
+      },
+      "channel": {
+        "label": "قناة"
+      },
+      "createTask": {
+        "label": "إنشاء مهمة"
+      },
+      "dueInHours": {
+        "label": "للتنفيذ خلال ساعات"
+      },
+      "lookbackHours": {
+        "label": "نظرة للخلف (ساعات)"
+      },
+      "title": {
+        "label": "العنوان",
+        "default": "ملخص يومي"
+      },
+      "extraInstructions": {
+        "label": "تعليمات إضافية للذكاء"
+      },
+      "option1": "ساخن",
+      "option2": "متوسط",
+      "option3": "بارد"
     }
   },
   "layout": {
