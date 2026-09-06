@@ -14,6 +14,7 @@ import catalogExactLexicon from "./templateExactLexicon.catalog.json";
 import moreExactLexicon from "./templateExactLexicon.more.json";
 import uniqueExactLexicon from "./templateExactLexicon.unique.json";
 import unique2ExactLexicon from "./templateExactLexicon.unique2.json";
+import unique3ExactLexicon from "./templateExactLexicon.unique3.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -40,6 +41,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(moreExactLexicon as Record<string, PhraseTranslation>),
   ...(uniqueExactLexicon as Record<string, PhraseTranslation>),
   ...(unique2ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique3ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -145,6 +147,8 @@ const DURATION_STUCK_RE = /^(\d+)(ד׳|ש׳)$/;
 const BURGER_SMASH_RE = /^(.+) — לחמנייה, בשר, גבינה — בלי פילוסופיה\.$/;
 const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהליך חד ותוצאות מדידות\.$/;
 const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
+const STORE_SHOPPING_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית קנייה מלאה\.$/;
+const SOIL_TO_PLATE_RE = /^(.+) — מהאדמה לצלחת — בלי פשרות על טעם\.$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -303,15 +307,30 @@ function localizeFragment(text: string, locale: string): string {
 }
 
 function localizeStoreExperienceLine(text: string, locale: string): string {
-  const match = text.match(STORE_EXPERIENCE_RE);
+  const match = text.match(STORE_EXPERIENCE_RE) || text.match(STORE_SHOPPING_RE);
   if (!match) return "";
   const brand = match[1];
   const category = localizeFragment(match[2], locale);
   if (!category) return "";
-  if (locale === "es") return `${brand} — ${category} con una experiencia de tienda completa.`;
-  if (locale === "pt-BR") return `${brand} — ${category} com uma experiência de loja completa.`;
-  if (locale === "ar") return `${brand} — ${category} مع تجربة متجر كاملة.`;
-  return `${brand} — ${category} with a full store experience.`;
+  const shopping = STORE_SHOPPING_RE.test(text);
+  if (locale === "es") {
+    return shopping
+      ? `${brand} — ${category} con una experiencia de compra completa.`
+      : `${brand} — ${category} con una experiencia de tienda completa.`;
+  }
+  if (locale === "pt-BR") {
+    return shopping
+      ? `${brand} — ${category} com uma experiência de compra completa.`
+      : `${brand} — ${category} com uma experiência de loja completa.`;
+  }
+  if (locale === "ar") {
+    return shopping
+      ? `${brand} — ${category} مع تجربة تسوق كاملة.`
+      : `${brand} — ${category} مع تجربة متجر كاملة.`;
+  }
+  return shopping
+    ? `${brand} — ${category} with a full shopping experience.`
+    : `${brand} — ${category} with a full store experience.`;
 }
 
 function localizeStorePoweredLine(text: string, locale: string): string {
@@ -417,6 +436,42 @@ function localizePrefixedEditorLabel(text: string, locale: string): string {
     return `${locPrefix} ${locRest}`;
   }
   return "";
+}
+
+function localizeSoilToPlate(text: string, locale: string): string {
+  const match = text.match(SOIL_TO_PLATE_RE);
+  if (!match) return "";
+  const dish = localizeFragment(match[1], locale) || (HE.test(match[1]) ? "" : match[1]);
+  if (!dish) return "";
+  if (locale === "es") return `${dish} — de la tierra al plato — sin ceder en el sabor.`;
+  if (locale === "pt-BR") return `${dish} — da terra ao prato — sem abrir mão do sabor.`;
+  if (locale === "ar") return `${dish} — من الأرض إلى الصحن — بلا تنازل عن الطعم.`;
+  return `${dish} — from the soil to the plate — no compromise on taste.`;
+}
+
+function localizeOpeningHours(text: string, locale: string): string {
+  if (!/א[׳']/.test(text) || !/\d{1,2}:\d{2}/.test(text)) return "";
+  const tokens: Record<string, PhraseTranslation> = {
+    "מוצ״ש": { en: "Sat night", es: "sáb. noche", "pt-BR": "sáb. noite", ar: "مساء السبت" },
+    "א׳–ה׳": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
+    "א'–ה'": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
+    "ו׳–ש׳": { en: "Fri–Sat", es: "vie–sáb", "pt-BR": "sex–sáb", ar: "جمعة–سبت" },
+    "ו'–ש'": { en: "Fri–Sat", es: "vie–sáb", "pt-BR": "sex–sáb", ar: "جمعة–سبت" },
+    שבת: { en: "Sat", es: "sáb", "pt-BR": "sáb", ar: "سبت" },
+    סגור: { en: "Closed", es: "Cerrado", "pt-BR": "Fechado", ar: "مغلق" },
+    "ו׳": { en: "Fri", es: "vie", "pt-BR": "sex", ar: "جمعة" },
+    "ו'": { en: "Fri", es: "vie", "pt-BR": "sex", ar: "جمعة" },
+  };
+  let out = text;
+  const keys = Object.keys(tokens).sort((a, b) => b.length - a.length);
+  for (const source of keys) {
+    if (!out.includes(source)) continue;
+    const translated = pickLocaleCopy(tokens[source], locale);
+    if (!translated) continue;
+    out = out.split(source).join(translated);
+  }
+  if (HE.test(out)) return "";
+  return out;
 }
 
 function localizeAgencySiteLine(text: string, locale: string): string {
@@ -545,6 +600,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(duration, locale);
   }
 
+  const openingHours = localizeOpeningHours(text, locale);
+  if (isUsableTranslation(text, openingHours, locale)) {
+    return adaptBuiltInDirectionalCss(openingHours, locale);
+  }
+
   const indexedLabel = localizeIndexedEditorLabel(text, locale);
   if (isUsableTranslation(text, indexedLabel, locale)) {
     return adaptBuiltInDirectionalCss(indexedLabel, locale);
@@ -603,6 +663,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const agencySharp = localizeAgencySharpLine(text, locale);
   if (isUsableTranslation(text, agencySharp, locale)) {
     return adaptBuiltInDirectionalCss(agencySharp, locale);
+  }
+
+  const soilToPlate = localizeSoilToPlate(text, locale);
+  if (isUsableTranslation(text, soilToPlate, locale)) {
+    return adaptBuiltInDirectionalCss(soilToPlate, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);

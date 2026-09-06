@@ -271,6 +271,22 @@ describe("localizeBuiltInTemplateSeed", () => {
       localizeBuiltInText("מיפוי אור, רעש, תנועה, שכנים, מגבלות וחומר מקומי.", "en"),
     ).toMatch(/light|noise|neighbors/i);
     expect(localizeBuiltInText("אזל מהמלאי", "es")).toMatch(/Agotado/i);
+    expect(
+      localizeBuiltInText("Lumenware — אלקטרוניקה וגאדג׳טים עם חוויית קנייה מלאה.", "en"),
+    ).toMatch(/full shopping experience/i);
+    expect(
+      localizeBuiltInText("Lumenware — אלקטרוניקה וגאדג׳טים עם חוויית קנייה מלאה.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("א׳–ה׳ 09:00–20:00 · ו׳ 09:00–14:00", "en")).toMatch(/Sun–Thu/);
+    expect(localizeBuiltInText("א׳–ה׳ 09:00–20:00 · ו׳ 09:00–14:00", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(
+      localizeBuiltInText("מוס שוקולד טבעוני — מהאדמה לצלחת — בלי פשרות על טעם.", "en"),
+    ).toMatch(/Vegan chocolate mousse/);
+    expect(
+      localizeBuiltInText("יחס עדין וסבלני שהופך את הביקור לחוויה נעימה לילדים.", "en"),
+    ).toMatch(/children|gentle/i);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
