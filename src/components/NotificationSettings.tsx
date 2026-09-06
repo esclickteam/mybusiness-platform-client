@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import API from "@api";
 import {
+  ArrowLeft,
   ArrowRight,
   Bell,
   BellRing,
@@ -14,7 +16,6 @@ import {
   Lock,
   Loader2,
   MessageCircle,
-  Share,
   Smartphone,
   Star,
   Sparkles,
@@ -27,7 +28,6 @@ import {
   getPushBillingStatus,
   normalizePushPlan,
   pushPlanAmountIls,
-  pushPlanLabelHe,
   reactivatePushBilling,
   type PushBillingPlan,
   type PushBillingStatus,
@@ -47,6 +47,7 @@ import {
 } from "../utils/push";
 import { resolvePushToggleCopy } from "../utils/pushToggleState";
 import { resolvePushSupportBanner } from "../utils/pushSupportBanner";
+import { getTextDirection } from "../i18n/localeUtils";
 import {
   buildNotificationSettingsWrite,
   isPushEnabledPreference,
@@ -89,52 +90,15 @@ const DEFAULT_SETTINGS: NotificationSettingsState = {
 
 const CATEGORIES: {
   key: CategoryKey;
-  label: string;
-  description: string;
   icon: React.ReactNode;
 }[] = [
-  {
-    key: "appointment",
-    label: "פגישות",
-    description: "פגישות ותורים חדשים שנקבעו",
-    icon: <Calendar className="h-4 w-4" />,
-  },
-  {
-    key: "lead",
-    label: "לידים חדשים",
-    description: "לידים חדשים שנכנסים למערכת",
-    icon: <UserPlus className="h-4 w-4" />,
-  },
-  {
-    key: "collaboration",
-    label: "שיתופי פעולה",
-    description: "הצעות, בקשות והסכמי שיתוף פעולה",
-    icon: <Handshake className="h-4 w-4" />,
-  },
-  {
-    key: "message",
-    label: "הודעות",
-    description: "הודעות חדשות מלקוחות ומשותפים עסקיים",
-    icon: <MessageCircle className="h-4 w-4" />,
-  },
-  {
-    key: "review",
-    label: "ביקורות",
-    description: "ביקורות חדשות שהתקבלו על העסק",
-    icon: <Star className="h-4 w-4" />,
-  },
-  {
-    key: "task",
-    label: "משימות ותזכורות",
-    description: "משימות חדשות ותזכורות לטיפול",
-    icon: <ListChecks className="h-4 w-4" />,
-  },
-  {
-    key: "aiCampaign",
-    label: "התראות קמפיין AI",
-    description: "המלצות ביצועים לקמפיינים ב-Meta — אזהרה וקריטי בלבד",
-    icon: <Sparkles className="h-4 w-4" />,
-  },
+  { key: "appointment", icon: <Calendar className="h-4 w-4" /> },
+  { key: "lead", icon: <UserPlus className="h-4 w-4" /> },
+  { key: "collaboration", icon: <Handshake className="h-4 w-4" /> },
+  { key: "message", icon: <MessageCircle className="h-4 w-4" /> },
+  { key: "review", icon: <Star className="h-4 w-4" /> },
+  { key: "task", icon: <ListChecks className="h-4 w-4" /> },
+  { key: "aiCampaign", icon: <Sparkles className="h-4 w-4" /> },
 ];
 
 function Toggle({
@@ -202,6 +166,8 @@ export function NotificationSettingsPanel({
   active,
   onBack,
 }: NotificationSettingsPanelProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
@@ -294,14 +260,14 @@ export function NotificationSettingsPanel({
         ) {
           const recover = await ensurePushSubscription();
           if (recover.reason === "entitlement-required") {
-            setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+            setBillingMessage(t("notificationSettings.needPushSub"));
           }
         } else {
           const localSub = await getCurrentPushSubscription();
           if (localSub && pushEnabled) {
             const bind = await bindExistingPushSubscription();
             if (bind.reason === "entitlement-required") {
-              setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+              setBillingMessage(t("notificationSettings.needPushSub"));
             }
           }
         }
@@ -445,7 +411,7 @@ export function NotificationSettingsPanel({
     if (busy) return;
 
     if (billingEnabled && !entitled) {
-      setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+      setBillingMessage(t("notificationSettings.needPushSub"));
       return;
     }
 
@@ -479,7 +445,7 @@ export function NotificationSettingsPanel({
         setSubscribed(true);
         await refreshDeviceStatus();
       } else if (result.reason === "entitlement-required") {
-        setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+        setBillingMessage(t("notificationSettings.needPushSub"));
         await refreshBillingStatus();
       } else if (result.reason === "unsupported") {
         setSupported(false);
@@ -495,7 +461,7 @@ export function NotificationSettingsPanel({
 
   function handleCategoryToggle(key: CategoryKey) {
     if (categoriesLocked) {
-      setBillingMessage("זמין לאחר הפעלת 7 ימי הניסיון");
+      setBillingMessage(t("notificationSettings.availableAfterTrialShort"));
       return;
     }
     const next = { ...settings, [key]: !settings[key] };
@@ -510,13 +476,13 @@ export function NotificationSettingsPanel({
     try {
       const result = await createPushBillingCheckout(selectedPlan);
       if (!result?.url) {
-        setBillingMessage("לא הצלחנו להתחיל את התשלום. נסו שוב.");
+        setBillingMessage(t("notificationSettings.checkoutFailed"));
         return;
       }
       window.location.assign(result.url);
     } catch (err) {
       setBillingMessage(
-        err instanceof Error ? err.message : "לא הצלחנו להתחיל את התשלום"
+        err instanceof Error ? err.message : t("notificationSettings.checkoutFailedGeneric")
       );
     } finally {
       setBillingBusy(false);
@@ -531,18 +497,18 @@ export function NotificationSettingsPanel({
       const result = await cancelPushBilling();
       await refreshBillingStatus();
       if (result.canceledImmediately) {
-        setBillingMessage("המנוי בוטל. התראות Push במכשיר הופסקו.");
+        setBillingMessage(t("notificationSettings.canceledStopped"));
       } else {
         const end = formatDdMmYyyy(result.currentPeriodEnd) || periodEndLabel;
         setBillingMessage(
           end
-            ? `המנוי בוטל ויישאר פעיל עד ${end}`
-            : "המנוי בוטל ויישאר פעיל עד סוף התקופה"
+            ? t("notificationSettings.canceledUntil", { date: end })
+            : t("notificationSettings.canceledUntilEnd")
         );
       }
     } catch (err) {
       setBillingMessage(
-        err instanceof Error ? err.message : "ביטול המנוי נכשל"
+        err instanceof Error ? err.message : t("notificationSettings.cancelFailed")
       );
     } finally {
       setBillingBusy(false);
@@ -556,10 +522,10 @@ export function NotificationSettingsPanel({
     try {
       await reactivatePushBilling();
       await refreshBillingStatus();
-      setBillingMessage("המנוי חודש בהצלחה");
+      setBillingMessage(t("notificationSettings.renewed"));
     } catch (err) {
       setBillingMessage(
-        err instanceof Error ? err.message : "חידוש המנוי נכשל"
+        err instanceof Error ? err.message : t("notificationSettings.renewFailed")
       );
     } finally {
       setBillingBusy(false);
@@ -573,20 +539,20 @@ export function NotificationSettingsPanel({
 
     try {
       if (billingEnabled && !entitled) {
-        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        setTestMessage(t("notificationSettings.needPushForTest"));
         return;
       }
 
       const ensure = await ensurePushSubscription();
       if (ensure.reason === "entitlement-required") {
-        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        setTestMessage(t("notificationSettings.needPushForTest"));
         await refreshBillingStatus();
         return;
       }
       if (!ensure.ok && ensure.reason === "ios-install") {
         setShowGuide(true);
         setTestMessage(
-          "באייפון צריך לפתוח מתוך האפליקציה המותקנת במסך הבית"
+          t("notificationSettings.iphoneStandalone")
         );
         return;
       }
@@ -596,18 +562,18 @@ export function NotificationSettingsPanel({
       setDeviceCount(
         Number(res.data?.deviceCount || res.data?.sent || deviceCount)
       );
-      setTestMessage(res.data?.message || "נשלחה התראת בדיקה");
+      setTestMessage(res.data?.message || t("notificationSettings.testSent"));
     } catch (err) {
       const anyErr = err as { status?: number; code?: string; message?: string };
       if (
         anyErr.status === 402 ||
         anyErr.code === "PUSH_ENTITLEMENT_REQUIRED"
       ) {
-        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        setTestMessage(t("notificationSettings.needPushForTest"));
         await refreshBillingStatus();
       } else {
         setTestMessage(
-          err instanceof Error ? err.message : "שליחת בדיקה נכשלה"
+          err instanceof Error ? err.message : t("notificationSettings.testFailed")
         );
       }
     } finally {
@@ -634,14 +600,14 @@ export function NotificationSettingsPanel({
 
   const paywallDisclaimerExtra = useMemo(() => {
     if (selectedPlan === "annual") {
-      return "לאחר 7 ימי ניסיון תחויבו 228 ₪ עבור שנה מלאה. לאחר מכן המנוי יתחדש אחת לשנה עד לביטול.";
+      return t("notificationSettings.trialDisclaimerAnnual");
     }
-    return "לאחר 7 ימי ניסיון תחויבו 29 ₪. לאחר מכן המנוי יתחדש מדי חודש עד לביטול.";
-  }, [selectedPlan]);
+    return t("notificationSettings.trialDisclaimerMonthly");
+  }, [selectedPlan, t]);
 
 
   return (
-    <div dir="rtl" className="flex min-h-0 flex-1 flex-col text-right">
+    <div dir={pageDir} className="flex min-h-0 flex-1 flex-col">
       <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
 
@@ -649,10 +615,10 @@ export function NotificationSettingsPanel({
           <button
             type="button"
             onClick={onBack}
-            aria-label="חזרה להתראות"
+            aria-label={t("notificationSettings.backAria")}
             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
           >
-            <ArrowRight className="h-4 w-4" />
+            {pageDir === "rtl" ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
           </button>
 
           <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -661,10 +627,10 @@ export function NotificationSettingsPanel({
             </span>
             <div className="min-w-0">
               <h3 className="truncate text-base font-black text-slate-900">
-                הגדרות התראות
+                {t("notificationSettings.title")}
               </h3>
               <p className="truncate text-[11px] font-bold text-slate-500">
-                Push למכשיר — גם כשהמערכת סגורה
+                {t("notificationSettings.subtitle")}
               </p>
             </div>
           </div>
@@ -672,7 +638,7 @@ export function NotificationSettingsPanel({
           {saved && (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-600">
               <Check className="h-3 w-3" />
-              נשמר
+              {t("notificationSettings.saved")}
             </span>
           )}
         </div>
@@ -692,7 +658,7 @@ export function NotificationSettingsPanel({
 
           {supported && permission === "denied" && (
             <div className="mb-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
-              התראות חסומות. לחצ/י 🔒 ליד כתובת האתר → התראות → אפשר/י.
+              {t("notificationSettings.blockedHint")}
             </div>
           )}
 
@@ -704,10 +670,10 @@ export function NotificationSettingsPanel({
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-black text-slate-900">
-                    התראות Push בזמן אמת
+                    {t("notificationSettings.pushTitle")}
                   </p>
                   <p className="text-[11px] font-semibold leading-4 text-slate-500">
-                    קבלו עדכונים חשובים למכשיר גם כש-Bizuply לא פתוחה.
+                    {t("notificationSettings.pushText")}
                   </p>
                 </div>
               </div>
@@ -723,15 +689,15 @@ export function NotificationSettingsPanel({
                       : "border-slate-200 bg-slate-50/80 hover:bg-white",
                   ].join(" ")}
                 >
-                  <p className="text-[11px] font-black text-slate-800">חודשי</p>
+                  <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.monthly")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
                     29 ₪{" "}
                     <span className="text-[10px] font-bold text-slate-500">
-                      / חודש
+                      {t("notificationSettings.perMonth")}
                     </span>
                   </p>
                   <p className="mt-1 text-[10px] font-bold text-emerald-600">
-                    7 ימים חינם
+                    {t("notificationSettings.sevenDaysFree")}
                   </p>
                 </button>
 
@@ -746,23 +712,23 @@ export function NotificationSettingsPanel({
                   ].join(" ")}
                 >
                   <span className="absolute -top-2 left-2 rounded-full bg-gradient-to-l from-amber-400 to-red-500 px-2 py-0.5 text-[9px] font-black text-white">
-                    מומלץ
+                    {t("notificationSettings.recommended")}
                   </span>
-                  <p className="text-[11px] font-black text-slate-800">שנתי</p>
+                  <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.annual")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
                     19 ₪{" "}
                     <span className="text-[10px] font-bold text-slate-500">
-                      / חודש
+                      {t("notificationSettings.perMonth")}
                     </span>
                   </p>
                   <p className="text-[10px] font-semibold text-slate-500">
-                    228 ₪ בחיוב שנתי
+                    {t("notificationSettings.annualCharge")}
                   </p>
                   <p className="mt-1 text-[10px] font-bold text-emerald-600">
-                    7 ימים חינם
+                    {t("notificationSettings.sevenDaysFree")}
                   </p>
                   <p className="mt-1 inline-flex rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700">
-                    חיסכון של 120 ₪ בשנה
+                    {t("notificationSettings.annualSave")}
                   </p>
                 </button>
               </div>
@@ -776,12 +742,11 @@ export function NotificationSettingsPanel({
                 {billingBusy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : null}
-                התחילו 7 ימים חינם
+                {t("notificationSettings.startTrial")}
               </button>
 
               <p className="mt-2 text-[10px] font-semibold leading-4 text-slate-500">
-                לא תחויבו היום. בתום 7 ימי הניסיון המנוי יתחדש אוטומטית לפי
-                המסלול שבחרתם, אלא אם תבטלו לפני כן.
+                {t("notificationSettings.trialDisclaimer")}
               </p>
               <p className="mt-1 text-[10px] font-semibold leading-4 text-slate-500">
                 {paywallDisclaimerExtra}
@@ -799,13 +764,13 @@ export function NotificationSettingsPanel({
               {subStatus === "past_due" ? (
                 <div className="mb-2 rounded-xl border border-red-200 bg-red-50 p-2.5">
                   <p className="text-xs font-black text-red-700">
-                    התשלום נכשל — יש לטפל בחיוב כדי להמשיך לקבל Push למכשיר
+                    {t("notificationSettings.paymentFailed")}
                   </p>
                   <Link
                     to="/contact"
                     className="mt-2 inline-flex h-9 items-center justify-center rounded-xl bg-white px-3 text-[11px] font-black text-red-700 ring-1 ring-red-100 transition hover:bg-red-100"
                   >
-                    פנו אלינו לטיפול בחיוב
+                    {t("notificationSettings.contactBilling")}
                   </Link>
                 </div>
               ) : null}
@@ -813,32 +778,39 @@ export function NotificationSettingsPanel({
               {subStatus === "trialing" ? (
                 <div className="mb-2">
                   <p className="text-sm font-black text-slate-900">
-                    תקופת ניסיון פעילה
+                    {t("notificationSettings.trialActive")}
                   </p>
                   <p className="text-[11px] font-semibold text-slate-500">
                     {trialDaysLeft != null
-                      ? `נשארו ${trialDaysLeft} ימים`
-                      : "הניסיון פעיל"}
+                      ? t("notificationSettings.trialDaysLeft", { count: trialDaysLeft })
+                      : t("notificationSettings.trialActiveShort")}
                     {periodEndLabel && firstChargeAmount != null
-                      ? ` · החיוב הראשון: ${periodEndLabel} · ${firstChargeAmount} ₪`
+                      ? t("notificationSettings.firstCharge", { date: periodEndLabel, amount: firstChargeAmount })
                       : periodEndLabel
-                        ? ` · החיוב הראשון: ${periodEndLabel}`
+                        ? t("notificationSettings.firstChargeDate", { date: periodEndLabel })
                         : ""}
                   </p>
                 </div>
               ) : (
                 <div className="mb-2">
                   <p className="text-sm font-black text-slate-900">
-                    מנוי {pushPlanLabelHe(plan)} פעיל
+                    {t("notificationSettings.planActive", {
+                      plan:
+                        plan === "monthly"
+                          ? t("notificationSettings.monthly")
+                          : plan === "annual"
+                            ? t("notificationSettings.annual")
+                            : t("notificationSettings.planGeneric"),
+                    })}
                   </p>
                   <p className="text-[11px] font-semibold text-slate-500">
                     {plan === "annual"
-                      ? "228 ₪ לשנה"
+                      ? t("notificationSettings.planAnnualPrice")
                       : plan === "monthly"
-                        ? "29 ₪ לחודש"
-                        : "מנוי Push"}
+                        ? t("notificationSettings.planMonthlyPrice")
+                        : t("notificationSettings.planGeneric")}
                     {periodEndLabel && !cancelAtPeriodEnd
-                      ? ` · חידוש הבא: ${periodEndLabel}`
+                      ? t("notificationSettings.nextRenewal", { date: periodEndLabel })
                       : ""}
                   </p>
                 </div>
@@ -846,7 +818,7 @@ export function NotificationSettingsPanel({
 
               {cancelAtPeriodEnd && periodEndLabel ? (
                 <div className="mb-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-[11px] font-bold text-amber-800">
-                  המנוי בוטל ויישאר פעיל עד {periodEndLabel}
+                  {t("notificationSettings.canceledUntil", { date: periodEndLabel })}
                 </div>
               ) : null}
 
@@ -861,7 +833,7 @@ export function NotificationSettingsPanel({
                   </span>
                   <div className="min-w-0">
                     <p className="text-xs font-black text-slate-900">
-                      התראות Push במכשיר
+                      {t("notificationSettings.devicePush")}
                     </p>
                     <p
                       className="text-[10px] font-semibold text-slate-500"
@@ -893,7 +865,7 @@ export function NotificationSettingsPanel({
                     {billingBusy ? (
                       <Loader2 className="me-1 h-3.5 w-3.5 animate-spin" />
                     ) : null}
-                    חידוש המנוי
+                    {t("notificationSettings.renew")}
                   </button>
                 ) : subStatus !== "past_due" ? (
                   <button
@@ -905,7 +877,7 @@ export function NotificationSettingsPanel({
                     {billingBusy ? (
                       <Loader2 className="me-1 h-3.5 w-3.5 animate-spin" />
                     ) : null}
-                    ביטול מנוי
+                    {t("notificationSettings.cancelSub")}
                   </button>
                 ) : null}
               </div>
@@ -930,7 +902,7 @@ export function NotificationSettingsPanel({
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-black text-slate-900">
-                    התראות Push במכשיר
+                    {t("notificationSettings.devicePush")}
                   </p>
                     <p
                       className="text-[11px] font-semibold text-slate-500"
@@ -962,7 +934,7 @@ export function NotificationSettingsPanel({
                 className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-white px-3 text-xs font-black text-sky-800 ring-1 ring-sky-100 transition hover:bg-sky-100 disabled:opacity-60"
               >
                 <Smartphone className="h-4 w-4" />
-                שלח התראת בדיקה לטלפון
+                {t("notificationSettings.sendTest")}
               </button>
               {testMessage ? (
                 <p className="mt-2 text-[11px] font-bold text-sky-800">
@@ -977,8 +949,7 @@ export function NotificationSettingsPanel({
               <div className="mb-1 flex items-start gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5">
                 <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
                 <p className="text-[11px] font-bold leading-4 text-slate-600">
-                  קטגוריות ההתראות מוצגות לתצוגה מקדימה בלבד. זמין לאחר הפעלת 7
-                  ימי הניסיון.
+                  {t("notificationSettings.categoriesPreview")}
                 </p>
               </div>
             ) : null}
@@ -1014,12 +985,12 @@ export function NotificationSettingsPanel({
                           categoriesLocked ? "text-slate-500" : "text-slate-800",
                         ].join(" ")}
                       >
-                        {category.label}
+                        {t(`notificationSettings.categories.${category.key}.label`)}
                       </p>
                       <p className="truncate text-[11px] font-semibold text-slate-500">
                         {categoriesLocked
-                          ? "זמין לאחר הפעלת 7 ימי הניסיון"
-                          : category.description}
+                          ? t("notificationSettings.availableAfterTrial")
+                          : t(`notificationSettings.categories.${category.key}.description`)}
                       </p>
                     </div>
                   </div>
@@ -1050,10 +1021,10 @@ export function NotificationSettingsPanel({
             >
               <span className="flex items-center gap-2 text-sm font-black text-slate-800">
                 <Smartphone className="h-4 w-4 text-amber-600" />
-                איך מקבלים התראות בטלפון?
+                {t("notificationSettings.howPhone")}
               </span>
               <span className="text-xs font-black text-amber-600">
-                {showGuide ? "הסתר" : "הצג"}
+                {showGuide ? t("notificationSettings.hide") : t("notificationSettings.show")}
               </span>
             </button>
 
@@ -1069,32 +1040,31 @@ export function NotificationSettingsPanel({
                   <div className="mt-2 space-y-2 text-[11px] font-semibold leading-5 text-slate-600">
                     <div>
                       <p className="mb-0.5 font-black text-slate-800">
-                        📱 אייפון
+                        📱 {t("notificationSettings.iphone")}
                       </p>
                       <ol className="list-inside list-decimal space-y-0.5">
                         <li>Safari → bizuply.com</li>
                         <li>
-                          שיתוף <Share className="inline h-3 w-3" /> → הוסף
-                          למסך הבית
+                          {t("notificationSettings.iphoneShare")}
                         </li>
-                        <li>פתח/י מהאייקון → הפעל/י Push כאן</li>
+                        <li>{t("notificationSettings.iphoneOpen")}</li>
                       </ol>
                       <p className="mt-0.5 text-[10px] text-slate-400">
-                        * iOS 16.4+ מהאפליקציה המותקנת בלבד
+                        {t("notificationSettings.iphoneNote")}
                       </p>
                     </div>
                     <div>
                       <p className="mb-0.5 font-black text-slate-800">
-                        🤖 אנדרואיד
+                        🤖 {t("notificationSettings.android")}
                       </p>
                       <ol className="list-inside list-decimal space-y-0.5">
-                        <li>Chrome → התקן אפליקציה</li>
-                        <li>הפעל/י Push כאן ואשר/י</li>
+                        <li>{t("notificationSettings.androidChrome")}</li>
+                        <li>{t("notificationSettings.androidEnable")}</li>
                       </ol>
                     </div>
                     <div>
-                      <p className="mb-0.5 font-black text-slate-800">💻 מחשב</p>
-                      <p>הפעל/י Push כאן ואשר/י בדפדפן.</p>
+                      <p className="mb-0.5 font-black text-slate-800">💻 {t("notificationSettings.desktop")}</p>
+                      <p>{t("notificationSettings.desktopEnable")}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -1108,13 +1078,13 @@ export function NotificationSettingsPanel({
                 className="mt-2 inline-flex h-9 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 text-[11px] font-black text-black transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
               >
                 <Download className="h-3.5 w-3.5" />
-                {installEvent ? "התקן אפליקציה" : "איך מתקינים באייפון"}
+                {installEvent ? t("notificationSettings.installApp") : t("notificationSettings.howIphone")}
               </button>
             )}
           </div>
 
           <p className="mt-3 text-center text-[10px] font-bold text-slate-400">
-            התראות בתוך המערכת ימשיכו להופיע תמיד
+            {t("notificationSettings.inAppAlways")}
           </p>
         </div>
       )}

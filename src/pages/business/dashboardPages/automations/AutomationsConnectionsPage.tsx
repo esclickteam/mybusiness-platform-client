@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useOutletContext } from "react-router-dom";
 import IntegrationsMain from "../integrations/IntegrationsMain";
 
@@ -12,6 +13,7 @@ type OutletCtx = {
  * providers (Gmail / Outlook / Google Calendar). No API/contract changes.
  */
 export default function AutomationsConnectionsPage() {
+  const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const returnPath = businessId
     ? `/business/${businessId}/dashboard/automations/connections`
@@ -25,22 +27,21 @@ export default function AutomationsConnectionsPage() {
       <IntegrationsMain
         businessId={businessId || undefined}
         returnPath={returnPath}
-        title="חיבורים"
-        description="חיבורי שירותים שמשמשים את האוטומציות — Gmail, Outlook ו-Google Calendar."
+        title={t("integrations.connectionsTitle")}
+        description={t("integrations.connectionsDescription")}
         embedded
       />
 
       {whatsappPath ? (
         <section className="ax-connection-note">
           <div>
-            <h2>WhatsApp / Meta</h2>
+            <h2>{t("integrations.whatsappNoteTitle")}</h2>
             <p>
-              הגדרות WhatsApp מנוהלות באזור WhatsApp הקיים. לא בוצע מיזוג עם
-              האוטומציות הישנות.
+              {t("integrations.whatsappNoteText")}
             </p>
           </div>
           <Link to={whatsappPath} className="ax-btn ax-btn--secondary">
-            מעבר להגדרות WhatsApp
+            {t("integrations.whatsappSettings")}
           </Link>
         </section>
       ) : null}

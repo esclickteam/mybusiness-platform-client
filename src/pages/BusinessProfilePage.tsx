@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowRight,
   Building2,
   CheckCircle2,
   FileSignature,
@@ -21,6 +23,7 @@ import {
 import API from "../api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type Business = {
   _id: string;
@@ -43,6 +46,8 @@ type BusinessProfilePageProps = {
 export default function BusinessProfilePage({
   resetSearchFilters,
 }: BusinessProfilePageProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { businessId } = useParams();
   const navigate = useNavigate();
 
@@ -80,7 +85,7 @@ export default function BusinessProfilePage({
         console.error("Failed to load business details:", err);
 
         if (mounted) {
-          setError("לא הצלחנו לטעון את פרטי העסק");
+          setError(t("collab.businessPage.loadError"));
         }
       } finally {
         if (mounted) {
@@ -96,7 +101,7 @@ export default function BusinessProfilePage({
     return () => {
       mounted = false;
     };
-  }, [businessId]);
+  }, [businessId, t]);
 
   useEffect(() => {
     async function fetchMyBusiness() {
@@ -151,24 +156,24 @@ export default function BusinessProfilePage({
     if (!business) return "";
 
     return business.area || business.city || "";
-  }, [business]);
+  }, [business, t]);
 
   const contactItems = useMemo(() => {
     if (!business) return [];
 
     return [
       {
-        label: "איש קשר",
+        label: t("collab.businessPage.contactPerson"),
         value: business.contact,
         icon: UserRound,
       },
       {
-        label: "טלפון",
+        label: t("collab.businessPage.phone"),
         value: business.phone,
         icon: Phone,
       },
       {
-        label: "אימייל",
+        label: t("collab.businessPage.email"),
         value: business.email,
         icon: Mail,
       },
@@ -201,7 +206,10 @@ export default function BusinessProfilePage({
 
     try {
       const fullMessage = chatSubject.trim()
-        ? `נושא: ${chatSubject.trim()}\n\n${chatMessage.trim()}`
+        ? t("collab.businessPage.subjectPrefix", {
+            subject: chatSubject.trim(),
+            body: chatMessage.trim(),
+          })
         : chatMessage.trim();
 
       const res = await API.post("/business-chat/start", {
@@ -214,7 +222,7 @@ export default function BusinessProfilePage({
       setChatSubject("");
     } catch (err) {
       console.error("Failed to send message:", err);
-      alert("לא הצלחנו לשלוח את ההודעה. נסי שוב.");
+      alert(t("collab.businessPage.sendFailed"));
     } finally {
       setSending(false);
     }
@@ -250,25 +258,22 @@ export default function BusinessProfilePage({
     });
   };
 
-  const applyChatTemplate = (template: string) => {
-    setChatSubject(template);
+  const applyChatTemplate = (template: "collab" | "intro" | "offer") => {
+    const subjects = {
+      collab: t("collab.businessPage.tplCollab"),
+      intro: t("collab.businessPage.tplIntro"),
+      offer: t("collab.businessPage.tplOffer"),
+    };
+    const bodies = {
+      collab: t("collab.businessPage.tplCollabBody"),
+      intro: t("collab.businessPage.tplIntroBody"),
+      offer: t("collab.businessPage.tplOfferBody"),
+    };
+    setChatSubject(subjects[template]);
 
     setChatMessage((prev) => {
       if (prev.trim()) return prev;
-
-      if (template === "שיתוף פעולה") {
-        return "שלום, אשמח לבדוק אפשרות לשיתוף פעולה בין העסקים שלנו.";
-      }
-
-      if (template === "שיחת היכרות") {
-        return "שלום, אשמח לתאם שיחת היכרות קצרה ולבדוק אם יש התאמה לשיתוף פעולה.";
-      }
-
-      if (template === "הצעה עסקית") {
-        return "שלום, יש לי הצעה עסקית שיכולה להתאים לעסק שלכם. אשמח לשלוח פרטים נוספים.";
-      }
-
-      return "";
+      return bodies[template];
     });
   };
 
@@ -281,13 +286,13 @@ export default function BusinessProfilePage({
   }
 
   if (!business) {
-    return <ErrorState text="העסק לא נמצא" />;
+    return <ErrorState text={t("collab.businessPage.notFound")} />;
   }
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-slate-50/70 px-4 py-6 text-right sm:px-6 lg:px-8"
+      dir={pageDir}
+      className="min-h-screen bg-slate-50/70 px-4 py-6 sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-7xl space-y-6">
         {isOwnerViewingOther && (
@@ -296,8 +301,8 @@ export default function BusinessProfilePage({
             onClick={handleBackToPartners}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
           >
-            <ArrowLeft className="h-5 w-5" />
-            חזרה לשותפים
+            {pageDir === "rtl" ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
+            {t("collab.businessPage.backToPartners")}
           </button>
         )}
 
@@ -322,15 +327,15 @@ export default function BusinessProfilePage({
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
                   <Sparkles className="h-4 w-4" />
-                  פרופיל עסקי
+                  {t("collab.businessPage.badge")}
                 </div>
 
                 <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
-                  {business.businessName || "עסק ללא שם"}
+                  {business.businessName || t("collab.businessPage.unnamed")}
                 </h1>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge icon={Store} text={business.category || "ללא קטגוריה"} />
+                  <Badge icon={Store} text={business.category || t("collab.businessPage.noCategory")} />
                   {locationText && <Badge icon={MapPin} text={locationText} />}
                 </div>
               </div>
@@ -345,7 +350,7 @@ export default function BusinessProfilePage({
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FileSignature className="h-5 w-5" />
-                  שליחת הצעה
+                  {t("collab.businessPage.sendProposal")}
                 </button>
 
                 <button
@@ -354,7 +359,7 @@ export default function BusinessProfilePage({
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
                 >
                   <MessageCircle className="h-5 w-5" />
-                  התחלת צ׳אט
+                  {t("collab.businessPage.startChat")}
                 </button>
               </div>
             )}
@@ -364,20 +369,20 @@ export default function BusinessProfilePage({
         <section className="grid gap-4 md:grid-cols-3">
           <MiniStatCard
             icon={Store}
-            label="תחום פעילות"
-            value={business.category || "לא הוגדר"}
+            label={t("collab.businessPage.field")}
+            value={business.category || t("collab.businessPage.notSet")}
             tone="violet"
           />
           <MiniStatCard
             icon={MapPin}
-            label="אזור שירות"
-            value={locationText || "לא הוגדר"}
+            label={t("collab.businessPage.serviceArea")}
+            value={locationText || t("collab.businessPage.notSet")}
             tone="sky"
           />
           <MiniStatCard
             icon={Handshake}
-            label="אפשרות פעולה"
-            value={isLoggedIn ? "הצעה / צ׳אט" : "צפייה בלבד"}
+            label={t("collab.businessPage.actionOption")}
+            value={isLoggedIn ? t("collab.businessPage.proposalOrChat") : t("collab.businessPage.viewOnly")}
             tone="emerald"
           />
         </section>
@@ -386,27 +391,27 @@ export default function BusinessProfilePage({
           <div className="space-y-6">
             <InfoPanel
               icon={Building2}
-              title="על העסק"
-              subtitle="תיאור ופרטים כלליים"
+              title={t("collab.businessPage.aboutTitle")}
+              subtitle={t("collab.businessPage.aboutSubtitle")}
             >
               <p className="text-sm font-semibold leading-8 text-slate-600">
-                {business.description || "לא נוסף תיאור לעסק עדיין."}
+                {business.description || t("collab.businessPage.noDescription")}
               </p>
             </InfoPanel>
 
             <InfoPanel
               icon={Handshake}
-              title="התאמה לשיתוף פעולה"
-              subtitle="מקום טוב להבין האם העסק מתאים לשיתוף פעולה"
+              title={t("collab.businessPage.fitTitle")}
+              subtitle={t("collab.businessPage.fitSubtitle")}
             >
               <div className="grid gap-3 sm:grid-cols-2">
                 <AgreementPoint
-                  title="אפשרות להצעת שיתוף פעולה"
-                  text="אפשר לשלוח הצעה מסודרת עם שירותים, תנאי תשלום, סעיפים ותנאי ביטול."
+                  title={t("collab.businessPage.canPropose")}
+                  text={t("collab.businessPage.canProposeText")}
                 />
                 <AgreementPoint
-                  title="אפשרות לפתיחת שיחה"
-                  text="אפשר להתחיל צ׳אט עסקי לפני שליחת הצעה או אחרי יצירת קשר ראשוני."
+                  title={t("collab.businessPage.canChat")}
+                  text={t("collab.businessPage.canChatText")}
                 />
               </div>
             </InfoPanel>
@@ -415,8 +420,8 @@ export default function BusinessProfilePage({
           <aside className="space-y-6">
             <InfoPanel
               icon={Phone}
-              title="פרטי קשר"
-              subtitle="פרטים שהעסק הציג בפרופיל"
+              title={t("collab.businessPage.contactTitle")}
+              subtitle={t("collab.businessPage.contactSubtitle")}
             >
               {contactItems.length ? (
                 <div className="space-y-3">
@@ -446,28 +451,28 @@ export default function BusinessProfilePage({
                 </div>
               ) : (
                 <p className="text-sm font-semibold text-slate-500">
-                  לא הוגדרו פרטי קשר לעסק.
+                  {t("collab.businessPage.noContact")}
                 </p>
               )}
             </InfoPanel>
 
             <InfoPanel
               icon={CheckCircle2}
-              title="פעולות מהירות"
-              subtitle="מה ניתן לעשות מכאן"
+              title={t("collab.businessPage.quickTitle")}
+              subtitle={t("collab.businessPage.quickSubtitle")}
             >
               <div className="space-y-3">
                 <QuickAction
                   icon={FileSignature}
-                  title="שליחת הצעה"
-                  text="פתיחת טופס הסכם/הצעה מסודר"
+                  title={t("collab.businessPage.sendProposal")}
+                  text={t("collab.businessPage.openProposalForm")}
                   onClick={openProposalModal}
                   disabled={!isLoggedIn || !currentUserBusinessName}
                 />
                 <QuickAction
                   icon={MessageCircle}
-                  title="שליחת הודעה"
-                  text="התחלת שיחה עסקית עם העסק"
+                  title={t("collab.businessPage.sendMessage")}
+                  text={t("collab.businessPage.startBusinessChat")}
                   onClick={openChatModal}
                   disabled={!isLoggedIn}
                 />
@@ -493,7 +498,7 @@ export default function BusinessProfilePage({
       {chatModalOpen && (
         <AppModal onClose={resetChatModal}>
           <div
-            dir="rtl"
+            dir={pageDir}
             className="mx-auto w-full max-w-2xl rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
           >
             {!createdConversationId ? (
@@ -506,10 +511,10 @@ export default function BusinessProfilePage({
 
                     <div>
                       <h3 className="text-xl font-black text-slate-800">
-                        שליחת הודעה לעסק
+                        {t("collab.businessPage.messageTo")}
                       </h3>
                       <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                        ההודעה תפתח שיחה חדשה עם {business.businessName}.
+                        {t("collab.businessPage.messageWillOpen", { name: business.businessName })}
                       </p>
                     </div>
                   </div>
@@ -524,22 +529,25 @@ export default function BusinessProfilePage({
                 </div>
 
                 <div className="mb-4 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-sky-50 p-4">
-                  <p className="text-xs font-black text-slate-400">נשלח אל</p>
+                  <p className="text-xs font-black text-slate-400">{t("collab.businessPage.sentTo")}</p>
                   <p className="mt-1 text-sm font-black text-slate-800">
                     {business.businessName}
                   </p>
                 </div>
 
                 <div className="mb-4 grid gap-2 sm:grid-cols-3">
-                  {["שיתוף פעולה", "שיחת היכרות", "הצעה עסקית"].map(
-                    (template) => (
+                  {([
+                    ["collab", t("collab.businessPage.tplCollab")],
+                    ["intro", t("collab.businessPage.tplIntro")],
+                    ["offer", t("collab.businessPage.tplOffer")],
+                  ] as const).map(([key, label]) => (
                       <button
-                        key={template}
+                        key={key}
                         type="button"
-                        onClick={() => applyChatTemplate(template)}
+                        onClick={() => applyChatTemplate(key)}
                         className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
                       >
-                        {template}
+                        {label}
                       </button>
                     )
                   )}
@@ -547,33 +555,33 @@ export default function BusinessProfilePage({
 
                 <label className="mb-4 block">
                   <p className="mb-2 text-sm font-black text-slate-800">
-                    נושא ההודעה
+                    {t("collab.businessPage.subject")}
                   </p>
                   <input
                     value={chatSubject}
                     onChange={(event) => setChatSubject(event.target.value)}
-                    placeholder="לדוגמה: שיתוף פעולה בין עסקים"
+                    placeholder={t("collab.businessPage.subjectPlaceholder")}
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
 
                 <label className="block">
                   <p className="mb-2 text-sm font-black text-slate-800">
-                    תוכן ההודעה
+                    {t("collab.businessPage.body")}
                   </p>
                   <textarea
                     value={chatMessage}
                     onChange={(event) => setChatMessage(event.target.value)}
                     rows={5}
                     maxLength={800}
-                    placeholder="כתבי כאן את ההודעה שלך..."
+                    placeholder={t("collab.businessPage.bodyPlaceholder")}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
 
                 <div className="mt-2 flex items-center justify-between text-xs font-semibold text-slate-400">
-                  <span>{chatMessage.length}/800 תווים</span>
-                  <span>תיפתח שיחה חדשה לאחר השליחה</span>
+                  <span>{t("collab.businessPage.chars", { count: chatMessage.length })}</span>
+                  <span>{t("collab.businessPage.newChatAfter")}</span>
                 </div>
 
                 <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -582,7 +590,7 @@ export default function BusinessProfilePage({
                     onClick={resetChatModal}
                     className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-100 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-200"
                   >
-                    ביטול
+                    {t("collab.businessPage.cancel")}
                   </button>
 
                   <button
@@ -596,7 +604,7 @@ export default function BusinessProfilePage({
                     ) : (
                       <Send className="h-5 w-5" />
                     )}
-                    {sending ? "שולח..." : "שליחת הודעה"}
+                    {sending ? t("collab.businessPage.sending") : t("collab.businessPage.send")}
                   </button>
                 </div>
               </>
@@ -607,12 +615,11 @@ export default function BusinessProfilePage({
                 </div>
 
                 <h3 className="mt-5 text-2xl font-black text-slate-800">
-                  ההודעה נשלחה בהצלחה
+                  {t("collab.businessPage.sentSuccess")}
                 </h3>
 
                 <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-7 text-slate-500">
-                  נפתחה שיחה חדשה עם העסק. אפשר להמשיך את השיחה מתוך אזור
-                  ההודעות.
+                  {t("collab.businessPage.chatOpened")}
                 </p>
 
                 <button
@@ -621,7 +628,7 @@ export default function BusinessProfilePage({
                   className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5"
                 >
                   <MessageCircle className="h-5 w-5" />
-                  המשך לצ׳אט
+                  {t("collab.businessPage.continueChat")}
                 </button>
               </div>
             )}
@@ -763,19 +770,22 @@ function QuickAction({
 }
 
 function LoadingState() {
-  return <BizuplyLoader fullScreen label="טוען את פרטי העסק..." />;
+  const { t } = useTranslation();
+  return <BizuplyLoader fullScreen label={t("collab.businessPage.loading")} />;
 }
 
 function ErrorState({ text }: { text: string }) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
     >
       <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center shadow-sm">
         <p className="text-lg font-black text-rose-700">{text}</p>
         <p className="mt-2 text-sm font-semibold text-rose-500">
-          נסי לרענן את העמוד או לחזור אחורה.
+          {t("collab.businessPage.tryRefresh")}
         </p>
       </div>
     </div>

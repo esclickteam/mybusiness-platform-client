@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
 import {
   checkDomainAvailability,
   checkoutDomainRegistration,
@@ -86,8 +88,8 @@ const EXTENSIONS_BY_LENGTH = [...DOMAIN_EXTENSIONS].sort(
   (a, b) => b.length - a.length,
 );
 
-function formatIls(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
+function formatIls(amount: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "ILS",
     minimumFractionDigits: 0,
@@ -95,10 +97,15 @@ function formatIls(amount: number) {
   }).format(amount || 0);
 }
 
-function formatDomainPrice(amount: number | null | undefined, free?: boolean) {
-  if (free || amount === 0) return "חינם";
+function formatDomainPrice(
+  amount: number | null | undefined,
+  free: boolean | undefined,
+  locale: string,
+  freeLabel: string,
+) {
+  if (free || amount === 0) return freeLabel;
   if (amount == null) return "—";
-  return formatIls(amount);
+  return formatIls(amount, locale);
 }
 
 function cleanDomainInput(value: string) {
@@ -145,6 +152,14 @@ type DomainSearchProps = {
 export default function DomainSearch({
   onRegistered,
 }: DomainSearchProps = {}) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const intlLocale = getIntlLocale(i18n.language);
+  const freeLabel = t("domainSearch.free");
+  const yearLabel = (years: number) =>
+    years === 1
+      ? t("domainSearch.oneYear")
+      : t("domainSearch.years", { count: years });
   const [domainName, setDomainName] = useState("");
   const [selectedTld, setSelectedTld] =
     useState<DomainExtension>("co.il");
@@ -241,7 +256,7 @@ export default function DomainSearch({
         setRegisterError(
           requestError instanceof Error
             ? requestError.message
-            : "אישור התשלום התקבל, אך השלמת הרישום נכשלה. נסו שוב.",
+            : t("domainSearch.paymentOkRegisterFailed"),
         );
       } finally {
         if (!cancelled) setIsCheckingOut(false);
@@ -258,7 +273,7 @@ export default function DomainSearch({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!result?.available || !result.domain || registerResult?.success) {
@@ -347,7 +362,7 @@ export default function DomainSearch({
           setError(
             requestError instanceof Error
               ? requestError.message
-              : "טעינת מחיר הדומיין נכשלה",
+              : t("domainSearch.priceLoadFailed"),
           );
         }
       } finally {
@@ -406,7 +421,7 @@ export default function DomainSearch({
           setRegisterError(
             requestError instanceof Error
               ? requestError.message
-              : "טעינת מחיר הדומיין נכשלה",
+              : t("domainSearch.priceLoadFailed"),
           );
         }
       } finally {
@@ -478,7 +493,7 @@ export default function DomainSearch({
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "בדיקת הדומיין נכשלה",
+          : t("domainSearch.checkFailed"),
       );
     } finally {
       setIsChecking(false);
@@ -546,7 +561,7 @@ export default function DomainSearch({
       setContactError(
         requestError instanceof Error
           ? requestError.message
-          : "יצירת איש הקשר נכשלה",
+          : t("domainSearch.contactCreateFailed"),
       );
     } finally {
       setIsCreatingContact(false);
@@ -582,7 +597,7 @@ export default function DomainSearch({
       }
 
       if (!checkout.paymentUrl) {
-        throw new Error("לא התקבל קישור לתשלום");
+        throw new Error(t("domainSearch.noCheckoutUrl"));
       }
 
       window.location.href = checkout.paymentUrl;
@@ -590,7 +605,7 @@ export default function DomainSearch({
       setRegisterError(
         requestError instanceof Error
           ? requestError.message
-          : "מעבר לתשלום נכשל",
+          : t("domainSearch.checkoutFailed"),
       );
       setIsCheckingOut(false);
     }
@@ -608,7 +623,7 @@ export default function DomainSearch({
 
   return (
     <section
-      dir="rtl"
+      dir={pageDir}
       className="mx-auto w-full max-w-5xl"
     >
       <div className="overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_26px_90px_rgba(15,23,42,0.10)]">
@@ -622,12 +637,11 @@ export default function DomainSearch({
 
             <div>
               <h2 className="text-3xl font-black tracking-tight text-slate-800">
-                מציאת דומיין לעסק
+                {t("domainSearch.title")}
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                הזינו שם דומיין, בחרו סיומת, ובדקו זמינות אמיתית לפני
-                הרישום.
+                {t("domainSearch.subtitle")}
               </p>
             </div>
           </div>
@@ -653,7 +667,7 @@ export default function DomainSearch({
                 onChange={(event) => {
                   handleDomainNameChange(event.target.value);
                 }}
-                placeholder="לדוגמה: mybusiness"
+                placeholder={t("domainSearch.namePlaceholder")}
                 dir="ltr"
                 autoComplete="off"
                 className="h-14 w-full rounded-2xl border border-slate-200 bg-white py-0 pl-5 pr-36 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
@@ -668,18 +682,18 @@ export default function DomainSearch({
               {isChecking ? (
                 <>
                   <BizuplyLoader size="sm" compact />
-                  בודק זמינות
+                  {t("domainSearch.checking")}
                 </>
               ) : (
                 <>
                   <Search className="h-5 w-5" />
-                  בדיקת דומיין
+                  {t("domainSearch.checkDomain")}
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-4 flex flex-wrap gap-2" dir="rtl">
+          <div className="mt-4 flex flex-wrap gap-2" dir={pageDir}>
             {DOMAIN_EXTENSIONS.map((tld) => {
               const active = selectedTld === tld;
               return (
@@ -702,13 +716,13 @@ export default function DomainSearch({
 
           {fullDomain ? (
             <p className="mt-3 text-xs font-semibold text-slate-500" dir="ltr">
-              ייבדק: {fullDomain}
+              {t("domainSearch.willCheck", { domain: fullDomain })}
             </p>
           ) : null}
 
           <div className="mt-4 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
             <ShieldCheck className="h-4 w-4 shrink-0" />
-            בדיקת הזמינות ורכישת הדומיין מתבצעות בזמן אמת.
+            {t("domainSearch.liveHint")}
           </div>
 
           {error ? (
@@ -752,8 +766,8 @@ export default function DomainSearch({
                       ].join(" ")}
                     >
                       {result.available
-                        ? "הדומיין זמין לרישום"
-                        : "הדומיין אינו זמין"}
+                        ? t("domainSearch.available")
+                        : t("domainSearch.unavailable")}
                     </p>
                   </div>
                 </div>
@@ -761,19 +775,21 @@ export default function DomainSearch({
                 {result.available ? (
                   <div className="text-left sm:text-right">
                     <p className="text-xs font-semibold text-slate-500">
-                      מחיר לתקופה שנבחרה
+                      {t("domainSearch.priceForPeriod")}
                     </p>
                     <p className="mt-1 text-2xl font-black text-slate-900">
                       {isEstimating
-                        ? "מחשב..."
+                        ? t("domainSearch.calculating")
                         : formatDomainPrice(
                             periodPrices[selectedYears],
                             freeDomainAvailable && selectedYears === 1,
+                            intlLocale,
+                            freeLabel,
                           )}
                     </p>
                     {freeDomainAvailable && selectedYears === 1 ? (
                       <p className="mt-1 text-xs font-bold text-emerald-700">
-                        כלול ברכישת אתר · שנה ראשונה
+                        {t("domainSearch.includedFirstYear")}
                       </p>
                     ) : null}
                   </div>
@@ -784,7 +800,7 @@ export default function DomainSearch({
                 <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                   <div className="rounded-2xl border border-emerald-200 bg-white p-4">
                     <h5 className="text-sm font-black text-slate-800">
-                      בחירת תקופת רישום
+                      {t("domainSearch.choosePeriod")}
                     </h5>
                     <div className="mt-3 grid gap-2">
                       {yearOptions.map((years) => {
@@ -818,13 +834,13 @@ export default function DomainSearch({
                             ].join(" ")}
                           >
                             <span>
-                              {years === 1 ? "שנה אחת" : `${years} שנים`}
+                              {yearLabel(years)}
                             </span>
                             <span className="text-xs font-black">
                               {isEstimating
                                 ? "..."
-                                : formatDomainPrice(price, isFree)}
-                              {active ? " · נבחר" : ""}
+                                : formatDomainPrice(price, isFree, intlLocale, freeLabel)}
+                              {active ? ` · ${t("domainSearch.selected")}` : ""}
                             </span>
                           </button>
                         );
@@ -833,24 +849,24 @@ export default function DomainSearch({
                   </div>
 
                   <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                    <h5 className="text-sm font-black text-slate-800">סיכום</h5>
+                    <h5 className="text-sm font-black text-slate-800">{t("domainSearch.summary")}</h5>
                     <p className="mt-3 text-sm font-semibold text-slate-600">
-                      {selectedYears === 1
-                        ? "שנה אחת"
-                        : `${selectedYears} שנים`}
+                      {yearLabel(selectedYears)}
                     </p>
                     <p className="mt-4 text-2xl font-black text-slate-900">
                       {isEstimating
-                        ? "מחשב מחיר..."
+                        ? t("domainSearch.calculatingPrice")
                         : formatDomainPrice(
                             periodPrices[selectedYears],
                             freeDomainAvailable && selectedYears === 1,
+                            intlLocale,
+                            freeLabel,
                           )}
                     </p>
                     <p className="mt-1 text-xs font-semibold text-slate-500">
                       {freeDomainAvailable && selectedYears === 1
-                        ? "דומיין חינם לשנה · כלול ברכישת אתר"
-                        : "בחרו תקופה והמשיכו למילוי פרטים"}
+                        ? t("domainSearch.freeIncluded")
+                        : t("domainSearch.chooseAndContinue")}
                     </p>
                     <button
                       type="button"
@@ -863,7 +879,7 @@ export default function DomainSearch({
                       className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <UserRound className="h-4 w-4" />
-                      המשך לפרטי קשר
+                      {t("domainSearch.continueContact")}
                     </button>
                   </div>
                 </div>
@@ -871,7 +887,7 @@ export default function DomainSearch({
 
               {result.premium ? (
                 <p className="mt-4 text-sm font-bold text-amber-700">
-                  זהו דומיין Premium וייתכן שיש לו מחיר מיוחד.
+                  {t("domainSearch.premiumNote")}
                 </p>
               ) : null}
             </div>
@@ -889,10 +905,10 @@ export default function DomainSearch({
 
               <div>
                 <h3 className="text-xl font-black text-slate-800">
-                  פרטי קשר
+                  {t("domainSearch.contactTitle")}
                 </h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">
-                  פרטי הבעלים לרישום הדומיין
+                  {t("domainSearch.contactSubtitle")}
                 </p>
               </div>
             </div>
@@ -905,7 +921,7 @@ export default function DomainSearch({
                 setContactResult(null);
               }}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-50"
-              aria-label="סגירה"
+              aria-label={t("domainSearch.closeAria")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -918,23 +934,23 @@ export default function DomainSearch({
             {!contactResult?.success ? (
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                label="שם פרטי"
+                label={t("domainSearch.firstName")}
                 value={firstName}
                 onChange={setFirstName}
-                placeholder="ישראל"
+                placeholder={t("domainSearch.firstNamePlaceholder")}
                 required
               />
 
               <Field
-                label="שם משפחה"
+                label={t("domainSearch.lastName")}
                 value={lastName}
                 onChange={setLastName}
-                placeholder="ישראלי"
+                placeholder={t("domainSearch.lastNamePlaceholder")}
                 required
               />
 
               <Field
-                label="טלפון"
+                label={t("domainSearch.phone")}
                 value={contact.phone}
                 onChange={(value) => updateContact("phone", value)}
                 placeholder="0501234567"
@@ -944,16 +960,16 @@ export default function DomainSearch({
               />
 
               <Field
-                label="שם העסק (אופציונלי)"
+                label={t("domainSearch.organization")}
                 value={contact.organization || ""}
                 onChange={(value) =>
                   updateContact("organization", value)
                 }
-                placeholder="העסק שלי"
+                placeholder={t("domainSearch.organizationPlaceholder")}
               />
 
               <Field
-                label="אימייל"
+                label={t("domainSearch.email")}
                 value={contact.email}
                 onChange={(value) => updateContact("email", value)}
                 placeholder="name@email.com"
@@ -963,15 +979,15 @@ export default function DomainSearch({
               />
 
               <Field
-                label="רחוב"
+                label={t("domainSearch.street")}
                 value={contact.address}
                 onChange={(value) => updateContact("address", value)}
-                placeholder="רחוב הרצל 1"
+                placeholder={t("domainSearch.streetPlaceholder")}
                 required
               />
 
               <Field
-                label="מדינה"
+                label={t("domainSearch.country")}
                 value={contact.country}
                 onChange={(value) => updateContact("country", value)}
                 placeholder="IL"
@@ -980,15 +996,15 @@ export default function DomainSearch({
               />
 
               <Field
-                label="עיר"
+                label={t("domainSearch.city")}
                 value={contact.city}
                 onChange={(value) => updateContact("city", value)}
-                placeholder="תל אביב"
+                placeholder={t("domainSearch.cityPlaceholder")}
                 required
               />
 
               <Field
-                label="מיקוד"
+                label={t("domainSearch.postal")}
                 value={contact.postalCode}
                 onChange={(value) =>
                   updateContact("postalCode", value)
@@ -999,10 +1015,10 @@ export default function DomainSearch({
 
               {requiresVat ? (
                 <Field
-                  label="מספר מזהה / ת.ז. / ח.פ."
+                  label={t("domainSearch.vat")}
                   value={contact.vatNumber || ""}
                   onChange={(value) => updateContact("vatNumber", value)}
-                  placeholder="למשל 512345678"
+                  placeholder={t("domainSearch.vatPlaceholder")}
                   dir="ltr"
                   required
                 />
@@ -1023,13 +1039,13 @@ export default function DomainSearch({
               <div className="mt-5 rounded-[24px] border border-slate-200 bg-white p-5">
                 <div className="min-w-0">
                   <h4 className="text-base font-black text-slate-900">
-                    בחרו תקופת רישום והמשיכו לתשלום
+                    {t("domainSearch.choosePeriodContinue")}
                   </h4>
 
                   <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                           <h5 className="text-sm font-black text-slate-800">
-                            בחירת תקופת רישום
+                            {t("domainSearch.choosePeriod")}
                           </h5>
                           <div className="mt-3 grid gap-2">
                             {yearOptions.map((years) => {
@@ -1047,11 +1063,11 @@ export default function DomainSearch({
                                   ].join(" ")}
                                 >
                                   <span>
-                                    {years === 1 ? "שנה אחת" : `${years} שנים`}
+                                    {yearLabel(years)}
                                   </span>
                                   {active ? (
                                     <span className="text-xs font-black text-emerald-700">
-                                      נבחר
+                                      {t("domainSearch.selected")}
                                     </span>
                                   ) : null}
                                 </button>
@@ -1062,29 +1078,31 @@ export default function DomainSearch({
 
                         <div className="rounded-2xl border border-slate-200 bg-white p-4">
                           <h5 className="text-sm font-black text-slate-800">
-                            סיכום
+                            {t("domainSearch.summary")}
                           </h5>
                           <p className="mt-3 text-sm font-semibold text-slate-600">
                             {selectedYears === 1
-                              ? "שנה אחת"
-                              : `${selectedYears} שנים`}
+                              ? t("domainSearch.oneYear")
+                              : t("domainSearch.years", { count: selectedYears })}
                           </p>
                           <p className="mt-4 text-2xl font-black text-slate-900">
                             {isQuoting
-                              ? "מחשב מחיר..."
+                              ? t("domainSearch.calculatingPrice")
                               : quote
                                 ? formatDomainPrice(
                                     quote.price,
                                     Boolean(quote.freeYearApplied) ||
                                       (freeDomainAvailable &&
                                         selectedYears === 1),
+                                    intlLocale,
+                                    freeLabel,
                                   )
                                 : "—"}
                           </p>
                           <p className="mt-1 text-xs font-semibold text-slate-500">
                             {freeDomainAvailable && selectedYears === 1
-                              ? "דומיין חינם לשנה · כלול ברכישת אתר"
-                              : "תשלום מאובטח · חידוש שנתי לפי תנאי הרישום"}
+                              ? t("domainSearch.freeIncluded")
+                              : t("domainSearch.securePay")}
                           </p>
                           <button
                             type="button"
@@ -1100,15 +1118,15 @@ export default function DomainSearch({
                               <>
                                 <BizuplyLoader size="sm" compact />
                                 {freeDomainAvailable && selectedYears === 1
-                                  ? "רושם דומיין חינם..."
-                                  : "מעביר לתשלום..."}
+                                  ? t("domainSearch.registeringFree")
+                                  : t("domainSearch.redirectingPay")}
                               </>
                             ) : (
                               <>
                                 <ShieldCheck className="h-5 w-5" />
                                 {freeDomainAvailable && selectedYears === 1
-                                  ? "רשום דומיין חינם לשנה"
-                                  : "המשך לתשלום מאובטח"}
+                                  ? t("domainSearch.registerFree")
+                                  : t("domainSearch.continueSecure")}
                               </>
                             )}
                           </button>
@@ -1132,8 +1150,8 @@ export default function DomainSearch({
                   <div>
                     <h4 className="text-base font-black text-emerald-900">
                       {registerResult.alreadyRegistered
-                        ? "הדומיין כבר רשום"
-                        : "הדומיין נרשם בהצלחה"}
+                        ? t("domainSearch.alreadyRegistered")
+                        : t("domainSearch.registeredSuccess")}
                     </h4>
                     <p
                       className="mt-2 text-sm font-black text-slate-800"
@@ -1143,16 +1161,18 @@ export default function DomainSearch({
                     </p>
                     {registerResult.registration?.expirationDate ? (
                       <p className="mt-2 text-xs font-semibold text-emerald-700">
-                        תוקף עד:{" "}
+                        {t("domainSearch.validUntil")}{" "}
                         {new Date(
                           registerResult.registration.expirationDate,
-                        ).toLocaleDateString("he-IL")}
+                        ).toLocaleDateString(intlLocale)}
                       </p>
                     ) : null}
                     {registerResult.quote?.total != null ? (
                       <p className="mt-1 text-xs font-semibold text-emerald-700">
-                        עלות משוערת: {registerResult.quote.total}{" "}
-                        {registerResult.quote.currency || ""}
+                        {t("domainSearch.estimatedCost", {
+                          amount: registerResult.quote.total,
+                          currency: registerResult.quote.currency || "",
+                        })}
                       </p>
                     ) : null}
                   </div>
@@ -1167,7 +1187,7 @@ export default function DomainSearch({
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-600 transition hover:bg-slate-50"
               >
                 <ArrowLeft className="h-4 w-4" />
-                חזרה
+                {t("domainSearch.back")}
               </button>
 
               {!contactResult?.success ? (
@@ -1179,12 +1199,12 @@ export default function DomainSearch({
                   {isCreatingContact ? (
                     <>
                       <BizuplyLoader size="sm" compact />
-                      יוצר איש קשר
+                      {t("domainSearch.creatingContact")}
                     </>
                   ) : (
                     <>
                       <UserRound className="h-5 w-5" />
-                      המשך
+                      {t("domainSearch.continue")}
                     </>
                   )}
                 </button>

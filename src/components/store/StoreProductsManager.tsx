@@ -23,15 +23,14 @@ import {
   X,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
 import API from "../../api";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { emitStoreCatalogChanged } from "../site-builder/studio/data/templates/shared/storeCatalogSync";
-import {
-  getAllowedOrderStatusTransitions,
-  ORDER_STATUS_LABELS,
-} from "./storeOrderStatusFsm";
+import { getAllowedOrderStatusTransitions } from "./storeOrderStatusFsm";
 import {
   CHECKOUT_APPEARANCE_PRESETS,
   DEFAULT_CHECKOUT_APPEARANCE,
@@ -340,12 +339,12 @@ const emptyCouponForm = {
   isActive: true,
 };
 
-function formatMoney(value?: number | string | null, currency = "ILS") {
+function formatMoney(value?: number | string | null, currency = "ILS", locale = "he-IL") {
   const amount = Number(value || 0);
   const code = String(currency || "ILS").trim().toUpperCase() || "ILS";
 
   try {
-    return new Intl.NumberFormat("he-IL", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: code,
       maximumFractionDigits: 2,
@@ -508,6 +507,8 @@ export default function StoreProductsManager({
   allowedViews,
   settingsFocus = "all",
 }: StoreProductsManagerProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { user } = useAuth() as { user: AuthUserShape | null };
   const socket = useSocket();
 
@@ -624,7 +625,7 @@ export default function StoreProductsManager({
       }
     } catch (err) {
       console.error("Load store data error:", err);
-      showMessage("error", "לא הצלחנו לטעון את נתוני החנות");
+      showMessage("error", t("storeManager.messages.loadError"));
     } finally {
       setLoading(false);
     }
@@ -682,14 +683,14 @@ export default function StoreProductsManager({
       if (data?.seeded) {
         showMessage(
           "success",
-          `נוספו ${data.productCount || 0} מוצרי דמו לתצוגה — כשתוסיפו מוצר אמיתי הם יוחלפו אוטומטית`,
+          t("storeManager.messages.demoSeeded", { count: data.productCount || 0 }),
         );
       } else if (data?.reason === "already_has_products") {
-        showMessage("success", "בחנות כבר יש מוצרים — לא הוספנו דמו מעל הנתונים שלך");
+        showMessage("success", t("storeManager.messages.demoSkipped"));
       }
     } catch (err) {
       console.error("Seed store demo error:", err);
-      showMessage("error", "לא הצלחנו להוסיף מוצרי דמו");
+      showMessage("error", t("storeManager.messages.demoError"));
     } finally {
       setSeedingDemo(false);
     }
@@ -756,7 +757,7 @@ export default function StoreProductsManager({
         emitStoreCatalogChanged(businessId);
       } catch (err) {
         console.error("Update inventory error:", err);
-        showMessage("error", "לא הצלחנו לעדכן את המלאי");
+        showMessage("error", t("storeManager.messages.stockUpdateError"));
         await loadStoreData();
       }
     },
@@ -771,10 +772,10 @@ export default function StoreProductsManager({
     try {
       const { data } = await API.put(`/store/${businessId}/settings`, settings);
       setSettings({ ...emptySettings, ...(data?.settings || {}) });
-      showMessage("success", "הגדרות החנות נשמרו בהצלחה");
+      showMessage("success", t("storeManager.messages.settingsSaved"));
     } catch (err) {
       console.error("Save store settings error:", err);
-      showMessage("error", "שגיאה בשמירת הגדרות החנות");
+      showMessage("error", t("storeManager.messages.settingsError"));
     } finally {
       setSaving(false);
     }
@@ -784,12 +785,12 @@ export default function StoreProductsManager({
     if (!businessId) return;
 
     if (!productForm.name?.trim()) {
-      showMessage("error", "צריך להזין שם מוצר");
+      showMessage("error", t("storeManager.messages.productNameRequired"));
       return;
     }
 
     if (!productForm.price && productForm.price !== 0) {
-      showMessage("error", "צריך להזין מחיר מוצר");
+      showMessage("error", t("storeManager.messages.productPriceRequired"));
       return;
     }
 
@@ -915,17 +916,19 @@ export default function StoreProductsManager({
       if (!editingProductId && clearedDemoCount > 0) {
         showMessage(
           "success",
-          `המוצר נוסף לחנות — ${clearedDemoCount} מוצרי דמו הוחלפו במוצרים שלך`
+          t("storeManager.messages.productAddedReplacedDemo", { count: clearedDemoCount })
         );
       } else {
         showMessage(
           "success",
-          editingProductId ? "המוצר עודכן בהצלחה" : "המוצר נוסף ונכנס לגריד"
+          editingProductId
+            ? t("storeManager.messages.productUpdated")
+            : t("storeManager.messages.productAdded")
         );
       }
     } catch (err) {
       console.error("Submit product error:", err);
-      showMessage("error", "שגיאה בשמירת המוצר");
+      showMessage("error", t("storeManager.messages.productSaveError"));
     } finally {
       setSaving(false);
     }
@@ -985,16 +988,16 @@ export default function StoreProductsManager({
 
   const deleteProduct = async (productId: string) => {
     if (!businessId) return;
-    if (!window.confirm("למחוק את המוצר?")) return;
+    if (!window.confirm(t("storeManager.messages.deleteProductConfirm"))) return;
 
     try {
       await API.delete(`/store/${businessId}/products/${productId}`);
       await loadStoreData();
       emitStoreCatalogChanged(businessId);
-      showMessage("success", "המוצר נמחק");
+      showMessage("success", t("storeManager.messages.productDeleted"));
     } catch (err) {
       console.error("Delete product error:", err);
-      showMessage("error", "שגיאה במחיקת מוצר");
+      showMessage("error", t("storeManager.messages.productDeleteError"));
     }
   };
 
@@ -1008,7 +1011,7 @@ export default function StoreProductsManager({
     if (!businessId) return;
 
     if (!categoryForm.name?.trim()) {
-      showMessage("error", "צריך להזין שם קטגוריה");
+      showMessage("error", t("storeManager.messages.categoryNameRequired"));
       return;
     }
 
@@ -1041,11 +1044,13 @@ export default function StoreProductsManager({
 
       showMessage(
         "success",
-        editingCategoryId ? "הקטגוריה עודכנה" : "הקטגוריה נוספה"
+        editingCategoryId
+          ? t("storeManager.messages.categoryUpdated")
+          : t("storeManager.messages.categoryAdded")
       );
     } catch (err) {
       console.error("Submit category error:", err);
-      showMessage("error", "שגיאה בשמירת קטגוריה");
+      showMessage("error", t("storeManager.messages.categorySaveError"));
     } finally {
       setSaving(false);
     }
@@ -1068,7 +1073,7 @@ export default function StoreProductsManager({
   const deleteCategory = async (categoryId: string) => {
     if (!businessId) return;
 
-    if (!window.confirm("למחוק את הקטגוריה? המוצרים לא יימחקו, רק השיוך יוסר.")) {
+    if (!window.confirm(t("storeManager.messages.deleteCategoryConfirm"))) {
       return;
     }
 
@@ -1076,10 +1081,10 @@ export default function StoreProductsManager({
       await API.delete(`/store/${businessId}/categories/${categoryId}`);
       await loadStoreData();
       emitStoreCatalogChanged(businessId);
-      showMessage("success", "הקטגוריה נמחקה");
+      showMessage("success", t("storeManager.messages.categoryDeleted"));
     } catch (err) {
       console.error("Delete category error:", err);
-      showMessage("error", "שגיאה במחיקת קטגוריה");
+      showMessage("error", t("storeManager.messages.categoryDeleteError"));
     }
   };
 
@@ -1092,12 +1097,12 @@ export default function StoreProductsManager({
     if (!businessId) return;
 
     if (!couponForm.code?.trim()) {
-      showMessage("error", "צריך להזין קוד קופון");
+      showMessage("error", t("storeManager.messages.couponCodeRequired"));
       return;
     }
 
     if (!couponForm.discountValue) {
-      showMessage("error", "צריך להזין ערך הנחה");
+      showMessage("error", t("storeManager.messages.couponValueRequired"));
       return;
     }
 
@@ -1120,11 +1125,13 @@ export default function StoreProductsManager({
 
       showMessage(
         "success",
-        editingCouponId ? "הקופון עודכן" : "הקופון נוסף"
+        editingCouponId
+          ? t("storeManager.messages.couponUpdated")
+          : t("storeManager.messages.couponAdded")
       );
     } catch (err) {
       console.error("Submit coupon error:", err);
-      showMessage("error", "שגיאה בשמירת קופון");
+      showMessage("error", t("storeManager.messages.couponSaveError"));
     } finally {
       setSaving(false);
     }
@@ -1150,15 +1157,15 @@ export default function StoreProductsManager({
 
   const deleteCoupon = async (couponId: string) => {
     if (!businessId) return;
-    if (!window.confirm("למחוק את הקופון?")) return;
+    if (!window.confirm(t("storeManager.messages.deleteCouponConfirm"))) return;
 
     try {
       await API.delete(`/store/${businessId}/coupons/${couponId}`);
       await loadStoreData();
-      showMessage("success", "הקופון נמחק");
+      showMessage("success", t("storeManager.messages.couponDeleted"));
     } catch (err) {
       console.error("Delete coupon error:", err);
-      showMessage("error", "שגיאה במחיקת קופון");
+      showMessage("error", t("storeManager.messages.couponDeleteError"));
     }
   };
 
@@ -1168,75 +1175,74 @@ export default function StoreProductsManager({
     try {
       await API.put(`/store/${businessId}/orders/${orderId}`, { status });
       await loadStoreData();
-      showMessage("success", "סטטוס ההזמנה עודכן");
+      showMessage("success", t("storeManager.messages.orderStatusUpdated"));
     } catch (err: any) {
       console.error("Update order status error:", err);
       const apiError =
         err?.response?.data?.error ||
         err?.response?.data?.message ||
-        "שגיאה בעדכון הזמנה";
+        t("storeManager.messages.orderUpdateError");
       showMessage("error", apiError);
     }
   };
 
 
   const nav = [
-    { id: "products" as StoreView, label: "מוצרים", icon: <Grid3X3 size={17} /> },
+    { id: "products" as StoreView, label: t("storeManager.nav.products"), icon: <Grid3X3 size={17} /> },
     {
       id: "inventory" as StoreView,
-      label: "מלאי",
+      label: t("storeManager.nav.inventory"),
       icon: <ClipboardList size={17} />,
     },
-    { id: "add-product" as StoreView, label: "הוספה", icon: <Plus size={17} /> },
-    { id: "categories" as StoreView, label: "קטגוריות", icon: <Tags size={17} /> },
-    { id: "settings" as StoreView, label: "הגדרות", icon: <Settings size={17} /> },
-    { id: "coupons" as StoreView, label: "קופונים", icon: <BadgePercent size={17} /> },
-    { id: "orders" as StoreView, label: "הזמנות", icon: <Boxes size={17} /> },
+    { id: "add-product" as StoreView, label: t("storeManager.nav.add"), icon: <Plus size={17} /> },
+    { id: "categories" as StoreView, label: t("storeManager.nav.categories"), icon: <Tags size={17} /> },
+    { id: "settings" as StoreView, label: t("storeManager.nav.settings"), icon: <Settings size={17} /> },
+    { id: "coupons" as StoreView, label: t("storeManager.nav.coupons"), icon: <BadgePercent size={17} /> },
+    { id: "orders" as StoreView, label: t("storeManager.nav.orders"), icon: <Boxes size={17} /> },
   ].filter((item) => !allowedViews || allowedViews.includes(item.id));
 
   if (!businessId) {
     return (
       <div
-        dir="rtl"
-        className="rounded-[32px] border border-amber-200 bg-amber-50 p-6 text-right"
+        dir={pageDir}
+        className="rounded-[32px] border border-amber-200 bg-amber-50 p-6"
       >
         <p className="text-sm font-black text-amber-800">
-          לא נמצא businessId. צריך להיכנס כבעל עסק כדי לנהל חנות.
+          {t("storeManager.noBusinessId")}
         </p>
       </div>
     );
   }
 
   return (
-    <section dir="rtl" className="w-full text-right">
+    <section dir={pageDir} className="w-full">
       {!embedded ? (
         <div className="mb-6 rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_22px_80px_rgba(15,23,42,0.08)] md:p-7">
           <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
                 <ShoppingBag size={15} />
-                ניהול חנות
+                {t("storeManager.title")}
               </div>
 
               <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
-                מוצרים, קטגוריות והגדרות
+                {t("storeManager.subtitle")}
               </h1>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                מוסיפים מוצר פעם אחת, משייכים אותו לקטגוריה, והוא מופיע אוטומטית
-                בגריד החנות ובדפי הקטגוריות באתר.
+                {t("storeManager.lead")}
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 xl:min-w-[620px]">
-              <StatCard title="מוצרים" value={products.length} />
-              <StatCard title="קטגוריות" value={categories.length} />
-              <StatCard title="ללא קטגוריה" value={productsWithoutCategory} />
-              <StatCard title="קופונים" value={coupons.length} />
-              <StatCard title="הזמנות" value={orders.length} />
+              <StatCard title={t("storeManager.stats.products")} value={products.length} />
+              <StatCard title={t("storeManager.stats.categories")} value={categories.length} />
+              <StatCard title={t("storeManager.stats.uncategorized")} value={productsWithoutCategory} />
+              <StatCard title={t("storeManager.stats.coupons")} value={coupons.length} />
+              <StatCard title={t("storeManager.stats.orders")} value={orders.length} />
               <StatCard
-                title="סטטוס"
-                value={settings.isStoreActive ? "פעיל" : "כבוי"}
+                title={t("storeManager.stats.status")}
+                value={settings.isStoreActive ? t("storeManager.active") : t("storeManager.off")}
               />
             </div>
           </div>
@@ -1315,7 +1321,7 @@ export default function StoreProductsManager({
           <div className="grid min-h-[420px] place-items-center">
             <div className="flex items-center gap-3 text-sm font-black text-slate-500">
               <BizuplyLoader size="sm" compact />
-              טוען נתוני חנות...
+              {t("storeManager.loading")}
             </div>
           </div>
         ) : null}
@@ -1453,6 +1459,7 @@ function InventoryView({
     patch: { sku?: string; stock?: number; status?: string }
   ) => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [draftSku, setDraftSku] = useState<Record<string, string>>({});
@@ -1492,13 +1499,13 @@ function InventoryView({
               onClick={onBackToProducts}
               className="text-slate-500 transition hover:text-slate-800"
             >
-              מוצרים
+              {t("storeManager.nav.products")}
             </button>
             <span className="text-slate-300">»</span>
-            <span>מלאי</span>
+            <span>{t("storeManager.nav.inventory")}</span>
           </nav>
           <p className="mt-2 text-sm font-bold text-slate-500">
-            רשימת מלאי ומק״ט לכל מוצר — עדכון מהיר בלי לפתוח את כרטיס המוצר.
+            {t("storeManager.inventory.subtitle")}
           </p>
         </div>
 
@@ -1510,7 +1517,7 @@ function InventoryView({
           <TextInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="חיפוש..."
+            placeholder={t("storeManager.inventory.searchPlaceholder")}
             className="pr-10"
           />
         </div>
@@ -1518,34 +1525,34 @@ function InventoryView({
 
       {products.length === 0 ? (
         <EmptyBox
-          title="אין מוצרים במלאי"
-          text="הוסיפו מוצרים בחנות כדי לנהל כאן מק״ט וכמויות."
+          title={t("storeManager.inventory.emptyTitle")}
+          text={t("storeManager.inventory.emptyText")}
           action={
             <PrimaryButton type="button" onClick={onBackToProducts}>
-              חזרה למוצרים
+              {t("storeManager.inventory.backToProducts")}
             </PrimaryButton>
           }
         />
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse text-right">
+            <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-slate-700 text-white">
                   <th className="px-4 py-3 text-xs font-black tracking-wide">
-                    מוצר
+                    {t("storeManager.inventory.colProduct")}
                   </th>
                   <th className="px-4 py-3 text-xs font-black tracking-wide">
-                    מק״ט / ברקוד
+                    {t("storeManager.inventory.colSku")}
                   </th>
                   <th className="px-4 py-3 text-xs font-black tracking-wide">
-                    כמות
+                    {t("storeManager.inventory.colQty")}
                   </th>
                   <th className="px-4 py-3 text-xs font-black tracking-wide">
-                    מלאי
+                    {t("storeManager.inventory.colStock")}
                   </th>
                   <th className="w-14 px-3 py-3 text-xs font-black tracking-wide">
-                    פעולות
+                    {t("storeManager.inventory.colActions")}
                   </th>
                 </tr>
               </thead>
@@ -1583,9 +1590,9 @@ function InventoryView({
                               {product.name}
                             </p>
                             <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
-                              {product.categoryName || "ללא קטגוריה"}
+                              {product.categoryName || t("storeManager.uncategorized")}
                               {hasVariants
-                                ? ` · ${product.variants!.length} וריאציות`
+                                ? ` · ${t("storeManager.inventory.variantsCount", { count: product.variants!.length })}`
                                 : ""}
                             </p>
                           </div>
@@ -1625,7 +1632,7 @@ function InventoryView({
                           value={draftStock[product._id] ?? String(stock)}
                           title={
                             hasVariants
-                              ? "כשיש וריאציות — עדכנו מלאי בכל וריאציה בעריכת המוצר"
+                              ? t("storeManager.inventory.variantsHint")
                               : undefined
                           }
                           onChange={(e) =>
@@ -1684,10 +1691,10 @@ function InventoryView({
                             }}
                             className="w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pr-3 pl-8 text-sm font-black text-slate-700 outline-none transition hover:border-slate-300 focus:border-violet-300"
                           >
-                            <option value="active">במלאי</option>
-                            <option value="out_of_stock">אזל מהמלאי</option>
-                            <option value="draft">טיוטה</option>
-                            <option value="hidden">מוסתר</option>
+                            <option value="active">{t("storeManager.inStock")}</option>
+                            <option value="out_of_stock">{t("storeManager.outOfStock")}</option>
+                            <option value="draft">{t("storeManager.draft")}</option>
+                            <option value="hidden">{t("storeManager.hidden")}</option>
                           </select>
                           <ChevronDown
                             size={14}
@@ -1706,7 +1713,7 @@ function InventoryView({
                             )
                           }
                           className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                          aria-label="פעולות"
+                          aria-label={t("storeManager.inventory.actionsAria")}
                         >
                           {busy ? (
                             <Loader2 size={16} className="animate-spin" />
@@ -1725,7 +1732,7 @@ function InventoryView({
                               }}
                               className="block w-full px-3 py-2 text-right text-sm font-bold text-slate-700 hover:bg-slate-50"
                             >
-                              עריכת מוצר
+                              {t("storeManager.inventory.editProduct")}
                             </button>
                             <button
                               type="button"
@@ -1735,7 +1742,7 @@ function InventoryView({
                               }}
                               className="block w-full px-3 py-2 text-right text-sm font-bold text-rose-600 hover:bg-rose-50"
                             >
-                              מחיקה
+                              {t("storeManager.delete")}
                             </button>
                           </div>
                         ) : null}
@@ -1781,24 +1788,32 @@ function ProductsView({
   onEditProduct: (product: StoreProduct) => void;
   onDeleteProduct: (productId: string) => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const intlLocale = getIntlLocale(i18n.language);
+  const productStatusLabel = (status?: string) => {
+    if (status === "active") return t("storeManager.active");
+    if (status === "out_of_stock") return t("storeManager.outOfStock");
+    if (status === "hidden") return t("storeManager.hidden");
+    return t("storeManager.draft");
+  };
   return (
     <div>
       <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h2 className="text-2xl font-black text-slate-800">כל המוצרים</h2>
+          <h2 className="text-2xl font-black text-slate-800">{t("storeManager.products.allTitle")}</h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
-            כאן רואים כל מוצר שנוסף לחנות, כולל שיוך לקטגוריה.
+            {t("storeManager.products.allSubtitle")}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <SecondaryButton type="button" onClick={onOpenInventory}>
             <ClipboardList size={17} />
-            רשימת מלאי
+            {t("storeManager.products.inventoryList")}
           </SecondaryButton>
           <PrimaryButton type="button" onClick={onAddProduct}>
             <Plus size={17} />
-            הוספת מוצר
+            {t("storeManager.products.addProduct")}
           </PrimaryButton>
         </div>
       </div>
@@ -1812,7 +1827,7 @@ function ProductsView({
           <TextInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="חיפוש לפי שם, מק״ט, תיאור או קטגוריה"
+            placeholder={t("storeManager.products.searchPlaceholder")}
             className="pr-10"
           />
         </div>
@@ -1821,7 +1836,7 @@ function ProductsView({
           value={filterCategoryId}
           onChange={(e) => setFilterCategoryId(e.target.value)}
         >
-          <option value="all">כל הקטגוריות</option>
+          <option value="all">{t("storeManager.products.allCategories")}</option>
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
               {category.name}
@@ -1830,19 +1845,19 @@ function ProductsView({
         </SelectInput>
 
         <div className="grid place-items-center rounded-2xl bg-slate-50 px-4 text-sm font-black text-slate-500">
-          {products.length} מוצרים
+          {t("storeManager.products.count", { count: products.length })}
         </div>
       </div>
 
       {products.length === 0 ? (
         <EmptyBox
-          title="אין עדיין מוצרים"
-          text="הוסיפו את המוצרים שלכם לחנות. אפשר גם לטעון מוצרי דמו לתצוגה — הם יוחלפו אוטומטית ברגע שתוסיפו מוצר אמיתי."
+          title={t("storeManager.products.emptyTitle")}
+          text={t("storeManager.products.emptyText")}
           action={
             <div className="flex flex-wrap items-center justify-center gap-3">
               <PrimaryButton type="button" onClick={onAddProduct}>
                 <Plus size={17} />
-                הוספת מוצר ראשון
+                {t("storeManager.products.addFirst")}
               </PrimaryButton>
               <button
                 type="button"
@@ -1855,7 +1870,7 @@ function ProductsView({
                 ) : (
                   <PackagePlus size={17} />
                 )}
-                {seedingDemo ? "טוען מוצרי דמו..." : "טעינת מוצרי דמו לתצוגה"}
+                {seedingDemo ? t("storeManager.products.seedingDemo") : t("storeManager.products.seedDemo")}
               </button>
             </div>
           }
@@ -1882,7 +1897,7 @@ function ProductsView({
                       <div className="text-center">
                         <ImagePlus size={34} className="mx-auto text-slate-300" />
                         <p className="mt-2 text-xs font-black text-slate-400">
-                          אין תמונה
+                          {t("storeManager.noImage")}
                         </p>
                       </div>
                     </div>
@@ -1891,23 +1906,19 @@ function ProductsView({
                   <div className="absolute right-3 top-3">
                     <StatusBadge
                       active={product.status === "active"}
-                      label={
-                        product.status === "active"
-                          ? "פעיל"
-                          : product.status || "טיוטה"
-                      }
+                      label={productStatusLabel(product.status)}
                     />
                   </div>
 
                   <div className="absolute left-3 top-3 flex flex-col items-start gap-2">
                     {isDemoStoreProduct(product) ? (
                       <span className="rounded-full bg-amber-500 px-3 py-1 text-[11px] font-black text-white">
-                        דמו
+                        {t("storeManager.demo")}
                       </span>
                     ) : null}
                     {product.isFeatured ? (
                       <span className="rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-black">
-                        מומלץ
+                        {t("storeManager.featured")}
                       </span>
                     ) : null}
                   </div>
@@ -1922,7 +1933,7 @@ function ProductsView({
                       <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
                         {product.shortDescription ||
                           product.description ||
-                          "אין תיאור"}
+                          t("storeManager.noDescription")}
                       </p>
                     </div>
                   </div>
@@ -1933,7 +1944,8 @@ function ProductsView({
                         <p className="text-xs font-black text-slate-400 line-through">
                           {formatMoney(
                             product.price,
-                            settings.currency || product.currency || "ILS"
+                            settings.currency || product.currency || "ILS",
+                            intlLocale
                           )}
                         </p>
                       ) : null}
@@ -1941,20 +1953,21 @@ function ProductsView({
                       <p className="text-2xl font-black text-violet-700">
                         {formatMoney(
                           product.salePrice || product.price,
-                          settings.currency || product.currency || "ILS"
+                          settings.currency || product.currency || "ILS",
+                          intlLocale
                         )}
                       </p>
                     </div>
 
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-600">
-                      {product.categoryName || "ללא קטגוריה"}
+                      {product.categoryName || t("storeManager.uncategorized")}
                     </span>
                   </div>
 
                   <div className="mb-4 grid grid-cols-2 gap-2">
                     <div className="rounded-2xl bg-slate-50 p-3">
                       <p className="text-[11px] font-black text-slate-400">
-                        מלאי
+                        {t("storeManager.stock")}
                       </p>
                       <p
                         className={`mt-1 text-sm font-black ${
@@ -1968,14 +1981,14 @@ function ProductsView({
                         {productStockTotal(product)}
                         {Array.isArray(product.variants) &&
                         product.variants.length > 0
-                          ? ` · ${product.variants.length} וריאציות`
+                          ? ` · ${t("storeManager.inventory.variantsCount", { count: product.variants.length })}`
                           : ""}
                       </p>
                     </div>
 
                     <div className="rounded-2xl bg-slate-50 p-3">
                       <p className="text-[11px] font-black text-slate-400">
-                        מק״ט
+                        {t("storeManager.sku")}
                       </p>
                       <p className="mt-1 truncate text-sm font-black text-slate-800">
                         {product.sku || "-"}
@@ -1989,14 +2002,14 @@ function ProductsView({
                       onClick={() => onEditProduct(product)}
                       className="w-full"
                     >
-                      עריכת מוצר
+                      {t("storeManager.inventory.editProduct")}
                     </SecondaryButton>
 
                     <button
                       type="button"
                       onClick={() => onDeleteProduct(product._id)}
                       className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
-                      title="מחיקת מוצר"
+                      title={t("storeManager.products.deleteTitle")}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -2034,21 +2047,22 @@ function ProductFormView({
   onCancel: () => void;
   onCreateCategory: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
           <h2 className="text-2xl font-black text-slate-800">
-            {editingProductId ? "עריכת מוצר" : "הוספת מוצר חדש"}
+            {editingProductId ? t("storeManager.form.editTitle") : t("storeManager.form.addTitle")}
           </h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
-            בחרי קטגוריה קיימת או צרי קטגוריה חדשה לפני שמירת המוצר.
+            {t("storeManager.form.hint")}
           </p>
         </div>
 
         <SecondaryButton type="button" onClick={onCancel}>
           <ArrowRight size={16} />
-          חזרה למוצרים
+          {t("storeManager.form.backToProducts")}
         </SecondaryButton>
       </div>
 
@@ -2056,19 +2070,19 @@ function ProductFormView({
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="grid gap-5">
             <div>
-              <FieldLabel>שם מוצר</FieldLabel>
+              <FieldLabel>{t("storeManager.form.name")}</FieldLabel>
               <TextInput
                 value={productForm.name}
                 onChange={(e) =>
                   setProductForm((prev) => ({ ...prev, name: e.target.value }))
                 }
-                placeholder="לדוגמה: מארז פרימיום"
+                placeholder={t("storeManager.form.namePlaceholder")}
               />
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <FieldLabel>מחיר</FieldLabel>
+                <FieldLabel>{t("storeManager.form.price")}</FieldLabel>
                 <TextInput
                   type="number"
                   value={productForm.price}
@@ -2083,7 +2097,7 @@ function ProductFormView({
               </div>
 
               <div>
-                <FieldLabel>מחיר מבצע</FieldLabel>
+                <FieldLabel>{t("storeManager.form.salePrice")}</FieldLabel>
                 <TextInput
                   type="number"
                   value={productForm.salePrice}
@@ -2100,13 +2114,13 @@ function ProductFormView({
 
             <div>
               <div className="mb-2 flex items-center justify-between gap-3">
-                <FieldLabel>קטגוריה</FieldLabel>
+                <FieldLabel>{t("storeManager.form.category")}</FieldLabel>
                 <button
                   type="button"
                   onClick={onCreateCategory}
                   className="text-xs font-black text-violet-700 hover:text-violet-900"
                 >
-                  + יצירת קטגוריה
+                  {t("storeManager.form.createCategory")}
                 </button>
               </div>
 
@@ -2119,7 +2133,7 @@ function ProductFormView({
                   }))
                 }
               >
-                <option value="">ללא קטגוריה</option>
+                <option value="">{t("storeManager.uncategorized")}</option>
                 {categories.map((category) => (
                   <option key={category._id} value={category._id}>
                     {category.name}
@@ -2129,7 +2143,7 @@ function ProductFormView({
             </div>
 
             <div>
-              <FieldLabel>תיאור קצר</FieldLabel>
+              <FieldLabel>{t("storeManager.form.shortDescription")}</FieldLabel>
               <TextInput
                 value={productForm.shortDescription}
                 onChange={(e) =>
@@ -2138,12 +2152,12 @@ function ProductFormView({
                     shortDescription: e.target.value,
                   }))
                 }
-                placeholder="משפט קצר שיופיע בכרטיס מוצר"
+                placeholder={t("storeManager.form.shortPlaceholder")}
               />
             </div>
 
             <div>
-              <FieldLabel>תיאור מלא</FieldLabel>
+              <FieldLabel>{t("storeManager.form.fullDescription")}</FieldLabel>
               <TextArea
                 value={productForm.description}
                 onChange={(e) =>
@@ -2152,13 +2166,13 @@ function ProductFormView({
                     description: e.target.value,
                   }))
                 }
-                placeholder="תיאור המוצר, יתרונות, מה כלול וכו׳"
+                placeholder={t("storeManager.form.fullPlaceholder")}
               />
             </div>
 
             <div className="grid gap-5 md:grid-cols-3">
               <div>
-                <FieldLabel>מק״ט</FieldLabel>
+                <FieldLabel>{t("storeManager.form.sku")}</FieldLabel>
                 <TextInput
                   value={productForm.sku}
                   onChange={(e) =>
@@ -2168,7 +2182,7 @@ function ProductFormView({
               </div>
 
               <div>
-                <FieldLabel>מלאי כללי</FieldLabel>
+                <FieldLabel>{t("storeManager.form.generalStock")}</FieldLabel>
                 <TextInput
                   type="number"
                   min={0}
@@ -2187,13 +2201,13 @@ function ProductFormView({
                 {Array.isArray(productForm.variants) &&
                 productForm.variants.length > 0 ? (
                   <p className="mt-1 text-[11px] font-bold text-slate-400">
-                    כשיש וריאציות — המלאי מנוהל לכל וריאציה
+                    {t("storeManager.form.variantsStockHint")}
                   </p>
                 ) : null}
               </div>
 
               <div>
-                <FieldLabel>סטטוס</FieldLabel>
+                <FieldLabel>{t("storeManager.form.status")}</FieldLabel>
                 <SelectInput
                   value={productForm.status}
                   onChange={(e) =>
@@ -2203,10 +2217,10 @@ function ProductFormView({
                     }))
                   }
                 >
-                  <option value="active">פעיל</option>
-                  <option value="draft">טיוטה</option>
-                  <option value="hidden">מוסתר</option>
-                  <option value="out_of_stock">אזל מהמלאי</option>
+                  <option value="active">{t("storeManager.active")}</option>
+                  <option value="draft">{t("storeManager.draft")}</option>
+                  <option value="hidden">{t("storeManager.hidden")}</option>
+                  <option value="out_of_stock">{t("storeManager.outOfStock")}</option>
                 </SelectInput>
               </div>
             </div>
@@ -2223,7 +2237,7 @@ function ProductFormView({
                     }))
                   }
                 />
-                מעקב מלאי אוטומטי
+                {t("storeManager.form.trackStock")}
               </label>
 
               <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
@@ -2237,16 +2251,16 @@ function ProductFormView({
                     }))
                   }
                 />
-                לאפשר הזמנה גם כשאין מלאי
+                {t("storeManager.form.allowBackorder")}
               </label>
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <FieldLabel>וריאציות (מידה / צבע)</FieldLabel>
+                  <FieldLabel>{t("storeManager.form.variants")}</FieldLabel>
                   <p className="mt-1 text-xs font-bold text-slate-500">
-                    מלאי ומק״ט נפרדים לכל אפשרות — מומלץ לאופנה
+                    {t("storeManager.form.variantsHint")}
                   </p>
                 </div>
                 <SecondaryButton
@@ -2257,7 +2271,7 @@ function ProductFormView({
                       variants: [
                         ...(Array.isArray(prev.variants) ? prev.variants : []),
                         {
-                          optionName: "מידה",
+                          optionName: t("storeManager.form.defaultOptionName"),
                           optionValue: "",
                           sku: "",
                           stock: "0",
@@ -2268,7 +2282,7 @@ function ProductFormView({
                     }))
                   }
                 >
-                  + הוספת וריאציה
+                  {t("storeManager.form.addVariant")}
                 </SecondaryButton>
               </div>
 
@@ -2281,7 +2295,7 @@ function ProductFormView({
                       className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 md:grid-cols-6"
                     >
                       <TextInput
-                        placeholder="שם אפשרות (מידה)"
+                        placeholder={t("storeManager.form.optionNamePlaceholder")}
                         value={variant.optionName || ""}
                         onChange={(e) =>
                           setProductForm((prev) => {
@@ -2299,7 +2313,7 @@ function ProductFormView({
                         }
                       />
                       <TextInput
-                        placeholder="ערך (M / שחור)"
+                        placeholder={t("storeManager.form.optionValuePlaceholder")}
                         value={variant.optionValue || ""}
                         onChange={(e) =>
                           setProductForm((prev) => {
@@ -2317,7 +2331,7 @@ function ProductFormView({
                         }
                       />
                       <TextInput
-                        placeholder="מק״ט"
+                        placeholder={t("storeManager.form.skuPlaceholder")}
                         value={variant.sku || ""}
                         onChange={(e) =>
                           setProductForm((prev) => {
@@ -2337,7 +2351,7 @@ function ProductFormView({
                       <TextInput
                         type="number"
                         min={0}
-                        placeholder="מלאי"
+                        placeholder={t("storeManager.form.stockPlaceholder")}
                         value={variant.stock ?? "0"}
                         onChange={(e) =>
                           setProductForm((prev) => {
@@ -2357,7 +2371,7 @@ function ProductFormView({
                       <TextInput
                         type="number"
                         min={0}
-                        placeholder="מחיר (אופציונלי)"
+                        placeholder={t("storeManager.form.pricePlaceholder")}
                         value={variant.price ?? ""}
                         onChange={(e) =>
                           setProductForm((prev) => {
@@ -2386,26 +2400,26 @@ function ProductFormView({
                           }))
                         }
                       >
-                        הסרה
+                        {t("storeManager.remove")}
                       </button>
                     </div>
                   ))}
                 </div>
               ) : (
                 <p className="text-sm font-bold text-slate-400">
-                  אין וריאציות — המלאי הכללי ישמש לרכישה
+                  {t("storeManager.form.noVariants")}
                 </p>
               )}
             </div>
 
             <div>
-              <FieldLabel>תגיות</FieldLabel>
+              <FieldLabel>{t("storeManager.form.tags")}</FieldLabel>
               <TextInput
                 value={productForm.tags}
                 onChange={(e) =>
                   setProductForm((prev) => ({ ...prev, tags: e.target.value }))
                 }
-                placeholder="חדש, מבצע, פרימיום"
+                placeholder={t("storeManager.form.tagsPlaceholder")}
               />
             </div>
 
@@ -2421,7 +2435,7 @@ function ProductFormView({
                     }))
                   }
                 />
-                מוצר מומלץ
+                {t("storeManager.form.featured")}
               </label>
 
               <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
@@ -2435,13 +2449,13 @@ function ProductFormView({
                     }))
                   }
                 />
-                מוצר דיגיטלי
+                {t("storeManager.form.digital")}
               </label>
             </div>
 
             {productForm.isDigital && (
               <div>
-                <FieldLabel>קישור לקובץ דיגיטלי</FieldLabel>
+                <FieldLabel>{t("storeManager.form.digitalFile")}</FieldLabel>
                 <TextInput
                   value={productForm.digitalFileUrl}
                   onChange={(e) =>
@@ -2458,18 +2472,18 @@ function ProductFormView({
         </div>
 
         <aside className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-lg font-black text-slate-800">תמונות המוצר</p>
+          <p className="text-lg font-black text-slate-800">{t("storeManager.form.imagesTitle")}</p>
           <p className="mt-1 text-xs font-bold leading-6 text-slate-500">
-            התמונה הראשונה תהיה התמונה הראשית בגריד החנות.
+            {t("storeManager.form.imagesHint")}
           </p>
 
           <label className="mt-5 flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-[28px] border border-dashed border-violet-200 bg-violet-50/40 p-6 text-center transition hover:bg-violet-50">
             <ImagePlus size={36} className="text-violet-600" />
             <span className="mt-3 text-sm font-black text-slate-800">
-              העלאת תמונות
+              {t("storeManager.form.uploadImages")}
             </span>
             <span className="mt-1 text-xs font-bold text-slate-400">
-              אפשר לבחור כמה תמונות יחד
+              {t("storeManager.form.uploadHint")}
             </span>
             <input
               type="file"
@@ -2502,7 +2516,7 @@ function ProductFormView({
             return existing.length > 0 ? (
               <div className="mt-4">
                 <p className="mb-2 text-xs font-black text-slate-500">
-                  תמונות שמורות
+                  {t("storeManager.form.savedImages")}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   {existing.map((url, index) => (
@@ -2527,7 +2541,7 @@ function ProductFormView({
                           }));
                         }}
                       >
-                        הסר
+                        {t("storeManager.remove")}
                       </button>
                     </div>
                   ))}
@@ -2539,7 +2553,7 @@ function ProductFormView({
           {productImages.length > 0 && (
             <div className="mt-4">
               <p className="mb-2 text-xs font-black text-slate-500">
-                תמונות חדשות להעלאה
+                {t("storeManager.form.newImages")}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {productImages.map((file, index) => (
@@ -2566,12 +2580,12 @@ function ProductFormView({
               className="w-full"
             >
               {editingProductId ? <Save size={17} /> : <PackagePlus size={17} />}
-              {editingProductId ? "שמירת שינויים" : "שמירת מוצר"}
+              {editingProductId ? t("storeManager.form.saveChanges") : t("storeManager.form.saveProduct")}
             </PrimaryButton>
 
             <SecondaryButton type="button" onClick={onCancel} className="w-full">
               <X size={16} />
-              ביטול
+              {t("storeManager.cancel")}
             </SecondaryButton>
           </div>
         </aside>
@@ -2605,34 +2619,35 @@ function CategoriesView({
   onEdit: (category: StoreCategory) => void;
   onDelete: (categoryId: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-5 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-2xl font-black text-slate-800">
-              {editingCategoryId ? "עריכת קטגוריה" : "הוספת קטגוריה"}
+              {editingCategoryId ? t("storeManager.categories.editTitle") : t("storeManager.categories.addTitle")}
             </h2>
             <p className="mt-1 text-sm font-bold text-slate-500">
-              אחרי יצירת קטגוריה תוכלי לשייך אליה מוצרים בטופס מוצר.
+              {t("storeManager.categories.hint")}
             </p>
           </div>
         </div>
 
         <div className="grid gap-4">
           <div>
-            <FieldLabel>שם קטגוריה</FieldLabel>
+            <FieldLabel>{t("storeManager.categories.name")}</FieldLabel>
             <TextInput
               value={categoryForm.name}
               onChange={(e) =>
                 setCategoryForm((prev) => ({ ...prev, name: e.target.value }))
               }
-              placeholder="לדוגמה: בגדי ים"
+              placeholder={t("storeManager.categories.namePlaceholder")}
             />
           </div>
 
           <div>
-            <FieldLabel>תיאור</FieldLabel>
+            <FieldLabel>{t("storeManager.categories.description")}</FieldLabel>
             <TextArea
               value={categoryForm.description}
               onChange={(e) =>
@@ -2645,7 +2660,7 @@ function CategoriesView({
           </div>
 
           <div>
-            <FieldLabel>סדר תצוגה</FieldLabel>
+            <FieldLabel>{t("storeManager.categories.sortOrder")}</FieldLabel>
             <TextInput
               type="number"
               value={categoryForm.sortOrder}
@@ -2661,7 +2676,7 @@ function CategoriesView({
           <label className="flex min-h-[110px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-violet-200 bg-violet-50/40 p-5 text-center transition hover:bg-violet-50">
             <ImagePlus size={28} className="text-violet-600" />
             <span className="mt-2 text-sm font-black text-slate-700">
-              תמונת קטגוריה
+              {t("storeManager.categories.image")}
             </span>
             <input
               type="file"
@@ -2673,7 +2688,7 @@ function CategoriesView({
 
           {categoryImage && (
             <p className="text-xs font-black text-violet-700">
-              נבחרה תמונה: {categoryImage.name}
+              {t("storeManager.categories.imageSelected", { name: categoryImage.name })}
             </p>
           )}
 
@@ -2688,7 +2703,7 @@ function CategoriesView({
                 }))
               }
             />
-            קטגוריה מוצגת באתר
+            {t("storeManager.categories.visibleOnSite")}
           </label>
 
           <PrimaryButton
@@ -2698,12 +2713,12 @@ function CategoriesView({
             className="w-full"
           >
             <Save size={17} />
-            {editingCategoryId ? "שמירת קטגוריה" : "הוספת קטגוריה"}
+            {editingCategoryId ? t("storeManager.categories.save") : t("storeManager.categories.add")}
           </PrimaryButton>
 
           {editingCategoryId && (
             <SecondaryButton type="button" onClick={onReset} className="w-full">
-              ביטול עריכה
+              {t("storeManager.categories.cancelEdit")}
             </SecondaryButton>
           )}
         </div>
@@ -2711,13 +2726,13 @@ function CategoriesView({
 
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="mb-5 text-2xl font-black text-slate-800">
-          קטגוריות קיימות
+          {t("storeManager.categories.existing")}
         </h2>
 
         {categories.length === 0 ? (
           <EmptyBox
-            title="אין קטגוריות עדיין"
-            text="צרי קטגוריות כמו Shopify, ואז כל מוצר שתוסיפי יוכל להשתייך לקטגוריה."
+            title={t("storeManager.categories.emptyTitle")}
+            text={t("storeManager.categories.emptyText")}
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
@@ -2751,7 +2766,7 @@ function CategoriesView({
                     <div className="mt-2">
                       <StatusBadge
                         active={category.isVisible}
-                        label={category.isVisible ? "מוצגת" : "מוסתרת"}
+                        label={category.isVisible ? t("storeManager.categories.visible") : t("storeManager.categories.hidden")}
                       />
                     </div>
                   </div>
@@ -2759,7 +2774,7 @@ function CategoriesView({
 
                 <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
                   <SecondaryButton onClick={() => onEdit(category)}>
-                    עריכה
+                    {t("storeManager.edit")}
                   </SecondaryButton>
 
                   <button
@@ -2794,6 +2809,7 @@ function SettingsView({
   focus?: "all" | "shipping";
   embedded?: boolean;
 }) {
+  const { t } = useTranslation();
   const checkoutLook = normalizeCheckoutAppearance(settings.checkoutAppearance);
 
   const updateCheckoutAppearance = (
@@ -2827,13 +2843,13 @@ function SettingsView({
         style={{ borderColor: checkoutLook.borderColor }}
       >
         <p className="text-sm font-black">
-          {checkoutLook.title || "סל ותשלום"}
+          {checkoutLook.title || t("storeManager.settings.cartTitle")}
         </p>
         <p
           className="text-xs font-bold"
           style={{ color: checkoutLook.mutedTextColor }}
         >
-          תצוגה מקדימה חיה
+          {t("storeManager.settings.livePreview")}
         </p>
       </div>
       <div className="space-y-3 p-4">
@@ -2844,7 +2860,7 @@ function SettingsView({
             borderColor: checkoutLook.borderColor,
           }}
         >
-          <span className="min-w-0 truncate">מוצר לדוגמה</span>
+          <span className="min-w-0 truncate">{t("storeManager.settings.sampleProduct")}</span>
           <button
             type="button"
             className="shrink-0 px-3 py-1.5 text-[11px] font-black text-white"
@@ -2854,14 +2870,14 @@ function SettingsView({
               color: checkoutLook.buttonTextColor,
             }}
           >
-            הוסף
+            {t("storeManager.add")}
           </button>
         </div>
         <p
           className="text-xs font-bold"
           style={{ color: checkoutLook.mutedTextColor }}
         >
-          סה״כ: ₪250
+          {t("storeManager.settings.total")}
         </p>
         <button
           type="button"
@@ -2872,7 +2888,7 @@ function SettingsView({
             borderRadius: checkoutLook.buttonRadius,
           }}
         >
-          {checkoutLook.buttonLabel || "המשך לתשלום"}
+          {checkoutLook.buttonLabel || t("storeManager.settings.checkout")}
         </button>
       </div>
     </div>
@@ -2883,18 +2899,18 @@ function SettingsView({
         <div className={cardClass}>
           <div className="mb-6">
             <h2 className="text-2xl font-black text-slate-800">
-              {focus === "shipping" ? "הגדרות משלוח" : "הגדרות חנות"}
+              {focus === "shipping" ? t("storeManager.settings.shippingTitle") : t("storeManager.settings.storeTitle")}
             </h2>
             <p className="mt-1 text-sm font-bold text-slate-500">
               {focus === "shipping"
-                ? "מחיר משלוח, משלוח חינם ומדיניות."
-                : "מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים."}
+                ? t("storeManager.settings.shippingSubtitle")
+                : t("storeManager.settings.storeSubtitle")}
             </p>
           </div>
 
           <div className={cx("grid gap-5", embedded ? "sm:grid-cols-2" : "lg:grid-cols-2")}>
             <div>
-              <FieldLabel>שם החנות</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.storeName")}</FieldLabel>
               <TextInput
                 value={settings.storeName || ""}
                 onChange={(e) =>
@@ -2904,7 +2920,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>מטבע</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.currency")}</FieldLabel>
               <SelectInput
                 value={settings.currency || "ILS"}
                 onChange={(e) =>
@@ -2918,7 +2934,7 @@ function SettingsView({
             </div>
 
             <div className="lg:col-span-2">
-              <FieldLabel>תיאור חנות</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.storeDescription")}</FieldLabel>
               <TextArea
                 value={settings.storeDescription || ""}
                 onChange={(e) =>
@@ -2931,7 +2947,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>טלפון וואטסאפ להזמנות</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.whatsappPhone")}</FieldLabel>
               <TextInput
                 value={settings.whatsappPhone || ""}
                 onChange={(e) =>
@@ -2945,7 +2961,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>הערה בצ׳קאאוט</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.checkoutNote")}</FieldLabel>
               <TextInput
                 value={settings.checkoutNote || ""}
                 onChange={(e) =>
@@ -2958,7 +2974,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>מחיר משלוח</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.shippingPrice")}</FieldLabel>
               <TextInput
                 type="number"
                 value={String(settings.defaultShippingPrice ?? 0)}
@@ -2972,7 +2988,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>משלוח חינם מעל</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.freeShippingFrom")}</FieldLabel>
               <TextInput
                 type="number"
                 value={settings.freeShippingFrom ?? ""}
@@ -2988,7 +3004,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>מדיניות משלוחים</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.shippingPolicy")}</FieldLabel>
               <TextArea
                 value={settings.shippingPolicy || ""}
                 onChange={(e) =>
@@ -3001,7 +3017,7 @@ function SettingsView({
             </div>
 
             <div>
-              <FieldLabel>מדיניות החזרות</FieldLabel>
+              <FieldLabel>{t("storeManager.settings.returnPolicy")}</FieldLabel>
               <TextArea
                 value={settings.returnPolicy || ""}
                 onChange={(e) =>
@@ -3016,10 +3032,10 @@ function SettingsView({
 
           <div className={cx("mt-6 grid gap-3", embedded ? "sm:grid-cols-2" : "md:grid-cols-4")}>
             {[
-              ["isStoreActive", "חנות פעילה"],
-              ["showPrices", "הצגת מחירים"],
-              ["allowCart", "סל קניות"],
-              ["allowWhatsappOrders", "הזמנות וואטסאפ"],
+              ["isStoreActive", t("storeManager.settings.isStoreActive")],
+              ["showPrices", t("storeManager.settings.showPrices")],
+              ["allowCart", t("storeManager.settings.allowCart")],
+              ["allowWhatsappOrders", t("storeManager.settings.allowWhatsappOrders")],
             ].map(([key, label]) => (
               <label
                 key={key}
@@ -3043,7 +3059,7 @@ function SettingsView({
           <div className="mt-6">
             <PrimaryButton type="button" onClick={onSave} loading={saving}>
               <Save size={17} />
-              שמירת הגדרות חנות
+              {t("storeManager.settings.saveSettings")}
             </PrimaryButton>
           </div>
         </div>
@@ -3053,14 +3069,13 @@ function SettingsView({
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-black text-white">
                 <ShoppingBag size={15} />
-                עיצוב סל ותשלום
+                {t("storeManager.settings.cartDesignTitle")}
               </div>
               <h2 className="mt-3 text-2xl font-black text-slate-800">
-                צבעים וכפתורים של הסל
+                {t("storeManager.settings.cartDesignSubtitle")}
               </h2>
               <p className="mt-1 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                בחרו ערכת צבעים או התאימו ידנית. השינויים חלים על מודל הסל
-                והתשלום באתר הציבורי.
+                {t("storeManager.settings.cartDesignHint")}
               </p>
             </div>
 
@@ -3080,7 +3095,7 @@ function SettingsView({
                         DEFAULT_CHECKOUT_APPEARANCE.primaryColor,
                     }}
                   />
-                  {preset.label}
+                  {t(`storeManager.settings.presets.${preset.id}`)}
                 </button>
               ))}
             </div>
@@ -3098,13 +3113,13 @@ function SettingsView({
               <div className={cx("grid min-w-0 gap-4", embedded ? "grid-cols-1 sm:grid-cols-2" : "sm:grid-cols-2")}>
                 {(
                   [
-                    ["primaryColor", "צבע כפתור ראשי"],
-                    ["buttonTextColor", "צבע טקסט בכפתור"],
-                    ["accentColor", "צבע הדגשה / הוספה"],
-                    ["panelBackground", "רקע החלון"],
-                    ["textColor", "צבע כותרות"],
-                    ["mutedTextColor", "צבע טקסט משני"],
-                    ["borderColor", "צבע מסגרות"],
+                    ["primaryColor", t("storeManager.settings.primaryColor")],
+                    ["buttonTextColor", t("storeManager.settings.buttonTextColor")],
+                    ["accentColor", t("storeManager.settings.accentColor")],
+                    ["panelBackground", t("storeManager.settings.panelBackground")],
+                    ["textColor", t("storeManager.settings.textColor")],
+                    ["mutedTextColor", t("storeManager.settings.mutedTextColor")],
+                    ["borderColor", t("storeManager.settings.borderColor")],
                   ] as Array<[keyof CheckoutAppearance, string]>
                 ).map(([key, label]) => (
                   <label key={key} className="grid min-w-0 gap-2">
@@ -3138,29 +3153,29 @@ function SettingsView({
                 ))}
 
                 <div className="min-w-0">
-                  <FieldLabel>כותרת הסל (אופציונלי)</FieldLabel>
+                  <FieldLabel>{t("storeManager.settings.cartTitleOptional")}</FieldLabel>
                   <TextInput
                     value={checkoutLook.title}
                     onChange={(e) =>
                       updateCheckoutAppearance({ title: e.target.value })
                     }
-                    placeholder="סל ותשלום"
+                    placeholder={t("storeManager.settings.cartTitlePlaceholder")}
                   />
                 </div>
 
                 <div className="min-w-0">
-                  <FieldLabel>טקסט כפתור תשלום (אופציונלי)</FieldLabel>
+                  <FieldLabel>{t("storeManager.settings.payButtonOptional")}</FieldLabel>
                   <TextInput
                     value={checkoutLook.buttonLabel}
                     onChange={(e) =>
                       updateCheckoutAppearance({ buttonLabel: e.target.value })
                     }
-                    placeholder="המשך לתשלום"
+                    placeholder={t("storeManager.settings.payButtonPlaceholder")}
                   />
                 </div>
 
                 <div className="min-w-0">
-                  <FieldLabel>עיגול כפתורים</FieldLabel>
+                  <FieldLabel>{t("storeManager.settings.buttonRadius")}</FieldLabel>
                   <TextInput
                     type="number"
                     min={4}
@@ -3175,7 +3190,7 @@ function SettingsView({
                 </div>
 
                 <div className="min-w-0">
-                  <FieldLabel>עיגול חלון</FieldLabel>
+                  <FieldLabel>{t("storeManager.settings.panelRadius")}</FieldLabel>
                   <TextInput
                     type="number"
                     min={8}
@@ -3196,7 +3211,7 @@ function SettingsView({
             <div className="mt-6">
               <PrimaryButton type="button" onClick={onSave} loading={saving}>
                 <Save size={17} />
-                שמירת עיצוב הסל
+                {t("storeManager.settings.saveCartDesign")}
               </PrimaryButton>
             </div>
           </div>
@@ -3228,16 +3243,18 @@ function CouponsView({
   onEdit: (coupon: StoreCoupon) => void;
   onDelete: (couponId: string) => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const intlLocale = getIntlLocale(i18n.language);
   return (
     <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="mb-5 text-2xl font-black text-slate-800">
-          {editingCouponId ? "עריכת קופון" : "הוספת קופון"}
+          {editingCouponId ? t("storeManager.coupons.editTitle") : t("storeManager.coupons.addTitle")}
         </h2>
 
         <div className="grid gap-4">
           <div>
-            <FieldLabel>קוד קופון</FieldLabel>
+            <FieldLabel>{t("storeManager.coupons.code")}</FieldLabel>
             <TextInput
               value={couponForm.code}
               onChange={(e) =>
@@ -3252,7 +3269,7 @@ function CouponsView({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <FieldLabel>סוג הנחה</FieldLabel>
+              <FieldLabel>{t("storeManager.coupons.discountType")}</FieldLabel>
               <SelectInput
                 value={couponForm.discountType}
                 onChange={(e) =>
@@ -3262,13 +3279,13 @@ function CouponsView({
                   }))
                 }
               >
-                <option value="percent">אחוזים</option>
-                <option value="fixed">סכום קבוע</option>
+                <option value="percent">{t("storeManager.coupons.percent")}</option>
+                <option value="fixed">{t("storeManager.coupons.fixed")}</option>
               </SelectInput>
             </div>
 
             <div>
-              <FieldLabel>ערך הנחה</FieldLabel>
+              <FieldLabel>{t("storeManager.coupons.discountValue")}</FieldLabel>
               <TextInput
                 type="number"
                 value={couponForm.discountValue}
@@ -3283,7 +3300,7 @@ function CouponsView({
           </div>
 
           <div>
-            <FieldLabel>מינימום הזמנה</FieldLabel>
+            <FieldLabel>{t("storeManager.coupons.minOrder")}</FieldLabel>
             <TextInput
               type="number"
               value={couponForm.minOrderAmount}
@@ -3298,7 +3315,7 @@ function CouponsView({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <FieldLabel>מתאריך</FieldLabel>
+              <FieldLabel>{t("storeManager.coupons.fromDate")}</FieldLabel>
               <TextInput
                 type="date"
                 value={couponForm.startsAt}
@@ -3312,7 +3329,7 @@ function CouponsView({
             </div>
 
             <div>
-              <FieldLabel>עד תאריך</FieldLabel>
+              <FieldLabel>{t("storeManager.coupons.toDate")}</FieldLabel>
               <TextInput
                 type="date"
                 value={couponForm.expiresAt}
@@ -3327,7 +3344,7 @@ function CouponsView({
           </div>
 
           <div>
-            <FieldLabel>מגבלת שימושים</FieldLabel>
+            <FieldLabel>{t("storeManager.coupons.usageLimit")}</FieldLabel>
             <TextInput
               type="number"
               value={couponForm.usageLimit}
@@ -3337,7 +3354,7 @@ function CouponsView({
                   usageLimit: e.target.value,
                 }))
               }
-              placeholder="ריק = ללא הגבלה"
+              placeholder={t("storeManager.coupons.usagePlaceholder")}
             />
           </div>
 
@@ -3352,7 +3369,7 @@ function CouponsView({
                 }))
               }
             />
-            קופון פעיל
+            {t("storeManager.coupons.active")}
           </label>
 
           <PrimaryButton
@@ -3362,24 +3379,24 @@ function CouponsView({
             className="w-full"
           >
             <Save size={17} />
-            שמירת קופון
+            {t("storeManager.coupons.save")}
           </PrimaryButton>
 
           {editingCouponId && (
             <SecondaryButton type="button" onClick={onReset} className="w-full">
-              ביטול עריכה
+              {t("storeManager.coupons.cancelEdit")}
             </SecondaryButton>
           )}
         </div>
       </div>
 
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-5 text-2xl font-black text-slate-800">קופונים</h2>
+        <h2 className="mb-5 text-2xl font-black text-slate-800">{t("storeManager.coupons.title")}</h2>
 
         {coupons.length === 0 ? (
           <EmptyBox
-            title="אין קופונים עדיין"
-            text="צרי קודי קופון ומבצעים שיופיעו בתהליך ההזמנה."
+            title={t("storeManager.coupons.emptyTitle")}
+            text={t("storeManager.coupons.emptyText")}
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
@@ -3396,19 +3413,19 @@ function CouponsView({
                     <p className="text-xs font-bold text-slate-400">
                       {coupon.discountType === "percent"
                         ? `${coupon.discountValue}%`
-                        : formatMoney(coupon.discountValue, settings.currency)}
+                        : formatMoney(coupon.discountValue, settings.currency, intlLocale)}
                     </p>
                   </div>
 
                   <StatusBadge
                     active={coupon.isActive}
-                    label={coupon.isActive ? "פעיל" : "כבוי"}
+                    label={coupon.isActive ? t("storeManager.active") : t("storeManager.off")}
                   />
                 </div>
 
                 <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
                   <SecondaryButton onClick={() => onEdit(coupon)}>
-                    עריכה
+                    {t("storeManager.edit")}
                   </SecondaryButton>
 
                   <button
@@ -3437,14 +3454,16 @@ function OrdersView({
   settings: StoreSettingsData;
   onUpdateOrderStatus: (orderId: string, status: string) => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const intlLocale = getIntlLocale(i18n.language);
   return (
     <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-5 text-2xl font-black text-slate-800">הזמנות</h2>
+      <h2 className="mb-5 text-2xl font-black text-slate-800">{t("storeManager.orders.title")}</h2>
 
       {orders.length === 0 ? (
         <EmptyBox
-          title="אין הזמנות עדיין"
-          text="כאן יופיעו הזמנות מהחנות הציבורית."
+          title={t("storeManager.orders.emptyTitle")}
+          text={t("storeManager.orders.emptyText")}
         />
       ) : (
         <div className="grid gap-4">
@@ -3459,13 +3478,13 @@ function OrdersView({
                     {order.orderNumber}
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-500">
-                    {order.customerName} · {order.customerPhone || "אין טלפון"}
+                    {order.customerName} · {order.customerPhone || t("storeManager.noPhone")}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="text-2xl font-black text-violet-700">
-                    {formatMoney(order.total, order.currency || settings.currency)}
+                    {formatMoney(order.total, order.currency || settings.currency, intlLocale)}
                   </p>
 
                   <SelectInput
@@ -3478,7 +3497,7 @@ function OrdersView({
                     {getAllowedOrderStatusTransitions(order.status).map(
                       (status) => (
                         <option key={status} value={status}>
-                          {ORDER_STATUS_LABELS[status] || status}
+                          {t(`storeManager.orders.status.${status}`)}
                         </option>
                       ),
                     )}
@@ -3498,7 +3517,8 @@ function OrdersView({
                         {item.quantity} ×{" "}
                         {formatMoney(
                           item.price,
-                          order.currency || settings.currency
+                          order.currency || settings.currency,
+                          intlLocale
                         )}
                       </span>
                     </div>

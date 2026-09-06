@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   Accessibility,
@@ -51,17 +52,19 @@ function makePanel(
   pluginKey: string,
   icon: LucideIcon,
   accent: string,
-  title: string,
-  description: string,
+  titleKey: string,
+  descriptionKey: string,
   renderFields: (
     props: PluginPanelProps & {
       settings: Record<string, unknown>;
       updateField: (k: string, v: unknown) => void;
+      t: (key: string) => string;
     }
   ) => React.ReactNode,
-  extraActions?: (props: PluginPanelProps) => React.ReactNode
+  extraActions?: (props: PluginPanelProps & { t: (key: string) => string }) => React.ReactNode
 ) {
   return function PluginPanel(props: PluginPanelProps) {
+    const { t } = useTranslation();
     const { settings, loading, saving, message, save, updateField } =
       useSitePluginSettings(props.siteId, pluginKey);
     const Icon = icon;
@@ -71,20 +74,20 @@ function makePanel(
         {...props}
         icon={Icon}
         accent={accent}
-        title={title}
-        description={description}
+        title={t(titleKey)}
+        description={t(descriptionKey)}
         loading={loading}
         saving={saving}
         message={message}
         onSave={() => save()}
-        extraActions={extraActions?.(props)}
+        extraActions={extraActions?.({ ...props, t })}
       >
         <Toggle
-          label="תוסף פעיל באתר"
+          label={t("sitePlugins.pluginActive")}
           checked={bool(settings.isActive, true)}
           onChange={(v) => updateField("isActive", v)}
         />
-        {renderFields({ ...props, settings, updateField })}
+        {renderFields({ ...props, settings, updateField, t })}
       </SitePluginPanelFrame>
     );
   };
@@ -94,11 +97,11 @@ export const SiteLeadsPanel = makePanel(
   "leads",
   Mail,
   "#6366F1",
-  "טופס לידים",
-  "פניות מהאתר נשמרות ב-CRM וניתן להגדיר התראות ומענה אוטומטי.",
-  ({ settings, updateField }) => (
+  "sitePlugins.leads.title",
+  "sitePlugins.leads.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="אימייל להתראות">
+      <Field label={t("sitePlugins.leads.notifyEmail")}>
         <TextInput
           value={str(settings.notifyEmail)}
           onChange={(v) => updateField("notifyEmail", v)}
@@ -107,34 +110,34 @@ export const SiteLeadsPanel = makePanel(
         />
       </Field>
       <Toggle
-        label="שליחה אוטומטית ל-CRM"
+        label={t("sitePlugins.leads.sendToCrm")}
         checked={bool(settings.sendToCrm, true)}
         onChange={(v) => updateField("sendToCrm", v)}
       />
       <Toggle
-        label="מענה אוטומטי ללקוח"
+        label={t("sitePlugins.leads.autoReply")}
         checked={bool(settings.autoReply, true)}
         onChange={(v) => updateField("autoReply", v)}
       />
-      <Field label="טקסט מענה אוטומטי">
+      <Field label={t("sitePlugins.leads.autoReplyText")}>
         <TextArea
           value={str(settings.autoReplyMessage)}
           onChange={(v) => updateField("autoReplyMessage", v)}
         />
       </Field>
       <Toggle
-        label="שדה טלפון חובה"
+        label={t("sitePlugins.leads.requirePhone")}
         checked={bool(settings.requirePhone)}
         onChange={(v) => updateField("requirePhone", v)}
       />
     </>
   ),
-  ({ businessId }) => (
+  ({ businessId, t }) => (
     <Link
       to={`/business/${businessId}/dashboard/crm/leads`}
       className={btnSecondary + " h-10 text-xs"}
     >
-      פתיחת לידים ב-CRM
+      {t("sitePlugins.leads.openCrm")}
     </Link>
   )
 );
@@ -143,26 +146,26 @@ export const SiteReviewsPanel = makePanel(
   "reviews",
   Star,
   "#F59E0B",
-  "ביקורות לקוחות",
-  "איסוף, אישור והצגת ביקורות באתר.",
-  ({ settings, updateField }) => (
+  "sitePlugins.reviews.title",
+  "sitePlugins.reviews.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
-        label="אישור לפני פרסום (Moderation)"
+        label={t("sitePlugins.reviews.moderation")}
         checked={bool(settings.moderation, true)}
         onChange={(v) => updateField("moderation", v)}
       />
       <Toggle
-        label="הצגה באתר"
+        label={t("sitePlugins.reviews.showOnSite")}
         checked={bool(settings.showOnSite, true)}
         onChange={(v) => updateField("showOnSite", v)}
       />
       <Toggle
-        label="בקשת ביקורת אחרי רכישה"
+        label={t("sitePlugins.reviews.requestAfterPurchase")}
         checked={bool(settings.requestAfterPurchase, true)}
         onChange={(v) => updateField("requestAfterPurchase", v)}
       />
-      <Field label="דירוג מינימלי לפרסום">
+      <Field label={t("sitePlugins.reviews.minRating")}>
         <TextInput
           value={String(num(settings.minRating, 1))}
           onChange={(v) => updateField("minRating", Number(v) || 1)}
@@ -171,12 +174,12 @@ export const SiteReviewsPanel = makePanel(
       </Field>
     </>
   ),
-  ({ businessId }) => (
+  ({ businessId, t }) => (
     <Link
       to={`/business/${businessId}/dashboard/build`}
       className={btnSecondary + " h-10 text-xs"}
     >
-      ניהול ביקורות
+      {t("sitePlugins.reviews.manage")}
     </Link>
   )
 );
@@ -185,28 +188,28 @@ export const SiteClubPanel = makePanel(
   "club",
   Users,
   "#8B5CF6",
-  "מועדון לקוחות",
-  "אזור אישי, הטבות ונקודות ללקוחות חוזרים.",
-  ({ settings, updateField }) => (
+  "sitePlugins.club.title",
+  "sitePlugins.club.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="שם המועדון">
+      <Field label={t("sitePlugins.club.name")}>
         <TextInput
           value={str(settings.clubName, "מועדון לקוחות")}
           onChange={(v) => updateField("clubName", v)}
         />
       </Field>
-      <Field label="הודעת ברוכים הבאים">
+      <Field label={t("sitePlugins.club.welcome")}>
         <TextArea
           value={str(settings.welcomeMessage)}
           onChange={(v) => updateField("welcomeMessage", v)}
         />
       </Field>
       <Toggle
-        label="מערכת נקודות"
+        label={t("sitePlugins.club.points")}
         checked={bool(settings.pointsEnabled, true)}
         onChange={(v) => updateField("pointsEnabled", v)}
       />
-      <Field label="נקודות לכל רכישה">
+      <Field label={t("sitePlugins.club.pointsPerPurchase")}>
         <TextInput
           value={String(num(settings.pointsPerPurchase, 10))}
           onChange={(v) => updateField("pointsPerPurchase", Number(v) || 0)}
@@ -222,21 +225,21 @@ export const SiteHeatmapPanel = makePanel(
   "heatmap",
   Flame,
   "#EF4444",
-  "מפת חום",
-  "ראו היכן מקליקים וגלולים הגולשים בעמודי האתר.",
-  ({ settings, updateField }) => (
+  "sitePlugins.heatmap.title",
+  "sitePlugins.heatmap.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
-        label="מעקב קליקים"
+        label={t("sitePlugins.heatmap.trackClicks")}
         checked={bool(settings.trackClicks, true)}
         onChange={(v) => updateField("trackClicks", v)}
       />
       <Toggle
-        label="מעקב גלילה"
+        label={t("sitePlugins.heatmap.trackScroll")}
         checked={bool(settings.trackScroll, true)}
         onChange={(v) => updateField("trackScroll", v)}
       />
-      <Field label="שמירת נתונים (ימים)">
+      <Field label={t("sitePlugins.heatmap.retention")}>
         <TextInput
           value={String(num(settings.retentionDays, 30))}
           onChange={(v) => updateField("retentionDays", Number(v) || 30)}
@@ -244,8 +247,7 @@ export const SiteHeatmapPanel = makePanel(
         />
       </Field>
       <div className="rounded-xl border border-dashed border-orange-200 bg-orange-50/50 p-4 text-sm text-slate-600">
-        לאחר פרסום האתר, מפת החום תתמלא בנתונים אמיתיים. כרגע המערכת מוכנה
-        לאיסוף.
+        {t("sitePlugins.heatmap.readyHint")}
       </div>
     </>
   )
@@ -255,18 +257,18 @@ export const SiteFormAbandonmentPanel = makePanel(
   "form-abandonment",
   FormInput,
   "#F97316",
-  "מנתח נטישת טפסים",
-  "גלו למה ממלאים לא משלימים טפסים באתר.",
-  ({ settings, updateField }) => (
+  "sitePlugins.abandonment.title",
+  "sitePlugins.abandonment.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="מינימום שדות שהתחילו למלא">
+      <Field label={t("sitePlugins.abandonment.minFields")}>
         <TextInput
           value={String(num(settings.minFieldsFilled, 2))}
           onChange={(v) => updateField("minFieldsFilled", Number(v) || 2)}
           type="number"
         />
       </Field>
-      <Field label="אימייל להתראות">
+      <Field label={t("sitePlugins.abandonment.alertEmail")}>
         <TextInput
           value={str(settings.alertEmail)}
           onChange={(v) => updateField("alertEmail", v)}
@@ -274,7 +276,7 @@ export const SiteFormAbandonmentPanel = makePanel(
         />
       </Field>
       <Toggle
-        label="שמירת טיוטות חלקיות"
+        label={t("sitePlugins.abandonment.partialDrafts")}
         checked={bool(settings.trackPartialSubmissions, true)}
         onChange={(v) => updateField("trackPartialSubmissions", v)}
       />
@@ -286,23 +288,23 @@ export const SiteJourneyRecordingPanel = makePanel(
   "journey-recording",
   Route,
   "#EC4899",
-  "הקלטת מסע לקוח",
-  "צפייה במסלול הגולשים באתר (בהתאם לפרטיות).",
-  ({ settings, updateField }) => (
+  "sitePlugins.journey.title",
+  "sitePlugins.journey.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
-        label="הסתרת שדות רגישים (סיסמאות וכו')"
+        label={t("sitePlugins.journey.maskInputs")}
         checked={bool(settings.maskInputs, true)}
         onChange={(v) => updateField("maskInputs", v)}
       />
-      <Field label="מקסימום הקלטות">
+      <Field label={t("sitePlugins.journey.maxRecordings")}>
         <TextInput
           value={String(num(settings.maxRecordings, 100))}
           onChange={(v) => updateField("maxRecordings", Number(v) || 100)}
           type="number"
         />
       </Field>
-      <Field label="משך הקלטה מקסימלי (שניות)">
+      <Field label={t("sitePlugins.journey.maxDuration")}>
         <TextInput
           value={String(num(settings.recordDurationSec, 300))}
           onChange={(v) => updateField("recordDurationSec", Number(v) || 300)}
@@ -317,24 +319,24 @@ export const SiteServiceFinderPanel = makePanel(
   "service-finder",
   Compass,
   "#2563EB",
-  "מצא את השירות",
-  "שאלון התאמה שמכוון ללקוח לשירות הנכון.",
-  ({ settings, updateField }) => (
+  "sitePlugins.finder.title",
+  "sitePlugins.finder.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="כותרת השאלון">
+      <Field label={t("sitePlugins.finder.quizTitle")}>
         <TextInput
           value={str(settings.title, "מצאו את השירות המתאים")}
           onChange={(v) => updateField("title", v)}
         />
       </Field>
-      <Field label="טקסט כפתור בסיום">
+      <Field label={t("sitePlugins.finder.resultCta")}>
         <TextInput
           value={str(settings.resultCta, "צרו קשר")}
           onChange={(v) => updateField("resultCta", v)}
         />
       </Field>
       <p className="text-xs text-slate-500">
-        עריכת השאלות והאפשרויות — בעורך האתר, בלוק &quot;מצא שירות&quot;.
+        {t("sitePlugins.finder.editHint")}
       </p>
     </>
   )
@@ -344,9 +346,9 @@ export const SiteAccessibilityPanel = makePanel(
   "accessibility",
   Accessibility,
   "#7C3AED",
-  "כלי נגישות BizUply",
-  "תפריט נגישות מקצועי מובנה — ללא UserWay וללא תשלום חיצוני לכל אתר. מופעל אוטומטית בכל עמודי האתר.",
-  ({ settings, updateField }) => {
+  "sitePlugins.a11y.title",
+  "sitePlugins.a11y.description",
+  ({ settings, updateField, t }) => {
     const features =
       settings.features && typeof settings.features === "object"
         ? (settings.features as Record<string, boolean>)
@@ -359,13 +361,12 @@ export const SiteAccessibilityPanel = makePanel(
     return (
       <>
         <p className="rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-xs leading-relaxed text-violet-900">
-          התוסף של BizUply — שליטה מלאה בקוד, ללא מגבלת אתרים וללא הטמעת ספק חיצוני.
-          קיצור מקלדת לגולשים: Ctrl+U.
+          {t("sitePlugins.a11y.intro")}
         </p>
         <p className="text-xs text-slate-500">
-          התפריט נפתח תמיד בצד שמאל. מיקום הכפתור הצף בלבד ניתן לשינוי.
+          {t("sitePlugins.a11y.menuSide")}
         </p>
-        <Field label="מיקום כפתור הצף">
+        <Field label={t("sitePlugins.a11y.buttonPosition")}>
           <select
             value={str(settings.widgetPosition, "bottom-left")}
             onChange={(e) => {
@@ -375,73 +376,73 @@ export const SiteAccessibilityPanel = makePanel(
             }}
             className={inputBase}
           >
-            <option value="bottom-left">שמאל למטה</option>
-            <option value="bottom-right">ימין למטה</option>
+            <option value="bottom-left">{t("sitePlugins.a11y.bottomLeft")}</option>
+            <option value="bottom-right">{t("sitePlugins.a11y.bottomRight")}</option>
           </select>
         </Field>
-        <Field label="צבע מיתוג">
+        <Field label={t("sitePlugins.a11y.brandColor")}>
           <TextInput
             value={str(settings.accentColor, "#7C3AED")}
             onChange={(v) => updateField("accentColor", v || "#7C3AED")}
           />
         </Field>
         <Toggle
-          label="הדגשת קישורים"
+          label={t("sitePlugins.a11y.highlightLinks")}
           checked={bool(features.highlightLinks, true)}
           onChange={(v) => setFeature("highlightLinks", v)}
         />
         <Toggle
-          label="ניגודיות (מחזור מצבים)"
+          label={t("sitePlugins.a11y.contrast")}
           checked={bool(features.contrast, true)}
           onChange={(v) => setFeature("contrast", v)}
         />
         <Toggle
-          label="ריווח טקסט"
+          label={t("sitePlugins.a11y.textSpacing")}
           checked={bool(features.textSpacing, true)}
           onChange={(v) => setFeature("textSpacing", v)}
         />
         <Toggle
-          label="טקסט גדול"
+          label={t("sitePlugins.a11y.largeText")}
           checked={bool(features.largeText, true)}
           onChange={(v) => setFeature("largeText", v)}
         />
         <Toggle
-          label="הסתרת תמונות"
+          label={t("sitePlugins.a11y.hideImages")}
           checked={bool(features.hideImages, true)}
           onChange={(v) => setFeature("hideImages", v)}
         />
         <Toggle
-          label="ביטול הנפשות"
+          label={t("sitePlugins.a11y.stopAnimations")}
           checked={bool(features.stopAnimations, true)}
           onChange={(v) => setFeature("stopAnimations", v)}
         />
         <Toggle
-          label="סמן מוגדל"
+          label={t("sitePlugins.a11y.largeCursor")}
           checked={bool(features.largeCursor, true)}
           onChange={(v) => setFeature("largeCursor", v)}
         />
         <Toggle
-          label="תמיכה בדיסלקציה"
+          label={t("sitePlugins.a11y.dyslexia")}
           checked={bool(features.dyslexia, true)}
           onChange={(v) => setFeature("dyslexia", v)}
         />
         <Toggle
-          label="גובה שורה"
+          label={t("sitePlugins.a11y.lineHeight")}
           checked={bool(features.lineHeight, true)}
           onChange={(v) => setFeature("lineHeight", v)}
         />
         <Toggle
-          label="תאורים"
+          label={t("sitePlugins.a11y.descriptions")}
           checked={bool(features.descriptions, true)}
           onChange={(v) => setFeature("descriptions", v)}
         />
         <Toggle
-          label="רוויה / גווני אפור"
+          label={t("sitePlugins.a11y.saturation")}
           checked={bool(features.saturation, true)}
           onChange={(v) => setFeature("saturation", v)}
         />
         <Toggle
-          label="יישור טקסט"
+          label={t("sitePlugins.a11y.textAlign")}
           checked={bool(features.textAlign, true)}
           onChange={(v) => setFeature("textAlign", v)}
         />
@@ -455,10 +456,10 @@ export const SiteWhatsAppFloatPanel = makePanel(
   MessageCircle,
   "#22C55E",
   "WhatsApp",
-  "Basic לפי העיצוב הקיים. Pro: כמה נציגים, שעות, מיקוד ומעקב לחיצות.",
-  ({ settings, updateField }) => (
+  "sitePlugins.whatsapp.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="טלפון">
+      <Field label={t("sitePlugins.whatsapp.phone")}>
         <TextInput
           value={str(settings.phone)}
           onChange={(v) => updateField("phone", v)}
@@ -466,16 +467,16 @@ export const SiteWhatsAppFloatPanel = makePanel(
         />
       </Field>
       <Toggle
-        label="בחירת נציג"
+        label={t("sitePlugins.whatsapp.agentPicker")}
         checked={bool(settings.agentPicker, true)}
         onChange={(v) => updateField("agentPicker", v)}
       />
       <Toggle
-        label="שעות פעילות"
+        label={t("sitePlugins.whatsapp.workingHours")}
         checked={bool(settings.workingHoursEnabled, true)}
         onChange={(v) => updateField("workingHoursEnabled", v)}
       />
-      <Field label="הודעת אופליין">
+      <Field label={t("sitePlugins.whatsapp.offline")}>
         <TextInput
           value={str(settings.offlineMessage, "נחזור אליכם בשעות הפעילות")}
           onChange={(v) => updateField("offlineMessage", v)}
@@ -489,21 +490,21 @@ export const SiteExitPopupPanel = makePanel(
   "exit-popup",
   DoorOpen,
   "#EF4444",
-  "פופאפ",
-  "Basic: יציאה/השהייה. Pro: גלילה, מיקוד, תזמון וכמה פופאפים.",
-  ({ settings, updateField }) => (
+  "sitePlugins.popup.title",
+  "sitePlugins.popup.description",
+  ({ settings, updateField, t }) => (
     <>
-      <Field label="כותרת">
+      <Field label={t("sitePlugins.popup.headline")}>
         <TextInput value={str(settings.headline)} onChange={(v) => updateField("headline", v)} />
       </Field>
-      <Field label="השהייה בשניות">
+      <Field label={t("sitePlugins.popup.delay")}>
         <TextInput
           type="number"
           value={String(num(settings.delaySeconds, 5))}
           onChange={(v) => updateField("delaySeconds", Number(v) || 5)}
         />
       </Field>
-      <Field label="אחוז גלילה">
+      <Field label={t("sitePlugins.popup.scroll")}>
         <TextInput
           type="number"
           value={String(num(settings.scrollPercent, 50))}
@@ -519,15 +520,15 @@ export const SiteSocialProofPanel = makePanel(
   Megaphone,
   "#F97316",
   "Social Proof",
-  "טוסט מאירוע אמיתי. DEMO חייב להיות מסומן.",
-  ({ settings, updateField }) => (
+  "sitePlugins.social.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
-        label="מצב DEMO"
+        label={t("sitePlugins.social.demoMode")}
         checked={bool(settings.demoMode)}
         onChange={(v) => updateField("demoMode", v)}
       />
-      <Field label="מיקום">
+      <Field label={t("sitePlugins.social.position")}>
         <TextInput
           value={str(settings.position, "bottom-left")}
           onChange={(v) => updateField("position", v)}
@@ -541,9 +542,9 @@ export const SiteFloatingContactBarPanel = makePanel(
   "floating-contact-bar",
   MessageCircle,
   "#0F172A",
-  "סרגל יצירת קשר",
-  "טלפון, אימייל, WhatsApp, טופס וקביעת תור. מסתיר את כפתור הוואטסאפ הצף כשיש כפילות.",
-  ({ settings, updateField }) => (
+  "sitePlugins.contactBar.title",
+  "sitePlugins.contactBar.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
         label="WhatsApp"
@@ -551,26 +552,26 @@ export const SiteFloatingContactBarPanel = makePanel(
         onChange={(v) => updateField("showWhatsapp", v)}
       />
       <Toggle
-        label="טלפון"
+        label={t("sitePlugins.contactBar.phone")}
         checked={bool(settings.showPhone, true)}
         onChange={(v) => updateField("showPhone", v)}
       />
       <Toggle
-        label="אימייל"
+        label={t("sitePlugins.contactBar.email")}
         checked={bool(settings.showEmail, true)}
         onChange={(v) => updateField("showEmail", v)}
       />
       <Toggle
-        label="טופס"
+        label={t("sitePlugins.contactBar.form")}
         checked={bool(settings.showForm)}
         onChange={(v) => updateField("showForm", v)}
       />
       <Toggle
-        label="קביעת תור"
+        label={t("sitePlugins.contactBar.booking")}
         checked={bool(settings.showBooking)}
         onChange={(v) => updateField("showBooking", v)}
       />
-      <Field label="אימייל">
+      <Field label={t("sitePlugins.contactBar.emailField")}>
         <TextInput value={str(settings.email)} onChange={(v) => updateField("email", v)} />
       </Field>
     </>
@@ -582,11 +583,11 @@ export const SiteFormToPdfPanel = makePanel(
   FileText,
   "#B45309",
   "Form to PDF",
-  "יצירת PDF מהגשה, עברית RTL ומיתוג.",
-  ({ settings, updateField }) => (
+  "sitePlugins.pdf.description",
+  ({ settings, updateField, t }) => (
     <>
       <Toggle
-        label="כלול לוגו"
+        label={t("sitePlugins.pdf.includeLogo")}
         checked={bool(settings.includeLogo, true)}
         onChange={(v) => updateField("includeLogo", v)}
       />
