@@ -1,5 +1,6 @@
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/i18n";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { AutomationBillingUsageOverview } from "../../../../../api/automationBillingApi";
 import { AUTOMATION_PLAN_KEYS } from "../../../../../api/automationBillingApi";
@@ -71,6 +72,10 @@ function baseUsage(
 }
 
 describe("AutomationPlanModal", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("he");
+  });
+
   beforeEach(() => {
     createAutomationPlanCheckout.mockReset();
     changeAutomationPlan.mockReset();

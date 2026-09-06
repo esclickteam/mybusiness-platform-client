@@ -62,7 +62,11 @@ import {
   getSectionsByCategory,
 } from "./library/sectionLibrary";
 import {
+  studioPageNavLabel,
+  studioPortalPageNavLabel,
+  studioPortalSectionNavLabel,
   studioSectionDescription,
+  studioSectionNavLabel,
   studioSectionTitle,
 } from "../../../../i18n/studioLibraryLabels";
 import {
@@ -118,12 +122,17 @@ type ElementCategory =
   | "lists"
   | "more";
 
-function sampleCrmFieldValue(field: ConfiguredClientField) {
+function sampleCrmFieldValue(
+  field: ConfiguredClientField,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
   // Editor samples must look like placeholders — not real shared client values.
-  if (field.type === "table") return "[טבלה מהתיק]";
-  if (field.type === "summary") return "[סיכום מהתיק]";
-  if (field.type === "number") return "[מספר]";
-  return `[${field.label || "ערך מהתיק"}]`;
+  if (field.type === "table") return t("studio.addLayers.crmSample.table");
+  if (field.type === "summary") return t("studio.addLayers.crmSample.summary");
+  if (field.type === "number") return t("studio.addLayers.crmSample.number");
+  return t("studio.addLayers.crmSample.value", {
+    label: field.label || t("studio.addLayers.crmSample.fallbackLabel"),
+  });
 }
 
 function mapLibraryCategoryToPanel(
@@ -983,7 +992,7 @@ export default function VisualAddLayersPanel({
               return key !== "client_name" && key !== "fullName";
             })
             .map((field) => {
-              const sampleValue = sampleCrmFieldValue(field);
+              const sampleValue = sampleCrmFieldValue(field, t);
               const label = field.label || field.key;
               return {
                 id: `crm-field-${field.key}`,
@@ -1321,17 +1330,33 @@ export default function VisualAddLayersPanel({
 
   const activeSectionCategoryLabel =
     sectionLibraryMode === "portal"
-      ? PORTAL_SECTION_KIND_NAV.find((item) => item.id === portalSectionKind)
-          ?.label || t("studio.addLayers.pagesAfterLogin")
-      : SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
-          ?.label || t("studio.addLayers.catAll");
+      ? studioPortalSectionNavLabel(
+          t,
+          portalSectionKind,
+          PORTAL_SECTION_KIND_NAV.find((item) => item.id === portalSectionKind)
+            ?.label || t("studio.addLayers.pagesAfterLogin"),
+        )
+      : studioSectionNavLabel(
+          t,
+          sectionCategory,
+          SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
+            ?.label || t("studio.addLayers.catAll"),
+        );
 
   const activePageCategoryLabel =
     pageLibraryMode === "portal"
-      ? PORTAL_PAGE_KIND_NAV.find((item) => item.id === portalPageKind)?.label ||
-        t("studio.addLayers.pagesAfterLogin")
-      : PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
-        t("studio.addLayers.catAll");
+      ? studioPortalPageNavLabel(
+          t,
+          portalPageKind,
+          PORTAL_PAGE_KIND_NAV.find((item) => item.id === portalPageKind)
+            ?.label || t("studio.addLayers.pagesAfterLogin"),
+        )
+      : studioPageNavLabel(
+          t,
+          pageCategory,
+          PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
+            t("studio.addLayers.catAll"),
+        );
 
   const handleAddLibraryPage = (page: VisualLibraryPageTemplate) => {
     closeAfter(() => {
@@ -1720,7 +1745,19 @@ export default function VisualAddLayersPanel({
                             : "text-slate-600 hover:bg-slate-50",
                         ].join(" ")}
                       >
-                        <span>{categoryItem.label}</span>
+                        <span>
+                          {pageLibraryMode === "portal"
+                            ? studioPortalPageNavLabel(
+                                t,
+                                categoryItem.id,
+                                categoryItem.label,
+                              )
+                            : studioPageNavLabel(
+                                t,
+                                categoryItem.id,
+                                categoryItem.label,
+                              )}
+                        </span>
                         <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
                           {pageLibraryMode === "portal"
                             ? categoryItem.id === "all"
@@ -2101,7 +2138,13 @@ export default function VisualAddLayersPanel({
                                   : "text-slate-600 hover:bg-slate-50",
                               ].join(" ")}
                             >
-                              <span>{kindItem.label}</span>
+                              <span>
+                                {studioPortalSectionNavLabel(
+                                  t,
+                                  kindItem.id,
+                                  kindItem.label,
+                                )}
+                              </span>
                               <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
                                 {
                                   SECTION_LIBRARY.filter((item) => {
@@ -2176,7 +2219,13 @@ export default function VisualAddLayersPanel({
                                     : "",
                                 ].join(" ")}
                               >
-                                <span>{categoryItem.label}</span>
+                                <span>
+                                  {studioSectionNavLabel(
+                                    t,
+                                    categoryItem.id,
+                                    categoryItem.label,
+                                  )}
+                                </span>
                                 {categoryItem.id === "all" ? (
                                   <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black text-slate-700">
                                     {

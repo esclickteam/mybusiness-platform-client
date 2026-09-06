@@ -1,5 +1,6 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/i18n";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { AutomationBillingUsageOverview } from "../../../../../api/automationBillingApi";
 import { AUTOMATION_PLAN_KEYS } from "../../../../../api/automationBillingApi";
@@ -76,6 +77,9 @@ function renderCard(
 }
 
 describe("AutomationUsageCard", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("he");
+  });
   it('no plan shows pricing CTA "בחירת חבילה"', () => {
     const { onOpenPlans } = renderCard(
       baseUsage({

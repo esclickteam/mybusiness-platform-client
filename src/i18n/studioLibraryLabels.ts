@@ -75,3 +75,35 @@ export function studioSectionDescription(
     defaultValue: fallback,
   });
 }
+
+export function studioSectionNavLabel(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.sectionNav.${id}`, { defaultValue: fallback });
+}
+
+export function studioPortalSectionNavLabel(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.portalSectionNav.${id}`, { defaultValue: fallback });
+}
+
+export function studioPageNavLabel(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.pageNav.${id}`, { defaultValue: fallback });
+}
+
+export function studioPortalPageNavLabel(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.portalPageNav.${id}`, { defaultValue: fallback });
+}

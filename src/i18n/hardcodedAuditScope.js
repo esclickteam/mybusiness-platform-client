@@ -56,7 +56,11 @@ export function classifySourcePath(rel) {
     r.endsWith("data/sitePluginNav.ts") ||
     r.endsWith("payments/paymentProvidersCatalog.ts") ||
     r.endsWith("countdown/countdownUtils.ts") ||
-    r.endsWith("automations/aiAutomationCatalog.ts")
+    r.endsWith("automations/aiAutomationCatalog.ts") ||
+    r.endsWith("automations/templateCategoryMapping.ts") ||
+    r.endsWith("automations/runsUiHelpers.ts") ||
+    r.endsWith("automations/billing/automationPlanCatalog.ts") ||
+    r.endsWith("visual-editor/library/sectionCategories.ts")
   ) {
     return "D";
   }
