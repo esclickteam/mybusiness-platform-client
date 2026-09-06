@@ -1,0 +1,938 @@
+{
+  "אבץ": {
+    "en": "Zinc",
+    "es": "Zinc",
+    "pt-BR": "Zinco",
+    "ar": "زنك"
+  },
+  "מדף צף": {
+    "en": "Floating shelf",
+    "es": "Estante flotante",
+    "pt-BR": "Prateleira flutuante",
+    "ar": "رف عائم"
+  },
+  "תה ערב": {
+    "en": "Evening tea",
+    "es": "Té de noche",
+    "pt-BR": "Chá da noite",
+    "ar": "شاي المساء"
+  },
+  "אומגה 3": {
+    "en": "Omega 3",
+    "es": "Omega 3",
+    "pt-BR": "Ômega 3",
+    "ar": "أوميغا 3"
+  },
+  "חלוק קל": {
+    "en": "Light robe",
+    "es": "Bata ligera",
+    "pt-BR": "Roupão leve",
+    "ar": "روب خفيف"
+  },
+  "מגנזיום": {
+    "en": "Magnesium",
+    "es": "Magnesio",
+    "pt-BR": "Magnésio",
+    "ar": "مغنيسيوم"
+  },
+  "פלסטרים": {
+    "en": "Bandages",
+    "es": "Tiritas",
+    "pt-BR": "Curativos",
+    "ar": "لصقات"
+  },
+  "ג׳ל רחצה": {
+    "en": "Shower gel",
+    "es": "Gel de ducha",
+    "pt-BR": "Gel de banho",
+    "ar": "جل استحمام"
+  },
+  "ויטמין C": {
+    "en": "Vitamin C",
+    "es": "Vitamina C",
+    "pt-BR": "Vitamina C",
+    "ar": "فيتامين C"
+  },
+  "טי Heavy": {
+    "en": "Heavy tee",
+    "es": "Camiseta Heavy",
+    "pt-BR": "Camiseta Heavy",
+    "ar": "تي شيرت Heavy"
+  },
+  "כובע Cap": {
+    "en": "Cap",
+    "es": "Gorra",
+    "pt-BR": "Boné",
+    "ar": "قبعة"
+  },
+  "כרטיסייה": {
+    "en": "Card holder",
+    "es": "Tarjetero",
+    "pt-BR": "Porta-cartões",
+    "ar": "حافظة بطاقات"
+  },
+  "כרית נוי": {
+    "en": "Cushion",
+    "es": "Cojín",
+    "pt-BR": "Almofada",
+    "ar": "وسادة ديكور"
+  },
+  "נעלי בית": {
+    "en": "Slippers",
+    "es": "Zapatillas de casa",
+    "pt-BR": "Pantufas",
+    "ar": "شبشب منزلي"
+  },
+  "ציפה רכה": {
+    "en": "Soft duvet cover",
+    "es": "Funda nórdica suave",
+    "pt-BR": "Capa de edredom macia",
+    "ar": "غطاء لحاف ناعم"
+  },
+  "קרם הגנה": {
+    "en": "Sunscreen",
+    "es": "Protector solar",
+    "pt-BR": "Protetor solar",
+    "ar": "واقي شمس"
+  },
+  "שמלה ערב": {
+    "en": "Evening dress",
+    "es": "Vestido de noche",
+    "pt-BR": "Vestido de noite",
+    "ar": "فستان سهرة"
+  },
+  "ארנק Slim": {
+    "en": "Slim wallet",
+    "es": "Cartera Slim",
+    "pt-BR": "Carteira Slim",
+    "ar": "محفظة Slim"
+  },
+  "גרבי Crew": {
+    "en": "Crew socks",
+    "es": "Calcetines Crew",
+    "pt-BR": "Meias Crew",
+    "ar": "جوارب Crew"
+  },
+  "ויטמין D3": {
+    "en": "Vitamin D3",
+    "es": "Vitamina D3",
+    "pt-BR": "Vitamina D3",
+    "ar": "فيتامين D3"
+  },
+  "טבעת Band": {
+    "en": "Band ring",
+    "es": "Anillo Band",
+    "pt-BR": "Anel Band",
+    "ar": "خاتم Band"
+  },
+  "טי Pocket": {
+    "en": "Pocket tee",
+    "es": "Camiseta Pocket",
+    "pt-BR": "Camiseta Pocket",
+    "ar": "تي شيرت Pocket"
+  },
+  "כרית שינה": {
+    "en": "Sleep pillow",
+    "es": "Almohada",
+    "pt-BR": "Travesseiro",
+    "ar": "وسادة نوم"
+  },
+  "מגבת Bath": {
+    "en": "Bath towel",
+    "es": "Toalla Bath",
+    "pt-BR": "Toalha Bath",
+    "ar": "منشفة Bath"
+  },
+  "מסכת שינה": {
+    "en": "Sleep mask",
+    "es": "Antifaz",
+    "pt-BR": "Máscara de dormir",
+    "ar": "قناع نوم"
+  },
+  "מרסס עלים": {
+    "en": "Leaf sprayer",
+    "es": "Pulverizador de hojas",
+    "pt-BR": "Pulverizador de folhas",
+    "ar": "مرشة أوراق"
+  },
+  "נעל אימון": {
+    "en": "Training shoe",
+    "es": "Zapatilla de entreno",
+    "pt-BR": "Tênis de treino",
+    "ar": "حذاء تمرين"
+  },
+  "סט Lounge": {
+    "en": "Lounge set",
+    "es": "Conjunto Lounge",
+    "pt-BR": "Conjunto Lounge",
+    "ar": "طقم Lounge"
+  },
+  "סרום לחות": {
+    "en": "Hydrating serum",
+    "es": "Sérum hidratante",
+    "pt-BR": "Sérum hidratante",
+    "ar": "سيروم ترطيب"
+  },
+  "ערכת עזרה": {
+    "en": "First-aid kit",
+    "es": "Botiquín",
+    "pt-BR": "Kit de primeiros socorros",
+    "ar": "حقيبة إسعاف"
+  },
+  "פס LED חם": {
+    "en": "Warm LED strip",
+    "es": "Tira LED cálida",
+    "pt-BR": "Fita LED quente",
+    "ar": "شريط LED دافئ"
+  },
+  "צמיד Cuff": {
+    "en": "Cuff bracelet",
+    "es": "Brazalete Cuff",
+    "pt-BR": "Bracelete Cuff",
+    "ar": "سوار Cuff"
+  },
+  "קרדיגן רך": {
+    "en": "Soft cardigan",
+    "es": "Cárdigan suave",
+    "pt-BR": "Cardigã macio",
+    "ar": "كارديغان ناعم"
+  },
+  "קרש חיתוך": {
+    "en": "Cutting board",
+    "es": "Tabla de cortar",
+    "pt-BR": "Tábua de corte",
+    "ar": "لوح تقطيع"
+  },
+  "שמלה Midi": {
+    "en": "Midi dress",
+    "es": "Vestido Midi",
+    "pt-BR": "Vestido Midi",
+    "ar": "فستان Midi"
+  },
+  "ברוט קלאסי": {
+    "en": "Classic Brut",
+    "es": "Brut clásico",
+    "pt-BR": "Brut clássico",
+    "ar": "بروت كلاسيكي"
+  },
+  "חולצת פשתן": {
+    "en": "Linen shirt",
+    "es": "Camisa de lino",
+    "pt-BR": "Camisa de linho",
+    "ar": "قميص كتان"
+  },
+  "מגבת ידיים": {
+    "en": "Hand towel",
+    "es": "Toalla de mano",
+    "pt-BR": "Toalha de mão",
+    "ar": "منشفة يد"
+  },
+  "מיקסר ידני": {
+    "en": "Hand mixer",
+    "es": "Batidora de mano",
+    "pt-BR": "Batedeira de mão",
+    "ar": "خلاط يدوي"
+  },
+  "מרלו גלילי": {
+    "en": "Galilee Merlot",
+    "es": "Merlot de Galilea",
+    "pt-BR": "Merlot da Galileia",
+    "ar": "ميرلو الجليل"
+  },
+  "משאבת רצפה": {
+    "en": "Floor pump",
+    "es": "Bomba de pie",
+    "pt-BR": "Bomba de chão",
+    "ar": "مضخة أرضية"
+  },
+  "עגילי Hoop": {
+    "en": "Hoop earrings",
+    "es": "Pendientes Hoop",
+    "pt-BR": "Brincos Hoop",
+    "ar": "أقراط Hoop"
+  },
+  "עגילי Stud": {
+    "en": "Stud earrings",
+    "es": "Pendientes Stud",
+    "pt-BR": "Brincos Stud",
+    "ar": "أقراط Stud"
+  },
+  "קברנה רזרב": {
+    "en": "Cabernet Reserve",
+    "es": "Cabernet Reserva",
+    "pt-BR": "Cabernet Reserva",
+    "ar": "كابيرنيه ريزيرف"
+  },
+  "ג׳קט Sherpa": {
+    "en": "Sherpa jacket",
+    "es": "Chaqueta Sherpa",
+    "pt-BR": "Jaqueta Sherpa",
+    "ar": "جاكيت Sherpa"
+  },
+  "וילון Sheer": {
+    "en": "Sheer curtain",
+    "es": "Cortina Sheer",
+    "pt-BR": "Cortina Sheer",
+    "ar": "ستارة Sheer"
+  },
+  "חלוק Fleece": {
+    "en": "Fleece robe",
+    "es": "Bata Fleece",
+    "pt-BR": "Roupão Fleece",
+    "ar": "روب Fleece"
+  },
+  "כדור פעילות": {
+    "en": "Activity ball",
+    "es": "Pelota de actividad",
+    "pt-BR": "Bola de atividade",
+    "ar": "كرة نشاط"
+  },
+  "כובע Beanie": {
+    "en": "Beanie",
+    "es": "Gorro Beanie",
+    "pt-BR": "Gorro Beanie",
+    "ar": "قبعة Beanie"
+  },
+  "מולטי Daily": {
+    "en": "Daily multi",
+    "es": "Multi Daily",
+    "pt-BR": "Multi Daily",
+    "ar": "مالتي Daily"
+  },
+  "מוקסין Soft": {
+    "en": "Soft moccasin",
+    "es": "Mocasín Soft",
+    "pt-BR": "Mocassim Soft",
+    "ar": "موكاسين Soft"
+  },
+  "מנורת שולחן": {
+    "en": "Table lamp",
+    "es": "Lámpara de mesa",
+    "pt-BR": "Luminária de mesa",
+    "ar": "مصباح طاولة"
+  },
+  "משחת שיניים": {
+    "en": "Toothpaste",
+    "es": "Pasta de dientes",
+    "pt-BR": "Creme dental",
+    "ar": "معجون أسنان"
+  },
+  "פיקוס לירטה": {
+    "en": "Fiddle-leaf fig",
+    "es": "Ficus lyrata",
+    "pt-BR": "Ficus lyrata",
+    "ar": "فيكس ليراتا"
+  },
+  "צמיד Tennis": {
+    "en": "Tennis bracelet",
+    "es": "Pulsera Tennis",
+    "pt-BR": "Pulseira Tennis",
+    "ar": "سوار Tennis"
+  },
+  "קופסת שמירה": {
+    "en": "Watch box",
+    "es": "Caja de guarda",
+    "pt-BR": "Caixa de guarda",
+    "ar": "صندوق حفظ"
+  },
+  "שרדונה חבית": {
+    "en": "Barrel Chardonnay",
+    "es": "Chardonnay de barrica",
+    "pt-BR": "Chardonnay de barrica",
+    "ar": "شاردونيه برميل"
+  },
+  "אוהל Base 4P": {
+    "en": "Base 4P tent",
+    "es": "Tienda Base 4P",
+    "pt-BR": "Barraca Base 4P",
+    "ar": "خيمة Base 4P"
+  },
+  "אלוורה ביתית": {
+    "en": "House aloe",
+    "es": "Aloe de interior",
+    "pt-BR": "Aloe de interior",
+    "ar": "صبار ألوة منزلي"
+  },
+  "ג׳קט Trucker": {
+    "en": "Trucker jacket",
+    "es": "Chaqueta Trucker",
+    "pt-BR": "Jaqueta Trucker",
+    "ar": "جاكيت Trucker"
+  },
+  "כובע Dad Cap": {
+    "en": "Dad cap",
+    "es": "Gorra Dad Cap",
+    "pt-BR": "Boné Dad Cap",
+    "ar": "قبعة Dad Cap"
+  },
+  "לופר Comfort": {
+    "en": "Comfort loafer",
+    "es": "Mocasín Comfort",
+    "pt-BR": "Loafer Comfort",
+    "ar": "لوفر Comfort"
+  },
+  "מארז חג זוגי": {
+    "en": "Holiday couple set",
+    "es": "Estuche de fiesta para dos",
+    "pt-BR": "Kit de festa para dois",
+    "ar": "طقم عيد لشخصين"
+  },
+  "מזוודת Cabin": {
+    "en": "Cabin suitcase",
+    "es": "Maleta Cabin",
+    "pt-BR": "Mala Cabin",
+    "ar": "حقيبة Cabin"
+  },
+  "מלטונין Soft": {
+    "en": "Soft melatonin",
+    "es": "Melatonina Soft",
+    "pt-BR": "Melatonina Soft",
+    "ar": "ميلاتونين Soft"
+  },
+  "סוקולנט מיקס": {
+    "en": "Succulent mix",
+    "es": "Mix de suculentas",
+    "pt-BR": "Mix de suculentas",
+    "ar": "خلطة عصاريات"
+  },
+  "סכין שף 20cm": {
+    "en": "20cm chef knife",
+    "es": "Cuchillo chef 20cm",
+    "pt-BR": "Faca chef 20cm",
+    "ar": "سكين شيف 20سم"
+  },
+  "פיג׳מה Modal": {
+    "en": "Modal pajamas",
+    "es": "Pijama Modal",
+    "pt-BR": "Pijama Modal",
+    "ar": "بيجامة Modal"
+  },
+  "פלסטלינה Pro": {
+    "en": "Pro clay",
+    "es": "Plastilina Pro",
+    "pt-BR": "Massinha Pro",
+    "ar": "صلصال Pro"
+  },
+  "אגרטל Ceramic": {
+    "en": "Ceramic vase",
+    "es": "Jarrón Ceramic",
+    "pt-BR": "Vaso Ceramic",
+    "ar": "مزهرية Ceramic"
+  },
+  "אוהל Ridge 2P": {
+    "en": "Ridge 2P tent",
+    "es": "Tienda Ridge 2P",
+    "pt-BR": "Barraca Ridge 2P",
+    "ar": "خيمة Ridge 2P"
+  },
+  "גרביים Merino": {
+    "en": "Merino socks",
+    "es": "Calcetines Merino",
+    "pt-BR": "Meias Merino",
+    "ar": "جوارب Merino"
+  },
+  "ג׳ינס Relaxed": {
+    "en": "Relaxed jeans",
+    "es": "Jeans Relaxed",
+    "pt-BR": "Jeans Relaxed",
+    "ar": "جينز Relaxed"
+  },
+  "דיפיוזר Amber": {
+    "en": "Amber diffuser",
+    "es": "Difusor Amber",
+    "pt-BR": "Difusor Amber",
+    "ar": "ناشر Amber"
+  },
+  "דיפיוזר Linen": {
+    "en": "Linen diffuser",
+    "es": "Difusor Linen",
+    "pt-BR": "Difusor Linen",
+    "ar": "ناشر Linen"
+  },
+  "חגורה Leather": {
+    "en": "Leather belt",
+    "es": "Cinturón Leather",
+    "pt-BR": "Cinto Leather",
+    "ar": "حزام Leather"
+  },
+  "כירת גז Trail": {
+    "en": "Trail gas stove",
+    "es": "Hornillo Trail",
+    "pt-BR": "Fogareiro Trail",
+    "ar": "موقد غاز Trail"
+  },
+  "מחבת יציקה 28": {
+    "en": "28cm cast-iron pan",
+    "es": "Sartén de hierro 28",
+    "pt-BR": "Frigideira de ferro 28",
+    "ar": "مقلاة حديد 28"
+  },
+  "מטחנת Baratza": {
+    "en": "Baratza grinder",
+    "es": "Molino Baratza",
+    "pt-BR": "Moedor Baratza",
+    "ar": "مطحنة Baratza"
+  },
+  "סאב Bass Cube": {
+    "en": "Bass Cube sub",
+    "es": "Subwoofer Bass Cube",
+    "pt-BR": "Subwoofer Bass Cube",
+    "ar": "ساب Bass Cube"
+  },
+  "סוביניון בלאן": {
+    "en": "Sauvignon Blanc",
+    "es": "Sauvignon Blanc",
+    "pt-BR": "Sauvignon Blanc",
+    "ar": "سوفينيون بلان"
+  },
+  "סט דינוזאורים": {
+    "en": "Dinosaur set",
+    "es": "Set de dinosaurios",
+    "pt-BR": "Kit de dinossauros",
+    "ar": "طقم ديناصورات"
+  },
+  "סט כפות מדידה": {
+    "en": "Measuring spoons",
+    "es": "Cucharas medidoras",
+    "pt-BR": "Colheres medidoras",
+    "ar": "ملاعق قياس"
+  },
+  "עציץ טרה קוטה": {
+    "en": "Terracotta pot",
+    "es": "Maceta de terracota",
+    "pt-BR": "Vaso de terracota",
+    "ar": "أصيص تراكوتا"
+  },
+  "פרוסקו איטלקי": {
+    "en": "Italian Prosecco",
+    "es": "Prosecco italiano",
+    "pt-BR": "Prosecco italiano",
+    "ar": "بروسيكو إيطالي"
+  },
+  "קסדת Aero Pro": {
+    "en": "Aero Pro helmet",
+    "es": "Casco Aero Pro",
+    "pt-BR": "Capacete Aero Pro",
+    "ar": "خوذة Aero Pro"
+  },
+  "רמקול Orbit X": {
+    "en": "Orbit X speaker",
+    "es": "Altavoz Orbit X",
+    "pt-BR": "Caixa Orbit X",
+    "ar": "سماعة Orbit X"
+  },
+  "שרשרת Pendant": {
+    "en": "Pendant necklace",
+    "es": "Collar Pendant",
+    "pt-BR": "Colar Pendant",
+    "ar": "قلادة Pendant"
+  },
+  "תיק Crossbody": {
+    "en": "Crossbody bag",
+    "es": "Bolso Crossbody",
+    "pt-BR": "Bolsa Crossbody",
+    "ar": "حقيبة Crossbody"
+  },
+  "אור קדמי 800lm": {
+    "en": "800lm front light",
+    "es": "Luz delantera 800lm",
+    "pt-BR": "Luz dianteira 800lm",
+    "ar": "ضوء أمامي 800لومن"
+  },
+  "וילון Blackout": {
+    "en": "Blackout curtain",
+    "es": "Cortina Blackout",
+    "pt-BR": "Cortina Blackout",
+    "ar": "ستارة Blackout"
+  },
+  "טבעת Solitaire": {
+    "en": "Solitaire ring",
+    "es": "Anillo Solitaire",
+    "pt-BR": "Anel Solitaire",
+    "ar": "خاتم Solitaire"
+  },
+  "כובע Trail Cap": {
+    "en": "Trail cap",
+    "es": "Gorra Trail Cap",
+    "pt-BR": "Boné Trail Cap",
+    "ar": "قبعة Trail Cap"
+  },
+  "כוס טרמי 350ml": {
+    "en": "350ml thermal cup",
+    "es": "Vaso térmico 350ml",
+    "pt-BR": "Copo térmico 350ml",
+    "ar": "كوب حراري 350مل"
+  },
+  "מארז בוקר זוגי": {
+    "en": "Couple morning set",
+    "es": "Estuche de mañana para dos",
+    "pt-BR": "Kit da manhã para dois",
+    "ar": "طقم صباح لشخصين"
+  },
+  "מכנסיים Jogger": {
+    "en": "Jogger pants",
+    "es": "Pantalón Jogger",
+    "pt-BR": "Calça Jogger",
+    "ar": "بنطال Jogger"
+  },
+  "נעל ריצה Pulse": {
+    "en": "Pulse running shoe",
+    "es": "Zapatilla Pulse",
+    "pt-BR": "Tênis Pulse",
+    "ar": "حذاء Pulse"
+  },
+  "נר Cedar Night": {
+    "en": "Cedar Night candle",
+    "es": "Vela Cedar Night",
+    "pt-BR": "Vela Cedar Night",
+    "ar": "شمعة Cedar Night"
+  },
+  "סיר נירוסטה 5L": {
+    "en": "5L stainless pot",
+    "es": "Olla de acero 5L",
+    "pt-BR": "Panela de aço 5L",
+    "ar": "قدر استانلس 5لتر"
+  },
+  "קנקן Pour Over": {
+    "en": "Pour Over kettle",
+    "es": "Tetera Pour Over",
+    "pt-BR": "Chaleira Pour Over",
+    "ar": "إبريق Pour Over"
+  },
+  "קרש חיתוך אלון": {
+    "en": "Oak cutting board",
+    "es": "Tabla de roble",
+    "pt-BR": "Tábua de carvalho",
+    "ar": "لوح تقطيع سنديان"
+  },
+  "שמן אתרי הדרים": {
+    "en": "Citrus essential oil",
+    "es": "Aceite esencial cítrico",
+    "pt-BR": "Óleo essencial cítrico",
+    "ar": "زيت عطري حمضي"
+  },
+  "שמן אתרי לבנדר": {
+    "en": "Lavender essential oil",
+    "es": "Aceite esencial de lavanda",
+    "pt-BR": "Óleo essencial de lavanda",
+    "ar": "زيت عطري لافندر"
+  },
+  "תיק צד Leather": {
+    "en": "Leather side bag",
+    "es": "Bolso lateral Leather",
+    "pt-BR": "Bolsa lateral Leather",
+    "ar": "حقيبة جانبية Leather"
+  },
+  "דשן נוזלי Green": {
+    "en": "Green liquid fertilizer",
+    "es": "Abono líquido Green",
+    "pt-BR": "Adubo líquido Green",
+    "ar": "سماد سائل Green"
+  },
+  "כבל Optical Pro": {
+    "en": "Optical Pro cable",
+    "es": "Cable Optical Pro",
+    "pt-BR": "Cabo Optical Pro",
+    "ar": "كابل Optical Pro"
+  },
+  "נעל עור Classic": {
+    "en": "Classic leather shoe",
+    "es": "Zapato de piel Classic",
+    "pt-BR": "Sapato de couro Classic",
+    "ar": "حذاء جلد Classic"
+  },
+  "סירופ וניל טבעי": {
+    "en": "Natural vanilla syrup",
+    "es": "Sirope de vainilla natural",
+    "pt-BR": "Xarope de baunilha natural",
+    "ar": "شراب فانيليا طبيعي"
+  },
+  "פיג׳מה Soft Set": {
+    "en": "Soft pajama set",
+    "es": "Pijama Soft Set",
+    "pt-BR": "Pijama Soft Set",
+    "ar": "بيجامة Soft Set"
+  },
+  "קופסת אחסון Oak": {
+    "en": "Oak storage box",
+    "es": "Caja Oak",
+    "pt-BR": "Caixa Oak",
+    "ar": "صندوق تخزين Oak"
+  },
+  "רמקול Bookshelf": {
+    "en": "Bookshelf speaker",
+    "es": "Altavoz Bookshelf",
+    "pt-BR": "Caixa Bookshelf",
+    "ar": "سماعة Bookshelf"
+  },
+  "אתיופיה יירגצ׳פה": {
+    "en": "Ethiopia Yirgacheffe",
+    "es": "Etiopía Yirgacheffe",
+    "pt-BR": "Etiópia Yirgacheffe",
+    "ar": "إثيوبيا يرگاتشيف"
+  },
+  "גרבי Crew 3-Pack": {
+    "en": "Crew socks 3-pack",
+    "es": "Pack 3 calcetines Crew",
+    "pt-BR": "Pack 3 meias Crew",
+    "ar": "جوارب Crew عبوة 3"
+  },
+  "ג׳ינס Rigid 14oz": {
+    "en": "Rigid 14oz jeans",
+    "es": "Jeans Rigid 14oz",
+    "pt-BR": "Jeans Rigid 14oz",
+    "ar": "جينز Rigid 14oz"
+  },
+  "חולצת כותנה Soft": {
+    "en": "Soft cotton shirt",
+    "es": "Camisa de algodón Soft",
+    "pt-BR": "Camisa de algodão Soft",
+    "ar": "قميص قطن Soft"
+  },
+  "מונסטרה דליסיוזה": {
+    "en": "Monstera deliciosa",
+    "es": "Monstera deliciosa",
+    "pt-BR": "Monstera deliciosa",
+    "ar": "مونستيرا ديليسيوزا"
+  },
+  "עציץ קרמיקה Sand": {
+    "en": "Sand ceramic pot",
+    "es": "Maceta Sand",
+    "pt-BR": "Vaso Sand",
+    "ar": "أصيص سيراميك Sand"
+  },
+  "ערכת פיקניק משחק": {
+    "en": "Play picnic set",
+    "es": "Set de pícnic de juego",
+    "pt-BR": "Kit de piquenique de brincar",
+    "ar": "طقم نزهة للعب"
+  },
+  "שרשרת Soft Chain": {
+    "en": "Soft Chain necklace",
+    "es": "Collar Soft Chain",
+    "pt-BR": "Colar Soft Chain",
+    "ar": "قلادة Soft Chain"
+  },
+  "תרמיל Summit 45L": {
+    "en": "Summit 45L pack",
+    "es": "Mochila Summit 45L",
+    "pt-BR": "Mochila Summit 45L",
+    "ar": "حقيبة Summit 45لتر"
+  },
+  "מארז זוגי Evening": {
+    "en": "Evening couple set",
+    "es": "Estuche Evening para dos",
+    "pt-BR": "Kit Evening para dois",
+    "ar": "طقم Evening لشخصين"
+  },
+  "נר סויה Rose Mist": {
+    "en": "Rose Mist soy candle",
+    "es": "Vela de soja Rose Mist",
+    "pt-BR": "Vela de soja Rose Mist",
+    "ar": "شمعة صويا Rose Mist"
+  },
+  "ערכת יצירה Colors": {
+    "en": "Colors craft kit",
+    "es": "Kit creativo Colors",
+    "pt-BR": "Kit criativo Colors",
+    "ar": "طقم إبداع Colors"
+  },
+  "תרמיל Daypack 22L": {
+    "en": "Daypack 22L",
+    "es": "Mochila Daypack 22L",
+    "pt-BR": "Mochila Daypack 22L",
+    "ar": "حقيبة Daypack 22لتر"
+  },
+  "אופני כביש Aero 12": {
+    "en": "Aero 12 road bike",
+    "es": "Bici de carretera Aero 12",
+    "pt-BR": "Bike de estrada Aero 12",
+    "ar": "دراجة طريق Aero 12"
+  },
+  "אספרסו House Blend": {
+    "en": "House Blend espresso",
+    "es": "Espresso House Blend",
+    "pt-BR": "Espresso House Blend",
+    "ar": "إسبريسو House Blend"
+  },
+  "אופני עיר City Flex": {
+    "en": "City Flex urban bike",
+    "es": "Bici urbana City Flex",
+    "pt-BR": "Bike urbana City Flex",
+    "ar": "دراجة مدينة City Flex"
+  },
+  "אופני כביש Endurance": {
+    "en": "Endurance road bike",
+    "es": "Bici Endurance",
+    "pt-BR": "Bike Endurance",
+    "ar": "دراجة طريق Endurance"
+  },
+  "חלבון Isolate": {
+    "en": "Isolate protein",
+    "es": "Proteína Isolate",
+    "pt-BR": "Proteína Isolate",
+    "ar": "بروتين Isolate"
+  },
+  "חלבון Plant": {
+    "en": "Plant protein",
+    "es": "Proteína Plant",
+    "pt-BR": "Proteína Plant",
+    "ar": "بروتين نباتي"
+  },
+  "מכנסיים Wide": {
+    "en": "Wide pants",
+    "es": "Pantalón Wide",
+    "pt-BR": "Calça Wide",
+    "ar": "بنطال Wide"
+  },
+  "מעיל קל": {
+    "en": "Light coat",
+    "es": "Abrigo ligero",
+    "pt-BR": "Casaco leve",
+    "ar": "معطف خفيف"
+  },
+  "מעיל Softshell": {
+    "en": "Softshell coat",
+    "es": "Abrigo Softshell",
+    "pt-BR": "Casaco Softshell",
+    "ar": "معطف Softshell"
+  },
+  "סט מצעים Linen": {
+    "en": "Linen bedding set",
+    "es": "Juego de cama Linen",
+    "pt-BR": "Jogo de cama Linen",
+    "ar": "طقم مفارش Linen"
+  },
+  "סט סירים": {
+    "en": "Pot set",
+    "es": "Juego de ollas",
+    "pt-BR": "Jogo de panelas",
+    "ar": "طقم قدور"
+  },
+  "סט סירים Titanium": {
+    "en": "Titanium pot set",
+    "es": "Juego de ollas Titanium",
+    "pt-BR": "Jogo de panelas Titanium",
+    "ar": "طقم قدور Titanium"
+  },
+  "סט סכינים 5": {
+    "en": "5-piece knife set",
+    "es": "Set de 5 cuchillos",
+    "pt-BR": "Jogo de 5 facas",
+    "ar": "طقم سكاكين 5"
+  },
+  "כוס קרמיקה 250ml": {
+    "en": "250ml ceramic cup",
+    "es": "Taza de cerámica 250ml",
+    "pt-BR": "Caneca de cerâmica 250ml",
+    "ar": "كوب سيراميك 250مل"
+  },
+  "אוזניות Pulse Pro": {
+    "en": "Pulse Pro headphones",
+    "es": "Auriculares Pulse Pro",
+    "pt-BR": "Fones Pulse Pro",
+    "ar": "سماعات Pulse Pro"
+  },
+  "אוזניות Studio ANC": {
+    "en": "Studio ANC headphones",
+    "es": "Auriculares Studio ANC",
+    "pt-BR": "Fones Studio ANC",
+    "ar": "سماعات Studio ANC"
+  },
+  "סאונדבר Cinema 3.1": {
+    "en": "Cinema 3.1 soundbar",
+    "es": "Barra Cinema 3.1",
+    "pt-BR": "Soundbar Cinema 3.1",
+    "ar": "ساوندبار Cinema 3.1"
+  },
+  "דמות Hero Bot": {
+    "en": "Hero Bot figure",
+    "es": "Figura Hero Bot",
+    "pt-BR": "Boneco Hero Bot",
+    "ar": "شخصية Hero Bot"
+  },
+  "משחק אסטרטגיה Quest": {
+    "en": "Quest strategy game",
+    "es": "Juego de estrategia Quest",
+    "pt-BR": "Jogo de estratégia Quest",
+    "ar": "لعبة استراتيجية Quest"
+  },
+  "משחק משפחה Fun 4": {
+    "en": "Fun 4 family game",
+    "es": "Juego familiar Fun 4",
+    "pt-BR": "Jogo em família Fun 4",
+    "ar": "لعبة عائلية Fun 4"
+  },
+  "תיק גב Day": {
+    "en": "Day backpack",
+    "es": "Mochila Day",
+    "pt-BR": "Mochila Day",
+    "ar": "حقيبة ظهر Day"
+  },
+  "תיק גב Work": {
+    "en": "Work backpack",
+    "es": "Mochila Work",
+    "pt-BR": "Mochila Work",
+    "ar": "حقيبة ظهر Work"
+  },
+  "תיק Weekender": {
+    "en": "Weekender bag",
+    "es": "Bolso Weekender",
+    "pt-BR": "Bolsa Weekender",
+    "ar": "حقيبة Weekender"
+  },
+  "תיק Shoe": {
+    "en": "Shoe bag",
+    "es": "Bolsa de zapatos",
+    "pt-BR": "Bolsa de sapatos",
+    "ar": "حقيبة أحذية"
+  },
+  "מארז טעימות 4": {
+    "en": "Tasting set of 4",
+    "es": "Estuche de cata 4",
+    "pt-BR": "Kit de degustação 4",
+    "ar": "طقم تذوق 4"
+  },
+  "מארז מתנה Soft": {
+    "en": "Soft gift set",
+    "es": "Estuche regalo Soft",
+    "pt-BR": "Kit presente Soft",
+    "ar": "طقم هدية Soft"
+  },
+  "שעון Dive": {
+    "en": "Dive watch",
+    "es": "Reloj Dive",
+    "pt-BR": "Relógio Dive",
+    "ar": "ساعة Dive"
+  },
+  "שעון Dress Gold": {
+    "en": "Dress Gold watch",
+    "es": "Reloj Dress Gold",
+    "pt-BR": "Relógio Dress Gold",
+    "ar": "ساعة Dress Gold"
+  },
+  "שעון Field": {
+    "en": "Field watch",
+    "es": "Reloj Field",
+    "pt-BR": "Relógio Field",
+    "ar": "ساعة Field"
+  },
+  "שעון Steel": {
+    "en": "Steel watch",
+    "es": "Reloj Steel",
+    "pt-BR": "Relógio Steel",
+    "ar": "ساعة Steel"
+  },
+  "חומר טיפוח": {
+    "en": "Care product",
+    "es": "Producto de cuidado",
+    "pt-BR": "Produto de cuidado",
+    "ar": "مادة عناية"
+  },
+  "ג׳ינס Straight": {
+    "en": "Straight jeans",
+    "es": "Jeans Straight",
+    "pt-BR": "Jeans Straight",
+    "ar": "جينز Straight"
+  }
+}

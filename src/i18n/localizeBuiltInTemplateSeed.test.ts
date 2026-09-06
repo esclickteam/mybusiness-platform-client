@@ -216,6 +216,19 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("דרופ חצות", "en")).toBe("Midnight drop");
     expect(localizeBuiltInText("חדש בקולקציה", "en")).toBe("New in the collection");
     expect(localizeBuiltInText("הוסף לסל", "es")).toMatch(/carrito/i);
+    expect(localizeBuiltInText("נעל אימון מתוך קטלוג Soleora — נעליים.", "en")).toBe(
+      "Training shoe from the Soleora catalog — shoes.",
+    );
+    expect(
+      localizeBuiltInText("Playora · כיף ברמה גבוהה. · מוצרים מתוסף החנות", "es"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("סגור", "en")).toBe("Close");
+    expect(
+      localizeBuiltInText("אתר מלא לסוכנות פרסום: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("בר צבע לשיער: בליאז׳, גוונים, תיקוני צבע וברק.", "pt-BR"),
+    ).toMatch(/balayage/i);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

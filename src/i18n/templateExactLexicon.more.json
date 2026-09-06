@@ -1,0 +1,1526 @@
+{
+  "לוגו": {
+    "en": "Logo",
+    "es": "Logo",
+    "pt-BR": "Logo",
+    "ar": "شعار"
+  },
+  "אימייל עבודה": {
+    "en": "Work email",
+    "es": "Email de trabajo",
+    "pt-BR": "E-mail de trabalho",
+    "ar": "بريد العمل"
+  },
+  "תחזית": {
+    "en": "Forecast",
+    "es": "Previsión",
+    "pt-BR": "Previsão",
+    "ar": "توقعات"
+  },
+  "אנגלית": {
+    "en": "English",
+    "es": "Inglés",
+    "pt-BR": "Inglês",
+    "ar": "الإنجليزية"
+  },
+  "סגור": {
+    "en": "Close",
+    "es": "Cerrar",
+    "pt-BR": "Fechar",
+    "ar": "إغلاق"
+  },
+  "סגירה": {
+    "en": "Closing",
+    "es": "Cierre",
+    "pt-BR": "Fechamento",
+    "ar": "إغلاق"
+  },
+  "זכויות יוצרים": {
+    "en": "Copyright",
+    "es": "Derechos de autor",
+    "pt-BR": "Direitos autorais",
+    "ar": "حقوق النشر"
+  },
+  "חתונות": {
+    "en": "Weddings",
+    "es": "Bodas",
+    "pt-BR": "Casamentos",
+    "ar": "أعراس"
+  },
+  "הבא": {
+    "en": "Next",
+    "es": "Siguiente",
+    "pt-BR": "Próximo",
+    "ar": "التالي"
+  },
+  "יפו": {
+    "en": "Jaffa",
+    "es": "Jaffa",
+    "pt-BR": "Jaffa",
+    "ar": "يافا"
+  },
+  "חניה": {
+    "en": "Parking",
+    "es": "Aparcamiento",
+    "pt-BR": "Estacionamento",
+    "ar": "موقف"
+  },
+  "נושא": {
+    "en": "Subject",
+    "es": "Asunto",
+    "pt-BR": "Assunto",
+    "ar": "موضوع"
+  },
+  "חינם": {
+    "en": "Free",
+    "es": "Gratis",
+    "pt-BR": "Grátis",
+    "ar": "مجاني"
+  },
+  "פשתן": {
+    "en": "Linen",
+    "es": "Lino",
+    "pt-BR": "Linho",
+    "ar": "كتان"
+  },
+  "צנרת": {
+    "en": "Plumbing",
+    "es": "Fontanería",
+    "pt-BR": "Encanamento",
+    "ar": "سباكة"
+  },
+  "48ש׳": {
+    "en": "48h",
+    "es": "48h",
+    "pt-BR": "48h",
+    "ar": "48س"
+  },
+  "אהוב": {
+    "en": "Favorite",
+    "es": "Favorito",
+    "pt-BR": "Favorito",
+    "ar": "مفضل"
+  },
+  "שלישי": {
+    "en": "Tuesday",
+    "es": "Martes",
+    "pt-BR": "Terça",
+    "ar": "الثلاثاء"
+  },
+  "בימוי": {
+    "en": "Direction",
+    "es": "Dirección",
+    "pt-BR": "Direção",
+    "ar": "إخراج"
+  },
+  "מתקדם": {
+    "en": "Advanced",
+    "es": "Avanzado",
+    "pt-BR": "Avançado",
+    "ar": "متقدم"
+  },
+  "אפיון": {
+    "en": "Brief",
+    "es": "Brief",
+    "pt-BR": "Brief",
+    "ar": "تأطير"
+  },
+  "עניין": {
+    "en": "Interest",
+    "es": "Interés",
+    "pt-BR": "Interesse",
+    "ar": "اهتمام"
+  },
+  "הדגשה": {
+    "en": "Emphasis",
+    "es": "Énfasis",
+    "pt-BR": "Ênfase",
+    "ar": "تأكيد"
+  },
+  "הקודם": {
+    "en": "Previous",
+    "es": "Anterior",
+    "pt-BR": "Anterior",
+    "ar": "السابق"
+  },
+  "נעילה": {
+    "en": "Lock",
+    "es": "Cierre",
+    "pt-BR": "Trava",
+    "ar": "قفل"
+  },
+  "מסירה": {
+    "en": "Handoff",
+    "es": "Entrega",
+    "pt-BR": "Entrega",
+    "ar": "تسليم"
+  },
+  "איסוף": {
+    "en": "Pickup",
+    "es": "Recogida",
+    "pt-BR": "Retirada",
+    "ar": "استلام"
+  },
+  "דיווח": {
+    "en": "Reporting",
+    "es": "Informes",
+    "pt-BR": "Relatórios",
+    "ar": "تقارير"
+  },
+  "תקציב": {
+    "en": "Budget",
+    "es": "Presupuesto",
+    "pt-BR": "Orçamento",
+    "ar": "ميزانية"
+  },
+  "היכרות": {
+    "en": "Introduction",
+    "es": "Presentación",
+    "pt-BR": "Apresentação",
+    "ar": "تعارف"
+  },
+  "לקריאה": {
+    "en": "Read",
+    "es": "Leer",
+    "pt-BR": "Ler",
+    "ar": "للقراءة"
+  },
+  "עדכונים": {
+    "en": "Updates",
+    "es": "Actualizaciones",
+    "pt-BR": "Atualizações",
+    "ar": "تحديثات"
+  },
+  "תג ליין": {
+    "en": "Tagline",
+    "es": "Eslogan",
+    "pt-BR": "Slogan",
+    "ar": "شعار نصي"
+  },
+  "סרטונים": {
+    "en": "Videos",
+    "es": "Vídeos",
+    "pt-BR": "Vídeos",
+    "ar": "فيديوهات"
+  },
+  "טקס זוהר": {
+    "en": "Glow ritual",
+    "es": "Ritual glow",
+    "pt-BR": "Ritual glow",
+    "ar": "طقس توهج"
+  },
+  "נווה צדק": {
+    "en": "Neve Tzedek",
+    "es": "Neve Tzedek",
+    "pt-BR": "Neve Tzedek",
+    "ar": "نيفي تسيدك"
+  },
+  "יצירת-קשר": {
+    "en": "Contact",
+    "es": "Contacto",
+    "pt-BR": "Contato",
+    "ar": "تواصل"
+  },
+  "סרום זוהר": {
+    "en": "Glow serum",
+    "es": "Sérum glow",
+    "pt-BR": "Sérum glow",
+    "ar": "سيروم توهج"
+  },
+  "ניווט בית": {
+    "en": "Home nav",
+    "es": "Nav inicio",
+    "pt-BR": "Nav início",
+    "ar": "تنقل الرئيسية"
+  },
+  "ווליום רך": {
+    "en": "Soft volume",
+    "es": "Volumen suave",
+    "pt-BR": "Volume suave",
+    "ar": "فوليوم ناعم"
+  },
+  "שדה שם מלא": {
+    "en": "Full name field",
+    "es": "Campo nombre completo",
+    "pt-BR": "Campo nome completo",
+    "ar": "حقل الاسم الكامل"
+  },
+  "שמירת מקום": {
+    "en": "Save a spot",
+    "es": "Reservar plaza",
+    "pt-BR": "Guardar lugar",
+    "ar": "حفظ مكان"
+  },
+  "חזרה למעלה": {
+    "en": "Back to top",
+    "es": "Volver arriba",
+    "pt-BR": "Voltar ao topo",
+    "ar": "العودة للأعلى"
+  },
+  "פדיקור ספא": {
+    "en": "Spa pedicure",
+    "es": "Pedicura spa",
+    "pt-BR": "Pedicure spa",
+    "ar": "بديكير سبا"
+  },
+  "החל מ־₪260": {
+    "en": "From ₪260",
+    "es": "Desde ₪260",
+    "pt-BR": "A partir de ₪260",
+    "ar": "من ₪260"
+  },
+  "תגית כותרת": {
+    "en": "Title tag",
+    "es": "Etiqueta de título",
+    "pt-BR": "Tag de título",
+    "ar": "وسم عنوان"
+  },
+  "המלצה הבאה": {
+    "en": "Next testimonial",
+    "es": "Siguiente reseña",
+    "pt-BR": "Próximo depoimento",
+    "ar": "الشهادة التالية"
+  },
+  "תחתית האתר": {
+    "en": "Site footer",
+    "es": "Pie del sitio",
+    "pt-BR": "Rodapé do site",
+    "ar": "تذييل الموقع"
+  },
+  "דיני חברות": {
+    "en": "Corporate law",
+    "es": "Derecho societario",
+    "pt-BR": "Direito societário",
+    "ar": "قانون الشركات"
+  },
+  "בחרו מסלול": {
+    "en": "Choose a track",
+    "es": "Elegid un itinerario",
+    "pt-BR": "Escolham um percurso",
+    "ar": "اختاروا مساراً"
+  },
+  "אזור מבוקש": {
+    "en": "Desired area",
+    "es": "Zona deseada",
+    "pt-BR": "Área desejada",
+    "ar": "منطقة مطلوبة"
+  },
+  "שורת תיאור": {
+    "en": "Description line",
+    "es": "Línea de descripción",
+    "pt-BR": "Linha de descrição",
+    "ar": "سطر وصف"
+  },
+  "טקסט תהליך": {
+    "en": "Process text",
+    "es": "Texto del proceso",
+    "pt-BR": "Texto do processo",
+    "ar": "نص العملية"
+  },
+  "פחות חיכוך": {
+    "en": "Less friction",
+    "es": "Menos fricción",
+    "pt-BR": "Menos atrito",
+    "ar": "احتكاك أقل"
+  },
+  "כותרת ייעוץ": {
+    "en": "Consult heading",
+    "es": "Título de consulta",
+    "pt-BR": "Título de consulta",
+    "ar": "عنوان استشارة"
+  },
+  "התחלת תהליך": {
+    "en": "Start the process",
+    "es": "Empezar el proceso",
+    "pt-BR": "Começar o processo",
+    "ar": "بدء العملية"
+  },
+  "תגובה מהירה": {
+    "en": "Fast reply",
+    "es": "Respuesta rápida",
+    "pt-BR": "Resposta rápida",
+    "ar": "رد سريع"
+  },
+  "לבדוק התאמה": {
+    "en": "Check the fit",
+    "es": "Comprobar encaje",
+    "pt-BR": "Verificar encaixe",
+    "ar": "تحققوا من الملاءمة"
+  },
+  "כותרת פתיחה": {
+    "en": "Opening heading",
+    "es": "Título de apertura",
+    "pt-BR": "Título de abertura",
+    "ar": "عنوان افتتاح"
+  },
+  "הדגשת כותרת": {
+    "en": "Heading emphasis",
+    "es": "Énfasis del título",
+    "pt-BR": "Ênfase do título",
+    "ar": "تأكيد العنوان"
+  },
+  "תיאור פתיחה": {
+    "en": "Opening description",
+    "es": "Descripción de apertura",
+    "pt-BR": "Descrição de abertura",
+    "ar": "وصف الافتتاح"
+  },
+  "המלצה קודמת": {
+    "en": "Previous testimonial",
+    "es": "Reseña anterior",
+    "pt-BR": "Depoimento anterior",
+    "ar": "الشهادة السابقة"
+  },
+  "תיאור תחתית": {
+    "en": "Footer description",
+    "es": "Descripción del pie",
+    "pt-BR": "Descrição do rodapé",
+    "ar": "وصف التذييل"
+  },
+  "ניווט תחתון": {
+    "en": "Footer nav",
+    "es": "Nav inferior",
+    "pt-BR": "Nav inferior",
+    "ar": "تنقل سفلي"
+  },
+  "תקציב משוער": {
+    "en": "Estimated budget",
+    "es": "Presupuesto estimado",
+    "pt-BR": "Orçamento estimado",
+    "ar": "ميزانية تقديرية"
+  },
+  "סוג הפרויקט": {
+    "en": "Project type",
+    "es": "Tipo de proyecto",
+    "pt-BR": "Tipo de projeto",
+    "ar": "نوع المشروع"
+  },
+  "טקסט תובנות": {
+    "en": "Insights text",
+    "es": "Texto de insights",
+    "pt-BR": "Texto de insights",
+    "ar": "نص الرؤى"
+  },
+  "קריאה לפעולה": {
+    "en": "Call to action",
+    "es": "Llamada a la acción",
+    "pt-BR": "Chamada para ação",
+    "ar": "دعوة لاتخاذ إجراء"
+  },
+  "ניווט תובנות": {
+    "en": "Insights nav",
+    "es": "Nav insights",
+    "pt-BR": "Nav insights",
+    "ar": "تنقل الرؤى"
+  },
+  "אייברו אודות": {
+    "en": "About eyebrow",
+    "es": "Ceja de acerca",
+    "pt-BR": "Olho de sobre",
+    "ar": "حاجب من نحن"
+  },
+  "אייברו תהליך": {
+    "en": "Process eyebrow",
+    "es": "Ceja de proceso",
+    "pt-BR": "Olho de processo",
+    "ar": "حاجب العملية"
+  },
+  "כותרת תובנות": {
+    "en": "Insights heading",
+    "es": "Título de insights",
+    "pt-BR": "Título de insights",
+    "ar": "عنوان الرؤى"
+  },
+  "4 חד׳ · מרכז": {
+    "en": "4 rooms · center",
+    "es": "4 hab. · centro",
+    "pt-BR": "4 quartos · centro",
+    "ar": "4 غرف · مركز"
+  },
+  "ניקוז לימפטי": {
+    "en": "Lymphatic drainage",
+    "es": "Drenaje linfático",
+    "pt-BR": "Drenagem linfática",
+    "ar": "تصريف لمفاوي"
+  },
+  "חזרה לדף הבית": {
+    "en": "Back to home",
+    "es": "Volver al inicio",
+    "pt-BR": "Voltar ao início",
+    "ar": "العودة للرئيسية"
+  },
+  "נקודת חוזקה 1": {
+    "en": "Strength 1",
+    "es": "Punto fuerte 1",
+    "pt-BR": "Ponto forte 1",
+    "ar": "نقطة قوة 1"
+  },
+  "נקודת חוזקה 2": {
+    "en": "Strength 2",
+    "es": "Punto fuerte 2",
+    "pt-BR": "Ponto forte 2",
+    "ar": "نقطة قوة 2"
+  },
+  "נקודת חוזקה 3": {
+    "en": "Strength 3",
+    "es": "Punto fuerte 3",
+    "pt-BR": "Ponto forte 3",
+    "ar": "نقطة قوة 3"
+  },
+  "טקסט פרויקטים": {
+    "en": "Projects text",
+    "es": "Texto de proyectos",
+    "pt-BR": "Texto de projetos",
+    "ar": "نص المشاريع"
+  },
+  "אייברו תובנות": {
+    "en": "Insights eyebrow",
+    "es": "Ceja de insights",
+    "pt-BR": "Olho de insights",
+    "ar": "حاجب الرؤى"
+  },
+  "מה תרצו לשאול?": {
+    "en": "What would you like to ask?",
+    "es": "¿Qué os gustaría preguntar?",
+    "pt-BR": "O que gostariam de perguntar?",
+    "ar": "ماذا تودون السؤال؟"
+  },
+  "שם מותג בתחתית": {
+    "en": "Footer brand name",
+    "es": "Marca en el pie",
+    "pt-BR": "Marca no rodapé",
+    "ar": "اسم العلامة في التذييل"
+  },
+  "ניווט פרויקטים": {
+    "en": "Projects nav",
+    "es": "Nav proyectos",
+    "pt-BR": "Nav projetos",
+    "ar": "تنقل المشاريع"
+  },
+  "טקסט משנה הירו": {
+    "en": "Hero subtitle",
+    "es": "Subtítulo del hero",
+    "pt-BR": "Subtítulo do hero",
+    "ar": "نص فرعي للبطل"
+  },
+  "טקסט פאנל הירו": {
+    "en": "Hero panel text",
+    "es": "Texto del panel hero",
+    "pt-BR": "Texto do painel hero",
+    "ar": "نص لوحة البطل"
+  },
+  "אייברו שירותים": {
+    "en": "Services eyebrow",
+    "es": "Ceja de servicios",
+    "pt-BR": "Olho de serviços",
+    "ar": "حاجب الخدمات"
+  },
+  "מה אומרים עלינו": {
+    "en": "What they say about us",
+    "es": "Qué dicen de nosotros",
+    "pt-BR": "O que dizem de nós",
+    "ar": "ماذا يقولون عنا"
+  },
+  "ניווט יצירת קשר": {
+    "en": "Contact nav",
+    "es": "Nav contacto",
+    "pt-BR": "Nav contato",
+    "ar": "تنقل التواصل"
+  },
+  "כפתור משני הירו": {
+    "en": "Hero secondary button",
+    "es": "Botón secundario del hero",
+    "pt-BR": "Botão secundário do hero",
+    "ar": "زر ثانوي للبطل"
+  },
+  "כותרת פאנל הירו": {
+    "en": "Hero panel heading",
+    "es": "Título del panel hero",
+    "pt-BR": "Título do painel hero",
+    "ar": "عنوان لوحة البطل"
+  },
+  "אייברו פרויקטים": {
+    "en": "Projects eyebrow",
+    "es": "Ceja de proyectos",
+    "pt-BR": "Olho de projetos",
+    "ar": "حاجب المشاريع"
+  },
+  "ניווט בית תחתון": {
+    "en": "Footer home nav",
+    "es": "Nav inicio inferior",
+    "pt-BR": "Nav início inferior",
+    "ar": "تنقل رئيسية سفلي"
+  },
+  "פרויקטים שהושלמו": {
+    "en": "Completed projects",
+    "es": "Proyectos completados",
+    "pt-BR": "Projetos concluídos",
+    "ar": "مشاريع مكتملة"
+  },
+  "כותרת ראשית הירו": {
+    "en": "Hero main heading",
+    "es": "Título principal del hero",
+    "pt-BR": "Título principal do hero",
+    "ar": "العنوان الرئيسي للبطل"
+  },
+  "אייברו יצירת קשר": {
+    "en": "Contact eyebrow",
+    "es": "Ceja de contacto",
+    "pt-BR": "Olho de contato",
+    "ar": "حاجب التواصل"
+  },
+  "כפתור שליחת טופס": {
+    "en": "Form submit button",
+    "es": "Botón de envío",
+    "pt-BR": "Botão de envio",
+    "ar": "زر إرسال النموذج"
+  },
+  "אוטומציות מתקדמות": {
+    "en": "Advanced automations",
+    "es": "Automatizaciones avanzadas",
+    "pt-BR": "Automações avançadas",
+    "ar": "أتمتة متقدمة"
+  },
+  "טקסט קריאה לפעולה": {
+    "en": "Call-to-action text",
+    "es": "Texto de llamada a la acción",
+    "pt-BR": "Texto de chamada",
+    "ar": "نص الدعوة للإجراء"
+  },
+  "ניווט אודות תחתון": {
+    "en": "Footer about nav",
+    "es": "Nav acerca inferior",
+    "pt-BR": "Nav sobre inferior",
+    "ar": "تنقل من نحن سفلي"
+  },
+  "תיאור קריאה לפעולה": {
+    "en": "Call-to-action description",
+    "es": "Descripción de la llamada",
+    "pt-BR": "Descrição da chamada",
+    "ar": "وصف الدعوة للإجراء"
+  },
+  "שינקין 18, תל אביב": {
+    "en": "18 Sheinkin, Tel Aviv",
+    "es": "Sheinkin 18, Tel Aviv",
+    "pt-BR": "Sheinkin 18, Tel Aviv",
+    "ar": "شينكين 18، تل أبيب"
+  },
+  "ניווט תובנות תחתון": {
+    "en": "Footer insights nav",
+    "es": "Nav insights inferior",
+    "pt-BR": "Nav insights inferior",
+    "ar": "تنقل رؤى سفلي"
+  },
+  "ניווט שירותים תחתון": {
+    "en": "Footer services nav",
+    "es": "Nav servicios inferior",
+    "pt-BR": "Nav serviços inferior",
+    "ar": "تنقل خدمات سفلي"
+  },
+  "האם יש תקופת ניסיון?": {
+    "en": "Is there a trial period?",
+    "es": "¿Hay periodo de prueba?",
+    "pt-BR": "Há período de teste?",
+    "ar": "هل هناك فترة تجريبية؟"
+  },
+  "ניווט פרויקטים תחתון": {
+    "en": "Footer projects nav",
+    "es": "Nav proyectos inferior",
+    "pt-BR": "Nav projetos inferior",
+    "ar": "تنقل مشاريع سفلي"
+  },
+  "ניווט יצירת קשר תחתון": {
+    "en": "Footer contact nav",
+    "es": "Nav contacto inferior",
+    "pt-BR": "Nav contato inferior",
+    "ar": "تنقل تواصل سفلي"
+  },
+  "קנייה, מכירה, ייעוץ...": {
+    "en": "Buy, sell, advise...",
+    "es": "Compra, venta, asesoría...",
+    "pt-BR": "Compra, venda, consultoria...",
+    "ar": "شراء، بيع، استشارة..."
+  },
+  "ספרו לנו על הצוות שלכם": {
+    "en": "Tell us about your team",
+    "es": "Contadnos sobre vuestro equipo",
+    "pt-BR": "Contem sobre a equipe de vocês",
+    "ar": "أخبرونا عن فريقكم"
+  },
+  "ספרו בקצרה מה אתם מחפשים...": {
+    "en": "Briefly tell us what you are looking for...",
+    "es": "Contadnos en breve qué buscáis...",
+    "pt-BR": "Contem em breve o que procuram...",
+    "ar": "أخبرونا باختصار عما تبحثون..."
+  },
+  "אפשר לערוך את כל הטקסטים והתמונות?": {
+    "en": "Can every text and image be edited?",
+    "es": "¿Se pueden editar todos los textos e imágenes?",
+    "pt-BR": "Dá para editar todos os textos e imagens?",
+    "ar": "هل يمكن تحرير كل النصوص والصور؟"
+  },
+  "בר טיפוח": {
+    "en": "Care bar",
+    "es": "Barra de cuidado",
+    "pt-BR": "Barra de cuidado",
+    "ar": "بار عناية"
+  },
+  "גלריית צבע": {
+    "en": "Color gallery",
+    "es": "Galería de color",
+    "pt-BR": "Galeria de cor",
+    "ar": "معرض لون"
+  },
+  "בר זכוכית": {
+    "en": "Glass bar",
+    "es": "Barra de cristal",
+    "pt-BR": "Barra de vidro",
+    "ar": "بار زجاج"
+  },
+  "בר צבע": {
+    "en": "Color bar",
+    "es": "Barra de color",
+    "pt-BR": "Barra de cor",
+    "ar": "بار لون"
+  },
+  "פתרונות": {
+    "en": "Solutions",
+    "es": "Soluciones",
+    "pt-BR": "Soluções",
+    "ar": "حلول"
+  },
+  "הצפנה": {
+    "en": "Encryption",
+    "es": "Cifrado",
+    "pt-BR": "Criptografia",
+    "ar": "تشفير"
+  },
+  "מאמנים": {
+    "en": "Coaches",
+    "es": "Entrenadores",
+    "pt-BR": "Treinadores",
+    "ar": "مدربون"
+  },
+  "קולקציה": {
+    "en": "Collection",
+    "es": "Colección",
+    "pt-BR": "Coleção",
+    "ar": "مجموعة"
+  },
+  "מתמטיקה": {
+    "en": "Math",
+    "es": "Matemáticas",
+    "pt-BR": "Matemática",
+    "ar": "رياضيات"
+  },
+  "פסיכומטרי": {
+    "en": "Psychometric",
+    "es": "Psicométrico",
+    "pt-BR": "Psicométrico",
+    "ar": "بسيخومتري"
+  },
+  "דיני משפחה": {
+    "en": "Family law",
+    "es": "Derecho de familia",
+    "pt-BR": "Direito de família",
+    "ar": "قانون الأسرة"
+  },
+  "טבע": {
+    "en": "Nature",
+    "es": "Naturaleza",
+    "pt-BR": "Natureza",
+    "ar": "طبيعة"
+  },
+  "אוסף": {
+    "en": "Collection",
+    "es": "Colección",
+    "pt-BR": "Coleção",
+    "ar": "مجموعة"
+  },
+  "יזמות": {
+    "en": "Venture",
+    "es": "Emprendimiento",
+    "pt-BR": "Empreendedorismo",
+    "ar": "ريادة"
+  },
+  "הגלים": {
+    "en": "The waves",
+    "es": "Las olas",
+    "pt-BR": "As ondas",
+    "ar": "الأمواج"
+  },
+  "מיצים": {
+    "en": "Juices",
+    "es": "Zumos",
+    "pt-BR": "Sucos",
+    "ar": "عصائر"
+  },
+  "מגרשים": {
+    "en": "Lots",
+    "es": "Parcelas",
+    "pt-BR": "Lotes",
+    "ar": "قطع"
+  },
+  "סוכנים": {
+    "en": "Agents",
+    "es": "Agentes",
+    "pt-BR": "Agentes",
+    "ar": "وكلاء"
+  },
+  "משכנתא": {
+    "en": "Mortgage",
+    "es": "Hipoteca",
+    "pt-BR": "Hipoteca",
+    "ar": "رهن"
+  },
+  "אינדקס": {
+    "en": "Index",
+    "es": "Índice",
+    "pt-BR": "Índice",
+    "ar": "فهرس"
+  },
+  "המעבדה": {
+    "en": "The lab",
+    "es": "El laboratorio",
+    "pt-BR": "O laboratório",
+    "ar": "المختبر"
+  },
+  "השיפוד": {
+    "en": "The spit",
+    "es": "El asador",
+    "pt-BR": "O espeto",
+    "ar": "السيخ"
+  },
+  "הקיטור": {
+    "en": "The steam",
+    "es": "El vapor",
+    "pt-BR": "O vapor",
+    "ar": "البخار"
+  },
+  "התפיסה": {
+    "en": "The idea",
+    "es": "La idea",
+    "pt-BR": "A ideia",
+    "ar": "الفكرة"
+  },
+  "הרטבים": {
+    "en": "The sauces",
+    "es": "Las salsas",
+    "pt-BR": "Os molhos",
+    "ar": "الصلصات"
+  },
+  "מתוקים": {
+    "en": "Sweets",
+    "es": "Dulces",
+    "pt-BR": "Doces",
+    "ar": "حلويات"
+  },
+  "הסחיטה": {
+    "en": "The press",
+    "es": "El prensado",
+    "pt-BR": "A extração",
+    "ar": "العصر"
+  },
+  "בורגרים": {
+    "en": "Burgers",
+    "es": "Hamburguesas",
+    "pt-BR": "Hambúrgueres",
+    "ar": "برغر"
+  },
+  "האטלייה": {
+    "en": "The atelier",
+    "es": "El atelier",
+    "pt-BR": "O ateliê",
+    "ar": "الأتيليه"
+  },
+  "אומאקאסה": {
+    "en": "Omakase",
+    "es": "Omakase",
+    "pt-BR": "Omakase",
+    "ar": "أوماكاسه"
+  },
+  "מעבדת כוח": {
+    "en": "Power lab",
+    "es": "Lab de fuerza",
+    "pt-BR": "Lab de força",
+    "ar": "مختبر قوة"
+  },
+  "שריפת HIIT": {
+    "en": "HIIT burn",
+    "es": "Quema HIIT",
+    "pt-BR": "Queima HIIT",
+    "ar": "حرق HIIT"
+  },
+  "מזטה": {
+    "en": "Mezze",
+    "es": "Mezze",
+    "pt-BR": "Mezze",
+    "ar": "مزة"
+  },
+  "תאלי": {
+    "en": "Thali",
+    "es": "Thali",
+    "pt-BR": "Thali",
+    "ar": "تالي"
+  },
+  "מסחרי": {
+    "en": "Commercial",
+    "es": "Comercial",
+    "pt-BR": "Comercial",
+    "ar": "تجاري"
+  },
+  "מסעדה": {
+    "en": "Restaurant",
+    "es": "Restaurante",
+    "pt-BR": "Restaurante",
+    "ar": "مطعم"
+  },
+  "ניטור": {
+    "en": "Monitoring",
+    "es": "Monitorización",
+    "pt-BR": "Monitoramento",
+    "ar": "مراقبة"
+  },
+  "מלאכה": {
+    "en": "Craft",
+    "es": "Oficio",
+    "pt-BR": "Ofício",
+    "ar": "حرفة"
+  },
+  "עברית": {
+    "en": "Hebrew",
+    "es": "Hebreo",
+    "pt-BR": "Hebraico",
+    "ar": "العبرية"
+  },
+  "גיטרה": {
+    "en": "Guitar",
+    "es": "Guitarra",
+    "pt-BR": "Violão",
+    "ar": "غيتار"
+  },
+  "מגלים": {
+    "en": "Discover",
+    "es": "Descubren",
+    "pt-BR": "Descobrem",
+    "ar": "يكتشفون"
+  },
+  "מנסים": {
+    "en": "Try",
+    "es": "Prueban",
+    "pt-BR": "Tentam",
+    "ar": "يجربون"
+  },
+  "בחינה": {
+    "en": "Exam",
+    "es": "Examen",
+    "pt-BR": "Prova",
+    "ar": "امتحان"
+  },
+  "אקדמי": {
+    "en": "Academic",
+    "es": "Académico",
+    "pt-BR": "Acadêmico",
+    "ar": "أكاديمي"
+  },
+  "הגריל": {
+    "en": "The grill",
+    "es": "La parrilla",
+    "pt-BR": "A grelha",
+    "ar": "الشواية"
+  },
+  "מנויים": {
+    "en": "Subscribers",
+    "es": "Suscriptores",
+    "pt-BR": "Assinantes",
+    "ar": "مشتركون"
+  },
+  "אחוזות": {
+    "en": "Estates",
+    "es": "Fincas",
+    "pt-BR": "Propriedades",
+    "ar": "عقارات"
+  },
+  "צלילות": {
+    "en": "Dives",
+    "es": "Inmersiones",
+    "pt-BR": "Mergulhos",
+    "ar": "غوص"
+  },
+  "גלשנים": {
+    "en": "Surfboards",
+    "es": "Tablas",
+    "pt-BR": "Pranchas",
+    "ar": "ألواح"
+  },
+  "אוספים": {
+    "en": "Collections",
+    "es": "Colecciones",
+    "pt-BR": "Coleções",
+    "ar": "مجموعات"
+  },
+  "ספרדית": {
+    "en": "Spanish",
+    "es": "Español",
+    "pt-BR": "Espanhol",
+    "ar": "الإسبانية"
+  },
+  "יוצרים": {
+    "en": "Creators",
+    "es": "Creadores",
+    "pt-BR": "Criadores",
+    "ar": "صناع"
+  },
+  "משתפים": {
+    "en": "Share",
+    "es": "Comparten",
+    "pt-BR": "Compartilham",
+    "ar": "يشاركون"
+  },
+  "ניגירי": {
+    "en": "Nigiri",
+    "es": "Nigiri",
+    "pt-BR": "Nigiri",
+    "ar": "نيغيري"
+  },
+  "משאיות": {
+    "en": "Trucks",
+    "es": "Camiones",
+    "pt-BR": "Caminhões",
+    "ar": "شاحنات"
+  },
+  "AI לעסק": {
+    "en": "AI for business",
+    "es": "IA para el negocio",
+    "pt-BR": "IA para o negócio",
+    "ar": "ذكاء اصطناعي للعمل"
+  },
+  "סוויטות": {
+    "en": "Suites",
+    "es": "Suites",
+    "pt-BR": "Suítes",
+    "ar": "أجنحة"
+  },
+  "לפטופים": {
+    "en": "Laptops",
+    "es": "Portátiles",
+    "pt-BR": "Laptops",
+    "ar": "حواسيب محمولة"
+  },
+  "משקולות": {
+    "en": "Weights",
+    "es": "Pesas",
+    "pt-BR": "Pesos",
+    "ar": "أوزان"
+  },
+  "מנהיגות": {
+    "en": "Leadership",
+    "es": "Liderazgo",
+    "pt-BR": "Liderança",
+    "ar": "قيادة"
+  },
+  "רפרטואר": {
+    "en": "Repertoire",
+    "es": "Repertorio",
+    "pt-BR": "Repertório",
+    "ar": "ريبرتوار"
+  },
+  "תבלינים": {
+    "en": "Spices",
+    "es": "Especias",
+    "pt-BR": "Temperos",
+    "ar": "بهارات"
+  },
+  "פורטרטים": {
+    "en": "Portraits",
+    "es": "Retratos",
+    "pt-BR": "Retratos",
+    "ar": "صور شخصية"
+  },
+  "חיטוב 90": {
+    "en": "90-day cut",
+    "es": "Definición 90",
+    "pt-BR": "Definção 90",
+    "ar": "نحت 90"
+  },
+  "מערכי טק": {
+    "en": "Tech stacks",
+    "es": "Stacks tech",
+    "pt-BR": "Stacks tech",
+    "ar": "منظومات تقنية"
+  },
+  "ריטואלים": {
+    "en": "Rituals",
+    "es": "Rituales",
+    "pt-BR": "Rituais",
+    "ar": "طقوس"
+  },
+  "פיש טאקו": {
+    "en": "Fish taco",
+    "es": "Taco de pescado",
+    "pt-BR": "Taco de peixe",
+    "ar": "تاكو سمك"
+  },
+  "ציפורניים": {
+    "en": "Nails",
+    "es": "Uñas",
+    "pt-BR": "Unhas",
+    "ar": "أظافر"
+  },
+  "מועד רצוי": {
+    "en": "Preferred date",
+    "es": "Fecha deseada",
+    "pt-BR": "Data desejada",
+    "ar": "موعد مفضل"
+  },
+  "וילת מצוק": {
+    "en": "Cliff villa",
+    "es": "Villa acantilado",
+    "pt-BR": "Villa no penhasco",
+    "ar": "فيلا جرف"
+  },
+  "שם / חברה": {
+    "en": "Name / company",
+    "es": "Nombre / empresa",
+    "pt-BR": "Nome / empresa",
+    "ar": "اسم / شركة"
+  },
+  "הלבשת בית": {
+    "en": "Homewear",
+    "es": "Ropa de casa",
+    "pt-BR": "Roupa de casa",
+    "ar": "ملابس منزلية"
+  },
+  "כיף ברמה גבוהה.": {
+    "en": "Fun at a high level.",
+    "es": "Diversión a otro nivel.",
+    "pt-BR": "Diversão em alto nível.",
+    "ar": "مرح بمستوى عالٍ."
+  },
+  "ירוק שנכנס הביתה.": {
+    "en": "Green that comes inside.",
+    "es": "Verde que entra en casa.",
+    "pt-BR": "Verde que entra em casa.",
+    "ar": "أخضر يدخل البيت."
+  },
+  "ניחוח שממלא חדר.": {
+    "en": "A scent that fills a room.",
+    "es": "Un aroma que llena la sala.",
+    "pt-BR": "Um aroma que enche o quarto.",
+    "ar": "رائحة تملأ الغرفة."
+  },
+  "מהשביל עד הבסיס.": {
+    "en": "From trail to base.",
+    "es": "Del sendero a la base.",
+    "pt-BR": "Da trilha à base.",
+    "ar": "من الممر حتى القاعدة."
+  },
+  "דרופ. סטייל. רחוב.": {
+    "en": "Drop. Style. Street.",
+    "es": "Drop. Estilo. Calle.",
+    "pt-BR": "Drop. Estilo. Rua.",
+    "ar": "دروب. ستايل. شارع."
+  },
+  "כל צעד מתחיל בסוליה.": {
+    "en": "Every step starts with the sole.",
+    "es": "Cada paso empieza en la suela.",
+    "pt-BR": "Cada passo começa na sola.",
+    "ar": "كل خطوة تبدأ من النعل."
+  },
+  "מרתף נבחר. כוס מדויקת.": {
+    "en": "A chosen cellar. A precise glass.",
+    "es": "Bodega elegida. Copa precisa.",
+    "pt-BR": "Adega escolhida. Taça precisa.",
+    "ar": "قبو مختار. كأس دقيقة."
+  },
+  "מינון ברור. שגרה פשוטה.": {
+    "en": "Clear dosing. A simple routine.",
+    "es": "Dosis clara. Rutina simple.",
+    "pt-BR": "Dose clara. Rotina simples.",
+    "ar": "جرعة واضحة. روتين بسيط."
+  },
+  "רצועה חזקה. צורה נקייה.": {
+    "en": "A strong strap. A clean shape.",
+    "es": "Correa fuerte. Forma limpia.",
+    "pt-BR": "Alça forte. Forma limpa.",
+    "ar": "حزام قوي. شكل نظيف."
+  },
+  "קילומטרים מתחילים כאן.": {
+    "en": "Kilometers start here.",
+    "es": "Los kilómetros empiezan aquí.",
+    "pt-BR": "Os quilômetros começam aqui.",
+    "ar": "الكيلومترات تبدأ هنا."
+  },
+  "קלייה טרייה. כוס מדויקת.": {
+    "en": "Fresh roast. A precise cup.",
+    "es": "Tueste fresco. Taza precisa.",
+    "pt-BR": "Torrefação fresca. Xícara precisa.",
+    "ar": "تحميص طازج. فنجان دقيق."
+  },
+  "גזרות מדויקות. ארון חי.": {
+    "en": "Precise cuts. A living closet.",
+    "es": "Cortes precisos. Armario vivo.",
+    "pt-BR": "Cortes precisos. Guarda-roupa vivo.",
+    "ar": "قصات دقيقة. خزانة حية."
+  },
+  "נוחות שנראית כמו סטייל.": {
+    "en": "Comfort that looks like style.",
+    "es": "Comodidad que parece estilo.",
+    "pt-BR": "Conforto que parece estilo.",
+    "ar": "راحة تبدو كأسلوب."
+  },
+  "מחוג מדויק. נוכחות שקטה.": {
+    "en": "A precise hand. Quiet presence.",
+    "es": "Aguja precisa. Presencia quieta.",
+    "pt-BR": "Ponteiro preciso. Presença quieta.",
+    "ar": "عقرب دقيق. حضور هادئ."
+  },
+  "אינדיגו אמיתי. חיתוך מדויק.": {
+    "en": "True indigo. A precise cut.",
+    "es": "Índigo de verdad. Corte preciso.",
+    "pt-BR": "Índigo de verdade. Corte preciso.",
+    "ar": "نيلي حقيقي. قص دقيق."
+  },
+  "למה לבחור בנו": {
+    "en": "Why choose us",
+    "es": "Por qué elegirnos",
+    "pt-BR": "Por que nos escolher",
+    "ar": "لماذا تختاروننا"
+  },
+  "עסקאות פעילות": {
+    "en": "Active deals",
+    "es": "Operaciones activas",
+    "pt-BR": "Negócios ativos",
+    "ar": "صفقات نشطة"
+  },
+  "הרשמה לעדכונים": {
+    "en": "Subscribe for updates",
+    "es": "Suscribirse a novedades",
+    "pt-BR": "Inscrever-se em novidades",
+    "ar": "الاشتراك في التحديثات"
+  },
+  "מיסוי ופיננסים": {
+    "en": "Tax and finance",
+    "es": "Fiscalidad y finanzas",
+    "pt-BR": "Tributos e finanças",
+    "ar": "ضرائب ومالية"
+  },
+  "אסתטיקה והלבנה": {
+    "en": "Aesthetics and whitening",
+    "es": "Estética y blanqueamiento",
+    "pt-BR": "Estética e clareamento",
+    "ar": "تجميل وتبييض"
+  },
+  "ליטיגציה וייצוג": {
+    "en": "Litigation and representation",
+    "es": "Litigio y representación",
+    "pt-BR": "Litígio e representação",
+    "ar": "تقاضي وتمثيل"
+  },
+  "פרטים על הפנייה": {
+    "en": "Inquiry details",
+    "es": "Detalles de la consulta",
+    "pt-BR": "Detalhes do pedido",
+    "ar": "تفاصيل الاستفسار"
+  },
+  "דיני חברות ומסחר": {
+    "en": "Corporate and commercial law",
+    "es": "Derecho societario y mercantil",
+    "pt-BR": "Direito societário e comercial",
+    "ar": "قانون شركات وتجارة"
+  },
+  "מה לקוחות אומרים?": {
+    "en": "What do clients say?",
+    "es": "¿Qué dicen los clientes?",
+    "pt-BR": "O que os clientes dizem?",
+    "ar": "ماذا يقول العملاء؟"
+  },
+  "בדיקת תיק ראשונית": {
+    "en": "Initial case review",
+    "es": "Revisión inicial del expediente",
+    "pt-BR": "Revisão inicial do caso",
+    "ar": "مراجعة أولية للملف"
+  },
+  "אנליטיקה בזמן אמת": {
+    "en": "Realtime analytics",
+    "es": "Analítica en tiempo real",
+    "pt-BR": "Analítica em tempo real",
+    "ar": "تحليلات لحظية"
+  },
+  "ספרו על המטרה שלכם": {
+    "en": "Tell us your goal",
+    "es": "Contadnos vuestro objetivo",
+    "pt-BR": "Contem o objetivo de vocês",
+    "ar": "أخبرونا عن هدفكم"
+  },
+  "מתאים לעסק בתחילת הדרך": {
+    "en": "Fits a business just starting out",
+    "es": "Encaja en un negocio que empieza",
+    "pt-BR": "Serve um negócio no começo",
+    "ar": "يناسب مشروعاً في البداية"
+  },
+  "נחלת בנימין 8, תל אביב": {
+    "en": "8 Nachalat Binyamin, Tel Aviv",
+    "es": "Nachalat Binyamin 8, Tel Aviv",
+    "pt-BR": "Nachalat Binyamin 8, Tel Aviv",
+    "ar": "نحلات بنيامين 8، تل أبيب"
+  },
+  "קליניקה פרטית / אונליין": {
+    "en": "Private clinic / online",
+    "es": "Clínica privada / online",
+    "pt-BR": "Clínica particular / online",
+    "ar": "عيادة خاصة / أونلاين"
+  },
+  "ליטיגציה ויישוב סכסוכים": {
+    "en": "Litigation and dispute resolution",
+    "es": "Litigio y resolución de conflictos",
+    "pt-BR": "Litígio e resolução de conflitos",
+    "ar": "تقاضي وتسوية نزاعات"
+  },
+  "כל שירותי החשמל במקום אחד": {
+    "en": "Every electrical service in one place",
+    "es": "Todos los servicios eléctricos en un sitio",
+    "pt-BR": "Todos os serviços elétricos num só lugar",
+    "ar": "كل خدمات الكهرباء في مكان واحد"
+  },
+  "הדפדפן לא תומך בניגון וידאו.": {
+    "en": "The browser does not support video playback.",
+    "es": "El navegador no admite la reproducción de vídeo.",
+    "pt-BR": "O navegador não reproduz vídeo.",
+    "ar": "المتصفح لا يدعم تشغيل الفيديو."
+  },
+  "לפני שקובעים ייעוץ — כל מה שחשוב לדעת.": {
+    "en": "Before you book a consult — everything that matters.",
+    "es": "Antes de reservar una consulta — todo lo importante.",
+    "pt-BR": "Antes de marcar uma consulta — tudo o que importa.",
+    "ar": "قبل حجز استشارة — كل ما يهم معرفته."
+  },
+  "עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר.": {
+    "en": "Professional legal help that leads to a better outcome.",
+    "es": "Ayuda legal profesional que lleva a un mejor resultado.",
+    "pt-BR": "Ajuda jurídica profissional que leva a um resultado melhor.",
+    "ar": "مساعدة قانونية مهنية تؤدي إلى نتيجة أفضل."
+  },
+  "אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.": {
+    "en": "A content strategy that feels like a brand, not another post.",
+    "es": "Una estrategia de contenido que se siente marca, no otro post.",
+    "pt-BR": "Uma estratégia de conteúdo que parece marca, não mais um post.",
+    "ar": "استراتيجية محتوى تشبه علامة، لا منشوراً إضافياً."
+  },
+  "כן. הטופס מוכן עיצובית לחיבור למערכת לידים בהמשך.": {
+    "en": "Yes. The form is designed to connect to a leads system later.",
+    "es": "Sí. El formulario está listo para conectarse luego a un sistema de leads.",
+    "pt-BR": "Sim. O formulário está pronto para ligar depois a um sistema de leads.",
+    "ar": "نعم. النموذج جاهز تصميمياً للربط لاحقاً بنظام عملاء محتملين."
+  },
+  "יותר מ־1,200 תהליכים דיגיטליים נבנו לעסקים בצמיחה": {
+    "en": "More than 1,200 digital flows built for growing businesses",
+    "es": "Más de 1.200 procesos digitales construidos para negocios en crecimiento",
+    "pt-BR": "Mais de 1.200 fluxos digitais feitos para negócios em crescimento",
+    "ar": "أكثر من 1,200 عملية رقمية بُنيت لشركات في نمو"
+  },
+  "הפסקנו לאבד פניות. כל ליד מקבל טיפול מסודר וברור.": {
+    "en": "We stopped losing inquiries. Every lead gets clear, ordered care.",
+    "es": "Dejamos de perder consultas. Cada lead recibe un trato claro y ordenado.",
+    "pt-BR": "Paramos de perder pedidos. Cada lead recebe um trato claro e organizado.",
+    "ar": "توقفنا عن فقدان الاستفسارات. كل عميل محتمل يحظى بعناية مرتبة وواضحة."
+  },
+  "הפקת וידאו, צילום ותוכן ויזואלי למותגים מודרניים.": {
+    "en": "Video production, photography, and visual content for modern brands.",
+    "es": "Producción de vídeo, foto y contenido visual para marcas modernas.",
+    "pt-BR": "Produção de vídeo, foto e conteúdo visual para marcas modernas.",
+    "ar": "إنتاج فيديو وتصوير ومحتوى بصري للعلامات الحديثة."
+  },
+  "מתאמים פגישות רק לנכסים או קונים שבאמת רלוונטיים.": {
+    "en": "We book visits only for homes or buyers that are truly relevant.",
+    "es": "Concertamos visitas solo a inmuebles o compradores realmente relevantes.",
+    "pt-BR": "Marcamos visitas só a imóveis ou compradores realmente relevantes.",
+    "ar": "ننسّق زيارات فقط لعقارات أو مشترين ذوي صلة حقيقية."
+  },
+  "כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים.": {
+    "en": "Content cards that build trust before the client leaves details.",
+    "es": "Tarjetas de contenido que dan confianza antes de dejar datos.",
+    "pt-BR": "Cartões de conteúdo que geram confiança antes de deixar dados.",
+    "ar": "بطاقات محتوى تبني ثقة قبل أن يترك العميل بياناته."
+  },
+  "קבלו בדיקת תיק ראשונית לפני שמקבלים החלטה משפטית.": {
+    "en": "Get an initial case review before you make a legal decision.",
+    "es": "Recibid una revisión inicial del expediente antes de decidir.",
+    "pt-BR": "Recebam uma revisão inicial do caso antes de decidir.",
+    "ar": "احصلوا على مراجعة أولية للملف قبل اتخاذ قرار قانوني."
+  },
+  "קריאות דחופות מקבלות קדימות לפי זמינות צוות קרוב.": {
+    "en": "Urgent calls get priority based on nearby team availability.",
+    "es": "Las urgencias tienen prioridad según el equipo cercano disponible.",
+    "pt-BR": "Urgências têm prioridade conforme a equipe próxima disponível.",
+    "ar": "المكالمات العاجلة تحظى بأولوية حسب توفر فريق قريب."
+  },
+  "כן. אפשר להזמין עיצוב זקן בלבד או לשלב עם תספורת.": {
+    "en": "Yes. You can book beard styling alone or pair it with a haircut.",
+    "es": "Sí. Se puede reservar solo barba o combinarla con corte.",
+    "pt-BR": "Sim. Dá para marcar só a barba ou juntar com o corte.",
+    "ar": "نعم. يمكن حجز تصفيف لحية وحدها أو دمجها مع قصة شعر."
+  },
+  "המטופלים מתארים בעיקר דבר אחד: תחושת שליטה ורוגע.": {
+    "en": "Patients mostly describe one thing: a sense of control and calm.",
+    "es": "Los pacientes describen sobre todo una cosa: control y calma.",
+    "pt-BR": "Os pacientes descrevem sobretudo uma coisa: controle e calma.",
+    "ar": "يصف المرضى أساساً شيئاً واحداً: شعور بالسيطرة والهدوء."
+  },
+  "תרגול אישי למיקוד בגב, שינה, יציבה או שיקום עדין.": {
+    "en": "A personal practice focused on back, sleep, posture, or gentle rehab.",
+    "es": "Práctica personal centrada en espalda, sueño, postura o rehabilitación suave.",
+    "pt-BR": "Prática pessoal focada em costas, sono, postura ou reabilitação suave.",
+    "ar": "تمرين شخصي للتركيز على الظهر أو النوم أو القوام أو إعادة تأهيل لطيفة."
+  },
+  "פרסום": {
+    "en": "advertising",
+    "es": "publicidad",
+    "pt-BR": "publicidade",
+    "ar": "إعلان"
+  },
+  "יחסי ציבור": {
+    "en": "public relations",
+    "es": "relaciones públicas",
+    "pt-BR": "relações públicas",
+    "ar": "علاقات عامة"
+  },
+  "סושיאל": {
+    "en": "social",
+    "es": "social",
+    "pt-BR": "social",
+    "ar": "سوشيال"
+  },
+  "משפיענים": {
+    "en": "influencer",
+    "es": "influencers",
+    "pt-BR": "influencers",
+    "ar": "مؤثرين"
+  },
+  "פודקאסט ואודיו": {
+    "en": "podcast and audio",
+    "es": "podcast y audio",
+    "pt-BR": "podcast e áudio",
+    "ar": "بودكاست وصوت"
+  },
+  "תקשורת משברים": {
+    "en": "crisis communications",
+    "es": "comunicación de crisis",
+    "pt-BR": "comunicação de crise",
+    "ar": "تواصل أزمات"
+  },
+  "שותפויות ואפיליאציה": {
+    "en": "partnerships and affiliate",
+    "es": "partnerships y afiliación",
+    "pt-BR": "parcerias e afiliação",
+    "ar": "شراكات وأفيلييت"
+  },
+  "ממשל ולובינג": {
+    "en": "government and lobbying",
+    "es": "gobierno y lobbying",
+    "pt-BR": "governo e lobbying",
+    "ar": "حكومة ولوبي"
+  },
+  "פיתוח זכיינות": {
+    "en": "franchise development",
+    "es": "desarrollo de franquicias",
+    "pt-BR": "desenvolvimento de franquias",
+    "ar": "تطوير امتياز"
+  },
+  "פיץ' ויחסי משקיעים": {
+    "en": "pitch and investor relations",
+    "es": "pitch y relaciones con inversores",
+    "pt-BR": "pitch e relações com investidores",
+    "ar": "بيتش وعلاقات مستثمرين"
+  },
+  "ספרים ומכתבים": {
+    "en": "books and stationery",
+    "es": "libros y papelería",
+    "pt-BR": "livros e papelaria",
+    "ar": "كتب وقرطاسية"
+  },
+  "תינוקות וילדים": {
+    "en": "baby and kids",
+    "es": "bebés e infantil",
+    "pt-BR": "bebês e infantil",
+    "ar": "رضع وأطفال"
+  },
+  "אלקטרוניקה וגאדג׳טים": {
+    "en": "electronics and gadgets",
+    "es": "electrónica y gadgets",
+    "pt-BR": "eletrônicos e gadgets",
+    "ar": "إلكترونيات وأجهزة"
+  },
+  "ייחודי": {
+    "en": "distinct",
+    "es": "único",
+    "pt-BR": "único",
+    "ar": "مميز"
+  },
+  "עיצוב ייחודי": {
+    "en": "distinct design",
+    "es": "diseño único",
+    "pt-BR": "design único",
+    "ar": "تصميم مميز"
+  },
+  "סוכנות פרסום": {
+    "en": "advertising agency",
+    "es": "agencia de publicidad",
+    "pt-BR": "agência de publicidade",
+    "ar": "وكالة إعلان"
+  },
+  "סוכנות יחסי ציבור": {
+    "en": "PR agency",
+    "es": "agencia de RR. PP.",
+    "pt-BR": "agência de RP",
+    "ar": "وكالة علاقات عامة"
+  },
+  "סוכנות סושיאל": {
+    "en": "social agency",
+    "es": "agencia social",
+    "pt-BR": "agência social",
+    "ar": "وكالة سوشيال"
+  },
+  "סוכנות משפיענים": {
+    "en": "influencer agency",
+    "es": "agencia de influencers",
+    "pt-BR": "agência de influencers",
+    "ar": "وكالة مؤثرين"
+  },
+  "סוכנות פודקאסט ואודיו": {
+    "en": "podcast and audio agency",
+    "es": "agencia de podcast y audio",
+    "pt-BR": "agência de podcast e áudio",
+    "ar": "وكالة بودكاست وصوت"
+  },
+  "סוכנות תקשורת משברים": {
+    "en": "crisis communications agency",
+    "es": "agencia de comunicación de crisis",
+    "pt-BR": "agência de comunicação de crise",
+    "ar": "وكالة تواصل أزمات"
+  },
+  "סוכנות שותפויות ואפיליאציה": {
+    "en": "partnerships and affiliate agency",
+    "es": "agencia de partnerships y afiliación",
+    "pt-BR": "agência de parcerias e afiliação",
+    "ar": "وكالة شراكات وأفيلييت"
+  },
+  "סוכנות ממשל ולובינג": {
+    "en": "government and lobbying agency",
+    "es": "agencia de gobierno y lobbying",
+    "pt-BR": "agência de governo e lobbying",
+    "ar": "وكالة حكومة ولوبي"
+  },
+  "סוכנות פיתוח זכיינות": {
+    "en": "franchise development agency",
+    "es": "agencia de franquicias",
+    "pt-BR": "agência de franquias",
+    "ar": "وكالة تطوير امتياز"
+  },
+  "סוכנות פיץ' ויחסי משקיעים": {
+    "en": "pitch and investor-relations agency",
+    "es": "agencia de pitch e inversores",
+    "pt-BR": "agência de pitch e investidores",
+    "ar": "وكالة بيتش وعلاقات مستثمرين"
+  }
+}

@@ -9,6 +9,9 @@ import sharedExactLexicon from "./templateExactLexicon.shared.json";
 import heroesExactLexicon from "./templateExactLexicon.heroes.json";
 import beautyExactLexicon from "./templateExactLexicon.beauty.json";
 import bodyExactLexicon from "./templateExactLexicon.body.json";
+import galleryExactLexicon from "./templateExactLexicon.gallery.json";
+import catalogExactLexicon from "./templateExactLexicon.catalog.json";
+import moreExactLexicon from "./templateExactLexicon.more.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -30,6 +33,9 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(heroesExactLexicon as Record<string, PhraseTranslation>),
   ...(beautyExactLexicon as Record<string, PhraseTranslation>),
   ...(bodyExactLexicon as Record<string, PhraseTranslation>),
+  ...(galleryExactLexicon as Record<string, PhraseTranslation>),
+  ...(catalogExactLexicon as Record<string, PhraseTranslation>),
+  ...(moreExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -87,9 +93,43 @@ const CATALOG_CATEGORY: Record<string, PhraseTranslation> = {
   חדר: { en: "room", es: "habitación", "pt-BR": "quarto", ar: "غرفة" },
   שיער: { en: "hair", es: "cabello", "pt-BR": "cabelo", ar: "شعر" },
   מיטות: { en: "beds", es: "camas", "pt-BR": "camas", ar: "أسرّة" },
+  תכשיטים: { en: "jewelry", es: "joyería", "pt-BR": "joias", ar: "مجوهرات" },
+  "הלבשת בית": { en: "homewear", es: "ropa de casa", "pt-BR": "roupa de casa", ar: "ملابس منزلية" },
+  "פארם וטיפוח": { en: "pharmacy and care", es: "farmacia y cuidado", "pt-BR": "farmácia e cuidado", ar: "صيدلية وعناية" },
+  "צמחים ומשתלה": { en: "plants and nursery", es: "plantas y vivero", "pt-BR": "plantas e viveiro", ar: "نباتات ومشتل" },
+  "ג׳ינס וסטרית": { en: "denim and street", es: "denim y street", "pt-BR": "jeans e street", ar: "دينم وستريت" },
+  "סניקרס וסטריטוור": { en: "sneakers and streetwear", es: "sneakers y streetwear", "pt-BR": "tênis e streetwear", ar: "سنيكرز وستريتوير" },
+  "יקב ויינות": { en: "winery and wines", es: "bodega y vinos", "pt-BR": "vinícola e vinhos", ar: "كرم ونبيذ" },
+  "טקסטיל לבית": { en: "home textiles", es: "textiles para el hogar", "pt-BR": "têxteis para casa", ar: "منسوجات للمنزل" },
+  "קפה ספיישלטי": { en: "specialty coffee", es: "café de especialidad", "pt-BR": "café especial", ar: "قهوة مختصة" },
+  "נרות וריחות": { en: "candles and scents", es: "velas y aromas", "pt-BR": "velas e aromas", ar: "شموع وعطور" },
+  נעליים: { en: "shoes", es: "zapatos", "pt-BR": "sapatos", ar: "أحذية" },
+  "מוצרי בית": { en: "home goods", es: "artículos del hogar", "pt-BR": "artigos para casa", ar: "مستلزمات المنزل" },
+  "ויטמינים ותוספים": { en: "vitamins and supplements", es: "vitaminas y complementos", "pt-BR": "vitaminas e suplementos", ar: "فيتامينات ومكملات" },
+  "מטבח וכלי בישול": { en: "kitchen and cookware", es: "cocina y utensilios", "pt-BR": "cozinha e utensílios", ar: "مطبخ وأدوات طبخ" },
+  "טיולים וקמפינג": { en: "travel and camping", es: "viajes y camping", "pt-BR": "viagens e camping", ar: "سفر وتخييم" },
+  "אופניים וציוד רכיבה": { en: "bikes and riding gear", es: "bicicletas y equipo", "pt-BR": "bicicletas e equipamento", ar: "دراجات ومعدات ركوب" },
+  "בגדים ואופנה": { en: "apparel and fashion", es: "ropa y moda", "pt-BR": "roupa e moda", ar: "ملابس وأزياء" },
+  "צעצועים ומשחקים": { en: "toys and games", es: "juguetes y juegos", "pt-BR": "brinquedos e jogos", ar: "ألعاب" },
+  "תיקים ואקססוריז": { en: "bags and accessories", es: "bolsos y accesorios", "pt-BR": "bolsas e acessórios", ar: "حقائب وإكسسوارات" },
+  "אודיו וסאונד": { en: "audio and sound", es: "audio y sonido", "pt-BR": "áudio e som", ar: "صوت" },
+  לפטופים: { en: "laptops", es: "portátiles", "pt-BR": "laptops", ar: "حواسيب محمولة" },
+  משקולות: { en: "weights", es: "pesas", "pt-BR": "pesos", ar: "أوزان" },
+  סניקרס: { en: "sneakers", es: "sneakers", "pt-BR": "tênis", ar: "سنيكرز" },
+  תאורה: { en: "lighting", es: "iluminación", "pt-BR": "iluminação", ar: "إضاءة" },
 };
 
+const NAMED_CATALOG_RE = /^(.+) מתוך קטלוג ([A-Za-z][\w.-]*) — (.+)\.$/;
+const STORE_ADDON_RE = /^([A-Za-z][\w.-]*) · (.+) · מוצרים מתוסף החנות$/;
 const STORY_OF_BRAND_RE = /^הסיפור של ([A-Za-z][\w.-]*)\.$/;
+const AGENCY_SITE_COLON_RE =
+  /^אתר מלא לסוכנות (.+): 8 עמודים, תנועה, אפקטים ועיצוב (.+)\.$/;
+const AGENCY_SITE_DASH_RE =
+  /^אתר מלא לסוכנות (.+) עם 8 עמודים, תנועה ואפקטים — (.+)\.$/;
+const STORE_SITE_COLON_RE =
+  /^חנות (.+) מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות\.$/;
+const STORE_SITE_DASH_RE =
+  /^חנות (.+) מלאה עם 8 עמודים, סינונים ומוצרים מתוסף החנות\.$/;
 
 function localizeStoryOfBrand(text: string, locale: string): string {
   const match = text.match(STORY_OF_BRAND_RE);
@@ -111,6 +151,86 @@ function localizeCatalogProductLine(text: string, locale: string): string {
   if (locale === "pt-BR") return `Produto de ${category} do catálogo ${brand}.`;
   if (locale === "ar") return `منتج ${category} من كتالوج ${brand}.`;
   return `${category.charAt(0).toUpperCase()}${category.slice(1)} product from the ${brand} catalog.`;
+}
+
+function localizeNamedCatalogProductLine(text: string, locale: string): string {
+  const match = text.match(NAMED_CATALOG_RE);
+  if (!match) return "";
+  const rawProduct = match[1];
+  const brand = match[2];
+  const category = pickLocaleCopy(CATALOG_CATEGORY[match[3]], locale);
+  if (!category) return "";
+  let product = rawProduct;
+  if (HE.test(rawProduct)) {
+    product = pickLocaleCopy(EXACT_LEXICON[rawProduct], locale);
+    if (!isUsableTranslation(rawProduct, product, locale)) return "";
+  }
+  if (locale === "es") return `${product} del catálogo ${brand} — ${category}.`;
+  if (locale === "pt-BR") return `${product} do catálogo ${brand} — ${category}.`;
+  if (locale === "ar") return `${product} من كتالوج ${brand} — ${category}.`;
+  return `${product} from the ${brand} catalog — ${category}.`;
+}
+
+function localizeStoreAddonLine(text: string, locale: string): string {
+  const match = text.match(STORE_ADDON_RE);
+  if (!match) return "";
+  const brand = match[1];
+  const tagline = match[2];
+  let localizedTag = tagline;
+  if (HE.test(tagline)) {
+    localizedTag = pickLocaleCopy(EXACT_LEXICON[tagline], locale);
+    if (!isUsableTranslation(tagline, localizedTag, locale)) return "";
+  }
+  if (locale === "es") return `${brand} · ${localizedTag} · productos del extra de tienda`;
+  if (locale === "pt-BR") return `${brand} · ${localizedTag} · produtos do extra da loja`;
+  if (locale === "ar") return `${brand} · ${localizedTag} · منتجات من إضافة المتجر`;
+  return `${brand} · ${localizedTag} · products from the store add-on`;
+}
+
+function localizeFragment(text: string, locale: string): string {
+  if (!HE.test(text)) return text;
+  const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
+  if (isUsableTranslation(text, exact, locale)) return exact;
+  return "";
+}
+
+function localizeAgencySiteLine(text: string, locale: string): string {
+  const colon = text.match(AGENCY_SITE_COLON_RE);
+  const dash = text.match(AGENCY_SITE_DASH_RE);
+  const match = colon || dash;
+  if (!match) return "";
+  const kind = localizeFragment(match[1], locale);
+  const design = localizeFragment(match[2], locale) || (HE.test(match[2]) ? "" : match[2]);
+  if (!kind || !design) return "";
+  if (colon) {
+    if (locale === "es") return `Web completa para agencia de ${kind}: 8 páginas, movimiento, efectos y diseño ${design}.`;
+    if (locale === "pt-BR") return `Site completo para agência de ${kind}: 8 páginas, movimento, efeitos e design ${design}.`;
+    if (locale === "ar") return `موقع كامل لوكالة ${kind}: 8 صفحات وحركة وتأثيرات وتصميم ${design}.`;
+    return `Full site for a ${kind} agency: 8 pages, motion, effects, and ${design} design.`;
+  }
+  if (locale === "es") return `Web completa para agencia de ${kind} con 8 páginas, movimiento y efectos — ${design}.`;
+  if (locale === "pt-BR") return `Site completo para agência de ${kind} com 8 páginas, movimento e efeitos — ${design}.`;
+  if (locale === "ar") return `موقع كامل لوكالة ${kind} مع 8 صفحات وحركة وتأثيرات — ${design}.`;
+  return `Full site for a ${kind} agency with 8 pages, motion, and effects — ${design}.`;
+}
+
+function localizeStoreSiteLine(text: string, locale: string): string {
+  const colon = text.match(STORE_SITE_COLON_RE);
+  const dash = text.match(STORE_SITE_DASH_RE);
+  const match = colon || dash;
+  if (!match) return "";
+  const kind = localizeFragment(match[1], locale);
+  if (!kind) return "";
+  if (colon) {
+    if (locale === "es") return `Tienda completa de ${kind}: 8 páginas, categorías, filtros, carrito y productos del extra de tienda.`;
+    if (locale === "pt-BR") return `Loja completa de ${kind}: 8 páginas, categorias, filtros, carrinho e produtos do extra da loja.`;
+    if (locale === "ar") return `متجر ${kind} كامل: 8 صفحات وفئات وفلاتر وسلة ومنتجات من إضافة المتجر.`;
+    return `Full ${kind} store: 8 pages, categories, filters, cart, and products from the store add-on.`;
+  }
+  if (locale === "es") return `Tienda completa de ${kind} con 8 páginas, filtros y productos del extra de tienda.`;
+  if (locale === "pt-BR") return `Loja completa de ${kind} com 8 páginas, filtros e produtos do extra da loja.`;
+  if (locale === "ar") return `متجر ${kind} كامل مع 8 صفحات وفلاتر ومنتجات من إضافة المتجر.`;
+  return `Full ${kind} store with 8 pages, filters, and products from the store add-on.`;
 }
 
 function isUsableTranslation(source: string, translated: string, locale: string): boolean {
@@ -170,9 +290,29 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(catalogLine, locale);
   }
 
+  const namedCatalogLine = localizeNamedCatalogProductLine(text, locale);
+  if (isUsableTranslation(text, namedCatalogLine, locale)) {
+    return adaptBuiltInDirectionalCss(namedCatalogLine, locale);
+  }
+
   const storyLine = localizeStoryOfBrand(text, locale);
   if (isUsableTranslation(text, storyLine, locale)) {
     return adaptBuiltInDirectionalCss(storyLine, locale);
+  }
+
+  const storeAddonLine = localizeStoreAddonLine(text, locale);
+  if (isUsableTranslation(text, storeAddonLine, locale)) {
+    return adaptBuiltInDirectionalCss(storeAddonLine, locale);
+  }
+
+  const agencySiteLine = localizeAgencySiteLine(text, locale);
+  if (isUsableTranslation(text, agencySiteLine, locale)) {
+    return adaptBuiltInDirectionalCss(agencySiteLine, locale);
+  }
+
+  const storeSiteLine = localizeStoreSiteLine(text, locale);
+  if (isUsableTranslation(text, storeSiteLine, locale)) {
+    return adaptBuiltInDirectionalCss(storeSiteLine, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);
