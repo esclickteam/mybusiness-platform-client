@@ -336,6 +336,18 @@ describe("localizeBuiltInTemplateSeed", () => {
         "pt-BR",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "בית טוב לא צועק. הוא מחזיק את השקט, את האור ואת האנשים שנכנסים אליו.",
+        "en",
+      ),
+    ).toMatch(/quiet|light/i);
+    expect(
+      localizeBuiltInText(
+        "בית טוב לא צועק. הוא מחזיק את השקט, את האור ואת האנשים שנכנסים אליו.",
+        "ar",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
