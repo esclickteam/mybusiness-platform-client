@@ -361,7 +361,7 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(api.startAiCampaignSession).not.toHaveBeenCalled();
   });
 
-  it("shows the generation CTA when budget is confirmed", async () => {
+  it("starts building the campaign as soon as the session is ready", async () => {
     api.startAiCampaignSession.mockResolvedValue({
       ...questionSession(),
       status: "READY_FOR_GENERATION",
@@ -372,9 +372,16 @@ describe("MetaAiCampaignWizardPage conversation", () => {
         generateEnabled: true,
       },
     });
+    api.generateAiCampaign.mockImplementation(
+      () => new Promise(() => undefined)
+    );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-generate"));
-    expect(screen.getByText(he.metaCampaigns.ai.readyGenerate)).toBeTruthy();
+    await waitFor(() => screen.getByTestId("meta-ai-preparing"));
+    expect(screen.getByText(he.metaCampaigns.ai.generating)).toBeTruthy();
+    expect(screen.queryByText(he.metaCampaigns.ai.readyGenerate)).toBeNull();
+    await waitFor(() =>
+      expect(api.generateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", false)
+    );
   });
 
   it("renders a currency question", async () => {
@@ -417,8 +424,11 @@ describe("MetaAiCampaignWizardPage conversation", () => {
       })
     );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-currency"));
-    expect((screen.getByTestId("meta-ai-currency") as HTMLInputElement).value).toBe("70");
+    await waitFor(() =>
+      expect((screen.getByTestId("meta-ai-currency") as HTMLInputElement).value).toBe(
+        "70"
+      )
+    );
   });
 
   it("shows the proposal after confirming the prefilled budget without a second generate click", async () => {
@@ -481,14 +491,19 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByRole("button", { name: "כן" })).toBeTruthy();
   });
 
-  it("enables generation only when the session is READY_FOR_GENERATION", async () => {
+  it("builds the campaign without a second generate click when ready", async () => {
     api.startAiCampaignSession.mockResolvedValue(readySession());
+    api.generateAiCampaign.mockImplementation(
+      () => new Promise(() => undefined)
+    );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-ready"));
-    const generate = screen.getByTestId("meta-ai-generate") as HTMLButtonElement;
-    expect(generate.disabled).toBe(false);
-    expect(generate.textContent).toContain(he.metaCampaigns.ai.readyGenerate);
+    await waitFor(() => screen.getByTestId("meta-ai-preparing"));
+    expect(screen.getByText(he.metaCampaigns.ai.generating)).toBeTruthy();
     expect(screen.queryByTestId("meta-ai-composer")).toBeNull();
+    expect(screen.queryByTestId("meta-ai-generate")).toBeNull();
+    await waitFor(() =>
+      expect(api.generateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", false)
+    );
   });
 
   it("opens the preview after generation and keeps missing creative visible", async () => {

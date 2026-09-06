@@ -137,6 +137,8 @@ export default function MetaAiCampaignWizardPage() {
   const [lastMessage, setLastMessage] = useState("");
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const draftLockRef = useRef(false);
+  const autoGenRef = useRef<string | null>(null);
+  const autoDraftRef = useRef<string | null>(null);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [failedAction, setFailedAction] = useState<string | null>(null);
@@ -149,6 +151,10 @@ export default function MetaAiCampaignWizardPage() {
       setSession(next);
       setResumeCandidate(null);
       if (tenantId && next.sessionId) persistSession(tenantId, next.sessionId);
+      const amount = suggestedBudgetAmount(next);
+      if (amount != null) {
+        setBudgetDraft((current) => current || String(amount));
+      }
     },
     [tenantId]
   );
@@ -288,7 +294,6 @@ export default function MetaAiCampaignWizardPage() {
   const handleGenerate = async (regenerate = false) => {
     if (!session?.sessionId || busy) return;
     if (session.status !== "READY_FOR_GENERATION") return;
-    if (!regenerate && !session.ready?.generateEnabled) return;
     setBusy(true);
     setPendingAction(regenerate ? "regenerate" : "generate");
     setError(null);
@@ -299,8 +304,11 @@ export default function MetaAiCampaignWizardPage() {
         regenerate
       );
       applySession(next);
-      setFailedAction(null);
+      if (regenerate || (next?.proposal && next.generation?.status === "READY")) {
+        setFailedAction(null);
+      }
     } catch (err) {
+      autoGenRef.current = null;
       setFailedAction("generate");
       setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
     } finally {
@@ -504,13 +512,12 @@ export default function MetaAiCampaignWizardPage() {
   const isReady = session?.status === "READY_FOR_GENERATION";
   const hasProposal =
     Boolean(session?.proposal) && session?.generation?.status === "READY";
-  const autoGenRef = useRef<string | null>(null);
-  const autoDraftRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!session?.sessionId || !tenantId || busy || loading) return;
     if (!isReady || hasProposal) return;
-    if (!session.ready?.generateEnabled) return;
+    if (failedAction === "generate") return;
+    if (String(session.generation?.status || "") === "GENERATING") return;
     if (autoGenRef.current === session.sessionId) return;
     autoGenRef.current = session.sessionId;
     setBusy(true);
@@ -520,10 +527,21 @@ export default function MetaAiCampaignWizardPage() {
       .then((next) => {
         if (next?.sessionId) {
           applySession(next);
-          setFailedAction(null);
         }
+        if (next?.proposal && next.generation?.status === "READY") {
+          setFailedAction(null);
+          return;
+        }
+        if (String(next?.generation?.status || "") === "GENERATING") return;
+        setFailedAction("generate");
+        setError({
+          message: t("metaCampaigns.ai.errorGeneric"),
+          retry: true,
+          manual: true,
+        });
       })
       .catch((err) => {
+        autoGenRef.current = null;
         setFailedAction("generate");
         setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
       })
@@ -531,7 +549,20 @@ export default function MetaAiCampaignWizardPage() {
         setBusy(false);
         setPendingAction(null);
       });
-  }, [applySession, busy, hasProposal, isReady, loading, session, t, tenantId]);
+  }, [applySession, busy, failedAction, hasProposal, isReady, loading, session, t, tenantId]);
+
+  useEffect(() => {
+    if (!session?.sessionId || !tenantId || hasProposal || loading) return;
+    if (String(session.generation?.status || "") !== "GENERATING") return;
+    const timer = window.setTimeout(() => {
+      void getAiCampaignSession(tenantId, session.sessionId)
+        .then((next) => {
+          if (next?.sessionId) applySession(next);
+        })
+        .catch(() => undefined);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [applySession, hasProposal, loading, session, tenantId]);
 
   useEffect(() => {
     if (!session?.sessionId || !tenantId || busy || loading) return;
@@ -704,23 +735,15 @@ export default function MetaAiCampaignWizardPage() {
                 onAnswer={handleAnswer}
               />
             ) : null}
-            <p className="text-base font-black text-slate-900">
-              {session.ready.message}
-            </p>
-            <button
-              type="button"
-              className={btnPrimary}
-              data-testid="meta-ai-generate"
-              disabled={busy || !session.ready.generateEnabled}
-              onClick={() => void handleGenerate(false)}
+            {failedAction === "generate" ? null : (
+            <div
+              className="flex items-center gap-3 text-base font-black text-slate-900"
+              data-testid="meta-ai-preparing"
             >
-              {pendingAction === "generate" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : null}
-              {pendingAction === "generate"
-                ? t("metaCampaigns.ai.generating")
-                : t("metaCampaigns.ai.readyGenerate")}
-            </button>
+              <Loader2 className="h-5 w-5 animate-spin text-violet-600" />
+              <p>{t("metaCampaigns.ai.generating")}</p>
+            </div>
+            )}
           </div>
         ) : (
           <div className="space-y-5">
