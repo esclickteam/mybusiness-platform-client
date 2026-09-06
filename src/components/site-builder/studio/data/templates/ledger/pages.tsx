@@ -82,7 +82,7 @@ function LedgerSectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.34em]",
@@ -141,11 +141,11 @@ function LedgerHeader({
       className="sticky top-0 z-50 border-b border-[#102018]/10 bg-[#fffdf8]/95 backdrop-blur-2xl"
     >
       <div className="mx-auto grid max-w-7xl items-center gap-4 px-5 py-4 lg:grid-cols-[auto_1fr_auto] lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#102018]/12 bg-[#0d5c45] text-sm font-semibold tracking-[0.2em] text-[#f6f3ea]">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-semibold tracking-tight text-[#102018]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -200,7 +200,7 @@ function LedgerHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-semibold uppercase tracking-[0.2em]",
+                  "border px-4 py-3 text-start text-sm font-semibold uppercase tracking-[0.2em]",
                   currentPage === id
                     ? "border-[#0d5c45] bg-[#0d5c45] text-[#f6f3ea]"
                     : "border-[#102018]/10 text-[#5a6b62]",
@@ -267,7 +267,7 @@ function LedgerHero({
               <TemplateText as="span" className="text-xl font-semibold tracking-[-0.04em] text-[#0d5c45]">
                 0{index + 1}
               </TemplateText>
-              <div className="text-right">
+              <div className="text-start">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#102018]">
                   {label}
                 </TemplateText>
@@ -499,10 +499,10 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
         </div>
         <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="ledger-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("ספרו לנו מה תרצו למדוד, לייעל או לייצב.")}  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("ספרו לנו מה תרצו למדוד, לייעל או לייצב.")}  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-[#102018]/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">{tx("שיחת ההתנעה מיועדת למנהלים, בעלי עסקים וגורמי כספים שמבקשים תהליך מסודר ולא רק ייעוץ חד-פעמי.")}</TemplateText>

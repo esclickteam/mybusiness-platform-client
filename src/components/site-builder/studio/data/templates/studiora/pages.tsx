@@ -58,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-[#c3ff00]">
         <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
         {eyebrow}
@@ -110,7 +110,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#c3ff00] text-lg font-black text-[#0a0a0a] transition duration-300 group-hover:rotate-12">
             {getValue(data, "logoText")}
@@ -165,7 +165,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-bold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-bold transition",
                   currentPage === id ? "bg-[#c3ff00] text-[#0a0a0a]" : "text-white/70 hover:bg-white/5",
                 )}
               >
@@ -218,14 +218,14 @@ function BookingModal({
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
           <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition focus:border-[#c3ff00]">
+            <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition focus:border-[#c3ff00]">
               <option>{tx("סוג הפרויקט")}</option>
               <option>{tx("מיתוג וזהות")}</option>
               <option>{tx("עיצוב UI/UX")}</option>
@@ -233,7 +233,7 @@ function BookingModal({
               <option>{tx("קמפיין / מושן")}</option>
             </select>
             <textarea
-              className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("ספרו לנו על הרעיון")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
@@ -580,19 +580,19 @@ function ContactSection({
         <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("תקציב משוער")}
              name="other" data-bizuply-form-field-id="other" />
             <textarea
-              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder={tx("ספרו לנו על הפרויקט")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button

@@ -58,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
         {eyebrow}
       </p>
@@ -109,7 +109,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-lg font-bold text-white shadow-lg shadow-[#0891b2]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -164,7 +164,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id ? "bg-white text-[#0891b2] shadow-sm" : "text-[#51707c]",
                 )}
               >
@@ -216,14 +216,14 @@ function BookingModal({
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
           <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]">
+            <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]">
               <option>{tx("סוג הטיפול")}</option>
               <option>{tx("בדיקה כללית")}</option>
               <option>{tx("יישור שיניים")}</option>
@@ -545,7 +545,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-lg font-bold text-[#0f2a36]">{question}</span>
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-lg text-white">
@@ -606,19 +606,19 @@ function ContactSection({
         <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
-              className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
+              className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
               placeholder={tx("במה נוכל לעזור?")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button

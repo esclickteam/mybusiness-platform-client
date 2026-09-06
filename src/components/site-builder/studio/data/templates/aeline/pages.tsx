@@ -331,7 +331,7 @@ function Header({
                 onPageChange(item.id);
                 setMobileOpen(false);
               }}
-              className="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-black/5"
+              className="rounded-2xl px-4 py-3 text-start text-sm font-black hover:bg-black/5"
             >
               {tx(item.label)}
             </button>
@@ -427,7 +427,7 @@ function HeroCardRail() {
           mode === "ring"
             ? "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]"
             : "aeline-hero-mobile-card group relative h-[138px] w-[156px] shrink-0",
-          "overflow-hidden rounded-[18px] border border-white/70 p-4 text-right",
+          "overflow-hidden rounded-[18px] border border-white/70 p-4 text-start",
           "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
           "transition duration-500 hover:scale-110",
           card.type === "dark"
@@ -1129,7 +1129,7 @@ function Footer({
                 key={page.id}
                 type="button"
                 onClick={() => onPageChange(page.id)}
-                className="text-right text-sm font-bold text-white/60 transition hover:text-white"
+                className="text-start text-sm font-bold text-white/60 transition hover:text-white"
               >
                 {page.name}
               </button>

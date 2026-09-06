@@ -37,7 +37,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       style={{ background: "#06101cf5", borderColor: "rgba(57,208,255,0.22)", backdropFilter: "blur(14px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="tpl-pulse-line h-10 w-1" style={{ background: "#39d0ff" }} />
           <span className="tpl-display text-2xl font-bold tracking-[-0.03em]" style={{ color: "#e8f1ff" }}>{v(data, "brandName")}</span>
         </button>
@@ -56,7 +56,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(57,208,255,0.2)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-right text-sm font-bold" style={{ borderColor: "rgba(57,208,255,0.14)" }}>{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-start text-sm font-bold" style={{ borderColor: "rgba(57,208,255,0.14)" }}>{label}</button>
             ))}
           </div>
         </div>
@@ -169,7 +169,7 @@ function SkylineBand({ data }: { data: Record<string, any> }) {
 }
 
 function CyanContact({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#06101c" }}>
       <div className="mx-auto grid max-w-7xl gap-10 border p-6 lg:grid-cols-[0.75fr_1fr] lg:p-10" style={{ borderColor: "rgba(57,208,255,0.26)", background: "#0c1a2b" }}>

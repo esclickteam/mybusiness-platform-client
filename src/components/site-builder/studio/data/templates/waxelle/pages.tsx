@@ -43,7 +43,7 @@ function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; c
   return (
     <div
       className="mt-6 min-h-[420px] w-full"
-      dir="rtl"
+      dir={templateDir()}
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
@@ -320,7 +320,7 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto mb-8 h-16 w-px bg-[var(--p)]" />
           <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">WAX / confirmationForm</p>
-          <Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="beauty-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}><input name="name" data-bizuply-form-field-id="name" autoComplete="name" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder={tx("שם מלא")} /><input name="phone" type="tel" data-bizuply-form-field-id="phone" autoComplete="tel" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder={tx("טלפון")} /><textarea name="message" data-bizuply-form-field-id="message" className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder={tx("הערות")} /><button type="submit" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal>
+          <Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="beauty-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}><input name="name" data-bizuply-form-field-id="name" autoComplete="name" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-start outline-none" placeholder={tx("שם מלא")} /><input name="phone" type="tel" data-bizuply-form-field-id="phone" autoComplete="tel" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-start outline-none" placeholder={tx("טלפון")} /><textarea name="message" data-bizuply-form-field-id="message" className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-start outline-none" placeholder={tx("הערות")} /><button type="submit" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal>
         </div>
       </section>
       <section data-template-section-type="locationMap" data-section-kind="locationMap" className="beauty-sandBloom-locationMap-frame-9 px-5 py-20 lg:px-8">

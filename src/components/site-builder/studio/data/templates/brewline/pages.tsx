@@ -76,7 +76,7 @@ function Header({ data, goHome }: { data: Record<string, any>; goHome: () => voi
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#1A1410]/72 text-[var(--cream)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={goHome} className="group flex items-center gap-3 text-right" aria-label={getValue(data, "brandName")}>
+        <button type="button" onClick={goHome} className="group flex items-center gap-3 text-start" aria-label={getValue(data, "brandName")}>
           <span className="grid h-11 w-11 place-items-center rounded-full border border-[var(--clay)] bg-[var(--clay)]/18 text-sm font-black text-[var(--cream)] transition group-hover:bg-[var(--clay)]">{getValue(data, "logoText")}</span>
           <span className="t-serif text-3xl leading-none tracking-tight">{getValue(data, "brandName")}</span>
         </button>
@@ -149,7 +149,7 @@ function Menu({ data }: { data: Record<string, any> }) {
               <article className="bl-menu-row grid gap-3 border-b border-[var(--espresso)]/20 py-7 last:border-b-0 md:grid-cols-[1fr_1.25fr_auto] md:items-end">
                 <h3 className="t-serif text-5xl leading-none tracking-[-0.04em] md:text-7xl">{name}</h3>
                 <p className="max-w-xl text-sm font-semibold leading-7 text-[#6B5749]">{text}</p>
-                <strong className="t-serif text-right text-3xl md:text-6xl leading-none text-[var(--clay)]">{price}</strong>
+                <strong className="t-serif text-start text-3xl md:text-6xl leading-none text-[var(--clay)]">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -320,10 +320,10 @@ function Contact({ data }: { data: Record<string, any> }) {
         </Reveal>
         <Reveal variant="left" delayMs={120}>
           <form className="grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brewline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("אירוע / כמות אורחים")}  name="guests" data-bizuply-form-field-id="guests" />
-            <textarea className="min-h-[140px] border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("ספרו לנו על הקייטרינג או הביקור שתרצו")}  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-start outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-start outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-start outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("אירוע / כמות אורחים")}  name="guests" data-bizuply-form-field-id="guests" />
+            <textarea className="min-h-[140px] border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-start outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder={tx("ספרו לנו על הקייטרינג או הביקור שתרצו")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--espresso)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--clay)]">
               {getValue(data, "contactButton")}
             </button>

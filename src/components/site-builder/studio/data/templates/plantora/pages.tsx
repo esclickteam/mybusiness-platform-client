@@ -433,8 +433,8 @@ function RootReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
         <div className="mt-8 space-y-3">
           <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(26,46,26,0.12)", background: "#f4f7f0" }}>{tx("היי! מתי נוח לכם?")}</div>
           <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="plantora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#65a30d", color: "#65a30dText" }}>{v(data, "cta")}</button>
           </form>
         </div>

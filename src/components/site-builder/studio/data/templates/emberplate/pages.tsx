@@ -38,7 +38,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#0a0604ee", borderColor: "rgba(246,235,224,0.12)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3.5 lg:px-8">
-        <button type="button" onClick={() => go("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => go("home")} className="flex items-center gap-3 text-start">
           <span className="relative grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#e85d04", color: "#140c08" }}>
             {v(data, "logoText")}
             <span className="tpl-ember absolute -top-1 -left-1 h-1.5 w-1.5 rounded-full" style={{ background: "#e85d04", ["--ember-dur" as string]: "5s" }} />
@@ -62,7 +62,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(246,235,224,0.12)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => go(id)} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => go(id)} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -356,7 +356,7 @@ function Insights({ data }: { data: Record<string, any> }) {
               <div className="journal-card-media relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
-              <div className="flex flex-col justify-center p-6 text-right sm:p-8 lg:p-10">
+              <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
                 <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#b89a82" }}>{featured.text}</p>
@@ -369,7 +369,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <div className="journal-card-media relative aspect-[16/10] overflow-hidden">
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-5 text-right sm:p-6">
+                <div className="p-5 text-start sm:p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#b89a82" }}>{post.text}</p>
@@ -428,9 +428,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           </div>
         </div>
         <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="emberplate-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
           <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#e85d04", color: "#140c08" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -508,7 +508,7 @@ function JournalPage({ data, onCta }: { data: Record<string, any>; onCta: () => 
           <img src={posts[0]?.image || v(data, "gallery2Image") || v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20" />
-        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-start text-white lg:px-8 lg:py-24">
           <SectionKicker label={v(data, "insightsKicker")} />
           <h1 className="tpl-display mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">{v(data, "insightsTitle")}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">{v(data, "pageHeroText")}</p>

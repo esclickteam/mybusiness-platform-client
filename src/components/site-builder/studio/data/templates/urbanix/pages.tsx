@@ -33,7 +33,7 @@ function UrbanixAccentHeader({ data, currentPage, goTo, onCta }: { data: Record<
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "rgba(20,21,22,0.94)", borderColor: "rgba(242,242,240,0.12)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-5 px-5 py-4 lg:px-8">
         <span className="tpl-pulse-line h-12 w-2" style={{ background: "#c8f542" }} />
-        <button type="button" onClick={() => goTo("home")} className="text-right">
+        <button type="button" onClick={() => goTo("home")} className="text-start">
           <span className="tpl-display text-3xl font-black uppercase" style={{ color: "#f2f2f0" }}>{v(data, "brandName")}</span>
         </button>
         <nav className="hidden items-center gap-0 border-r lg:flex" style={{ borderColor: "rgba(242,242,240,0.12)" }}>
@@ -48,7 +48,7 @@ function UrbanixAccentHeader({ data, currentPage, goTo, onCta }: { data: Record<
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(242,242,240,0.12)", background: "#141516" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-black">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-black">{label}</button>
             ))}
           </div>
         </div>
@@ -150,7 +150,7 @@ function UrbanixDistrictColumns({ data }: { data: Record<string, any> }) {
 }
 
 function UrbanixLimeContact({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "border bg-transparent px-4 py-4 text-right outline-none";
+  const field = "border bg-transparent px-4 py-4 text-start outline-none";
   return (
     <section style={{ background: "#141516" }}>
       <div className="px-5 py-10 lg:px-8" style={{ background: "#c8f542", color: "#101210" }}>

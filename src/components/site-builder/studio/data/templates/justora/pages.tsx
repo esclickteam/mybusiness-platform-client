@@ -305,7 +305,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <p
         className={cx(
           "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold",
@@ -512,7 +512,7 @@ function Header({
         className={cx(
           "inline-flex items-center gap-1.5",
           mobile
-            ? "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition"
+            ? "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition"
             : "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
           isActive
             ? mobile
@@ -605,7 +605,7 @@ function Header({
             event.preventDefault();
             handleNavigate("home");
           }}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold !text-white shadow-lg shadow-[#b45c3a]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -712,15 +712,15 @@ function ConsultationModal({
           >
             <div className="grid gap-4">
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
                 placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
                 placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
                 placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-              <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]">
+              <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]">
                 <option>{tx("תחום משפטי")}</option>
                 <option>{tx("דיני משפחה")}</option>
                 <option>{tx("משפט מסחרי")}</option>
@@ -728,7 +728,7 @@ function ConsultationModal({
                 <option>{tx("ליטיגציה וייצוג")}</option>
               </select>
               <textarea
-                className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
+                className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
                 placeholder={tx("כמה מילים על המקרה")}
                name="other" data-bizuply-form-field-id="other"></textarea>
 
@@ -769,7 +769,7 @@ function Hero({
       <div className="absolute right-[18%] top-[12%] h-80 w-80 rounded-full bg-[#8b744f]/18 blur-3xl" />
 
       <div className="relative mx-auto grid min-h-[760px] max-w-[1380px] items-end gap-8 px-5 pt-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pt-20 lg:[direction:ltr]">
-        <div className="relative z-30 pb-48 text-right lg:pb-64 lg:[direction:rtl]">
+        <div className="relative z-30 pb-48 text-start lg:pb-64 lg:[direction:rtl]">
           <p className="mb-7 text-xs font-semibold tracking-[0.18em] text-[#d8b88f]">{tx("המשרד המשפטי שלך")}</p>
 
           <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] !text-white md:text-7xl lg:text-[78px]">
@@ -991,7 +991,7 @@ function PracticeAreasSection({
     >
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div className="text-right">
+          <div className="text-start">
             <p className="mb-6 text-sm font-semibold text-[#b45c3a]">{tx("תחומי התמחות")}</p>
 
             <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] !text-[#2b1b1d] md:text-7xl">{tx("מגוון רחב של תחומי התמחות משפטיים")}</h2>
@@ -1607,7 +1607,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
                     {question}
@@ -1699,16 +1699,16 @@ function ContactSection({
         >
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
-              className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
+              className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder={tx("מה תרצו לשאול?")}
              name="other" data-bizuply-form-field-id="other"></textarea>
 

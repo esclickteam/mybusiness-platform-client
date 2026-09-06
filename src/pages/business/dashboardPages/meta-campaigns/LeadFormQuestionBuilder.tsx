@@ -25,8 +25,7 @@ export default function LeadFormQuestionBuilder({
   onCustomQuestionsChange,
   disabled = false,
 }: Props) {
-  const { t, i18n } = useTranslation();
-  const isHe = (i18n.language || "he").startsWith("he");
+  const { t } = useTranslation();
 
   const toggleContact = (type: string) => {
     if (disabled) return;

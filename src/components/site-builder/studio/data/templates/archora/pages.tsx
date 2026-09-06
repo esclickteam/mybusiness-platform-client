@@ -78,7 +78,7 @@ function CounterStat({
 
   return (
     <Reveal delayMs={delayMs} variant="scale">
-      <div ref={ref} className="aspect-square border border-[#111]/20 bg-[#111] p-6 text-right text-[var(--p)] md:p-8">
+      <div ref={ref} className="aspect-square border border-[#111]/20 bg-[#111] p-6 text-start text-[var(--p)] md:p-8">
         <strong className="ar-latin block text-5xl font-extrabold md:text-6xl">
           {value}
           {suffix}
@@ -126,7 +126,7 @@ function Hero({ data }: { data: Record<string, any> }) {
       <div className="absolute inset-0 bg-gradient-to-b from-[#111]/35 via-[#111]/52 to-[#111]" />
       <div className="absolute inset-0 ar-grid-noise opacity-45" />
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-5 pb-16 pt-32 lg:px-8 lg:pb-24">
-        <Reveal variant="right" className="max-w-6xl text-right">
+        <Reveal variant="right" className="max-w-6xl text-start">
           <p className="text-xs font-bold uppercase tracking-[0.4em] text-[var(--p)]">{getValue(data, "heroEyebrow")}</p>
           <div className="relative mt-5 inline-block">
             <span className="ar-slash absolute -left-5 top-2 h-[88%] w-5 bg-[var(--p)] md:-left-8 md:w-7" />
@@ -210,7 +210,7 @@ function Projects({ data }: { data: Record<string, any> }) {
               <article className="ar-project-card group relative aspect-[4/3] overflow-hidden border border-white/12 bg-[#1A1A1A]">
                 <img src={project.image} alt="" className="ar-project-img absolute inset-0 h-full w-full object-cover opacity-80" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/35 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-6 text-right md:p-8">
+                <div className="absolute inset-x-0 bottom-0 p-6 text-start md:p-8">
                   <span className="bg-[var(--p)] px-3 py-1 text-xs font-black text-[#111]">0{index + 1}</span>
                   <h3 className="ar-display mt-4 text-2xl font-extrabold leading-tight text-white md:text-3xl">{project.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-white/78">{project.text}</p>
@@ -260,7 +260,7 @@ function Services({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid gap-5 sm:grid-cols-2">
           {services.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 100}>
-              <article className="ar-service-panel flex min-h-[240px] flex-col justify-between border border-white/12 p-7 text-right md:min-h-[260px] md:p-8">
+              <article className="ar-service-panel flex min-h-[240px] flex-col justify-between border border-white/12 p-7 text-start md:min-h-[260px] md:p-8">
                 <span className="ar-latin text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{index + 1}</span>
                 <div>
                   <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
@@ -286,7 +286,7 @@ function Stats({ data }: { data: Record<string, any> }) {
   return (
     <section data-template-section-type="stats" className="ar-lime-band bg-[var(--p)] px-5 py-20 text-[#111] lg:px-8 lg:py-24">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
-        <Reveal variant="right" className="text-right">
+        <Reveal variant="right" className="text-start">
           <p className="text-xs font-black uppercase tracking-[0.34em]">{getValue(data, "statsEyebrow")}</p>
           <h2 className="ar-display mt-4 text-4xl font-extrabold leading-tight md:text-6xl">{tx("מספרים עם הד.")}</h2>
         </Reveal>
@@ -311,7 +311,7 @@ function Process({ data }: { data: Record<string, any> }) {
   return (
     <section id="process" data-template-section-type="process" className="relative bg-[#0A0A0A] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-        <Reveal variant="right" className="text-right">
+        <Reveal variant="right" className="text-start">
           <p className="text-xs font-bold uppercase tracking-[0.34em] text-[var(--p)]">{getValue(data, "processEyebrow")}</p>
           <h2 className="ar-display mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">{getValue(data, "processTitle")}</h2>
         </Reveal>
@@ -320,7 +320,7 @@ function Process({ data }: { data: Record<string, any> }) {
           <div className="space-y-8">
             {steps.map(([title, text], index) => (
               <Reveal key={title} delayMs={index * 120} variant="left">
-                <article className="relative pr-16 text-right">
+                <article className="relative pr-16 text-start">
                   <span className="ar-node absolute right-0 top-1 grid h-10 w-10 place-items-center border border-[var(--p)] bg-[#0A0A0A] text-xs font-black text-[var(--p)]">{index + 1}</span>
                   <div className="border border-white/12 bg-white/[0.03] p-6">
                     <h3 className="text-2xl font-bold text-white">{title}</h3>
@@ -344,14 +344,14 @@ function Contact({ data }: { data: Record<string, any> }) {
           <div className="ar-project-card relative h-full min-h-[420px] overflow-hidden">
             <img src={getImage(data, "contactImage")} alt="" className="ar-project-img h-full w-full object-cover opacity-78" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
-            <div className="absolute bottom-0 right-0 p-8 text-right">
+            <div className="absolute bottom-0 right-0 p-8 text-start">
               <p className="text-sm font-bold text-[var(--p)]">{getValue(data, "phone")}</p>
               <p className="mt-2 text-sm text-white/72">{getValue(data, "email")}</p>
               <p className="mt-2 text-sm text-white/72">{getValue(data, "address")}</p>
             </div>
           </div>
         </Reveal>
-        <Reveal variant="left" delayMs={120} className="p-6 text-right md:p-10 lg:p-12">
+        <Reveal variant="left" delayMs={120} className="p-6 text-start md:p-10 lg:p-12">
           <p className="text-xs font-bold uppercase tracking-[0.34em] text-[var(--p)]">brief intake</p>
           <h2 className="ar-display mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 text-base leading-8 text-white/72">{getValue(data, "contactText")}</p>

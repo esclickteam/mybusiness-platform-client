@@ -32,7 +32,7 @@ function HomaraSoftHeader({ data, currentPage, goTo, onCta }: { data: Record<str
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "rgba(243,240,232,0.94)", borderColor: "rgba(36,48,40,0.14)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="h-8 w-8 border" style={{ borderColor: "#3f6f5a", background: "#ebe6da" }} />
           <span className="tpl-display text-2xl font-bold">{v(data, "brandName")}</span>
         </button>
@@ -50,7 +50,7 @@ function HomaraSoftHeader({ data, currentPage, goTo, onCta }: { data: Record<str
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-bold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-bold">{label}</button>
             ))}
           </div>
         </div>
@@ -150,7 +150,7 @@ function HomaraFamilyPromise({ data }: { data: Record<string, any> }) {
 }
 
 function HomaraPhoneContact({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "border bg-transparent px-4 py-4 text-right outline-none";
+  const field = "border bg-transparent px-4 py-4 text-start outline-none";
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#ebe6da" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">

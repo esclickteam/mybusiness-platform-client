@@ -983,7 +983,7 @@ function FaqSection() {
               <button
                 type="button"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-5 p-6 text-right text-xl font-black tracking-[-.03em] text-[#301b12]"
+                className="flex w-full items-center justify-between gap-5 p-6 text-start text-xl font-black tracking-[-.03em] text-[#301b12]"
               >
                 <VisualText id={`faq.${index}.question`} fallback={faq.question} />
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#301b12] text-white">{openIndex === index ? "−" : "+"}</span>

@@ -55,7 +55,7 @@ function EstateoCenteredHeader({ data, currentPage, goTo, onCta }: { data: Recor
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(244,236,223,0.14)", background: "#100e0c" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>

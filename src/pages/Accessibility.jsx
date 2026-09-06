@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 export default function Accessibility() {
   const { t, i18n } = useTranslation();
@@ -26,7 +27,7 @@ export default function Accessibility() {
   return (
     <main
       className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800"
-      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      dir={getTextDirection(i18n.language)}
     >
       <Helmet>
         <title>{t("accessibilityPage.seoTitle")}</title>

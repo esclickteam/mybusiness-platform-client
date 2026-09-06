@@ -207,7 +207,7 @@ function MonolithMark({ data }: { data: Record<string, any> }) {
           className="text-sm"
         />
       </div>
-      <div className="text-right">
+      <div className="text-start">
         <EditableText
           data={data}
           dataKey="brandName"
@@ -249,7 +249,7 @@ function SectionHeading({
   dark?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-start")}>
       <EditableText
         data={data}
         dataKey={eyebrowKey}
@@ -319,7 +319,7 @@ function Header({
       className="sticky top-0 z-50 border-b border-[#c8a96a]/25 bg-[#0c1a33]/95 backdrop-blur"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="text-start">
           <MonolithMark data={data} />
         </button>
 
@@ -386,7 +386,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(item.id)}
                 className={cx(
-                  "border px-4 py-4 text-right text-sm uppercase tracking-[0.2em]",
+                  "border px-4 py-4 text-start text-sm uppercase tracking-[0.2em]",
                   currentPage === item.id
                     ? "border-[#c8a96a] bg-[#c8a96a] text-[#0c1a33]"
                     : "border-[#c8a96a]/25 text-white",
@@ -1014,7 +1014,7 @@ function ContactSection({
             className="grid gap-0 border border-[#d7c7a5] bg-white"
           >
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:border-l"
               placeholder={tx("שם מלא")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.name"
@@ -1022,7 +1022,7 @@ function ContactSection({
               data-visual-edit-label="שדה שם"
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
               placeholder={tx("טלפון")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.phone"
@@ -1030,7 +1030,7 @@ function ContactSection({
               data-visual-edit-label="שדה טלפון"
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:border-l"
               placeholder={tx("אימייל")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.email"
@@ -1038,7 +1038,7 @@ function ContactSection({
               data-visual-edit-label="שדה אימייל"
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
               placeholder={tx("תחום ייעוץ")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.topic"
@@ -1046,7 +1046,7 @@ function ContactSection({
               data-visual-edit-label="שדה תחום ייעוץ"
             />
             <textarea
-              className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
+              className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
               placeholder={tx("ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.message"
@@ -1088,7 +1088,7 @@ function CtaSection({
     <section className="border-b border-[#c8a96a]/20 bg-[#102140] px-4 py-20 lg:px-8">
       <Reveal className="mx-auto max-w-7xl border border-[#c8a96a]/25 bg-[#0c1a33] p-6 lg:p-10">
         <div className="grid gap-0 lg:grid-cols-[1fr_1px_0.8fr] lg:items-center">
-          <div className="pb-8 text-right lg:pb-0 lg:pl-8">
+          <div className="pb-8 text-start lg:pb-0 lg:pl-8">
             <div className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]">
               board call
             </div>
@@ -1180,7 +1180,7 @@ function Footer({
                   key={item.id}
                   type="button"
                   onClick={() => goTo(item.id)}
-                  className="border border-[#c8a96a]/20 px-4 py-3 text-right text-sm uppercase tracking-[0.18em] text-[#f6f1e7] transition hover:border-[#c8a96a]"
+                  className="border border-[#c8a96a]/20 px-4 py-3 text-start text-sm uppercase tracking-[0.18em] text-[#f6f1e7] transition hover:border-[#c8a96a]"
                 >
                   <TemplateText
                     as="span"

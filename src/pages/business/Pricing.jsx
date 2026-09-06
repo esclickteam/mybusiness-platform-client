@@ -158,8 +158,22 @@ export default function Plans() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
-  const isHe = coerceSupportedLanguage(i18n.language) === "he";
   const billingMarket = useBillingMarket();
+  const formattedWebsitePrice = formatPlanPrice(
+    billingMarket.prices.websiteAnnual,
+    billingMarket.currency,
+    i18n.language
+  );
+  const formattedWebsiteAddonPrice = formatPlanPrice(
+    WEBSITE_ADDON.price,
+    "ILS",
+    i18n.language
+  );
+  const yearlySavings = formatPlanPrice(
+    billingMarket.prices.businessMonthly * 2,
+    billingMarket.currency,
+    i18n.language
+  );
   const initialPendingIntent = useMemo(() => loadPendingPurchaseIntent(), []);
   const initialPurchaseKey = initialPendingIntent
     ? findServiceCatalogKey(initialPendingIntent.serviceKey)
@@ -187,17 +201,18 @@ export default function Plans() {
   const userId = user?._id || user?.userId || user?.id;
   const activePlan = useMemo(() => getActivePricingPlan(user), [user]);
   const websiteAddonLabel = t("pricing.websiteAddon.label", {
-    defaultValue: isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn,
+    price: formattedWebsiteAddonPrice,
+    defaultValue: WEBSITE_ADDON.labelEn,
   });
   const websiteAddonHint = t("pricing.websiteAddon.hint", {
-    defaultValue: isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn,
+    defaultValue: WEBSITE_ADDON.hintEn,
   });
 
   const catLabel = (key) => {
     const entry = PRICING_CATEGORY_LABELS[key];
     if (!entry) return key;
     return t(`pricing.categories.${key}`, {
-      defaultValue: isHe ? entry.he : entry.en,
+      defaultValue: entry.en,
     });
   };
 
@@ -237,7 +252,9 @@ export default function Plans() {
     if (!plan.checkoutPlan) {
       navigate("/contact", {
         state: {
-          prefillMessage: t("pricing.websiteContactMessage"),
+          prefillMessage: t("pricing.websiteContactMessage", {
+            price: formattedWebsitePrice,
+          }),
         },
       });
       return;
@@ -284,9 +301,9 @@ export default function Plans() {
   const packages = useMemo(
     () =>
       PRICING_PACKAGES.map((pkg) => {
-        const tx = (suffix, he, en) =>
+        const tx = (suffix, _he, en) =>
           t(`pricing.packages.${pkg.type}.${suffix}`, {
-            defaultValue: isHe ? he : en,
+            defaultValue: en,
           });
         const checkoutPlan = pkg.checkoutPlan || pkg.type;
         const regionalPrice =
@@ -302,19 +319,25 @@ export default function Plans() {
           name: tx("name", pkg.nameHe, pkg.nameEn),
           badge: tx("badge", pkg.badgeHe, pkg.badgeEn),
           description: tx("description", pkg.descriptionHe, pkg.descriptionEn),
-          note: tx("note", pkg.noteHe, pkg.noteEn),
+          note:
+            pkg.type === "yearly"
+              ? t("pricing.packages.yearly.note", {
+                  savings: yearlySavings,
+                  defaultValue: pkg.noteEn,
+                })
+              : tx("note", pkg.noteHe, pkg.noteEn),
           button: tx("button", pkg.buttonHe, pkg.buttonEn),
           pricePeriod: tx("pricePeriod", pkg.pricePeriodHe, pkg.pricePeriodEn),
           allowsWebsiteAddon:
             pkg.allowsWebsiteAddon && billingMarket.id === "israel",
-          features: (isHe ? pkg.featuresHe : pkg.featuresEn).map((item, index) =>
+          features: pkg.featuresEn.map((item, index) =>
             t(`pricing.packages.${pkg.type}.features.${index}`, {
               defaultValue: item,
             })
           ),
         };
       }),
-    [billingMarket, isHe, t]
+    [billingMarket, t, yearlySavings]
   );
 
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
@@ -902,7 +925,6 @@ export default function Plans() {
         onClose={() => setPurchaseKey(null)}
         user={user}
         activePlan={activePlan}
-        isHe={isHe}
         restoredIntent={
           restoredIntent && purchaseService
             ? restoredIntent

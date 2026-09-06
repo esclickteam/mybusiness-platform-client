@@ -115,8 +115,8 @@ function getClientEmail(appointment: Appointment): string {
   );
 }
 
-function isHebrewLocale(locale: string): boolean {
-  return locale === "he" || locale === "he-IL";
+function isRtlLocale(locale: string): boolean {
+  return /^(he|ar)([-_]|$)/i.test(locale);
 }
 
 function getValidDate(date?: string): Date | null {
@@ -177,7 +177,7 @@ const DailyAgenda = React.memo(
     const navigate = useNavigate();
     const [emailMenuOpenId, setEmailMenuOpenId] = useState<string | null>(null);
 
-    const isRtl = isHebrewLocale(locale);
+    const isRtl = isRtlLocale(locale);
 
     const selectedDate = useMemo(() => {
       if (typeof date === "string" && date.length === 10) {

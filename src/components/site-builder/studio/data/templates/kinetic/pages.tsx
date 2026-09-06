@@ -114,7 +114,7 @@ function KineticSectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.36em]",
@@ -171,11 +171,11 @@ function KineticHeader({
     >
       <div className="h-1 w-full bg-[#ff2d2d]" />
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#ff2d2d] bg-[#ff2d2d] text-sm font-black tracking-[0.2em] text-black">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-black uppercase tracking-tight text-white">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -230,7 +230,7 @@ function KineticHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-black uppercase tracking-[0.22em]",
+                  "border px-4 py-3 text-start text-sm font-black uppercase tracking-[0.22em]",
                   currentPage === id
                     ? "border-[#ff2d2d] bg-[#ff2d2d] text-black"
                     : "border-white/10 text-white",
@@ -554,10 +554,10 @@ function ContactIntake({ data }: { data: Record<string, any> }) {
         </div>
         <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder={tx("מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?")}  name="other" data-bizuply-form-field-id="other"></textarea>
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-start text-white outline-none md:col-span-2" placeholder={tx("מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?")}  name="other" data-bizuply-form-field-id="other"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">{tx("דף יצירת קשר נבנה כמו מסך המרה קשוח: מעט הסחות, הרבה בהירות, והזמנה ברורה לשיעור ניסיון.")}</TemplateText>

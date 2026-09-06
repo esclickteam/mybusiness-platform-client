@@ -84,7 +84,7 @@ function SectionIntro({
   align?: "right" | "center";
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", align === "center" ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", align === "center" ? "text-center" : "text-start")}>
       <TemplateText
         as="p"
         className="mb-4 inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.34em] text-[#00ff88]"
@@ -172,14 +172,14 @@ function VertexHeader({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="flex items-center gap-3 text-right"
+          className="flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 border border-[#00ff88] bg-[#00ff88]/10 text-sm font-bold text-[#00ff88]">
             <TemplateText as="span" className="grid h-full w-full place-items-center">
               {getValue(data, "logoText")}
             </TemplateText>
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-bold uppercase tracking-[0.14em] text-[#f5f5f5]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -230,7 +230,7 @@ function VertexHeader({
                 type="button"
                 onClick={() => handleNavigate(pageId)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-bold uppercase tracking-[0.14em] transition rounded-none",
+                  "border px-4 py-3 text-start text-sm font-bold uppercase tracking-[0.14em] transition rounded-none",
                   currentPage === pageId
                     ? "border-[#00ff88] bg-[#00ff88] text-[#050505]"
                     : "border-[#00ff8833] text-[#f5f5f5]",
@@ -294,12 +294,12 @@ function InquiryModal({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-14 border-b border-[#00ff8833] bg-transparent px-5 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+              className="h-14 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
               placeholder={placeholder}
             />
           ))}
           <textarea
-            className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+            className="min-h-32 bg-transparent px-5 py-4 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
             placeholder={tx("תיאור קצר של האתגר")}
            name="other" data-bizuply-form-field-id="other"></textarea>
           <button
@@ -401,7 +401,7 @@ function HeroSection({
           </div>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([value, label]) => (
-              <div key={label} className="border border-[#00ff8833] bg-[#0d0d0d] px-4 py-4 text-right">
+              <div key={label} className="border border-[#00ff8833] bg-[#0d0d0d] px-4 py-4 text-start">
                 <TemplateText as="div" className="text-3xl font-black text-[#00ff88]">
                   {value}
                 </TemplateText>
@@ -537,7 +537,7 @@ function ServicesSection({
               <button
                 type="button"
                 onClick={openInquiry}
-                className="mt-8 border border-[#00ff8833] px-4 py-3 text-right text-xs font-bold uppercase tracking-[0.26em] text-[#00ff88] transition hover:border-[#00ff88]"
+                className="mt-8 border border-[#00ff8833] px-4 py-3 text-start text-xs font-bold uppercase tracking-[0.26em] text-[#00ff88] transition hover:border-[#00ff88]"
               >
                 Brief / Start
               </button>
@@ -739,12 +739,12 @@ function ContactSection({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-16 border-b border-[#00ff8833] bg-transparent px-5 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+              className="h-16 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
               placeholder={placeholder}
             />
           ))}
           <textarea
-            className="min-h-40 border-b border-[#00ff8833] bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+            className="min-h-40 border-b border-[#00ff8833] bg-transparent px-5 py-4 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
             placeholder={tx("ספרו לנו מה צריך להיבנות, להשתפר או להשתלב.")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <div className="p-5">

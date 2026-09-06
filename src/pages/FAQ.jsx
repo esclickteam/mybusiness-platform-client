@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -15,7 +16,7 @@ function FAQ() {
   return (
     <main
       className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
-      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      dir={getTextDirection(i18n.language)}
     >
       <Helmet>
         <title>{t("faqPage.seoTitle")}</title>

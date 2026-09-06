@@ -135,7 +135,7 @@ function SectionHeading({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-4xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-4xl", center ? "text-center" : "text-start")}>
       <div className={cx("mb-5", center ? "justify-center" : "justify-start", "flex")}>
         <TerminalLabel label={label} />
       </div>
@@ -191,7 +191,7 @@ function CitadelHeader({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="flex items-center gap-3 text-right"
+          className="flex items-center gap-3 text-start"
         >
           <span
             className="grid h-11 w-11 place-items-center border text-sm font-black tracking-[0.32em]"
@@ -284,7 +284,7 @@ function CitadelHeader({
                   key={pageId}
                   type="button"
                   onClick={() => handleNavigate(pageId)}
-                  className="rounded-sm border px-4 py-3 text-right text-xs font-bold uppercase tracking-[0.24em]"
+                  className="rounded-sm border px-4 py-3 text-start text-xs font-bold uppercase tracking-[0.24em]"
                   style={{
                     borderColor: isActive ? citadelTheme.accent : citadelTheme.border,
                     color: isActive ? citadelTheme.dark : citadelTheme.text,
@@ -769,7 +769,7 @@ function ContactSection({ data }: { data: TemplateData }) {
           ].map(([id, label, placeholder]) => (
             <input
               key={id}
-              className="h-14 border bg-transparent px-5 text-right text-sm outline-none"
+              className="h-14 border bg-transparent px-5 text-start text-sm outline-none"
               style={{ borderColor: citadelTheme.border, color: citadelTheme.light }}
               placeholder={placeholder}
               data-visual-editable="true"
@@ -779,7 +779,7 @@ function ContactSection({ data }: { data: TemplateData }) {
             />
           ))}
           <textarea
-            className="min-h-40 border bg-transparent px-5 py-4 text-right text-sm outline-none md:col-span-2"
+            className="min-h-40 border bg-transparent px-5 py-4 text-start text-sm outline-none md:col-span-2"
             style={{ borderColor: citadelTheme.border, color: citadelTheme.light }}
             placeholder={tx("ספרו לנו על האתגר, הסביבה והדחיפות.")}
             data-visual-editable="true"
@@ -819,7 +819,7 @@ function CtaSection({
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: citadelTheme.border, background: citadelTheme.dark }}>
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 xl:flex-row xl:items-center">
-        <div className="max-w-3xl text-right">
+        <div className="max-w-3xl text-start">
           <div className="mb-5">
             <TerminalLabel label="הצעד_הבא" />
           </div>
@@ -913,7 +913,7 @@ function CitadelFooter({
                 key={pageId}
                 type="button"
                 onClick={() => goTo(pageId)}
-                className="text-right text-sm uppercase tracking-[0.2em] transition hover:opacity-100"
+                className="text-start text-sm uppercase tracking-[0.2em] transition hover:opacity-100"
                 style={{ color: citadelTheme.text, opacity: 0.75 }}
               >
                 {formatBracketLabel(String(label))}

@@ -2033,7 +2033,7 @@
     "alertUserNotLoaded": "Los datos de usuario aún no se han cargado. Inicia sesión o regístrate para continuar con el proceso de pago.",
     "alertCheckoutFailed": "No se pudo iniciar la comprobación",
     "alertGenericError": "Error, por favor, inténtelo de nuevo.",
-    "websiteContactMessage": "Hola, me gustaría comenzar con el paquete solo para sitios web a 600  / año (autoservicio desde la plantilla, vinculado a CRM).",
+    "websiteContactMessage": "Hola, me gustaría empezar con el paquete Solo sitio web a {{price}}/año (autoservicio desde plantilla, vinculado al CRM).",
     "packageWithWebsiteContactMessage": "Hola, me gustaría unirme al {{package}} en {{price}}{{period}}, incluido el complemento del sitio web {{websitePrice}} una vez (construcción de sitio web de autoservicio).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + complemento de sitio web {{websitePrice}} una sola vez",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + sitio web {{websitePrice}} una sola vez (en Stripe)",
@@ -2077,7 +2077,7 @@
       "support": "Soporte mensual"
     },
     "websiteAddon": {
-      "label": "₪550 único — sitio de autoservicio como extra del plan",
+      "label": "{{price}} único — sitio de autoservicio como extra del plan Business",
       "hint": "Pago único, sin renovación automática · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año"
     },
     "packages": {
@@ -2087,7 +2087,19 @@
         "description": "Crea un sitio profesional desde una plantilla — publica, recibe consultas y todo se conecta al CRM.",
         "note": "Pago único — sin compromiso ni renovación automática",
         "button": "Empezar con un sitio",
-        "pricePeriod": "/año"
+        "pricePeriod": "/año",
+        "features": {
+          "0": "Constructor visual completo de sitios",
+          "1": "Cientos de plantillas listas por sector",
+          "2": "Páginas, secciones, galerías y formularios",
+          "3": "Adaptado a móvil, tablet y escritorio",
+          "4": "Dominio gratis el primer año",
+          "5": "Publica en URL de BizUply o tu dominio",
+          "6": "Formulario de leads del sitio conectado al CRM",
+          "7": "Herramientas de accesibilidad incluidas",
+          "8": "SEO básico de páginas",
+          "9": "Edita cuando quieras por tu cuenta"
+        }
       },
       "monthly": {
         "name": "BizUply Business",
@@ -2095,15 +2107,39 @@
         "description": "Acceso al sistema de negocio BizUply — CRM, citas, colaboraciones, automatizaciones e IA. El sitio no está incluido.",
         "note": "Facturación mensual renovable",
         "button": "Empezar mensual",
-        "pricePeriod": "/mes"
+        "pricePeriod": "/mes",
+        "features": {
+          "0": "Página de negocio profesional en la plataforma",
+          "1": "CRM para leads y clientes",
+          "2": "Calendario de citas y servicios",
+          "3": "Mensajería integrada",
+          "4": "Gestión de reseñas y valoraciones",
+          "5": "Red de colaboraciones de negocio",
+          "6": "Automatizaciones inteligentes",
+          "7": "Asesor IA de BizUply e insights",
+          "8": "Tareas, registro de llamadas y alertas",
+          "9": "Analítica y panel de rendimiento",
+          "10": "Opción de añadir agentes humanos",
+          "11": "Opción de añadir el sitio por separado"
+        }
       },
       "yearly": {
         "name": "BizUply Business anual",
         "badge": "Mejor valor",
         "description": "El sistema de negocio a un mejor precio anual — CRM, citas, colaboraciones e IA. El sitio no está incluido.",
-        "note": "Facturación anual renovable",
+        "note": "Facturación anual renovable · ahorra {{savings}} frente al mensual",
         "button": "Empezar anual",
-        "pricePeriod": "/año"
+        "pricePeriod": "/año",
+        "features": {
+          "0": "Todo lo del paquete Business mensual",
+          "1": "Ahorro anual significativo",
+          "2": "Acceso completo a todos los módulos de negocio",
+          "3": "CRM + citas + colaboraciones + IA",
+          "4": "Automatizaciones y alertas sin límites",
+          "5": "Panel de rendimiento y analítica",
+          "6": "Opción de añadir el sitio por separado",
+          "7": "Opción de añadir más servicios de negocio"
+        }
       }
     }
   },

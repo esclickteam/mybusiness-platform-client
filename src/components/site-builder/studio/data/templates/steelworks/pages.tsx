@@ -108,7 +108,7 @@ function BandHeading({
   invert?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <TemplateText
         as="p"
         editId={eyebrowKey}
@@ -181,7 +181,7 @@ function SteelHeader({
       className="sticky top-0 z-50 border-b border-white/10 bg-[#111111]/95 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-5 py-4 md:px-8">
-        <button type="button" onClick={() => navigate("home")} className="flex items-center gap-4 text-right">
+        <button type="button" onClick={() => navigate("home")} className="flex items-center gap-4 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#ff6b2c] bg-[#1a1a1a] text-sm font-black uppercase text-[#ff6b2c]">
             <TemplateText as="span" editId="logoText" editLabel="logoText">
               {getValue(data, "logoText")}
@@ -252,7 +252,7 @@ function SteelHeader({
                 type="button"
                 onClick={() => navigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-xs font-black uppercase tracking-[0.24em]",
+                  "border px-4 py-3 text-start text-xs font-black uppercase tracking-[0.24em]",
                   currentPage === id
                     ? "border-[#ff6b2c] bg-[#ff6b2c] text-[#111111]"
                     : "border-white/10 text-[#f3f0ea]",
@@ -742,19 +742,19 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
         </div>
         <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder={tx("אימייל")}
            name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <textarea
-            className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder={tx("ספרו לנו על הפרויקט")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <SteelButton className="w-full justify-center">

@@ -76,7 +76,7 @@ function EditorialIntro({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <TemplateText
         as="p"
         className="mb-4 inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.34em] text-[#ff3b30]"
@@ -178,7 +178,7 @@ function FramehausHeader({
     >
       <div className="mx-auto grid max-w-7xl items-center gap-4 px-5 py-4 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
         <div className="flex items-center justify-between gap-3 lg:justify-start">
-          <button type="button" onClick={() => handleNavigate("home")} className="text-right">
+          <button type="button" onClick={() => handleNavigate("home")} className="text-start">
             <TemplateText as="div" className="text-3xl font-black uppercase tracking-[-0.08em] text-[#111111]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -227,7 +227,7 @@ function FramehausHeader({
                 type="button"
                 onClick={() => handleNavigate(pageId)}
                 className={cx(
-                  "border-2 px-4 py-3 text-right text-sm font-bold uppercase tracking-[0.18em] rounded-none",
+                  "border-2 px-4 py-3 text-start text-sm font-bold uppercase tracking-[0.18em] rounded-none",
                   currentPage === pageId
                     ? "border-[#111111] bg-[#111111] text-[#fafafa]"
                     : "border-black text-[#111111]",
@@ -290,12 +290,12 @@ function InquiryModal({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-14 border-b-2 border-black bg-transparent px-5 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
+              className="h-14 border-b-2 border-black bg-transparent px-5 text-start text-sm text-[#111111] outline-none placeholder:text-[#777]"
               placeholder={placeholder}
             />
           ))}
           <textarea
-            className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
+            className="min-h-32 bg-transparent px-5 py-4 text-start text-sm text-[#111111] outline-none placeholder:text-[#777]"
             placeholder={tx("ספרו לנו איזה עולם אתם רוצים לבנות בפריים.")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <button
@@ -427,7 +427,7 @@ function StatsSection({ data }: { data: Record<string, any> }) {
     <section className="border-b-2 border-black px-5 py-12 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-px border-2 border-black bg-black md:grid-cols-4">
         {stats.map(([value, label]) => (
-          <div key={label} className="bg-[#fafafa] px-5 py-6 text-right">
+          <div key={label} className="bg-[#fafafa] px-5 py-6 text-start">
             <TemplateText as="div" className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#666666]">
               {label}
             </TemplateText>
@@ -587,7 +587,7 @@ function GallerySection({ data }: { data: Record<string, any> }) {
           {works.map((work, index) => (
             <article key={work.title + index} className={work.cols}>
               <FramedImage src={work.image} alt={work.title} className={work.height} />
-              <div className="mt-4 border-r-4 border-[#ff3b30] pr-4 text-right">
+              <div className="mt-4 border-r-4 border-[#ff3b30] pr-4 text-start">
                 <TemplateText as="div" className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#666666]">
                   Spread 0{index + 1}
                 </TemplateText>
@@ -725,12 +725,12 @@ function ContactSection({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-16 border-b-2 border-black bg-transparent px-5 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
+              className="h-16 border-b-2 border-black bg-transparent px-5 text-start text-sm text-[#111111] outline-none placeholder:text-[#777]"
               placeholder={placeholder}
             />
           ))}
           <textarea
-            className="min-h-40 border-b-2 border-black bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
+            className="min-h-40 border-b-2 border-black bg-transparent px-5 py-4 text-start text-sm text-[#111111] outline-none placeholder:text-[#777]"
             placeholder={tx("מה אתם רוצים שנראה, נצלם ונגרום לו להרגיש?")}
            name="other" data-bizuply-form-field-id="other"></textarea>
           <div className="p-5">
@@ -870,7 +870,7 @@ function InnerPage({
     <>
       <section className="relative overflow-hidden border-b-2 border-black px-5 py-16 lg:px-8 lg:py-24">
         <div className="framehaus-hero-grid pointer-events-none absolute inset-0 opacity-20" />
-        <div className="mx-auto max-w-7xl text-right">
+        <div className="mx-auto max-w-7xl text-start">
           <TemplateText as="p" className="text-[11px] font-bold uppercase tracking-[0.34em] text-[#ff3b30]">
             {getValue(data, "brandName")}
           </TemplateText>

@@ -60,7 +60,7 @@ function Header({
       style={{ background: "#f7f3eeee", borderColor: "rgba(28,38,24,0.15)", backdropFilter: "blur(14px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span
             className="grid h-10 w-10 place-items-center text-sm font-bold"
             style={{ background: "#8b6f5c", color: "#f7f3ee" }}
@@ -107,7 +107,7 @@ function Header({
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(28,38,24,0.15)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">
                 {label}
               </button>
             ))}
@@ -120,7 +120,7 @@ function Header({
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field =
-    "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+    "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="solenne-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
       <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />

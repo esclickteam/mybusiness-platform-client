@@ -241,7 +241,7 @@ function Faq({ data }: { data: Record<string, any> }) {
           {faqs.map(([q, a], i) => (
             <Reveal key={q} delayMs={i * 80} variant="left">
               <div className="border border-[var(--p)]/25 bg-[var(--surface)]">
-                <button type="button" onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-6 text-right">
+                <button type="button" onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-6 text-start">
                   <span className="text-lg font-bold">{q}</span>
                   <span className="grid h-9 w-9 place-items-center bg-[var(--p)] text-white">{open === i ? "−" : "+"}</span>
                 </button>
@@ -278,11 +278,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
             <Reveal variant="left" delayMs={120}>
               <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
                 </div>
-                <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-                <textarea className="min-h-32 border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("ספרו לנו בקצרה על הסוגיה")}  name="message" data-bizuply-form-field-id="message"></textarea>
+                <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+                <textarea className="min-h-32 border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("ספרו לנו בקצרה על הסוגיה")}  name="message" data-bizuply-form-field-id="message"></textarea>
                 <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
               </form>
             </Reveal>
@@ -322,8 +322,8 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>

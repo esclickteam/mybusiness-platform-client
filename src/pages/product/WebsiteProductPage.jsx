@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import {
   Code2,
   History,
@@ -104,7 +105,7 @@ export default function WebsiteProductPage() {
   ];
 
   return (
-    <div dir={i18n.language === "he" ? "rtl" : "ltr"} className="pm wbp">
+    <div dir={getTextDirection(i18n.language)} className="pm wbp">
       <Helmet>
         <title>{SEO_TITLE}</title>
         <meta name="description" content={SEO_DESCRIPTION} />

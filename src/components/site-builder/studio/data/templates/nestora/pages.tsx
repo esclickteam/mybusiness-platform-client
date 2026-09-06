@@ -55,7 +55,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(61,90,128,0.16)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-right text-sm" style={{ borderColor: "rgba(61,90,128,0.12)" }}>{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-start text-sm" style={{ borderColor: "rgba(61,90,128,0.12)" }}>{label}</button>
             ))}
           </div>
         </div>
@@ -138,7 +138,7 @@ function PersonalLetter({ data }: { data: Record<string, any> }) {
 }
 
 function PersonalContact({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(61,90,128,0.14)", background: "#eef1f5" }}>
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.85fr]">

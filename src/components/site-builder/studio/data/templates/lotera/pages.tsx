@@ -33,7 +33,7 @@ function LoteraSeaHeader({ data, currentPage, goTo, onCta }: { data: Record<stri
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 -mb-[74px] border-b"
       style={{ background: "rgba(7,19,31,0.34)", borderColor: "rgba(238,245,251,0.18)", backdropFilter: "blur(14px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="h-9 w-px" style={{ background: "#5eb4ff" }} />
           <span className="tpl-display text-2xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -56,7 +56,7 @@ function LoteraSeaHeader({ data, currentPage, goTo, onCta }: { data: Record<stri
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(238,245,251,0.18)", background: "#07131f" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -84,7 +84,7 @@ function LoteraCinematicHero({ data, goTo, onCta }: { data: Record<string, any>;
       <div className="absolute inset-x-5 bottom-6 z-20 mx-auto max-w-7xl lg:inset-x-8">
         <div className="grid border backdrop-blur-xl md:grid-cols-3" style={{ borderColor: "rgba(238,245,251,0.22)", background: "rgba(7,19,31,0.62)" }}>
           {teasers.map(([title, text, meta], index) => (
-            <button key={title} type="button" onClick={() => goTo("listings")} className="group border-b p-5 text-right md:border-b-0 md:border-l last:border-l-0"
+            <button key={title} type="button" onClick={() => goTo("listings")} className="group border-b p-5 text-start md:border-b-0 md:border-l last:border-l-0"
               style={{ borderColor: "rgba(238,245,251,0.16)" }}>
               <span className="text-xs font-bold tracking-[0.24em]" style={{ color: "#5eb4ff" }}>0{index + 1} / {meta}</span>
               <strong className="tpl-display mt-3 block text-2xl font-bold">{title}</strong>
@@ -156,7 +156,7 @@ function LoteraWaterStory({ data }: { data: Record<string, any> }) {
 }
 
 function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "border-0 border-b bg-transparent px-0 py-4 text-right outline-none";
+  const field = "border-0 border-b bg-transparent px-0 py-4 text-start outline-none";
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(238,245,251,0.16)", background: "#030910" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">

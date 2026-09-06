@@ -83,7 +83,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.34em]",
@@ -142,11 +142,11 @@ function HorizonHeader({
       className="sticky top-0 z-50 border-b border-[#1c1c1c]/10 bg-[#f7f3ed]/95 backdrop-blur-2xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#1c1c1c]/12 bg-[#1c1c1c] text-sm font-semibold tracking-[0.2em] text-[#f7f3ed]">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-semibold tracking-tight text-[#1c1c1c]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -201,7 +201,7 @@ function HorizonHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-semibold tracking-[0.16em] uppercase",
+                  "border px-4 py-3 text-start text-sm font-semibold tracking-[0.16em] uppercase",
                   currentPage === id
                     ? "border-[#1c1c1c] bg-[#1c1c1c] text-[#f7f3ed]"
                     : "border-[#1c1c1c]/10 text-[#6b645c]",
@@ -277,7 +277,7 @@ function HorizonHero({
               <TemplateText as="div" className="mt-3 max-w-sm text-sm leading-7 text-[#6b645c]">{tx("ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.")}</TemplateText>
             </div>
             {stats.map(([value, label]) => (
-              <div key={label} className="border-b border-[#1c1c1c]/10 px-5 py-6 text-right md:border-b-0 md:border-l lg:px-8">
+              <div key={label} className="border-b border-[#1c1c1c]/10 px-5 py-6 text-start md:border-b-0 md:border-l lg:px-8">
                 <TemplateText as="div" className="text-3xl font-semibold tracking-[-0.04em] text-[#1c1c1c]">
                   {value}
                 </TemplateText>
@@ -489,7 +489,7 @@ function DistrictTable() {
             <div
               key={area}
               className={cx(
-                "grid gap-4 border-b border-[#1c1c1c]/10 px-5 py-5 text-right md:grid-cols-[1fr_1fr_1fr]",
+                "grid gap-4 border-b border-[#1c1c1c]/10 px-5 py-5 text-start md:grid-cols-[1fr_1fr_1fr]",
                 index === districtRows.length - 1 ? "border-b-0" : "",
               )}
             >
@@ -589,10 +589,10 @@ function ContactSection({ data }: { data: Record<string, any> }) {
         </div>
         <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="horizon-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים.")}  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים.")}  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#1c1c1c]/10 pt-6">
             <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">{tx("פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.")}</TemplateText>

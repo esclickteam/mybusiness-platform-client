@@ -37,7 +37,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       style={{ background: "#e8f3f2f4", borderColor: "rgba(31,122,120,0.18)", backdropFilter: "blur(14px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="h-8 w-12 border-t-2 border-b-2" style={{ borderColor: "#1f7a78" }} />
           <span>
             <span className="tpl-display block text-2xl font-bold leading-none" style={{ color: "#12343a" }}>{v(data, "brandName")}</span>
@@ -70,7 +70,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(31,122,120,0.18)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b px-2 py-3 text-right text-sm font-semibold" style={{ borderColor: "rgba(31,122,120,0.12)" }}>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b px-2 py-3 text-start text-sm font-semibold" style={{ borderColor: "rgba(31,122,120,0.12)" }}>
                 {label}
               </button>
             ))}
@@ -187,7 +187,7 @@ function NatureSquares({ data }: { data: Record<string, any> }) {
 }
 
 function SereneInquiry({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#cfe6e4" }}>
       <div className="mx-auto grid max-w-6xl gap-10 border p-6 md:grid-cols-[0.85fr_1.15fr] md:p-10" style={{ borderColor: "rgba(31,122,120,0.22)", background: "#e8f3f2" }}>

@@ -142,7 +142,7 @@ function Stats({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="stats" className="border-y border-white/10 bg-[var(--v-surface)] px-5 py-16 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
         {stats.map(([num, label]) => (
-          <div key={label} className="text-center md:text-right">
+          <div key={label} className="text-center md:text-start">
             <div className="v-display text-5xl font-semibold text-[var(--v-moss)] md:text-6xl">{num}</div>
             <div className="mt-2 text-sm tracking-[0.12em] text-[var(--v-muted)]">{label}</div>
           </div>
@@ -277,9 +277,9 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           </div>
         </div>
         <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("תקציב משוער")}  name="other" data-bizuply-form-field-id="other" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("תקציב משוער")}  name="other" data-bizuply-form-field-id="other" />
           <button type="submit" onClick={openModal} className="bg-[var(--v-moss)] px-7 py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>
@@ -314,8 +314,8 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
         <h3 className="v-display text-3xl font-semibold">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--v-moss)] py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>

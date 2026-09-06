@@ -497,8 +497,8 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lectora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>

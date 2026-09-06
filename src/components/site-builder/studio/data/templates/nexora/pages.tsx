@@ -58,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">
         {eyebrow}
       </p>
@@ -127,7 +127,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 text-lg font-bold text-white shadow-lg shadow-indigo-500/30 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -182,7 +182,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id ? "bg-white/10 text-white" : "text-slate-400 hover:bg-white/5",
                 )}
               >
@@ -236,15 +236,15 @@ function BookingModal({
           </p>
           <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("אימייל עבודה")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("שם החברה")}
              name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <button
@@ -560,7 +560,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-lg font-bold text-white">{question}</span>
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-lg text-white">
@@ -645,19 +645,19 @@ function ContactSection({
         <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("אימייל עבודה")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("שם החברה")}
              name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <textarea
-              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
+              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder={tx("ספרו לנו על הצוות שלכם")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button

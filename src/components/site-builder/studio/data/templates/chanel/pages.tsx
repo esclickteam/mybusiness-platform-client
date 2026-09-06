@@ -2132,7 +2132,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
                 alt={current.name}
                 className="h-12 w-12 rounded-full object-cover"
               />
-              <div className="text-right">
+              <div className="text-start">
                 <strong
                   className="block text-sm font-normal tracking-wide"
                   data-editable="text"

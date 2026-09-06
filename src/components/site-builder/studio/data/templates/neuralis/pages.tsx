@@ -218,7 +218,7 @@ function FeaturesBento({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 85} variant="up">
-              <article className="neuralis-card relative flex min-h-[280px] flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 text-right transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 md:min-h-[320px]">
+              <article className="neuralis-card relative flex min-h-[280px] flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 text-start transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 md:min-h-[320px]">
                 <span className="neuralis-display text-5xl font-bold text-cyan-300/28 md:text-6xl">0{index + 1}</span>
                 <div className="relative z-10">
                   <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
@@ -386,11 +386,11 @@ function DemoForm({ data }: { data: Record<string, any> }) {
         <Reveal variant="left" delayMs={120}>
           <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("אימייל עבודה")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("אימייל עבודה")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             </div>
-            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("חברה ותפקיד")}  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("איזה תהליך הייתם רוצים להפוך לחכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
+            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("חברה ותפקיד")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("איזה תהליך הייתם רוצים להפוך לחכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>

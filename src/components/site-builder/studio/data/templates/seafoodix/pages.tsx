@@ -162,7 +162,7 @@ function FoamHomeStats({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 70} variant="up">
-            <div className="text-center md:text-right">
+            <div className="text-center md:text-start">
               <div className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#38bdf8" }}>{n}</div>
               <p className="mt-2 text-sm" style={{ color: "#7aa8b8" }}>{l}</p>
             </div>
@@ -440,7 +440,7 @@ function FoamReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
       <div className="mx-auto max-w-xl text-center">
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 leading-8" style={{ color: "#7aa8b8" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#38bdf8", background: "#0a2430" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="seafoodix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-start" style={{ borderColor: "#38bdf8", background: "#0a2430" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="seafoodix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />

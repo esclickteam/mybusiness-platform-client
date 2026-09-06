@@ -1592,7 +1592,7 @@ function FaqSection({ data }: SharedProps) {
                   type="button"
                   onClick={() => setOpen(isOpen ? null : index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-start justify-between gap-5 py-6 text-right sm:py-8"
+                  className="flex w-full items-start justify-between gap-5 py-6 text-start sm:py-8"
                   {...visualProps(
                     `faq.${index}.question.button`,
                     "button",

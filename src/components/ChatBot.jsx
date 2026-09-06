@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { useLocaleDir } from "../hooks/useLocaleDir";
-import { isHebrewLanguage } from "../i18n/localeUtils";
+import { getIntlLocale, isHebrewLanguage } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
 import {
   disconnectSupportGuestSocket,
@@ -107,7 +107,7 @@ function formatHistoryDate(value, language) {
   if (!value) return "";
   try {
     return new Date(value).toLocaleString(
-      isHebrewLanguage(language) ? "he-IL" : "en-US",
+      getIntlLocale(language),
       {
         day: "numeric",
         month: "short",

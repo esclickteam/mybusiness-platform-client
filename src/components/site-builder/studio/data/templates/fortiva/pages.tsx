@@ -60,7 +60,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p
         className={cx(
           "mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em]",
@@ -124,7 +124,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-lg bg-[#0f1e3d] font-serif text-lg font-semibold text-[#c6a664] transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -182,7 +182,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id ? "bg-[#0f1e3d] text-[#f6f5f1]" : "text-[#5a6478] hover:bg-[#f6f5f1]",
                 )}
               >
@@ -233,14 +233,14 @@ function BookingModal({
         <p className="mt-3 text-sm leading-6 text-[#4a5568]">{getValue(data, "contactText")}</p>
         <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="fortiva-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
-            className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+            className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
             placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
-            className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+            className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
             placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <select className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]">
+          <select className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]">
             <option>{tx("תחום הפנייה")}</option>
             <option>{tx("דיני חברות ומסחר")}</option>
             <option>{tx("נדל״ן ומקרקעין")}</option>
@@ -248,7 +248,7 @@ function BookingModal({
             <option>{tx("ליטיגציה ויישוב סכסוכים")}</option>
           </select>
           <textarea
-            className="min-h-24 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+            className="min-h-24 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
             placeholder={tx("פרטים על הפנייה")}
            name="other" data-bizuply-form-field-id="other"></textarea>
           <button
@@ -580,19 +580,19 @@ function ContactSection({
         <form className="m-4 rounded-2xl bg-[#f6f5f1] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="fortiva-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
               placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
               placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+              className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
               placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
-              className="min-h-32 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
+              className="min-h-32 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-start outline-none transition focus:border-[#b8935a]"
               placeholder={tx("פרטים על הפנייה")}
              name="other" data-bizuply-form-field-id="other"></textarea>
             <button

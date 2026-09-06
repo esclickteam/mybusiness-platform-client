@@ -2033,7 +2033,7 @@
     "alertUserNotLoaded": "Os dados do usuário ainda não foram carregados. Entre ou registre-se para continuar a verificação.",
     "alertCheckoutFailed": "Falha ao iniciar o checkout",
     "alertGenericError": "Erro, por favor, tente novamente.",
-    "websiteContactMessage": "Oi, gostaria de começar com o pacote somente no site em  600/ano (autoatendimento a partir do modelo, vinculado ao CRM).",
+    "websiteContactMessage": "Oi, gostaria de começar com o pacote Apenas website a {{price}}/ano (autoatendimento a partir do modelo, ligado ao CRM).",
     "packageWithWebsiteContactMessage": "Oi, eu gostaria de me juntar ao {{package}} no {{price}}{{period}}, incluindo o complemento {{websitePrice}} do site uma vez (construção do site de autoatendimento).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + add-on {{websitePrice}} de uma só vez",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + site {{websitePrice}} uma vez (em Stripe)",
@@ -2077,7 +2077,7 @@
       "support": "Suporte mensal"
     },
     "websiteAddon": {
-      "label": "₪550 único — site self-serve como extra do plano",
+      "label": "{{price}} único — site self-serve como extra do plano Business",
       "hint": "Pagamento único, sem renovação automática · modelos e editor visual, ligado ao CRM — domínio grátis por 1 ano"
     },
     "packages": {
@@ -2087,7 +2087,19 @@
         "description": "Crie um site profissional a partir de um modelo — publique, receba contactos e tudo liga ao CRM.",
         "note": "Pagamento único — sem compromisso e sem renovação automática",
         "button": "Começar com um site",
-        "pricePeriod": "/ano"
+        "pricePeriod": "/ano",
+        "features": {
+          "0": "Construtor visual completo de sites",
+          "1": "Centenas de modelos prontos por setor",
+          "2": "Páginas, seções, galerias e formulários",
+          "3": "Adaptado a celular, tablet e desktop",
+          "4": "Domínio grátis no primeiro ano",
+          "5": "Publique na URL da BizUply ou no seu domínio",
+          "6": "Formulário de leads do site ligado ao CRM",
+          "7": "Ferramentas de acessibilidade incluídas",
+          "8": "SEO básico de páginas",
+          "9": "Edite quando quiser por conta própria"
+        }
       },
       "monthly": {
         "name": "BizUply Business",
@@ -2095,15 +2107,39 @@
         "description": "Acesso ao sistema de negócio BizUply — CRM, marcações, colaborações, automações e IA. O site não está incluído.",
         "note": "Cobrança mensal renovável",
         "button": "Começar mensal",
-        "pricePeriod": "/mês"
+        "pricePeriod": "/mês",
+        "features": {
+          "0": "Página profissional do negócio na plataforma",
+          "1": "CRM para leads e clientes",
+          "2": "Agenda de marcações e serviços",
+          "3": "Mensagens integradas",
+          "4": "Gestão de avaliações e notas",
+          "5": "Rede de colaborações de negócio",
+          "6": "Automações inteligentes",
+          "7": "Consultor de IA da BizUply e insights",
+          "8": "Tarefas, registo de chamadas e alertas",
+          "9": "Análises e painel de desempenho",
+          "10": "Opção de adicionar agentes humanos",
+          "11": "Opção de adicionar o site à parte"
+        }
       },
       "yearly": {
         "name": "BizUply Business anual",
         "badge": "Melhor valor",
         "description": "O sistema de negócio a um melhor preço anual — CRM, marcações, colaborações e IA. O site não está incluído.",
-        "note": "Cobrança anual renovável",
+        "note": "Cobrança anual renovável · poupe {{savings}} face ao mensal",
         "button": "Começar anual",
-        "pricePeriod": "/ano"
+        "pricePeriod": "/ano",
+        "features": {
+          "0": "Tudo do pacote Business mensal",
+          "1": "Poupança anual significativa",
+          "2": "Acesso completo a todos os módulos de negócio",
+          "3": "CRM + marcações + colaborações + IA",
+          "4": "Automações e alertas sem limites",
+          "5": "Painel de desempenho e análises",
+          "6": "Opção de adicionar o site à parte",
+          "7": "Opção de adicionar mais serviços de negócio"
+        }
       }
     }
   },

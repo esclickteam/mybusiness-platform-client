@@ -310,7 +310,7 @@ function Header({
           data-visual-link-href={getPageHref("home")}
           data-link-url={getPageHref("home")}
           onClick={(event) => handlePageClick(event, "home")}
-          className="flex items-center gap-3 text-right"
+          className="flex items-center gap-3 text-start"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_14px_35px_rgba(37,99,235,0.28)]">
             <Building2 className="h-5 w-5" />
@@ -1005,7 +1005,7 @@ export function SpalcioPages(props: SpalcioPagesProps) {
           : activePage.slug
       }
       data-bizuply-library-page={isLibraryPage ? "true" : undefined}
-      className="min-h-screen bg-white text-right text-slate-950"
+      className="min-h-screen bg-white text-start text-slate-950"
     >
       <Header
         activePageId={headerActiveId}

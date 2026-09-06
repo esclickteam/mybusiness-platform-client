@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { Bell, CheckCheck, Clock3, Flame, RefreshCw, Settings } from "lucide-react";
 import { Reveal, SectionHeading } from "../product-marketing";
 import "./automationsNotificationsDemo.css";
@@ -25,7 +26,7 @@ function KindIcon({ kind }: { kind: DemoKind }) {
 
 export default function AutomationsNotificationsDemo() {
   const { t, i18n } = useTranslation();
-  const dir = i18n.language === "he" ? "rtl" : "ltr";
+  const dir = getTextDirection(i18n.language);
 
   const DEMO_NOTIFICATIONS: DemoNotification[] = [
     {

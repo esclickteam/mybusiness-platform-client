@@ -2033,7 +2033,7 @@
     "alertUserNotLoaded": "User data is not loaded yet. Sign in or register to continue to checkout.",
     "alertCheckoutFailed": "Failed to start checkout",
     "alertGenericError": "Error, please try again.",
-    "websiteContactMessage": "Hi, I’d like to start with the Website-only package at ₪600/year (self-serve from template, linked to CRM).",
+    "websiteContactMessage": "Hi, I’d like to start with the Website-only package at {{price}}/year (self-serve from template, linked to CRM).",
     "packageWithWebsiteContactMessage": "Hi, I’d like to join {{package}} at {{price}}{{period}}, including the website add-on {{websitePrice}} one-time (self-serve website build).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + website add-on {{websitePrice}} one-time",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + website {{websitePrice}} one-time (in Stripe)",
@@ -2077,7 +2077,7 @@
       "support": "Monthly support"
     },
     "websiteAddon": {
-      "label": "₪550 one-time — self-serve website as a business-plan add-on",
+      "label": "{{price}} one-time — self-serve website as a business-plan add-on",
       "hint": "One-time payment, no auto-renewal · templates and visual editor, linked to CRM — includes free domain for 1 year"
     },
     "packages": {
@@ -2087,7 +2087,19 @@
         "description": "Build a professional site yourself from a template — publish, get inquiries, and everything links to the CRM.",
         "note": "One-time payment — no commitment and no auto-renewal",
         "button": "Start with a website",
-        "pricePeriod": "/year"
+        "pricePeriod": "/year",
+        "features": {
+          "0": "Full visual website builder",
+          "1": "Hundreds of ready-made industry templates",
+          "2": "Pages, sections, galleries, and forms",
+          "3": "Mobile, tablet, and desktop responsive",
+          "4": "Free domain for the first year",
+          "5": "Publish to BizUply URL or your domain",
+          "6": "Site lead form linked to CRM",
+          "7": "Built-in accessibility tools",
+          "8": "Basic page SEO",
+          "9": "Edit anytime on your own"
+        }
       },
       "monthly": {
         "name": "BizUply Business",
@@ -2095,15 +2107,39 @@
         "description": "Access to the BizUply business system — CRM, appointments, collaborations, automations, and AI. Website not included.",
         "note": "Renewing monthly billing",
         "button": "Start monthly",
-        "pricePeriod": "/month"
+        "pricePeriod": "/month",
+        "features": {
+          "0": "Professional business page on the platform",
+          "1": "CRM for leads and clients",
+          "2": "Appointments calendar and services",
+          "3": "Built-in messaging",
+          "4": "Reviews and ratings management",
+          "5": "Business collaboration network",
+          "6": "Smart automations",
+          "7": "BizUply AI advisor and insights",
+          "8": "Tasks, call logging, and alerts",
+          "9": "Analytics and performance dashboard",
+          "10": "Option to add human agents",
+          "11": "Option to add website building separately"
+        }
       },
       "yearly": {
         "name": "BizUply Business yearly",
         "badge": "Best value",
         "description": "The business system at a better yearly price — CRM, appointments, collaborations, and AI. Website not included.",
-        "note": "Renewing yearly billing",
+        "note": "Renewing yearly billing · save {{savings}} vs monthly",
         "button": "Start yearly",
-        "pricePeriod": "/year"
+        "pricePeriod": "/year",
+        "features": {
+          "0": "Everything in the Business monthly package",
+          "1": "Meaningful yearly savings",
+          "2": "Full access to all business modules",
+          "3": "CRM + appointments + collaborations + AI",
+          "4": "Automations and alerts without limits",
+          "5": "Performance dashboard and analytics",
+          "6": "Option to add website building separately",
+          "7": "Option to add additional business services"
+        }
       }
     }
   },

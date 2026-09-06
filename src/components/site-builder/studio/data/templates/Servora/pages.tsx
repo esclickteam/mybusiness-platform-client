@@ -939,7 +939,7 @@ function ServiceRequestCard({
           placeholder={tx("שם מלא")}
           aria-label={tx("שם מלא")}
           data-editable="input"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.nameInput`, "box", "שדה שם")}
          data-bizuply-form-field-id="name" autoComplete="name" />
 
@@ -949,7 +949,7 @@ function ServiceRequestCard({
           placeholder={tx("טלפון")}
           aria-label={tx("טלפון")}
           data-editable="input"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.phoneInput`, "box", "שדה טלפון")}
          data-bizuply-form-field-id="phone" autoComplete="tel" />
 
@@ -957,7 +957,7 @@ function ServiceRequestCard({
           name="service"
           aria-label={tx("בחירת שירות")}
           data-editable="select"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.serviceSelect`, "box", "בחירת שירות")}
         >
           {safeArray(data.services).map((service, index) => (

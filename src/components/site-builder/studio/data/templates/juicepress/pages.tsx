@@ -172,7 +172,7 @@ function CitrusHomeStats({ data }: { data: Record<string, any> }) {
             </Reveal>
           ))}
         </div>
-        <p className="max-w-md text-center text-sm leading-7 md:text-right" style={{ color: "#78716c" }}>{v(data, "hours")}</p>
+        <p className="max-w-md text-center text-sm leading-7 md:text-start" style={{ color: "#78716c" }}>{v(data, "hours")}</p>
       </div>
     </section>
   );
@@ -440,10 +440,10 @@ function CitrusReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#78716c" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
         <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("מספר סועדים")} name="guests" data-bizuply-form-field-id="guests" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("מספר סועדים")} name="guests" data-bizuply-form-field-id="guests" />
           <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>
         </form>
       </div>

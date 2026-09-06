@@ -96,7 +96,7 @@ function VillaLedger({ data }: { data: Record<string, any> }) {
         <p className="text-center text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>{v(data, "ledgerEyebrow")}</p>
         <div className="mt-10 border-t" style={{ borderColor: "rgba(226,199,160,0.24)" }}>
           {villas.map((villa, index) => (
-            <button key={villa.name} type="button" className="tpl-rise grid w-full gap-4 border-b py-6 text-right md:grid-cols-[1fr_0.5fr_0.6fr] md:items-center" style={{ borderColor: "rgba(226,199,160,0.18)", animationDelay: `${index * 0.07}s` }}>
+            <button key={villa.name} type="button" className="tpl-rise grid w-full gap-4 border-b py-6 text-start md:grid-cols-[1fr_0.5fr_0.6fr] md:items-center" style={{ borderColor: "rgba(226,199,160,0.18)", animationDelay: `${index * 0.07}s` }}>
               <span className="tpl-display text-3xl font-bold" style={{ color: "#f4efe6" }}>{villa.name}</span>
               <span className="text-sm tracking-[0.22em]" style={{ color: "#a89a86" }}>{villa.rooms}</span>
               <span className="text-left text-xs font-bold tracking-[0.26em]" style={{ color: "#e2c7a0" }}>{villa.action}</span>

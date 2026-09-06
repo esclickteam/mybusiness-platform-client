@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import StatStrip from "./StatStrip";
 import type { MarketingStat } from "./StatStrip";
 import { WordReveal } from "./Reveal";
@@ -53,7 +54,7 @@ export default function CenteredProductHero({
       className="pm-hero"
       data-accent={accent === "violet" ? undefined : accent}
       aria-label={ariaLabel}
-      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pm-hero__atmosphere" aria-hidden="true">
         <span className="pm-hero__orb pm-hero__orb--a" />

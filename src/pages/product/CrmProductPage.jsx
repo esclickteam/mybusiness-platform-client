@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import {
   BellRing,
   CalendarClock,
@@ -62,7 +63,7 @@ export default function CrmProductPage() {
   return (
     <div
       className="pm crm-page crmp"
-      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      dir={getTextDirection(i18n.language)}
     >
       <Helmet>
         <title>{seoTitle}</title>

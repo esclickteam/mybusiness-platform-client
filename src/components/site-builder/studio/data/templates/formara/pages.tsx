@@ -304,10 +304,10 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
         </Reveal>
         <Reveal variant="left" delayMs={120}>
           <form className="grid gap-4 bg-[#1E1C1A] p-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("מה תרצו לעצב?")}  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("מה תרצו לעצב?")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">
               {getValue(data, "contactButton")}
             </button>
@@ -344,8 +344,8 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <h3 className="t-display text-2xl sm:text-4xl text-white">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{getValue(data, "contactText")}</p>
         <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>

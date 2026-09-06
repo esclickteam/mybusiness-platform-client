@@ -196,7 +196,7 @@ function Header({
       data-template-section-type="header"
       data-visual-flow-lock="true"
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <button
@@ -288,7 +288,7 @@ function Hero({
       id="home"
       {...templateSectionProps("hero", "הירו", "hero")}
       className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip bg-[#07100e] text-white"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="absolute inset-0 bg-[#07100e]" />
 
@@ -481,13 +481,13 @@ function Services({
       id="services"
       {...templateSectionProps("services", "שירותים", "services")}
       className="relative overflow-hidden bg-[#aebcc3] px-4 py-20 text-[#111827] md:px-8 md:py-0"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="mx-auto grid min-h-[760px] max-w-[1800px] grid-cols-1 items-center gap-10 md:grid-cols-[1fr_0.92fr_1fr]">
         <div
           data-ido-reveal="services-right"
           className={[
-            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:text-right",
+            "mx-auto max-w-md text-center transition-all ease-[cubic-bezier(0.19,1,0.22,1)] md:text-start",
             showRight
               ? "translate-y-0 opacity-100 blur-none"
               : "-translate-y-40 opacity-0 blur-md",
@@ -637,7 +637,7 @@ function About({
       id="about"
       {...templateSectionProps("about", "אודות", "about")}
       className="relative overflow-hidden bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-16rem] top-[8rem] h-[36rem] w-[36rem] rounded-full bg-[#c9f4dc]/10 blur-3xl" />
@@ -849,7 +849,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
       ref={sectionRef}
       {...templateSectionProps("gallery", "גלריה", "gallery")}
       className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip overflow-y-visible bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
 
@@ -1004,7 +1004,7 @@ function Booking({
       {...templateSectionProps("booking", "שיחת ייעוץ", "contact")}
       data-template-section-type="contact"
       className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_0.9fr]">
         <div
@@ -1144,7 +1144,7 @@ function Faq({
       {...templateSectionProps("faq", "שאלות נפוצות", "faq")}
       data-template-section-type="faq"
       className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="mx-auto max-w-4xl">
         <div
@@ -1212,7 +1212,7 @@ function Footer() {
       {...templateSectionProps("footer", "פוטר", "footer")}
       data-template-section-type="footer"
       className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
-      dir="rtl"
+      dir={templateDir()}
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
         <TemplateText

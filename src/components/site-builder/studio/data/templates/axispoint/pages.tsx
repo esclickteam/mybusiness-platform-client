@@ -34,7 +34,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#0c1222f2", borderColor: "rgba(226,232,240,0.12)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#f43f5e", color: "#ffffff" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -54,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(226,232,240,0.12)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -64,7 +64,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="axispoint-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
       <input className={field} style={{ borderColor: "rgba(226,232,240,0.12)", color: "#e2e8f0" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />

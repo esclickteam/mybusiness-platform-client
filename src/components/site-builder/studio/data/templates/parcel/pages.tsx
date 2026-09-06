@@ -37,7 +37,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       style={{ background: "#efe9daf4", borderColor: "rgba(107,90,46,0.24)", backdropFilter: "blur(12px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-stretch text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-stretch text-start">
           <span className="grid w-12 place-items-center border" style={{ borderColor: "#6b5a2e", color: "#6b5a2e" }}>▧</span>
           <span className="border-y border-l px-4 py-2" style={{ borderColor: "rgba(107,90,46,0.28)" }}>
             <span className="tpl-display block text-xl font-bold" style={{ color: "#243018" }}>{v(data, "brandName")}</span>
@@ -59,7 +59,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(107,90,46,0.22)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-right text-sm font-bold" style={{ borderColor: "rgba(107,90,46,0.16)" }}>{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-start text-sm font-bold" style={{ borderColor: "rgba(107,90,46,0.16)" }}>{label}</button>
             ))}
           </div>
         </div>
@@ -161,7 +161,7 @@ function PlanningSidenotes({ data }: { data: Record<string, any> }) {
 }
 
 function SurveyRequest({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(107,90,46,0.24)", background: "#efe9da" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1fr]">

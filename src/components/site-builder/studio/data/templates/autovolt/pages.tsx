@@ -156,7 +156,7 @@ function Services({ data }: { data: Record<string, any> }) {
                   <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase leading-none text-white">{title}</h3>
                   <p className="mt-4 text-sm font-semibold leading-6 text-white/58">{text}</p>
                 </div>
-                <strong className="t-display text-right text-3xl md:text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
+                <strong className="t-display text-start text-3xl md:text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -248,7 +248,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <p className="mt-6 max-w-md text-base font-semibold leading-8 text-white/62">{text}</p>
                 <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-5 border-t border-white/14 pt-6">
                   <strong className="t-display text-3xl md:text-7xl font-bold leading-none text-[var(--blue)]">{price}</strong>
-                  <span className="max-w-[14rem] text-right text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
+                  <span className="max-w-[14rem] text-start text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
                 </div>
               </article>
             </Reveal>
@@ -322,16 +322,16 @@ function Booking({ data }: { data: Record<string, any> }) {
         <Reveal variant="left" delayMs={120}>
           <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="autovolt-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 md:grid-cols-2">
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("דגם הרכב")}  name="other" data-bizuply-form-field-id="other" />
-            <select className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition focus:border-[var(--blue)]" defaultValue="">
+            <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("דגם הרכב")}  name="other" data-bizuply-form-field-id="other" />
+            <select className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition focus:border-[var(--blue)]" defaultValue="">
               <option value="" disabled>{tx("בחרו חבילה")}</option>
               <option>{getValue(data, "packageOneTitle")}</option>
               <option>{getValue(data, "packageTwoTitle")}</option>
             </select>
-            <textarea className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("מה מצב הצבע ומה חשוב לכם?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <textarea className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("מה מצב הצבע ומה חשוב לכם?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
             <button type="submit" className="bg-[var(--blue)] px-8 py-4 text-sm font-black uppercase tracking-[0.24em] text-[#0A0F14] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>

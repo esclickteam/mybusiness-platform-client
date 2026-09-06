@@ -335,7 +335,7 @@ function MedicalFaq({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 onClick={() => setOpen(open === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-5 px-6 py-5 text-right"
+                className="flex w-full items-center justify-between gap-5 px-6 py-5 text-start"
               >
                 <span className="text-base font-semibold text-[var(--vc-text)]">{question}</span>
                 <span className="text-2xl leading-none text-[var(--vc-primary)]">{open === index ? "-" : "+"}</span>
@@ -380,10 +380,10 @@ function AppointmentForm({ data, openModal }: { data: Record<string, any>; openM
         </div>
         <form className="grid content-center gap-4 p-8 md:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("טלפון לחזרה")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-          <select className="vc-input rounded-xl px-5 py-4 text-right text-[var(--vc-muted)] outline-none">
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("טלפון לחזרה")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+          <select className="vc-input rounded-xl px-5 py-4 text-start text-[var(--vc-muted)] outline-none">
             <option>{tx("תחום רפואי מבוקש")}</option>
             <option>{tx("רפואת משפחה ופנימית")}</option>
             <option>{tx("קרדיולוגיה מניעתית")}</option>
@@ -447,8 +447,8 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{getValue(data, "contactText")}</p>
         <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button
             type="submit"
             className="rounded-xl bg-[var(--vc-primary)] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[var(--vc-secondary)]"

@@ -356,23 +356,23 @@ function Reservation({ data, openModal }: { data: Record<string, any>; openModal
         </div>
         <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={getValue(data, "reservationDateLabel")}
           />
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={getValue(data, "reservationGuestsLabel")}
           />
           <textarea
-            className="min-h-[132px] border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)] md:col-span-2"
+            className="min-h-[132px] border border-white/10 bg-transparent px-5 py-4 text-start text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)] md:col-span-2"
             placeholder={getValue(data, "reservationNoteLabel")}
           />
           <button type="submit" onClick={openModal} className="s-button-primary px-8 py-4 text-sm md:col-span-2">
@@ -424,11 +424,11 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">{getValue(data, "contactText")}</p>
         <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
-            className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
+            className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="s-button-primary py-4 text-sm">

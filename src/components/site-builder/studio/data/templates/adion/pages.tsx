@@ -379,7 +379,7 @@ function SectionTitle({
     <div
       className={cx(
         "mx-auto mb-12 max-w-5xl",
-        align === "center" ? "text-center" : "text-right"
+        align === "center" ? "text-center" : "text-start"
       )}
     >
       <Eyebrow>{eyebrow}</Eyebrow>

@@ -221,7 +221,7 @@ function Header({
       data-template-section-type="header"
       data-section-kind="header"
       className="sticky top-0 z-50 border-b border-[#ead7c8]/80 bg-[#fff8f2]/90 backdrop-blur-2xl"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="header"
       data-visual-editable="true"
       data-visual-edit-id="header.section"
@@ -232,7 +232,7 @@ function Header({
         <button
           type="button"
           onClick={() => navigateTo("home", onNavigate)}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
           data-visual-editable="true"
           data-visual-edit-id="header.logo"
           data-visual-edit-type="button"
@@ -307,7 +307,7 @@ function Hero({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2]"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="hero"
       data-section-kind="hero"
       data-visual-editable="true"
@@ -413,7 +413,7 @@ function SalonVideoSection({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2] py-20"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="video-main"
       data-section-kind="video-main"
       data-visual-editable="true"
@@ -492,7 +492,7 @@ function SalonVideoSection({
           className="mt-8 flex flex-col items-center justify-between gap-4 rounded-[38px] border border-[#ead7c8] bg-white/70 p-5 shadow-sm md:flex-row"
         >
           <p
-            className="max-w-2xl text-center text-base font-bold leading-7 text-[#6f4f40] md:text-right"
+            className="max-w-2xl text-center text-base font-bold leading-7 text-[#6f4f40] md:text-start"
             data-visual-editable="true"
             data-visual-edit-id="videoMain.ctaText"
             data-visual-edit-type="text"
@@ -525,7 +525,7 @@ function ServicesSection({
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="services"
       data-section-kind="services"
       data-visual-editable="true"
@@ -668,7 +668,7 @@ function ConsultationSection({ data }: { data: any }) {
   return (
     <section
       className="relative overflow-hidden bg-[#241612] py-12 md:py-24 text-white"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="consultation"
       data-section-kind="consultation"
       data-visual-editable="true"
@@ -804,7 +804,7 @@ function WhySection({
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="why"
       data-section-kind="why"
       data-visual-editable="true"
@@ -927,7 +927,7 @@ function DirectorSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="director"
       data-section-kind="director"
       data-visual-editable="true"
@@ -1018,7 +1018,7 @@ function TestimonialsSection({ data }: { data: any }) {
   return (
     <section
       className="overflow-hidden bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="testimonials"
       data-section-kind="testimonials"
       data-visual-editable="true"
@@ -1142,7 +1142,7 @@ function PartnersSection({ data }: { data: any }) {
   return (
     <section
       className="border-y border-[#ead7c8] bg-[#fffdfb] py-10"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="partners"
       data-section-kind="partners"
       data-visual-editable="true"
@@ -1180,7 +1180,7 @@ function BlogSection({
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="blog"
       data-section-kind="blog"
       data-visual-editable="true"
@@ -1294,7 +1294,7 @@ function GallerySection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="gallery"
       data-section-kind="gallery"
       data-visual-editable="true"
@@ -1360,7 +1360,7 @@ function PricingSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="pricing"
       data-section-kind="pricing"
       data-visual-editable="true"
@@ -1502,7 +1502,7 @@ function ProductsSection({
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="shop"
       data-section-kind="shop"
       data-bizuply-block="store"
@@ -1590,7 +1590,7 @@ function TeamSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="team"
       data-section-kind="team"
       data-visual-editable="true"
@@ -1712,7 +1712,7 @@ function Footer({
   return (
     <footer
       className="bg-[#241612] py-16 text-white"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="footer"
       data-section-kind="footer"
       data-visual-editable="true"
@@ -1874,7 +1874,7 @@ function PageHero({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="page-hero"
       data-section-kind="page-hero"
       data-visual-editable="true"

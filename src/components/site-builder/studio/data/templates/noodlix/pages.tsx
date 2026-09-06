@@ -55,7 +55,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <nav className="border-t px-5 py-4 lg:hidden" style={{ borderColor: "rgba(0,0,0,0.08)", background: "var(--surface, #fff)" }}>
           <div className="mx-auto grid max-w-7xl gap-2">
             {nav.map(([id, label]) => (
-              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </nav>
@@ -348,7 +348,7 @@ function Insights({ data }: { data: Record<string, any> }) {
               <div className="journal-card-media relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
-              <div className="flex flex-col justify-center p-6 text-right sm:p-8 lg:p-10">
+              <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
                 <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#8aa89a" }}>{featured.text}</p>
@@ -361,7 +361,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <div className="journal-card-media relative aspect-[16/10] overflow-hidden">
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-5 text-right sm:p-6">
+                <div className="p-5 text-start sm:p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#8aa89a" }}>{post.text}</p>
@@ -505,7 +505,7 @@ function JournalPage({ data, onCta }: { data: Record<string, any>; onCta: () => 
           <img src={posts[0]?.image || v(data, "gallery2Image") || v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20" />
-        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-start text-white lg:px-8 lg:py-24">
           <SectionKicker label={v(data, "insightsKicker")} />
           <h1 className="tpl-display mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">{v(data, "insightsTitle")}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">{v(data, "pageHeroText")}</p>

@@ -200,7 +200,7 @@ function SectionTitle({
   text?: string;
 }) {
   return (
-    <div className="mb-11 max-w-none text-right">
+    <div className="mb-11 max-w-none text-start">
       <Eyebrow>{eyebrow}</Eyebrow>
 
       <h2 className="whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
@@ -393,7 +393,7 @@ function Hero({
             </div>
           </div>
 
-          <div className="nadlanist-fade-up py-4 text-right lg:py-10">
+          <div className="nadlanist-fade-up py-4 text-start lg:py-10">
             <div className="mb-8 flex flex-wrap justify-start gap-3">
               {chips.map((item) => (
                 <span
@@ -439,7 +439,7 @@ function Partners({ data }: { data: NadlanistData }) {
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-white/10 bg-[#0a182c] p-4 shadow-xl shadow-black/20 sm:p-6">
-        <div className="mb-5 text-right text-xs font-black uppercase tracking-[0.22em] text-white/45">
+        <div className="mb-5 text-start text-xs font-black uppercase tracking-[0.22em] text-white/45">
           {data.partners.eyebrow}
         </div>
 
@@ -469,13 +469,13 @@ function Manifesto({
     <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px]">
         <div className="grid gap-8 lg:grid-cols-[1fr_.72fr] lg:items-end">
-          <div className="text-right">
+          <div className="text-start">
             <h2 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
               {renderStackedTitle(data.manifesto.title)}
             </h2>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8">
+          <div className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-start shadow-xl shadow-black/20 sm:p-8">
             <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-full bg-[#c9a85f] text-xl text-[#071426]">
               ◆
             </div>
@@ -510,7 +510,7 @@ function Services({ data }: { data: NadlanistData }) {
           {services.map((item, index) => (
             <article
               key={`${item.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-right shadow-xl shadow-black/20"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-start shadow-xl shadow-black/20"
             >
               <div className="relative h-[320px] overflow-hidden">
                 <img
@@ -597,7 +597,7 @@ function Properties({
                   </span>
                 </div>
 
-                <div className="absolute bottom-5 left-5 right-5 text-right">
+                <div className="absolute bottom-5 left-5 right-5 text-start">
                   <div className="mb-4 flex flex-wrap justify-start gap-2">
                     {safeArray(item.details, []).map((detail) => (
                       <span
@@ -648,7 +648,7 @@ function Reviews({ data }: { data: NadlanistData }) {
           {reviews.map((item, index) => (
             <article
               key={`${item.name}-${index}`}
-              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-right text-white transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/60"
+              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-start text-white transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/60"
             >
               <div className="mb-8 flex items-center justify-between">
                 <span className="text-2xl sm:text-4xl font-black tracking-[-0.08em] text-[#c9a85f]">
@@ -691,7 +691,7 @@ function Process({ data }: { data: NadlanistData }) {
           {process.map((item) => (
             <article
               key={item.step}
-              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-right shadow-xl shadow-black/20 transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/50"
+              className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-start shadow-xl shadow-black/20 transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/50"
             >
               <div className="mb-10 text-xs font-black uppercase tracking-[0.22em] text-[#c9a85f]">
                 {item.step}
@@ -720,7 +720,7 @@ function Faq({
   return (
     <section className="bg-[#081529] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
-        <div className="text-right">
+        <div className="text-start">
           <SectionTitle
             eyebrow={data.faqSection.eyebrow}
             title={renderStackedTitle(data.faqSection.title)}
@@ -731,7 +731,7 @@ function Faq({
           </Button>
         </div>
 
-        <div className="space-y-3 text-right">
+        <div className="space-y-3 text-start">
           {faqs.map((item, index) => (
             <details
               key={`${item.q}-${index}`}
@@ -765,7 +765,7 @@ function BigCta({
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-[1500px] overflow-hidden rounded-[2.4rem] border border-white/10 bg-[#0a182c] p-5 text-white shadow-2xl shadow-black/25 sm:p-8">
-        <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] p-6 text-right sm:p-10">
+        <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] p-6 text-start sm:p-10">
           <img
             src={data.cta.image || data.images.heroAlt || FALLBACK_IMAGE}
             alt={data.cta.title}
@@ -827,7 +827,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
           />
         </div>
 
-        <div className="text-right">
+        <div className="text-start">
           <Eyebrow>{data.about.eyebrow}</Eyebrow>
           <h1 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
             {renderStackedTitle(data.about.title)}
@@ -842,7 +842,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
         {stats.map(([num, label]) => (
           <div
             key={label}
-            className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-8 text-right shadow-xl shadow-black/20"
+            className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-8 text-start shadow-xl shadow-black/20"
           >
             <div className="text-3xl md:text-6xl font-black tracking-[-0.1em] text-white">
               {num}
@@ -923,7 +923,7 @@ function BlogPage({ data }: { data: NadlanistData }) {
           {posts.map((post, index) => (
             <article
               key={`${post.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-right shadow-xl shadow-black/20"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a182c] text-start shadow-xl shadow-black/20"
             >
               <div className="h-[320px] overflow-hidden">
                 <img
@@ -954,7 +954,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1fr_.75fr]">
-        <div className="text-right">
+        <div className="text-start">
           <Eyebrow>{data.contact.eyebrow}</Eyebrow>
 
           <h1 className="max-w-none whitespace-nowrap text-[clamp(1.9rem,3.1vw,3.6rem)] font-black uppercase leading-[1.08] tracking-[-0.04em] text-white">
@@ -967,8 +967,8 @@ function ContactPage({ data }: { data: NadlanistData }) {
         </div>
 
         <form
-          dir="rtl"
-          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nadlanist-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          dir={templateDir()}
+          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-start shadow-xl shadow-black/20 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nadlanist-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             ["שם", "השם שלך"],
             ["אימייל", "hello@email.com"],
@@ -980,7 +980,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
               </span>
               <input
                 placeholder={placeholder}
-                className="w-full rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
+                className="w-full rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-start text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
               />
             </label>
           ))}
@@ -990,7 +990,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
             <textarea
               rows={5}
               placeholder={tx("ספרו בקצרה מה אתם מחפשים...")}
-              className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-start text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
              name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
 
@@ -1023,7 +1023,7 @@ function Footer({
   return (
     <footer className="relative z-10 border-t border-white/10 bg-[#030914] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div className="text-right">
+        <div className="text-start">
           <button
             type="button"
             onClick={() => setPage("home")}

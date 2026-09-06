@@ -314,7 +314,7 @@ function Header({
               }}
               data-bizuply-spa-nav="true"
               data-bizuply-page-id={item.id}
-              className="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-black/5"
+              className="rounded-2xl px-4 py-3 text-start text-sm font-black hover:bg-black/5"
             >
               {tx(item.label)}
             </button>
@@ -328,7 +328,7 @@ function Header({
             }}
             data-bizuply-spa-nav="true"
             data-bizuply-page-id="contact"
-            className="rounded-2xl bg-black px-4 py-3 text-right text-sm font-black text-white"
+            className="rounded-2xl bg-black px-4 py-3 text-start text-sm font-black text-white"
           >{tx("אימון ניסיון")}</button>
         </div>
       ) : null}
@@ -344,7 +344,7 @@ function HeroFloatingStats() {
           <HeartPulse className="h-5 w-5" />
         </span>
 
-        <div className="text-right">
+        <div className="text-start">
           <p className="text-sm font-black">BPM 148</p>
           <p className="text-xs font-bold text-white/45">{tx("דופק ממוצע")}</p>
         </div>
@@ -355,7 +355,7 @@ function HeroFloatingStats() {
           <Timer className="h-5 w-5" />
         </span>
 
-        <div className="text-right">
+        <div className="text-start">
           <p className="text-sm font-black">{tx("45 דקות")}</p>
           <p className="text-xs font-bold text-white/45">{tx("אימון ממוקד")}</p>
         </div>
@@ -797,7 +797,7 @@ function Footer({
                 onClick={() => onPageChange(page.id)}
                 data-bizuply-spa-nav="true"
                 data-bizuply-page-id={page.id}
-                className="text-right text-sm font-bold text-white/55 transition hover:text-white"
+                className="text-start text-sm font-bold text-white/55 transition hover:text-white"
               >
                 {page.name}
               </button>

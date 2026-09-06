@@ -42,7 +42,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#faf5fff2", borderColor: "rgba(30,27,75,0.1)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -62,7 +62,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map((item) => (
-              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{tx(item.label)}</button>
+              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{tx(item.label)}</button>
             ))}
           </div>
         </div>
@@ -72,7 +72,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
       <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />

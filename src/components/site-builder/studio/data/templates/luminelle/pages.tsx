@@ -354,7 +354,7 @@ function FAQ({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 onClick={() => setOpen(open === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-6 py-6 text-right"
+                className="flex w-full items-center justify-between gap-6 py-6 text-start"
               >
                 <span className="text-lg font-semibold text-[var(--l-ink)]">{question}</span>
                 <span className="grid h-9 w-9 shrink-0 place-items-center border border-[var(--l-line-strong)] text-lg text-[var(--l-sage)]">

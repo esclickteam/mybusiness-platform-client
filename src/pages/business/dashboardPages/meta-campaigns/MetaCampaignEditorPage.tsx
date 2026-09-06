@@ -6,6 +6,7 @@ import {
   useParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   AppWindow,
@@ -112,6 +113,20 @@ const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
 
 const ALL_PREVIEW_FORMATS: MetaPreviewFormat[] = [...META_PREVIEW_FORMATS];
 
+const SPECIAL_AD_LABEL_KEYS: Record<string, string> = {
+  HOUSING: "metaCampaigns.special.housing",
+  EMPLOYMENT: "metaCampaigns.special.employment",
+  FINANCIAL_PRODUCTS_SERVICES: "metaCampaigns.special.financial",
+};
+
+const CTA_LABEL_KEYS: Record<string, string> = {
+  SIGN_UP: "metaCampaigns.cta.signUp",
+  LEARN_MORE: "metaCampaigns.cta.learnMore",
+  CONTACT_US: "metaCampaigns.cta.contactUs",
+  SHOP_NOW: "metaCampaigns.cta.shopNow",
+  WHATSAPP_MESSAGE: "metaCampaigns.cta.whatsapp",
+};
+
 export default function MetaCampaignEditorPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -122,7 +137,7 @@ export default function MetaCampaignEditorPage() {
   }>();
   const isEdit = Boolean(campaignId);
   const basePath = `/business/${urlBusinessId || businessId}/dashboard/meta-campaigns`;
-  const isHe = i18n.language?.startsWith("he");
+  const dateLocale = getIntlLocale(i18n.language);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -212,15 +227,20 @@ export default function MetaCampaignEditorPage() {
         const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
         return contact ? getLeadFormContactLabel(contact) : type;
       }),
-    [leadContactTypes, isHe]
+    [leadContactTypes]
   );
 
   const objectives = useMemo(() => {
     const fromApi = connection?.objectives?.length
-      ? connection.objectives.map((item) => ({
-          value: item.value,
-          label: isHe ? item.labelHe : item.labelEn,
-        }))
+      ? connection.objectives.map((item) => {
+          const known = OBJECTIVE_OPTIONS.find((option) => option.value === item.value);
+          return {
+            value: item.value,
+            label: known
+              ? t(known.labelKey)
+              : item.labelEn || item.labelHe || item.value,
+          };
+        })
       : OBJECTIVE_OPTIONS.map((item) => ({
           value: item.value,
           label: t(item.labelKey),
@@ -237,7 +257,7 @@ export default function MetaCampaignEditorPage() {
           descriptionByValue[item.value] ||
           t("metaCampaigns.objectives.fallbackDesc"),
       }));
-  }, [connection?.objectives, isHe, t]);
+  }, [connection?.objectives, t]);
 
   const specialCategories = useMemo(() => {
     if (connection?.specialAdCategories?.length) {
@@ -245,7 +265,9 @@ export default function MetaCampaignEditorPage() {
         .filter((item) => item.value !== "NONE")
         .map((item) => ({
           value: item.value,
-          label: isHe ? item.labelHe : item.labelEn,
+          label: SPECIAL_AD_LABEL_KEYS[item.value]
+            ? t(SPECIAL_AD_LABEL_KEYS[item.value])
+            : item.labelEn || item.labelHe || item.value,
         }));
     }
     return [
@@ -256,13 +278,15 @@ export default function MetaCampaignEditorPage() {
         label: t("metaCampaigns.special.financial"),
       },
     ];
-  }, [connection?.specialAdCategories, isHe, t]);
+  }, [connection?.specialAdCategories, t]);
 
   const callToActions = useMemo(() => {
     if (connection?.callToActions?.length) {
       return connection.callToActions.map((item) => ({
         value: item.value,
-        label: isHe ? item.labelHe : item.labelEn,
+        label: CTA_LABEL_KEYS[item.value]
+          ? t(CTA_LABEL_KEYS[item.value])
+          : item.labelEn || item.labelHe || item.value,
       }));
     }
     return [
@@ -272,7 +296,7 @@ export default function MetaCampaignEditorPage() {
       { value: "SHOP_NOW", label: t("metaCampaigns.cta.shopNow") },
       { value: "WHATSAPP_MESSAGE", label: t("metaCampaigns.cta.whatsapp") },
     ];
-  }, [connection?.callToActions, isHe, t]);
+  }, [connection?.callToActions, t]);
 
   const selectedPreviewFormats = useMemo(
     () =>
@@ -303,14 +327,12 @@ export default function MetaCampaignEditorPage() {
       );
       return {
         value,
-        label: fromApi
-          ? isHe
-            ? fromApi.labelHe
-            : fromApi.labelEn
-          : t(`metaCampaigns.preview.formats.${value}`, { defaultValue: value }),
+        label: t(`metaCampaigns.preview.formats.${value}`, {
+          defaultValue: fromApi?.labelEn || fromApi?.labelHe || value,
+        }),
       };
     });
-  }, [connection?.previewFormats, isHe, selectedPreviewFormats, t]);
+  }, [connection?.previewFormats, selectedPreviewFormats, t]);
 
   useEffect(() => {
     if (!selectedPreviewFormats.includes(activePreview as MetaPreviewFormat)) {
@@ -1508,7 +1530,7 @@ export default function MetaCampaignEditorPage() {
                 </dt>
                 <dd className="font-black text-slate-900">
                   {form.startTime
-                    ? new Date(form.startTime).toLocaleString(isHe ? "he-IL" : "en-US")
+                    ? new Date(form.startTime).toLocaleString(dateLocale)
                     : "—"}
                 </dd>
               </div>
@@ -1518,7 +1540,7 @@ export default function MetaCampaignEditorPage() {
                 </dt>
                 <dd className="font-black text-slate-900">
                   {form.stopTime
-                    ? new Date(form.stopTime).toLocaleString(isHe ? "he-IL" : "en-US")
+                    ? new Date(form.stopTime).toLocaleString(dateLocale)
                     : "—"}
                 </dd>
               </div>
@@ -2184,7 +2206,7 @@ export default function MetaCampaignEditorPage() {
                 <dt className="text-slate-400">{t("metaCampaigns.form.startTime")}</dt>
                 <dd className="font-black text-slate-800">
                   {form.startTime
-                    ? new Date(form.startTime).toLocaleString(isHe ? "he-IL" : "en-US")
+                    ? new Date(form.startTime).toLocaleString(dateLocale)
                     : "—"}
                 </dd>
               </div>

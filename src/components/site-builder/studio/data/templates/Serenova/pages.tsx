@@ -140,9 +140,9 @@ const SERENOVA_MODAL_FIELDS: BizuplyFormField[] = [
 
 const fieldClassByTone = {
   section:
-    "rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]",
+    "rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b99067]",
   modal:
-    "rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]",
+    "rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-start outline-none transition focus:border-[#b99067]",
 } as const;
 
 function renderSerenovaField(
@@ -326,7 +326,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p
         className={cx(
           "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur-xl",
@@ -395,7 +395,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#244236] text-lg font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -452,7 +452,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id
                     ? "bg-[#244236] text-[#fbf6ec]"
                     : "text-[#405349] hover:bg-white",
@@ -848,7 +848,7 @@ function ServicesSection({
 
       <div className="relative mx-auto max-w-7xl">
         <div className="grid items-end gap-8 lg:grid-cols-[1fr_340px]">
-          <div className="max-w-3xl text-right">
+          <div className="max-w-3xl text-start">
             <p className="mb-4 inline-flex rounded-full border border-[#244236]/15 bg-white/65 px-4 py-2 text-sm font-semibold text-[#5b725f] shadow-sm backdrop-blur-xl">
               {getValue(data, "servicesEyebrow")}
             </p>
@@ -1281,7 +1281,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-xl font-semibold tracking-[-0.04em] text-[#20342a]">
                     {question}
