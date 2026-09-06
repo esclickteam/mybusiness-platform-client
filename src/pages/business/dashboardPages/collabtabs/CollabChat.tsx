@@ -20,10 +20,12 @@ import {
   X,
 } from "lucide-react";
 import { useLocation, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import API from "../../../../api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
@@ -377,6 +379,8 @@ export default function CollabChat({
   onClose,
   initialConversationId,
 }: CollabChatProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const socketRef = useRef<Socket | null>(null);
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -626,7 +630,7 @@ export default function CollabChat({
       });
 
       setConversations([]);
-      setError("שגיאה בטעינת השיחות");
+      setError(t("business.collab.loadError", "שגיאה בטעינת השיחות"));
 
       if (conversationIdFromNav) {
         await openConversationById(conversationIdFromNav);
@@ -639,6 +643,7 @@ export default function CollabChat({
     conversationIdFromNav,
     normalizeMessages,
     openConversationById,
+    t,
   ]);
 
   fetchConversationsRef.current = fetchConversations;
@@ -965,14 +970,14 @@ export default function CollabChat({
     }
 
     if (!socketRef.current.connected) {
-      alert("החיבור לצ׳אט לא פעיל כרגע. נסה לרענן את העמוד.");
+      alert(t("business.collab.notConnected", "החיבור לצ׳אט לא פעיל כרגע. נסה לרענן את העמוד."));
       return;
     }
 
     const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
 
     if (!otherId) {
-      alert("לא ניתן לזהות את העסק השני בשיחה. נסה לרענן את הצ׳אט.");
+      alert(t("business.collab.unknownPartner", "לא ניתן לזהות את העסק השני בשיחה. נסה לרענן את הצ׳אט."));
       return;
     }
 
@@ -1034,7 +1039,7 @@ export default function CollabChat({
           },
         });
 
-        alert("שליחת ההודעה לוקחת יותר מדי זמן. נסה שוב.");
+        alert(t("business.collab.sendTimeout", "שליחת ההודעה לוקחת יותר מדי זמן. נסה שוב."));
       }
     }, 15000);
 
@@ -1043,7 +1048,7 @@ export default function CollabChat({
       window.clearTimeout(timeoutId);
 
       if (!ack) {
-        alert("לא התקבלה תגובה מהשרת. נסה שוב.");
+        alert(t("business.collab.noServerReply", "לא התקבלה תגובה מהשרת. נסה שוב."));
 
         dispatchMessages({
           type: "replace",
@@ -1058,7 +1063,11 @@ export default function CollabChat({
       }
 
       if (!ack.ok) {
-        alert(`שליחת ההודעה נכשלה: ${ack.error || "שגיאה לא ידועה"}`);
+        alert(
+          t("business.collab.sendFailed", "שליחת ההודעה נכשלה: {{detail}}", {
+            detail: ack.error || t("business.collab.unknownError", "שגיאה לא ידועה"),
+          })
+        );
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
@@ -1137,7 +1146,11 @@ export default function CollabChat({
   const filteredConversations = conversations
     .filter((conversation) => conversation)
     .filter((conversation) => {
-      const partner = getConversationPartner(conversation, myBusinessId);
+      const partner = getConversationPartner(
+        conversation,
+        myBusinessId,
+        t("business.collab.businessFallback", "עסק")
+      );
       const lastMessage =
         conversation.messages?.[conversation.messages.length - 1]?.text || "";
 
@@ -1152,12 +1165,16 @@ export default function CollabChat({
     });
 
   const selectedPartner = selectedConversation
-    ? getConversationPartner(selectedConversation, myBusinessId)
+    ? getConversationPartner(
+        selectedConversation,
+        myBusinessId,
+        t("business.collab.businessFallback", "עסק")
+      )
     : null;
 
   return (
     <section
-      dir="rtl"
+      dir={pageDir}
       className="flex h-[72vh] min-h-[560px] w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white text-right shadow-[0_24px_80px_rgba(15,23,42,0.10)]"
     >
       <aside className="hidden w-[340px] shrink-0 border-l border-slate-100 bg-gradient-to-b from-white via-sky-50/40 to-violet-50/40 md:flex md:flex-col">
@@ -1166,15 +1183,17 @@ export default function CollabChat({
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-black text-violet-700">
                 <Sparkles className="h-3.5 w-3.5" />
-                צ׳אט שיתופי פעולה
+                {t("business.collab.badge", "צ׳אט שיתופי פעולה")}
               </div>
 
               <h2 className="mt-3 text-xl font-black text-slate-800">
-                הודעות עסקיות
+                {t("business.collab.title", "הודעות עסקיות")}
               </h2>
 
               <p className="mt-1 text-xs font-semibold text-slate-500">
-                {conversations.length} שיחות
+                {t("business.collab.chatsCount", "{{count}} שיחות", {
+                  count: conversations.length,
+                })}
               </p>
             </div>
 
@@ -1187,7 +1206,7 @@ export default function CollabChat({
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="חיפוש שיחות..."
+              placeholder={t("business.collab.searchPh", "חיפוש שיחות...")}
               className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-11 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </div>
@@ -1205,12 +1224,13 @@ export default function CollabChat({
               {filteredConversations.map((conversation) => {
                 const partner = getConversationPartner(
                   conversation,
-                  myBusinessId
+                  myBusinessId,
+                  t("business.collab.businessFallback", "עסק")
                 );
 
                 const lastMessage =
                   conversation.messages?.[conversation.messages.length - 1]
-                    ?.text || "אין הודעות";
+                    ?.text || t("business.collab.noMessages", "אין הודעות");
 
                 const isActive =
                   selectedConversation?._id?.toString() ===
@@ -1248,7 +1268,7 @@ export default function CollabChat({
 
                           {isActive && (
                             <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700">
-                              פתוח
+                              {t("business.collab.open", "פתוח")}
                             </span>
                           )}
                         </div>
@@ -1276,20 +1296,22 @@ export default function CollabChat({
             <div className="min-w-0">
               <h3 className="truncate text-base font-black text-slate-800">
                 {selectedPartner
-                  ? `שיחה עם ${selectedPartner.businessName}`
-                  : "בחר שיחה עסקית"}
+                  ? t("business.collab.chatWith", "שיחה עם {{name}}", {
+                      name: selectedPartner.businessName,
+                    })
+                  : t("business.collab.pickChat", "בחר שיחה עסקית")}
               </h3>
 
               <p className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
                 {connected ? (
                   <>
                     <Wifi className="h-3.5 w-3.5 text-emerald-600" />
-                    מחובר
+                    {t("business.collab.connected", "מחובר")}
                   </>
                 ) : (
                   <>
                     <WifiOff className="h-3.5 w-3.5 text-rose-600" />
-                    לא מחובר
+                    {t("business.collab.disconnected", "לא מחובר")}
                   </>
                 )}
               </p>
@@ -1301,7 +1323,7 @@ export default function CollabChat({
               type="button"
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-              aria-label="סגירת צ׳אט"
+              aria-label={t("business.collab.closeAria", "סגירת צ׳אט")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -1337,10 +1359,10 @@ export default function CollabChat({
                 <div ref={messagesEndRef} />
               </div>
             ) : (
-              <EmptyChat text={error || "אין הודעות בשיחה הזו"} />
+              <EmptyChat text={error || t("business.collab.emptyThread", "אין הודעות בשיחה הזו")} />
             )
           ) : (
-            <EmptyChat text="בחר שיחה עסקית מהרשימה" />
+            <EmptyChat text={t("business.collab.pickFromList", "בחר שיחה עסקית מהרשימה")} />
           )}
         </div>
 
@@ -1354,7 +1376,7 @@ export default function CollabChat({
           >
             <div className="flex items-center gap-3">
               <input
-                placeholder="הקלד הודעה..."
+                placeholder={t("business.collab.typePh", "הקלד הודעה...")}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 autoComplete="off"
@@ -1367,7 +1389,7 @@ export default function CollabChat({
                 className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="h-5 w-5" />
-                <span className="hidden sm:inline">שליחה</span>
+                <span className="hidden sm:inline">{t("common.send", "שליחה")}</span>
               </button>
             </div>
           </form>
@@ -1379,7 +1401,8 @@ export default function CollabChat({
 
 function getConversationPartner(
   conversation: Conversation,
-  myBusinessId: string
+  myBusinessId: string,
+  fallbackName = "עסק"
 ) {
   const otherId = getOtherBusinessId(conversation, myBusinessId);
 
@@ -1390,7 +1413,7 @@ function getConversationPartner(
 
   return {
     _id: otherId,
-    businessName: partner?.businessName || "עסק",
+    businessName: partner?.businessName || fallbackName,
   };
 }
 
@@ -1404,12 +1427,12 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-function formatMessageTime(message: ChatMessage) {
+function formatMessageTime(message: ChatMessage, locale: string) {
   const value = message.timestamp || message.createdAt;
 
   if (!value) return "";
 
-  return new Date(value).toLocaleTimeString("he-IL", {
+  return new Date(value).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -1422,6 +1445,7 @@ function MessageBubble({
   message: ChatMessage;
   isMine: boolean;
 }) {
+  const { t, i18n } = useTranslation();
   return (
     <div className={["flex", isMine ? "justify-start" : "justify-end"].join(" ")}>
       <div
@@ -1433,7 +1457,7 @@ function MessageBubble({
         ].join(" ")}
       >
         <p className="whitespace-pre-wrap break-words text-sm font-semibold leading-6">
-          {message.text || "[אין טקסט]"}
+          {message.text || t("business.collab.noText", "[אין טקסט]")}
         </p>
 
         <div
@@ -1442,10 +1466,10 @@ function MessageBubble({
             isMine ? "justify-end text-white/75" : "text-slate-400",
           ].join(" ")}
         >
-          <span>{formatMessageTime(message)}</span>
+          <span>{formatMessageTime(message, getIntlLocale(i18n.language))}</span>
 
           {message.sending && <BizuplyLoader size="xs" compact />}
-          {message.failed && <span className="text-rose-500">נכשל</span>}
+          {message.failed && <span className="text-rose-500">{t("business.collab.failed", "נכשל")}</span>}
 
           {!message.sending && !message.failed && isMine && (
             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -1457,6 +1481,7 @@ function MessageBubble({
 }
 
 function ConnectionBadge({ connected }: { connected: boolean }) {
+  const { t } = useTranslation();
   return (
     <div
       className={[
@@ -1465,7 +1490,11 @@ function ConnectionBadge({ connected }: { connected: boolean }) {
           ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"
           : "bg-rose-50 text-rose-600 ring-1 ring-rose-100",
       ].join(" ")}
-      title={connected ? "מחובר" : "לא מחובר"}
+      title={
+        connected
+          ? t("business.collab.connected", "מחובר")
+          : t("business.collab.disconnected", "לא מחובר")
+      }
     >
       {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
     </div>
@@ -1493,16 +1522,17 @@ function ConversationSkeleton() {
 }
 
 function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 p-6 text-center shadow-sm">
       <MessageCircle className="mx-auto h-8 w-8 text-sky-300" />
 
       <p className="mt-3 text-sm font-black text-slate-600">
-        אין שיחות
+        {t("business.collab.noChats", "אין שיחות")}
       </p>
 
       <p className="mt-1 text-xs font-semibold text-slate-400">
-        הודעות עסקיות חדשות יופיעו כאן.
+        {t("business.collab.noChatsHint", "הודעות עסקיות חדשות יופיעו כאן.")}
       </p>
 
       <button
@@ -1510,13 +1540,14 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
         onClick={onRefresh}
         className="mt-4 rounded-xl bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition hover:bg-violet-100"
       >
-        רענון
+        {t("common.refresh", "רענון")}
       </button>
     </div>
   );
 }
 
 function EmptyChat({ text }: { text: string }) {
+  const { t } = useTranslation();
   return (
     <div className="flex h-full min-h-[340px] items-center justify-center">
       <div className="max-w-sm rounded-[2rem] border border-dashed border-sky-200 bg-white/85 p-8 text-center shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur">
@@ -1525,7 +1556,7 @@ function EmptyChat({ text }: { text: string }) {
         </div>
 
         <h3 className="mt-4 text-lg font-black text-slate-800">
-          אין שיחה פעילה
+          {t("business.collab.noActive", "אין שיחה פעילה")}
         </h3>
 
         <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">

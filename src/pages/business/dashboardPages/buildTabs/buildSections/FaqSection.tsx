@@ -2,9 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import FaqTab from "../FaqTab";
 import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 
 type FaqItem = {
   _id?: string;
@@ -36,6 +38,8 @@ export default function FaqSection({
   currentUser = null,
   renderTopBar,
 }: FaqSectionProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -88,7 +92,7 @@ export default function FaqSection({
 
   return (
     <section
-      dir="rtl"
+      dir={pageDir}
       className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[1.02fr_0.98fr]">
@@ -102,29 +106,31 @@ export default function FaqSection({
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-violet-500" />
-                  ניהול שאלות נפוצות
+                  {t("business.profileBuild.manageFaqs", "ניהול שאלות נפוצות")}
                 </div>
 
                 <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm backdrop-blur">
-                  תצוגה חיה בזמן אמת
+                  {t("buildPage.header.badgeLive", "תצוגה חיה בזמן אמת")}
                 </div>
               </div>
 
               <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                    שאלות נפוצות
+                    {t("business.profileBuild.faqsTitle", "שאלות נפוצות")}
                   </h1>
 
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    הוסף תשובות לשאלות נפוצות של לקוחות והפוך את הפרופיל
-                    לברור, מקצועי ואמין יותר.
+                    {t(
+                      "business.profileBuild.faqsIntro",
+                      "הוסף תשובות לשאלות נפוצות של לקוחות והפוך את הפרופיל לברור, מקצועי ואמין יותר."
+                    )}
                   </p>
                 </div>
 
                 <div className="w-full rounded-2xl border border-white bg-white/85 px-5 py-4 shadow-lg backdrop-blur sm:w-auto">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    סה״כ שאלות
+                    {t("business.profileBuild.totalQuestions", "סה״כ שאלות")}
                   </p>
 
                   <p className="mt-1 text-3xl font-black text-slate-800">
@@ -141,11 +147,11 @@ export default function FaqSection({
                 <BizuplyLoader size="lg" />
 
                 <h3 className="mt-5 text-lg font-black text-slate-800">
-                  טוען שאלות נפוצות…
+                  {t("business.profileBuild.loadingFaqs", "טוען שאלות נפוצות…")}
                 </h3>
 
                 <p className="mt-2 text-sm text-slate-500">
-                  השאלות והתשובות שלך נטענות.
+                  {t("business.profileBuild.loadingFaqsHint", "השאלות והתשובות שלך נטענות.")}
                 </p>
               </div>
             ) : (
@@ -153,16 +159,16 @@ export default function FaqSection({
                 <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <h2 className="text-lg font-black text-slate-800">
-                      ניהול שאלות ותשובות
+                      {t("business.profileBuild.manageQa", "ניהול שאלות ותשובות")}
                     </h2>
 
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      הוסף, ערוך או מחק שאלות שיופיעו בפרופיל הציבורי.
+                      {t("business.profileBuild.manageQaHint", "הוסף, ערוך או מחק שאלות שיופיעו בפרופיל הציבורי.")}
                     </p>
                   </div>
 
                   <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                    {faqs.length} שאלות
+                    {t("business.profileBuild.questionsCount", "{{count}} שאלות", { count: faqs.length })}
                   </span>
                 </div>
 
@@ -185,12 +191,14 @@ export default function FaqSection({
                 </div>
 
                 <h3 className="mt-4 text-lg font-black text-slate-800">
-                  התחל עם השאלה הנפוצה הראשונה
+                  {t("business.profileBuild.startFirstFaq", "התחל עם השאלה הנפוצה הראשונה")}
                 </h3>
 
                 <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                  הוסף שאלות על מחירים, שעות פעילות, תהליך הזמנה, ביטולים,
-                  מיקום או כל דבר שלקוחות שואלים בדרך כלל.
+                  {t(
+                    "business.profileBuild.startFirstFaqHint",
+                    "הוסף שאלות על מחירים, שעות פעילות, תהליך הזמנה, ביטולים, מיקום או כל דבר שלקוחות שואלים בדרך כלל."
+                  )}
                 </p>
               </div>
             )}
@@ -202,7 +210,7 @@ export default function FaqSection({
                   onClick={() => navigate(`/business/${businessId}?tab=faq`)}
                   className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
-                  צפייה בפרופיל הציבורי
+                  {t("business.profileBuild.viewPublicProfile", "צפייה בפרופיל הציבורי")}
                 </button>
               </div>
             )}
@@ -225,11 +233,11 @@ export default function FaqSection({
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-black text-violet-700">
-                      תצוגה מקדימה של הפרופיל הציבורי
+                      {t("business.profileBuild.publicPreview", "תצוגה מקדימה של הפרופיל הציבורי")}
                     </p>
 
                     <h2 className="mt-1 text-xl font-black text-slate-800">
-                      שאלות ותשובות
+                      {t("business.profileBuild.questionsAndAnswers", "שאלות ותשובות")}
                     </h2>
                   </div>
 
@@ -245,21 +253,21 @@ export default function FaqSection({
 
                     <div className="relative">
                       <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-3 py-1 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                        תצוגה מקדימה חיה
+                        {t("business.profileBuild.livePreview", "תצוגה מקדימה חיה")}
                       </div>
 
                       <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-800">
-                        שאלות ותשובות
+                        {t("business.profileBuild.questionsAndAnswers", "שאלות ותשובות")}
                       </h3>
 
                       <p className="mt-2 text-sm leading-6 text-slate-600">
-                        כך אזור השאלות והתשובות יופיע ללקוחות בפרופיל העסקי.
+                        {t("business.profileBuild.howFaqAppears", "כך אזור השאלות והתשובות יופיע ללקוחות בפרופיל העסקי.")}
                       </p>
 
                       <div className="mt-6 grid grid-cols-2 gap-3">
                         <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm backdrop-blur">
                           <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                            שאלות
+                            {t("business.profileBuild.questions", "שאלות")}
                           </p>
 
                           <p className="mt-1 text-2xl font-black text-slate-800">
@@ -269,11 +277,13 @@ export default function FaqSection({
 
                         <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm backdrop-blur">
                           <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                            סטטוס
+                            {t("common.status", "סטטוס")}
                           </p>
 
                           <p className="mt-1 text-lg font-black text-slate-800">
-                            {hasFaqs ? "פעיל" : "ריק"}
+                            {hasFaqs
+                              ? t("business.profileBuild.active", "פעיל")
+                              : t("business.profileBuild.empty", "ריק")}
                           </p>
                         </div>
                       </div>
@@ -284,12 +294,14 @@ export default function FaqSection({
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div>
                         <h3 className="text-2xl font-black text-slate-800">
-                          מה לקוחות שואלים
+                          {t("business.profileBuild.whatCustomersAsk", "מה לקוחות שואלים")}
                         </h3>
 
                         <p className="mt-1 text-sm leading-6 text-slate-500">
-                          כאן יוצגו השאלות הנפוצות שיעזרו ללקוחות להבין את
-                          השירותים מהר יותר.
+                          {t(
+                            "business.profileBuild.whatCustomersAskHint",
+                            "כאן יוצגו השאלות הנפוצות שיעזרו ללקוחות להבין את השירותים מהר יותר."
+                          )}
                         </p>
                       </div>
 
@@ -301,7 +313,9 @@ export default function FaqSection({
                             : "bg-slate-100 text-slate-500",
                         ].join(" ")}
                       >
-                        {hasFaqs ? "פעיל" : "ריק"}
+                        {hasFaqs
+                          ? t("business.profileBuild.active", "פעיל")
+                          : t("business.profileBuild.empty", "ריק")}
                       </span>
                     </div>
 
@@ -311,7 +325,7 @@ export default function FaqSection({
                           <BizuplyLoader size="lg" />
 
                           <p className="mt-4 text-sm font-bold text-slate-500">
-                            טוען שאלות נפוצות…
+                            {t("business.profileBuild.loadingFaqs", "טוען שאלות נפוצות…")}
                           </p>
                         </div>
                       ) : hasFaqs ? (
@@ -331,12 +345,14 @@ export default function FaqSection({
                           </div>
 
                           <h3 className="mt-4 text-lg font-black text-slate-800">
-                            עדיין אין שאלות נפוצות
+                            {t("business.faq.emptyTitle", "עדיין אין שאלות נפוצות")}
                           </h3>
 
                           <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                            הוסף שאלות ותשובות נפוצות כדי לעזור ללקוחות להבין
-                            את השירותים שלך מהר יותר.
+                            {t(
+                              "business.profileBuild.noFaqsHint",
+                              "הוסף שאלות ותשובות נפוצות כדי לעזור ללקוחות להבין את השירותים שלך מהר יותר."
+                            )}
                           </p>
                         </div>
                       )}
@@ -345,7 +361,7 @@ export default function FaqSection({
                     <div className="mt-5 grid grid-cols-2 gap-3">
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          שאלות
+                          {t("business.profileBuild.questions", "שאלות")}
                         </p>
 
                         <p className="mt-1 text-2xl font-black text-slate-800">
@@ -355,11 +371,13 @@ export default function FaqSection({
 
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          סטטוס
+                          {t("common.status", "סטטוס")}
                         </p>
 
                         <p className="mt-1 text-lg font-black text-slate-800">
-                          {hasFaqs ? "פעיל" : "ריק"}
+                          {hasFaqs
+                            ? t("business.profileBuild.active", "פעיל")
+                            : t("business.profileBuild.empty", "ריק")}
                         </p>
                       </div>
                     </div>

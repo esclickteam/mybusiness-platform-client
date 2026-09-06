@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import i18n from "../../i18n/i18n";
+import { getTextDirection } from "../../i18n/localeUtils";
 import {
   PushBellDiscoverChip,
   PushCompactUpsellCard,
@@ -92,7 +94,7 @@ describe("PushDiscoverabilityCards", () => {
       </div>
     );
     const chip = screen.getByTestId("push-bell-chip");
-    expect(chip).toHaveAttribute("dir", "rtl");
+    expect(chip).toHaveAttribute("dir", getTextDirection(i18n.language));
     expect(chip).toHaveAttribute("aria-label", "7 ימים של התראות Push חינם");
     expect(chip.textContent || "").toContain("7 ימים של התראות Push חינם");
     expect(chip.textContent || "").not.toContain("Push • 7 ימים חינם");
