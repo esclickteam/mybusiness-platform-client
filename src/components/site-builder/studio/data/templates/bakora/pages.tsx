@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { bakoraDefaultData } from "./defaultData";
@@ -582,7 +583,7 @@ export default function BakoraPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="bakora" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="bakora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf6f0", color: "#2a1f18" }}>
       <style dangerouslySetInnerHTML={{ __html: bakoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

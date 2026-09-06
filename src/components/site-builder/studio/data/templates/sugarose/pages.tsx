@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { sugaroseDefaultData } from "./defaultData";
@@ -355,7 +356,7 @@ export default function SugarosePages(props: SugarosePagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="sugarose" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF8E6", color: "#4B2202" }}>
+    <div dir={templateDir()} data-template-id="sugarose" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF8E6", color: "#4B2202" }}>
       <style dangerouslySetInnerHTML={{ __html: sugaroseEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

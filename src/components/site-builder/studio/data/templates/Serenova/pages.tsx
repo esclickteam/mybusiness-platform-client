@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
@@ -1567,7 +1568,7 @@ export default function SerenovaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="serenova"
       className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(184,207,174,0.38),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(215,191,151,0.32),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(184,207,174,0.20),transparent_24%),linear-gradient(180deg,#f7efe3_0%,#f2eadc_48%,#edf2ea_100%)] font-sans text-[#20342a]"
     >

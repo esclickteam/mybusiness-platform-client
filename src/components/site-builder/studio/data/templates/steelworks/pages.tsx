@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -973,7 +974,7 @@ export default function SteelworksPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="steelworks"
       className="min-h-screen w-full overflow-x-hidden bg-[#1a1a1a] text-[#f3f0ea]"
       style={{ fontFamily: '"Inter", "Arial", sans-serif' }}

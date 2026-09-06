@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { mezzalineDefaultData } from "./defaultData";
@@ -567,7 +568,7 @@ export default function MezzalinePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="mezzaline" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="mezzaline" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f7f1e6", color: "#2c2a22" }}>
       <style dangerouslySetInnerHTML={{ __html: mezzalineEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { rivaraDefaultData } from "./defaultData";
@@ -267,7 +268,7 @@ export default function RivaraPages({
     contact: <InnerPage data={merged} title={tx("יצירת קשר")}><SereneInquiry data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="rivara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#e8f3f2", color: "#12343a" }}>
+    <div dir={templateDir()} data-template-id="rivara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#e8f3f2", color: "#12343a" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vesperaDefaultData } from "./defaultData";
@@ -394,7 +395,7 @@ export default function VesperaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vespera"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a0f14", color: "#f4ebe4" }}

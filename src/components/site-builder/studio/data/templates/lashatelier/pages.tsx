@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lashatelierDefaultData } from "./defaultData";
@@ -355,7 +356,7 @@ export default function LashatelierPages(props: LashatelierPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="lashatelier" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#120A1F", color: "#FAF5FF" }}>
+    <div dir={templateDir()} data-template-id="lashatelier" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#120A1F", color: "#FAF5FF" }}>
       <style dangerouslySetInnerHTML={{ __html: lashatelierEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

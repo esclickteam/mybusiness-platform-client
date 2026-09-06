@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { soundlineDefaultData } from "./defaultData";
@@ -382,7 +383,7 @@ export default function SoundlinePages({
   );
 
   return (
-    <div dir="rtl" data-template-id="soundline" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir={templateDir()} data-template-id="soundline" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: soundlineEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: pageContent }]} />
     </div>

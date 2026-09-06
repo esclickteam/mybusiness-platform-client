@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { microarchDefaultData } from "./defaultData";
@@ -358,7 +359,7 @@ export default function MicroarchPages(props: MicroarchPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="microarch" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFFBEB", color: "#451A03" }}>
+    <div dir={templateDir()} data-template-id="microarch" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFFBEB", color: "#451A03" }}>
       <style dangerouslySetInnerHTML={{ __html: microarchEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { cinderDefaultData } from "./defaultData";
@@ -394,7 +395,7 @@ export default function CinderPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="cinder"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a120e", color: "#f6efe6" }}

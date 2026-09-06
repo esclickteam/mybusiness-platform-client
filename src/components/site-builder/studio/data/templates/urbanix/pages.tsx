@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { urbanixDefaultData } from "./defaultData";
@@ -241,7 +242,7 @@ export default function UrbanixPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="urbanix" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="urbanix" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#141516", color: "#f2f2f0" }}>
       <UrbanixAccentHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

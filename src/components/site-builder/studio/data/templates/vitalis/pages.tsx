@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalisDefaultData } from "./defaultData";
@@ -801,7 +802,7 @@ export default function VitalisPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vitalis"
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#f7fcfc_0%,#ffffff_40%)] font-sans text-[#0f2a36]"
     >

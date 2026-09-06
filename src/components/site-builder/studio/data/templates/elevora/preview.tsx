@@ -1,4 +1,5 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 
 import { elevoraEditorCss } from "./editorCss";
 import ElevoraPages from "./pages";
@@ -6,7 +7,7 @@ import ElevoraPages from "./pages";
 export default function ElevoraPreview() {
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="elevora"
       className="h-screen min-h-screen w-full bg-[#f6f1e7] text-[#13231b]"
       style={{

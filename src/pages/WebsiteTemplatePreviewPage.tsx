@@ -8,12 +8,13 @@ import { getStudioTemplateById, getStudioTemplateSeedById } from "../components/
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { useTranslation } from "react-i18next";
-import i18n from "../i18n/i18n";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../i18n/localeUtils";
+import { setTemplateLanguageOverride } from "../i18n/templateDir";
 
 export default function WebsiteTemplatePreviewPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  setTemplateLanguageOverride(i18n.language);
   const navigate = useNavigate();
 
   const { businessId, templateId } = useParams<{

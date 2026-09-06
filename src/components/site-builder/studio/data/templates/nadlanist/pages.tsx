@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -232,7 +233,7 @@ function Shell({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="nadlanist-framion-inspired"
       className={cx(
         "min-h-screen bg-[#06101f] text-white",

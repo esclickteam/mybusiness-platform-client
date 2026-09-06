@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { geloraDefaultData } from "./defaultData";
@@ -415,7 +416,7 @@ export default function GeloraPages(props: GeloraPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="gelora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF7FB", color: "#4C0F2E" }}>
+    <div dir={templateDir()} data-template-id="gelora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF7FB", color: "#4C0F2E" }}>
       <style dangerouslySetInnerHTML={{ __html: geloraEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

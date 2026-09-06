@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { solenneDefaultData } from "./defaultData";
@@ -394,7 +395,7 @@ export default function SolennePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="solenne"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f7f3ee", color: "#1d1a17" }}

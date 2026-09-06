@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lexhavenDefaultData } from "./defaultData";
@@ -356,7 +357,7 @@ export default function LexhavenPages(props: LexhavenPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="lexhaven" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="lexhaven" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: lexhavenEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

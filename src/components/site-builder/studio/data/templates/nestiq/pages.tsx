@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nestiqDefaultData } from "./defaultData";
@@ -468,7 +469,7 @@ export default function NestiqPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf5ff", color: "#1e1b4b" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo(ctaPage)} />
       <VisualPageStack data={merged} activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

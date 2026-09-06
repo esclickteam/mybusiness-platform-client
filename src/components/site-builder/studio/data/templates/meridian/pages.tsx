@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { meridianDefaultData } from "./defaultData";
@@ -394,7 +395,7 @@ export default function MeridianPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="meridian"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#12100e", color: "#f3ebe1" }}

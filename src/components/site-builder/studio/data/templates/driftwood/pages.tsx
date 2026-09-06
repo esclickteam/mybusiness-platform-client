@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { driftwoodDefaultData } from "./defaultData";
@@ -220,7 +221,7 @@ export default function DriftwoodPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="driftwood" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="driftwood" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f0e8dc", color: "#3c2e22" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

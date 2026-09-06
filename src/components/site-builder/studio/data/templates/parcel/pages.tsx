@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { parcelDefaultData } from "./defaultData";
@@ -238,7 +239,7 @@ export default function ParcelPages({
     contact: <InnerPage data={merged} title={tx("יצירת קשר")}><SurveyRequest data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="parcel" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#efe9da", color: "#243018" }}>
+    <div dir={templateDir()} data-template-id="parcel" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#efe9da", color: "#243018" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

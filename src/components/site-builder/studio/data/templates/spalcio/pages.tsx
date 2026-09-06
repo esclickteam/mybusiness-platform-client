@@ -1,4 +1,5 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import {
   ArrowLeft,
@@ -994,7 +995,7 @@ export function SpalcioPages(props: SpalcioPagesProps) {
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="spalcio"
       data-template-page-id={publicPageId}
       data-active-page-id={publicPageId}

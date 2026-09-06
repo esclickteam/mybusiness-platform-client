@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { spiceforgeDefaultData } from "./defaultData";
@@ -552,7 +553,7 @@ export default function SpiceforgePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="spiceforge" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="spiceforge" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a0f0a", color: "#fff1e0" }}>
       <style dangerouslySetInnerHTML={{ __html: spiceforgeEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

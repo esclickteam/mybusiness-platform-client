@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -548,7 +549,7 @@ export default function TalentixPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="talentix" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="talentix" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: talentixEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

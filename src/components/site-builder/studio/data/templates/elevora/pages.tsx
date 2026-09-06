@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -205,7 +206,7 @@ export default function ElevoraPages({
       <style>{elevoraEditorCss}</style>
 
       <main
-        dir="rtl"
+        dir={templateDir()}
         data-template-id="elevora"
         data-template-mode={mode}
         data-template-page-id={currentPage}

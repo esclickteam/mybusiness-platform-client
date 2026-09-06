@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -927,7 +928,7 @@ export default function FramehausPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="framehaus"
       className="min-h-screen w-full overflow-x-hidden bg-[#fafafa] text-[#111111] rounded-none"
       style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}

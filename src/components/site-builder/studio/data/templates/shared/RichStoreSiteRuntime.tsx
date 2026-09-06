@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -2608,7 +2609,7 @@ export default function RichStoreSiteRuntime({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id={templateId}
       data-rich-store-layout={layoutId}
       data-bizuply-site="true"

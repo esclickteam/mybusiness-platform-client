@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { shinoraDefaultData, type ShinoraTemplateData } from "./defaultData";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1982,7 +1983,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
   return (
     <main
       className="min-h-screen bg-[#fff8f2] font-sans text-[#241612]"
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="shinora"
       data-visual-template-root="true"
     >

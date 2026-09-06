@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vowlineDefaultData } from "./defaultData";
@@ -385,7 +386,7 @@ export default function VowlinePages(props: VowlinePagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="vowline" className="min-h-screen w-full overflow-x-hidden bg-[#F8F4F0]">
+    <div dir={templateDir()} data-template-id="vowline" className="min-h-screen w-full overflow-x-hidden bg-[#F8F4F0]">
       <style dangerouslySetInnerHTML={{ __html: vowlineEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

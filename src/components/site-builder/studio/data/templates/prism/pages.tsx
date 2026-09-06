@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -967,7 +968,7 @@ export default function PrismPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="prism"
       className="min-h-screen w-full overflow-x-hidden bg-[#fffef8] text-[#0a0a0a]"
       style={{ fontFamily: '"Arial Black", "Helvetica Neue", Arial, sans-serif' }}

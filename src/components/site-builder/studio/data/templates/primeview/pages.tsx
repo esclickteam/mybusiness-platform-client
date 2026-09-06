@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { primeviewDefaultData } from "./defaultData";
@@ -438,7 +439,7 @@ export default function PrimeviewPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id="primeview" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="primeview" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f8fafc", color: "#0f172a" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

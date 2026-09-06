@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -814,7 +815,7 @@ export default function HorizonPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="horizon"
       className="min-h-screen w-full overflow-x-hidden bg-[#f7f3ed] text-[#1c1c1c]"
       style={{ fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif' }}

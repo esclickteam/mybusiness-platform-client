@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1362,7 +1363,7 @@ export default function GridlinePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="gridline"
       data-template-mode={mode}
       className="min-h-screen overflow-x-hidden bg-[#f3f3ef] text-black"

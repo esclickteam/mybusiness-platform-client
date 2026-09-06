@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { pawhausDefaultData } from "./defaultData";
@@ -398,7 +399,7 @@ export default function PawhausPages({ initialPage = "home", mode = "preview", d
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="pawhaus" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="pawhaus" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: pawhausEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { burgerhausDefaultData } from "./defaultData";
@@ -577,7 +578,7 @@ export default function BurgerhausPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="burgerhaus" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="burgerhaus" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#111111", color: "#f5f5f5" }}>
       <style dangerouslySetInnerHTML={{ __html: burgerhausEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

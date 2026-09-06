@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { neuralisDefaultData } from "./defaultData";
@@ -446,7 +447,7 @@ export default function NeuralisPages(props: NeuralisPagesProps) {
   );
 
   return (
-    <div dir="rtl" data-template-id="neuralis" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="neuralis" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: neuralisEditorCss }} />
       <Header data={mergedData} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: <HomePage data={mergedData} /> }]} />

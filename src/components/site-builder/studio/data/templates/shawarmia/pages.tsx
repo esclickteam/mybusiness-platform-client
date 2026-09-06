@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { shawarmiaDefaultData } from "./defaultData";
@@ -587,7 +588,7 @@ export default function ShawarmiaPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="shawarmia" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="shawarmia" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#14110e", color: "#f5ebe0" }}>
       <style dangerouslySetInnerHTML={{ __html: shawarmiaEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -1,9 +1,10 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import SkylaraPages from "./pages";
 
 export default function SkylaraPreview() {
   return (
-    <div dir="rtl" data-template-id="skylara" className="min-h-screen w-full overflow-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
+    <div dir={templateDir()} data-template-id="skylara" className="min-h-screen w-full overflow-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
       <SkylaraPages initialPage="home" mode="preview" />
     </div>
   );

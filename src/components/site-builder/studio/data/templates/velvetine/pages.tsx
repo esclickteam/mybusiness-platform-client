@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { velvetineDefaultData } from "./defaultData";
@@ -355,7 +356,7 @@ export default function VelvetinePages(props: VelvetinePagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="velvetine" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#120E0C", color: "#F5EDE3" }}>
+    <div dir={templateDir()} data-template-id="velvetine" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#120E0C", color: "#F5EDE3" }}>
       <style dangerouslySetInnerHTML={{ __html: velvetineEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

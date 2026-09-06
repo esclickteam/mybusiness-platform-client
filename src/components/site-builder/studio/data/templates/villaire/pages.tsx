@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { villaireDefaultData } from "./defaultData";
@@ -206,7 +207,7 @@ export default function VillairePages({
     contact: <InnerPage data={merged} title={tx("יצירת קשר")}><NarrowInquiry data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="villaire" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>
+    <div dir={templateDir()} data-template-id="villaire" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>
       <Header data={merged} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

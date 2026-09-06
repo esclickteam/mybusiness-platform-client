@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { crustoraDefaultData } from "./defaultData";
 import { crustoraEditorCss } from "./editorCss";
@@ -547,7 +548,7 @@ export default function CrustoraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="crustora" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="crustora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf4eb", color: "#2a1810" }}>
       <style dangerouslySetInnerHTML={{ __html: crustoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { spajadeDefaultData } from "./defaultData";
@@ -357,7 +358,7 @@ export default function SpajadePages(props: SpajadePagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="spajade" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#07140F", color: "#ECFDF5" }}>
+    <div dir={templateDir()} data-template-id="spajade" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#07140F", color: "#ECFDF5" }}>
       <style dangerouslySetInnerHTML={{ __html: spajadeEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { glowhausDefaultData } from "./defaultData";
@@ -358,7 +359,7 @@ export default function GlowhausPages(props: GlowhausPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="glowhaus" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#061018", color: "#E0F2FE" }}>
+    <div dir={templateDir()} data-template-id="glowhaus" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#061018", color: "#E0F2FE" }}>
       <style dangerouslySetInnerHTML={{ __html: glowhausEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

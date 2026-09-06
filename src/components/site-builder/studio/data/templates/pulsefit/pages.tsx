@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { pulsefitDefaultData } from "./defaultData";
@@ -383,7 +384,7 @@ export default function PulsefitPages(props: PulsefitPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="pulsefit" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="pulsefit" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: pulsefitEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

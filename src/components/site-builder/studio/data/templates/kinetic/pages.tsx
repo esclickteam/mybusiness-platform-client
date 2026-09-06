@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -761,7 +762,7 @@ export default function KineticPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="kinetic"
       className="min-h-screen w-full overflow-x-hidden bg-black text-white"
       style={{ fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif' }}

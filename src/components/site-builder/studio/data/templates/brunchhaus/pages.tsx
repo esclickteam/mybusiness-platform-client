@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { brunchhausDefaultData } from "./defaultData";
@@ -544,7 +545,7 @@ export default function BrunchhausPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="brunchhaus" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="brunchhaus" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fff8f0", color: "#3a2a1e" }}>
       <style dangerouslySetInnerHTML={{ __html: brunchhausEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

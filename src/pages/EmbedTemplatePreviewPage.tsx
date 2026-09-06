@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../i18n/localeUtils";
+import { setTemplateLanguageOverride } from "../i18n/templateDir";
 
 /**
  * Standalone live render of a studio template's homepage for gallery card
@@ -18,6 +19,7 @@ export default function EmbedTemplatePreviewPage() {
   const modeParam = String(searchParams.get("mode") || "preview").toLowerCase();
   const mode = modeParam === "edit" ? "edit" : "preview";
   const language = searchParams.get("lang") || i18n.language;
+  setTemplateLanguageOverride(searchParams.get("lang"));
 
   const renderer = useMemo(
     () => getStudioTemplateRenderer(templateKey),
@@ -75,7 +77,7 @@ export default function EmbedTemplatePreviewPage() {
         }
       `}</style>
 
-      <div data-template-id={key}>
+      <div data-template-id={key} dir={getTextDirection(language)}>
         <Component
           initialPage={pageId}
           initialPageId={pageId}

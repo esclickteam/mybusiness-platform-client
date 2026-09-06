@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { gelatixDefaultData } from "./defaultData";
@@ -573,7 +574,7 @@ export default function GelatixPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="gelatix" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="gelatix" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fff5f8", color: "#2b1822" }}>
       <style dangerouslySetInnerHTML={{ __html: gelatixEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1040,7 +1041,7 @@ export default function CitadelPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="citadel"
       className="min-h-screen w-full overflow-x-hidden"
       style={{

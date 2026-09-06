@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { fluxoraDefaultData } from "./defaultData";
@@ -925,7 +926,7 @@ export default function FluxoraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="fluxora"
       className="min-h-screen w-full overflow-x-hidden bg-[#070b10] font-sans text-[#e8eef5]"
     >

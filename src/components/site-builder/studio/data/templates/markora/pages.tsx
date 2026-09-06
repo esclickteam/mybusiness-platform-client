@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { markoraDefaultData } from "./defaultData";
@@ -363,7 +364,7 @@ export default function MarkoraPages(props: MarkoraPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="markora" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="markora" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: markoraEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

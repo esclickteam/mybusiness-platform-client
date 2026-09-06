@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { numerisDefaultData } from "./defaultData";
@@ -359,7 +360,7 @@ export default function NumerisPages(props: NumerisPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="numeris" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir={templateDir()} data-template-id="numeris" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: numerisEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

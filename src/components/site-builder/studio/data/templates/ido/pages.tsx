@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1290,7 +1291,7 @@ export default function IdoPages({
 
   return (
     <main
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="ido"
       data-template-page={currentPage}
       data-template-page-id={currentPage}

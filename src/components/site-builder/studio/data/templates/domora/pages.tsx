@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { domoraDefaultData, type DomoraDefaultData } from "./defaultData";
@@ -241,7 +242,7 @@ function Shell({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="domora-cetfar-inspired"
       className={cx(
         "min-h-screen bg-[#f5f5f2] text-[#151d20]",

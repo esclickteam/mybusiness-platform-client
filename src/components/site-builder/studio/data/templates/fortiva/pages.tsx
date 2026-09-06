@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { fortivaDefaultData } from "./defaultData";
@@ -778,7 +779,7 @@ export default function FortivaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="fortiva"
       className="min-h-screen w-full overflow-x-hidden bg-[#f6f5f1] text-[#0f1e3d]"
       style={{ fontFamily: '"Frank Ruhl Libre", "Playfair Display", Georgia, serif' }}

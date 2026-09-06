@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { verdantDefaultData } from "./defaultData";
@@ -363,7 +364,7 @@ export default function VerdantPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="verdant"
       className="min-h-screen w-full overflow-x-hidden"
     >

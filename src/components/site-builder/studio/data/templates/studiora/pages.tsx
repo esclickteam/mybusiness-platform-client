@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { studioraDefaultData } from "./defaultData";
@@ -781,7 +782,7 @@ export default function StudioraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="studiora"
       className="min-h-screen w-full overflow-x-hidden bg-[#0a0a0a] font-sans text-white"
     >

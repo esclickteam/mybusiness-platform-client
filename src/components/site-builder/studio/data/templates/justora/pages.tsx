@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { justoraDefaultData } from "./defaultData";
 import {
@@ -2051,7 +2052,7 @@ export default function JustoraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="justora"
       data-template-page-id={
         isLibraryPage ? libraryPage?.rawPageId || currentPage : currentPage

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1373,7 +1374,7 @@ export default function MonolithPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="monolith"
       data-template-mode={mode}
       className="min-h-screen overflow-x-hidden bg-[#0c1a33] text-[#0c1a33]"

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1279,7 +1280,7 @@ export default function VirelloPages(props: VirelloPagesProps) {
         data-template-id="virello"
         data-visual-template="virello"
         data-active-page-id={activePage}
-        dir="rtl"
+        dir={templateDir()}
         className="min-h-screen overflow-hidden bg-[#fff8f0] text-[#301b12]"
       >
         <VirelloEffects />

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { autovoltDefaultData } from "./defaultData";
@@ -380,7 +381,7 @@ export default function AutovoltPages({ initialPage = "home", mode = "preview", 
   );
 
   return (
-    <div dir="rtl" data-template-id="autovolt" className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
+    <div dir={templateDir()} data-template-id="autovolt" className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
       <style dangerouslySetInnerHTML={{ __html: autovoltEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content }]} />
     </div>

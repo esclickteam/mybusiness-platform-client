@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalcareDefaultData } from "./defaultData";
@@ -499,7 +500,7 @@ export default function VitalcarePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vitalcare"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--vc-background)] text-[var(--vc-text)]"
     >

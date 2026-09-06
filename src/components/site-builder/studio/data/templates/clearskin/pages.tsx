@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { clearskinDefaultData } from "./defaultData";
@@ -357,7 +358,7 @@ export default function ClearskinPages(props: ClearskinPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="clearskin" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#F3FEFF", color: "#164E63" }}>
+    <div dir={templateDir()} data-template-id="clearskin" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#F3FEFF", color: "#164E63" }}>
       <style dangerouslySetInnerHTML={{ __html: clearskinEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

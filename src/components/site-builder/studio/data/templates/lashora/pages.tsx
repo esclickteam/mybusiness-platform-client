@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lashoraDefaultData } from "./defaultData";
@@ -357,7 +358,7 @@ export default function LashoraPages(props: LashoraPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="lashora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0B0A12", color: "#F5F3FF" }}>
+    <div dir={templateDir()} data-template-id="lashora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0B0A12", color: "#F5F3FF" }}>
       <style dangerouslySetInnerHTML={{ __html: lashoraEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

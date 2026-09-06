@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { groomoraDefaultData } from "./defaultData";
@@ -355,7 +356,7 @@ export default function GroomoraPages(props: GroomoraPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="groomora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0C1208", color: "#F7FEE7" }}>
+    <div dir={templateDir()} data-template-id="groomora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0C1208", color: "#F7FEE7" }}>
       <style dangerouslySetInnerHTML={{ __html: groomoraEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

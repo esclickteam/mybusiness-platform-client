@@ -1,5 +1,6 @@
 import i18n from "./i18n";
 import { normalizeLanguage } from "./languages";
+import { resolveTemplateLanguage } from "./templateDir";
 import phrasebook from "./templateSeedPhrasebook.json";
 import generatedExactLexicon from "./templateExactLexicon.generated.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
@@ -21,7 +22,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
 };
 
 function localeKey(language?: string): "he" | "en" | "es" | "pt-BR" | "ar" {
-  const normalized = normalizeLanguage(language || i18n.language);
+  const normalized = normalizeLanguage(resolveTemplateLanguage(language) || i18n.language);
   if (normalized === "he") return "he";
   if (normalized === "pt-BR") return "pt-BR";
   if (normalized === "es" || normalized === "ar" || normalized === "en") {

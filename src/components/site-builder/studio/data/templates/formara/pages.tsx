@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { formaraDefaultData } from "./defaultData";
@@ -378,7 +379,7 @@ export default function FormaraPages(props: FormaraPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="formara" className="min-h-screen w-full overflow-x-hidden bg-[#1E1C1A]">
+    <div dir={templateDir()} data-template-id="formara" className="min-h-screen w-full overflow-x-hidden bg-[#1E1C1A]">
       <style dangerouslySetInnerHTML={{ __html: formaraEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

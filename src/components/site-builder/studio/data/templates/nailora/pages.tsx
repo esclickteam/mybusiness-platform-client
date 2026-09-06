@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nailoraDefaultData } from "./defaultData";
@@ -357,7 +358,7 @@ export default function NailoraPages(props: NailoraPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="nailora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF8FA", color: "#3D1F2E" }}>
+    <div dir={templateDir()} data-template-id="nailora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFF8FA", color: "#3D1F2E" }}>
       <style dangerouslySetInnerHTML={{ __html: nailoraEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

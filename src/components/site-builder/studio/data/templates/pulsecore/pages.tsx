@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -843,7 +844,7 @@ function PulsecoreShell({
     <div
       data-template-id="pulsecore"
       data-template-page-id={activePage}
-      dir="rtl"
+      dir={templateDir()}
       className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#080808] text-white"
     >
       <style>{pulsecoreEditorCss}</style>

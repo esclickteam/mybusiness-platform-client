@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { peeloraDefaultData } from "./defaultData";
@@ -358,7 +359,7 @@ export default function PeeloraPages(props: PeeloraPagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="peelora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#F8FCFF", color: "#0C4A6E" }}>
+    <div dir={templateDir()} data-template-id="peelora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#F8FCFF", color: "#0C4A6E" }}>
       <style dangerouslySetInnerHTML={{ __html: peeloraEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

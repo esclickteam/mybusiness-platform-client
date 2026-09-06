@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { arboraDefaultData } from "./defaultData";
@@ -394,7 +395,7 @@ export default function ArboraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="arbora"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#eef2ea", color: "#1c2618" }}

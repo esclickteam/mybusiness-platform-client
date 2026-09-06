@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { CrmBookingMount } from "../shared/CrmBookingMount";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -544,7 +545,7 @@ export default function LuminellePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="luminelle"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--l-bg)] text-[var(--l-ink)]"
     >

@@ -1,4 +1,5 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import {
@@ -546,7 +547,7 @@ export default function CycloraPages({
     <main
       ref={rootRef}
       id="top"
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="cyclora"
       data-template-mode={mode}
       data-template-page-id={pageId}

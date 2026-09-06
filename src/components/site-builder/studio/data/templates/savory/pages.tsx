@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { savoryDefaultData } from "./defaultData";
@@ -478,7 +479,7 @@ export default function SavoryPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="savory"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--s-bg)] text-[var(--s-text)]"
     >

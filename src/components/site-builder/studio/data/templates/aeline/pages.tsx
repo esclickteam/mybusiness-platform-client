@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -1168,7 +1169,7 @@ function AelineShell({
     <div
       data-template-id="aeline"
       data-template-page-id={activePage}
-      dir="rtl"
+      dir={templateDir()}
       className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
     >
       <style>{aelineEditorCss}</style>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
@@ -445,7 +446,7 @@ export default function ServoraPages({
       <style>{servoraEditorCss}</style>
 
       <main
-        dir="rtl"
+        dir={templateDir()}
         data-template-id="servora"
         data-template-mode={mode}
         data-template-page-id={isLibraryPage ? rawPageId : currentPage}

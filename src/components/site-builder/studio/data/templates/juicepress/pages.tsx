@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { juicepressDefaultData } from "./defaultData";
@@ -580,7 +581,7 @@ export default function JuicepressPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="juicepress" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="juicepress" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fffbeb", color: "#1c1917" }}>
       <style dangerouslySetInnerHTML={{ __html: juicepressEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

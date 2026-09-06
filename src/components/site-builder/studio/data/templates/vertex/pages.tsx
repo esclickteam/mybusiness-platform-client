@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -926,7 +927,7 @@ export default function VertexPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vertex"
       className="min-h-screen w-full overflow-x-hidden bg-[#050505] text-[#f5f5f5] rounded-none"
       style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}

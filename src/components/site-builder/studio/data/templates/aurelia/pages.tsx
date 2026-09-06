@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aureliaDefaultData } from "./defaultData";
@@ -840,7 +841,7 @@ export default function AureliaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="aurelia"
       className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_14%_6%,rgba(201,162,75,0.14),transparent_30%),radial-gradient(circle_at_86%_22%,rgba(122,59,29,0.16),transparent_32%),linear-gradient(180deg,#14100d_0%,#181310_50%,#12100c_100%)] font-sans text-[#f5eee1]"
       style={{ fontFamily: '"Cormorant Garamond", "Playfair Display", Georgia, serif' }}

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { browlineDefaultData } from "./defaultData";
@@ -357,7 +358,7 @@ export default function BrowlinePages(props: BrowlinePagesProps) {
   };
 
   return (
-    <div dir="rtl" data-template-id="browline" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FBF7F4", color: "#3E2723" }}>
+    <div dir={templateDir()} data-template-id="browline" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FBF7F4", color: "#3E2723" }}>
       <style dangerouslySetInnerHTML={{ __html: browlineEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

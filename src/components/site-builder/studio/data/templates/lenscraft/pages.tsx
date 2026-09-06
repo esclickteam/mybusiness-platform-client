@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lenscraftDefaultData } from "./defaultData";
@@ -361,7 +362,7 @@ export default function LenscraftPages(props: LenscraftPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="lenscraft" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir={templateDir()} data-template-id="lenscraft" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: lenscraftEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

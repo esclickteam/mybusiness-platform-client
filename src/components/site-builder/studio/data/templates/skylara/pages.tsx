@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { skylaraDefaultData } from "./defaultData";
@@ -247,7 +248,7 @@ export default function SkylaraPages({
     contact: <InnerPage data={merged} title={tx("יצירת קשר")}><CyanContact data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="skylara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
+    <div dir={templateDir()} data-template-id="skylara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

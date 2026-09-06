@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { skyholdDefaultData } from "./defaultData";
@@ -448,7 +449,7 @@ export default function SkyholdPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id="skyhold" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="skyhold" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#0f1419", color: "#e8edf5" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

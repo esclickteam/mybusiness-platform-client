@@ -1,8 +1,9 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import TacoflarePages from "./pages";
 export default function TacoflarePreview() {
   return (
-    <div dir="rtl" data-template-id="tacoflare" className="min-h-screen w-full" style={{ background: "#1a0e0a", color: "#fff3e8" }}>
+    <div dir={templateDir()} data-template-id="tacoflare" className="min-h-screen w-full" style={{ background: "#1a0e0a", color: "#fff3e8" }}>
       <TacoflarePages initialPage="home" mode="preview" />
     </div>
   );
