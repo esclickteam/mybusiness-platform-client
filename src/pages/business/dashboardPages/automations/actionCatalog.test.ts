@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import i18n from "../../../../i18n/i18n";
 import {
   ACTION_OPTIONS,
   FLOW_ACTION_PALETTE,
@@ -32,6 +33,10 @@ function graphActionKeys(
 }
 
 describe("automation action catalog", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en");
+  });
+
   it("shows only unique supported publishable actions in the picker", () => {
     const actionKeys = paletteActionKeys();
     expect(actionKeys).toEqual([...new Set(actionKeys)]);
@@ -69,7 +74,7 @@ describe("automation action catalog", () => {
     const sendEmail = findActionOption("send_email")!;
     expect(sendEmail.supported).toBe(true);
     expect(sendEmail.customerVisible).not.toBe(false);
-    expect(sendEmail.label).toBe("שליחת מייל עסקי");
+    expect(sendEmail.label).toBe("Send a business email");
 
     const appointment = findActionOption("create_appointment")!;
     expect(appointment.supported).toBe(false);

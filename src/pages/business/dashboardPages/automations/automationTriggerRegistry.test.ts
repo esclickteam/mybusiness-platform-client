@@ -1,4 +1,5 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, beforeAll } from "vitest";
+import i18n from "../../../../i18n/i18n";
 import {
   buildPaletteWithTriggers,
   buildTriggerPaletteItems,
@@ -128,6 +129,10 @@ const SUPPORTED: AutomationTriggerOption[] = [
 ];
 
 describe("automation trigger registry client", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en");
+  });
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -213,7 +218,7 @@ describe("automation trigger registry client", () => {
         { triggerKey: "new_lead", label: "ליד חדש ב־CRM" },
         "trigger"
       )
-    ).toBe("מופעל בכל יצירת ליד חדש");
+    ).toBe("Runs whenever a new lead is created");
     expect(
       nodeSummary(
         {
@@ -229,7 +234,7 @@ describe("automation trigger registry client", () => {
         { triggerKey: "appointment_reminder", hoursBefore: 24 },
         "trigger"
       )
-    ).toBe("יום לפני הפגישה");
+    ).toBe("1 day before the appointment");
   });
 
   it("does not import MiniMap in AutomationFlowEditor", async () => {

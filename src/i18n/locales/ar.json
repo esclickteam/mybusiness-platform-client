@@ -479,6 +479,787 @@
       "title": "الأتمتة",
       "subtitle": "A البصرية جعل / n8n نمط باني  وحدات السحب، وربطها، والذهاب العيش.",
       "channel": "السحب والإفلات منشئ"
+    },
+    "common": {
+      "all": "الكل",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "close": "إغلاق",
+      "retry": "حاول مرة أخرى",
+      "loading": "جارٍ التحميل…",
+      "yes": "نعم",
+      "no": "لا",
+      "optional": "اختياري",
+      "requiredFields": "حقول مطلوبة",
+      "settings": "الإعدادات",
+      "title": "العنوان",
+      "value": "القيمة",
+      "none": "—"
+    },
+    "home": {
+      "title": "الأتمتة",
+      "subtitle": "أنشئ وأدر عمليات تلقائية لنشاطك التجاري",
+      "new": "أتمتة جديدة",
+      "templates": "قوالب",
+      "runDemoTrigger": "تشغيل محفّز تجريبي",
+      "kpiTotal": "إجمالي الأتمتة",
+      "kpiActive": "نشطة",
+      "kpiRuns": "تشغيلات خلال 30 يومًا",
+      "kpiFailed": "فاشلة",
+      "billingAria": "فوترة الأتمتة وواتساب",
+      "searchPlaceholder": "البحث في الأتمتة",
+      "sort": "ترتيب",
+      "sortUpdated": "آخر تحديث",
+      "sortCreated": "آخر إنشاء",
+      "sortName": "الاسم",
+      "filterAll": "الكل",
+      "filterActive": "نشطة",
+      "filterDraft": "مسودات",
+      "filterPaused": "متوقفة",
+      "filterFailed": "أخطاء",
+      "loading": "جارٍ تحميل الأتمتة...",
+      "emptyTitle": "لا توجد أتمتة بعد",
+      "emptyText": "أنشئ أول أتمتة ووفّر العمل اليدوي.",
+      "browseTemplates": "تصفح القوالب",
+      "noneFoundTitle": "لم يتم العثور على أتمتة",
+      "noneFoundText": "جرّب تغيير البحث أو عوامل التصفية.",
+      "fallbackName": "الأتمتة",
+      "deleteActiveHint": "هذه الأتمتة نشطة وستتوقف فورًا. ",
+      "deletePausedHint": "هذه الأتمتة متوقفة. ",
+      "deleteConfirm": "هل تريد حذف \"{{name}}\" نهائيًا؟ سيُحذف أيضًا سجل التشغيل ولا يمكن التراجع."
+    },
+    "toasts": {
+      "loadError": "تعذّر تحميل الأتمتة",
+      "checkoutCancel": "تم إلغاء الدفع — يمكنك اختيار خطة مرة أخرى في أي وقت.",
+      "waCheckoutProcessing": "جارٍ تحديث فوترة واتساب...",
+      "waCheckoutCancel": "تم إلغاء إعداد فوترة واتساب — يمكنك إعداده مرة أخرى في أي وقت.",
+      "waReactivated": "تم التراجع عن الإلغاء وستبقى الفوترة نشطة.",
+      "waReactivateError": "تعذّر إبقاء فوترة واتساب نشطة",
+      "planReactivated": "تم التراجع عن الإلغاء وستستمر الخطة.",
+      "planReactivateError": "تعذّر إبقاء الخطة نشطة",
+      "duplicated": "تم نسخ الأتمتة",
+      "duplicateError": "تعذّر النسخ",
+      "statusUpdated": "تم تحديث حالة الأتمتة",
+      "waBillingRequired": "يلزم إعداد فوترة واتساب قبل تفعيل الأتمتة.",
+      "waBillingBlock": "لا يمكن تحديث الأتمتة بسبب فوترة واتساب",
+      "planRequired": "اختر خطة إجراءات لتفعيل أتمتة",
+      "quotaExhausted": "استُنفدت حصة الإجراءات الشهرية — ستُحظر الإجراءات المدفوعة حتى الترقية",
+      "updateBlocked": "لا يمكن تحديث الأتمتة",
+      "deleted": "تم حذف الأتمتة",
+      "deleteError": "تعذّر الحذف",
+      "createdAndEnabled": "تم إنشاء الأتمتة وتفعيلها",
+      "createdNotEnabled": "تم الإنشاء دون التفعيل — راجع الإعدادات وانشر",
+      "createdNotEnabledBuilder": "تم الإنشاء دون التفعيل — أكمل الإعدادات وانشر في المحرر",
+      "activateError": "تعذّر تفعيل الأتمتة",
+      "waUnavailable": "واتساب غير متاح الآن. يُرجى التواصل مع الدعم.",
+      "connectWhatsApp": "اربط واتساب للأعمال قبل التفعيل",
+      "noApprovedTemplates": "لا توجد قوالب ميتا معتمدة (APPROVED) — أنشئ قالبًا واعتمده في ميتا",
+      "notReady": "لا يمكن التفعيل الآن",
+      "selectWaTemplate": "اختر قالب واتساب معتمدًا",
+      "selectEmailProvider": "اختر Gmail أو Outlook / Microsoft 365 أو بريدًا تجاريًا",
+      "blankReady": "اللوحة الفارغة جاهزة — اختر محفّزًا للبدء",
+      "createError": "تعذّر إنشاء الأتمتة"
+    },
+    "templates": {
+      "title": "قوالب الأتمتة",
+      "subtitle": "اختر أتمتة ← اختر قالب واتساب معتمدًا ← فعّل فورًا.",
+      "catalogCount": "قوالب في الكتالوج",
+      "categoryCount": "قوالب في هذه الفئة",
+      "searchPlaceholder": "ابحث عن قالب جاهز",
+      "categoriesAria": "الفئات",
+      "loading": "جارٍ تحميل قوالب الأتمتة...",
+      "emptyTitle": "لا توجد قوالب في هذه الفئة",
+      "emptyText": "جرّب فئة أخرى أو حدّث الصفحة.",
+      "refresh": "تحديث",
+      "ctaPickPlan": "اختيار خطة أتمتة",
+      "ctaPickMessage": "تفعيل — اختر قالب رسالة",
+      "ctaEnableAi": "تفعيل القالب",
+      "ctaEnableNow": "تفعيل الآن",
+      "planRequiredTitle": "يلزم وجود خطة أتمتة نشطة",
+      "badgeFlow": "تدفق",
+      "badgeComingSoon": "قريبًا",
+      "badgeReady": "جاهز",
+      "badgeMissing": "هناك نقص",
+      "trigger": "محفّز",
+      "result": "نتيجة",
+      "suggestedTemplate": "القالب المقترح: {{name}}",
+      "chooseWaOnEnable": "عند التفعيل ستختار قالب واتساب معتمدًا",
+      "aiStartsWhen": "يبدأ عندما:",
+      "aiDoes": "ماذا يفعل الذكاء الاصطناعي:",
+      "aiAfterwards": "بعد ذلك:",
+      "aiSystems": "الأنظمة:",
+      "aiEstimated": "الإجراءات التقديرية:",
+      "aiDefaultResult": "—",
+      "activateTitle": "تفعيل “{{name}}”",
+      "chooseApprovedWa": "اختر قالب واتساب معتمدًا من قائمتك — ستبدأ الأتمتة فورًا.",
+      "approvedMessageTemplate": "قالب رسالة معتمد",
+      "chooseTemplate": "اختر قالبًا",
+      "noApprovedYet": "لا توجد قوالب معتمدة بعد — جهّزها من القائمة أعلاه واعتمدها في ميتا.",
+      "chooseEmailAccount": "اختر الحساب الذي سيُرسل منه البريد.",
+      "emailAccount": "حساب البريد",
+      "chooseProvider": "اختر مزودًا",
+      "from": "من",
+      "chooseBusinessEmail": "اختر بريدًا تجاريًا موثقًا",
+      "categories": {
+        "all": "الكل",
+        "crm": "CRM",
+        "appointments": "المواعيد",
+        "email": "البريد",
+        "whatsapp": "واتساب",
+        "sales": "المبيعات",
+        "store": "المتجر",
+        "ai": "ذكاء اصطناعي"
+      }
+    },
+    "create": {
+      "title": "إنشاء أتمتة",
+      "subtitle": "اختر كيف تبدأ",
+      "blankTitle": "أتمتة فارغة",
+      "blankText": "ابدأ من اللوحة وابنِ التدفق بنفسك",
+      "templatesTitle": "قوالب",
+      "templatesText": "ابدأ بعملية جاهزة وكيّفها لنشاطك",
+      "defaultName": "أتمتة جديدة"
+    },
+    "picker": {
+      "titleAll": "إضافة خطوة",
+      "titleTrigger": "ما الذي سيبدأ الأتمتة؟",
+      "titleResult": "ماذا يجب أن يحدث تلقائيًا؟",
+      "subtitleAll": "اختر محفّزًا أو نتيجة أو منطقًا لإضافته إلى التدفق",
+      "subtitleTrigger": "اختر الحدث الذي يبدأ العملية",
+      "subtitleResult": "النتيجة هي ما يحدث بعد المحفّز. يمكنك إضافة عدة نتائج معًا.",
+      "searchAll": "ابحث عن محفّز أو نتيجة",
+      "searchTrigger": "بحث: عميل محتمل، CRM، موعد، واتساب، دفع، طلب، نموذج، وقت…",
+      "searchResult": "ابحث عن نتيجة (واتساب، مهمة، ذكاء اصطناعي…)",
+      "searchAria": "البحث في المحفّزات",
+      "categoriesAria": "فئات المحفّز",
+      "loading": "جارٍ تحميل المحفّزات من الخادم...",
+      "emptyTriggers": "لا توجد محفّزات مطابقة",
+      "emptyItems": "لم يتم العثور على عناصر",
+      "categories": {
+        "all": "الكل",
+        "trigger": "محفّزات",
+        "action": "نتائج",
+        "logic": "منطق",
+        "delay": "انتظار",
+        "ai": "ذكاء اصطناعي",
+        "integrations": "اتصالات"
+      },
+      "triggerCategories": {
+        "common": "شائعة",
+        "recent": "مستخدمة مؤخرًا",
+        "crm": "CRM والعملاء المحتملون",
+        "appointments": "المواعيد",
+        "whatsapp": "واتساب",
+        "store": "المتجر والمدفوعات",
+        "website": "الموقع والنماذج",
+        "subscriptions": "الاشتراكات والفوترة",
+        "tasks": "المهام والفريق",
+        "email": "البريد",
+        "schedule": "الجدول",
+        "manual": "التكاملات والنظام",
+        "system": "التكاملات والنظام"
+      }
+    },
+    "toolbar": {
+      "back": "رجوع",
+      "nameAria": "اسم الأتمتة",
+      "addStep": "إضافة خطوة",
+      "test": "اختبار",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "saveError": "فشل الحفظ",
+      "unsaved": "● تغييرات غير محفوظة",
+      "saved": "✓ تم الحفظ",
+      "published": "منشورة",
+      "draft": "مسودة",
+      "publish": "نشر",
+      "publishing": "جارٍ النشر…",
+      "updatePublish": "تحديث النشر",
+      "pause": "إيقاف مؤقت",
+      "resume": "تفعيل",
+      "active": "نشطة",
+      "paused": "متوقفة",
+      "cannotPublishArchived": "لا يمكن نشر أتمتة مؤرشفة",
+      "reloadTriggers": "أعد تحميل كتالوج المحفّزات",
+      "unsupportedTrigger": "محفّز قديم أو غير مدعوم",
+      "updatePublished": "تحديث النسخة المنشورة من المسودة الحالية",
+      "publishAutomation": "نشر الأتمتة"
+    },
+    "empty": {
+      "badge": "محفّز",
+      "chooseAria": "اختر محفّزًا",
+      "scheduleHint": "أيضًا حسب الجدول",
+      "title": "ابدأ بمحفّز",
+      "text": "اختر متى تبدأ الأتمتة (مثل عميل محتمل جديد). ثم أضف ما يجب أن يحدث تلقائيًا — النتيجة. يمكنك التقسيم إلى عدة نتائج معًا دون مسارات معقدة.",
+      "chooseTrigger": "اختر محفّزًا"
+    },
+    "catalog": {
+      "noCharge": "بدون رسوم",
+      "actions": {
+        "create_task": "إنشاء مهمة في CRM",
+        "update_lead_status": "تحديث حالة العميل المحتمل",
+        "update_status": "تحديث حالة العميل المحتمل",
+        "assign_owner": "تعيين لمندوب",
+        "add_tag": "إضافة وسم",
+        "create_crm_note": "إنشاء ملاحظة في CRM",
+        "whatsapp_template": "إرسال قالب واتساب",
+        "send_whatsapp": "إرسال قالب واتساب",
+        "send_email": "إرسال بريد تجاري",
+        "send_gmail": "إرسال بريد عبر Gmail",
+        "send_outlook": "إرسال بريد عبر Outlook / Microsoft 365",
+        "google_calendar_create_event": "Google Calendar — إنشاء حدث",
+        "google_calendar_update_event": "Google Calendar — تحديث حدث",
+        "google_calendar_delete_event": "Google Calendar — حذف حدث",
+        "notify": "إشعار داخلي",
+        "internal_notification": "إشعار داخلي",
+        "delay": "انتظار",
+        "webhook": "استدعاء Webhook",
+        "stop": "إيقاف التدفق",
+        "create_appointment": "إنشاء موعد",
+        "ai_rank_lead": "ذكاء اصطناعي · ترتيب عميل محتمل",
+        "ai_classify_lead": "ذكاء اصطناعي · تصنيف عميل محتمل",
+        "ai_auto_tag": "ذكاء اصطناعي · وسم عميل محتمل",
+        "ai_detect_hot_lead": "ذكاء اصطناعي · اكتشاف عميل محتمل ساخن",
+        "ai_lead_brief": "ذكاء اصطناعي · ملخص العميل المحتمل",
+        "ai_draft_followup": "ذكاء اصطناعي · مسودة متابعة",
+        "ai_draft_email": "ذكاء اصطناعي · مسودة بريد",
+        "ai_suggest_next_action": "ذكاء اصطناعي · اقتراح الإجراء التالي",
+        "ai_daily_leads_digest": "ذكاء اصطناعي · ملخص يومي للعملاء المحتملين",
+        "ai_daily_agenda_digest": "ذكاء اصطناعي · ملخص يومي للجدول"
+      },
+      "actionShort": {
+        "whatsapp_template": "واتساب",
+        "create_task": "مهمة",
+        "create_crm_note": "ملاحظة CRM",
+        "notify": "تنبيه",
+        "update_lead_status": "الحالة",
+        "assign_owner": "تعيين مندوب",
+        "add_tag": "وسم",
+        "send_gmail": "Gmail",
+        "send_outlook": "Outlook",
+        "send_email": "بريد تجاري",
+        "google_calendar_create_event": "Google Calendar · إنشاء",
+        "google_calendar_update_event": "Google Calendar · تحديث",
+        "google_calendar_delete_event": "Google Calendar · حذف",
+        "webhook": "Webhook",
+        "ai_rank_lead": "ذكاء اصطناعي · ترتيب عميل محتمل",
+        "ai_classify_lead": "ذكاء اصطناعي · تصنيف عميل محتمل",
+        "ai_auto_tag": "ذكاء اصطناعي · وسم عميل محتمل",
+        "ai_detect_hot_lead": "ذكاء اصطناعي · اكتشاف عميل محتمل ساخن",
+        "ai_lead_brief": "ذكاء اصطناعي · ملخص العميل المحتمل",
+        "ai_draft_followup": "ذكاء اصطناعي · مسودة متابعة",
+        "ai_draft_email": "ذكاء اصطناعي · مسودة بريد",
+        "ai_suggest_next_action": "ذكاء اصطناعي · اقتراح إجراء",
+        "ai_daily_leads_digest": "ذكاء اصطناعي · ملخص يومي للعملاء المحتملين",
+        "ai_daily_agenda_digest": "ذكاء اصطناعي · ملخص يومي للجدول"
+      },
+      "actionDesc": {
+        "whatsapp_template": "يرسل قالب رسالة",
+        "create_task": "ينشئ مهمة متابعة في CRM",
+        "create_crm_note": "يسجّل ملاحظة في بطاقة العميل المحتمل/العميل",
+        "notify": "ينبّه مالك النشاط",
+        "update_lead_status": "يحدّث حالة العميل المحتمل",
+        "assign_owner": "يعين لعضو في الفريق",
+        "add_tag": "يضيف وسمًا للعميل المحتمل/العميل",
+        "send_gmail": "Gmail — إرسال بريد",
+        "send_outlook": "Outlook / Microsoft 365 — إرسال بريد",
+        "send_email": "إرسال بريد تجاري",
+        "google_calendar_create_event": "ينشئ حدثًا في تقويم Google",
+        "google_calendar_update_event": "يحدّث حدثًا في تقويم Google",
+        "google_calendar_delete_event": "يحذف حدثًا من تقويم Google",
+        "webhook": "يرسل بيانات إلى نظام خارجي",
+        "ai_rank_lead": "يرتب عميلًا محتملًا حسب الاحتمال والإلحاح",
+        "ai_classify_lead": "يصنّف عميلًا محتملًا إلى فئة",
+        "ai_auto_tag": "يضيف وسوم CRM تلقائيًا",
+        "ai_detect_hot_lead": "يكتشف عميلًا محتملًا ساخنًا للمعالجة الفورية",
+        "ai_lead_brief": "يعد ملخصًا قبل مكالمة مبيعات",
+        "ai_draft_followup": "يصيغ رسالة متابعة",
+        "ai_draft_email": "يصيغ بريدًا للعميل",
+        "ai_suggest_next_action": "يقترح الإجراء التالي للمندوب",
+        "ai_daily_leads_digest": "يلخص العملاء المحتملين الجدد",
+        "ai_daily_agenda_digest": "يلخص المهام والمواعيد"
+      },
+      "conditions": {
+        "no_response": "لم يتم التواصل",
+        "status_is": "حالة محددة",
+        "has_appointment": "لديه موعد قادم",
+        "has_tag": "لديه وسم",
+        "source_is": "مصدر عميل محتمل محدد",
+        "business_hours": "ضمن ساعات العمل",
+        "replied": "ردّ العميل",
+        "amount_above": "مبلغ أعلى من X"
+      },
+      "conditionDesc": {
+        "no_response": "نعم/لا حسب الرد",
+        "status_is": "يفحص حالة العميل المحتمل",
+        "has_appointment": "ما إذا كان هناك موعد قادم",
+        "has_tag": "حسب وسم على العميل المحتمل/العميل",
+        "source_is": "ميتا / الموقع / واتساب",
+        "business_hours": "داخل/خارج الساعات",
+        "replied": "ما إذا كان هناك رد",
+        "amount_above": "حسب قيمة الصفقة"
+      },
+      "conditionHasAppointmentShort": "لديه موعد",
+      "conditionSourceShort": "مصدر العميل المحتمل",
+      "delayUnits": {
+        "minutes": "دقائق",
+        "hours": "ساعات",
+        "days": "أيام"
+      },
+      "filters": {
+        "all": "الكل",
+        "trigger": "محفّز",
+        "condition": "شرط",
+        "router": "تقسيم",
+        "delay": "انتظار",
+        "action": "نتيجة"
+      },
+      "nodeTypes": {
+        "trigger": "محفّز",
+        "delay": "انتظار",
+        "condition": "شرط",
+        "action": "نتيجة",
+        "router": "تقسيم"
+      },
+      "triggerCategories": {
+        "crm": "CRM والعملاء المحتملون",
+        "appointments": "المواعيد",
+        "website": "الموقع والنماذج",
+        "store": "المتجر والمدفوعات",
+        "schedule": "الجدول",
+        "manual": "التكاملات والنظام",
+        "system": "التكاملات والنظام",
+        "whatsapp": "واتساب",
+        "subscriptions": "الاشتراكات والفوترة",
+        "tasks": "المهام والفريق",
+        "email": "البريد"
+      },
+      "palette": {
+        "resultPrefix": "نتيجة · {{label}}",
+        "conditionPrefix": "شرط · {{label}}",
+        "routerLabel": "تقسيم · عدة نتائج معًا",
+        "routerDesc": "يقسم إلى 1–6 نتائج تعمل معًا — دون مسارات معقدة",
+        "routerDefault": "تقسيم إلى عدة نتائج",
+        "resultN": "نتيجة {{n}}",
+        "waitLabel": "انتظار",
+        "waitDesc": "ينتظر ثم يتابع / ينقسم",
+        "reminderDefault": "تذكير بالموعد — قبل يوم",
+        "reminderDesc": "متى يُرسل تذكير الموعد — ثم تختار النتيجة (واتساب والمزيد)",
+        "aiCriteriaDefault": "الملاءمة للخدمة والإلحاح وإمكانية الشراء",
+        "meetingTitleDefault": "اجتماع مع {{appointment.clientName}}"
+      },
+      "summaries": {
+        "hourBefore": "قبل الموعد بساعة",
+        "twoHoursBefore": "قبل الموعد بساعتين",
+        "dayBefore": "قبل الموعد بيوم",
+        "daysBefore": "قبل الموعد بـ {{count}} أيام",
+        "hoursBefore": "قبل الموعد بـ {{count}} ساعات",
+        "statusFromTo": "من {{from}} إلى {{to}}",
+        "statusTo": "الانتقال إلى الحالة {{status}}",
+        "anyStatusChange": "عند أي تغيير حالة",
+        "bySchedule": "حسب الجدول المحدد",
+        "manual": "تشغيل يدوي من النظام",
+        "newLead": "يعمل عند إنشاء كل عميل محتمل جديد",
+        "formSubmitted": "يعمل عند إرسال نموذج من الموقع",
+        "appointmentCreated": "يعمل عند حجز موعد",
+        "appointmentCancelled": "يعمل عند إلغاء موعد",
+        "orderCreated": "يعمل عند إنشاء طلب",
+        "orderPaid": "يعمل بعد طلب مدفوع في المتجر",
+        "triggerFallback": "محفّز",
+        "routerTogether": "{{count}} نتائج معًا",
+        "aiFallback": "إجراء ذكاء اصطناعي",
+        "calendarDelete": "Calendar · حذف {{eventId}}",
+        "ai_rank_lead": "يرتب عميلًا محتملًا حسب الاحتمال والإلحاح",
+        "ai_classify_lead": "يصنّف عميلًا محتملًا",
+        "ai_auto_tag": "وسم تلقائي",
+        "ai_detect_hot_lead": "يكتشف عميلًا محتملًا ساخنًا",
+        "ai_lead_brief": "ملخص العميل المحتمل",
+        "ai_draft_followup": "مسودة متابعة",
+        "ai_draft_email": "مسودة بريد",
+        "ai_suggest_next_action": "يقترح الإجراء التالي",
+        "ai_daily_leads_digest": "ملخص يومي للعملاء المحتملين",
+        "ai_daily_agenda_digest": "ملخص المهام/المواعيد"
+      },
+      "recipients": {
+        "lead_email": "بريد العميل المحتمل",
+        "appointment_customer_email": "العميل الذي حجز",
+        "store_customer_email": "عميل الطلب",
+        "business_owner": "مالك النشاط",
+        "lead_owner": "مسؤول العميل المحتمل",
+        "fixed_email": "عنوان ثابت",
+        "custom_field": "حقل مخصص",
+        "lead_phone": "هاتف العميل المحتمل",
+        "fixed_phone": "رقم ثابت"
+      },
+      "system": {
+        "lead_multi_route": {
+          "title": "عميل محتمل جديد — عدة نتائج معًا",
+          "description": "عند دخول عميل محتمل جديد إلى CRM: إرسال واتساب وإنشاء مهمة للمندوب وتنبيه المالك — بالتوازي.",
+          "trigger": "عميل محتمل جديد في CRM",
+          "results": {
+            "0": "واتساب فوري",
+            "1": "مهمة للمندوب",
+            "2": "تنبيه للمالك"
+          }
+        },
+        "lead_no_response": {
+          "title": "عميل محتمل جديد → افتتاح + متابعات حسب الرد",
+          "description": "رسالة افتتاح فورًا. إذا لم يرد واتساب — متابعة بعد 24 ساعة وأخرى بعد 3 أيام.",
+          "trigger": "عميل محتمل جديد في CRM",
+          "results": {
+            "0": "افتتاح واتساب",
+            "1": "متابعة #1",
+            "2": "متابعة #2"
+          },
+          "timing": "افتتاح فوري · متابعة #1 بعد 24 ساعة · متابعة #2 بعد 3 أيام"
+        },
+        "new_client_welcome": {
+          "title": "عميل جديد — ترحيب",
+          "description": "محفّز عميل جديد → رسالة افتتاح + مهمة احتفاظ.",
+          "trigger": "عميل جديد",
+          "results": {
+            "0": "رسالة افتتاح",
+            "1": "مهمة احتفاظ"
+          }
+        },
+        "appointment_duo": {
+          "title": "موعد — تأكيد + تذكير + مهمة",
+          "description": "عند إنشاء موعد: تأكيد واتساب للعميل ومهمة تحضير وتذكير قبل يوم.",
+          "trigger": "موعد جديد",
+          "results": {
+            "0": "تأكيد واتساب",
+            "1": "تذكير مسبق",
+            "2": "مهمة"
+          }
+        },
+        "appointment_gcal_sync": {
+          "title": "موعد → Google Calendar",
+          "description": "محفّز موعد جديد. النتيجة: إنشاء حدث في تقويم Google.",
+          "trigger": "موعد جديد",
+          "results": {
+            "0": "حدث في Google Calendar"
+          }
+        },
+        "appointment_email_confirm": {
+          "title": "موعد → بريد تأكيد",
+          "description": "محفّز موعد جديد. النتيجة: بريد تأكيد للعميل.",
+          "trigger": "موعد جديد",
+          "results": {
+            "0": "بريد تأكيد"
+          }
+        },
+        "lead_email_welcome": {
+          "title": "عميل محتمل جديد → بريد + مهمة",
+          "description": "محفّز عميل محتمل جديد. النتائج: بريد ومهمة متابعة.",
+          "trigger": "عميل محتمل جديد في CRM",
+          "results": {
+            "0": "بريد",
+            "1": "مهمة متابعة"
+          }
+        },
+        "appointment_reminder_1_day": {
+          "title": "تذكير بالموعد — قبل يوم",
+          "description": "يرسل قالب واتساب قبل الموعد بيوم.",
+          "trigger": "موعد قادم (قبل يوم)",
+          "results": {
+            "0": "تذكير واتساب"
+          },
+          "timing": "قبل يوم واحد"
+        },
+        "appointment_reminder_2_days": {
+          "title": "تذكير بالموعد — قبل يومين",
+          "description": "يرسل قالب واتساب قبل الموعد بيومين (48 ساعة).",
+          "trigger": "موعد قادم (قبل يومين)",
+          "results": {
+            "0": "تذكير واتساب"
+          },
+          "timing": "قبل يومين (48 ساعة)"
+        },
+        "appointment_reminder_hours": {
+          "title": "تذكير بالموعد — قبل ساعات",
+          "description": "تذكير مخصص (مثل قبل ساعتين) بقالب واتساب.",
+          "trigger": "موعد قادم (قبل ساعات)",
+          "results": {
+            "0": "تذكير واتساب"
+          },
+          "timing": "عدد ساعات تختاره"
+        },
+        "appointment_thanks": {
+          "title": "شكر بعد الموعد",
+          "description": "بعد انتهاء الموعد — رسالة شكر عبر واتساب حسب وقت الموعد.",
+          "trigger": "انتهى الموعد",
+          "results": {
+            "0": "رسالة شكر"
+          }
+        },
+        "appointment_review": {
+          "title": "طلب تقييم بعد الموعد",
+          "description": "بعد يوم من انتهاء الموعد — طلب تقييم عبر واتساب.",
+          "trigger": "انتهى الموعد",
+          "results": {
+            "0": "طلب تقييم"
+          }
+        },
+        "lead_followup_2": {
+          "title": "متابعة ثانية للعميل المحتمل (مدمجة)",
+          "description": "دُمج في المسار الموحد «عميل محتمل جديد → افتتاح + متابعات حسب الرد». لا يُعرض كبطاقة منفصلة.",
+          "trigger": "عميل محتمل لم يُحوَّل",
+          "results": {
+            "0": "متابعة واتساب ثانية"
+          },
+          "timing": "جزء من مسار المتابعات الموحد"
+        },
+        "inactive_client": {
+          "title": "عميل غير نشط — تذكير لطيف",
+          "description": "تذكير للعملاء دون تفاعل أخير.",
+          "trigger": "عميل غير نشط",
+          "results": {
+            "0": "رسالة تذكير لطيفة"
+          }
+        }
+      },
+      "waRequired": {
+        "wa_welcome_lead": {
+          "title": "ترحيب بعميل محتمل جديد",
+          "reason": "تُرسل عند دخول عميل محتمل جديد إلى CRM."
+        },
+        "wa_welcome_client": {
+          "title": "ترحيب بعميل جديد",
+          "reason": "تُرسل عند إنشاء عميل جديد في CRM."
+        },
+        "wa_appointment_reminder": {
+          "title": "تذكير بالموعد",
+          "reason": "تُرسل قبل الموعد (ساعة / ساعتان / يوم / يومان / 3 أيام)."
+        },
+        "wa_appointment_confirmation": {
+          "title": "تأكيد الموعد",
+          "reason": "تُرسل فور حجز موعد جديد."
+        },
+        "wa_appointment_thanks": {
+          "title": "شكر بعد الموعد",
+          "reason": "تُرسل بعد انتهاء الموعد حسب وقته."
+        },
+        "wa_appointment_review": {
+          "title": "طلب تقييم بعد الموعد",
+          "reason": "تُرسل لطلب تقييم/ملاحظات بعد موعد."
+        },
+        "wa_follow_up": {
+          "title": "متابعة لعميل محتمل لم يرد",
+          "reason": "تُرسل كأول متابعة لعميل محتمل بلا رد."
+        },
+        "wa_follow_up_2": {
+          "title": "متابعة ثانية للعميل المحتمل",
+          "reason": "تُرسل كمتابعة إضافية للعملاء المحتملين الذين لم يُحوَّلوا."
+        },
+        "wa_inactive_client": {
+          "title": "تذكير لطيف لعميل غير نشط",
+          "reason": "تُرسل للعملاء دون نشاط أخير."
+        }
+      }
+    },
+    "editor": {
+      "stepN": "الخطوة {{n}}",
+      "deleteModule": "حذف الوحدة",
+      "done": "تم",
+      "howTitle": "كيف تُبنى الأتمتة؟",
+      "how1": "اختر محفّزًا (متى يحدث)",
+      "how2": "أضف نتيجة — ما يجب أن يحدث تلقائيًا",
+      "how3": "تريد عدة نتائج معًا؟ أضف نتيجة أخرى من المحفّز — دون مسارات",
+      "triggerSettings": "إعدادات المحفّز الذي يبدأ الأتمتة",
+      "triggerEvent": "الحدث الذي يبدأ الأتمتة",
+      "replaceTrigger": "استبدال المحفّز",
+      "unsupportedTrigger": "محفّز قديم أو غير مدعوم — اختر محفّزًا مدعومًا مرة أخرى",
+      "toStatus": "إلى الحالة",
+      "fromStatus": "من الحالة",
+      "chooseTargetStatus": "اختر حالة مستهدفة",
+      "anyStatus": "أي حالة",
+      "needTargetStatus": "اختر حالة مستهدفة",
+      "needHoursBefore": "حدد عدد الساعات قبل الموعد",
+      "invalidSchedule": "إعدادات الجدول غير صالحة",
+      "parallelFromTrigger": "كم نتيجة معًا من المحفّز",
+      "parallelHint": "كل نتيجة تعمل بالتوازي — دون مسارات منفصلة.",
+      "addResultToTrigger": "إضافة نتيجة إلى المحفّز",
+      "hoursBefore": "متى يُرسل التذكير (ساعات قبل)",
+      "preset2h": "قبل ساعتين",
+      "preset1d": "قبل يوم",
+      "preset2d": "قبل يومين",
+      "preset3d": "قبل 3 أيام",
+      "reminderHours": "تذكير بالموعد — قبل {{count}} ساعات",
+      "reminder1d": "تذكير بالموعد — قبل يوم",
+      "reminder2d": "تذكير بالموعد — قبل يومين",
+      "routerCount": "كم نتيجة معًا",
+      "resultName": "اسم النتيجة {{n}}",
+      "amount": "الكمية",
+      "unit": "الوحدة",
+      "condition": "شرط",
+      "actionType": "نوع الإجراء",
+      "aiSettings": "إعدادات الذكاء الاصطناعي",
+      "advanced": "متقدم",
+      "channelEmail": "البريد",
+      "toneProfessional": "مهني",
+      "toneFriendly": "ودي",
+      "toneConcise": "موجز",
+      "statuses": {
+        "new": "جديد",
+        "contacted": "تم التواصل",
+        "interested": "مهتم",
+        "converted": "تم التحويل",
+        "lost": "ضائع",
+        "old": "قديم"
+      },
+      "mapping": {
+        "leadName": "اسم العميل المحتمل",
+        "leadPhone": "هاتف العميل المحتمل",
+        "leadEmail": "بريد العميل المحتمل",
+        "leadSource": "مصدر العميل المحتمل",
+        "businessName": "اسم النشاط",
+        "date": "التاريخ",
+        "time": "الوقت",
+        "constant": "قيمة ثابتة",
+        "manual": "حقل مخصص / قيمة يدوية",
+        "clientName": "اسم العميل",
+        "timeUntil": "الوقت حتى الموعد",
+        "appointmentTime": "وقت الموعد",
+        "service": "الخدمة"
+      },
+      "wa": {
+        "connectBeforeSelect": "اربط رقم واتساب الخاص بالنشاط قبل اختيار قالب",
+        "unavailable": "واتساب غير متاح الآن. يُرجى التواصل مع الدعم.",
+        "loadTemplatesError": "تعذّر تحميل قوالب واتساب",
+        "managedOff": "اربط واتساب للأعمال الخاص بالنشاط — الوضع المُدار متوقف حاليًا.",
+        "refresh": "تحديث القوالب",
+        "loadingTemplates": "جارٍ تحميل القوالب...",
+        "retry": "حاول مرة أخرى",
+        "connectCta": "ربط واتساب للأعمال",
+        "noneApproved": "لا توجد قوالب واتساب معتمدة",
+        "noneApprovedHint": "بعد اعتماد قالب في ميتا، حدّث القائمة.",
+        "chooseTemplate": "اختر قالبًا",
+        "testTemplate": "قالب اختبار",
+        "variableMapping": "تعيين المتغيرات",
+        "chooseMapping": "اختر تعيينًا",
+        "lastSync": "آخر مزامنة: {{time}}",
+        "sender": "المرسل",
+        "managedNumber": "رقم BizUply المُدار",
+        "businessNumber": "رقم واتساب الخاص بالنشاط",
+        "connectBusinessNumber": "اربط رقم واتساب الخاص بالنشاط — اربطه من الإعدادات",
+        "whoReceives": "من يجب أن يستلم الرسالة؟",
+        "recipient": "المستلم:",
+        "fixedPhoneE164": "رقم ثابت (E.164)",
+        "template": "قالب واتساب",
+        "bizuplyBannerTitle": "الإرسال عبر رقم BizUply",
+        "bizuplyBannerText": "إلى أن يُفعَّل اتصال واتساب شخصي للنشاط، ستُرسل الرسائل من رقم BizUply المركزي باسم نشاطك.",
+        "oneAction": "إجراء أتمتة واحد",
+        "perMessage": "لكل رسالة واتساب",
+        "estimateDaily": "تقدير فقط: مثلًا رسالة واحدة يوميًا ≈ {{amount}} / شهر",
+        "estimate100": "تقدير فقط: مثلًا 100 رسالة ≈ {{amount}}"
+      },
+      "gmail": {
+        "bannerTitle": "الإرسال عبر Gmail المتصل",
+        "bannerText": "سيُرسل البريد من حساب Gmail الذي ربطته بالنشاط. بدون SMTP وبدون إرسال عبر BizUply.",
+        "loading": "جارٍ تحميل حالة Gmail...",
+        "pendingApproval": "Gmail قيد موافقة Google حاليًا",
+        "connectBeforePublish": "اربط حساب Gmail قبل نشر الأتمتة",
+        "noConnectUrl": "لم يُستلم رابط تسجيل الدخول",
+        "connectFailed": "فشل اتصال Gmail",
+        "connect": "ربط Gmail",
+        "sender": "المرسل",
+        "whoReceives": "من يجب أن يستلم البريد؟"
+      },
+      "outlook": {
+        "connectBeforePublish": "اربط حساب Outlook قبل نشر الأتمتة",
+        "noConnectUrl": "لم يُستلم رابط تسجيل الدخول",
+        "connectFailed": "فشل اتصال Outlook",
+        "bannerTitle": "الإرسال عبر Outlook / Microsoft 365 المتصل",
+        "bannerText": "سيتم إرسال البريد من حساب Outlook الذي ربطته بالنشاط. بدون SMTP وبدون بديل لمزوّد آخر.",
+        "loading": "جارٍ تحميل حالة Outlook...",
+        "comingSoon": "سيكون Outlook / Microsoft 365 متاحًا قريبًا",
+        "connect": "ربط Outlook",
+        "sender": "المُرسِل",
+        "whoReceives": "إلى من يُرسل البريد؟"
+      },
+      "calendar": {
+        "fromAppointment": "ستُؤخذ تفاصيل الحدث من الموعد (التاريخ والوقت والمدة والحاضر والموقع).",
+        "manualHint": "يُنشأ الحدث في تقويم Google الخاص بالنشاط. يمكنك إدخال الأوقات يدويًا أو تركها فارغة عند وجود موعد في السياق.",
+        "needCalendarScope": "يلزم إذن التقويم (Gmail متصل بالفعل)",
+        "connectBeforePublish": "اربط تقويم Google قبل نشر الأتمتة",
+        "noConnectUrl": "لم يُستلم رابط تسجيل الدخول",
+        "connectFailed": "فشل اتصال تقويم Google",
+        "connect": "ربط تقويم Google",
+        "endOptional": "النهاية (اختياري)",
+        "durationMinutes": "المدة بالدقائق (إن لم توجد نهاية)",
+        "loading": "جارٍ تحميل حالة Google Calendar...",
+        "unavailable": "Google Calendar غير متاح لهذا النشاط حاليًا",
+        "googleAccount": "حساب Google",
+        "description": "الوصف",
+        "fromAppointmentNote": "ستُؤخذ تفاصيل الحدث من الموعد",
+        "setManual": "تعيين تفاصيل الحدث يدويًا",
+        "startOptional": "البداية (اختياري — الافتراضي من الموعد)",
+        "datetimePlaceholder": "YYYY-MM-DD HH:mm أو فارغ",
+        "attendee": "المشارك (بريد)",
+        "location": "الموقع"
+      },
+      "email": {
+        "senderUnavailable": "المرسل المحدد غير متاح",
+        "noSender": "لم يُحدد بريد المرسل",
+        "noVerified": "لم يُحدد بريد تجاري موثق",
+        "from": "من",
+        "fromHelp": "سيُرسل البريد من عنوان تجاري موثّق للنشاط.",
+        "to": "إلى",
+        "chooseVerified": "اختر بريدًا تجاريًا موثّقًا",
+        "customFieldKey": "حقل مخصص (مفتاح)"
+      },
+      "toasts": {
+        "addedAndLinked": "أُضيف ووُصل تلقائيًا (بما في ذلك بقية التدفق)",
+        "moduleAdded": "أُضيفت وحدة إلى اللوحة",
+        "resultAdded": "أُضيفت نتيجة إلى المحفّز",
+        "addedToSelected": "أُضيف ووُصل تلقائيًا إلى الوحدة المحددة",
+        "triggerAdded": "أُضيف المحفّز — اختر ما يجب أن يحدث تلقائيًا",
+        "settingsSaved": "تم حفظ الإعدادات",
+        "draftSaved": "تم حفظ المسودة",
+        "saveError": "تعذّر حفظ الأتمتة",
+        "waBillingRequired": "يلزم إعداد فوترة واتساب قبل تفعيل الأتمتة.",
+        "waBillingBlock": "لا يمكن تفعيل الأتمتة بسبب فوترة واتساب",
+        "planRequired": "اختر خطة إجراءات لتفعيل أتمتة",
+        "quotaExhausted": "استُنفدت حصة الإجراءات الشهرية — ستُحظر الإجراءات المدفوعة حتى الترقية",
+        "billingBlocked": "لا يمكن تفعيل الأتمتة بسبب حالة دفع الخطة",
+        "archived": "لا يمكن نشر أتمتة مؤرشفة",
+        "needTriggerCatalog": "حمّل كتالوج المحفّزات قبل النشر",
+        "unsupportedPublish": "المحفّز المحدد غير مدعوم للنشر بعد",
+        "unsupportedChoose": "محفّز قديم أو غير مدعوم — اختر محفّزًا مدعومًا قبل النشر",
+        "saveTimeout": "الحفظ يستغرق وقتًا طويلًا — حاول مرة أخرى",
+        "cannotSaveBeforePublish": "تعذّر حفظ المسودة قبل النشر",
+        "publishNoResponse": "نجح النشر لكن الخادم لم يُرجع ردًا صالحًا",
+        "publishedUpdated": "نُشرت الأتمتة وحدّثت",
+        "published": "نُشرت الأتمتة",
+        "publishFailed": "تعذّر نشر الأتمتة",
+        "testFailed": "فشل اختبار الأتمتة",
+        "resumeFailed": "تعذّر استئناف الأتمتة",
+        "loadGmail": "تعذّر تحميل حالة Gmail",
+        "loadOutlook": "تعذّر تحميل حالة Outlook",
+        "loadCalendar": "تعذّر تحميل حالة تقويم Google",
+        "loadTriggers": "تعذّر تحميل كتالوج المحفّزات"
+      },
+      "test": {
+        "title": "وضع الاختبار — لن تُرسل رسائل ولن تُجرى تغييرات",
+        "run": "تشغيل اختبار",
+        "publishFailed": "فشل النشر"
+      },
+      "loadGmail": "تعذّر تحميل حالة Gmail"
+    },
+    "email": {
+      "business": "بريد تجاري",
+      "missingTitle": "لم يُحدد بريد تجاري موثق",
+      "missingBody": "للإرسال من البريد التجاري، أكمل أولًا الإعداد والتوثيق.",
+      "settingsCta": "إعداد البريد التجاري",
+      "providerRequired": "لاستخدام هذه الأتمتة، اربط Gmail أو Outlook / Microsoft 365"
+    },
+    "ai": {
+      "billingSafe": "يُحتسب إجراء الذكاء الاصطناعي كإجراء أتمتة في خطتك",
+      "defaultSystems": "إشعارات"
+    },
+    "errors": {
+      "missingTrigger": "محفّز معتمد مفقود",
+      "missingGraph": "هذا القالب بلا رسم تفعيل"
     }
   },
   "layout": {
@@ -5744,6 +6525,245 @@
       "confirmSuggestion": "تأكيد",
       "changeMapping": "التغيير",
       "sourceFieldLine": "{{source}}  {{field}}"
+    },
+    "wizard": {
+      "ariaCreate": "إنشاء قالب",
+      "close": "إغلاق",
+      "kicker": "قوالب الرسائل",
+      "title": "إنشاء قالب",
+      "metaBadge": "واجهة ميتا",
+      "preview": "معاينة",
+      "previewBusiness": "واتساب · نشاط تجاري",
+      "bodyPlaceholderPreview": "سيظهر نص الرسالة هنا.",
+      "category": "الفئة",
+      "categoryHelp": "اختر فئة وفئة فرعية. يُحدَّد اسم القالب واللغة في خطوة التحرير.",
+      "subcategory": "الفئة الفرعية",
+      "subcategoryHelp": "تتغيّر الخيارات حسب الفئة المحددة.",
+      "templateName": "اسم القالب",
+      "nameHelp": "أحرف إنجليزية صغيرة وأرقام وشرطة سفلية فقط. لن يراه العملاء.",
+      "language": "اللغة",
+      "languageHelp": "لغة محتوى القالب. يمكنك إضافة نسخ إضافية لاحقًا.",
+      "authOptions": "خيارات المصادقة",
+      "authHelp": "تُعرض فقط الخيارات المدعومة فعليًا عند الإرسال إلى ميتا. تسجيل الدخول بنقرة واحدة أو بدون نقرة غير متاح بعد.",
+      "otp": "رمز لمرة واحدة",
+      "otpHint": "يجب أن يتضمن النص المتغير {{1}} لرمز التحقق.",
+      "securityRec": "توصية أمنية",
+      "securityRecHint": "تضيف تذييلًا يوصي بعدم مشاركة الرمز.",
+      "expiry": "انتهاء صلاحية الرمز",
+      "expiryHint": "تعرض ميتا صلاحية لمدة 10 دقائق. لا يوجد حقل منفصل مدعوم في اتصالنا بعد.",
+      "copyCode": "نسخ الرمز",
+      "copyCodeHint": "يمكنك إضافة زر نسخ في قسم الأزرار أدناه.",
+      "reviewTitle": "مراجعة قبل الإرسال",
+      "reviewHelp": "تأكد من صحة التفاصيل قبل إرسال القالب إلى ميتا للمراجعة.",
+      "header": "الرأس",
+      "body": "النص",
+      "footer": "التذييل",
+      "buttons": "الأزرار",
+      "samples": "عينات المتغيرات",
+      "none": "بدون",
+      "reviewWarn": "الإرسال يحوّل القالب إلى مراجعة ميتا. سيبقى الحالة قيد الانتظار حتى توافق ميتا أو ترفض.",
+      "draftSaved": "تم حفظ المسودة",
+      "draftFailed": "تعذّر حفظ المسودة",
+      "submitted": "تم إرسال القالب للمراجعة. الحالة: {{status}}.",
+      "savedNoMeta": "تم حفظ القالب كمسودة لأنه لا يوجد اتصال ميتا نشط.",
+      "submitFailed": "تعذّر إرسال القالب",
+      "prev": "السابق",
+      "next": "التالي",
+      "submitReview": "إرسال للمراجعة",
+      "saveDraft": "حفظ كمسودة",
+      "bodyPlaceholder": "اكتب نص الرسالة. استخدم {{1}} للمتغيرات.",
+      "steps": {
+        "setup": {
+          "title": "إعداد القالب",
+          "hint": "الفئة والفئة الفرعية"
+        },
+        "edit": {
+          "title": "تحرير القالب",
+          "hint": "الاسم واللغة والمحتوى"
+        },
+        "review": {
+          "title": "إرسال للمراجعة",
+          "hint": "مراجعة قبل ميتا"
+        }
+      },
+      "categories": {
+        "MARKETING": {
+          "title": "تسويق",
+          "description": "عروض وتحديثات منتجات ورسائل تسويقية. تُرسل فقط للعملاء الذين وافقوا على استلامها."
+        },
+        "UTILITY": {
+          "title": "خدمي",
+          "description": "تحديثات الطلبات وتذكيرات وردود على طلبات العميل. ليست مخصصة للترويج."
+        },
+        "AUTHENTICATION": {
+          "title": "مصادقة",
+          "description": "رمز لمرة واحدة لتسجيل الدخول أو التحقق من الهوية أو تأكيد إجراء."
+        }
+      },
+      "subtypes": {
+        "defaultMarketing": {
+          "title": "افتراضي",
+          "description": "أرسل رسائل مع وسائط وأزرار مخصصة لتشجيع تفاعل العملاء."
+        },
+        "catalog": {
+          "title": "كتالوج",
+          "description": "أرسل رسائل تساعد المبيعات عبر ربط كتالوج المنتجات."
+        },
+        "callPermission": {
+          "title": "طلب إذن الاتصال",
+          "description": "اسأل العملاء إن كان يمكن الاتصال بهم على واتساب."
+        },
+        "defaultUtility": {
+          "title": "افتراضي",
+          "description": "أرسل رسائل حول طلب أو حساب قائم."
+        },
+        "otp": {
+          "title": "كلمة مرور لمرة واحدة",
+          "description": "أرسل رموزًا للتحقق من معاملة أو تسجيل دخول."
+        }
+      },
+      "languages": {
+        "he": "العبرية",
+        "en": "الإنجليزية",
+        "ar": "العربية",
+        "es": "الإسبانية",
+        "fr": "الفرنسية",
+        "pt_BR": "البرتغالية (البرازيل)"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "approved": "موافَق عليه",
+        "rejected": "مرفوض",
+        "draft": "مسودة"
+      },
+      "media": {
+        "image": "صورة",
+        "video": "فيديو",
+        "document": "مستند",
+        "location": "موقع"
+      }
+    },
+    "metaEditor": {
+      "content": "المحتوى",
+      "contentHelp": "أضف رأسًا ونصًا وتذييلًا للقالب. تُكتب المتغيرات بصيغة {{1}} و{{2}}.",
+      "variableType": "نوع المتغير",
+      "variableName": "اسم",
+      "variableNumber": "رقم",
+      "mediaSample": "عينة وسائط · اختياري",
+      "mediaNone": "بدون",
+      "mediaImage": "صورة",
+      "mediaVideo": "فيديو",
+      "mediaDocument": "مستند",
+      "mediaLocation": "موقع",
+      "mediaIdImage": "معرّف وسائط الصورة",
+      "mediaIdVideo": "معرّف وسائط الفيديو",
+      "mediaIdDocument": "معرّف وسائط المستند",
+      "mediaIdPlaceholder": "معرّف الوسائط المستلم من الرفع",
+      "headerOptional": "الرأس · اختياري",
+      "headerPlaceholder": "أضف سطر نص قصير لرأس الرسالة",
+      "addVariable": "+ إضافة متغير",
+      "variable": "+ متغير",
+      "code": "رمز",
+      "strikethrough": "يتوسطه خط",
+      "italic": "مائل",
+      "bold": "عريض",
+      "bodyHelp": "يمكنك إضافة متغيرات بصيغة {{1}} و{{2}}. تتحدث المعاينة فورًا.",
+      "exampleValues": "قيم أمثلة للمتغيرات",
+      "exampleHelp": "تتطلب ميتا مثالًا لكل متغير قبل المراجعة.",
+      "samplePlaceholder": "قيمة مثال",
+      "footerOptional": "التذييل · اختياري",
+      "footerHelp": "نص قصير أسفل الرسالة. يمكنك تركه فارغًا.",
+      "footerPlaceholder": "مثلًا: لا ترد على هذه الرسالة",
+      "buttonsOptional": "الأزرار · اختياري",
+      "buttonsHelp": "أنشئ أزرارًا ليرد العملاء أو يتخذوا إجراءً. يمكنك إضافة حتى {{count}} أزرار.",
+      "addButton": "إضافة زر",
+      "removeButton": "إزالة الزر",
+      "buttonText": "نص الزر",
+      "urlType": "نوع الرابط",
+      "urlStatic": "ثابت",
+      "urlDynamic": "ديناميكي",
+      "websiteUrl": "رابط الموقع",
+      "sampleUrl": "رابط مثال",
+      "phoneNumber": "رقم الهاتف",
+      "contactHelp": "تحدد ميتا نص الزر. لا يمكن تعديله.",
+      "sampleCode": "رمز مثال",
+      "wrapText": "نص",
+      "buttons": {
+        "quick_reply": {
+          "title": "مخصص",
+          "description": "يرسل العميل ردًا قصيرًا بنقرة واحدة.",
+          "defaultText": "مخصص"
+        },
+        "url": {
+          "title": "زيارة الموقع",
+          "description": "يفتح رابط موقع ثابت أو ديناميكي.",
+          "defaultText": "زيارة الموقع"
+        },
+        "voice_call": {
+          "title": "مكالمة واتساب",
+          "description": "يبدأ مكالمة صوتية عبر واتساب مع النشاط التجاري.",
+          "defaultText": "مكالمة واتساب"
+        },
+        "phone_number": {
+          "title": "الاتصال برقم الهاتف",
+          "description": "يتصل برقم محدد مسبقًا.",
+          "defaultText": "اتصال"
+        },
+        "request_contact_info": {
+          "title": "مشاركة بيانات التواصل",
+          "description": "يطلب من العميل مشاركة بيانات التواصل.",
+          "defaultText": "مشاركة بيانات التواصل"
+        },
+        "copy_code": {
+          "title": "نسخ الرمز",
+          "description": "ينسخ رمز عرض أو تحقق إلى الحافظة.",
+          "defaultText": "نسخ الرمز"
+        }
+      }
+    },
+    "billing": {
+      "loadError": "تعذّر تحميل بيانات فوترة واتساب الآن.",
+      "retry": "حاول مرة أخرى",
+      "title": "واتساب",
+      "payAsYouGo": "فوترة حسب الاستخدام",
+      "notConfigured": "لم يتم إعداد فوترة واتساب",
+      "setupCta": "إعداد فوترة واتساب",
+      "active": "فوترة واتساب نشطة",
+      "manage": "إدارة الفوترة",
+      "perMessage": "{{price}} لكل رسالة",
+      "messagesThisMonth": "{{count}} رسائل هذا الشهر",
+      "estimatedCharge": "التكلفة التقديرية:",
+      "periodEnd": "تنتهي فترة الفوترة: {{date}}",
+      "noPackages": "لا توجد باقات واتساب — تُحسب فقط الرسائل المُرسلة فعليًا.",
+      "paymentIssue": "هناك مشكلة في الدفع لفوترة واتساب",
+      "paymentIssueBody": "سيستمر الإرسال مؤقتًا. يُفضَّل تسوية الدفع لتجنب التوقف.",
+      "until": " حتى {{date}}.",
+      "managePayment": "إدارة الدفع",
+      "sendBlocked": "إرسال واتساب محظور بسبب حالة الفوترة",
+      "sendBlockedBody": "أضف وسيلة دفع لمواصلة إرسال الرسائل.",
+      "settlePayment": "تسوية الدفع",
+      "cancelScheduled": "الفوترة مجدولة للإلغاء",
+      "cancelScheduledOn": " في {{date}}",
+      "keepActive": "إبقاء الفوترة نشطة",
+      "updating": "جارٍ التحديث...",
+      "setupFailed": "تعذّر بدء إعداد الفوترة. حاول مرة أخرى.",
+      "cancelSuccess": "سيتم إلغاء الفوترة في نهاية فترة الفوترة الحالية.",
+      "cancelFailed": "تعذّر إلغاء الفوترة. حاول مرة أخرى.",
+      "reactivateSuccess": "تم التراجع عن الإلغاء وستبقى الفوترة نشطة.",
+      "reactivateFailed": "تعذّر إبقاء الفوترة نشطة.",
+      "setupTitle": "إعداد فوترة واتساب",
+      "manageTitle": "إدارة فوترة واتساب",
+      "close": "إغلاق",
+      "needPayment": "يلزم وجود وسيلة دفع لرسائل واتساب",
+      "usageOnly": "تُفوتر الأتمتة والإرسال حسب الاستخدام الفعلي — لا توجد باقات مدفوعة مسبقًا.",
+      "startPayment": "بدء إعداد الدفع",
+      "cancel": "إلغاء",
+      "manageLine": "فوترة حسب الاستخدام · {{price}} لكل رسالة",
+      "periodUntil": " · الفترة حتى {{date}}",
+      "cancelNote": "الفوترة مجدولة للإلغاء",
+      "cancelNoteOn": " في {{date}}. يمكنك إبقاؤها نشطة.",
+      "cancelAtEndBody": "يمكنك إلغاء الفوترة في نهاية الفترة الحالية. حتى ذلك الحين يمكنك مواصلة الإرسال حسب الاستخدام.",
+      "cancelAtEnd": "إلغاء في نهاية الفترة"
     }
   },
   "metaCampaigns": {

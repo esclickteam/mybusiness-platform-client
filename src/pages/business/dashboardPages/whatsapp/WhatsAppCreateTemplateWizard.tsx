@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { Check, Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -39,88 +42,70 @@ const NAME_MAX = 512;
 const OTP_BODY_DEFAULT = "{{1}} הוא קוד האימות שלכם.";
 const SECURITY_FOOTER = "למען האבטחה, אל תשתפו את הקוד הזה.";
 
-const LANGUAGES = [
-  { code: "he", label: "עברית" },
-  { code: "en", label: "אנגלית" },
-  { code: "ar", label: "ערבית" },
-  { code: "es", label: "ספרדית" },
-  { code: "fr", label: "צרפתית" },
-  { code: "pt_BR", label: "פורטוגזית (ברזיל)" },
-] as const;
+const LANGUAGE_CODES = ["he", "en", "ar", "es", "fr", "pt_BR"] as const;
 
-const CATEGORIES: Array<{
+function getLanguages(t: TFunction) {
+  return LANGUAGE_CODES.map((code) => ({
+    code,
+    label: t(`whatsapp.wizard.languages.${code}`),
+  }));
+}
+
+function getCategories(t: TFunction): Array<{
   value: MetaCategory;
   title: string;
   description: string;
-}> = [
-  {
-    value: "MARKETING",
-    title: "שיווק",
-    description:
-      "מבצעים, עדכוני מוצרים והודעות שיווקיות. נשלחות רק ללקוחות שהסכימו לקבל אותן.",
-  },
-  {
-    value: "UTILITY",
-    title: "שירות ציבורי",
-    description:
-      "עדכוני הזמנות, תזכורות ותגובות לבקשות של הלקוח. לא מיועדות לקידום מכירות.",
-  },
-  {
-    value: "AUTHENTICATION",
-    title: "אימות",
-    description: "קוד חד-פעמי לכניסה, אימות זהות או אישור פעולה.",
-  },
-];
+}> {
+  return (["MARKETING", "UTILITY", "AUTHENTICATION"] as MetaCategory[]).map(
+    (value) => ({
+      value,
+      title: t(`whatsapp.wizard.categories.${value}.title`),
+      description: t(`whatsapp.wizard.categories.${value}.description`),
+    })
+  );
+}
 
-const SUBTYPES: Record<
-  MetaCategory,
-  Array<{ value: TemplateKind; title: string; description: string }>
-> = {
-  MARKETING: [
-    {
-      value: "default",
-      title: "ברירת מחדל",
-      description:
-        "אפשר לשלוח הודעות עם מדיה ולחצנים בהתאמה אישית כדי לעודד מעורבות של הלקוחות.",
-    },
-    {
-      value: "catalog",
-      title: "קטלוג",
-      description:
-        "ניתן לשלוח הודעות שמשפרות את המכירות על ידי חיבור של קטלוג המוצרים.",
-    },
-    {
-      value: "call_permission",
-      title: "בקשה להרשאות שיחה",
-      description: "ניתן לשאול לקוחות אם אפשר להתקשר אליהם בוואטסאפ.",
-    },
-  ],
-  UTILITY: [
-    {
-      value: "default",
-      title: "ברירת מחדל",
-      description: "כאן אפשר לשלוח הודעות לגבי הזמנה או חשבון קיימים.",
-    },
-    {
-      value: "call_permission",
-      title: "בקשה להרשאות שיחה",
-      description: "ניתן לשאול לקוחות אם אפשר להתקשר אליהם בוואטסאפ.",
-    },
-  ],
-  AUTHENTICATION: [
-    {
-      value: "otp",
-      title: "קוד סיסמה חד-פעמי",
-      description: "צריך לשלוח קודים כדי לאמת עסקה או התחברות.",
-    },
-  ],
+const SUBTYPE_VALUES: Record<MetaCategory, TemplateKind[]> = {
+  MARKETING: ["default", "catalog", "call_permission"],
+  UTILITY: ["default", "call_permission"],
+  AUTHENTICATION: ["otp"],
 };
 
-const STEPS = [
-  { title: "הגדרת תבנית", hint: "קטגוריה ותת-קטגוריה" },
-  { title: "עריכת תבנית", hint: "שם, שפה ותוכן" },
-  { title: "שליחה לבדיקה", hint: "סקירה לפני מטא" },
-] as const;
+function subtypeKey(category: MetaCategory, kind: TemplateKind): string {
+  if (kind === "default" && category === "MARKETING") return "defaultMarketing";
+  if (kind === "default" && category === "UTILITY") return "defaultUtility";
+  if (kind === "call_permission") return "callPermission";
+  return kind;
+}
+
+function getSubtypes(t: TFunction) {
+  return (Object.keys(SUBTYPE_VALUES) as MetaCategory[]).reduce(
+    (acc, category) => {
+      acc[category] = SUBTYPE_VALUES[category].map((value) => ({
+        value,
+        title: t(`whatsapp.wizard.subtypes.${subtypeKey(category, value)}.title`),
+        description: t(
+          `whatsapp.wizard.subtypes.${subtypeKey(category, value)}.description`
+        ),
+      }));
+      return acc;
+    },
+    {} as Record<
+      MetaCategory,
+      Array<{ value: TemplateKind; title: string; description: string }>
+    >
+  );
+}
+
+const STEP_KEYS = ["setup", "edit", "review"] as const;
+
+function getSteps(t: TFunction) {
+  return STEP_KEYS.map((key) => ({
+    key,
+    title: t(`whatsapp.wizard.steps.${key}.title`),
+    hint: t(`whatsapp.wizard.steps.${key}.hint`),
+  }));
+}
 
 const emptyForm = (): FormState => ({
   name: "",
@@ -145,13 +130,17 @@ function extractVariables(text: string): string[] {
   );
 }
 
-function categoryLabel(value: MetaCategory): string {
-  return CATEGORIES.find((item) => item.value === value)?.title || value;
+function categoryLabel(value: MetaCategory, t: TFunction): string {
+  return getCategories(t).find((item) => item.value === value)?.title || value;
 }
 
-function kindLabel(category: MetaCategory, kind: TemplateKind): string {
+function kindLabel(
+  category: MetaCategory,
+  kind: TemplateKind,
+  t: TFunction
+): string {
   return (
-    SUBTYPES[category].find((item) => item.value === kind)?.title || kind
+    getSubtypes(t)[category].find((item) => item.value === kind)?.title || kind
   );
 }
 
@@ -175,6 +164,12 @@ export function WhatsAppCreateTemplateWizard({
   onClose: () => void;
   onSubmitted: () => void;
 }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const languages = getLanguages(t);
+  const categories = getCategories(t);
+  const subtypesByCategory = getSubtypes(t);
+  const steps = getSteps(t);
   const [step, setStep] = useState<Step>(0);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
@@ -185,7 +180,7 @@ export function WhatsAppCreateTemplateWizard({
     [form.headerText, form.body]
   );
   const previewBody = useMemo(() => {
-    let text = form.body || "כאן יופיע גוף ההודעה.";
+    let text = form.body || t("whatsapp.wizard.bodyPlaceholderPreview");
     variables.forEach((variable) => {
       text = text.replaceAll(
         `{{${variable}}}`,
@@ -193,7 +188,7 @@ export function WhatsAppCreateTemplateWizard({
       );
     });
     return text;
-  }, [form.body, form.exampleValues, variables]);
+  }, [form.body, form.exampleValues, variables, t]);
 
   const nameValid = /^[a-z0-9_]+$/.test(form.name) && form.name.length > 0;
   const canGoEdit = Boolean(form.metaCategory && form.templateKind);
@@ -211,7 +206,7 @@ export function WhatsAppCreateTemplateWizard({
   };
 
   const selectCategory = (value: MetaCategory) => {
-    const firstKind = SUBTYPES[value][0]?.value || "default";
+    const firstKind = SUBTYPE_VALUES[value][0] || "default";
     setForm((prev) => ({
       ...prev,
       metaCategory: value,
@@ -258,11 +253,11 @@ export function WhatsAppCreateTemplateWizard({
     setError(null);
     try {
       await saveWhatsAppTemplateDraft(businessId, buildPayload());
-      toast.success("הטיוטה נשמרה");
+      toast.success(t("whatsapp.wizard.draftSaved"));
       onSubmitted();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "שמירת הטיוטה נכשלה");
+      setError(err instanceof Error ? err.message : t("whatsapp.wizard.draftFailed"));
     } finally {
       setSaving(false);
     }
@@ -277,46 +272,49 @@ export function WhatsAppCreateTemplateWizard({
         buildPayload()
       );
       const rawStatus = String(result.meta?.status || "").toUpperCase();
-      const status =
+      const statusKey =
         rawStatus === "PENDING"
-          ? "ממתין"
+          ? "pending"
           : rawStatus === "APPROVED"
-            ? "מאושרת"
+            ? "approved"
             : rawStatus === "REJECTED"
-              ? "נדחתה"
+              ? "rejected"
               : rawStatus === "DRAFT"
-                ? "טיוטה"
-                : result.meta?.status || "ממתין";
+                ? "draft"
+                : "";
+      const status = statusKey
+        ? t(`whatsapp.wizard.status.${statusKey}`)
+        : result.meta?.status || t("whatsapp.wizard.status.pending");
       toast.success(
         result.meta?.id
-          ? `התבנית נשלחה לבדיקה. הסטטוס: ${status}.`
-          : "התבנית נשמרה כטיוטה כי אין חיבור מטא פעיל."
+          ? t("whatsapp.wizard.submitted", { status })
+          : t("whatsapp.wizard.savedNoMeta")
       );
       onSubmitted();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "שליחת התבנית נכשלה");
+      setError(err instanceof Error ? err.message : t("whatsapp.wizard.submitFailed"));
     } finally {
       setSaving(false);
     }
   };
 
-  const subtypes = SUBTYPES[form.metaCategory];
+  const subtypes = subtypesByCategory[form.metaCategory];
 
   return (
-    <section className="wa-meta-wizard" dir="rtl" aria-label="יצירת תבנית">
+    <section className="wa-meta-wizard" dir={dir} aria-label={t("whatsapp.wizard.ariaCreate")}>
       <header className="wa-meta-wizard__top">
         <div>
-          <p className="wa-meta-kicker">תבניות הודעה</p>
-          <h3>יצירת תבנית</h3>
+          <p className="wa-meta-kicker">{t("whatsapp.wizard.kicker")}</p>
+          <h3>{t("whatsapp.wizard.title")}</h3>
         </div>
         <div className="wa-meta-wizard__top-actions">
-          <span className="wa-meta-badge">ממשק מטא</span>
+          <span className="wa-meta-badge">{t("whatsapp.wizard.metaBadge")}</span>
           <button
             type="button"
             className="wa-meta-icon-btn"
             onClick={onClose}
-            aria-label="סגירה"
+            aria-label={t("whatsapp.wizard.close")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -324,11 +322,11 @@ export function WhatsAppCreateTemplateWizard({
       </header>
 
       <ol className="wa-meta-stepper">
-        {STEPS.map((item, index) => {
+        {steps.map((item, index) => {
           const state =
             step === index ? "current" : step > index ? "done" : "todo";
           return (
-            <li key={item.title} className={`is-${state}`}>
+            <li key={item.key} className={`is-${state}`}>
               <span className="wa-meta-stepper__num">
                 {state === "done" ? <Check className="h-3.5 w-3.5" /> : index + 1}
               </span>
@@ -342,10 +340,10 @@ export function WhatsAppCreateTemplateWizard({
       </ol>
 
       <div className="wa-meta-wizard__body" dir="ltr">
-        <aside className="wa-meta-preview" dir="rtl">
+        <aside className="wa-meta-preview" dir={dir}>
           <div className="wa-meta-preview__chrome">
-            <strong>תצוגה מקדימה</strong>
-            <span>וואטסאפ · עסק</span>
+            <strong>{t("whatsapp.wizard.preview")}</strong>
+            <span>{t("whatsapp.wizard.previewBusiness")}</span>
           </div>
           <div className="wa-meta-preview__stage">
             <div className="wa-meta-bubble">
@@ -353,16 +351,16 @@ export function WhatsAppCreateTemplateWizard({
                 <p className="wa-meta-bubble__header">{form.headerText}</p>
               )}
               {form.headerType === "image" && (
-                <div className="wa-meta-bubble__media">תמונה</div>
+                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.image")}</div>
               )}
               {form.headerType === "video" && (
-                <div className="wa-meta-bubble__media">וידאו</div>
+                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.video")}</div>
               )}
               {form.headerType === "document" && (
-                <div className="wa-meta-bubble__media">מסמך</div>
+                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.document")}</div>
               )}
               {form.headerType === "location" && (
-                <div className="wa-meta-bubble__media">מיקום</div>
+                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.location")}</div>
               )}
               <p className="wa-meta-bubble__body">{previewBody}</p>
               {form.footer && (
@@ -373,7 +371,7 @@ export function WhatsAppCreateTemplateWizard({
                 <div className="wa-meta-bubble__buttons">
                   {form.buttons.map((button, index) => (
                     <span key={`${button.type}-${index}`}>
-                      {button.text || metaButtonTypeLabel(button.type)}
+                      {button.text || metaButtonTypeLabel(button.type, t)}
                     </span>
                   ))}
                 </div>
@@ -382,15 +380,15 @@ export function WhatsAppCreateTemplateWizard({
           </div>
         </aside>
 
-        <div className="wa-meta-editor" dir="rtl">
+        <div className="wa-meta-editor" dir={dir}>
           {step === 0 && (
             <div className="wa-meta-card">
-              <h4>קטגוריה</h4>
+              <h4>{t("whatsapp.wizard.category")}</h4>
               <p className="wa-meta-help">
-                בחרו קטגוריה ותת-קטגוריה. שם התבנית והשפה יוגדרו בשלב העריכה.
+                {t("whatsapp.wizard.categoryHelp")}
               </p>
               <div className="wa-meta-choice-list" style={{ marginTop: 16 }}>
-                {CATEGORIES.map((item) => (
+                {categories.map((item) => (
                   <button
                     key={item.value}
                     type="button"
@@ -407,9 +405,9 @@ export function WhatsAppCreateTemplateWizard({
               </div>
 
               <div className="wa-meta-section-divider">
-                <h4>תת-קטגוריה</h4>
+                <h4>{t("whatsapp.wizard.subcategory")}</h4>
                 <p className="wa-meta-help">
-                  האפשרויות משתנות לפי הקטגוריה שנבחרה.
+                  {t("whatsapp.wizard.subcategoryHelp")}
                 </p>
                 <div className="wa-meta-choice-list" style={{ marginTop: 12 }}>
                   {subtypes.map((item) => (
@@ -435,7 +433,7 @@ export function WhatsAppCreateTemplateWizard({
             <div className="wa-meta-card wa-meta-editor-flow">
               <label>
                 <div className="wa-meta-field-row">
-                  <span className="wa-meta-label">שם התבנית</span>
+                  <span className="wa-meta-label">{t("whatsapp.wizard.templateName")}</span>
                   <span className="wa-meta-counter">
                     {form.name.length}/{NAME_MAX}
                   </span>
@@ -451,38 +449,37 @@ export function WhatsAppCreateTemplateWizard({
                   placeholder="welcome_offer"
                 />
                 <p className="wa-meta-help">
-                  אותיות אנגליות קטנות, מספרים וקו תחתון בלבד. לא יוצג ללקוחות.
+                  {t("whatsapp.wizard.nameHelp")}
                 </p>
               </label>
 
               <label>
-                <span className="wa-meta-label">שפה</span>
+                <span className="wa-meta-label">{t("whatsapp.wizard.language")}</span>
                 <select
                   className="wa-meta-select"
                   value={form.language}
                   onChange={(e) => update("language", e.target.value)}
                 >
-                  {LANGUAGES.map((lang) => (
+                  {languages.map((lang) => (
                     <option key={lang.code} value={lang.code}>
                       {lang.label}
                     </option>
                   ))}
                 </select>
                 <p className="wa-meta-help">
-                  השפה שבה ייכתב תוכן התבנית. אפשר להוסיף גרסאות נוספות מאוחר יותר.
+                  {t("whatsapp.wizard.languageHelp")}
                 </p>
               </label>
 
               {form.metaCategory === "AUTHENTICATION" && (
                 <div className="wa-meta-auth-panel">
-                  <h4>אפשרויות אימות</h4>
+                  <h4>{t("whatsapp.wizard.authOptions")}</h4>
                   <p className="wa-meta-help">
-                    מוצגות רק האפשרויות שנתמכות בפועל בשליחה למטא. כניסה בלחיצה
-                    אחת וכניסה ללא לחיצה אינן זמינות כרגע.
+{t("whatsapp.wizard.authHelp")}
                   </p>
                   <div className="wa-meta-auth-row">
-                    <strong>קוד חד-פעמי</strong>
-                    <span>הגוף חייב לכלול את המשתנה {"{{1}}"} לקוד האימות.</span>
+                    <strong>{t("whatsapp.wizard.otp")}</strong>
+                    <span>{t("whatsapp.wizard.otpHint")}</span>
                   </div>
                   <label className="wa-meta-check">
                     <input
@@ -498,20 +495,19 @@ export function WhatsAppCreateTemplateWizard({
                       }}
                     />
                     <span>
-                      <strong>המלצת אבטחה</strong>
-                      <em>מוסיפה כותרת תחתונה שממליצה לא לשתף את הקוד.</em>
+                      <strong>{t("whatsapp.wizard.securityRec")}</strong>
+                      <em>{t("whatsapp.wizard.securityRecHint")}</em>
                     </span>
                   </label>
                   <div className="wa-meta-auth-row">
-                    <strong>זמן תפוגת הקוד</strong>
+                    <strong>{t("whatsapp.wizard.expiry")}</strong>
                     <span>
-                      מטא מציגה תפוגה של 10 דקות. אין שדה נפרד שנתמך כרגע בחיבור
-                      שלנו.
+{t("whatsapp.wizard.expiryHint")}
                     </span>
                   </div>
                   <div className="wa-meta-auth-row">
-                    <strong>העתקת קוד</strong>
-                    <span>אפשר להוסיף לחצן העתקה באזור הלחצנים למטה.</span>
+                    <strong>{t("whatsapp.wizard.copyCode")}</strong>
+                    <span>{t("whatsapp.wizard.copyCodeHint")}</span>
                   </div>
                 </div>
               )}
@@ -530,7 +526,7 @@ export function WhatsAppCreateTemplateWizard({
                 bodyPlaceholder={
                   form.metaCategory === "AUTHENTICATION"
                     ? OTP_BODY_DEFAULT
-                    : "כתבו את גוף ההודעה. השתמשו ב-{{1}} למשתנים."
+                    : t("whatsapp.wizard.bodyPlaceholder")
                 }
                 onChange={(patch) =>
                   setForm((prev) => {
@@ -551,54 +547,54 @@ export function WhatsAppCreateTemplateWizard({
 
           {step === 2 && (
             <div className="wa-meta-card wa-meta-review">
-              <h4>בדיקה לפני שליחה</h4>
+              <h4>{t("whatsapp.wizard.reviewTitle")}</h4>
               <p className="wa-meta-help">
-                ודאו שהפרטים נכונים לפני השליחה לבדיקה של מטא.
+                {t("whatsapp.wizard.reviewHelp")}
               </p>
               <dl style={{ marginTop: 14 }}>
-                <dt>קטגוריה</dt>
-                <dd>{categoryLabel(form.metaCategory)}</dd>
-                <dt>תת-קטגוריה</dt>
-                <dd>{kindLabel(form.metaCategory, form.templateKind)}</dd>
-                <dt>שם התבנית</dt>
+                <dt>{t("whatsapp.wizard.category")}</dt>
+                <dd>{categoryLabel(form.metaCategory, t)}</dd>
+                <dt>{t("whatsapp.wizard.subcategory")}</dt>
+                <dd>{kindLabel(form.metaCategory, form.templateKind, t)}</dd>
+                <dt>{t("whatsapp.wizard.templateName")}</dt>
                 <dd dir="ltr">{form.name || "—"}</dd>
-                <dt>שפה</dt>
+                <dt>{t("whatsapp.wizard.language")}</dt>
                 <dd>
-                  {LANGUAGES.find((lang) => lang.code === form.language)?.label ||
+                  {languages.find((lang) => lang.code === form.language)?.label ||
                     form.language}
                 </dd>
-                <dt>כותרת</dt>
+                <dt>{t("whatsapp.wizard.header")}</dt>
                 <dd>
                   {form.headerType === "text"
                     ? form.headerText || "—"
                     : form.headerType === "none"
-                      ? "ללא"
+                      ? t("whatsapp.wizard.none")
                       : form.headerType === "image"
-                        ? "תמונה"
+                        ? t("whatsapp.wizard.media.image")
                         : form.headerType === "video"
-                          ? "וידאו"
+                          ? t("whatsapp.wizard.media.video")
                           : form.headerType === "location"
-                            ? "מיקום"
-                            : "מסמך"}
+                            ? t("whatsapp.wizard.media.location")
+                            : t("whatsapp.wizard.media.document")}
                 </dd>
-                <dt>גוף</dt>
+                <dt>{t("whatsapp.wizard.body")}</dt>
                 <dd style={{ whiteSpace: "pre-wrap", fontWeight: 500 }}>
                   {form.body || "—"}
                 </dd>
-                <dt>כותרת תחתונה</dt>
+                <dt>{t("whatsapp.wizard.footer")}</dt>
                 <dd>{form.footer || "—"}</dd>
-                <dt>לחצנים</dt>
+                <dt>{t("whatsapp.wizard.buttons")}</dt>
                 <dd>
                   {form.buttons.length
                     ? form.buttons
                         .map(
                           (button) =>
-                            `${metaButtonTypeLabel(button.type)}: ${button.text || button.exampleUrl}`
+                            `${metaButtonTypeLabel(button.type, t)}: ${button.text || button.exampleUrl}`
                         )
                         .join(" · ")
                     : "—"}
                 </dd>
-                <dt>דגימות משתנים</dt>
+                <dt>{t("whatsapp.wizard.samples")}</dt>
                 <dd dir="ltr">
                   {variables.length
                     ? variables
@@ -608,8 +604,7 @@ export function WhatsAppCreateTemplateWizard({
                 </dd>
               </dl>
               <p className="wa-meta-alert wa-meta-alert--warn">
-                שליחה מעבירה את התבנית לבדיקה במטא. הסטטוס יוצג כממתין עד שמטא
-                תחזיר מאושרת או נדחתה.
+{t("whatsapp.wizard.reviewWarn")}
               </p>
             </div>
           )}
@@ -626,7 +621,7 @@ export function WhatsAppCreateTemplateWizard({
               className="wa-meta-btn wa-meta-btn--secondary"
               onClick={() => setStep((prev) => (prev - 1) as Step)}
             >
-              הקודם
+              {t("whatsapp.wizard.prev")}
             </button>
           )}
           {step < 2 ? (
@@ -636,7 +631,7 @@ export function WhatsAppCreateTemplateWizard({
               disabled={step === 0 ? !canGoEdit : !canGoReview}
               onClick={() => setStep((prev) => (prev + 1) as Step)}
             >
-              הבא
+              {t("whatsapp.wizard.next")}
             </button>
           ) : (
             <button
@@ -646,7 +641,7 @@ export function WhatsAppCreateTemplateWizard({
               onClick={handleSubmit}
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              שליחה לבדיקה
+              {t("whatsapp.wizard.submitReview")}
             </button>
           )}
         </div>
@@ -658,14 +653,14 @@ export function WhatsAppCreateTemplateWizard({
             onClick={handleSaveDraft}
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            שמירה כטיוטה
+            {t("whatsapp.wizard.saveDraft")}
           </button>
           <button
             type="button"
             className="wa-meta-btn wa-meta-btn--ghost"
             onClick={onClose}
           >
-            סגירה
+            {t("whatsapp.wizard.close")}
           </button>
         </div>
       </div>

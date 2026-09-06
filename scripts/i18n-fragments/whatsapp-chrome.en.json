@@ -1,0 +1,232 @@
+{
+  "wizard": {
+    "ariaCreate": "Create template",
+    "close": "Close",
+    "kicker": "Message templates",
+    "title": "Create template",
+    "metaBadge": "Meta interface",
+    "preview": "Preview",
+    "previewBusiness": "WhatsApp · Business",
+    "bodyPlaceholderPreview": "The message body will appear here.",
+    "category": "Category",
+    "categoryHelp": "Choose a category and subcategory. The template name and language are set in the edit step.",
+    "subcategory": "Subcategory",
+    "subcategoryHelp": "The options change based on the selected category.",
+    "templateName": "Template name",
+    "nameHelp": "Lowercase English letters, numbers, and underscores only. Customers will not see this.",
+    "language": "Language",
+    "languageHelp": "The language used for the template content. You can add more versions later.",
+    "authOptions": "Authentication options",
+    "authHelp": "Only options actually supported when submitting to Meta are shown. One-tap and zero-tap login are not available yet.",
+    "otp": "One-time code",
+    "otpHint": "The body must include the {{1}} variable for the verification code.",
+    "securityRec": "Security recommendation",
+    "securityRecHint": "Adds a footer that recommends not sharing the code.",
+    "expiry": "Code expiry",
+    "expiryHint": "Meta shows a 10-minute expiry. There is no separate field supported in our connection yet.",
+    "copyCode": "Copy code",
+    "copyCodeHint": "You can add a copy button in the buttons section below.",
+    "reviewTitle": "Review before sending",
+    "reviewHelp": "Make sure the details are correct before sending the template to Meta for review.",
+    "header": "Header",
+    "body": "Body",
+    "footer": "Footer",
+    "buttons": "Buttons",
+    "samples": "Variable samples",
+    "none": "None",
+    "reviewWarn": "Sending submits the template for Meta review. The status will stay pending until Meta returns approved or rejected.",
+    "draftSaved": "Draft saved",
+    "draftFailed": "Could not save the draft",
+    "submitted": "The template was submitted for review. Status: {{status}}.",
+    "savedNoMeta": "The template was saved as a draft because there is no active Meta connection.",
+    "submitFailed": "Could not submit the template",
+    "prev": "Back",
+    "next": "Next",
+    "submitReview": "Submit for review",
+    "saveDraft": "Save as draft",
+    "bodyPlaceholder": "Write the message body. Use {{1}} for variables.",
+    "steps": {
+      "setup": { "title": "Set up template", "hint": "Category and subcategory" },
+      "edit": { "title": "Edit template", "hint": "Name, language, and content" },
+      "review": { "title": "Submit for review", "hint": "Review before Meta" }
+    },
+    "categories": {
+      "MARKETING": {
+        "title": "Marketing",
+        "description": "Promotions, product updates, and marketing messages. Sent only to customers who opted in."
+      },
+      "UTILITY": {
+        "title": "Utility",
+        "description": "Order updates, reminders, and replies to customer requests. Not intended for promotions."
+      },
+      "AUTHENTICATION": {
+        "title": "Authentication",
+        "description": "A one-time code for sign-in, identity verification, or confirming an action."
+      }
+    },
+    "subtypes": {
+      "defaultMarketing": {
+        "title": "Default",
+        "description": "Send messages with media and custom buttons to encourage customer engagement."
+      },
+      "catalog": {
+        "title": "Catalog",
+        "description": "Send messages that help sales by connecting your product catalog."
+      },
+      "callPermission": {
+        "title": "Call permission request",
+        "description": "Ask customers if you may call them on WhatsApp."
+      },
+      "defaultUtility": {
+        "title": "Default",
+        "description": "Send messages about an existing order or account."
+      },
+      "otp": {
+        "title": "One-time password",
+        "description": "Send codes to verify a transaction or sign-in."
+      }
+    },
+    "languages": {
+      "he": "Hebrew",
+      "en": "English",
+      "ar": "Arabic",
+      "es": "Spanish",
+      "fr": "French",
+      "pt_BR": "Portuguese (Brazil)"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "draft": "Draft"
+    },
+    "media": {
+      "image": "Image",
+      "video": "Video",
+      "document": "Document",
+      "location": "Location"
+    }
+  },
+  "metaEditor": {
+    "content": "Content",
+    "contentHelp": "Add a header, body, and footer to your template. Variables use {{1}}, {{2}}.",
+    "variableType": "Variable type",
+    "variableName": "Name",
+    "variableNumber": "Number",
+    "mediaSample": "Media sample · Optional",
+    "mediaNone": "None",
+    "mediaImage": "Image",
+    "mediaVideo": "Video",
+    "mediaDocument": "Document",
+    "mediaLocation": "Location",
+    "mediaIdImage": "Image media ID",
+    "mediaIdVideo": "Video media ID",
+    "mediaIdDocument": "Document media ID",
+    "mediaIdPlaceholder": "Media ID received from upload",
+    "headerOptional": "Header · Optional",
+    "headerPlaceholder": "Add a short text line for the message header",
+    "addVariable": "Add variable",
+    "variable": "Variable",
+    "code": "Code",
+    "strikethrough": "Strikethrough",
+    "italic": "Italic",
+    "bold": "Bold",
+    "bodyHelp": "You can add variables as {{1}}, {{2}}. The preview updates in real time.",
+    "exampleValues": "Example values for variables",
+    "exampleHelp": "Meta requires a sample for every variable before review.",
+    "samplePlaceholder": "Sample value",
+    "footerOptional": "Footer · Optional",
+    "footerHelp": "Short text at the bottom of the message. You can leave this empty.",
+    "footerPlaceholder": "For example: Do not reply to this message",
+    "buttonsOptional": "Buttons · Optional",
+    "buttonsHelp": "Create buttons so customers can reply or take an action. You can add up to {{count}} buttons.",
+    "addButton": "Add button",
+    "removeButton": "Remove button",
+    "buttonText": "Button text",
+    "urlType": "URL type",
+    "urlStatic": "Static",
+    "urlDynamic": "Dynamic",
+    "websiteUrl": "Website URL",
+    "sampleUrl": "Sample URL",
+    "phoneNumber": "Phone number",
+    "contactHelp": "Meta sets the button text. It cannot be edited.",
+    "sampleCode": "Sample code",
+    "wrapText": "text",
+    "buttons": {
+      "quick_reply": {
+        "title": "Custom",
+        "description": "The customer sends a short reply in one tap.",
+        "defaultText": "Custom"
+      },
+      "url": {
+        "title": "Visit website",
+        "description": "Opens a static or dynamic website URL.",
+        "defaultText": "Visit website"
+      },
+      "voice_call": {
+        "title": "WhatsApp call",
+        "description": "Starts a WhatsApp voice call with the business.",
+        "defaultText": "WhatsApp call"
+      },
+      "phone_number": {
+        "title": "Call phone number",
+        "description": "Calls a predefined phone number.",
+        "defaultText": "Call"
+      },
+      "request_contact_info": {
+        "title": "Share contact details",
+        "description": "Asks the customer to share their contact details.",
+        "defaultText": "Share contact details"
+      },
+      "copy_code": {
+        "title": "Copy code",
+        "description": "Copies a promo or verification code to the clipboard.",
+        "defaultText": "Copy code"
+      }
+    }
+  },
+  "billing": {
+    "loadError": "We could not load WhatsApp billing data right now.",
+    "retry": "Try again",
+    "title": "WhatsApp",
+    "payAsYouGo": "Pay as you go",
+    "notConfigured": "WhatsApp billing is not set up",
+    "setupCta": "Set up WhatsApp billing",
+    "active": "WhatsApp billing is active",
+    "manage": "Manage billing",
+    "perMessage": "{{price}} per message",
+    "messagesThisMonth": "{{count}} messages this month",
+    "estimatedCharge": "Estimated charge:",
+    "periodEnd": "Billing period ends: {{date}}",
+    "noPackages": "There are no WhatsApp packages — you are charged only for messages actually sent.",
+    "paymentIssue": "There is a payment problem with WhatsApp billing",
+    "paymentIssueBody": "Sending will continue temporarily. Please settle the payment to avoid an interruption.",
+    "until": " Until {{date}}.",
+    "managePayment": "Manage payment",
+    "sendBlocked": "WhatsApp sending is blocked because of the billing status",
+    "sendBlockedBody": "Add a payment method to keep sending messages.",
+    "settlePayment": "Settle payment",
+    "cancelScheduled": "Billing is scheduled to cancel",
+    "cancelScheduledOn": " on {{date}}",
+    "keepActive": "Keep billing active",
+    "updating": "Updating...",
+    "setupFailed": "We could not start billing setup. Please try again.",
+    "cancelSuccess": "Billing will be cancelled at the end of the current billing period.",
+    "cancelFailed": "We could not cancel billing. Please try again.",
+    "reactivateSuccess": "Cancellation was undone and billing will stay active.",
+    "reactivateFailed": "We could not keep billing active.",
+    "setupTitle": "Set up WhatsApp billing",
+    "manageTitle": "Manage WhatsApp billing",
+    "close": "Close",
+    "needPayment": "A payment method is required for WhatsApp messages",
+    "usageOnly": "Automations and sending are billed by actual usage — there are no prepaid message packages.",
+    "startPayment": "Start payment setup",
+    "cancel": "Cancel",
+    "manageLine": "Pay as you go · {{price}} per message",
+    "periodUntil": " · period until {{date}}",
+    "cancelNote": "Billing is scheduled to cancel",
+    "cancelNoteOn": " on {{date}}. You can keep it active.",
+    "cancelAtEndBody": "You can cancel billing at the end of the current period. Until then you can keep sending messages by usage.",
+    "cancelAtEnd": "Cancel at period end"
+  }
+}

@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import i18n from "../../../../i18n/i18n";
 import {
   ChevronDown,
   Copy,
@@ -31,66 +34,49 @@ const BUTTON_TEXT_MAX = 25;
 const URL_MAX = 2000;
 const MAX_BUTTONS = 10;
 
-const VARIABLE_OPTIONS: Array<{ value: VariableType; label: string }> = [
-  { value: "name", label: "שם" },
-  { value: "number", label: "מספר" },
-];
+function getVariableOptions(t: TFunction): Array<{ value: VariableType; label: string }> {
+  return [
+    { value: "name", label: t("whatsapp.metaEditor.variableName") },
+    { value: "number", label: t("whatsapp.metaEditor.variableNumber") },
+  ];
+}
 
-const MEDIA_OPTIONS: Array<{
+function getMediaOptions(t: TFunction): Array<{
   value: MediaSample;
   label: string;
   Icon?: typeof ImageIcon;
-}> = [
-  { value: "none", label: "בלי" },
-  { value: "image", label: "תמונה", Icon: ImageIcon },
-  { value: "video", label: "סרטון", Icon: PlayCircle },
-  { value: "document", label: "מסמך", Icon: FileText },
-  { value: "location", label: "מיקום", Icon: MapPin },
-];
+}> {
+  return [
+    { value: "none", label: t("whatsapp.metaEditor.mediaNone") },
+    { value: "image", label: t("whatsapp.metaEditor.mediaImage"), Icon: ImageIcon },
+    { value: "video", label: t("whatsapp.metaEditor.mediaVideo"), Icon: PlayCircle },
+    { value: "document", label: t("whatsapp.metaEditor.mediaDocument"), Icon: FileText },
+    { value: "location", label: t("whatsapp.metaEditor.mediaLocation"), Icon: MapPin },
+  ];
+}
 
-const BUTTON_MENU: Array<{
+const BUTTON_ICONS: Record<ButtonType, typeof Copy> = {
+  quick_reply: CornerUpLeft,
+  url: ExternalLink,
+  voice_call: MessageCircle,
+  phone_number: Phone,
+  request_contact_info: User,
+  copy_code: Copy,
+};
+
+function getButtonMenu(t: TFunction): Array<{
   type: ButtonType;
   title: string;
   description: string;
   Icon: typeof Copy;
-}> = [
-  {
-    type: "quick_reply",
-    title: "בהתאמה אישית",
-    description: "הלקוח שולח תשובה קצרה בלחיצה אחת.",
-    Icon: CornerUpLeft,
-  },
-  {
-    type: "url",
-    title: "ביקור באתר האינטרנט",
-    description: "פותח כתובת אתר סטטית או דינמית.",
-    Icon: ExternalLink,
-  },
-  {
-    type: "voice_call",
-    title: "שיחה בוואטסאפ",
-    description: "פותח שיחה קולית בוואטסאפ עם העסק.",
-    Icon: MessageCircle,
-  },
-  {
-    type: "phone_number",
-    title: "התקשרות למספר הטלפון",
-    description: "מתקשר למספר שהוגדר מראש.",
-    Icon: Phone,
-  },
-  {
-    type: "request_contact_info",
-    title: "שיתוף הפרטים ליצירת קשר",
-    description: "מבקש מהלקוח לשתף את פרטי הקשר שלו.",
-    Icon: User,
-  },
-  {
-    type: "copy_code",
-    title: "העתקת קוד",
-    description: "מעתיק קוד מבצע או קוד אימות ללוח.",
-    Icon: Copy,
-  },
-];
+}> {
+  return (Object.keys(BUTTON_ICONS) as ButtonType[]).map((type) => ({
+    type,
+    title: t(`whatsapp.metaEditor.buttons.${type}.title`),
+    description: t(`whatsapp.metaEditor.buttons.${type}.description`),
+    Icon: BUTTON_ICONS[type],
+  }));
+}
 
 function extractVariables(text: string): string[] {
   const matches = text.matchAll(/\{\{\s*([1-9]\d*)\s*\}\}/g);
@@ -109,30 +95,23 @@ function wrapSelection(
   start: number,
   end: number,
   before: string,
-  after: string
+  after: string,
+  fallback: string
 ): string {
-  return `${value.slice(0, start)}${before}${value.slice(start, end) || "טקסט"}${after}${value.slice(end)}`;
+  return `${value.slice(0, start)}${before}${value.slice(start, end) || fallback}${after}${value.slice(end)}`;
 }
 
-function buttonTypeLabel(type: ButtonType): string {
-  return BUTTON_MENU.find((item) => item.type === type)?.title || type;
+function buttonTypeLabel(type: ButtonType, t: TFunction = i18n.t.bind(i18n)): string {
+  return t(`whatsapp.metaEditor.buttons.${type}.title`);
 }
 
-function defaultButton(type: ButtonType): WhatsAppTemplateButton {
+function defaultButton(
+  type: ButtonType,
+  t: TFunction = i18n.t.bind(i18n)
+): WhatsAppTemplateButton {
   return {
     type,
-    text:
-      type === "url"
-        ? "ביקור באתר"
-        : type === "phone_number"
-          ? "התקשרות"
-          : type === "voice_call"
-            ? "שיחה בוואטסאפ"
-            : type === "request_contact_info"
-              ? "שיתוף הפרטים ליצירת קשר"
-              : type === "copy_code"
-                ? "העתקת קוד"
-                : "בהתאמה אישית",
+    text: t(`whatsapp.metaEditor.buttons.${type}.defaultText`),
     url: type === "url" ? "" : undefined,
     urlType: type === "url" ? "static" : undefined,
     phoneNumber: type === "phone_number" ? "" : undefined,
@@ -278,7 +257,7 @@ export function WhatsAppMetaTemplateContent({
   variableType = "number",
   showHeader = true,
   allowedButtons,
-  bodyPlaceholder = "כתבו את גוף ההודעה. השתמשו ב-{{1}} למשתנים.",
+  bodyPlaceholder,
   onChange,
 }: {
   headerType: WhatsAppHeaderType;
@@ -303,6 +282,11 @@ export function WhatsAppMetaTemplateContent({
     variableType?: VariableType;
   }) => void;
 }) {
+  const { t } = useTranslation();
+  const resolvedBodyPlaceholder =
+    bodyPlaceholder || t("whatsapp.wizard.bodyPlaceholder");
+  const variableOptions = getVariableOptions(t);
+  const mediaOptions = getMediaOptions(t);
   const headerRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -311,7 +295,7 @@ export function WhatsAppMetaTemplateContent({
   const [menuUp, setMenuUp] = useState(false);
   const media = mediaFromHeader(headerType);
   const variables = extractVariables(`${headerText}\n${body}`);
-  const buttonMenu = BUTTON_MENU.filter((item) =>
+  const buttonMenu = getButtonMenu(t).filter((item) =>
     allowedButtons.includes(item.type)
   );
 
@@ -380,7 +364,7 @@ export function WhatsAppMetaTemplateContent({
     const el = bodyRef.current;
     if (!el) return;
     onChange({
-      body: wrapSelection(body, el.selectionStart, el.selectionEnd, before, after),
+      body: wrapSelection(body, el.selectionStart, el.selectionEnd, before, after, t("whatsapp.metaEditor.wrapText")),
     });
   };
 
@@ -400,7 +384,7 @@ export function WhatsAppMetaTemplateContent({
 
   const addButton = (type: ButtonType) => {
     if (buttons.length >= MAX_BUTTONS) return;
-    onChange({ buttons: [...buttons, defaultButton(type)] });
+    onChange({ buttons: [...buttons, defaultButton(type, t)] });
     setMenuOpen(false);
   };
 
@@ -418,27 +402,26 @@ export function WhatsAppMetaTemplateContent({
   return (
     <div className="wa-meta-content">
       <div className="wa-meta-content__intro">
-        <h4>תוכן</h4>
+        <h4>{t("whatsapp.metaEditor.content")}</h4>
         <p className="wa-meta-help">
-          יש להוסיף כותרת, גוף וחתימה לתבנית שלכם. המשתנים נכתבים במבנה {"{{1}}"}
-          , {"{{2}}"}.
+{t("whatsapp.metaEditor.contentHelp")}
         </p>
       </div>
 
       {showHeader && (
         <>
           <MetaSelect
-            label="סוג המשתנה"
+            label={t("whatsapp.metaEditor.variableType")}
             info
             value={variableType}
-            options={VARIABLE_OPTIONS}
+            options={variableOptions}
             onChange={(next) => onChange({ variableType: next })}
           />
 
           <MetaSelect
-            label="דגימת מדיה · לא חובה"
+            label={t("whatsapp.metaEditor.mediaSample")}
             value={media}
-            options={MEDIA_OPTIONS}
+            options={mediaOptions}
             radioEnd
             onChange={setMedia}
           />
@@ -447,24 +430,24 @@ export function WhatsAppMetaTemplateContent({
             <label className="wa-meta-content__field">
               <span className="wa-meta-label">
                 {media === "image"
-                  ? "מזהה מדיה לתמונה"
+                  ? t("whatsapp.metaEditor.mediaIdImage")
                   : media === "video"
-                    ? "מזהה מדיה לסרטון"
-                    : "מזהה מדיה למסמך"}
+                    ? t("whatsapp.metaEditor.mediaIdVideo")
+                    : t("whatsapp.metaEditor.mediaIdDocument")}
               </span>
               <input
                 className="wa-meta-input"
                 dir="ltr"
                 value={headerMediaUrl}
                 onChange={(e) => onChange({ headerMediaUrl: e.target.value })}
-                placeholder="מזהה מדיה שהתקבל מהעלאה"
+                placeholder={t("whatsapp.metaEditor.mediaIdPlaceholder")}
               />
             </label>
           )}
 
           <section className="wa-meta-content__block">
             <div className="wa-meta-field-row">
-              <span className="wa-meta-label">כותרת · לא חובה</span>
+              <span className="wa-meta-label">{t("whatsapp.metaEditor.headerOptional")}</span>
               <span className="wa-meta-counter">
                 {headerText.length}/{HEADER_TEXT_MAX}
               </span>
@@ -475,37 +458,37 @@ export function WhatsAppMetaTemplateContent({
               maxLength={HEADER_TEXT_MAX}
               value={headerText}
               onChange={(e) => setHeaderText(e.target.value)}
-              placeholder="הוספת שורת טקסט קצרה לכותרת ההודעה"
+              placeholder={t("whatsapp.metaEditor.headerPlaceholder")}
             />
             <button
               type="button"
               className="wa-meta-link-btn"
               onClick={insertHeaderVariable}
             >
-              + הוספת משתנה
+              {t("whatsapp.metaEditor.addVariable")}
             </button>
           </section>
         </>
       )}
 
       <section className="wa-meta-content__block">
-        <h5>גוף</h5>
+        <h5>{t("whatsapp.wizard.body")}</h5>
         <div className="wa-meta-toolbar-row">
           <div className="wa-meta-toolbar">
             <button type="button" onClick={insertBodyVariable}>
-              + משתנה
+              {t("whatsapp.metaEditor.variable")}
             </button>
             <button type="button" onClick={() => insertFormat("```", "```")}>
-              קוד
+              {t("whatsapp.metaEditor.code")}
             </button>
             <button type="button" onClick={() => insertFormat("~", "~")}>
-              קו חוצה
+              {t("whatsapp.metaEditor.strikethrough")}
             </button>
             <button type="button" onClick={() => insertFormat("_", "_")}>
-              נטוי
+              {t("whatsapp.metaEditor.italic")}
             </button>
             <button type="button" onClick={() => insertFormat("*", "*")}>
-              מודגש
+              {t("whatsapp.metaEditor.bold")}
             </button>
           </div>
           <span className="wa-meta-counter">
@@ -518,18 +501,17 @@ export function WhatsAppMetaTemplateContent({
           maxLength={BODY_MAX}
           value={body}
           onChange={(e) => onChange({ body: e.target.value })}
-          placeholder={bodyPlaceholder}
+          placeholder={resolvedBodyPlaceholder}
         />
         <p className="wa-meta-help">
-          אפשר להוסיף משתנים במבנה {"{{1}}"}, {"{{2}}"}. התצוגה המקדימה מתעדכנת
-          בזמן אמת.
+{t("whatsapp.metaEditor.bodyHelp")}
         </p>
       </section>
 
       {variables.length > 0 && (
         <section className="wa-meta-content__block">
-          <h5>ערכי דוגמה למשתנים</h5>
-          <p className="wa-meta-help">מטא דורשת דוגמאות לכל משתנה לפני בדיקה.</p>
+          <h5>{t("whatsapp.metaEditor.exampleValues")}</h5>
+          <p className="wa-meta-help">{t("whatsapp.metaEditor.exampleHelp")}</p>
           <div className="wa-meta-var-grid">
             {variables.map((variable) => (
               <label key={variable}>
@@ -545,7 +527,7 @@ export function WhatsAppMetaTemplateContent({
                       },
                     })
                   }
-                  placeholder="ערך לדוגמה"
+                  placeholder={t("whatsapp.metaEditor.samplePlaceholder")}
                 />
               </label>
             ))}
@@ -555,26 +537,25 @@ export function WhatsAppMetaTemplateContent({
 
       <section className="wa-meta-content__block">
         <div className="wa-meta-field-row">
-          <h5>כותרת תחתונה · לא חובה</h5>
+          <h5>{t("whatsapp.metaEditor.footerOptional")}</h5>
           <span className="wa-meta-counter">
             {footer.length}/{FOOTER_MAX}
           </span>
         </div>
-        <p className="wa-meta-help">טקסט קצר בתחתית ההודעה. אפשר להשאיר ריק.</p>
+        <p className="wa-meta-help">{t("whatsapp.metaEditor.footerHelp")}</p>
         <input
           className="wa-meta-input"
           maxLength={FOOTER_MAX}
           value={footer}
           onChange={(e) => onChange({ footer: e.target.value })}
-          placeholder="לדוגמה: אל תשיבו להודעה זו"
+          placeholder={t("whatsapp.metaEditor.footerPlaceholder")}
         />
       </section>
 
       <section className="wa-meta-content__block">
-        <h5>לחצנים · לא חובה</h5>
+        <h5>{t("whatsapp.metaEditor.buttonsOptional")}</h5>
         <p className="wa-meta-help">
-          יצירת לחצנים שיאפשרו ללקוחות להשיב להודעה שלכם או לבצע פעולה. ניתן
-          להוסיף עד {MAX_BUTTONS} לחצנים.
+{t("whatsapp.metaEditor.buttonsHelp", { count: MAX_BUTTONS })}
         </p>
         <div className="wa-meta-add-wrap">
           <button
@@ -586,7 +567,7 @@ export function WhatsAppMetaTemplateContent({
             onClick={() => setMenuOpen((open) => !open)}
           >
             <Plus className="h-4 w-4" />
-            הוספת לחצן
+            {t("whatsapp.metaEditor.addButton")}
             <ChevronDown className="h-4 w-4" />
           </button>
           {menuOpen && (
@@ -620,7 +601,7 @@ export function WhatsAppMetaTemplateContent({
         {buttons.map((btn, index) => (
           <div key={`${btn.type}-${index}`} className="wa-meta-button-card">
             <header>
-              <strong>{buttonTypeLabel(btn.type)}</strong>
+              <strong>{buttonTypeLabel(btn.type, t)}</strong>
               <button
                 type="button"
                 className="wa-meta-icon-btn"
@@ -629,7 +610,7 @@ export function WhatsAppMetaTemplateContent({
                     buttons: buttons.filter((_, i) => i !== index),
                   })
                 }
-                aria-label="הסרת לחצן"
+                aria-label={t("whatsapp.metaEditor.removeButton")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -638,7 +619,7 @@ export function WhatsAppMetaTemplateContent({
               btn.type !== "request_contact_info" && (
               <label>
                 <div className="wa-meta-field-row">
-                  <span className="wa-meta-label">טקסט הלחצן</span>
+                  <span className="wa-meta-label">{t("whatsapp.metaEditor.buttonText")}</span>
                   <span className="wa-meta-counter">
                     {btn.text.length}/{BUTTON_TEXT_MAX}
                   </span>
@@ -654,7 +635,7 @@ export function WhatsAppMetaTemplateContent({
             {btn.type === "url" && (
               <>
                 <label>
-                  <span className="wa-meta-label">סוג כתובת</span>
+                  <span className="wa-meta-label">{t("whatsapp.metaEditor.urlType")}</span>
                   <select
                     className="wa-meta-select"
                     value={btn.urlType || "static"}
@@ -664,13 +645,13 @@ export function WhatsAppMetaTemplateContent({
                       })
                     }
                   >
-                    <option value="static">סטטית</option>
-                    <option value="dynamic">דינמית</option>
+                    <option value="static">{t("whatsapp.metaEditor.urlStatic")}</option>
+                    <option value="dynamic">{t("whatsapp.metaEditor.urlDynamic")}</option>
                   </select>
                 </label>
                 <label>
                   <div className="wa-meta-field-row">
-                    <span className="wa-meta-label">כתובת אתר</span>
+                    <span className="wa-meta-label">{t("whatsapp.metaEditor.websiteUrl")}</span>
                     <span className="wa-meta-counter">
                       {(btn.url || "").length}/{URL_MAX}
                     </span>
@@ -686,7 +667,7 @@ export function WhatsAppMetaTemplateContent({
                 </label>
                 {btn.urlType === "dynamic" && (
                   <label>
-                    <span className="wa-meta-label">כתובת לדוגמה</span>
+                    <span className="wa-meta-label">{t("whatsapp.metaEditor.sampleUrl")}</span>
                     <input
                       className="wa-meta-input"
                       dir="ltr"
@@ -702,7 +683,7 @@ export function WhatsAppMetaTemplateContent({
             )}
             {btn.type === "phone_number" && (
               <label>
-                <span className="wa-meta-label">מספר טלפון</span>
+                <span className="wa-meta-label">{t("whatsapp.metaEditor.phoneNumber")}</span>
                 <input
                   className="wa-meta-input"
                   dir="ltr"
@@ -716,12 +697,12 @@ export function WhatsAppMetaTemplateContent({
             )}
             {btn.type === "request_contact_info" && (
               <p className="wa-meta-help">
-                מטא קובעת את טקסט הלחצן. אי אפשר לערוך אותו.
+                {t("whatsapp.metaEditor.contactHelp")}
               </p>
             )}
             {btn.type === "copy_code" && (
               <label>
-                <span className="wa-meta-label">קוד לדוגמה</span>
+                <span className="wa-meta-label">{t("whatsapp.metaEditor.sampleCode")}</span>
                 <input
                   className="wa-meta-input"
                   dir="ltr"
@@ -740,6 +721,9 @@ export function WhatsAppMetaTemplateContent({
   );
 }
 
-export function metaButtonTypeLabel(type: WhatsAppTemplateButton["type"]) {
-  return buttonTypeLabel(type);
+export function metaButtonTypeLabel(
+  type: WhatsAppTemplateButton["type"],
+  t: TFunction = i18n.t.bind(i18n)
+) {
+  return buttonTypeLabel(type, t);
 }

@@ -1,5 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, Loader2, RefreshCw } from "lucide-react";
+import { useLocaleDir } from "../../../../../hooks/useLocaleDir";
 import {
   WHATSAPP_BILLING_API_CODES,
   normalizeWhatsAppBillingPublicCode,
@@ -51,6 +53,8 @@ export default function WhatsAppUsageCard({
   onOpenManage,
   onReactivate,
 }: Props) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   if (loading && !usage) {
     return (
       <div className="wa-billing-card wa-billing-card--skeleton" aria-busy="true">
@@ -64,10 +68,10 @@ export default function WhatsAppUsageCard({
   if (error && !usage) {
     return (
       <div className="wa-billing-card wa-billing-card--error" role="status">
-        <p>לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.</p>
+        <p>{t("whatsapp.billing.loadError")}</p>
         <button type="button" className="wa-billing-btn wa-billing-btn--secondary" onClick={onRetry}>
           <RefreshCw size={14} />
-          נסו שוב
+          {t("whatsapp.billing.retry")}
         </button>
       </div>
     );
@@ -104,15 +108,15 @@ export default function WhatsAppUsageCard({
 
   if (needsSetup && !hasActiveLike) {
     return (
-      <div className="wa-billing-card wa-billing-card--setup" dir="rtl">
+      <div className="wa-billing-card wa-billing-card--setup" dir={dir}>
         <div className="wa-billing-card__body">
-          <strong>וואטסאפ</strong>
-          <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
+          <strong>{t("whatsapp.billing.title")}</strong>
+          <p className="wa-billing-card__plan">{t("whatsapp.billing.payAsYouGo")}</p>
           <p className="wa-billing-card__counts">
-            {formatHeIls(unitPrice)} להודעה
+            {t("whatsapp.billing.perMessage", { price: formatHeIls(unitPrice) })}
           </p>
           <p className="wa-billing-card__status" role="status">
-            חיוב וואטסאפ לא הוגדר
+            {t("whatsapp.billing.notConfigured")}
           </p>
         </div>
         <button
@@ -120,7 +124,7 @@ export default function WhatsAppUsageCard({
           className="wa-billing-btn wa-billing-btn--primary"
           onClick={onOpenSetup}
         >
-          הגדרת חיוב וואטסאפ
+          {t("whatsapp.billing.setupCta")}
         </button>
       </div>
     );
@@ -133,17 +137,17 @@ export default function WhatsAppUsageCard({
       : "";
 
   return (
-    <div className={`wa-billing-card ${cardMod}`.trim()} dir="rtl">
+    <div className={`wa-billing-card ${cardMod}`.trim()} dir={dir}>
       {error ? (
         <div className="wa-billing-card__inline-error" role="status">
-          <span>לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.</span>
+          <span>{t("whatsapp.billing.loadError")}</span>
           <button
             type="button"
             className="wa-billing-btn wa-billing-btn--secondary"
             onClick={onRetry}
           >
             <RefreshCw size={14} />
-            נסו שוב
+            {t("whatsapp.billing.retry")}
           </button>
         </div>
       ) : null}
@@ -151,16 +155,16 @@ export default function WhatsAppUsageCard({
       {loading ? (
         <div className="wa-billing-card__refresh" aria-live="polite">
           <Loader2 size={14} className="wa-billing-spin" />
-          מעדכנים...
+          {t("whatsapp.billing.updating")}
         </div>
       ) : null}
 
       <div className="wa-billing-card__header">
         <div>
-          <h3 className="wa-billing-card__title">וואטסאפ</h3>
-          <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
+          <h3 className="wa-billing-card__title">{t("whatsapp.billing.title")}</h3>
+          <p className="wa-billing-card__plan">{t("whatsapp.billing.payAsYouGo")}</p>
           <p className="wa-billing-card__status wa-billing-card__status--active">
-            חיוב וואטסאפ פעיל
+            {t("whatsapp.billing.active")}
           </p>
         </div>
         <button
@@ -168,43 +172,46 @@ export default function WhatsAppUsageCard({
           className="wa-billing-btn wa-billing-btn--secondary"
           onClick={onOpenManage}
         >
-          ניהול חיוב
+          {t("whatsapp.billing.manage")}
         </button>
       </div>
 
       <p className="wa-billing-card__counts">
-        {formatHeIls(unitPrice)} להודעה
+        {t("whatsapp.billing.perMessage", { price: formatHeIls(unitPrice) })}
       </p>
       <p className="wa-billing-card__counts">
-        {formatHeNumber(messageCount)} הודעות החודש
+        {t("whatsapp.billing.messagesThisMonth", {
+          count: formatHeNumber(messageCount),
+        })}
       </p>
       <p className="wa-billing-card__counts">
-        חיוב משוער: <strong>{formatHeIls(chargeIls)}</strong>
+        {t("whatsapp.billing.estimatedCharge")}{" "}
+        <strong>{formatHeIls(chargeIls)}</strong>
       </p>
 
       <div className="wa-billing-card__meta">
-        {periodEndLabel ? <span>סוף תקופת החיוב: {periodEndLabel}</span> : null}
+        {periodEndLabel ? (
+          <span>{t("whatsapp.billing.periodEnd", { date: periodEndLabel })}</span>
+        ) : null}
       </div>
 
-      <p className="wa-billing-card__note">
-        אין חבילות וואטסאפ — מחויבים רק לפי הודעות שנשלחו בפועל.
-      </p>
+      <p className="wa-billing-card__note">{t("whatsapp.billing.noPackages")}</p>
 
       {inPaymentGrace ? (
         <div className="wa-billing-alert wa-billing-alert--warn" role="status">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>יש בעיה בתשלום עבור חיוב וואטסאפ</strong>
+            <strong>{t("whatsapp.billing.paymentIssue")}</strong>
             <p>
-              השליחה תמשיך זמנית. מומלץ להסדיר את התשלום כדי למנוע עצירה.
-              {graceLabel ? ` עד ${graceLabel}.` : ""}
+              {t("whatsapp.billing.paymentIssueBody")}
+              {graceLabel ? t("whatsapp.billing.until", { date: graceLabel }) : ""}
             </p>
             <button
               type="button"
               className="wa-billing-btn wa-billing-btn--primary"
               onClick={onOpenManage}
             >
-              ניהול תשלום
+              {t("whatsapp.billing.managePayment")}
             </button>
           </div>
         </div>
@@ -214,16 +221,16 @@ export default function WhatsAppUsageCard({
         <div className="wa-billing-alert wa-billing-alert--blocked" role="alert">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>שליחת וואטסאפ חסומה עקב מצב החיוב</strong>
-            <p>יש להסדיר אמצעי תשלום כדי להמשיך לשלוח הודעות.</p>
+            <strong>{t("whatsapp.billing.sendBlocked")}</strong>
+            <p>{t("whatsapp.billing.sendBlockedBody")}</p>
             <button
               type="button"
               className="wa-billing-btn wa-billing-btn--primary"
               onClick={isSetupReason(usage.blockReason) ? onOpenSetup : onOpenManage}
             >
               {isSetupReason(usage.blockReason)
-                ? "הגדרת חיוב וואטסאפ"
-                : "הסדרת תשלום"}
+                ? t("whatsapp.billing.setupCta")
+                : t("whatsapp.billing.settlePayment")}
             </button>
           </div>
         </div>
@@ -232,15 +239,17 @@ export default function WhatsAppUsageCard({
       {usage.subscription?.cancelAtPeriodEnd ? (
         <div className="wa-billing-card__cancel-note" role="status">
           <p>
-            החיוב מתוכנן לביטול
-            {cancelDateLabel ? ` ב־${cancelDateLabel}` : ""}
+            {t("whatsapp.billing.cancelScheduled")}
+            {cancelDateLabel
+              ? t("whatsapp.billing.cancelScheduledOn", { date: cancelDateLabel })
+              : ""}
           </p>
           <button
             type="button"
             className="wa-billing-btn wa-billing-btn--secondary"
             onClick={onReactivate}
           >
-            השארת החיוב פעיל
+            {t("whatsapp.billing.keepActive")}
           </button>
         </div>
       ) : null}

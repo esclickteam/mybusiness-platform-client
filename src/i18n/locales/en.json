@@ -479,6 +479,787 @@
       "title": "Automations",
       "subtitle": "A visual Make / n8n-style builder — drag modules, connect them, and go live.",
       "channel": "Drag & Drop Builder"
+    },
+    "common": {
+      "all": "All",
+      "cancel": "Cancel",
+      "save": "Save",
+      "close": "Close",
+      "retry": "Try again",
+      "loading": "Loading…",
+      "yes": "Yes",
+      "no": "No",
+      "optional": "Optional",
+      "requiredFields": "Required fields",
+      "settings": "Settings",
+      "title": "Title",
+      "value": "Value",
+      "none": "—"
+    },
+    "home": {
+      "title": "Automations",
+      "subtitle": "Build and manage automatic processes for your business",
+      "new": "New automation",
+      "templates": "Templates",
+      "runDemoTrigger": "Run a sample trigger",
+      "kpiTotal": "Total automations",
+      "kpiActive": "Active",
+      "kpiRuns": "Runs in 30 days",
+      "kpiFailed": "Failed",
+      "billingAria": "Automation and WhatsApp billing",
+      "searchPlaceholder": "Search automations",
+      "sort": "Sort",
+      "sortUpdated": "Recently updated",
+      "sortCreated": "Recently created",
+      "sortName": "Name",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterDraft": "Drafts",
+      "filterPaused": "Paused",
+      "filterFailed": "Errors",
+      "loading": "Loading automations...",
+      "emptyTitle": "No automations yet",
+      "emptyText": "Create your first automation and save manual work.",
+      "browseTemplates": "Browse templates",
+      "noneFoundTitle": "No automations found",
+      "noneFoundText": "Try changing the search or filters.",
+      "fallbackName": "the automation",
+      "deleteActiveHint": "This automation is active and will stop immediately. ",
+      "deletePausedHint": "This automation is paused. ",
+      "deleteConfirm": "Permanently delete \"{{name}}\"? This also deletes run history and cannot be undone."
+    },
+    "toasts": {
+      "loadError": "Could not load automations",
+      "checkoutCancel": "Payment was cancelled — you can choose a plan again at any time.",
+      "waCheckoutProcessing": "Updating WhatsApp billing...",
+      "waCheckoutCancel": "WhatsApp billing setup was cancelled — you can set it up again at any time.",
+      "waReactivated": "Cancellation was undone and billing will stay active.",
+      "waReactivateError": "We could not keep WhatsApp billing active",
+      "planReactivated": "Cancellation was undone and the plan will continue.",
+      "planReactivateError": "We could not keep the plan active",
+      "duplicated": "Automation duplicated",
+      "duplicateError": "Could not duplicate",
+      "statusUpdated": "Automation status updated",
+      "waBillingRequired": "WhatsApp billing must be set up before enabling the automation.",
+      "waBillingBlock": "The automation cannot be updated because of WhatsApp billing",
+      "planRequired": "Choose an actions plan to enable an automation",
+      "quotaExhausted": "The monthly action quota was used — billed actions will be blocked until you upgrade",
+      "updateBlocked": "The automation cannot be updated",
+      "deleted": "Automation deleted",
+      "deleteError": "Could not delete",
+      "createdAndEnabled": "Automation created and enabled",
+      "createdNotEnabled": "Created but not enabled — check settings and publish",
+      "createdNotEnabledBuilder": "Created but not enabled — finish setup and publish in the builder",
+      "activateError": "Could not enable the automation",
+      "waUnavailable": "WhatsApp is unavailable right now. Please contact support.",
+      "connectWhatsApp": "Connect WhatsApp Business before enabling",
+      "noApprovedTemplates": "No Meta-approved (APPROVED) templates to choose — create a template and approve it in Meta",
+      "notReady": "Cannot enable this right now",
+      "selectWaTemplate": "Choose an approved WhatsApp template",
+      "selectEmailProvider": "Choose Gmail, Outlook / Microsoft 365, or a business email",
+      "blankReady": "Blank canvas is ready — choose a trigger to start",
+      "createError": "Could not create the automation"
+    },
+    "templates": {
+      "title": "Automation templates",
+      "subtitle": "Choose an automation → choose an approved WhatsApp template → enable immediately.",
+      "catalogCount": "templates in catalog",
+      "categoryCount": "templates in this category",
+      "searchPlaceholder": "Search a working template",
+      "categoriesAria": "Categories",
+      "loading": "Loading automation templates...",
+      "emptyTitle": "No templates to show in this category",
+      "emptyText": "Try another category or refresh the page.",
+      "refresh": "Refresh",
+      "ctaPickPlan": "Choose an automations plan",
+      "ctaPickMessage": "Enable — choose a message template",
+      "ctaEnableAi": "Enable template",
+      "ctaEnableNow": "Enable now",
+      "planRequiredTitle": "An active automations plan is required",
+      "badgeFlow": "Flow",
+      "badgeComingSoon": "Coming soon",
+      "badgeReady": "Ready",
+      "badgeMissing": "Something is missing",
+      "trigger": "Trigger",
+      "result": "Result",
+      "suggestedTemplate": "Suggested template: {{name}}",
+      "chooseWaOnEnable": "You will choose an approved WhatsApp template when enabling",
+      "aiStartsWhen": "Starts when:",
+      "aiDoes": "What AI does:",
+      "aiAfterwards": "Afterwards:",
+      "aiSystems": "Systems:",
+      "aiEstimated": "Estimated actions:",
+      "aiDefaultResult": "—",
+      "activateTitle": "Enable “{{name}}”",
+      "chooseApprovedWa": "Choose an approved WhatsApp template from your list — the automation will start immediately.",
+      "approvedMessageTemplate": "Approved message template",
+      "chooseTemplate": "Choose a template",
+      "noApprovedYet": "No approved templates yet — prepare one from the list above and approve it in Meta.",
+      "chooseEmailAccount": "Choose which account should send the email.",
+      "emailAccount": "Email account",
+      "chooseProvider": "Choose a provider",
+      "from": "From",
+      "chooseBusinessEmail": "Choose a verified business email",
+      "categories": {
+        "all": "All",
+        "crm": "CRM",
+        "appointments": "Appointments",
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "sales": "Sales",
+        "store": "Store",
+        "ai": "AI"
+      }
+    },
+    "create": {
+      "title": "Create automation",
+      "subtitle": "Choose how to start",
+      "blankTitle": "Blank automation",
+      "blankText": "Start from the canvas and build the flow yourself",
+      "templatesTitle": "Templates",
+      "templatesText": "Start from a ready process and adapt it to your business",
+      "defaultName": "New automation"
+    },
+    "picker": {
+      "titleAll": "Add a step",
+      "titleTrigger": "What will start the automation?",
+      "titleResult": "What should happen automatically?",
+      "subtitleAll": "Choose a trigger, result, or logic to add to the flow",
+      "subtitleTrigger": "Choose the event that starts the process",
+      "subtitleResult": "A result is what happens after the trigger. You can add several results together.",
+      "searchAll": "Search a trigger or result",
+      "searchTrigger": "Search: lead, CRM, appointment, WhatsApp, payment, order, form, time…",
+      "searchResult": "Search a result (WhatsApp, task, AI…)",
+      "searchAria": "Search triggers",
+      "categoriesAria": "Trigger categories",
+      "loading": "Loading triggers from the server...",
+      "emptyTriggers": "No matching triggers",
+      "emptyItems": "No items found",
+      "categories": {
+        "all": "All",
+        "trigger": "Triggers",
+        "action": "Results",
+        "logic": "Logic",
+        "delay": "Wait",
+        "ai": "AI",
+        "integrations": "Connections"
+      },
+      "triggerCategories": {
+        "common": "Popular",
+        "recent": "Recently used",
+        "crm": "CRM and leads",
+        "appointments": "Appointments",
+        "whatsapp": "WhatsApp",
+        "store": "Store and payments",
+        "website": "Website and forms",
+        "subscriptions": "Subscriptions and billing",
+        "tasks": "Tasks and team",
+        "email": "Email",
+        "schedule": "Schedule",
+        "manual": "Integrations and system",
+        "system": "Integrations and system"
+      }
+    },
+    "toolbar": {
+      "back": "Back",
+      "nameAria": "Automation name",
+      "addStep": "Add step",
+      "test": "Test",
+      "save": "Save",
+      "saving": "Saving…",
+      "saveError": "Save failed",
+      "unsaved": "● Unsaved changes",
+      "saved": "✓ Saved",
+      "published": "Published",
+      "draft": "Draft",
+      "publish": "Publish",
+      "publishing": "Publishing…",
+      "updatePublish": "Update publish",
+      "pause": "Pause",
+      "resume": "Enable",
+      "active": "Active",
+      "paused": "Paused",
+      "cannotPublishArchived": "Cannot publish an archived automation",
+      "reloadTriggers": "Reload the trigger catalog",
+      "unsupportedTrigger": "Old or unsupported trigger",
+      "updatePublished": "Update the published version from the current draft",
+      "publishAutomation": "Publish the automation"
+    },
+    "empty": {
+      "badge": "Trigger",
+      "chooseAria": "Choose a trigger",
+      "scheduleHint": "Also by schedule",
+      "title": "Start with a trigger",
+      "text": "Choose when the automation starts (for example a new lead). Then add what should happen automatically — the result. You can split into several results together, without complex paths.",
+      "chooseTrigger": "Choose a trigger"
+    },
+    "catalog": {
+      "noCharge": "No charge",
+      "actions": {
+        "create_task": "Create a CRM task",
+        "update_lead_status": "Update lead status",
+        "update_status": "Update lead status",
+        "assign_owner": "Assign to a rep",
+        "add_tag": "Add a tag",
+        "create_crm_note": "Create a CRM note",
+        "whatsapp_template": "Send a WhatsApp template",
+        "send_whatsapp": "Send a WhatsApp template",
+        "send_email": "Send a business email",
+        "send_gmail": "Send email via Gmail",
+        "send_outlook": "Send email via Outlook / Microsoft 365",
+        "google_calendar_create_event": "Google Calendar — create event",
+        "google_calendar_update_event": "Google Calendar — update event",
+        "google_calendar_delete_event": "Google Calendar — delete event",
+        "notify": "Internal notification",
+        "internal_notification": "Internal notification",
+        "delay": "Wait",
+        "webhook": "Webhook call",
+        "stop": "Stop flow",
+        "create_appointment": "Create appointment",
+        "ai_rank_lead": "AI · Rank lead",
+        "ai_classify_lead": "AI · Classify lead",
+        "ai_auto_tag": "AI · Tag lead",
+        "ai_detect_hot_lead": "AI · Detect hot lead",
+        "ai_lead_brief": "AI · Lead brief",
+        "ai_draft_followup": "AI · Follow-up draft",
+        "ai_draft_email": "AI · Email draft",
+        "ai_suggest_next_action": "AI · Suggest next action",
+        "ai_daily_leads_digest": "AI · Daily leads digest",
+        "ai_daily_agenda_digest": "AI · Daily agenda digest"
+      },
+      "actionShort": {
+        "whatsapp_template": "WhatsApp",
+        "create_task": "Task",
+        "create_crm_note": "CRM note",
+        "notify": "Alert",
+        "update_lead_status": "Status",
+        "assign_owner": "Assign rep",
+        "add_tag": "Tag",
+        "send_gmail": "Gmail",
+        "send_outlook": "Outlook",
+        "send_email": "Business email",
+        "google_calendar_create_event": "Google Calendar · Create",
+        "google_calendar_update_event": "Google Calendar · Update",
+        "google_calendar_delete_event": "Google Calendar · Delete",
+        "webhook": "Webhook",
+        "ai_rank_lead": "AI · Rank lead",
+        "ai_classify_lead": "AI · Classify lead",
+        "ai_auto_tag": "AI · Tag lead",
+        "ai_detect_hot_lead": "AI · Detect hot lead",
+        "ai_lead_brief": "AI · Lead brief",
+        "ai_draft_followup": "AI · Follow-up draft",
+        "ai_draft_email": "AI · Email draft",
+        "ai_suggest_next_action": "AI · Suggest action",
+        "ai_daily_leads_digest": "AI · Daily leads digest",
+        "ai_daily_agenda_digest": "AI · Daily agenda digest"
+      },
+      "actionDesc": {
+        "whatsapp_template": "Sends a message template",
+        "create_task": "Creates a follow-up task in CRM",
+        "create_crm_note": "Records a note on the lead/client card",
+        "notify": "Notifies the business owner",
+        "update_lead_status": "Updates the lead status",
+        "assign_owner": "Assigns a team member",
+        "add_tag": "Adds a tag to the lead/client",
+        "send_gmail": "Gmail — send email",
+        "send_outlook": "Outlook / Microsoft 365 — send email",
+        "send_email": "Send a business email",
+        "google_calendar_create_event": "Creates a Google Calendar event",
+        "google_calendar_update_event": "Updates a Google Calendar event",
+        "google_calendar_delete_event": "Deletes a Google Calendar event",
+        "webhook": "Sends data to an external system",
+        "ai_rank_lead": "Ranks a lead by chance and urgency",
+        "ai_classify_lead": "Classifies a lead into a category",
+        "ai_auto_tag": "Adds CRM tags automatically",
+        "ai_detect_hot_lead": "Detects a hot lead for immediate handling",
+        "ai_lead_brief": "Prepares a brief before a sales call",
+        "ai_draft_followup": "Drafts a follow-up message",
+        "ai_draft_email": "Drafts an email to the client",
+        "ai_suggest_next_action": "Suggests the next action for the rep",
+        "ai_daily_leads_digest": "Summarizes new leads",
+        "ai_daily_agenda_digest": "Summarizes tasks and appointments"
+      },
+      "conditions": {
+        "no_response": "No contact was made",
+        "status_is": "Specific status",
+        "has_appointment": "Has an upcoming appointment",
+        "has_tag": "Has a tag",
+        "source_is": "Specific lead source",
+        "business_hours": "Within business hours",
+        "replied": "The client replied",
+        "amount_above": "Amount above X"
+      },
+      "conditionDesc": {
+        "no_response": "Yes/no based on a reply",
+        "status_is": "Checks lead status",
+        "has_appointment": "Whether there is an upcoming appointment",
+        "has_tag": "By a tag on the lead/client",
+        "source_is": "Meta / website / WhatsApp",
+        "business_hours": "Inside/outside hours",
+        "replied": "Whether there was a reply",
+        "amount_above": "By deal value"
+      },
+      "conditionHasAppointmentShort": "Has an appointment",
+      "conditionSourceShort": "Lead source",
+      "delayUnits": {
+        "minutes": "Minutes",
+        "hours": "Hours",
+        "days": "Days"
+      },
+      "filters": {
+        "all": "All",
+        "trigger": "Trigger",
+        "condition": "Condition",
+        "router": "Split",
+        "delay": "Wait",
+        "action": "Result"
+      },
+      "nodeTypes": {
+        "trigger": "Trigger",
+        "delay": "Wait",
+        "condition": "Condition",
+        "action": "Result",
+        "router": "Split"
+      },
+      "triggerCategories": {
+        "crm": "CRM and leads",
+        "appointments": "Appointments",
+        "website": "Website and forms",
+        "store": "Store and payments",
+        "schedule": "Schedule",
+        "manual": "Integrations and system",
+        "system": "Integrations and system",
+        "whatsapp": "WhatsApp",
+        "subscriptions": "Subscriptions and billing",
+        "tasks": "Tasks and team",
+        "email": "Email"
+      },
+      "palette": {
+        "resultPrefix": "Result · {{label}}",
+        "conditionPrefix": "Condition · {{label}}",
+        "routerLabel": "Split · several results together",
+        "routerDesc": "Splits into 1–6 results that run together — without complex paths",
+        "routerDefault": "Split into several results",
+        "resultN": "Result {{n}}",
+        "waitLabel": "Wait",
+        "waitDesc": "Waits, then continues / splits",
+        "reminderDefault": "Appointment reminder — 1 day before",
+        "reminderDesc": "When to send an appointment reminder — then choose the result (WhatsApp and more)",
+        "aiCriteriaDefault": "Fit to service, urgency, and purchase potential",
+        "meetingTitleDefault": "Meeting with {{appointment.clientName}}"
+      },
+      "summaries": {
+        "hourBefore": "1 hour before the appointment",
+        "twoHoursBefore": "2 hours before the appointment",
+        "dayBefore": "1 day before the appointment",
+        "daysBefore": "{{count}} days before the appointment",
+        "hoursBefore": "{{count}} hours before the appointment",
+        "statusFromTo": "From {{from}} to {{to}}",
+        "statusTo": "Move to status {{status}}",
+        "anyStatusChange": "On any status change",
+        "bySchedule": "According to the configured schedule",
+        "manual": "Manual start from the system",
+        "newLead": "Runs whenever a new lead is created",
+        "formSubmitted": "Runs when a website form is submitted",
+        "appointmentCreated": "Runs when an appointment is booked",
+        "appointmentCancelled": "Runs when an appointment is cancelled",
+        "orderCreated": "Runs when an order is created",
+        "orderPaid": "Runs after a paid store order",
+        "triggerFallback": "Trigger",
+        "routerTogether": "{{count}} results together",
+        "aiFallback": "AI action",
+        "calendarDelete": "Calendar · delete {{eventId}}",
+        "ai_rank_lead": "Ranks a lead by chance and urgency",
+        "ai_classify_lead": "Classifies a lead",
+        "ai_auto_tag": "Automatic tagging",
+        "ai_detect_hot_lead": "Detects a hot lead",
+        "ai_lead_brief": "Lead brief",
+        "ai_draft_followup": "Follow-up draft",
+        "ai_draft_email": "Email draft",
+        "ai_suggest_next_action": "Suggests the next action",
+        "ai_daily_leads_digest": "Daily leads digest",
+        "ai_daily_agenda_digest": "Tasks/appointments digest"
+      },
+      "recipients": {
+        "lead_email": "Lead email",
+        "appointment_customer_email": "The client who booked",
+        "store_customer_email": "The customer on the order",
+        "business_owner": "Business owner",
+        "lead_owner": "Lead owner",
+        "fixed_email": "Fixed address",
+        "custom_field": "Custom field",
+        "lead_phone": "Lead phone",
+        "fixed_phone": "Fixed number"
+      },
+      "system": {
+        "lead_multi_route": {
+          "title": "New lead — several results together",
+          "description": "When a new CRM lead arrives: send WhatsApp, create a task for a rep, and notify the owner — in parallel.",
+          "trigger": "New CRM lead",
+          "results": {
+            "0": "Immediate WhatsApp",
+            "1": "Task for a rep",
+            "2": "Owner notification"
+          }
+        },
+        "lead_no_response": {
+          "title": "New lead → opening + follow-ups by reply",
+          "description": "Opening message immediately. If there is no WhatsApp reply — a follow-up after 24 hours and another after 3 days.",
+          "trigger": "New CRM lead",
+          "results": {
+            "0": "WhatsApp opening",
+            "1": "Follow-up #1",
+            "2": "Follow-up #2"
+          },
+          "timing": "Immediate opening · follow-up #1 after 24h · follow-up #2 after 3 days"
+        },
+        "new_client_welcome": {
+          "title": "New client — welcome",
+          "description": "New client trigger → opening message + retention task.",
+          "trigger": "New client",
+          "results": {
+            "0": "Opening message",
+            "1": "Retention task"
+          }
+        },
+        "appointment_duo": {
+          "title": "Appointment — confirmation + reminder + task",
+          "description": "When an appointment is created: WhatsApp confirmation to the client, a prep task, and a reminder the day before.",
+          "trigger": "New appointment",
+          "results": {
+            "0": "WhatsApp confirmation",
+            "1": "Reminder before",
+            "2": "Task"
+          }
+        },
+        "appointment_gcal_sync": {
+          "title": "Appointment → Google Calendar",
+          "description": "New appointment trigger. Result: create a Google Calendar event.",
+          "trigger": "New appointment",
+          "results": {
+            "0": "Google Calendar event"
+          }
+        },
+        "appointment_email_confirm": {
+          "title": "Appointment → confirmation email",
+          "description": "New appointment trigger. Result: confirmation email to the client.",
+          "trigger": "New appointment",
+          "results": {
+            "0": "Confirmation email"
+          }
+        },
+        "lead_email_welcome": {
+          "title": "New lead → email + task",
+          "description": "New lead trigger. Results: email and a follow-up task.",
+          "trigger": "New CRM lead",
+          "results": {
+            "0": "Email",
+            "1": "Follow-up task"
+          }
+        },
+        "appointment_reminder_1_day": {
+          "title": "Appointment reminder — 1 day before",
+          "description": "Sends a WhatsApp template one day before the appointment.",
+          "trigger": "Upcoming appointment (1 day before)",
+          "results": {
+            "0": "WhatsApp reminder"
+          },
+          "timing": "One day before"
+        },
+        "appointment_reminder_2_days": {
+          "title": "Appointment reminder — 2 days before",
+          "description": "Sends a WhatsApp template two days (48 hours) before the appointment.",
+          "trigger": "Upcoming appointment (2 days before)",
+          "results": {
+            "0": "WhatsApp reminder"
+          },
+          "timing": "Two days before (48 hours)"
+        },
+        "appointment_reminder_hours": {
+          "title": "Appointment reminder — hours before",
+          "description": "Custom reminder (for example two hours before) using a WhatsApp template.",
+          "trigger": "Upcoming appointment (hours before)",
+          "results": {
+            "0": "WhatsApp reminder"
+          },
+          "timing": "A chosen number of hours"
+        },
+        "appointment_thanks": {
+          "title": "Thank-you after appointment",
+          "description": "After the appointment ends — a WhatsApp thank-you based on the appointment time.",
+          "trigger": "Appointment ended",
+          "results": {
+            "0": "Thank-you message"
+          }
+        },
+        "appointment_review": {
+          "title": "Review request after appointment",
+          "description": "One day after the appointment ends — a WhatsApp review request.",
+          "trigger": "Appointment ended",
+          "results": {
+            "0": "Review request"
+          }
+        },
+        "lead_followup_2": {
+          "title": "Second lead follow-up (merged)",
+          "description": "Merged into the unified “New lead → opening + follow-ups by reply” path. Not shown as a separate card.",
+          "trigger": "Lead not converted",
+          "results": {
+            "0": "Second WhatsApp follow-up"
+          },
+          "timing": "Part of the unified follow-up path"
+        },
+        "inactive_client": {
+          "title": "Inactive client — nudge",
+          "description": "A reminder for clients with no recent interaction.",
+          "trigger": "Inactive client",
+          "results": {
+            "0": "Nudge message"
+          }
+        }
+      },
+      "waRequired": {
+        "wa_welcome_lead": {
+          "title": "Welcome new lead",
+          "reason": "Sent when a new lead enters the CRM."
+        },
+        "wa_welcome_client": {
+          "title": "Welcome new client",
+          "reason": "Sent when a new client is created in the CRM."
+        },
+        "wa_appointment_reminder": {
+          "title": "Appointment reminder",
+          "reason": "Sent before an appointment (1 hour / 2 hours / 1 day / 2 days / 3 days)."
+        },
+        "wa_appointment_confirmation": {
+          "title": "Appointment confirmation",
+          "reason": "Sent immediately when a new appointment is booked."
+        },
+        "wa_appointment_thanks": {
+          "title": "Thank-you after appointment",
+          "reason": "Sent after the appointment ends, based on the appointment time."
+        },
+        "wa_appointment_review": {
+          "title": "Review request after appointment",
+          "reason": "Sent to request a review/feedback after an appointment."
+        },
+        "wa_follow_up": {
+          "title": "Follow-up for an unanswered lead",
+          "reason": "Sent as the first follow-up to a lead with no reply."
+        },
+        "wa_follow_up_2": {
+          "title": "Second lead follow-up",
+          "reason": "Sent as another follow-up to leads that were not converted."
+        },
+        "wa_inactive_client": {
+          "title": "Nudge for an inactive client",
+          "reason": "Sent to clients with no recent activity."
+        }
+      }
+    },
+    "editor": {
+      "stepN": "Step {{n}}",
+      "deleteModule": "Delete module",
+      "done": "Done",
+      "howTitle": "How do you build an automation?",
+      "how1": "Choose a trigger (when it happens)",
+      "how2": "Add a result — what should happen automatically",
+      "how3": "Want several results together? Add another result from the trigger — no paths",
+      "triggerSettings": "Settings for the trigger that starts the automation",
+      "triggerEvent": "The event that starts the automation",
+      "replaceTrigger": "Replace trigger",
+      "unsupportedTrigger": "Old or unsupported trigger — choose a supported trigger again",
+      "toStatus": "To status",
+      "fromStatus": "From status",
+      "chooseTargetStatus": "Choose a target status",
+      "anyStatus": "Any status",
+      "needTargetStatus": "Choose a target status",
+      "needHoursBefore": "Set how many hours before the appointment",
+      "invalidSchedule": "The schedule settings are invalid",
+      "parallelFromTrigger": "How many results together from the trigger",
+      "parallelHint": "Each result runs in parallel — without separate paths.",
+      "addResultToTrigger": "Add a result to the trigger",
+      "hoursBefore": "When to send the reminder (hours before)",
+      "preset2h": "2 hours before",
+      "preset1d": "1 day before",
+      "preset2d": "2 days before",
+      "preset3d": "3 days before",
+      "reminderHours": "Appointment reminder — {{count}} hours before",
+      "reminder1d": "Appointment reminder — 1 day before",
+      "reminder2d": "Appointment reminder — 2 days before",
+      "routerCount": "How many results together",
+      "resultName": "Result name {{n}}",
+      "amount": "Amount",
+      "unit": "Unit",
+      "condition": "Condition",
+      "actionType": "Action type",
+      "aiSettings": "AI settings",
+      "advanced": "Advanced",
+      "channelEmail": "Email",
+      "toneProfessional": "Professional",
+      "toneFriendly": "Friendly",
+      "toneConcise": "Concise",
+      "statuses": {
+        "new": "New",
+        "contacted": "Contacted",
+        "interested": "Interested",
+        "converted": "Converted",
+        "lost": "Lost",
+        "old": "Old"
+      },
+      "mapping": {
+        "leadName": "Lead name",
+        "leadPhone": "Lead phone",
+        "leadEmail": "Lead email",
+        "leadSource": "Lead source",
+        "businessName": "Business name",
+        "date": "Date",
+        "time": "Time",
+        "constant": "Fixed value",
+        "manual": "Custom field / manual value",
+        "clientName": "Client name",
+        "timeUntil": "Time until the appointment",
+        "appointmentTime": "Appointment time",
+        "service": "Service"
+      },
+      "wa": {
+        "connectBeforeSelect": "Connect the business WhatsApp number before choosing a template",
+        "unavailable": "WhatsApp is unavailable right now. Please contact support.",
+        "loadTemplatesError": "We could not load WhatsApp templates",
+        "managedOff": "Connect the business WhatsApp Business — managed mode is currently off.",
+        "refresh": "Refresh templates",
+        "loadingTemplates": "Loading templates...",
+        "retry": "Try again",
+        "connectCta": "Connect WhatsApp Business",
+        "noneApproved": "No approved WhatsApp templates available",
+        "noneApprovedHint": "After a template is approved in Meta, refresh the list.",
+        "chooseTemplate": "Choose a template",
+        "testTemplate": "Test template",
+        "variableMapping": "Variable mapping",
+        "chooseMapping": "Choose a mapping",
+        "lastSync": "Last sync: {{time}}",
+        "sender": "Sender",
+        "managedNumber": "Managed BizUply number",
+        "businessNumber": "Business WhatsApp number",
+        "connectBusinessNumber": "Connect the business WhatsApp number — connect in settings",
+        "whoReceives": "Who should receive the message?",
+        "recipient": "Recipient:",
+        "fixedPhoneE164": "Fixed number (E.164)",
+        "template": "WhatsApp template",
+        "bizuplyBannerTitle": "Sending via the BizUply number",
+        "bizuplyBannerText": "Until a personal WhatsApp connection is enabled for the business, messages will be sent from the central BizUply number on behalf of your business.",
+        "oneAction": "1 automation action",
+        "perMessage": "per WhatsApp message",
+        "estimateDaily": "Estimate only: for example one message a day ≈ {{amount}} / month",
+        "estimate100": "Estimate only: for example 100 messages ≈ {{amount}}"
+      },
+      "gmail": {
+        "bannerTitle": "Sending via connected Gmail",
+        "bannerText": "The email will be sent from the Gmail account you connected to the business. No SMTP and no sending through BizUply.",
+        "loading": "Loading Gmail status...",
+        "pendingApproval": "Gmail is currently in the Google approval process",
+        "connectBeforePublish": "Connect a Gmail account before publishing the automation",
+        "noConnectUrl": "No sign-in link was received",
+        "connectFailed": "Gmail connection failed",
+        "connect": "Connect Gmail",
+        "sender": "Sender",
+        "whoReceives": "Who should receive the email?"
+      },
+      "outlook": {
+        "connectBeforePublish": "Connect an Outlook account before publishing the automation",
+        "noConnectUrl": "No sign-in link was received",
+        "connectFailed": "Outlook connection failed",
+        "bannerTitle": "Sending via connected Outlook / Microsoft 365",
+        "bannerText": "The email will be sent from the Outlook account you connected to the business. No SMTP and no fallback to another provider.",
+        "loading": "Loading Outlook status...",
+        "comingSoon": "Outlook / Microsoft 365 will be available soon",
+        "connect": "Connect Outlook",
+        "sender": "Sender",
+        "whoReceives": "Who should receive the email?"
+      },
+      "calendar": {
+        "fromAppointment": "Event details will be taken from the appointment (date, time, duration, attendee, and location).",
+        "manualHint": "The event is created in the business Google Calendar. You can enter times manually or leave them empty when an appointment is in context.",
+        "needCalendarScope": "Calendar permission is required (Gmail is already connected)",
+        "connectBeforePublish": "Connect Google Calendar before publishing the automation",
+        "noConnectUrl": "No sign-in link was received",
+        "connectFailed": "Google Calendar connection failed",
+        "connect": "Connect Google Calendar",
+        "endOptional": "End (optional)",
+        "durationMinutes": "Duration in minutes (if there is no end)",
+        "loading": "Loading Google Calendar status...",
+        "unavailable": "Google Calendar is not available for this business right now",
+        "googleAccount": "Google account",
+        "description": "Description",
+        "fromAppointmentNote": "Event details will be taken from the appointment",
+        "setManual": "Set event details manually",
+        "startOptional": "Start (optional — defaults from the appointment)",
+        "datetimePlaceholder": "YYYY-MM-DD HH:mm or empty",
+        "attendee": "Attendee (email)",
+        "location": "Location"
+      },
+      "email": {
+        "senderUnavailable": "The selected sender is unavailable",
+        "noSender": "No sender email is set",
+        "noVerified": "No verified business email is set",
+        "from": "From",
+        "fromHelp": "The email will be sent from a verified business address.",
+        "to": "To",
+        "chooseVerified": "Choose a verified business email",
+        "customFieldKey": "Custom field (key)"
+      },
+      "toasts": {
+        "addedAndLinked": "Added and connected automatically (including the rest of the flow)",
+        "moduleAdded": "Module added to the board",
+        "resultAdded": "Result added to the trigger",
+        "addedToSelected": "Added and connected automatically to the selected module",
+        "triggerAdded": "Trigger added — choose what should happen automatically",
+        "settingsSaved": "Settings saved",
+        "draftSaved": "Draft saved",
+        "saveError": "Could not save the automation",
+        "waBillingRequired": "WhatsApp billing must be set up before enabling the automation.",
+        "waBillingBlock": "The automation cannot be enabled because of WhatsApp billing",
+        "planRequired": "Choose an actions plan to enable an automation",
+        "quotaExhausted": "The monthly action quota was used — billed actions will be blocked until you upgrade",
+        "billingBlocked": "Automations cannot be enabled because of the plan payment status",
+        "archived": "Cannot publish an archived automation",
+        "needTriggerCatalog": "Load the trigger catalog before publishing",
+        "unsupportedPublish": "The selected trigger is not yet supported for publishing",
+        "unsupportedChoose": "Old or unsupported trigger — choose a supported trigger before publishing",
+        "saveTimeout": "Saving is taking too long — try again",
+        "cannotSaveBeforePublish": "The draft could not be saved before publishing",
+        "publishNoResponse": "Publish succeeded but the server did not return a valid response",
+        "publishedUpdated": "Automation published and updated",
+        "published": "Automation published",
+        "publishFailed": "The automation could not be published",
+        "testFailed": "Automation test failed",
+        "resumeFailed": "The automation could not be resumed",
+        "loadGmail": "We could not load Gmail status",
+        "loadOutlook": "We could not load Outlook status",
+        "loadCalendar": "We could not load Google Calendar status",
+        "loadTriggers": "We could not load the trigger catalog"
+      },
+      "test": {
+        "title": "Test mode — no messages will be sent and no changes will be made",
+        "run": "Run a test",
+        "publishFailed": "Publish failed"
+      },
+      "loadGmail": "We could not load Gmail status"
+    },
+    "email": {
+      "business": "Business email",
+      "missingTitle": "No verified business email is set",
+      "missingBody": "To send from the business email, finish setting up and verifying the email first.",
+      "settingsCta": "Set up business email",
+      "providerRequired": "To use this automation, connect Gmail or Outlook / Microsoft 365"
+    },
+    "ai": {
+      "billingSafe": "An AI action counts as an automation action in your plan",
+      "defaultSystems": "Notifications"
+    },
+    "errors": {
+      "missingTrigger": "An approved trigger is missing",
+      "missingGraph": "This template has no activation graph"
     }
   },
   "layout": {
@@ -5744,6 +6525,245 @@
       "confirmSuggestion": "Confirm",
       "changeMapping": "Change",
       "sourceFieldLine": "{{source}} → {{field}}"
+    },
+    "wizard": {
+      "ariaCreate": "Create template",
+      "close": "Close",
+      "kicker": "Message templates",
+      "title": "Create template",
+      "metaBadge": "Meta interface",
+      "preview": "Preview",
+      "previewBusiness": "WhatsApp · Business",
+      "bodyPlaceholderPreview": "The message body will appear here.",
+      "category": "Category",
+      "categoryHelp": "Choose a category and subcategory. The template name and language are set in the edit step.",
+      "subcategory": "Subcategory",
+      "subcategoryHelp": "The options change based on the selected category.",
+      "templateName": "Template name",
+      "nameHelp": "Lowercase English letters, numbers, and underscores only. Customers will not see this.",
+      "language": "Language",
+      "languageHelp": "The language used for the template content. You can add more versions later.",
+      "authOptions": "Authentication options",
+      "authHelp": "Only options actually supported when submitting to Meta are shown. One-tap and zero-tap login are not available yet.",
+      "otp": "One-time code",
+      "otpHint": "The body must include the {{1}} variable for the verification code.",
+      "securityRec": "Security recommendation",
+      "securityRecHint": "Adds a footer that recommends not sharing the code.",
+      "expiry": "Code expiry",
+      "expiryHint": "Meta shows a 10-minute expiry. There is no separate field supported in our connection yet.",
+      "copyCode": "Copy code",
+      "copyCodeHint": "You can add a copy button in the buttons section below.",
+      "reviewTitle": "Review before sending",
+      "reviewHelp": "Make sure the details are correct before sending the template to Meta for review.",
+      "header": "Header",
+      "body": "Body",
+      "footer": "Footer",
+      "buttons": "Buttons",
+      "samples": "Variable samples",
+      "none": "None",
+      "reviewWarn": "Sending submits the template for Meta review. The status will stay pending until Meta returns approved or rejected.",
+      "draftSaved": "Draft saved",
+      "draftFailed": "Could not save the draft",
+      "submitted": "The template was submitted for review. Status: {{status}}.",
+      "savedNoMeta": "The template was saved as a draft because there is no active Meta connection.",
+      "submitFailed": "Could not submit the template",
+      "prev": "Back",
+      "next": "Next",
+      "submitReview": "Submit for review",
+      "saveDraft": "Save as draft",
+      "bodyPlaceholder": "Write the message body. Use {{1}} for variables.",
+      "steps": {
+        "setup": {
+          "title": "Set up template",
+          "hint": "Category and subcategory"
+        },
+        "edit": {
+          "title": "Edit template",
+          "hint": "Name, language, and content"
+        },
+        "review": {
+          "title": "Submit for review",
+          "hint": "Review before Meta"
+        }
+      },
+      "categories": {
+        "MARKETING": {
+          "title": "Marketing",
+          "description": "Promotions, product updates, and marketing messages. Sent only to customers who opted in."
+        },
+        "UTILITY": {
+          "title": "Utility",
+          "description": "Order updates, reminders, and replies to customer requests. Not intended for promotions."
+        },
+        "AUTHENTICATION": {
+          "title": "Authentication",
+          "description": "A one-time code for sign-in, identity verification, or confirming an action."
+        }
+      },
+      "subtypes": {
+        "defaultMarketing": {
+          "title": "Default",
+          "description": "Send messages with media and custom buttons to encourage customer engagement."
+        },
+        "catalog": {
+          "title": "Catalog",
+          "description": "Send messages that help sales by connecting your product catalog."
+        },
+        "callPermission": {
+          "title": "Call permission request",
+          "description": "Ask customers if you may call them on WhatsApp."
+        },
+        "defaultUtility": {
+          "title": "Default",
+          "description": "Send messages about an existing order or account."
+        },
+        "otp": {
+          "title": "One-time password",
+          "description": "Send codes to verify a transaction or sign-in."
+        }
+      },
+      "languages": {
+        "he": "Hebrew",
+        "en": "English",
+        "ar": "Arabic",
+        "es": "Spanish",
+        "fr": "French",
+        "pt_BR": "Portuguese (Brazil)"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "draft": "Draft"
+      },
+      "media": {
+        "image": "Image",
+        "video": "Video",
+        "document": "Document",
+        "location": "Location"
+      }
+    },
+    "metaEditor": {
+      "content": "Content",
+      "contentHelp": "Add a header, body, and footer to your template. Variables use {{1}}, {{2}}.",
+      "variableType": "Variable type",
+      "variableName": "Name",
+      "variableNumber": "Number",
+      "mediaSample": "Media sample · Optional",
+      "mediaNone": "None",
+      "mediaImage": "Image",
+      "mediaVideo": "Video",
+      "mediaDocument": "Document",
+      "mediaLocation": "Location",
+      "mediaIdImage": "Image media ID",
+      "mediaIdVideo": "Video media ID",
+      "mediaIdDocument": "Document media ID",
+      "mediaIdPlaceholder": "Media ID received from upload",
+      "headerOptional": "Header · Optional",
+      "headerPlaceholder": "Add a short text line for the message header",
+      "addVariable": "Add variable",
+      "variable": "Variable",
+      "code": "Code",
+      "strikethrough": "Strikethrough",
+      "italic": "Italic",
+      "bold": "Bold",
+      "bodyHelp": "You can add variables as {{1}}, {{2}}. The preview updates in real time.",
+      "exampleValues": "Example values for variables",
+      "exampleHelp": "Meta requires a sample for every variable before review.",
+      "samplePlaceholder": "Sample value",
+      "footerOptional": "Footer · Optional",
+      "footerHelp": "Short text at the bottom of the message. You can leave this empty.",
+      "footerPlaceholder": "For example: Do not reply to this message",
+      "buttonsOptional": "Buttons · Optional",
+      "buttonsHelp": "Create buttons so customers can reply or take an action. You can add up to {{count}} buttons.",
+      "addButton": "Add button",
+      "removeButton": "Remove button",
+      "buttonText": "Button text",
+      "urlType": "URL type",
+      "urlStatic": "Static",
+      "urlDynamic": "Dynamic",
+      "websiteUrl": "Website URL",
+      "sampleUrl": "Sample URL",
+      "phoneNumber": "Phone number",
+      "contactHelp": "Meta sets the button text. It cannot be edited.",
+      "sampleCode": "Sample code",
+      "wrapText": "text",
+      "buttons": {
+        "quick_reply": {
+          "title": "Custom",
+          "description": "The customer sends a short reply in one tap.",
+          "defaultText": "Custom"
+        },
+        "url": {
+          "title": "Visit website",
+          "description": "Opens a static or dynamic website URL.",
+          "defaultText": "Visit website"
+        },
+        "voice_call": {
+          "title": "WhatsApp call",
+          "description": "Starts a WhatsApp voice call with the business.",
+          "defaultText": "WhatsApp call"
+        },
+        "phone_number": {
+          "title": "Call phone number",
+          "description": "Calls a predefined phone number.",
+          "defaultText": "Call"
+        },
+        "request_contact_info": {
+          "title": "Share contact details",
+          "description": "Asks the customer to share their contact details.",
+          "defaultText": "Share contact details"
+        },
+        "copy_code": {
+          "title": "Copy code",
+          "description": "Copies a promo or verification code to the clipboard.",
+          "defaultText": "Copy code"
+        }
+      }
+    },
+    "billing": {
+      "loadError": "We could not load WhatsApp billing data right now.",
+      "retry": "Try again",
+      "title": "WhatsApp",
+      "payAsYouGo": "Pay as you go",
+      "notConfigured": "WhatsApp billing is not set up",
+      "setupCta": "Set up WhatsApp billing",
+      "active": "WhatsApp billing is active",
+      "manage": "Manage billing",
+      "perMessage": "{{price}} per message",
+      "messagesThisMonth": "{{count}} messages this month",
+      "estimatedCharge": "Estimated charge:",
+      "periodEnd": "Billing period ends: {{date}}",
+      "noPackages": "There are no WhatsApp packages — you are charged only for messages actually sent.",
+      "paymentIssue": "There is a payment problem with WhatsApp billing",
+      "paymentIssueBody": "Sending will continue temporarily. Please settle the payment to avoid an interruption.",
+      "until": " Until {{date}}.",
+      "managePayment": "Manage payment",
+      "sendBlocked": "WhatsApp sending is blocked because of the billing status",
+      "sendBlockedBody": "Add a payment method to keep sending messages.",
+      "settlePayment": "Settle payment",
+      "cancelScheduled": "Billing is scheduled to cancel",
+      "cancelScheduledOn": " on {{date}}",
+      "keepActive": "Keep billing active",
+      "updating": "Updating...",
+      "setupFailed": "We could not start billing setup. Please try again.",
+      "cancelSuccess": "Billing will be cancelled at the end of the current billing period.",
+      "cancelFailed": "We could not cancel billing. Please try again.",
+      "reactivateSuccess": "Cancellation was undone and billing will stay active.",
+      "reactivateFailed": "We could not keep billing active.",
+      "setupTitle": "Set up WhatsApp billing",
+      "manageTitle": "Manage WhatsApp billing",
+      "close": "Close",
+      "needPayment": "A payment method is required for WhatsApp messages",
+      "usageOnly": "Automations and sending are billed by actual usage — there are no prepaid message packages.",
+      "startPayment": "Start payment setup",
+      "cancel": "Cancel",
+      "manageLine": "Pay as you go · {{price}} per message",
+      "periodUntil": " · period until {{date}}",
+      "cancelNote": "Billing is scheduled to cancel",
+      "cancelNoteOn": " on {{date}}. You can keep it active.",
+      "cancelAtEndBody": "You can cancel billing at the end of the current period. Until then you can keep sending messages by usage.",
+      "cancelAtEnd": "Cancel at period end"
     }
   },
   "metaCampaigns": {

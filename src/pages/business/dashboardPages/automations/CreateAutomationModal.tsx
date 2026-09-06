@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FilePlus2, LayoutTemplate, Loader2, X } from "lucide-react";
@@ -23,6 +24,7 @@ export default function CreateAutomationModal({
   readOnly,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const titleId = useId();
   const [creatingBlank, setCreatingBlank] = useState(false);
@@ -57,17 +59,17 @@ export default function CreateAutomationModal({
       // Empty canvas only — never seed a starter/template graph.
       const created = await createAutomationWorkflow(businessId, {
         useStarter: false,
-        name: "אוטומציה חדשה",
+        name: t("automations.create.defaultName"),
         nodes: [],
         edges: [],
       });
-      toast.success("בד ריק מוכן — בחרו טריגר כדי להתחיל");
+      toast.success(t("automations.toasts.blankReady"));
       onClose();
       navigate(
         `/business/${businessId}/dashboard/automations/${created._id}`
       );
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.createError")));
     } finally {
       setCreatingBlank(false);
     }
@@ -99,15 +101,15 @@ export default function CreateAutomationModal({
         <button
           type="button"
           className="ax-create-modal__close"
-          aria-label="סגור"
+          aria-label={t("automations.common.close")}
           onClick={onClose}
         >
           <X size={16} />
         </button>
 
         <header className="ax-create-modal__header">
-          <h2 id={titleId}>צור אוטומציה</h2>
-          <p>בחר איך להתחיל</p>
+          <h2 id={titleId}>{t("automations.create.title")}</h2>
+          <p>{t("automations.create.subtitle")}</p>
         </header>
 
         <div className="ax-create-modal__choices">
@@ -127,8 +129,8 @@ export default function CreateAutomationModal({
               )}
             </span>
             <span className="ax-create-choice__text">
-              <strong>אוטומציה ריקה</strong>
-              <em>התחל מהבד ובנה את הזרימה בעצמך</em>
+              <strong>{t("automations.create.blankTitle")}</strong>
+              <em>{t("automations.create.blankText")}</em>
             </span>
           </button>
 
@@ -141,8 +143,8 @@ export default function CreateAutomationModal({
               <LayoutTemplate size={18} />
             </span>
             <span className="ax-create-choice__text">
-              <strong>תבניות</strong>
-              <em>התחל מתהליך מוכן והתאם אותו לעסק</em>
+              <strong>{t("automations.create.templatesTitle")}</strong>
+              <em>{t("automations.create.templatesText")}</em>
             </span>
           </button>
         </div>

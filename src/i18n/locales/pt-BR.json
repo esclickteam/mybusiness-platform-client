@@ -479,6 +479,787 @@
       "title": "Automações",
       "subtitle": "Um construtor visual de estilo Make / n8n arraste módulos, conecte-os e entre em operação.",
       "channel": "Arrastar e soltar o construtor"
+    },
+    "common": {
+      "all": "Todos",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "close": "Fechar",
+      "retry": "Tentar de novo",
+      "loading": "Carregando…",
+      "yes": "Sim",
+      "no": "Não",
+      "optional": "Opcional",
+      "requiredFields": "Campos obrigatórios",
+      "settings": "Configurações",
+      "title": "Título",
+      "value": "Valor",
+      "none": "—"
+    },
+    "home": {
+      "title": "Automações",
+      "subtitle": "Crie e gerencie processos automáticos para o seu negócio",
+      "new": "Nova automação",
+      "templates": "Modelos",
+      "runDemoTrigger": "Executar um gatilho de exemplo",
+      "kpiTotal": "Total de automações",
+      "kpiActive": "Ativas",
+      "kpiRuns": "Execuções em 30 dias",
+      "kpiFailed": "Com falha",
+      "billingAria": "Cobrança de automações e WhatsApp",
+      "searchPlaceholder": "Pesquisar automações",
+      "sort": "Ordenar",
+      "sortUpdated": "Atualizadas recentemente",
+      "sortCreated": "Criadas recentemente",
+      "sortName": "Nome",
+      "filterAll": "Todas",
+      "filterActive": "Ativas",
+      "filterDraft": "Rascunhos",
+      "filterPaused": "Pausadas",
+      "filterFailed": "Erros",
+      "loading": "Carregando automações...",
+      "emptyTitle": "Ainda não há automações",
+      "emptyText": "Crie sua primeira automação e evite trabalho manual.",
+      "browseTemplates": "Ver modelos",
+      "noneFoundTitle": "Nenhuma automação encontrada",
+      "noneFoundText": "Tente alterar a pesquisa ou os filtros.",
+      "fallbackName": "a automação",
+      "deleteActiveHint": "Esta automação está ativa e será interrompida imediatamente. ",
+      "deletePausedHint": "Esta automação está pausada. ",
+      "deleteConfirm": "Excluir permanentemente \"{{name}}\"? Isso também apaga o histórico de execuções e não pode ser desfeito."
+    },
+    "toasts": {
+      "loadError": "Não foi possível carregar as automações",
+      "checkoutCancel": "O pagamento foi cancelado — você pode escolher um plano de novo a qualquer momento.",
+      "waCheckoutProcessing": "Atualizando a cobrança do WhatsApp...",
+      "waCheckoutCancel": "A configuração de cobrança do WhatsApp foi cancelada — você pode configurar de novo a qualquer momento.",
+      "waReactivated": "O cancelamento foi desfeito e a cobrança continuará ativa.",
+      "waReactivateError": "Não foi possível manter a cobrança do WhatsApp ativa",
+      "planReactivated": "O cancelamento foi desfeito e o plano continuará.",
+      "planReactivateError": "Não foi possível manter o plano ativo",
+      "duplicated": "Automação duplicada",
+      "duplicateError": "Não foi possível duplicar",
+      "statusUpdated": "Status da automação atualizado",
+      "waBillingRequired": "É preciso configurar a cobrança do WhatsApp antes de ativar a automação.",
+      "waBillingBlock": "Não é possível atualizar a automação devido à cobrança do WhatsApp",
+      "planRequired": "Escolha um plano de ações para ativar uma automação",
+      "quotaExhausted": "A cota mensal de ações foi usada — ações cobradas ficarão bloqueadas até o upgrade",
+      "updateBlocked": "Não é possível atualizar a automação",
+      "deleted": "Automação excluída",
+      "deleteError": "Não foi possível excluir",
+      "createdAndEnabled": "Automação criada e ativada",
+      "createdNotEnabled": "Criada, mas não ativada — confira as configurações e publique",
+      "createdNotEnabledBuilder": "Criada, mas não ativada — conclua a configuração e publique no editor",
+      "activateError": "Não foi possível ativar a automação",
+      "waUnavailable": "O WhatsApp está indisponível agora. Fale com o suporte.",
+      "connectWhatsApp": "Conecte o WhatsApp Business antes de ativar",
+      "noApprovedTemplates": "Não há modelos aprovados pela Meta (APPROVED) — prepare um modelo e aprove na Meta",
+      "notReady": "Não é possível ativar agora",
+      "selectWaTemplate": "Escolha um modelo do WhatsApp aprovado",
+      "selectEmailProvider": "Escolha Gmail, Outlook / Microsoft 365 ou um e-mail comercial",
+      "blankReady": "A tela vazia está pronta — escolha um gatilho para começar",
+      "createError": "Não foi possível criar a automação"
+    },
+    "templates": {
+      "title": "Modelos de automação",
+      "subtitle": "Escolha uma automação → escolha um modelo do WhatsApp aprovado → ative na hora.",
+      "catalogCount": "modelos no catálogo",
+      "categoryCount": "modelos nesta categoria",
+      "searchPlaceholder": "Pesquisar um modelo pronto",
+      "categoriesAria": "Categorias",
+      "loading": "Carregando modelos de automação...",
+      "emptyTitle": "Não há modelos nesta categoria",
+      "emptyText": "Tente outra categoria ou atualize a página.",
+      "refresh": "Atualizar",
+      "ctaPickPlan": "Escolher um plano de automações",
+      "ctaPickMessage": "Ativar — escolher modelo de mensagem",
+      "ctaEnableAi": "Ativar modelo",
+      "ctaEnableNow": "Ativar agora",
+      "planRequiredTitle": "É necessário um plano de automações ativo",
+      "badgeFlow": "Fluxo",
+      "badgeComingSoon": "Em breve",
+      "badgeReady": "Pronto",
+      "badgeMissing": "Falta algo",
+      "trigger": "Gatilho",
+      "result": "Resultado",
+      "suggestedTemplate": "Modelo sugerido: {{name}}",
+      "chooseWaOnEnable": "Na ativação você escolherá um modelo do WhatsApp aprovado",
+      "aiStartsWhen": "Começa quando:",
+      "aiDoes": "O que a IA faz:",
+      "aiAfterwards": "Depois:",
+      "aiSystems": "Sistemas:",
+      "aiEstimated": "Ações estimadas:",
+      "aiDefaultResult": "—",
+      "activateTitle": "Ativar “{{name}}”",
+      "chooseApprovedWa": "Escolha um modelo do WhatsApp aprovado da sua lista — a automação começará na hora.",
+      "approvedMessageTemplate": "Modelo de mensagem aprovado",
+      "chooseTemplate": "Escolher um modelo",
+      "noApprovedYet": "Ainda não há modelos aprovados — prepare na lista acima e aprove na Meta.",
+      "chooseEmailAccount": "Escolha por qual conta o e-mail será enviado.",
+      "emailAccount": "Conta de e-mail",
+      "chooseProvider": "Escolher um provedor",
+      "from": "De",
+      "chooseBusinessEmail": "Escolha um e-mail comercial verificado",
+      "categories": {
+        "all": "Todas",
+        "crm": "CRM",
+        "appointments": "Compromissos",
+        "email": "E-mail",
+        "whatsapp": "WhatsApp",
+        "sales": "Vendas",
+        "store": "Loja",
+        "ai": "IA"
+      }
+    },
+    "create": {
+      "title": "Criar automação",
+      "subtitle": "Escolha como começar",
+      "blankTitle": "Automação em branco",
+      "blankText": "Comece pela tela e monte o fluxo você mesmo",
+      "templatesTitle": "Modelos",
+      "templatesText": "Comece com um processo pronto e adapte ao seu negócio",
+      "defaultName": "Nova automação"
+    },
+    "picker": {
+      "titleAll": "Adicionar etapa",
+      "titleTrigger": "O que vai iniciar a automação?",
+      "titleResult": "O que deve acontecer automaticamente?",
+      "subtitleAll": "Escolha um gatilho, um resultado ou lógica para adicionar ao fluxo",
+      "subtitleTrigger": "Escolha o evento que inicia o processo",
+      "subtitleResult": "Um resultado é o que acontece depois do gatilho. Você pode adicionar vários resultados juntos.",
+      "searchAll": "Pesquisar um gatilho ou resultado",
+      "searchTrigger": "Pesquisar: lead, CRM, compromisso, WhatsApp, pagamento, pedido, formulário, hora…",
+      "searchResult": "Pesquisar um resultado (WhatsApp, tarefa, IA…)",
+      "searchAria": "Pesquisar gatilhos",
+      "categoriesAria": "Categorias de gatilho",
+      "loading": "Carregando gatilhos do servidor...",
+      "emptyTriggers": "Nenhum gatilho correspondente",
+      "emptyItems": "Nenhum item encontrado",
+      "categories": {
+        "all": "Todos",
+        "trigger": "Gatilhos",
+        "action": "Resultados",
+        "logic": "Lógica",
+        "delay": "Espera",
+        "ai": "IA",
+        "integrations": "Conexões"
+      },
+      "triggerCategories": {
+        "common": "Populares",
+        "recent": "Usados recentemente",
+        "crm": "CRM e leads",
+        "appointments": "Compromissos",
+        "whatsapp": "WhatsApp",
+        "store": "Loja e pagamentos",
+        "website": "Site e formulários",
+        "subscriptions": "Assinaturas e cobrança",
+        "tasks": "Tarefas e equipe",
+        "email": "E-mail",
+        "schedule": "Agenda",
+        "manual": "Integrações e sistema",
+        "system": "Integrações e sistema"
+      }
+    },
+    "toolbar": {
+      "back": "Voltar",
+      "nameAria": "Nome da automação",
+      "addStep": "Adicionar etapa",
+      "test": "Testar",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "saveError": "Falha ao salvar",
+      "unsaved": "● Alterações não salvas",
+      "saved": "✓ Salvo",
+      "published": "Publicada",
+      "draft": "Rascunho",
+      "publish": "Publicar",
+      "publishing": "Publicando…",
+      "updatePublish": "Atualizar publicação",
+      "pause": "Pausar",
+      "resume": "Ativar",
+      "active": "Ativa",
+      "paused": "Pausada",
+      "cannotPublishArchived": "Não é possível publicar uma automação arquivada",
+      "reloadTriggers": "Recarregue o catálogo de gatilhos",
+      "unsupportedTrigger": "Gatilho antigo ou sem suporte",
+      "updatePublished": "Atualizar a versão publicada com o rascunho atual",
+      "publishAutomation": "Publicar a automação"
+    },
+    "empty": {
+      "badge": "Gatilho",
+      "chooseAria": "Escolher um gatilho",
+      "scheduleHint": "Também por agenda",
+      "title": "Comece com um gatilho",
+      "text": "Escolha quando a automação começa (por exemplo um novo lead). Depois adicione o que deve acontecer automaticamente — o resultado. Você pode dividir em vários resultados juntos, sem caminhos complexos.",
+      "chooseTrigger": "Escolher um gatilho"
+    },
+    "catalog": {
+      "noCharge": "Sem cobrança",
+      "actions": {
+        "create_task": "Criar uma tarefa no CRM",
+        "update_lead_status": "Atualizar status do lead",
+        "update_status": "Atualizar status do lead",
+        "assign_owner": "Atribuir a um representante",
+        "add_tag": "Adicionar uma tag",
+        "create_crm_note": "Criar uma nota no CRM",
+        "whatsapp_template": "Enviar um modelo do WhatsApp",
+        "send_whatsapp": "Enviar um modelo do WhatsApp",
+        "send_email": "Enviar um e-mail comercial",
+        "send_gmail": "Enviar e-mail pelo Gmail",
+        "send_outlook": "Enviar e-mail pelo Outlook / Microsoft 365",
+        "google_calendar_create_event": "Google Calendar — criar evento",
+        "google_calendar_update_event": "Google Calendar — atualizar evento",
+        "google_calendar_delete_event": "Google Calendar — excluir evento",
+        "notify": "Notificação interna",
+        "internal_notification": "Notificação interna",
+        "delay": "Espera",
+        "webhook": "Chamada de webhook",
+        "stop": "Parar o fluxo",
+        "create_appointment": "Criar um compromisso",
+        "ai_rank_lead": "IA · Classificar lead",
+        "ai_classify_lead": "IA · Categorizar lead",
+        "ai_auto_tag": "IA · Marcar lead",
+        "ai_detect_hot_lead": "IA · Detectar lead quente",
+        "ai_lead_brief": "IA · Resumo do lead",
+        "ai_draft_followup": "IA · Rascunho de acompanhamento",
+        "ai_draft_email": "IA · Rascunho de e-mail",
+        "ai_suggest_next_action": "IA · Sugerir próxima ação",
+        "ai_daily_leads_digest": "IA · Resumo diário de leads",
+        "ai_daily_agenda_digest": "IA · Resumo diário da agenda"
+      },
+      "actionShort": {
+        "whatsapp_template": "WhatsApp",
+        "create_task": "Tarefa",
+        "create_crm_note": "Nota no CRM",
+        "notify": "Alerta",
+        "update_lead_status": "Status",
+        "assign_owner": "Atribuir representante",
+        "add_tag": "Tag",
+        "send_gmail": "Gmail",
+        "send_outlook": "Outlook",
+        "send_email": "E-mail comercial",
+        "google_calendar_create_event": "Google Calendar · Criar",
+        "google_calendar_update_event": "Google Calendar · Atualizar",
+        "google_calendar_delete_event": "Google Calendar · Excluir",
+        "webhook": "Webhook",
+        "ai_rank_lead": "IA · Classificar lead",
+        "ai_classify_lead": "IA · Categorizar lead",
+        "ai_auto_tag": "IA · Marcar lead",
+        "ai_detect_hot_lead": "IA · Detectar lead quente",
+        "ai_lead_brief": "IA · Resumo do lead",
+        "ai_draft_followup": "IA · Rascunho de acompanhamento",
+        "ai_draft_email": "IA · Rascunho de e-mail",
+        "ai_suggest_next_action": "IA · Sugerir ação",
+        "ai_daily_leads_digest": "IA · Resumo diário de leads",
+        "ai_daily_agenda_digest": "IA · Resumo diário da agenda"
+      },
+      "actionDesc": {
+        "whatsapp_template": "Envia um modelo de mensagem",
+        "create_task": "Cria uma tarefa de acompanhamento no CRM",
+        "create_crm_note": "Registra uma nota no cartão do lead/cliente",
+        "notify": "Notifica o dono do negócio",
+        "update_lead_status": "Atualiza o status do lead",
+        "assign_owner": "Atribui a um membro da equipe",
+        "add_tag": "Adiciona uma tag ao lead/cliente",
+        "send_gmail": "Gmail — enviar e-mail",
+        "send_outlook": "Outlook / Microsoft 365 — enviar e-mail",
+        "send_email": "Enviar um e-mail comercial",
+        "google_calendar_create_event": "Cria um evento no Google Calendar",
+        "google_calendar_update_event": "Atualiza um evento no Google Calendar",
+        "google_calendar_delete_event": "Exclui um evento do Google Calendar",
+        "webhook": "Envia dados para um sistema externo",
+        "ai_rank_lead": "Classifica um lead por chance e urgência",
+        "ai_classify_lead": "Classifica um lead em uma categoria",
+        "ai_auto_tag": "Adiciona tags de CRM automaticamente",
+        "ai_detect_hot_lead": "Detecta um lead quente para atendimento imediato",
+        "ai_lead_brief": "Prepara um resumo antes de uma ligação de vendas",
+        "ai_draft_followup": "Redige uma mensagem de acompanhamento",
+        "ai_draft_email": "Redige um e-mail para o cliente",
+        "ai_suggest_next_action": "Sugere a próxima ação para o representante",
+        "ai_daily_leads_digest": "Resume os novos leads",
+        "ai_daily_agenda_digest": "Resume tarefas e compromissos"
+      },
+      "conditions": {
+        "no_response": "Nenhum contato foi feito",
+        "status_is": "Status específico",
+        "has_appointment": "Tem um compromisso próximo",
+        "has_tag": "Tem uma tag",
+        "source_is": "Fonte de lead específica",
+        "business_hours": "Dentro do horário comercial",
+        "replied": "O cliente respondeu",
+        "amount_above": "Valor acima de X"
+      },
+      "conditionDesc": {
+        "no_response": "Sim/não conforme a resposta",
+        "status_is": "Verifica o status do lead",
+        "has_appointment": "Se há um compromisso próximo",
+        "has_tag": "Por uma tag no lead/cliente",
+        "source_is": "Meta / site / WhatsApp",
+        "business_hours": "Dentro/fora do horário",
+        "replied": "Se houve uma resposta",
+        "amount_above": "Pelo valor do negócio"
+      },
+      "conditionHasAppointmentShort": "Tem um compromisso",
+      "conditionSourceShort": "Fonte do lead",
+      "delayUnits": {
+        "minutes": "Minutos",
+        "hours": "Horas",
+        "days": "Dias"
+      },
+      "filters": {
+        "all": "Tudo",
+        "trigger": "Gatilho",
+        "condition": "Condição",
+        "router": "Divisão",
+        "delay": "Espera",
+        "action": "Resultado"
+      },
+      "nodeTypes": {
+        "trigger": "Gatilho",
+        "delay": "Espera",
+        "condition": "Condição",
+        "action": "Resultado",
+        "router": "Divisão"
+      },
+      "triggerCategories": {
+        "crm": "CRM e leads",
+        "appointments": "Compromissos",
+        "website": "Site e formulários",
+        "store": "Loja e pagamentos",
+        "schedule": "Agenda",
+        "manual": "Integrações e sistema",
+        "system": "Integrações e sistema",
+        "whatsapp": "WhatsApp",
+        "subscriptions": "Assinaturas e cobrança",
+        "tasks": "Tarefas e equipe",
+        "email": "E-mail"
+      },
+      "palette": {
+        "resultPrefix": "Resultado · {{label}}",
+        "conditionPrefix": "Condição · {{label}}",
+        "routerLabel": "Divisão · vários resultados juntos",
+        "routerDesc": "Divide em 1–6 resultados que rodam juntos — sem caminhos complexos",
+        "routerDefault": "Dividir em vários resultados",
+        "resultN": "Resultado {{n}}",
+        "waitLabel": "Espera",
+        "waitDesc": "Espera e depois continua / se divide",
+        "reminderDefault": "Lembrete de compromisso — 1 dia antes",
+        "reminderDesc": "Quando enviar um lembrete de compromisso — depois você escolhe o resultado (WhatsApp e mais)",
+        "aiCriteriaDefault": "Adequação ao serviço, urgência e potencial de compra",
+        "meetingTitleDefault": "Reunião com {{appointment.clientName}}"
+      },
+      "summaries": {
+        "hourBefore": "1 hora antes do compromisso",
+        "twoHoursBefore": "2 horas antes do compromisso",
+        "dayBefore": "1 dia antes do compromisso",
+        "daysBefore": "{{count}} dias antes do compromisso",
+        "hoursBefore": "{{count}} horas antes do compromisso",
+        "statusFromTo": "De {{from}} para {{to}}",
+        "statusTo": "Mover para o status {{status}}",
+        "anyStatusChange": "Em qualquer mudança de status",
+        "bySchedule": "Conforme a agenda configurada",
+        "manual": "Início manual pelo sistema",
+        "newLead": "É executada sempre que um novo lead é criado",
+        "formSubmitted": "É executada ao enviar um formulário do site",
+        "appointmentCreated": "É executada ao agendar um compromisso",
+        "appointmentCancelled": "É executada ao cancelar um compromisso",
+        "orderCreated": "É executada ao criar um pedido",
+        "orderPaid": "É executada após um pedido pago na loja",
+        "triggerFallback": "Gatilho",
+        "routerTogether": "{{count}} resultados juntos",
+        "aiFallback": "Ação de IA",
+        "calendarDelete": "Calendar · excluir {{eventId}}",
+        "ai_rank_lead": "Classifica um lead por chance e urgência",
+        "ai_classify_lead": "Classifica um lead",
+        "ai_auto_tag": "Marcação automática",
+        "ai_detect_hot_lead": "Detecta um lead quente",
+        "ai_lead_brief": "Resumo do lead",
+        "ai_draft_followup": "Rascunho de acompanhamento",
+        "ai_draft_email": "Rascunho de e-mail",
+        "ai_suggest_next_action": "Sugere a próxima ação",
+        "ai_daily_leads_digest": "Resumo diário de leads",
+        "ai_daily_agenda_digest": "Resumo de tarefas/compromissos"
+      },
+      "recipients": {
+        "lead_email": "E-mail do lead",
+        "appointment_customer_email": "O cliente que agendou",
+        "store_customer_email": "O cliente do pedido",
+        "business_owner": "Dono do negócio",
+        "lead_owner": "Responsável pelo lead",
+        "fixed_email": "Endereço fixo",
+        "custom_field": "Campo personalizado",
+        "lead_phone": "Telefone do lead",
+        "fixed_phone": "Número fixo"
+      },
+      "system": {
+        "lead_multi_route": {
+          "title": "Novo lead — vários resultados juntos",
+          "description": "Quando um novo lead chega ao CRM: envia WhatsApp, cria uma tarefa para um representante e avisa o dono — em paralelo.",
+          "trigger": "Novo lead no CRM",
+          "results": {
+            "0": "WhatsApp imediato",
+            "1": "Tarefa para um representante",
+            "2": "Aviso ao dono"
+          }
+        },
+        "lead_no_response": {
+          "title": "Novo lead → abertura + acompanhamentos conforme a resposta",
+          "description": "Mensagem de abertura imediatamente. Se não houver resposta no WhatsApp — um acompanhamento após 24 horas e outro após 3 dias.",
+          "trigger": "Novo lead no CRM",
+          "results": {
+            "0": "Abertura no WhatsApp",
+            "1": "Acompanhamento nº 1",
+            "2": "Acompanhamento nº 2"
+          },
+          "timing": "Abertura imediata · acompanhamento nº 1 após 24h · acompanhamento nº 2 após 3 dias"
+        },
+        "new_client_welcome": {
+          "title": "Novo cliente — boas-vindas",
+          "description": "Gatilho de novo cliente → mensagem de abertura + tarefa de retenção.",
+          "trigger": "Novo cliente",
+          "results": {
+            "0": "Mensagem de abertura",
+            "1": "Tarefa de retenção"
+          }
+        },
+        "appointment_duo": {
+          "title": "Compromisso — confirmação + lembrete + tarefa",
+          "description": "Ao criar um compromisso: confirmação de WhatsApp ao cliente, uma tarefa de preparação e um lembrete no dia anterior.",
+          "trigger": "Novo compromisso",
+          "results": {
+            "0": "Confirmação no WhatsApp",
+            "1": "Lembrete antes",
+            "2": "Tarefa"
+          }
+        },
+        "appointment_gcal_sync": {
+          "title": "Compromisso → Google Calendar",
+          "description": "Gatilho de novo compromisso. Resultado: criar um evento no Google Calendar.",
+          "trigger": "Novo compromisso",
+          "results": {
+            "0": "Evento no Google Calendar"
+          }
+        },
+        "appointment_email_confirm": {
+          "title": "Compromisso → e-mail de confirmação",
+          "description": "Gatilho de novo compromisso. Resultado: e-mail de confirmação ao cliente.",
+          "trigger": "Novo compromisso",
+          "results": {
+            "0": "E-mail de confirmação"
+          }
+        },
+        "lead_email_welcome": {
+          "title": "Novo lead → e-mail + tarefa",
+          "description": "Gatilho de novo lead. Resultados: e-mail e uma tarefa de acompanhamento.",
+          "trigger": "Novo lead no CRM",
+          "results": {
+            "0": "E-mail",
+            "1": "Tarefa de acompanhamento"
+          }
+        },
+        "appointment_reminder_1_day": {
+          "title": "Lembrete de compromisso — 1 dia antes",
+          "description": "Envia um modelo do WhatsApp um dia antes do compromisso.",
+          "trigger": "Compromisso próximo (1 dia antes)",
+          "results": {
+            "0": "Lembrete no WhatsApp"
+          },
+          "timing": "Um dia antes"
+        },
+        "appointment_reminder_2_days": {
+          "title": "Lembrete de compromisso — 2 dias antes",
+          "description": "Envia um modelo do WhatsApp dois dias (48 horas) antes do compromisso.",
+          "trigger": "Compromisso próximo (2 dias antes)",
+          "results": {
+            "0": "Lembrete no WhatsApp"
+          },
+          "timing": "Dois dias antes (48 horas)"
+        },
+        "appointment_reminder_hours": {
+          "title": "Lembrete de compromisso — horas antes",
+          "description": "Lembrete personalizado (por exemplo duas horas antes) com um modelo do WhatsApp.",
+          "trigger": "Compromisso próximo (horas antes)",
+          "results": {
+            "0": "Lembrete no WhatsApp"
+          },
+          "timing": "Um número de horas à escolha"
+        },
+        "appointment_thanks": {
+          "title": "Agradecimento após o compromisso",
+          "description": "Após o fim do compromisso — um agradecimento no WhatsApp conforme o horário.",
+          "trigger": "Compromisso encerrado",
+          "results": {
+            "0": "Mensagem de agradecimento"
+          }
+        },
+        "appointment_review": {
+          "title": "Pedido de avaliação após o compromisso",
+          "description": "Um dia após o fim do compromisso — um pedido de avaliação no WhatsApp.",
+          "trigger": "Compromisso encerrado",
+          "results": {
+            "0": "Pedido de avaliação"
+          }
+        },
+        "lead_followup_2": {
+          "title": "Segundo acompanhamento de lead (mesclado)",
+          "description": "Mesclado na rota unificada “Novo lead → abertura + acompanhamentos conforme a resposta”. Não aparece como cartão separado.",
+          "trigger": "Lead não convertido",
+          "results": {
+            "0": "Segundo acompanhamento no WhatsApp"
+          },
+          "timing": "Parte da rota unificada de acompanhamentos"
+        },
+        "inactive_client": {
+          "title": "Cliente inativo — toque",
+          "description": "Um lembrete para clientes sem interação recente.",
+          "trigger": "Cliente inativo",
+          "results": {
+            "0": "Mensagem de toque"
+          }
+        }
+      },
+      "waRequired": {
+        "wa_welcome_lead": {
+          "title": "Boas-vindas a um novo lead",
+          "reason": "É enviada quando um novo lead entra no CRM."
+        },
+        "wa_welcome_client": {
+          "title": "Boas-vindas a um novo cliente",
+          "reason": "É enviada quando um novo cliente é criado no CRM."
+        },
+        "wa_appointment_reminder": {
+          "title": "Lembrete de compromisso",
+          "reason": "É enviada antes de um compromisso (1 hora / 2 horas / 1 dia / 2 dias / 3 dias)."
+        },
+        "wa_appointment_confirmation": {
+          "title": "Confirmação de compromisso",
+          "reason": "É enviada imediatamente ao agendar um novo compromisso."
+        },
+        "wa_appointment_thanks": {
+          "title": "Agradecimento após o compromisso",
+          "reason": "É enviada após o fim do compromisso, conforme o horário."
+        },
+        "wa_appointment_review": {
+          "title": "Pedido de avaliação após o compromisso",
+          "reason": "É enviada para pedir uma avaliação/feedback após um compromisso."
+        },
+        "wa_follow_up": {
+          "title": "Acompanhamento de um lead sem resposta",
+          "reason": "É enviada como o primeiro acompanhamento a um lead sem resposta."
+        },
+        "wa_follow_up_2": {
+          "title": "Segundo acompanhamento de lead",
+          "reason": "É enviada como outro acompanhamento a leads que não converteram."
+        },
+        "wa_inactive_client": {
+          "title": "Toque para um cliente inativo",
+          "reason": "É enviada a clientes sem atividade recente."
+        }
+      }
+    },
+    "editor": {
+      "stepN": "Etapa {{n}}",
+      "deleteModule": "Excluir módulo",
+      "done": "Concluir",
+      "howTitle": "Como se constrói uma automação?",
+      "how1": "Escolha um gatilho (quando acontece)",
+      "how2": "Adicione um resultado — o que deve acontecer automaticamente",
+      "how3": "Quer vários resultados juntos? Adicione outro resultado a partir do gatilho — sem caminhos",
+      "triggerSettings": "Configurações do gatilho que inicia a automação",
+      "triggerEvent": "O evento que inicia a automação",
+      "replaceTrigger": "Substituir gatilho",
+      "unsupportedTrigger": "Gatilho antigo ou sem suporte — escolha novamente um compatível",
+      "toStatus": "Para o status",
+      "fromStatus": "Do status",
+      "chooseTargetStatus": "Escolha um status de destino",
+      "anyStatus": "Qualquer status",
+      "needTargetStatus": "Escolha um status de destino",
+      "needHoursBefore": "Defina quantas horas antes do compromisso",
+      "invalidSchedule": "A agenda não é válida",
+      "parallelFromTrigger": "Quantos resultados juntos a partir do gatilho",
+      "parallelHint": "Cada resultado roda em paralelo — sem caminhos separados.",
+      "addResultToTrigger": "Adicionar um resultado ao gatilho",
+      "hoursBefore": "Quando enviar o lembrete (horas antes)",
+      "preset2h": "2 horas antes",
+      "preset1d": "1 dia antes",
+      "preset2d": "2 dias antes",
+      "preset3d": "3 dias antes",
+      "reminderHours": "Lembrete de compromisso — {{count}} horas antes",
+      "reminder1d": "Lembrete de compromisso — 1 dia antes",
+      "reminder2d": "Lembrete de compromisso — 2 dias antes",
+      "routerCount": "Quantos resultados juntos",
+      "resultName": "Nome do resultado {{n}}",
+      "amount": "Quantidade",
+      "unit": "Unidade",
+      "condition": "Condição",
+      "actionType": "Tipo de ação",
+      "aiSettings": "Configurações de IA",
+      "advanced": "Avançado",
+      "channelEmail": "E-mail",
+      "toneProfessional": "Profissional",
+      "toneFriendly": "Amigável",
+      "toneConcise": "Conciso",
+      "statuses": {
+        "new": "Novo",
+        "contacted": "Contatado",
+        "interested": "Interessado",
+        "converted": "Convertido",
+        "lost": "Perdido",
+        "old": "Antigo"
+      },
+      "mapping": {
+        "leadName": "Nome do lead",
+        "leadPhone": "Telefone do lead",
+        "leadEmail": "E-mail do lead",
+        "leadSource": "Fonte do lead",
+        "businessName": "Nome do negócio",
+        "date": "Data",
+        "time": "Hora",
+        "constant": "Valor fixo",
+        "manual": "Campo personalizado / valor manual",
+        "clientName": "Nome do cliente",
+        "timeUntil": "Tempo até o compromisso",
+        "appointmentTime": "Horário do compromisso",
+        "service": "Serviço"
+      },
+      "wa": {
+        "connectBeforeSelect": "Conecte o número de WhatsApp do negócio antes de escolher um modelo",
+        "unavailable": "O WhatsApp está indisponível agora. Fale com o suporte.",
+        "loadTemplatesError": "Não foi possível carregar os modelos do WhatsApp",
+        "managedOff": "Conecte o WhatsApp Business do negócio — o modo gerenciado está desativado.",
+        "refresh": "Atualizar modelos",
+        "loadingTemplates": "Carregando modelos...",
+        "retry": "Tentar de novo",
+        "connectCta": "Conectar WhatsApp Business",
+        "noneApproved": "Não há modelos do WhatsApp aprovados",
+        "noneApprovedHint": "Depois de aprovar um modelo na Meta, atualize a lista.",
+        "chooseTemplate": "Escolher um modelo",
+        "testTemplate": "Modelo de teste",
+        "variableMapping": "Mapeamento de variáveis",
+        "chooseMapping": "Escolher um mapeamento",
+        "lastSync": "Última sincronização: {{time}}",
+        "sender": "Remetente",
+        "managedNumber": "Número gerenciado da BizUply",
+        "businessNumber": "Número de WhatsApp do negócio",
+        "connectBusinessNumber": "Conecte o número de WhatsApp do negócio — conecte nas configurações",
+        "whoReceives": "Quem deve receber a mensagem?",
+        "recipient": "Destinatário:",
+        "fixedPhoneE164": "Número fixo (E.164)",
+        "template": "Modelo do WhatsApp",
+        "bizuplyBannerTitle": "Envio pelo número da BizUply",
+        "bizuplyBannerText": "Até uma conexão pessoal de WhatsApp ser ativada para o negócio, as mensagens serão enviadas do número central da BizUply em nome do seu negócio.",
+        "oneAction": "1 ação de automação",
+        "perMessage": "por mensagem do WhatsApp",
+        "estimateDaily": "Apenas estimativa: por exemplo uma mensagem por dia ≈ {{amount}} / mês",
+        "estimate100": "Apenas estimativa: por exemplo 100 mensagens ≈ {{amount}}"
+      },
+      "gmail": {
+        "bannerTitle": "Envio pelo Gmail conectado",
+        "bannerText": "O e-mail será enviado da conta do Gmail que você conectou ao negócio. Sem SMTP e sem envio pela BizUply.",
+        "loading": "Carregando o status do Gmail...",
+        "pendingApproval": "O Gmail está no processo de aprovação do Google",
+        "connectBeforePublish": "Conecte uma conta do Gmail antes de publicar a automação",
+        "noConnectUrl": "Nenhum link de login foi recebido",
+        "connectFailed": "A conexão do Gmail falhou",
+        "connect": "Conectar Gmail",
+        "sender": "Remetente",
+        "whoReceives": "Quem deve receber o e-mail?"
+      },
+      "outlook": {
+        "connectBeforePublish": "Conecte uma conta do Outlook antes de publicar a automação",
+        "noConnectUrl": "Nenhum link de login foi recebido",
+        "connectFailed": "A conexão do Outlook falhou",
+        "bannerTitle": "Envio pelo Outlook / Microsoft 365 conectado",
+        "bannerText": "O e-mail será enviado da conta Outlook que você conectou ao negócio. Sem SMTP e sem fallback para outro provedor.",
+        "loading": "Carregando status do Outlook...",
+        "comingSoon": "O Outlook / Microsoft 365 estará disponível em breve",
+        "connect": "Conectar Outlook",
+        "sender": "Remetente",
+        "whoReceives": "Para quem enviar o e-mail?"
+      },
+      "calendar": {
+        "fromAppointment": "Os dados do evento serão obtidos do compromisso (data, hora, duração, participante e local).",
+        "manualHint": "O evento é criado no Google Calendar do negócio. Você pode inserir horários manualmente ou deixá-los vazios quando houver um compromisso no contexto.",
+        "needCalendarScope": "É necessária permissão do Calendar (o Gmail já está conectado)",
+        "connectBeforePublish": "Conecte o Google Calendar antes de publicar a automação",
+        "noConnectUrl": "Nenhum link de login foi recebido",
+        "connectFailed": "A conexão do Google Calendar falhou",
+        "connect": "Conectar Google Calendar",
+        "endOptional": "Término (opcional)",
+        "durationMinutes": "Duração em minutos (se não houver término)",
+        "loading": "Carregando status do Google Calendar...",
+        "unavailable": "O Google Calendar não está disponível para este negócio no momento",
+        "googleAccount": "Conta Google",
+        "description": "Descrição",
+        "fromAppointmentNote": "Os detalhes do evento serão obtidos do compromisso",
+        "setManual": "Definir detalhes do evento manualmente",
+        "startOptional": "Início (opcional — padrão do compromisso)",
+        "datetimePlaceholder": "YYYY-MM-DD HH:mm ou vazio",
+        "attendee": "Participante (e-mail)",
+        "location": "Local"
+      },
+      "email": {
+        "senderUnavailable": "O remetente selecionado está indisponível",
+        "noSender": "Nenhum e-mail de remetente está definido",
+        "noVerified": "Nenhum e-mail comercial verificado está definido",
+        "from": "De",
+        "fromHelp": "O e-mail será enviado de um endereço comercial verificado do negócio.",
+        "to": "Para",
+        "chooseVerified": "Escolha um e-mail comercial verificado",
+        "customFieldKey": "Campo personalizado (chave)"
+      },
+      "toasts": {
+        "addedAndLinked": "Adicionado e conectado automaticamente (incluindo o restante do fluxo)",
+        "moduleAdded": "Módulo adicionado ao quadro",
+        "resultAdded": "Resultado adicionado ao gatilho",
+        "addedToSelected": "Adicionado e conectado automaticamente ao módulo selecionado",
+        "triggerAdded": "Gatilho adicionado — escolha o que deve acontecer automaticamente",
+        "settingsSaved": "Configurações salvas",
+        "draftSaved": "Rascunho salvo",
+        "saveError": "Não foi possível salvar a automação",
+        "waBillingRequired": "É preciso configurar a cobrança do WhatsApp antes de ativar a automação.",
+        "waBillingBlock": "Não é possível ativar a automação devido à cobrança do WhatsApp",
+        "planRequired": "Escolha um plano de ações para ativar uma automação",
+        "quotaExhausted": "A cota mensal de ações foi usada — ações cobradas ficarão bloqueadas até o upgrade",
+        "billingBlocked": "Não é possível ativar automações devido ao status de pagamento do plano",
+        "archived": "Não é possível publicar uma automação arquivada",
+        "needTriggerCatalog": "Carregue o catálogo de gatilhos antes de publicar",
+        "unsupportedPublish": "O gatilho selecionado ainda não é suportado para publicação",
+        "unsupportedChoose": "Gatilho antigo ou sem suporte — escolha um compatível antes de publicar",
+        "saveTimeout": "O salvamento está demorando demais — tente de novo",
+        "cannotSaveBeforePublish": "Não foi possível salvar o rascunho antes de publicar",
+        "publishNoResponse": "A publicação foi concluída, mas o servidor não devolveu uma resposta válida",
+        "publishedUpdated": "Automação publicada e atualizada",
+        "published": "Automação publicada",
+        "publishFailed": "Não foi possível publicar a automação",
+        "testFailed": "O teste da automação falhou",
+        "resumeFailed": "Não foi possível retomar a automação",
+        "loadGmail": "Não foi possível carregar o status do Gmail",
+        "loadOutlook": "Não foi possível carregar o status do Outlook",
+        "loadCalendar": "Não foi possível carregar o status do Google Calendar",
+        "loadTriggers": "Não foi possível carregar o catálogo de gatilhos"
+      },
+      "test": {
+        "title": "Modo de teste — nenhuma mensagem será enviada e nenhuma alteração será feita",
+        "run": "Executar um teste",
+        "publishFailed": "A publicação falhou"
+      },
+      "loadGmail": "Não foi possível carregar o status do Gmail"
+    },
+    "email": {
+      "business": "E-mail comercial",
+      "missingTitle": "Nenhum e-mail comercial verificado está definido",
+      "missingBody": "Para enviar pelo e-mail comercial, conclua primeiro a configuração e a verificação.",
+      "settingsCta": "Configurar e-mail comercial",
+      "providerRequired": "Para usar esta automação, conecte Gmail ou Outlook / Microsoft 365"
+    },
+    "ai": {
+      "billingSafe": "Uma ação de IA conta como uma ação de automação do seu plano",
+      "defaultSystems": "Notificações"
+    },
+    "errors": {
+      "missingTrigger": "Falta um gatilho aprovado",
+      "missingGraph": "Este modelo não tem um grafo de ativação"
     }
   },
   "layout": {
@@ -5744,6 +6525,245 @@
       "confirmSuggestion": "Confirmar",
       "changeMapping": "Mudar",
       "sourceFieldLine": "{{source}}  {{field}}"
+    },
+    "wizard": {
+      "ariaCreate": "Criar modelo",
+      "close": "Fechar",
+      "kicker": "Modelos de mensagem",
+      "title": "Criar modelo",
+      "metaBadge": "Interface da Meta",
+      "preview": "Prévia",
+      "previewBusiness": "WhatsApp · Empresa",
+      "bodyPlaceholderPreview": "O corpo da mensagem aparecerá aqui.",
+      "category": "Categoria",
+      "categoryHelp": "Escolha uma categoria e uma subcategoria. O nome e o idioma são definidos na etapa de edição.",
+      "subcategory": "Subcategoria",
+      "subcategoryHelp": "As opções mudam conforme a categoria selecionada.",
+      "templateName": "Nome do modelo",
+      "nameHelp": "Apenas letras minúsculas em inglês, números e sublinhados. Os clientes não verão isso.",
+      "language": "Idioma",
+      "languageHelp": "O idioma do conteúdo do modelo. Você pode adicionar mais versões depois.",
+      "authOptions": "Opções de autenticação",
+      "authHelp": "Só aparecem as opções realmente suportadas no envio para a Meta. Login com um toque ou sem toque ainda não está disponível.",
+      "otp": "Código de uso único",
+      "otpHint": "O corpo deve incluir a variável {{1}} para o código de verificação.",
+      "securityRec": "Recomendação de segurança",
+      "securityRecHint": "Adiciona um rodapé recomendando não compartilhar o código.",
+      "expiry": "Validade do código",
+      "expiryHint": "A Meta mostra validade de 10 minutos. Ainda não há um campo separado na nossa conexão.",
+      "copyCode": "Copiar código",
+      "copyCodeHint": "Você pode adicionar um botão de copiar na seção de botões.",
+      "reviewTitle": "Revisar antes de enviar",
+      "reviewHelp": "Confira se os dados estão corretos antes de enviar o modelo para a Meta.",
+      "header": "Cabeçalho",
+      "body": "Corpo",
+      "footer": "Rodapé",
+      "buttons": "Botões",
+      "samples": "Exemplos de variáveis",
+      "none": "Nenhum",
+      "reviewWarn": "O envio encaminha o modelo para análise da Meta. O status fica pendente até a Meta aprovar ou recusar.",
+      "draftSaved": "Rascunho salvo",
+      "draftFailed": "Não foi possível salvar o rascunho",
+      "submitted": "O modelo foi enviado para análise. Status: {{status}}.",
+      "savedNoMeta": "O modelo foi salvo como rascunho porque não há conexão ativa da Meta.",
+      "submitFailed": "Não foi possível enviar o modelo",
+      "prev": "Voltar",
+      "next": "Avançar",
+      "submitReview": "Enviar para análise",
+      "saveDraft": "Salvar como rascunho",
+      "bodyPlaceholder": "Escreva o corpo da mensagem. Use {{1}} para variáveis.",
+      "steps": {
+        "setup": {
+          "title": "Configurar modelo",
+          "hint": "Categoria e subcategoria"
+        },
+        "edit": {
+          "title": "Editar modelo",
+          "hint": "Nome, idioma e conteúdo"
+        },
+        "review": {
+          "title": "Enviar para análise",
+          "hint": "Revisão antes da Meta"
+        }
+      },
+      "categories": {
+        "MARKETING": {
+          "title": "Marketing",
+          "description": "Promoções, novidades de produtos e mensagens de marketing. Enviadas só a clientes que autorizaram."
+        },
+        "UTILITY": {
+          "title": "Utilidade",
+          "description": "Atualizações de pedidos, lembretes e respostas a solicitações do cliente. Não são para promoções."
+        },
+        "AUTHENTICATION": {
+          "title": "Autenticação",
+          "description": "Um código de uso único para entrar, verificar identidade ou confirmar uma ação."
+        }
+      },
+      "subtypes": {
+        "defaultMarketing": {
+          "title": "Padrão",
+          "description": "Envie mensagens com mídia e botões personalizados para estimular o engajamento."
+        },
+        "catalog": {
+          "title": "Catálogo",
+          "description": "Envie mensagens que ajudam as vendas ao conectar o catálogo de produtos."
+        },
+        "callPermission": {
+          "title": "Pedido de permissão para ligação",
+          "description": "Pergunte aos clientes se você pode ligar para eles no WhatsApp."
+        },
+        "defaultUtility": {
+          "title": "Padrão",
+          "description": "Envie mensagens sobre um pedido ou uma conta existentes."
+        },
+        "otp": {
+          "title": "Senha de uso único",
+          "description": "Envie códigos para verificar uma transação ou um login."
+        }
+      },
+      "languages": {
+        "he": "Hebraico",
+        "en": "Inglês",
+        "ar": "Árabe",
+        "es": "Espanhol",
+        "fr": "Francês",
+        "pt_BR": "Português (Brasil)"
+      },
+      "status": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "rejected": "Recusado",
+        "draft": "Rascunho"
+      },
+      "media": {
+        "image": "Imagem",
+        "video": "Vídeo",
+        "document": "Documento",
+        "location": "Localização"
+      }
+    },
+    "metaEditor": {
+      "content": "Conteúdo",
+      "contentHelp": "Adicione cabeçalho, corpo e rodapé ao modelo. As variáveis usam {{1}}, {{2}}.",
+      "variableType": "Tipo de variável",
+      "variableName": "Nome",
+      "variableNumber": "Número",
+      "mediaSample": "Amostra de mídia · Opcional",
+      "mediaNone": "Nenhuma",
+      "mediaImage": "Imagem",
+      "mediaVideo": "Vídeo",
+      "mediaDocument": "Documento",
+      "mediaLocation": "Localização",
+      "mediaIdImage": "ID de mídia da imagem",
+      "mediaIdVideo": "ID de mídia do vídeo",
+      "mediaIdDocument": "ID de mídia do documento",
+      "mediaIdPlaceholder": "ID de mídia recebido no upload",
+      "headerOptional": "Cabeçalho · Opcional",
+      "headerPlaceholder": "Adicione uma linha curta para o cabeçalho",
+      "addVariable": "+ Adicionar variável",
+      "variable": "+ Variável",
+      "code": "Código",
+      "strikethrough": "Tachado",
+      "italic": "Itálico",
+      "bold": "Negrito",
+      "bodyHelp": "Você pode adicionar variáveis como {{1}}, {{2}}. A prévia atualiza em tempo real.",
+      "exampleValues": "Valores de exemplo das variáveis",
+      "exampleHelp": "A Meta exige um exemplo para cada variável antes da análise.",
+      "samplePlaceholder": "Valor de exemplo",
+      "footerOptional": "Rodapé · Opcional",
+      "footerHelp": "Texto curto no final da mensagem. Pode ficar vazio.",
+      "footerPlaceholder": "Por exemplo: Não responda a esta mensagem",
+      "buttonsOptional": "Botões · Opcional",
+      "buttonsHelp": "Crie botões para os clientes responderem ou agirem. Você pode adicionar até {{count}} botões.",
+      "addButton": "Adicionar botão",
+      "removeButton": "Remover botão",
+      "buttonText": "Texto do botão",
+      "urlType": "Tipo de URL",
+      "urlStatic": "Estática",
+      "urlDynamic": "Dinâmica",
+      "websiteUrl": "URL do site",
+      "sampleUrl": "URL de exemplo",
+      "phoneNumber": "Número de telefone",
+      "contactHelp": "A Meta define o texto do botão. Ele não pode ser editado.",
+      "sampleCode": "Código de exemplo",
+      "wrapText": "texto",
+      "buttons": {
+        "quick_reply": {
+          "title": "Personalizado",
+          "description": "O cliente envia uma resposta curta com um toque.",
+          "defaultText": "Personalizado"
+        },
+        "url": {
+          "title": "Visitar o site",
+          "description": "Abre um URL estático ou dinâmico.",
+          "defaultText": "Visitar site"
+        },
+        "voice_call": {
+          "title": "Chamada do WhatsApp",
+          "description": "Inicia uma chamada de voz do WhatsApp com a empresa.",
+          "defaultText": "Chamada do WhatsApp"
+        },
+        "phone_number": {
+          "title": "Ligar para o número",
+          "description": "Liga para um número predefinido.",
+          "defaultText": "Ligar"
+        },
+        "request_contact_info": {
+          "title": "Compartilhar dados de contato",
+          "description": "Pede ao cliente para compartilhar os dados de contato.",
+          "defaultText": "Compartilhar dados de contato"
+        },
+        "copy_code": {
+          "title": "Copiar código",
+          "description": "Copia um código promocional ou de verificação.",
+          "defaultText": "Copiar código"
+        }
+      }
+    },
+    "billing": {
+      "loadError": "Não foi possível carregar os dados de cobrança do WhatsApp agora.",
+      "retry": "Tentar de novo",
+      "title": "WhatsApp",
+      "payAsYouGo": "Cobrança por uso",
+      "notConfigured": "A cobrança do WhatsApp não foi configurada",
+      "setupCta": "Configurar cobrança do WhatsApp",
+      "active": "A cobrança do WhatsApp está ativa",
+      "manage": "Gerenciar cobrança",
+      "perMessage": "{{price}} por mensagem",
+      "messagesThisMonth": "{{count}} mensagens este mês",
+      "estimatedCharge": "Cobrança estimada:",
+      "periodEnd": "O período de cobrança termina: {{date}}",
+      "noPackages": "Não há pacotes de WhatsApp — a cobrança é só pelas mensagens enviadas.",
+      "paymentIssue": "Há um problema de pagamento na cobrança do WhatsApp",
+      "paymentIssueBody": "O envio continuará temporariamente. Regularize o pagamento para evitar interrupção.",
+      "until": " Até {{date}}.",
+      "managePayment": "Gerenciar pagamento",
+      "sendBlocked": "O envio de WhatsApp está bloqueado por causa do status da cobrança",
+      "sendBlockedBody": "Adicione um método de pagamento para continuar enviando mensagens.",
+      "settlePayment": "Regularizar pagamento",
+      "cancelScheduled": "A cobrança está programada para cancelamento",
+      "cancelScheduledOn": " em {{date}}",
+      "keepActive": "Manter a cobrança ativa",
+      "updating": "Atualizando...",
+      "setupFailed": "Não foi possível iniciar a configuração da cobrança. Tente de novo.",
+      "cancelSuccess": "A cobrança será cancelada no fim do período atual.",
+      "cancelFailed": "Não foi possível cancelar a cobrança. Tente de novo.",
+      "reactivateSuccess": "O cancelamento foi desfeito e a cobrança continuará ativa.",
+      "reactivateFailed": "Não foi possível manter a cobrança ativa.",
+      "setupTitle": "Configurar cobrança do WhatsApp",
+      "manageTitle": "Gerenciar cobrança do WhatsApp",
+      "close": "Fechar",
+      "needPayment": "É necessário um método de pagamento para mensagens do WhatsApp",
+      "usageOnly": "Automações e envio são cobrados pelo uso real — não há pacotes pré-pagos.",
+      "startPayment": "Iniciar configuração de pagamento",
+      "cancel": "Cancelar",
+      "manageLine": "Cobrança por uso · {{price}} por mensagem",
+      "periodUntil": " · período até {{date}}",
+      "cancelNote": "A cobrança está programada para cancelamento",
+      "cancelNoteOn": " em {{date}}. Você pode mantê-la ativa.",
+      "cancelAtEndBody": "Você pode cancelar a cobrança no fim do período atual. Até lá, pode continuar enviando por uso.",
+      "cancelAtEnd": "Cancelar no fim do período"
     }
   },
   "metaCampaigns": {

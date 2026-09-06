@@ -479,6 +479,787 @@
       "title": "Automatizaciones",
       "subtitle": "Un constructor visual Make / n8n-style: arrastre los módulos, conéctelos e inicie sesión.",
       "channel": "Generador de arrastrar y soltar"
+    },
+    "common": {
+      "all": "Todos",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "close": "Cerrar",
+      "retry": "Intentar de nuevo",
+      "loading": "Cargando…",
+      "yes": "Sí",
+      "no": "No",
+      "optional": "Opcional",
+      "requiredFields": "Campos obligatorios",
+      "settings": "Ajustes",
+      "title": "Título",
+      "value": "Valor",
+      "none": "—"
+    },
+    "home": {
+      "title": "Automatizaciones",
+      "subtitle": "Crea y gestiona procesos automáticos para tu negocio",
+      "new": "Nueva automatización",
+      "templates": "Plantillas",
+      "runDemoTrigger": "Ejecutar un disparador de ejemplo",
+      "kpiTotal": "Total de automatizaciones",
+      "kpiActive": "Activas",
+      "kpiRuns": "Ejecuciones en 30 días",
+      "kpiFailed": "Fallidas",
+      "billingAria": "Facturación de automatizaciones y WhatsApp",
+      "searchPlaceholder": "Buscar automatizaciones",
+      "sort": "Ordenar",
+      "sortUpdated": "Actualizadas recientemente",
+      "sortCreated": "Creadas recientemente",
+      "sortName": "Nombre",
+      "filterAll": "Todas",
+      "filterActive": "Activas",
+      "filterDraft": "Borradores",
+      "filterPaused": "En pausa",
+      "filterFailed": "Errores",
+      "loading": "Cargando automatizaciones...",
+      "emptyTitle": "Aún no hay automatizaciones",
+      "emptyText": "Crea tu primera automatización y ahorra trabajo manual.",
+      "browseTemplates": "Explorar plantillas",
+      "noneFoundTitle": "No se encontraron automatizaciones",
+      "noneFoundText": "Prueba a cambiar la búsqueda o los filtros.",
+      "fallbackName": "la automatización",
+      "deleteActiveHint": "Esta automatización está activa y se detendrá de inmediato. ",
+      "deletePausedHint": "Esta automatización está en pausa. ",
+      "deleteConfirm": "¿Eliminar permanentemente \"{{name}}\"? También se elimina el historial de ejecuciones y no se puede deshacer."
+    },
+    "toasts": {
+      "loadError": "No se pudieron cargar las automatizaciones",
+      "checkoutCancel": "El pago se canceló — puedes elegir un plan de nuevo en cualquier momento.",
+      "waCheckoutProcessing": "Actualizando la facturación de WhatsApp...",
+      "waCheckoutCancel": "La configuración de facturación de WhatsApp se canceló — puedes configurarla de nuevo en cualquier momento.",
+      "waReactivated": "Se deshizo la cancelación y la facturación seguirá activa.",
+      "waReactivateError": "No pudimos mantener activa la facturación de WhatsApp",
+      "planReactivated": "Se deshizo la cancelación y el plan continuará.",
+      "planReactivateError": "No pudimos mantener el plan activo",
+      "duplicated": "Automatización duplicada",
+      "duplicateError": "No se pudo duplicar",
+      "statusUpdated": "Estado de la automatización actualizado",
+      "waBillingRequired": "Debes configurar la facturación de WhatsApp antes de activar la automatización.",
+      "waBillingBlock": "No se puede actualizar la automatización por la facturación de WhatsApp",
+      "planRequired": "Elige un plan de acciones para activar una automatización",
+      "quotaExhausted": "Se agotó la cuota mensual de acciones — las acciones de pago se bloquearán hasta que actualices",
+      "updateBlocked": "No se puede actualizar la automatización",
+      "deleted": "Automatización eliminada",
+      "deleteError": "No se pudo eliminar",
+      "createdAndEnabled": "Automatización creada y activada",
+      "createdNotEnabled": "Creada pero no activada — revisa la configuración y publica",
+      "createdNotEnabledBuilder": "Creada pero no activada — termina la configuración y publica en el editor",
+      "activateError": "No se pudo activar la automatización",
+      "waUnavailable": "WhatsApp no está disponible ahora. Contacta con soporte.",
+      "connectWhatsApp": "Conecta WhatsApp Business antes de activar",
+      "noApprovedTemplates": "No hay plantillas aprobadas por Meta (APPROVED) — crea una plantilla y apruébala en Meta",
+      "notReady": "No se puede activar ahora",
+      "selectWaTemplate": "Elige una plantilla de WhatsApp aprobada",
+      "selectEmailProvider": "Elige Gmail, Outlook / Microsoft 365 o un correo de empresa",
+      "blankReady": "El lienzo vacío está listo — elige un disparador para empezar",
+      "createError": "No se pudo crear la automatización"
+    },
+    "templates": {
+      "title": "Plantillas de automatización",
+      "subtitle": "Elige una automatización → elige una plantilla de WhatsApp aprobada → actívala al momento.",
+      "catalogCount": "plantillas en el catálogo",
+      "categoryCount": "plantillas en esta categoría",
+      "searchPlaceholder": "Buscar una plantilla lista",
+      "categoriesAria": "Categorías",
+      "loading": "Cargando plantillas de automatización...",
+      "emptyTitle": "No hay plantillas en esta categoría",
+      "emptyText": "Prueba otra categoría o actualiza la página.",
+      "refresh": "Actualizar",
+      "ctaPickPlan": "Elegir un plan de automatizaciones",
+      "ctaPickMessage": "Activar — elegir plantilla de mensaje",
+      "ctaEnableAi": "Activar plantilla",
+      "ctaEnableNow": "Activar ahora",
+      "planRequiredTitle": "Se requiere un plan de automatizaciones activo",
+      "badgeFlow": "Flujo",
+      "badgeComingSoon": "Próximamente",
+      "badgeReady": "Lista",
+      "badgeMissing": "Falta algo",
+      "trigger": "Disparador",
+      "result": "Resultado",
+      "suggestedTemplate": "Plantilla sugerida: {{name}}",
+      "chooseWaOnEnable": "Al activar elegirás una plantilla de WhatsApp aprobada",
+      "aiStartsWhen": "Empieza cuando:",
+      "aiDoes": "Qué hace la IA:",
+      "aiAfterwards": "Después:",
+      "aiSystems": "Sistemas:",
+      "aiEstimated": "Acciones estimadas:",
+      "aiDefaultResult": "—",
+      "activateTitle": "Activar “{{name}}”",
+      "chooseApprovedWa": "Elige una plantilla de WhatsApp aprobada de tu lista — la automatización se iniciará de inmediato.",
+      "approvedMessageTemplate": "Plantilla de mensaje aprobada",
+      "chooseTemplate": "Elegir una plantilla",
+      "noApprovedYet": "Aún no hay plantillas aprobadas — prepáralas arriba y apruébalas en Meta.",
+      "chooseEmailAccount": "Elige con qué cuenta se enviará el correo.",
+      "emailAccount": "Cuenta de correo",
+      "chooseProvider": "Elegir un proveedor",
+      "from": "De",
+      "chooseBusinessEmail": "Elige un correo de empresa verificado",
+      "categories": {
+        "all": "Todas",
+        "crm": "CRM",
+        "appointments": "Citas",
+        "email": "Correo",
+        "whatsapp": "WhatsApp",
+        "sales": "Ventas",
+        "store": "Tienda",
+        "ai": "IA"
+      }
+    },
+    "create": {
+      "title": "Crear automatización",
+      "subtitle": "Elige cómo empezar",
+      "blankTitle": "Automatización en blanco",
+      "blankText": "Empieza desde el lienzo y construye el flujo tú mismo",
+      "templatesTitle": "Plantillas",
+      "templatesText": "Empieza con un proceso listo y adáptalo a tu negocio",
+      "defaultName": "Nueva automatización"
+    },
+    "picker": {
+      "titleAll": "Añadir un paso",
+      "titleTrigger": "¿Qué iniciará la automatización?",
+      "titleResult": "¿Qué debe ocurrir automáticamente?",
+      "subtitleAll": "Elige un disparador, un resultado o lógica para añadir al flujo",
+      "subtitleTrigger": "Elige el evento que inicia el proceso",
+      "subtitleResult": "Un resultado es lo que ocurre después del disparador. Puedes añadir varios resultados juntos.",
+      "searchAll": "Buscar un disparador o resultado",
+      "searchTrigger": "Buscar: lead, CRM, cita, WhatsApp, pago, pedido, formulario, hora…",
+      "searchResult": "Buscar un resultado (WhatsApp, tarea, IA…)",
+      "searchAria": "Buscar disparadores",
+      "categoriesAria": "Categorías de disparador",
+      "loading": "Cargando disparadores del servidor...",
+      "emptyTriggers": "No hay disparadores coincidentes",
+      "emptyItems": "No se encontraron elementos",
+      "categories": {
+        "all": "Todos",
+        "trigger": "Disparadores",
+        "action": "Resultados",
+        "logic": "Lógica",
+        "delay": "Espera",
+        "ai": "IA",
+        "integrations": "Conexiones"
+      },
+      "triggerCategories": {
+        "common": "Populares",
+        "recent": "Usados recientemente",
+        "crm": "CRM y leads",
+        "appointments": "Citas",
+        "whatsapp": "WhatsApp",
+        "store": "Tienda y pagos",
+        "website": "Sitio y formularios",
+        "subscriptions": "Suscripciones y facturación",
+        "tasks": "Tareas y equipo",
+        "email": "Correo",
+        "schedule": "Programación",
+        "manual": "Integraciones y sistema",
+        "system": "Integraciones y sistema"
+      }
+    },
+    "toolbar": {
+      "back": "Volver",
+      "nameAria": "Nombre de la automatización",
+      "addStep": "Añadir paso",
+      "test": "Probar",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saveError": "Error al guardar",
+      "unsaved": "● Cambios sin guardar",
+      "saved": "✓ Guardado",
+      "published": "Publicada",
+      "draft": "Borrador",
+      "publish": "Publicar",
+      "publishing": "Publicando…",
+      "updatePublish": "Actualizar publicación",
+      "pause": "Pausar",
+      "resume": "Activar",
+      "active": "Activa",
+      "paused": "En pausa",
+      "cannotPublishArchived": "No se puede publicar una automatización archivada",
+      "reloadTriggers": "Vuelve a cargar el catálogo de disparadores",
+      "unsupportedTrigger": "Disparador antiguo o no compatible",
+      "updatePublished": "Actualizar la versión publicada con el borrador actual",
+      "publishAutomation": "Publicar la automatización"
+    },
+    "empty": {
+      "badge": "Disparador",
+      "chooseAria": "Elegir un disparador",
+      "scheduleHint": "También por programación",
+      "title": "Empieza con un disparador",
+      "text": "Elige cuándo empieza la automatización (por ejemplo un lead nuevo). Luego añade lo que debe ocurrir automáticamente — el resultado. Puedes dividir en varios resultados juntos, sin rutas complejas.",
+      "chooseTrigger": "Elegir un disparador"
+    },
+    "catalog": {
+      "noCharge": "Sin cargo",
+      "actions": {
+        "create_task": "Crear una tarea de CRM",
+        "update_lead_status": "Actualizar estado del lead",
+        "update_status": "Actualizar estado del lead",
+        "assign_owner": "Asignar a un representante",
+        "add_tag": "Añadir una etiqueta",
+        "create_crm_note": "Crear una nota de CRM",
+        "whatsapp_template": "Enviar una plantilla de WhatsApp",
+        "send_whatsapp": "Enviar una plantilla de WhatsApp",
+        "send_email": "Enviar un correo de empresa",
+        "send_gmail": "Enviar correo por Gmail",
+        "send_outlook": "Enviar correo por Outlook / Microsoft 365",
+        "google_calendar_create_event": "Google Calendar — crear evento",
+        "google_calendar_update_event": "Google Calendar — actualizar evento",
+        "google_calendar_delete_event": "Google Calendar — eliminar evento",
+        "notify": "Notificación interna",
+        "internal_notification": "Notificación interna",
+        "delay": "Espera",
+        "webhook": "Llamada webhook",
+        "stop": "Detener el flujo",
+        "create_appointment": "Crear una cita",
+        "ai_rank_lead": "IA · Clasificar lead",
+        "ai_classify_lead": "IA · Categorizar lead",
+        "ai_auto_tag": "IA · Etiquetar lead",
+        "ai_detect_hot_lead": "IA · Detectar lead caliente",
+        "ai_lead_brief": "IA · Resumen del lead",
+        "ai_draft_followup": "IA · Borrador de seguimiento",
+        "ai_draft_email": "IA · Borrador de correo",
+        "ai_suggest_next_action": "IA · Sugerir siguiente acción",
+        "ai_daily_leads_digest": "IA · Resumen diario de leads",
+        "ai_daily_agenda_digest": "IA · Resumen diario de agenda"
+      },
+      "actionShort": {
+        "whatsapp_template": "WhatsApp",
+        "create_task": "Tarea",
+        "create_crm_note": "Nota de CRM",
+        "notify": "Alerta",
+        "update_lead_status": "Estado",
+        "assign_owner": "Asignar representante",
+        "add_tag": "Etiqueta",
+        "send_gmail": "Gmail",
+        "send_outlook": "Outlook",
+        "send_email": "Correo de empresa",
+        "google_calendar_create_event": "Google Calendar · Crear",
+        "google_calendar_update_event": "Google Calendar · Actualizar",
+        "google_calendar_delete_event": "Google Calendar · Eliminar",
+        "webhook": "Webhook",
+        "ai_rank_lead": "IA · Clasificar lead",
+        "ai_classify_lead": "IA · Categorizar lead",
+        "ai_auto_tag": "IA · Etiquetar lead",
+        "ai_detect_hot_lead": "IA · Detectar lead caliente",
+        "ai_lead_brief": "IA · Resumen del lead",
+        "ai_draft_followup": "IA · Borrador de seguimiento",
+        "ai_draft_email": "IA · Borrador de correo",
+        "ai_suggest_next_action": "IA · Sugerir acción",
+        "ai_daily_leads_digest": "IA · Resumen diario de leads",
+        "ai_daily_agenda_digest": "IA · Resumen diario de agenda"
+      },
+      "actionDesc": {
+        "whatsapp_template": "Envía una plantilla de mensaje",
+        "create_task": "Crea una tarea de seguimiento en el CRM",
+        "create_crm_note": "Registra una nota en la ficha del lead/cliente",
+        "notify": "Notifica al dueño del negocio",
+        "update_lead_status": "Actualiza el estado del lead",
+        "assign_owner": "Asigna a un miembro del equipo",
+        "add_tag": "Añade una etiqueta al lead/cliente",
+        "send_gmail": "Gmail — enviar correo",
+        "send_outlook": "Outlook / Microsoft 365 — enviar correo",
+        "send_email": "Enviar un correo de empresa",
+        "google_calendar_create_event": "Crea un evento de Google Calendar",
+        "google_calendar_update_event": "Actualiza un evento de Google Calendar",
+        "google_calendar_delete_event": "Elimina un evento de Google Calendar",
+        "webhook": "Envía datos a un sistema externo",
+        "ai_rank_lead": "Clasifica un lead por probabilidad y urgencia",
+        "ai_classify_lead": "Clasifica un lead en una categoría",
+        "ai_auto_tag": "Añade etiquetas de CRM automáticamente",
+        "ai_detect_hot_lead": "Detecta un lead caliente para atención inmediata",
+        "ai_lead_brief": "Prepara un resumen antes de una llamada de ventas",
+        "ai_draft_followup": "Redacta un mensaje de seguimiento",
+        "ai_draft_email": "Redacta un correo para el cliente",
+        "ai_suggest_next_action": "Sugiere la siguiente acción para el representante",
+        "ai_daily_leads_digest": "Resume los leads nuevos",
+        "ai_daily_agenda_digest": "Resume tareas y citas"
+      },
+      "conditions": {
+        "no_response": "No se hizo contacto",
+        "status_is": "Estado concreto",
+        "has_appointment": "Tiene una cita próxima",
+        "has_tag": "Tiene una etiqueta",
+        "source_is": "Fuente de lead concreta",
+        "business_hours": "Dentro del horario",
+        "replied": "El cliente respondió",
+        "amount_above": "Importe superior a X"
+      },
+      "conditionDesc": {
+        "no_response": "Sí/no según la respuesta",
+        "status_is": "Comprueba el estado del lead",
+        "has_appointment": "Si hay una cita próxima",
+        "has_tag": "Por una etiqueta del lead/cliente",
+        "source_is": "Meta / web / WhatsApp",
+        "business_hours": "Dentro/fuera del horario",
+        "replied": "Si hubo una respuesta",
+        "amount_above": "Por el valor de la operación"
+      },
+      "conditionHasAppointmentShort": "Tiene una cita",
+      "conditionSourceShort": "Fuente del lead",
+      "delayUnits": {
+        "minutes": "Minutos",
+        "hours": "Horas",
+        "days": "Días"
+      },
+      "filters": {
+        "all": "Todo",
+        "trigger": "Disparador",
+        "condition": "Condición",
+        "router": "División",
+        "delay": "Espera",
+        "action": "Resultado"
+      },
+      "nodeTypes": {
+        "trigger": "Disparador",
+        "delay": "Espera",
+        "condition": "Condición",
+        "action": "Resultado",
+        "router": "División"
+      },
+      "triggerCategories": {
+        "crm": "CRM y leads",
+        "appointments": "Citas",
+        "website": "Sitio y formularios",
+        "store": "Tienda y pagos",
+        "schedule": "Programación",
+        "manual": "Integraciones y sistema",
+        "system": "Integraciones y sistema",
+        "whatsapp": "WhatsApp",
+        "subscriptions": "Suscripciones y facturación",
+        "tasks": "Tareas y equipo",
+        "email": "Correo"
+      },
+      "palette": {
+        "resultPrefix": "Resultado · {{label}}",
+        "conditionPrefix": "Condición · {{label}}",
+        "routerLabel": "División · varios resultados juntos",
+        "routerDesc": "Divide en 1–6 resultados que se ejecutan juntos — sin rutas complejas",
+        "routerDefault": "Dividir en varios resultados",
+        "resultN": "Resultado {{n}}",
+        "waitLabel": "Espera",
+        "waitDesc": "Espera y luego continúa / se divide",
+        "reminderDefault": "Recordatorio de cita — 1 día antes",
+        "reminderDesc": "Cuándo enviar un recordatorio de cita — luego eliges el resultado (WhatsApp y más)",
+        "aiCriteriaDefault": "Ajuste al servicio, urgencia y potencial de compra",
+        "meetingTitleDefault": "Reunión con {{appointment.clientName}}"
+      },
+      "summaries": {
+        "hourBefore": "1 hora antes de la cita",
+        "twoHoursBefore": "2 horas antes de la cita",
+        "dayBefore": "1 día antes de la cita",
+        "daysBefore": "{{count}} días antes de la cita",
+        "hoursBefore": "{{count}} horas antes de la cita",
+        "statusFromTo": "De {{from}} a {{to}}",
+        "statusTo": "Pasar al estado {{status}}",
+        "anyStatusChange": "En cualquier cambio de estado",
+        "bySchedule": "Según la programación configurada",
+        "manual": "Inicio manual desde el sistema",
+        "newLead": "Se ejecuta cada vez que se crea un lead nuevo",
+        "formSubmitted": "Se ejecuta al enviar un formulario del sitio",
+        "appointmentCreated": "Se ejecuta al reservar una cita",
+        "appointmentCancelled": "Se ejecuta al cancelar una cita",
+        "orderCreated": "Se ejecuta al crear un pedido",
+        "orderPaid": "Se ejecuta tras un pedido pagado en la tienda",
+        "triggerFallback": "Disparador",
+        "routerTogether": "{{count}} resultados juntos",
+        "aiFallback": "Acción de IA",
+        "calendarDelete": "Calendar · eliminar {{eventId}}",
+        "ai_rank_lead": "Clasifica un lead por probabilidad y urgencia",
+        "ai_classify_lead": "Clasifica un lead",
+        "ai_auto_tag": "Etiquetado automático",
+        "ai_detect_hot_lead": "Detecta un lead caliente",
+        "ai_lead_brief": "Resumen del lead",
+        "ai_draft_followup": "Borrador de seguimiento",
+        "ai_draft_email": "Borrador de correo",
+        "ai_suggest_next_action": "Sugiere la siguiente acción",
+        "ai_daily_leads_digest": "Resumen diario de leads",
+        "ai_daily_agenda_digest": "Resumen de tareas/citas"
+      },
+      "recipients": {
+        "lead_email": "Correo del lead",
+        "appointment_customer_email": "El cliente que reservó",
+        "store_customer_email": "El cliente del pedido",
+        "business_owner": "Dueño del negocio",
+        "lead_owner": "Responsable del lead",
+        "fixed_email": "Dirección fija",
+        "custom_field": "Campo personalizado",
+        "lead_phone": "Teléfono del lead",
+        "fixed_phone": "Número fijo"
+      },
+      "system": {
+        "lead_multi_route": {
+          "title": "Lead nuevo — varios resultados juntos",
+          "description": "Cuando llega un lead nuevo al CRM: envía WhatsApp, crea una tarea para un representante y avisa al dueño — en paralelo.",
+          "trigger": "Lead nuevo en el CRM",
+          "results": {
+            "0": "WhatsApp inmediato",
+            "1": "Tarea para un representante",
+            "2": "Aviso al dueño"
+          }
+        },
+        "lead_no_response": {
+          "title": "Lead nuevo → apertura + seguimientos según respuesta",
+          "description": "Mensaje de apertura de inmediato. Si no hay respuesta de WhatsApp — un seguimiento a las 24 horas y otro a los 3 días.",
+          "trigger": "Lead nuevo en el CRM",
+          "results": {
+            "0": "Apertura por WhatsApp",
+            "1": "Seguimiento n.º 1",
+            "2": "Seguimiento n.º 2"
+          },
+          "timing": "Apertura inmediata · seguimiento n.º 1 a las 24 h · seguimiento n.º 2 a los 3 días"
+        },
+        "new_client_welcome": {
+          "title": "Cliente nuevo — bienvenida",
+          "description": "Disparador de cliente nuevo → mensaje de apertura + tarea de retención.",
+          "trigger": "Cliente nuevo",
+          "results": {
+            "0": "Mensaje de apertura",
+            "1": "Tarea de retención"
+          }
+        },
+        "appointment_duo": {
+          "title": "Cita — confirmación + recordatorio + tarea",
+          "description": "Al crear una cita: confirmación de WhatsApp al cliente, una tarea de preparación y un recordatorio el día anterior.",
+          "trigger": "Cita nueva",
+          "results": {
+            "0": "Confirmación de WhatsApp",
+            "1": "Recordatorio previo",
+            "2": "Tarea"
+          }
+        },
+        "appointment_gcal_sync": {
+          "title": "Cita → Google Calendar",
+          "description": "Disparador de cita nueva. Resultado: crear un evento de Google Calendar.",
+          "trigger": "Cita nueva",
+          "results": {
+            "0": "Evento de Google Calendar"
+          }
+        },
+        "appointment_email_confirm": {
+          "title": "Cita → correo de confirmación",
+          "description": "Disparador de cita nueva. Resultado: correo de confirmación al cliente.",
+          "trigger": "Cita nueva",
+          "results": {
+            "0": "Correo de confirmación"
+          }
+        },
+        "lead_email_welcome": {
+          "title": "Lead nuevo → correo + tarea",
+          "description": "Disparador de lead nuevo. Resultados: correo y una tarea de seguimiento.",
+          "trigger": "Lead nuevo en el CRM",
+          "results": {
+            "0": "Correo",
+            "1": "Tarea de seguimiento"
+          }
+        },
+        "appointment_reminder_1_day": {
+          "title": "Recordatorio de cita — 1 día antes",
+          "description": "Envía una plantilla de WhatsApp un día antes de la cita.",
+          "trigger": "Cita próxima (1 día antes)",
+          "results": {
+            "0": "Recordatorio de WhatsApp"
+          },
+          "timing": "Un día antes"
+        },
+        "appointment_reminder_2_days": {
+          "title": "Recordatorio de cita — 2 días antes",
+          "description": "Envía una plantilla de WhatsApp dos días (48 horas) antes de la cita.",
+          "trigger": "Cita próxima (2 días antes)",
+          "results": {
+            "0": "Recordatorio de WhatsApp"
+          },
+          "timing": "Dos días antes (48 horas)"
+        },
+        "appointment_reminder_hours": {
+          "title": "Recordatorio de cita — horas antes",
+          "description": "Recordatorio personalizado (por ejemplo dos horas antes) con una plantilla de WhatsApp.",
+          "trigger": "Cita próxima (horas antes)",
+          "results": {
+            "0": "Recordatorio de WhatsApp"
+          },
+          "timing": "Un número de horas a elegir"
+        },
+        "appointment_thanks": {
+          "title": "Agradecimiento después de la cita",
+          "description": "Tras terminar la cita — un agradecimiento de WhatsApp según la hora de la cita.",
+          "trigger": "Cita finalizada",
+          "results": {
+            "0": "Mensaje de agradecimiento"
+          }
+        },
+        "appointment_review": {
+          "title": "Solicitud de reseña después de la cita",
+          "description": "Un día después de terminar la cita — una solicitud de reseña por WhatsApp.",
+          "trigger": "Cita finalizada",
+          "results": {
+            "0": "Solicitud de reseña"
+          }
+        },
+        "lead_followup_2": {
+          "title": "Segundo seguimiento de lead (fusionado)",
+          "description": "Fusionado en la ruta unificada “Lead nuevo → apertura + seguimientos según respuesta”. No se muestra como tarjeta aparte.",
+          "trigger": "Lead no convertido",
+          "results": {
+            "0": "Segundo seguimiento de WhatsApp"
+          },
+          "timing": "Parte de la ruta unificada de seguimientos"
+        },
+        "inactive_client": {
+          "title": "Cliente inactivo — recordatorio",
+          "description": "Un recordatorio para clientes sin interacción reciente.",
+          "trigger": "Cliente inactivo",
+          "results": {
+            "0": "Mensaje de recordatorio"
+          }
+        }
+      },
+      "waRequired": {
+        "wa_welcome_lead": {
+          "title": "Bienvenida a un lead nuevo",
+          "reason": "Se envía cuando un lead nuevo entra al CRM."
+        },
+        "wa_welcome_client": {
+          "title": "Bienvenida a un cliente nuevo",
+          "reason": "Se envía cuando se crea un cliente nuevo en el CRM."
+        },
+        "wa_appointment_reminder": {
+          "title": "Recordatorio de cita",
+          "reason": "Se envía antes de una cita (1 hora / 2 horas / 1 día / 2 días / 3 días)."
+        },
+        "wa_appointment_confirmation": {
+          "title": "Confirmación de cita",
+          "reason": "Se envía de inmediato al reservar una cita nueva."
+        },
+        "wa_appointment_thanks": {
+          "title": "Agradecimiento después de la cita",
+          "reason": "Se envía tras terminar la cita, según la hora de la cita."
+        },
+        "wa_appointment_review": {
+          "title": "Solicitud de reseña después de la cita",
+          "reason": "Se envía para pedir una reseña/opinión después de una cita."
+        },
+        "wa_follow_up": {
+          "title": "Seguimiento de un lead sin respuesta",
+          "reason": "Se envía como el primer seguimiento a un lead sin respuesta."
+        },
+        "wa_follow_up_2": {
+          "title": "Segundo seguimiento de lead",
+          "reason": "Se envía como otro seguimiento a leads que no se convirtieron."
+        },
+        "wa_inactive_client": {
+          "title": "Recordatorio para un cliente inactivo",
+          "reason": "Se envía a clientes sin actividad reciente."
+        }
+      }
+    },
+    "editor": {
+      "stepN": "Paso {{n}}",
+      "deleteModule": "Eliminar módulo",
+      "done": "Listo",
+      "howTitle": "¿Cómo se construye una automatización?",
+      "how1": "Elige un disparador (cuándo ocurre)",
+      "how2": "Añade un resultado — qué debe ocurrir automáticamente",
+      "how3": "¿Quieres varios resultados juntos? Añade otro resultado desde el disparador — sin rutas",
+      "triggerSettings": "Ajustes del disparador que inicia la automatización",
+      "triggerEvent": "El evento que inicia la automatización",
+      "replaceTrigger": "Reemplazar disparador",
+      "unsupportedTrigger": "Disparador antiguo o no compatible — elige de nuevo uno compatible",
+      "toStatus": "Al estado",
+      "fromStatus": "Desde el estado",
+      "chooseTargetStatus": "Elige un estado de destino",
+      "anyStatus": "Cualquier estado",
+      "needTargetStatus": "Elige un estado de destino",
+      "needHoursBefore": "Define cuántas horas antes de la cita",
+      "invalidSchedule": "La programación no es válida",
+      "parallelFromTrigger": "Cuántos resultados juntos desde el disparador",
+      "parallelHint": "Cada resultado se ejecuta en paralelo — sin rutas separadas.",
+      "addResultToTrigger": "Añadir un resultado al disparador",
+      "hoursBefore": "Cuándo enviar el recordatorio (horas antes)",
+      "preset2h": "2 horas antes",
+      "preset1d": "1 día antes",
+      "preset2d": "2 días antes",
+      "preset3d": "3 días antes",
+      "reminderHours": "Recordatorio de cita — {{count}} horas antes",
+      "reminder1d": "Recordatorio de cita — 1 día antes",
+      "reminder2d": "Recordatorio de cita — 2 días antes",
+      "routerCount": "Cuántos resultados juntos",
+      "resultName": "Nombre del resultado {{n}}",
+      "amount": "Cantidad",
+      "unit": "Unidad",
+      "condition": "Condición",
+      "actionType": "Tipo de acción",
+      "aiSettings": "Ajustes de IA",
+      "advanced": "Avanzado",
+      "channelEmail": "Correo",
+      "toneProfessional": "Profesional",
+      "toneFriendly": "Cercano",
+      "toneConcise": "Conciso",
+      "statuses": {
+        "new": "Nuevo",
+        "contacted": "Contactado",
+        "interested": "Interesado",
+        "converted": "Convertido",
+        "lost": "Perdido",
+        "old": "Antiguo"
+      },
+      "mapping": {
+        "leadName": "Nombre del lead",
+        "leadPhone": "Teléfono del lead",
+        "leadEmail": "Correo del lead",
+        "leadSource": "Fuente del lead",
+        "businessName": "Nombre del negocio",
+        "date": "Fecha",
+        "time": "Hora",
+        "constant": "Valor fijo",
+        "manual": "Campo personalizado / valor manual",
+        "clientName": "Nombre del cliente",
+        "timeUntil": "Tiempo hasta la cita",
+        "appointmentTime": "Hora de la cita",
+        "service": "Servicio"
+      },
+      "wa": {
+        "connectBeforeSelect": "Conecta el número de WhatsApp del negocio antes de elegir una plantilla",
+        "unavailable": "WhatsApp no está disponible ahora. Contacta con soporte.",
+        "loadTemplatesError": "No pudimos cargar las plantillas de WhatsApp",
+        "managedOff": "Conecta WhatsApp Business del negocio — el modo gestionado está desactivado.",
+        "refresh": "Actualizar plantillas",
+        "loadingTemplates": "Cargando plantillas...",
+        "retry": "Intentar de nuevo",
+        "connectCta": "Conectar WhatsApp Business",
+        "noneApproved": "No hay plantillas de WhatsApp aprobadas",
+        "noneApprovedHint": "Tras aprobar una plantilla en Meta, actualiza la lista.",
+        "chooseTemplate": "Elegir una plantilla",
+        "testTemplate": "Plantilla de prueba",
+        "variableMapping": "Asignación de variables",
+        "chooseMapping": "Elegir una asignación",
+        "lastSync": "Última sincronización: {{time}}",
+        "sender": "Remitente",
+        "managedNumber": "Número gestionado de BizUply",
+        "businessNumber": "Número de WhatsApp del negocio",
+        "connectBusinessNumber": "Conecta el número de WhatsApp del negocio — conéctalo en ajustes",
+        "whoReceives": "¿Quién debe recibir el mensaje?",
+        "recipient": "Destinatario:",
+        "fixedPhoneE164": "Número fijo (E.164)",
+        "template": "Plantilla de WhatsApp",
+        "bizuplyBannerTitle": "Envío a través del número de BizUply",
+        "bizuplyBannerText": "Hasta que se active una conexión personal de WhatsApp para el negocio, los mensajes se enviarán desde el número central de BizUply en nombre de tu negocio.",
+        "oneAction": "1 acción de automatización",
+        "perMessage": "por mensaje de WhatsApp",
+        "estimateDaily": "Solo estimación: por ejemplo un mensaje al día ≈ {{amount}} / mes",
+        "estimate100": "Solo estimación: por ejemplo 100 mensajes ≈ {{amount}}"
+      },
+      "gmail": {
+        "bannerTitle": "Envío a través de Gmail conectado",
+        "bannerText": "El correo se enviará desde la cuenta de Gmail que conectaste al negocio. Sin SMTP y sin envío a través de BizUply.",
+        "loading": "Cargando el estado de Gmail...",
+        "pendingApproval": "Gmail está en el proceso de aprobación de Google",
+        "connectBeforePublish": "Conecta una cuenta de Gmail antes de publicar la automatización",
+        "noConnectUrl": "No se recibió un enlace de inicio de sesión",
+        "connectFailed": "Falló la conexión de Gmail",
+        "connect": "Conectar Gmail",
+        "sender": "Remitente",
+        "whoReceives": "¿Quién debe recibir el correo?"
+      },
+      "outlook": {
+        "connectBeforePublish": "Conecta una cuenta de Outlook antes de publicar la automatización",
+        "noConnectUrl": "No se recibió un enlace de inicio de sesión",
+        "connectFailed": "Falló la conexión de Outlook",
+        "bannerTitle": "Envío a través de Outlook / Microsoft 365 conectado",
+        "bannerText": "El correo se enviará desde la cuenta de Outlook que conectaste al negocio. Sin SMTP y sin fallback a otro proveedor.",
+        "loading": "Cargando el estado de Outlook...",
+        "comingSoon": "Outlook / Microsoft 365 estará disponible pronto",
+        "connect": "Conectar Outlook",
+        "sender": "Remitente",
+        "whoReceives": "¿A quién se envía el correo?"
+      },
+      "calendar": {
+        "fromAppointment": "Los datos del evento se tomarán de la cita (fecha, hora, duración, asistente y ubicación).",
+        "manualHint": "El evento se crea en el Google Calendar del negocio. Puedes introducir horas manualmente o dejarlas vacías cuando hay una cita en contexto.",
+        "needCalendarScope": "Se requiere permiso de Calendar (Gmail ya está conectado)",
+        "connectBeforePublish": "Conecta Google Calendar antes de publicar la automatización",
+        "noConnectUrl": "No se recibió un enlace de inicio de sesión",
+        "connectFailed": "Falló la conexión de Google Calendar",
+        "connect": "Conectar Google Calendar",
+        "endOptional": "Fin (opcional)",
+        "durationMinutes": "Duración en minutos (si no hay fin)",
+        "loading": "Cargando el estado de Google Calendar...",
+        "unavailable": "Google Calendar no está disponible para este negocio ahora",
+        "googleAccount": "Cuenta de Google",
+        "description": "Descripción",
+        "fromAppointmentNote": "Los detalles del evento se tomarán de la cita",
+        "setManual": "Definir los detalles del evento manualmente",
+        "startOptional": "Inicio (opcional — valor predeterminado de la cita)",
+        "datetimePlaceholder": "YYYY-MM-DD HH:mm o vacío",
+        "attendee": "Participante (correo)",
+        "location": "Ubicación"
+      },
+      "email": {
+        "senderUnavailable": "El remitente seleccionado no está disponible",
+        "noSender": "No hay correo de remitente",
+        "noVerified": "No hay un correo de empresa verificado",
+        "from": "De",
+        "fromHelp": "El correo se enviará desde una dirección comercial verificada del negocio.",
+        "to": "Para",
+        "chooseVerified": "Elige un correo comercial verificado",
+        "customFieldKey": "Campo personalizado (clave)"
+      },
+      "toasts": {
+        "addedAndLinked": "Añadido y conectado automáticamente (incluido el resto del flujo)",
+        "moduleAdded": "Módulo añadido al tablero",
+        "resultAdded": "Resultado añadido al disparador",
+        "addedToSelected": "Añadido y conectado automáticamente al módulo seleccionado",
+        "triggerAdded": "Disparador añadido — elige qué debe ocurrir automáticamente",
+        "settingsSaved": "Ajustes guardados",
+        "draftSaved": "Borrador guardado",
+        "saveError": "No se pudo guardar la automatización",
+        "waBillingRequired": "Debes configurar la facturación de WhatsApp antes de activar la automatización.",
+        "waBillingBlock": "No se puede activar la automatización por la facturación de WhatsApp",
+        "planRequired": "Elige un plan de acciones para activar una automatización",
+        "quotaExhausted": "Se agotó la cuota mensual de acciones — las acciones de pago se bloquearán hasta que actualices",
+        "billingBlocked": "No se pueden activar automatizaciones por el estado de pago del plan",
+        "archived": "No se puede publicar una automatización archivada",
+        "needTriggerCatalog": "Carga el catálogo de disparadores antes de publicar",
+        "unsupportedPublish": "El disparador seleccionado aún no se puede publicar",
+        "unsupportedChoose": "Disparador antiguo o no compatible — elige uno compatible antes de publicar",
+        "saveTimeout": "El guardado está tardando demasiado — inténtalo de nuevo",
+        "cannotSaveBeforePublish": "No se pudo guardar el borrador antes de publicar",
+        "publishNoResponse": "La publicación se realizó, pero el servidor no devolvió una respuesta válida",
+        "publishedUpdated": "Automatización publicada y actualizada",
+        "published": "Automatización publicada",
+        "publishFailed": "No se pudo publicar la automatización",
+        "testFailed": "Falló la prueba de la automatización",
+        "resumeFailed": "No se pudo reanudar la automatización",
+        "loadGmail": "No pudimos cargar el estado de Gmail",
+        "loadOutlook": "No pudimos cargar el estado de Outlook",
+        "loadCalendar": "No pudimos cargar el estado de Google Calendar",
+        "loadTriggers": "No pudimos cargar el catálogo de disparadores"
+      },
+      "test": {
+        "title": "Modo de prueba — no se enviarán mensajes ni se harán cambios",
+        "run": "Ejecutar una prueba",
+        "publishFailed": "La publicación falló"
+      },
+      "loadGmail": "No pudimos cargar el estado de Gmail"
+    },
+    "email": {
+      "business": "Correo de empresa",
+      "missingTitle": "No hay un correo de empresa verificado",
+      "missingBody": "Para enviar desde el correo de empresa, termina primero la configuración y la verificación.",
+      "settingsCta": "Configurar correo de empresa",
+      "providerRequired": "Para usar esta automatización, conecta Gmail o Outlook / Microsoft 365"
+    },
+    "ai": {
+      "billingSafe": "Una acción de IA cuenta como una acción de automatización de tu plan",
+      "defaultSystems": "Notificaciones"
+    },
+    "errors": {
+      "missingTrigger": "Falta un disparador aprobado",
+      "missingGraph": "Esta plantilla no tiene un grafo de activación"
     }
   },
   "layout": {
@@ -5744,6 +6525,245 @@
       "confirmSuggestion": "Confirmar",
       "changeMapping": "Cambiar",
       "sourceFieldLine": "{{source}}  {{field}}"
+    },
+    "wizard": {
+      "ariaCreate": "Crear plantilla",
+      "close": "Cerrar",
+      "kicker": "Plantillas de mensaje",
+      "title": "Crear plantilla",
+      "metaBadge": "Interfaz de Meta",
+      "preview": "Vista previa",
+      "previewBusiness": "WhatsApp · Negocio",
+      "bodyPlaceholderPreview": "El cuerpo del mensaje aparecerá aquí.",
+      "category": "Categoría",
+      "categoryHelp": "Elige una categoría y una subcategoría. El nombre y el idioma se definen en el paso de edición.",
+      "subcategory": "Subcategoría",
+      "subcategoryHelp": "Las opciones cambian según la categoría seleccionada.",
+      "templateName": "Nombre de la plantilla",
+      "nameHelp": "Solo letras minúsculas en inglés, números y guiones bajos. Los clientes no lo verán.",
+      "language": "Idioma",
+      "languageHelp": "El idioma del contenido de la plantilla. Puedes añadir más versiones después.",
+      "authOptions": "Opciones de autenticación",
+      "authHelp": "Solo se muestran las opciones realmente compatibles al enviar a Meta. El inicio de sesión con un toque o sin toque aún no está disponible.",
+      "otp": "Código de un solo uso",
+      "otpHint": "El cuerpo debe incluir la variable {{1}} para el código de verificación.",
+      "securityRec": "Recomendación de seguridad",
+      "securityRecHint": "Añade un pie que recomienda no compartir el código.",
+      "expiry": "Caducidad del código",
+      "expiryHint": "Meta muestra una caducidad de 10 minutos. Aún no hay un campo independiente en nuestra conexión.",
+      "copyCode": "Copiar código",
+      "copyCodeHint": "Puedes añadir un botón de copiar en la sección de botones.",
+      "reviewTitle": "Revisar antes de enviar",
+      "reviewHelp": "Comprueba que los datos son correctos antes de enviar la plantilla a Meta.",
+      "header": "Encabezado",
+      "body": "Cuerpo",
+      "footer": "Pie",
+      "buttons": "Botones",
+      "samples": "Ejemplos de variables",
+      "none": "Ninguno",
+      "reviewWarn": "Al enviar, la plantilla pasa a revisión de Meta. El estado permanecerá pendiente hasta que Meta la apruebe o rechace.",
+      "draftSaved": "Borrador guardado",
+      "draftFailed": "No se pudo guardar el borrador",
+      "submitted": "La plantilla se envió a revisión. Estado: {{status}}.",
+      "savedNoMeta": "La plantilla se guardó como borrador porque no hay una conexión activa de Meta.",
+      "submitFailed": "No se pudo enviar la plantilla",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "submitReview": "Enviar a revisión",
+      "saveDraft": "Guardar como borrador",
+      "bodyPlaceholder": "Escribe el cuerpo del mensaje. Usa {{1}} para las variables.",
+      "steps": {
+        "setup": {
+          "title": "Configurar plantilla",
+          "hint": "Categoría y subcategoría"
+        },
+        "edit": {
+          "title": "Editar plantilla",
+          "hint": "Nombre, idioma y contenido"
+        },
+        "review": {
+          "title": "Enviar a revisión",
+          "hint": "Revisión antes de Meta"
+        }
+      },
+      "categories": {
+        "MARKETING": {
+          "title": "Marketing",
+          "description": "Promociones, novedades de producto y mensajes de marketing. Solo se envían a clientes que dieron su consentimiento."
+        },
+        "UTILITY": {
+          "title": "Utilidad",
+          "description": "Actualizaciones de pedidos, recordatorios y respuestas a solicitudes del cliente. No están pensadas para promociones."
+        },
+        "AUTHENTICATION": {
+          "title": "Autenticación",
+          "description": "Un código de un solo uso para iniciar sesión, verificar identidad o confirmar una acción."
+        }
+      },
+      "subtypes": {
+        "defaultMarketing": {
+          "title": "Predeterminada",
+          "description": "Envía mensajes con medios y botones personalizados para fomentar la interacción."
+        },
+        "catalog": {
+          "title": "Catálogo",
+          "description": "Envía mensajes que impulsan las ventas al conectar tu catálogo de productos."
+        },
+        "callPermission": {
+          "title": "Solicitud de permiso para llamar",
+          "description": "Pregunta a los clientes si puedes llamarlos por WhatsApp."
+        },
+        "defaultUtility": {
+          "title": "Predeterminada",
+          "description": "Envía mensajes sobre un pedido o una cuenta existentes."
+        },
+        "otp": {
+          "title": "Contraseña de un solo uso",
+          "description": "Envía códigos para verificar una transacción o un inicio de sesión."
+        }
+      },
+      "languages": {
+        "he": "Hebreo",
+        "en": "Inglés",
+        "ar": "Árabe",
+        "es": "Español",
+        "fr": "Francés",
+        "pt_BR": "Portugués (Brasil)"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "approved": "Aprobada",
+        "rejected": "Rechazada",
+        "draft": "Borrador"
+      },
+      "media": {
+        "image": "Imagen",
+        "video": "Vídeo",
+        "document": "Documento",
+        "location": "Ubicación"
+      }
+    },
+    "metaEditor": {
+      "content": "Contenido",
+      "contentHelp": "Añade encabezado, cuerpo y pie a la plantilla. Las variables usan {{1}}, {{2}}.",
+      "variableType": "Tipo de variable",
+      "variableName": "Nombre",
+      "variableNumber": "Número",
+      "mediaSample": "Muestra de media · Opcional",
+      "mediaNone": "Ninguna",
+      "mediaImage": "Imagen",
+      "mediaVideo": "Vídeo",
+      "mediaDocument": "Documento",
+      "mediaLocation": "Ubicación",
+      "mediaIdImage": "ID de media de imagen",
+      "mediaIdVideo": "ID de media de vídeo",
+      "mediaIdDocument": "ID de media de documento",
+      "mediaIdPlaceholder": "ID de media recibido al subir",
+      "headerOptional": "Encabezado · Opcional",
+      "headerPlaceholder": "Añade una línea corta para el encabezado",
+      "addVariable": "+ Añadir variable",
+      "variable": "+ Variable",
+      "code": "Código",
+      "strikethrough": "Tachado",
+      "italic": "Cursiva",
+      "bold": "Negrita",
+      "bodyHelp": "Puedes añadir variables como {{1}}, {{2}}. La vista previa se actualiza al momento.",
+      "exampleValues": "Valores de ejemplo para las variables",
+      "exampleHelp": "Meta exige un ejemplo para cada variable antes de la revisión.",
+      "samplePlaceholder": "Valor de ejemplo",
+      "footerOptional": "Pie · Opcional",
+      "footerHelp": "Texto breve al final del mensaje. Puedes dejarlo vacío.",
+      "footerPlaceholder": "Por ejemplo: No respondas a este mensaje",
+      "buttonsOptional": "Botones · Opcional",
+      "buttonsHelp": "Crea botones para que los clientes respondan o actúen. Puedes añadir hasta {{count}} botones.",
+      "addButton": "Añadir botón",
+      "removeButton": "Quitar botón",
+      "buttonText": "Texto del botón",
+      "urlType": "Tipo de URL",
+      "urlStatic": "Estática",
+      "urlDynamic": "Dinámica",
+      "websiteUrl": "URL del sitio",
+      "sampleUrl": "URL de ejemplo",
+      "phoneNumber": "Número de teléfono",
+      "contactHelp": "Meta define el texto del botón. No se puede editar.",
+      "sampleCode": "Código de ejemplo",
+      "wrapText": "texto",
+      "buttons": {
+        "quick_reply": {
+          "title": "Personalizado",
+          "description": "El cliente envía una respuesta corta con un toque.",
+          "defaultText": "Personalizado"
+        },
+        "url": {
+          "title": "Visitar el sitio web",
+          "description": "Abre una URL estática o dinámica.",
+          "defaultText": "Visitar sitio"
+        },
+        "voice_call": {
+          "title": "Llamada de WhatsApp",
+          "description": "Inicia una llamada de voz de WhatsApp con el negocio.",
+          "defaultText": "Llamada de WhatsApp"
+        },
+        "phone_number": {
+          "title": "Llamar al número",
+          "description": "Llama a un número predefinido.",
+          "defaultText": "Llamar"
+        },
+        "request_contact_info": {
+          "title": "Compartir datos de contacto",
+          "description": "Pide al cliente que comparta sus datos de contacto.",
+          "defaultText": "Compartir datos de contacto"
+        },
+        "copy_code": {
+          "title": "Copiar código",
+          "description": "Copia un código promocional o de verificación.",
+          "defaultText": "Copiar código"
+        }
+      }
+    },
+    "billing": {
+      "loadError": "No pudimos cargar los datos de facturación de WhatsApp ahora.",
+      "retry": "Intentar de nuevo",
+      "title": "WhatsApp",
+      "payAsYouGo": "Pago por uso",
+      "notConfigured": "La facturación de WhatsApp no está configurada",
+      "setupCta": "Configurar facturación de WhatsApp",
+      "active": "La facturación de WhatsApp está activa",
+      "manage": "Gestionar facturación",
+      "perMessage": "{{price}} por mensaje",
+      "messagesThisMonth": "{{count}} mensajes este mes",
+      "estimatedCharge": "Cargo estimado:",
+      "periodEnd": "El periodo de facturación termina: {{date}}",
+      "noPackages": "No hay paquetes de WhatsApp: solo se cobra por los mensajes enviados.",
+      "paymentIssue": "Hay un problema de pago en la facturación de WhatsApp",
+      "paymentIssueBody": "El envío continuará temporalmente. Regulariza el pago para evitar una interrupción.",
+      "until": " Hasta {{date}}.",
+      "managePayment": "Gestionar pago",
+      "sendBlocked": "El envío de WhatsApp está bloqueado por el estado de facturación",
+      "sendBlockedBody": "Añade un método de pago para seguir enviando mensajes.",
+      "settlePayment": "Regularizar el pago",
+      "cancelScheduled": "La facturación está programada para cancelarse",
+      "cancelScheduledOn": " el {{date}}",
+      "keepActive": "Mantener la facturación activa",
+      "updating": "Actualizando...",
+      "setupFailed": "No pudimos iniciar la configuración de facturación. Inténtalo de nuevo.",
+      "cancelSuccess": "La facturación se cancelará al final del periodo actual.",
+      "cancelFailed": "No pudimos cancelar la facturación. Inténtalo de nuevo.",
+      "reactivateSuccess": "Se deshizo la cancelación y la facturación seguirá activa.",
+      "reactivateFailed": "No pudimos mantener la facturación activa.",
+      "setupTitle": "Configurar facturación de WhatsApp",
+      "manageTitle": "Gestionar facturación de WhatsApp",
+      "close": "Cerrar",
+      "needPayment": "Se necesita un método de pago para los mensajes de WhatsApp",
+      "usageOnly": "Las automatizaciones y el envío se facturan por uso real: no hay paquetes prepago.",
+      "startPayment": "Empezar configuración de pago",
+      "cancel": "Cancelar",
+      "manageLine": "Pago por uso · {{price}} por mensaje",
+      "periodUntil": " · periodo hasta {{date}}",
+      "cancelNote": "La facturación está programada para cancelarse",
+      "cancelNoteOn": " el {{date}}. Puedes mantenerla activa.",
+      "cancelAtEndBody": "Puedes cancelar la facturación al final del periodo actual. Hasta entonces podrás seguir enviando por uso.",
+      "cancelAtEnd": "Cancelar al final del periodo"
     }
   },
   "metaCampaigns": {

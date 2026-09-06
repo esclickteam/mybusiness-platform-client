@@ -479,6 +479,787 @@
       "title": "אוטומציות",
       "subtitle": "בונה תהליכים ויזואלי בסגנון Make / n8n — גררו מודולים, חברו והפעילו.",
       "channel": "Drag & Drop Builder"
+    },
+    "common": {
+      "all": "הכל",
+      "cancel": "ביטול",
+      "save": "שמור",
+      "close": "סגור",
+      "retry": "נסו שוב",
+      "loading": "טוען…",
+      "yes": "כן",
+      "no": "לא",
+      "optional": "אופציונלי",
+      "requiredFields": "שדות חובה",
+      "settings": "הגדרות",
+      "title": "כותרת",
+      "value": "ערך",
+      "none": "—"
+    },
+    "home": {
+      "title": "אוטומציות",
+      "subtitle": "בנה ונהל תהליכים אוטומטיים לעסק",
+      "new": "אוטומציה חדשה",
+      "templates": "תבניות",
+      "runDemoTrigger": "הפעל טריגר לדוגמה",
+      "kpiTotal": "סה״כ אוטומציות",
+      "kpiActive": "פעילות",
+      "kpiRuns": "הרצות ב־30 יום",
+      "kpiFailed": "נכשלו",
+      "billingAria": "חיוב אוטומציות ו-WhatsApp",
+      "searchPlaceholder": "חיפוש אוטומציה",
+      "sort": "מיון",
+      "sortUpdated": "עודכן לאחרונה",
+      "sortCreated": "נוצר לאחרונה",
+      "sortName": "שם",
+      "filterAll": "הכל",
+      "filterActive": "פעילות",
+      "filterDraft": "טיוטות",
+      "filterPaused": "מושהות",
+      "filterFailed": "שגיאות",
+      "loading": "טוען אוטומציות...",
+      "emptyTitle": "עדיין אין אוטומציות",
+      "emptyText": "צור את האוטומציה הראשונה שלך וחסוך פעולות ידניות.",
+      "browseTemplates": "עיון בתבניות",
+      "noneFoundTitle": "לא נמצאו אוטומציות",
+      "noneFoundText": "נסו לשנות את החיפוש או הסינון.",
+      "fallbackName": "האוטומציה",
+      "deleteActiveHint": "האוטומציה פעילה ותיפסק מיד. ",
+      "deletePausedHint": "האוטומציה מושהית. ",
+      "deleteConfirm": "למחוק לצמיתות את \"{{name}}\"? הפעולה כוללת גם את היסטוריית ההרצות ולא ניתן לשחזר."
+    },
+    "toasts": {
+      "loadError": "שגיאה בטעינת האוטומציות",
+      "checkoutCancel": "התשלום בוטל — ניתן לבחור חבילה מחדש בכל עת.",
+      "waCheckoutProcessing": "מעדכנים את חיוב WhatsApp...",
+      "waCheckoutCancel": "הגדרת חיוב WhatsApp בוטלה — ניתן להגדיר מחדש בכל עת.",
+      "waReactivated": "הביטול בוטל והחיוב יישאר פעיל.",
+      "waReactivateError": "לא הצלחנו להשאיר את חיוב WhatsApp פעיל",
+      "planReactivated": "הביטול בוטל והחבילה תמשיך כרגיל.",
+      "planReactivateError": "לא הצלחנו להשאיר את החבילה פעילה",
+      "duplicated": "האוטומציה שוכפלה",
+      "duplicateError": "שגיאה בשכפול",
+      "statusUpdated": "סטטוס האוטומציה עודכן",
+      "waBillingRequired": "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה.",
+      "waBillingBlock": "לא ניתן לעדכן את האוטומציה עקב חיוב WhatsApp",
+      "planRequired": "כדי להפעיל אוטומציה יש לבחור חבילת פעולות",
+      "quotaExhausted": "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג",
+      "updateBlocked": "לא ניתן לעדכן את האוטומציה",
+      "deleted": "האוטומציה נמחקה",
+      "deleteError": "שגיאה במחיקה",
+      "createdAndEnabled": "האוטומציה נוצרה והופעלה",
+      "createdNotEnabled": "נוצרה אבל לא הופעלה — בדקו הגדרות ופרסמו",
+      "createdNotEnabledBuilder": "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה",
+      "activateError": "שגיאה בהפעלת האוטומציה",
+      "waUnavailable": "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה.",
+      "connectWhatsApp": "חברו WhatsApp Business לפני הפעלה",
+      "noApprovedTemplates": "אין תבניות Meta מאושרות (APPROVED) לבחירה — הכינו תבנית ואשרו אותה ב-Meta",
+      "notReady": "לא ניתן להפעיל כרגע",
+      "selectWaTemplate": "בחרו תבנית WhatsApp מאושרת",
+      "selectEmailProvider": "בחרו Gmail, Outlook / Microsoft 365 או מייל עסקי",
+      "blankReady": "בד ריק מוכן — בחרו טריגר כדי להתחיל",
+      "createError": "שגיאה ביצירת אוטומציה"
+    },
+    "templates": {
+      "title": "תבניות אוטומציה",
+      "subtitle": "בחרו אוטומציה ← בחרו תבנית WhatsApp מאושרת ← הפעלה מיידית.",
+      "catalogCount": "תבניות בקטלוג",
+      "categoryCount": "תבניות בקטגוריה זו",
+      "searchPlaceholder": "חפש תבנית שעובדת",
+      "categoriesAria": "קטגוריות",
+      "loading": "טוען תבניות אוטומציה...",
+      "emptyTitle": "אין תבניות להצגה בקטגוריה זו",
+      "emptyText": "נסו קטגוריה אחרת או רעננו את העמוד.",
+      "refresh": "רענון",
+      "ctaPickPlan": "בחר חבילת אוטומציות",
+      "ctaPickMessage": "הפעל — בחר תבנית הודעה",
+      "ctaEnableAi": "הפעל תבנית",
+      "ctaEnableNow": "הפעל עכשיו",
+      "planRequiredTitle": "נדרשת חבילת אוטומציות פעילה",
+      "badgeFlow": "זרימה",
+      "badgeComingSoon": "בקרוב",
+      "badgeReady": "מוכן",
+      "badgeMissing": "חסר משהו",
+      "trigger": "טריגר",
+      "result": "תוצאה",
+      "suggestedTemplate": "תבנית מוצעת: {{name}}",
+      "chooseWaOnEnable": "בהפעלה תבחרו תבנית WhatsApp מאושרת",
+      "aiStartsWhen": "מתי מתחיל:",
+      "aiDoes": "מה ה-AI עושה:",
+      "aiAfterwards": "אחר כך:",
+      "aiSystems": "מערכות:",
+      "aiEstimated": "פעולות משוערות:",
+      "aiDefaultResult": "—",
+      "activateTitle": "הפעלת «{{name}}»",
+      "chooseApprovedWa": "בחרו תבנית WhatsApp מאושרת מהרשימה שלכם — האוטומציה תופעל מיד.",
+      "approvedMessageTemplate": "תבנית הודעה מאושרת",
+      "chooseTemplate": "בחרו תבנית",
+      "noApprovedYet": "אין תבניות מאושרות עדיין — הכינו מהרשימה למעלה ואשרו ב-Meta.",
+      "chooseEmailAccount": "בחרו דרך איזה חשבון לשלוח את האימייל.",
+      "emailAccount": "חשבון אימייל",
+      "chooseProvider": "בחרו ספק",
+      "from": "מאת",
+      "chooseBusinessEmail": "בחרו מייל עסקי מאומת",
+      "categories": {
+        "all": "הכל",
+        "crm": "CRM",
+        "appointments": "פגישות",
+        "email": "מייל",
+        "whatsapp": "WhatsApp",
+        "sales": "מכירות",
+        "store": "חנות",
+        "ai": "AI"
+      }
+    },
+    "create": {
+      "title": "צור אוטומציה",
+      "subtitle": "בחר איך להתחיל",
+      "blankTitle": "אוטומציה ריקה",
+      "blankText": "התחל מהבד ובנה את הזרימה בעצמך",
+      "templatesTitle": "תבניות",
+      "templatesText": "התחל מתהליך מוכן והתאם אותו לעסק",
+      "defaultName": "אוטומציה חדשה"
+    },
+    "picker": {
+      "titleAll": "הוסף שלב",
+      "titleTrigger": "מה יפעיל את האוטומציה?",
+      "titleResult": "מה יקרה אוטומטית?",
+      "subtitleAll": "בחרו טריגר, תוצאה או לוגיקה להוספה לזרימה",
+      "subtitleTrigger": "בחרו את האירוע שיתחיל את התהליך",
+      "subtitleResult": "התוצאה היא מה שקורה אחרי הטריגר. אפשר להוסיף כמה תוצאות יחד.",
+      "searchAll": "חפש טריגר או תוצאה",
+      "searchTrigger": "חיפוש: ליד, CRM, פגישה, וואטסאפ, תשלום, הזמנה, טופס, זמן…",
+      "searchResult": "חפש תוצאה (וואטסאפ, משימה, AI…)",
+      "searchAria": "חיפוש טריגרים",
+      "categoriesAria": "קטגוריות טריגר",
+      "loading": "טוען טריגרים מהשרת...",
+      "emptyTriggers": "לא נמצאו טריגרים מתאימים",
+      "emptyItems": "לא נמצאו פריטים",
+      "categories": {
+        "all": "הכל",
+        "trigger": "טריגרים",
+        "action": "תוצאות",
+        "logic": "לוגיקה",
+        "delay": "המתנה",
+        "ai": "AI",
+        "integrations": "חיבורים"
+      },
+      "triggerCategories": {
+        "common": "נפוצים",
+        "recent": "אחרונים בשימוש",
+        "crm": "CRM ולידים",
+        "appointments": "פגישות",
+        "whatsapp": "WhatsApp",
+        "store": "חנות ותשלומים",
+        "website": "אתר וטפסים",
+        "subscriptions": "מנויים וחיובים",
+        "tasks": "משימות וצוות",
+        "email": "אימייל",
+        "schedule": "לוח זמנים",
+        "manual": "אינטגרציות ומערכת",
+        "system": "אינטגרציות ומערכת"
+      }
+    },
+    "toolbar": {
+      "back": "חזרה",
+      "nameAria": "שם האוטומציה",
+      "addStep": "הוסף שלב",
+      "test": "בדיקה",
+      "save": "שמור",
+      "saving": "שומר…",
+      "saveError": "שגיאה בשמירה",
+      "unsaved": "● שינויים שלא נשמרו",
+      "saved": "✓ נשמר",
+      "published": "פורסם",
+      "draft": "טיוטה",
+      "publish": "פרסם",
+      "publishing": "מפרסם…",
+      "updatePublish": "עדכון פרסום",
+      "pause": "השהיה",
+      "resume": "הפעלה",
+      "active": "פעילה",
+      "paused": "מושהית",
+      "cannotPublishArchived": "לא ניתן לפרסם אוטומציה בארכיון",
+      "reloadTriggers": "יש לטעון מחדש את קטלוג הטריגרים",
+      "unsupportedTrigger": "טריגר ישן או לא נתמך",
+      "updatePublished": "עדכון הגרסה המפורסמת לפי הטיוטה הנוכחית",
+      "publishAutomation": "פרסום האוטומציה"
+    },
+    "empty": {
+      "badge": "טריגר",
+      "chooseAria": "בחר טריגר",
+      "scheduleHint": "גם לפי לוח זמנים",
+      "title": "התחילו בטריגר",
+      "text": "בחרו מתי האוטומציה מתחילה (למשל ליד חדש). אחר כך תוסיפו מה יקרה אוטומטית — התוצאה. אפשר לפצל לכמה תוצאות יחד, בלי מסלולים מורכבים.",
+      "chooseTrigger": "בחר טריגר"
+    },
+    "catalog": {
+      "noCharge": "ללא חיוב",
+      "actions": {
+        "create_task": "יצירת משימה ב-CRM",
+        "update_lead_status": "עדכון סטטוס ליד",
+        "update_status": "עדכון סטטוס ליד",
+        "assign_owner": "שיוך לנציג",
+        "add_tag": "הוספת תגית",
+        "create_crm_note": "יצירת הערה ב-CRM",
+        "whatsapp_template": "שליחת תבנית וואטסאפ",
+        "send_whatsapp": "שליחת תבנית וואטסאפ",
+        "send_email": "שליחת מייל עסקי",
+        "send_gmail": "שליחת מייל דרך Gmail",
+        "send_outlook": "שליחת מייל דרך Outlook / Microsoft 365",
+        "google_calendar_create_event": "Google Calendar — יצירת אירוע",
+        "google_calendar_update_event": "Google Calendar — עדכון אירוע",
+        "google_calendar_delete_event": "Google Calendar — מחיקת אירוע",
+        "notify": "התראה פנימית",
+        "internal_notification": "התראה פנימית",
+        "delay": "המתנה",
+        "webhook": "קריאת Webhook",
+        "stop": "עצירת זרימה",
+        "create_appointment": "יצירת פגישה",
+        "ai_rank_lead": "AI · דירוג ליד",
+        "ai_classify_lead": "AI · סיווג ליד",
+        "ai_auto_tag": "AI · תיוג ליד",
+        "ai_detect_hot_lead": "AI · זיהוי ליד חם",
+        "ai_lead_brief": "AI · תקציר ליד",
+        "ai_draft_followup": "AI · טיוטת המשך",
+        "ai_draft_email": "AI · טיוטת אימייל",
+        "ai_suggest_next_action": "AI · הצעת פעולה",
+        "ai_daily_leads_digest": "AI · תקציר לידים יומי",
+        "ai_daily_agenda_digest": "AI · תקציר יומן יומי"
+      },
+      "actionShort": {
+        "whatsapp_template": "וואטסאפ",
+        "create_task": "משימה",
+        "create_crm_note": "הערה ב-CRM",
+        "notify": "התראה",
+        "update_lead_status": "סטטוס",
+        "assign_owner": "שיוך נציג",
+        "add_tag": "תגית",
+        "send_gmail": "Gmail",
+        "send_outlook": "Outlook",
+        "send_email": "מייל עסקי",
+        "google_calendar_create_event": "Google Calendar · יצירה",
+        "google_calendar_update_event": "Google Calendar · עדכון",
+        "google_calendar_delete_event": "Google Calendar · מחיקה",
+        "webhook": "Webhook",
+        "ai_rank_lead": "AI · דירוג ליד",
+        "ai_classify_lead": "AI · סיווג ליד",
+        "ai_auto_tag": "AI · תיוג ליד",
+        "ai_detect_hot_lead": "AI · זיהוי ליד חם",
+        "ai_lead_brief": "AI · תקציר ליד",
+        "ai_draft_followup": "AI · טיוטת Follow-up",
+        "ai_draft_email": "AI · טיוטת מייל",
+        "ai_suggest_next_action": "AI · הצעת פעולה",
+        "ai_daily_leads_digest": "AI · תקציר לידים יומי",
+        "ai_daily_agenda_digest": "AI · תקציר אג׳נדה יומי"
+      },
+      "actionDesc": {
+        "whatsapp_template": "שולח תבנית הודעה",
+        "create_task": "יוצר משימת מעקב ב-CRM",
+        "create_crm_note": "מתעד הערה בכרטיס ליד/לקוח",
+        "notify": "התראה לבעל העסק",
+        "update_lead_status": "מעדכן סטטוס ליד",
+        "assign_owner": "משייך לאיש צוות",
+        "add_tag": "מוסיף תגית לליד/לקוח",
+        "send_gmail": "Gmail — שליחת מייל",
+        "send_outlook": "Outlook / Microsoft 365 — שליחת מייל",
+        "send_email": "שליחת מייל עסקי",
+        "google_calendar_create_event": "יוצר אירוע ביומן Google",
+        "google_calendar_update_event": "מעדכן אירוע ביומן Google",
+        "google_calendar_delete_event": "מוחק אירוע מיומן Google",
+        "webhook": "שולח נתונים למערכת חיצונית",
+        "ai_rank_lead": "מדרג ליד לפי סיכוי ודחיפות",
+        "ai_classify_lead": "מסווג ליד לקטגוריה",
+        "ai_auto_tag": "מוסיף תגיות CRM אוטומטית",
+        "ai_detect_hot_lead": "מזהה ליד חם לטיפול מיידי",
+        "ai_lead_brief": "מכין תקציר לפני שיחת מכירה",
+        "ai_draft_followup": "מנסח טיוטת הודעת מעקב",
+        "ai_draft_email": "מנסח טיוטת מייל ללקוח",
+        "ai_suggest_next_action": "מציע את הפעולה הבאה לנציג",
+        "ai_daily_leads_digest": "מסכם לידים חדשים",
+        "ai_daily_agenda_digest": "מסכם משימות ופגישות"
+      },
+      "conditions": {
+        "no_response": "לא נוצר קשר",
+        "status_is": "סטטוס מסוים",
+        "has_appointment": "יש פגישה קרובה",
+        "has_tag": "יש תגית",
+        "source_is": "מקור ליד מסוים",
+        "business_hours": "בתוך שעות פעילות",
+        "replied": "הלקוח השיב",
+        "amount_above": "סכום מעל X"
+      },
+      "conditionDesc": {
+        "no_response": "כן/לא לפי מענה",
+        "status_is": "בודק סטטוס ליד",
+        "has_appointment": "האם יש תור קרוב",
+        "has_tag": "לפי תגית על הליד/לקוח",
+        "source_is": "Meta / אתר / וואטסאפ",
+        "business_hours": "בתוך/מחוץ לשעות",
+        "replied": "האם הייתה תשובה",
+        "amount_above": "לפי ערך עסקה"
+      },
+      "conditionHasAppointmentShort": "יש פגישה",
+      "conditionSourceShort": "מקור ליד",
+      "delayUnits": {
+        "minutes": "דקות",
+        "hours": "שעות",
+        "days": "ימים"
+      },
+      "filters": {
+        "all": "הכל",
+        "trigger": "טריגר",
+        "condition": "תנאי",
+        "router": "פיצול",
+        "delay": "המתנה",
+        "action": "תוצאה"
+      },
+      "nodeTypes": {
+        "trigger": "טריגר",
+        "delay": "המתנה",
+        "condition": "תנאי",
+        "action": "תוצאה",
+        "router": "פיצול"
+      },
+      "triggerCategories": {
+        "crm": "CRM ולידים",
+        "appointments": "פגישות",
+        "website": "אתר וטפסים",
+        "store": "חנות ותשלומים",
+        "schedule": "לוח זמנים",
+        "manual": "אינטגרציות ומערכת",
+        "system": "אינטגרציות ומערכת",
+        "whatsapp": "WhatsApp",
+        "subscriptions": "מנויים וחיובים",
+        "tasks": "משימות וצוות",
+        "email": "אימייל"
+      },
+      "palette": {
+        "resultPrefix": "תוצאה · {{label}}",
+        "conditionPrefix": "תנאי · {{label}}",
+        "routerLabel": "פיצול · כמה תוצאות יחד",
+        "routerDesc": "מפצל ל־1–6 תוצאות שרצות יחד — בלי מסלולים מורכבים",
+        "routerDefault": "פיצול לכמה תוצאות",
+        "resultN": "תוצאה {{n}}",
+        "waitLabel": "המתנה",
+        "waitDesc": "ממתין ואז ממשיך / מתפצל",
+        "reminderDefault": "תזכורת פגישה — יום לפני",
+        "reminderDesc": "מתי לשלוח תזכורת לפגישה — אחר כך בוחרים את התוצאה (WhatsApp וכו׳)",
+        "aiCriteriaDefault": "התאמה לשירות, דחיפות ופוטנציאל רכישה",
+        "meetingTitleDefault": "פגישה עם {{appointment.clientName}}"
+      },
+      "summaries": {
+        "hourBefore": "שעה לפני הפגישה",
+        "twoHoursBefore": "שעתיים לפני הפגישה",
+        "dayBefore": "יום לפני הפגישה",
+        "daysBefore": "{{count}} ימים לפני הפגישה",
+        "hoursBefore": "{{count}} שעות לפני הפגישה",
+        "statusFromTo": "מ־{{from}} ל־{{to}}",
+        "statusTo": "מעבר לסטטוס {{status}}",
+        "anyStatusChange": "בכל שינוי סטטוס",
+        "bySchedule": "לפי לוח הזמנים שהוגדר",
+        "manual": "הפעלה ידנית מהמערכת",
+        "newLead": "מופעל בכל יצירת ליד חדש",
+        "formSubmitted": "מופעל בשליחת טופס מהאתר",
+        "appointmentCreated": "מופעל בקביעת פגישה",
+        "appointmentCancelled": "מופעל בביטול פגישה",
+        "orderCreated": "מופעל ביצירת הזמנה",
+        "orderPaid": "מופעל אחרי הזמנה ששולמה בחנות",
+        "triggerFallback": "טריגר",
+        "routerTogether": "{{count}} תוצאות יחד",
+        "aiFallback": "פעולת AI",
+        "calendarDelete": "Calendar · מחיקת {{eventId}}",
+        "ai_rank_lead": "מדרג ליד לפי סיכוי ודחיפות",
+        "ai_classify_lead": "מסווג ליד",
+        "ai_auto_tag": "תיוג אוטומטי",
+        "ai_detect_hot_lead": "זיהוי ליד חם",
+        "ai_lead_brief": "תקציר ליד",
+        "ai_draft_followup": "טיוטת הודעת מעקב",
+        "ai_draft_email": "טיוטת מייל",
+        "ai_suggest_next_action": "הצעת פעולה הבאה",
+        "ai_daily_leads_digest": "תקציר לידים יומי",
+        "ai_daily_agenda_digest": "תקציר משימות/פגישות"
+      },
+      "recipients": {
+        "lead_email": "אימייל הליד",
+        "appointment_customer_email": "הלקוח שקבע תור",
+        "store_customer_email": "הלקוח בהזמנה",
+        "business_owner": "בעל העסק",
+        "lead_owner": "אחראי הליד",
+        "fixed_email": "כתובת קבועה",
+        "custom_field": "שדה מותאם אישית",
+        "lead_phone": "טלפון הליד",
+        "fixed_phone": "מספר קבוע"
+      },
+      "system": {
+        "lead_multi_route": {
+          "title": "ליד חדש — כמה תוצאות יחד",
+          "description": "כשנכנס ליד חדש ב-CRM: שליחת WhatsApp, יצירת משימה לנציג והתראה לבעל העסק — במקביל.",
+          "trigger": "ליד חדש ב-CRM",
+          "results": {
+            "0": "WhatsApp מיידי",
+            "1": "משימה לנציג",
+            "2": "התראה לבעל העסק"
+          }
+        },
+        "lead_no_response": {
+          "title": "ליד חדש → פתיחה + פולואפים לפי תגובה",
+          "description": "הודעת פתיחה מיד. אם אין תשובת WhatsApp — פולואפ אחרי 24 שעות ופולואפ נוסף אחרי 3 ימים.",
+          "trigger": "ליד חדש ב-CRM",
+          "results": {
+            "0": "פתיחה WhatsApp",
+            "1": "פולואפ #1",
+            "2": "פולואפ #2"
+          },
+          "timing": "פתיחה מיידית · פולואפ #1 אחרי 24ש׳ · פולואפ #2 אחרי 3 ימים"
+        },
+        "new_client_welcome": {
+          "title": "לקוח חדש — ברוכים הבאים",
+          "description": "טריגר לקוח חדש → הודעת פתיחה + משימת שימור.",
+          "trigger": "לקוח חדש",
+          "results": {
+            "0": "הודעת פתיחה",
+            "1": "משימת שימור"
+          }
+        },
+        "appointment_duo": {
+          "title": "פגישה — אישור + תזכורת + משימה",
+          "description": "כשנוצרת פגישה: אישור WhatsApp ללקוח, משימת הכנה, ותזכורת יום לפני המועד.",
+          "trigger": "פגישה חדשה",
+          "results": {
+            "0": "אישור WhatsApp",
+            "1": "תזכורת לפני",
+            "2": "משימה"
+          }
+        },
+        "appointment_gcal_sync": {
+          "title": "פגישה → Google Calendar",
+          "description": "טריגר פגישה חדשה. תוצאה: יצירת אירוע ביומן Google.",
+          "trigger": "פגישה חדשה",
+          "results": {
+            "0": "אירוע ב-Google Calendar"
+          }
+        },
+        "appointment_email_confirm": {
+          "title": "פגישה → אימייל אישור",
+          "description": "טריגר פגישה חדשה. תוצאה: אימייל אישור ללקוח.",
+          "trigger": "פגישה חדשה",
+          "results": {
+            "0": "אימייל אישור"
+          }
+        },
+        "lead_email_welcome": {
+          "title": "ליד חדש → אימייל + משימה",
+          "description": "טריגר ליד חדש. תוצאות: אימייל ומשימת מעקב.",
+          "trigger": "ליד חדש ב-CRM",
+          "results": {
+            "0": "אימייל",
+            "1": "משימת מעקב"
+          }
+        },
+        "appointment_reminder_1_day": {
+          "title": "תזכורת פגישה — יום לפני",
+          "description": "שולח תבנית WhatsApp יום לפני הפגישה.",
+          "trigger": "פגישה קרובה (יום לפני)",
+          "results": {
+            "0": "הודעת תזכורת WhatsApp"
+          },
+          "timing": "יום אחד לפני"
+        },
+        "appointment_reminder_2_days": {
+          "title": "תזכורת פגישה — יומיים לפני",
+          "description": "שולח תבנית WhatsApp יומיים (48 שעות) לפני הפגישה.",
+          "trigger": "פגישה קרובה (יומיים לפני)",
+          "results": {
+            "0": "הודעת תזכורת WhatsApp"
+          },
+          "timing": "יומיים לפני (48 שעות)"
+        },
+        "appointment_reminder_hours": {
+          "title": "תזכורת פגישה — שעות לפני",
+          "description": "תזכורת מותאמת (למשל שעתיים לפני) לתבנית WhatsApp.",
+          "trigger": "פגישה קרובה (שעות לפני)",
+          "results": {
+            "0": "הודעת תזכורת WhatsApp"
+          },
+          "timing": "מספר שעות לבחירה"
+        },
+        "appointment_thanks": {
+          "title": "תודה אחרי פגישה",
+          "description": "אחרי סיום הפגישה — הודעת תודה ב-WhatsApp לפי מועד הפגישה.",
+          "trigger": "פגישה הסתיימה",
+          "results": {
+            "0": "הודעת תודה"
+          }
+        },
+        "appointment_review": {
+          "title": "בקשת ביקורת אחרי פגישה",
+          "description": "יום אחרי סיום הפגישה — בקשת ביקורת ב-WhatsApp.",
+          "trigger": "פגישה הסתיימה",
+          "results": {
+            "0": "בקשת ביקורת"
+          }
+        },
+        "lead_followup_2": {
+          "title": "פולואפ שני לליד (מיזוג)",
+          "description": "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
+          "trigger": "ליד ללא המרה",
+          "results": {
+            "0": "WhatsApp פולואפ שני"
+          },
+          "timing": "חלק ממסלול הפולואפים המאוחד"
+        },
+        "inactive_client": {
+          "title": "לקוח לא פעיל — נגיעה",
+          "description": "תזכורת ללקוחות ללא אינטראקציה לאחרונה.",
+          "trigger": "לקוח לא פעיל",
+          "results": {
+            "0": "הודעת נגיעה"
+          }
+        }
+      },
+      "waRequired": {
+        "wa_welcome_lead": {
+          "title": "ברוכים הבאים לליד חדש",
+          "reason": "נשלחת כשנכנס ליד חדש ל-CRM."
+        },
+        "wa_welcome_client": {
+          "title": "ברוכים הבאים ללקוח חדש",
+          "reason": "נשלחת כשנוצר לקוח חדש ב-CRM."
+        },
+        "wa_appointment_reminder": {
+          "title": "תזכורת פגישה",
+          "reason": "נשלחת לפני פגישה (שעה / שעתיים / יום / יומיים / 3 ימים)."
+        },
+        "wa_appointment_confirmation": {
+          "title": "אישור פגישה",
+          "reason": "נשלחת מיד כשנקבעת פגישה חדשה."
+        },
+        "wa_appointment_thanks": {
+          "title": "תודה אחרי פגישה",
+          "reason": "נשלחת אחרי סיום הפגישה לפי מועד הפגישה."
+        },
+        "wa_appointment_review": {
+          "title": "בקשת ביקורת אחרי פגישה",
+          "reason": "נשלחת לבקשת ביקורת/פידבק אחרי פגישה."
+        },
+        "wa_follow_up": {
+          "title": "מעקב לליד שלא נענה",
+          "reason": "נשלחת כפולואפ ראשון לליד בלי מענה."
+        },
+        "wa_follow_up_2": {
+          "title": "פולואפ שני לליד",
+          "reason": "נשלחת כמעקב נוסף ללידים שלא הומרו."
+        },
+        "wa_inactive_client": {
+          "title": "נגיעה ללקוח לא פעיל",
+          "reason": "נשלחת ללקוחות ללא פעילות לאחרונה."
+        }
+      }
+    },
+    "editor": {
+      "stepN": "שלב {{n}}",
+      "deleteModule": "מחק מודול",
+      "done": "סיום",
+      "howTitle": "איך בונים אוטומציה?",
+      "how1": "בוחרים טריגר (מתי זה קורה)",
+      "how2": "מוסיפים תוצאה — מה יקרה אוטומטית",
+      "how3": "רוצים כמה תוצאות יחד? הוסיפו עוד תוצאה מהטריגר — בלי מסלולים",
+      "triggerSettings": "הגדרות הטריגר שמתחיל את האוטומציה",
+      "triggerEvent": "האירוע שמתחיל את האוטומציה",
+      "replaceTrigger": "החלפת טריגר",
+      "unsupportedTrigger": "טריגר ישן או לא נתמך — בחרו טריגר נתמך מחדש",
+      "toStatus": "אל סטטוס",
+      "fromStatus": "מסטטוס",
+      "chooseTargetStatus": "בחרו סטטוס יעד",
+      "anyStatus": "כל סטטוס",
+      "needTargetStatus": "יש לבחור סטטוס יעד",
+      "needHoursBefore": "יש להגדיר כמה שעות לפני הפגישה",
+      "invalidSchedule": "הגדרות לוח הזמנים אינן תקינות",
+      "parallelFromTrigger": "כמה תוצאות יחד מהטריגר",
+      "parallelHint": "כל תוצאה רצה במקביל — בלי מסלולים נפרדים.",
+      "addResultToTrigger": "הוסף תוצאה לטריגר",
+      "hoursBefore": "מתי לשלוח את התזכורת (שעות לפני)",
+      "preset2h": "שעתיים לפני",
+      "preset1d": "יום לפני",
+      "preset2d": "יומיים לפני",
+      "preset3d": "3 ימים לפני",
+      "reminderHours": "תזכורת פגישה — {{count}} שעות לפני",
+      "reminder1d": "תזכורת פגישה — יום לפני",
+      "reminder2d": "תזכורת פגישה — יומיים לפני",
+      "routerCount": "כמה תוצאות יחד",
+      "resultName": "שם התוצאה {{n}}",
+      "amount": "כמות",
+      "unit": "יחידה",
+      "condition": "תנאי",
+      "actionType": "סוג פעולה",
+      "aiSettings": "הגדרות AI",
+      "advanced": "מתקדם",
+      "channelEmail": "אימייל",
+      "toneProfessional": "מקצועי",
+      "toneFriendly": "ידידותי",
+      "toneConcise": "קצר",
+      "statuses": {
+        "new": "חדש",
+        "contacted": "נוצר קשר",
+        "interested": "מעוניין",
+        "converted": "הומר",
+        "lost": "אבוד",
+        "old": "ישן"
+      },
+      "mapping": {
+        "leadName": "שם הליד",
+        "leadPhone": "טלפון הליד",
+        "leadEmail": "אימייל הליד",
+        "leadSource": "מקור הליד",
+        "businessName": "שם העסק",
+        "date": "תאריך",
+        "time": "שעה",
+        "constant": "ערך קבוע",
+        "manual": "שדה מותאם אישית / ערך ידני",
+        "clientName": "שם הלקוח",
+        "timeUntil": "זמן עד הפגישה",
+        "appointmentTime": "שעת הפגישה",
+        "service": "שירות"
+      },
+      "wa": {
+        "connectBeforeSelect": "יש לחבר מספר WhatsApp של העסק לפני בחירת תבנית",
+        "unavailable": "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה.",
+        "loadTemplatesError": "לא הצלחנו לטעון את תבניות WhatsApp",
+        "managedOff": "יש לחבר WhatsApp Business של העסק — המצב המנוהל כבוי כרגע.",
+        "refresh": "רענון תבניות",
+        "loadingTemplates": "טוען תבניות...",
+        "retry": "נסיון חוזר",
+        "connectCta": "חברו WhatsApp Business",
+        "noneApproved": "אין תבניות WhatsApp מאושרות זמינות",
+        "noneApprovedHint": "אחרי אישור תבנית ב-Meta, רעננו את הרשימה.",
+        "chooseTemplate": "בחרו תבנית",
+        "testTemplate": "תבנית בדיקה",
+        "variableMapping": "מיפוי משתנים",
+        "chooseMapping": "בחרו מיפוי",
+        "lastSync": "סנכרון אחרון: {{time}}",
+        "sender": "שולח",
+        "managedNumber": "מספר BizUply המנוהל",
+        "businessNumber": "מספר WhatsApp של העסק",
+        "connectBusinessNumber": "חיבור מספר WhatsApp של העסק — חבר בהגדרות",
+        "whoReceives": "מי יקבל את ההודעה?",
+        "recipient": "נמען:",
+        "fixedPhoneE164": "מספר קבוע (E.164)",
+        "template": "תבנית WhatsApp",
+        "bizuplyBannerTitle": "שליחה דרך מספר BizUply",
+        "bizuplyBannerText": "עד שיופעל חיבור WhatsApp אישי לעסק, ההודעות יישלחו ממספר BizUply המרכזי בשם העסק.",
+        "oneAction": "פעולת אוטומציה אחת",
+        "perMessage": "לכל הודעת WhatsApp",
+        "estimateDaily": "הערכה בלבד: למשל הודעה אחת ביום ≈ {{amount}} / חודש",
+        "estimate100": "הערכה בלבד: למשל 100 הודעות ≈ {{amount}}"
+      },
+      "gmail": {
+        "bannerTitle": "שליחה דרך Gmail מחובר",
+        "bannerText": "המייל יישלח מחשבון Gmail שחיברת לעסק. בלי SMTP ובלי שליחה דרך BizUply.",
+        "loading": "טוען סטטוס Gmail...",
+        "pendingApproval": "Gmail נמצא כרגע בתהליך אישור של Google",
+        "connectBeforePublish": "יש לחבר חשבון Gmail לפני פרסום האוטומציה",
+        "noConnectUrl": "לא התקבל קישור התחברות",
+        "connectFailed": "התחברות Gmail נכשלה",
+        "connect": "חיבור Gmail",
+        "sender": "שולח",
+        "whoReceives": "מי יקבל את המייל?"
+      },
+      "outlook": {
+        "connectBeforePublish": "יש לחבר חשבון Outlook לפני פרסום האוטומציה",
+        "noConnectUrl": "לא התקבל קישור התחברות",
+        "connectFailed": "התחברות Outlook נכשלה",
+        "bannerTitle": "שליחה דרך Outlook / Microsoft 365 המחובר",
+        "bannerText": "המייל יישלח מחשבון Outlook שחיברתם לעסק. אין שימוש ב-SMTP ואין fallback לספק אחר.",
+        "loading": "טוען סטטוס Outlook...",
+        "comingSoon": "Outlook / Microsoft 365 יהיה זמין בקרוב",
+        "connect": "חיבור Outlook",
+        "sender": "שולח",
+        "whoReceives": "למי לשלוח את המייל?"
+      },
+      "calendar": {
+        "fromAppointment": "פרטי האירוע יילקחו מהפגישה (תאריך, שעה, משך, משתתף ומיקום).",
+        "manualHint": "האירוע נוצר ביומן Google של העסק. ניתן להזין זמנים ידנית או להשאיר ריק כאשר יש פגישה בהקשר.",
+        "needCalendarScope": "יש לאשר הרשאת Calendar (Gmail כבר מחובר)",
+        "connectBeforePublish": "יש לחבר Google Calendar לפני פרסום האוטומציה",
+        "noConnectUrl": "לא התקבל קישור התחברות",
+        "connectFailed": "התחברות Google Calendar נכשלה",
+        "connect": "חיבור Google Calendar",
+        "endOptional": "סיום (אופציונלי)",
+        "durationMinutes": "משך בדקות (אם אין סיום)",
+        "loading": "טוען סטטוס Google Calendar...",
+        "unavailable": "Google Calendar אינו זמין לעסק זה כרגע",
+        "googleAccount": "חשבון Google",
+        "description": "תיאור",
+        "fromAppointmentNote": "פרטי האירוע יילקחו מהפגישה",
+        "setManual": "הגדר פרטי אירוע ידנית",
+        "startOptional": "התחלה (אופציונלי — ברירת מחדל מפגישה)",
+        "datetimePlaceholder": "YYYY-MM-DD HH:mm או ריק",
+        "attendee": "משתתף (אימייל)",
+        "location": "מיקום"
+      },
+      "email": {
+        "senderUnavailable": "שולח שנבחר אינו זמין",
+        "noSender": "לא הוגדר מייל שולח",
+        "noVerified": "לא הוגדר מייל עסקי מאומת",
+        "from": "מאת",
+        "fromHelp": "המייל יישלח מכתובת עסקית מאומתת של העסק.",
+        "to": "אל",
+        "chooseVerified": "בחרו מייל עסקי מאומת",
+        "customFieldKey": "שדה מותאם (מפתח)"
+      },
+      "toasts": {
+        "addedAndLinked": "נוסף וחובר אוטומטית (כולל המשך הזרימה)",
+        "moduleAdded": "מודול נוסף ללוח",
+        "resultAdded": "תוצאה נוספה לטריגר",
+        "addedToSelected": "נוסף וחובר אוטומטית למודול שנבחר",
+        "triggerAdded": "טריגר נוסף — בחרו מה יקרה אוטומטית",
+        "settingsSaved": "ההגדרות נשמרו",
+        "draftSaved": "הטיוטה נשמרה",
+        "saveError": "שגיאה בשמירת האוטומציה",
+        "waBillingRequired": "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה.",
+        "waBillingBlock": "לא ניתן להפעיל אוטומציה עקב מצב חיוב WhatsApp",
+        "planRequired": "כדי להפעיל אוטומציה יש לבחור חבילת פעולות",
+        "quotaExhausted": "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג",
+        "billingBlocked": "לא ניתן להפעיל אוטומציות עקב מצב התשלום של החבילה",
+        "archived": "לא ניתן לפרסם אוטומציה בארכיון",
+        "needTriggerCatalog": "יש לטעון את קטלוג הטריגרים לפני פרסום",
+        "unsupportedPublish": "הטריגר שנבחר עדיין לא נתמך לפרסום",
+        "unsupportedChoose": "טריגר ישן או לא נתמך — יש לבחור טריגר נתמך לפני פרסום",
+        "saveTimeout": "השמירה לוקחת יותר מדי זמן — נסו שוב",
+        "cannotSaveBeforePublish": "לא ניתן לשמור את הטיוטה לפני פרסום",
+        "publishNoResponse": "הפרסום הצליח אך לא התקבלה תשובה תקינה מהשרת",
+        "publishedUpdated": "האוטומציה פורסמה ועדכנה",
+        "published": "האוטומציה פורסמה",
+        "publishFailed": "לא ניתן לפרסם את האוטומציה",
+        "testFailed": "בדיקת האוטומציה נכשלה",
+        "resumeFailed": "לא ניתן להפעיל מחדש את האוטומציה",
+        "loadGmail": "לא הצלחנו לטעון את סטטוס Gmail",
+        "loadOutlook": "לא הצלחנו לטעון את סטטוס Outlook",
+        "loadCalendar": "לא הצלחנו לטעון את סטטוס Google Calendar",
+        "loadTriggers": "לא הצלחנו לטעון את קטלוג הטריגרים"
+      },
+      "test": {
+        "title": "מצב בדיקה — לא יישלחו הודעות ולא יבוצעו שינויים",
+        "run": "הרצת בדיקה",
+        "publishFailed": "הפרסום נכשל"
+      },
+      "loadGmail": "לא הצלחנו לטעון את סטטוס Gmail"
+    },
+    "email": {
+      "business": "מייל עסקי",
+      "missingTitle": "לא הוגדר מייל עסקי מאומת",
+      "missingBody": "כדי לשלוח מהמייל העסקי של העסק, יש להשלים קודם את הגדרת המייל ואימותו.",
+      "settingsCta": "הגדרת מייל עסקי",
+      "providerRequired": "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
+    },
+    "ai": {
+      "billingSafe": "פעולת AI נספרת כפעולת אוטומציה בחבילה",
+      "defaultSystems": "התראות"
+    },
+    "errors": {
+      "missingTrigger": "חסר טריגר מאושר",
+      "missingGraph": "אין גרף הפעלה לתבנית זו"
     }
   },
   "layout": {
@@ -5733,6 +6514,245 @@
       "confirmSuggestion": "אישור",
       "changeMapping": "שינוי",
       "sourceFieldLine": "{{source}} → {{field}}"
+    },
+    "wizard": {
+      "ariaCreate": "יצירת תבנית",
+      "close": "סגירה",
+      "kicker": "תבניות הודעה",
+      "title": "יצירת תבנית",
+      "metaBadge": "ממשק מטא",
+      "preview": "תצוגה מקדימה",
+      "previewBusiness": "וואטסאפ · עסק",
+      "bodyPlaceholderPreview": "כאן יופיע גוף ההודעה.",
+      "category": "קטגוריה",
+      "categoryHelp": "בחרו קטגוריה ותת-קטגוריה. שם התבנית והשפה יוגדרו בשלב העריכה.",
+      "subcategory": "תת-קטגוריה",
+      "subcategoryHelp": "האפשרויות משתנות לפי הקטגוריה שנבחרה.",
+      "templateName": "שם התבנית",
+      "nameHelp": "אותיות אנגליות קטנות, מספרים וקו תחתון בלבד. לא יוצג ללקוחות.",
+      "language": "שפה",
+      "languageHelp": "השפה שבה ייכתב תוכן התבנית. אפשר להוסיף גרסאות נוספות מאוחר יותר.",
+      "authOptions": "אפשרויות אימות",
+      "authHelp": "מוצגות רק האפשרויות שנתמכות בפועל בשליחה למטא. כניסה בלחיצה אחת וכניסה ללא לחיצה אינן זמינות כרגע.",
+      "otp": "קוד חד-פעמי",
+      "otpHint": "הגוף חייב לכלול את המשתנה {{1}} לקוד האימות.",
+      "securityRec": "המלצת אבטחה",
+      "securityRecHint": "מוסיפה כותרת תחתונה שממליצה לא לשתף את הקוד.",
+      "expiry": "זמן תפוגת הקוד",
+      "expiryHint": "מטא מציגה תפוגה של 10 דקות. אין שדה נפרד שנתמך כרגע בחיבור שלנו.",
+      "copyCode": "העתקת קוד",
+      "copyCodeHint": "אפשר להוסיף לחצן העתקה באזור הלחצנים למטה.",
+      "reviewTitle": "בדיקה לפני שליחה",
+      "reviewHelp": "ודאו שהפרטים נכונים לפני השליחה לבדיקה של מטא.",
+      "header": "כותרת",
+      "body": "גוף",
+      "footer": "כותרת תחתונה",
+      "buttons": "לחצנים",
+      "samples": "דגימות משתנים",
+      "none": "ללא",
+      "reviewWarn": "שליחה מעבירה את התבנית לבדיקה במטא. הסטטוס יוצג כממתין עד שמטא תחזיר מאושרת או נדחתה.",
+      "draftSaved": "הטיוטה נשמרה",
+      "draftFailed": "שמירת הטיוטה נכשלה",
+      "submitted": "התבנית נשלחה לבדיקה. הסטטוס: {{status}}.",
+      "savedNoMeta": "התבנית נשמרה כטיוטה כי אין חיבור מטא פעיל.",
+      "submitFailed": "שליחת התבנית נכשלה",
+      "prev": "הקודם",
+      "next": "הבא",
+      "submitReview": "שליחה לבדיקה",
+      "saveDraft": "שמירה כטיוטה",
+      "bodyPlaceholder": "כתבו את גוף ההודעה. השתמשו ב-{{1}} למשתנים.",
+      "steps": {
+        "setup": {
+          "title": "הגדרת תבנית",
+          "hint": "קטגוריה ותת-קטגוריה"
+        },
+        "edit": {
+          "title": "עריכת תבנית",
+          "hint": "שם, שפה ותוכן"
+        },
+        "review": {
+          "title": "שליחה לבדיקה",
+          "hint": "סקירה לפני מטא"
+        }
+      },
+      "categories": {
+        "MARKETING": {
+          "title": "שיווק",
+          "description": "מבצעים, עדכוני מוצרים והודעות שיווקיות. נשלחות רק ללקוחות שהסכימו לקבל אותן."
+        },
+        "UTILITY": {
+          "title": "שירות ציבורי",
+          "description": "עדכוני הזמנות, תזכורות ותגובות לבקשות של הלקוח. לא מיועדות לקידום מכירות."
+        },
+        "AUTHENTICATION": {
+          "title": "אימות",
+          "description": "קוד חד-פעמי לכניסה, אימות זהות או אישור פעולה."
+        }
+      },
+      "subtypes": {
+        "defaultMarketing": {
+          "title": "ברירת מחדל",
+          "description": "אפשר לשלוח הודעות עם מדיה ולחצנים בהתאמה אישית כדי לעודד מעורבות של הלקוחות."
+        },
+        "catalog": {
+          "title": "קטלוג",
+          "description": "ניתן לשלוח הודעות שמשפרות את המכירות על ידי חיבור של קטלוג המוצרים."
+        },
+        "callPermission": {
+          "title": "בקשה להרשאות שיחה",
+          "description": "ניתן לשאול לקוחות אם אפשר להתקשר אליהם בוואטסאפ."
+        },
+        "defaultUtility": {
+          "title": "ברירת מחדל",
+          "description": "כאן אפשר לשלוח הודעות לגבי הזמנה או חשבון קיימים."
+        },
+        "otp": {
+          "title": "קוד סיסמה חד-פעמי",
+          "description": "צריך לשלוח קודים כדי לאמת עסקה או התחברות."
+        }
+      },
+      "languages": {
+        "he": "עברית",
+        "en": "אנגלית",
+        "ar": "ערבית",
+        "es": "ספרדית",
+        "fr": "צרפתית",
+        "pt_BR": "פורטוגזית (ברזיל)"
+      },
+      "status": {
+        "pending": "ממתין",
+        "approved": "מאושרת",
+        "rejected": "נדחתה",
+        "draft": "טיוטה"
+      },
+      "media": {
+        "image": "תמונה",
+        "video": "וידאו",
+        "document": "מסמך",
+        "location": "מיקום"
+      }
+    },
+    "metaEditor": {
+      "content": "תוכן",
+      "contentHelp": "יש להוסיף כותרת, גוף וחתימה לתבנית שלכם. המשתנים נכתבים במבנה {{1}}, {{2}}.",
+      "variableType": "סוג המשתנה",
+      "variableName": "שם",
+      "variableNumber": "מספר",
+      "mediaSample": "דגימת מדיה · לא חובה",
+      "mediaNone": "בלי",
+      "mediaImage": "תמונה",
+      "mediaVideo": "סרטון",
+      "mediaDocument": "מסמך",
+      "mediaLocation": "מיקום",
+      "mediaIdImage": "מזהה מדיה לתמונה",
+      "mediaIdVideo": "מזהה מדיה לסרטון",
+      "mediaIdDocument": "מזהה מדיה למסמך",
+      "mediaIdPlaceholder": "מזהה מדיה שהתקבל מהעלאה",
+      "headerOptional": "כותרת · לא חובה",
+      "headerPlaceholder": "הוספת שורת טקסט קצרה לכותרת ההודעה",
+      "addVariable": "+ הוספת משתנה",
+      "variable": "+ משתנה",
+      "code": "קוד",
+      "strikethrough": "קו חוצה",
+      "italic": "נטוי",
+      "bold": "מודגש",
+      "bodyHelp": "אפשר להוסיף משתנים במבנה {{1}}, {{2}}. התצוגה המקדימה מתעדכנת בזמן אמת.",
+      "exampleValues": "ערכי דוגמה למשתנים",
+      "exampleHelp": "מטא דורשת דוגמאות לכל משתנה לפני בדיקה.",
+      "samplePlaceholder": "ערך לדוגמה",
+      "footerOptional": "כותרת תחתונה · לא חובה",
+      "footerHelp": "טקסט קצר בתחתית ההודעה. אפשר להשאיר ריק.",
+      "footerPlaceholder": "לדוגמה: אל תשיבו להודעה זו",
+      "buttonsOptional": "לחצנים · לא חובה",
+      "buttonsHelp": "יצירת לחצנים שיאפשרו ללקוחות להשיב להודעה שלכם או לבצע פעולה. ניתן להוסיף עד {{count}} לחצנים.",
+      "addButton": "הוספת לחצן",
+      "removeButton": "הסרת לחצן",
+      "buttonText": "טקסט הלחצן",
+      "urlType": "סוג כתובת",
+      "urlStatic": "סטטית",
+      "urlDynamic": "דינמית",
+      "websiteUrl": "כתובת אתר",
+      "sampleUrl": "כתובת לדוגמה",
+      "phoneNumber": "מספר טלפון",
+      "contactHelp": "מטא קובעת את טקסט הלחצן. אי אפשר לערוך אותו.",
+      "sampleCode": "קוד לדוגמה",
+      "wrapText": "טקסט",
+      "buttons": {
+        "quick_reply": {
+          "title": "בהתאמה אישית",
+          "description": "הלקוח שולח תשובה קצרה בלחיצה אחת.",
+          "defaultText": "בהתאמה אישית"
+        },
+        "url": {
+          "title": "ביקור באתר האינטרנט",
+          "description": "פותח כתובת אתר סטטית או דינמית.",
+          "defaultText": "ביקור באתר"
+        },
+        "voice_call": {
+          "title": "שיחה בוואטסאפ",
+          "description": "פותח שיחה קולית בוואטסאפ עם העסק.",
+          "defaultText": "שיחה בוואטסאפ"
+        },
+        "phone_number": {
+          "title": "התקשרות למספר הטלפון",
+          "description": "מתקשר למספר שהוגדר מראש.",
+          "defaultText": "התקשרות"
+        },
+        "request_contact_info": {
+          "title": "שיתוף הפרטים ליצירת קשר",
+          "description": "מבקש מהלקוח לשתף את פרטי הקשר שלו.",
+          "defaultText": "שיתוף הפרטים ליצירת קשר"
+        },
+        "copy_code": {
+          "title": "העתקת קוד",
+          "description": "מעתיק קוד מבצע או קוד אימות ללוח.",
+          "defaultText": "העתקת קוד"
+        }
+      }
+    },
+    "billing": {
+      "loadError": "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.",
+      "retry": "נסו שוב",
+      "title": "וואטסאפ",
+      "payAsYouGo": "חיוב לפי שימוש",
+      "notConfigured": "חיוב וואטסאפ לא הוגדר",
+      "setupCta": "הגדרת חיוב וואטסאפ",
+      "active": "חיוב וואטסאפ פעיל",
+      "manage": "ניהול חיוב",
+      "perMessage": "{{price}} להודעה",
+      "messagesThisMonth": "{{count}} הודעות החודש",
+      "estimatedCharge": "חיוב משוער:",
+      "periodEnd": "סוף תקופת החיוב: {{date}}",
+      "noPackages": "אין חבילות וואטסאפ — מחויבים רק לפי הודעות שנשלחו בפועל.",
+      "paymentIssue": "יש בעיה בתשלום עבור חיוב וואטסאפ",
+      "paymentIssueBody": "השליחה תמשיך זמנית. מומלץ להסדיר את התשלום כדי למנוע עצירה.",
+      "until": " עד {{date}}.",
+      "managePayment": "ניהול תשלום",
+      "sendBlocked": "שליחת וואטסאפ חסומה עקב מצב החיוב",
+      "sendBlockedBody": "יש להסדיר אמצעי תשלום כדי להמשיך לשלוח הודעות.",
+      "settlePayment": "הסדרת תשלום",
+      "cancelScheduled": "החיוב מתוכנן לביטול",
+      "cancelScheduledOn": " ב־{{date}}",
+      "keepActive": "השארת החיוב פעיל",
+      "updating": "מעדכנים...",
+      "setupFailed": "לא הצלחנו להתחיל את הגדרת החיוב. נסו שוב.",
+      "cancelSuccess": "החיוב יבוטל בסוף תקופת החיוב הנוכחית.",
+      "cancelFailed": "לא הצלחנו לבטל את החיוב. נסו שוב.",
+      "reactivateSuccess": "הביטול בוטל והחיוב יישאר פעיל.",
+      "reactivateFailed": "לא הצלחנו להשאיר את החיוב פעיל.",
+      "setupTitle": "הגדרת חיוב וואטסאפ",
+      "manageTitle": "ניהול חיוב וואטסאפ",
+      "close": "סגור",
+      "needPayment": "נדרש אמצעי תשלום עבור הודעות וואטסאפ",
+      "usageOnly": "האוטומציות והשליחה מחויבות לפי שימוש בפועל — אין חבילות הודעות מראש.",
+      "startPayment": "התחלת הגדרת תשלום",
+      "cancel": "ביטול",
+      "manageLine": "חיוב לפי שימוש · {{price}} להודעה",
+      "periodUntil": " · תקופה עד {{date}}",
+      "cancelNote": "החיוב מתוכנן לביטול",
+      "cancelNoteOn": " ב־{{date}}. אפשר להשאיר אותו פעיל.",
+      "cancelAtEndBody": "אפשר לבטל את החיוב לסוף התקופה הנוכחית. עד אז ניתן להמשיך לשלוח הודעות לפי השימוש.",
+      "cancelAtEnd": "ביטול בסוף התקופה"
     }
   },
   "metaCampaigns": {

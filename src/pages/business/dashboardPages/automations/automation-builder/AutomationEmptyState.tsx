@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Clock3, Plus } from "lucide-react";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
  * Make-style blank slate: one clear trigger entry point, then results.
  */
 export default function AutomationEmptyState({ readOnly, onAddTrigger }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="af-empty-canvas">
       <div className="af-empty-canvas__stage">
@@ -18,13 +20,13 @@ export default function AutomationEmptyState({ readOnly, onAddTrigger }: Props) 
           className="af-empty-trigger"
           disabled={readOnly}
           onClick={onAddTrigger}
-          aria-label="בחר טריגר"
+          aria-label={t("automations.empty.chooseAria")}
         >
-          <span className="af-empty-trigger__badge">טריגר</span>
+          <span className="af-empty-trigger__badge">{t("automations.empty.badge")}</span>
           <span className="af-empty-trigger__plus" aria-hidden>
             <Plus size={36} strokeWidth={2.5} />
           </span>
-          <span className="af-empty-trigger__clock" aria-hidden title="גם לפי לוח זמנים">
+          <span className="af-empty-trigger__clock" aria-hidden title={t("automations.empty.scheduleHint")}>
             <Clock3 size={14} />
           </span>
         </button>
@@ -33,11 +35,8 @@ export default function AutomationEmptyState({ readOnly, onAddTrigger }: Props) 
         </span>
       </div>
 
-      <strong>התחילו בטריגר</strong>
-      <p>
-        בחרו מתי האוטומציה מתחילה (למשל ליד חדש). אחר כך תוסיפו מה יקרה אוטומטית —
-        התוצאה. אפשר לפצל לכמה תוצאות יחד, בלי מסלולים מורכבים.
-      </p>
+      <strong>{t("automations.empty.title")}</strong>
+      <p>{t("automations.empty.text")}</p>
       <button
         type="button"
         className="af-btn af-btn--primary"
@@ -46,7 +45,7 @@ export default function AutomationEmptyState({ readOnly, onAddTrigger }: Props) 
         data-demo-target="automations-add-trigger"
       >
         <Plus size={14} />
-        בחר טריגר
+        {t("automations.empty.chooseTrigger")}
       </button>
     </div>
   );

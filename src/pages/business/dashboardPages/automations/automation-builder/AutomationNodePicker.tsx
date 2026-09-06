@@ -16,19 +16,19 @@ import {
   MessageCircle,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   AutomationTriggerOption,
   PaletteFilter,
   PaletteItem,
 } from "../automationFlowTypes";
-import { TRIGGER_CATEGORY_LABELS } from "../automationFlowTypes";
+import { getTriggerCategoryLabels } from "../automationFlowTypes";
 import {
   groupTriggerItems,
   mapCatalogCategoryToPicker,
   readRecentTriggerKeys,
   rememberRecentTriggerKey,
   triggerMatchesQuery,
-  TRIGGER_PICKER_CATEGORY_LABELS,
   type TriggerPickerCategoryId,
 } from "./triggerPickerUtils";
 import { MixedBidiText } from "./bidiText";
@@ -44,14 +44,14 @@ export type PickerCategory =
   | "ai"
   | "integrations";
 
-const CATEGORIES: Array<{ id: PickerCategory; label: string }> = [
-  { id: "all", label: "הכל" },
-  { id: "trigger", label: "טריגרים" },
-  { id: "action", label: "תוצאות" },
-  { id: "logic", label: "לוגיקה" },
-  { id: "delay", label: "המתנה" },
-  { id: "ai", label: "AI" },
-  { id: "integrations", label: "חיבורים" },
+const CATEGORY_IDS: PickerCategory[] = [
+  "all",
+  "trigger",
+  "action",
+  "logic",
+  "delay",
+  "ai",
+  "integrations",
 ];
 
 const TRIGGER_ICON_MAP: Record<string, LucideIcon> = {
@@ -146,6 +146,12 @@ export default function AutomationNodePicker({
   onClose,
   onPick,
 }: Props) {
+  const { t } = useTranslation();
+  const triggerCategoryLabels = getTriggerCategoryLabels(t);
+  const categories = CATEGORY_IDS.map((id) => ({
+    id,
+    label: t(`automations.picker.categories.${id}`),
+  }));
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<PickerCategory>("all");
   const [triggerCategory, setTriggerCategory] = useState<
@@ -179,10 +185,10 @@ export default function AutomationNodePicker({
   const visibleCategories = useMemo(() => {
     if (mode === "trigger") return [];
     if (mode === "result") {
-      return CATEGORIES.filter((c) => c.id !== "trigger");
+      return categories.filter((c) => c.id !== "trigger");
     }
-    return CATEGORIES;
-  }, [mode]);
+    return categories;
+  }, [categories, mode]);
 
   const triggerGroups = useMemo(() => {
     if (mode !== "trigger") return [];
@@ -223,12 +229,15 @@ export default function AutomationNodePicker({
     if (mode !== "trigger") return [];
     const groups = groupTriggerItems(items, triggerCatalog, recentKeys);
     const chips: Array<{ id: TriggerPickerCategoryId | "all"; label: string }> =
-      [{ id: "all", label: "הכל" }];
+      [{ id: "all", label: t("automations.picker.categories.all") }];
     for (const group of groups) {
-      chips.push({ id: group.id, label: group.label });
+      chips.push({
+        id: group.id,
+        label: t(`automations.picker.triggerCategories.${group.id}`),
+      });
     }
     return chips;
-  }, [items, mode, recentKeys, triggerCatalog]);
+  }, [items, mode, recentKeys, t, triggerCatalog]);
 
   const visible = useMemo(() => {
     if (mode === "trigger") return [];
@@ -258,15 +267,15 @@ export default function AutomationNodePicker({
 
   const isTriggerMode = mode === "trigger";
   const title = isTriggerMode
-    ? "מה יפעיל את האוטומציה?"
+    ? t("automations.picker.titleTrigger")
     : mode === "result"
-      ? "מה יקרה אוטומטית?"
-      : "הוסף שלב";
+      ? t("automations.picker.titleResult")
+      : t("automations.picker.titleAll");
   const subtitle = isTriggerMode
-    ? "בחרו את האירוע שיתחיל את התהליך"
+    ? t("automations.picker.subtitleTrigger")
     : mode === "result"
-      ? "התוצאה היא מה שקורה אחרי הטריגר. אפשר להוסיף כמה תוצאות יחד."
-      : "בחרו טריגר, תוצאה או לוגיקה להוספה לזרימה";
+      ? t("automations.picker.subtitleResult")
+      : t("automations.picker.subtitleAll");
 
   const handlePick = (item: PaletteItem) => {
     if (readOnly || item.supported === false) return;
@@ -281,13 +290,15 @@ export default function AutomationNodePicker({
     const option = catalogByKey.get(item.key);
     const Icon = triggerIconFor(option, item);
     const categoryLabel =
-      TRIGGER_CATEGORY_LABELS[option?.category || ""] ||
-      TRIGGER_PICKER_CATEGORY_LABELS[
-        mapCatalogCategoryToPicker(option?.category)
-      ];
+      triggerCategoryLabels[option?.category || ""] ||
+      t(
+        `automations.picker.triggerCategories.${mapCatalogCategoryToPicker(
+          option?.category
+        )}`
+      );
     const billingNote =
       option?.billingNote ||
-      String(item.defaults?.billingNote || "ללא חיוב");
+      String(item.defaults?.billingNote || t("automations.catalog.noCharge"));
     const disabled = readOnly || item.supported === false;
     return (
       <button
@@ -347,7 +358,7 @@ export default function AutomationNodePicker({
           <button
             type="button"
             className="af-drawer__close"
-            aria-label="סגור"
+            aria-label={t("automations.common.close")}
             onClick={onClose}
           >
             <X size={16} />
@@ -361,18 +372,18 @@ export default function AutomationNodePicker({
             onChange={(event) => setQuery(event.target.value)}
             placeholder={
               isTriggerMode
-                ? "חיפוש: ליד, CRM, פגישה, וואטסאפ, תשלום, הזמנה, טופס, זמן…"
+                ? t("automations.picker.searchTrigger")
                 : mode === "result"
-                  ? "חפש תוצאה (וואטסאפ, משימה, AI…)"
-                  : "חפש טריגר או תוצאה"
+                  ? t("automations.picker.searchResult")
+                  : t("automations.picker.searchAll")
             }
             autoFocus
-            aria-label="חיפוש טריגרים"
+            aria-label={t("automations.picker.searchAria")}
           />
         </label>
 
         {isTriggerMode ? (
-          <div className="af-drawer__chips" role="tablist" aria-label="קטגוריות טריגר">
+          <div className="af-drawer__chips" role="tablist" aria-label={t("automations.picker.categoriesAria")}>
             {triggerCategoryChips.map((chip) => (
               <button
                 key={chip.id}
@@ -406,7 +417,7 @@ export default function AutomationNodePicker({
         )}
 
         <div className="af-drawer__body">
-          {loading ? <p className="af-palette__hint">טוען טריגרים מהשרת...</p> : null}
+          {loading ? <p className="af-palette__hint">{t("automations.picker.loading")}</p> : null}
           {error ? (
             <div className="af-wa-template__state af-wa-template__state--error">
               <p>{error}</p>
@@ -416,7 +427,7 @@ export default function AutomationNodePicker({
                   className="af-toolbar__btn"
                   onClick={onRetryCatalog}
                 >
-                  נסיון חוזר
+                  {t("automations.common.retry")}
                 </button>
               ) : null}
             </div>
@@ -425,13 +436,15 @@ export default function AutomationNodePicker({
           {isTriggerMode ? (
             triggerFlatCount === 0 ? (
               <div className="af-drawer__empty" role="status">
-                לא נמצאו טריגרים מתאימים
+                {t("automations.picker.emptyTriggers")}
               </div>
             ) : (
               <div className="af-picker-groups">
                 {triggerGroups.map((group) => (
                   <section key={group.id} className="af-picker-group">
-                    <h3 className="af-picker-group__title">{group.label}</h3>
+                    <h3 className="af-picker-group__title">
+                      {t(`automations.picker.triggerCategories.${group.id}`)}
+                    </h3>
                     <div className="af-picker-list">
                       {group.items.map((item) => renderTriggerItem(item))}
                     </div>
@@ -440,7 +453,7 @@ export default function AutomationNodePicker({
               </div>
             )
           ) : visible.length === 0 ? (
-            <div className="af-drawer__empty">לא נמצאו פריטים</div>
+            <div className="af-drawer__empty">{t("automations.picker.emptyItems")}</div>
           ) : (
             <div className="af-picker-list">
               {visible.map((item) => {

@@ -4,7 +4,11 @@
  * clear Trigger → Result flows (no abstract "paths").
  */
 
+import type { TFunction } from "i18next";
+import i18n from "../../../../i18n/i18n";
 import { listSupportedAiTemplates } from "./aiAutomationCatalog";
+
+type TranslateFn = TFunction;
 
 export type SystemAutomationKind =
   | "standard"
@@ -40,16 +44,17 @@ export type SystemAutomationSuggestion = {
   requiresAi?: boolean;
 };
 
-export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
+type SystemAutomationDef = Omit<
+  SystemAutomationSuggestion,
+  "title" | "description" | "triggerLabel" | "resultLabels" | "timingHint"
+> & { resultCount: number; hasTiming?: boolean };
+
+const SYSTEM_AUTOMATION_DEFS: SystemAutomationDef[] = [
   {
     id: "lead_multi_route",
     recipeKey: "lead_multi_route",
     kind: "standard",
-    title: "ליד חדש — כמה תוצאות יחד",
-    description:
-      "כשנכנס ליד חדש ב-CRM: שליחת WhatsApp, יצירת משימה לנציג והתראה לבעל העסק — במקביל.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["WhatsApp מיידי", "משימה לנציג", "התראה לבעל העסק"],
+    resultCount: 3,
     categories: ["crm", "whatsapp"],
     recommendedWaCategory: "welcome",
     recommendedTemplateHints: ["new_lead_welcome"],
@@ -59,11 +64,8 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     recipeKey: "lead_no_response",
     whatsappTrigger: "new_lead_welcome",
     kind: "standard",
-    title: "ליד חדש → פתיחה + פולואפים לפי תגובה",
-    description:
-      "הודעת פתיחה מיד. אם אין תשובת WhatsApp — פולואפ אחרי 24 שעות ופולואפ נוסף אחרי 3 ימים.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["פתיחה WhatsApp", "פולואפ #1", "פולואפ #2"],
+    resultCount: 3,
+    hasTiming: true,
     categories: ["crm", "whatsapp", "sales"],
     recommendedWaCategory: "welcome",
     recommendedTemplateHints: [
@@ -71,17 +73,13 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
       "lead_follow_up",
       "lead_follow_up_2",
     ],
-    timingHint: "פתיחה מיידית · פולואפ #1 אחרי 24ש׳ · פולואפ #2 אחרי 3 ימים",
   },
   {
     id: "new_client_welcome",
     recipeKey: "new_client_welcome",
     whatsappTrigger: "new_client_welcome",
     kind: "standard",
-    title: "לקוח חדש — ברוכים הבאים",
-    description: "טריגר לקוח חדש → הודעת פתיחה + משימת שימור.",
-    triggerLabel: "לקוח חדש",
-    resultLabels: ["הודעת פתיחה", "משימת שימור"],
+    resultCount: 2,
     categories: ["crm", "whatsapp"],
     recommendedWaCategory: "welcome",
     recommendedTemplateHints: ["welcome", "new_client"],
@@ -90,11 +88,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     id: "appointment_duo",
     recipeKey: "appointment_duo",
     kind: "standard",
-    title: "פגישה — אישור + תזכורת + משימה",
-    description:
-      "כשנוצרת פגישה: אישור WhatsApp ללקוח, משימת הכנה, ותזכורת יום לפני המועד.",
-    triggerLabel: "פגישה חדשה",
-    resultLabels: ["אישור WhatsApp", "תזכורת לפני", "משימה"],
+    resultCount: 3,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "appointment_reminder",
     recommendedTemplateHints: ["appointment_reminder", "thanks"],
@@ -102,77 +96,56 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
   {
     id: "appointment_gcal_sync",
     kind: "standard",
-    title: "פגישה → Google Calendar",
-    description: "טריגר פגישה חדשה. תוצאה: יצירת אירוע ביומן Google.",
-    triggerLabel: "פגישה חדשה",
-    resultLabels: ["אירוע ב-Google Calendar"],
+    resultCount: 1,
     categories: ["appointments"],
   },
   {
     id: "appointment_email_confirm",
     kind: "standard",
-    title: "פגישה → אימייל אישור",
-    description: "טריגר פגישה חדשה. תוצאה: אימייל אישור ללקוח.",
-    triggerLabel: "פגישה חדשה",
-    resultLabels: ["אימייל אישור"],
+    resultCount: 1,
     categories: ["appointments", "email"],
   },
   {
     id: "lead_email_welcome",
     kind: "standard",
-    title: "ליד חדש → אימייל + משימה",
-    description: "טריגר ליד חדש. תוצאות: אימייל ומשימת מעקב.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["אימייל", "משימת מעקב"],
+    resultCount: 2,
     categories: ["crm", "email"],
   },
   {
     id: "appointment_reminder_1_day",
     whatsappTrigger: "appointment_reminder_1_day",
     kind: "reminder",
-    title: "תזכורת פגישה — יום לפני",
-    description: "שולח תבנית WhatsApp יום לפני הפגישה.",
-    triggerLabel: "פגישה קרובה (יום לפני)",
-    resultLabels: ["הודעת תזכורת WhatsApp"],
+    resultCount: 1,
+    hasTiming: true,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "appointment_reminder",
     recommendedTemplateHints: ["appointment_reminder"],
-    timingHint: "יום אחד לפני",
   },
   {
     id: "appointment_reminder_2_days",
     whatsappTrigger: "appointment_reminder_hours",
     kind: "reminder",
-    title: "תזכורת פגישה — יומיים לפני",
-    description: "שולח תבנית WhatsApp יומיים (48 שעות) לפני הפגישה.",
-    triggerLabel: "פגישה קרובה (יומיים לפני)",
-    resultLabels: ["הודעת תזכורת WhatsApp"],
+    resultCount: 1,
+    hasTiming: true,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "appointment_reminder",
     recommendedTemplateHints: ["appointment_reminder"],
-    timingHint: "יומיים לפני (48 שעות)",
   },
   {
     id: "appointment_reminder_hours",
     whatsappTrigger: "appointment_reminder_hours",
     kind: "reminder",
-    title: "תזכורת פגישה — שעות לפני",
-    description: "תזכורת מותאמת (למשל שעתיים לפני) לתבנית WhatsApp.",
-    triggerLabel: "פגישה קרובה (שעות לפני)",
-    resultLabels: ["הודעת תזכורת WhatsApp"],
+    resultCount: 1,
+    hasTiming: true,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "appointment_reminder",
     recommendedTemplateHints: ["appointment_reminder"],
-    timingHint: "מספר שעות לבחירה",
   },
   {
     id: "appointment_thanks",
     whatsappTrigger: "appointment_thanks",
     kind: "whatsapp_simple",
-    title: "תודה אחרי פגישה",
-    description: "אחרי סיום הפגישה — הודעת תודה ב-WhatsApp לפי מועד הפגישה.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["הודעת תודה"],
+    resultCount: 1,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "custom",
     recommendedTemplateHints: ["thanks", "thank_you"],
@@ -181,10 +154,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     id: "appointment_review",
     whatsappTrigger: "appointment_review_request",
     kind: "whatsapp_simple",
-    title: "בקשת ביקורת אחרי פגישה",
-    description: "יום אחרי סיום הפגישה — בקשת ביקורת ב-WhatsApp.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["בקשת ביקורת"],
+    resultCount: 1,
     categories: ["appointments", "whatsapp"],
     recommendedWaCategory: "custom",
     recommendedTemplateHints: ["review", "feedback"],
@@ -193,32 +163,69 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     id: "lead_followup_2",
     whatsappTrigger: "lead_followup_2",
     kind: "whatsapp_simple",
-    title: "פולואפ שני לליד (מיזוג)",
-    description:
-      "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
-    triggerLabel: "ליד ללא המרה",
-    resultLabels: ["WhatsApp פולואפ שני"],
+    resultCount: 1,
+    hasTiming: true,
+    comingSoon: true,
     categories: ["crm", "whatsapp"],
     recommendedWaCategory: "follow_up",
     recommendedTemplateHints: ["lead_follow_up_2"],
-    timingHint: "חלק ממסלול הפולואפים המאוחד",
-    comingSoon: true,
   },
   {
     id: "inactive_client",
     whatsappTrigger: "inactive_client",
     kind: "whatsapp_simple",
-    title: "לקוח לא פעיל — נגיעה",
-    description: "תזכורת ללקוחות ללא אינטראקציה לאחרונה.",
-    triggerLabel: "לקוח לא פעיל",
-    resultLabels: ["הודעת נגיעה"],
+    resultCount: 1,
     categories: ["crm", "whatsapp"],
     recommendedWaCategory: "follow_up",
     recommendedTemplateHints: ["inactive", "follow_up"],
   },
 ];
 
-SYSTEM_AUTOMATION_CATALOG.push(...listSupportedAiTemplates().map((template) => ({ id: template.templateKey, recipeKey: template.recipeKey, kind: "ai" as const, title: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai", "crm"] : ["ai", "crm", "sales"]) as SystemAutomationSuggestion["categories"], requiresAi: false })));
+function localizeSystemRow(
+  def: SystemAutomationDef,
+  t: TranslateFn
+): SystemAutomationSuggestion {
+  const base = `automations.catalog.system.${def.id}`;
+  const { resultCount, hasTiming, ...rest } = def;
+  return {
+    ...rest,
+    title: t(`${base}.title`),
+    description: t(`${base}.description`),
+    triggerLabel: t(`${base}.trigger`),
+    resultLabels: Array.from({ length: resultCount }, (_, index) =>
+      t(`${base}.results.${index}`)
+    ),
+    ...(hasTiming ? { timingHint: t(`${base}.timing`) } : {}),
+  };
+}
+
+export function getSystemAutomationCatalog(
+  t: TranslateFn = i18n.t.bind(i18n)
+): SystemAutomationSuggestion[] {
+  const rows = SYSTEM_AUTOMATION_DEFS.map((def) => localizeSystemRow(def, t));
+  rows.push(
+    ...listSupportedAiTemplates().map((template) => ({
+      id: template.templateKey,
+      recipeKey: template.recipeKey,
+      kind: "ai" as const,
+      title: template.titleHe,
+      description: template.description,
+      triggerLabel: template.customerExplanation.startsWhen,
+      resultLabels: [
+        template.customerExplanation.aiDoes,
+        template.customerExplanation.afterwards,
+      ],
+      categories: (template.recommendedTrigger === "scheduled"
+        ? ["ai", "crm"]
+        : ["ai", "crm", "sales"]) as SystemAutomationSuggestion["categories"],
+      requiresAi: false,
+    }))
+  );
+  return rows;
+}
+
+export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] =
+  getSystemAutomationCatalog();
 
 export type MessageTemplateGap = {
   id: string;
@@ -229,21 +236,18 @@ export type MessageTemplateGap = {
   hintNames: string[];
 };
 
-/** Full checklist of WhatsApp message templates businesses should prepare. */
-export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
+type RequiredWhatsAppTemplateDef = {
   id: string;
   category: MessageTemplateGap["category"];
-  title: string;
-  reason: string;
   hintNames: string[];
   relatedAutomationIds: string[];
   suggestedMetaName: string;
-}> = [
+};
+
+const REQUIRED_WHATSAPP_TEMPLATE_DEFS: RequiredWhatsAppTemplateDef[] = [
   {
     id: "wa_welcome_lead",
     category: "welcome",
-    title: "ברוכים הבאים לליד חדש",
-    reason: "נשלחת כשנכנס ליד חדש ל-CRM.",
     hintNames: ["new_lead_welcome"],
     relatedAutomationIds: ["lead_multi_route", "wa_new_lead_welcome"],
     suggestedMetaName: "new_lead_welcome",
@@ -251,8 +255,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_welcome_client",
     category: "welcome",
-    title: "ברוכים הבאים ללקוח חדש",
-    reason: "נשלחת כשנוצר לקוח חדש ב-CRM.",
     hintNames: ["new_client_welcome"],
     relatedAutomationIds: ["new_client_welcome", "wa_new_client_welcome"],
     suggestedMetaName: "new_client_welcome",
@@ -260,8 +262,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_appointment_reminder",
     category: "appointment_reminder",
-    title: "תזכורת פגישה",
-    reason: "נשלחת לפני פגישה (שעה / שעתיים / יום / יומיים / 3 ימים).",
     hintNames: ["appointment_reminder"],
     relatedAutomationIds: [
       "appointment_duo",
@@ -274,8 +274,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_appointment_confirmation",
     category: "custom",
-    title: "אישור פגישה",
-    reason: "נשלחת מיד כשנקבעת פגישה חדשה.",
     hintNames: ["appointment_confirmation"],
     relatedAutomationIds: ["appointment_duo", "wf_appointment_duo"],
     suggestedMetaName: "appointment_confirmation",
@@ -283,8 +281,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_appointment_thanks",
     category: "custom",
-    title: "תודה אחרי פגישה",
-    reason: "נשלחת אחרי סיום הפגישה לפי מועד הפגישה.",
     hintNames: ["appointment_thanks"],
     relatedAutomationIds: ["appointment_thanks", "wa_appointment_thanks"],
     suggestedMetaName: "appointment_thanks",
@@ -292,8 +288,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_appointment_review",
     category: "custom",
-    title: "בקשת ביקורת אחרי פגישה",
-    reason: "נשלחת לבקשת ביקורת/פידבק אחרי פגישה.",
     hintNames: ["appointment_review"],
     relatedAutomationIds: ["appointment_review", "wa_appointment_review"],
     suggestedMetaName: "appointment_review",
@@ -301,8 +295,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_follow_up",
     category: "follow_up",
-    title: "מעקב לליד שלא נענה",
-    reason: "נשלחת כפולואפ ראשון לליד בלי מענה.",
     hintNames: ["lead_follow_up"],
     relatedAutomationIds: ["lead_no_response", "wa_lead_no_response"],
     suggestedMetaName: "lead_follow_up",
@@ -310,8 +302,6 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_follow_up_2",
     category: "follow_up",
-    title: "פולואפ שני לליד",
-    reason: "נשלחת כמעקב נוסף ללידים שלא הומרו.",
     hintNames: ["lead_follow_up_2"],
     relatedAutomationIds: ["lead_followup_2", "wa_lead_followup_2"],
     suggestedMetaName: "lead_follow_up_2",
@@ -319,13 +309,33 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   {
     id: "wa_inactive_client",
     category: "follow_up",
-    title: "נגיעה ללקוח לא פעיל",
-    reason: "נשלחת ללקוחות ללא פעילות לאחרונה.",
     hintNames: ["inactive_client"],
     relatedAutomationIds: ["inactive_client", "wa_inactive_client"],
     suggestedMetaName: "inactive_client",
   },
 ];
+
+export function getRequiredWhatsAppMessageTemplates(
+  t: TranslateFn = i18n.t.bind(i18n)
+): Array<{
+  id: string;
+  category: MessageTemplateGap["category"];
+  title: string;
+  reason: string;
+  hintNames: string[];
+  relatedAutomationIds: string[];
+  suggestedMetaName: string;
+}> {
+  return REQUIRED_WHATSAPP_TEMPLATE_DEFS.map((def) => ({
+    ...def,
+    title: t(`automations.catalog.waRequired.${def.id}.title`),
+    reason: t(`automations.catalog.waRequired.${def.id}.reason`),
+  }));
+}
+
+/** Full checklist of WhatsApp message templates businesses should prepare. */
+export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES =
+  getRequiredWhatsAppMessageTemplates();
 
 /** @deprecated use REQUIRED_WHATSAPP_MESSAGE_TEMPLATES */
 const REQUIRED_TEMPLATE_GROUPS = REQUIRED_WHATSAPP_MESSAGE_TEMPLATES;
@@ -382,10 +392,11 @@ export type RequiredWhatsAppMessageTemplateStatus = {
 
 /** Full required WhatsApp message-template checklist with prepared status. */
 export function listRequiredWhatsAppMessageTemplates(
-  templates: WaTemplateLike[] = []
+  templates: WaTemplateLike[] = [],
+  t: TranslateFn = i18n.t.bind(i18n)
 ): RequiredWhatsAppMessageTemplateStatus[] {
   const usable = (templates || []).filter(isUsableTemplate);
-  return REQUIRED_WHATSAPP_MESSAGE_TEMPLATES.map((group) => {
+  return getRequiredWhatsAppMessageTemplates(t).map((group) => {
     // Prefer name/key hints so each checklist row is independently prepared.
     const match =
       usable.find(

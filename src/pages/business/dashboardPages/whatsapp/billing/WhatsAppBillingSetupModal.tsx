@@ -1,6 +1,8 @@
 import React, { useEffect, useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { useLocaleDir } from "../../../../../hooks/useLocaleDir";
 import {
   cancelWhatsAppBilling,
   createWhatsAppBillingCheckout,
@@ -38,6 +40,8 @@ export default function WhatsAppBillingSetupModal({
   onClose,
   onUsageUpdated,
 }: Props) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [mode, setMode] = useState<ModalMode>(initialMode);
@@ -104,13 +108,13 @@ export default function WhatsAppBillingSetupModal({
         returnTo,
       });
       if (!result?.url) {
-        toast.error("לא הצלחנו להתחיל את הגדרת החיוב. נסו שוב.");
+        toast.error(t("whatsapp.billing.setupFailed"));
         setBusy(false);
         return;
       }
       window.location.assign(result.url);
     } catch {
-      toast.error("לא הצלחנו להתחיל את הגדרת החיוב. נסו שוב.");
+      toast.error(t("whatsapp.billing.setupFailed"));
       setBusy(false);
     }
   };
@@ -119,11 +123,11 @@ export default function WhatsAppBillingSetupModal({
     setBusy(true);
     try {
       await cancelWhatsAppBilling(businessId);
-      toast.success("החיוב יבוטל בסוף תקופת החיוב הנוכחית.");
+      toast.success(t("whatsapp.billing.cancelSuccess"));
       await onUsageUpdated();
       onClose();
     } catch {
-      toast.error("לא הצלחנו לבטל את החיוב. נסו שוב.");
+      toast.error(t("whatsapp.billing.cancelFailed"));
     } finally {
       setBusy(false);
     }
@@ -133,11 +137,11 @@ export default function WhatsAppBillingSetupModal({
     setBusy(true);
     try {
       await reactivateWhatsAppBilling(businessId);
-      toast.success("הביטול בוטל והחיוב יישאר פעיל.");
+      toast.success(t("whatsapp.billing.reactivateSuccess"));
       await onUsageUpdated();
       onClose();
     } catch {
-      toast.error("לא הצלחנו להשאיר את החיוב פעיל.");
+      toast.error(t("whatsapp.billing.reactivateFailed"));
     } finally {
       setBusy(false);
     }
@@ -145,8 +149,8 @@ export default function WhatsAppBillingSetupModal({
 
   const heading =
     mode === "manage" && hasActiveLike
-      ? "ניהול חיוב וואטסאפ"
-      : "הגדרת חיוב וואטסאפ";
+      ? t("whatsapp.billing.manageTitle")
+      : t("whatsapp.billing.setupTitle");
 
   return (
     <div
@@ -162,12 +166,12 @@ export default function WhatsAppBillingSetupModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        dir="rtl"
+        dir={dir}
       >
         <button
           type="button"
           className="wa-billing-modal__close"
-          aria-label="סגור"
+          aria-label={t("whatsapp.billing.close")}
           onClick={onClose}
           disabled={busy}
         >
@@ -178,14 +182,15 @@ export default function WhatsAppBillingSetupModal({
 
         {mode === "setup" || !hasActiveLike ? (
           <>
-            <p>נדרש אמצעי תשלום עבור הודעות וואטסאפ</p>
-            <p>
-              האוטומציות והשליחה מחויבות לפי שימוש בפועל — אין חבילות הודעות
-              מראש.
-            </p>
+            <p>{t("whatsapp.billing.needPayment")}</p>
+            <p>{t("whatsapp.billing.usageOnly")}</p>
             <div className="wa-billing-modal__price">
-              <strong>חיוב לפי שימוש</strong>
-              <span>{formatHeIls(unitPrice)} להודעה</span>
+              <strong>{t("whatsapp.billing.payAsYouGo")}</strong>
+              <span>
+                {t("whatsapp.billing.perMessage", {
+                  price: formatHeIls(unitPrice),
+                })}
+              </span>
             </div>
             <div className="wa-billing-modal__actions">
               <button
@@ -194,7 +199,7 @@ export default function WhatsAppBillingSetupModal({
                 onClick={onClose}
                 disabled={busy}
               >
-                ביטול
+                {t("whatsapp.billing.cancel")}
               </button>
               <button
                 type="button"
@@ -203,22 +208,27 @@ export default function WhatsAppBillingSetupModal({
                 disabled={busy}
               >
                 {busy ? <Loader2 size={14} className="wa-billing-spin" /> : null}
-                התחלת הגדרת תשלום
+                {t("whatsapp.billing.startPayment")}
               </button>
             </div>
           </>
         ) : (
           <>
             <p>
-              חיוב לפי שימוש · {formatHeIls(unitPrice)} להודעה
-              {periodEndLabel ? ` · תקופה עד ${periodEndLabel}` : ""}
+              {t("whatsapp.billing.manageLine", {
+                price: formatHeIls(unitPrice),
+              })}
+              {periodEndLabel
+                ? t("whatsapp.billing.periodUntil", { date: periodEndLabel })
+                : ""}
             </p>
             {cancelAtPeriodEnd ? (
               <>
                 <p>
-                  החיוב מתוכנן לביטול
-                  {periodEndLabel ? ` ב־${periodEndLabel}` : ""}. אפשר להשאיר
-                  אותו פעיל.
+                  {t("whatsapp.billing.cancelNote")}
+                  {periodEndLabel
+                    ? t("whatsapp.billing.cancelNoteOn", { date: periodEndLabel })
+                    : ""}
                 </p>
                 <div className="wa-billing-modal__actions">
                   <button
@@ -227,7 +237,7 @@ export default function WhatsAppBillingSetupModal({
                     onClick={onClose}
                     disabled={busy}
                   >
-                    סגור
+                    {t("whatsapp.billing.close")}
                   </button>
                   <button
                     type="button"
@@ -238,16 +248,13 @@ export default function WhatsAppBillingSetupModal({
                     {busy ? (
                       <Loader2 size={14} className="wa-billing-spin" />
                     ) : null}
-                    השארת החיוב פעיל
+                    {t("whatsapp.billing.keepActive")}
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <p>
-                  אפשר לבטל את החיוב לסוף התקופה הנוכחית. עד אז ניתן להמשיך
-                  לשלוח הודעות לפי השימוש.
-                </p>
+                <p>{t("whatsapp.billing.cancelAtEndBody")}</p>
                 <div className="wa-billing-modal__actions">
                   <button
                     type="button"
@@ -255,7 +262,7 @@ export default function WhatsAppBillingSetupModal({
                     onClick={onClose}
                     disabled={busy}
                   >
-                    סגור
+                    {t("whatsapp.billing.close")}
                   </button>
                   <button
                     type="button"
@@ -266,7 +273,7 @@ export default function WhatsAppBillingSetupModal({
                     {busy ? (
                       <Loader2 size={14} className="wa-billing-spin" />
                     ) : null}
-                    ביטול בסוף התקופה
+                    {t("whatsapp.billing.cancelAtEnd")}
                   </button>
                 </div>
               </>

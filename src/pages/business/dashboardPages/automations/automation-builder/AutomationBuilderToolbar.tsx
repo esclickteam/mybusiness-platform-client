@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   FlaskConical,
@@ -42,26 +43,39 @@ function SaveStatus({
   saveState: BuilderSaveState;
   workflow: AutomationWorkflow;
 }) {
+  const { t } = useTranslation();
   if (saveState === "saving") {
-    return <span className="af-save-status af-save-status--saving">שומר…</span>;
+    return (
+      <span className="af-save-status af-save-status--saving">
+        {t("automations.toolbar.saving")}
+      </span>
+    );
   }
   if (saveState === "error") {
-    return <span className="af-save-status af-save-status--error">שגיאה בשמירה</span>;
+    return (
+      <span className="af-save-status af-save-status--error">
+        {t("automations.toolbar.saveError")}
+      </span>
+    );
   }
   if (dirty) {
     return (
       <span className="af-save-status af-save-status--dirty">
-        ● שינויים שלא נשמרו
+        {t("automations.toolbar.unsaved")}
       </span>
     );
   }
   if (saveState === "saved") {
-    return <span className="af-save-status af-save-status--saved">✓ נשמר</span>;
+    return (
+      <span className="af-save-status af-save-status--saved">
+        {t("automations.toolbar.saved")}
+      </span>
+    );
   }
   if (workflow.publishedVersionId) {
-    return <span className="af-save-status">פורסם</span>;
+    return <span className="af-save-status">{t("automations.toolbar.published")}</span>;
   }
-  return <span className="af-save-status">טיוטה</span>;
+  return <span className="af-save-status">{t("automations.toolbar.draft")}</span>;
 }
 
 export default function AutomationBuilderToolbar({
@@ -84,18 +98,19 @@ export default function AutomationBuilderToolbar({
   hasUnsupportedTrigger,
   triggerCatalogError,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="af-builder-toolbar">
       <div className="af-builder-toolbar__start">
         <button type="button" className="af-toolbar__btn" onClick={onBack}>
           <ArrowRight size={14} />
-          חזרה
+          {t("automations.toolbar.back")}
         </button>
         <input
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           className="af-toolbar__btn af-toolbar__name"
-          aria-label="שם האוטומציה"
+          aria-label={t("automations.toolbar.nameAria")}
           disabled={readOnly}
           title={writeBlockedTitle || name}
           dir="auto"
@@ -114,7 +129,7 @@ export default function AutomationBuilderToolbar({
           data-demo-target="automations-add-action"
         >
           <Plus size={14} />
-          הוסף שלב
+          {t("automations.toolbar.addStep")}
         </button>
         <button
           type="button"
@@ -124,7 +139,7 @@ export default function AutomationBuilderToolbar({
           onClick={onToggleTest}
         >
           <FlaskConical size={14} />
-          בדיקה
+          {t("automations.toolbar.test")}
         </button>
         <button
           type="button"
@@ -135,7 +150,7 @@ export default function AutomationBuilderToolbar({
           onClick={onSave}
         >
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          שמור
+          {t("automations.toolbar.save")}
         </button>
         <button
           type="button"
@@ -144,14 +159,14 @@ export default function AutomationBuilderToolbar({
           title={
             writeBlockedTitle ||
             (workflow.status === "archived"
-              ? "לא ניתן לפרסם אוטומציה בארכיון"
+              ? t("automations.toolbar.cannotPublishArchived")
               : triggerCatalogError
-                ? "יש לטעון מחדש את קטלוג הטריגרים"
+                ? t("automations.toolbar.reloadTriggers")
                 : hasUnsupportedTrigger
-                  ? "טריגר ישן או לא נתמך"
+                  ? t("automations.toolbar.unsupportedTrigger")
                   : workflow.status === "active"
-                    ? "עדכון הגרסה המפורסמת לפי הטיוטה הנוכחית"
-                    : "פרסום האוטומציה")
+                    ? t("automations.toolbar.updatePublished")
+                    : t("automations.toolbar.publishAutomation"))
           }
           onClick={onPublish}
         >
@@ -161,10 +176,10 @@ export default function AutomationBuilderToolbar({
             <Play size={14} />
           )}
           {publishing
-            ? "מפרסם…"
+            ? t("automations.toolbar.publishing")
             : workflow.status === "active" || workflow.publishedVersionId
-              ? "עדכון פרסום"
-              : "פרסם"}
+              ? t("automations.toolbar.updatePublish")
+              : t("automations.toolbar.publish")}
         </button>
         {workflow.status === "active" ? (
           <button
@@ -175,7 +190,7 @@ export default function AutomationBuilderToolbar({
             onClick={onPause}
           >
             <Pause size={14} />
-            השהיה
+            {t("automations.toolbar.pause")}
           </button>
         ) : workflow.status === "paused" ? (
           <button
@@ -186,13 +201,13 @@ export default function AutomationBuilderToolbar({
             onClick={onResume}
           >
             <Play size={14} />
-            הפעלה
+            {t("automations.toolbar.resume")}
           </button>
         ) : null}
         {workflow.status === "active" ? (
-          <span className="af-badge af-badge--active">פעילה</span>
+          <span className="af-badge af-badge--active">{t("automations.toolbar.active")}</span>
         ) : workflow.status === "paused" ? (
-          <span className="af-badge af-badge--paused">מושהית</span>
+          <span className="af-badge af-badge--paused">{t("automations.toolbar.paused")}</span>
         ) : null}
       </div>
     </div>
