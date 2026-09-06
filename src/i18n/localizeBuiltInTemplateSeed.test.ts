@@ -287,6 +287,12 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(
       localizeBuiltInText("יחס עדין וסבלני שהופך את הביקור לחוויה נעימה לילדים.", "en"),
     ).toMatch(/children|gentle/i);
+    expect(
+      localizeBuiltInText("Influencix — סוכנות משפיענים עם חתימת creator spotlight.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("זרימות תפעול פשוטות שחוסכות זמן ומשפרות את חוויית הלקוח.", "en"),
+    ).toMatch(/operations|client experience/i);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

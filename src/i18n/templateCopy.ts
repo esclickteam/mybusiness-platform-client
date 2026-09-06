@@ -15,6 +15,7 @@ import moreExactLexicon from "./templateExactLexicon.more.json";
 import uniqueExactLexicon from "./templateExactLexicon.unique.json";
 import unique2ExactLexicon from "./templateExactLexicon.unique2.json";
 import unique3ExactLexicon from "./templateExactLexicon.unique3.json";
+import unique4ExactLexicon from "./templateExactLexicon.unique4.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -42,6 +43,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(uniqueExactLexicon as Record<string, PhraseTranslation>),
   ...(unique2ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique3ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique4ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -149,6 +151,7 @@ const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהלי�
 const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
 const STORE_SHOPPING_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית קנייה מלאה\.$/;
 const SOIL_TO_PLATE_RE = /^(.+) — מהאדמה לצלחת — בלי פשרות על טעם\.$/;
+const AGENCY_SIGNATURE_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם חתימת (.+)$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -415,6 +418,20 @@ function localizeAgencySharpLine(text: string, locale: string): string {
   return `${brand} — a ${kind} agency with a sharp process and measurable results.`;
 }
 
+function localizeAgencySignatureLine(text: string, locale: string): string {
+  const match = text.match(AGENCY_SIGNATURE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  const kind = localizeFragment(match[2], locale);
+  if (!kind) return "";
+  const sig = HE.test(match[3]) ? localizeFragment(match[3], locale) : match[3];
+  if (!sig || HE.test(sig)) return "";
+  if (locale === "es") return `${brand} — agencia de ${kind} con firma ${sig}`;
+  if (locale === "pt-BR") return `${brand} — agência de ${kind} com assinatura ${sig}`;
+  if (locale === "ar") return `${brand} — وكالة ${kind} بتوقيع ${sig}`;
+  return `${brand} — a ${kind} agency with a ${sig} signature`;
+}
+
 function localizeIndexedEditorLabel(text: string, locale: string): string {
   const match = text.match(INDEXED_LABEL_RE);
   if (!match) return "";
@@ -663,6 +680,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const agencySharp = localizeAgencySharpLine(text, locale);
   if (isUsableTranslation(text, agencySharp, locale)) {
     return adaptBuiltInDirectionalCss(agencySharp, locale);
+  }
+
+  const agencySignature = localizeAgencySignatureLine(text, locale);
+  if (isUsableTranslation(text, agencySignature, locale)) {
+    return adaptBuiltInDirectionalCss(agencySignature, locale);
   }
 
   const soilToPlate = localizeSoilToPlate(text, locale);
