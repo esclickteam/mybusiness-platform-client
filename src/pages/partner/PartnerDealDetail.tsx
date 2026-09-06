@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPartnerDeal,
   partnerApiError,
@@ -19,6 +20,7 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
 
 export default function PartnerDealDetail() {
+  const { t } = useTranslation();
   const { dealId } = useParams();
   const [params] = useSearchParams();
   const [deal, setDeal] = useState<PartnerDeal | null>(null);
@@ -63,12 +65,12 @@ export default function PartnerDealDetail() {
       setBillingSafety(data.billingSafety || null);
       if (hydrateForm) {
         setEmail(data.client?.contact?.email || "");
-        setPackageDisplayName(publicPackageLabel(data.deal.packageDisplayName));
+        setPackageDisplayName(publicPackageLabel(data.deal.packageDisplayName, undefined, t));
         setPackageDescription(data.deal.packageDescription || "");
         const names: Record<string, string> = {};
         for (const line of data.deal.lines || []) {
           if (isCommissionSku(line.sku)) continue;
-          names[line.sku] = publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe || line.sku);
+          names[line.sku] = publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe || line.sku, t);
         }
         setLineNames(names);
       }
@@ -105,7 +107,7 @@ export default function PartnerDealDetail() {
         }
         if (!cancelled) setConfirmingPayment(false);
       } catch (err: unknown) {
-        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון עסקה"));
+        if (!cancelled) setError(partnerApiError(err, t("partner.errors.deal")));
       }
     })();
 
@@ -114,7 +116,7 @@ export default function PartnerDealDetail() {
     };
   }, [dealId, paidReturn]);
 
-  if (!deal && !error) return <BizuplyLoader label="טוען עסקה..." />;
+  if (!deal && !error) return <BizuplyLoader label={t("partner.deal.loading")} />;
   if (!deal) {
     return <p className="font-black text-rose-700">{error}</p>;
   }
@@ -132,7 +134,7 @@ export default function PartnerDealDetail() {
       const data = await startPartnerDealCheckout(dealId);
       if (data.url) window.location.href = data.url;
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן לפתוח Stripe Checkout"));
+      setError(partnerApiError(err, t("partner.errors.checkout")));
       setPaying(false);
     }
   }
@@ -150,7 +152,7 @@ export default function PartnerDealDetail() {
       setDeal(data.deal);
       if (data.serviceRows) setServiceRows(data.serviceRows);
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן לשמור את שם החבילה"));
+      setError(partnerApiError(err, t("partner.errors.savePackageName")));
     } finally {
       setSavingName(false);
     }
@@ -159,62 +161,61 @@ export default function PartnerDealDetail() {
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow={`Deal #${deal.dealNumber}`}
-        title={client?.contact?.businessName || "סיכום עסקה"}
-        subtitle="הלקוח רואה מחיר אחיד: מחיר פרטנר + עמלה. כאן אתם רואים לכל שירות את מחיר הלקוח, התשלום ל-Bizuply, והעמלה החד-פעמית והחודשית."
+        eyebrow={t("partner.deal.eyebrow", { defaultValue: "Deal #{{number}}", number: deal.dealNumber })}
+        title={client?.contact?.businessName || t("partner.deal.title")}
+        subtitle={t("partner.deal.subtitle")}
       />
       {confirmingPayment && !isPaid ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל.
+          {t("partner.deal.confirmingStripe", { defaultValue: "מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל." })}
         </p>
       ) : null}
       {isPaid ? (
         <div className="space-y-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
-          <p>התשלום ל-Bizuply התקבל.</p>
+          <p>{t("partner.deal.bizuplyPaid")}</p>
           {(deal as any).pipelineStatus === "completed" ? (
-            <p>הלקוח הופעל. העמלה זכאית למשיכה רק אחרי שהעסקה הושלמה, ולא אוטומטית עם התשלום.</p>
+            <p>{t("partner.deal.activatedEligible")}</p>
           ) : (
             <p>
-              העמלה ממתינה עד שהעסק יופעל והמוצרים הדיגיטליים יופעלו. תשלום שולם אינו זמין למשיכה
-              אוטומטית.
+              {t("partner.deal.pendingUntilActive", { defaultValue: "העמלה ממתינה עד שהעסק יופעל והמוצרים הדיגיטליים יופעלו. תשלום שולם אינו זמין למשיכה אוטומטית." })}
             </p>
           )}
           {deal.clientProvisioning?.status === "created" ? (
             <p>
-              נפתח משתמש ללקוח
+              {t("partner.deal.userCreated")}
               {deal.clientProvisioning.email ? ` (${deal.clientProvisioning.email})` : ""}.
               {deal.clientProvisioning.welcomeEmailSent
-                ? " סיסמה חד-פעמית נשלחה לאימייל, והלקוח יוכל להחליף אותה בכניסה הראשונה."
-                : " יש לשלוח ללקוח את פרטי הכניסה אם המייל לא נשלח."}
+                ? ` ${t("partner.deal.passwordSent")}`
+                : ` ${t("partner.deal.sendCredentials")}`}
             </p>
           ) : null}
           {deal.clientProvisioning?.status === "already_active" ? (
-            <p>ללקוח כבר יש משתמש פעיל במערכת.</p>
+            <p>{t("partner.deal.alreadyHasUser")}</p>
           ) : null}
           {deal.clientProvisioning?.status === "email_exists" ? (
-            <p>לא נפתח משתמש חדש — האימייל כבר קיים במערכת.</p>
+            <p>{t("partner.deal.emailExists")}</p>
           ) : null}
           {deal.clientProvisioning?.status === "failed" ? (
-            <p>פתיחת המשתמש נכשלה{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
+            <p>{t("partner.deal.userCreateFailed")}{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
           ) : null}
         </div>
       ) : null}
       {canceled ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          התשלום בוטל. העסקה ממתינה לתשלום ל-Bizuply.
+          {t("partner.deal.paymentCancelled")}
         </p>
       ) : null}
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
       {billingSafety && billingSafety.enabled === false ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          תשלום ל-Bizuply כבוי בסביבה זו
+          {t("partner.deal.billingDisabled")}
           {billingSafety.message ? ` — ${billingSafety.message}` : ""}
         </p>
       ) : null}
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5">
         <label className="block">
-          <span className="text-xs font-black text-slate-500">שם החבילה / הרישיון בהצעה ללקוח</span>
+          <span className="text-xs font-black text-slate-500">{t("partner.deal.offerPackageName")}</span>
           <input
             value={packageDisplayName}
             onChange={(e) => setPackageDisplayName(e.target.value)}
@@ -222,7 +223,7 @@ export default function PartnerDealDetail() {
           />
         </label>
         <label className="mt-4 block">
-          <span className="text-xs font-black text-slate-500">תיאור הרישיון ללקוח</span>
+          <span className="text-xs font-black text-slate-500">{t("partner.deal.licenseDescription")}</span>
           <textarea
             value={packageDescription}
             onChange={(e) => setPackageDescription(e.target.value)}
@@ -231,7 +232,7 @@ export default function PartnerDealDetail() {
           />
         </label>
         <div className="mt-4 space-y-2">
-          <p className="text-xs font-black text-slate-500">שמות השירותים בהצעה ללקוח</p>
+          <p className="text-xs font-black text-slate-500">{t("partner.deal.serviceNames")}</p>
           {Object.entries(lineNames).map(([sku, name]) => (
             <input
               key={sku}
@@ -247,28 +248,31 @@ export default function PartnerDealDetail() {
           onClick={savePresentation}
           className="mt-4 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
         >
-          {savingName ? "שומר..." : "שמירת שמות"}
+          {savingName ? t("partner.saving") : t("partner.deal.saveNames")}
         </button>
       </section>
 
       <section className="grid gap-3 md:grid-cols-4">
-        <Stat label="תשלום ל-Bizuply" value={partnerStatusLabel((deal as any).paymentStatus || deal.status)} />
-        <Stat label="הפעלת חשבון הלקוח" value={partnerStatusLabel((deal as any).activationStatus)} />
+        <Stat label={t("partner.deal.payBizuply")} value={partnerStatusLabel((deal as any).paymentStatus || deal.status, t)} />
+        <Stat label={t("partner.deal.activateAccount")} value={partnerStatusLabel((deal as any).activationStatus, t)} />
         <Stat
-          label="מוצרים דיגיטליים"
+          label={t("partner.deal.digitalProducts")}
           value={
             (deal as any).fulfillment
-              ? `${(deal as any).fulfillment.softwareFulfilled} מתוך ${(deal as any).fulfillment.softwareTotal} הופעלו`
+              ? t("partner.deal.softwareProgress", {
+                  done: (deal as any).fulfillment.softwareFulfilled,
+                  total: (deal as any).fulfillment.softwareTotal,
+                })
               : "—"
           }
         />
-        <Stat label="עמלה" value={partnerStatusLabel((deal as any).commissionStatus)} />
+        <Stat label={t("partner.commission")} value={partnerStatusLabel((deal as any).commissionStatus, t)} />
       </section>
       {(deal as any).needsAttention ? (
         <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
-          <p className="font-black text-amber-900">התשלום התקבל, אך העסק עדיין לא הופעל.</p>
+          <p className="font-black text-amber-900">{t("partner.deal.paidNotActivated")}</p>
           <p className="text-sm font-bold text-amber-800">
-            {(deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
+            {(deal as any).activationErrorMessage || t("partner.deal.needsActivation")}
           </p>
           <div className="grid gap-3 md:grid-cols-3">
             <button
@@ -281,21 +285,21 @@ export default function PartnerDealDetail() {
                   const data = await retryPartnerDealActivation(dealId);
                   setDeal(data.deal);
                 } catch (err: unknown) {
-                  setError(partnerApiError(err, "ניסיון ההפעלה נכשל"));
+                  setError(partnerApiError(err, t("partner.deal.activationFailed")));
                 } finally {
                   setRecovering("");
                 }
               }}
               className="rounded-2xl bg-slate-900 py-2 text-sm font-black text-white"
             >
-              {recovering === "retry" ? "מפעיל..." : "ניסיון הפעלה מחדש"}
+              {recovering === "retry" ? t("partner.deal.activating") : t("partner.deal.retryActivation")}
             </button>
             <div className="flex gap-2">
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
-                placeholder="אימייל חדש"
+                placeholder={t("partner.deal.newEmail")}
               />
               <button
                 type="button"
@@ -307,14 +311,14 @@ export default function PartnerDealDetail() {
                     const data = await changePartnerDealEmail(dealId, email);
                     setDeal(data.deal);
                   } catch (err: unknown) {
-                    setError(partnerApiError(err, "לא ניתן לשנות אימייל"));
+                    setError(partnerApiError(err, t("partner.errors.changeEmail")));
                   } finally {
                     setRecovering("");
                   }
                 }}
                 className="rounded-2xl border px-3 text-sm font-black"
               >
-                שמירת אימייל
+                {t("partner.deal.saveEmail")}
               </button>
             </div>
             <div className="flex gap-2">
@@ -322,7 +326,7 @@ export default function PartnerDealDetail() {
                 value={businessId}
                 onChange={(e) => setBusinessId(e.target.value)}
                 className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
-                placeholder="מזהה עסק קיים"
+                placeholder={t("partner.deal.existingBusinessId")}
               />
               <button
                 type="button"
@@ -334,14 +338,14 @@ export default function PartnerDealDetail() {
                     const data = await linkPartnerDealBusiness(dealId, businessId);
                     setDeal(data.deal);
                   } catch (err: unknown) {
-                    setError(partnerApiError(err, "לא ניתן לקשר עסק"));
+                    setError(partnerApiError(err, t("partner.errors.linkBusiness")));
                   } finally {
                     setRecovering("");
                   }
                 }}
                 className="rounded-2xl border px-3 text-sm font-black"
               >
-                קישור לעסק קיים
+                {t("partner.deal.linkExisting")}
               </button>
             </div>
           </div>
@@ -349,51 +353,53 @@ export default function PartnerDealDetail() {
       ) : null}
 
       <section className="grid gap-3 md:grid-cols-4">
-        <Stat label="סטטוס עסקה" value={partnerStatusLabel((deal as any).pipelineStatus || deal.status)} />
-        <Stat label="חד-פעמי ללקוח" value={formatIls(totals.oneTime)} />
-        <Stat label="חודשי ללקוח" value={formatIls(totals.monthly)} />
-        <Stat label="שנתי ללקוח" value={formatIls(totals.annual)} />
+        <Stat label={t("partner.deal.dealStatus")} value={partnerStatusLabel((deal as any).pipelineStatus || deal.status, t)} />
+        <Stat label={t("partner.deal.oneTimeCustomer")} value={formatIls(totals.oneTime)} />
+        <Stat label={t("partner.deal.monthlyCustomer")} value={formatIls(totals.monthly)} />
+        <Stat label={t("partner.deal.yearlyCustomer")} value={formatIls(totals.annual)} />
       </section>
 
       <section className="grid gap-3 md:grid-cols-3">
         <Stat
-          label="הכנסה חד-פעמית שלך"
+          label={t("partner.deal.yourOneTime")}
           value={formatIls(
             Number(deal.partnerIncomeOneTime) ||
               serviceRows.reduce((sum, row) => sum + Number(row.partnerIncomeOneTime || 0), 0)
           )}
         />
         <Stat
-          label="הכנסה חודשית שלך"
-          value={`${formatIls(
-            Number(deal.partnerIncomeRecurring) ||
-              serviceRows.reduce((sum, row) => sum + Number(row.partnerIncomeRecurring || 0), 0)
-          )} / חודש`}
+          label={t("partner.deal.yourMonthly")}
+          value={t("partner.perMonth", {
+            amount: formatIls(
+              Number(deal.partnerIncomeRecurring) ||
+                serviceRows.reduce((sum, row) => sum + Number(row.partnerIncomeRecurring || 0), 0)
+            ),
+          })}
         />
         <Stat
-          label="הכנסה חודשית פעילה"
+          label={t("partner.deal.activeMonthly")}
           value={
             deal.recurringIncomeActive ||
             (isPaid && deal.stripeSubscriptionId && deal.paymentStatus !== "refunded")
-              ? "פעילה"
-              : "לא פעילה"
+              ? t("partner.deal.activeF")
+              : t("partner.deal.inactiveF")
           }
         />
       </section>
 
       <section className="overflow-x-auto rounded-3xl border border-slate-200 bg-white p-5">
-        <h3 className="font-black">פירוט פנימי לעסק</h3>
+        <h3 className="font-black">{t("partner.deal.internalBreakdown")}</h3>
         <p className="mt-1 text-sm font-bold text-slate-500">
-          מחיר ללקוח = מחיר פרטנר + עמלה. העמלה החד-פעמית נגבית בהקמה; העמלה החודשית נגבית כל עוד הלקוח פעיל.
+          {t("partner.deal.priceFormula")}
         </p>
         <table className="mt-4 min-w-full text-right text-sm">
           <thead className="text-xs font-black text-slate-500">
             <tr>
-              <th className="px-3 py-2">שירות</th>
-              <th className="px-3 py-2">מחיר ללקוח</th>
-              <th className="px-3 py-2">תשלום ל-Bizuply</th>
-              <th className="px-3 py-2">עמלה חד-פעמית</th>
-              <th className="px-3 py-2">עמלה חודשית</th>
+              <th className="px-3 py-2">{t("partner.deal.service")}</th>
+              <th className="px-3 py-2">{t("partner.deal.customerPrice")}</th>
+              <th className="px-3 py-2">{t("partner.deal.payBizuplyCol")}</th>
+              <th className="px-3 py-2">{t("partner.deal.oneTimeCommission")}</th>
+              <th className="px-3 py-2">{t("partner.deal.monthlyCommission")}</th>
             </tr>
           </thead>
           <tbody>
@@ -401,30 +407,36 @@ export default function PartnerDealDetail() {
               <tr key={row.sku} className="border-t border-slate-100">
                 <td className="px-3 py-3 font-black">
                   {row.name}
-                  <span className="mr-2 text-[11px] font-bold text-slate-400">{billingLabel(row.billing)}</span>
+                  <span className="mr-2 text-[11px] font-bold text-slate-400">{billingLabel(row.billing, t)}</span>
                 </td>
                 <td className="px-3 py-3 font-bold">
                   {formatIls(row.customerPrice)}
                   {row.customerSetup ? (
-                    <span className="block text-[11px] text-slate-500">+ {formatIls(row.customerSetup)} הקמה</span>
+                    <span className="block text-[11px] text-slate-500">
+                      {t("partner.deal.setupFee", { amount: formatIls(row.customerSetup) })}
+                    </span>
                   ) : null}
                 </td>
                 <td className="px-3 py-3 font-bold">
                   {formatIls(row.payBizuply)}
                   {row.payBizuplySetupShare ? (
                     <span className="block text-[11px] text-slate-500">
-                      + {formatIls(row.payBizuplySetupShare)} חלק Bizuply בהקמה
+                      {t("partner.deal.bizuplySetupShare", {
+                        amount: formatIls(row.payBizuplySetupShare),
+                      })}
                     </span>
                   ) : null}
                   {row.payBizuplyMonthlyShare ? (
                     <span className="block text-[11px] text-slate-500">
-                      + {formatIls(row.payBizuplyMonthlyShare)} / חודש חלק Bizuply
+                      {t("partner.deal.bizuplyMonthlyShare", {
+                        amount: formatIls(row.payBizuplyMonthlyShare),
+                      })}
                     </span>
                   ) : null}
                 </td>
                 <td className="px-3 py-3 font-bold">{row.oneTimeCommission ? formatIls(row.oneTimeCommission) : "—"}</td>
                 <td className="px-3 py-3 font-bold">
-                  {row.monthlyCommission ? `${formatIls(row.monthlyCommission)} כל עוד פעיל` : "—"}
+                  {row.monthlyCommission ? t("partner.deal.whileActive", { amount: formatIls(row.monthlyCommission) }) : "—"}
                 </td>
               </tr>
             ))}
@@ -433,15 +445,15 @@ export default function PartnerDealDetail() {
       </section>
 
       <details className="rounded-3xl border border-slate-200 bg-white p-5">
-        <summary className="cursor-pointer font-black">מה שאתם משלמים ל-Bizuply ב-Stripe — לא מה שהלקוח רואה</summary>
+        <summary className="cursor-pointer font-black">{t("partner.deal.stripeNote")}</summary>
         <p className="mb-3 mt-2 text-sm font-bold text-slate-500">
-          פריטים חודשיים, כולל חלק Bizuply מהעמלה החודשית, מתחדשים כל עוד המנוי פעיל. עמלה חד-פעמית נגבית רק בחשבונית הראשונה.
+          {t("partner.deal.renewalNote")}
         </p>
         <ul className="space-y-2 text-sm font-bold">
           {stripeItems.map((item) => (
             <li key={item.sku} className="flex justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
               <span>
-                {item.nameEn} · {billingLabel(item.billing)}
+                {item.nameEn} · {billingLabel(item.billing, t)}
               </span>
               <span className="font-black">{formatIls(item.amountIls)}</span>
             </li>
@@ -455,10 +467,10 @@ export default function PartnerDealDetail() {
           onClick={() => navigator.clipboard.writeText(publicUrl)}
           className="rounded-2xl border px-4 py-2 text-sm font-black"
         >
-          העתקת קישור ללקוח
+          {t("partner.deal.copyCustomerLink")}
         </button>
         <a href={publicUrl} className="rounded-2xl border px-4 py-2 text-sm font-black" target="_blank" rel="noreferrer">
-          צפייה בסיכום ללקוח
+          {t("partner.deal.viewCustomerSummary")}
         </a>
         {!isPaid ? (
           <button
@@ -467,18 +479,18 @@ export default function PartnerDealDetail() {
             onClick={payBizuply}
             className="rounded-2xl bg-violet-700 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
           >
-            {paying ? "פותח Stripe..." : "מעבר לתשלום ל-Bizuply"}
+            {paying ? t("partner.deal.openingStripe") : t("partner.deal.goPayBizuply")}
           </button>
         ) : (
-          <p className="rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800">שולם ל-Bizuply</p>
+          <p className="rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800">{t("partner.deal.paidToBizuply")}</p>
         )}
         {client?._id ? (
           <Link to={`/partner/dashboard/crm/${client._id}`} className="rounded-2xl border px-4 py-2 text-sm font-black">
-            תיק הלקוח
+            {t("partner.deal.clientFile")}
           </Link>
         ) : null}
         <Link to="/partner/dashboard/withdrawals" className="rounded-2xl border px-4 py-2 text-sm font-black">
-          משיכת עמלה
+          {t("partner.deal.withdrawCommission")}
         </Link>
       </div>
     </div>

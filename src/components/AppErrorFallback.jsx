@@ -1,9 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 const AppErrorFallback = ({ resetErrorBoundary }) => {
+  const { t, i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       style={{
         padding: "2rem",
         textAlign: "center",
@@ -16,8 +19,8 @@ const AppErrorFallback = ({ resetErrorBoundary }) => {
         fontFamily: "sans-serif"
       }}
     >
-      <h2>אירעה שגיאה זמנית</h2>
-      <p>לא הצלחנו לטעון את העמוד. רעננו ונסו שוב.</p>
+      <h2>{t("leftover.appError.title")}</h2>
+      <p>{t("leftover.appError.body")}</p>
       <button
         onClick={resetErrorBoundary}
         style={{
@@ -31,7 +34,7 @@ const AppErrorFallback = ({ resetErrorBoundary }) => {
           cursor: "pointer"
         }}
       >
-        רענון העמוד
+        {t("leftover.appError.refresh")}
       </button>
     </div>
   );

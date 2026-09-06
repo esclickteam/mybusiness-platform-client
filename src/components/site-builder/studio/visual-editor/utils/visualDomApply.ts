@@ -1,3 +1,4 @@
+import i18n from "../../../../../i18n/i18n";
 import {
   VISUAL_CONTENT_KEY,
   VISUAL_INSERTED_ELEMENTS_KEY,
@@ -1144,7 +1145,7 @@ function createEditorMediaPreview(
   preview.setAttribute("data-visual-type", "image");
   preview.setAttribute("data-visual-media-type", type);
   preview.setAttribute("data-resource-type", type);
-  preview.setAttribute("aria-label", alt || "מדיה");
+  preview.setAttribute("aria-label", alt || String(i18n.t("studio.defaults.media")));
   preview.setAttribute("draggable", "false");
   preview.removeAttribute("aria-hidden");
 
@@ -2795,7 +2796,7 @@ function createInsertedSectionNode(
     section,
     item.id,
     "section",
-    item.label || "סקשן חדש",
+    item.label || String(i18n.t("studio.defaults.newSection")),
   );
 
   section.setAttribute(
@@ -2838,7 +2839,7 @@ function createInsertedSectionNode(
   }
   section.setAttribute(
     "data-section-title",
-    item.label || "סקשן חדש",
+    item.label || String(i18n.t("studio.defaults.newSection")),
   );
 
   section.style.position = "relative";
@@ -3425,16 +3426,16 @@ function createInsertedElementNode(
     type,
     item.label ||
       (type === "text"
-        ? "טקסט חדש"
+        ? String(i18n.t("studio.defaults.newText"))
         : type === "button"
-          ? "כפתור חדש"
+          ? String(i18n.t("studio.defaults.newButton"))
           : type === "image"
-            ? "תמונה חדשה"
+            ? String(i18n.t("studio.defaults.newImage"))
             : type === "video"
-              ? "סרטון חדש"
+              ? String(i18n.t("studio.defaults.newVideo"))
               : type === "divider"
-                ? "קו מפריד"
-                : "אלמנט חדש"),
+                ? String(i18n.t("studio.defaults.divider"))
+                : String(i18n.t("studio.defaults.newElement"))),
   );
 
   node.setAttribute(
@@ -3474,7 +3475,7 @@ function createInsertedElementNode(
   }
 
   if (type === "text") {
-    node.textContent = "טקסט חדש";
+    node.textContent = String(i18n.t("studio.defaults.newText"));
     if (!flowClone) {
       node.style.minWidth = "160px";
       node.style.padding = "6px 10px";
@@ -3487,7 +3488,7 @@ function createInsertedElementNode(
   }
 
   if (type === "button") {
-    node.textContent = "כפתור חדש";
+    node.textContent = String(i18n.t("studio.defaults.newButton"));
     if (tagName === "button") {
       node.setAttribute("type", "button");
     }
@@ -3510,7 +3511,7 @@ function createInsertedElementNode(
 
   if (type === "image") {
     const image = node as HTMLImageElement;
-    image.alt = item.label || "תמונה";
+    image.alt = item.label || String(i18n.t("studio.defaults.newImage"));
     image.draggable = false;
     image.style.width = "320px";
     image.style.height = "220px";

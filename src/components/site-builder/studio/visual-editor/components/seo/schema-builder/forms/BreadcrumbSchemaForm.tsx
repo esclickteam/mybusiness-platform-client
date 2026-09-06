@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 
 import type { BreadcrumbFormData, BreadcrumbItem } from "../schemaTypes";
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const items: BreadcrumbItem[] = Array.isArray(value.items) ? value.items : [];
   const setItems = (next: BreadcrumbItem[]) => onChange({ ...value, items: next });
 
@@ -32,7 +34,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
   return (
     <div className="space-y-3">
       <p className="rounded-xl bg-blue-50 px-3 py-2 text-[11px] font-semibold text-blue-800">
-        השלבים נוצרו אוטומטית לפי מבנה האתר. אפשר לשנות שם, כתובת וסדר.
+        {t("leftover.schema.breadcrumbHint")}
       </p>
 
       {items.map((item, index) => (
@@ -46,7 +48,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
           <input
             value={item.name}
             onChange={(event) => update(item.id, { name: event.target.value })}
-            placeholder="שם התצוגה"
+            placeholder={t("leftover.schema.displayName")}
             className="h-10 w-[140px] rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
           />
           <input
@@ -62,7 +64,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
               onClick={() => move(index, -1)}
               disabled={index === 0}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30 hover:bg-slate-50"
-              aria-label="למעלה"
+              aria-label={t("leftover.schema.moveUp")}
             >
               <ChevronUp className="h-4 w-4" />
             </button>
@@ -71,7 +73,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
               onClick={() => move(index, 1)}
               disabled={index === items.length - 1}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30 hover:bg-slate-50"
-              aria-label="למטה"
+              aria-label={t("leftover.schema.moveDown")}
             >
               <ChevronDown className="h-4 w-4" />
             </button>
@@ -79,7 +81,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
               type="button"
               onClick={() => remove(item.id)}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-rose-500 hover:bg-rose-50"
-              aria-label="מחיקה"
+              aria-label={t("leftover.schema.delete")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -92,7 +94,7 @@ export default function BreadcrumbSchemaForm({ value, onChange }: Props) {
         onClick={add}
         className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
       >
-        <Plus className="h-4 w-4" /> הוספת שלב
+        <Plus className="h-4 w-4" /> {t("leftover.schema.addStep")}
       </button>
     </div>
   );

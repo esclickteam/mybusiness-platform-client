@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
-import { billingLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
 import {
   applyPartnerFavicon,
@@ -10,6 +10,8 @@ import {
   partnerFacingName,
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
+import { formatPartnerDate } from "../../lib/partnerWork";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
 
 type PublicProduct = {
   name?: string;
@@ -41,7 +43,16 @@ type PublicSummary = {
   };
 };
 
+function billingKey(billing?: string) {
+  if (billing === "recurring_month") return "partner.billing.monthly";
+  if (billing === "recurring_year") return "partner.billing.annual";
+  return "partner.billing.oneTime";
+}
+
 export default function PartnerPublicDeal() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
+  const pageDir = getTextDirection(i18n.language);
   const { dealId } = useParams();
   const [summary, setSummary] = useState<PublicSummary | null>(null);
   const [error, setError] = useState("");
@@ -60,8 +71,8 @@ export default function PartnerPublicDeal() {
     if (!dealId) return;
     fetchPublicPartnerDeal(dealId)
       .then((data) => setSummary(data as PublicSummary))
-      .catch(() => setError("העסקה לא נמצאה"));
-  }, [dealId]);
+      .catch(() => setError(t("partner.publicDeal.notFound")));
+  }, [dealId, t]);
 
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const brandName = partnerFacingName(summary?.branding, host) || summary?.partner?.name || "";
@@ -74,23 +85,23 @@ export default function PartnerPublicDeal() {
 
   if (!summary && !error) {
     return (
-      <div dir="rtl" className="grid min-h-screen place-items-center bg-[#f6f4ff] font-black text-slate-500">
-        טוען סיכום עסקה...
+      <div dir={pageDir} className="grid min-h-screen place-items-center bg-[#f6f4ff] font-black text-slate-500">
+        {t("partner.publicDeal.loading")}
       </div>
     );
   }
   if (!summary) {
     return (
-      <div dir="rtl" className="mx-auto max-w-3xl p-8 text-center font-black text-rose-700">
+      <div dir={pageDir} className="mx-auto max-w-3xl p-8 text-center font-black text-rose-700">
         {error}
       </div>
     );
   }
 
   const pay = summary.payment || {};
-  const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
+  const date = formatPartnerDate(summary.dealDate, locale);
   const logo = brandLogo || summary.business?.logo;
-  const heading = brandName || "פרטנר";
+  const heading = brandName || t("partner.publicDeal.partner");
   const products: PublicProduct[] = [
     summary.package
       ? {
@@ -103,7 +114,7 @@ export default function PartnerPublicDeal() {
   ].filter(Boolean) as PublicProduct[];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
+    <div dir={pageDir} className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
       <Helmet>
         <meta name="robots" content="noindex,nofollow" />
         {heading ? <title>{heading}</title> : null}
@@ -119,7 +130,9 @@ export default function PartnerPublicDeal() {
               </div>
             )}
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">החבילה שלך</p>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">
+                {t("partner.publicDeal.yourPackage")}
+              </p>
               <h1 className="text-2xl font-black">{heading}</h1>
               <p className="text-sm font-bold text-white/80">
                 {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
@@ -130,16 +143,18 @@ export default function PartnerPublicDeal() {
 
         <div className="space-y-8 px-8 py-8">
           <section className="grid gap-3 sm:grid-cols-2">
-            <Info label="שם העסק" value={summary.business?.name} />
-            <Info label="איש קשר" value={summary.business?.contactName} />
-            <Info label="טלפון" value={summary.business?.phone} />
-            <Info label="אימייל" value={summary.business?.email} />
-            <Info label="מספר עסקה" value={summary.dealNumber} />
-            <Info label="תאריך" value={date} />
+            <Info label={t("partner.publicDeal.businessName")} value={summary.business?.name} />
+            <Info label={t("partner.publicDeal.contact")} value={summary.business?.contactName} />
+            <Info label={t("partner.phone")} value={summary.business?.phone} />
+            <Info label={t("partner.email")} value={summary.business?.email} />
+            <Info label={t("partner.publicDeal.dealNumber")} value={summary.dealNumber} />
+            <Info label={t("partner.date")} value={date === "—" ? "" : date} />
           </section>
 
           <section>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">
+              {t("partner.publicDeal.productBreakdown")}
+            </p>
             <h2 className="mt-1 text-3xl font-black">{summary.package?.name}</h2>
             {summary.package?.description ? (
               <p className="mt-2 font-bold text-slate-500">{summary.package.description}</p>
@@ -154,13 +169,13 @@ export default function PartnerPublicDeal() {
                   {item.description ? (
                     <p className="text-sm font-bold text-slate-500">{item.description}</p>
                   ) : null}
-                  <p className="text-xs font-bold text-slate-400">{billingLabel(item.billing)}</p>
+                  <p className="text-xs font-bold text-slate-400">{t(billingKey(item.billing))}</p>
                 </div>
               ))}
             </div>
             {summary.package?.includes?.length ? (
               <>
-                <h3 className="mt-5 font-black">מה כלול בחבילה</h3>
+                <h3 className="mt-5 font-black">{t("partner.publicDeal.whatsIncluded")}</h3>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   {summary.package.includes.map((item) => (
                     <div key={item} className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-900">
@@ -173,29 +188,37 @@ export default function PartnerPublicDeal() {
           </section>
 
           <section className="rounded-[28px] bg-slate-900 p-6 text-white">
-            <h3 className="text-lg font-black">סיכום ההצעה</h3>
+            <h3 className="text-lg font-black">{t("partner.publicDeal.offerSummary")}</h3>
             <p className="mt-1 text-sm font-bold text-white/60">
-              מחיר אחיד לרישיון ולשירותים — הסכום הסופי כולל את כל הרכיבים.
+              {t("partner.publicDeal.unifiedPrice")}
             </p>
             <div className="mt-4 space-y-2 font-black">
-              <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />
+              <Row label={t("partner.publicDeal.oneTimePrice")} value={formatIls(pay.oneTime)} />
               {pay.monthly ? (
-                <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />
+                <Row
+                  label={t("partner.publicDeal.monthlyPrice")}
+                  value={t("partner.perMonth", { amount: formatIls(pay.monthly) })}
+                />
               ) : null}
-              {pay.annual ? <Row label="שנתי" value={`${formatIls(pay.annual)} / שנה`} /> : null}
-              <Row label="סה״כ ההצעה" value={formatIls(pay.dueNow)} large />
+              {pay.annual ? (
+                <Row
+                  label={t("partner.billing.annual")}
+                  value={t("partner.perYear", { amount: formatIls(pay.annual) })}
+                />
+              ) : null}
+              <Row label={t("partner.publicDeal.totalOffer")} value={formatIls(pay.dueNow)} large />
             </div>
             {pay.renewalMonthly ? (
               <p className="mt-4 text-sm font-bold text-white/70">
-                מתחדש ב-{formatIls(pay.renewalMonthly)} לחודש
+                {t("partner.publicDeal.renewsMonthly", { amount: formatIls(pay.renewalMonthly) })}
               </p>
             ) : pay.renewalAnnual ? (
               <p className="mt-4 text-sm font-bold text-white/70">
-                מתחדש ב-{formatIls(pay.renewalAnnual)} לשנה
+                {t("partner.publicDeal.renewsYearly", { amount: formatIls(pay.renewalAnnual) })}
               </p>
             ) : null}
             <p className="mt-5 text-sm font-bold leading-6 text-white/75">
-              התשלום והפעלת השירות מתבצעים מול הפרטנר שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
+              {t("partner.publicDeal.payWithPartner")}
             </p>
           </section>
         </div>

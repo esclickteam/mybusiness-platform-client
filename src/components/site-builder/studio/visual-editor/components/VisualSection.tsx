@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../../../i18n/i18n";
 
 import {
   readVisualDeleted,
@@ -54,7 +55,7 @@ export default function VisualSection({
           "data-visual-editable": "true",
           "data-visual-edit-id": elementId,
           "data-visual-edit-type": "section",
-          "data-visual-edit-label": label || title || "סקשן",
+          "data-visual-edit-label": label || title || i18n.t("leftover.studioChrome.section"),
           "data-visual-section-key": sectionKind,
           "data-template-section-id": sectionKind,
           "data-section-kind": sectionKind,

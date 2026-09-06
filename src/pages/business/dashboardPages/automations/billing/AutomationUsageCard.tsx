@@ -1,4 +1,5 @@
 import React, { useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, HelpCircle, Loader2, RefreshCw } from "lucide-react";
 import {
   AUTOMATION_BILLING_API_CODES,
@@ -72,6 +73,7 @@ export default function AutomationUsageCard({
   onOpenManage,
   onReactivate,
 }: Props) {
+  const { t } = useTranslation();
   const tipId = useId();
   const [tipOpen, setTipOpen] = useState(false);
 
@@ -88,10 +90,10 @@ export default function AutomationUsageCard({
   if (error && !usage) {
     return (
       <div className="ax-billing-card ax-billing-card--error" role="status">
-        <p>לא הצלחנו לטעון את נתוני החבילה כרגע.</p>
+        <p>{t("automations.billing.loadError")}</p>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={onRetry}>
           <RefreshCw size={14} />
-          נסו שוב
+          {t("automations.billing.tryAgain")}
         </button>
       </div>
     );
@@ -108,13 +110,13 @@ export default function AutomationUsageCard({
       const daysLeft = Math.ceil((endsMs - Date.now()) / 86400000);
       const dateLabel = formatHeDate(endsAt);
       let warning: string | null = null;
-      let ctaLabel = "בחירת חבילה";
+      let ctaLabel = t("automations.billing.choosePlan");
       if (daysLeft <= 1) {
-        warning = "מחר מסתיימת חבילת המעבר";
-        ctaLabel = "בחירת חבילת אוטומציות";
+        warning = t("automations.billing.endsTomorrow");
+        ctaLabel = t("automations.billing.chooseAutomationsPlan");
       } else if (daysLeft <= 7) {
-        warning = `חבילת המעבר מסתיימת בעוד ${daysLeft} ימים`;
-        ctaLabel = "בחירת חבילת אוטומציות";
+        warning = t("automations.billing.endsInDays", { count: daysLeft });
+        ctaLabel = t("automations.billing.chooseAutomationsPlan");
       }
 
       return (
@@ -125,14 +127,13 @@ export default function AutomationUsageCard({
           role="status"
         >
           <div className="ax-billing-card__body">
-            <strong>חבילת מעבר לאוטומציות</strong>
+            <strong>{t("automations.billing.transitionTitle")}</strong>
             <p>
-              האוטומציות שלך ימשיכו לפעול ללא שינוי עד{" "}
-              {dateLabel || "סיום תקופת המעבר"}.
+              {t("automations.billing.transitionUntil", {
+                date: dateLabel || t("automations.billing.transitionEndFallback"),
+              })}
             </p>
-            <p>
-              לאחר מכן יהיה צורך לבחור חבילת פעולות כדי להמשיך להפעיל אוטומציות.
-            </p>
+            <p>{t("automations.billing.transitionAfter")}</p>
             {warning ? (
               <p className="ax-billing-card__note" role="alert">
                 {warning}
@@ -152,7 +153,7 @@ export default function AutomationUsageCard({
 
     return (
       <div className="ax-billing-card ax-billing-card--exempt" role="status">
-        <p>האוטומציות פעילות בחשבון</p>
+        <p>{t("automations.billing.exemptActive")}</p>
       </div>
     );
   }
@@ -196,15 +197,15 @@ export default function AutomationUsageCard({
     return (
       <div className="ax-billing-card ax-billing-card--no-plan">
         <div className="ax-billing-card__body">
-          <strong>אוטומציות בתשלום לפי שימוש</strong>
-          <p>בחרו חבילת פעולות כדי להפעיל תהליכים אוטומטיים בעסק.</p>
+          <strong>{t("automations.billing.payAsYouGoTitle")}</strong>
+          <p>{t("automations.billing.payAsYouGoText")}</p>
         </div>
         <button
           type="button"
           className="ax-btn ax-btn--primary"
           onClick={() => onOpenPlans("no_plan")}
         >
-          בחירת חבילה
+          {t("automations.billing.choosePlan")}
         </button>
       </div>
     );
@@ -232,10 +233,10 @@ export default function AutomationUsageCard({
     <div className={`ax-billing-card ${cardMod}`.trim()}>
       {error ? (
         <div className="ax-billing-card__inline-error" role="status">
-          <span>לא הצלחנו לטעון את נתוני החבילה כרגע.</span>
+          <span>{t("automations.billing.loadError")}</span>
           <button type="button" className="ax-btn ax-btn--secondary" onClick={onRetry}>
             <RefreshCw size={14} />
-            נסו שוב
+            {t("automations.billing.tryAgain")}
           </button>
         </div>
       ) : null}
@@ -243,36 +244,35 @@ export default function AutomationUsageCard({
       {loading ? (
         <div className="ax-billing-card__refresh" aria-live="polite">
           <Loader2 size={14} className="ax-billing-spin" />
-          מעדכנים...
+          {t("automations.billing.updating")}
         </div>
       ) : null}
 
       <div className="ax-billing-card__header">
         <div>
-          <h3 className="ax-billing-card__title">שימוש באוטומציות החודש</h3>
-          <p className="ax-billing-card__plan">חבילת {planName}</p>
+          <h3 className="ax-billing-card__title">{t("automations.billing.usageTitle")}</h3>
+          <p className="ax-billing-card__plan">{t("automations.billing.planOf", { plan: planName })}</p>
         </div>
         <button
           type="button"
           className="ax-btn ax-btn--secondary"
           onClick={onOpenManage}
         >
-          ניהול חבילה
+          {t("automations.billing.managePlan")}
         </button>
       </div>
 
       <div className="ax-billing-card__usage-row">
         <p className="ax-billing-card__counts">
           <strong>{formatHeNumber(used)}</strong>
-          {" מתוך "}
+          {" / "}
           <strong>{formatHeNumber(limit)}</strong>
-          {" פעולות"}
           <button
             type="button"
             className="ax-billing-tip-btn"
             aria-expanded={tipOpen}
             aria-controls={tipId}
-            aria-label="מהי פעולה?"
+            aria-label={t("automations.billing.whatIsActionAria")}
             onClick={() => setTipOpen((v) => !v)}
           >
             <HelpCircle size={15} />
@@ -280,11 +280,8 @@ export default function AutomationUsageCard({
         </p>
         {tipOpen ? (
           <div id={tipId} className="ax-billing-tip" role="note">
-            <strong>מהי פעולה?</strong>
-            <p>
-              פעולה היא שלב באוטומציה שמשנה משהו בעסק (למשל שליחת הודעה או עדכון
-              ליד). טריגרים, תנאים והמתנות אינם נספרים במכסה.
-            </p>
+            <strong>{t("automations.billing.whatIsActionTitle")}</strong>
+            <p>{t("automations.billing.whatIsActionText")}</p>
           </div>
         ) : null}
       </div>
@@ -295,7 +292,7 @@ export default function AutomationUsageCard({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.max(0, Math.min(100, Math.round(percentage)))}
-        aria-label="שימוש במכסת הפעולות החודשית"
+        aria-label={t("automations.billing.quotaAria")}
       >
         <div
           className="ax-billing-progress__fill"
@@ -304,8 +301,8 @@ export default function AutomationUsageCard({
       </div>
 
       <div className="ax-billing-card__meta">
-        <span>נוצלו {formatHeNumber(Number(percentage.toFixed(2)))}%</span>
-        {periodEndLabel ? <span>מתאפס ב־{periodEndLabel}</span> : null}
+        <span>{t("automations.billing.usedPercent", { percent: formatHeNumber(Number(percentage.toFixed(2))) })}</span>
+        {periodEndLabel ? <span>{t("automations.billing.resetsOn", { date: periodEndLabel })}</span> : null}
       </div>
 
       {severity === "warn" && !quotaBlocked && !paymentBlocked ? (
@@ -313,16 +310,18 @@ export default function AutomationUsageCard({
           <AlertTriangle size={16} aria-hidden />
           <div>
             <strong>
-              ניצלתם {formatHeNumber(used)} מתוך {formatHeNumber(limit)} פעולות
-              החודש
+              {t("automations.billing.warnUsed", {
+                used: formatHeNumber(used),
+                limit: formatHeNumber(limit),
+              })}
             </strong>
-            <p>אם השימוש צפוי לגדול, אפשר לשדרג את החבילה.</p>
+            <p>{t("automations.billing.warnHint")}</p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={() => openUpgrade("quota_warning")}
             >
-              שדרוג חבילה
+              {t("automations.billing.upgradePlan")}
             </button>
           </div>
         </div>
@@ -332,14 +331,18 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--critical" role="status">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>הגעתם כמעט למכסת הפעולות החודשית</strong>
-            <p>נשארו {formatHeNumber(Math.max(0, limit - used))} פעולות.</p>
+            <strong>{t("automations.billing.almostQuota")}</strong>
+            <p>
+              {t("automations.billing.remainingActions", {
+                count: formatHeNumber(Math.max(0, limit - used)),
+              })}
+            </p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={() => openUpgrade("quota_critical")}
             >
-              שדרוג עכשיו
+              {t("automations.billing.upgradeNow")}
             </button>
           </div>
         </div>
@@ -349,17 +352,14 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--blocked" role="alert">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>מכסת הפעולות החודשית נוצלה</strong>
-            <p>
-              האוטומציות ממשיכות לרוץ; רק פעולות מחויבות ייחסמו עד לחידוש המכסה
-              או לשדרוג החבילה.
-            </p>
+            <strong>{t("automations.billing.quotaExhausted")}</strong>
+            <p>{t("automations.billing.quotaExhaustedText")}</p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={() => openUpgrade("quota_exhausted")}
             >
-              שדרוג חבילה
+              {t("automations.billing.upgradePlan")}
             </button>
           </div>
         </div>
@@ -369,18 +369,20 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--warn" role="status">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>יש בעיה בתשלום עבור חבילת האוטומציות</strong>
+            <strong>{t("automations.billing.paymentIssue")}</strong>
             <p>
-              האוטומציות ימשיכו לפעול זמנית. מומלץ להסדיר את התשלום כדי למנוע
-              עצירה.
-              {graceLabel ? ` עד ${graceLabel}.` : ""}
+              {t("automations.billing.paymentIssueText", {
+                until: graceLabel
+                  ? t("automations.billing.untilGrace", { date: graceLabel })
+                  : "",
+              })}
             </p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={() => onOpenPlans("payment")}
             >
-              ניהול תשלום
+              {t("automations.billing.managePayment")}
             </button>
           </div>
         </div>
@@ -390,14 +392,14 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--blocked" role="alert">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>חבילת האוטומציות אינה פעילה</strong>
-            <p>לא ניתן להתחיל פעולות חדשות עד להסדרת התשלום.</p>
+            <strong>{t("automations.billing.planInactive")}</strong>
+            <p>{t("automations.billing.planInactiveText")}</p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={() => onOpenPlans("payment")}
             >
-              הסדרת תשלום
+              {t("automations.billing.settlePayment")}
             </button>
           </div>
         </div>
@@ -405,18 +407,21 @@ export default function AutomationUsageCard({
 
       {pendingName ? (
         <p className="ax-billing-card__note" role="status">
-          בחידוש הבא: {pendingName}
+          {t("automations.billing.nextRenewal", { plan: pendingName })}
         </p>
       ) : null}
 
       {usage.subscription?.cancelAtPeriodEnd ? (
         <div className="ax-billing-card__cancel-note" role="status">
           <p>
-            החבילה מתוכננת לביטול
-            {cancelDateLabel ? ` ב־${cancelDateLabel}` : ""}
+            {t("automations.billing.cancelScheduled", {
+              when: cancelDateLabel
+                ? t("automations.billing.cancelOn", { date: cancelDateLabel })
+                : "",
+            })}
           </p>
           <button type="button" className="ax-btn ax-btn--secondary" onClick={onReactivate}>
-            השארת החבילה פעילה
+            {t("automations.billing.keepActive")}
           </button>
         </div>
       ) : null}

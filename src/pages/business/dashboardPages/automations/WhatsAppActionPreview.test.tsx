@@ -6,12 +6,14 @@ import type {
 } from "../../../../api/whatsappApi";
 import { WhatsAppActionPreview } from "./WhatsAppActionPreview";
 import {
-  WA_PREVIEW_EMPTY_HE,
-  WA_PREVIEW_ERROR_HE,
+  getWaPreviewEmpty,
+  getWaPreviewError,
   WA_PREVIEW_SAMPLE_DATA,
   buildWhatsAppPreviewModel,
   interpolateWhatsAppPreviewText,
 } from "./whatsAppActionPreviewModel";
+import i18n from "../../../../i18n/i18n";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 const CATALOG_BODIES: Record<string, string> = {
   new_lead_welcome:
@@ -117,7 +119,7 @@ describe("whatsApp action preview interpolation", () => {
       [{ variable: "1", source: "", field: "" }],
       "new_lead_welcome"
     );
-    expect(empty).toContain("[שם הליד]");
+    expect(empty).toContain("[Lead name]");
     expect(empty).not.toContain("{{1}}");
     const mapped = interpolateWhatsAppPreviewText(
       template.body,
@@ -126,7 +128,7 @@ describe("whatsApp action preview interpolation", () => {
     );
     expect(mapped).toContain(WA_PREVIEW_SAMPLE_DATA.leadName);
     expect(mapped).not.toContain("{{1}}");
-    expect(mapped).not.toContain("[שם הליד]");
+    expect(mapped).not.toContain("[Lead name]");
   });
 
   it("uses appointment date/time samples when mapped", () => {
@@ -137,8 +139,8 @@ describe("whatsApp action preview interpolation", () => {
     });
     expect(model.body).toContain(WA_PREVIEW_SAMPLE_DATA.leadName);
     expect(model.body).toContain(WA_PREVIEW_SAMPLE_DATA.appointmentTime);
-    expect(model.body).toContain("[זמן עד הפגישה]");
-    expect(model.body).toContain("[שירות]");
+    expect(model.body).toContain("[Time until the appointment]");
+    expect(model.body).toContain("[Service]");
   });
 
   it("keeps preview sample data out of returned mappings", () => {
@@ -185,8 +187,8 @@ describe("whatsApp action preview interpolation", () => {
 describe("WhatsAppActionPreview", () => {
   it("shows empty state when no template is selected", () => {
     render(<WhatsAppActionPreview template={null} hasSelection={false} />);
-    expect(screen.getByText("תצוגה מקדימה")).toBeTruthy();
-    expect(screen.getByText(WA_PREVIEW_EMPTY_HE)).toBeTruthy();
+    expect(screen.getByText(i18n.t("leftover.waPreview.preview", "Preview"))).toBeTruthy();
+    expect(screen.getByText(getWaPreviewEmpty())).toBeTruthy();
   });
 
   it("shows error copy without throwing", () => {
@@ -196,7 +198,7 @@ describe("WhatsAppActionPreview", () => {
         hasSelection
       />
     );
-    expect(screen.getByText(WA_PREVIEW_ERROR_HE)).toBeTruthy();
+    expect(screen.getByText(getWaPreviewError())).toBeTruthy();
   });
 
   it("renders a live new-lead bubble with RTL and no raw tokens", () => {
@@ -210,9 +212,9 @@ describe("WhatsAppActionPreview", () => {
       />
     );
     const root = container.querySelector('[data-testid="wa-action-preview"]');
-    expect(root?.getAttribute("dir")).toBe("rtl");
-    expect(screen.getByText(/ישראל ישראלי/)).toBeTruthy();
-    expect(screen.getByText(/טלפון הליד/)).toBeTruthy();
+    expect(root?.getAttribute("dir")).toBe(getTextDirection(i18n.language));
+    expect(screen.getByText(new RegExp(WA_PREVIEW_SAMPLE_DATA.leadName))).toBeTruthy();
+    expect(screen.getByText(new RegExp(i18n.t("leftover.waPreview.leadPhone", "Lead phone")))).toBeTruthy();
     expect(container.textContent).not.toContain("{{1}}");
     expect(container.querySelector(".af-wa-preview__button")).toBeNull();
   });
@@ -229,9 +231,9 @@ describe("WhatsAppActionPreview", () => {
       />
     );
     const root = container.querySelector('[data-testid="wa-action-preview"]');
-    expect(root?.getAttribute("dir")).toBe("rtl");
-    expect(screen.getByText(/ישראל ישראלי/)).toBeTruthy();
-    expect(screen.getByText(/עסק בדיקה/)).toBeTruthy();
+    expect(root?.getAttribute("dir")).toBe(getTextDirection(i18n.language));
+    expect(screen.getByText(new RegExp(WA_PREVIEW_SAMPLE_DATA.leadName))).toBeTruthy();
+    expect(screen.getByText(new RegExp(WA_PREVIEW_SAMPLE_DATA.businessName))).toBeTruthy();
     expect(screen.getByText(/16\/09\/2026/)).toBeTruthy();
     expect(screen.getByText(/18:00/)).toBeTruthy();
     expect(screen.getByText(/נקבעה בהצלחה/)).toBeTruthy();
@@ -250,7 +252,7 @@ describe("WhatsAppActionPreview", () => {
       />
     );
     expect(screen.getByText(/18:00/)).toBeTruthy();
-    expect(screen.getByText(/ישראל ישראלי/)).toBeTruthy();
+    expect(screen.getByText(new RegExp(WA_PREVIEW_SAMPLE_DATA.leadName))).toBeTruthy();
   });
 
   it("renders buttons as non-interactive preview chrome", () => {
@@ -264,7 +266,7 @@ describe("WhatsAppActionPreview", () => {
         hasSelection
       />
     );
-    expect(screen.getByText("תמונה")).toBeTruthy();
+    expect(screen.getByText(i18n.t("leftover.waPreview.image", "Image"))).toBeTruthy();
     const btn = container.querySelector(".af-wa-preview__button");
     expect(btn?.textContent).toBe("פתח קישור");
     expect(btn?.getAttribute("role")).toBe("presentation");

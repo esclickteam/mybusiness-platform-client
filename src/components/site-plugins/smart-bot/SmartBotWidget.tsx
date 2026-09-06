@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { Bot, GripVertical, Mail, MessageCircle, Phone, Send, X } from "lucide-react";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import {
   buildWhatsAppUrl,
@@ -27,6 +30,7 @@ export default function SmartBotWidget({
   mode = "live",
   onPositionChange,
 }: SmartBotWidgetProps) {
+  const { t, i18n } = useTranslation();
   const settings = useMemo(
     () => mergeSmartBotSettings(settingsProp),
     [settingsProp]
@@ -99,10 +103,10 @@ export default function SmartBotWidget({
     const welcome =
       settings.welcomeMessage ||
       startNode?.message ||
-      "שלום! איך אפשר לעזור?";
+      t("publicWidgets.smartBot.defaultWelcomeShort");
     lineCounter.current = 0;
     setLines([{ id: "line-0", role: "bot", text: welcome }]);
-  }, [settings]);
+  }, [settings, t]);
 
   const closeBot = useCallback(() => {
     setOpen(false);
@@ -210,7 +214,7 @@ export default function SmartBotWidget({
     if (action === "contact") {
       setShowContact(true);
       setAwaitingInput(null);
-      pushLine("bot", "בחרו איך ליצור קשר:");
+      pushLine("bot", t("publicWidgets.smartBot.chooseContact"));
       return;
     }
 
@@ -226,7 +230,7 @@ export default function SmartBotWidget({
     if (action === "end") {
       pushLine(
         "bot",
-        option.replyText || "תודה שפניתם אלינו! אנחנו כאן אם תצטרכו משהו נוסף."
+        option.replyText || t("publicWidgets.smartBot.thanksMore")
       );
       setAwaitingInput(null);
       return;
@@ -238,7 +242,7 @@ export default function SmartBotWidget({
       pushLine(
         "bot",
         option.payload?.prompt ||
-          "כתבו לנו כאן את השאלה או הפרטים:"
+          t("publicWidgets.smartBot.askPrompt")
       );
       return;
     }
@@ -283,7 +287,7 @@ export default function SmartBotWidget({
 
     pushLine(
       "bot",
-      option.replyText || "תודה! קיבלנו את ההודעה ונחזור אליכם בהקדם."
+      option.replyText || t("publicWidgets.smartBot.thanksSoon")
     );
 
     if (option.nextNodeId) {
@@ -324,7 +328,7 @@ export default function SmartBotWidget({
       data-bizuply-widget="smart-bot"
       data-bizuply-plugin="smart-bot"
       data-bizuply-plugin-runtime="true"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <button
         type="button"
@@ -337,7 +341,7 @@ export default function SmartBotWidget({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        aria-label={settings.triggerLabel || "צריכים עזרה?"}
+        aria-label={settings.triggerLabel || t("publicWidgets.smartBot.defaultTrigger")}
         className={`fixed z-[2147483000] flex items-center gap-2 shadow-lg transition hover:scale-105 ${
           isEditor ? "cursor-grab active:cursor-grabbing ring-2 ring-teal-400 ring-offset-2" : ""
         } ${
@@ -358,7 +362,7 @@ export default function SmartBotWidget({
         {showIcon ? <Bot size={22} /> : null}
         {showLabel ? (
           <span className="text-sm font-bold whitespace-nowrap">
-            {settings.triggerLabel || "צריכים עזרה?"}
+            {settings.triggerLabel || t("publicWidgets.smartBot.defaultTrigger")}
           </span>
         ) : null}
       </button>
@@ -371,7 +375,7 @@ export default function SmartBotWidget({
             transform: "translateX(50%)",
           }}
         >
-          בוט חכם · גררו
+          {t("publicWidgets.smartBot.dragLabel")}
         </div>
       ) : null}
 
@@ -392,7 +396,7 @@ export default function SmartBotWidget({
             onPointerDown={(e) => e.stopPropagation()}
           >
             <header
-              dir="rtl"
+              dir={getTextDirection(i18n.language)}
               className="flex items-center justify-between gap-3 px-4 py-3 text-right text-white"
               style={{ background: headerColor }}
             >
@@ -402,17 +406,17 @@ export default function SmartBotWidget({
                 </span>
                 <div className="min-w-0 text-right">
                   <strong className="block truncate text-sm font-black">
-                    {settings.botName || "בוט חכם"}
+                    {settings.botName || t("publicWidgets.smartBot.defaultName")}
                   </strong>
                   <span className="block text-[11px] font-semibold text-white/80">
-                    {isEditor ? "תצוגה מקדימה בעורך" : "אונליין · עונה מיד"}
+                    {isEditor ? t("publicWidgets.smartBot.editorPreview") : t("publicWidgets.smartBot.online")}
                   </span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={closeBot}
-                aria-label="סגירה"
+                aria-label={t("publicWidgets.common.close")}
                 className="grid h-9 w-9 place-items-center rounded-full bg-white/10 transition hover:bg-white/20"
               >
                 <X size={16} />
@@ -421,7 +425,7 @@ export default function SmartBotWidget({
 
             <div
               ref={scrollRef}
-              dir="rtl"
+              dir={getTextDirection(i18n.language)}
               className="max-h-[min(50vh,360px)] space-y-3 overflow-y-auto px-4 py-4 text-right"
             >
               {lines.map((line) => (
@@ -432,7 +436,7 @@ export default function SmartBotWidget({
                   }`}
                 >
                   <div
-                    dir="rtl"
+                    dir={getTextDirection(i18n.language)}
                     className="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-right text-sm font-medium leading-6"
                     style={
                       line.role === "user"
@@ -446,7 +450,7 @@ export default function SmartBotWidget({
               ))}
             </div>
 
-            <div className="border-t border-slate-100 px-3 py-3" dir="rtl">
+            <div className="border-t border-slate-100 px-3 py-3" dir={getTextDirection(i18n.language)}>
               {showContact && hasContact ? (
                 <div className="grid gap-2 text-right">
                   {phone ? (
@@ -459,7 +463,7 @@ export default function SmartBotWidget({
                       style={{ background: headerColor }}
                     >
                       <Phone size={16} />
-                      {settings.contactLabel || "צרו קשר"} · טלפון
+                      {t("publicWidgets.smartBot.viaPhone", { label: settings.contactLabel || t("publicWidgets.smartBot.defaultContact") })}
                     </a>
                   ) : null}
                   {whatsapp ? (
@@ -467,7 +471,7 @@ export default function SmartBotWidget({
                       href={
                         isEditor
                           ? undefined
-                          : buildWhatsAppUrl(whatsapp, `שלום, פניתי דרך הבוט באתר`)
+                          : buildWhatsAppUrl(whatsapp, t("publicWidgets.smartBot.waPrefill"))
                       }
                       target="_blank"
                       rel="noreferrer"
@@ -489,7 +493,7 @@ export default function SmartBotWidget({
                       className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700"
                     >
                       <Mail size={16} />
-                      אימייל
+                      {t("publicWidgets.smartBot.email")}
                     </a>
                   ) : null}
                   <button
@@ -497,20 +501,20 @@ export default function SmartBotWidget({
                     onClick={() => setShowContact(false)}
                     className="text-xs font-semibold text-slate-500"
                   >
-                    חזרה לשיחה
+                    {t("publicWidgets.smartBot.backToChat")}
                   </button>
                 </div>
               ) : awaitingInput ? (
                 <div className="flex flex-row-reverse items-center gap-2">
                   <input
                     type="text"
-                    dir="rtl"
+                    dir={getTextDirection(i18n.language)}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") submitManualInput();
                     }}
-                    placeholder="כתבו תשובה כאן..."
+                    placeholder={t("publicWidgets.smartBot.replyPlaceholder")}
                     className="h-11 min-w-0 flex-1 rounded-xl border border-slate-200 px-3 text-right text-sm outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
                   />
                   <button
@@ -518,7 +522,7 @@ export default function SmartBotWidget({
                     onClick={submitManualInput}
                     className="grid h-11 w-11 place-items-center rounded-xl text-white"
                     style={{ background: headerColor }}
-                    aria-label="שליחה"
+                    aria-label={t("publicWidgets.smartBot.sendAria")}
                   >
                     <Send size={16} />
                   </button>
@@ -539,19 +543,19 @@ export default function SmartBotWidget({
                     <button
                       type="button"
                       onClick={() => {
-                        pushLine("user", settings.contactLabel || "צרו קשר");
+                        pushLine("user", settings.contactLabel || t("publicWidgets.smartBot.defaultContact"));
                         setShowContact(true);
-                        pushLine("bot", "בחרו איך ליצור קשר:");
+                        pushLine("bot", t("publicWidgets.smartBot.chooseContact"));
                       }}
                       className="rounded-full px-3 py-2 text-right text-xs font-bold text-white"
                       style={{ background: headerColor }}
                     >
-                      {settings.contactLabel || "צרו קשר"}
+                      {settings.contactLabel || t("publicWidgets.smartBot.defaultContact")}
                     </button>
                   ) : null}
                   {!options.length && settings.contactEnabled === false ? (
                     <p className="w-full text-center text-xs text-slate-500">
-                      אין אפשרויות בשלב זה
+                      {t("publicWidgets.smartBot.noOptions")}
                     </p>
                   ) : null}
                 </div>

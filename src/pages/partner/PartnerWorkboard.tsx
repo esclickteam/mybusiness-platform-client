@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Bell, CalendarCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n/localeUtils";
 import {
   createPartnerWorkItem,
   fetchPartnerClients,
@@ -17,6 +19,8 @@ import {
 } from "../../lib/partnerWork";
 
 export default function PartnerWorkboard() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const isReminders = location.pathname.includes("/reminders");
@@ -40,7 +44,7 @@ export default function PartnerWorkboard() {
     let cancelled = false;
     refresh()
       .catch((err) => {
-        if (!cancelled) setError(partnerApiError(err, "שגיאה בטעינת משימות"));
+        if (!cancelled) setError(partnerApiError(err, t("partner.errors.tasks")));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -48,7 +52,7 @@ export default function PartnerWorkboard() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const items: PartnerWorkItem[] = useMemo(() => {
     if (isReminders) return upcomingReminders(clients, 50);
@@ -58,7 +62,7 @@ export default function PartnerWorkboard() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!clientId || !title.trim()) {
-      setError("יש לבחור לקוח ולמלא כותרת");
+      setError(t("partner.errors.workItemRequired"));
       return;
     }
     setSaving(true);
@@ -79,7 +83,7 @@ export default function PartnerWorkboard() {
       setParams({});
       await refresh();
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן ליצור פריט"));
+      setError(partnerApiError(err, t("partner.errors.createItem")));
     } finally {
       setSaving(false);
     }
@@ -90,12 +94,12 @@ export default function PartnerWorkboard() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-2xl font-black text-slate-900">
-            {isReminders ? "תזכורות" : "משימות"}
+            {isReminders ? t("partner.workboard.reminders") : t("partner.workboard.tasks")}
           </h2>
           <p className="text-sm font-bold text-slate-500">
             {isReminders
-              ? "מעקבים עם תאריך יעד מתיקי הלקוחות."
-              : "כל המשימות הפתוחות בכל תיקי הלקוחות."}
+              ? t("partner.workboard.remindersSubtitle")
+              : t("partner.workboard.tasksSubtitle")}
           </p>
         </div>
         <button
@@ -103,7 +107,7 @@ export default function PartnerWorkboard() {
           onClick={() => setParams({ new: "1" })}
           className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
         >
-          {isReminders ? "תזכורת חדשה" : "משימה חדשה"}
+          {isReminders ? t("partner.workboard.newReminder") : t("partner.workboard.newTask")}
         </button>
       </div>
       {error ? (
@@ -114,13 +118,13 @@ export default function PartnerWorkboard() {
       {creating ? (
         <form onSubmit={submit} className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5">
           <label className="block text-sm font-black">
-            לקוח / עסקה
+            {t("partner.workboard.clientOrDeal")}
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
               className="mt-1 w-full rounded-2xl border px-3 py-2 font-bold"
             >
-              <option value="">בחרו לקוח</option>
+              <option value="">{t("partner.workboard.chooseClient")}</option>
               {clients.map((client) => (
                 <option key={client._id} value={client._id}>
                   {client.contact?.businessName}
@@ -129,7 +133,7 @@ export default function PartnerWorkboard() {
             </select>
           </label>
           <label className="block text-sm font-black">
-            {isReminders ? "טקסט התזכורת" : "כותרת"}
+            {isReminders ? t("partner.workboard.reminderText") : t("partner.workboard.title")}
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -138,7 +142,7 @@ export default function PartnerWorkboard() {
           </label>
           {!isReminders ? (
             <label className="block text-sm font-black">
-              תיאור (אופציונלי)
+              {t("partner.workboard.descriptionOptional")}
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -148,7 +152,7 @@ export default function PartnerWorkboard() {
           ) : null}
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm font-black">
-              תאריך
+              {t("partner.date")}
               <input
                 type="date"
                 value={dueAt}
@@ -157,7 +161,7 @@ export default function PartnerWorkboard() {
               />
             </label>
             <label className="block text-sm font-black">
-              שעה (אופציונלי)
+              {t("partner.workboard.timeOptional")}
               <input
                 type="time"
                 value={dueTime}
@@ -167,12 +171,12 @@ export default function PartnerWorkboard() {
             </label>
           </div>
           <PartnerPrimaryButton disabled={saving}>
-            {saving ? "שומר..." : "שמירה"}
+            {saving ? t("partner.saving") : t("partner.save")}
           </PartnerPrimaryButton>
         </form>
       ) : null}
       {loading ? (
-        <BizuplyLoader label="טוען..." />
+        <BizuplyLoader label={t("partner.loading")} />
       ) : (
         <PartnerCard className="divide-y divide-slate-100 overflow-hidden">
           {items.map((item) => (
@@ -194,12 +198,14 @@ export default function PartnerWorkboard() {
                 </div>
               </div>
               <span className="text-xs font-bold text-slate-400">
-                {formatPartnerDateTime(item.dueAt)}
+                {formatPartnerDateTime(item.dueAt, locale)}
               </span>
             </Link>
           ))}
           {!items.length ? (
-            <PartnerEmpty>{isReminders ? "אין תזכורות" : "אין משימות פתוחות"}</PartnerEmpty>
+            <PartnerEmpty>
+              {isReminders ? t("partner.workboard.emptyReminders") : t("partner.workboard.emptyTasks")}
+            </PartnerEmpty>
           ) : null}
         </PartnerCard>
       )}

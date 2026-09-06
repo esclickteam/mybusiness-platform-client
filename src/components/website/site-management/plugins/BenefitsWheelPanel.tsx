@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FerrisWheel,
   LayoutTemplate,
@@ -11,6 +12,7 @@ import {
   Trash2,
   Zap,
 } from "lucide-react";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 import { getSitePlugins, updateSitePlugins } from "../../../../api/sitePluginsApi";
 import { useSitePluginSettings } from "./useSitePluginSettings";
@@ -38,11 +40,21 @@ import {
   TRIGGER_ICON_OPTIONS,
 } from "../../../site-plugins/benefits-wheel/benefitsWheelTriggerIcons";
 
-const TRIGGER_SHAPES: { value: BenefitsWheelTriggerShape; label: string }[] = [
-  { value: "pill", label: "גלולה" },
-  { value: "rounded", label: "מרובע" },
-  { value: "circle", label: "עיגול" },
-];
+const TRIGGER_SHAPE_KEYS: Record<BenefitsWheelTriggerShape, string> = {
+  pill: "sitePlugins.benefitsWheel.pill",
+  rounded: "sitePlugins.benefitsWheel.rounded",
+  circle: "sitePlugins.benefitsWheel.circle",
+};
+
+const TRIGGER_ICON_KEYS: Record<string, string> = {
+  "ferris-wheel": "sitePlugins.benefitsWheel.iconFerris",
+  gift: "sitePlugins.benefitsWheel.iconGift",
+  sparkles: "sitePlugins.benefitsWheel.iconSparkles",
+  tag: "sitePlugins.benefitsWheel.iconTag",
+  percent: "sitePlugins.benefitsWheel.iconPercent",
+  star: "sitePlugins.benefitsWheel.iconStar",
+  trophy: "sitePlugins.benefitsWheel.iconTrophy",
+};
 
 function SectionCard({
   icon: Icon,
@@ -110,6 +122,7 @@ function ColorField({
 }
 
 export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
+  const { t, i18n } = useTranslation();
   const { settings, loading, saving, message, save, updateField } =
     useSitePluginSettings(props.siteId, "benefits-wheel");
   const [removing, setRemoving] = useState(false);
@@ -124,7 +137,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
     () =>
       resolveTriggerPresentation({
         ...(settings as object),
-        triggerLabel: str(settings.triggerLabel, str(settings.title, "גלגל הטבות")),
+        triggerLabel: str(settings.triggerLabel, str(settings.title, t("sitePlugins.benefitsWheel.defaultTitle"))),
         triggerIcon: (settings.triggerIcon as BenefitsWheelTriggerIcon) || "ferris-wheel",
         triggerShowIcon: settings.triggerShowIcon !== false,
         triggerColor: str(settings.triggerColor, "#7C3AED"),
@@ -132,7 +145,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
         triggerTextColor: str(settings.triggerTextColor, "#ffffff"),
         triggerShape: (settings.triggerShape as BenefitsWheelTriggerShape) || "pill",
       }),
-    [settings]
+    [settings, t]
   );
   const selectedIcon = (settings.triggerIcon as BenefitsWheelTriggerIcon) || "ferris-wheel";
   const selectedShape = (settings.triggerShape as BenefitsWheelTriggerShape) || "pill";
@@ -162,9 +175,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
 
   async function handleRemovePlugin() {
     if (
-      !window.confirm(
-        "להסיר את גלגל ההטבות מהאתר? התוסף יוסר לגמרי מרשימת התוספים וההגדרות."
-      )
+      !window.confirm(t("sitePlugins.benefitsWheel.removeConfirm"))
     ) {
       return;
     }
@@ -180,11 +191,11 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
       props.onPluginUninstalled?.("benefits-wheel");
       setRemoveMessage(
         result.enabledPlugins.includes("benefits-wheel")
-          ? "שגיאה בהסרת התוסף. נסו שוב."
+          ? t("sitePlugins.benefitsWheel.removeFailed")
           : ""
       );
     } catch {
-      setRemoveMessage("שגיאה בהסרת התוסף. נסו שוב.");
+      setRemoveMessage(t("sitePlugins.benefitsWheel.removeFailed"));
     } finally {
       setRemoving(false);
     }
@@ -195,26 +206,31 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
       {...props}
       icon={FerrisWheel}
       accent="#D946EF"
-      title="גלגל הטבות"
-      description="גלגל מסתובב במודאל — נפתח בכניסה ראשונה לאתר. גררו את הכפתור הצף בעורך."
+      title={t("sitePlugins.benefitsWheel.title")}
+      description={t("sitePlugins.benefitsWheel.description")}
       loading={loading}
       saving={saving}
       message={message || (removeMessage ? { type: "error", text: removeMessage } : null)}
       onSave={() => save({ ...settings, segmentCount, segments })}
     >
-      <SectionCard icon={Power} title="הפעלה" subtitle="מתי התוסף יופיע באתר" accent="#8B5CF6">
+      <SectionCard
+        icon={Power}
+        title={t("sitePlugins.benefitsWheel.activation")}
+        subtitle={t("sitePlugins.benefitsWheel.activationHint")}
+        accent="#8B5CF6"
+      >
         <Toggle
-          label="תוסף פעיל באתר"
+          label={t("sitePlugins.benefitsWheel.pluginActive")}
           checked={bool(settings.isActive, true)}
           onChange={(v) => updateField("isActive", v)}
         />
         <Toggle
-          label="פתיחה אוטומטית בכניסה ראשונה"
+          label={t("sitePlugins.benefitsWheel.autoOpen")}
           checked={bool(settings.autoOpenOnFirstVisit, true)}
           onChange={(v) => updateField("autoOpenOnFirstVisit", v)}
         />
         <Toggle
-          label="הצג כפתור צף"
+          label={t("sitePlugins.benefitsWheel.showTrigger")}
           checked={bool(settings.showTrigger, true)}
           onChange={(v) => updateField("showTrigger", v)}
         />
@@ -222,13 +238,13 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
 
       <SectionCard
         icon={MousePointerClick}
-        title="כפתור צף"
-        subtitle="טקסט, אייקון, צבעים וצורה"
+        title={t("sitePlugins.benefitsWheel.trigger")}
+        subtitle={t("sitePlugins.benefitsWheel.triggerHint")}
         accent="#EC4899"
       >
         <div className="rounded-2xl border border-dashed border-violet-200 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-5">
           <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-wide text-violet-500">
-            תצוגה מקדימה
+            {t("sitePlugins.benefitsWheel.preview")}
           </p>
           <div className="flex justify-center">
             <span
@@ -246,22 +262,22 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
           </div>
         </div>
 
-        <Field label="טקסט על הכפתור">
+        <Field label={t("sitePlugins.benefitsWheel.buttonText")}>
           <TextInput
-            value={str(settings.triggerLabel, str(settings.title, "גלגל הטבות"))}
+            value={str(settings.triggerLabel, str(settings.title, t("sitePlugins.benefitsWheel.defaultTitle")))}
             onChange={(v) => updateField("triggerLabel", v)}
-            placeholder="גלגל הטבות"
+            placeholder={t("sitePlugins.benefitsWheel.defaultTitle")}
           />
         </Field>
 
         <Toggle
-          label="הצג אייקון ליד הטקסט"
+          label={t("sitePlugins.benefitsWheel.showIcon")}
           checked={bool(settings.triggerShowIcon, true)}
           onChange={(v) => updateField("triggerShowIcon", v)}
         />
 
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">אייקון</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.benefitsWheel.icon")}</p>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-4">
             {TRIGGER_ICON_OPTIONS.filter((opt) => opt.value !== "none").map(({ value, label, Icon }) => {
               const active = selectedIcon === value;
@@ -277,7 +293,9 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
                   }`}
                 >
                   <Icon size={20} strokeWidth={2.25} />
-                  <span className="text-[10px] font-bold">{label}</span>
+                  <span className="text-[10px] font-bold">
+                    {t(TRIGGER_ICON_KEYS[value] || label, { defaultValue: label })}
+                  </span>
                 </button>
               );
             })}
@@ -291,47 +309,47 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
               }`}
             >
               <span className="grid h-5 w-5 place-items-center text-xs font-black">—</span>
-              <span className="text-[10px] font-bold">ללא</span>
+              <span className="text-[10px] font-bold">{t("sitePlugins.benefitsWheel.none")}</span>
             </button>
           </div>
         </div>
 
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">צורת הכפתור</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.benefitsWheel.shape")}</p>
           <div className="grid grid-cols-3 gap-2">
-            {TRIGGER_SHAPES.map((shape) => (
+            {(["pill", "rounded", "circle"] as BenefitsWheelTriggerShape[]).map((shape) => (
               <button
-                key={shape.value}
+                key={shape}
                 type="button"
-                onClick={() => updateField("triggerShape", shape.value)}
+                onClick={() => updateField("triggerShape", shape)}
                 className={`rounded-xl border px-3 py-2.5 text-xs font-bold transition ${
-                  selectedShape === shape.value
+                  selectedShape === shape
                     ? "border-violet-400 bg-violet-50 text-violet-700 ring-2 ring-violet-200"
                     : "border-slate-200 bg-white text-slate-600 hover:border-violet-200"
                 }`}
               >
-                {shape.label}
+                {t(TRIGGER_SHAPE_KEYS[shape])}
               </button>
             ))}
           </div>
           {selectedShape === "circle" ? (
-            <p className="mt-2 text-[11px] text-slate-400">בעיגול — מוצג אייקון בלבד</p>
+            <p className="mt-2 text-[11px] text-slate-400">{t("sitePlugins.benefitsWheel.circleHint")}</p>
           ) : null}
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <ColorField
-            label="צבע ראשי"
+            label={t("sitePlugins.benefitsWheel.primary")}
             value={str(settings.triggerColor, "#7C3AED")}
             onChange={(v) => updateField("triggerColor", v)}
           />
           <ColorField
-            label="צבע משני"
+            label={t("sitePlugins.benefitsWheel.secondary")}
             value={str(settings.triggerColorEnd, "#a855f7")}
             onChange={(v) => updateField("triggerColorEnd", v)}
           />
           <ColorField
-            label="צבע טקסט"
+            label={t("sitePlugins.benefitsWheel.textColor")}
             value={str(settings.triggerTextColor, "#ffffff")}
             onChange={(v) => updateField("triggerTextColor", v)}
           />
@@ -340,23 +358,23 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
 
       <SectionCard
         icon={LayoutTemplate}
-        title="תוכן המודאל"
-        subtitle="כותרת, תיאור ומגבלת סיבובים"
+        title={t("sitePlugins.benefitsWheel.modal")}
+        subtitle={t("sitePlugins.benefitsWheel.modalHint")}
         accent="#6366F1"
       >
-        <Field label="כותרת המודאל">
+        <Field label={t("sitePlugins.benefitsWheel.modalTitle")}>
           <TextInput
-            value={str(settings.title, "גלגל ההטבות")}
+            value={str(settings.title, t("sitePlugins.benefitsWheel.defaultModal"))}
             onChange={(v) => updateField("title", v)}
           />
         </Field>
-        <Field label="תת-כותרת">
+        <Field label={t("sitePlugins.benefitsWheel.subtitle")}>
           <TextInput
-            value={str(settings.subtitle, "סובבו וגלו מה זכיתם!")}
+            value={str(settings.subtitle, t("sitePlugins.benefitsWheel.defaultSubtitle"))}
             onChange={(v) => updateField("subtitle", v)}
           />
         </Field>
-        <Field label="סיבובים לכל מבקר">
+        <Field label={t("sitePlugins.benefitsWheel.spins")}>
           <TextInput
             type="number"
             value={String(num(settings.spinsPerUser, 1))}
@@ -367,13 +385,13 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
 
       <SectionCard
         icon={Sparkles}
-        title="חלקי הגלגל"
-        subtitle="הטבות, צבעים וקודי קופון"
+        title={t("sitePlugins.benefitsWheel.segments")}
+        subtitle={t("sitePlugins.benefitsWheel.segmentsHint")}
         accent="#F59E0B"
       >
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50/60 px-3 py-2">
           <p className="text-xs font-semibold text-slate-600">
-            {segmentCount} חלקים בגלגל
+            {t("sitePlugins.benefitsWheel.sliceCount", { count: segmentCount })}
           </p>
           <div className="flex items-center gap-2">
             <input
@@ -391,7 +409,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
               className="inline-flex h-9 items-center gap-1 rounded-lg border border-amber-200 bg-white px-3 text-xs font-bold text-amber-700 disabled:opacity-40"
             >
               <Plus size={14} />
-              הוסף
+              {t("sitePlugins.benefitsWheel.add")}
             </button>
           </div>
         </div>
@@ -409,13 +427,15 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
                 >
                   {index + 1}
                 </span>
-                <span className="text-xs font-bold text-slate-500">הטבה {index + 1}</span>
+                <span className="text-xs font-bold text-slate-500">
+                  {t("sitePlugins.benefitsWheel.perkN", { n: index + 1 })}
+                </span>
                 <button
                   type="button"
                   onClick={() => removeSegment(index)}
                   disabled={segmentCount <= 3}
                   className="mr-auto grid h-8 w-8 place-items-center rounded-lg border border-rose-100 bg-white text-rose-500 disabled:opacity-30"
-                  aria-label="הסרה"
+                  aria-label={t("sitePlugins.benefitsWheel.remove")}
                 >
                   <Trash2 size={14} />
                 </button>
@@ -426,19 +446,19 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
                   value={seg.color || WHEEL_COLORS[index % WHEEL_COLORS.length]}
                   onChange={(e) => updateSegment(index, { color: e.target.value })}
                   className="h-10 w-full cursor-pointer rounded-lg border border-slate-200 bg-white sm:w-12"
-                  aria-label={`צבע ${index + 1}`}
+                  aria-label={t("sitePlugins.benefitsWheel.colorN", { n: index + 1 })}
                 />
                 <input
                   value={seg.label}
                   onChange={(e) => updateSegment(index, { label: e.target.value })}
-                  placeholder={`הטבה ${index + 1}`}
+                  placeholder={t("sitePlugins.benefitsWheel.perkN", { n: index + 1 })}
                   className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
               </div>
               <div className="mt-2">
                 <label className="mb-1 flex items-center gap-1 text-[11px] font-bold text-slate-500">
                   <Ticket size={12} />
-                  קוד הטבה
+                  {t("sitePlugins.benefitsWheel.perkCode")}
                 </label>
                 <input
                   value={seg.couponCode || ""}
@@ -459,18 +479,17 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
       <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-4 text-xs leading-relaxed text-slate-500">
         <Zap size={16} className="mt-0.5 shrink-0 text-violet-500" />
         <p>
-          בעורך: <strong className="text-slate-700">הוספה → תוספים → גלגל הטבות</strong>.
-          גררו את הכפתור הצף למיקום הרצוי. להסרה מהעמוד — «הסרה» בלוח התוספים.
+          {t("sitePlugins.benefitsWheel.editorTip")}
         </p>
       </div>
 
       <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-white p-4">
         <div className="flex items-center gap-2">
           <Trash2 size={16} className="text-rose-500" />
-          <p className="text-sm font-bold text-slate-800">הסרת התוסף מהאתר</p>
+          <p className="text-sm font-bold text-slate-800">{t("sitePlugins.benefitsWheel.removeTitle")}</p>
         </div>
         <p className="mt-1 text-xs text-slate-500">
-          מסיר את גלגל ההטבות לגמרי מרשימת התוספים הפעילים.
+          {t("sitePlugins.benefitsWheel.removeHint")}
         </p>
         <button
           type="button"
@@ -478,15 +497,15 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
           disabled={removing}
           className="mt-3 inline-flex h-10 items-center rounded-xl border border-rose-200 bg-white px-4 text-sm font-bold text-rose-600 transition hover:bg-rose-50 disabled:opacity-50"
         >
-          {removing ? "מסיר..." : "הסרת התוסף מהאתר"}
+          {removing ? t("sitePlugins.benefitsWheel.removing") : t("sitePlugins.benefitsWheel.removeCta")}
         </button>
       </div>
 
       {Array.isArray(settings.wonSpins) && settings.wonSpins.length > 0 ? (
         <SectionCard
           icon={Palette}
-          title={`הטבות שנשמרו (${settings.wonSpins.length})`}
-          subtitle="רשימת זכיות מבקרים"
+          title={t("sitePlugins.benefitsWheel.winsTitle", { count: settings.wonSpins.length })}
+          subtitle={t("sitePlugins.benefitsWheel.winsHint")}
           accent="#059669"
         >
           <ul className="max-h-44 space-y-1 overflow-y-auto text-xs text-slate-600">
@@ -506,7 +525,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
                     ) : null}
                   </span>
                   <span className="text-slate-400">
-                    {row.createdAt ? new Date(row.createdAt).toLocaleDateString("he-IL") : ""}
+                    {row.createdAt ? new Date(row.createdAt).toLocaleDateString(getIntlLocale(i18n.language)) : ""}
                   </span>
                 </li>
               ))}

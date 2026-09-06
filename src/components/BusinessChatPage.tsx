@@ -9,6 +9,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import API from "../api";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import { useTranslation } from "react-i18next";
 import GuidedDemoSandboxButton from "../guidedDemo/GuidedDemoSandboxButton";
 
 /* =====================================================
@@ -59,6 +60,7 @@ type NewMessagePayload = {
 ===================================================== */
 
 export default function BusinessChatPage() {
+  const { t } = useTranslation();
   const { user, initialized } = useAuth() as any;
   const socket = useSocket() as any;
   const location = useLocation();
@@ -365,7 +367,7 @@ export default function BusinessChatPage() {
                     target="messages-demo-send"
                     className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
                   >
-                    שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+                    {t("leftover.waInbox.demoSend")}
                   </GuidedDemoSandboxButton>
                 </div>
 

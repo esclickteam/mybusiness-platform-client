@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+import i18n from "../i18n/i18n";
 import type { PushPermission } from "./push";
 
 export type PushToggleCopyKind =
@@ -9,6 +11,16 @@ export type PushToggleCopyKind =
   | "unsupported"
   | "off";
 
+function translate(
+  key: string,
+  fallback: string,
+  vars?: Record<string, string | number>,
+  t?: TFunction
+) {
+  const options = { defaultValue: fallback, ...vars };
+  return t ? t(key, options) : i18n.t(key, options);
+}
+
 export function resolvePushToggleCopy(input: {
   pushOn: boolean;
   serverReady: boolean;
@@ -17,11 +29,18 @@ export function resolvePushToggleCopy(input: {
   subscribed: boolean;
   deviceCount: number;
   ios?: boolean;
+  t?: TFunction;
 }): { kind: PushToggleCopyKind; text: string } {
+  const t = input.t;
   if (input.permission === "denied") {
     return {
       kind: "blocked",
-      text: "חסום בהגדרות הדפדפן/המכשיר",
+      text: translate(
+        "leftover.pushToggle.blocked",
+        "Blocked in browser / device settings",
+        undefined,
+        t
+      ),
     };
   }
 
@@ -29,14 +48,29 @@ export function resolvePushToggleCopy(input: {
     if (input.pushOn || input.deviceCount > 0) {
       return {
         kind: "on-other-context",
-        text: `פעיל במכשיר מותקן · ${input.deviceCount} מכשיר רשום`,
+        text: translate(
+          "leftover.pushToggle.onOther",
+          "Active on an installed device · {{count}} registered device",
+          { count: input.deviceCount },
+          t
+        ),
       };
     }
     return {
       kind: "unsupported",
       text: input.ios
-        ? "לא ניתן להפעיל מכאן — פתחו מ-Safari דרך האייקון במסך הבית"
-        : "הדפדפן הזה לא תומך ב-Push",
+        ? translate(
+            "leftover.pushToggle.unsupportedIos",
+            "Cannot enable from here — open Safari from the home-screen icon",
+            undefined,
+            t
+          )
+        : translate(
+            "leftover.pushToggle.unsupported",
+            "This browser does not support Push",
+            undefined,
+            t
+          ),
     };
   }
 
@@ -47,24 +81,44 @@ export function resolvePushToggleCopy(input: {
     if (bound) {
       return {
         kind: "on-ready",
-        text: `מופעל · ${input.deviceCount} מכשיר רשום`,
+        text: translate(
+          "leftover.pushToggle.onReady",
+          "On · {{count}} registered device",
+          { count: input.deviceCount },
+          t
+        ),
       };
     }
     return {
       kind: "on-unbound",
-      text: "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה",
+      text: translate(
+        "leftover.pushToggle.onUnbound",
+        "On on this device, but not registered on the server yet — tap Test",
+        undefined,
+        t
+      ),
     };
   }
 
   if (input.permission === "granted" && !input.subscribed) {
     return {
       kind: "need-rebind",
-      text: "יש הרשאה, אבל אין רישום במכשיר — לחץ לרישום מחדש",
+      text: translate(
+        "leftover.pushToggle.needRebind",
+        "Permission is granted, but this device is not registered — tap to re-register",
+        undefined,
+        t
+      ),
     };
   }
 
   return {
     kind: "off",
-    text: "כבוי — לחץ להפעלה לקבלת התראות לטלפון",
+    text: translate(
+      "leftover.pushToggle.off",
+      "Off — tap to enable phone notifications",
+      undefined,
+      t
+    ),
   };
 }

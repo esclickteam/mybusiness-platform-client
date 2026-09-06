@@ -10,10 +10,12 @@ import {
   UserRound,
   XCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type SupportFormData = {
   name: string;
@@ -28,6 +30,8 @@ type StatusMessage = {
 } | null;
 
 export default function BusinessSupport() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [formData, setFormData] = useState<SupportFormData>({
     name: "",
     email: "",
@@ -69,7 +73,7 @@ export default function BusinessSupport() {
     if (!name.trim() || !email.trim() || !phone.trim() || !issueDescription.trim()) {
       setStatus({
         type: "error",
-        message: "יש למלא את כל השדות, כולל מספר טלפון.",
+        message: t("support.business.requiredFields"),
       });
       return;
     }
@@ -98,7 +102,7 @@ export default function BusinessSupport() {
 
       setStatus({
         type: "success",
-        message: "הפנייה נשלחה בהצלחה! נחזור אליך בהקדם.",
+        message: t("support.business.sent"),
       });
 
       setFormData({
@@ -112,7 +116,7 @@ export default function BusinessSupport() {
 
       setStatus({
         type: "error",
-        message: "אירעה שגיאה בשליחת הפנייה. נסה שוב מאוחר יותר.",
+        message: t("support.business.sendError"),
       });
     } finally {
       setLoading(false);
@@ -121,8 +125,8 @@ export default function BusinessSupport() {
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40 px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
+      dir={pageDir}
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40 px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
         <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-white via-violet-50 to-sky-50 px-6 py-10 shadow-[0_24px_80px_rgba(109,40,217,0.10)] sm:px-8 lg:px-10">
@@ -132,16 +136,15 @@ export default function BusinessSupport() {
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
               <Headphones size={15} />
-              תמיכה לעסקים
+              {t("support.business.badge")}
             </div>
 
             <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
-              איך אפשר לעזור?
+              {t("support.business.title")}
             </h1>
 
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-              יש לך שאלה, תקלה או משהו שצריך לבדוק? מלא את הטופס ונציג מהצוות
-              יחזור אליך בהקדם.
+              {t("support.business.intro")}
             </p>
           </div>
         </section>
@@ -153,24 +156,24 @@ export default function BusinessSupport() {
           >
             <div className="mb-6">
               <h2 className="text-2xl font-black tracking-tight text-slate-800">
-                פתיחת פנייה לתמיכה
+                {t("support.business.formTitle")}
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                מלא את הפרטים ונחזור אליך עם מענה מסודר.
+                {t("support.business.formHint")}
               </p>
             </div>
 
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  שם מלא <span className="text-violet-600">*</span>
+                  {t("support.business.fullName")} <span className="text-violet-600">*</span>
                 </label>
 
                 <div className="relative">
                   <UserRound
                     size={18}
-                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"
                   />
 
                   <input
@@ -179,16 +182,16 @@ export default function BusinessSupport() {
                     value={formData.name}
                     onChange={handleInputChange}
                     disabled={loading}
-                    placeholder="הכנס שם מלא"
+                    placeholder={t("support.business.namePlaceholder")}
                     required
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white ps-11 pe-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  טלפון <span className="text-violet-600">*</span>
+                  {t("support.business.phone")} <span className="text-violet-600">*</span>
                 </label>
 
                 <PhoneInput
@@ -209,22 +212,22 @@ export default function BusinessSupport() {
                     disabled: loading,
                   }}
                   containerClass="!w-full"
-                  inputClass="!h-12 !w-full !rounded-2xl !border !border-slate-200 !bg-white !pr-14 !pl-4 !text-right !text-sm !font-semibold !text-slate-900 !shadow-sm !outline-none focus:!border-violet-400 focus:!ring-4 focus:!ring-violet-100 disabled:!cursor-not-allowed disabled:!bg-slate-50 disabled:!text-slate-400"
-                  buttonClass="!rounded-r-2xl !border-slate-200 !bg-slate-50 hover:!bg-slate-100"
-                  dropdownClass="!rounded-2xl !border-slate-200 !text-left !shadow-2xl"
+                  inputClass="!h-12 !w-full !rounded-2xl !border !border-slate-200 !bg-white !pe-14 !ps-4 !text-start !text-sm !font-semibold !text-slate-900 !shadow-sm !outline-none focus:!border-violet-400 focus:!ring-4 focus:!ring-violet-100 disabled:!cursor-not-allowed disabled:!bg-slate-50 disabled:!text-slate-400"
+                  buttonClass="!rounded-e-2xl !border-slate-200 !bg-slate-50 hover:!bg-slate-100"
+                  dropdownClass="!rounded-2xl !border-slate-200 !text-start !shadow-2xl"
                   searchClass="!rounded-xl !border-slate-200 !px-3 !py-2"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  אימייל <span className="text-violet-600">*</span>
+                  {t("support.business.email")} <span className="text-violet-600">*</span>
                 </label>
 
                 <div className="relative">
                   <Mail
                     size={18}
-                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"
                   />
 
                   <input
@@ -233,22 +236,22 @@ export default function BusinessSupport() {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={loading}
-                    placeholder="הכנס כתובת אימייל"
+                    placeholder={t("support.business.emailPlaceholder")}
                     required
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white ps-11 pe-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  הודעה <span className="text-violet-600">*</span>
+                  {t("support.business.message")} <span className="text-violet-600">*</span>
                 </label>
 
                 <div className="relative">
                   <MessageCircle
                     size={18}
-                    className="pointer-events-none absolute right-4 top-4 text-slate-400"
+                    className="pointer-events-none absolute start-4 top-4 text-slate-400"
                   />
 
                   <textarea
@@ -256,10 +259,10 @@ export default function BusinessSupport() {
                     value={formData.issueDescription}
                     onChange={handleInputChange}
                     disabled={loading}
-                    placeholder="תאר את השאלה או התקלה שלך"
+                    placeholder={t("support.business.messagePlaceholder")}
                     required
                     rows={6}
-                    className="w-full resize-none rounded-2xl border border-slate-200 bg-white py-3 pr-11 pl-4 text-sm font-medium leading-6 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                    className="w-full resize-none rounded-2xl border border-slate-200 bg-white py-3 ps-11 pe-4 text-sm font-medium leading-6 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                   />
                 </div>
               </div>
@@ -269,7 +272,7 @@ export default function BusinessSupport() {
                 disabled={loading}
                 className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
               >
-                {loading ? "שולח..." : "שליחת פנייה"}
+                {loading ? t("support.business.sending") : t("support.business.submit")}
                 <Send size={17} />
               </button>
 
@@ -300,26 +303,24 @@ export default function BusinessSupport() {
             </div>
 
             <h2 className="mt-5 text-2xl font-black tracking-tight text-slate-800">
-              אנחנו כאן בשבילך
+              {t("support.business.asideTitle")}
             </h2>
 
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              צוות התמיכה שלנו מטפל בפניות של עסקים, בעיות התחברות, תשלומים,
-              תקלות במערכת, שאלות על CRM, דשבורד, עמוד עסקי וכל דבר שצריך
-              בדיקה.
+              {t("support.business.asideText")}
             </p>
 
             <div className="mt-6 space-y-3">
               <div className="rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm">
-                <p className="text-xs font-black text-slate-400">זמן מענה</p>
+                <p className="text-xs font-black text-slate-400">{t("support.business.responseTime")}</p>
                 <p className="mt-1 text-sm font-black text-slate-900">
-                  נחזור אליך בהקדם האפשרי
+                  {t("support.business.responseHint")}
                 </p>
               </div>
 
               <div className="rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm">
                 <p className="text-xs font-black text-slate-400">
-                  אימייל ישיר
+                  {t("support.business.directEmail")}
                 </p>
                 <a
                   href="mailto:support@bizuply.com"
@@ -331,10 +332,10 @@ export default function BusinessSupport() {
 
               <div className="rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm">
                 <p className="text-xs font-black text-slate-400">
-                  מומלץ לצרף בפנייה
+                  {t("support.business.attachTitle")}
                 </p>
                 <p className="mt-1 text-sm font-bold leading-6 text-slate-700">
-                  שם העסק, תיאור קצר של הבעיה, צילום מסך אם יש, וטלפון לחזרה.
+                  {t("support.business.attachHint")}
                 </p>
               </div>
             </div>

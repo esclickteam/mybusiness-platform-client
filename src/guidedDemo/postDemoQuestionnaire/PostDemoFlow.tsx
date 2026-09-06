@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import {
   saveGuidedDemoQuestionnaire,
   requestGuidedDemoProposal,
@@ -51,10 +53,11 @@ function OptionGrid({
   values,
   onToggle,
 }: {
-  options: readonly { value: string; label: string; icon?: string }[];
+  options: readonly { value: string; label: string; labelKey?: string; icon?: string }[];
   values: string[];
   onToggle: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
       {options.map((opt) => {
@@ -72,7 +75,9 @@ function OptionGrid({
             ].join(" ")}
           >
             {opt.icon ? <span className="text-lg leading-none">{opt.icon}</span> : null}
-            <span className="text-sm font-black text-slate-900">{opt.label}</span>
+            <span className="text-sm font-black text-slate-900">
+              {opt.labelKey ? t(opt.labelKey, opt.label) : opt.label}
+            </span>
           </button>
         );
       })}
@@ -86,11 +91,12 @@ function RadioGrid({
   onChange,
   columns = 3,
 }: {
-  options: readonly { value: string; label: string }[];
+  options: readonly { value: string; label: string; labelKey?: string }[];
   value: string;
   onChange: (value: string) => void;
   columns?: 2 | 3;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={
@@ -111,7 +117,7 @@ function RadioGrid({
               : "border-slate-200 bg-white text-slate-800 hover:border-[#6D28D9]/30",
           ].join(" ")}
         >
-          {opt.label}
+          {opt.labelKey ? t(opt.labelKey, opt.label) : opt.label}
         </button>
       ))}
     </div>
@@ -124,6 +130,8 @@ const areaClass =
   "mt-2 min-h-28 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#6D28D9]/50";
 
 export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [step, setStep] = useState<StepKey>(() => resolveInitialStep(initialQuestionnaire));
   const [answers, setAnswers] = useState<PostDemoAnswers>(() =>
     mergeAnswers(initialQuestionnaire?.answers || EMPTY_ANSWERS)
@@ -218,7 +226,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
       setStep("success");
       stepRef.current = "success";
     } catch (err: any) {
-      setError(err?.response?.data?.error || "שליחת הבקשה נכשלה");
+      setError(err?.response?.data?.error || t("leftover.guidedQ.sendFailed", "The request could not be sent"));
     } finally {
       setSubmitting(false);
     }
@@ -231,7 +239,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
         onClick={goBack}
         className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-700"
       >
-        חזרה
+        {t("leftover.guidedQ.back", "Back")}
       </button>
       <button
         type="button"
@@ -239,7 +247,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
         className="min-h-11 rounded-2xl px-5 py-3 text-sm font-black text-white"
         style={{ background: BRAND }}
       >
-        המשך
+        {t("leftover.guidedQ.continue", "Continue")}
       </button>
     </div>
   ) : null;
@@ -253,7 +261,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           className="min-h-12 w-full rounded-2xl px-4 py-3 text-base font-black text-white"
           style={{ background: BRAND }}
         >
-          מתחילים
+          {t("leftover.guidedQ.start", "Let's start")}
         </button>
         <button
           type="button"
@@ -262,7 +270,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           }}
           className="min-h-11 w-full rounded-2xl text-sm font-bold text-slate-500"
         >
-          אעשה את זה אחר כך
+          {t("leftover.guidedQ.later", "I'll do this later")}
         </button>
       </div>
     );
@@ -274,7 +282,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           onClick={() => goTo("1")}
           className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-700"
         >
-          חזרה לעריכה
+          {t("leftover.guidedQ.backToEdit", "Back to editing")}
         </button>
         <button
           type="button"
@@ -283,7 +291,9 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           className="min-h-12 rounded-2xl px-5 py-3 text-sm font-black text-white disabled:opacity-60"
           style={{ background: BRAND }}
         >
-          {submitting ? "שולח..." : "בקשה להצעה מותאמת"}
+          {submitting
+            ? t("leftover.guidedQ.sending", "Sending...")
+            : t("leftover.guidedQ.requestOffer", "Request a tailored offer")}
         </button>
       </div>
     );
@@ -295,7 +305,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
         className="min-h-12 w-full rounded-2xl px-4 py-3 text-base font-black text-white"
         style={{ background: BRAND }}
       >
-        סיום
+        {t("leftover.guidedQ.done", "Done")}
       </button>
     );
   }
@@ -303,7 +313,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[2147483007] flex items-end justify-center bg-slate-950/55 p-0 sm:items-center sm:p-4"
-      dir="rtl"
+      dir={pageDir}
     >
       <div
         role="dialog"
@@ -314,7 +324,10 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           {showProgress ? (
             <>
               <p className="text-sm font-bold text-slate-500">
-                שלב {questionIdx + 1} מתוך {QUESTION_STEPS.length}
+                {t("leftover.guidedQ.stepOf", "Step {{current}} of {{total}}", {
+                  current: questionIdx + 1,
+                  total: QUESTION_STEPS.length,
+                })}
               </p>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
@@ -336,25 +349,33 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
             {step === "intro" ? (
               <div>
                 <h2 className="text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
-                  כמעט סיימנו ✨
+                  {t("leftover.guidedQ.almost", "Almost done ✨")}
                 </h2>
                 <p className="mt-4 text-base font-semibold leading-7 text-slate-600">
-                  נשמח להבין מה מתוך הדמו הכי מתאים לעסק שלך ומה חשוב לך לפני שנמשיך להצעה.
+                  {t(
+                    "leftover.guidedQ.introBody",
+                    "We would like to understand what from the demo fits your business and what matters before we prepare an offer."
+                  )}
                 </p>
                 <p className="mt-3 text-base font-semibold leading-7 text-slate-600">
-                  עשר שאלות קצרות יעזרו לנו להתאים את ההמשך בצורה מדויקת יותר.
+                  {t(
+                    "leftover.guidedQ.introHint",
+                    "Ten short questions will help us tailor the next step more accurately."
+                  )}
                 </p>
-                <p className="mt-5 text-sm font-bold text-[#6D28D9]">כ־2 דקות • אין שאלות חובה</p>
+                <p className="mt-5 text-sm font-bold text-[#6D28D9]">
+                  {t("leftover.guidedQ.introTime", "About 2 minutes • no required questions")}
+                </p>
               </div>
             ) : null}
 
             {step === "1" ? (
               <QuestionBlock
-                title="מה הכי רלוונטי לך מתוך BizUply?"
+                title={t("leftover.guidedQ.qRelevant", "What from BizUply is most relevant to you?")}
                 options={RELEVANT_OPTIONS}
                 values={answers.relevant.selections}
                 other={answers.relevant.other}
-                otherLabel="מה עוד רלוונטי עבורך?"
+                otherLabel={t("leftover.guidedQ.otherRelevant", "What else is relevant for you?")}
                 onToggle={(value) =>
                   patchAnswers((prev) => ({
                     ...prev,
@@ -372,7 +393,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 }
               >
                 <label className="mt-5 block text-sm font-black text-slate-800">
-                  יש משהו ספציפי מתוך מה שבחרת שחשוב לך במיוחד?
+                  {t("leftover.guidedQ.specificNote", "Is there something specific from what you chose that matters most?")}
                   <textarea
                     className={areaClass}
                     value={answers.relevant.note}
@@ -389,11 +410,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "2" ? (
               <QuestionBlock
-                title="מה הכי חשוב לך לשפר בעסק כרגע?"
+                title={t("leftover.guidedQ.qGoals", "What is most important to improve in the business right now?")}
                 options={GOAL_OPTIONS}
                 values={answers.goals.selections}
                 other={answers.goals.other}
-                otherLabel="מה עוד חשוב לשפר?"
+                otherLabel={t("leftover.guidedQ.otherGoals", "What else is important to improve?")}
                 onToggle={(value) =>
                   patchAnswers((prev) => ({
                     ...prev,
@@ -415,7 +436,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
             {step === "3" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם אתם משתמשים היום במערכת או כלי שתרצו להחליף ב־BizUply?
+                  {t("leftover.guidedQ.qTool", "Are you using a system or tool today that you would like to replace with BizUply?")}
                 </h2>
                 <div className="mt-5">
                   <RadioGrid
@@ -434,10 +455,10 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 </div>
                 {answers.currentTool.answer === "yes" ? (
                   <label className="mt-4 block text-sm font-black text-slate-800">
-                    באיזו מערכת או כלי אתם משתמשים היום?
+                    {t("leftover.guidedQ.whichTool", "Which system or tool do you use today?")}
                     <textarea
                       className={areaClass}
-                      placeholder="לדוגמה: Excel, יומן, WhatsApp, מערכת לניהול לקוחות או כלי אחר."
+                      placeholder={t("leftover.guidedQ.toolPh", "For example: Excel, a calendar, WhatsApp, a CRM, or another tool.")}
                       value={answers.currentTool.detail}
                       onChange={(e) =>
                         patchAnswers((prev) => ({
@@ -453,11 +474,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "4" ? (
               <QuestionBlock
-                title="האם יש מידע או תוכן שחשוב לכם להעביר ל־BizUply?"
+                title={t("leftover.guidedQ.qTransfer", "Is there information or content you want to move into BizUply?")}
                 options={TRANSFER_OPTIONS}
                 values={answers.transfer.selections}
                 other={answers.transfer.other}
-                otherLabel="איזה מידע נוסף חשוב להעביר?"
+                otherLabel={t("leftover.guidedQ.otherTransfer", "What other information is important to move?")}
                 onToggle={(value) =>
                   patchAnswers((prev) => {
                     const selections = toggleExclusive(prev.transfer.selections, value, "none");
@@ -481,7 +502,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 {showFileFollowup ? (
                   <div className="mt-5">
                     <p className="text-sm font-black text-slate-800">
-                      האם יש לכם קובץ Excel/CSV עם הנתונים?
+                      {t("leftover.guidedQ.hasFile", "Do you have an Excel/CSV file with the data?")}
                     </p>
                     <div className="mt-3">
                       <RadioGrid
@@ -505,11 +526,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "5" ? (
               <QuestionBlock
-                title="מה היית רוצה שיקרה אצלך באופן אוטומטי?"
+                title={t("leftover.guidedQ.qAuto", "What would you like to happen automatically?")}
                 options={AUTOMATION_OPTIONS}
                 values={answers.automation.selections}
                 other={answers.automation.other}
-                otherLabel="מה עוד היית רוצה להפוך לאוטומטי?"
+                otherLabel={t("leftover.guidedQ.otherAuto", "What else would you like to automate?")}
                 hideOtherInput
                 onToggle={(value) =>
                   patchAnswers((prev) => ({
@@ -535,7 +556,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
               >
                 {showAutomationDetail ? (
                   <label className="mt-5 block text-sm font-black text-slate-800">
-                    פירוט נוסף
+                    {t("leftover.guidedQ.moreDetail", "More detail")}
                     <textarea
                       className={areaClass}
                       value={answers.automation.detail}
@@ -554,11 +575,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
             {step === "6" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם יש תהליך מיוחד בעסק שחשוב שניקח בחשבון?
+                  {t("leftover.guidedQ.qProcess", "Is there a special process in the business we should take into account?")}
                 </h2>
                 <textarea
                   className={`${areaClass} mt-5 min-h-40`}
-                  placeholder="לדוגמה: שלבי טיפול בליד, חלוקת עבודה בין עובדים, אישורים פנימיים, תהליך מכירה ייחודי או שלבים קבועים בעבודה."
+                  placeholder={t("leftover.guidedQ.processPh", "For example: lead handling stages, work split between staff, internal approvals, a unique sales process, or fixed work steps.")}
                   value={answers.specialProcess}
                   onChange={(e) =>
                     patchAnswers((prev) => ({ ...prev, specialProcess: e.target.value }))
@@ -569,11 +590,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "7" ? (
               <QuestionBlock
-                title="האם תרצו גם שירות מקצועי מעבר למערכת?"
+                title={t("leftover.guidedQ.qService", "Would you also like a professional service beyond the system?")}
                 options={SERVICE_OPTIONS}
                 values={answers.services.selections}
                 other={answers.services.other}
-                otherLabel="איזה שירות נוסף היה מעניין אותך?"
+                otherLabel={t("leftover.guidedQ.otherService", "Which extra service would interest you?")}
                 onToggle={(value) =>
                   patchAnswers((prev) => ({
                     ...prev,
@@ -594,11 +615,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "8" ? (
               <QuestionBlock
-                title="מה הדבר העיקרי שעלול לעכב אתכם מלהתחיל?"
+                title={t("leftover.guidedQ.qBlocker", "What is the main thing that might delay you from starting?")}
                 options={BLOCKER_OPTIONS}
                 values={answers.blockers.selections}
                 other={answers.blockers.other}
-                otherLabel="מה עלול לעכב?"
+                otherLabel={t("leftover.guidedQ.otherBlocker", "What might delay you?")}
                 onToggle={(value) =>
                   patchAnswers((prev) => ({
                     ...prev,
@@ -624,7 +645,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
             {step === "9" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  אם הכול מתאים, מתי הייתם רוצים להתחיל?
+                  {t("leftover.guidedQ.qTiming", "If everything fits, when would you like to start?")}
                 </h2>
                 <div className="mt-5">
                   <RadioGrid
@@ -637,7 +658,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 {answers.startTiming === "other" ? (
                   <input
                     className={`${fieldClass} mt-4`}
-                    placeholder="מתי?"
+                    placeholder={t("leftover.guidedQ.whenPh", "When?")}
                     value={answers.startTimingOther}
                     onChange={(e) =>
                       patchAnswers((prev) => ({
@@ -653,11 +674,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
             {step === "10" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  יש משהו נוסף שחשוב שנדע לפני שנכין לכם התאמה והצעה?
+                  {t("leftover.guidedQ.qExtra", "Is there anything else we should know before we prepare a fit and an offer?")}
                 </h2>
                 <textarea
                   className={`${areaClass} mt-5 min-h-40`}
-                  placeholder="כל פרט נוסף שיעזור לנו להבין את העסק ואת הצרכים שלכם."
+                  placeholder={t("leftover.guidedQ.extraPh", "Any extra detail that helps us understand the business and your needs.")}
                   value={answers.extraNotes}
                   onChange={(e) =>
                     patchAnswers((prev) => ({ ...prev, extraNotes: e.target.value }))
@@ -668,9 +689,11 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
 
             {step === "summary" ? (
               <div>
-                <h2 className="text-2xl font-black text-slate-950">זהו, סיימנו ✨</h2>
+                <h2 className="text-2xl font-black text-slate-950">
+                  {t("leftover.guidedQ.summaryTitle", "That's it, we're done ✨")}
+                </h2>
                 <p className="mt-2 text-base font-semibold text-slate-600">
-                  הנה הדברים המרכזיים שסימנת לפני שנמשיך.
+                  {t("leftover.guidedQ.summaryHint", "Here are the main points you marked before we continue.")}
                 </p>
                 <div className="mt-5 space-y-3">
                   {summary.map((row) => (
@@ -684,7 +707,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                   ))}
                   {!summary.length ? (
                     <p className="text-sm font-semibold text-slate-500">
-                      אפשר להמשיך גם בלי למלא הכול.
+                      {t("leftover.guidedQ.optionalHint", "You can continue without filling everything in.")}
                     </p>
                   ) : null}
                 </div>
@@ -697,17 +720,26 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-3xl">
                   🎉
                 </div>
-                <h2 className="text-2xl font-black text-slate-950">הבקשה שלך התקבלה 🎉</h2>
+                <h2 className="text-2xl font-black text-slate-950">
+                  {t("leftover.guidedQ.successTitle", "Your request was received 🎉")}
+                </h2>
                 <p className="mt-3 text-base font-semibold leading-7 text-slate-600">
-                  תודה! קיבלנו את כל הפרטים ונעבור עליהם כדי להתאים לך את ההמשך וההצעה בצורה
-                  מדויקת.
+                  {t(
+                    "leftover.guidedQ.successBody",
+                    "Thank you! We received the details and will review them so we can tailor the next step and offer accurately."
+                  )}
                 </p>
-                <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-right">
-                  <p className="text-sm font-black text-slate-900">מה קורה עכשיו?</p>
-                  <ol className="mt-3 list-decimal space-y-2 pr-5 text-sm font-semibold text-slate-700">
-                    <li>נעבור על התשובות שלך.</li>
-                    <li>נבדוק מה הכי מתאים לצרכים שסימנת.</li>
-                    <li>נחזור אליך עם ההמשך והצעה מותאמת.</li>
+                <div className={[
+                  "mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4",
+                  pageDir === "rtl" ? "text-right" : "text-left",
+                ].join(" ")}>
+                  <p className="text-sm font-black text-slate-900">
+                    {t("leftover.guidedQ.nowTitle", "What happens now?")}
+                  </p>
+                  <ol className="mt-3 list-decimal space-y-2 ps-5 text-sm font-semibold text-slate-700">
+                    <li>{t("leftover.guidedQ.now1", "We will review your answers.")}</li>
+                    <li>{t("leftover.guidedQ.now2", "We will check what best fits the needs you marked.")}</li>
+                    <li>{t("leftover.guidedQ.now3", "We will get back to you with the next step and a tailored offer.")}</li>
                   </ol>
                 </div>
               </div>

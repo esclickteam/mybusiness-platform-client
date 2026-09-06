@@ -11,13 +11,9 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
-import { useTranslation } from "react-i18next";
-import { useLocaleDir } from "../../hooks/useLocaleDir";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 function StaffDashboard() {
-  const { t } = useTranslation();
-  const dir = useLocaleDir();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -29,53 +25,53 @@ function StaffDashboard() {
 
   const stats = [
     {
-      label: t("staff.workTimeToday"),
+      label: "זמן עבודה היום",
       value: "04:32",
       icon: Clock3,
       tone: "from-violet-500 to-indigo-500",
     },
     {
-      label: t("staff.callsMade"),
+      label: "שיחות שבוצעו",
       value: "18",
       icon: PhoneCall,
       tone: "from-teal-500 to-emerald-500",
     },
     {
-      label: t("staff.callsClosed"),
+      label: "שיחות שנסגרו",
       value: "7",
       icon: CheckCircle2,
       tone: "from-sky-500 to-blue-500",
     },
     {
-      label: t("staff.pendingFollowups"),
+      label: "מעקבים ממתינים",
       value: "3",
       icon: Hourglass,
       tone: "from-amber-500 to-orange-500",
     },
     {
-      label: t("staff.officeTasks"),
+      label: "משימות משרד",
       value: "2",
       icon: FolderKanban,
       tone: "from-fuchsia-500 to-pink-500",
     },
   ];
 
-  if (loading) return <BizuplyLoader fullScreen label={t("staff.loading")} />;
+  if (loading) return <BizuplyLoader fullScreen label="טוען דשבורד..." />;
 
   return (
     <div
-      dir={dir}
+      dir="rtl"
       className="min-h-screen bg-[radial-gradient(circle_at_top,_#f3eeff_0%,_#f7f8fc_42%,_#eefbf7_100%)] text-slate-800"
       style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
     >
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-        <div className="mb-8 text-center sm:text-start">
-          <p className="text-sm font-bold text-[#7C4DFF]">{t("staff.center")}</p>
+        <div className="mb-8 text-center sm:text-right">
+          <p className="text-sm font-bold text-[#7C4DFF]">מרכז עובדים</p>
           <h1 className="mt-1 text-3xl font-black text-slate-900">
-            {t("staff.dashboard")}
+            דשבורד עובד
           </h1>
           <p className="mt-2 text-base font-bold text-slate-500">
-            {t("staff.hello", { name: user?.name || user?.email })}
+            שלום {user?.name || user?.email}
           </p>
         </div>
 
@@ -111,10 +107,10 @@ function StaffDashboard() {
             </span>
             <div>
               <p className="text-base font-black text-slate-900">
-                {t("staff.createBusiness")}
+                יצירת בעל עסק
               </p>
               <p className="mt-0.5 text-sm font-bold text-slate-500">
-                {t("staff.createBusinessHint")}
+                טופס מקצועי עם חבילה, שיוך ותשלום
               </p>
             </div>
           </Link>
@@ -127,11 +123,9 @@ function StaffDashboard() {
               <ClipboardList className="h-6 w-6" />
             </span>
             <div>
-              <p className="text-base font-black text-slate-900">
-                {t("staff.taskBoard")}
-              </p>
+              <p className="text-base font-black text-slate-900">לוח משימות</p>
               <p className="mt-0.5 text-sm font-bold text-slate-500">
-                {t("staff.taskBoardHint")}
+                מעקב אחרי משימות ומעקבים
               </p>
             </div>
           </Link>

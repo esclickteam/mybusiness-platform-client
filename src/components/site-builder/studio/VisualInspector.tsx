@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   AnimationPresetValue,
   InspectorTab,
@@ -74,75 +75,43 @@ const colorPresets = [
 ];
 
 const backgroundPresets = [
-  { label: "לבן נקי", value: "#FFFFFF" },
-  { label: "שמנת", value: "#F6F2EA" },
-  { label: "בז׳ עדין", value: "#E8DFCF" },
-  { label: "כהה", value: "#020617" },
-  { label: "חום אופנה", value: "#292318" },
+{ labelKey: "studio.inspector.bgWhite", value: "#FFFFFF" },
+{ labelKey: "studio.inspector.bgCream", value: "#F6F2EA" },
+{ labelKey: "studio.visualInspector.bgBeige", value: "#E8DFCF" },
+{ labelKey: "studio.inspector.bgDark", value: "#020617" },
+{ labelKey: "studio.visualInspector.bgFashionBrown", value: "#292318" },
   {
-    label: "גרדיאנט נקי",
+    labelKey: "studio.inspector.bgCleanGradient",
     value: "linear-gradient(135deg, #FFFFFF, #F6F2EA)",
   },
   {
-    label: "גרדיאנט כהה",
+    labelKey: "studio.inspector.bgDarkGradient",
     value: "linear-gradient(135deg, #020617, #292318)",
   },
 ];
 
 const shadowPresets = [
-  { label: "ללא", value: "none" },
-  { label: "עדין", value: "0 18px 50px rgba(15,23,42,0.08)" },
-  { label: "מקצועי", value: "0 24px 80px rgba(15,23,42,0.10)" },
-  { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
-  { label: "עמוק", value: "0 44px 150px rgba(15,23,42,0.22)" },
-  { label: "אופנה", value: "0 34px 110px rgba(41,35,24,0.18)" },
+{ labelKey: "studio.inspector.shadowNone", value: "none" },
+{ labelKey: "studio.inspector.shadowSoft", value: "0 18px 50px rgba(15,23,42,0.08)" },
+{ labelKey: "studio.inspector.shadowPro", value: "0 24px 80px rgba(15,23,42,0.10)" },
+{ labelKey: "studio.inspector.shadowLuxury", value: "0 34px 110px rgba(15,23,42,0.14)" },
+{ labelKey: "studio.inspector.shadowDeep", value: "0 44px 150px rgba(15,23,42,0.22)" },
+{ labelKey: "studio.visualInspector.shadowFashion", value: "0 34px 110px rgba(41,35,24,0.18)" },
 ];
 
 const animationPresets: {
-  label: string;
+  labelKey: string;
   value: AnimationPresetValue;
-  description: string;
+  descriptionKey: string;
 }[] = [
-  {
-    label: "ללא תנועה",
-    value: "",
-    description: "מסיר אנימציה מהאלמנט",
-  },
-  {
-    label: "Fade Up",
-    value: "fade-up",
-    description: "כניסה מלמטה עם שקיפות",
-  },
-  {
-    label: "Zoom In",
-    value: "zoom-in",
-    description: "כניסה עם הגדלה עדינה",
-  },
-  {
-    label: "Slide Right",
-    value: "slide-right",
-    description: "כניסה מצד ימין",
-  },
-  {
-    label: "Slide Left",
-    value: "slide-left",
-    description: "כניסה מצד שמאל",
-  },
-  {
-    label: "Blur Reveal",
-    value: "blur-reveal",
-    description: "חשיפה עם טשטוש יוקרתי",
-  },
-  {
-    label: "Float Soft",
-    value: "float-soft",
-    description: "תנועה עדינה למעלה ולמטה",
-  },
-  {
-    label: "Pulse Soft",
-    value: "pulse-soft",
-    description: "פעימה עדינה לאלמנט",
-  },
+  { labelKey: "studio.inspector.motionNone", value: "", descriptionKey: "studio.inspector.motionNoneHint" },
+  { labelKey: "Fade Up", value: "fade-up", descriptionKey: "studio.inspector.fadeUp" },
+  { labelKey: "Zoom In", value: "zoom-in", descriptionKey: "studio.inspector.zoomIn" },
+  { labelKey: "Slide Right", value: "slide-right", descriptionKey: "studio.inspector.slideRight" },
+  { labelKey: "Slide Left", value: "slide-left", descriptionKey: "studio.visualInspector.slideLeft" },
+  { labelKey: "Blur Reveal", value: "blur-reveal", descriptionKey: "studio.inspector.blurReveal" },
+  { labelKey: "Float Soft", value: "float-soft", descriptionKey: "studio.inspector.float" },
+  { labelKey: "Pulse Soft", value: "pulse-soft", descriptionKey: "studio.inspector.pulse" },
 ];
 
 const fontOptions = [
@@ -166,7 +135,7 @@ const quickSizes: Array<{
   style: StylePatch;
 }> = [
   {
-    label: "כותרת ענקית",
+    labelKey: "studio.inspector.typeHuge",
     style: {
       fontSize: "86px",
       lineHeight: 0.95,
@@ -174,7 +143,7 @@ const quickSizes: Array<{
     },
   },
   {
-    label: "כותרת סקשן",
+    labelKey: "studio.inspector.typeSection",
     style: {
       fontSize: "54px",
       lineHeight: 1.05,
@@ -182,7 +151,7 @@ const quickSizes: Array<{
     },
   },
   {
-    label: "כותרת כרטיס",
+    labelKey: "studio.inspector.typeCard",
     style: {
       fontSize: "28px",
       lineHeight: 1.25,
@@ -190,7 +159,7 @@ const quickSizes: Array<{
     },
   },
   {
-    label: "טקסט רגיל",
+    labelKey: "studio.inspector.typeBody",
     style: {
       fontSize: "18px",
       lineHeight: 1.75,
@@ -200,12 +169,12 @@ const quickSizes: Array<{
 ];
 
 const radiusPresets = [
-  { label: "מרובע", value: 0 },
-  { label: "חד עדין", value: 6 },
-  { label: "מלבני", value: 12 },
-  { label: "רך", value: 22 },
-  { label: "מעוגל", value: 34 },
-  { label: "עגול מאוד", value: 48 },
+{ labelKey: "studio.inspector.radiusSquare", value: 0 },
+{ labelKey: "studio.inspector.radiusSharpSoft", value: 6 },
+{ labelKey: "studio.inspector.radiusRect", value: 12 },
+{ labelKey: "studio.inspector.radiusSoft", value: 22 },
+{ labelKey: "studio.inspector.radiusRound", value: 34 },
+{ labelKey: "studio.inspector.radiusVeryRound", value: 48 },
 ];
 
 function normalizeStylePatch(style: StylePatch): StylePatch {
@@ -241,30 +210,33 @@ function buildRadiusStyle(value: number): StylePatch {
   };
 }
 
-function radiusLabel(value: number) {
-  if (value <= 0) return "מרובע חד";
-  if (value <= 8) return "כמעט מרובע";
-  if (value <= 16) return "מלבני";
-  if (value <= 28) return "רך";
-  if (value <= 42) return "מעוגל";
-  return "עגול מאוד";
+function radiusLabel(value: number, t: (key: string) => string) {
+  if (value <= 0) return t("studio.inspector.radiusSharp");
+  if (value <= 8) return t("studio.inspector.radiusAlmostSquare");
+  if (value <= 16) return t("studio.inspector.radiusRect");
+  if (value <= 28) return t("studio.inspector.radiusSoft");
+  if (value <= 42) return t("studio.inspector.radiusRound");
+  return t("studio.inspector.radiusVeryRound");
 }
 
-function getSelectedTitle(selectedElement: VisualSelectedElement | null) {
-  if (!selectedElement) return "לא נבחר אלמנט";
+function getSelectedTitle(
+  selectedElement: VisualSelectedElement | null,
+  t: (key: string) => string,
+) {
+  if (!selectedElement) return t("studio.inspector.noElement");
 
   const typeLabels: Record<VisualEditableElementType, string> = {
-    section: "סקשן",
-    text: "טקסט",
-    image: "תמונה",
-    button: "כפתור",
-    line: "קו",
-    box: "קופסה",
-    icon: "אייקון",
-    unknown: "אלמנט",
+    section: t("studio.visualInspector.typeSection"),
+    text: t("studio.visualInspector.typeText"),
+    image: t("studio.visualInspector.typeImage"),
+    button: t("studio.visualInspector.typeButton"),
+    line: t("studio.visualInspector.typeLine"),
+    box: t("studio.visualInspector.typeBox"),
+    icon: t("studio.visualInspector.typeIcon"),
+    unknown: t("studio.element"),
   };
 
-  return `${typeLabels[selectedElement.type] || "אלמנט"} · ${
+  return `${typeLabels[selectedElement.type] || t("studio.element")} · ${
     selectedElement.label || selectedElement.id
   }`;
 }
@@ -301,6 +273,7 @@ export default function VisualInspector({
   onSetAnimation,
   onClearAnimation,
 }: VisualInspectorProps) {
+  const { t } = useTranslation();
   const [textColor, setTextColor] = useState("#2B2722");
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [accentColor, setAccentColor] = useState("#B68A55");
@@ -337,14 +310,14 @@ export default function VisualInspector({
   }, [selectedElement]);
 
   const currentTabTitle = useMemo(() => {
-    if (activeTab === "design") return "עיצוב אלמנט";
-    if (activeTab === "settings") return "הגדרות אלמנט";
-    return "אנימציות ותנועה";
-  }, [activeTab]);
+    if (activeTab === "design") return t("studio.inspector.designElement");
+    if (activeTab === "settings") return t("studio.inspector.settingsElement");
+    return t("studio.inspector.motionElement");
+  }, [activeTab, t]);
 
   const selectedName = useMemo(() => {
-    return getSelectedTitle(selectedElement);
-  }, [selectedElement]);
+    return getSelectedTitle(selectedElement, t);
+  }, [selectedElement, t]);
 
   const hasSelectedElement = Boolean(selectedElement?.id);
 
@@ -582,21 +555,21 @@ export default function VisualInspector({
             active={activeTab === "design"}
             onClick={() => setActiveTab("design")}
           >
-            עיצוב
+            {t("studio.inspector.tabDesign")}
           </Tab>
 
           <Tab
             active={activeTab === "settings"}
             onClick={() => setActiveTab("settings")}
           >
-            הגדרות
+            {t("studio.inspector.tabSettings")}
           </Tab>
 
           <Tab
             active={activeTab === "animations"}
             onClick={() => setActiveTab("animations")}
           >
-            תנועה
+            {t("studio.inspector.tabMotion")}
           </Tab>
         </div>
       </div>
@@ -607,18 +580,18 @@ export default function VisualInspector({
         {hasSelectedElement && activeTab === "design" ? (
           <>
             <PanelTitle
-              title="מה שסימנת — אותו את עורכת"
-              subtitle="צבעים, פונטים, ריווחים, פינות, מיקום וצל נשמרים רק לאלמנט הנבחר."
+              title={t("studio.visualInspector.editWhatYouMarked")}
+              subtitle={t("studio.visualInspector.editWhatYouMarkedHint")}
             />
 
-            <DesignSection title="פעולות מהירות" icon="⚡">
+            <DesignSection title={t("studio.inspector.quickActions")} icon="⚡">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton
                   onClick={() =>
                     selectedElement?.id && onDuplicate?.(selectedElement.id)
                   }
                 >
-                  שכפול
+                  {t("studio.duplicate")}
                 </ActionButton>
 
                 <ActionButton
@@ -626,7 +599,7 @@ export default function VisualInspector({
                     selectedElement?.id && onBringForward?.(selectedElement.id)
                   }
                 >
-                  קדימה
+                  {t("studio.forward")}
                 </ActionButton>
 
                 <ActionButton
@@ -634,11 +607,11 @@ export default function VisualInspector({
                     selectedElement?.id && onSendBackward?.(selectedElement.id)
                   }
                 >
-                  אחורה
+                  {t("studio.backward")}
                 </ActionButton>
 
                 <ActionButton onClick={resetSelectedStyle}>
-                  איפוס עיצוב
+                  {t("studio.inspector.resetDesign")}
                 </ActionButton>
 
                 <ActionButton
@@ -647,20 +620,20 @@ export default function VisualInspector({
                     selectedElement?.id && onDelete?.(selectedElement.id)
                   }
                 >
-                  מחיקה
+                  {t("studio.delete")}
                 </ActionButton>
               </div>
             </DesignSection>
 
             {supportsTextEdit(selectedElement) ? (
-              <DesignSection title="עריכת טקסט" icon="T">
+              <DesignSection title={t("studio.visualInspector.editText")} icon="T">
                 <textarea
                   value={textDraft}
                   onChange={(event) => setTextDraft(event.target.value)}
                   onBlur={handleTextSave}
                   rows={4}
                   className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold leading-7 text-slate-900 outline-none transition focus:border-violet-300 focus:bg-white"
-                  placeholder="כתבי טקסט..."
+                  placeholder={t("studio.visualInspector.writeText")}
                 />
 
                 <button
@@ -668,31 +641,31 @@ export default function VisualInspector({
                   onClick={handleTextSave}
                   className="mt-3 w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
-                  עדכון טקסט
+                  {t("studio.visualInspector.updateText")}
                 </button>
               </DesignSection>
             ) : null}
 
-            <DesignSection title="צבעים" icon="🎨">
+            <DesignSection title={t("studio.inspector.colors")} icon="🎨">
               <ColorControl
-                label="צבע טקסט"
+                label={t("studio.inspector.textColor")}
                 value={textColor}
                 onChange={updateTextColor}
               />
 
               <ColorControl
-                label="צבע רקע"
+                label={t("studio.inspector.bgColor")}
                 value={backgroundColor}
                 onChange={updateBackgroundColor}
               />
 
               <ColorControl
-                label="צבע גבול / הדגשה"
+                label={t("studio.inspector.accentBorder")}
                 value={accentColor}
                 onChange={updateAccentColor}
               />
 
-              <PresetLabel>צבעים מהירים לטקסט</PresetLabel>
+<PresetLabel>{t("studio.inspector.quickTextColors")}</PresetLabel>
 
               <div className="grid grid-cols-7 gap-2">
                 {colorPresets.map((color) => (
@@ -700,12 +673,12 @@ export default function VisualInspector({
                     key={`text-${color}`}
                     color={color}
                     onClick={() => updateTextColor(color)}
-                    title={`טקסט ${color}`}
+                    title={t("studio.inspector.textSwatch", { color })}
                   />
                 ))}
               </div>
 
-              <PresetLabel>צבעים מהירים לרקע</PresetLabel>
+<PresetLabel>{t("studio.inspector.quickBgColors")}</PresetLabel>
 
               <div className="grid grid-cols-7 gap-2">
                 {colorPresets.map((color) => (
@@ -713,23 +686,23 @@ export default function VisualInspector({
                     key={`background-${color}`}
                     color={color}
                     onClick={() => updateBackgroundColor(color)}
-                    title={`רקע ${color}`}
+                    title={t("studio.inspector.bgSwatch", { color })}
                   />
                 ))}
               </div>
             </DesignSection>
 
-            <DesignSection title="רקע וסקשן" icon="▧">
+            <DesignSection title={t("studio.inspector.bgAndSection")} icon="▧">
               <div className="space-y-2">
                 {backgroundPresets.map((preset) => (
                   <button
-                    key={preset.label}
+                    key={preset.labelKey}
                     type="button"
                     onClick={() => updateBackgroundColor(preset.value)}
                     className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-violet-300 hover:bg-violet-50"
                   >
                     <span className="text-xs font-black text-slate-700">
-                      {preset.label}
+                      {t(preset.labelKey)}
                     </span>
 
                     <span
@@ -741,10 +714,10 @@ export default function VisualInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="טיפוגרפיה ופונטים" icon="T">
+            <DesignSection title={t("studio.visualInspector.typographyFonts")} icon="T">
               <label className="mb-4 block">
                 <span className="mb-2 block text-xs font-black text-slate-600">
-                  בחירת פונט
+                  {t("studio.visualInspector.chooseFont")}
                 </span>
 
                 <select
@@ -760,21 +733,21 @@ export default function VisualInspector({
                 </select>
               </label>
 
-              <PresetLabel>גדלים מהירים</PresetLabel>
+<PresetLabel>{t("studio.visualInspector.quickSizes")}</PresetLabel>
 
               <div className="mb-4 grid grid-cols-2 gap-2">
                 {quickSizes.map((item) => (
                   <ActionButton
-                    key={item.label}
+                    key={item.labelKey}
                     onClick={() => applyStyle(item.style)}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </ActionButton>
                 ))}
               </div>
 
               <RangeControl
-                label="גודל טקסט"
+                label={t("studio.inspector.fontSize")}
                 value={fontSize}
                 min={8}
                 max={120}
@@ -783,7 +756,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="עובי טקסט"
+                label={t("studio.inspector.fontWeight")}
                 value={fontWeight}
                 min={100}
                 max={950}
@@ -792,7 +765,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="גובה שורה"
+                label={t("studio.inspector.lineHeight")}
                 value={lineHeight}
                 min={0.8}
                 max={2.8}
@@ -801,7 +774,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="ריווח אותיות"
+                label={t("studio.visualInspector.letterSpacing")}
                 value={letterSpacing}
                 min={-8}
                 max={20}
@@ -825,11 +798,11 @@ export default function VisualInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="מבנה, פינות וריווח" icon="□">
+            <DesignSection title={t("studio.inspector.structure")} icon="□">
               <RadiusControl value={radius} onChange={updateRadius} />
 
               <RangeControl
-                label="ריווח פנימי"
+                label={t("studio.inspector.padding")}
                 value={padding}
                 min={0}
                 max={180}
@@ -838,7 +811,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="מרווח עליון"
+                label={t("studio.inspector.marginTop")}
                 value={marginTop}
                 min={-160}
                 max={240}
@@ -847,7 +820,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="מרווח תחתון"
+                label={t("studio.visualInspector.marginBottom")}
                 value={marginBottom}
                 min={-160}
                 max={240}
@@ -856,7 +829,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="שקיפות"
+                label={t("studio.inspector.opacity")}
                 value={opacity}
                 min={5}
                 max={100}
@@ -865,9 +838,9 @@ export default function VisualInspector({
               />
             </DesignSection>
 
-            <DesignSection title="מיקום ושכבות" icon="↕">
+            <DesignSection title={t("studio.visualInspector.layersPosition")} icon="↕">
               <RangeControl
-                label="הזזה ימינה / שמאלה"
+                label={t("studio.visualInspector.moveX")}
                 value={translateX}
                 min={-300}
                 max={300}
@@ -876,7 +849,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="הזזה למעלה / למטה"
+                label={t("studio.visualInspector.moveY")}
                 value={translateY}
                 min={-300}
                 max={300}
@@ -885,7 +858,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="גודל / Scale"
+                label={t("studio.visualInspector.scale")}
                 value={scale}
                 min={20}
                 max={220}
@@ -894,7 +867,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="סיבוב"
+                label={t("studio.visualInspector.rotate")}
                 value={rotate}
                 min={-45}
                 max={45}
@@ -903,7 +876,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="שכבה קדימה / אחורה"
+                label={t("studio.visualInspector.layerForwardBack")}
                 value={zIndex}
                 min={0}
                 max={100}
@@ -911,9 +884,9 @@ export default function VisualInspector({
               />
             </DesignSection>
 
-            <DesignSection title="רוחב וגודל" icon="↔">
+            <DesignSection title={t("studio.visualInspector.widthSize")} icon="↔">
               <RangeControl
-                label="רוחב באחוזים"
+                label={t("studio.visualInspector.widthPercent")}
                 value={width}
                 min={5}
                 max={100}
@@ -922,7 +895,7 @@ export default function VisualInspector({
               />
 
               <RangeControl
-                label="רוחב מקסימלי"
+                label={t("studio.visualInspector.maxWidth")}
                 value={maxWidth}
                 min={120}
                 max={1800}
@@ -932,11 +905,11 @@ export default function VisualInspector({
 
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <ActionButton onClick={() => applyStyle({ width: "100%" })}>
-                  רוחב מלא
+                  {t("studio.inspector.fullWidth")}
                 </ActionButton>
 
                 <ActionButton onClick={() => applyStyle({ width: "auto" })}>
-                  רוחב טבעי
+                  {t("studio.visualInspector.naturalWidth")}
                 </ActionButton>
 
                 <ActionButton
@@ -949,23 +922,23 @@ export default function VisualInspector({
                     })
                   }
                 >
-                  Flex מרכז
+                  {t("studio.inspector.flexCenter")}
                 </ActionButton>
 
                 <ActionButton onClick={() => applyStyle({ display: "block" })}>
-                  בלוק
+                  {t("studio.inspector.block")}
                 </ActionButton>
               </div>
             </DesignSection>
 
-            <DesignSection title="צל וגבול" icon="◈">
+            <DesignSection title={t("studio.inspector.shadowBorder")} icon="◈">
               <div className="grid grid-cols-2 gap-2">
                 {shadowPresets.map((shadow) => (
                   <ActionButton
-                    key={shadow.label}
+                    key={shadow.labelKey}
                     onClick={() => applyStyle({ boxShadow: shadow.value })}
                   >
-                    {shadow.label}
+                    {t(shadow.labelKey)}
                   </ActionButton>
                 ))}
               </div>
@@ -978,7 +951,7 @@ export default function VisualInspector({
                     })
                   }
                 >
-                  גבול עדין
+                  {t("studio.inspector.softBorder")}
                 </ActionButton>
 
                 <ActionButton
@@ -988,29 +961,29 @@ export default function VisualInspector({
                     })
                   }
                 >
-                  גבול בצבע
+                  {t("studio.inspector.coloredBorder")}
                 </ActionButton>
 
                 <ActionButton onClick={() => applyStyle({ border: "none" })}>
-                  בלי גבול
+                  {t("studio.visualInspector.noBorder")}
                 </ActionButton>
               </div>
             </DesignSection>
 
-            <DesignSection title="יישור" icon="↔">
+            <DesignSection title={t("studio.visualInspector.alignment")} icon="↔">
               <div className="grid grid-cols-3 gap-2">
                 <ActionButton onClick={() => applyStyle({ textAlign: "right" })}>
-                  ימין
+                  {t("studio.inspector.right")}
                 </ActionButton>
 
                 <ActionButton
                   onClick={() => applyStyle({ textAlign: "center" })}
                 >
-                  מרכז
+                  {t("studio.inspector.center")}
                 </ActionButton>
 
                 <ActionButton onClick={() => applyStyle({ textAlign: "left" })}>
-                  שמאל
+                  {t("studio.inspector.left")}
                 </ActionButton>
               </div>
             </DesignSection>
@@ -1020,12 +993,12 @@ export default function VisualInspector({
         {hasSelectedElement && activeTab === "settings" ? (
           <>
             <PanelTitle
-              title="הגדרות אלמנט"
-              subtitle="תוכן, תמונה ו־ALT לפי האלמנט שסימנת."
+              title={t("studio.inspector.settingsTitle")}
+              subtitle={t("studio.visualInspector.settingsHint")}
             />
 
             {supportsTextEdit(selectedElement) ? (
-              <DesignSection title="תוכן טקסט" icon="T">
+              <DesignSection title={t("studio.visualInspector.textContent")} icon="T">
                 <textarea
                   value={textDraft}
                   onChange={(event) => setTextDraft(event.target.value)}
@@ -1039,16 +1012,16 @@ export default function VisualInspector({
                   onClick={handleTextSave}
                   className="mt-3 w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
-                  שמירת טקסט
+                  {t("studio.visualInspector.saveText")}
                 </button>
               </DesignSection>
             ) : null}
 
             {supportsImageEdit(selectedElement) ? (
-              <DesignSection title="תמונה" icon="▧">
+              <DesignSection title={t("studio.visualInspector.image")} icon="▧">
                 <label className="mb-3 block">
                   <span className="mb-2 block text-xs font-black text-slate-600">
-                    כתובת תמונה
+                    {t("studio.visualInspector.imageUrl")}
                   </span>
 
                   <input
@@ -1062,14 +1035,14 @@ export default function VisualInspector({
 
                 <label className="mb-3 block">
                   <span className="mb-2 block text-xs font-black text-slate-600">
-                    Alt / תיאור תמונה
+                    {t("studio.visualInspector.imageAlt")}
                   </span>
 
                   <input
                     value={altDraft}
                     onChange={(event) => setAltDraft(event.target.value)}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition focus:border-violet-300 focus:bg-white"
-                    placeholder="תיאור לתמונה"
+                    placeholder={t("studio.visualInspector.imageAltPlaceholder")}
                   />
                 </label>
 
@@ -1088,19 +1061,19 @@ export default function VisualInspector({
                   onClick={handleImageSave}
                   className="w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
-                  החלפת תמונה
+                  {t("studio.visualInspector.replaceImage")}
                 </button>
               </DesignSection>
             ) : null}
 
-            <DesignSection title="פעולות מהירות" icon="⚡">
+            <DesignSection title={t("studio.inspector.quickActions")} icon="⚡">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton
                   onClick={() =>
                     selectedElement?.id && onDuplicate?.(selectedElement.id)
                   }
                 >
-                  שכפול
+                  {t("studio.duplicate")}
                 </ActionButton>
 
                 <ActionButton
@@ -1108,7 +1081,7 @@ export default function VisualInspector({
                     selectedElement?.id && onBringForward?.(selectedElement.id)
                   }
                 >
-                  קדימה
+                  {t("studio.forward")}
                 </ActionButton>
 
                 <ActionButton
@@ -1116,7 +1089,7 @@ export default function VisualInspector({
                     selectedElement?.id && onSendBackward?.(selectedElement.id)
                   }
                 >
-                  אחורה
+                  {t("studio.backward")}
                 </ActionButton>
 
                 <ActionButton
@@ -1125,7 +1098,7 @@ export default function VisualInspector({
                     selectedElement?.id && onDelete?.(selectedElement.id)
                   }
                 >
-                  מחיקה
+                  {t("studio.delete")}
                 </ActionButton>
               </div>
             </DesignSection>
@@ -1135,17 +1108,17 @@ export default function VisualInspector({
         {hasSelectedElement && activeTab === "animations" ? (
           <>
             <PanelTitle
-              title="אנימציות ותנועה"
-              subtitle="בחרי אנימציה לאלמנט שסימנת."
+              title={t("studio.inspector.motionTitle")}
+              subtitle={t("studio.visualInspector.motionHint")}
             />
 
             <div className="space-y-3">
               {animationPresets.map((animation) => (
                 <AnimationButton
-                  key={animation.label}
-                  label={animation.label}
+                  key={animation.labelKey}
+                  label={t(animation.labelKey)}
                   value={animation.value}
-                  description={animation.description}
+                  description={t(animation.descriptionKey)}
                   onClick={() => {
                     if (!selectedElement?.id) return;
 
@@ -1160,7 +1133,7 @@ export default function VisualInspector({
               ))}
             </div>
 
-            <DesignSection title="אפקטים מהירים" icon="✦">
+            <DesignSection title={t("studio.inspector.quickEffects")} icon="✦">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton
                   onClick={() =>
@@ -1203,7 +1176,7 @@ export default function VisualInspector({
                     })
                   }
                 >
-                  איפוס
+                  {t("studio.reset")}
                 </ActionButton>
               </div>
             </DesignSection>
@@ -1222,12 +1195,11 @@ function EmptySelection() {
       </div>
 
       <p className="mt-5 text-lg font-black text-slate-800">
-        לא נבחר אלמנט
+        {t("studio.inspector.noElement")}
       </p>
 
       <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-        לחצי על כותרת, תמונה, כפתור, קו, קופסה או סקשן בתוך התבנית כדי לפתוח
-        עריכה מלאה.
+        {t("studio.visualInspector.clickToEdit")}
       </p>
     </div>
   );
@@ -1361,6 +1333,7 @@ function RadiusControl({
   value: number;
   onChange: (value: number) => void;
 }) {
+  const { t } = useTranslation();
   const progress = Math.max(0, Math.min(100, (value / 90) * 100));
 
   return (
@@ -1368,11 +1341,11 @@ function RadiusControl({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-black text-slate-700">
-            קו פינות — מריבוע עד עיגול
+{t("studio.inspector.cornerLine")}
           </p>
 
           <p className="mt-1 text-[11px] font-bold leading-5 text-slate-400">
-            משנה פינות של האלמנט שסימנת.
+{t("studio.visualInspector.cornerHint")}
           </p>
         </div>
 
@@ -1383,7 +1356,7 @@ function RadiusControl({
 
       <div className="mb-4 grid grid-cols-[54px_1fr_54px] items-center gap-3">
         <div className="grid h-12 w-12 place-items-center rounded-none border-2 border-slate-300 bg-white text-[10px] font-black text-slate-500">
-          מרובע
+{t("studio.inspector.square")}
         </div>
 
         <div>
@@ -1406,20 +1379,20 @@ function RadiusControl({
         </div>
 
         <div className="grid h-12 w-12 place-items-center rounded-[24px] border-2 border-violet-300 bg-white text-[10px] font-black text-violet-600">
-          עגול
+{t("studio.inspector.round")}
         </div>
       </div>
 
       <div className="mb-3 flex items-center justify-between text-[11px] font-black text-slate-400">
         <span>0px</span>
-        <span className="text-violet-700">{radiusLabel(value)}</span>
+        <span className="text-violet-700">{radiusLabel(value, t)}</span>
         <span>90px</span>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
         {radiusPresets.map((preset) => (
           <button
-            key={preset.label}
+            key={preset.labelKey}
             type="button"
             onClick={() => onChange(preset.value)}
             className={[
@@ -1429,9 +1402,9 @@ function RadiusControl({
                 : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700",
             ].join(" ")}
             style={{ borderRadius: `${Math.min(preset.value, 28)}px` }}
-            title={`${preset.label} ${preset.value}px`}
+            title={`${t(preset.labelKey)} ${preset.value}px`}
           >
-            {preset.label}
+            {t(preset.labelKey)}
           </button>
         ))}
       </div>

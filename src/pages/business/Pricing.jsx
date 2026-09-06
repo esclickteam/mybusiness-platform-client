@@ -43,6 +43,7 @@ import {
   loadPendingPurchaseIntent,
 } from "../../utils/pendingPurchaseIntent";
 import { getActivePricingPlan } from "../../utils/servicePurchaseFlow";
+import { coerceSupportedLanguage } from "../../i18n/languages";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -83,23 +84,56 @@ function formatIls(amount) {
   return `₪${Number(amount).toLocaleString("he-IL")}`;
 }
 
-function localizeService(addon, isHe) {
+function localizeService(addon, t, language) {
+  const useHe = coerceSupportedLanguage(language) === "he";
+  const tx = (key, he, en) =>
+    t(key, { defaultValue: useHe ? he : en || he });
   return {
     ...addon,
-    displayName: isHe ? addon.name : addon.nameEn,
-    displayDescription: isHe ? addon.description : addon.descriptionEn,
-    displayPrice: isHe ? addon.priceLabel : addon.priceLabelEn,
-    displayDetails: isHe ? addon.details : addon.detailsEn,
-    displayTracks: (addon.tracks || []).map((track) => ({
-      label: isHe ? track.label : track.labelEn,
-      price: isHe ? track.price : track.priceEn,
+    displayName: tx(`pricing.addons.${addon.key}.name`, addon.name, addon.nameEn),
+    displayDescription: tx(
+      `pricing.addons.${addon.key}.description`,
+      addon.description,
+      addon.descriptionEn
+    ),
+    displayPrice: tx(
+      `pricing.addons.${addon.key}.price`,
+      addon.priceLabel,
+      addon.priceLabelEn
+    ),
+    displayDetails: (useHe ? addon.details : addon.detailsEn).map((item, index) =>
+      tx(`pricing.addons.${addon.key}.details.${index}`, item, item)
+    ),
+    displayTracks: (addon.tracks || []).map((track, index) => ({
+      label: tx(
+        `pricing.addons.${addon.key}.tracks.${index}.label`,
+        track.label,
+        track.labelEn
+      ),
+      price: tx(
+        `pricing.addons.${addon.key}.tracks.${index}.price`,
+        track.price,
+        track.priceEn
+      ),
     })),
-    displayExtras: (addon.extras || []).map((extra) => ({
-      label: isHe ? extra.label : extra.labelEn,
-      price: isHe ? extra.price : extra.priceEn,
+    displayExtras: (addon.extras || []).map((extra, index) => ({
+      label: tx(
+        `pricing.addons.${addon.key}.extras.${index}.label`,
+        extra.label,
+        extra.labelEn
+      ),
+      price: tx(
+        `pricing.addons.${addon.key}.extras.${index}.price`,
+        extra.price,
+        extra.priceEn
+      ),
     })),
-    displayExamples: isHe ? addon.examples || [] : addon.examplesEn || [],
-    displayNote: isHe ? addon.note : addon.noteEn,
+    displayExamples: (useHe ? addon.examples || [] : addon.examplesEn || []).map(
+      (item, index) => tx(`pricing.addons.${addon.key}.examples.${index}`, item, item)
+    ),
+    displayNote: addon.note
+      ? tx(`pricing.addons.${addon.key}.note`, addon.note, addon.noteEn)
+      : addon.noteEn,
   };
 }
 
@@ -116,7 +150,7 @@ export default function Plans() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
-  const isHe = (i18n.language || "he").startsWith("he");
+  const isHe = coerceSupportedLanguage(i18n.language) === "he";
   const initialPendingIntent = useMemo(() => loadPendingPurchaseIntent(), []);
   const initialPurchaseKey = initialPendingIntent
     ? findServiceCatalogKey(initialPendingIntent.serviceKey)
@@ -143,13 +177,19 @@ export default function Plans() {
 
   const userId = user?._id || user?.userId || user?.id;
   const activePlan = useMemo(() => getActivePricingPlan(user), [user]);
-  const websiteAddonLabel = isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn;
-  const websiteAddonHint = isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn;
+  const websiteAddonLabel = t("pricing.websiteAddon.label", {
+    defaultValue: isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn,
+  });
+  const websiteAddonHint = t("pricing.websiteAddon.hint", {
+    defaultValue: isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn,
+  });
 
   const catLabel = (key) => {
     const entry = PRICING_CATEGORY_LABELS[key];
     if (!entry) return key;
-    return isHe ? entry.he : entry.en;
+    return t(`pricing.categories.${key}`, {
+      defaultValue: isHe ? entry.he : entry.en,
+    });
   };
 
   const toggleWebsiteAddon = (planType) => {
@@ -220,17 +260,27 @@ export default function Plans() {
 
   const packages = useMemo(
     () =>
-      PRICING_PACKAGES.map((pkg) => ({
-        ...pkg,
-        name: isHe ? pkg.nameHe : pkg.nameEn,
-        badge: isHe ? pkg.badgeHe : pkg.badgeEn,
-        description: isHe ? pkg.descriptionHe : pkg.descriptionEn,
-        note: isHe ? pkg.noteHe : pkg.noteEn,
-        button: isHe ? pkg.buttonHe : pkg.buttonEn,
-        pricePeriod: isHe ? pkg.pricePeriodHe : pkg.pricePeriodEn,
-        features: isHe ? pkg.featuresHe : pkg.featuresEn,
-      })),
-    [isHe]
+      PRICING_PACKAGES.map((pkg) => {
+        const tx = (suffix, he, en) =>
+          t(`pricing.packages.${pkg.type}.${suffix}`, {
+            defaultValue: isHe ? he : en,
+          });
+        return {
+          ...pkg,
+          name: tx("name", pkg.nameHe, pkg.nameEn),
+          badge: tx("badge", pkg.badgeHe, pkg.badgeEn),
+          description: tx("description", pkg.descriptionHe, pkg.descriptionEn),
+          note: tx("note", pkg.noteHe, pkg.noteEn),
+          button: tx("button", pkg.buttonHe, pkg.buttonEn),
+          pricePeriod: tx("pricePeriod", pkg.pricePeriodHe, pkg.pricePeriodEn),
+          features: (isHe ? pkg.featuresHe : pkg.featuresEn).map((item, index) =>
+            t(`pricing.packages.${pkg.type}.features.${index}`, {
+              defaultValue: item,
+            })
+          ),
+        };
+      }),
+    [isHe, t]
   );
 
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
@@ -239,8 +289,8 @@ export default function Plans() {
     const publicCategories = new Set(PRICING_CATEGORY_ORDER);
     return PRICING_ADDONS.filter(
       (addon) => !addon.hidden && publicCategories.has(addon.category)
-    ).map((addon) => localizeService(addon, isHe));
-  }, [isHe]);
+    ).map((addon) => localizeService(addon, t, i18n.language));
+  }, [i18n.language, t]);
 
   const filteredAddons = useMemo(() => {
     return localizedAddons.filter((addon) => {
@@ -447,7 +497,7 @@ export default function Plans() {
               }}
             >
               <Plus size={15} />
-              {isHe ? "לבחירת רכישה" : "Choose purchase"}
+              {t("pricing.choosePurchase")}
             </button>
           </div>
         </div>
@@ -797,7 +847,7 @@ export default function Plans() {
         catLabel={catLabel}
         t={t}
         AddonIcon={AddonIcon}
-        purchaseLabel={isHe ? "לבחירת רכישה" : "Choose purchase"}
+        purchaseLabel={t("pricing.choosePurchase")}
       />
 
       <ServicePurchasePanel

@@ -69,6 +69,8 @@ import {
   readSiteAnalyticsContext,
   trackBizuplyPageView,
 } from "@/utils/bizuplyAnalytics";
+import i18n from "../../../i18n/i18n";
+import { coerceSupportedLanguage } from "../../../i18n/localeUtils";
 
 const PUBLIC_BASE_CSS = `
 html,
@@ -2152,26 +2154,33 @@ function applyPublicSiteLanguage(lang) {
   if (document.body) document.body.setAttribute("dir", lang.dir);
 }
 
-const PUBLIC_EN_CHROME = {
-  "דלג לתוכן הראשי": "Skip to main content",
-  "דף הבית": "Home",
-  "צור קשר": "Contact",
-  "שירותים": "Services",
-  "עבודות": "Work",
-  "מחירים": "Pricing",
-  "חבילות": "Packages",
-  "גלריה": "Gallery",
-  "סיפורים": "Stories",
-  "שיחת היכרות": "Intro call",
-  "המבצע מסתיים בעוד": "The offer ends in",
-  סל: "Cart",
-  "סל קניות": "Cart",
-  "הסל שלי": "My cart",
-  "טלפון:": "Phone:",
-  "וואטסאפ:": "WhatsApp:",
-  "מייל:": "Email:",
-  "כתובת:": "Address:",
-};
+const PUBLIC_CHROME_KEYS = [
+  ["דלג לתוכן הראשי", "publicWidgets.site.skipLink"],
+  ["דף הבית", "publicWidgets.site.home"],
+  ["צור קשר", "publicWidgets.site.contact"],
+  ["שירותים", "publicWidgets.site.services"],
+  ["עבודות", "publicWidgets.site.work"],
+  ["מחירים", "publicWidgets.site.pricing"],
+  ["חבילות", "publicWidgets.site.packages"],
+  ["גלריה", "publicWidgets.site.gallery"],
+  ["סיפורים", "publicWidgets.site.stories"],
+  ["שיחת היכרות", "publicWidgets.site.introCall"],
+  ["המבצע מסתיים בעוד", "publicWidgets.site.offerEnds"],
+  ["סל", "publicWidgets.site.cart"],
+  ["סל קניות", "publicWidgets.site.shoppingCart"],
+  ["הסל שלי", "publicWidgets.site.myCart"],
+  ["טלפון:", "publicWidgets.site.phoneLabel"],
+  ["וואטסאפ:", "publicWidgets.site.whatsappLabel"],
+  ["מייל:", "publicWidgets.site.emailLabel"],
+  ["כתובת:", "publicWidgets.site.addressLabel"],
+];
+
+function publicChromeReplacements(langCode) {
+  const lng = coerceSupportedLanguage(langCode);
+  return Object.fromEntries(
+    PUBLIC_CHROME_KEYS.map(([he, key]) => [he, i18n.t(key, { lng })]),
+  );
+}
 
 function replaceLocaleCopyInText(raw, replacements) {
   const trimmed = String(raw || "").trim();
@@ -2195,7 +2204,7 @@ function applyLocaleCopyToDom(root, site, pathname) {
   const copy = asPlainObject(stored.localeCopy?.[lang.code]);
   const ownerReplacements = asPlainObject(copy.replacements || copy);
   const replacements = {
-    ...PUBLIC_EN_CHROME,
+    ...publicChromeReplacements(lang.code),
     ...ownerReplacements,
   };
   const hasOwnerCopy = Object.keys(ownerReplacements).length > 0;
@@ -3085,7 +3094,9 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
+          {i18n.t("publicWidgets.site.skipLink", {
+            lng: coerceSupportedLanguage(publicLang.code),
+          })}
         </a>
 
         {customCode.enabled !== false ? (
@@ -3160,7 +3171,9 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
+          {i18n.t("publicWidgets.site.skipLink", {
+            lng: coerceSupportedLanguage(publicLang.code),
+          })}
         </a>
 
         {customCode.enabled !== false ? (
@@ -3225,12 +3238,15 @@ export default function PublicVisualSiteRenderer({
     >
       <div className="max-w-xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-2xl font-black text-slate-800">
-          לא נמצא תוכן להצגת האתר
+          {i18n.t("publicWidgets.site.emptyTitle", {
+            lng: coerceSupportedLanguage(publicLang.code),
+          })}
         </h1>
 
         <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
-          האתר פורסם, אבל לא נשמר HTML תקין ולא נמצא renderer עבור
-          התבנית.
+          {i18n.t("publicWidgets.site.emptyHint", {
+            lng: coerceSupportedLanguage(publicLang.code),
+          })}
         </p>
 
         <pre className="mt-5 overflow-auto rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">

@@ -31,6 +31,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
 import type { StylePatch } from "../types";
 import StudioFontPicker from "../StudioFontPicker";
 import { snapshotTextRange } from "./utils/richTextHtml";
@@ -67,43 +68,43 @@ const FONT_SIZES = [
 ];
 
 const RADIUS_OPTIONS = [
-  { label: "פינות", value: "" },
-  { label: "0", value: "0px" },
-  { label: "8", value: "8px" },
-  { label: "16", value: "16px" },
-  { label: "28", value: "28px" },
-  { label: "עגול", value: "999px" },
+  { key: "corners", value: "" },
+  { key: "0", value: "0px" },
+  { key: "8", value: "8px" },
+  { key: "16", value: "16px" },
+  { key: "28", value: "28px" },
+  { key: "round", value: "999px" },
 ];
 
 const SHADOW_OPTIONS = [
-  { label: "צל", value: "" },
-  { label: "ללא", value: "none" },
-  { label: "עדין", value: "0 12px 30px rgba(15,23,42,0.12)" },
-  { label: "בינוני", value: "0 22px 60px rgba(15,23,42,0.18)" },
-  { label: "חזק", value: "0 35px 100px rgba(15,23,42,0.25)" },
+  { key: "shadow", value: "" },
+  { key: "none", value: "none" },
+  { key: "soft", value: "0 12px 30px rgba(15,23,42,0.12)" },
+  { key: "medium", value: "0 22px 60px rgba(15,23,42,0.18)" },
+  { key: "strong", value: "0 35px 100px rgba(15,23,42,0.25)" },
 ];
 
 const ANIMATION_OPTIONS = [
-  { label: "תנועה", value: "" },
-  { label: "ללא", value: "none" },
-  { label: "Fade Up", value: "fade-up" },
-  { label: "Fade In", value: "fade-in" },
-  { label: "Zoom", value: "zoom-in" },
-  { label: "Slide Right", value: "slide-right" },
-  { label: "Slide Left", value: "slide-left" },
-  { label: "Blur Reveal", value: "blur-reveal" },
-  { label: "Float", value: "float-soft" },
-  { label: "Pulse", value: "pulse-soft" },
-  { label: "Gradient Flow", value: "gradient-flow" },
-  { label: "Marquee", value: "marquee-left" },
-  { label: "Ken Burns", value: "ken-burns" },
-  { label: "Mesh Drift", value: "mesh-drift" },
-  { label: "Button Shine", value: "button-shine" },
-  { label: "Hover Lift", value: "hover-lift" },
-  { label: "Orbit", value: "orbit" },
-  { label: "Pulse Ring", value: "pulse-ring" },
-  { label: "Shimmer", value: "shimmer" },
-  { label: "Bounce Soft", value: "bounce-soft" },
+  { key: "motion", value: "" },
+  { key: "none", value: "none" },
+  { key: "Fade Up", value: "fade-up" },
+  { key: "Fade In", value: "fade-in" },
+  { key: "Zoom", value: "zoom-in" },
+  { key: "Slide Right", value: "slide-right" },
+  { key: "Slide Left", value: "slide-left" },
+  { key: "Blur Reveal", value: "blur-reveal" },
+  { key: "Float", value: "float-soft" },
+  { key: "Pulse", value: "pulse-soft" },
+  { key: "Gradient Flow", value: "gradient-flow" },
+  { key: "Marquee", value: "marquee-left" },
+  { key: "Ken Burns", value: "ken-burns" },
+  { key: "Mesh Drift", value: "mesh-drift" },
+  { key: "Button Shine", value: "button-shine" },
+  { key: "Hover Lift", value: "hover-lift" },
+  { key: "Orbit", value: "orbit" },
+  { key: "Pulse Ring", value: "pulse-ring" },
+  { key: "Shimmer", value: "shimmer" },
+  { key: "Bounce Soft", value: "bounce-soft" },
 ];
 
 function normalizeHref(value: string) {
@@ -674,6 +675,7 @@ function GradientColorPicker({
   onClear: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const gradient = buildLinearGradient(colors, angle);
 
   function updateColor(index: number, value: string) {
@@ -702,15 +704,14 @@ function GradientColorPicker({
       className="pointer-events-auto absolute right-1/2 top-[66px] z-[2147483002] w-[min(720px,calc(100vw-32px))] translate-x-1/2 rounded-[22px] border border-slate-200 bg-white/95 p-4 shadow-[0_20px_70px_rgba(15,23,42,0.2)] backdrop-blur-2xl"
       onMouseDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
-      dir="rtl"
     >
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-black text-slate-800">
-            {target === "text" ? "מיקס צבעים לטקסט" : "מיקס צבעים לרקע"}
+            {target === "text" ? t("studio.textGradient") : t("studio.backgroundGradient")}
           </p>
           <p className="mt-1 text-xs font-bold text-slate-500">
-            אפשר לבחור בין 2 ל־5 צבעים ולשנות את זווית המעבר.
+            {t("studio.gradientHint")}
           </p>
         </div>
 
@@ -739,7 +740,7 @@ function GradientColorPicker({
               value={normalizeColor(color, "#111827")}
               onChange={(event) => updateColor(index, event.target.value)}
               className="h-9 w-11 cursor-pointer rounded-xl border-0 bg-transparent p-0"
-              title={`צבע ${index + 1}`}
+              title={t("studio.colorN", { n: index + 1 })}
             />
 
             <span className="min-w-[70px] px-1 text-xs font-black text-slate-600" dir="ltr">
@@ -751,7 +752,7 @@ function GradientColorPicker({
                 type="button"
                 onClick={() => removeColor(index)}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-rose-500 hover:bg-rose-50"
-                title="הסרת צבע"
+                title={t("studio.removeColor")}
               >
                 <Minus className="h-4 w-4" />
               </button>
@@ -766,13 +767,13 @@ function GradientColorPicker({
           className="inline-flex h-11 items-center gap-2 rounded-2xl border border-dashed border-violet-300 bg-violet-50 px-4 text-sm font-black text-violet-700 disabled:opacity-40"
         >
           <Plus className="h-4 w-4" />
-          הוספת צבע
+          {t("studio.addColor")}
         </button>
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_110px] sm:items-center">
         <label className="grid gap-2 text-sm font-black text-slate-700">
-          זווית: {angle}°
+          {t("studio.angle", { angle })}
           <input
             type="range"
             min="0"
@@ -799,7 +800,7 @@ function GradientColorPicker({
           onClick={onClear}
           className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 hover:bg-slate-50"
         >
-          הסרת מיקס
+          {t("studio.clearGradient")}
         </button>
 
         <button
@@ -808,7 +809,7 @@ function GradientColorPicker({
           disabled={!gradient}
           className="h-11 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-black shadow-sm hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-40"
         >
-          החלת המיקס
+          {t("studio.applyGradient")}
         </button>
       </div>
     </div>
@@ -819,6 +820,7 @@ export default function VisualFloatingToolbar({
   editor,
   clientPortalPluginEnabled = false,
 }: VisualFloatingToolbarProps) {
+  const { t } = useTranslation();
   const element = editor?.selectedElement || null;
 
   const [textValue, setTextValue] = useState("");
@@ -1478,7 +1480,7 @@ export default function VisualFloatingToolbar({
       return;
     }
 
-    window.alert("העלאת המדיה עדיין לא מחוברת לעורך.");
+    window.alert(t("studio.mediaUploadNotConnected"));
   }
 
   function openMediaEditor() {
@@ -1493,7 +1495,7 @@ export default function VisualFloatingToolbar({
   function setBackgroundImageFromUrl() {
     if (locked) return;
 
-    const src = window.prompt("הדביקי כתובת תמונת רקע", "");
+    const src = window.prompt(t("studio.pasteBackgroundUrl"), "");
 
     if (!src?.trim()) return;
 
@@ -1523,7 +1525,7 @@ export default function VisualFloatingToolbar({
       return;
     }
 
-    window.alert("העלאת תמונת רקע עדיין לא מחוברת לעורך.");
+    window.alert(t("studio.backgroundUploadNotConnected"));
   }
 
   function setAnimation(value: string) {
@@ -1548,7 +1550,7 @@ export default function VisualFloatingToolbar({
       return;
     }
 
-    window.alert("נעילת אלמנטים תחובר במנוע הפעולות המרכזי.");
+    window.alert(t("studio.lockNotConnected"));
   }
 
   function toggleHidden() {
@@ -1562,7 +1564,7 @@ export default function VisualFloatingToolbar({
       return;
     }
 
-    window.alert("הסתרת אלמנטים תחובר במנוע הפעולות המרכזי.");
+    window.alert(t("studio.hideNotConnected"));
   }
 
   function resetStyle() {
@@ -1579,7 +1581,6 @@ export default function VisualFloatingToolbar({
 
   return (
     <div
-      dir="rtl"
       data-visual-floating-toolbar="true"
       onMouseDown={(event) => {
         event.stopPropagation();
@@ -1594,7 +1595,7 @@ export default function VisualFloatingToolbar({
       <div className="pointer-events-auto relative flex h-14 w-full max-w-[1720px] items-center gap-1.5 overflow-x-auto overflow-y-visible whitespace-nowrap px-1 text-slate-800">
         <div className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-50 px-3 text-xs font-black text-violet-700">
           <Sparkles className="h-4 w-4" />
-          {element?.label || getTagName(element) || "אלמנט"}
+          {element?.label || getTagName(element) || t("studio.element")}
         </div>
 
         <ToolbarDivider />
@@ -1603,7 +1604,7 @@ export default function VisualFloatingToolbar({
           <>
             <button
               type="button"
-              title="עריכת טופס"
+              title={t("studio.editForm")}
               disabled={locked}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -1617,7 +1618,7 @@ export default function VisualFloatingToolbar({
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black transition hover:bg-[#333] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ClipboardList className="h-4 w-4" />
-              עריכת טופס
+              {t("studio.editForm")}
             </button>
 
             <ToolbarDivider />
@@ -1648,7 +1649,7 @@ export default function VisualFloatingToolbar({
                     submitText();
                   }
                 }}
-                placeholder="עריכת טקסט"
+                placeholder={t("studio.editText")}
                 className="h-9 w-full rounded-xl bg-transparent px-8 pl-2 text-sm font-bold text-slate-900 outline-none transition hover:bg-slate-100 focus:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
@@ -1659,9 +1660,9 @@ export default function VisualFloatingToolbar({
                   value={boundCrmFieldKey}
                   onChange={(value) => bindCrmField(value)}
                   className="w-[150px]"
-                  title="קישור לנתון אישי מה-CRM (לפי לקוח מחובר)"
+                  title={t("studio.personalFieldTitle")}
                 >
-                  <option value="">נתון אישי</option>
+                  <option value="">{t("studio.personalField")}</option>
                   {crmFields.map((field) => (
                     <option key={field.id || field.key} value={field.key}>
                       {field.label || field.key}
@@ -1677,11 +1678,11 @@ export default function VisualFloatingToolbar({
                       bindCrmField(boundCrmFieldKey, part);
                     }}
                     className="w-[110px]"
-                    title="מה להציג מהנתון"
+                    title={t("studio.fieldDisplay")}
                   >
-                    <option value="value">ערך</option>
-                    <option value="label">תווית</option>
-                    <option value="both">שם - ערך</option>
+                    <option value="value">{t("studio.fieldValue")}</option>
+                    <option value="label">{t("studio.fieldLabel")}</option>
+                    <option value="both">{t("studio.fieldBoth")}</option>
                   </SelectControl>
                 ) : null}
               </>
@@ -1706,9 +1707,9 @@ export default function VisualFloatingToolbar({
                 } as StylePatch)
               }
               className="w-[74px]"
-              title="גודל טקסט"
+              title={t("studio.fontSizeTitle")}
             >
-              <option value="">גודל</option>
+              <option value="">{t("studio.fontSize")}</option>
 
               {FONT_SIZES.map((size) => (
                 <option key={size} value={size}>
@@ -1718,7 +1719,7 @@ export default function VisualFloatingToolbar({
             </SelectControl>
 
             <ToolbarButton
-              title="מודגש"
+              title={t("studio.bold")}
               disabled={locked}
               active={isStyleActive(
                 style,
@@ -1742,7 +1743,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="נטוי"
+              title={t("studio.italic")}
               disabled={locked}
               active={isStyleActive(
                 style,
@@ -1766,7 +1767,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="קו תחתון"
+              title={t("studio.underline")}
               disabled={locked}
               active={String(
                 style["text-decoration"] || style.textDecoration || "",
@@ -1786,7 +1787,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לימין"
+              title={t("studio.alignRight")}
               disabled={locked}
               active={isStyleActive(
                 style,
@@ -1804,7 +1805,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור למרכז"
+              title={t("studio.alignCenter")}
               disabled={locked}
               active={isStyleActive(
                 style,
@@ -1822,7 +1823,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לשמאל"
+              title={t("studio.alignLeft")}
               disabled={locked}
               active={isStyleActive(
                 style,
@@ -1840,7 +1841,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ColorControl
-              title="צבע טקסט"
+              title={t("studio.textColor")}
               value={currentColor}
               fallback="#111827"
               onPreview={(value) =>
@@ -1866,7 +1867,7 @@ export default function VisualFloatingToolbar({
             </ColorControl>
 
             <ToolbarButton
-              title="מיקס צבעים לטקסט"
+              title={t("studio.textGradient")}
               disabled={locked}
               active={hasTextGradient && gradientOpen}
               onClick={() => openGradient("text")}
@@ -1879,7 +1880,7 @@ export default function VisualFloatingToolbar({
         {hasBackground ? (
           <>
             <ColorControl
-            title="צבע רקע"
+            title={t("studio.backgroundColor")}
             value={currentBackground}
             fallback="#ffffff"
             onPreview={(value) =>
@@ -1899,7 +1900,7 @@ export default function VisualFloatingToolbar({
           </ColorControl>
 
           <ToolbarButton
-            title="מיקס צבעים לרקע"
+            title={t("studio.backgroundGradient")}
             disabled={locked}
             active={hasBackgroundGradient && gradientOpen}
             onClick={() => openGradient("background")}
@@ -1920,11 +1921,13 @@ export default function VisualFloatingToolbar({
                 } as StylePatch)
               }
               className="w-[86px]"
-              title="פינות"
+              title={t("studio.corners")}
             >
               {RADIUS_OPTIONS.map((item) => (
-                <option key={item.label} value={item.value}>
-                  {item.label}
+                <option key={item.key} value={item.value}>
+                  {item.key === "corners" || item.key === "round"
+                    ? t(`studio.${item.key}`)
+                    : item.key}
                 </option>
               ))}
             </SelectControl>
@@ -1938,11 +1941,11 @@ export default function VisualFloatingToolbar({
                 } as StylePatch)
               }
               className="w-[88px]"
-              title="צל"
+              title={t("studio.shadow")}
             >
               {SHADOW_OPTIONS.map((item) => (
-                <option key={item.label} value={item.value}>
-                  {item.label}
+                <option key={item.key} value={item.value}>
+                  {t(`studio.${item.key}`)}
                 </option>
               ))}
             </SelectControl>
@@ -1960,7 +1963,7 @@ export default function VisualFloatingToolbar({
                 } as StylePatch)
               }
               className="w-[92px]"
-              title="התאמת מדיה"
+              title={t("studio.mediaFit")}
             >
               <option value="">Fit</option>
               <option value="cover">Cover</option>
@@ -1970,7 +1973,7 @@ export default function VisualFloatingToolbar({
 
             <button
               type="button"
-              title="שינוי תמונה או וידאו"
+              title={t("studio.changeMedia")}
               disabled={locked}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -1984,12 +1987,12 @@ export default function VisualFloatingToolbar({
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
-              שינוי
+              {t("studio.change")}
             </button>
 
             <button
               type="button"
-              title="עריכת תמונה"
+              title={t("studio.editImage")}
               disabled={locked}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -2003,11 +2006,11 @@ export default function VisualFloatingToolbar({
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 text-sm font-black text-violet-700 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Sparkles className="h-4 w-4" />
-              עריכה
+              {t("studio.edit")}
             </button>
 
             <ToolbarButton
-              title="מדיה לפי כתובת"
+              title={t("studio.mediaFromUrl")}
               disabled={locked}
               active={mediaOpen}
               onClick={() => setMediaOpen((value) => !value)}
@@ -2020,7 +2023,7 @@ export default function VisualFloatingToolbar({
         {kind === "section" || kind === "general" ? (
           <>
             <ToolbarButton
-              title="העלאת תמונת רקע"
+              title={t("studio.uploadBackground")}
               disabled={locked}
               onClick={uploadBackgroundImage}
             >
@@ -2028,7 +2031,7 @@ export default function VisualFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="תמונת רקע לפי כתובת"
+              title={t("studio.backgroundFromUrl")}
               disabled={locked}
               onClick={setBackgroundImageFromUrl}
             >
@@ -2043,7 +2046,7 @@ export default function VisualFloatingToolbar({
         portalControlKind === "forgot" ||
         portalControlKind === "submit" ? (
           <ToolbarButton
-            title="קישור"
+            title={t("studio.link")}
             disabled={locked || portalControlKind === "submit"}
             onClick={() => {
               if (!elementId || portalControlKind === "submit") return;
@@ -2057,7 +2060,7 @@ export default function VisualFloatingToolbar({
 
         {portalAuthFormKind ? (
           <ToolbarButton
-            title="קישורי כפתורים בטופס (הרשמה / שכחתי סיסמה)"
+            title={t("studio.formButtonLinks")}
             disabled={locked}
             onClick={() => {
               window.dispatchEvent(
@@ -2078,7 +2081,7 @@ export default function VisualFloatingToolbar({
               value={packagesPaymentUrl}
               disabled={locked}
               dir="ltr"
-              placeholder="קישור סליקה (https://…)"
+              placeholder={t("studio.paymentLinkPlaceholder")}
               onMouseDown={(event) => event.stopPropagation()}
               onClick={(event) => event.stopPropagation()}
               onChange={(event) => {
@@ -2110,11 +2113,13 @@ export default function VisualFloatingToolbar({
           value={currentAnimation}
           onChange={setAnimation}
           className="w-[104px]"
-          title="אנימציה"
+          title={t("studio.animation")}
         >
           {ANIMATION_OPTIONS.map((animation) => (
-            <option key={animation.label} value={animation.value}>
-              {animation.label}
+            <option key={animation.key} value={animation.value}>
+              {animation.key === "motion" || animation.key === "none"
+                ? t(`studio.${animation.key}`)
+                : animation.key}
             </option>
           ))}
         </SelectControl>
@@ -2122,7 +2127,7 @@ export default function VisualFloatingToolbar({
         <ToolbarDivider />
 
         <ToolbarButton
-          title="בחירת האלמנט ההורה"
+          title={t("studio.selectParent")}
           onClick={() => editor?.selectParent?.()}
         >
           <CornerUpLeft className="h-4 w-4" />
@@ -2131,8 +2136,8 @@ export default function VisualFloatingToolbar({
         <ToolbarButton
           title={
             kind === "section"
-              ? "הזזת בלוק למעלה"
-              : "קדימה בשכבות"
+              ? t("studio.moveBlockUp")
+              : t("studio.bringForwardLayer")
           }
           disabled={locked}
           onClick={() => {
@@ -2149,8 +2154,8 @@ export default function VisualFloatingToolbar({
         <ToolbarButton
           title={
             kind === "section"
-              ? "הזזת בלוק למטה"
-              : "אחורה בשכבות"
+              ? t("studio.moveBlockDown")
+              : t("studio.sendBackwardLayer")
           }
           disabled={locked}
           onClick={() => {
@@ -2165,7 +2170,7 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title="שכפול"
+          title={t("studio.duplicate")}
           disabled={locked}
           onClick={() =>
             editor?.duplicateElement?.(elementId) ||
@@ -2176,7 +2181,7 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title={locked ? "פתיחת נעילה" : "נעילת אלמנט"}
+          title={locked ? t("studio.unlock") : t("studio.lockElement")}
           active={locked}
           onClick={toggleLock}
         >
@@ -2188,7 +2193,7 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title={hidden ? "הצגת אלמנט" : "הסתרת אלמנט"}
+          title={hidden ? t("studio.showElement") : t("studio.hideElement")}
           active={hidden}
           onClick={toggleHidden}
         >
@@ -2200,7 +2205,7 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title="איפוס עיצוב"
+          title={t("studio.resetStyle")}
           disabled={locked}
           onClick={resetStyle}
         >
@@ -2208,7 +2213,7 @@ export default function VisualFloatingToolbar({
         </ToolbarButton>
 
         <ToolbarButton
-          title="מחיקה"
+          title={t("studio.delete")}
           danger
           disabled={locked}
           onClick={() =>
@@ -2219,7 +2224,7 @@ export default function VisualFloatingToolbar({
           <Trash2 className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="סגירת בחירה" onClick={closeSelection}>
+        <ToolbarButton title={t("studio.closeSelection")} onClick={closeSelection}>
           <X className="h-4 w-4" />
         </ToolbarButton>
       </div>
@@ -2258,7 +2263,7 @@ export default function VisualFloatingToolbar({
             }}
             className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            העלאה מהמחשב
+            {t("studio.uploadFromComputer")}
           </button>
 
           <input
@@ -2274,7 +2279,7 @@ export default function VisualFloatingToolbar({
                 submitMediaUrl();
               }
             }}
-            placeholder="כתובת תמונה או וידאו"
+            placeholder={t("studio.mediaUrlPlaceholder")}
             dir="ltr"
             className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
           />
@@ -2309,7 +2314,7 @@ export default function VisualFloatingToolbar({
             }}
             className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            החלפה
+            {t("studio.replace")}
           </button>
 
           <button

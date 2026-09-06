@@ -1,22 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
+import { useTranslation } from "react-i18next";
 import API from "../api";
 import ProposalDocumentView from "./admin/crm/proposals/ProposalDocumentView";
 import EnterpriseProposalView from "./admin/crm/proposals/EnterpriseProposalView";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { getTextDirection } from "../i18n/localeUtils";
 
-const THINKING_OPTIONS = [
-  { value: "need_time", label: "צריך עוד זמן" },
-  { value: "consult", label: "רוצה להתייעץ" },
-  { value: "price", label: "המחיר" },
-  { value: "clarification", label: "צריך הבהרה" },
-  { value: "other", label: "אחר" },
-];
+const THINKING_OPTION_KEYS = [
+  { value: "need_time", key: "public.proposal.needTime", fallback: "צריך עוד זמן" },
+  { value: "consult", key: "public.proposal.consult", fallback: "רוצה להתייעץ" },
+  { value: "price", key: "public.proposal.price", fallback: "המחיר" },
+  { value: "clarification", key: "public.proposal.clarification", fallback: "צריך הבהרה" },
+  { value: "other", key: "public.proposal.other", fallback: "אחר" },
+] as const;
 
 type Mode = "main" | "signing" | "question" | "thinking" | "done";
 
 export default function PublicSalesProposalPage() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { token = "" } = useParams<{ token: string }>();
   const [searchParams] = useSearchParams();
   const [state, setState] = useState<"loading" | "ready" | "expired" | "error">("loading");
@@ -51,19 +55,19 @@ export default function PublicSalesProposalPage() {
         }
         if (data.proposal?.status === "payment_pending") {
           setMode("signing");
-          setMessage("התשלום ממתין להשלמה. ניתן לנסות שוב.");
+          setMessage(t("public.proposal.paymentPending", "התשלום ממתין להשלמה. ניתן לנסות שוב."));
         }
         if (["paid", "accepted"].includes(data.proposal?.status)) {
           setMode("done");
-          setMessage("התשלום התקבל. תודה! ניצור איתך קשר להמשך ההטמעה.");
+          setMessage(t("public.proposal.paidThanks", "התשלום התקבל. תודה! ניצור איתך קשר להמשך ההטמעה."));
         }
         if (searchParams.get("checkout") === "success") {
           setMode("done");
-          setMessage("התשלום התקבל בהצלחה. תודה! ניצור איתך קשר להמשך.");
+          setMessage(t("public.proposal.paidSuccess", "התשלום התקבל בהצלחה. תודה! ניצור איתך קשר להמשך."));
         }
         if (searchParams.get("checkout") === "cancel") {
           setMode("signing");
-          setMessage("התשלום בוטל. אפשר לנסות שוב בכל עת.");
+          setMessage(t("public.proposal.paymentCancelled", "התשלום בוטל. אפשר לנסות שוב בכל עת."));
         }
       } catch (err: any) {
         if (!alive) return;
@@ -86,7 +90,7 @@ export default function PublicSalesProposalPage() {
       setProposal(data.proposal);
       setMode("signing");
     } catch (err: any) {
-      setMessage(err?.response?.data?.error || "הפעולה נכשלה");
+      setMessage(err?.response?.data?.error || t("public.proposal.actionFailed", "הפעולה נכשלה"));
     } finally {
       setBusy(false);
     }
@@ -100,17 +104,17 @@ export default function PublicSalesProposalPage() {
       let payload: Record<string, string> = {};
       if (!alreadySigned) {
         if (!fullName.trim() || fullName.trim().length < 2) {
-          setMessage("יש למלא שם מלא");
+          setMessage(t("public.proposal.needFullName", "יש למלא שם מלא"));
           setBusy(false);
           return;
         }
         if (!idNumber.trim() || idNumber.trim().length < 5) {
-          setMessage("יש למלא תעודת זהות");
+          setMessage(t("public.proposal.needId", "יש למלא תעודת זהות"));
           setBusy(false);
           return;
         }
         if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-          setMessage("יש לחתום באזור החתימה");
+          setMessage(t("public.proposal.needSignature", "יש לחתום באזור החתימה"));
           setBusy(false);
           return;
         }
@@ -132,9 +136,9 @@ export default function PublicSalesProposalPage() {
         window.location.href = data.checkoutUrl;
         return;
       }
-      setMessage("נוצר קישור תשלום, אך לא התקבלה כתובת. נסו שוב.");
+      setMessage(t("public.proposal.checkoutMissing", "נוצר קישור תשלום, אך לא התקבלה כתובת. נסו שוב."));
     } catch (err: any) {
-      setMessage(err?.response?.data?.error || "חתימה / תשלום נכשלו");
+      setMessage(err?.response?.data?.error || t("public.proposal.signPayFailed", "חתימה / תשלום נכשלו"));
     } finally {
       setBusy(false);
     }
@@ -148,9 +152,9 @@ export default function PublicSalesProposalPage() {
       });
       setProposal(data.proposal);
       setMode("done");
-      setMessage("השאלה התקבלה. נחזור אליך בהקדם.");
+      setMessage(t("public.proposal.questionReceived", "השאלה התקבלה. נחזור אליך בהקדם."));
     } catch (err: any) {
-      setMessage(err?.response?.data?.error || "שליחה נכשלה");
+      setMessage(err?.response?.data?.error || t("public.proposal.sendFailed", "שליחה נכשלה"));
     } finally {
       setBusy(false);
     }
@@ -165,9 +169,9 @@ export default function PublicSalesProposalPage() {
       });
       setProposal(data.proposal);
       setMode("done");
-      setMessage("תודה! נמשיך איתך בקצב שנוח לך.");
+      setMessage(t("public.proposal.thinkingThanks", "תודה! נמשיך איתך בקצב שנוח לך."));
     } catch (err: any) {
-      setMessage(err?.response?.data?.error || "שליחה נכשלה");
+      setMessage(err?.response?.data?.error || t("public.proposal.sendFailed", "שליחה נכשלה"));
     } finally {
       setBusy(false);
     }
@@ -175,7 +179,7 @@ export default function PublicSalesProposalPage() {
 
   if (state === "loading") {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#f5f6fb]" dir="rtl">
+      <div className="grid min-h-screen place-items-center bg-[#f5f6fb]" dir={pageDir}>
         <BizuplyLoader />
       </div>
     );
@@ -183,17 +187,17 @@ export default function PublicSalesProposalPage() {
 
   if (state === "expired") {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#f5f6fb] p-6" dir="rtl">
+      <div className="grid min-h-screen place-items-center bg-[#f5f6fb] p-6" dir={pageDir}>
         <div className="w-full max-w-md rounded-[28px] bg-white p-8 text-center shadow-xl">
-          <h1 className="text-2xl font-black text-slate-900">תוקף ההצעה פג</h1>
+          <h1 className="text-2xl font-black text-slate-900">{t("public.proposal.expiredTitle", "תוקף ההצעה פג")}</h1>
           <p className="mt-3 text-sm font-semibold text-slate-500">
-            אם תרצה/י לקבל הצעה מעודכנת, ניתן לפנות אלינו.
+            {t("public.proposal.expiredHint", "אם תרצה/י לקבל הצעה מעודכנת, ניתן לפנות אלינו.")}
           </p>
           <Link
             to="/contact"
             className="mt-6 inline-flex rounded-2xl bg-[#6D28D9] px-5 py-3 text-sm font-black text-white"
           >
-            צרו קשר
+            {t("common.contactUs", "צרו קשר")}
           </Link>
         </div>
       </div>
@@ -202,14 +206,14 @@ export default function PublicSalesProposalPage() {
 
   if (state === "error" || !proposal) {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#f5f6fb] p-6" dir="rtl">
+      <div className="grid min-h-screen place-items-center bg-[#f5f6fb] p-6" dir={pageDir}>
         <div className="w-full max-w-md rounded-[28px] bg-white p-8 text-center shadow-xl">
-          <h1 className="text-2xl font-black text-slate-900">ההצעה לא נמצאה</h1>
+          <h1 className="text-2xl font-black text-slate-900">{t("public.proposal.notFound", "ההצעה לא נמצאה")}</h1>
           <Link
             to="/contact"
             className="mt-6 inline-flex rounded-2xl bg-[#6D28D9] px-5 py-3 text-sm font-black text-white"
           >
-            צרו קשר
+            {t("common.contactUs", "צרו קשר")}
           </Link>
         </div>
       </div>
@@ -223,7 +227,7 @@ export default function PublicSalesProposalPage() {
   return (
     <div
       className="min-h-screen w-full bg-[linear-gradient(180deg,#f8f5ff_0%,#f5f6fb_40%,#ffffff_100%)] px-3 py-6 sm:px-6 sm:py-10"
-      dir="rtl"
+      dir={pageDir}
     >
       <DocumentView
         interactive
@@ -238,7 +242,9 @@ export default function PublicSalesProposalPage() {
                   onClick={() => void startSigning()}
                   className="min-h-12 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-base font-black text-white disabled:opacity-60"
                 >
-                  {isEnterprise ? "אישור ההצעה ומעבר לתשלום" : "אני רוצה להתחיל"}
+                  {isEnterprise
+                    ? t("public.proposal.approveAndPay", "אישור ההצעה ומעבר לתשלום")
+                    : t("public.proposal.wantToStart", "אני רוצה להתחיל")}
                 </button>
                 <button
                   type="button"
@@ -246,7 +252,7 @@ export default function PublicSalesProposalPage() {
                   onClick={() => setMode("question")}
                   className="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700"
                 >
-                  יש לי שאלה על ההצעה
+                  {t("public.proposal.haveQuestion", "יש לי שאלה על ההצעה")}
                 </button>
                 <button
                   type="button"
@@ -254,27 +260,31 @@ export default function PublicSalesProposalPage() {
                   onClick={() => setMode("thinking")}
                   className="min-h-11 w-full rounded-2xl px-4 py-3 text-sm font-bold text-slate-500"
                 >
-                  אני רוצה לחשוב על זה
+                  {t("public.proposal.wantToThink", "אני רוצה לחשוב על זה")}
                 </button>
               </>
             ) : null}
 
             {mode === "signing" && !alreadyPaid ? (
               <div className="space-y-4 rounded-3xl border border-violet-100 bg-violet-50/40 p-4 sm:p-5">
-                <h3 className="text-lg font-black text-slate-900">אישור וחתימה</h3>
+                <h3 className="text-lg font-black text-slate-900">{t("public.proposal.signTitle", "אישור וחתימה")}</h3>
                 {proposal.signedAt ? (
                   <p className="text-sm font-semibold text-emerald-800">
-                    ההצעה כבר נחתמה על ידי {proposal.approvedByName}. ניתן להמשיך לתשלום.
+                    {t("public.proposal.alreadySigned", "ההצעה כבר נחתמה על ידי {{name}}. ניתן להמשיך לתשלום.", {
+                      name: proposal.approvedByName,
+                    })}
                   </p>
                 ) : (
                   <>
                     <p className="text-sm font-semibold leading-6 text-slate-600">
-                      אני מאשר/ת כי קראתי את פרטי ההצעה והתנאים, ואני מבקש/ת להתקדם בהתאם לרכיבים
-                      ולמחירים המופיעים בהצעה זו.
+                      {t(
+                        "public.proposal.approvalText",
+                        "אני מאשר/ת כי קראתי את פרטי ההצעה והתנאים, ואני מבקש/ת להתקדם בהתאם לרכיבים ולמחירים המופיעים בהצעה זו."
+                      )}
                     </p>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <label className="block text-sm font-black text-slate-800">
-                        שם מלא
+                        {t("public.proposal.fullName", "שם מלא")}
                         <input
                           className="mt-1 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm"
                           value={fullName}
@@ -282,7 +292,7 @@ export default function PublicSalesProposalPage() {
                         />
                       </label>
                       <label className="block text-sm font-black text-slate-800">
-                        ת״ז
+                        {t("public.proposal.idNumber", "ת״ז")}
                         <input
                           className="mt-1 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm"
                           value={idNumber}
@@ -290,16 +300,16 @@ export default function PublicSalesProposalPage() {
                         />
                       </label>
                       <label className="block text-sm font-black text-slate-800">
-                        מספר עסק / ח״פ
+                        {t("public.proposal.businessNumber", "מספר עסק / ח״פ")}
                         <input
                           className="mt-1 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm"
                           value={businessNumber}
                           onChange={(e) => setBusinessNumber(e.target.value)}
-                          placeholder="אופציונלי"
+                          placeholder={t("common.optional", "אופציונלי")}
                         />
                       </label>
                       <label className="block text-sm font-black text-slate-800">
-                        תאריך
+                        {t("public.proposal.date", "תאריך")}
                         <input
                           type="date"
                           className="mt-1 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm"
@@ -310,13 +320,13 @@ export default function PublicSalesProposalPage() {
                     </div>
                     <div>
                       <div className="mb-2 flex items-center justify-between gap-2">
-                        <p className="text-sm font-black text-slate-800">חתימה</p>
+                        <p className="text-sm font-black text-slate-800">{t("public.proposal.signature", "חתימה")}</p>
                         <button
                           type="button"
                           className="text-xs font-bold text-slate-500"
                           onClick={() => sigPadRef.current?.clear()}
                         >
-                          ניקוי
+                          {t("public.proposal.clear", "ניקוי")}
                         </button>
                       </div>
                       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
@@ -339,17 +349,17 @@ export default function PublicSalesProposalPage() {
                   className="min-h-12 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-base font-black text-white disabled:opacity-60"
                 >
                   {busy
-                    ? "מעביר לתשלום..."
+                    ? t("public.proposal.redirectingPay", "מעביר לתשלום...")
                     : proposal.signedAt
-                      ? "המשך לתשלום ב-Stripe"
-                      : "אישור, חתימה ומעבר לתשלום"}
+                      ? t("public.proposal.continueStripe", "המשך לתשלום ב-Stripe")
+                      : t("public.proposal.approveSignPay", "אישור, חתימה ומעבר לתשלום")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode("main")}
                   className="w-full text-sm font-bold text-slate-500"
                 >
-                  חזרה
+                  {t("common.back", "חזרה")}
                 </button>
               </div>
             ) : null}
@@ -357,7 +367,7 @@ export default function PublicSalesProposalPage() {
             {mode === "question" ? (
               <div className="space-y-3">
                 <label className="block text-sm font-black text-slate-800">
-                  מה תרצה/י לשאול?
+                  {t("public.proposal.askWhat", "מה תרצה/י לשאול?")}
                   <textarea
                     className="mt-2 min-h-28 w-full rounded-2xl border px-4 py-3 text-sm"
                     value={question}
@@ -370,23 +380,23 @@ export default function PublicSalesProposalPage() {
                   onClick={() => void sendQuestion()}
                   className="min-h-11 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
                 >
-                  שליחת שאלה
+                  {t("public.proposal.sendQuestion", "שליחת שאלה")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode("main")}
                   className="w-full text-sm font-bold text-slate-500"
                 >
-                  חזרה
+                  {t("common.back", "חזרה")}
                 </button>
               </div>
             ) : null}
 
             {mode === "thinking" ? (
               <div className="space-y-3">
-                <p className="text-sm font-black text-slate-800">מה יעזור לך להחליט?</p>
+                <p className="text-sm font-black text-slate-800">{t("public.proposal.whatHelps", "מה יעזור לך להחליט?")}</p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {THINKING_OPTIONS.map((opt) => (
+                  {THINKING_OPTION_KEYS.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -398,13 +408,13 @@ export default function PublicSalesProposalPage() {
                           : "border-slate-200",
                       ].join(" ")}
                     >
-                      {opt.label}
+                      {t(opt.key, opt.fallback)}
                     </button>
                   ))}
                 </div>
                 <textarea
                   className="min-h-24 w-full rounded-2xl border px-4 py-3 text-sm"
-                  placeholder="פירוט אופציונלי"
+                  placeholder={t("public.proposal.optionalNote", "פירוט אופציונלי")}
                   value={thinkingNote}
                   onChange={(e) => setThinkingNote(e.target.value)}
                 />
@@ -414,14 +424,14 @@ export default function PublicSalesProposalPage() {
                   onClick={() => void sendThinking()}
                   className="min-h-11 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
                 >
-                  שליחה
+                  {t("common.send", "שליחה")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode("main")}
                   className="w-full text-sm font-bold text-slate-500"
                 >
-                  חזרה
+                  {t("common.back", "חזרה")}
                 </button>
               </div>
             ) : null}

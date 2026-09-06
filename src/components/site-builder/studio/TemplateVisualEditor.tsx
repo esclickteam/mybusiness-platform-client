@@ -14,6 +14,8 @@ import {
   applySharedChromeScalarsToVisualData,
 } from "./visual-editor/utils/visualSharedChrome";
 import { stripStoreBoundVisualImageOverrides } from "./data/templates/shared/storeCatalogSync";
+import i18n from "../../../i18n/i18n";
+import { localizeBuiltInTemplateSeed } from "../../../i18n/localizeBuiltInTemplateSeed";
 
 type VisualSavePayload = {
   templateKey: string;
@@ -278,9 +280,10 @@ export default function TemplateVisualEditor({
   siteId,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
-    const defaultData = cloneData(
-      renderer.defaultData || {},
-    ) as Record<string, any>;
+    const defaultData = localizeBuiltInTemplateSeed(
+      cloneData(renderer.defaultData || {}) as Record<string, any>,
+      i18n.language,
+    );
 
     const savedVisualData = extractVisualDataFromInitialData(
       cloneData(initialData || {}) as Record<string, any>,

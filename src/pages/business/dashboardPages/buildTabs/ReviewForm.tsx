@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import API from "@/api";
 import Icon from "@/components/ui/Icon";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type RatingKey =
   | "experience"
@@ -61,19 +63,19 @@ type FormState = {
 const PRIMARY_FIELDS: RatingConfig[] = [
   {
     key: "experience",
-    label: "חוויה כללית",
+    label: "business.reviews.experience",
     icon: "overall",
     required: true,
   },
   {
     key: "service",
-    label: "איכות השירות",
+    label: "business.reviews.service",
     icon: "service",
     required: true,
   },
   {
     key: "professional",
-    label: "מקצועיות",
+    label: "business.reviews.professional",
     icon: "professionalism",
     required: true,
   },
@@ -82,25 +84,35 @@ const PRIMARY_FIELDS: RatingConfig[] = [
 const OPTIONAL_FIELDS: RatingConfig[] = [
   {
     key: "timing",
-    label: "עמידה בזמנים",
+    label: "business.reviews.timing",
     icon: "timeliness",
   },
   {
     key: "availability",
-    label: "זמינות",
+    label: "business.reviews.availability",
     icon: "availability",
   },
   {
     key: "value",
-    label: "תמורה למחיר",
+    label: "business.reviews.value",
     icon: "valueForMoney",
   },
   {
     key: "goal",
-    label: "השגת מטרה",
+    label: "business.reviews.goal",
     icon: "goalAchievement",
   },
 ];
+
+const RATING_LABEL_FALLBACKS: Record<string, string> = {
+  "business.reviews.experience": "leftover.reviews.experience",
+  "business.reviews.service": "leftover.reviews.serviceQuality",
+  "business.reviews.professional": "leftover.reviews.professional",
+  "business.reviews.timing": "leftover.reviews.timing",
+  "business.reviews.availability": "leftover.reviews.availability",
+  "business.reviews.value": "leftover.reviews.value",
+  "business.reviews.goal": "leftover.reviews.goal",
+};
 
 function getAverage(ratings: Partial<Record<RatingKey, number>>) {
   const values = Object.values(ratings).filter(
@@ -114,13 +126,13 @@ function getAverage(ratings: Partial<Record<RatingKey, number>>) {
   return Math.round((total / values.length) * 10) / 10;
 }
 
-function getRatingLabel(value: number) {
-  if (value >= 4.8) return "מצוין";
-  if (value >= 4) return "מעולה";
-  if (value >= 3) return "טוב";
-  if (value >= 2) return "בסדר";
-  if (value > 0) return "דורש שיפור";
-  return "טרם דורג";
+function getRatingLabel(value: number, t: (key: string, fallback: string) => string) {
+  if (value >= 4.8) return t("business.reviews.outstanding", t("leftover.reviews.outstanding", "Outstanding"));
+  if (value >= 4) return t("business.reviews.excellent", t("leftover.reviews.excellent", "Excellent"));
+  if (value >= 3) return t("business.reviews.good", t("leftover.reviews.good", "Good"));
+  if (value >= 2) return t("business.reviews.okay", "Okay");
+  if (value > 0) return t("business.reviews.needsWork", t("leftover.reviews.needsWork", "Needs improvement"));
+  return t("business.reviews.notRated", "Not rated");
 }
 
 function StarRating({
@@ -130,6 +142,7 @@ function StarRating({
   value?: number;
   onChange: (value: number) => void;
 }) {
+  const { t } = useTranslation();
   const [hover, setHover] = useState(0);
   const activeValue = hover || value;
 
@@ -147,7 +160,7 @@ function StarRating({
             onFocus={() => setHover(rating)}
             onBlur={() => setHover(0)}
             onClick={() => onChange(rating)}
-            aria-label={`${rating} כוכבים`}
+            aria-label={t("business.reviews.starsAria", "{{rating}} כוכבים", { rating })}
             className={[
               "flex h-10 w-10 items-center justify-center rounded-2xl text-lg transition-all",
               "focus:outline-none focus:ring-4 focus:ring-amber-100",
@@ -179,6 +192,7 @@ function RatingRow({
   value?: number;
   onChange: (key: RatingKey, value: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.04)]">
       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -189,11 +203,14 @@ function RatingRow({
 
           <div className="min-w-0 text-right">
             <p className="text-sm font-black text-slate-800">
-              {field.label}
+              {t(
+                field.label,
+                t(RATING_LABEL_FALLBACKS[field.label] || field.label)
+              )}
               {field.required && <span className="text-violet-600"> *</span>}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-slate-400">
-              לחצו על הכוכבים לדירוג
+              {t("business.reviews.clickStars", "לחצו על הכוכבים לדירוג")}
             </p>
           </div>
         </div>
@@ -215,6 +232,8 @@ export default function ReviewForm({
   defaultEmail = "",
   layout = "default",
 }: ReviewFormProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const isModalLayout = layout === "modal";
   const [form, setForm] = useState<FormState>({
     name: defaultName,
@@ -253,7 +272,7 @@ export default function ReviewForm({
     event.preventDefault();
 
     if (!canSubmit) {
-      setError("יש למלא שם ואת כל הדירוגים הנדרשים.");
+      setError(t("business.reviews.needNameRatings", "יש למלא שם ואת כל הדירוגים הנדרשים."));
       return;
     }
 
@@ -312,7 +331,7 @@ export default function ReviewForm({
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           err?.message ||
-          "לא ניתן לשלוח את הביקורת. נסו שוב."
+          t("business.reviews.sendFailed", "לא ניתן לשלוח את הביקורת. נסו שוב.")
       );
     } finally {
       setIsSubmitting(false);
@@ -321,7 +340,7 @@ export default function ReviewForm({
 
   return (
     <form
-      dir="rtl"
+      dir={pageDir}
       onSubmit={handleSubmit}
       className={[
         "relative text-right text-slate-800",
@@ -336,19 +355,21 @@ export default function ReviewForm({
       <div className="relative shrink-0 border-b border-slate-100 p-6 sm:p-7">
         <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
           <Icon name="rating" size={15} />
-          ביקורת לקוח
+          {t("business.reviews.customerReview", "ביקורת לקוח")}
         </div>
 
         <h3
           id="review-form-title"
           className="mt-4 text-3xl font-black tracking-tight text-slate-800"
         >
-          כתיבת ביקורת
+          {t("business.reviews.writeReview", "כתיבת ביקורת")}
         </h3>
 
         <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-          דרגו את החוויה ושתפו מה בולט. הביקורת שלכם עוזרת ללקוחות אחרים לבחור
-          בביטחון.
+          {t(
+            "business.reviews.writeHint",
+            "דרגו את החוויה ושתפו מה בולט. הביקורת שלכם עוזרת ללקוחות אחרים לבחור בביטחון."
+          )}
         </p>
       </div>
 
@@ -361,21 +382,21 @@ export default function ReviewForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              השם שלכם *
+              {t("business.reviews.yourName", "השם שלכם *")}
             </span>
             <input
               value={form.name}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, name: event.target.value }))
               }
-              placeholder="השם שלכם"
+              placeholder={t("business.reviews.yourNamePh", "השם שלכם")}
               className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </label>
 
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              אימייל
+              {t("common.email", "אימייל")}
             </span>
             <input
               type="email"
@@ -407,7 +428,9 @@ export default function ReviewForm({
           className="flex w-full items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700 transition hover:bg-violet-100"
         >
           <span>
-            {showMore ? "הסתרת פרטים נוספים" : "הוספת פרטים נוספים (אופציונלי)"}
+            {showMore
+              ? t("business.reviews.hideMore", "הסתרת פרטים נוספים")
+              : t("business.reviews.showMore", "הוספת פרטים נוספים (אופציונלי)")}
           </span>
           <span className={showMore ? "rotate-180 transition" : "transition"}>
             ⌄
@@ -429,8 +452,8 @@ export default function ReviewForm({
 
         <label className="block">
           <span className="mb-2 block text-sm font-black text-slate-800">
-            מה בולט במיוחד?
-            <span className="font-bold text-slate-400"> אופציונלי</span>
+            {t("business.reviews.whatStoodOut", "מה בולט במיוחד?")}
+            <span className="font-bold text-slate-400"> {t("common.optional", "אופציונלי")}</span>
           </span>
 
           <textarea
@@ -441,7 +464,7 @@ export default function ReviewForm({
                 comment: event.target.value.slice(0, 300),
               }))
             }
-            placeholder="שירות, יחס, תוצאות..."
+            placeholder={t("business.reviews.commentPh", "שירות, יחס, תוצאות...")}
             rows={5}
             maxLength={300}
             className="w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
@@ -458,9 +481,11 @@ export default function ReviewForm({
           </div>
 
           <div>
-            <p className="text-sm font-black text-slate-800">ממוצע דירוג חי</p>
+            <p className="text-sm font-black text-slate-800">
+              {t("business.reviews.liveAverage", "ממוצע דירוג חי")}
+            </p>
             <p className="mt-1 text-xs font-bold text-slate-500">
-              מחושב לפי הדירוגים שבחרתם
+              {t("business.reviews.liveAverageHint", "מחושב לפי הדירוגים שבחרתם")}
             </p>
           </div>
 
@@ -469,7 +494,7 @@ export default function ReviewForm({
               {average.toFixed(1)}
             </p>
             <p className="text-xs font-black text-slate-400">
-              {getRatingLabel(average)}
+              {getRatingLabel(average, t)}
             </p>
           </div>
         </div>
@@ -488,7 +513,7 @@ export default function ReviewForm({
         ].join(" ")}
       >
         <p className="text-xs font-bold leading-5 text-slate-500">
-          חובה: שם + חוויה כללית + שירות + מקצועיות.
+          {t("business.reviews.requiredHint", "חובה: שם + חוויה כללית + שירות + מקצועיות.")}
         </p>
 
         <button
@@ -496,7 +521,9 @@ export default function ReviewForm({
           disabled={!canSubmit}
           className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-7 py-3 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          {isSubmitting ? "שולח..." : "שליחת ביקורת"}
+          {isSubmitting
+            ? t("business.reviews.sending", "שולח...")
+            : t("business.reviews.submitReview", "שליחת ביקורת")}
         </button>
       </div>
     </form>

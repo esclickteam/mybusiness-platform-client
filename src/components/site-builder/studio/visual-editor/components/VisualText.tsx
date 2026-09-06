@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../../../i18n/i18n";
 
 import { readVisualContent } from "../utils/visualData";
 import { hasRichMarkup, sanitizeRichHtml } from "../utils/richTextHtml";
@@ -32,7 +33,7 @@ export default function VisualText({
   className,
   style,
   editable = true,
-  label = "טקסט",
+  label = i18n.t("leftover.studioChrome.text"),
   preserveWhitespace = false,
   ...props
 }: VisualTextProps) {

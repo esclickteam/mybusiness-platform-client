@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
   useNavigate,
   useOutletContext,
@@ -50,10 +52,11 @@ import {
 } from "../../../../api/whatsappApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
+import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import {
-  AI_BILLING_SAFE_MESSAGE,
-  getAiTemplateByKey,
-} from "./aiAutomationCatalog";
+  aiTemplateDescription,
+  aiTemplateTitle,
+} from "../../../../i18n/aiAutomationLabels";
 import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
@@ -67,11 +70,7 @@ import {
   type WorkingTemplate,
 } from "./workingTemplates";
 import {
-  BUSINESS_EMAIL_MISSING_BODY_HE,
-  BUSINESS_EMAIL_MISSING_TITLE_HE,
-  BUSINESS_EMAIL_SETTINGS_CTA_HE,
   EMAIL_PROVIDER_OPTIONS,
-  EMAIL_PROVIDER_REQUIRED_HE,
   formatBusinessSenderLabel,
   pickDefaultBusinessSender,
   type EmailProviderId,
@@ -122,6 +121,8 @@ function cardMatchesHighlight(
 }
 
 export default function AutomationsTemplatesPage() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
@@ -314,7 +315,7 @@ export default function AutomationsTemplatesPage() {
   const ensureAutomationPlanOrOpenBilling = useCallback((): boolean => {
     if (!planGateReady) return false;
     if (hasPlan) return true;
-    toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+    toast.error(t("automations.toasts.planRequired"));
     openPlanPicker();
     return false;
   }, [hasPlan, openPlanPicker, planGateReady]);
@@ -427,7 +428,7 @@ export default function AutomationsTemplatesPage() {
   ) => {
     if (!businessId) return;
     const triggerKey = readiness.resolvedTriggerKey || "";
-    if (!triggerKey) throw new Error("חסר טריגר מאושר");
+    if (!triggerKey) throw new Error(t("automations.errors.missingTrigger"));
 
     const selectedTpl = waTemplates.find(
       (tpl) => getWaTemplateId(tpl) === templateId
@@ -497,12 +498,12 @@ export default function AutomationsTemplatesPage() {
     });
     try {
       await publishAutomationWorkflow(businessId, created._id);
-      toast.success("האוטומציה נוצרה והופעלה");
+      toast.success(t("automations.toasts.createdAndEnabled"));
     } catch (error: unknown) {
       toast.error(
         readAutomationErrorMessage(
           error,
-          "נוצרה אבל לא הופעלה — בדקו הגדרות ופרסמו"
+          t("automations.toasts.createdNotEnabled")
         )
       );
     }
@@ -542,12 +543,12 @@ export default function AutomationsTemplatesPage() {
       });
       if (!isAi) try {
         await publishAutomationWorkflow(businessId, created._id);
-        toast.success("האוטומציה נוצרה והופעלה");
+        toast.success(t("automations.toasts.createdAndEnabled"));
       } catch (error: unknown) {
         toast.error(
           readAutomationErrorMessage(
             error,
-            "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה"
+            t("automations.toasts.createdNotEnabledBuilder")
           )
         );
       }
@@ -556,10 +557,10 @@ export default function AutomationsTemplatesPage() {
     }
 
     if (!template.buildGraph) {
-      throw new Error("אין גרף הפעלה לתבנית זו");
+      throw new Error(t("automations.errors.missingGraph"));
     }
     const triggerKey = readiness.resolvedTriggerKey || "";
-    if (!triggerKey) throw new Error("חסר טריגר מאושר");
+    if (!triggerKey) throw new Error(t("automations.errors.missingTrigger"));
 
     const selectedTplId =
       waTemplateId || readiness.suggestedWaTemplateId || "";
@@ -650,12 +651,12 @@ export default function AutomationsTemplatesPage() {
     });
     if (!isAi) try {
       await publishAutomationWorkflow(businessId, created._id);
-      toast.success("האוטומציה נוצרה והופעלה");
+      toast.success(t("automations.toasts.createdAndEnabled"));
     } catch (error: unknown) {
       toast.error(
         readAutomationErrorMessage(
           error,
-          "נוצרה אבל לא הופעלה — בדקו הגדרות ופרסמו"
+          t("automations.toasts.createdNotEnabled")
         )
       );
     }
@@ -681,15 +682,15 @@ export default function AutomationsTemplatesPage() {
         if (managedModeEnabled) {
           toast.error(
             waUnavailableMessage ||
-              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+              t("automations.toasts.waUnavailable")
           );
           return;
         }
-        toast.error("חברו WhatsApp Business לפני הפעלה");
+        toast.error(t("automations.toasts.connectWhatsApp"));
         navigate(`/business/${businessId}/dashboard/whatsapp`);
         return;
       }
-      toast.error(card.readiness.blocker || "לא ניתן להפעיל כרגע");
+      toast.error(card.readiness.blocker || t("automations.toasts.notReady"));
       return;
     }
 
@@ -710,17 +711,17 @@ export default function AutomationsTemplatesPage() {
           if (managedModeEnabled) {
             toast.error(
               waUnavailableMessage ||
-                "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+                t("automations.toasts.waUnavailable")
             );
             return;
           }
-          toast.error("חברו WhatsApp Business לפני הפעלה");
+          toast.error(t("automations.toasts.connectWhatsApp"));
           navigate(`/business/${businessId}/dashboard/whatsapp`);
           return;
         }
         if (!waTemplates.length) {
           toast.error(
-            "אין תבניות Meta מאושרות (APPROVED) לבחירה — הכינו תבנית ואשרו אותה ב-Meta"
+            t("automations.toasts.noApprovedTemplates")
           );
           return;
         }
@@ -748,7 +749,7 @@ export default function AutomationsTemplatesPage() {
         emailProvider || undefined
       );
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.activateError")));
     } finally {
       setCreatingKey(null);
     }
@@ -766,11 +767,11 @@ export default function AutomationsTemplatesPage() {
     } catch (error: unknown) {
       const code = readAutomationBillingErrorCode(error);
       if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
-        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+        toast.error(t("automations.toasts.planRequired"));
         openPlanPicker();
         return;
       }
-      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.activateError")));
     } finally {
       setCreatingKey(null);
     }
@@ -783,25 +784,25 @@ export default function AutomationsTemplatesPage() {
       Boolean(picker.template.requiresWaTemplate);
     const needsEmail = Boolean(picker.template.requiresEmailProvider);
     if (needsWa && !picker.templateId) {
-      toast.error("בחרו תבנית WhatsApp מאושרת");
+      toast.error(t("automations.toasts.selectWaTemplate"));
       return;
     }
     if (needsEmail && !picker.emailProvider) {
-      toast.error("בחרו Gmail, Outlook / Microsoft 365 או מייל עסקי");
+      toast.error(t("automations.toasts.selectEmailProvider"));
       return;
     }
     if (picker.emailProvider === "gmail" && !gmailConnected) {
-      toast.error(EMAIL_PROVIDER_REQUIRED_HE);
+      toast.error(t("automations.email.providerRequired"));
       navigate(`/business/${businessId}/dashboard/automations/connections`);
       return;
     }
     if (picker.emailProvider === "outlook" && !outlookConnected) {
-      toast.error(EMAIL_PROVIDER_REQUIRED_HE);
+      toast.error(t("automations.email.providerRequired"));
       navigate(`/business/${businessId}/dashboard/automations/connections`);
       return;
     }
     if (picker.emailProvider === "business" && !picker.senderId) {
-      toast.error(BUSINESS_EMAIL_MISSING_TITLE_HE);
+      toast.error(t("automations.email.missingTitle"));
       return;
     }
     setCreatingKey(picker.template.key);
@@ -826,7 +827,7 @@ export default function AutomationsTemplatesPage() {
       }
       setPicker(null);
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.activateError")));
     } finally {
       setCreatingKey(null);
     }
@@ -836,17 +837,17 @@ export default function AutomationsTemplatesPage() {
     <div className="ax-page ax-templates">
       <header className="ax-page__header">
         <div>
-          <h1 className="ax-home__title">תבניות אוטומציה</h1>
+          <h1 className="ax-home__title">{t("automations.templates.title")}</h1>
           <p className="ax-home__subtitle">
-            בחרו אוטומציה ← בחרו תבנית WhatsApp מאושרת ← הפעלה מיידית.
+            {t("automations.templates.subtitle")}
           </p>
         </div>
         <div className="ax-templates__stats">
           <strong>{catalogCount}</strong>
           <span>
             {category === "all"
-              ? "תבניות בקטלוג"
-              : "תבניות בקטגוריה זו"}
+              ? t("automations.templates.catalogCount")
+              : t("automations.templates.categoryCount")}
           </span>
         </div>
       </header>
@@ -857,10 +858,10 @@ export default function AutomationsTemplatesPage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="חפש תבנית שעובדת"
+            placeholder={t("automations.templates.searchPlaceholder")}
           />
         </label>
-        <div className="ax-filters" role="tablist" aria-label="קטגוריות">
+        <div className="ax-filters" role="tablist" aria-label={t("automations.templates.categoriesAria")}>
           {visibleCategories.map((item) => (
             <button
               key={item.id}
@@ -870,7 +871,7 @@ export default function AutomationsTemplatesPage() {
               className={`ax-chip${category === item.id ? " ax-chip--active" : ""}`}
               onClick={() => setCategory(item.id)}
             >
-              {item.label}
+              {t(`automations.templates.categories.${item.id}`)}
             </button>
           ))}
         </div>
@@ -879,18 +880,18 @@ export default function AutomationsTemplatesPage() {
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען תבניות אוטומציה...
+          {t("automations.templates.loading")}
         </div>
       ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>אין תבניות להצגה בקטגוריה זו</strong>
-          <p>נסו קטגוריה אחרת או רעננו את העמוד.</p>
+          <strong>{t("automations.templates.emptyTitle")}</strong>
+          <p>{t("automations.templates.emptyText")}</p>
           <button
             type="button"
             className="ax-btn ax-btn--primary"
             onClick={() => void load()}
           >
-            רענון
+            {t("automations.templates.refresh")}
           </button>
         </div>
       ) : (
@@ -904,12 +905,12 @@ export default function AutomationsTemplatesPage() {
               Boolean(highlightedKey) &&
               cardMatchesHighlight(template, highlightedKey || "");
             const ctaLabel = !hasPlan
-              ? "בחר חבילת אוטומציות"
+              ? t("automations.templates.ctaPickPlan")
               : isWa
-                ? "הפעל — בחר תבנית הודעה"
+                ? t("automations.templates.ctaPickMessage")
                 : isAi
-                  ? "הפעל תבנית"
-                  : "הפעל עכשיו";
+                  ? t("automations.templates.ctaEnableAi")
+                  : t("automations.templates.ctaEnableNow");
 
             return (
               <article
@@ -930,31 +931,49 @@ export default function AutomationsTemplatesPage() {
                     {isWa ? (
                       <span className="ax-badge ax-badge--active">WhatsApp</span>
                     ) : (
-                      <span className="ax-badge ax-badge--active">זרימה</span>
+                      <span className="ax-badge ax-badge--active">{t("automations.templates.badgeFlow")}</span>
                     )}
                     {template.comingSoon ? (
-                      <span className="ax-badge ax-badge--paused">בקרוב</span>
+                      <span className="ax-badge ax-badge--paused">{t("automations.templates.badgeComingSoon")}</span>
                     ) : readiness.ready ? (
-                      <span className="ax-badge ax-badge--active">מוכן</span>
+                      <span className="ax-badge ax-badge--active">{t("automations.templates.badgeReady")}</span>
                     ) : (
-                      <span className="ax-badge ax-badge--paused">חסר משהו</span>
+                      <span className="ax-badge ax-badge--paused">{t("automations.templates.badgeMissing")}</span>
                     )}
                   </div>
                 </div>
 
-                <h3 className="ax-template-card__title">{template.name}</h3>
-                <p className="ax-template-card__desc">{template.description}</p>
+                <h3 className="ax-template-card__title">
+                  {(() => {
+                    const catalog = getAiTemplateByKey(
+                      template.key || template.recipeKey
+                    );
+                    return catalog
+                      ? aiTemplateTitle(t, catalog)
+                      : template.name;
+                  })()}
+                </h3>
+                <p className="ax-template-card__desc">
+                  {(() => {
+                    const catalog = getAiTemplateByKey(
+                      template.key || template.recipeKey
+                    );
+                    return catalog
+                      ? aiTemplateDescription(t, catalog)
+                      : template.description;
+                  })()}
+                </p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
-                    <em>טריגר</em>
+                    <em>{t("automations.templates.trigger")}</em>
                     {template.triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
-                    <em>תוצאה</em>
+                    <em>{t("automations.templates.result")}</em>
                     {template.resultLabels.join(" · ")}
                   </span>
                 </div>
@@ -964,8 +983,8 @@ export default function AutomationsTemplatesPage() {
                 ) : isWa ? (
                   <p className="ax-template-card__hint">
                     {readiness.suggestedWaTemplateName
-                      ? `תבנית מוצעת: ${readiness.suggestedWaTemplateName}`
-                      : "בהפעלה תבחרו תבנית WhatsApp מאושרת"}
+                      ? t("automations.templates.suggestedTemplate", { name: readiness.suggestedWaTemplateName })
+                      : t("automations.templates.chooseWaOnEnable")}
                   </p>
                 ) : null}
 
@@ -980,7 +999,7 @@ export default function AutomationsTemplatesPage() {
                   }
                   title={
                     !hasPlan
-                      ? "נדרשת חבילת אוטומציות פעילה"
+                      ? t("automations.templates.planRequiredTitle")
                       : !readiness.ready
                         ? readiness.blocker
                         : writeBlockedTitle
@@ -1014,7 +1033,16 @@ export default function AutomationsTemplatesPage() {
             >
               <X size={16} />
             </button>
-            <h2>{aiPreview.template.name}</h2>
+            <h2>
+              {(() => {
+                const catalog = getAiTemplateByKey(
+                  aiPreview.template.recipeKey || aiPreview.template.key
+                );
+                return catalog
+                  ? aiTemplateTitle(t, catalog)
+                  : aiPreview.template.name;
+              })()}
+            </h2>
             {(() => {
               const catalog = getAiTemplateByKey(
                 aiPreview.template.recipeKey || aiPreview.template.key
@@ -1023,30 +1051,30 @@ export default function AutomationsTemplatesPage() {
               return (
                 <>
                   <p>
-                    <strong>מתי מתחיל:</strong>{" "}
+                    <strong>{t("automations.templates.aiStartsWhen")}</strong>{" "}
                     {explanation?.startsWhen || aiPreview.template.triggerLabel}
                   </p>
                   <p>
-                    <strong>מה ה-AI עושה:</strong>{" "}
+                    <strong>{t("automations.templates.aiDoes")}</strong>{" "}
                     {explanation?.aiDoes ||
                       aiPreview.template.resultLabels[0] ||
-                      "—"}
+                      t("automations.templates.aiDefaultResult")}
                   </p>
                   <p>
-                    <strong>אחר כך:</strong>{" "}
+                    <strong>{t("automations.templates.aiAfterwards")}</strong>{" "}
                     {explanation?.afterwards ||
                       aiPreview.template.resultLabels[1] ||
-                      "—"}
+                      t("automations.templates.aiDefaultResult")}
                   </p>
                   <p>
-                    <strong>מערכות:</strong>{" "}
-                    {(explanation?.systems || ["CRM", "התראות"]).join(" · ")}
+                    <strong>{t("automations.templates.aiSystems")}</strong>{" "}
+                    {(explanation?.systems || ["CRM", t("automations.ai.defaultSystems")]).join(" · ")}
                   </p>
                   <p>
-                    <strong>פעולות משוערות:</strong>{" "}
+                    <strong>{t("automations.templates.aiEstimated")}</strong>{" "}
                     {explanation?.estimatedActions ?? 2}
                   </p>
-                  <p className="ax-template-card__hint">{AI_BILLING_SAFE_MESSAGE}</p>
+                  <p className="ax-template-card__hint">{t("automations.ai.billingSafe")}</p>
                 </>
               );
             })()}
@@ -1056,7 +1084,7 @@ export default function AutomationsTemplatesPage() {
                 className="af-btn"
                 onClick={() => setAiPreview(null)}
               >
-                ביטול
+                {t("automations.common.cancel")}
               </button>
               <button
                 type="button"
@@ -1074,7 +1102,7 @@ export default function AutomationsTemplatesPage() {
                 {creatingKey ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : null}
-                {hasPlan ? "הפעל תבנית" : "בחר חבילת אוטומציות"}
+                {hasPlan ? t("automations.templates.ctaEnableAi") : t("automations.templates.ctaPickPlan")}
               </button>
             </div>
           </div>
@@ -1091,15 +1119,15 @@ export default function AutomationsTemplatesPage() {
             >
               <X size={16} />
             </button>
-            <h2>הפעלת «{picker.template.name}»</h2>
+            <h2>{t("automations.templates.activateTitle", { name: picker.template.name })}</h2>
             {picker.template.engine === "whatsapp_simple" ||
             picker.template.requiresWaTemplate ? (
               <>
                 <p>
-                  בחרו תבנית WhatsApp מאושרת מהרשימה שלכם — האוטומציה תופעל מיד.
+                  {t("automations.templates.chooseApprovedWa")}
                 </p>
                 <label>
-                  תבנית הודעה מאושרת
+                  {t("automations.templates.approvedMessageTemplate")}
                   <select
                     value={picker.templateId}
                     onChange={(e) =>
@@ -1108,7 +1136,7 @@ export default function AutomationsTemplatesPage() {
                       )
                     }
                   >
-                    <option value="">בחרו תבנית</option>
+                    <option value="">{t("automations.templates.chooseTemplate")}</option>
                     {waTemplates.map((tpl) => {
                       const id = getWaTemplateId(tpl);
                       return (
@@ -1127,17 +1155,17 @@ export default function AutomationsTemplatesPage() {
                 </label>
                 {!waTemplates.length ? (
                   <p className="ax-template-card__blocker">
-                    אין תבניות מאושרות עדיין — הכינו מהרשימה למעלה ואשרו ב-Meta.
+                    {t("automations.templates.noApprovedYet")}
                   </p>
                 ) : null}
               </>
             ) : (
-              <p>בחרו דרך איזה חשבון לשלוח את האימייל.</p>
+              <p>{t("automations.templates.chooseEmailAccount")}</p>
             )}
             {picker.template.requiresEmailProvider ? (
               <>
                 <label>
-                  חשבון אימייל
+                  {t("automations.templates.emailAccount")}
                   <select
                     value={picker.emailProvider}
                     onChange={(e) => {
@@ -1157,10 +1185,12 @@ export default function AutomationsTemplatesPage() {
                       );
                     }}
                   >
-                    <option value="">בחרו ספק</option>
+                    <option value="">{t("automations.templates.chooseProvider")}</option>
                     {EMAIL_PROVIDER_OPTIONS.map((provider) => (
                       <option key={provider.id} value={provider.id}>
-                        {provider.label}
+                        {provider.id === "business"
+                          ? t("automations.email.business")
+                          : provider.label}
                       </option>
                     ))}
                   </select>
@@ -1168,7 +1198,7 @@ export default function AutomationsTemplatesPage() {
                 {picker.emailProvider === "business" ? (
                   businessSenders.length ? (
                     <label>
-                      מאת
+                      {t("automations.templates.from")}
                       <select
                         value={picker.senderId}
                         onChange={(e) =>
@@ -1180,7 +1210,7 @@ export default function AutomationsTemplatesPage() {
                         }
                       >
                         {businessSenders.length > 1 ? (
-                          <option value="">בחרו מייל עסקי מאומת</option>
+                          <option value="">{t("automations.templates.chooseBusinessEmail")}</option>
                         ) : null}
                         {businessSenders.map((sender) => (
                           <option key={sender.senderId} value={sender.senderId}>
@@ -1190,15 +1220,15 @@ export default function AutomationsTemplatesPage() {
                       </select>
                     </label>
                   ) : (
-                    <div className="ax-template-card__blocker" dir="rtl">
+                    <div className="ax-template-card__blocker" dir={dir}>
                       <p>
-                        <strong>{BUSINESS_EMAIL_MISSING_TITLE_HE}</strong>
+                        <strong>{t("automations.email.missingTitle")}</strong>
                       </p>
-                      <p>{BUSINESS_EMAIL_MISSING_BODY_HE}</p>
+                      <p>{t("automations.email.missingBody")}</p>
                       <a
                         href={`/business/${businessId}/dashboard/integrations#email-senders`}
                       >
-                        {BUSINESS_EMAIL_SETTINGS_CTA_HE}
+                        {t("automations.email.settingsCta")}
                       </a>
                     </div>
                   )
@@ -1211,7 +1241,7 @@ export default function AutomationsTemplatesPage() {
                 className="af-btn"
                 onClick={() => setPicker(null)}
               >
-                ביטול
+                {t("automations.common.cancel")}
               </button>
               <button
                 type="button"
@@ -1231,7 +1261,7 @@ export default function AutomationsTemplatesPage() {
                 {creatingKey ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : null}
-                הפעל עכשיו
+                {t("automations.templates.ctaEnableNow")}
               </button>
             </div>
           </div>

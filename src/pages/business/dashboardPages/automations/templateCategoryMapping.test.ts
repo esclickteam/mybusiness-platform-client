@@ -51,8 +51,8 @@ describe("templateCategoryMapping trigger/result labels", () => {
 
   it("exposes clear trigger and result for system recipes", () => {
     const row = recipe({ key: "lead_multi_route" });
-    expect(getRecipeTriggerLabel(row)).toContain("ליד");
-    expect(getRecipeResultLabel(row)).toMatch(/WhatsApp|משימה|התראה/);
+    expect(getRecipeTriggerLabel(row)).toMatch(/ליד|lead/i);
+    expect(getRecipeResultLabel(row)).toMatch(/WhatsApp|משימה|התראה|task|alert/i);
   });
 
   it("overrides path-language names and descriptions", () => {

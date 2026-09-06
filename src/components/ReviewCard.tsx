@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@/components/ui/Icon";
 import ReviewDetailModal from "@/components/ReviewDetailModal";
 import {
@@ -12,6 +13,7 @@ import {
   getReviewText,
   type ReviewRecord,
 } from "@/utils/reviewDisplay";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type ReviewCardProps = {
   review?: ReviewRecord | null;
@@ -23,9 +25,11 @@ type ReviewCardProps = {
 function StarDisplay({
   rating,
   size = "sm",
+  ariaLabel,
 }: {
   rating: number;
   size?: "xs" | "sm" | "md";
+  ariaLabel: string;
 }) {
   const safeRating = Math.max(0, Math.min(5, rating));
   const full = Math.floor(safeRating);
@@ -38,7 +42,7 @@ function StarDisplay({
   return (
     <span
       dir="ltr"
-      aria-label={`דירוג ${safeRating.toFixed(1)} מתוך 5`}
+      aria-label={ariaLabel}
       className={[
         "inline-flex items-center whitespace-nowrap tracking-[1px] text-amber-400",
         sizeClass,
@@ -57,12 +61,14 @@ export default function ReviewCard({
   highlighted = false,
   reviewDomId,
 }: ReviewCardProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [modalOpen, setModalOpen] = useState(false);
 
   const ratingEntries = useMemo(() => {
     if (!review) return [];
     return getReviewRatingEntries(review);
-  }, [review]);
+  }, [review, i18n.language]);
 
   if (!review) return null;
 
@@ -72,6 +78,10 @@ export default function ReviewCard({
   const reviewDate = getReviewDateLabel(review.createdAt || review.date);
   const ratingText = getReviewRatingLabel(average);
   const isInteractive = !isPreview;
+  const starsAria = t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+    rating: average.toFixed(1),
+  });
+  const initialFallback = t("leftover.reviews.initialFallback", "C");
 
   const cardBody = (
     <>
@@ -82,7 +92,7 @@ export default function ReviewCard({
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 text-lg font-black text-violet-700 shadow-sm">
-              {clientName.trim().charAt(0) || "ל"}
+              {clientName.trim().charAt(0) || initialFallback}
             </div>
 
             <div className="min-w-0">
@@ -91,10 +101,12 @@ export default function ReviewCard({
               </h3>
 
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <StarDisplay rating={average} size="sm" />
+                <StarDisplay rating={average} size="sm" ariaLabel={starsAria} />
 
                 <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-black text-amber-700">
-                  {average ? `${average.toFixed(1)} / 5` : "אין דירוג"}
+                  {average
+                    ? `${average.toFixed(1)} / 5`
+                    : t("leftover.reviews.noRating", "No rating")}
                 </span>
 
                 <span className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-black text-violet-700">
@@ -119,16 +131,16 @@ export default function ReviewCard({
         ) : (
           <div className="mt-4 rounded-[1.25rem] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-3">
             <p className="text-sm font-semibold text-slate-400">
-              לא נכתבה תגובה מילולית לביקורת הזו.
+              {t("leftover.reviews.noVerbal", "No written comment was added to this review.")}
             </p>
           </div>
         )}
 
         {isInteractive && (
           <p className="mt-4 text-xs font-black text-violet-600">
-            לחצו לצפייה בפירוט מלא
+            {t("leftover.reviews.clickForDetails", "Click to view full details")}
             {ratingEntries.length > 0
-              ? ` · ${ratingEntries.length} פרמטרים שדורגו`
+              ? ` · ${t("leftover.reviews.paramsRated", "{{count}} rated parameters", { count: ratingEntries.length })}`
               : ""}
           </p>
         )}
@@ -142,10 +154,11 @@ export default function ReviewCard({
         <button
           type="button"
           id={reviewDomId}
-          dir="rtl"
+          dir={pageDir}
           onClick={() => setModalOpen(true)}
           className={[
-            "group relative w-full overflow-hidden rounded-[1.6rem] border bg-white p-4 text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition",
+            "group relative w-full overflow-hidden rounded-[1.6rem] border bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition",
+            pageDir === "rtl" ? "text-right" : "text-left",
             "cursor-pointer hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(124,58,237,0.16)] focus:outline-none focus:ring-4 focus:ring-violet-100",
             highlighted
               ? "border-violet-400 ring-4 ring-violet-200 shadow-[0_24px_70px_rgba(124,58,237,0.24)]"
@@ -157,9 +170,10 @@ export default function ReviewCard({
       ) : (
         <article
           id={reviewDomId}
-          dir="rtl"
+          dir={pageDir}
           className={[
-            "group relative overflow-hidden rounded-[1.6rem] border border-white/80 bg-white p-4 text-right shadow-sm",
+            "group relative overflow-hidden rounded-[1.6rem] border border-white/80 bg-white p-4 shadow-sm",
+            pageDir === "rtl" ? "text-right" : "text-left",
             highlighted
               ? "border-violet-400 ring-4 ring-violet-200"
               : "",

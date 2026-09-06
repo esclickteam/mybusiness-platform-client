@@ -1,3 +1,6 @@
+import i18n from "../i18n/i18n";
+import { getIntlLocale } from "../i18n/localeUtils";
+
 export type RatingKey =
   | "service"
   | "professionalism"
@@ -60,20 +63,26 @@ const RATING_FIELD_ORDER: RatingKey[] = [
   "goal",
 ];
 
-const ratingLabels: Record<string, RatingMeta> = {
-  service: { label: "שירות", icon: "service" },
-  professional: { label: "מקצועיות", icon: "professionalism" },
-  professionalism: { label: "מקצועיות", icon: "professionalism" },
-  timing: { label: "עמידה בזמנים", icon: "timeliness" },
-  timeliness: { label: "עמידה בזמנים", icon: "timeliness" },
-  availability: { label: "זמינות", icon: "availability" },
-  value: { label: "תמורה למחיר", icon: "valueForMoney" },
-  valueForMoney: { label: "תמורה למחיר", icon: "valueForMoney" },
-  goal: { label: "השגת מטרה", icon: "goalAchievement" },
-  goalAchievement: { label: "השגת מטרה", icon: "goalAchievement" },
-  experience: { label: "חוויה כללית", icon: "overall" },
-  overall: { label: "חוויה כללית", icon: "overall" },
+const ratingLabelKeys: Record<string, { labelKey: string; fallback: string; icon: string }> = {
+  service: { labelKey: "leftover.reviews.service", fallback: "Service", icon: "service" },
+  professional: { labelKey: "leftover.reviews.professional", fallback: "Professionalism", icon: "professionalism" },
+  professionalism: { labelKey: "leftover.reviews.professional", fallback: "Professionalism", icon: "professionalism" },
+  timing: { labelKey: "leftover.reviews.timing", fallback: "Punctuality", icon: "timeliness" },
+  timeliness: { labelKey: "leftover.reviews.timing", fallback: "Punctuality", icon: "timeliness" },
+  availability: { labelKey: "leftover.reviews.availability", fallback: "Availability", icon: "availability" },
+  value: { labelKey: "leftover.reviews.value", fallback: "Value for money", icon: "valueForMoney" },
+  valueForMoney: { labelKey: "leftover.reviews.value", fallback: "Value for money", icon: "valueForMoney" },
+  goal: { labelKey: "leftover.reviews.goal", fallback: "Goal achieved", icon: "goalAchievement" },
+  goalAchievement: { labelKey: "leftover.reviews.goal", fallback: "Goal achieved", icon: "goalAchievement" },
+  experience: { labelKey: "leftover.reviews.experience", fallback: "Overall experience", icon: "overall" },
+  overall: { labelKey: "leftover.reviews.experience", fallback: "Overall experience", icon: "overall" },
 };
+
+function ratingMeta(key: string): RatingMeta {
+  const def = ratingLabelKeys[key];
+  if (!def) return { label: key, icon: "rating" };
+  return { label: i18n.t(def.labelKey, def.fallback), icon: def.icon };
+}
 
 const RATING_ALIASES: Record<string, RatingKey> = {
   overall: "overall",
@@ -105,7 +114,11 @@ export function getReviewClientName(review: ReviewRecord) {
   }
 
   if (review.client && typeof review.client === "object") {
-    return review.client.name || review.client.fullName || "לקוח אנונימי";
+    return (
+      review.client.name ||
+      review.client.fullName ||
+      i18n.t("leftover.reviews.anonymous", "Anonymous customer")
+    );
   }
 
   return (
@@ -113,7 +126,7 @@ export function getReviewClientName(review: ReviewRecord) {
     review.userName ||
     review.user ||
     review.name ||
-    "לקוח אנונימי"
+    i18n.t("leftover.reviews.anonymous", "Anonymous customer")
   );
 }
 
@@ -122,12 +135,12 @@ export function getReviewText(review: ReviewRecord) {
 }
 
 export function getReviewDateLabel(date?: string | Date) {
-  if (!date) return "לא צוין תאריך";
+  if (!date) return i18n.t("leftover.reviews.noDate", "Date not specified");
 
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return String(date);
 
-  return parsed.toLocaleDateString("he-IL", {
+  return parsed.toLocaleDateString(getIntlLocale(i18n.language), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -146,10 +159,12 @@ export function getReviewRatingEntries(review: ReviewRecord) {
     if (numericValue === null) continue;
 
     const canonicalKey = RATING_ALIASES[rawKey] || rawKey;
-    const meta = ratingLabels[canonicalKey] || ratingLabels[rawKey] || {
-      label: rawKey,
-      icon: "rating",
-    };
+    const meta = ratingLabelKeys[canonicalKey] || ratingLabelKeys[rawKey]
+      ? ratingMeta(canonicalKey in ratingLabelKeys ? canonicalKey : rawKey)
+      : {
+          label: rawKey,
+          icon: "rating",
+        };
 
     merged.set(canonicalKey, {
       key: canonicalKey,
@@ -182,20 +197,20 @@ export function getReviewAverage(
 }
 
 export function getReviewRatingLabel(average: number) {
-  if (!average) return "ללא דירוג";
-  if (average >= 4.7) return "מצוין";
-  if (average >= 4.3) return "מעולה";
-  if (average >= 4) return "טוב מאוד";
-  if (average >= 3) return "טוב";
-  return "דורש שיפור";
+  if (!average) return i18n.t("leftover.reviews.noneYet", "Not rated yet");
+  if (average >= 4.7) return i18n.t("leftover.reviews.outstanding", "Outstanding");
+  if (average >= 4.3) return i18n.t("leftover.reviews.excellent", "Excellent");
+  if (average >= 4) return i18n.t("leftover.reviews.veryGood", "Very good");
+  if (average >= 3) return i18n.t("leftover.reviews.good", "Good");
+  return i18n.t("leftover.reviews.needsWork", "Needs improvement");
 }
 
 export const REVIEW_RATING_PARAMETER_DEFINITIONS = [
-  { label: "חוויה כללית", required: true },
-  { label: "איכות השירות", required: true },
-  { label: "מקצועיות", required: true },
-  { label: "עמידה בזמנים", required: false },
-  { label: "זמינות", required: false },
-  { label: "תמורה למחיר", required: false },
-  { label: "השגת מטרה", required: false },
+  { labelKey: "leftover.reviews.experience", fallback: "Overall experience", required: true },
+  { labelKey: "leftover.reviews.serviceQuality", fallback: "Service quality", required: true },
+  { labelKey: "leftover.reviews.professional", fallback: "Professionalism", required: true },
+  { labelKey: "leftover.reviews.timing", fallback: "Punctuality", required: false },
+  { labelKey: "leftover.reviews.availability", fallback: "Availability", required: false },
+  { labelKey: "leftover.reviews.value", fallback: "Value for money", required: false },
+  { labelKey: "leftover.reviews.goal", fallback: "Goal achieved", required: false },
 ] as const;

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlignCenter,
   AlignLeft,
@@ -42,19 +43,19 @@ type VisualTextSettingsPanelProps = {
 };
 
 const FONT_WEIGHTS = [
-  { label: "רגיל", value: "400" },
-  { label: "בינוני", value: "500" },
-  { label: "חצי מודגש", value: "600" },
-  { label: "מודגש", value: "700" },
-  { label: "שחור", value: "900" },
+  { label: "Regular", value: "400" },
+  { label: "Medium", value: "500" },
+  { label: "Semibold", value: "600" },
+  { label: "Bold", value: "700" },
+  { label: "Black", value: "900" },
 ];
 
 const STYLE_LABELS: Record<string, string> = {
-  h1: "כותרת 1",
-  h2: "כותרת 2",
-  h3: "כותרת 3",
-  h4: "כותרת 4",
-  paragraph: "פסקה",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  paragraph: "Paragraph",
 };
 
 const LINE_HEIGHTS = ["1", "1.15", "1.3", "1.5", "1.7", "2"];
@@ -263,6 +264,7 @@ function ColorSwatch({
 export default function VisualTextSettingsPanel({
   editor,
 }: VisualTextSettingsPanelProps) {
+  const { t } = useTranslation();
   const element = editor?.selectedElement;
   const elementId = getElementId(element);
   const node = getElementNode(element);
@@ -574,17 +576,17 @@ export default function VisualTextSettingsPanel({
         }}
       >
         <div className="text-[15px] font-semibold text-slate-900">
-          הגדרות טקסט
+          {t("studio.textSettings.title")}
         </div>
         <div className="flex items-center gap-1">
-          <span className="inline-flex h-7 w-7 items-center justify-center text-slate-400" title="עזרה" aria-label="עזרה">
+          <span className="inline-flex h-7 w-7 items-center justify-center text-slate-400" title={t("studio.textSettings.help")} aria-label={t("studio.textSettings.help")}>
             <HelpCircle className="h-4 w-4" />
           </span>
           <button
             type="button"
             data-testid="text-settings-close"
-            title="סגירה"
-            aria-label="סגירה"
+            title={t("studio.textSettings.close")}
+            aria-label={t("studio.textSettings.close")}
             onClick={() => {
               dismissedIdRef.current = elementId;
               setOpen(false);
@@ -602,23 +604,23 @@ export default function VisualTextSettingsPanel({
             data-testid="text-settings-inline-hint"
             className="rounded-lg bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800"
           >
-            העיצוב חל על הטקסט שנבחר.
+            {t("studio.textSettings.inlineHint")}
           </div>
         ) : (
           <div
             data-testid="text-settings-element-hint"
             className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500"
           >
-            העיצוב חל על כל אלמנט הטקסט.
+            {t("studio.textSettings.elementHint")}
           </div>
         )}
 
         <div>
-          <FieldLabel>סגנון</FieldLabel>
+          <FieldLabel>{t("studio.textSettings.style")}</FieldLabel>
           <PanelSelect
             testId="text-settings-style"
             value={styleId}
-            title="סגנון טקסט"
+            title={t("studio.textSettings.styleTitle")}
             onChange={(id) => {
               const preset = TEXT_STYLE_PRESETS.find((item) => item.id === id);
               if (preset) apply(preset.style, true);
@@ -626,19 +628,19 @@ export default function VisualTextSettingsPanel({
           >
             {TEXT_STYLE_PRESETS.map((item) => (
               <option key={item.id} value={item.id}>
-                {STYLE_LABELS[item.id] || item.label}
+                {t(`studio.textSettings.${item.id}`, STYLE_LABELS[item.id] || item.label)}
               </option>
             ))}
           </PanelSelect>
         </div>
 
         <div>
-          <FieldLabel>גופן</FieldLabel>
+          <FieldLabel>{t("studio.textSettings.font")}</FieldLabel>
           <div data-testid="text-settings-font-family">
             <StudioFontPicker
               value={currentFont}
-              searchPlaceholder="חיפוש גופנים..."
-              closeAriaLabel="סגור גופנים"
+              searchPlaceholder={t("studio.textSettings.searchFonts")}
+              closeAriaLabel={t("studio.textSettings.closeFonts")}
               onChange={(fontFamily) =>
                 apply({
                   "font-family": fontFamily,
@@ -657,7 +659,7 @@ export default function VisualTextSettingsPanel({
                     ? "700"
                     : "400"
               }
-              title="משקל"
+              title={t("studio.textSettings.weight")}
               onChange={(fontWeight) =>
                 apply({
                   "font-weight": fontWeight,
@@ -667,7 +669,7 @@ export default function VisualTextSettingsPanel({
             >
               {FONT_WEIGHTS.map((item) => (
                 <option key={item.value} value={item.value}>
-                  {item.label}
+                  {t(`studio.textSettings.w${item.value}`, item.label)}
                 </option>
               ))}
             </PanelSelect>
@@ -675,7 +677,7 @@ export default function VisualTextSettingsPanel({
         </div>
 
         <div>
-          <FieldLabel>גודל גופן (px)</FieldLabel>
+          <FieldLabel>{t("studio.textSettings.fontSize")}</FieldLabel>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -683,7 +685,7 @@ export default function VisualTextSettingsPanel({
               max={120}
               value={Math.min(120, Math.max(8, sizePx))}
               data-testid="text-settings-font-size-slider"
-              aria-label="גודל גופן"
+              aria-label={t("studio.textSettings.fontSizeAria")}
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => {
                 const fontSize = `${event.target.value}px`;
@@ -700,7 +702,7 @@ export default function VisualTextSettingsPanel({
               max={120}
               value={Math.round(sizePx) || 16}
               data-testid="text-settings-font-size"
-              aria-label="גודל גופן"
+              aria-label={t("studio.textSettings.fontSizeAria")}
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => {
                 const fontSize = `${event.target.value}px`;
@@ -717,7 +719,7 @@ export default function VisualTextSettingsPanel({
         <div className="flex flex-wrap items-center gap-1">
           <ToggleButton
             testId="text-settings-bold"
-            title="מודגש"
+            title={t("studio.textSettings.bold")}
             disabled={locked}
             active={boldActive}
             onClick={() =>
@@ -731,7 +733,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-italic"
-            title="נטוי"
+            title={t("studio.textSettings.italic")}
             disabled={locked}
             active={italicActive}
             onClick={() =>
@@ -745,7 +747,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-underline"
-            title="קו תחתון"
+            title={t("studio.textSettings.underline")}
             disabled={locked}
             active={underlineActive}
             onClick={() =>
@@ -759,7 +761,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ColorSwatch
             testId="text-settings-color"
-            title="צבע טקסט"
+            title={t("studio.textSettings.textColor")}
             value={isTransparentColor(currentColor) ? "#111827" : currentColor}
             fallback="#111827"
             onChange={(value) => {
@@ -783,7 +785,7 @@ export default function VisualTextSettingsPanel({
           </ColorSwatch>
           <ColorSwatch
             testId="text-settings-highlight"
-            title="הדגשה"
+            title={t("studio.textSettings.highlight")}
             value={
               isTransparentColor(currentHighlight) ? "#fff59d" : currentHighlight
             }
@@ -802,7 +804,7 @@ export default function VisualTextSettingsPanel({
           </ColorSwatch>
           <ToggleButton
             testId="text-settings-link"
-            title="קישור"
+            title={t("studio.textSettings.link")}
             disabled={locked}
             onClick={() => editor?.openLinkSettings?.(elementId)}
           >
@@ -813,7 +815,7 @@ export default function VisualTextSettingsPanel({
         <div className="flex flex-wrap items-center gap-1">
           <ToggleButton
             testId="text-settings-align-left"
-            title="יישור לשמאל"
+            title={t("studio.textSettings.alignLeft")}
             disabled={locked}
             active={currentAlign === "left"}
             onClick={() =>
@@ -827,7 +829,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-align-center"
-            title="יישור למרכז"
+            title={t("studio.textSettings.alignCenter")}
             disabled={locked}
             active={currentAlign === "center"}
             onClick={() =>
@@ -841,7 +843,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-align-right"
-            title="יישור לימין"
+            title={t("studio.textSettings.alignRight")}
             disabled={locked}
             active={currentAlign === "right"}
             onClick={() =>
@@ -855,7 +857,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-ltr"
-            title="משמאל לימין"
+            title={t("studio.textSettings.ltr")}
             disabled={locked}
             active={currentDirection === "ltr"}
             onClick={() =>
@@ -873,7 +875,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-rtl"
-            title="מימין לשמאל"
+            title={t("studio.textSettings.rtl")}
             disabled={locked}
             active={currentDirection === "rtl"}
             onClick={() =>
@@ -893,7 +895,7 @@ export default function VisualTextSettingsPanel({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <FieldLabel>גובה שורה</FieldLabel>
+            <FieldLabel>{t("studio.textSettings.lineHeight")}</FieldLabel>
             <PanelSelect
               testId="text-settings-line-height"
               value={currentLineHeight}
@@ -904,7 +906,7 @@ export default function VisualTextSettingsPanel({
                 )
               }
             >
-              <option value="">ברירת מחדל</option>
+              <option value="">{t("studio.textSettings.default")}</option>
               {LINE_HEIGHTS.map((value) => (
                 <option key={value} value={value}>
                   {value}
@@ -913,7 +915,7 @@ export default function VisualTextSettingsPanel({
             </PanelSelect>
           </div>
           <div>
-            <FieldLabel>ריווח אותיות</FieldLabel>
+            <FieldLabel>{t("studio.textSettings.letterSpacing")}</FieldLabel>
             <PanelSelect
               testId="text-settings-letter-spacing"
               value={currentLetterSpacing}
@@ -927,7 +929,7 @@ export default function VisualTextSettingsPanel({
                 )
               }
             >
-              <option value="">ברירת מחדל</option>
+              <option value="">{t("studio.textSettings.default")}</option>
               {LETTER_SPACINGS.map((value) => (
                 <option key={value} value={value}>
                   {value}
@@ -938,13 +940,13 @@ export default function VisualTextSettingsPanel({
         </div>
 
         <div>
-          <FieldLabel>קישור</FieldLabel>
+          <FieldLabel>{t("studio.textSettings.link")}</FieldLabel>
           <div className="flex gap-2">
             <input
               data-testid="text-settings-link-input"
               value={linkValue}
-              placeholder="הדביקו קישור"
-              aria-label="קישור"
+              placeholder={t("studio.textSettings.pasteLink")}
+              aria-label={t("studio.textSettings.link")}
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => setLinkValue(event.target.value)}
               className="h-9 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-violet-400"
@@ -952,8 +954,8 @@ export default function VisualTextSettingsPanel({
             <button
               type="button"
               data-testid="text-settings-link-apply"
-              title="החל"
-              aria-label="החל"
+              title={t("studio.textSettings.apply")}
+              aria-label={t("studio.textSettings.apply")}
               disabled={locked || !linkValue.trim()}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -972,7 +974,7 @@ export default function VisualTextSettingsPanel({
               }}
               className="h-9 rounded-lg bg-slate-900 px-3 text-xs font-bold text-white disabled:opacity-40"
             >
-              החל
+              {t("studio.textSettings.apply")}
             </button>
           </div>
         </div>
@@ -981,13 +983,13 @@ export default function VisualTextSettingsPanel({
           <button
             type="button"
             data-testid="text-settings-effects"
-            title="אפקטים"
+            title={t("studio.textSettings.effects")}
             onClick={() => setEffectsOpen((value) => !value)}
             className="flex w-full items-center justify-between py-2 text-sm font-semibold text-slate-800"
           >
             <span className="inline-flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-violet-500" />
-              אפקטים
+              {t("studio.textSettings.effects")}
             </span>
             <ChevronDown
               className={`h-4 w-4 text-slate-400 transition ${
@@ -1041,7 +1043,9 @@ export default function VisualTextSettingsPanel({
                     : "border-slate-200 text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                {hasTextGradient ? "נקה גרדיאנט טקסט" : "גרדיאנט טקסט"}
+                {hasTextGradient
+                  ? t("studio.textSettings.clearGradient")
+                  : t("studio.textSettings.textGradient")}
               </button>
             </div>
           ) : null}

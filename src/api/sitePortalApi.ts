@@ -4,6 +4,7 @@ import {
   setSitePortalToken,
   type SitePortalMember,
 } from "../utils/sitePortalSession";
+import i18n from "../i18n/i18n";
 
 const RAW_API_BASE_URL = String(
   import.meta.env.VITE_API_URL ||
@@ -71,7 +72,7 @@ async function portalFetch<T>(
   const data = await res.json().catch(() => null);
 
   if (!res.ok || !data?.success) {
-    throw new Error(data?.error || "שגיאה באזור האישי");
+    throw new Error(data?.error || i18n.t("leftover.errors.portalArea"));
   }
 
   return data as T;
@@ -302,7 +303,7 @@ import API from "../api";
 export async function listSitePortalMembers(siteId: string) {
   const { data } = await API.get(`/site-builder/sites/${siteId}/portal/members`);
   if (!data?.success) {
-    throw new Error(data?.error || "שגיאה בטעינת חברים");
+    throw new Error(data?.error || i18n.t("leftover.errors.loadMembers"));
   }
   return data as {
     success: true;
@@ -333,7 +334,7 @@ export async function createSitePortalMember(
     body
   );
   if (!data?.success) {
-    throw new Error(data?.error || "שגיאה ביצירת חבר");
+    throw new Error(data?.error || i18n.t("leftover.errors.createMember"));
   }
   return data as {
     success: true;
@@ -354,7 +355,7 @@ export async function updateSitePortalMember(
     body
   );
   if (!data?.success) {
-    throw new Error(data?.error || "שגיאה בעדכון חבר");
+    throw new Error(data?.error || i18n.t("leftover.errors.updateMember"));
   }
   return data as { success: true; member: SitePortalMember };
 }
@@ -364,7 +365,7 @@ export async function deleteSitePortalMember(siteId: string, memberId: string) {
     `/site-builder/sites/${siteId}/portal/members/${memberId}`
   );
   if (!data?.success) {
-    throw new Error(data?.error || "שגיאה במחיקת חבר");
+    throw new Error(data?.error || i18n.t("leftover.errors.deleteMember"));
   }
   return data;
 }
@@ -374,7 +375,7 @@ export async function reinviteSitePortalMember(siteId: string, memberId: string)
     `/site-builder/sites/${siteId}/portal/members/${memberId}/invite`
   );
   if (!data?.success) {
-    throw new Error(data?.error || "שגיאה ביצירת הזמנה");
+    throw new Error(data?.error || i18n.t("leftover.errors.createInvite"));
   }
   return data as {
     success: true;

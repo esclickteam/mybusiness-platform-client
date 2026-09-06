@@ -1,3 +1,5 @@
+import i18n from "../../../../../i18n/i18n";
+
 /** Meta Instant Form `locale` values (Graph API enum). */
 export const META_LEAD_FORM_LOCALES = [
   { value: "he_IL", label: "עברית" },
@@ -50,11 +52,22 @@ export function isRtlLeadFormLocale(locale: string) {
 export function leadFormContactLabel(
   type: string,
   locale: string,
-  fields: Array<{ type: string; labelHe: string; labelEn: string }>
+  fields: Array<{ type: string; labelEn?: string; labelHe?: string }>
 ) {
   const field = fields.find((item) => item.type === type);
   if (!field) return type;
-  return String(locale || "").toLowerCase().startsWith("he")
-    ? field.labelHe
-    : field.labelEn;
+  const lng = formLocaleToAppLng(locale);
+  return i18n.t(`leftover.metaLeadForm.${type}`, {
+    lng,
+    defaultValue: field.labelEn || field.labelHe || type,
+  });
+}
+
+export function formLocaleToAppLng(locale: string) {
+  const code = String(locale || "").toLowerCase().replace("_", "-");
+  if (code.startsWith("he")) return "he";
+  if (code.startsWith("ar")) return "ar";
+  if (code.startsWith("es")) return "es";
+  if (code.startsWith("pt-br") || code.startsWith("ptbr")) return "pt-BR";
+  return "en";
 }

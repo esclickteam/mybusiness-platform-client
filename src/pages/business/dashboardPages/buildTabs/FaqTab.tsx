@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type FaqItem = {
   _id?: string;
@@ -38,6 +40,8 @@ export default function FaqTab({
   navigate,
   businessId,
 }: FaqTabProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [openAnswers, setOpenAnswers] = useState<string[]>([]);
   const [newFaq, setNewFaq] = useState<FaqFormState>({
     question: "",
@@ -95,14 +99,14 @@ export default function FaqTab({
       }
     } catch (err) {
       console.error("❌ שגיאה בהוספת שאלה נפוצה:", err);
-      alert("לא הצלחנו להוסיף את השאלה. נסה שוב.");
+      alert(t("business.faq.addFailed", "לא הצלחנו להוסיף את השאלה. נסה שוב."));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    const approved = window.confirm("למחוק את השאלה הזו?");
+    const approved = window.confirm(t("buildPage.alerts.deleteFaqConfirm", "למחוק את השאלה?"));
     if (!approved || deletingId) return;
 
     try {
@@ -124,7 +128,7 @@ export default function FaqTab({
       }
     } catch (err) {
       console.error("❌ שגיאה במחיקת שאלה נפוצה:", err);
-      alert("לא הצלחנו למחוק את השאלה. נסה שוב.");
+      alert(t("business.faq.deleteFailed", "לא הצלחנו למחוק את השאלה. נסה שוב."));
     } finally {
       setDeletingId(null);
     }
@@ -170,24 +174,24 @@ export default function FaqTab({
       setOpenAnswers((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (err) {
       console.error("❌ שגיאה בשמירת שאלה נפוצה:", err);
-      alert("לא הצלחנו לשמור את השינויים. נסה שוב.");
+      alert(t("business.faq.saveFailed", "לא הצלחנו לשמור את השינויים. נסה שוב."));
     } finally {
       setSavingEditId(null);
     }
   };
 
   return (
-    <div dir="rtl" className="w-full text-right">
+    <div dir={pageDir} className="w-full text-right">
       {!isPreview && (
         <div className="mb-6 rounded-[1.5rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-4 shadow-sm sm:p-5">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <h2 className="text-xl font-black tracking-tight text-slate-800">
-                הוספת שאלה חדשה
+                {t("business.faq.addNewTitle", "הוספת שאלה חדשה")}
               </h2>
 
               <p className="mt-1 text-sm leading-6 text-slate-500">
-                הוסף שאלה ותשובה שיופיעו בפרופיל הציבורי של העסק.
+                {t("business.faq.addNewHint", "הוסף שאלה ותשובה שיופיעו בפרופיל הציבורי של העסק.")}
               </p>
             </div>
 
@@ -199,14 +203,14 @@ export default function FaqTab({
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="mb-2 block text-sm font-black text-slate-800">
-                שאלה
+                {t("business.faq.question", "שאלה")}
               </label>
 
               <input
                 type="text"
                 value={newFaq.question}
                 disabled={isSubmitting}
-                placeholder="לדוגמה: איך קובעים תור?"
+                placeholder={t("business.faq.questionPh", "לדוגמה: איך קובעים תור?")}
                 onChange={(event) =>
                   setNewFaq((prev) => ({
                     ...prev,
@@ -219,14 +223,14 @@ export default function FaqTab({
 
             <div>
               <label className="mb-2 block text-sm font-black text-slate-800">
-                תשובה
+                {t("business.faq.answer", "תשובה")}
               </label>
 
               <textarea
                 value={newFaq.answer}
                 disabled={isSubmitting}
                 rows={4}
-                placeholder="כתוב כאן תשובה ברורה וקצרה ללקוחות..."
+                placeholder={t("business.faq.answerPh", "כתוב כאן תשובה ברורה וקצרה ללקוחות...")}
                 onChange={(event) =>
                   setNewFaq((prev) => ({
                     ...prev,
@@ -246,7 +250,9 @@ export default function FaqTab({
               }
               className="inline-flex h-[48px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50 sm:w-auto"
             >
-              {isSubmitting ? "מוסיף שאלה..." : "➕ הוספת שאלה"}
+              {isSubmitting
+                ? t("business.faq.adding", "מוסיף שאלה...")
+                : t("business.faq.addQuestion", "➕ הוספת שאלה")}
             </button>
           </form>
         </div>
@@ -255,18 +261,18 @@ export default function FaqTab({
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className="text-lg font-black text-slate-800">
-            שאלות ותשובות
+            {t("business.faq.qaTitle", "שאלות ותשובות")}
           </h3>
 
           {!isPreview && (
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              כאן אפשר לערוך את השאלות שיופיעו בפרופיל הציבורי.
+              {t("business.faq.qaHint", "כאן אפשר לערוך את השאלות שיופיעו בפרופיל הציבורי.")}
             </p>
           )}
         </div>
 
         <span className="w-fit rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-          {safeFaqs.length} שאלות
+          {t("business.faq.questionsCount", "{{count}} שאלות", { count: safeFaqs.length })}
         </span>
       </div>
 
@@ -277,11 +283,14 @@ export default function FaqTab({
           </div>
 
           <h4 className="mt-4 text-base font-black text-slate-800">
-            עדיין אין שאלות נפוצות
+            {t("business.faq.emptyTitle", "עדיין אין שאלות נפוצות")}
           </h4>
 
           <p className="mt-2 max-w-sm text-sm leading-7 text-slate-500">
-            לאחר שתוסיף שאלות ותשובות, הן יופיעו כאן ובפרופיל הציבורי של העסק.
+            {t(
+              "business.faq.emptyHint",
+              "לאחר שתוסיף שאלות ותשובות, הן יופיעו כאן ובפרופיל הציבורי של העסק."
+            )}
           </p>
         </div>
       ) : (
@@ -307,7 +316,7 @@ export default function FaqTab({
                   <div className="flex justify-end gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-3">
                     <button
                       type="button"
-                      title="עריכה"
+                      title={t("common.edit", "עריכה")}
                       onClick={() => handleStartEdit(faq, id)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-sm shadow-sm transition hover:bg-violet-50 hover:text-violet-700"
                     >
@@ -316,7 +325,7 @@ export default function FaqTab({
 
                     <button
                       type="button"
-                      title="מחיקה"
+                      title={t("common.delete", "מחיקה")}
                       disabled={isDeleting}
                       onClick={() => handleDelete(id)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-sm shadow-sm transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
@@ -330,7 +339,7 @@ export default function FaqTab({
                   <div className="space-y-3 p-4">
                     <div>
                       <label className="mb-2 block text-sm font-black text-slate-800">
-                        שאלה
+                        {t("business.faq.question", "שאלה")}
                       </label>
 
                       <input
@@ -348,7 +357,7 @@ export default function FaqTab({
 
                     <div>
                       <label className="mb-2 block text-sm font-black text-slate-800">
-                        תשובה
+                        {t("business.faq.answer", "תשובה")}
                       </label>
 
                       <textarea
@@ -376,7 +385,9 @@ export default function FaqTab({
                         onClick={() => handleSaveEdit(id)}
                         className="flex h-11 flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
                       >
-                        {isSavingEdit ? "שומר..." : "💾 שמירה"}
+                        {isSavingEdit
+                          ? t("business.faq.saving", "שומר...")
+                          : `💾 ${t("common.save", "שמירה")}`}
                       </button>
 
                       <button
@@ -385,7 +396,7 @@ export default function FaqTab({
                         onClick={handleCancelEdit}
                         className="flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        ביטול
+                        {t("common.cancel", "ביטול")}
                       </button>
                     </div>
                   </div>
@@ -397,7 +408,7 @@ export default function FaqTab({
                       className="flex w-full items-center justify-between gap-4 px-4 py-4 text-right transition hover:bg-violet-50/50"
                     >
                       <span className="text-sm font-black leading-7 text-slate-800 sm:text-base">
-                        {faq.question || "שאלה ללא כותרת"}
+                        {faq.question || t("business.faq.untitled", "שאלה ללא כותרת")}
                       </span>
 
                       <span
@@ -415,7 +426,7 @@ export default function FaqTab({
                     {isOpen && (
                       <div className="border-t border-slate-100 bg-slate-50/70 px-4 py-4">
                         <p className="text-sm leading-7 text-slate-600">
-                          {faq.answer || "לא נוספה תשובה לשאלה הזו."}
+                          {faq.answer || t("business.faq.noAnswer", "לא נוספה תשובה לשאלה הזו.")}
                         </p>
                       </div>
                     )}
@@ -433,7 +444,7 @@ export default function FaqTab({
           onClick={() => navigate(`/business/${businessId}?tab=faq`)}
           className="mt-5 flex h-[52px] w-full items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50"
         >
-          👀 צפייה בפרופיל הציבורי
+          {t("business.faq.viewPublic", "👀 צפייה בפרופיל הציבורי")}
         </button>
       )}
     </div>

@@ -1,3 +1,4 @@
+import i18n from "../../../../../i18n/i18n";
 import {
   readVisualContent,
   removeVisualContentItem,
@@ -722,11 +723,11 @@ export function repairDuplicateContactNav<T extends TemplateNavItem>(
   };
 
   return [
-    pick("home", "ראשי"),
-    pick("services", "שירותים"),
-    pick("gallery", "עבודות"),
-    pick("pricing", "מחירים"),
-    pick("contact", "צור קשר"),
+    pick("home", i18n.t("leftover.nav.home")),
+    pick("services", i18n.t("leftover.nav.services")),
+    pick("gallery", i18n.t("leftover.nav.gallery")),
+    pick("pricing", i18n.t("leftover.nav.pricing")),
+    pick("contact", i18n.t("leftover.nav.contact")),
   ];
 }
 

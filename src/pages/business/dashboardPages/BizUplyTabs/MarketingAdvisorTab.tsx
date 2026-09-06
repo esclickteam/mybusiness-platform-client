@@ -8,7 +8,9 @@ import React, {
   useState,
 } from "react";
 import Markdown from "markdown-to-jsx";
+import { useTranslation } from "react-i18next";
 import API from "@api";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type ChatRole = "assistant" | "user";
 
@@ -36,19 +38,14 @@ type MarketingAdvisorResponse = {
   answer?: string;
 };
 
-const presetQuestions = [
-  "איך אפשר להביא יותר לידים החודש?",
-  "איך אפשר להגדיל המרות?",
-  "איפה כדאי לרכז את תקציב השיווק שלי?",
-  "איזה ערוץ יביא תוצאות הכי מהר?",
-];
-
 export default function MarketingAdvisorTab({
   businessId,
   conversationId,
   userId,
   businessDetails,
 }: MarketingAdvisorTabProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -63,19 +60,31 @@ export default function MarketingAdvisorTab({
   const isLimitReached =
     remainingQuestions !== null && remainingQuestions <= 0;
 
+  const presetQuestions = useMemo(
+    () => [
+      t("business.advisor.qLeads", "איך אפשר להביא יותר לידים החודש?"),
+      t("business.advisor.qConversions", "איך אפשר להגדיל המרות?"),
+      t("business.advisor.qBudget", "איפה כדאי לרכז את תקציב השיווק שלי?"),
+      t("business.advisor.qChannel", "איזה ערוץ יביא תוצאות הכי מהר?"),
+    ],
+    [t, i18n.language]
+  );
+
   const balanceLabel = useMemo(() => {
     if (remainingQuestions === null) return null;
 
     if (remainingQuestions === 0) {
-      return "לא נשארו שאלות AI החודש";
+      return t("business.advisor.noneLeft", "לא נשארו שאלות AI החודש");
     }
 
     if (remainingQuestions === 1) {
-      return "נשארה שאלת AI אחת החודש";
+      return t("business.advisor.oneLeft", "נשארה שאלת AI אחת החודש");
     }
 
-    return `נשארו ${remainingQuestions} שאלות AI החודש`;
-  }, [remainingQuestions]);
+    return t("business.advisor.manyLeft", "נשארו {{count}} שאלות AI החודש", {
+      count: remainingQuestions,
+    });
+  }, [remainingQuestions, t, i18n.language]);
 
   /* =========================
      LOAD REMAINING QUESTIONS
@@ -114,18 +123,25 @@ export default function MarketingAdvisorTab({
      INITIAL AI GREETING
   ========================= */
   useEffect(() => {
+    const welcome = t(
+      "business.advisor.welcome",
+      "היי 👋 אני **יועץ השיווק AI** שלך.\n\nאפשר לשאול אותי על יצירת לידים, קמפיינים, משפכים שיווקיים, תוכן, פרסום, המרות או אסטרטגיית שיווק."
+    );
     setMessages((prev) => {
+      if (prev.length > 1) return prev;
+      if (prev.length === 1 && prev[0].role === "assistant") {
+        return [{ role: "assistant", content: welcome }];
+      }
       if (prev.length > 0) return prev;
 
       return [
         {
           role: "assistant",
-          content:
-            "היי 👋 אני **יועץ השיווק AI** שלך.\n\nאפשר לשאול אותי על יצירת לידים, קמפיינים, משפכים שיווקיים, תוכן, פרסום, המרות או אסטרטגיית שיווק.",
+          content: welcome,
         },
       ];
     });
-  }, []);
+  }, [t, i18n.language]);
 
   /* =========================
      SEND MESSAGE
@@ -141,7 +157,10 @@ export default function MarketingAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "❗ הגעת למגבלת שאלות ה-AI החודשית שלך.",
+            content: t(
+              "business.advisor.limitMsg",
+              "❗ הגעת למגבלת שאלות ה-AI החודשית שלך."
+            ),
           },
         ]);
         return;
@@ -177,7 +196,8 @@ export default function MarketingAdvisorTab({
           {
             role: "assistant",
             content:
-              response.data.answer || "❌ לא התקבלה תשובה מהשרת.",
+              response.data.answer ||
+              t("business.advisor.noAnswer", "❌ לא התקבלה תשובה מהשרת."),
           },
         ]);
 
@@ -198,7 +218,10 @@ export default function MarketingAdvisorTab({
           {
             role: "assistant",
             content:
-              "⚠️ משהו השתבש בזמן ניתוח שאלת השיווק שלך. נסה שוב.",
+              t(
+                "business.advisor.error",
+                "⚠️ משהו השתבש בזמן ניתוח שאלת השיווק שלך. נסה שוב."
+              ),
           },
         ]);
       } finally {
@@ -213,6 +236,7 @@ export default function MarketingAdvisorTab({
       loading,
       isLimitReached,
       refreshRemainingQuestions,
+      t,
     ]
   );
 
@@ -282,7 +306,7 @@ export default function MarketingAdvisorTab({
 
   return (
     <section
-      dir="rtl"
+      dir={pageDir}
       className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-right !text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       {/* Background */}
@@ -301,32 +325,33 @@ export default function MarketingAdvisorTab({
             <div className="max-w-3xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-xs font-black !text-fuchsia-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
-                יועץ שיווק AI
+                {t("business.advisor.badge", "יועץ שיווק AI")}
               </div>
 
 
               <h2 className="text-3xl font-black tracking-tight !text-slate-800 sm:text-4xl lg:text-5xl">
-                מרכז הפיקוד השיווקי שלך
+                {t("business.advisor.title", "מרכז הפיקוד השיווקי שלך")}
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 !text-slate-600 sm:text-base">
-                קבל ייעוץ שיווקי ממוקד ללידים, קמפיינים, מודעות,
-                משפכי שיווק, אסטרטגיית תוכן ושיפור המרות — בהתאמה
-                לעסק שלך.
+                {t(
+                  "business.advisor.subtitle",
+                  "קבל ייעוץ שיווקי ממוקד ללידים, קמפיינים, מודעות, משפכי שיווק, אסטרטגיית תוכן ושיפור המרות — בהתאמה לעסק שלך."
+                )}
               </p>
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
               <p className="text-xs font-black uppercase tracking-[0.22em] !text-slate-400">
-                מאזן חודשי
+                {t("business.advisor.monthlyBalance", "מאזן חודשי")}
               </p>
 
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-4xl font-black !text-slate-800">
-                  {remainingQuestions ?? "—"}
+                  {remainingQuestions ?? t("crm.common.emDash", "—")}
                 </span>
                 <span className="pb-1 text-sm font-bold !text-slate-500">
-                  שאלות
+                  {t("business.advisor.questions", "שאלות")}
                 </span>
               </div>
 
@@ -346,11 +371,11 @@ export default function MarketingAdvisorTab({
             <div className="mt-7">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <p className="text-sm font-black !text-slate-800">
-                  התחל עם שאלת שיווק מוכנה
+                  {t("business.advisor.startReady", "התחל עם שאלת שיווק מוכנה")}
                 </p>
 
                 <p className="hidden text-xs font-bold !text-slate-500 sm:block">
-                  בחר שאלה או כתוב שאלה משלך למטה
+                  {t("business.advisor.pickOrWrite", "בחר שאלה או כתוב שאלה משלך למטה")}
                 </p>
               </div>
 
@@ -420,7 +445,7 @@ export default function MarketingAdvisorTab({
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500" />
                     </span>
-                    ה-AI מנתח את שאלת השיווק שלך…
+                    {t("business.advisor.analyzing", "ה-AI מנתח את שאלת השיווק שלך…")}
                   </div>
                 </div>
               </div>
@@ -432,7 +457,7 @@ export default function MarketingAdvisorTab({
         <footer className="border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-xl sm:px-7 lg:px-8">
           {isLimitReached && (
             <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold !text-rose-700">
-              הגעת למגבלת שאלות ה-AI החודשית שלך.
+              {t("advisor.limitReached", "הגעת למגבלת שאלות ה-AI החודשית שלך.")}
             </div>
           )}
 
@@ -441,7 +466,10 @@ export default function MarketingAdvisorTab({
               type="text"
               value={userInput}
               disabled={loading || isLimitReached}
-              placeholder="לדוגמה: איך אפשר להביא יותר לידים בתקציב קטן?"
+              placeholder={t(
+                "business.advisor.inputPh",
+                "לדוגמה: איך אפשר להביא יותר לידים בתקציב קטן?"
+              )}
               onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -457,7 +485,9 @@ export default function MarketingAdvisorTab({
               disabled={loading || !userInput.trim() || isLimitReached}
               className="min-h-12 rounded-2xl bg-fuchsia-600 px-6 text-sm font-black !text-white shadow-lg shadow-fuchsia-200 transition duration-300 hover:-translate-y-0.5 hover:bg-fuchsia-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0 sm:min-w-32"
             >
-              {loading ? "חושב..." : "שלח"}
+              {loading
+                ? t("advisor.thinking", "חושב...")
+                : t("advisor.send", "שלח")}
             </button>
           </div>
         </footer>

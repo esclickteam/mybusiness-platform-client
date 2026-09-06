@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   createEmailSender,
   deleteEmailSender,
@@ -26,6 +28,7 @@ function DnsField({
   label: string;
   value: string;
 }) {
+  const { t } = useTranslation();
   if (!value) return null;
   return (
     <div className="min-w-0">
@@ -36,7 +39,7 @@ function DnsField({
           className="shrink-0 rounded-lg border border-slate-200 px-2 py-0.5 text-xs text-slate-700"
           onClick={() => void copyText(value)}
         >
-          העתקה
+          {t("emailSenders.copy")}
         </button>
       </div>
       <p className="mt-1 break-all font-mono text-xs text-slate-800" dir="ltr">
@@ -65,6 +68,8 @@ function VerificationModal({
   const [copied, setCopied] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const email = sender.email;
   const domain = sender.domain || domainFromEmail(email);
   const name = senderDisplayName(sender);
@@ -85,7 +90,7 @@ function VerificationModal({
         onVerified(next);
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "לא ניתן לטעון את רשומות האימות");
+      setError(e instanceof Error ? e.message : t("emailSenders.loadRecordsError"));
     } finally {
       setLoading(false);
     }
@@ -114,11 +119,9 @@ function VerificationModal({
         window.setTimeout(onClose, 1400);
         return;
       }
-      setError(
-        "האימות עדיין לא הושלם. ודאו שהרשומות נוספו ונסו שוב בעוד כמה דקות."
-      );
+      setError(t("emailSenders.stillPending"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "בדיקת האימות נכשלה");
+      setError(e instanceof Error ? e.message : t("emailSenders.checkFailed"));
     } finally {
       setChecking(false);
     }
@@ -131,14 +134,27 @@ function VerificationModal({
         email,
         displayName: name,
         records,
+        labels: {
+          title: t("emailSenders.instructionsTitle"),
+          domain: t("emailSenders.instructionsDomain"),
+          email: t("emailSenders.instructionsEmail"),
+          name: t("emailSenders.instructionsName"),
+          addDns: t("emailSenders.instructionsAddDns"),
+          noRecords: t("emailSenders.instructionsNoRecords"),
+          after: t("emailSenders.instructionsAfter"),
+          recordType: t("emailSenders.recordType"),
+          recordHost: t("emailSenders.recordHost"),
+          recordValue: t("emailSenders.recordValue"),
+          recordPriority: t("emailSenders.recordPriority"),
+        },
       }),
-    [domain, email, name, records]
+    [domain, email, name, records, t]
   );
 
   return (
     <div
       className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-4"
-      dir="rtl"
+      dir={pageDir}
       onClick={onClose}
     >
       <div
@@ -146,48 +162,38 @@ function VerificationModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-slate-100 px-5 py-4">
-          <h3 className="text-lg font-semibold">אימות המייל העסקי</h3>
+          <h3 className="text-lg font-semibold">{t("emailSenders.verifyTitle")}</h3>
           <p className="mt-2 text-sm text-slate-600">
-            כדי לשלוח מ-
-            <span className="font-medium" dir="ltr">
-              {email}
-            </span>
-            , צריך לבצע אימות חד-פעמי של הדומיין{" "}
-            <span className="font-medium" dir="ltr">
-              {domain}
-            </span>
-            .
+            {t("emailSenders.verifyLead", { email, domain })}
           </p>
           <p className="mt-2 text-sm text-slate-600">
-            אחרי שהאימות יושלם, תוכלו להשתמש בכתובת הזו בכל האוטומציות.
+            {t("emailSenders.verifyAfter")}
           </p>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           <p className="text-sm font-medium text-slate-800">
-            את הפרטים האלו צריך להוסיף במקום שבו מנוהל הדומיין שלכם.
+            {t("emailSenders.addWhereManaged")}
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            אם אתם מנהלים את הדומיין בעצמכם, העתיקו את הרשומות והוסיפו אותן אצל
-            ספק הדומיין.
+            {t("emailSenders.selfManageHint")}
           </p>
           <button
             type="button"
             className="mt-2 text-sm text-slate-700 underline"
             onClick={() => setShowHelp((v) => !v)}
           >
-            מידע נוסף
+            {t("emailSenders.moreInfo")}
           </button>
           {showHelp ? (
             <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-              אם אינכם בטוחים איפה מנוהל הדומיין, בדקו אצל מי שרכש את הכתובת או
-              מארח את האתר. בדרך כלל זה אצל ספק הדומיין או חברת האחסון.
+              {t("emailSenders.helpText")}
             </p>
           ) : null}
 
           <div className="mt-4 space-y-3">
             {loading ? (
-              <p className="text-sm text-slate-500">טוען רשומות...</p>
+              <p className="text-sm text-slate-500">{t("emailSenders.loadingRecords")}</p>
             ) : records.length ? (
               records.map((record, index) => (
                 <div
@@ -195,20 +201,20 @@ function VerificationModal({
                   className="rounded-xl border border-slate-200 p-3"
                 >
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <DnsField label="סוג" value={record.type || "TXT"} />
-                    <DnsField label="שם / Host" value={record.name || ""} />
+                    <DnsField label={t("emailSenders.type")} value={record.type || "TXT"} />
+                    <DnsField label={t("emailSenders.host")} value={record.name || ""} />
                     <div className="sm:col-span-2">
-                      <DnsField label="ערך" value={record.value || ""} />
+                      <DnsField label={t("emailSenders.value")} value={record.value || ""} />
                     </div>
                     {record.priority ? (
-                      <DnsField label="עדיפות" value={record.priority} />
+                      <DnsField label={t("emailSenders.priority")} value={record.priority} />
                     ) : null}
                   </div>
                 </div>
               ))
             ) : (
               <p className="text-sm text-amber-800">
-                הרשומות עדיין לא זמינות. נסו שוב בעוד רגע.
+                {t("emailSenders.recordsUnavailable")}
               </p>
             )}
           </div>
@@ -219,14 +225,14 @@ function VerificationModal({
               className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
               onClick={() => setShowShare((v) => !v)}
             >
-              מישהו אחר מנהל לי את הדומיין
+              {t("emailSenders.someoneElse")}
             </button>
             {showShare ? (
               <div className="mt-3 rounded-xl bg-slate-50 p-3">
-                <p className="text-sm font-medium">העתקת הוראות למנהל הדומיין</p>
+                <p className="text-sm font-medium">{t("emailSenders.copyInstructionsTitle")}</p>
                 <pre
                   className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all rounded-lg bg-white p-3 text-xs text-slate-700"
-                  dir="rtl"
+                  dir={pageDir}
                 >
                   {instructions}
                 </pre>
@@ -239,7 +245,7 @@ function VerificationModal({
                     window.setTimeout(() => setCopied(false), 2000);
                   }}
                 >
-                  {copied ? "הועתק" : "העתקת הוראות"}
+                  {copied ? t("emailSenders.copied") : t("emailSenders.copyInstructions")}
                 </button>
               </div>
             ) : null}
@@ -247,7 +253,7 @@ function VerificationModal({
 
           {success ? (
             <p className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-              המייל אומת בהצלחה ✓
+              {t("emailSenders.verifiedSuccess")}
             </p>
           ) : null}
           {error ? (
@@ -263,7 +269,7 @@ function VerificationModal({
             className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
             onClick={onClose}
           >
-            סגירה
+            {t("emailSenders.close")}
           </button>
           <button
             type="button"
@@ -271,7 +277,7 @@ function VerificationModal({
             className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
             onClick={() => void checkVerification()}
           >
-            {checking ? "בודק..." : "בדיקת אימות"}
+            {checking ? t("emailSenders.checking") : t("emailSenders.checkVerification")}
           </button>
         </div>
       </div>
@@ -280,6 +286,8 @@ function VerificationModal({
 }
 
 export default function EmailSendersPanel() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [senders, setSenders] = useState<EmailSender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -296,7 +304,7 @@ export default function EmailSendersPanel() {
     try {
       setSenders(await listEmailSenders());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "שגיאה בטעינת שולחי מייל");
+      setError(e instanceof Error ? e.message : t("emailSenders.loadSendersError"));
     } finally {
       setLoading(false);
     }
@@ -315,7 +323,7 @@ export default function EmailSendersPanel() {
       setEmail("");
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "לא ניתן להוסיף מייל עסקי");
+      setError(e instanceof Error ? e.message : t("emailSenders.addSenderError"));
     } finally {
       setBusy(false);
     }
@@ -329,7 +337,7 @@ export default function EmailSendersPanel() {
       setEditingId("");
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "לא ניתן לעדכן את שם השולח");
+      setError(e instanceof Error ? e.message : t("emailSenders.renameError"));
     } finally {
       setBusy(false);
     }
@@ -338,14 +346,13 @@ export default function EmailSendersPanel() {
   return (
     <section
       id="email-senders"
-      dir="rtl"
+      dir={pageDir}
       className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
     >
       <div>
-        <h2 className="text-lg font-semibold">שולחי מייל</h2>
+        <h2 className="text-lg font-semibold">{t("emailSenders.title")}</h2>
         <p className="mt-1 text-sm text-slate-600">
-          כאן מגדירים את כתובות המייל העסקיות שמהן יישלחו הודעות ללקוחות דרך
-          האוטומציות.
+          {t("emailSenders.subtitle")}
         </p>
       </div>
 
@@ -356,7 +363,7 @@ export default function EmailSendersPanel() {
       ) : null}
 
       {loading ? (
-        <p className="mt-4 text-sm text-slate-500">טוען שולחים...</p>
+        <p className="mt-4 text-sm text-slate-500">{t("emailSenders.loadingSenders")}</p>
       ) : senders.length ? (
         <div className="mt-4 space-y-3">
           {senders.map((sender) => {
@@ -374,16 +381,16 @@ export default function EmailSendersPanel() {
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {pending ? (
                     <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
-                      נדרש אימות חד-פעמי
+                      {t("emailSenders.needsVerification")}
                     </span>
                   ) : (
                     <>
                       <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">
-                        מאומת ✓
+                        {t("emailSenders.verified")}
                       </span>
                       {sender.isDefault ? (
                         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                          ברירת מחדל
+                          {t("emailSenders.default")}
                         </span>
                       ) : null}
                     </>
@@ -396,7 +403,7 @@ export default function EmailSendersPanel() {
                       className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-white"
                       onClick={() => setVerifySender(sender)}
                     >
-                      השלמת אימות
+                      {t("emailSenders.completeVerification")}
                     </button>
                   ) : (
                     <>
@@ -408,7 +415,7 @@ export default function EmailSendersPanel() {
                             setDefaultEmailSender(sender.senderId).then(load)
                           }
                         >
-                          הגדרה כברירת מחדל
+                          {t("emailSenders.setDefault")}
                         </button>
                       ) : null}
                       {editingId === sender.senderId ? (
@@ -424,7 +431,7 @@ export default function EmailSendersPanel() {
                             className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-white"
                             onClick={() => void saveName(sender.senderId)}
                           >
-                            שמירה
+                            {t("emailSenders.save")}
                           </button>
                         </>
                       ) : (
@@ -436,7 +443,7 @@ export default function EmailSendersPanel() {
                             setEditingName(name);
                           }}
                         >
-                          עריכת שם שולח
+                          {t("emailSenders.editSenderName")}
                         </button>
                       )}
                     </>
@@ -448,7 +455,7 @@ export default function EmailSendersPanel() {
                       deleteEmailSender(sender.senderId).then(load)
                     }
                   >
-                    הסרה
+                    {t("emailSenders.remove")}
                   </button>
                 </div>
               </div>
@@ -457,15 +464,15 @@ export default function EmailSendersPanel() {
         </div>
       ) : (
         <p className="mt-4 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          עדיין לא הוגדר מייל עסקי. הוסיפו כתובת כדי לשלוח הודעות ללקוחות.
+          {t("emailSenders.empty")}
         </p>
       )}
 
       <div className="mt-6 border-t border-slate-100 pt-4">
-        <h3 className="text-sm font-semibold">הוספת מייל עסקי</h3>
+        <h3 className="text-sm font-semibold">{t("emailSenders.addTitle")}</h3>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           <label className="text-sm">
-            שם שולח
+            {t("emailSenders.senderName")}
             <input
               className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
               placeholder="Invistimo"
@@ -474,7 +481,7 @@ export default function EmailSendersPanel() {
             />
           </label>
           <label className="text-sm">
-            כתובת מייל
+            {t("emailSenders.emailAddress")}
             <input
               className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
               placeholder="support@invistimo.com"
@@ -490,7 +497,7 @@ export default function EmailSendersPanel() {
           className="mt-3 rounded-xl bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-50"
           onClick={() => void addSender()}
         >
-          הוספת מייל עסקי
+          {t("emailSenders.addButton")}
         </button>
       </div>
 

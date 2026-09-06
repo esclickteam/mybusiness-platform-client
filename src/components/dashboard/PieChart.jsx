@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   PieChart,
   Pie,
@@ -11,6 +12,7 @@ import {
 const COLORS = ["#6a5acd", "#ffa07a", "#90ee90", "#f7c6ff"];
 
 const PieChartComponent = ({ data }) => {
+  const { t } = useTranslation();
   if (!data || typeof data !== "object") return null;
 
   const chartData = Object.entries(data).map(([label, value]) => ({ name: label, value }));
@@ -23,7 +25,7 @@ const PieChartComponent = ({ data }) => {
       borderRadius: "12px",
       boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
     }}>
-      <h3 style={{ textAlign: "center", color: "#4b0082" }}>💰 התפלגות הכנסות לפי מקור</h3>
+      <h3 style={{ textAlign: "center", color: "#4b0082" }}>💰 {t("leftover.dashboard.revenueBySource", "Revenue mix by source")}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie

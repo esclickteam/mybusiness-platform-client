@@ -1,9 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import grapesjs, { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
+import i18n from "../../../i18n/i18n";
+import { coerceSupportedLanguage } from "../../../i18n/languages";
 
 import { registerBizuplyBlocks } from "./grapesBlocks";
-import { bizuplyCanvasCss, defaultBizuplyHtml } from "./grapesTheme";
+import { bizuplyCanvasCss, defaultBizuplyHtml, getDefaultBizuplyHtml } from "./grapesTheme";
 import type { BizuplySitePayload, BizuplyWebsiteStudioProps } from "./types";
 
 type LeftPanel =
@@ -35,16 +39,16 @@ type StudioTemplate = {
 const studioTemplates: StudioTemplate[] = [
   {
     id: "luxury-beauty",
-    name: "יוקרתי",
-    description: "אתר יוקרתי לעסקי יופי, קליניקות וסטודיו",
+    name: "Luxury",
+    description: "luxury",
     preview:
       "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=700&q=90",
     html: defaultBizuplyHtml,
   },
   {
     id: "modern-beauty",
-    name: "מודרני",
-    description: "מבנה מודרני, נקי ומכירתי",
+    name: "Modern",
+    description: "modern",
     preview:
       "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=700&q=90",
     html: `
@@ -106,8 +110,8 @@ const studioTemplates: StudioTemplate[] = [
   },
   {
     id: "minimal-premium",
-    name: "מינימליסטי",
-    description: "עיצוב שקט, נקי ואלגנטי",
+    name: "Minimal",
+    description: "minimal",
     preview:
       "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=700&q=90",
     html: `
@@ -130,39 +134,45 @@ const studioTemplates: StudioTemplate[] = [
   },
 ];
 
-const leftNav: { key: LeftPanel; label: string; icon: string }[] = [
-  { key: "templates", label: "תבניות", icon: "▦" },
-  { key: "elements", label: "הוספת אלמנטים", icon: "+" },
-  { key: "smartBlocks", label: "בלוקים חכמים", icon: "✦" },
-  { key: "pages", label: "דפים", icon: "▤" },
-  { key: "media", label: "מדיה", icon: "▧" },
-  { key: "commerce", label: "מוצרים וסליקה", icon: "◈" },
-  { key: "services", label: "שירותים", icon: "◇" },
-  { key: "booking", label: "תיאום תורים", icon: "◷" },
-  { key: "club", label: "מועדון לקוחות", icon: "♛" },
-  { key: "leads", label: "טפסים ולידים", icon: "✉" },
-  { key: "seo", label: "SEO", icon: "⌕" },
-  { key: "settings", label: "הגדרות", icon: "⚙" },
+const leftNav: { key: LeftPanel; labelKey: string; icon: string }[] = [
+  { key: "templates", labelKey: "studio.grapesStudio.templates", icon: "▦" },
+  { key: "elements", labelKey: "studio.grapesStudio.addElements", icon: "+" },
+  { key: "smartBlocks", labelKey: "studio.grapesStudio.smartBlocks", icon: "✦" },
+  { key: "pages", labelKey: "studio.grapesStudio.pages", icon: "▤" },
+  { key: "media", labelKey: "studio.grapesStudio.media", icon: "▧" },
+  { key: "commerce", labelKey: "studio.grapesStudio.commerce", icon: "◈" },
+  { key: "services", labelKey: "studio.grapesStudio.services", icon: "◇" },
+  { key: "booking", labelKey: "studio.grapesStudio.booking", icon: "◷" },
+  { key: "club", labelKey: "studio.grapesStudio.club", icon: "♛" },
+  { key: "leads", labelKey: "studio.grapesStudio.leads", icon: "✉" },
+  { key: "seo", labelKey: "studio.grapesStudio.seo", icon: "⌕" },
+  { key: "settings", labelKey: "studio.grapesStudio.settings", icon: "⚙" },
 ];
 
 const quickBlocks = [
-  { label: "הירו", icon: "▣", blockId: "biz-hero-luxury" },
-  { label: "אודות", icon: "◌", blockId: "biz-about" },
-  { label: "שירותים", icon: "✦", blockId: "biz-services" },
-  { label: "גלריה", icon: "▧", blockId: "biz-gallery" },
-  { label: "ביקורות", icon: "★", blockId: "biz-reviews" },
-  { label: "יצירת קשר", icon: "☎", blockId: "biz-contact" },
-  { label: "טופס ליד", icon: "▤", blockId: "biz-lead-form" },
-  { label: "מוצרים", icon: "◈", blockId: "biz-products" },
-  { label: "תיאום תורים", icon: "◷", blockId: "biz-booking" },
-  { label: "מועדון לקוחות", icon: "♛", blockId: "biz-club" },
+  { labelKey: "studio.grapesStudio.hero", icon: "▣", blockId: "biz-hero-luxury" },
+  { labelKey: "studio.kind.about", icon: "◌", blockId: "biz-about" },
+  { labelKey: "studio.kind.services", icon: "✦", blockId: "biz-services" },
+  { labelKey: "studio.kind.gallery", icon: "▧", blockId: "biz-gallery" },
+  { labelKey: "studio.kind.reviews", icon: "★", blockId: "biz-reviews" },
+  { labelKey: "studio.kind.contact", icon: "☎", blockId: "biz-contact" },
+  { labelKey: "studio.blocks.leadForm", icon: "▤", blockId: "biz-lead-form" },
+  { labelKey: "studio.nav.products", icon: "◈", blockId: "biz-products" },
+  { labelKey: "studio.blocks.booking", icon: "◷", blockId: "biz-booking" },
+  { labelKey: "studio.blocks.club", icon: "♛", blockId: "biz-club" },
 ];
+
+function templateChrome(id: string, field: "name" | "description") {
+  return String(i18n.t(`studio.studioTemplates.${id}.${field}`));
+}
 
 export default function BizuplyWebsiteStudio({
   businessId,
   initialSlug = "hadar-beauty",
   onSave,
 }: BizuplyWebsiteStudioProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
   const blocksRef = useRef<HTMLDivElement | null>(null);
   const layersRef = useRef<HTMLDivElement | null>(null);
@@ -187,6 +197,8 @@ export default function BizuplyWebsiteStudio({
   useEffect(() => {
     if (!editorContainerRef.current || editorRef.current) return;
 
+    const locale = coerceSupportedLanguage(i18n.language);
+    editorContainerRef.current.dir = dir;
     const editor = grapesjs.init({
       container: editorContainerRef.current,
       height: "100%",
@@ -218,7 +230,7 @@ export default function BizuplyWebsiteStudio({
         appendTo: stylesRef.current || undefined,
         sectors: [
           {
-            name: "צבעים",
+            name: t("studio.grapes.colors"),
             open: true,
             properties: [
               "color",
@@ -229,7 +241,7 @@ export default function BizuplyWebsiteStudio({
             ],
           },
           {
-            name: "טיפוגרפיה",
+            name: t("studio.grapes.typography"),
             open: true,
             properties: [
               "font-family",
@@ -242,7 +254,7 @@ export default function BizuplyWebsiteStudio({
             ],
           },
           {
-            name: "גודל ומיקום",
+            name: t("studio.grapes.sizePosition"),
             open: true,
             properties: [
               "display",
@@ -259,17 +271,17 @@ export default function BizuplyWebsiteStudio({
             ],
           },
           {
-            name: "מרווחים",
+            name: t("studio.grapes.spacing"),
             open: true,
             properties: ["margin", "padding"],
           },
           {
-            name: "פינות, גבול וצל",
+            name: t("studio.grapes.cornersBorderShadow"),
             open: true,
             properties: ["border-radius", "border", "box-shadow"],
           },
           {
-            name: "אפקטים",
+            name: t("studio.grapes.effects"),
             open: false,
             properties: ["transform", "transition", "filter", "backdrop-filter"],
           },
@@ -297,16 +309,16 @@ export default function BizuplyWebsiteStudio({
       deviceManager: {
         devices: [
           {
-            name: "Desktop",
+            name: t("studio.desktop"),
             width: "",
           },
           {
-            name: "Tablet",
+            name: t("studio.tablet"),
             width: "768px",
             widthMedia: "992px",
           },
           {
-            name: "Mobile",
+            name: t("studio.mobile"),
             width: "390px",
             widthMedia: "480px",
           },
@@ -314,21 +326,21 @@ export default function BizuplyWebsiteStudio({
       },
 
       i18n: {
-        locale: "he",
-        localeFallback: "he",
+        locale,
+        localeFallback: "en",
         messages: {
-          he: {
+          [locale]: {
             styleManager: {
-              empty: "בחרי אלמנט כדי לערוך עיצוב",
+              empty: t("studio.grapes.styleEmpty"),
             },
             traitManager: {
-              empty: "בחרי אלמנט כדי לערוך הגדרות",
+              empty: t("studio.grapes.traitsEmpty"),
             },
             assetManager: {
-              addButton: "הוספת תמונה",
-              inputPlh: "כתובת תמונה",
-              modalTitle: "ניהול מדיה",
-              uploadTitle: "גררי תמונות לכאן",
+              addButton: t("studio.grapes.addImage"),
+              inputPlh: t("studio.grapes.imageUrl"),
+              modalTitle: t("studio.grapes.mediaModal"),
+              uploadTitle: t("studio.grapes.uploadDropImages"),
             },
           },
         },
@@ -340,7 +352,7 @@ export default function BizuplyWebsiteStudio({
     editor.on("load", () => {
       registerBizuplyBlocks(editor);
 
-      editor.setComponents(defaultBizuplyHtml);
+      editor.setComponents(getDefaultBizuplyHtml());
       editor.setStyle(bizuplyCanvasCss);
 
       injectGrapesUiPolish(editor);
@@ -429,18 +441,18 @@ export default function BizuplyWebsiteStudio({
   };
 
   const handleClear = () => {
-    const ok = window.confirm("למחוק את כל העיצוב הנוכחי?");
+    const ok = window.confirm(t("studio.grapesStudio.clearConfirm"));
     if (!ok) return;
 
     runEditor((editor) => {
-      editor.setComponents(defaultBizuplyHtml);
+      editor.setComponents(getDefaultBizuplyHtml());
       editor.setStyle(bizuplyCanvasCss);
     });
   };
 
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="h-screen w-full overflow-hidden bg-[#f6f4ff] text-slate-800"
     >
       <style>{studioPolishCss}</style>
@@ -457,7 +469,7 @@ export default function BizuplyWebsiteStudio({
                 Bizuply Website Studio
               </p>
               <p className="mt-1 text-xs font-bold leading-none text-slate-400">
-                עורך אתר מקצועי בלי קוד
+{t("studio.grapesStudio.tagline")}
               </p>
             </div>
           </div>
@@ -479,8 +491,8 @@ export default function BizuplyWebsiteStudio({
           </div>
 
           <div className="flex items-center gap-2">
-            <ToolbarButton onClick={handleUndo}>ביטול</ToolbarButton>
-            <ToolbarButton onClick={handleRedo}>בצע שוב</ToolbarButton>
+            <ToolbarButton onClick={handleUndo}>{t("studio.grapesStudio.undo")}</ToolbarButton>
+            <ToolbarButton onClick={handleRedo}>{t("studio.grapesStudio.redo")}</ToolbarButton>
 
             <div className="mx-1 h-8 w-px bg-slate-200" />
 
@@ -488,32 +500,32 @@ export default function BizuplyWebsiteStudio({
               active={device === "Desktop"}
               onClick={() => changeDevice("Desktop")}
             >
-              דסקטופ
+              {t("studio.grapesStudio.desktop")}
             </DeviceButton>
             <DeviceButton
               active={device === "Tablet"}
               onClick={() => changeDevice("Tablet")}
             >
-              טאבלט
+              {t("studio.grapesStudio.tablet")}
             </DeviceButton>
             <DeviceButton
               active={device === "Mobile"}
               onClick={() => changeDevice("Mobile")}
             >
-              מובייל
+              {t("studio.grapesStudio.mobile")}
             </DeviceButton>
 
             <div className="mx-1 h-8 w-px bg-slate-200" />
 
-            <ToolbarButton onClick={handleOpenAssets}>מדיה</ToolbarButton>
-            <ToolbarButton onClick={handlePreview}>תצוגה מקדימה</ToolbarButton>
-            <ToolbarButton onClick={handleClear}>איפוס</ToolbarButton>
+            <ToolbarButton onClick={handleOpenAssets}>{t("studio.grapesStudio.media")}</ToolbarButton>
+            <ToolbarButton onClick={handlePreview}>{t("studio.grapesStudio.preview")}</ToolbarButton>
+            <ToolbarButton onClick={handleClear}>{t("studio.grapesStudio.reset")}</ToolbarButton>
 
             <button
               type="button"
               className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-xs font-black text-violet-700 transition hover:bg-violet-100"
             >
-              AI לבניית אתר ✨
+              {t("studio.grapesStudio.aiBuild")}
             </button>
 
             <button
@@ -522,7 +534,7 @@ export default function BizuplyWebsiteStudio({
               disabled={!ready || !slugValid}
               className="rounded-2xl border border-violet-200 bg-white px-4 py-3 text-xs font-black text-violet-700 shadow-sm transition hover:bg-violet-50 disabled:opacity-40"
             >
-              שמירה כטיוטה
+              {t("studio.grapesStudio.saveDraft")}
             </button>
 
             <button
@@ -531,20 +543,20 @@ export default function BizuplyWebsiteStudio({
               disabled={!ready || !slugValid}
               className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-xs font-black text-black shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:opacity-40"
             >
-              פרסום 🚀
+              {t("studio.grapesStudio.publish")}
             </button>
           </div>
         </header>
 
         {!slugValid && (
           <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
-            מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty
+            {t("studio.grapesStudio.slugHint")}
           </div>
         )}
 
         {savedAt && (
           <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-            נשמר בהצלחה בשעה {savedAt} · {publicUrl}
+            {t("studio.grapesStudio.savedAt", { time: savedAt, url: publicUrl })}
           </div>
         )}
 
@@ -564,7 +576,7 @@ export default function BizuplyWebsiteStudio({
                   ].join(" ")}
                 >
                   <span className="mb-1 text-lg">{item.icon}</span>
-                  <span className="leading-4">{item.label}</span>
+                  <span className="leading-4">{t(item.labelKey)}</span>
                 </button>
               ))}
             </nav>
@@ -572,8 +584,8 @@ export default function BizuplyWebsiteStudio({
             <div className="min-h-0 overflow-y-auto bg-white p-5">
               {leftPanel === "templates" && (
                 <PanelBox
-                  title="תבניות"
-                  subtitle="בחרי מבנה אתר מוכן והתחילי לערוך"
+                  title={t("studio.grapesStudio.templates")}
+                  subtitle={t("studio.grapesStudio.templatesHint")}
                 >
                   <div className="grid grid-cols-3 gap-3">
                     {studioTemplates.map((template) => (
@@ -589,10 +601,10 @@ export default function BizuplyWebsiteStudio({
                           className="mb-3 h-24 w-full rounded-2xl object-cover"
                         />
                         <p className="text-sm font-black text-slate-800">
-                          {template.name}
+                          {templateChrome(template.id, "name")}
                         </p>
                         <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-4 text-slate-400">
-                          {template.description}
+                          {templateChrome(template.id, "description")}
                         </p>
                       </button>
                     ))}
@@ -602,8 +614,8 @@ export default function BizuplyWebsiteStudio({
 
               {leftPanel === "elements" && (
                 <PanelBox
-                  title="הוספת אלמנטים"
-                  subtitle="גררי אלמנטים או לחצי כדי להוסיף לאתר"
+                  title={t("studio.grapesStudio.addElements")}
+                  subtitle={t("studio.grapesStudio.addElementsHint")}
                 >
                   <div className="mb-5 grid grid-cols-3 gap-3">
                     {quickBlocks.map((block) => (
@@ -617,7 +629,7 @@ export default function BizuplyWebsiteStudio({
                           {block.icon}
                         </span>
                         <span className="text-xs font-black text-slate-800">
-                          {block.label}
+                          {t(block.labelKey)}
                         </span>
                       </button>
                     ))}
@@ -631,120 +643,120 @@ export default function BizuplyWebsiteStudio({
 
               {leftPanel === "smartBlocks" && (
                 <PanelBox
-                  title="בלוקים חכמים"
-                  subtitle="בלוקים שמתחברים למודולים של Bizuply"
+                  title={t("studio.grapesStudio.smartBlocks")}
+                  subtitle={t("studio.grapesStudio.smartBlocksHint")}
                 >
                   <SmartBlock
-                    title="שירותים מהעסק"
-                    text="מושך אוטומטית שירותים, מחירים וזמנים"
+                    title={t("studio.grapesStudio.smartServices")}
+                    text={t("studio.grapesStudio.smartServicesText")}
                     onClick={() => addBlockToCanvas("biz-services")}
                   />
                   <SmartBlock
-                    title="תיאום תורים"
-                    text="מחובר ליומן, שעות פעילות וזמינות"
+                    title={t("studio.grapesStudio.smartBooking")}
+                    text={t("studio.grapesStudio.smartBookingText")}
                     onClick={() => addBlockToCanvas("biz-booking")}
                   />
                   <SmartBlock
-                    title="מוצרים וסליקה"
-                    text="מוצרים, סליקה וכפתור הוספה לסל"
+                    title={t("studio.grapesStudio.smartProducts")}
+                    text={t("studio.grapesStudio.smartProductsText")}
                     onClick={() => addBlockToCanvas("biz-products")}
                   />
                   <SmartBlock
-                    title="טופס ליד"
-                    text="כל פנייה נכנסת ל־CRM של העסק"
+                    title={t("studio.grapesStudio.smartLead")}
+                    text={t("studio.grapesStudio.smartLeadText")}
                     onClick={() => addBlockToCanvas("biz-lead-form")}
                   />
                   <SmartBlock
-                    title="מועדון לקוחות"
-                    text="הרשמה להטבות, קופונים ועדכונים"
+                    title={t("studio.grapesStudio.smartClub")}
+                    text={t("studio.grapesStudio.smartClubText")}
                     onClick={() => addBlockToCanvas("biz-club")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "pages" && (
-                <PanelBox title="דפים" subtitle="ניהול דפי האתר">
-                  <PageItem active title="דף הבית" />
-                  <PageItem title="אודות" />
-                  <PageItem title="שירותים" />
-                  <PageItem title="צור קשר" />
+                <PanelBox title={t("studio.grapesStudio.pages")} subtitle={t("studio.grapesStudio.pagesHint")}>
+                  <PageItem active title={t("studio.nav.home")} />
+                  <PageItem title={t("studio.nav.about")} />
+                  <PageItem title={t("studio.nav.services")} />
+                  <PageItem title={t("studio.nav.contact")} />
                 </PanelBox>
               )}
 
               {leftPanel === "media" && (
-                <PanelBox title="מדיה" subtitle="תמונות וקבצים לאתר">
+                <PanelBox title={t("studio.grapesStudio.media")} subtitle={t("studio.grapesStudio.mediaHint")}>
                   <button
                     type="button"
                     onClick={handleOpenAssets}
                     className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-black text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
                   >
-                    פתיחת מנהל מדיה
+                    {t("studio.grapesStudio.openMedia")}
                   </button>
                 </PanelBox>
               )}
 
               {leftPanel === "commerce" && (
-                <PanelBox title="מוצרים וסליקה" subtitle="חיבור חנות וסליקה">
+                <PanelBox title={t("studio.grapesStudio.commerce")} subtitle={t("studio.grapesStudio.commerceHint")}>
                   <SmartBlock
-                    title="הוספת בלוק מוצרים"
-                    text="מוצרים עם מחיר וכפתור רכישה"
+                    title={t("studio.grapesStudio.addProductsBlock")}
+                    text={t("studio.grapesStudio.addProductsBlockText")}
                     onClick={() => addBlockToCanvas("biz-products")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "services" && (
-                <PanelBox title="שירותים" subtitle="חיבור השירותים לאתר">
+                <PanelBox title={t("studio.grapesStudio.services")} subtitle={t("studio.grapesStudio.servicesHint")}>
                   <SmartBlock
-                    title="הוספת בלוק שירותים"
-                    text="השירותים יוצגו מתוך המערכת"
+                    title={t("studio.grapesStudio.addServicesBlock")}
+                    text={t("studio.grapesStudio.addServicesBlockText")}
                     onClick={() => addBlockToCanvas("biz-services")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "booking" && (
-                <PanelBox title="תיאום תורים" subtitle="חיבור האתר ליומן">
+                <PanelBox title={t("studio.grapesStudio.booking")} subtitle={t("studio.grapesStudio.bookingHint")}>
                   <SmartBlock
-                    title="הוספת תיאום תורים"
-                    text="בחירת שירות, תאריך ושעה פנויה"
+                    title={t("studio.grapesStudio.addBooking")}
+                    text={t("studio.grapesStudio.addBookingText")}
                     onClick={() => addBlockToCanvas("biz-booking")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "club" && (
-                <PanelBox title="מועדון לקוחות" subtitle="הטבות וקופונים">
+                <PanelBox title={t("studio.grapesStudio.club")} subtitle={t("studio.grapesStudio.clubHint")}>
                   <SmartBlock
-                    title="הוספת מועדון לקוחות"
-                    text="סקשן קטן להצטרפות לקוחות"
+                    title={t("studio.grapesStudio.addClub")}
+                    text={t("studio.grapesStudio.addClubText")}
                     onClick={() => addBlockToCanvas("biz-club")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "leads" && (
-                <PanelBox title="טפסים ולידים" subtitle="טפסים שמתחברים ל־CRM">
+                <PanelBox title={t("studio.grapesStudio.leads")} subtitle={t("studio.grapesStudio.leadsHint")}>
                   <SmartBlock
-                    title="הוספת טופס ליד"
-                    text="שם, טלפון, אימייל והודעה"
+                    title={t("studio.grapesStudio.addLead")}
+                    text={t("studio.grapesStudio.addLeadText")}
                     onClick={() => addBlockToCanvas("biz-lead-form")}
                   />
                 </PanelBox>
               )}
 
               {leftPanel === "seo" && (
-                <PanelBox title="SEO" subtitle="הגדרות נראות במנועי חיפוש">
+                <PanelBox title={t("studio.grapesStudio.seo")} subtitle={t("studio.grapesStudio.seoHint")}>
                   <p className="rounded-3xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-500">
-                    בהמשך נחבר כותרת SEO, תיאור, תמונת שיתוף וקישור ציבורי.
+                    {t("studio.grapesStudio.seoSoon")}
                   </p>
                 </PanelBox>
               )}
 
               {leftPanel === "settings" && (
-                <PanelBox title="הגדרות" subtitle="הגדרות כלליות לאתר">
+                <PanelBox title={t("studio.grapesStudio.settings")} subtitle={t("studio.grapesStudio.settingsHint")}>
                   <p className="rounded-3xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-500">
-                    כאן יהיו שפה, דומיין, סטטוס פרסום, פיקסלים, אנליטיקס והרשאות.
+                    {t("studio.grapesStudio.settingsSoon")}
                   </p>
                 </PanelBox>
               )}
@@ -763,13 +775,13 @@ export default function BizuplyWebsiteStudio({
                 active={rightPanel === "design"}
                 onClick={() => setRightPanel("design")}
               >
-                עיצוב
+                {t("studio.grapesStudio.design")}
               </PanelTab>
               <PanelTab
                 active={rightPanel === "settings"}
                 onClick={() => setRightPanel("settings")}
               >
-                הגדרות
+                {t("studio.grapesStudio.settings")}
               </PanelTab>
             </div>
 
@@ -777,8 +789,8 @@ export default function BizuplyWebsiteStudio({
               {rightPanel === "design" && (
                 <>
                   <PanelTitle
-                    title="עיצוב"
-                    subtitle="צבעים, גדלים, פינות, ריווח, צללים ואפקטים"
+                    title={t("studio.grapesStudio.design")}
+                    subtitle={t("studio.grapesStudio.designHint")}
                   />
                   <div ref={stylesRef} />
                 </>
@@ -787,8 +799,8 @@ export default function BizuplyWebsiteStudio({
               {rightPanel === "settings" && (
                 <>
                   <PanelTitle
-                    title="הגדרות אלמנט"
-                    subtitle="קישורים, פעולות, תמונות, שדות והגדרות מתקדמות"
+                    title={t("studio.grapesStudio.elementSettings")}
+                    subtitle={t("studio.grapesStudio.elementSettingsHint")}
                   />
                   <div ref={traitsRef} />
                 </>
@@ -946,6 +958,7 @@ function SmartBlock({
 }
 
 function PageItem({ title, active = false }: { title: string; active?: boolean }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -957,7 +970,7 @@ function PageItem({ title, active = false }: { title: string; active?: boolean }
       ].join(" ")}
     >
       <span className="text-sm font-black">{title}</span>
-      <span className="text-xs font-black">{active ? "פעיל" : "עריכה"}</span>
+      <span className="text-xs font-black">{active ? t("studio.grapesStudio.active") : t("studio.grapesStudio.editing")}</span>
     </button>
   );
 }

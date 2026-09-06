@@ -1,3 +1,5 @@
+import i18n from "../i18n/i18n";
+import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import {
   getSectionTemplateById,
   SECTION_LIBRARY,
@@ -275,7 +277,11 @@ export function materializeAiSitePlan(plan: AiSitePlan) {
 
     return {
       id: pageId,
-      title: page.title || (isHome ? "דף הבית" : `עמוד ${index + 1}`),
+      title:
+        page.title ||
+        (isHome
+          ? String(i18n.t("studio.pages.home"))
+          : String(i18n.t("studio.pages.pageN", { n: index + 1 }))),
       slug: isHome ? "" : String(page.slug || pageId).replace(/^\//, ""),
       type: page.type || (isHome ? "home" : "blank"),
       isHome,
@@ -534,26 +540,29 @@ export function buildClientAiSitePlan(input: {
   // Ensure home is first
   pages.sort((a, b) => Number(b.isHome) - Number(a.isHome));
 
-  return {
-    siteName: businessName,
-    hostTemplateKey: "adion",
-    templateKey: "adion",
-    palette: {
-      primary: input.primaryColor || "#4c1d95",
-      secondary: input.secondaryColor || "#0ea5e9",
-      ...paletteBase,
+  return localizeBuiltInTemplateSeed(
+    {
+      siteName: businessName,
+      hostTemplateKey: "adion",
+      templateKey: "adion",
+      palette: {
+        primary: input.primaryColor || "#4c1d95",
+        secondary: input.secondaryColor || "#0ea5e9",
+        ...paletteBase,
+      },
+      brand: {
+        businessName,
+        tagline: description.slice(0, 90) || `${businessName} — ${niche}`,
+      },
+      seo: {
+        title: `${businessName} | ${niche}`,
+        description:
+          description ||
+          `${businessName} — ${niche}. שירות מקצועי, שקיפות ותוצאות.`,
+        keywords: [businessName, niche, audience].filter(Boolean),
+      },
+      pages,
     },
-    brand: {
-      businessName,
-      tagline: description.slice(0, 90) || `${businessName} — ${niche}`,
-    },
-    seo: {
-      title: `${businessName} | ${niche}`,
-      description:
-        description ||
-        `${businessName} — ${niche}. שירות מקצועי, שקיפות ותוצאות.`,
-      keywords: [businessName, niche, audience].filter(Boolean),
-    },
-    pages,
-  };
+    i18n.language,
+  );
 }

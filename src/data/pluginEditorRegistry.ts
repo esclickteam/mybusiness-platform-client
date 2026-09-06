@@ -231,6 +231,8 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   },
 };
 
+type TranslateFn = (key: string, options?: { defaultValue?: string }) => string;
+
 export function getPluginEditorAction(pluginKey: string): PluginEditorAction | null {
   if (PLUGIN_EDITOR_ACTIONS[pluginKey]) return PLUGIN_EDITOR_ACTIONS[pluginKey];
   // Never invent a generic dashed placeholder for unknown catalog keys.
@@ -240,6 +242,24 @@ export function getPluginEditorAction(pluginKey: string): PluginEditorAction | n
     kind: "settings",
     label: "הגדרות תוסף",
     description: "ניהול בפאנל — לא רכיב שנגרר לעמוד",
+  };
+}
+
+export function localizePluginEditorAction(
+  action: PluginEditorAction,
+  t?: TranslateFn
+): PluginEditorAction {
+  if (!t || !action) return action;
+  const fallback = action.pluginKey && !PLUGIN_EDITOR_ACTIONS[action.pluginKey];
+  const key = fallback ? "fallback" : action.pluginKey;
+  return {
+    ...action,
+    label: t(`studio.pluginActions.${key}.label`, { defaultValue: action.label }),
+    description: action.description
+      ? t(`studio.pluginActions.${key}.description`, {
+          defaultValue: action.description,
+        })
+      : action.description,
   };
 }
 

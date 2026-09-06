@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 /**
  * Multi-select catalog upsells.
@@ -12,9 +14,14 @@ export default function UpsellPicker({
   onAmountChange,
   allowCustomPrice = false,
   packageSku = "monthly",
-  title = "אפסיילים ושירותים נוספים",
-  hint = "סמנו שירותים להוספה לרכישה",
+  title,
+  hint,
 }) {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
+  const heading = title ?? t("billing.upsell.title");
+  const description = hint ?? t("billing.upsell.hint");
+
   const visibleUpsells = useMemo(() => {
     return (upsells || []).filter((item) => {
       if (!item || item.active === false) return false;
@@ -39,10 +46,17 @@ export default function UpsellPicker({
     }, 0);
   }, [visibleUpsells, selectedSet, amountsBySku]);
 
+  const billingLabel = (billing) =>
+    billing === "recurring_month"
+      ? t("billing.upsell.monthly")
+      : billing === "recurring_year"
+        ? t("billing.upsell.yearly")
+        : t("billing.upsell.oneTime");
+
   if (!visibleUpsells.length) {
     return (
       <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-sm font-bold text-slate-500">
-        אין אפסיילים פעילים בקטלוג
+        {t("billing.upsell.empty")}
       </div>
     );
   }
@@ -51,12 +65,15 @@ export default function UpsellPicker({
     <div className="space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h3 className="text-sm font-black text-slate-900">{title}</h3>
-          <p className="mt-0.5 text-xs font-bold text-slate-500">{hint}</p>
+          <h3 className="text-sm font-black text-slate-900">{heading}</h3>
+          <p className="mt-0.5 text-xs font-bold text-slate-500">{description}</p>
         </div>
         {selectedSet.size > 0 ? (
           <p className="text-xs font-black text-emerald-700">
-            נבחרו {selectedSet.size} · ₪{selectedTotal.toLocaleString("he-IL")}
+            {t("billing.upsell.selectedCount", {
+              count: selectedSet.size,
+              amount: selectedTotal.toLocaleString(locale),
+            })}
           </p>
         ) : null}
       </div>
@@ -90,12 +107,8 @@ export default function UpsellPicker({
                     {item.nameHe || item.sku}
                   </span>
                   <span className="mt-0.5 block text-[11px] font-bold text-slate-500">
-                    {item.billing === "recurring_month"
-                      ? "חודשי"
-                      : item.billing === "recurring_year"
-                        ? "שנתי"
-                        : "חד־פעמי"}{" "}
-                    · קטלוג ₪{item.amountIls}
+                    {billingLabel(item.billing)}{" "}
+                    · {t("billing.upsell.catalogPrice", { amount: item.amountIls })}
                   </span>
                   {item.descriptionHe ? (
                     <span className="mt-1 block text-[11px] font-semibold leading-4 text-slate-500">
@@ -107,7 +120,7 @@ export default function UpsellPicker({
 
               {allowCustomPrice && checked ? (
                 <label className="mt-2 block text-[11px] font-bold text-slate-600">
-                  מחיר לתשלום (₪)
+                  {t("billing.upsell.customPrice")}
                   <input
                     type="number"
                     min={0}

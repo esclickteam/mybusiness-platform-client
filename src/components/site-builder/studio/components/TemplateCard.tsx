@@ -1,8 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type {
   ReadyWebsiteBlock,
   ReadyWebsiteTemplate,
 } from "../data/readyWebsiteTypes";
+import { localizeBuiltInText } from "../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type TemplateCardProps = {
   template: ReadyWebsiteTemplate;
@@ -39,30 +42,38 @@ export default function TemplateCard({
   template,
   onApply,
 }: TemplateCardProps) {
+  const { t, i18n } = useTranslation();
   const tone = getTone(template);
 
   return (
-    <article className="group overflow-hidden rounded-[30px] border border-slate-200 bg-white text-right shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_34px_90px_rgba(15,23,42,0.15)]">
+    <article
+      dir={getTextDirection(i18n.language)}
+      className="group overflow-hidden rounded-[30px] border border-slate-200 bg-white text-start shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_34px_90px_rgba(15,23,42,0.15)]"
+    >
       <TemplateMiniPreview template={template} tone={tone} />
 
       <div className="p-5">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <Badge tone={tone}>{template.niche}</Badge>
-          <Badge tone="neutral">{template.blocks.length} בלוקים</Badge>
+          <Badge tone={tone}>{localizeBuiltInText(template.niche)}</Badge>
+          <Badge tone="neutral">
+            {t("studio.readyTemplates.blockCount", {
+              count: template.blocks.length,
+            })}
+          </Badge>
           <Badge tone="sky">{template.layout}</Badge>
         </div>
 
         <h3 className="text-[22px] font-black leading-tight tracking-[-0.04em] text-slate-800">
-          {template.name}
+          {localizeBuiltInText(template.name)}
         </h3>
 
         <p className="mt-2 min-h-[48px] text-[14px] font-bold leading-6 text-slate-600">
-          {template.description}
+          {localizeBuiltInText(template.description)}
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <InfoPill label="קטגוריה" value={template.category} />
-          <InfoPill label="מבנה" value={template.layout} />
+          <InfoPill label={t("studio.readyTemplates.category")} value={localizeBuiltInText(template.category)} />
+          <InfoPill label={t("studio.readyTemplates.layout")} value={template.layout} />
         </div>
 
         <div className="mt-4 flex items-center gap-2">
@@ -71,7 +82,7 @@ export default function TemplateCard({
             onClick={onApply}
             className="inline-flex h-12 flex-1 items-center justify-center rounded-[20px] bg-gradient-to-r from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] px-4 text-[15px] font-black text-black shadow-[0_16px_38px_rgba(15,23,42,0.20)] transition hover:scale-[1.01] hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            החל אתר מוכן
+            {t("studio.readyTemplates.apply")}
           </button>
 
           <div className="hidden h-12 items-center justify-center rounded-[20px] border border-slate-200 bg-slate-50 px-4 text-[13px] font-black text-slate-700 xl:inline-flex">
@@ -90,6 +101,7 @@ function TemplateMiniPreview({
   template: ReadyWebsiteTemplate;
   tone: PreviewTone;
 }) {
+  const { t } = useTranslation();
   const mode = getPreviewMode(template);
   const shellClass = getShellClass(tone);
 
@@ -103,7 +115,7 @@ function TemplateMiniPreview({
         </div>
 
         <div className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-700">
-          תצוגת תבנית
+          {t("leftover.studioChrome.templateView")}
         </div>
       </div>
 
@@ -113,7 +125,7 @@ function TemplateMiniPreview({
         </div>
 
         <div className="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1 text-[11px] font-black text-slate-800 shadow-sm">
-          {template.blocks.length} סקשנים
+          {t("leftover.studioChrome.sections", { count: template.blocks.length })}
         </div>
 
         <div className="absolute inset-x-4 top-[58px] overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.16)]">

@@ -7,8 +7,13 @@ import { createMySite, listMySites } from "../api/mySitesApi";
 import { getStudioTemplateById, getStudioTemplateSeedById } from "../components/site-builder/studio/data/templates";
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n/i18n";
+import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../i18n/localeUtils";
 
 export default function WebsiteTemplatePreviewPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { businessId, templateId } = useParams<{
@@ -119,7 +124,7 @@ export default function WebsiteTemplatePreviewPage() {
           className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 text-sm font-black text-white shadow-2xl backdrop-blur-xl transition hover:bg-black"
         >
           <ArrowLeft className="h-4 w-4" />
-          חזרה
+          {t("studio.templatePreview.back")}
         </button>
 
         <button
@@ -129,7 +134,7 @@ export default function WebsiteTemplatePreviewPage() {
           className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#6D28D9] px-5 text-sm font-black text-white shadow-2xl transition hover:bg-[#5b21b6]"
         >
           <Pencil className="h-4 w-4" />
-          עריכה
+          {t("studio.templatePreview.edit")}
         </button>
 
         <button
@@ -138,7 +143,7 @@ export default function WebsiteTemplatePreviewPage() {
           className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-black text-[#111827] shadow-2xl transition hover:bg-[#f3f4f6]"
         >
           <Wand2 className="h-4 w-4" />
-          שימוש בתבנית
+          {t("studio.templatePreview.useTemplate")}
         </button>
       </div>
     );
@@ -156,11 +161,11 @@ export default function WebsiteTemplatePreviewPage() {
             </div>
 
             <h1 className="mt-6 text-2xl font-black tracking-[-0.03em]">
-              התבנית לא נמצאה
+              {t("studio.templatePreview.notFound")}
             </h1>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
-              התבנית שנבחרה לא קיימת או לא רשומה בתיקיית התבניות.
+              {t("studio.templatePreview.notFoundHint")}
             </p>
 
             <button
@@ -168,7 +173,7 @@ export default function WebsiteTemplatePreviewPage() {
               onClick={handleBackToTemplates}
               className="mt-7 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-black transition hover:bg-black"
             >
-              חזרה לתבניות
+              {t("studio.templatePreview.backToTemplates")}
             </button>
           </div>
         </div>
@@ -182,7 +187,10 @@ export default function WebsiteTemplatePreviewPage() {
     const Component = renderer.Component as React.ComponentType<
       Record<string, unknown>
     >;
-    const data = (renderer.defaultData || {}) as Record<string, unknown>;
+    const data = localizeBuiltInTemplateSeed(
+      (renderer.defaultData || {}) as Record<string, unknown>,
+      i18n.language,
+    );
     const pageId = String(previewPageId || homePageId);
     const pageSlug = String(previewPage?.slug || homePage?.slug || "/");
     const key = String(renderer.key || cleanTemplateId).toLowerCase();
@@ -205,7 +213,7 @@ export default function WebsiteTemplatePreviewPage() {
         <div
           className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible"
           data-template-id={key}
-          dir="rtl"
+          dir={getTextDirection(i18n.language)}
         >
           <Component
             initialPage={pageId}
@@ -271,14 +279,14 @@ export default function WebsiteTemplatePreviewPage() {
       <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center">
         <div className="w-full rounded-[2rem] border border-[#e5e7eb] bg-[#f9fafb] p-10 text-center shadow-sm">
           <h1 className="text-2xl font-black tracking-[-0.03em]">
-            אין תצוגה מקדימה לתבנית
+            {t("studio.templatePreview.noPreview")}
           </h1>
           <button
             type="button"
             onClick={handleBackToTemplates}
             className="mt-7 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-black transition hover:bg-black"
           >
-            חזרה לתבניות
+            {t("studio.templatePreview.backToTemplates")}
           </button>
         </div>
       </div>

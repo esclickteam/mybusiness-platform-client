@@ -10,6 +10,8 @@ import {
   X,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
@@ -39,8 +41,10 @@ export default function SitePluginHelpModal({
   onClose,
   onToggle,
 }: SitePluginHelpModalProps) {
+  const { t } = useTranslation();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const closeLabel = t("leftover.pluginHelp.close", "Close");
 
   useEffect(() => {
     if (!open) return;
@@ -66,7 +70,7 @@ export default function SitePluginHelpModal({
 
     const frame = window.requestAnimationFrame(() => {
       dialogRef.current
-        ?.querySelector<HTMLElement>("button[aria-label='סגירה']")
+        ?.querySelector<HTMLElement>("button[data-plugin-help-close='true']")
         ?.focus();
     });
 
@@ -92,7 +96,10 @@ export default function SitePluginHelpModal({
   const helpText =
     plugin.helpText ||
     plugin.description ||
-    "תוסף זה מרחיב את יכולות האתר. לאחר ההתקנה ניתן להגדיר אותו בפאנל הניהול.";
+    t(
+      "leftover.pluginHelp.fallbackDesc",
+      "This plugin extends the website. After install you can configure it in the management panel."
+    );
 
   const host =
     contained && typeof document !== "undefined"
@@ -112,7 +119,7 @@ export default function SitePluginHelpModal({
     >
       <button
         type="button"
-        aria-label="סגירת עזרת תוסף"
+        aria-label={t("leftover.pluginHelp.closeHelpAria", "Close plugin help")}
         data-studio-dismiss-backdrop="true"
         className="pointer-events-auto absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]"
         onClick={onClose}
@@ -130,11 +137,14 @@ export default function SitePluginHelpModal({
             type="button"
             onClick={onClose}
             className="grid h-9 w-9 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100"
-            aria-label="סגירה"
+            aria-label={closeLabel}
+            data-plugin-help-close="true"
           >
             <ChevronLeft size={20} />
           </button>
-          <span className="text-sm font-medium text-slate-500">חזרה לחנות</span>
+          <span className="text-sm font-medium text-slate-500">
+            {t("leftover.pluginHelp.backStore", "Back to store")}
+          </span>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -177,7 +187,8 @@ export default function SitePluginHelpModal({
                       <span className="text-sm text-slate-400">·</span>
                       <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600">
                         <Check size={14} />
-                        {plugin.statusLabel || "מנוי פעיל"}
+                        {plugin.statusLabel ||
+                          t("leftover.pluginHelp.activeSub", "Active subscription")}
                       </span>
                     </>
                   ) : null}
@@ -206,7 +217,7 @@ export default function SitePluginHelpModal({
                 ) : isEnabled && plugin.entitled === true ? (
                   <>
                     <X size={16} />
-                    הסרת תוסף
+                    {t("leftover.pluginHelp.remove", "Remove plugin")}
                   </>
                 ) : plugin.ctaLabel ? (
                   <>
@@ -215,7 +226,7 @@ export default function SitePluginHelpModal({
                 ) : (
                   <>
                     <Download size={16} />
-                    התקנה
+                    {t("leftover.pluginHelp.install", "Install")}
                   </>
                 )}
               </button>
@@ -237,7 +248,9 @@ export default function SitePluginHelpModal({
           {/* Description */}
           <div className="space-y-6 px-6 pb-8">
             <section>
-              <h2 className="text-base font-bold text-slate-900">על התוסף</h2>
+              <h2 className="text-base font-bold text-slate-900">
+                {t("leftover.pluginHelp.about", "About the plugin")}
+              </h2>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
                 {helpText}
               </p>
@@ -247,7 +260,7 @@ export default function SitePluginHelpModal({
               <section>
                 <h2 className="flex items-center gap-2 text-base font-bold text-slate-900">
                   <Sparkles size={16} className="text-violet-500" />
-                  דוגמאות שימוש
+                  {t("leftover.pluginHelp.examples", "Usage examples")}
                 </h2>
                 <ul className="mt-3 space-y-2">
                   {examples.map((item) => (
@@ -264,23 +277,31 @@ export default function SitePluginHelpModal({
             ) : null}
 
             <section>
-              <h2 className="text-base font-bold text-slate-900">פרטים</h2>
+              <h2 className="text-base font-bold text-slate-900">
+                {t("leftover.pluginHelp.details", "Details")}
+              </h2>
               <dl className="mt-3 divide-y divide-slate-100 rounded-xl border border-slate-100">
                 <div className="flex justify-between gap-4 px-4 py-3">
-                  <dt className="text-sm text-slate-500">קטגוריה</dt>
+                  <dt className="text-sm text-slate-500">
+                    {t("leftover.pluginHelp.category", "Category")}
+                  </dt>
                   <dd className="text-sm font-medium text-slate-800">
                     {CATEGORY_LABELS[plugin.category] || plugin.category}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 px-4 py-3">
-                  <dt className="text-sm text-slate-500">מחיר</dt>
+                  <dt className="text-sm text-slate-500">
+                    {t("leftover.pluginHelp.price", "Price")}
+                  </dt>
                   <dd className="text-sm font-medium text-slate-800">
                     {formatPluginPrice(plugin)}
                   </dd>
                 </div>
                 {plugin.futurePriceLabel ? (
                   <div className="flex justify-between gap-4 px-4 py-3">
-                    <dt className="text-sm text-slate-500">מחיר עתידי</dt>
+                    <dt className="text-sm text-slate-500">
+                      {t("leftover.pluginHelp.futurePrice", "Future price")}
+                    </dt>
                     <dd className="text-sm font-medium text-slate-800">
                       {plugin.futurePriceLabel}
                     </dd>
@@ -292,8 +313,10 @@ export default function SitePluginHelpModal({
             <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4">
               <p className="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
                 <ExternalLink size={14} className="mt-0.5 shrink-0" />
-                לאחר ההתקנה — הגדרות בלשונית הניהול של התוסף, והוספה לעמודים
-                דרך עורך האתר → תוספים.
+                {t(
+                  "leftover.pluginHelp.afterInstall",
+                  "After install — settings are in the plugin management tab, and you add it to pages from the site editor → Plugins."
+                )}
               </p>
             </section>
           </div>

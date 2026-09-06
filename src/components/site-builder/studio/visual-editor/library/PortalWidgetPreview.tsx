@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 
 type PortalPreviewKind =
   | "portal-login"
@@ -42,7 +45,7 @@ function Field({
         fontWeight: 600,
         color: "#94a3b8",
         background: "#fff",
-        textAlign: "right",
+        textAlign: "start",
       }}
     >
       <span style={{ color: ink, opacity: 0.35 }}>{placeholder}</span>
@@ -85,6 +88,7 @@ export default function PortalWidgetPreview({
   line = "#e2e8f0",
   soft = "#f8fafc",
 }: Props) {
+  const { t, i18n } = useTranslation();
   const wrap: React.CSSProperties = {
     height: "100%",
     width: "100%",
@@ -93,7 +97,7 @@ export default function PortalWidgetPreview({
     display: "flex",
     flexDirection: "column",
     gap: 12,
-    direction: "rtl",
+    direction: getTextDirection(i18n.language),
     fontFamily: "inherit",
     overflow: "hidden",
     background: soft,
@@ -103,19 +107,19 @@ export default function PortalWidgetPreview({
     return (
       <div style={{ ...wrap, background: "#fff" }}>
         <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
-          אזור אישי
+          {t("publicWidgets.portal.area")}
         </div>
         <div style={{ fontSize: 26, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
-          הרשמה
+          {t("publicWidgets.portal.register")}
         </div>
         <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
-          מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.
+          {t("publicWidgets.portal.registerSubtitle")}
         </div>
-        <Field placeholder="שם מלא" line={line} ink={ink} />
-        <Field placeholder="אימייל" line={line} ink={ink} />
-        <Field placeholder="טלפון (אופציונלי)" line={line} ink={ink} />
-        <Field placeholder="סיסמה" line={line} ink={ink} />
-        <PrimaryButton label="יצירת חשבון" background={ink} />
+        <Field placeholder={t("publicWidgets.common.fullName")} line={line} ink={ink} />
+        <Field placeholder={t("publicWidgets.common.email")} line={line} ink={ink} />
+        <Field placeholder={t("publicWidgets.portal.phoneOptional")} line={line} ink={ink} />
+        <Field placeholder={t("publicWidgets.common.password")} line={line} ink={ink} />
+        <PrimaryButton label={t("publicWidgets.portal.createAccount")} background={ink} />
       </div>
     );
   }
@@ -125,24 +129,24 @@ export default function PortalWidgetPreview({
     return (
       <div style={{ ...wrap, background: "#fff" }}>
         <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
-          אזור אישי
+          {t("publicWidgets.portal.area")}
         </div>
         <div style={{ fontSize: 24, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
-          {isReset ? "סיסמה חדשה" : "שכחתי סיסמה"}
+          {isReset ? t("publicWidgets.portal.newPassword") : t("publicWidgets.portal.forgotPassword")}
         </div>
         <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
           {isReset
-            ? "בחרו סיסמה חדשה לאזור האישי."
-            : "נשלח קישור לאיפוס סיסמה לאימייל שלכם."}
+            ? t("publicWidgets.portal.newPasswordSubtitle")
+            : t("publicWidgets.portal.forgotSubtitle")}
         </div>
         <Field
-          placeholder={isReset ? "סיסמה חדשה" : "אימייל"}
+          placeholder={isReset ? t("publicWidgets.portal.newPassword") : t("publicWidgets.common.email")}
           line={line}
           ink={ink}
         />
-        {isReset ? <Field placeholder="אימות סיסמה" line={line} ink={ink} /> : null}
+        {isReset ? <Field placeholder={t("publicWidgets.portal.confirmPassword")} line={line} ink={ink} /> : null}
         <PrimaryButton
-          label={isReset ? "שמירת סיסמה" : "שליחת קישור"}
+          label={isReset ? t("publicWidgets.portal.savePassword") : t("publicWidgets.portal.sendResetLink")}
           background={ink}
         />
       </div>
@@ -166,10 +170,10 @@ export default function PortalWidgetPreview({
               fontWeight: 900,
             }}
           >
-            ל
+            {t("publicWidgets.portal.customer").slice(0, 1)}
           </div>
           <div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: ink }}>שלום לקוח/ה</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: ink }}>{t("publicWidgets.portal.helloName", { name: t("publicWidgets.portal.customer") })}</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: muted }}>
               client@example.com
             </div>
@@ -177,9 +181,9 @@ export default function PortalWidgetPreview({
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
           {[
-            ["הזמנות", "3"],
-            ["קורסים", "2"],
-            ["הודעות", "0"],
+            [t("publicWidgets.portal.orders"), "3"],
+            [t("publicWidgets.portal.courses"), "2"],
+            [t("publicWidgets.portal.messages"), "0"],
           ].map(([label, value]) => (
             <div
               key={label}
@@ -198,10 +202,10 @@ export default function PortalWidgetPreview({
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
           {[
-            ["משקל", "72"],
-            ["כמות טיפולים", "4"],
-            ["יתרה", "250"],
-            ["מפגשים", "8"],
+            [t("publicWidgets.portal.weight"), "72"],
+            [t("publicWidgets.portal.treatments"), "4"],
+            [t("publicWidgets.portal.balance"), "250"],
+            [t("publicWidgets.portal.sessions"), "8"],
           ].map(([label, value]) => (
             <div
               key={label}
@@ -217,7 +221,7 @@ export default function PortalWidgetPreview({
             </div>
           ))}
         </div>
-        {["ההזמנות שלי", "העגלה שלי", "פרטי החשבון"].map((label) => (
+        {[t("publicWidgets.portal.myOrders"), t("publicWidgets.portal.myCart"), t("publicWidgets.portal.accountDetails")].map((label) => (
           <div
             key={label}
             style={{
@@ -240,16 +244,16 @@ export default function PortalWidgetPreview({
   if (kind === "portal-custom-data") {
     return (
       <div style={wrap}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>הנתונים שלי</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>{t("publicWidgets.portal.myData")}</div>
         <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
-          ערכים מעודכנים מתיק הלקוח ב-CRM.
+          {t("publicWidgets.portal.myDataSubtitleShort")}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
           {[
-            ["משקל", "72"],
-            ["כמות טיפולים", "4"],
-            ["יתרה", "₪250"],
-            ["מפגשים שבוצעו", "8"],
+            [t("publicWidgets.portal.weight"), "72"],
+            [t("publicWidgets.portal.treatments"), "4"],
+            [t("publicWidgets.portal.balance"), "₪250"],
+            [t("publicWidgets.portal.sessionsDone"), "8"],
           ].map(([label, value]) => (
             <div
               key={label}
@@ -275,14 +279,14 @@ export default function PortalWidgetPreview({
   if (kind === "portal-packages") {
     return (
       <div style={wrap}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>בחרו חבילה</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>{t("publicWidgets.portal.choosePackage")}</div>
         <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
-          לאחר התשלום בסליקה תיפתח הגישה לאזור האישי.
+          {t("publicWidgets.portal.packagesSubtitle")}
         </div>
         {[
-          ["בסיס", "₪290", false],
-          ["עסקי", "₪590", true],
-          ["פרימיום", "₪990", false],
+          [t("publicWidgets.portal.pkgBasic"), "₪290", false],
+          [t("publicWidgets.portal.pkgBusiness"), "₪590", true],
+          [t("publicWidgets.portal.pkgPremium"), "₪990", false],
         ].map(([name, price, featured]) => (
           <div
             key={String(name)}
@@ -295,7 +299,7 @@ export default function PortalWidgetPreview({
             }}
           >
             <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.7 }}>
-              {featured ? "הכי פופולרי" : "חבילה"}
+              {featured ? t("publicWidgets.portal.mostPopular") : t("publicWidgets.portal.package")}
             </div>
             <div style={{ fontSize: 16, fontWeight: 900 }}>{name}</div>
             <div style={{ fontSize: 24, fontWeight: 900 }}>{price}</div>
@@ -311,7 +315,7 @@ export default function PortalWidgetPreview({
                 textAlign: "center",
               }}
             >
-              לתשלום בסליקה
+              {t("publicWidgets.portal.payCheckout")}
             </div>
           </div>
         ))}
@@ -323,7 +327,7 @@ export default function PortalWidgetPreview({
     return (
       <div style={wrap}>
         <div style={{ fontSize: 12, fontWeight: 800, color: muted, letterSpacing: "0.04em" }}>
-          היסטוריית הזמנות
+          {t("publicWidgets.portal.orderHistory")}
         </div>
         <div
           style={{
@@ -346,14 +350,14 @@ export default function PortalWidgetPreview({
               color: muted,
             }}
           >
-            <div>הזמנה</div>
-            <div>סטטוס</div>
-            <div>סכום</div>
+            <div>{t("publicWidgets.portal.order")}</div>
+            <div>{t("publicWidgets.portal.status")}</div>
+            <div>{t("publicWidgets.portal.amount")}</div>
           </div>
           {[
-            ["#1042", "שולמה", "₪249"],
-            ["#1038", "בטיפול", "₪128"],
-            ["#1021", "נשלחה", "₪89"],
+            ["#1042", t("publicWidgets.portal.paid"), "₪249"],
+            ["#1038", t("publicWidgets.portal.processing"), "₪128"],
+            ["#1021", t("publicWidgets.portal.shipped"), "₪89"],
           ].map(([order, status, total], index, arr) => (
             <div
               key={order}
@@ -395,8 +399,8 @@ export default function PortalWidgetPreview({
     return (
       <div style={{ ...wrap, background: "#fff" }}>
         {[
-          { name: "מוצר לדוגמה × 1", price: "₪120.00" },
-          { name: "תוספת × 2", price: "₪60.00" },
+          { name: t("publicWidgets.store.sampleProduct"), price: "₪120.00" },
+          { name: t("publicWidgets.store.sampleExtra"), price: "₪60.00" },
         ].map((item) => (
           <div
             key={item.name}
@@ -416,9 +420,9 @@ export default function PortalWidgetPreview({
           </div>
         ))}
         <div style={{ fontWeight: 900, fontSize: 18, color: ink, marginTop: 4 }}>
-          סה״כ: ₪180.00
+          {t("publicWidgets.portal.total", { amount: "₪180.00" })}
         </div>
-        <PrimaryButton label="המשך לתשלום" background={accent} />
+        <PrimaryButton label={t("publicWidgets.store.continueToPay")} background={accent} />
       </div>
     );
   }
@@ -426,23 +430,23 @@ export default function PortalWidgetPreview({
   return (
     <div style={{ ...wrap, background: "#fff" }}>
       <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
-        אזור אישי
+        {t("publicWidgets.portal.area")}
       </div>
       <div style={{ fontSize: 26, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
-        התחברות
+        {t("publicWidgets.portal.login")}
       </div>
       <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
-        הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
+        {t("publicWidgets.portal.loginSubtitle")}
       </div>
-      <Field placeholder="אימייל" line={line} ink={ink} />
-      <Field placeholder="סיסמה" line={line} ink={ink} />
-      <PrimaryButton label="התחברות" background={ink} />
+      <Field placeholder={t("publicWidgets.common.email")} line={line} ink={ink} />
+      <Field placeholder={t("publicWidgets.common.password")} line={line} ink={ink} />
+      <PrimaryButton label={t("publicWidgets.portal.login")} background={ink} />
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 800, color: accent }}>
-          אין לכם חשבון? הרשמה
+          {t("publicWidgets.portal.noAccountRegister")}
         </div>
         <div style={{ fontSize: 13, fontWeight: 800, color: muted }}>
-          שכחתי סיסמה
+          {t("publicWidgets.portal.forgotPassword")}
         </div>
       </div>
     </div>

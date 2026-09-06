@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown, Loader2, RefreshCw, Search } from "lucide-react";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
@@ -167,13 +168,13 @@ function sortFonts(fonts: StudioFont[]) {
   );
 }
 
-function getFontLabel(value: string) {
+function getFontLabel(value: string, fallback: string) {
   const clean = String(value || "")
     .replace(/['"]/g, "")
     .split(",")[0]
     .trim();
 
-  return clean || "גופן";
+  return clean || fallback;
 }
 
 function fontCssFamily(font: string) {
@@ -249,6 +250,7 @@ export default function StudioFontPicker({
   searchPlaceholder = "Search fonts...",
   closeAriaLabel = "Close fonts",
 }: StudioFontPickerProps) {
+  const { t } = useTranslation();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const [open, setOpen] = useState(false);
@@ -261,7 +263,7 @@ export default function StudioFontPicker({
     left: 0,
   });
 
-  const currentLabel = getFontLabel(value);
+  const currentLabel = getFontLabel(value, t("leftover.studioChrome.font"));
 
   const filteredFonts = useMemo(() => {
     const clean = query.trim().toLowerCase();
@@ -490,7 +492,7 @@ export default function StudioFontPicker({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
-        title="גופן"
+        title={t("leftover.studioChrome.font")}
         className="
           inline-flex h-9 w-[132px] shrink-0 items-center justify-between gap-2
           rounded-lg px-2 text-sm font-bold text-slate-900

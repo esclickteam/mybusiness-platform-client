@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { BarChart3, Cake, HelpCircle, Languages, QrCode, Search, Users } from "lucide-react";
 
 import API from "../../../../api";
@@ -27,6 +28,7 @@ function useJson<T>(loader: () => Promise<T>, deps: React.DependencyList) {
 }
 
 export function AnalyticsProPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
   const { data, error, reload } = useJson(async () => {
@@ -42,7 +44,7 @@ export function AnalyticsProPanel(props: PluginPanelProps) {
       icon={BarChart3}
       accent="#0EA5E9"
       title="Analytics Pro"
-      description="אירועי המרה, מקורות, מכשירים ומשפך."
+      description={t("leftover.addonOps.analyticsDesc", "Conversion events, sources, devices, and funnel.")}
       loading={!data && !error}
       saving={false}
       message={error}
@@ -50,10 +52,10 @@ export function AnalyticsProPanel(props: PluginPanelProps) {
     >
       <div data-testid="analytics-overview" className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
-          <Field label="מתאריך">
+          <Field label={t("leftover.addonOps.fromDate", "From date")}>
             <TextInput type="date" value={from} onChange={setFrom} />
           </Field>
-          <Field label="עד תאריך">
+          <Field label={t("leftover.addonOps.toDate", "To date")}>
             <TextInput type="date" value={to} onChange={setTo} />
           </Field>
         </div>
@@ -84,6 +86,7 @@ export function AnalyticsProPanel(props: PluginPanelProps) {
 }
 
 export function SeoProPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const { data, error, reload } = useJson(async () => {
     const { data: res } = await API.get(`/site-builder/sites/${props.siteId}/seo-audit`);
     return res.audit;
@@ -96,7 +99,7 @@ export function SeoProPanel(props: PluginPanelProps) {
       icon={Search}
       accent="#059669"
       title="SEO Pro"
-      description="ביקורת SEO עם ציון והמלצות. Core SEO נשאר חינם."
+      description={t("leftover.addonOps.seoDesc", "SEO audit with a score and recommendations. Core SEO stays free.")}
       loading={!data && !error}
       saving={false}
       message={error}
@@ -133,6 +136,7 @@ export function SeoProPanel(props: PluginPanelProps) {
 }
 
 export function MultiLanguagePanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const { data, error, reload } = useJson(async () => {
     const { data: res } = await API.get(`/site-builder/sites/${props.siteId}/i18n`);
     return res;
@@ -142,8 +146,8 @@ export function MultiLanguagePanel(props: PluginPanelProps) {
       {...props}
       icon={Languages}
       accent="#2563EB"
-      title="רב־לשוני"
-      description="עברית /he ואנגלית /en עם hreflang."
+      title={t("leftover.addonOps.multilingual", "Multilingual")}
+      description={t("leftover.addonOps.multilingualDesc", "Hebrew /he and English /en with hreflang.")}
       loading={!data && !error}
       saving={false}
       message={error}
@@ -159,6 +163,7 @@ export function MultiLanguagePanel(props: PluginPanelProps) {
 }
 
 export function ReferAFriendPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const [name, setName] = React.useState("QA Referral");
   const { data, error, reload } = useJson(async () => {
     const { data: res } = await API.get(`/site-builder/sites/${props.siteId}/referrals`);
@@ -169,15 +174,15 @@ export function ReferAFriendPanel(props: PluginPanelProps) {
       {...props}
       icon={Users}
       accent="#F59E0B"
-      title="חבר מביא חבר"
-      description="קמפיין, קוד, ביקור והמרה — בלי תשלום אמיתי."
+      title={t("leftover.addonOps.referral", "Refer a friend")}
+      description={t("leftover.addonOps.referralDesc", "Campaign, code, visit, and conversion — without a real payment.")}
       loading={!data && !error}
       saving={false}
       message={error}
       onSave={() => reload()}
     >
       <div data-testid="referral-dashboard" className="space-y-3">
-        <Field label="שם קמפיין">
+        <Field label={t("leftover.addonOps.campaignName", "Campaign name")}>
           <TextInput value={name} onChange={setName} />
         </Field>
         <button
@@ -220,6 +225,7 @@ export function ReferAFriendPanel(props: PluginPanelProps) {
 }
 
 export function BirthdayClubPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const [name, setName] = React.useState("QA Birthday");
   const [email, setEmail] = React.useState("qa-bday@example.com");
   const [birthday, setBirthday] = React.useState(new Date().toISOString().slice(0, 10));
@@ -232,22 +238,22 @@ export function BirthdayClubPanel(props: PluginPanelProps) {
       {...props}
       icon={Cake}
       accent="#EC4899"
-      title="מועדון יום הולדת"
-      description="שדה יום הולדת, קרובים וסגמנט שנתי."
+      title={t("leftover.addonOps.birthdayClub", "Birthday club")}
+      description={t("leftover.addonOps.birthdayClubDesc", "Birthday field, upcoming dates, and a yearly segment.")}
       loading={!data && !error}
       saving={false}
       message={error}
       onSave={() => reload()}
     >
       <div className="space-y-3">
-        <Field label="שם">
+        <Field label={t("leftover.addonOps.name", "Name")}>
           <TextInput value={name} onChange={setName} />
         </Field>
-        <Field label="אימייל">
+        <Field label={t("leftover.addonOps.email", "Email")}>
           <TextInput value={email} onChange={setEmail} />
         </Field>
         <div data-testid="birthday-field">
-          <Field label="יום הולדת">
+          <Field label={t("leftover.addonOps.birthday", "Birthday")}>
             <TextInput type="date" value={birthday} onChange={setBirthday} />
           </Field>
         </div>
@@ -286,6 +292,7 @@ export function BirthdayClubPanel(props: PluginPanelProps) {
 }
 
 export function QrGeneratorPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const [label, setLabel] = React.useState("QA QR");
   const [destination, setDestination] = React.useState("https://bizuply.com");
   const { data, error, reload } = useJson(async () => {
@@ -298,7 +305,7 @@ export function QrGeneratorPanel(props: PluginPanelProps) {
       icon={QrCode}
       accent="#111827"
       title="QR Pro"
-      description="יצירה, הורדה, יעד דינמי ואנליטיקת סריקות."
+      description={t("leftover.addonOps.qrDesc", "Create, download, a dynamic destination, and scan analytics.")}
       loading={!data && !error}
       saving={false}
       message={error}
@@ -358,6 +365,7 @@ export function QrGeneratorPanel(props: PluginPanelProps) {
 }
 
 export function FaqProPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const [name, setName] = React.useState("QA FAQ");
   const [question, setQuestion] = React.useState("What is included?");
   const [answer, setAnswer] = React.useState("QA answer");
@@ -372,7 +380,7 @@ export function FaqProPanel(props: PluginPanelProps) {
       icon={HelpCircle}
       accent="#7C3AED"
       title="FAQ Pro"
-      description="סט FAQ לשימוש חוזר, קטגוריה, חיפוש ו-schema."
+      description={t("leftover.addonOps.faqDesc", "A reusable FAQ set, category, search, and schema.")}
       loading={!data && !error}
       saving={false}
       message={error}

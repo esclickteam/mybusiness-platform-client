@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -37,6 +38,15 @@ type GscVerificationWizardProps = {
   textareaClass?: string;
 };
 
+function RecommendedBadge() {
+  const { t } = useTranslation();
+  return (
+    <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-700">
+      {t("studio.gsc.recommended")}
+    </span>
+  );
+}
+
 function StepBadge({ n }: { n: number }) {
   return (
     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
@@ -63,7 +73,7 @@ function MethodCard({
       type="button"
       onClick={onClick}
       className={[
-        "w-full rounded-2xl border px-3.5 py-3 text-right transition",
+        "w-full rounded-2xl border px-3.5 py-3 text-start transition",
         selected
           ? "border-blue-400 bg-blue-50 shadow-sm ring-2 ring-blue-100"
           : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
@@ -77,9 +87,7 @@ function MethodCard({
           </p>
         </div>
         {recommended ? (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-700">
-            מומלץ
-          </span>
+          <RecommendedBadge />
         ) : null}
       </div>
     </button>
@@ -94,6 +102,7 @@ export default function GscVerificationWizard({
   fieldClass = seoFieldClass,
   textareaClass = seoTextareaClass,
 }: GscVerificationWizardProps) {
+  const { t } = useTranslation();
   const verificationCode = String(
     siteSeoDraft.googleSiteVerification || "",
   ).trim();
@@ -150,13 +159,13 @@ export default function GscVerificationWizard({
   }, [siteBaseUrl]);
 
   const statusLabel = useMemo(() => {
-    if (!hasAnyVerification) return "לא הוגדר אימות";
-    if (hasMeta) return "קוד האימות נשמר באתר";
+    if (!hasAnyVerification) return t("studio.gsc.notSet");
+    if (hasMeta) return t("studio.gsc.metaSaved");
     const htmlCheck = checks?.find((item) => item.id === "htmlFile");
-    if (hasHtmlPair && htmlCheck?.ok) return "קובץ האימות זמין באתר";
-    if (hasHtmlPair) return "קובץ האימות נשמר — בודקים זמינות באתר";
-    return "לא הוגדר אימות";
-  }, [hasAnyVerification, hasMeta, hasHtmlPair, checks]);
+    if (hasHtmlPair && htmlCheck?.ok) return t("studio.gsc.fileReady");
+    if (hasHtmlPair) return t("studio.gsc.fileSavedChecking");
+    return t("studio.gsc.notSet");
+  }, [hasAnyVerification, hasMeta, hasHtmlPair, checks, t]);
 
   const setVerificationCode = (rawValue: string) => {
     setMetaError("");
@@ -170,7 +179,7 @@ export default function GscVerificationWizard({
   const copyToClipboard = async (value: string, key: string) => {
     setCopyError("");
     if (!value) {
-      setCopyError("אין מה להעתיק");
+      setCopyError(t("studio.gsc.nothingToCopy"));
       return;
     }
     try {
@@ -182,7 +191,7 @@ export default function GscVerificationWizard({
       if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
       copyTimerRef.current = window.setTimeout(() => setCopiedKey(""), 2000);
     } catch {
-      setCopyError("ההעתקה נכשלה — העתיקו ידנית מהשדה");
+      setCopyError(t("studio.gsc.copyFailed"));
       setCopiedKey("");
     }
   };
@@ -192,8 +201,8 @@ export default function GscVerificationWizard({
       setChecks(null);
       setChecksError(
         publicUrlIsPlaceholder
-          ? "האתר עדיין לא פורסם — אין מה לבדוק בכתובת ציבורית"
-          : "אין כתובת אתר לבדיקה",
+          ? t("studio.gsc.notPublished")
+          : t("studio.gsc.noUrl"),
       );
       return;
     }
@@ -209,11 +218,11 @@ export default function GscVerificationWizard({
       const htmlResult = results.find((item) => item.id === "htmlFile");
       if (hasHtmlPair && htmlResult && !htmlResult.ok && !htmlResult.skipped) {
         setHtmlError(
-          "קובץ האימות לא זמין באתר אחרי השמירה. שמרו, פרסמו, ואז בדקו שוב.",
+          t("studio.gsc.fileNotLive"),
         );
       }
     } catch {
-      setChecksError("בדיקת המוכנות נכשלה — נסו שוב בעוד רגע");
+      setChecksError(t("studio.gsc.checkFailed"));
     } finally {
       setChecksLoading(false);
     }
@@ -248,7 +257,7 @@ export default function GscVerificationWizard({
     const normalized = normalizeGoogleHtmlFileName(file.name);
     if (!normalized) {
       setHtmlError(
-        "שם הקובץ לא תקין. גוגל נותן קובץ בשם כמו google1234567890abcdef.html",
+        t("studio.gsc.badFileName"),
       );
       return;
     }
@@ -257,11 +266,11 @@ export default function GscVerificationWizard({
       const text = await file.text();
       const clean = String(text || "").trim();
       if (!clean) {
-        setHtmlError("הקובץ ריק. הורידו שוב מגוגל והעלו את הקובץ המקורי.");
+        setHtmlError(t("studio.gsc.emptyFile"));
         return;
       }
       if (clean.length > 2000) {
-        setHtmlError("הקובץ ארוך מדי (מעל 2000 תווים). העלו את קובץ האימות המקורי מגוגל.");
+        setHtmlError(t("studio.gsc.fileTooLong"));
         return;
       }
       setUploadName(file.name);
@@ -272,17 +281,17 @@ export default function GscVerificationWizard({
       }));
       setMethod("html");
     } catch {
-      setHtmlError("העלאת הקובץ נכשלה. נסו שוב או הדביקו את התוכן ידנית.");
+      setHtmlError(t("studio.gsc.uploadFailed"));
     }
   };
 
   const validateMetaBeforeHint = () => {
     if (!verificationCode) {
-      setMetaError("הדביקו את קוד האימות מגוגל לפני השמירה");
+      setMetaError(t("studio.gsc.pasteCodeFirst"));
       return false;
     }
     if (verificationCode.length < 8) {
-      setMetaError("קוד האימות נראה קצר מדי — הדביקו את כל התג או את ה־content מגוגל");
+      setMetaError(t("studio.gsc.codeTooShort"));
       return false;
     }
     setMetaError("");
@@ -298,25 +307,24 @@ export default function GscVerificationWizard({
           </span>
           {hasAnyVerification ? (
             <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-800 ring-1 ring-amber-200">
-              יש להשלים אימות ב-Google Search Console
+              {t("studio.gsc.needVerify")}
             </span>
           ) : null}
         </div>
         <p className="mt-2 text-[11px] font-semibold leading-5 text-slate-500">
-          BizUply מכינה את האתר לאימות ומנחה אתכם. האימות עצמו מתבצע ישירות מול
-          Google — אנחנו לא יודעים אם לחצתם Verify בגוגל.
+          {t("studio.gsc.intro")}
         </p>
       </div>
 
       {domainKind === "custom" ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-semibold leading-6 text-emerald-900">
-          <p className="font-black">דומיין מותאם פעיל</p>
+          <p className="font-black">{t("studio.gsc.customDomainActive")}</p>
           <p className="mt-1">
-            השתמשו בכתובת הדומיין שלכם (
+            {t("studio.gsc.useYourDomain")}
             <span className="font-black" dir="ltr">
               {siteBaseUrl}
             </span>
-            ) — לא בכתובת{" "}
+            {t("studio.gsc.notBizuply")}{" "}
             <span className="font-black" dir="ltr">
               *.sites.bizuply.com
             </span>
@@ -325,9 +333,9 @@ export default function GscVerificationWizard({
         </div>
       ) : domainKind === "platform" ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-xs font-semibold leading-6 text-slate-600">
-          <p className="font-black text-slate-900">כתובת הפלטפורמה</p>
+          <p className="font-black text-slate-900">{t("studio.gsc.platformAddress")}</p>
           <p className="mt-1">
-            אין דומיין מותאם פעיל כרגע, לכן נשתמש בכתובת{" "}
+            {t("studio.gsc.noCustomDomain")}{" "}
             <span className="font-black" dir="ltr">
               {siteBaseUrl || "*.sites.bizuply.com"}
             </span>
@@ -339,13 +347,12 @@ export default function GscVerificationWizard({
       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-semibold leading-6 text-amber-900">
         <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
           <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-          בחלון של גוגל בחרו &quot;קידומת של כתובת URL&quot;
+          {t("studio.gsc.chooseUrlPrefix")}
         </p>
         <p>
-          בצד שמאל בחרו{" "}
-          <span className="font-black">קידומת של כתובת URL</span> — לא{" "}
-          <span className="font-black">דומיין</span>. אפשרות הדומיין דורשת הגדרות
-          DNS ומסובכת יותר.
+          {t("studio.gsc.leftChoosePrefix")}{" "}
+          <span className="font-black">{t("studio.gsc.urlPrefix")}</span> — {t("studio.gsc.notDomain")}
+          {t("studio.gsc.domainHarder")}
         </p>
       </div>
 
@@ -354,11 +361,10 @@ export default function GscVerificationWizard({
           <StepBadge n={1} />
           <div className="min-w-0 flex-1 space-y-2 pt-0.5">
             <p className="text-sm font-black text-slate-900">
-              פתיחת Google Search Console
+              {t("studio.gsc.openGsc")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              אם מופיע מסך פתיחה — לחצו &quot;הוספת אתר&quot;. אם כבר התחלתם —
-              המשיכו את האימות מהמקום שעצרתם.
+              {t("studio.gsc.addPropertyHint")}
             </p>
             <a
               href={GSC_WELCOME_URL}
@@ -367,7 +373,7 @@ export default function GscVerificationWizard({
               className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 transition hover:bg-blue-50"
             >
               <ExternalLink className="h-4 w-4" />
-              פתיחת Google Search Console
+              {t("studio.gsc.openGsc")}
             </a>
           </div>
         </li>
@@ -376,11 +382,10 @@ export default function GscVerificationWizard({
           <StepBadge n={2} />
           <div className="min-w-0 flex-1 space-y-2 pt-0.5">
             <p className="text-sm font-black text-slate-900">
-              בחירת קידומת כתובת URL
+              {t("studio.gsc.chooseUrlPrefixTitle")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              בגוגל בחרו את האפשרות השמאלית — &quot;קידומת של כתובת URL&quot; —
-              ואז המשיכו לשלב הבא עם כתובת האתר.
+              {t("studio.gsc.chooseUrlPrefixText")}
             </p>
           </div>
         </li>
@@ -389,11 +394,10 @@ export default function GscVerificationWizard({
           <StepBadge n={3} />
           <div className="min-w-0 flex-1 space-y-2 pt-0.5">
             <p className="text-sm font-black text-slate-900">
-              העתקת כתובת האתר
+              {t("studio.gsc.copySiteUrl")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              העתיקו את הכתובת המדויקת מכאן והדביקו בשדה של גוגל. רק כתובת האתר
-              הציבורית — בלי{" "}
+              {t("studio.gsc.copySiteUrlText")}{" "}
               <span className="font-black" dir="ltr">
                 /business/.../dashboard
               </span>
@@ -402,8 +406,7 @@ export default function GscVerificationWizard({
             {publicUrlIsPlaceholder ? (
               <p className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                האתר עדיין לא פורסם, לכן זו כתובת לדוגמה. פרסמו את האתר והכתובת
-                האמיתית תופיע כאן.
+                {t("studio.gsc.exampleUrl")}
               </p>
             ) : null}
             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
@@ -420,11 +423,11 @@ export default function GscVerificationWizard({
               >
                 {copiedKey === "site" ? (
                   <>
-                    <CheckCircle2 className="h-4 w-4" /> הועתק
+                    <CheckCircle2 className="h-4 w-4" /> {t("studio.gsc.copied")}
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4" /> העתקת כתובת האתר
+                    <Copy className="h-4 w-4" /> {t("studio.gsc.copyAddress")}
                   </>
                 )}
               </button>
@@ -436,29 +439,28 @@ export default function GscVerificationWizard({
           <StepBadge n={4} />
           <div className="min-w-0 flex-1 space-y-3 pt-0.5">
             <p className="text-sm font-black text-slate-900">
-              בחירת שיטת אימות
+              {t("studio.gsc.chooseMethod")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              בחרו איך גוגל יבדוק שהאתר שלכם. שתי האפשרויות עובדות — Meta מומלצת
-              כי היא פשוטה יותר.
+              {t("studio.gsc.chooseMethodText")}
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
               <MethodCard
                 selected={method === "meta"}
                 recommended
-                title="אימות באמצעות Meta Tag"
-                subtitle="מדביקים קוד קצר מגוגל. BizUply שמה אותו באתר."
+                title={t("studio.gsc.metaTitle")}
+                subtitle={t("studio.gsc.metaSubtitle")}
                 onClick={() => setMethod("meta")}
               />
               <MethodCard
                 selected={method === "html"}
-                title="אימות באמצעות קובץ של Google"
-                subtitle="מעלים את קובץ ה־HTML שגוגל נותן להורדה."
+                title={t("studio.gsc.fileTitle")}
+                subtitle={t("studio.gsc.fileSubtitle")}
                 onClick={() => setMethod("html")}
               />
             </div>
             <p className="text-[10px] font-semibold text-slate-400">
-              מונחים טכניים: Meta Tag · HTML verification file
+              {t("studio.gsc.techTerms")}
             </p>
           </div>
         </li>
@@ -469,11 +471,10 @@ export default function GscVerificationWizard({
             {method === "meta" ? (
               <>
                 <p className="text-sm font-black text-slate-900">
-                  הזנת קוד האימות (Meta)
+                  {t("studio.gsc.enterMeta")}
                 </p>
                 <p className="text-xs font-semibold text-slate-500">
-                  בגוגל בחרו שיטת Meta tag, העתיקו את הקוד או את כל שורת ה־meta,
-                  והדביקו כאן. אחרי שמירה ופרסום הקוד יופיע ב־HTML של האתר.
+                  {t("studio.gsc.enterMetaText")}
                 </p>
                 <input
                   value={verificationCode}
@@ -482,7 +483,7 @@ export default function GscVerificationWizard({
                     if (verificationCode) validateMetaBeforeHint();
                   }}
                   className={fieldClass}
-                  placeholder="הדביקו את הקוד או את כל שורת ה-meta מגוגל"
+                  placeholder={t("studio.gsc.metaPlaceholder")}
                   dir="ltr"
                 />
                 {metaError ? (
@@ -494,13 +495,13 @@ export default function GscVerificationWizard({
                 {hasMeta && !metaError ? (
                   <p className="flex items-center gap-1.5 text-xs font-black text-emerald-700">
                     <CheckCircle2 className="h-4 w-4" />
-                    קוד האימות מוכן לשמירה באתר
+                    {t("studio.gsc.metaReady")}
                   </p>
                 ) : null}
                 <p className="text-[11px] font-semibold text-slate-500">
-                  לחצו &quot;שמירה&quot; בתחתית החלון כדי לבצע{" "}
+                  {t("studio.gsc.clickSave")}{" "}
                   <span className="font-black text-slate-700">
-                    שמירת קוד האימות
+                    {t("studio.gsc.saveMeta")}
                   </span>
                   .
                 </p>
@@ -508,11 +509,10 @@ export default function GscVerificationWizard({
             ) : (
               <>
                 <p className="text-sm font-black text-slate-900">
-                  העלאת קובץ אימות של Google
+                  {t("studio.gsc.uploadFile")}
                 </p>
                 <p className="text-xs font-semibold text-slate-500">
-                  בגוגל בחרו HTML file, הורידו את הקובץ, ואז העלו אותו כאן. אפשר
-                  גם להדביק ידנית את שם הקובץ ואת התוכן.
+                  {t("studio.gsc.uploadFileText")}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -527,12 +527,12 @@ export default function GscVerificationWizard({
                   className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 transition hover:bg-blue-50"
                 >
                   <Upload className="h-4 w-4" />
-                  העלאת קובץ אימות
+                  {t("studio.gsc.uploadFileBtn")}
                 </button>
                 {uploadName || htmlFileName ? (
                   <p className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
                     <FileUp className="h-4 w-4 text-slate-500" />
-                    שם הקובץ:{" "}
+                    {t("studio.gsc.fileName")}{" "}
                     <span className="font-black" dir="ltr">
                       {htmlFileName || uploadName}
                     </span>
@@ -565,7 +565,7 @@ export default function GscVerificationWizard({
                     }));
                   }}
                   className={textareaClass}
-                  placeholder="או הדביקו כאן את כל תוכן הקובץ מגוגל"
+                  placeholder={t("studio.gsc.fileContentPh")}
                   dir="ltr"
                   rows={3}
                 />
@@ -578,12 +578,12 @@ export default function GscVerificationWizard({
                 {hasHtmlPair && !htmlError ? (
                   <p className="flex items-center gap-1.5 text-xs font-black text-emerald-700">
                     <CheckCircle2 className="h-4 w-4" />
-                    קובץ האימות מוכן לשמירה
+                    {t("studio.gsc.fileReadySave")}
                   </p>
                 ) : null}
                 {htmlPublicUrl ? (
                   <p className="text-[11px] font-semibold text-slate-500">
-                    אחרי שמירה ופרסום הקובץ אמור להיפתח ב:{" "}
+                    {t("studio.gsc.afterSaveFile")}{" "}
                     <a
                       href={htmlPublicUrl}
                       target="_blank"
@@ -603,10 +603,9 @@ export default function GscVerificationWizard({
         <li className="flex gap-3">
           <StepBadge n={6} />
           <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-            <p className="text-sm font-black text-slate-900">שמירה ב־BizUply</p>
+            <p className="text-sm font-black text-slate-900">{t("studio.gsc.saveInBizuply")}</p>
             <p className="text-xs font-semibold text-slate-500">
-              לחצו &quot;שמירה&quot; בתחתית החלון, ואז פרסמו את האתר אם הוא עדיין
-              לא פורסם. בלי שמירה ופרסום גוגל לא יראה את קוד האימות.
+              {t("studio.gsc.saveInBizuplyText")}
             </p>
           </div>
         </li>
@@ -615,11 +614,10 @@ export default function GscVerificationWizard({
           <StepBadge n={7} />
           <div className="min-w-0 flex-1 space-y-2 pt-0.5">
             <p className="text-sm font-black text-slate-900">
-              חזרה ל־Google ולחיצה על Verify
+              {t("studio.gsc.backToGoogle")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              אחרי שהאימות מוכן באתר — חזרו לחלון של גוגל ולחצו Verify. BizUply לא
-              מבצעת את האימות במקומכם.
+              {t("studio.gsc.backToGoogleText")}
             </p>
             <a
               href={GSC_HOME_URL}
@@ -628,7 +626,7 @@ export default function GscVerificationWizard({
               className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-600 px-3.5 py-2 text-xs font-black text-white transition hover:bg-blue-700"
             >
               <ExternalLink className="h-4 w-4" />
-              סיימתי — חזרה ל-Google
+              {t("studio.gsc.doneBack")}
             </a>
           </div>
         </li>
@@ -637,12 +635,10 @@ export default function GscVerificationWizard({
       <div className="rounded-2xl border border-blue-200 bg-blue-50 px-3.5 py-3 text-xs font-semibold leading-6 text-blue-950">
         <p className="mb-2 flex items-center gap-1.5 text-sm font-black text-blue-900">
           <Search className="h-4 w-4 shrink-0" />
-          שליחת Sitemap ל-Google
+          {t("studio.gsc.submitSitemap")}
         </p>
         <p className="mb-2">
-          אחרי שהאימות בגוגל הצליח, שלחו מפת אתר: ב-Search Console עברו ל־
-          <span className="font-black">Sitemaps</span>, הדביקו את הכתובת המלאה
-          למטה, ולחצו שליחה.
+          {t("studio.gsc.submitSitemapText")}
         </p>
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-blue-200 bg-white p-1.5">
           <input
@@ -658,11 +654,11 @@ export default function GscVerificationWizard({
           >
             {copiedKey === "sitemap" ? (
               <>
-                <CheckCircle2 className="h-4 w-4" /> הועתק
+                <CheckCircle2 className="h-4 w-4" /> {t("studio.gsc.copied")}
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4" /> העתקת כתובת Sitemap
+                <Copy className="h-4 w-4" /> {t("studio.gsc.copySitemap")}
               </>
             )}
           </button>
@@ -683,7 +679,7 @@ export default function GscVerificationWizard({
       <div className="rounded-2xl border border-slate-200 bg-white px-3.5 py-3">
         <div className="mb-2 flex items-center justify-between gap-2">
           <p className="text-sm font-black text-slate-900">
-            בדיקות מוכנות באתר (BizUply)
+            {t("studio.gsc.readinessChecks")}
           </p>
           <button
             type="button"
@@ -696,12 +692,11 @@ export default function GscVerificationWizard({
             ) : (
               <RefreshCw className="h-3.5 w-3.5" />
             )}
-            בדיקה מחדש
+            {t("studio.gsc.recheck")}
           </button>
         </div>
         <p className="mb-3 text-[11px] font-semibold leading-5 text-slate-500">
-          בודקים רק מה שבשליטת BizUply: זמינות האתר, robots, sitemap, וקוד/קובץ
-          האימות. לא בודקים אם גוגל אימת או אינדקס.
+          {t("studio.gsc.readinessHint")}
         </p>
         {checksError ? (
           <p className="mb-2 flex items-start gap-1.5 text-xs font-bold text-rose-600">
@@ -718,11 +713,11 @@ export default function GscVerificationWizard({
               {item.skipped ? (
                 <span className="mt-0.5 text-slate-400">—</span>
               ) : item.ok ? (
-                <span className="mt-0.5 text-emerald-600" aria-label="עבר">
+                <span className="mt-0.5 text-emerald-600" aria-label={t("studio.gsc.passed")}>
                   ✅
                 </span>
               ) : (
-                <span className="mt-0.5 text-rose-500" aria-label="נכשל">
+                <span className="mt-0.5 text-rose-500" aria-label={t("studio.gsc.failed")}>
                   ❌
                 </span>
               )}
@@ -738,7 +733,7 @@ export default function GscVerificationWizard({
           ))}
           {!checks && !checksLoading && !checksError ? (
             <li className="text-xs font-semibold text-slate-400">
-              לחצו &quot;בדיקה מחדש&quot; כדי לבדוק את האתר.
+              {t("studio.gsc.clickRecheck")}
             </li>
           ) : null}
         </ul>
@@ -752,8 +747,7 @@ export default function GscVerificationWizard({
       ) : null}
 
       <p className="rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-[11px] font-semibold leading-5 text-slate-500">
-        האימות מתבצע ישירות מול Google. BizUply מכינה את האתר לאימות ומנחה אותך
-        בתהליך. אין חיבור אוטומטי ל־Google Search Console בשלב זה.
+        {t("studio.gsc.footer")}
       </p>
     </div>
   );

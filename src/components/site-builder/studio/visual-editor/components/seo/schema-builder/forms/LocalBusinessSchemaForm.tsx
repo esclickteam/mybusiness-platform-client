@@ -1,5 +1,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../../../../i18n/localeUtils";
 
 import {
   LOCAL_BUSINESS_TYPES,
@@ -23,7 +25,19 @@ type Props = {
   onChange: (next: LocalBusinessFormData) => void;
 };
 
+const SEO_DAY_KEYS: Record<string, string> = {
+  Sunday: "studio.seo.sunday",
+  Monday: "studio.seo.monday",
+  Tuesday: "studio.seo.tuesday",
+  Wednesday: "studio.seo.wednesday",
+  Thursday: "studio.seo.thursday",
+  Friday: "studio.seo.friday",
+  Saturday: "studio.seo.saturday",
+};
+
 export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const set = <K extends keyof LocalBusinessFormData>(
     key: K,
     val: LocalBusinessFormData[K],
@@ -58,119 +72,119 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={pageDir}>
       <div className={FIELD_GRID}>
         <SelectField
-          label="סוג העסק"
+          label={t("studio.seo.businessType")}
           value={value.businessType || "LocalBusiness"}
           onChange={(v) => set("businessType", v)}
-          options={LOCAL_BUSINESS_TYPES.map((t) => ({ value: t, label: t }))}
+          options={LOCAL_BUSINESS_TYPES.map((type) => ({ value: type, label: type }))}
         />
         <TextField
-          label="שם העסק"
+          label={t("studio.seo.businessName")}
           value={value.name || ""}
           onChange={(v) => set("name", v)}
-          placeholder="לדוגמה: חשמלאי מוסמך תל אביב"
+          placeholder={t("studio.seo.businessNamePh")}
         />
         <TextField
-          label="שם חלופי"
+          label={t("studio.seo.alternateName")}
           value={value.alternateName || ""}
           onChange={(v) => set("alternateName", v)}
         />
         <TextField
-          label="טווח מחירים"
+          label={t("studio.seo.priceRange")}
           value={value.priceRange || ""}
           onChange={(v) => set("priceRange", v)}
-          placeholder="₪₪ או ₪100-₪500"
+          placeholder={t("studio.seo.priceRangePh")}
         />
       </div>
 
       <TextAreaField
-        label="תיאור העסק"
+        label={t("studio.seo.businessDescription")}
         value={value.description || ""}
         onChange={(v) => set("description", v)}
       />
 
       <div className={FIELD_GRID}>
         <TextField
-          label="טלפון"
+          label={t("studio.seo.phone")}
           value={value.telephone || ""}
           onChange={(v) => set("telephone", v)}
           dir="ltr"
           placeholder="+972-3-1234567"
         />
         <TextField
-          label="אימייל"
+          label={t("studio.seo.email")}
           value={value.email || ""}
           onChange={(v) => set("email", v)}
           dir="ltr"
         />
         <TextField
-          label="כתובת אתר"
+          label={t("studio.seo.websiteUrl")}
           value={value.url || ""}
           onChange={(v) => set("url", v)}
           dir="ltr"
         />
         <TextField
-          label="לוגו (URL)"
+          label={t("studio.seo.logoUrl")}
           value={value.logo || ""}
           onChange={(v) => set("logo", v)}
           dir="ltr"
         />
         <TextField
-          label="תמונת העסק (URL)"
+          label={t("studio.seo.businessImage")}
           value={value.image || ""}
           onChange={(v) => set("image", v)}
           dir="ltr"
         />
         <TextField
-          label="אזור שירות"
+          label={t("studio.seo.areaServed")}
           value={value.areaServed || ""}
           onChange={(v) => set("areaServed", v)}
-          placeholder="לדוגמה: גוש דן"
+          placeholder={t("studio.seo.areaServedPh")}
         />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-3">
-        <p className="mb-2 text-xs font-black text-slate-700">כתובת מלאה</p>
+        <p className="mb-2 text-xs font-black text-slate-700">{t("studio.seo.fullAddress")}</p>
         <div className={FIELD_GRID}>
           <TextField
-            label="רחוב ומספר"
+            label={t("studio.seo.street")}
             value={value.streetAddress || ""}
             onChange={(v) => set("streetAddress", v)}
           />
           <TextField
-            label="עיר"
+            label={t("studio.seo.city")}
             value={value.addressLocality || ""}
             onChange={(v) => set("addressLocality", v)}
           />
           <TextField
-            label="אזור / מחוז"
+            label={t("studio.seo.region")}
             value={value.addressRegion || ""}
             onChange={(v) => set("addressRegion", v)}
           />
           <TextField
-            label="מיקוד"
+            label={t("studio.seo.postalCode")}
             value={value.postalCode || ""}
             onChange={(v) => set("postalCode", v)}
           />
           <TextField
-            label="מדינה"
+            label={t("studio.seo.country")}
             value={value.addressCountry || "IL"}
             onChange={(v) => set("addressCountry", v)}
             dir="ltr"
-            hint="קוד מדינה, למשל IL"
+            hint={t("studio.seo.countryHint")}
           />
         </div>
         <div className={`${FIELD_GRID} mt-3`}>
           <TextField
-            label="קו רוחב (latitude)"
+            label={t("studio.seo.latitude")}
             value={value.latitude || ""}
             onChange={(v) => set("latitude", v)}
             dir="ltr"
           />
           <TextField
-            label="קו אורך (longitude)"
+            label={t("studio.seo.longitude")}
             value={value.longitude || ""}
             onChange={(v) => set("longitude", v)}
             dir="ltr"
@@ -180,10 +194,10 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-3">
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-xs font-black text-slate-700">שעות פתיחה</p>
+          <p className="text-xs font-black text-slate-700">{t("studio.seo.openingHours")}</p>
         </div>
         <SwitchField
-          label="פתוח 24 שעות בכל הימים"
+          label={t("studio.seo.open24")}
           checked={Boolean(value.openAllHours)}
           onChange={(v) => set("openAllHours", v)}
         />
@@ -203,7 +217,7 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
                 >
                   {WEEK_DAYS.map((day) => (
                     <option key={day.id} value={day.id}>
-                      {day.label}
+                      {t(SEO_DAY_KEYS[day.id] || day.label)}
                     </option>
                   ))}
                 </select>
@@ -217,7 +231,7 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
                   className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs font-bold text-slate-800 disabled:opacity-40"
                   dir="ltr"
                 />
-                <span className="text-xs font-bold text-slate-400">עד</span>
+                <span className="text-xs font-bold text-slate-400">{t("studio.seo.until")}</span>
                 <input
                   type="time"
                   value={row.closes}
@@ -236,13 +250,13 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
                       updateRow(row.id, { closed: event.target.checked })
                     }
                   />
-                  סגור
+                  {t("studio.seo.closed")}
                 </label>
                 <button
                   type="button"
                   onClick={() => removeRow(row.id)}
                   className="ms-auto flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-rose-500 hover:bg-rose-50"
-                  aria-label="מחיקת שורה"
+                  aria-label={t("studio.seo.deleteRow")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -253,22 +267,22 @@ export default function LocalBusinessSchemaForm({ value, onChange }: Props) {
               onClick={addRow}
               className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:bg-slate-50"
             >
-              <Plus className="h-4 w-4" /> הוספת יום/טווח
+              <Plus className="h-4 w-4" /> {t("studio.seo.addDayRange")}
             </button>
           </div>
         ) : null}
       </div>
 
       <TagsField
-        label="שירותים עיקריים"
+        label={t("studio.seo.mainServices")}
         values={value.services || []}
         onChange={(v) => set("services", v)}
-        placeholder="הקלידו שירות ולחצו +"
-        dir="rtl"
+        placeholder={t("studio.seo.servicesPlaceholder")}
+        dir={pageDir}
       />
 
       <TagsField
-        label="רשתות חברתיות (URL)"
+        label={t("studio.seo.socialUrls")}
         values={value.sameAs || []}
         onChange={(v) => set("sameAs", v)}
         placeholder="https://facebook.com/..."

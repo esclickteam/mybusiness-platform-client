@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ImageLoader from "@components/ImageLoader";
 import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 
 type GalleryImage = {
   preview: string;
@@ -36,6 +38,8 @@ export default function GallerySection({
   renderTopBar,
   navigate,
 }: GallerySectionProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const fallbackGalleryInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -57,14 +61,14 @@ export default function GallerySection({
 
   const hasImages = images.length > 0;
   const featuredImage = images[0]?.preview;
-  const businessName = businessDetails.businessName || "העסק שלך";
+  const businessName = businessDetails.businessName || t("business.profileBuild.yourBusiness", "העסק שלך");
 
   const previewImages = useMemo(() => images.slice(0, 6), [images]);
 
   const onDelete = (publicId: string) => {
     if (isSaving) return;
 
-    const ok = window.confirm("להסיר את התמונה הזו מהגלריה?");
+    const ok = window.confirm(t("business.profileBuild.deleteImageConfirm", "להסיר את התמונה הזו מהגלריה?"));
     if (!ok) return;
 
     setImages((prev) => prev.filter((img) => img.publicId !== publicId));
@@ -73,7 +77,7 @@ export default function GallerySection({
 
   return (
     <section
-      dir="rtl"
+      dir={pageDir}
       className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[1.02fr_0.98fr]">
@@ -88,30 +92,31 @@ export default function GallerySection({
             <div className="relative">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                  ניהול גלריה
+                  {t("business.profileBuild.manageGallery", "ניהול גלריה")}
                 </div>
 
                 <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm backdrop-blur">
-                  תצוגה חיה בזמן אמת
+                  {t("buildPage.header.badgeLive", "תצוגה חיה בזמן אמת")}
                 </div>
               </div>
 
               <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                    תמונות גלריה
+                    {t("business.profileBuild.galleryPhotos", "תמונות גלריה")}
                   </h1>
 
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    העלה ונהל את התמונות שמופיעות בגלריית הפרופיל העסקי שלך.
-                    תמונות איכותיות גורמות לעמוד להיראות אמין, יוקרתי ומקצועי
-                    יותר.
+                    {t(
+                      "business.profileBuild.galleryIntro",
+                      "העלה ונהל את התמונות שמופיעות בגלריית הפרופיל העסקי שלך. תמונות איכותיות גורמות לעמוד להיראות אמין, יוקרתי ומקצועי יותר."
+                    )}
                   </p>
                 </div>
 
                 <div className="w-full rounded-2xl border border-white bg-white/85 px-5 py-4 shadow-lg backdrop-blur sm:w-auto">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    סה״כ תמונות
+                    {t("business.profileBuild.totalPhotos", "סה״כ תמונות")}
                   </p>
                   <p className="mt-1 text-3xl font-black text-slate-800">
                     {images.length}
@@ -146,16 +151,18 @@ export default function GallerySection({
               </div>
 
               <h3 className="relative mt-5 text-xl font-black text-slate-800">
-                לחץ להעלאת תמונות
+                {t("business.profileBuild.clickToUpload", "לחץ להעלאת תמונות")}
               </h3>
 
               <p className="relative mt-2 max-w-md text-sm leading-7 text-slate-500">
-                אפשר להעלות כמה תמונות יחד. מומלץ להשתמש בתמונות חדות, מוארות
-                ורוחביות כדי שהפרופיל הציבורי ייראה מקצועי יותר.
+                {t(
+                  "business.profileBuild.uploadHint",
+                  "אפשר להעלות כמה תמונות יחד. מומלץ להשתמש בתמונות חדות, מוארות ורוחביות כדי שהפרופיל הציבורי ייראה מקצועי יותר."
+                )}
               </p>
 
               <span className="relative mt-5 inline-flex rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black text-slate-800 shadow-xl shadow-violet-500/20 transition group-hover:-translate-y-0.5">
-                בחירת תמונות
+                {t("business.profileBuild.choosePhotos", "בחירת תמונות")}
               </span>
             </button>
 
@@ -163,17 +170,17 @@ export default function GallerySection({
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-lg font-black text-slate-800">
-                    גלריה שהועלתה
+                    {t("business.profileBuild.uploadedGallery", "גלריה שהועלתה")}
                   </h2>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    נהל, הצג ומחק תמונות מהגלריה.
+                    {t("business.profileBuild.manageShowDelete", "נהל, הצג ומחק תמונות מהגלריה.")}
                   </p>
                 </div>
 
                 {hasImages && (
                   <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                    {images.length} תמונות
+                    {t("business.profileBuild.photosCount", "{{count}} תמונות", { count: images.length })}
                   </span>
                 )}
               </div>
@@ -185,12 +192,14 @@ export default function GallerySection({
                   </div>
 
                   <h3 className="mt-4 text-lg font-black text-slate-800">
-                    עדיין אין תמונות בגלריה
+                    {t("business.profileBuild.noGalleryYet", "עדיין אין תמונות בגלריה")}
                   </h3>
 
                   <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                    התחל בהעלאת תמונות. הן יופיעו כאן וגם בתצוגה המקדימה של
-                    הפרופיל הציבורי.
+                    {t(
+                      "business.profileBuild.startUploading",
+                      "התחל בהעלאת תמונות. הן יופיעו כאן וגם בתצוגה המקדימה של הפרופיל הציבורי."
+                    )}
                   </p>
                 </div>
               ) : (
@@ -202,13 +211,13 @@ export default function GallerySection({
                     >
                       <ImageLoader
                         src={preview}
-                        alt={`תמונת גלריה ${index + 1}`}
+                        alt={t("buildPage.gallery.galleryImageAlt", "תמונת גלריה {{index}}", { index: index + 1 })}
                         className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
                       />
 
                       {index === 0 && (
                         <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                          מובילה
+                          {t("business.profileBuild.featured", "מובילה")}
                         </div>
                       )}
 
@@ -217,7 +226,7 @@ export default function GallerySection({
                         onClick={() => onDelete(publicId)}
                         disabled={isSaving}
                         className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-sm shadow-lg transition hover:scale-105 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                        aria-label="מחיקת תמונה"
+                        aria-label={t("business.profileBuild.deleteImageAria", "מחיקת תמונה")}
                       >
                         🗑️
                       </button>
@@ -236,7 +245,7 @@ export default function GallerySection({
                   }
                   className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
-                  צפייה בפרופיל הציבורי
+                  {t("business.profileBuild.viewPublicProfile", "צפייה בפרופיל הציבורי")}
                 </button>
               </div>
             )}
@@ -247,7 +256,7 @@ export default function GallerySection({
               <div className="rounded-[1.5rem] border border-white bg-white px-6 py-5 text-center shadow-2xl">
                 <BizuplyLoader size="lg" />
                 <p className="text-sm font-black text-slate-800">
-                  שומר שינויים…
+                  {t("buildPage.actions.saving", "שומר...")}
                 </p>
               </div>
             </div>
@@ -269,10 +278,10 @@ export default function GallerySection({
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-black text-violet-700">
-                      תצוגה מקדימה של הפרופיל הציבורי
+                      {t("business.profileBuild.publicPreview", "תצוגה מקדימה של הפרופיל הציבורי")}
                     </p>
                     <h2 className="mt-1 text-xl font-black text-slate-800">
-                      הגלריה של {businessName}
+                      {t("business.profileBuild.galleryOf", "הגלריה של {{name}}", { name: businessName })}
                     </h2>
                   </div>
 
@@ -286,7 +295,7 @@ export default function GallerySection({
                     {featuredImage ? (
                       <ImageLoader
                         src={featuredImage}
-                        alt="תמונת גלריה מובילה"
+                        alt={t("business.profileBuild.featuredAlt", "תמונת גלריה מובילה")}
                         className="h-72 w-full object-cover sm:h-80"
                       />
                     ) : (
@@ -296,21 +305,21 @@ export default function GallerySection({
                         </div>
 
                         <h3 className="mt-4 text-lg font-black text-slate-800">
-                          אין תמונות בגלריה
+                          {t("buildPage.gallery.emptyTitle", "אין תמונות בגלריה")}
                         </h3>
 
                         <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                          העלה תמונות כדי שהפרופיל הציבורי ייראה מקצועי יותר.
+                          {t("business.profileBuild.uploadForPreview", "העלה תמונות כדי שהפרופיל הציבורי ייראה מקצועי יותר.")}
                         </p>
                       </div>
                     )}
 
                     <div className="absolute bottom-4 right-4 rounded-full border border-white bg-white/85 px-4 py-2 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                      גלריה ציבורית
+                      {t("business.profileBuild.publicGallery", "גלריה ציבורית")}
                     </div>
 
                     <div className="absolute bottom-4 left-4 rounded-full border border-white bg-white/85 px-4 py-2 text-xs font-black text-blue-700 shadow-sm backdrop-blur">
-                      {images.length} תמונות
+                      {t("business.profileBuild.photosCount", "{{count}} תמונות", { count: images.length })}
                     </div>
                   </div>
 
@@ -318,10 +327,10 @@ export default function GallerySection({
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <h3 className="text-2xl font-black text-slate-800">
-                          הגלריה שלנו
+                          {t("business.profileBuild.ourGallery", "הגלריה שלנו")}
                         </h3>
                         <p className="mt-1 text-sm leading-6 text-slate-500">
-                          כך התמונות יופיעו בפרופיל העסקי הציבורי.
+                          {t("business.profileBuild.howPhotosAppear", "כך התמונות יופיעו בפרופיל העסקי הציבורי.")}
                         </p>
                       </div>
 
@@ -333,7 +342,9 @@ export default function GallerySection({
                             : "bg-slate-100 text-slate-500",
                         ].join(" ")}
                       >
-                        {hasImages ? "פעיל" : "ריק"}
+                        {hasImages
+                          ? t("business.profileBuild.active", "פעיל")
+                          : t("business.profileBuild.empty", "ריק")}
                       </span>
                     </div>
 
@@ -346,7 +357,7 @@ export default function GallerySection({
                           >
                             <ImageLoader
                               src={preview}
-                              alt={`תמונת גלריה ${index + 1}`}
+                              alt={t("buildPage.gallery.galleryImageAlt", "תמונת גלריה {{index}}", { index: index + 1 })}
                               className="h-24 w-full object-cover"
                             />
                           </div>
@@ -366,7 +377,7 @@ export default function GallerySection({
                     <div className="mt-5 grid grid-cols-2 gap-3">
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          תמונות
+                          {t("business.profileBuild.photos", "תמונות")}
                         </p>
                         <p className="mt-1 text-2xl font-black text-slate-800">
                           {images.length}
@@ -375,10 +386,12 @@ export default function GallerySection({
 
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          סטטוס
+                          {t("common.status", "סטטוס")}
                         </p>
                         <p className="mt-1 text-lg font-black text-slate-800">
-                          {hasImages ? "פעיל" : "ריק"}
+                          {hasImages
+                            ? t("business.profileBuild.active", "פעיל")
+                            : t("business.profileBuild.empty", "ריק")}
                         </p>
                       </div>
                     </div>

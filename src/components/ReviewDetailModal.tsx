@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import Icon from "@/components/ui/Icon";
 import { lockPageScroll } from "@/utils/pageScrollLock";
 import {
@@ -14,6 +15,7 @@ import {
   getReviewText,
   type ReviewRecord,
 } from "@/utils/reviewDisplay";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type ReviewDetailModalProps = {
   review: ReviewRecord | null;
@@ -24,9 +26,11 @@ type ReviewDetailModalProps = {
 function StarDisplay({
   rating,
   size = "sm",
+  ariaLabel,
 }: {
   rating: number;
   size?: "xs" | "sm" | "md";
+  ariaLabel: string;
 }) {
   const safeRating = Math.max(0, Math.min(5, rating));
   const full = Math.floor(safeRating);
@@ -39,7 +43,7 @@ function StarDisplay({
   return (
     <span
       dir="ltr"
-      aria-label={`דירוג ${safeRating.toFixed(1)} מתוך 5`}
+      aria-label={ariaLabel}
       className={[
         "inline-flex items-center whitespace-nowrap tracking-[1px] text-amber-400",
         sizeClass,
@@ -57,9 +61,12 @@ export default function ReviewDetailModal({
   open,
   onClose,
 }: ReviewDetailModalProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+
   const ratingEntries = useMemo(
     () => (review ? getReviewRatingEntries(review) : []),
-    [review]
+    [review, i18n.language]
   );
 
   useEffect(() => {
@@ -88,6 +95,10 @@ export default function ReviewDetailModal({
   const reviewText = getReviewText(review);
   const reviewDate = getReviewDateLabel(review.createdAt || review.date);
   const ratingText = getReviewRatingLabel(average);
+  const starsAria = t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+    rating: average.toFixed(1),
+  });
+  const initialFallback = t("leftover.reviews.initialFallback", "C");
 
   return createPortal(
     <AnimatePresence>
@@ -98,12 +109,15 @@ export default function ReviewDetailModal({
           role="presentation"
         >
           <motion.div
-            dir="rtl"
+            dir={pageDir}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="relative w-full max-w-xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
+            className={[
+              "relative w-full max-w-xl overflow-hidden rounded-[2rem] bg-white shadow-2xl",
+              pageDir === "rtl" ? "text-right" : "text-left",
+            ].join(" ")}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -114,7 +128,7 @@ export default function ReviewDetailModal({
 
             <button
               type="button"
-              aria-label="סגירת פירוט הביקורת"
+              aria-label={t("leftover.reviews.closeAria", "Close review details")}
               onClick={onClose}
               className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
             >
@@ -124,12 +138,12 @@ export default function ReviewDetailModal({
             <div className="relative px-6 pb-5 pt-7 sm:px-7">
               <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
                 <Icon name="rating" size={14} />
-                פירוט ביקורת
+                {t("leftover.reviews.detailBadge", "Review details")}
               </div>
 
               <div className="mt-4 flex items-start gap-4">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 text-xl font-black text-violet-700 shadow-sm">
-                  {clientName.trim().charAt(0) || "ל"}
+                  {clientName.trim().charAt(0) || initialFallback}
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -145,9 +159,11 @@ export default function ReviewDetailModal({
                   </p>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <StarDisplay rating={average} size="md" />
+                    <StarDisplay rating={average} size="md" ariaLabel={starsAria} />
                     <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-black text-amber-700">
-                      {average ? `${average.toFixed(1)} / 5` : "אין דירוג"}
+                      {average
+                        ? `${average.toFixed(1)} / 5`
+                        : t("leftover.reviews.noRating", "No rating")}
                     </span>
                     <span className="rounded-full bg-violet-50 px-3 py-1 text-sm font-black text-violet-700">
                       {ratingText}
@@ -160,7 +176,7 @@ export default function ReviewDetailModal({
             <div className="relative space-y-5 px-6 py-5 sm:px-7">
               <section>
                 <h3 className="text-sm font-black text-slate-900">
-                  תגובת הלקוח
+                  {t("leftover.reviews.customerComment", "Customer comment")}
                 </h3>
 
                 {reviewText ? (
@@ -171,7 +187,7 @@ export default function ReviewDetailModal({
                   </div>
                 ) : (
                   <p className="mt-3 text-sm font-semibold text-slate-400">
-                    לא נכתבה תגובה מילולית לביקורת הזו.
+                    {t("leftover.reviews.noVerbal", "No written comment was added to this review.")}
                   </p>
                 )}
               </section>
@@ -180,10 +196,12 @@ export default function ReviewDetailModal({
                 <section>
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <h3 className="text-sm font-black text-slate-900">
-                      פירוט דירוגים
+                      {t("leftover.reviews.ratingBreakdown", "Rating breakdown")}
                     </h3>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
-                      {ratingEntries.length} פרמטרים שדורגו
+                      {t("leftover.reviews.paramsRated", "{{count}} rated parameters", {
+                        count: ratingEntries.length,
+                      })}
                     </span>
                   </div>
 
@@ -201,7 +219,13 @@ export default function ReviewDetailModal({
                         </div>
 
                         <div className="flex items-center gap-2 text-sm font-black text-slate-700">
-                          <StarDisplay rating={value} size="xs" />
+                          <StarDisplay
+                            rating={value}
+                            size="xs"
+                            ariaLabel={t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+                              rating: value.toFixed(1),
+                            })}
+                          />
                           <span dir="ltr" className="text-slate-500">
                             ({value.toFixed(1)})
                           </span>
@@ -212,7 +236,10 @@ export default function ReviewDetailModal({
                 </section>
               ) : (
                 <section className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm font-bold text-slate-400">
-                  לא נבחרו פרמטרי דירוג מפורטים לביקורת הזו.
+                  {t(
+                    "leftover.reviews.noParams",
+                    "No detailed rating parameters were selected for this review."
+                  )}
                 </section>
               )}
             </div>
@@ -223,7 +250,7 @@ export default function ReviewDetailModal({
                 onClick={onClose}
                 className="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
-                סגירה
+                {t("leftover.reviews.close", "Close")}
               </button>
             </div>
           </motion.div>

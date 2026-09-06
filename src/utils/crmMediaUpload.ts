@@ -1,4 +1,5 @@
 import API from "@api";
+import i18n from "../i18n/i18n";
 
 export type CrmUploadedMedia = {
   secureUrl: string;
@@ -42,7 +43,7 @@ async function signAndUploadDirect(
 
   if (!signResponse.ok || (!signData?.ok && !signData?.success)) {
     throw new Error(
-      signData?.message || signData?.error || "יצירת חתימת העלאה נכשלה"
+      signData?.message || signData?.error || i18n.t("leftover.errors.signFail")
     );
   }
 
@@ -52,7 +53,7 @@ async function signAndUploadDirect(
     !signData.signature ||
     !signData.uploadUrl
   ) {
-    throw new Error("חסרים פרטי חתימה להעלאה");
+    throw new Error(i18n.t("leftover.errors.signMissing"));
   }
 
   const formData = new FormData();
@@ -81,7 +82,7 @@ async function signAndUploadDirect(
   const cloudinaryResult = await cloudinaryResponse.json().catch(() => null);
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
+    throw new Error(i18n.t("leftover.errors.uploadRetry"));
   }
 
   const secureUrl = String(cloudinaryResult.secure_url || "");
@@ -134,7 +135,7 @@ async function uploadViaServer(
   });
 
   if (!data?.ok && !data?.secureUrl && !data?.url) {
-    throw new Error(data?.message || data?.error || "העלאת הקובץ נכשלה");
+    throw new Error(data?.message || data?.error || i18n.t("leftover.errors.uploadFailed"));
   }
 
   return {

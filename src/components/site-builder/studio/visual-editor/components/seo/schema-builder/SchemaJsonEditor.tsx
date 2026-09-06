@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   CheckCircle2,
   ChevronDown,
@@ -27,6 +28,7 @@ export default function SchemaJsonEditor({
   onEnterCustom,
   onRegenerateFromForm,
 }: Props) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const format = () => {
@@ -49,16 +51,12 @@ export default function SchemaJsonEditor({
 
   const confirmEnterCustom = () => {
     if (mode === "custom") return;
-    const ok = window.confirm(
-      "עריכה ידנית של הקוד תעבור למצב מתקדם. שינויים עתידיים בטופס עלולים לדרוס את הקוד הידני.\n\nלהמשיך לעריכה מתקדמת?",
-    );
+    const ok = window.confirm(t("studio.schema.confirmAdvanced"));
     if (ok) onEnterCustom();
   };
 
   const confirmRegenerate = () => {
-    const ok = window.confirm(
-      "הפעולה תחליף את קוד ה‑JSON הידני בקוד חדש לפי נתוני הטופס. להמשיך?",
-    );
+    const ok = window.confirm(t("studio.schema.confirmRegenerate"));
     if (ok) onRegenerateFromForm();
   };
 
@@ -66,10 +64,10 @@ export default function SchemaJsonEditor({
     <details className="group/json mt-3 rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
       <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-blue-600">
         <ChevronDown className="h-4 w-4 transition group-open/json:rotate-180" />
-        תצוגת JSON-LD ועריכה מתקדמת
+        {t("studio.schema.jsonLdTitle")}
         {mode === "custom" ? (
           <span className="ms-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black text-amber-700">
-            נערך ידנית
+            {t("studio.schema.editedManually")}
           </span>
         ) : null}
       </summary>
@@ -77,7 +75,7 @@ export default function SchemaJsonEditor({
       <div className="space-y-2 border-t border-slate-100 px-3.5 py-3">
         {mode === "form" ? (
           <p className="rounded-xl bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500">
-            הקוד נוצר אוטומטית מהטופס. כדי לערוך ידנית לחצו "מעבר לעריכה מתקדמת".
+            {t("studio.schema.autoFromForm")}
           </p>
         ) : null}
 
@@ -102,7 +100,7 @@ export default function SchemaJsonEditor({
               onClick={confirmEnterCustom}
               className="flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 hover:bg-slate-50"
             >
-              <Wand2 className="h-3.5 w-3.5" /> מעבר לעריכה מתקדמת
+              <Wand2 className="h-3.5 w-3.5" /> {t("studio.schema.switchAdvanced")}
             </button>
           ) : (
             <button
@@ -110,7 +108,7 @@ export default function SchemaJsonEditor({
               onClick={confirmRegenerate}
               className="flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 hover:bg-slate-50"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> יצירה מחדש מהטופס
+              <RotateCcw className="h-3.5 w-3.5" /> {t("studio.schema.regenerateFromForm")}
             </button>
           )}
           <button
@@ -118,7 +116,7 @@ export default function SchemaJsonEditor({
             onClick={format}
             className="flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 hover:bg-slate-50"
           >
-            פורמט
+            {t("studio.schema.format")}
           </button>
           <button
             type="button"
@@ -127,11 +125,11 @@ export default function SchemaJsonEditor({
           >
             {copied ? (
               <>
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> הועתק
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {t("studio.schema.copied")}
               </>
             ) : (
               <>
-                <Copy className="h-3.5 w-3.5" /> העתקה
+                <Copy className="h-3.5 w-3.5" /> {t("studio.schema.copy")}
               </>
             )}
           </button>
@@ -142,7 +140,7 @@ export default function SchemaJsonEditor({
               </span>
             ) : (
               <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
-                <CheckCircle2 className="h-3.5 w-3.5" /> JSON תקין
+                <CheckCircle2 className="h-3.5 w-3.5" /> {t("studio.schema.jsonValid")}
               </span>
             )}
           </span>

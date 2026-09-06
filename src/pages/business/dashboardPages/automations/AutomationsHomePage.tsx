@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -52,21 +53,18 @@ type OutletCtx = {
   readOnly: boolean;
 };
 
-const STATUS_FILTERS: Array<{ value: WorkflowStatusFilter; label: string }> = [
-  { value: "all", label: "הכל" },
-  { value: "active", label: "פעילות" },
-  { value: "draft", label: "טיוטות" },
-  { value: "paused", label: "מושהות" },
-  { value: "failed", label: "שגיאות" },
+const STATUS_FILTER_VALUES: WorkflowStatusFilter[] = [
+  "all",
+  "active",
+  "draft",
+  "paused",
+  "failed",
 ];
 
-const SORT_OPTIONS: Array<{ value: WorkflowSortKey; label: string }> = [
-  { value: "updated", label: "עודכן לאחרונה" },
-  { value: "created", label: "נוצר לאחרונה" },
-  { value: "name", label: "שם" },
-];
+const SORT_VALUES: WorkflowSortKey[] = ["updated", "created", "name"];
 
 export default function AutomationsHomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -155,7 +153,7 @@ export default function AutomationsHomePage() {
         }),
       ]);
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה בטעינת האוטומציות"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.loadError")));
     }
   }, [businessId, queryClient]);
 
@@ -164,7 +162,7 @@ export default function AutomationsHomePage() {
       toast.error(
         readAutomationErrorMessage(
           workflowsQuery.error,
-          "שגיאה בטעינת האוטומציות"
+          t("automations.toasts.loadError")
         )
       );
     }
@@ -178,13 +176,13 @@ export default function AutomationsHomePage() {
     if (flag === "processing") {
       setCheckoutProcessingOpen(true);
     } else if (flag === "cancel") {
-      toast.info("התשלום בוטל — ניתן לבחור חבילה מחדש בכל עת.");
+      toast.info(t("automations.toasts.checkoutCancel"));
     }
     if (waFlag === "processing") {
       setWaCheckoutProcessingOpen(true);
-      toast.info("מעדכנים את חיוב WhatsApp...");
+      toast.info(t("automations.toasts.waCheckoutProcessing"));
     } else if (waFlag === "cancel") {
-      toast.info("הגדרת חיוב WhatsApp בוטלה — ניתן להגדיר מחדש בכל עת.");
+      toast.info(t("automations.toasts.waCheckoutCancel"));
     }
     const next = new URLSearchParams(searchParams);
     next.delete("automationBilling");
@@ -202,11 +200,11 @@ export default function AutomationsHomePage() {
     if (!businessId) return;
     try {
       await reactivateWhatsAppBilling(businessId);
-      toast.success("הביטול בוטל והחיוב יישאר פעיל.");
+      toast.success(t("automations.toasts.waReactivated"));
       await refreshWaBilling();
     } catch (error: unknown) {
       toast.error(
-        readAutomationErrorMessage(error, "לא הצלחנו להשאיר את חיוב WhatsApp פעיל")
+        readAutomationErrorMessage(error, t("automations.toasts.waReactivateError"))
       );
     }
   };
@@ -220,11 +218,11 @@ export default function AutomationsHomePage() {
     if (!businessId) return;
     try {
       await reactivateAutomationPlan(businessId);
-      toast.success("הביטול בוטל והחבילה תמשיך כרגיל.");
+      toast.success(t("automations.toasts.planReactivated"));
       await refreshBilling();
     } catch (error: unknown) {
       toast.error(
-        readAutomationErrorMessage(error, "לא הצלחנו להשאיר את החבילה פעילה")
+        readAutomationErrorMessage(error, t("automations.toasts.planReactivateError"))
       );
     }
   };
@@ -255,10 +253,10 @@ export default function AutomationsHomePage() {
     }
     try {
       const copy = await duplicateAutomationWorkflow(businessId, workflow._id);
-      toast.success("האוטומציה שוכפלה");
+      toast.success(t("automations.toasts.duplicated"));
       navigate(copy._id);
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה בשכפול"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.duplicateError")));
     }
   };
 
@@ -283,19 +281,19 @@ export default function AutomationsHomePage() {
         queryKey: automationQueryKeys.stats(businessId),
         refetchType: "active",
       });
-      toast.success("סטטוס האוטומציה עודכן");
+      toast.success(t("automations.toasts.statusUpdated"));
     } catch (error: unknown) {
       const waCode = readWhatsAppBillingErrorCode(error);
       if (isWhatsAppBillingGateCode(waCode)) {
         if (waCode === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED) {
           toast.error(
-            "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה."
+            t("automations.toasts.waBillingRequired")
           );
         } else {
           toast.error(
             readAutomationErrorMessage(
               error,
-              "לא ניתן לעדכן את האוטומציה עקב חיוב WhatsApp"
+              t("automations.toasts.waBillingBlock")
             )
           );
         }
@@ -305,7 +303,7 @@ export default function AutomationsHomePage() {
       }
       const code = readAutomationBillingErrorCode(error);
       if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
-        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+        toast.error(t("automations.toasts.planRequired"));
         openPlanModal("pick");
         return;
       }
@@ -315,20 +313,20 @@ export default function AutomationsHomePage() {
       ) {
         // Soft warning — action quota must not block enable/resume of workflows.
         toast.error(
-          "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג"
+          t("automations.toasts.quotaExhausted")
         );
         openPlanModal("manage");
         return;
       }
       if (code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
         toast.error(
-          readAutomationErrorMessage(error, "לא ניתן לעדכן את האוטומציה")
+          readAutomationErrorMessage(error, t("automations.toasts.updateBlocked"))
         );
         openPlanModal("manage");
         return;
       }
       toast.error(
-        readAutomationErrorMessage(error, "לא ניתן לעדכן את האוטומציה")
+        readAutomationErrorMessage(error, t("automations.toasts.updateBlocked"))
       );
     }
   };
@@ -343,16 +341,16 @@ export default function AutomationsHomePage() {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
-    const name = String(workflow.name || "האוטומציה").trim() || "האוטומציה";
+    const name = String(workflow.name || t("automations.home.fallbackName")).trim() || t("automations.home.fallbackName");
     const statusHint =
       workflow.status === "active"
-        ? "האוטומציה פעילה ותיפסק מיד. "
+        ? t("automations.home.deleteActiveHint")
         : workflow.status === "paused"
-          ? "האוטומציה מושהית. "
+          ? t("automations.home.deletePausedHint")
           : "";
     if (
       !window.confirm(
-        `${statusHint}למחוק לצמיתות את "${name}"? הפעולה כוללת גם את היסטוריית ההרצות ולא ניתן לשחזר.`
+        `${statusHint}${t("automations.home.deleteConfirm", { name })}`
       )
     ) {
       return;
@@ -367,9 +365,9 @@ export default function AutomationsHomePage() {
         queryKey: automationQueryKeys.stats(businessId),
         refetchType: "active",
       });
-      toast.success("האוטומציה נמחקה");
+      toast.success(t("automations.toasts.deleted"));
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה במחיקה"));
+      toast.error(readAutomationErrorMessage(error, t("automations.toasts.deleteError")));
     }
   };
 
@@ -383,9 +381,9 @@ export default function AutomationsHomePage() {
     <div className="ax-home">
       <header className="ax-home__header">
         <div className="min-w-0">
-          <h1 className="ax-home__title">אוטומציות</h1>
+          <h1 className="ax-home__title">{t("automations.home.title")}</h1>
           <p className="ax-home__subtitle">
-            בנה ונהל תהליכים אוטומטיים לעסק
+            {t("automations.home.subtitle")}
           </p>
         </div>
         <div className="ax-home__actions">
@@ -398,13 +396,13 @@ export default function AutomationsHomePage() {
             title={writeBlockedTitle}
           >
             <Plus size={15} />
-            אוטומציה חדשה
+            {t("automations.home.new")}
           </button>
           <Link to="templates" className="ax-btn ax-btn--secondary">
-            תבניות
+            {t("automations.home.templates")}
           </Link>
           <GuidedDemoSandboxButton target="automations-demo-trigger">
-            הפעל טריגר לדוגמה
+            {t("automations.home.runDemoTrigger")}
           </GuidedDemoSandboxButton>
         </div>
       </header>
@@ -413,25 +411,25 @@ export default function AutomationsHomePage() {
         <div className="ax-kpi-row">
           <div className="ax-kpi">
             <strong>{stats.total}</strong>
-            <span>סה״כ אוטומציות</span>
+            <span>{t("automations.home.kpiTotal")}</span>
           </div>
           <div className="ax-kpi">
             <strong>{stats.active}</strong>
-            <span>פעילות</span>
+            <span>{t("automations.home.kpiActive")}</span>
           </div>
           <div className="ax-kpi">
             <strong>{stats.runsLast30Days}</strong>
-            <span>הרצות ב־30 יום</span>
+            <span>{t("automations.home.kpiRuns")}</span>
           </div>
           <div className="ax-kpi">
             <strong>{stats.failedLast30Days}</strong>
-            <span>נכשלו</span>
+            <span>{t("automations.home.kpiFailed")}</span>
           </div>
         </div>
       ) : null}
 
       {businessId ? (
-        <section className="ax-billing-stack" aria-label="חיוב אוטומציות ו-WhatsApp">
+        <section className="ax-billing-stack" aria-label={t("automations.home.billingAria")}>
           <AutomationUsageCard
             businessId={businessId}
             usage={billingUsage}
@@ -463,32 +461,48 @@ export default function AutomationsHomePage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="חיפוש אוטומציה"
+            placeholder={t("automations.home.searchPlaceholder")}
           />
         </label>
         <div className="ax-filters">
-          {STATUS_FILTERS.map((item) => (
+          {STATUS_FILTER_VALUES.map((value) => (
             <button
-              key={item.value}
+              key={value}
               type="button"
               className={`ax-chip${
-                statusFilter === item.value ? " ax-chip--active" : ""
+                statusFilter === value ? " ax-chip--active" : ""
               }`}
-              onClick={() => setStatusFilter(item.value)}
+              onClick={() => setStatusFilter(value)}
             >
-              {item.label}
+              {t(
+                value === "all"
+                  ? "automations.home.filterAll"
+                  : value === "active"
+                    ? "automations.home.filterActive"
+                    : value === "draft"
+                      ? "automations.home.filterDraft"
+                      : value === "paused"
+                        ? "automations.home.filterPaused"
+                        : "automations.home.filterFailed"
+              )}
             </button>
           ))}
         </div>
         <label className="ax-sort">
-          <span>מיון</span>
+          <span>{t("automations.home.sort")}</span>
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as WorkflowSortKey)}
           >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {SORT_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {t(
+                  value === "updated"
+                    ? "automations.home.sortUpdated"
+                    : value === "created"
+                      ? "automations.home.sortCreated"
+                      : "automations.home.sortName"
+                )}
               </option>
             ))}
           </select>
@@ -498,13 +512,13 @@ export default function AutomationsHomePage() {
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען אוטומציות...
+          {t("automations.home.loading")}
         </div>
       ) : showEmpty ? (
         <div className="ax-empty ax-empty--card">
           <Workflow className="mx-auto mb-3 h-8 w-8 text-slate-400" />
-          <strong>עדיין אין אוטומציות</strong>
-          <p>צור את האוטומציה הראשונה שלך וחסוך פעולות ידניות.</p>
+          <strong>{t("automations.home.emptyTitle")}</strong>
+          <p>{t("automations.home.emptyText")}</p>
           <div className="ax-empty__actions">
             <button
               type="button"
@@ -515,17 +529,17 @@ export default function AutomationsHomePage() {
               title={writeBlockedTitle}
             >
               <Plus size={15} />
-              אוטומציה חדשה
+              {t("automations.home.new")}
             </button>
             <Link to="templates" className="ax-btn ax-btn--secondary">
-              עיון בתבניות
+              {t("automations.home.browseTemplates")}
             </Link>
           </div>
         </div>
       ) : visibleWorkflows.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>לא נמצאו אוטומציות</strong>
-          <p>נסו לשנות את החיפוש או הסינון.</p>
+          <strong>{t("automations.home.noneFoundTitle")}</strong>
+          <p>{t("automations.home.noneFoundText")}</p>
         </div>
       ) : (
         <AutomationsWorkflowList

@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
+import i18n from "@/i18n/i18n";
 import AutomationBuilderToolbar from "./AutomationBuilderToolbar";
 
 const workflow = {
@@ -10,6 +11,10 @@ const workflow = {
 } as React.ComponentProps<typeof AutomationBuilderToolbar>["workflow"];
 
 describe("AutomationBuilderToolbar", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en");
+  });
+
   it("always fires Add Step from the top button", () => {
     const onOpenPicker = vi.fn();
     render(
@@ -34,7 +39,7 @@ describe("AutomationBuilderToolbar", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /הוסף שלב/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Add step/ }));
     expect(onOpenPicker).toHaveBeenCalledTimes(1);
   });
 });

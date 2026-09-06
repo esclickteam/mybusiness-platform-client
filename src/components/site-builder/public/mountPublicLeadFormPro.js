@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 function safeText(value) {
   return String(value || "")
     .replace(/\s+/g, " ")
@@ -134,9 +136,9 @@ export function applyMultiStep(form) {
     else form.appendChild(nav);
   }
   nav.innerHTML = `
-    <button type="button" data-bizuply-form-prev="true" class="rounded-xl border px-4 py-2 text-sm font-black">הקודם</button>
+    <button type="button" data-bizuply-form-prev="true" class="rounded-xl border px-4 py-2 text-sm font-black">${i18n.t("leftover.formPro.previous")}</button>
     <span class="text-xs font-bold">${step} / ${total}</span>
-    <button type="button" data-bizuply-form-next="true" class="rounded-xl border px-4 py-2 text-sm font-black">הבא</button>
+    <button type="button" data-bizuply-form-next="true" class="rounded-xl border px-4 py-2 text-sm font-black">${i18n.t("leftover.formPro.next")}</button>
   `;
   const prev = nav.querySelector("[data-bizuply-form-prev='true']");
   const next = nav.querySelector("[data-bizuply-form-next='true']");

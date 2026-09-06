@@ -87,6 +87,7 @@ import {
   defaultSelectedLeadContactTypes,
   formatCurrency,
   formatNumber,
+  getLeadFormContactLabel,
   LEAD_FORM_CONTACT_FIELDS,
   META_PREVIEW_FORMATS,
   OBJECTIVE_OPTIONS,
@@ -136,9 +137,15 @@ export default function MetaCampaignEditorPage() {
   const [introTitle, setIntroTitle] = useState("");
   const [introDescription, setIntroDescription] = useState("");
   const [privacyPolicyUrl, setPrivacyPolicyUrl] = useState("");
-  const [thankYouTitle, setThankYouTitle] = useState("תודה!");
-  const [thankYouBody, setThankYouBody] = useState("ניצור איתכם קשר בהקדם.");
-  const [thankYouButton, setThankYouButton] = useState("לאתר");
+  const [thankYouTitle, setThankYouTitle] = useState(() =>
+    t("leftover.instantForm.thanks", "Thanks!")
+  );
+  const [thankYouBody, setThankYouBody] = useState(() =>
+    t("leftover.instantForm.thanksBody", "We’ll be in touch soon.")
+  );
+  const [thankYouButton, setThankYouButton] = useState(() =>
+    t("leftover.instantForm.toSite", "To the site")
+  );
   const [formPreviewScreen, setFormPreviewScreen] = useState<
     "intro" | "questions" | "privacy" | "thanks"
   >("intro");
@@ -203,7 +210,7 @@ export default function MetaCampaignEditorPage() {
     () =>
       leadContactTypes.map((type) => {
         const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
-        return contact ? (isHe ? contact.labelHe : contact.labelEn) : type;
+        return contact ? getLeadFormContactLabel(contact) : type;
       }),
     [leadContactTypes, isHe]
   );
@@ -916,7 +923,7 @@ export default function MetaCampaignEditorPage() {
   }) => {
     const type = String(question.type || "").toUpperCase();
     const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
-    if (contact) return isHe ? contact.labelHe : contact.labelEn;
+    if (contact) return getLeadFormContactLabel(contact);
     return question.label || question.key || type || "—";
   };
 

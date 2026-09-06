@@ -1,5 +1,10 @@
 import API from "@api";
 import type { TFunction } from "i18next";
+import i18n from "../../../../i18n/i18n";
+
+function tr(t: TFunction | undefined, key: string, fallback: string, opts?: Record<string, unknown>) {
+  return t ? t(key, { defaultValue: fallback, ...opts }) : i18n.t(key, { defaultValue: fallback, ...opts });
+}
 
 export type {
   ClientTrackingEntry,
@@ -40,11 +45,16 @@ export type ClientTableFieldValue = {
 
 export function defaultTableFieldValue(
   columns?: string[],
+  t?: TFunction,
 ): ClientTableFieldValue {
   const cols =
     Array.isArray(columns) && columns.length
       ? columns.map(String)
-      : ["תאריך", "פעולה", "סטטוס"];
+      : [
+          tr(t, "crm.clients.examples.date", "Date"),
+          tr(t, "crm.clients.examples.action", "Action"),
+          tr(t, "crm.clients.examples.status", "Status"),
+        ];
   return {
     columns: cols,
     rows: [cols.map(() => "")],
@@ -82,7 +92,7 @@ export function normalizeTableFieldValue(
 
   if (typeof value === "string" && value.trim()) {
     return {
-      columns: ["תוכן"],
+      columns: [tr(undefined, "crm.clients.examples.content", "Content")],
       rows: [[value.trim()]],
     };
   }
@@ -298,15 +308,15 @@ export async function saveConfiguredClientFields(
   return saved;
 }
 
-export function createExampleClientFields(): ConfiguredClientField[] {
+export function createExampleClientFields(t?: TFunction): ConfiguredClientField[] {
   return [
     {
       id: uid("client_field"),
       key: "weight",
-      label: "משקל",
+      label: tr(t, "crm.clients.examples.weight", "Weight"),
       type: "tracking",
-      description: "טבלת מעקב משקל — תאריך, שעה וערך לכל מדידה",
-      placeholder: "לדוגמה: 72",
+      description: tr(t, "crm.clients.examples.weightDesc", "Weight tracking table — date, time, and value for each measurement"),
+      placeholder: tr(t, "crm.clients.examples.weightPh", "For example: 72"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -318,10 +328,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "treatments_left",
-      label: "כמות טיפולים",
+      label: tr(t, "crm.clients.examples.treatmentsLeft", "Treatments left"),
       type: "number",
-      description: "כמה טיפולים נותרו בחבילה",
-      placeholder: "לדוגמה: 4",
+      description: tr(t, "crm.clients.examples.treatmentsLeftDesc", "How many treatments remain in the package"),
+      placeholder: tr(t, "crm.clients.examples.treatmentsLeftPh", "For example: 4"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -333,10 +343,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "balance",
-      label: "יתרה",
+      label: tr(t, "crm.clients.examples.balance", "Balance"),
       type: "number",
-      description: "יתרת תשלום / זכות",
-      placeholder: "לדוגמה: 250",
+      description: tr(t, "crm.clients.examples.balanceDesc", "Payment / credit balance"),
+      placeholder: tr(t, "crm.clients.examples.balancePh", "For example: 250"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -348,10 +358,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "sessions_done",
-      label: "מפגשים שבוצעו",
+      label: tr(t, "crm.clients.examples.sessionsDone", "Sessions completed"),
       type: "number",
-      description: "מספר מפגשים שהושלמו",
-      placeholder: "לדוגמה: 8",
+      description: tr(t, "crm.clients.examples.sessionsDoneDesc", "Number of completed sessions"),
+      placeholder: tr(t, "crm.clients.examples.sessionsDonePh", "For example: 8"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -363,10 +373,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "summary",
-      label: "סיכום",
+      label: tr(t, "crm.clients.examples.summary", "Summary"),
       type: "summary",
-      description: "סיכום מצב הלקוח מהתיק",
-      placeholder: "לדוגמה: התקדמות טובה, ממשיכים לפי התוכנית",
+      description: tr(t, "crm.clients.examples.summaryDesc", "Client status summary from the file"),
+      placeholder: tr(t, "crm.clients.examples.summaryPh", "For example: Good progress, continuing as planned"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -378,10 +388,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "treatment_plan",
-      label: "תכנית טיפול",
+      label: tr(t, "crm.clients.examples.treatmentPlan", "Treatment plan"),
       type: "textarea",
-      description: "תכנית הטיפול המלאה שמוצגת ללקוח באזור האישי",
-      placeholder: "לדוגמה: מפגש שבועי · תרגילים ביתיים · יעד לחודש",
+      description: tr(t, "crm.clients.examples.treatmentPlanDesc", "The full treatment plan shown to the client in the personal area"),
+      placeholder: tr(t, "crm.clients.examples.treatmentPlanPh", "For example: Weekly session · home exercises · monthly goal"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -393,10 +403,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "continuation_plan",
-      label: "תוכנית המשך",
+      label: tr(t, "crm.clients.examples.continuationPlan", "Continuation plan"),
       type: "textarea",
-      description: "מה ממשיכים בשלב הבא",
-      placeholder: "לדוגמה: 4 מפגשים נוספים + מעקב משקל",
+      description: tr(t, "crm.clients.examples.continuationPlanDesc", "What continues in the next stage"),
+      placeholder: tr(t, "crm.clients.examples.continuationPlanPh", "For example: 4 more sessions + weight tracking"),
       options: [],
       required: false,
       showInClientProfile: true,
@@ -408,11 +418,15 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "follow_up_plan",
-      label: "תכנית מעקב",
+      label: tr(t, "crm.clients.examples.followUpPlan", "Follow-up plan"),
       type: "table",
-      description: "טבלת מעקב אישית לכל לקוח — תאריך, פעולה וסטטוס",
+      description: tr(t, "crm.clients.examples.followUpPlanDesc", "Personal follow-up table for each client — date, action, and status"),
       placeholder: "",
-      options: ["תאריך", "פעולה", "סטטוס"],
+      options: [
+        tr(t, "crm.clients.examples.date", "Date"),
+        tr(t, "crm.clients.examples.action", "Action"),
+        tr(t, "crm.clients.examples.status", "Status"),
+      ],
       required: false,
       showInClientProfile: true,
       showInClientPortal: true,
@@ -425,11 +439,12 @@ export function createExampleClientFields(): ConfiguredClientField[] {
 
 export function createEmptyClientField(
   count: number,
+  t?: TFunction,
 ): ConfiguredClientField {
   return {
     id: uid("client_field"),
     key: `field_${count + 1}`,
-    label: `נתון ${count + 1}`,
+    label: tr(t, "crm.clients.examples.fieldN", "Field {{n}}", { n: count + 1 }),
     type: "text",
     description: "",
     placeholder: "",

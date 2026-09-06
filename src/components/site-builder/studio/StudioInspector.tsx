@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   AnimationPresetValue,
   InspectorTab,
@@ -44,82 +45,54 @@ const colorPresets = [
 ];
 
 const backgroundPresets = [
-  { label: "לבן נקי", value: "#FFFFFF" },
-  { label: "רקע אתר", value: "var(--biz-bg)" },
-  { label: "צבע משני", value: "var(--biz-secondary)" },
-  { label: "סגול רך", value: "#F5F3FF" },
-  { label: "ורוד יוקרתי", value: "#FFF1F5" },
-  { label: "שמנת", value: "#FFFBF6" },
-  { label: "כהה", value: "#020617" },
+{ labelKey: "studio.inspector.bgWhite", value: "#FFFFFF" },
+{ labelKey: "studio.inspector.bgSite", value: "var(--biz-bg)" },
+{ labelKey: "studio.inspector.bgSecondary", value: "var(--biz-secondary)" },
+{ labelKey: "studio.inspector.bgSoftViolet", value: "#F5F3FF" },
+{ labelKey: "studio.inspector.bgLuxuryPink", value: "#FFF1F5" },
+{ labelKey: "studio.inspector.bgCream", value: "#FFFBF6" },
+{ labelKey: "studio.inspector.bgDark", value: "#020617" },
   {
-    label: "גרדיאנט מותג",
+    labelKey: "studio.inspector.bgBrandGradient",
     value: "linear-gradient(135deg, var(--biz-primary), var(--biz-accent))",
   },
   {
-    label: "גרדיאנט נקי",
+    labelKey: "studio.inspector.bgCleanGradient",
     value:
       "linear-gradient(135deg, #FFFFFF, color-mix(in srgb, var(--biz-secondary) 65%, #FFFFFF))",
   },
   {
-    label: "גרדיאנט כהה",
+    labelKey: "studio.inspector.bgDarkGradient",
     value:
       "linear-gradient(135deg, #020617, #111827, color-mix(in srgb, var(--biz-primary) 36%, #020617))",
   },
 ];
 
 const shadowPresets = [
-  { label: "ללא", value: "none" },
-  { label: "עדין", value: "0 18px 50px rgba(15,23,42,0.08)" },
-  { label: "מקצועי", value: "0 24px 80px rgba(15,23,42,0.10)" },
-  { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
-  { label: "עמוק", value: "0 44px 150px rgba(15,23,42,0.22)" },
+{ labelKey: "studio.inspector.shadowNone", value: "none" },
+{ labelKey: "studio.inspector.shadowSoft", value: "0 18px 50px rgba(15,23,42,0.08)" },
+{ labelKey: "studio.inspector.shadowPro", value: "0 24px 80px rgba(15,23,42,0.10)" },
+{ labelKey: "studio.inspector.shadowLuxury", value: "0 34px 110px rgba(15,23,42,0.14)" },
+{ labelKey: "studio.inspector.shadowDeep", value: "0 44px 150px rgba(15,23,42,0.22)" },
   {
-    label: "זוהר מותג",
+    labelKey: "studio.inspector.shadowBrand",
     value:
       "0 30px 90px color-mix(in srgb, var(--biz-primary) 28%, transparent)",
   },
 ];
 
 const animationPresets: {
-  label: string;
+  labelKey: string;
   value: AnimationPresetValue;
-  description: string;
+  descriptionKey: string;
 }[] = [
-  {
-    label: "ללא תנועה",
-    value: "",
-    description: "מסיר אנימציה מהאלמנט",
-  },
-  {
-    label: "Fade Up",
-    value: "fade-up",
-    description: "כניסה מלמטה עם שקיפות",
-  },
-  {
-    label: "Zoom In",
-    value: "zoom-in",
-    description: "כניסה עם הגדלה עדינה",
-  },
-  {
-    label: "Slide Right",
-    value: "slide-right",
-    description: "כניסה מצד ימין",
-  },
-  {
-    label: "Blur Reveal",
-    value: "blur-reveal",
-    description: "חשיפה עם טשטוש יוקרתי",
-  },
-  {
-    label: "Float Soft",
-    value: "float-soft",
-    description: "תנועה עדינה למעלה ולמטה",
-  },
-  {
-    label: "Pulse Soft",
-    value: "pulse-soft",
-    description: "פעימה עדינה לאלמנט",
-  },
+  { labelKey: "studio.inspector.motionNone", value: "", descriptionKey: "studio.inspector.motionNoneHint" },
+  { labelKey: "Fade Up", value: "fade-up", descriptionKey: "studio.inspector.fadeUp" },
+  { labelKey: "Zoom In", value: "zoom-in", descriptionKey: "studio.inspector.zoomIn" },
+  { labelKey: "Slide Right", value: "slide-right", descriptionKey: "studio.inspector.slideRight" },
+  { labelKey: "Blur Reveal", value: "blur-reveal", descriptionKey: "studio.inspector.blurReveal" },
+  { labelKey: "Float Soft", value: "float-soft", descriptionKey: "studio.inspector.float" },
+  { labelKey: "Pulse Soft", value: "pulse-soft", descriptionKey: "studio.inspector.pulse" },
 ];
 
 const fontOptions = [
@@ -139,7 +112,7 @@ const fontOptions = [
 
 const quickSizes = [
   {
-    label: "כותרת ענקית",
+    labelKey: "studio.inspector.typeHuge",
     style: {
       "font-size": "72px",
       "line-height": 0.95,
@@ -147,7 +120,7 @@ const quickSizes = [
     },
   },
   {
-    label: "כותרת סקשן",
+    labelKey: "studio.inspector.typeSection",
     style: {
       "font-size": "48px",
       "line-height": 1.05,
@@ -155,7 +128,7 @@ const quickSizes = [
     },
   },
   {
-    label: "כותרת כרטיס",
+    labelKey: "studio.inspector.typeCard",
     style: {
       "font-size": "24px",
       "line-height": 1.25,
@@ -163,7 +136,7 @@ const quickSizes = [
     },
   },
   {
-    label: "טקסט רגיל",
+    labelKey: "studio.inspector.typeBody",
     style: {
       "font-size": "18px",
       "line-height": 1.75,
@@ -173,12 +146,12 @@ const quickSizes = [
 ];
 
 const radiusPresets = [
-  { label: "מרובע", value: 0 },
-  { label: "חד עדין", value: 6 },
-  { label: "מלבני", value: 12 },
-  { label: "רך", value: 22 },
-  { label: "מעוגל", value: 34 },
-  { label: "עגול מאוד", value: 48 },
+{ labelKey: "studio.inspector.radiusSquare", value: 0 },
+{ labelKey: "studio.inspector.radiusSharpSoft", value: 6 },
+{ labelKey: "studio.inspector.radiusRect", value: 12 },
+{ labelKey: "studio.inspector.radiusSoft", value: 22 },
+{ labelKey: "studio.inspector.radiusRound", value: 34 },
+{ labelKey: "studio.inspector.radiusVeryRound", value: 48 },
 ];
 
 function buildRadiusStyle(value: number): StylePatch {
@@ -198,13 +171,13 @@ function buildRadiusStyle(value: number): StylePatch {
   };
 }
 
-function radiusLabel(value: number) {
-  if (value <= 0) return "מרובע חד";
-  if (value <= 8) return "כמעט מרובע";
-  if (value <= 16) return "מלבני";
-  if (value <= 28) return "רך";
-  if (value <= 42) return "מעוגל";
-  return "עגול מאוד";
+function radiusLabel(value: number, t: (key: string) => string) {
+  if (value <= 0) return t("studio.inspector.radiusSharp");
+  if (value <= 8) return t("studio.inspector.radiusAlmostSquare");
+  if (value <= 16) return t("studio.inspector.radiusRect");
+  if (value <= 28) return t("studio.inspector.radiusSoft");
+  if (value <= 42) return t("studio.inspector.radiusRound");
+  return t("studio.inspector.radiusVeryRound");
 }
 
 function isEditableLinkComponent(selectedComponent: any) {
@@ -239,6 +212,7 @@ export default function StudioInspector({
   onSetAnimation,
   onClearAnimation,
 }: Props) {
+  const { t } = useTranslation();
   const [textColor, setTextColor] = useState("#171321");
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [accentColor, setAccentColor] = useState("#7C3AED");
@@ -252,13 +226,13 @@ export default function StudioInspector({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const currentTabTitle = useMemo(() => {
-    if (activeTab === "design") return "עיצוב אלמנט";
-    if (activeTab === "settings") return "הגדרות אלמנט";
-    return "אנימציות ותנועה";
-  }, [activeTab]);
+    if (activeTab === "design") return t("studio.inspector.designElement");
+    if (activeTab === "settings") return t("studio.inspector.settingsElement");
+    return t("studio.inspector.motionElement");
+  }, [activeTab, t]);
 
   const selectedName = useMemo(() => {
-    if (!selectedComponent) return "לא נבחר אלמנט";
+    if (!selectedComponent) return t("studio.inspector.noElement");
 
     const tagName = String(selectedComponent.get?.("tagName") || "").toUpperCase();
     const attrs = selectedComponent.getAttributes?.() || {};
@@ -266,8 +240,8 @@ export default function StudioInspector({
 
     if (kind) return `${tagName} · ${kind}`;
 
-    return tagName || "אלמנט";
-  }, [selectedComponent]);
+    return tagName || t("studio.element");
+  }, [selectedComponent, t]);
 
   const applyStyle = (style: StylePatch) => {
     onApplyStyle?.(style);
@@ -414,21 +388,21 @@ export default function StudioInspector({
             active={activeTab === "design"}
             onClick={() => setActiveTab("design")}
           >
-            עיצוב
+            {t("studio.inspector.tabDesign")}
           </Tab>
 
           <Tab
             active={activeTab === "settings"}
             onClick={() => setActiveTab("settings")}
           >
-            הגדרות
+            {t("studio.inspector.tabSettings")}
           </Tab>
 
           <Tab
             active={activeTab === "animations"}
             onClick={() => setActiveTab("animations")}
           >
-            תנועה
+            {t("studio.inspector.tabMotion")}
           </Tab>
         </div>
       </div>
@@ -437,43 +411,43 @@ export default function StudioInspector({
         {activeTab === "design" && (
           <>
             <PanelTitle
-              title="בחרי אלמנט באתר"
-              subtitle="לאחר בחירה אפשר לשנות צבע, רקע, פונט, ריווח, צל, גודל ומבנה. העיצוב חל רק על האלמנט הנבחר."
+              title={t("studio.inspector.selectOnSite")}
+              subtitle={t("studio.inspector.selectOnSiteHint")}
             />
 
-            <DesignSection title="פעולות מהירות" icon="⚡">
+            <DesignSection title={t("studio.inspector.quickActions")} icon="⚡">
               <div className="grid grid-cols-2 gap-2">
-                <ActionButton onClick={onSetBackgroundImage}>תמונת רקע</ActionButton>
-                <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
-                <ActionButton onClick={onBringForward}>קדימה</ActionButton>
-                <ActionButton onClick={onSendBackward}>אחורה</ActionButton>
-                <ActionButton onClick={resetSelectedStyle}>איפוס עיצוב</ActionButton>
+                <ActionButton onClick={onSetBackgroundImage}>{t("studio.inspector.bgImage")}</ActionButton>
+                <ActionButton onClick={onDuplicate}>{t("studio.duplicate")}</ActionButton>
+                <ActionButton onClick={onBringForward}>{t("studio.forward")}</ActionButton>
+                <ActionButton onClick={onSendBackward}>{t("studio.backward")}</ActionButton>
+                <ActionButton onClick={resetSelectedStyle}>{t("studio.inspector.resetDesign")}</ActionButton>
                 <ActionButton danger onClick={onDelete}>
-                  מחיקה
+                  {t("studio.delete")}
                 </ActionButton>
               </div>
             </DesignSection>
 
-            <DesignSection title="צבעים" icon="🎨">
+            <DesignSection title={t("studio.inspector.colors")} icon="🎨">
               <ColorControl
-                label="צבע טקסט"
+                label={t("studio.inspector.textColor")}
                 value={textColor}
                 onChange={updateTextColor}
               />
 
               <ColorControl
-                label="צבע רקע"
+                label={t("studio.inspector.bgColor")}
                 value={backgroundColor}
                 onChange={updateBackgroundColor}
               />
 
               <ColorControl
-                label="צבע הדגשה / גבול"
+                label={t("studio.inspector.accentBorder")}
                 value={accentColor}
                 onChange={updateAccentColor}
               />
 
-              <PresetLabel>צבעים מהירים לטקסט</PresetLabel>
+<PresetLabel>{t("studio.inspector.quickTextColors")}</PresetLabel>
 
               <div className="grid grid-cols-6 gap-2">
                 {colorPresets.map((color) => (
@@ -481,12 +455,12 @@ export default function StudioInspector({
                     key={`text-${color}`}
                     color={color}
                     onClick={() => updateTextColor(color)}
-                    title={`טקסט ${color}`}
+                    title={t("studio.inspector.textSwatch", { color })}
                   />
                 ))}
               </div>
 
-              <PresetLabel>צבעים מהירים לרקע</PresetLabel>
+<PresetLabel>{t("studio.inspector.quickBgColors")}</PresetLabel>
 
               <div className="grid grid-cols-6 gap-2">
                 {colorPresets.map((color) => (
@@ -494,17 +468,17 @@ export default function StudioInspector({
                     key={`background-${color}`}
                     color={color}
                     onClick={() => updateBackgroundColor(color)}
-                    title={`רקע ${color}`}
+                    title={t("studio.inspector.bgSwatch", { color })}
                   />
                 ))}
               </div>
             </DesignSection>
 
-            <DesignSection title="רקע וסקשן" icon="▧">
+            <DesignSection title={t("studio.inspector.bgAndSection")} icon="▧">
               <div className="space-y-2">
                 {backgroundPresets.map((preset) => (
                   <button
-                    key={preset.label}
+                    key={preset.labelKey}
                     type="button"
                     onClick={() => {
                       setBackgroundColor(preset.value);
@@ -517,7 +491,7 @@ export default function StudioInspector({
                     className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-violet-300 hover:bg-violet-50"
                   >
                     <span className="text-xs font-black text-slate-700">
-                      {preset.label}
+                      {t(preset.labelKey)}
                     </span>
 
                     <span
@@ -533,24 +507,24 @@ export default function StudioInspector({
                 onClick={onSetBackgroundImage}
                 className="mt-3 w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
-                העלאת תמונת רקע לבלוק
+                {t("studio.inspector.uploadSectionBg")}
               </button>
             </DesignSection>
 
-            <DesignSection title="טיפוגרפיה" icon="T">
+            <DesignSection title={t("studio.inspector.typography")} icon="T">
               <div className="mb-4 grid grid-cols-2 gap-2">
                 {quickSizes.map((item) => (
                   <ActionButton
-                    key={item.label}
+                    key={item.labelKey}
                     onClick={() => applyStyle(item.style)}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </ActionButton>
                 ))}
               </div>
 
               <RangeControl
-                label="גודל טקסט"
+                label={t("studio.inspector.fontSize")}
                 value={fontSize}
                 min={10}
                 max={96}
@@ -559,7 +533,7 @@ export default function StudioInspector({
               />
 
               <RangeControl
-                label="עובי טקסט"
+                label={t("studio.inspector.fontWeight")}
                 value={fontWeight}
                 min={300}
                 max={950}
@@ -568,7 +542,7 @@ export default function StudioInspector({
               />
 
               <RangeControl
-                label="גובה שורה"
+                label={t("studio.inspector.lineHeight")}
                 value={lineHeight}
                 min={0.9}
                 max={2.4}
@@ -595,11 +569,11 @@ export default function StudioInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="מבנה, פינות וריווח" icon="□">
+            <DesignSection title={t("studio.inspector.structure")} icon="□">
               <RadiusControl value={radius} onChange={updateRadius} />
 
               <RangeControl
-                label="ריווח פנימי"
+                label={t("studio.inspector.padding")}
                 value={padding}
                 min={0}
                 max={130}
@@ -608,7 +582,7 @@ export default function StudioInspector({
               />
 
               <RangeControl
-                label="מרווח עליון"
+                label={t("studio.inspector.marginTop")}
                 value={marginTop}
                 min={-80}
                 max={160}
@@ -617,7 +591,7 @@ export default function StudioInspector({
               />
 
               <RangeControl
-                label="שקיפות"
+                label={t("studio.inspector.opacity")}
                 value={opacity}
                 min={10}
                 max={100}
@@ -626,14 +600,14 @@ export default function StudioInspector({
               />
             </DesignSection>
 
-            <DesignSection title="צל וגבול" icon="◈">
+            <DesignSection title={t("studio.inspector.shadowBorder")} icon="◈">
               <div className="grid grid-cols-2 gap-2">
                 {shadowPresets.map((shadow) => (
                   <ActionButton
-                    key={shadow.label}
+                    key={shadow.labelKey}
                     onClick={() => applyStyle({ "box-shadow": shadow.value })}
                   >
-                    {shadow.label}
+                    {t(shadow.labelKey)}
                   </ActionButton>
                 ))}
               </div>
@@ -646,7 +620,7 @@ export default function StudioInspector({
                     })
                   }
                 >
-                  גבול עדין
+                  {t("studio.inspector.softBorder")}
                 </ActionButton>
 
                 <ActionButton
@@ -656,33 +630,33 @@ export default function StudioInspector({
                     })
                   }
                 >
-                  גבול בצבע
+                  {t("studio.inspector.coloredBorder")}
                 </ActionButton>
               </div>
             </DesignSection>
 
-            <DesignSection title="יישור וגודל" icon="↔">
+            <DesignSection title={t("studio.inspector.alignSize")} icon="↔">
               <div className="grid grid-cols-3 gap-2">
                 <ActionButton onClick={() => applyStyle({ "text-align": "right" })}>
-                  ימין
+                  {t("studio.inspector.right")}
                 </ActionButton>
                 <ActionButton onClick={() => applyStyle({ "text-align": "center" })}>
-                  מרכז
+                  {t("studio.inspector.center")}
                 </ActionButton>
                 <ActionButton onClick={() => applyStyle({ "text-align": "left" })}>
-                  שמאל
+                  {t("studio.inspector.left")}
                 </ActionButton>
               </div>
 
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <ActionButton onClick={() => applyStyle({ width: "100%" })}>
-                  רוחב מלא
+                  {t("studio.inspector.fullWidth")}
                 </ActionButton>
                 <ActionButton onClick={() => applyStyle({ "max-width": "1180px" })}>
-                  רוחב אתר
+                  {t("studio.inspector.siteWidth")}
                 </ActionButton>
                 <ActionButton onClick={() => applyStyle({ display: "block" })}>
-                  בלוק
+                  {t("studio.inspector.block")}
                 </ActionButton>
                 <ActionButton
                   onClick={() =>
@@ -694,7 +668,7 @@ export default function StudioInspector({
                     })
                   }
                 >
-                  Flex מרכז
+                  {t("studio.inspector.flexCenter")}
                 </ActionButton>
               </div>
             </DesignSection>
@@ -704,14 +678,14 @@ export default function StudioInspector({
               onClick={() => setShowAdvanced((value) => !value)}
               className="mb-4 flex w-full items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-black text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
             >
-              <span>GrapesJS מתקדם</span>
+<span>{t("studio.inspector.grapesAdvanced")}</span>
               <span>{showAdvanced ? "−" : "+"}</span>
             </button>
 
             {showAdvanced && (
-              <DesignSection title="פאנל מקורי מתקדם" icon="⚙">
+              <DesignSection title={t("studio.inspector.nativePanel")} icon="⚙">
                 <p className="mb-3 text-xs font-bold leading-5 text-slate-400">
-                  הפאנל המקורי נשאר למקרים מתקדמים יותר.
+{t("studio.inspector.nativePanelHint")}
                 </p>
                 <div ref={stylesRef} />
               </DesignSection>
@@ -722,8 +696,8 @@ export default function StudioInspector({
         {activeTab === "settings" && (
           <>
             <PanelTitle
-              title="הגדרות אלמנט"
-              subtitle="קישורים, פעולות, תמונות, שדות והגדרות מקוריות של GrapesJS."
+              title={t("studio.inspector.settingsTitle")}
+              subtitle={t("studio.inspector.settingsHint")}
             />
 
             <LinkEditorPanel
@@ -732,18 +706,18 @@ export default function StudioInspector({
               onApplyLink={onApplyLink}
             />
 
-            <DesignSection title="פעולות מהירות" icon="⚡">
+            <DesignSection title={t("studio.inspector.quickActions")} icon="⚡">
               <div className="grid grid-cols-2 gap-2">
-                <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
+                <ActionButton onClick={onDuplicate}>{t("studio.duplicate")}</ActionButton>
                 <ActionButton danger onClick={onDelete}>
-                  מחיקה
+                  {t("studio.delete")}
                 </ActionButton>
-                <ActionButton onClick={onBringForward}>קדימה</ActionButton>
-                <ActionButton onClick={onSendBackward}>אחורה</ActionButton>
+                <ActionButton onClick={onBringForward}>{t("studio.forward")}</ActionButton>
+                <ActionButton onClick={onSendBackward}>{t("studio.backward")}</ActionButton>
               </div>
             </DesignSection>
 
-            <DesignSection title="הגדרות מקוריות" icon="⚙">
+            <DesignSection title={t("studio.inspector.nativeSettings")} icon="⚙">
               <div ref={traitsRef} />
             </DesignSection>
           </>
@@ -752,17 +726,17 @@ export default function StudioInspector({
         {activeTab === "animations" && (
           <>
             <PanelTitle
-              title="אנימציות ותנועה"
-              subtitle="בחרי אנימציה לאלמנט / סקשן הנבחר. מתאים לכותרות, כרטיסים ותמונות."
+              title={t("studio.inspector.motionTitle")}
+              subtitle={t("studio.inspector.motionHint")}
             />
 
             <div className="space-y-3">
               {animationPresets.map((animation) => (
                 <AnimationButton
-                  key={animation.label}
-                  label={animation.label}
+                  key={animation.labelKey}
+                  label={t(animation.labelKey)}
                   value={animation.value}
-                  description={animation.description}
+                  description={t(animation.descriptionKey)}
                   onClick={() => {
                     if (!animation.value) {
                       onClearAnimation?.();
@@ -775,7 +749,7 @@ export default function StudioInspector({
               ))}
             </div>
 
-            <DesignSection title="אפקטים מהירים" icon="✦">
+            <DesignSection title={t("studio.inspector.quickEffects")} icon="✦">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton
                   onClick={() =>
@@ -818,7 +792,7 @@ export default function StudioInspector({
                     })
                   }
                 >
-                  איפוס
+                  {t("studio.reset")}
                 </ActionButton>
               </div>
             </DesignSection>
@@ -857,10 +831,10 @@ function LinkEditorPanel({
 
   if (!selectedComponent) {
     return (
-      <DesignSection title="קישור כפתור / לינק" icon="↗">
+      <DesignSection title={t("studio.inspector.buttonLink")} icon="↗">
         <div className="rounded-2xl bg-slate-50 p-4 text-center">
           <p className="text-xs font-bold leading-5 text-slate-500">
-            בחרי כפתור או לינק באתר כדי להגדיר לאן הוא יעבור.
+{t("studio.inspector.chooseButtonHint")}
           </p>
         </div>
       </DesignSection>
@@ -868,16 +842,16 @@ function LinkEditorPanel({
   }
 
   return (
-    <DesignSection title="קישור כפתור / לינק" icon="↗">
+    <DesignSection title={t("studio.inspector.buttonLink")} icon="↗">
       {!isLinkLike ? (
         <div className="mb-4 rounded-2xl bg-amber-50 p-4 text-xs font-bold leading-5 text-amber-700">
-          האלמנט הנבחר אינו כפתור. בחרי כפתור, לינק או אלמנט עם
+          {t("studio.inspector.notButtonHint")}
           data-editable-link.
         </div>
       ) : null}
 
       <label className="grid gap-2">
-        <span className="text-xs font-black text-slate-500">סוג קישור</span>
+<span className="text-xs font-black text-slate-500">{t("studio.inspector.linkType")}</span>
 
         <select
           value={link.type || "none"}
@@ -888,22 +862,22 @@ function LinkEditorPanel({
           }
           className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
         >
-          <option value="none">ללא קישור</option>
-          <option value="page">עמוד באתר</option>
-          <option value="section">סקשן בעמוד</option>
-          <option value="product">מוצר</option>
-          <option value="category">קטגוריה</option>
-          <option value="whatsapp">וואטסאפ</option>
-          <option value="phone">טלפון</option>
-          <option value="email">אימייל</option>
-          <option value="external">קישור חיצוני</option>
+          <option value="none">{t("studio.inspector.noLink")}</option>
+          <option value="page">{t("studio.inspector.pageOnSite")}</option>
+          <option value="section">{t("studio.inspector.sectionOnPage")}</option>
+          <option value="product">{t("studio.inspector.product")}</option>
+          <option value="category">{t("studio.inspector.category")}</option>
+          <option value="whatsapp">{t("studio.inspector.whatsapp")}</option>
+          <option value="phone">{t("studio.inspector.phone")}</option>
+          <option value="email">{t("studio.inspector.email")}</option>
+          <option value="external">{t("studio.inspector.external")}</option>
         </select>
       </label>
 
       {link.type === "page" ? (
         <label className="mt-4 grid gap-2">
           <span className="text-xs font-black text-slate-500">
-            בחרי עמוד לפי השם שבעל העסק קבע
+{t("studio.inspector.choosePageByName")}
           </span>
 
           <select
@@ -916,12 +890,12 @@ function LinkEditorPanel({
             }
             className="min-h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white"
           >
-            <option value="">בחרי עמוד...</option>
+            <option value="">{t("studio.inspector.choosePagePlaceholder")}</option>
 
             {pages.map((page) => (
               <option key={page.id} value={page.id}>
                 {page.title}
-                {page.isHome ? " — דף הבית" : page.slug ? ` — /${page.slug}` : ""}
+{page.isHome ? t("studio.inspector.homeSuffix") : page.slug ? ` — /${page.slug}` : ""}
               </option>
             ))}
           </select>
@@ -931,7 +905,7 @@ function LinkEditorPanel({
       {link.type === "section" ? (
         <label className="mt-4 grid gap-2">
           <span className="text-xs font-black text-slate-500">
-            מזהה סקשן בעמוד
+{t("studio.inspector.sectionId")}
           </span>
 
           <input
@@ -951,7 +925,7 @@ function LinkEditorPanel({
       {["whatsapp", "phone", "email", "external"].includes(link.type) ? (
         <label className="mt-4 grid gap-2">
           <span className="text-xs font-black text-slate-500">
-            ערך הקישור
+{t("studio.inspector.linkValue")}
           </span>
 
           <input
@@ -979,20 +953,19 @@ function LinkEditorPanel({
 
       {link.type === "product" ? (
         <div className="mt-4 rounded-2xl bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-700">
-          בשלב הבא נחבר כאן בחירת מוצר אמיתי מהחנות לפי productId.
+{t("studio.inspector.productComingSoon")}
         </div>
       ) : null}
 
       {link.type === "category" ? (
         <div className="mt-4 rounded-2xl bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-700">
-          בשלב הבא נחבר כאן בחירת קטגוריית מוצרים אמיתית מהחנות.
+{t("studio.inspector.categoryComingSoon")}
         </div>
       ) : null}
 
       <div className="mt-4 rounded-2xl bg-slate-50 p-3">
         <p className="text-[11px] font-bold leading-5 text-slate-400">
-          הקישור נשמר לפי מזהה עמוד יציב, אבל בעל העסק רואה את שם העמוד שהוא
-          בחר. שינוי שם עמוד לא ישבור את הקישור.
+          {t("studio.inspector.stablePageId")}
         </p>
       </div>
     </DesignSection>
@@ -1125,6 +1098,7 @@ function RadiusControl({
   value: number;
   onChange: (value: number) => void;
 }) {
+  const { t } = useTranslation();
   const progress = Math.max(0, Math.min(100, (value / 90) * 100));
 
   return (
@@ -1132,10 +1106,10 @@ function RadiusControl({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-black text-slate-700">
-            קו פינות — מריבוע עד עיגול
+{t("studio.inspector.cornerLine")}
           </p>
           <p className="mt-1 text-[11px] font-bold leading-5 text-slate-400">
-            משנה את הזווית של הסקשן, הכרטיסים, התמונות, הכפתורים והטפסים.
+{t("studio.inspector.cornerLineHint")}
           </p>
         </div>
 
@@ -1146,7 +1120,7 @@ function RadiusControl({
 
       <div className="mb-4 grid grid-cols-[54px_1fr_54px] items-center gap-3">
         <div className="grid h-12 w-12 place-items-center rounded-none border-2 border-slate-300 bg-white text-[10px] font-black text-slate-500">
-          מרובע
+{t("studio.inspector.square")}
         </div>
 
         <div>
@@ -1169,20 +1143,20 @@ function RadiusControl({
         </div>
 
         <div className="grid h-12 w-12 place-items-center rounded-[24px] border-2 border-violet-300 bg-white text-[10px] font-black text-violet-600">
-          עגול
+{t("studio.inspector.round")}
         </div>
       </div>
 
       <div className="mb-3 flex items-center justify-between text-[11px] font-black text-slate-400">
         <span>0px</span>
-        <span className="text-violet-700">{radiusLabel(value)}</span>
+        <span className="text-violet-700">{radiusLabel(value, t)}</span>
         <span>90px</span>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
         {radiusPresets.map((preset) => (
           <button
-            key={preset.label}
+            key={preset.labelKey}
             type="button"
             onClick={() => onChange(preset.value)}
             className={[
@@ -1192,9 +1166,9 @@ function RadiusControl({
                 : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700",
             ].join(" ")}
             style={{ borderRadius: `${Math.min(preset.value, 28)}px` }}
-            title={`${preset.label} ${preset.value}px`}
+            title={`${t(preset.labelKey)} ${preset.value}px`}
           >
-            {preset.label}
+            {t(preset.labelKey)}
           </button>
         ))}
       </div>

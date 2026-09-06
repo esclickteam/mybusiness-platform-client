@@ -1,4 +1,7 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 import SitePortalLoginView from "./SitePortalLoginView";
 import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
@@ -45,6 +48,8 @@ export default function SitePortalGate({
   children,
   onPortalAuthChange,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const siteId = getSiteId(site);
   const siteName = String(site?.name || site?.brand?.name || "").trim();
   const portalGate = (site?.portalGate || {}) as PortalGateInfo;
@@ -101,25 +106,25 @@ export default function SitePortalGate({
   if (portalRoute && !pluginEnabled) {
     return (
       <div
-        dir="rtl"
+        dir={pageDir}
         className="flex min-h-screen items-center justify-center bg-white px-4"
       >
         <div className="w-full max-w-md rounded-[28px] border border-slate-200 p-8 text-center">
           <h1 className="text-2xl font-black text-slate-900">
             {portalGate.reason === "billing_inactive"
-              ? "האזור האישי אינו פעיל"
-              : "אין אזור אישי"}
+              ? t("publicWidgets.portal.inactiveTitle")
+              : t("publicWidgets.portal.missingTitle")}
           </h1>
           <p className="mt-3 text-sm font-medium text-slate-500">
             {portalGate.reason === "billing_inactive"
-              ? "התוסף «אזור אישי» קיים באתר, אך המנוי אינו פעיל כרגע."
-              : "באתר זה לא מותקן התוסף «אזור אישי», ולכן אין התחברות ללקוחות."}
+              ? t("publicWidgets.portal.inactiveHint")
+              : t("publicWidgets.portal.missingHint")}
           </p>
           <a
             href="/"
             className="mt-6 inline-flex rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
           >
-            חזרה לאתר
+            {t("publicWidgets.portal.backToSite")}
           </a>
         </div>
       </div>
@@ -250,27 +255,28 @@ export default function SitePortalGate({
 
       return (
         <div
-          dir="rtl"
+          dir={pageDir}
           className="flex min-h-screen items-center justify-center bg-white px-4"
         >
           <div className="w-full max-w-md rounded-[28px] border border-slate-200 p-8 text-center">
-            <h1 className="text-2xl font-black text-slate-900">נדרש תשלום</h1>
+            <h1 className="text-2xl font-black text-slate-900">
+              {t("publicWidgets.portal.paymentRequired")}
+            </h1>
             <p className="mt-3 text-sm font-medium text-slate-500">
-              העמוד הזה פתוח ללקוחות משלמים. בחרו חבילה והשלימו תשלום בסליקה כדי
-              לפתוח גישה.
+              {t("publicWidgets.portal.paymentRequiredHint")}
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <a
                 href={packagesPath}
                 className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
               >
-                לחבילות ותשלום
+                {t("publicWidgets.portal.toPackages")}
               </a>
               <a
                 href={accountPath}
                 className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700"
               >
-                החשבון שלי
+                {t("publicWidgets.portal.myAccount")}
               </a>
             </div>
           </div>

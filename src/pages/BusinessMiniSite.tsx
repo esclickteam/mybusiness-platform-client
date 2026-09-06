@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type ClubForm = {
   fullName: string;
@@ -26,47 +28,67 @@ type Coupon = {
   validUntil: string;
 };
 
-const benefits: Benefit[] = [
-  {
-    id: "b1",
-    title: "הנחות קבועות לחברי מועדון",
-    description: "לקוחות שנרשמים למועדון מקבלים הטבות מיוחדות לפי החלטת בעל העסק.",
-    tag: "VIP",
-  },
-  {
-    id: "b2",
-    title: "קופון יום הולדת",
-    description: "שליחת הטבה אישית ללקוח בחודש יום ההולדת שלו.",
-    tag: "אוטומטי",
-  },
-  {
-    id: "b3",
-    title: "מבצעים לפי שירותים",
-    description: "אפשר להציע הנחה על טיפול, פגישה, מוצר או חבילה.",
-    tag: "שיווק",
-  },
-];
+function buildBenefits(t: (key: string, fallback: string) => string): Benefit[] {
+  return [
+    {
+      id: "b1",
+      title: t("leftover.miniSite.benefitVipTitle", "Ongoing discounts for club members"),
+      description: t(
+        "leftover.miniSite.benefitVipDesc",
+        "Customers who join the club get special benefits chosen by the business owner."
+      ),
+      tag: "VIP",
+    },
+    {
+      id: "b2",
+      title: t("leftover.miniSite.benefitBdayTitle", "Birthday coupon"),
+      description: t(
+        "leftover.miniSite.benefitBdayDesc",
+        "A personal benefit sent in the customer’s birthday month."
+      ),
+      tag: t("leftover.miniSite.auto", "Automatic"),
+    },
+    {
+      id: "b3",
+      title: t("leftover.miniSite.benefitServiceTitle", "Promos by service"),
+      description: t(
+        "leftover.miniSite.benefitServiceDesc",
+        "You can offer a discount on a treatment, meeting, product, or package."
+      ),
+      tag: t("leftover.miniSite.marketing", "Marketing"),
+    },
+  ];
+}
 
-const coupons: Coupon[] = [
-  {
-    id: "c1",
-    title: "10% הנחה לטיפול ראשון",
-    description: "הטבה למצטרפים חדשים למועדון הלקוחות.",
-    code: "WELCOME10",
-    discount: "10%",
-    validUntil: "30.06.2026",
-  },
-  {
-    id: "c2",
-    title: "50 ₪ הנחה בקביעת תור",
-    description: "מתאים לעידוד לקוחות לקבוע תור דרך האתר.",
-    code: "BOOK50",
-    discount: "₪50",
-    validUntil: "15.07.2026",
-  },
-];
+function buildCoupons(t: (key: string, fallback: string) => string): Coupon[] {
+  return [
+    {
+      id: "c1",
+      title: t("leftover.miniSite.coupon10Title", "10% off the first treatment"),
+      description: t("leftover.miniSite.coupon10Desc", "A benefit for new customer-club members."),
+      code: "WELCOME10",
+      discount: "10%",
+      validUntil: "30.06.2026",
+    },
+    {
+      id: "c2",
+      title: t("leftover.miniSite.coupon50Title", "₪50 off when booking"),
+      description: t(
+        "leftover.miniSite.coupon50Desc",
+        "Helps encourage customers to book through the website."
+      ),
+      code: "BOOK50",
+      discount: "₪50",
+      validUntil: "15.07.2026",
+    },
+  ];
+}
 
 export default function BusinessMiniSiteClub() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const benefits = useMemo(() => buildBenefits(t), [t]);
+  const coupons = useMemo(() => buildCoupons(t), [t]);
   const [form, setForm] = useState<ClubForm>({
     fullName: "",
     phone: "",
@@ -104,7 +126,7 @@ export default function BusinessMiniSiteClub() {
   };
 
   return (
-    <main dir="rtl" className="min-h-screen bg-[#f7f4ff] text-slate-800">
+    <main dir={pageDir} className="min-h-screen bg-[#f7f4ff] text-slate-800">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#d8c7ff_0%,transparent_35%),radial-gradient(circle_at_bottom_right,#ffe0ec_0%,transparent_30%)]" />
 
@@ -119,23 +141,23 @@ export default function BusinessMiniSiteClub() {
               <div>
                 <p className="text-sm font-semibold text-violet-700">Bizuply Mini Site</p>
                 <h1 className="text-lg font-black tracking-tight text-slate-800">
-                  הדר עשת ביוטי
+                  {t("leftover.miniSite.demoName", "Hadar Eshet Beauty")}
                 </h1>
               </div>
             </div>
 
             <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-600 md:flex">
               <a href="#services" className="transition hover:text-violet-700">
-                שירותים
+                {t("business.miniSite.navServices", "שירותים")}
               </a>
               <a href="#club" className="transition hover:text-violet-700">
-                מועדון לקוחות
+                {t("business.miniSite.navClub", "מועדון לקוחות")}
               </a>
               <a href="#coupons" className="transition hover:text-violet-700">
-                הטבות
+                {t("business.miniSite.navBenefits", "הטבות")}
               </a>
               <a href="#contact" className="transition hover:text-violet-700">
-                יצירת קשר
+                {t("business.miniSite.navContact", "יצירת קשר")}
               </a>
             </nav>
 
@@ -143,7 +165,7 @@ export default function BusinessMiniSiteClub() {
               href="#club"
               className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-violet-800"
             >
-              הצטרפות למועדון
+              {t("business.miniSite.joinClub", "הצטרפות למועדון")}
             </a>
           </header>
 
@@ -152,17 +174,21 @@ export default function BusinessMiniSiteClub() {
             <div className="order-2 lg:order-1">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-sm font-bold text-violet-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                אתר עסקי חכם + מועדון לקוחות
+                {t("business.miniSite.smartSite", "אתר עסקי חכם + מועדון לקוחות")}
               </div>
 
               <h2 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-slate-800 md:text-6xl">
-                הצטרפי למועדון הלקוחות וקבלי הטבות אישיות, קופונים ועדכונים לפני כולם
+                {t(
+                  "business.miniSite.heroTitle",
+                  "הצטרפי למועדון הלקוחות וקבלי הטבות אישיות, קופונים ועדכונים לפני כולם"
+                )}
               </h2>
 
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-                כאן הלקוחות יכולים להירשם למועדון של העסק, לקבל הנחות, קופונים,
-                עדכונים על מבצעים ולשמור על קשר ישיר עם בעל העסק — הכל בתוך האתר
-                החכם של ביזאפלי.
+                {t(
+                  "business.miniSite.heroBody",
+                  "כאן הלקוחות יכולים להירשם למועדון של העסק, לקבל הנחות, קופונים, עדכונים על מבצעים ולשמור על קשר ישיר עם בעל העסק — הכל בתוך האתר החכם של ביזאפלי."
+                )}
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -170,31 +196,31 @@ export default function BusinessMiniSiteClub() {
                   href="#club"
                   className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 py-4 text-center text-base font-black text-black shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5"
                 >
-                  הצטרפות חינם למועדון
+                  {t("business.miniSite.joinFree", "הצטרפות חינם למועדון")}
                 </a>
 
                 <a
                   href="#coupons"
                   className="rounded-2xl border border-violet-200 bg-white/80 px-7 py-4 text-center text-base font-black text-violet-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
                 >
-                  צפייה בהטבות
+                  {t("business.miniSite.viewBenefits", "צפייה בהטבות")}
                 </a>
               </div>
 
               <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
                   <p className="text-2xl font-black text-slate-800">320+</p>
-                  <p className="mt-1 text-xs font-bold text-slate-500">חברי מועדון</p>
+                  <p className="mt-1 text-xs font-bold text-slate-500">{t("business.miniSite.clubMembers", "חברי מועדון")}</p>
                 </div>
 
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
                   <p className="text-2xl font-black text-slate-800">12</p>
-                  <p className="mt-1 text-xs font-bold text-slate-500">הטבות פעילות</p>
+                  <p className="mt-1 text-xs font-bold text-slate-500">{t("business.miniSite.activeBenefits", "הטבות פעילות")}</p>
                 </div>
 
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
                   <p className="text-2xl font-black text-slate-800">VIP</p>
-                  <p className="mt-1 text-xs font-bold text-slate-500">לקוחות קבועים</p>
+                  <p className="mt-1 text-xs font-bold text-slate-500">{t("business.miniSite.regularCustomers", "לקוחות קבועים")}</p>
                 </div>
               </div>
             </div>
@@ -210,9 +236,9 @@ export default function BusinessMiniSiteClub() {
                       <div className="mb-8 w-[78%] rounded-[2rem] border border-white/80 bg-white/80 p-5 shadow-2xl">
                         <div className="mb-4 flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-bold text-violet-600">כרטיס מועדון</p>
+                            <p className="text-xs font-bold text-violet-600">{t("business.miniSite.clubCard", "כרטיס מועדון")}</p>
                             <h3 className="text-2xl font-black text-slate-800">
-                              הדר עשת ביוטי
+                              {t("leftover.miniSite.demoName", "Hadar Eshet Beauty")}
                             </h3>
                           </div>
 
@@ -222,10 +248,10 @@ export default function BusinessMiniSiteClub() {
                         </div>
 
                         <div className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-                          <p className="text-sm text-white/70">הטבת הצטרפות</p>
-                          <p className="mt-1 text-3xl font-black">10% הנחה</p>
+                          <p className="text-sm text-white/70">{t("business.miniSite.joinBenefit", "הטבת הצטרפות")}</p>
+                          <p className="mt-1 text-3xl font-black">{t("business.miniSite.discount10", "10% הנחה")}</p>
                           <p className="mt-2 text-xs text-white/60">
-                            למצטרפים חדשים למועדון הלקוחות
+                            {t("business.miniSite.forNewMembers", "למצטרפים חדשים למועדון הלקוחות")}
                           </p>
                         </div>
                       </div>
@@ -234,13 +260,13 @@ export default function BusinessMiniSiteClub() {
 
                   <div className="mt-5 grid grid-cols-2 gap-3">
                     <div className="rounded-3xl bg-violet-50 p-4">
-                      <p className="text-sm font-bold text-violet-700">הטבה פעילה</p>
+                      <p className="text-sm font-bold text-violet-700">{t("business.miniSite.activeBenefit", "הטבה פעילה")}</p>
                       <p className="mt-1 text-xl font-black text-slate-800">WELCOME10</p>
                     </div>
 
                     <div className="rounded-3xl bg-fuchsia-50 p-4">
-                      <p className="text-sm font-bold text-fuchsia-700">סטטוס לקוח</p>
-                      <p className="mt-1 text-xl font-black text-slate-800">חבר מועדון</p>
+                      <p className="text-sm font-bold text-fuchsia-700">{t("business.miniSite.customerStatus", "סטטוס לקוח")}</p>
+                      <p className="mt-1 text-xl font-black text-slate-800">{t("business.miniSite.clubMember", "חבר מועדון")}</p>
                     </div>
                   </div>
                 </div>
@@ -254,15 +280,17 @@ export default function BusinessMiniSiteClub() {
       <section id="services" className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-black text-violet-700">מה הלקוח מקבל?</p>
+            <p className="text-sm font-black text-violet-700">{t("business.miniSite.whatCustomerGets", "מה הלקוח מקבל?")}</p>
             <h2 className="mt-2 text-3xl font-black text-slate-800 md:text-4xl">
-              מועדון לקוחות שמייצר חזרה לעסק
+              {t("business.miniSite.clubThatReturns", "מועדון לקוחות שמייצר חזרה לעסק")}
             </h2>
           </div>
 
           <p className="max-w-xl text-base leading-7 text-slate-600">
-            המטרה היא לא רק שהלקוח ייכנס לאתר — אלא שהוא יירשם, יחזור, יקבל
-            הטבות ויהפוך ללקוח קבוע.
+            {t(
+              "business.miniSite.clubGoal",
+              "המטרה היא לא רק שהלקוח ייכנס לאתר — אלא שהוא יירשם, יחזור, יקבל הטבות ויהפוך ללקוח קבוע."
+            )}
           </p>
         </div>
 
@@ -290,24 +318,29 @@ export default function BusinessMiniSiteClub() {
         className="mx-auto grid max-w-7xl gap-6 px-5 py-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-8"
       >
         <div className="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_25px_90px_rgba(15,23,42,0.07)] md:p-8">
-          <p className="text-sm font-black text-violet-700">הרשמת לקוח</p>
+          <p className="text-sm font-black text-violet-700">{t("business.miniSite.customerSignup", "הרשמת לקוח")}</p>
 
           <h2 className="mt-2 text-3xl font-black text-slate-800">
-            הצטרפות למועדון הלקוחות
+            {t("business.miniSite.joinClubTitle", "הצטרפות למועדון הלקוחות")}
           </h2>
 
           <p className="mt-3 leading-7 text-slate-600">
-            הלקוח משאיר פרטים, נכנס למועדון, ובעל העסק יכול לשלוח לו הנחות,
-            עדכונים וקופונים.
+            {t(
+              "business.miniSite.joinClubHint",
+              "הלקוח משאיר פרטים, נכנס למועדון, ובעל העסק יכול לשלוח לו הנחות, עדכונים וקופונים."
+            )}
           </p>
 
           {submitted ? (
             <div className="mt-8 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-6">
               <p className="text-2xl font-black text-emerald-700">
-                נרשמת בהצלחה למועדון!
+                {t("business.miniSite.signupSuccess", "נרשמת בהצלחה למועדון!")}
               </p>
               <p className="mt-2 leading-7 text-emerald-800">
-                ההטבה שלך נשמרה. בהמשך אפשר לשלוח כאן קופון ב־SMS, וואטסאפ או מייל.
+                {t(
+                  "business.miniSite.benefitSaved",
+                  "ההטבה שלך נשמרה. בהמשך אפשר לשלוח כאן קופון ב־SMS, וואטסאפ או מייל."
+                )}
               </p>
 
               <button
@@ -315,19 +348,19 @@ export default function BusinessMiniSiteClub() {
                 onClick={() => setSubmitted(false)}
                 className="mt-5 rounded-md border border-emerald-200/80 bg-gradient-to-l from-emerald-100 via-green-50 to-white px-5 py-3 text-sm font-black text-black"
               >
-                הרשמת לקוח נוסף
+                {t("business.miniSite.anotherSignup", "הרשמת לקוח נוסף")}
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-700">
-                  שם מלא
+                  {t("business.miniSite.fullName", "שם מלא")}
                 </label>
                 <input
                   value={form.fullName}
                   onChange={(e) => updateField("fullName", e.target.value)}
-                  placeholder="לדוגמה: מיכל לוי"
+                  placeholder={t("business.miniSite.namePh", "לדוגמה: מיכל לוי")}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 />
               </div>
@@ -335,7 +368,7 @@ export default function BusinessMiniSiteClub() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-black text-slate-700">
-                    טלפון
+                    {t("common.phone", "טלפון")}
                   </label>
                   <input
                     value={form.phone}
@@ -347,7 +380,7 @@ export default function BusinessMiniSiteClub() {
 
                 <div>
                   <label className="mb-2 block text-sm font-black text-slate-700">
-                    אימייל
+                    {t("common.email", "אימייל")}
                   </label>
                   <input
                     value={form.email}
@@ -360,7 +393,7 @@ export default function BusinessMiniSiteClub() {
 
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-700">
-                  תאריך יום הולדת
+                  {t("business.miniSite.birthday", "תאריך יום הולדת")}
                 </label>
                 <input
                   type="date"
@@ -378,8 +411,10 @@ export default function BusinessMiniSiteClub() {
                   className="mt-1 h-5 w-5 accent-violet-700"
                 />
                 <span className="text-sm font-semibold leading-6 text-slate-600">
-                  אני מאשר/ת הצטרפות למועדון הלקוחות וקבלת עדכונים, הטבות וקופונים
-                  מהעסק.
+                  {t(
+                    "business.miniSite.consent",
+                    "אני מאשר/ת הצטרפות למועדון הלקוחות וקבלת עדכונים, הטבות וקופונים מהעסק."
+                  )}
                 </span>
               </label>
 
@@ -388,7 +423,7 @@ export default function BusinessMiniSiteClub() {
                 disabled={!isValid}
                 className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-4 text-base font-black text-black shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300 disabled:shadow-none"
               >
-                הצטרפות למועדון וקבלת הטבה
+                {t("business.miniSite.joinAndBenefit", "הצטרפות למועדון וקבלת הטבה")}
               </button>
             </form>
           )}
@@ -397,12 +432,12 @@ export default function BusinessMiniSiteClub() {
         <div id="coupons" className="rounded-[2rem] border border-white/80 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_25px_90px_rgba(15,23,42,0.18)] md:p-8">
           <div className="mb-7 flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-black text-violet-300">הטבות פעילות</p>
-              <h2 className="mt-2 text-3xl font-black">קופונים לחברי מועדון</h2>
+              <p className="text-sm font-black text-violet-300">{t("business.miniSite.activeBenefits", "הטבות פעילות")}</p>
+              <h2 className="mt-2 text-3xl font-black">{t("business.miniSite.couponsTitle", "קופונים לחברי מועדון")}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 px-4 py-3 text-sm font-black text-black">
-              {coupons.length} קופונים
+              {t("business.miniSite.couponsCount", "{{count}} קופונים", { count: coupons.length })}
             </div>
           </div>
 
@@ -427,14 +462,16 @@ export default function BusinessMiniSiteClub() {
 
                 <div className="flex flex-col justify-between gap-3 p-5 sm:flex-row sm:items-center">
                   <div>
-                    <p className="text-xs font-bold text-black/45">קוד קופון</p>
+                    <p className="text-xs font-bold text-black/45">{t("business.miniSite.couponCode", "קוד קופון")}</p>
                     <p className="mt-1 text-2xl font-black tracking-wider text-violet-200">
                       {coupon.code}
                     </p>
                   </div>
 
                   <p className="rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-black/70">
-                    בתוקף עד {coupon.validUntil}
+                    {t("business.miniSite.validUntil", "בתוקף עד {{date}}", {
+                      date: coupon.validUntil,
+                    })}
                   </p>
                 </div>
               </article>
@@ -443,11 +480,13 @@ export default function BusinessMiniSiteClub() {
 
           <div className="mt-6 rounded-[1.5rem] border border-violet-300/20 bg-violet-500/10 p-5">
             <h3 className="text-lg font-black text-violet-100">
-              לבעל העסק בדשבורד
+              {t("business.miniSite.forOwner", "לבעל העסק בדשבורד")}
             </h3>
             <p className="mt-2 leading-7 text-white/65">
-              בהמשך בעל העסק יוכל ליצור קופון, לבחור אחוז/סכום הנחה, תוקף,
-              קהל יעד, ולשלוח אותו לכל חברי המועדון.
+              {t(
+                "business.miniSite.ownerHint",
+                "בהמשך בעל העסק יוכל ליצור קופון, לבחור אחוז/סכום הנחה, תוקף, קהל יעד, ולשלוח אותו לכל חברי המועדון."
+              )}
             </p>
           </div>
         </div>
@@ -458,23 +497,23 @@ export default function BusinessMiniSiteClub() {
         <div className="rounded-[2.5rem] border border-white/80 bg-white p-6 shadow-[0_30px_100px_rgba(91,33,182,0.10)] md:p-8">
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="text-sm font-black text-violet-700">איך זה נראה לבעל העסק?</p>
+              <p className="text-sm font-black text-violet-700">{t("business.miniSite.ownerView", "איך זה נראה לבעל העסק?")}</p>
               <h2 className="mt-2 text-3xl font-black text-slate-800">
-                ניהול מועדון לקוחות מתוך ביזאפלי
+                {t("business.miniSite.ownerManage", "ניהול מועדון לקוחות מתוך ביזאפלי")}
               </h2>
             </div>
 
             <button className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              + יצירת הטבה חדשה
+              {t("business.miniSite.createBenefit", "+ יצירת הטבה חדשה")}
             </button>
           </div>
 
           <div className="grid gap-4 md:grid-cols-4">
             {[
-              ["חברי מועדון", "320"],
-              ["הטבות פעילות", "12"],
-              ["קופונים מומשו", "74"],
-              ["לקוחות חדשים החודש", "28"],
+              [t("business.miniSite.clubMembers", "חברי מועדון"), "320"],
+              [t("business.miniSite.activeBenefits", "הטבות פעילות"), "12"],
+              [t("business.miniSite.redeemedCoupons", "קופונים מומשו"), "74"],
+              [t("business.miniSite.newThisMonth", "לקוחות חדשים החודש"), "28"],
             ].map(([label, value]) => (
               <div
                 key={label}
@@ -488,16 +527,16 @@ export default function BusinessMiniSiteClub() {
 
           <div className="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100">
             <div className="grid grid-cols-4 bg-slate-50 px-5 py-4 text-sm font-black text-slate-500">
-              <span>שם לקוח</span>
-              <span>טלפון</span>
-              <span>סטטוס</span>
-              <span>הטבה אחרונה</span>
+              <span>{t("business.miniSite.customerName", "שם לקוח")}</span>
+              <span>{t("common.phone", "טלפון")}</span>
+              <span>{t("common.status", "סטטוס")}</span>
+              <span>{t("business.miniSite.lastBenefit", "הטבה אחרונה")}</span>
             </div>
 
             {[
-              ["מיכל לוי", "050-1234567", "VIP", "WELCOME10"],
-              ["נועה כהן", "052-7778899", "חדש", "BOOK50"],
-              ["דנה ישראלי", "054-3332211", "פעיל", "WELCOME10"],
+              [t("leftover.miniSite.nameMichal", "Michal Levi"), "050-1234567", t("leftover.miniSite.vip", "VIP"), "WELCOME10"],
+              [t("leftover.miniSite.nameNoa", "Noa Cohen"), "052-7778899", t("leftover.miniSite.newStatus", "New"), "BOOK50"],
+              [t("leftover.miniSite.nameDana", "Dana Israeli"), "054-3332211", t("leftover.miniSite.active", "Active"), "WELCOME10"],
             ].map(([name, phone, status, coupon]) => (
               <div
                 key={phone}
@@ -520,18 +559,21 @@ export default function BusinessMiniSiteClub() {
       {/* Contact */}
       <section id="contact" className="mx-auto max-w-7xl px-5 pb-16 lg:px-8">
         <div className="rounded-[2rem] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-8 text-center text-white shadow-2xl shadow-violet-200">
-          <h2 className="text-3xl font-black">רוצה לקבוע תור?</h2>
+          <h2 className="text-3xl font-black">{t("business.miniSite.bookTitle", "רוצה לקבוע תור?")}</h2>
           <p className="mx-auto mt-3 max-w-2xl leading-7 text-white/80">
-            אפשר לשלב כאן קביעת תור, וואטסאפ, טופס ליד או מעבר ישיר לשירותים של העסק.
+            {t(
+              "business.miniSite.bookHint",
+              "אפשר לשלב כאן קביעת תור, וואטסאפ, טופס ליד או מעבר ישיר לשירותים של העסק."
+            )}
           </p>
 
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <button className="rounded-2xl bg-white px-7 py-4 text-base font-black text-violet-700">
-              קביעת תור
+              {t("business.miniSite.bookCta", "קביעת תור")}
             </button>
 
             <button className="rounded-2xl border border-white/40 bg-white/10 px-7 py-4 text-base font-black text-black">
-              שליחת הודעה
+              {t("business.miniSite.sendMessage", "שליחת הודעה")}
             </button>
           </div>
         </div>

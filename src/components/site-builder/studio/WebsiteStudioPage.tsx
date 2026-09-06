@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import { useTranslation } from "react-i18next";
+import i18n from "../../../i18n/i18n";
+import { getIntlLocale } from "../../../i18n/localeUtils";
 
 import type {
   DeviceMode,
@@ -60,6 +62,7 @@ import {
   createCanvasCss,
   defaultCanvasCss,
   defaultWebsiteHtml,
+  getDefaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
 import { normalizePageSlug } from "./data/linkUtils";
@@ -257,37 +260,11 @@ function summarizeStudioPagesForDebug(pages: Array<any>) {
   }));
 }
 
-const sectionKindLabels: Record<string, string> = {
-  header: "Header",
-  hero: "פתיח",
-  welcome: "Welcome",
-  about: "אודות",
-  team: "צוות",
-  services: "שירותים",
-  gallery: "גלריה",
-  contact: "יצירת קשר",
-  promotion: "מבצע",
-  subscribe: "הרשמה",
-  testimonials: "המלצות",
-  reviews: "ביקורות",
-  clients: "לקוחות",
-  store: "חנות / מוצרים",
-  booking: "תיאום תורים",
-  bookings: "תיאום תורים",
-  events: "אירועים",
-  club: "מועדון לקוחות",
-  bot: "בוט חכם",
-  social: "רשתות חברתיות",
-  course: "קורס",
-  miniSaas: "Mini SaaS",
-  basic: "בסיסי",
-  text: "טקסט",
-  list: "רשימה",
-  form: "טופס",
-  forms: "טופס",
-  section: "סקשן",
-  footer: "Footer",
-};
+function getSectionKindLabel(kind: string) {
+  const key = `studio.kind.${kind}`;
+  const translated = i18n.t(key);
+  return translated === key ? String(kind) : translated;
+}
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -401,14 +378,14 @@ function createBlankPageHtml(pageTitle: string) {
 <main data-studio-page="true" class="min-h-screen bg-white">
   <section
     data-section-kind="basic"
-    data-section-title="עמוד ריק"
+    data-section-title="${i18n.t("studio.emptyPage.sectionTitle")}"
     class="mx-auto flex min-h-[460px] w-full max-w-[1180px] items-center justify-center px-6 py-24 text-center"
   >
     <div class="mx-auto max-w-xl rounded-[32px] border border-dashed border-slate-200 bg-slate-50 px-8 py-10">
-      <p class="mb-3 text-sm font-black text-violet-700">עמוד חדש</p>
+      <p class="mb-3 text-sm font-black text-violet-700">${i18n.t("studio.emptyPage.heading")}</p>
       <h1 class="text-4xl font-black tracking-[-0.04em] text-slate-800">${pageTitle}</h1>
       <p class="mt-4 text-base font-bold leading-8 text-slate-500">
-        התחילי להוסיף סקשנים מהתפריט בצד.
+        ${i18n.t("studio.emptyPage.hint")}
       </p>
     </div>
   </section>
@@ -479,11 +456,11 @@ function createInitialPages(): StudioSitePageWithPortal[] {
   return [
     {
       id: "home",
-      title: "דף הבית",
+      title: String(i18n.t("studio.homePage")),
       slug: "",
       type: "home",
       isHome: true,
-      html: defaultWebsiteHtml,
+      html: getDefaultWebsiteHtml(),
       css: defaultCanvasCss,
       createdAt: now,
       updatedAt: now,
@@ -691,7 +668,7 @@ function extractSectionsFromEditor(
       component?.find?.("h3")?.[0];
 
     const headingText = heading ? getComponentText(heading) : "";
-    const label = sectionKindLabels[String(kind)] || String(kind);
+    const label = getSectionKindLabel(String(kind));
 
     return {
       id,
@@ -703,29 +680,15 @@ function extractSectionsFromEditor(
 }
 
 function clientPortalVariableTypeLabel(type: ClientPortalVariableType) {
-  if (type === "text") return "טקסט קצר";
-  if (type === "textarea") return "טקסט ארוך";
-  if (type === "number") return "מספר";
-  if (type === "date") return "תאריך";
-  if (type === "checkbox") return "צ׳קבוקס";
-  if (type === "checklist") return "רשימת סימון";
-  if (type === "status") return "סטטוס";
-  if (type === "file") return "קובץ";
-  if (type === "image") return "תמונה";
-  if (type === "email") return "מייל";
-  if (type === "phone") return "טלפון";
-  return type;
+  const key = `studio.portalVars.types.${type}`;
+  const translated = i18n.t(key);
+  return translated === key ? String(type) : translated;
 }
 
 function clientPortalVariableSourceLabel(source: ClientPortalVariableSource) {
-  if (source === "business_input") return "העסק ממלא";
-  if (source === "client_input") return "הלקוח ממלא";
-  if (source === "crm_client") return "נמשך מתיק הלקוח";
-  if (source === "appointments") return "נמשך מפגישות";
-  if (source === "payments") return "נמשך מתשלומים";
-  if (source === "tasks") return "נמשך ממשימות";
-  if (source === "files") return "נמשך מקבצים";
-  return "מותאם אישית";
+  const key = `studio.portalVars.sources.${source}`;
+  const translated = i18n.t(key);
+  return translated === key ? i18n.t("studio.portalVars.sources.custom") : translated;
 }
 
 function cleanVariableKey(value: string) {
@@ -1529,7 +1492,7 @@ function normalizeRendererSectionKind(value: unknown) {
 function normalizeRendererSectionTitle(value: unknown) {
   const clean = String(value || "").trim();
   if (!clean) return "Section";
-  return sectionKindLabels[clean] || clean;
+  return getSectionKindLabel(clean);
 }
 
 function ensureEditableSectionMarkers(
@@ -1915,20 +1878,24 @@ function createGenericTemplatePages(
   const text = getSeedPaletteValue(seed, "text", "#0f172a");
   const muted = getSeedPaletteValue(seed, "muted", "#64748b");
   const name = escapeHtml(seed.name || "BizUply Template");
-  const title = escapeHtml(seed.heroTitle || seed.name || "אתר עסקי מוכן");
+  const title = escapeHtml(seed.heroTitle || seed.name || String(i18n.t("studio.seed.readyTitle")));
   const subtitle = escapeHtml(
-    seed.heroSubtitle || seed.description || "תבנית אתר מוכנה לעריכה מלאה.",
+    seed.heroSubtitle || seed.description || String(i18n.t("studio.seed.readySubtitle")),
   );
+  const aboutNav = escapeHtml(String(i18n.t("studio.nav.about")));
+  const servicesNav = escapeHtml(String(i18n.t("studio.nav.services")));
+  const contactNav = escapeHtml(String(i18n.t("studio.nav.contact")));
+  const blockHint = escapeHtml(String(i18n.t("studio.seed.blockHint")));
 
   const sections = (Array.isArray(seed.blocks) ? seed.blocks : [])
     .map((block: any, index) => {
       const kind = escapeHtml(block.type || "section");
       const blockTitle = escapeHtml(block.title || `${kind} ${index + 1}`);
-      return `<section id="${kind}-${index}" data-section-kind="${kind}" data-section-title="${blockTitle}" class="px-6 py-24" style="background:${index % 2 ? "#ffffff" : background};color:${text};"><div class="mx-auto max-w-6xl"><p class="text-sm font-black uppercase tracking-[0.24em]" style="color:${muted};">${kind}</p><h2 class="mt-4 text-5xl font-black tracking-[-0.05em]">${blockTitle}</h2><p class="mt-5 max-w-2xl text-base leading-8" style="color:${muted};">בלוק מוכן מתוך התבנית. אפשר לבחור אותו, לערוך טקסטים, לשנות צבעים ולהחליף תמונות.</p></div></section>`;
+      return `<section id="${kind}-${index}" data-section-kind="${kind}" data-section-title="${blockTitle}" class="px-6 py-24" style="background:${index % 2 ? "#ffffff" : background};color:${text};"><div class="mx-auto max-w-6xl"><p class="text-sm font-black uppercase tracking-[0.24em]" style="color:${muted};">${kind}</p><h2 class="mt-4 text-5xl font-black tracking-[-0.05em]">${blockTitle}</h2><p class="mt-5 max-w-2xl text-base leading-8" style="color:${muted};">${blockHint}</p></div></section>`;
     })
     .join("");
 
-  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(getTemplateIdFromSeed(seed))}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">אודות</a><a data-editable-link="true" href="#services">שירותים</a><a data-editable-link="true" href="#contact">צור קשר</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-black" style="background:${primary};">יצירת קשר</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
+  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(getTemplateIdFromSeed(seed))}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">${aboutNav}</a><a data-editable-link="true" href="#services">${servicesNav}</a><a data-editable-link="true" href="#contact">${contactNav}</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-black" style="background:${primary};">${contactNav}</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
 
   return {
     slug:
@@ -1937,7 +1904,7 @@ function createGenericTemplatePages(
     pages: [
       {
         id: "home",
-        title: "דף הבית",
+        title: String(i18n.t("studio.homePage")),
         slug: "",
         type: "home",
         isHome: true,
@@ -4934,7 +4901,7 @@ export default function WebsiteStudioPage({
     resolve: () => void;
     reject: (error: unknown) => void;
   } | null>(null);
-  const [siteName, setSiteName] = useState("האתר שלי");
+  const [siteName, setSiteName] = useState(() => String(i18n.t("studio.seed.mySite")));
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
     useState("");
@@ -5464,7 +5431,7 @@ export default function WebsiteStudioPage({
 
         if (!res.ok) {
           setSlugAvailable(false);
-          setSlugError(data?.error || "שגיאה בבדיקת הסאב דומיין");
+          setSlugError(data?.error || t("studio.slugBar.checkError"));
           return;
         }
 
@@ -5472,18 +5439,18 @@ export default function WebsiteStudioPage({
 
         setSlugAvailable(available);
         setSlugError(
-          available ? "" : data?.error || "הסאב דומיין הזה כבר תפוס",
+          available ? "" : data?.error || t("studio.slugBar.taken"),
         );
       } catch {
         setSlugAvailable(false);
-        setSlugError("שגיאה בבדיקת הסאב דומיין");
+        setSlugError(t("studio.slugBar.checkError"));
       } finally {
         setSlugChecking(false);
       }
     }, 450);
 
     return () => window.clearTimeout(timeout);
-  }, [businessId, siteId, slug, slugValid]);
+  }, [businessId, siteId, slug, slugValid, t]);
 
   const syncSections = (editor: Editor | null | undefined) => {
     window.setTimeout(() => {
@@ -5976,7 +5943,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   const addBusinessPage = (title: string) => {
     runEditor((editor) => {
-      const cleanTitle = title.trim() || "עמוד חדש";
+      const cleanTitle = title.trim() || t("studio.newPage");
       const id = uid("page");
 
       const nextPage: StudioSitePageWithPortal = {
@@ -6033,7 +6000,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const title =
       canonicalizePortalPageTitle(pageTemplate) ||
       String(pageTemplate.title || "").trim() ||
-      "עמוד חדש";
+      t("studio.newPage");
     const slugSuggestion =
       String(pageTemplate.slugSuggestion || "").trim() || title;
 
@@ -6170,7 +6137,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const id = uid("page");
       const title =
         String(pageTemplate.title || "").trim() ||
-        "עמוד חדש";
+        t("studio.newPage");
       const slugSuggestion =
         String(pageTemplate.slugSuggestion || "").trim() ||
         title;
@@ -6314,7 +6281,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const variable: ClientPortalVariable = {
       id: uid("var"),
       key: `custom_${count}`,
-      label: `משתנה ${count}`,
+      label: t("studio.seed.variableN", { count }),
       type: "text",
       source: "business_input",
       scope: "per_client",
@@ -6503,12 +6470,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   }) => {
     const id = String(pageSettingsModal.pageId || "").trim();
     if (!id) {
-      throw new Error("לא נמצא עמוד לשמירה");
+      throw new Error(t("studio.alerts.pageNotFound"));
     }
 
     const cleanTitle = String(nextTitle || "").trim();
     if (!cleanTitle) {
-      throw new Error("שם העמוד לא יכול להיות ריק");
+      throw new Error(t("studio.alerts.pageTitleRequired"));
     }
 
     const nextSiteSeo = siteSeo
@@ -6579,7 +6546,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     );
     const payload = await res.json().catch(() => null);
     if (!res.ok || !payload?.success) {
-      throw new Error(payload?.error || "שמירת SEO נכשלה");
+      throw new Error(payload?.error || t("studio.alerts.seoSaveFailed"));
     }
   };
 
@@ -6630,7 +6597,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           visualEditorPayload: (target as any)?.visualEditorPayload,
         }) || {};
 
-      const copyTitle = `${String(target.title || "עמוד").trim()} (עותק)`;
+      const copyTitle = t("studio.sitePages.pageCopyTitle", {
+        title: String(target.title || t("studio.page")).trim(),
+      });
       const nextPage = {
         ...target,
         id: newId,
@@ -6700,7 +6669,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "subpage") {
       if (target.isHome) {
-        window.alert("לא ניתן להפוך את דף הבית לעמוד משנה.");
+        window.alert(t("studio.alerts.cannotNestHome"));
         return;
       }
 
@@ -6732,11 +6701,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (!parentId) return;
 
       const parentPage = pages.find((page) => page.id === parentId);
-      const defaultTitle = `${String(parentPage?.title || "עמוד").trim()} — חדש`;
+      const defaultTitle = t("studio.sitePages.newSubpageTitle", {
+        title: String(parentPage?.title || t("studio.page")).trim(),
+      });
       const nextTitle = window.prompt(
         parentPage
-          ? `שם לעמוד משנה תחת "${parentPage.title}"`
-          : "שם לעמוד המשנה",
+          ? t("studio.sitePages.subpageNamePrompt", { title: parentPage.title })
+          : t("studio.sitePages.subpageNameFallback"),
         defaultTitle,
       );
       if (nextTitle == null) return;
@@ -6854,10 +6825,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "delete") {
       if (target.isHome) {
-        window.alert("לא ניתן למחוק את דף הבית. הגדירי קודם עמוד אחר כדף הבית.");
+        window.alert(t("studio.alerts.cannotDeleteHome"));
         return;
       }
-      const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
+      const ok = window.confirm(
+        t("studio.alerts.deletePageConfirm", { title: target.title }),
+      );
       if (!ok) return;
 
       markPageDeleted(id);
@@ -6887,7 +6860,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (action === "dynamic") {
       if (!clientPortalPluginEnabled) {
         window.alert(
-          "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+          t("studio.alerts.portalPluginRequired"),
         );
         return;
       }
@@ -6900,7 +6873,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "background" || action === "copy") {
       window.alert(
-        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, דינמי/אזור אישי, שינוי שם, שכפול, דף בית, הסתרה מתפריט, עמוד משנה ומחיקה.",
+        t("studio.alerts.pageMenuComingSoon"),
       );
     }
   };
@@ -6977,7 +6950,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       if (!found) return;
 
-      const ok = window.confirm("למחוק את הסקשן מהעמוד הזה?");
+      const ok = window.confirm(t("studio.alerts.deleteSectionConfirm"));
       if (!ok) return;
 
       found.remove();
@@ -7149,7 +7122,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleReset = () => {
-    const ok = window.confirm("למחוק את כל העיצוב של העמוד הפעיל?");
+    const ok = window.confirm(t("studio.alerts.resetDesignConfirm"));
     if (!ok) return;
 
     runEditor((editor) => {
@@ -7162,10 +7135,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templatePages.find((page) => page.id === "home");
 
       const html = selectedTemplateSeed
-        ? templatePage?.html || defaultWebsiteHtml
+        ? templatePage?.html || getDefaultWebsiteHtml()
         : active?.isHome
-          ? defaultWebsiteHtml
-          : createBlankPageHtml(active?.title || "עמוד חדש");
+          ? getDefaultWebsiteHtml()
+          : createBlankPageHtml(active?.title || t("studio.newPage"));
 
       editor.setComponents(html);
       editor.setStyle(
@@ -7191,27 +7164,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   ) => {
     if (!editorRef.current || !slugValid || saving) {
       if (overrides) {
-        throw new Error("לא ניתן לשמור כרגע. בדקי שהעורך מוכן ונסי שוב.");
+        throw new Error(t("studio.alerts.cannotSaveNow"));
       }
       return;
     }
 
     if (slugChecking) {
-      const message = "רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.";
+      const message = t("studio.alerts.slugStillChecking");
       if (overrides) throw new Error(message);
       alert(message);
       return;
     }
 
     if (published && slug === "your-business") {
-      const message = "בחרי סאב דומיין אמיתי לפני פרסום.";
+      const message = t("studio.alerts.chooseRealSlug");
       if (overrides) throw new Error(message);
       alert(message);
       return;
     }
 
     if (published && slugAvailable === false) {
-      const message = slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.";
+      const message = slugError || t("studio.alerts.slugTakenChooseAnother");
       if (overrides) throw new Error(message);
       alert(message);
       return;
@@ -7309,7 +7282,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
+        throw new Error(responseData?.error || t("studio.alerts.serverSaveFailed"));
       }
 
       if (published && responseData?.site) {
@@ -7335,7 +7308,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       await onSave?.(payload);
 
       setSavedAt(
-        new Date().toLocaleTimeString("he-IL", {
+        new Date().toLocaleTimeString(getIntlLocale(i18n.language), {
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -7343,7 +7316,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       void payload;
     } catch (error: any) {
-      const message = error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.";
+      const message = error?.message || t("studio.alerts.saveFailedRetry");
       if (overrides) throw new Error(message);
       alert(message);
     } finally {
@@ -7357,7 +7330,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert("בחרי אלמנט באתר כדי לערוך אותו");
+        alert(t("studio.alerts.selectElementToEdit"));
         return;
       }
 
@@ -7380,7 +7353,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי טקסט או אלמנט כדי לערוך");
+        alert(t("studio.alerts.selectTextToEdit"));
         return;
       }
 
@@ -7404,7 +7377,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי כפתור או לינק כדי להגדיר קישור");
+        alert(t("studio.alerts.selectLinkToEdit"));
         return;
       }
 
@@ -7437,7 +7410,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected() || getSelectedOrWrapper(editor);
 
       if (!selected) {
-        alert("בחרי תמונה או סקשן כדי להחליף תמונה");
+        alert(t("studio.alerts.selectImageToReplace"));
         return;
       }
 
@@ -7465,7 +7438,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט לשכפול");
+        alert(t("studio.alerts.selectElementToDuplicate"));
         return;
       }
 
@@ -7488,11 +7461,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט למחיקה");
+        alert(t("studio.alerts.selectElementToDelete"));
         return;
       }
 
-      const ok = window.confirm("למחוק את האלמנט הנבחר?");
+      const ok = window.confirm(t("studio.alerts.deleteElementConfirm"));
       if (!ok) return;
 
       selected.remove();
@@ -7506,7 +7479,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט");
+        alert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7527,7 +7500,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט");
+        alert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7551,7 +7524,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert("בחרי סקשן כדי להגדיר לו תמונת רקע");
+        alert(t("studio.alerts.selectSectionBackground"));
         return;
       }
 
@@ -7572,7 +7545,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט / סקשן כדי להוסיף לו תנועה");
+        alert(t("studio.alerts.selectForAnimation"));
         return;
       }
 
@@ -7596,7 +7569,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert("בחרי אלמנט / סקשן כדי להסיר ממנו תנועה");
+        alert(t("studio.alerts.selectToClearAnimation"));
         return;
       }
 
@@ -7626,7 +7599,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return {
         ok: false,
         slug: clean,
-        message: "כתובת האתר חייבת להיות באנגלית, מספרים ומקף בלבד",
+        message: t("studio.alerts.slugEnglishOnly"),
       };
     }
 
@@ -7652,7 +7625,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           ok: false,
           slug: clean,
-          message: data?.error || "שגיאה בבדיקת כתובת האתר",
+          message: data?.error || t("studio.alerts.slugCheckFailed"),
         };
       }
 
@@ -7660,7 +7633,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           ok: false,
           slug: clean,
-          message: data?.error || "הכתובת הזאת כבר תפוסה. בחרי שם אחר.",
+          message: data?.error || t("studio.alerts.addressTakenChooseAnother"),
         };
       }
 
@@ -7673,7 +7646,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return {
         ok: false,
         slug: clean,
-        message: "שגיאה בבדיקת כתובת האתר. נסי שוב.",
+        message: t("studio.alerts.slugCheckRetry"),
       };
     }
   }
@@ -8320,7 +8293,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           homeHtmlLength: getTextLength(homePage?.html),
         });
         throw new Error(
-          "הפרסום נעצר: לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
+          t("studio.alerts.publishNoContent"),
         );
       }
 
@@ -8515,7 +8488,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!res.ok) {
-        throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
+        throw new Error(responseData?.error || t("studio.alerts.serverSaveFailed"));
       }
 
       rememberPersistedPageIds(pagesForSave);
@@ -8569,7 +8542,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       await onSave?.(safePayload as any);
 
       setSavedAt(
-        new Date().toLocaleTimeString("he-IL", {
+        new Date().toLocaleTimeString(getIntlLocale(i18n.language), {
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -8672,7 +8645,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!visualPayload.autosave) {
-        alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+        alert(error?.message || t("studio.alerts.saveFailedRetry"));
       }
       throw error;
     } finally {
@@ -8860,17 +8833,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             <div className="w-full max-w-[560px] overflow-hidden rounded-[32px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
               <div className="border-b border-slate-100 px-7 py-6">
                 <div className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
-                  פרסום האתר
+                  {t("studio.publishModal.title")}
                 </div>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-800">
                   {publishCustomDomainPhase === "active"
-                    ? "פרסום האתר בכתובת שלך"
-                    : "בחרי כתובת לאתר שלך"}
+                    ? t("studio.publishModal.publishAtYourAddress")
+                    : t("studio.publishModal.chooseAddress")}
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
                   {publishCustomDomainPhase === "active"
-                    ? "האתר יפורסם בדומיין המחובר. כתובת Bizuply נשמרת ככתובת חלופית."
-                    : "כדי לפרסם אתר חי צריך לבחור כתובת קצרה וברורה. השמירה נשארת כטיוטה גם בלי כתובת."}
+                    ? t("studio.publishModal.customDomainHint")
+                    : t("studio.publishModal.chooseAddressHint")}
                 </p>
               </div>
 
@@ -8878,7 +8851,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 {publishCustomDomainPhase === "active" ? (
                   <>
                     <label className="text-sm font-black text-slate-700">
-                      כתובת האתר
+                      {t("studio.publishModal.siteAddress")}
                     </label>
                     <div
                       className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4 text-left text-base font-black text-slate-800"
@@ -8889,7 +8862,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                     <div className="mt-5">
                       <label className="text-xs font-black text-slate-500">
-                        כתובת Bizuply חלופית
+                        {t("studio.publishModal.bizuplyBackup")}
                       </label>
                       <div className="mt-2 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
                         <span className="hidden shrink-0 items-center border-l border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
@@ -8928,7 +8901,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 ) : (
                   <>
                     <label className="text-sm font-black text-slate-700">
-                      כתובת האתר
+                      {t("studio.publishModal.siteAddress")}
                     </label>
 
                     <div className="mt-3 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -8960,10 +8933,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                 <div className="mt-3 min-h-6 text-sm font-bold">
                   {publishSlugChecking ? (
-                    <span className="text-sky-600">בודק זמינות...</span>
+                    <span className="text-sky-600">
+                      {t("studio.publishModal.checkingAvailability")}
+                    </span>
                   ) : publishSlugAvailable === true ? (
                     <span className="text-emerald-600">
-                      הכתובת פנויה: {buildPublicSiteUrl(publishSlugDraft)}
+                      {t("studio.publishModal.addressAvailable", {
+                        url: buildPublicSiteUrl(publishSlugDraft),
+                      })}
                     </span>
                   ) : publishSlugError ? (
                     <span className="text-rose-600">{publishSlugError}</span>
@@ -8974,7 +8951,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   {publishCustomDomainPhase === "active" ? (
                     <>
                       <p className="text-sm font-black text-emerald-700">
-                        דומיין מחובר
+                        {t("studio.publishModal.domainConnected")}
                       </p>
                       <p
                         className="mt-1 text-sm font-black text-slate-800"
@@ -8987,13 +8964,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : publishCustomDomainPhase === "provisioning" ? (
                     <>
                       <p className="text-sm font-black text-amber-700">
-                        הדומיין בתהליך חיבור
+                        {t("studio.publishModal.domainProvisioning")}
                       </p>
                       <p
                         className="mt-1 text-sm font-bold text-slate-700"
@@ -9002,20 +8979,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         {customDomain}
                       </p>
                       <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
-                        עד שהחיבור יושלם האתר יפורסם בכתובת Bizuply.
+                        {t("studio.publishModal.domainProvisioningHint")}
                       </p>
                       <button
                         type="button"
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : publishCustomDomainPhase === "failed" ? (
                     <>
                       <p className="text-sm font-black text-rose-700">
-                        חיבור הדומיין נכשל
+                        {t("studio.publishModal.domainFailed")}
                       </p>
                       <p
                         className="mt-1 text-sm font-bold text-slate-700"
@@ -9024,20 +9001,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         {customDomain}
                       </p>
                       <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
-                        האתר יפורסם בינתיים בכתובת Bizuply.
+                        {t("studio.publishModal.domainFailedHint")}
                       </p>
                       <button
                         type="button"
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        ניהול דומיין
+                        {t("studio.manageDomain")}
                       </button>
                     </>
                   ) : (
                     <>
                       <p className="text-sm font-bold leading-6 text-slate-600">
-                        רוצים כתובת משלכם במקום{" "}
+                        {t("studio.publishModal.wantOwnAddress")}{" "}
                         <span dir="ltr" className="font-black text-slate-800">
                           .{getPublicSiteDomain()}
                         </span>
@@ -9048,7 +9025,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         onClick={() => setConnectDomainOpen(true)}
                         className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                       >
-                        חיבור דומיין מותאם
+                        {t("studio.connectCustomDomain")}
                       </button>
                     </>
                   )}
@@ -9066,7 +9043,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   }}
                   className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-600 transition hover:bg-slate-100"
                 >
-                  ביטול
+                  {t("studio.cancel")}
                 </button>
 
                 <button
@@ -9075,7 +9052,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   onClick={() => void handleConfirmVisualPublishSlug()}
                   className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 py-3 text-sm font-black text-black shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {publishSlugChecking ? "בודק..." : "בדיקת זמינות ופרסום"}
+                  {publishSlugChecking
+                    ? t("studio.checking")
+                    : t("studio.publishModal.checkAndPublish")}
                 </button>
               </div>
             </div>
@@ -9346,13 +9325,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         {!slugValid && (
           <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
-            מותר רק אותיות באנגלית קטנות, מספרים ומקף. לדוגמה: hadar-beauty
+            {t("studio.slugBar.invalid")}
           </div>
         )}
 
         {slugValid && slug && slug !== "your-business" && slugChecking && (
           <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
-            בודק אם הסאב דומיין פנוי...
+            {t("studio.slugBar.checking")}
           </div>
         )}
 
@@ -9362,7 +9341,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slugAvailable === true &&
           !slugChecking && (
             <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-              הסאב דומיין פנוי: {buildPublicSiteUrl(slug)}
+              {t("studio.slugBar.available", { url: buildPublicSiteUrl(slug) })}
             </div>
           )}
 
@@ -9372,21 +9351,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slugAvailable === false &&
           !slugChecking && (
             <div className="z-40 border-b border-rose-100 bg-rose-50 px-4 py-2 text-center text-xs font-black text-rose-600">
-              {slugError || "הסאב דומיין הזה כבר תפוס"}
+              {slugError || t("studio.slugBar.taken")}
             </div>
           )}
 
-        {loadingSite && <BizuplyLoader fullScreen overlay label="טוען אתר מהשרת..." />}
+        {loadingSite && (
+          <BizuplyLoader
+            fullScreen
+            overlay
+            label={t("studio.slugBar.loadingFromServer")}
+          />
+        )}
 
         {saving && (
           <div className="z-40 border-b border-violet-100 bg-violet-50 px-4 py-2 text-center text-xs font-black text-violet-700">
-            שומר את האתר...
+            {t("studio.slugBar.savingSite")}
           </div>
         )}
 
         {savedAt && !saving && (
           <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
-            נשמר בהצלחה בשעה {savedAt} · {publicUrl}
+            {t("studio.slugBar.savedAt", { time: savedAt, url: publicUrl })}
           </div>
         )}
 
@@ -9398,7 +9383,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         <div className={editorStageClass}>
           <StudioWixRail
             activePanel={activePanel}
-            activePageTitle={activePage?.title || "עמוד"}
+            activePageTitle={activePage?.title || t("studio.page")}
             clientPortalEnabled={activePageClientPortal.enabled}
             clientPortalPluginEnabled={clientPortalPluginEnabled}
             onOpenAdd={() => setActivePanel("sections")}
@@ -9408,7 +9393,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             onOpenClientPortal={() => {
               if (!clientPortalPluginEnabled) {
                 window.alert(
-                  "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+                  t("studio.alerts.portalPluginRequired"),
                 );
                 return;
               }
@@ -9423,7 +9408,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             >
               <button
                 type="button"
-                aria-label="סגירת פאנל"
+                aria-label={t("studio.closePanel")}
                 data-studio-dismiss-backdrop="true"
                 onClick={() => setActivePanel(null)}
                 className="pointer-events-auto absolute bottom-0 left-[110px] right-0 top-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
@@ -9444,7 +9429,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         BizUply Studio
                       </p>
                       <p className="truncate text-sm font-black text-slate-800">
-                        {activePanel === "pages" ? "דפים וניהול אתר" : "הוספת סקשנים ובלוקים"}
+                        {activePanel === "pages" ? t("studio.sitePages.manageTitle") : t("studio.addLayers.panelTitle")}
                       </p>
                     </div>
 
@@ -9486,7 +9471,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                           pages[0]?.id ||
                           "";
                         if (!pageId) {
-                          window.alert("אין עמוד פתוח להגדרות SEO.");
+                          window.alert(t("studio.alerts.noPageForSeo"));
                           return;
                         }
                         setActivePanel(null);
@@ -9593,28 +9578,31 @@ function StudioWixRail({
   onOpenMedia: () => void;
   onOpenClientPortal: () => void;
 }) {
+  const { t } = useTranslation();
   const items = [
-    { id: "add", label: "הוסף", icon: "+", onClick: onOpenAdd },
+    { id: "add", label: t("studio.add"), icon: "+", onClick: onOpenAdd },
     {
       id: "pages",
-      label: "דפים",
+      label: t("studio.pages"),
       icon: "▦",
       onClick: onOpenPages,
       active: activePanel === "pages",
     },
     {
       id: "sections",
-      label: "סקשנים",
+      label: t("studio.sections"),
       icon: "≡",
       onClick: onOpenSections,
       active: activePanel === "sections",
     },
-    { id: "media", label: "מדיה", icon: "◐", onClick: onOpenMedia },
+    { id: "media", label: t("studio.media"), icon: "◐", onClick: onOpenMedia },
     ...(clientPortalPluginEnabled
       ? [
           {
             id: "portal",
-            label: clientPortalEnabled ? "אזור אישי" : "דינמי",
+            label: clientPortalEnabled
+              ? t("studio.sitePages.personalAreaShort")
+              : t("studio.sitePages.dynamicShort"),
             icon: "⚙",
             onClick: onOpenClientPortal,
           },
@@ -9678,10 +9666,12 @@ function ClientPortalSettingsModal({
   onDeleteVariable: (variableId: string) => void;
   onInsertVariable: (variable: ClientPortalVariable) => void;
 }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
     <div className="fixed inset-0 z-[999999] grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-md">
       <div
-        dir="rtl"
+        dir={dir}
         className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
       >
         <aside className="hidden w-[320px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 lg:block">
@@ -9693,23 +9683,22 @@ function ClientPortalSettingsModal({
               {pageTitle}
             </h2>
             <p className="mt-3 text-sm font-bold leading-7 text-white/55">
-              כאן העסק מגדיר אילו משתנים קיימים בעמוד. אחר כך ב־CRM מחברים
-              לקוחות, והמערכת מושכת לכל לקוח את הנתונים שלו.
+              {t("studio.portalPage.sideHint")}
             </p>
           </div>
 
           <div className="mt-4 grid gap-3">
             <SideInfo
-              label="סטטוס"
-              value={config.enabled ? "עמוד אזור אישי" : "עמוד רגיל"}
+              label={t("studio.portalPage.status")}
+              value={config.enabled ? t("studio.portalPage.badge") : t("studio.portalPage.regularPage")}
             />
-            <SideInfo label="משתנים" value={String(config.variables.length)} />
+            <SideInfo label={t("studio.portalPage.variables")} value={String(config.variables.length)} />
             <SideInfo
-              label="נתונים"
+              label={t("studio.portalPage.data")}
               value={
                 config.dataMode === "per_client"
-                  ? "אישיים לפי לקוח"
-                  : "גלובליים"
+                  ? t("studio.portalPage.perClient")
+                  : t("studio.portalPage.global")
               }
             />
           </div>
@@ -9719,14 +9708,13 @@ function ClientPortalSettingsModal({
           <header className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
             <div>
               <div className="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                עמוד אזור אישי
+                {t("studio.portalPage.badge")}
               </div>
               <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
-                הגדרת עמוד דינמי ללקוחות
+                {t("studio.portalPage.title")}
               </h2>
               <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                אחרי התחברות כל לקוח רואה רק את הנתונים האישיים שלו מתיק ה-CRM —
-                לא אותו ערך לכולם.
+                {t("studio.portalPage.subtitle")}
               </p>
             </div>
 
@@ -9743,8 +9731,8 @@ function ClientPortalSettingsModal({
             <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="grid gap-4 md:grid-cols-2">
                 <ToggleCard
-                  title="הפוך לעמוד אזור אישי"
-                  text="העמוד יהיה זמין רק ללקוחות שמחוברים או משויכים."
+                  title={t("studio.portalPage.enableTitle")}
+                  text={t("studio.portalPage.enableText")}
                   checked={config.enabled}
                   onChange={(checked) =>
                     onUpdateConfig({
@@ -9756,8 +9744,8 @@ function ClientPortalSettingsModal({
                 />
 
                 <ToggleCard
-                  title="דורש התחברות לקוח"
-                  text="לקוח יראה את העמוד רק אחרי התחברות עם מייל וסיסמה."
+                  title={t("studio.portalPage.loginTitle")}
+                  text={t("studio.portalPage.loginText")}
                   checked={config.loginRequired}
                   onChange={(checked) =>
                     onUpdateConfig({ loginRequired: checked })
@@ -9767,7 +9755,7 @@ function ClientPortalSettingsModal({
 
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <SelectBlock
-                  label="מי יכול לראות"
+                  label={t("studio.portalPage.whoCanSee")}
                   value={config.accessMode}
                   onChange={(value) =>
                     onUpdateConfig({
@@ -9775,14 +9763,14 @@ function ClientPortalSettingsModal({
                     })
                   }
                   options={[
-                    { value: "assigned_clients", label: "לקוחות משויכים בלבד" },
-                    { value: "paid_clients", label: "לקוחות משלמים בלבד" },
-                    { value: "all_clients", label: "כל הלקוחות המחוברים" },
+                    { value: "assigned_clients", label: t("studio.portalPage.assignedOnly") },
+                    { value: "paid_clients", label: t("studio.portalPage.paidOnly") },
+                    { value: "all_clients", label: t("studio.portalPage.allSignedIn") },
                   ]}
                 />
 
                 <SelectBlock
-                  label="סוג נתונים"
+                  label={t("studio.portalPage.dataType")}
                   value={config.dataMode}
                   onChange={(value) =>
                     onUpdateConfig({
@@ -9790,13 +9778,13 @@ function ClientPortalSettingsModal({
                     })
                   }
                   options={[
-                    { value: "per_client", label: "נתונים אישיים לפי לקוח" },
-                    { value: "global", label: "נתון כללי לכולם" },
+                    { value: "per_client", label: t("studio.portalPage.personalData") },
+                    { value: "global", label: t("studio.portalPage.sharedData") },
                   ]}
                 />
 
                 <InputBlock
-                  label="מחיר חודשי לעמוד"
+                  label={t("studio.portalPage.monthlyPrice")}
                   value={String(config.monthlyPrice)}
                   type="number"
                   onChange={(value) =>
@@ -9812,12 +9800,10 @@ function ClientPortalSettingsModal({
               <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
                   <h3 className="text-2xl font-black text-slate-800">
-                    משתנים דינמיים בעמוד
+                    {t("studio.portalPage.dynamicVars")}
                   </h3>
                   <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
-                    כל משתנה הוא דאטה שהעסק יכול להציג ללקוח או לקבל מהלקוח.
-                    לדוגמה: כותרת, סטטוס, רשימת משימות, קובץ, תאריך, תשלום,
-                    פגישה.
+                    {t("studio.portalPage.dynamicVarsHint")}
                   </p>
                 </div>
 
@@ -9826,18 +9812,17 @@ function ClientPortalSettingsModal({
                   onClick={onAddVariable}
                   className="inline-flex h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
-                  + הוספת משתנה
+                  {t("studio.portalPage.addVariable")}
                 </button>
               </div>
 
               {config.variables.length === 0 ? (
                 <div className="rounded-[26px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
                   <h4 className="text-xl font-black text-slate-800">
-                    עדיין אין משתנים בעמוד
+                    {t("studio.portalPage.noVariables")}
                   </h4>
                   <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
-                    לחצי על “הוספת משתנה” כדי לאפשר לעסק להגדיר איזה מידע יופיע
-                    ללקוח בעמוד הזה.
+                    {t("studio.portalPage.noVariablesHint")}
                   </p>
                 </div>
               ) : (
@@ -9872,76 +9857,77 @@ function VariableEditorCard({
   onDelete: () => void;
   onInsert: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <article className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 lg:grid-cols-[1fr_180px_190px]">
         <InputBlock
-          label="שם לתצוגה"
+          label={t("studio.portalPage.displayName")}
           value={variable.label}
           onChange={(value) => onUpdate({ label: value })}
         />
 
         <SelectBlock
-          label="סוג שדה"
+          label={t("studio.portalPage.fieldType")}
           value={variable.type}
           onChange={(value) =>
             onUpdate({ type: value as ClientPortalVariableType })
           }
           options={[
-            { value: "text", label: "טקסט קצר" },
-            { value: "textarea", label: "טקסט ארוך" },
-            { value: "number", label: "מספר" },
-            { value: "date", label: "תאריך" },
-            { value: "checkbox", label: "צ׳קבוקס" },
-            { value: "checklist", label: "רשימת סימון" },
-            { value: "status", label: "סטטוס" },
-            { value: "file", label: "קובץ" },
-            { value: "image", label: "תמונה" },
-            { value: "email", label: "מייל" },
-            { value: "phone", label: "טלפון" },
+            { value: "text", label: t("studio.portalVars.types.text") },
+            { value: "textarea", label: t("studio.portalVars.types.textarea") },
+            { value: "number", label: t("studio.portalVars.types.number") },
+            { value: "date", label: t("studio.portalVars.types.date") },
+            { value: "checkbox", label: t("studio.portalVars.types.checkbox") },
+            { value: "checklist", label: t("studio.portalVars.types.checklist") },
+            { value: "status", label: t("studio.portalVars.types.status") },
+            { value: "file", label: t("studio.portalVars.types.file") },
+            { value: "image", label: t("studio.portalVars.types.image") },
+            { value: "email", label: t("studio.portalVars.types.email") },
+            { value: "phone", label: t("studio.portalVars.types.phone") },
           ]}
         />
 
         <SelectBlock
-          label="מקור הנתון"
+          label={t("studio.portalPage.dataSource")}
           value={variable.source}
           onChange={(value) =>
             onUpdate({ source: value as ClientPortalVariableSource })
           }
           options={[
-            { value: "business_input", label: "העסק ממלא" },
-            { value: "client_input", label: "הלקוח ממלא" },
-            { value: "crm_client", label: "מתיק הלקוח" },
-            { value: "appointments", label: "מפגישות" },
-            { value: "payments", label: "מתשלומים" },
-            { value: "tasks", label: "ממשימות" },
-            { value: "files", label: "מקבצים" },
-            { value: "custom", label: "מותאם אישית" },
+            { value: "business_input", label: t("studio.portalVars.sources.business_input") },
+            { value: "client_input", label: t("studio.portalVars.sources.client_input") },
+            { value: "crm_client", label: t("studio.portalVars.sources.crm_client") },
+            { value: "appointments", label: t("studio.portalVars.sources.appointments") },
+            { value: "payments", label: t("studio.portalVars.sources.payments") },
+            { value: "tasks", label: t("studio.portalVars.sources.tasks") },
+            { value: "files", label: t("studio.portalVars.sources.files") },
+            { value: "custom", label: t("studio.portalVars.sources.custom") },
           ]}
         />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
         <InputBlock
-          label="שם משתנה טכני"
+          label={t("studio.portalPage.technicalName")}
           value={variable.key}
           onChange={(value) => onUpdate({ key: cleanVariableKey(value) })}
         />
 
         <SelectBlock
-          label="היקף נתונים"
+          label={t("studio.portalPage.dataScope")}
           value={variable.scope}
           onChange={(value) =>
             onUpdate({ scope: value as ClientPortalVariable["scope"] })
           }
           options={[
-            { value: "per_client", label: "אישי לפי לקוח" },
-            { value: "global", label: "כללי לכל הלקוחות" },
+            { value: "per_client", label: t("studio.portalPage.personalScope") },
+            { value: "global", label: t("studio.portalPage.globalScope") },
           ]}
         />
 
         <InputBlock
-          label="Placeholder"
+          label={t("studio.portalPage.placeholder")}
           value={variable.placeholder || ""}
           onChange={(value) => onUpdate({ placeholder: value })}
         />
@@ -9950,24 +9936,24 @@ function VariableEditorCard({
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <ToggleCard
           compact
-          title="מוצג ללקוח"
-          text="הלקוח יראה את המשתנה בעמוד"
+          title={t("studio.portalPage.shownToClient")}
+          text={t("studio.portalPage.shownToClientText")}
           checked={variable.visibleToClient}
           onChange={(checked) => onUpdate({ visibleToClient: checked })}
         />
 
         <ToggleCard
           compact
-          title="הלקוח יכול לערוך"
-          text="הלקוח יוכל להזין או לעדכן את הערך"
+          title={t("studio.portalPage.clientCanEdit")}
+          text={t("studio.portalPage.clientCanEditText")}
           checked={variable.editableByClient}
           onChange={(checked) => onUpdate({ editableByClient: checked })}
         />
 
         <ToggleCard
           compact
-          title="שדה חובה"
-          text="לא ניתן לשלוח בלי למלא"
+          title={t("studio.portalPage.required")}
+          text={t("studio.portalPage.requiredText")}
           checked={variable.required}
           onChange={(checked) => onUpdate({ required: checked })}
         />
@@ -9987,7 +9973,7 @@ function VariableEditorCard({
             onClick={onInsert}
             className="h-11 rounded-2xl bg-violet-700 px-4 text-xs font-black text-black transition hover:bg-violet-800"
           >
-            הכנסה לעמוד
+            {t("studio.portalPage.insertToPage")}
           </button>
 
           <button
@@ -9995,7 +9981,7 @@ function VariableEditorCard({
             onClick={onDelete}
             className="h-11 rounded-2xl bg-rose-50 px-4 text-xs font-black text-rose-600 transition hover:bg-rose-100"
           >
-            מחיקה
+            {t("studio.portalPage.delete")}
           </button>
         </div>
       </div>

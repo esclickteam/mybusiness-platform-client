@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi";
-import { formatIls, quotePreviewComponents, recurringIntervalLabel, catalogBillingLabel, skuAllowsRecurringMarkup } from "../../lib/partnerMoney";
+import { formatIls, quotePreviewComponents, skuAllowsRecurringMarkup } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 
 export default function PartnerPricing() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<PartnerPriceLine[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState<string>("");
@@ -12,8 +14,8 @@ export default function PartnerPricing() {
   useEffect(() => {
     fetchPartnerPricebook()
       .then(setItems)
-      .catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת מחירון"));
-  }, []);
+      .catch((err) => setError(err.response?.data?.error || t("partner.errors.pricing")));
+  }, [t]);
 
   async function save(
     item: PartnerPriceLine,
@@ -46,7 +48,7 @@ export default function PartnerPricing() {
       const updated = await updatePricebookItem(item.sku, body);
       setItems((prev) => prev.map((row) => (row.sku === item.sku ? { ...row, ...updated } : row)));
     } catch (err: any) {
-      setError(err.response?.data?.error || "שגיאה בשמירה");
+      setError(err.response?.data?.error || t("partner.errors.save"));
     } finally {
       setSaving("");
     }
@@ -55,9 +57,9 @@ export default function PartnerPricing() {
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow="מוצרים וחבילות"
-        title="מוצרים וחבילות"
-        subtitle="מחיר Bizuply לקריאה בלבד. עמלה מתחדשת אפשרית רק על מוצר עם חיוב מתחדש, באותו מחזור של המוצר."
+        eyebrow={t("partner.pricing.title")}
+        title={t("partner.pricing.title")}
+        subtitle={t("partner.pricing.intro")}
       />
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
@@ -70,7 +72,7 @@ export default function PartnerPricing() {
         ))}
         {!items.length ? (
           <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm font-bold text-slate-400">
-            אין כרגע מוצרים פעילים למכירת פרטנר.
+            {t("partner.pricing.empty")}
           </p>
         ) : null}
       </div>
@@ -96,6 +98,7 @@ function PriceRow({
     }
   ) => void;
 }) {
+  const { t } = useTranslation();
   const [oneTimeEnabled, setOneTimeEnabled] = useState(Boolean(item.oneTimeMarkupEnabled));
   const [oneTimeAmount, setOneTimeAmount] = useState(Number(item.oneTimeMarkupAmount || 0));
   const [recurringEnabled, setRecurringEnabled] = useState(Boolean(item.recurringMarkupEnabled));
@@ -108,16 +111,27 @@ function PriceRow({
     recurringMarkupEnabled: recurringEnabled,
     recurringMarkupAmount: recurringAmount,
   });
-  const intervalLabel = recurringIntervalLabel(item.billing);
+  const intervalLabel =
+    item.billing === "recurring_year"
+      ? t("partner.pricing.perYearShort")
+      : t("partner.pricing.perMonthShort");
   const allowsRecurring = skuAllowsRecurringMarkup(item.billing);
   const bizuplyAmount =
     item.billing === "one_time"
       ? Number(item.amountIls ?? quoted.oneTimeBase) || 0
       : Number(item.amountIls ?? quoted.recurringBase) || 0;
+  const catalogBilling =
+    item.billing === "recurring_year"
+      ? t("partner.pricing.perYearShort")
+      : item.billing === "recurring_month"
+        ? t("partner.pricing.perMonthShort")
+        : t("partner.billing.oneTime");
   const recurringToggleLabel =
-    item.billing === "recurring_year" ? "הוסף עמלה שנתית מתחדשת" : "הוסף עמלה חודשית מתחדשת";
+    item.billing === "recurring_year"
+      ? t("partner.pricing.addYearly", { defaultValue: "הוסף עמלה שנתית מתחדשת" })
+      : t("partner.pricing.addMonthly", { defaultValue: "הוסף עמלה חודשית מתחדשת" });
   const recurringAmountLabel =
-    item.billing === "recurring_year" ? "עמלה שנתית: ₪" : "עמלה חודשית: ₪";
+    item.billing === "recurring_year" ? t("partner.pricing.yearlyPrefix") : t("partner.pricing.monthlyPrefix");
 
   return (
     <article className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
@@ -129,7 +143,7 @@ function PriceRow({
           ) : null}
           {item.category === "human_service" ? (
             <p className="mt-1 text-xs font-black text-amber-700">
-              שירות אנושי – אינו מפעיל מודול אוטומטית.
+              {t("partner.pricing.humanService")}
             </p>
           ) : null}
         </div>
@@ -140,12 +154,16 @@ function PriceRow({
             onChange={(e) => setEnabled(e.target.checked)}
             className="accent-violet-700"
           />
-          הצג בעמוד האישי
+          {t("partner.pricing.showOnPage")}
         </label>
       </div>
 
       <p className="mt-4 text-sm font-black text-slate-800">
-        מחיר Bizuply: {formatIls(bizuplyAmount)} {catalogBillingLabel(item.billing)}
+        {t("partner.pricing.bizuplyPriceLine", {
+          defaultValue: "מחיר Bizuply: {{amount}} {{billing}}",
+          amount: formatIls(bizuplyAmount),
+          billing: catalogBilling,
+        })}
       </p>
 
       <div className={`mt-4 grid gap-4 ${allowsRecurring ? "md:grid-cols-2" : ""}`}>
@@ -157,11 +175,11 @@ function PriceRow({
               onChange={(e) => setOneTimeEnabled(e.target.checked)}
               className="accent-violet-700"
             />
-            הוסף עמלה חד-פעמית
+            {t("partner.pricing.addOneTime", { defaultValue: "הוסף עמלה חד-פעמית" })}
           </label>
           {oneTimeEnabled ? (
             <label className="mt-3 block text-sm font-black text-violet-900">
-              סכום העמלה: ₪
+              {t("partner.pricing.amountPrefix")}
               <input
                 type="number"
                 min={0}
@@ -173,15 +191,15 @@ function PriceRow({
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
-              <dt>מחיר בסיס</dt>
+              <dt>{t("partner.pricing.basePrice", { defaultValue: "מחיר בסיס" })}</dt>
               <dd>{formatIls(quoted.oneTimeBase)}</dd>
             </div>
             <div className="flex justify-between gap-3">
-              <dt>העמלה שלך</dt>
+              <dt>{t("partner.pricing.yourCommission")}</dt>
               <dd>{formatIls(quoted.oneTimeMarkup)}</dd>
             </div>
             <div className="flex justify-between gap-3 font-black text-slate-900">
-              <dt>מחיר ללקוח</dt>
+              <dt>{t("partner.pricing.customerPrice")}</dt>
               <dd>{formatIls(quoted.customerOneTimeAmount)}</dd>
             </div>
           </dl>
@@ -213,19 +231,19 @@ function PriceRow({
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
-              <dt>מחיר בסיס</dt>
+              <dt>{t("partner.pricing.basePrice")}</dt>
               <dd>
                 {formatIls(quoted.recurringBase)} {intervalLabel}
               </dd>
             </div>
             <div className="flex justify-between gap-3">
-              <dt>העמלה שלך</dt>
+              <dt>{t("partner.pricing.yourCommission")}</dt>
               <dd>
                 {formatIls(quoted.recurringMarkup)} {intervalLabel}
               </dd>
             </div>
             <div className="flex justify-between gap-3 font-black text-slate-900">
-              <dt>מחיר ללקוח</dt>
+              <dt>{t("partner.pricing.customerPrice")}</dt>
               <dd>
                 {formatIls(quoted.customerRecurringAmount)} {intervalLabel}
               </dd>
@@ -249,7 +267,7 @@ function PriceRow({
         }
         className="mt-4 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white disabled:opacity-60"
       >
-        {saving ? "שומר..." : "שמירת עמלות"}
+        {saving ? t("partner.saving") : t("partner.pricing.saveCommissions")}
       </button>
     </article>
   );

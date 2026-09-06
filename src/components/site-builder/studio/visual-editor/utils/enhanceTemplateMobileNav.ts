@@ -1,3 +1,5 @@
+import i18n from "../../../../../i18n/i18n";
+
 /**
  * Universal header nav for all website templates.
  *
@@ -279,7 +281,8 @@ function isNativeMenuButton(btn: HTMLButtonElement): boolean {
     text === "×" ||
     text === "✕" ||
     text === "Menu" ||
-    text === "תפריט"
+    text === i18n.t("leftover.nav.menu") ||
+    text === i18n.t("leftover.nav.menu", { lng: "he" })
   ) {
     return true;
   }
@@ -497,7 +500,7 @@ function ensureToggle(header: HTMLElement, bp: "md" | "lg" | "xl") {
     toggle = header.ownerDocument.createElement("button");
     toggle.type = "button";
     toggle.setAttribute(TOGGLE_ATTR, "true");
-    toggle.setAttribute("aria-label", "תפריט");
+    toggle.setAttribute("aria-label", i18n.t("leftover.nav.menu"));
     toggle.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();

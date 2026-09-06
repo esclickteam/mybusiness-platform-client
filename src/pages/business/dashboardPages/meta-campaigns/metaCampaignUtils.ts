@@ -1,7 +1,10 @@
+import i18n from "../../../../i18n/i18n";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
+
 export function formatCurrency(
   value: number,
   currency = "ILS",
-  locale = "he-IL"
+  locale = getIntlLocale(i18n.language)
 ) {
   const amount = Number(value) || 0;
   try {
@@ -15,7 +18,7 @@ export function formatCurrency(
   }
 }
 
-export function formatNumber(value: number, locale = "he-IL") {
+export function formatNumber(value: number, locale = getIntlLocale(i18n.language)) {
   return new Intl.NumberFormat(locale).format(Number(value) || 0);
 }
 
@@ -46,7 +49,7 @@ export function toLocalIsoDate(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateTimeHe(value?: string | Date | null, locale = "he-IL") {
+export function formatDateTimeHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -59,7 +62,7 @@ export function formatDateTimeHe(value?: string | Date | null, locale = "he-IL")
   });
 }
 
-export function formatDateHe(value?: string | Date | null, locale = "he-IL") {
+export function formatDateHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -338,26 +341,37 @@ export function resolveAdAccountId(account?: {
   return graphId.replace(/^act_/i, "");
 }
 
+export function getLeadFormContactLabel(
+  field: { type?: string; labelEn?: string; labelHe?: string } | string
+) {
+  const type = typeof field === "string" ? field : String(field?.type || "");
+  const fallback =
+    typeof field === "string"
+      ? type
+      : field?.labelEn || field?.labelHe || type;
+  return i18n.t(`leftover.metaLeadForm.${type}`, fallback);
+}
+
 /** Meta Instant Form contact fields (Ads Manager parity). */
 export const LEAD_FORM_CONTACT_FIELDS = [
-  { type: "FULL_NAME", labelHe: "שם מלא", labelEn: "Full name", defaultSelected: true },
-  { type: "EMAIL", labelHe: "אימייל", labelEn: "Email", defaultSelected: true },
-  { type: "PHONE", labelHe: "מספר טלפון", labelEn: "Phone number", defaultSelected: true },
-  { type: "FIRST_NAME", labelHe: "שם פרטי", labelEn: "First name", defaultSelected: false },
-  { type: "LAST_NAME", labelHe: "שם משפחה", labelEn: "Last name", defaultSelected: false },
-  { type: "CITY", labelHe: "עיר", labelEn: "City", defaultSelected: false },
-  { type: "STATE", labelHe: "מדינה / אזור", labelEn: "State / Province", defaultSelected: false },
-  { type: "COUNTRY", labelHe: "ארץ", labelEn: "Country", defaultSelected: false },
-  { type: "POST_CODE", labelHe: "מיקוד", labelEn: "Post code", defaultSelected: false },
-  { type: "STREET_ADDRESS", labelHe: "כתובת", labelEn: "Street address", defaultSelected: false },
-  { type: "DOB", labelHe: "תאריך לידה", labelEn: "Date of birth", defaultSelected: false },
-  { type: "GENDER", labelHe: "מגדר", labelEn: "Gender", defaultSelected: false },
-  { type: "JOB_TITLE", labelHe: "תפקיד", labelEn: "Job title", defaultSelected: false },
-  { type: "COMPANY_NAME", labelHe: "שם החברה", labelEn: "Company name", defaultSelected: false },
-  { type: "WORK_EMAIL", labelHe: "אימייל עבודה", labelEn: "Work email", defaultSelected: false },
-  { type: "WORK_PHONE_NUMBER", labelHe: "טלפון עבודה", labelEn: "Work phone", defaultSelected: false },
-  { type: "WHATSAPP_NUMBER", labelHe: "וואטסאפ", labelEn: "WhatsApp number", defaultSelected: false },
-  { type: "WEBSITE", labelHe: "אתר", labelEn: "Website", defaultSelected: false },
+  { type: "FULL_NAME", labelEn: "Full name", defaultSelected: true },
+  { type: "EMAIL", labelEn: "Email", defaultSelected: true },
+  { type: "PHONE", labelEn: "Phone number", defaultSelected: true },
+  { type: "FIRST_NAME", labelEn: "First name", defaultSelected: false },
+  { type: "LAST_NAME", labelEn: "Last name", defaultSelected: false },
+  { type: "CITY", labelEn: "City", defaultSelected: false },
+  { type: "STATE", labelEn: "State / Province", defaultSelected: false },
+  { type: "COUNTRY", labelEn: "Country", defaultSelected: false },
+  { type: "POST_CODE", labelEn: "Post code", defaultSelected: false },
+  { type: "STREET_ADDRESS", labelEn: "Street address", defaultSelected: false },
+  { type: "DOB", labelEn: "Date of birth", defaultSelected: false },
+  { type: "GENDER", labelEn: "Gender", defaultSelected: false },
+  { type: "JOB_TITLE", labelEn: "Job title", defaultSelected: false },
+  { type: "COMPANY_NAME", labelEn: "Company name", defaultSelected: false },
+  { type: "WORK_EMAIL", labelEn: "Work email", defaultSelected: false },
+  { type: "WORK_PHONE_NUMBER", labelEn: "Work phone", defaultSelected: false },
+  { type: "WHATSAPP_NUMBER", labelEn: "WhatsApp number", defaultSelected: false },
+  { type: "WEBSITE", labelEn: "Website", defaultSelected: false },
 ] as const;
 
 export type LeadFormAnswerType = "short_answer" | "multiple_choice";

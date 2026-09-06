@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DndContext,
   DragOverlay,
@@ -61,6 +62,14 @@ import {
   getSectionsByCategory,
 } from "./library/sectionLibrary";
 import {
+  studioPageNavLabel,
+  studioPortalPageNavLabel,
+  studioPortalSectionNavLabel,
+  studioSectionDescription,
+  studioSectionNavLabel,
+  studioSectionTitle,
+} from "../../../../i18n/studioLibraryLabels";
+import {
   PORTAL_SECTION_KIND_NAV,
   SECTION_LIBRARY_NAV,
   type SectionLibraryNavId,
@@ -113,12 +122,17 @@ type ElementCategory =
   | "lists"
   | "more";
 
-function sampleCrmFieldValue(field: ConfiguredClientField) {
+function sampleCrmFieldValue(
+  field: ConfiguredClientField,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
   // Editor samples must look like placeholders — not real shared client values.
-  if (field.type === "table") return "[טבלה מהתיק]";
-  if (field.type === "summary") return "[סיכום מהתיק]";
-  if (field.type === "number") return "[מספר]";
-  return `[${field.label || "ערך מהתיק"}]`;
+  if (field.type === "table") return t("studio.addLayers.crmSample.table");
+  if (field.type === "summary") return t("studio.addLayers.crmSample.summary");
+  if (field.type === "number") return t("studio.addLayers.crmSample.number");
+  return t("studio.addLayers.crmSample.value", {
+    label: field.label || t("studio.addLayers.crmSample.fallbackLabel"),
+  });
 }
 
 function mapLibraryCategoryToPanel(
@@ -221,6 +235,7 @@ function SortableSectionRow({
     disabled: item.pinned,
     animateLayoutChanges: () => false,
   });
+  const { t } = useTranslation();
 
   return (
     <div
@@ -251,13 +266,13 @@ function SortableSectionRow({
         ].join(" ")}
         title={
           item.pinned
-            ? "בלוק קבוע"
-            : "גרור לשינוי סדר"
+            ? t("studio.addLayers.fixedBlock")
+            : t("studio.addLayers.dragToReorder")
         }
         aria-label={
           item.pinned
-            ? "בלוק קבוע"
-            : "גרירת בלוק"
+            ? t("studio.addLayers.fixedBlock")
+            : t("studio.addLayers.dragBlock")
         }
         {...(item.pinned ? {} : { ...attributes, ...listeners })}
       >
@@ -278,10 +293,10 @@ function SortableSectionRow({
         </span>
         <span className="block truncate text-[11px] font-bold text-slate-400">
           {item.pinned
-            ? "קבוע"
+            ? t("studio.addLayers.fixed")
             : item.inserted
-              ? "סקשן לעריכה"
-              : "תבנית · ניתן לעריכה"}
+              ? t("studio.addLayers.editableSection")
+              : t("studio.addLayers.templateEditable")}
         </span>
       </button>
     </div>
@@ -319,19 +334,19 @@ const PRIMITIVE_ELEMENT_IDS = new Set([
 
 const ELEMENT_CATEGORY_LABELS: Array<{
   id: ElementCategory;
-  label: string;
+  labelKey: string;
 }> = [
-  { id: "all", label: "הכול" },
-  { id: "text", label: "טקסט" },
-  { id: "buttons", label: "כפתורים" },
-  { id: "media", label: "מדיה" },
-  { id: "shapes", label: "קופסאות וצורות" },
-  { id: "crm", label: "נתונים משתנים" },
-  { id: "cards", label: "כרטיסיות" },
-  { id: "tables", label: "טבלאות" },
-  { id: "forms", label: "טפסים" },
-  { id: "lists", label: "רשימות" },
-  { id: "more", label: "עוד" },
+  { id: "all", labelKey: "studio.addLayers.catAll" },
+  { id: "text", labelKey: "studio.addLayers.catText" },
+  { id: "buttons", labelKey: "studio.addLayers.catButtons" },
+  { id: "media", labelKey: "studio.addLayers.catMedia" },
+  { id: "shapes", labelKey: "studio.addLayers.catShapes" },
+  { id: "crm", labelKey: "studio.addLayers.catCrm" },
+  { id: "cards", labelKey: "studio.addLayers.catCards" },
+  { id: "tables", labelKey: "studio.addLayers.catTables" },
+  { id: "forms", labelKey: "studio.addLayers.catForms" },
+  { id: "lists", labelKey: "studio.addLayers.catLists" },
+  { id: "more", labelKey: "studio.addLayers.catMore" },
 ];
 
 function CodeField({
@@ -379,6 +394,7 @@ function ElementPreview({
   thumbnail?: string;
   barePreview?: boolean;
 }) {
+  const { t } = useTranslation();
   if (barePreview || kind === "raw") {
     return (
       <div className="flex h-full items-center justify-center bg-transparent px-4">
@@ -449,7 +465,7 @@ function ElementPreview({
     return (
       <div className="flex h-full items-center justify-center bg-white">
         <div className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 py-3 text-xs font-black text-black shadow-lg shadow-violet-200">
-          לחצו כאן
+          {t("studio.addLayers.clickHere")}
         </div>
       </div>
     );
@@ -499,7 +515,7 @@ function ElementPreview({
           </span>
         )}
         <span className="mt-2 text-[10px] font-bold text-slate-400">
-          מתעדכן מה-CRM
+          {t("studio.addLayers.updatesFromCrm")}
         </span>
       </div>
     );
@@ -563,6 +579,7 @@ export default function VisualAddLayersPanel({
   clientPortalPluginEnabled = false,
   onOverlayInstalled,
 }: VisualAddLayersPanelProps) {
+  const { t } = useTranslation();
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
   const [sections, setSections] = useState<SectionItem[]>([]);
@@ -853,56 +870,56 @@ export default function VisualAddLayersPanel({
     const quickPrimitives: LibraryElement[] = [
       {
         id: "heading",
-        title: "כותרת",
-        description: "כותרת גדולה ומודגשת",
+        title: t("studio.addLayers.elHeading"),
+        description: t("studio.addLayers.elHeadingHint"),
         category: "text",
         preview: "heading",
         action: () => editor?.addText?.(),
       },
       {
         id: "paragraph",
-        title: "פסקת טקסט",
-        description: "טקסט חופשי לתוכן והסברים",
+        title: t("studio.addLayers.elParagraph"),
+        description: t("studio.addLayers.elParagraphHint"),
         category: "text",
         preview: "paragraph",
         action: () => editor?.addText?.(),
       },
       {
         id: "button",
-        title: "כפתור מעוצב",
-        description: "כפתור עצמאי עם קישור",
+        title: t("studio.addLayers.elButton"),
+        description: t("studio.addLayers.elButtonHint"),
         category: "buttons",
         preview: "button",
         action: () => editor?.addButton?.(),
       },
       {
         id: "image",
-        title: "תמונה",
-        description: "העלאה מהמחשב והחלפה חופשית",
+        title: t("studio.addLayers.elImage"),
+        description: t("studio.addLayers.elImageHint"),
         category: "media",
         preview: "image",
         action: () => editor?.addImage?.({ openMediaPicker: false }),
       },
       {
         id: "video",
-        title: "סרטון",
-        description: "וידאו אוטומטי, מושתק ובלולאה",
+        title: t("studio.addLayers.elVideo"),
+        description: t("studio.addLayers.elVideoHint"),
         category: "media",
         preview: "video",
         action: () => editor?.addVideo?.(),
       },
       {
         id: "box",
-        title: "קופסה מעוצבת",
-        description: "רקע, מסגרת או שכבת תוכן",
+        title: t("studio.addLayers.elBox"),
+        description: t("studio.addLayers.elBoxHint"),
         category: "shapes",
         preview: "box",
         action: () => editor?.addBox?.(),
       },
       {
         id: "divider",
-        title: "קו מפריד",
-        description: "קו עצמאי לגרירה וצביעה",
+        title: t("studio.addLayers.elDivider"),
+        description: t("studio.addLayers.elDividerHint"),
         category: "shapes",
         preview: "divider",
         action: () => editor?.addDivider?.(),
@@ -916,55 +933,55 @@ export default function VisualAddLayersPanel({
       : [
           {
             id: "crm-field-greeting",
-            title: "שלום, שם לקוח",
+            title: t("studio.addLayers.elHello"),
             description:
-              "ברכה אישית — אחרי התחברות מוצג שם הלקוח מהאזור האישי / CRM",
+              t("studio.addLayers.elHelloHint"),
             category: "crm",
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שלום, [שם לקוח]</div>',
+              `<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">${t("studio.addLayers.greetingPreview")}</div>`,
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
-                label: "שם לקוח",
-                sampleValue: "[שם לקוח]",
+                label: t("studio.defaults.clientName"),
+                sampleValue: t("studio.defaults.clientNameSample"),
                 format: "greeting",
                 asPair: false,
               }),
           },
           {
             id: "crm-field-client-name",
-            title: "שם לקוח",
+            title: t("studio.addLayers.elClientName"),
             description:
-              "שני שדות נפרדים: שם + ערך · הערך משתנה לפי הלקוח המחובר",
+              t("studio.addLayers.elClientNameHint"),
             category: "crm",
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:14px;font-weight:800;color:#64748b">שם לקוח</div><div style="font-size:22px;font-weight:800;color:#0f172a">[שם לקוח]</div>',
+              `<div style="font-size:14px;font-weight:800;color:#64748b">${t("studio.defaults.clientName")}</div><div style="font-size:22px;font-weight:800;color:#0f172a">${t("studio.defaults.clientNameSample")}</div>`,
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
-                label: "שם לקוח",
-                sampleValue: "[שם לקוח]",
+                label: t("studio.defaults.clientName"),
+                sampleValue: t("studio.defaults.clientNameSample"),
                 asPair: true,
               }),
           },
           {
             id: "crm-field-generic",
-            title: "נתון משתנה מה-CRM",
+            title: t("studio.addLayers.elCrmValue"),
             description:
-              "מוסיף שני שדות נפרדים (שם + ערך) — השם זהה לכל הלקוחות, הערך אישי מהתיק",
+              t("studio.addLayers.elCrmValueHint"),
             category: "crm",
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:14px;font-weight:800;color:#64748b">שם הנתון</div><div style="font-size:22px;font-weight:800;color:#0f172a">[ערך מהתיק]</div>',
+              `<div style="font-size:14px;font-weight:800;color:#64748b">${t("studio.defaults.crmField")}</div><div style="font-size:22px;font-weight:800;color:#0f172a">${t("studio.defaults.sampleValue")}</div>`,
             action: () =>
               editor?.addCrmField?.({
-                label: "שם הנתון",
-                sampleValue: "[ערך מהתיק]",
+                label: t("studio.defaults.crmField"),
+                sampleValue: t("studio.defaults.sampleValue"),
                 asPair: true,
               }),
           },
@@ -975,12 +992,12 @@ export default function VisualAddLayersPanel({
               return key !== "client_name" && key !== "fullName";
             })
             .map((field) => {
-              const sampleValue = sampleCrmFieldValue(field);
+              const sampleValue = sampleCrmFieldValue(field, t);
               const label = field.label || field.key;
               return {
                 id: `crm-field-${field.key}`,
                 title: label,
-                description: `שני שדות: ${label} + ערך אישי מהתיק`,
+                description: t("studio.addLayers.elCrmPairHint", { label }),
                 category: "crm" as const,
                 preview: "crm" as const,
                 barePreview: true,
@@ -1018,8 +1035,12 @@ export default function VisualAddLayersPanel({
       const isCrm = category === "crm";
       return {
         id: item.id,
-        title: item.title,
-        description: item.description,
+        title: t(`studio.library.items.${item.id}.title`, {
+          defaultValue: item.title,
+        }),
+        description: t(`studio.library.items.${item.id}.description`, {
+          defaultValue: item.description,
+        }),
         category,
         preview: isCrm
           ? ("crm" as const)
@@ -1043,7 +1064,7 @@ export default function VisualAddLayersPanel({
       merged.push(item);
     });
     return merged;
-  }, [clientPortalPluginEnabled, crmFields, editor]);
+  }, [clientPortalPluginEnabled, crmFields, editor, t]);
 
   const visibleElementCategories = useMemo(
     () =>
@@ -1111,12 +1132,24 @@ export default function VisualAddLayersPanel({
           base = base.filter((item) => item.id.startsWith(nav.prefix));
         }
       }
-      return base.filter((item) => {
-        if (!normalizedSearch) return true;
-        return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-          .toLowerCase()
-          .includes(normalizedSearch);
-      });
+      return base
+        .filter((item) => {
+          if (!normalizedSearch) return true;
+          const title = studioSectionTitle(t, item.id, item.title);
+          const description = studioSectionDescription(
+            t,
+            item.id,
+            item.description || ""
+          );
+          return `${title} ${description} ${(item.keywords || []).join(" ")}`
+            .toLowerCase()
+            .includes(normalizedSearch);
+        })
+        .map((item) => ({
+          ...item,
+          title: studioSectionTitle(t, item.id, item.title),
+          description: studioSectionDescription(t, item.id, item.description || ""),
+        }));
     }
 
     let base =
@@ -1147,12 +1180,24 @@ export default function VisualAddLayersPanel({
         .slice(0, 36);
     }
 
-    return base.filter((item) => {
-      if (!normalizedSearch) return true;
-      return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-        .toLowerCase()
-        .includes(normalizedSearch);
-    });
+    return base
+      .filter((item) => {
+        if (!normalizedSearch) return true;
+        const title = studioSectionTitle(t, item.id, item.title);
+        const description = studioSectionDescription(
+          t,
+          item.id,
+          item.description || ""
+        );
+        return `${title} ${description} ${(item.keywords || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedSearch);
+      })
+      .map((item) => ({
+        ...item,
+        title: studioSectionTitle(t, item.id, item.title),
+        description: studioSectionDescription(t, item.id, item.description || ""),
+      }));
   }, [
     clientPortalPluginEnabled,
     favoriteSectionIds,
@@ -1162,6 +1207,7 @@ export default function VisualAddLayersPanel({
     sectionLibraryMode,
     sectionQuickFilter,
     portalSectionKind,
+    t,
   ]);
 
   const filteredPages = useMemo(() => {
@@ -1284,17 +1330,33 @@ export default function VisualAddLayersPanel({
 
   const activeSectionCategoryLabel =
     sectionLibraryMode === "portal"
-      ? PORTAL_SECTION_KIND_NAV.find((item) => item.id === portalSectionKind)
-          ?.label || "עמודים אחרי התחברות"
-      : SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
-          ?.label || "הכול";
+      ? studioPortalSectionNavLabel(
+          t,
+          portalSectionKind,
+          PORTAL_SECTION_KIND_NAV.find((item) => item.id === portalSectionKind)
+            ?.label || t("studio.addLayers.pagesAfterLogin"),
+        )
+      : studioSectionNavLabel(
+          t,
+          sectionCategory,
+          SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
+            ?.label || t("studio.addLayers.catAll"),
+        );
 
   const activePageCategoryLabel =
     pageLibraryMode === "portal"
-      ? PORTAL_PAGE_KIND_NAV.find((item) => item.id === portalPageKind)?.label ||
-        "עמודים אחרי התחברות"
-      : PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
-        "הכול";
+      ? studioPortalPageNavLabel(
+          t,
+          portalPageKind,
+          PORTAL_PAGE_KIND_NAV.find((item) => item.id === portalPageKind)
+            ?.label || t("studio.addLayers.pagesAfterLogin"),
+        )
+      : studioPageNavLabel(
+          t,
+          pageCategory,
+          PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
+            t("studio.addLayers.catAll"),
+        );
 
   const handleAddLibraryPage = (page: VisualLibraryPageTemplate) => {
     closeAfter(() => {
@@ -1343,8 +1405,8 @@ export default function VisualAddLayersPanel({
       });
       setLastAddedTitle(
         item.category === "booking"
-          ? `״${item.title}״ נוסף ומחובר ליומן ה-CRM`
-          : `״${item.title}״ נוסף לעמוד`,
+          ? t("studio.addLayers.addedConnectedCalendar", { title: item.title })
+          : t("studio.addLayers.addedToPage", { title: item.title }),
       );
       setPreviewSection(null);
     });
@@ -1355,7 +1417,7 @@ export default function VisualAddLayersPanel({
   ) => {
     if (!canReplaceSelectedSection) return;
     editor.replaceSelectedSectionWithLibrary(item.id);
-    setLastAddedTitle(`״${item.title}״ הוחלף תוך שמירת התוכן`);
+    setLastAddedTitle(t("studio.addLayers.replacedKeepingContent", { title: item.title }));
     setPreviewSection(null);
   };
 
@@ -1383,15 +1445,15 @@ export default function VisualAddLayersPanel({
   const title =
     mode === "add"
       ? addTab === "sections"
-        ? "הוספת סקשן"
+        ? t("studio.addLayers.addSection")
         : addTab === "pages"
-          ? "הוספת עמוד"
+          ? t("studio.addLayers.addPage")
           : addTab === "plugins"
-            ? "תוספים"
-            : "הוספת אלמנטים"
+            ? t("studio.addLayers.plugins")
+            : t("studio.addLayers.addElements")
       : mode === "layers"
-        ? "שכבות"
-        : "קוד מותאם";
+        ? t("studio.layers")
+        : t("studio.customCode");
 
   return (
     <div
@@ -1405,7 +1467,7 @@ export default function VisualAddLayersPanel({
       {mode === "add" ? (
         <button
           type="button"
-          aria-label="סגירת פאנל"
+          aria-label={t("studio.addLayers.closePanel")}
           data-studio-dismiss-backdrop="true"
           onClick={onClose}
           className="pointer-events-auto absolute bottom-0 left-0 top-16 border border-slate-200/80 bg-gradient-to-l from-slate-200/90 via-slate-100 to-sky-50 text-slate-800/10 backdrop-blur-[2px] right-[72px]"
@@ -1438,7 +1500,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <Grid3X3 className="h-5 w-5" />
                 }
-                label="אלמנטים"
+                label={t("studio.addLayers.elements")}
                 testId="visual-add-tab-elements"
                 onClick={() =>
                   setAddTab("elements")
@@ -1450,7 +1512,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <PanelTop className="h-5 w-5" />
                 }
-                label="סקשנים"
+                label={t("studio.addLayers.sections")}
                 testId="visual-add-tab-sections"
                 onClick={() =>
                   setAddTab("sections")
@@ -1462,7 +1524,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <FileText className="h-5 w-5" />
                 }
-                label="עמודים"
+                label={t("studio.addLayers.pages")}
                 testId="visual-add-tab-pages"
                 onClick={() => setAddTab("pages")}
               />
@@ -1470,7 +1532,7 @@ export default function VisualAddLayersPanel({
               <NavigationButton
                 active={addTab === "plugins"}
                 icon={<Puzzle className="h-5 w-5" />}
-                label="תוספים"
+                label={t("studio.addLayers.plugins")}
                 testId="visual-add-tab-plugins"
                 onClick={() => setAddTab("plugins")}
               />
@@ -1480,7 +1542,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <Grid3X3 className="h-5 w-5" />
                 }
-                label="אייקונים"
+                label={t("studio.addLayers.icons")}
                 onClick={() =>
                   setAddTab("icons")
                 }
@@ -1491,7 +1553,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <WandSparkles className="h-5 w-5" />
                 }
-                label="אנימציות"
+                label={t("studio.addLayers.animations")}
                 onClick={() =>
                   setAddTab("animations")
                 }
@@ -1502,7 +1564,7 @@ export default function VisualAddLayersPanel({
                 icon={
                   <ImagePlus className="h-5 w-5" />
                 }
-                label="מדיה"
+                label={t("studio.addLayers.media")}
                 onClick={() => setAddTab("media")}
               />
             </div>
@@ -1520,7 +1582,7 @@ export default function VisualAddLayersPanel({
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
                   <Upload className="h-5 w-5" />
                 </span>
-                העלאה
+                {t("studio.addLayers.upload")}
               </button>
             </div>
           </nav>
@@ -1533,14 +1595,14 @@ export default function VisualAddLayersPanel({
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-400">
                   {addTab === "icons"
-                    ? "בחרו אייקון, צבע ואפקט והוסיפו לעמוד"
+                    ? t("studio.addLayers.iconHint")
                     : addTab === "animations"
-                      ? "בחרו אנימציית Lottie מקצועית והוסיפו לעמוד"
+                      ? t("studio.addLayers.lottieHint")
                       : addTab === "sections"
-                        ? `${SECTION_LIBRARY.length} סקשנים · כל אחד נפתח לעריכה מלאה אחרי ההוספה`
+                        ? t("studio.addLayers.sectionCountHint", { count: SECTION_LIBRARY.length })
                         : addTab === "pages"
-                          ? `${PAGE_LIBRARY.length} תבניות עמוד · כל עמוד ניתן לעריכה חופשית`
-                          : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
+                          ? t("studio.addLayers.pageCountHint", { count: PAGE_LIBRARY.length })
+                          : t("studio.addLayers.chooseToAdd")}
                 </p>
               </div>
 
@@ -1555,14 +1617,14 @@ export default function VisualAddLayersPanel({
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-50"
                 >
                   <Upload className="h-4 w-4" />
-                  העלאה
+                  {t("studio.addLayers.upload")}
                 </button>
 
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-                  aria-label="סגירה"
+                  aria-label={t("studio.addLayers.close")}
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -1622,7 +1684,7 @@ export default function VisualAddLayersPanel({
                             : "text-slate-500 hover:text-slate-700",
                         ].join(" ")}
                       >
-                        עמודי האתר
+                        {t("studio.addLayers.sitePages")}
                       </button>
                       <button
                         type="button"
@@ -1634,7 +1696,7 @@ export default function VisualAddLayersPanel({
                             : "text-slate-500 hover:text-slate-700",
                         ].join(" ")}
                       >
-                        עמודים אחרי התחברות
+                        {t("studio.addLayers.pagesAfterLogin")}
                       </button>
                     </div>
                   ) : null}
@@ -1647,7 +1709,7 @@ export default function VisualAddLayersPanel({
                       onChange={(event) =>
                         setSearchQuery(event.target.value)
                       }
-                      placeholder="חיפוש עמודים..."
+                      placeholder={t("studio.addLayers.searchPages")}
                       className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
                     />
                   </label>
@@ -1657,8 +1719,8 @@ export default function VisualAddLayersPanel({
                   <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
                     <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
                       {pageLibraryMode === "portal"
-                        ? "סוג עמוד"
-                        : "קטגוריות"}
+                        ? t("studio.addLayers.pageType")
+                        : t("studio.addLayers.categories")}
                     </p>
                     {(pageLibraryMode === "portal"
                       ? PORTAL_PAGE_KIND_NAV
@@ -1683,7 +1745,19 @@ export default function VisualAddLayersPanel({
                             : "text-slate-600 hover:bg-slate-50",
                         ].join(" ")}
                       >
-                        <span>{categoryItem.label}</span>
+                        <span>
+                          {pageLibraryMode === "portal"
+                            ? studioPortalPageNavLabel(
+                                t,
+                                categoryItem.id,
+                                categoryItem.label,
+                              )
+                            : studioPageNavLabel(
+                                t,
+                                categoryItem.id,
+                                categoryItem.label,
+                              )}
+                        </span>
                         <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
                           {pageLibraryMode === "portal"
                             ? categoryItem.id === "all"
@@ -1709,15 +1783,15 @@ export default function VisualAddLayersPanel({
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
                         <h3 className="text-base font-black text-slate-800">
-                          ספריית עמודים · {activePageCategoryLabel}
+                          {t("studio.addLayers.pageLibrary", { category: activePageCategoryLabel })}
                         </h3>
                         <p className="mt-1 text-xs font-bold text-slate-400">
-                          תבנית מקצועית שתיפתח לעריכה מלאה — כל סקשן ואלמנט ניתנים לשינוי
+                          {t("studio.addLayers.pageLibraryHint")}
                         </p>
                       </div>
 
                       <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                        {filteredPages.length} עמודים
+{t("studio.addLayers.pageCount", { count: filteredPages.length })}
                       </span>
                     </div>
 
@@ -1725,17 +1799,21 @@ export default function VisualAddLayersPanel({
                       type="button"
                       onClick={() => {
                         const title =
-                          window.prompt("שם העמוד החדש", "עמוד חדש") ||
-                          "עמוד חדש";
+                          window.prompt(t("studio.addLayers.newPagePrompt"), t("studio.newPage")) ||
+                          t("studio.newPage");
                         handleAddLibraryPage({
                           id: "blank-editable-page",
                           kind: "page",
                           tab: "pages",
                           category: "hero",
                           title,
-                          description: "עמוד ריק לעריכה מלאה",
+                          description: t("studio.addLayers.blankPage"),
                           slugSuggestion: "new-page",
-                          keywords: ["ריק", "עריכה", "blank"],
+                          keywords: [
+                            t("studio.addLayers.blankKeyword"),
+                            t("studio.addLayers.editKeyword"),
+                            "blank",
+                          ],
                           sectionIds: [],
                         });
                       }}
@@ -1746,15 +1824,15 @@ export default function VisualAddLayersPanel({
                           Start blank
                         </p>
                         <h4 className="mt-1 text-base font-black text-slate-900">
-                          עמוד ריק לעריכה מלאה
+                          {t("studio.addLayers.blankPage")}
                         </h4>
                         <p className="mt-1 text-xs font-bold text-slate-500">
-                          בלי טבלה מובנית — מוסיפים סקשנים ואלמנטים כמו שרוצים
+                          {t("studio.addLayers.blankPageHint")}
                         </p>
                       </div>
                       <span className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-900 px-4 text-xs font-black text-white">
                         <Plus className="h-4 w-4" />
-                        יצירה
+                        {t("studio.addLayers.create")}
                       </span>
                     </button>
 
@@ -1774,7 +1852,7 @@ export default function VisualAddLayersPanel({
                             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/90 to-transparent" />
                             <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-black text-slate-700 shadow-sm backdrop-blur">
                               <Plus className="h-3 w-3" />
-                              הוספה
+                              {t("studio.addLayers.add")}
                             </span>
                           </div>
 
@@ -1787,7 +1865,7 @@ export default function VisualAddLayersPanel({
                                 {page.description}
                               </p>
                               <p className="mt-2 text-[11px] font-black text-slate-500">
-                                {page.sectionIds.length} סקשנים
+{t("studio.addLayers.sectionCount", { count: page.sectionIds.length })}
                               </p>
                             </div>
                           </div>
@@ -1798,10 +1876,10 @@ export default function VisualAddLayersPanel({
                     {filteredPages.length === 0 ? (
                       <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
                         <p className="text-sm font-black text-slate-700">
-                          לא נמצאו עמודים
+                          {t("studio.addLayers.noPagesFound")}
                         </p>
                         <p className="mt-2 text-xs font-bold text-slate-400">
-                          נסו חיפוש אחר או עברו לקטגוריה אחרת
+{t("studio.addLayers.tryOtherSearch")}
                         </p>
                       </div>
                     ) : null}
@@ -1823,7 +1901,7 @@ export default function VisualAddLayersPanel({
                             : "text-slate-500 hover:text-slate-700",
                         ].join(" ")}
                       >
-                        סקשני האתר
+                        {t("studio.addLayers.siteSections")}
                       </button>
                       <button
                         type="button"
@@ -1835,7 +1913,7 @@ export default function VisualAddLayersPanel({
                             : "text-slate-500 hover:text-slate-700",
                         ].join(" ")}
                       >
-                        סקשנים אחרי התחברות
+                        {t("studio.addLayers.sectionsAfterLogin")}
                       </button>
                     </div>
                   ) : null}
@@ -1852,8 +1930,8 @@ export default function VisualAddLayersPanel({
                       }
                       placeholder={
                         addTab === "sections"
-                          ? "חיפוש סקשנים..."
-                          : "חיפוש אלמנטים..."
+                          ? t("studio.addLayers.searchSections")
+                          : t("studio.addLayers.searchElements")
                       }
                       className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
                     />
@@ -1880,7 +1958,7 @@ export default function VisualAddLayersPanel({
                                 : "bg-slate-100 text-slate-600 hover:bg-slate-200",
                             ].join(" ")}
                           >
-                            {categoryItem.label}
+                            {t(categoryItem.labelKey)}
                           </button>
                         ),
                       )}
@@ -1901,21 +1979,21 @@ export default function VisualAddLayersPanel({
                         <div>
                           <h3 className="text-base font-black text-slate-800">
                             {elementCategory === "crm"
-                              ? "נתונים משתנים מה-CRM"
-                              : "אלמנטים לאתר"}
+                              ? t("studio.addLayers.crmData")
+                              : t("studio.addLayers.elementsForSite")}
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
                             {elementCategory === "crm"
-                              ? "כל נתון מוסיף שני שדות נפרדים (שם + ערך) שאפשר למקם בנפרד. השם זהה לכל לקוחות העסק — הערך משתנה לפי תיק הלקוח המחובר."
+                              ? t("studio.addLayers.crmDataHint")
                               : elementCategory === "tables"
-                                ? "בחרו כמה שורות ועמודות ואז הוסיפו טבלה לעמוד"
-                              : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
+                                ? t("studio.addLayers.tableHint")
+                              : t("studio.addLayers.clickAdds")}
                           </p>
                         </div>
 
                         <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
                           {filteredElements.length}{" "}
-                          פריטים
+                          {t("studio.addLayers.items")}
                         </span>
                       </div>
 
@@ -1923,7 +2001,7 @@ export default function VisualAddLayersPanel({
                         <div className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                           <label className="min-w-[120px]">
                             <span className="mb-1 block text-[11px] font-black text-slate-500">
-                              שורות
+                              {t("studio.addLayers.rows")}
                             </span>
                             <input
                               type="number"
@@ -1943,7 +2021,7 @@ export default function VisualAddLayersPanel({
                           </label>
                           <label className="min-w-[120px]">
                             <span className="mb-1 block text-[11px] font-black text-slate-500">
-                              עמודות
+                              {t("studio.addLayers.columns")}
                             </span>
                             <input
                               type="number"
@@ -1975,10 +2053,10 @@ export default function VisualAddLayersPanel({
                             }
                             className="inline-flex h-10 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-black text-white transition hover:bg-slate-800"
                           >
-                            הוספת טבלה {tableRows}×{tableCols}
+                            {t("studio.addLayers.addTable", { rows: tableRows, cols: tableCols })}
                           </button>
                           <p className="w-full text-[11px] font-bold text-slate-400">
-                            אפשר גם לבחור תבנית מוכנה מהרשימה למטה
+                            {t("studio.addLayers.orReadyTemplate")}
                           </p>
                         </div>
                       ) : null}
@@ -2048,8 +2126,8 @@ export default function VisualAddLayersPanel({
                       <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
                         <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
                           {sectionLibraryMode === "portal"
-                            ? "סוג סקשן"
-                            : "קטגוריות"}
+                            ? t("studio.addLayers.sectionType")
+                            : t("studio.addLayers.categories")}
                         </p>
                         {sectionLibraryMode === "portal" ? (
                           PORTAL_SECTION_KIND_NAV.map((kindItem) => (
@@ -2064,7 +2142,13 @@ export default function VisualAddLayersPanel({
                                   : "text-slate-600 hover:bg-slate-50",
                               ].join(" ")}
                             >
-                              <span>{kindItem.label}</span>
+                              <span>
+                                {studioPortalSectionNavLabel(
+                                  t,
+                                  kindItem.id,
+                                  kindItem.label,
+                                )}
+                              </span>
                               <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
                                 {
                                   SECTION_LIBRARY.filter((item) => {
@@ -2083,10 +2167,10 @@ export default function VisualAddLayersPanel({
                             <div className="mb-3 space-y-1 border-b border-slate-100 pb-3">
                               {(
                                 [
-                                  ["recommended", "מומלצים"],
-                                  ["recent", "נוספו לאחרונה"],
-                                  ["favorites", "מועדפים"],
-                                  ["all", "כל העיצובים"],
+                                  ["recommended", t("studio.addLayers.recommended")],
+                                  ["recent", t("studio.addLayers.recent")],
+                                  ["favorites", t("studio.addLayers.favorites")],
+                                  ["all", t("studio.addLayers.allDesigns")],
                                 ] as Array<[SectionQuickFilter, string]>
                               ).map(([id, label]) => (
                                 <button
@@ -2123,7 +2207,7 @@ export default function VisualAddLayersPanel({
                                       undefined,
                                       "blank",
                                     );
-                                    setLastAddedTitle("סקשן ריק נוסף לעמוד");
+                                    setLastAddedTitle(t("studio.addLayers.emptySectionAdded"));
                                     return;
                                   }
                                   setSectionQuickFilter("all");
@@ -2139,7 +2223,13 @@ export default function VisualAddLayersPanel({
                                     : "",
                                 ].join(" ")}
                               >
-                                <span>{categoryItem.label}</span>
+                                <span>
+                                  {studioSectionNavLabel(
+                                    t,
+                                    categoryItem.id,
+                                    categoryItem.label,
+                                  )}
+                                </span>
                                 {categoryItem.id === "all" ? (
                                   <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black text-slate-700">
                                     {
@@ -2181,15 +2271,15 @@ export default function VisualAddLayersPanel({
                         <div className="mb-4 flex items-center justify-between gap-3">
                           <div>
                             <h3 className="text-base font-black text-slate-800">
-                              ספריית סקשנים · {activeSectionCategoryLabel}
+                              {t("studio.addLayers.sectionLibrary", { category: activeSectionCategoryLabel })}
                             </h3>
                             <p className="mt-1 text-xs font-bold text-slate-400">
-                              תבנית לפתיחה — אחרי ההוספה כל טקסט, תמונה ואלמנט ניתנים לעריכה
+                              {t("studio.addLayers.sectionLibraryHint")}
                             </p>
                           </div>
 
                           <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-                            {filteredSections.length} סקשנים
+{t("studio.addLayers.sectionsCount", { count: filteredSections.length })}
                           </span>
                         </div>
 
@@ -2217,7 +2307,7 @@ export default function VisualAddLayersPanel({
                                   setPreviewSection(item);
                                 }}
                                 className="block w-full text-right"
-                                aria-label={`תצוגה מקדימה: ${item.title}`}
+                                aria-label={t("studio.addLayers.previewAria", { title: item.title })}
                               >
                               <div className="relative h-[220px] overflow-hidden bg-[#f5f5f3] p-3">
                                 <div className="h-full overflow-hidden border border-black/5 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
@@ -2234,7 +2324,7 @@ export default function VisualAddLayersPanel({
                                 <div className="absolute inset-0 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/0 opacity-0 transition duration-200 group-hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 group-hover:opacity-100">
                                   <span className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-xs font-black text-slate-800 shadow-xl">
                                     <Eye className="h-4 w-4" />
-                                    תצוגה מקדימה
+                                    {t("studio.addLayers.preview")}
                                   </span>
                                 </div>
                               </div>
@@ -2258,7 +2348,7 @@ export default function VisualAddLayersPanel({
                               <button
                                 type="button"
                                 data-testid="visual-add-to-page"
-                                aria-label={`הוספה לעמוד: ${item.title}`}
+                                aria-label={t("studio.addLayers.addToPageAria", { title: item.title })}
                                 onClick={(event) => {
                                   event.preventDefault();
                                   event.stopPropagation();
@@ -2267,7 +2357,7 @@ export default function VisualAddLayersPanel({
                                 className="absolute bottom-3 left-3 z-20 inline-flex h-9 items-center gap-1.5 rounded-md bg-slate-900 px-3 text-[11px] font-black text-white shadow-md transition hover:bg-slate-800"
                               >
                                 <Plus className="h-3.5 w-3.5" />
-                                הוספה לעמוד
+                                {t("studio.addLayers.addToPage")}
                               </button>
                               <button
                                 type="button"
@@ -2280,8 +2370,8 @@ export default function VisualAddLayersPanel({
                                 ].join(" ")}
                                 aria-label={
                                   favoriteSectionIds.includes(item.id)
-                                    ? "הסרה מהמועדפים"
-                                    : "הוספה למועדפים"
+                                    ? t("studio.addLayers.removeFavorite")
+                                    : t("studio.addLayers.addFavorite")
                                 }
                               >
                                 <Heart
@@ -2300,10 +2390,10 @@ export default function VisualAddLayersPanel({
                         {filteredSections.length === 0 ? (
                           <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
                             <p className="text-sm font-black text-slate-700">
-                              לא נמצאו סקשנים בקטגוריה זו
+{t("studio.addLayers.noSectionsInCategory")}
                             </p>
                             <p className="mt-2 text-xs font-bold text-slate-400">
-                              נסו חיפוש אחר או עברו לקטגוריה אחרת
+    {t("studio.addLayers.tryOtherSearch")}
                             </p>
                           </div>
                         ) : null}
@@ -2336,7 +2426,7 @@ export default function VisualAddLayersPanel({
               type="button"
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
-              aria-label="סגירה"
+              aria-label={t("studio.addLayers.close")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -2346,7 +2436,7 @@ export default function VisualAddLayersPanel({
             <div className="flex min-h-0 flex-1 flex-col">
               <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
                 <span className="text-xs font-black text-slate-500">
-                  {sections.length} בלוקים · {layers.length} שכבות
+                  {t("studio.addLayers.blockCount", { sections: sections.length, layers: layers.length })}
                 </span>
 
                 <button
@@ -2355,7 +2445,7 @@ export default function VisualAddLayersPanel({
                   className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-black text-slate-600"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
-                  רענון
+                  {t("studio.addLayers.refresh")}
                 </button>
               </div>
 
@@ -2364,10 +2454,10 @@ export default function VisualAddLayersPanel({
                   <div className="space-y-2">
                     <div className="px-1">
                       <div className="text-sm font-black text-slate-900">
-                        סדר הבלוקים
+                        {t("studio.addLayers.blockOrder")}
                       </div>
                       <div className="mt-1 text-[11px] font-bold leading-5 text-slate-400">
-                        גררו את הידית כדי לשנות את סדר הבלוקים בעמוד — חלק ומיידי.
+                        {t("studio.addLayers.blockOrderHint")}
                       </div>
                     </div>
 
@@ -2432,7 +2522,7 @@ export default function VisualAddLayersPanel({
                 <div className="space-y-2">
                   {sections.length ? (
                     <div className="px-1 pt-1 text-sm font-black text-slate-900">
-                      שכבות אלמנטים
+                      {t("studio.addLayers.elementLayers")}
                     </div>
                   ) : null}
 
@@ -2468,7 +2558,7 @@ export default function VisualAddLayersPanel({
                           </span>
 
                           <span className="block truncate text-[11px] font-bold text-slate-400">
-                            {item.type} · שכבה{" "}
+                            {t("studio.addLayers.layerN", { type: item.type })}{" "}
                             {item.zIndex}
                           </span>
                         </span>
@@ -2478,7 +2568,7 @@ export default function VisualAddLayersPanel({
                         <div className="grid grid-cols-4 gap-1 border-t border-violet-100 pt-2">
                           <button
                             type="button"
-                            title="לחזית"
+                            title={t("studio.addLayers.toFront")}
                             onClick={() =>
                               editor?.bringToFront?.(
                                 item.id,
@@ -2491,7 +2581,7 @@ export default function VisualAddLayersPanel({
 
                           <button
                             type="button"
-                            title="לרקע"
+                            title={t("studio.addLayers.toBack")}
                             onClick={() =>
                               editor?.sendToBack?.(
                                 item.id,
@@ -2506,8 +2596,8 @@ export default function VisualAddLayersPanel({
                             type="button"
                             title={
                               item.hidden
-                                ? "הצגה"
-                                : "הסתרה"
+                                ? t("studio.addLayers.show")
+                                : t("studio.addLayers.hide")
                             }
                             onClick={() =>
                               editor?.toggleElementHidden?.(
@@ -2525,7 +2615,7 @@ export default function VisualAddLayersPanel({
 
                           <button
                             type="button"
-                            title="מחיקה"
+                            title={t("studio.delete")}
                             onClick={() =>
                               editor?.deleteElement?.(
                                 item.id,
@@ -2545,7 +2635,7 @@ export default function VisualAddLayersPanel({
 
               {selectedLayer ? (
                 <div className="shrink-0 border-t border-slate-200 bg-slate-50 p-3 text-xs font-bold text-slate-500">
-                  מסומן: {selectedLayer.label}
+{t("studio.addLayers.marked", { label: selectedLayer.label })}
                 </div>
               ) : null}
             </div>
@@ -2562,7 +2652,7 @@ export default function VisualAddLayersPanel({
                       : "text-slate-500 hover:text-slate-800",
                   ].join(" ")}
                 >
-                  כל האתר
+                  {t("studio.addLayers.wholeSite")}
                 </button>
                 <button
                   type="button"
@@ -2574,19 +2664,19 @@ export default function VisualAddLayersPanel({
                       : "text-slate-500 hover:text-slate-800",
                   ].join(" ")}
                 >
-                  עמוד זה בלבד
+                  {t("studio.addLayers.thisPageOnly")}
                 </button>
               </div>
 
               <div className="rounded-2xl bg-slate-50 p-3 text-xs font-bold leading-6 text-slate-600">
                 {codeScope === "site"
-                  ? "קוד ברמת האתר רץ בכל העמודים — מתאים לפיקסל, Analytics, CSS גלובלי."
-                  : "קוד ברמת העמוד רץ רק בעמוד הנוכחי — בנוסף לקוד של כל האתר."}
+                  ? t("studio.addLayers.siteCodeHint")
+                  : t("studio.addLayers.pageCodeHint")}
               </div>
 
               <label className="flex items-center justify-between rounded-2xl border border-slate-200 p-3">
                 <span className="text-sm font-black text-slate-800">
-                  הפעלת קוד מותאם
+                  {t("studio.addLayers.enableCustomCode")}
                 </span>
 
                 <input
@@ -2628,7 +2718,7 @@ export default function VisualAddLayersPanel({
               />
 
               <CodeField
-                label="HTML בתחילת ה־Body"
+                label={t("studio.addLayers.bodyStart")}
                 value={codeDraft.bodyStartHtml}
                 onChange={(bodyStartHtml) =>
                   setCodeDraft((current) => ({
@@ -2636,12 +2726,12 @@ export default function VisualAddLayersPanel({
                     bodyStartHtml,
                   }))
                 }
-                placeholder="<!-- קוד שיופיע לפני האתר -->"
+                placeholder={t("studio.addLayers.bodyStartPh")}
                 rows={4}
               />
 
               <CodeField
-                label="HTML בסוף ה־Body"
+                label={t("studio.addLayers.bodyEnd")}
                 value={codeDraft.bodyEndHtml}
                 onChange={(bodyEndHtml) =>
                   setCodeDraft((current) => ({
@@ -2649,7 +2739,7 @@ export default function VisualAddLayersPanel({
                     bodyEndHtml,
                   }))
                 }
-                placeholder="<!-- קוד שיופיע אחרי האתר -->"
+                placeholder={t("studio.addLayers.bodyEndPh")}
                 rows={4}
               />
 
@@ -2666,9 +2756,7 @@ export default function VisualAddLayersPanel({
               />
 
               <div className="rounded-2xl bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800">
-                CSS מתעדכן מיד בעורך. Head HTML מופיע בעריכה (בלי
-                סקריפטים). JavaScript רץ בתצוגה מקדימה ובאתר המפורסם בלבד.
-                שמרו גם טיוטה/פרסום כדי שהקוד יישמר בשרת.
+                {t("studio.addLayers.codeNote")}
               </div>
 
               <button
@@ -2680,7 +2768,7 @@ export default function VisualAddLayersPanel({
                       "function"
                     ) {
                       window.alert(
-                        "שמירת קוד ברמת האתר לא זמינה. רעננו את הדף ונסו שוב.",
+                        t("studio.addLayers.siteCodeUnavailable"),
                       );
                       return;
                     }
@@ -2690,7 +2778,7 @@ export default function VisualAddLayersPanel({
                       typeof editor?.updateCustomCode !== "function"
                     ) {
                       window.alert(
-                        "שמירת קוד מותאם לא זמינה כרגע. רעננו את הדף ונסו שוב.",
+                        t("studio.addLayers.customCodeUnavailable"),
                       );
                       return;
                     }
@@ -2702,8 +2790,8 @@ export default function VisualAddLayersPanel({
               >
                 <Save className="h-4 w-4" />
                 {codeScope === "site"
-                  ? "שמירת קוד לכל האתר"
-                  : "שמירת קוד לעמוד זה"}
+                  ? t("studio.addLayers.saveSiteCode")
+                  : t("studio.addLayers.savePageCode")}
               </button>
             </div>
           )}
@@ -2715,7 +2803,7 @@ export default function VisualAddLayersPanel({
           <header className="flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 px-6">
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-slate-400">
-                תצוגה מקדימה
+                {t("studio.addLayers.preview")}
               </p>
               <h3 className="truncate text-lg font-black text-slate-800">
                 {previewSection.title}
@@ -2735,7 +2823,7 @@ export default function VisualAddLayersPanel({
                   ].join(" ")}
                 >
                   <Monitor className="h-4 w-4" />
-                  דסקטופ
+                  {t("studio.addLayers.desktop")}
                 </button>
                 <button
                   type="button"
@@ -2748,7 +2836,7 @@ export default function VisualAddLayersPanel({
                   ].join(" ")}
                 >
                   <Smartphone className="h-4 w-4" />
-                  מובייל
+                  {t("studio.addLayers.mobile")}
                 </button>
               </div>
 
@@ -2761,7 +2849,7 @@ export default function VisualAddLayersPanel({
                     ? "border-rose-200 bg-rose-50 text-rose-600"
                     : "border-slate-200 text-slate-500 hover:text-rose-600",
                 ].join(" ")}
-                aria-label="מועדפים"
+                aria-label={t("studio.addLayers.favoritesAria")}
               >
                 <Heart
                   className="h-4 w-4"
@@ -2777,7 +2865,7 @@ export default function VisualAddLayersPanel({
                 type="button"
                 onClick={() => setPreviewSection(null)}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
-                aria-label="חזרה לספרייה"
+                aria-label={t("studio.addLayers.backToLibrary")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -2806,7 +2894,7 @@ export default function VisualAddLayersPanel({
 
           <footer className="flex min-h-[76px] shrink-0 items-center justify-between gap-4 border-t border-slate-200 bg-white px-6 py-3">
             <p className="text-xs font-bold text-slate-500">
-              הסקשן יותאם אוטומטית לצבעים ולפונט של האתר.
+              {t("studio.addLayers.sectionMatchesTheme")}
             </p>
             <div className="flex items-center gap-2">
               {canReplaceSelectedSection ? (
@@ -2816,7 +2904,7 @@ export default function VisualAddLayersPanel({
                   className="inline-flex h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-5 text-sm font-black text-slate-800 transition hover:border-slate-950"
                 >
                   <RefreshCw className="h-4 w-4" />
-                  החלפת הסקשן הנבחר
+                  {t("studio.addLayers.replaceSelectedSection")}
                 </button>
               ) : null}
               <button
@@ -2825,7 +2913,7 @@ export default function VisualAddLayersPanel({
                 className="inline-flex h-11 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
               >
                 <Plus className="h-4 w-4" />
-                הוספה לעמוד
+                {t("studio.addLayers.addToPage")}
               </button>
             </div>
           </footer>
@@ -2844,7 +2932,7 @@ export default function VisualAddLayersPanel({
             className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-3 py-1.5 text-xs font-black hover:bg-white/20"
           >
             <Undo2 className="h-4 w-4" />
-            ביטול
+            {t("studio.cancel")}
           </button>
         </div>
       ) : null}

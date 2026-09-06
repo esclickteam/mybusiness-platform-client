@@ -1,4 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import i18n from "../../../../i18n/i18n";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
   ReactFlow,
   Background,
@@ -112,68 +117,74 @@ import {
   type EmailSender,
 } from "../../../../api/emailSendersApi";
 import {
-  BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE,
   nextSendEmailSenderFields,
 } from "./emailProviderAutomation";
 
-const WA_MAPPING_PRESETS = [
-  { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
-  { key: "lead:phone", source: "lead", field: "phone", label: "טלפון הליד" },
-  { key: "lead:email", source: "lead", field: "email", label: "אימייל הליד" },
-  { key: "lead:source", source: "lead", field: "source", label: "מקור הליד" },
-  {
-    key: "business:businessName",
-    source: "business",
-    field: "businessName",
-    label: "שם העסק",
-  },
-  {
-    key: "appointment:date",
-    source: "appointment",
-    field: "date",
-    label: "תאריך",
-  },
-  {
-    key: "appointment:time",
-    source: "appointment",
-    field: "time",
-    label: "שעה",
-  },
-  { key: "constant", source: "constant", field: "", label: "ערך קבוע" },
-  {
-    key: "manual",
-    source: "manual",
-    field: "",
-    label: "שדה מותאם אישית / ערך ידני",
-  },
-] as const;
+function getWaMappingPresets(t: TFunction) {
+  return [
+    { key: "lead:name", source: "lead", field: "name", label: t("automations.editor.mapping.leadName") },
+    { key: "lead:phone", source: "lead", field: "phone", label: t("automations.editor.mapping.leadPhone") },
+    { key: "lead:email", source: "lead", field: "email", label: t("automations.editor.mapping.leadEmail") },
+    { key: "lead:source", source: "lead", field: "source", label: t("automations.editor.mapping.leadSource") },
+    {
+      key: "business:businessName",
+      source: "business",
+      field: "businessName",
+      label: t("automations.editor.mapping.businessName"),
+    },
+    {
+      key: "appointment:date",
+      source: "appointment",
+      field: "date",
+      label: t("automations.editor.mapping.date"),
+    },
+    {
+      key: "appointment:time",
+      source: "appointment",
+      field: "time",
+      label: t("automations.editor.mapping.time"),
+    },
+    { key: "constant", source: "constant", field: "", label: t("automations.editor.mapping.constant") },
+    {
+      key: "manual",
+      source: "manual",
+      field: "",
+      label: t("automations.editor.mapping.manual"),
+    },
+  ] as const;
+}
 
 /** Labels for Meta positional variables (not injected system fields). */
-const WA_VARIABLE_LABELS: Record<string, Record<string, string>> = {
-  appointment_reminder: {
-    "1": "שם הלקוח",
-    "2": "זמן עד הפגישה",
-    "3": "שעת הפגישה",
-    "4": "שירות",
-  },
-  appointment_thanks: { "1": "שם הלקוח", "2": "שירות" },
-  appointment_review: { "1": "שם הלקוח", "2": "שירות" },
-  new_lead_welcome: { "1": "שם הליד" },
-  lead_follow_up: { "1": "שם הליד" },
-  lead_follow_up_2: { "1": "שם הליד" },
-  new_client_welcome: { "1": "שם הלקוח" },
-  inactive_client: { "1": "שם הלקוח" },
-  new_lead_received_utility: {
-    "1": "שם הליד",
-    "2": "טלפון הליד",
-    "3": "מקור הליד",
-  },
-  new_lead_received: {
-    "1": "שם הליד",
-    "2": "טלפון הליד",
-    "3": "מקור הליד",
-  },
-};
+function getWaVariableLabels(t: TFunction): Record<string, Record<string, string>> {
+  const client = t("automations.editor.mapping.clientName");
+  const lead = t("automations.editor.mapping.leadName");
+  const service = t("automations.editor.mapping.service");
+  return {
+    appointment_reminder: {
+      "1": client,
+      "2": t("automations.editor.mapping.timeUntil"),
+      "3": t("automations.editor.mapping.appointmentTime"),
+      "4": service,
+    },
+    appointment_thanks: { "1": client, "2": service },
+    appointment_review: { "1": client, "2": service },
+    new_lead_welcome: { "1": lead },
+    lead_follow_up: { "1": lead },
+    lead_follow_up_2: { "1": lead },
+    new_client_welcome: { "1": client },
+    inactive_client: { "1": client },
+    new_lead_received_utility: {
+      "1": lead,
+      "2": t("automations.editor.mapping.leadPhone"),
+      "3": t("automations.editor.mapping.leadSource"),
+    },
+    new_lead_received: {
+      "1": lead,
+      "2": t("automations.editor.mapping.leadPhone"),
+      "3": t("automations.editor.mapping.leadSource"),
+    },
+  };
+}
 
 const WA_DEFAULT_MAPPINGS: Record<
   string,
@@ -236,15 +247,9 @@ function isGoogleCalendarActionKey(actionKey: unknown) {
   );
 }
 
-const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
-  lead_email: "אימייל הליד",
-  appointment_customer_email: "הלקוח שקבע תור",
-  store_customer_email: "הלקוח בהזמנה",
-  business_owner: "בעל העסק",
-  lead_owner: "אחראי הליד",
-  fixed_email: "כתובת קבועה",
-  custom_field: "שדה מותאם אישית",
-};
+function getRecipientLabel(t: TFunction, key: string) {
+  return t(`automations.catalog.recipients.${key}`);
+}
 
 function triggerSupportsAppointmentCustomerEmail(triggerKey: string) {
   const key = String(triggerKey || "");
@@ -278,11 +283,12 @@ function mappingPresetKey(row: WhatsAppVariableMapping) {
 
 function templateVariableLabel(
   metaTemplateName: string,
-  variable: string
+  variable: string,
+  t: TFunction
 ): string {
   const tpl = String(metaTemplateName || "").toLowerCase();
   const key = String(variable || "");
-  return WA_VARIABLE_LABELS[tpl]?.[key] || "";
+  return getWaVariableLabels(t)[tpl]?.[key] || "";
 }
 
 function buildMappingsFromTemplate(
@@ -315,16 +321,15 @@ function buildMappingsFromTemplate(
 import { automationNodeTypes } from "./FlowNodes";
 import {
   AI_AUTOMATION_CATALOG,
-  AI_BILLING_SAFE_MESSAGE,
   getAiTemplateByKey,
   listSupportedAiTemplates,
 } from "./aiAutomationCatalog";
 import {
-  CONDITION_OPTIONS,
-  DELAY_UNITS,
-  FLOW_ACTION_PALETTE,
-  TRIGGER_CATEGORY_LABELS,
-  TYPE_META,
+  getConditionOptions,
+  getDelayUnits,
+  getFlowActionPalette,
+  getTriggerCategoryLabels,
+  getTypeMeta,
   DEFAULT_NEW_TRIGGER_ROUTE_COUNT,
   buildPaletteWithTriggers,
   clampRouteCount,
@@ -359,18 +364,22 @@ function readErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-function edgeLabelFromHandle(handle?: string | null) {
+function edgeLabelFromHandle(handle: string | null | undefined, t: TFunction) {
   if (!handle) return "";
-  if (handle === "yes") return "כן";
-  if (handle === "no") return "לא";
-  if (handle.startsWith("route_")) return `תוצאה ${handle.split("_")[1]}`;
-  if (handle.startsWith("path_")) return `תוצאה ${handle.split("_")[1]}`;
+  if (handle === "yes") return t("automations.common.yes");
+  if (handle === "no") return t("automations.common.no");
+  if (handle.startsWith("route_")) {
+    return t("automations.catalog.palette.resultN", { n: handle.split("_")[1] });
+  }
+  if (handle.startsWith("path_")) {
+    return t("automations.catalog.palette.resultN", { n: handle.split("_")[1] });
+  }
   return "";
 }
 
-function styleEdge(edge: Partial<Edge>): Edge {
+function styleEdge(edge: Partial<Edge>, t?: TFunction): Edge {
   const handle = edge.sourceHandle || null;
-  const label = edge.label || edgeLabelFromHandle(handle);
+  const label = edge.label || (t ? edgeLabelFromHandle(handle, t) : "");
   const isYes = handle === "yes";
   const isNo = handle === "no";
   const stroke = isYes ? "#059669" : isNo ? "#dc2626" : "#64748b";
@@ -424,7 +433,7 @@ function toFlowEdges(workflow: AutomationWorkflow): Edge[] {
       sourceHandle: e.sourceHandle || undefined,
       targetHandle: e.targetHandle || undefined,
       label: e.label || undefined,
-    })
+    }, i18n.t.bind(i18n))
   );
 }
 
@@ -502,6 +511,14 @@ function EditorInner({
   onBack,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const FLOW_ACTION_PALETTE = useMemo(() => getFlowActionPalette(t), [t]);
+  const TYPE_META = useMemo(() => getTypeMeta(t), [t]);
+  const CONDITION_OPTIONS = useMemo(() => getConditionOptions(t), [t]);
+  const DELAY_UNITS = useMemo(() => getDelayUnits(t), [t]);
+  const TRIGGER_CATEGORY_LABELS = useMemo(() => getTriggerCategoryLabels(t), [t]);
+  const WA_MAPPING_PRESETS = useMemo(() => getWaMappingPresets(t), [t]);
   const readOnly = readOnlyProp || isAutomationsReadOnly();
   const writeBlockedTitle = readOnly
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
@@ -705,15 +722,15 @@ function EditorInner({
           unavailable ||
             approved.message ||
             (senderMode === "business_connected"
-              ? "יש לחבר מספר WhatsApp של העסק לפני בחירת תבנית"
-              : "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה.")
+              ? t("automations.editor.wa.connectBeforeSelect")
+              : t("automations.editor.wa.unavailable"))
         );
       } else if (approved.message) {
         setWaSyncError(approved.message);
       }
     } catch (error: unknown) {
       setWaTemplates([]);
-      setWaSyncError(readErrorMessage(error, "לא הצלחנו לטעון את תבניות WhatsApp"));
+      setWaSyncError(readErrorMessage(error, t("automations.editor.wa.loadTemplatesError")));
     } finally {
       setWaLoading(false);
     }
@@ -735,7 +752,7 @@ function EditorInner({
         setWaSyncError(
           synced.customerUnavailableMessage ||
             synced.message ||
-            "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+            t("automations.editor.wa.unavailable")
         );
       } else if (synced.sync?.errors?.length) {
         setWaSyncError(
@@ -747,7 +764,7 @@ function EditorInner({
       }
     } catch (error: unknown) {
       setWaSyncError(
-        readErrorMessage(error, "לא הצלחנו לטעון את תבניות WhatsApp")
+        readErrorMessage(error, t("automations.editor.wa.loadTemplatesError"))
       );
       await loadApprovedWhatsAppTemplates(senderMode);
       return;
@@ -769,7 +786,7 @@ function EditorInner({
     } catch (error: unknown) {
       setGmailAvailable(false);
       setGmailAccount(null);
-      setGmailMessage(readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Gmail"));
+      setGmailMessage(readErrorMessage(error, t("automations.editor.toasts.loadGmail")));
     } finally {
       setGmailLoading(false);
     }
@@ -787,7 +804,7 @@ function EditorInner({
       setOutlookAvailable(false);
       setOutlookAccount(null);
       setOutlookMessage(
-        readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Outlook")
+        readErrorMessage(error, t("automations.editor.toasts.loadOutlook"))
       );
     } finally {
       setOutlookLoading(false);
@@ -804,7 +821,7 @@ function EditorInner({
     } catch (error: unknown) {
       setCalendarStatus(null);
       setCalendarMessage(
-        readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Google Calendar")
+        readErrorMessage(error, t("automations.editor.toasts.loadCalendar"))
       );
     } finally {
       setCalendarLoading(false);
@@ -826,7 +843,7 @@ function EditorInner({
     } catch (error: unknown) {
       setTriggerCatalog([]);
       setTriggerCatalogError(
-        readErrorMessage(error, "לא הצלחנו לטעון את קטלוג הטריגרים")
+        readErrorMessage(error, t("automations.editor.toasts.loadTriggers"))
       );
     } finally {
       setTriggerCatalogLoading(false);
@@ -1086,9 +1103,9 @@ function EditorInner({
   const palette = useMemo(
     () =>
       triggerCatalog.length
-        ? buildPaletteWithTriggers(triggerCatalog)
+        ? buildPaletteWithTriggers(triggerCatalog, t)
         : FLOW_ACTION_PALETTE,
-    [triggerCatalog]
+    [triggerCatalog, t, FLOW_ACTION_PALETTE]
   );
 
   const filteredPalette = useMemo(() => {
@@ -1147,7 +1164,7 @@ function EditorInner({
           styleEdge({
             ...connection,
             id: newId("e"),
-          }),
+          }, t),
           eds
         )
       );
@@ -1250,12 +1267,12 @@ function EditorInner({
           });
           insertedOk = result.ok;
           if (!result.ok) return prev;
-          return result.edges.map((edge) => styleEdge(edge));
+          return result.edges.map((edge) => styleEdge(edge, t));
         });
         toast.success(
           insertedOk
-            ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
-            : "מודול נוסף ללוח"
+            ? t("automations.editor.toasts.addedAndLinked")
+            : t("automations.editor.toasts.moduleAdded")
         );
       } else if (autoConnect && afterNode && item.type !== "trigger") {
         let replacedCount = 0;
@@ -1289,19 +1306,19 @@ function EditorInner({
             createEdgeId: () => newId("e"),
           });
           replacedCount = spliced.replaced.length;
-          return spliced.edges.map((edge) => styleEdge(edge));
+          return spliced.edges.map((edge) => styleEdge(edge, t));
         });
         toast.success(
           replacedCount
-            ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
+            ? t("automations.editor.toasts.addedAndLinked")
             : afterNode.type === "trigger"
-              ? "תוצאה נוספה לטריגר"
-              : "נוסף וחובר אוטומטית למודול שנבחר"
+              ? t("automations.editor.toasts.resultAdded")
+              : t("automations.editor.toasts.addedToSelected")
         );
       } else if (item.type === "trigger") {
-        toast.success("טריגר נוסף — בחרו מה יקרה אוטומטית");
+        toast.success(t("automations.editor.toasts.triggerAdded"));
       } else {
-        toast.success("מודול נוסף ללוח");
+        toast.success(t("automations.editor.toasts.moduleAdded"));
       }
 
       setSelectedIdSafe(id);
@@ -1418,12 +1435,12 @@ function EditorInner({
     const key = String(node.data?.triggerKey || "");
     if (key === "lead_status_changed") {
       const toStatus = String(node.data?.toStatus || "").trim();
-      if (!toStatus) return "יש לבחור סטטוס יעד";
+      if (!toStatus) return t("automations.editor.needTargetStatus");
     }
     if (key === "appointment_reminder") {
       const hoursBefore = Number(node.data?.hoursBefore);
       if (!Number.isFinite(hoursBefore) || hoursBefore <= 0) {
-        return "יש להגדיר כמה שעות לפני הפגישה";
+        return t("automations.editor.needHoursBefore");
       }
     }
     if (key === "scheduled") {
@@ -1431,7 +1448,7 @@ function EditorInner({
         (node.data?.schedule as Partial<AutomationScheduleConfig> | undefined) ||
           {}
       );
-      if (!schedule) return "הגדרות לוח הזמנים אינן תקינות";
+      if (!schedule) return t("automations.editor.invalidSchedule");
     }
     return null;
   }, []);
@@ -1449,7 +1466,7 @@ function EditorInner({
         setInspectorBaseline(JSON.stringify(node.data || {}));
         setDrawerSessionDirty(false);
       }
-      toast.success("ההגדרות נשמרו");
+      toast.success(t("automations.editor.toasts.settingsSaved"));
     }
     return ok;
   };
@@ -1543,11 +1560,11 @@ function EditorInner({
       setNodes(withSelectedNode(toFlowNodes(saved), selectedIdRef.current));
       setEdges(toFlowEdges(saved));
       setSaveState("saved");
-      if (!quiet) toast.success("הטיוטה נשמרה");
+      if (!quiet) toast.success(t("automations.editor.toasts.draftSaved"));
       return true;
     } catch (error: unknown) {
       setSaveState("error");
-      toast.error(readErrorMessage(error, "שגיאה בשמירת האוטומציה"));
+      toast.error(readErrorMessage(error, t("automations.editor.toasts.saveError")));
       return false;
     } finally {
       setSaving(false);
@@ -1604,8 +1621,8 @@ function EditorInner({
     if (isWhatsAppBillingGateCode(code)) {
       const msg =
         code === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED
-          ? "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה."
-          : "לא ניתן להפעיל אוטומציה עקב מצב חיוב WhatsApp";
+          ? t("automations.editor.toasts.waBillingRequired")
+          : t("automations.editor.toasts.waBillingBlock");
       setPublishError(msg);
       toast.error(msg);
       openWhatsAppBillingGateModal();
@@ -1613,7 +1630,7 @@ function EditorInner({
     }
     const normalized = normalizeAutomationBillingPublicCode(code);
     if (normalized === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
-      const msg = "כדי להפעיל אוטומציה יש לבחור חבילת פעולות";
+      const msg = t("automations.editor.toasts.planRequired");
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("pick");
@@ -1622,13 +1639,13 @@ function EditorInner({
     if (normalized === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
       // Soft warning only — action quota must not block publish / workflow start.
       toast.error(
-        "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג"
+        t("automations.editor.toasts.quotaExhausted")
       );
       openBillingGateModal("manage");
       return false;
     }
     if (normalized === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
-      const msg = "לא ניתן להפעיל אוטומציות עקב מצב התשלום של החבילה";
+      const msg = t("automations.editor.toasts.billingBlocked");
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("manage");
@@ -1643,12 +1660,12 @@ function EditorInner({
       return;
     }
     if (workflow.status === "archived") {
-      toast.error("לא ניתן לפרסם אוטומציה בארכיון");
+      toast.error(t("automations.editor.toasts.archived"));
       return;
     }
     if (publishing) return;
     if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
-      const msg = "יש לטעון את קטלוג הטריגרים לפני פרסום";
+      const msg = t("automations.editor.toasts.needTriggerCatalog");
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1659,7 +1676,7 @@ function EditorInner({
         isBizuplySendEmailActionKey(node.data?.actionKey)
     );
     if (sendEmailNodes.length && !emailSenders.length) {
-      const msg = "לא הוגדר מייל עסקי מאומת";
+      const msg = t("automations.editor.email.noVerified");
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1667,7 +1684,7 @@ function EditorInner({
     if (
       sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
     ) {
-      const msg = "לא הוגדר מייל עסקי מאומת";
+      const msg = t("automations.editor.email.noVerified");
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1681,15 +1698,15 @@ function EditorInner({
         );
       })
     ) {
-      const msg = BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE;
+      const msg = t("automations.editor.email.senderUnavailable");
       setPublishError(msg);
       toast.error(msg);
       return;
     }
     if (hasUnsupportedTrigger) {
       const msg = selectedTriggerOption
-        ? "הטריגר שנבחר עדיין לא נתמך לפרסום"
-        : "טריגר ישן או לא נתמך — יש לבחור טריגר נתמך לפני פרסום";
+        ? t("automations.editor.toasts.unsupportedPublish")
+        : t("automations.editor.toasts.unsupportedChoose");
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1703,7 +1720,7 @@ function EditorInner({
         await new Promise((resolve) => window.setTimeout(resolve, 50));
       }
       if (savingRef.current) {
-        const msg = "השמירה לוקחת יותר מדי זמן — נסו שוב";
+        const msg = t("automations.editor.toasts.saveTimeout");
         setPublishError(msg);
         toast.error(msg);
         return;
@@ -1712,7 +1729,7 @@ function EditorInner({
       setNodes(nodesForPublish);
       const savedOk = await handleSave(true, nodesForPublish);
       if (!savedOk) {
-        setPublishError("לא ניתן לשמור את הטיוטה לפני פרסום");
+        setPublishError(t("automations.editor.toasts.cannotSaveBeforePublish"));
         return;
       }
       const result = await publishAutomationWorkflow(businessId, workflow._id);
@@ -1730,7 +1747,7 @@ function EditorInner({
         return;
       }
       if (!result.workflow) {
-        const msg = "הפרסום הצליח אך לא התקבלה תשובה תקינה מהשרת";
+        const msg = t("automations.editor.toasts.publishNoResponse");
         setPublishError(msg);
         toast.error(msg);
         return;
@@ -1745,8 +1762,8 @@ function EditorInner({
       setPublishError("");
       toast.success(
         result.workflow.status === "active"
-          ? "האוטומציה פורסמה ועדכנה"
-          : "האוטומציה פורסמה"
+          ? t("automations.editor.toasts.publishedUpdated")
+          : t("automations.editor.toasts.published")
       );
       if (result.warnings?.length) {
         toast.warn(result.warnings.join(" · "));
@@ -1770,7 +1787,7 @@ function EditorInner({
       const msg =
         response?.errors?.join(" · ") ||
         response?.error ||
-        readErrorMessage(error, "לא ניתן לפרסם את האוטומציה");
+        readErrorMessage(error, t("automations.editor.toasts.publishFailed"));
       setPublishError(msg);
       toast.error(msg);
       selectNodeFromPublishErrors([msg]);
@@ -1795,7 +1812,7 @@ function EditorInner({
       });
       setTestResult((result || {}) as Record<string, unknown>);
     } catch (error: unknown) {
-      toast.error(readErrorMessage(error, "בדיקת האוטומציה נכשלה"));
+      toast.error(readErrorMessage(error, t("automations.editor.toasts.testFailed")));
     } finally {
       setTesting(false);
     }
@@ -1874,7 +1891,7 @@ function EditorInner({
       : null;
 
   return (
-    <div className="af-builder" dir="rtl">
+    <div className="af-builder" dir={dir}>
       <AutomationBuilderToolbar
         name={name}
         onNameChange={setName}
@@ -1900,7 +1917,7 @@ function EditorInner({
               readAutomationErrorCode(error);
             if (applyBillingGateCode(code)) return;
             toast.error(
-              readErrorMessage(error, "לא ניתן להפעיל מחדש את האוטומציה")
+              readErrorMessage(error, t("automations.editor.toasts.resumeFailed"))
             );
           }
         }}
@@ -1916,7 +1933,7 @@ function EditorInner({
 
         {publishError ? (
           <div className="af-publish-error" role="alert">
-            <strong>הפרסום נכשל</strong>
+            <strong>{t("automations.editor.test.publishFailed")}</strong>
             <span>{publishError}</span>
           </div>
         ) : null}
@@ -1941,7 +1958,7 @@ function EditorInner({
 
         {testOpen ? (
           <div className="af-test-panel">
-            <strong>מצב בדיקה — לא יישלחו הודעות ולא יתבצעו שינויים</strong>
+            <strong>{t("automations.editor.test.title")}</strong>
             <button
               type="button"
               className="af-btn af-btn--primary"
@@ -1954,7 +1971,7 @@ function EditorInner({
               ) : (
                 <FlaskConical size={14} />
               )}
-              הריצו בדיקה
+              {t("automations.editor.test.run")}
             </button>
             {testResult ? (
               <ol>
@@ -1968,7 +1985,7 @@ function EditorInner({
                       step.label ||
                         step.nodeId ||
                         step.type ||
-                        `שלב ${index + 1}`
+                        t("automations.editor.stepN", { n: index + 1 })
                     )}{" "}
                     · {String(step.status || "")}
                   </li>
@@ -2096,7 +2113,7 @@ function EditorInner({
             updateSelectedData({
               ...item.defaults,
               triggerKey: item.key,
-              label: item.label.replace(/^טריגר ·\s*/, ""),
+              label: item.label.replace(/^(?:טריגר|Trigger)\s*·\s*/, ""),
               routeCount: clampRouteCount(
                 selectedNode.data?.routeCount,
                 DEFAULT_NEW_TRIGGER_ROUTE_COUNT
@@ -2130,14 +2147,14 @@ function EditorInner({
                 selectedNode.data?.label ||
                   TYPE_META[selectedNode.type as keyof typeof TYPE_META]
                     ?.title ||
-                  "הגדרות"
+                  t("automations.common.settings")
               )
-            : "הגדרות"
+            : t("automations.common.settings")
         }
         subtitle={
           selectedNode?.type === "trigger"
             ? selectedTriggerOption?.description ||
-              "הגדרות הטריגר שמתחיל את האוטומציה"
+              t("automations.editor.triggerSettings")
             : selectedNode
               ? TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.title
               : undefined
@@ -2153,7 +2170,7 @@ function EditorInner({
                 className="af-btn af-btn--danger"
                 onClick={deleteSelected}
               >
-                מחק מודול
+                {t("automations.editor.deleteModule")}
               </button>
               <div className="af-drawer__footer-actions">
                 <button
@@ -2163,7 +2180,7 @@ function EditorInner({
                     closeInspector({ discardSession: drawerSessionDirty })
                   }
                 >
-                  ביטול
+                  {t("automations.common.cancel")}
                 </button>
                 <button
                   type="button"
@@ -2172,7 +2189,7 @@ function EditorInner({
                   title={writeBlockedTitle}
                   onClick={() => void handleDrawerSave()}
                 >
-                  שמור
+                  {t("automations.common.save")}
                 </button>
                 <button
                   type="button"
@@ -2181,7 +2198,7 @@ function EditorInner({
                   title={writeBlockedTitle}
                   onClick={() => void handleDrawerFinish()}
                 >
-                  סיום
+                  {t("automations.editor.done")}
                 </button>
               </div>
             </div>
@@ -2192,12 +2209,12 @@ function EditorInner({
 {!selectedNode ? (
           <div className="af-inspector__hint">
             <p>
-              <strong>איך בונים אוטומציה?</strong>
+              <strong>{t("automations.editor.howTitle")}</strong>
             </p>
             <ol>
-              <li>בוחרים טריגר (מתי זה קורה)</li>
-              <li>מוסיפים תוצאה — מה יקרה אוטומטית</li>
-              <li>רוצים כמה תוצאות יחד? הוסיפו עוד תוצאה מהטריגר — בלי מסלולים</li>
+              <li>{t("automations.editor.how1")}</li>
+              <li>{t("automations.editor.how2")}</li>
+              <li>{t("automations.editor.how3")}</li>
             </ol>
           </div>
         ) : (
@@ -2217,7 +2234,7 @@ function EditorInner({
             </div>
 
             <label>
-              כותרת
+              {t("automations.common.title")}
               <input
                 value={String(selectedNode.data?.label || "")}
                 onChange={(e) => updateSelectedData({ label: e.target.value })}
@@ -2236,25 +2253,25 @@ function EditorInner({
                     text={
                       TRIGGER_CATEGORY_LABELS[
                         selectedTriggerOption?.category || ""
-                      ] || "טריגר"
+                      ] || t("automations.catalog.nodeTypes.trigger")
                     }
                   />
                   <MixedBidiText
                     as="strong"
                     text={
                       selectedTriggerOption?.label ||
-                      String(selectedNode.data?.label || "טריגר")
+                      String(selectedNode.data?.label || t("automations.catalog.nodeTypes.trigger"))
                     }
                   />
                   <MixedBidiText
                     as="p"
                     text={
                       selectedTriggerOption?.description ||
-                      "האירוע שמתחיל את האוטומציה"
+                      t("automations.editor.triggerEvent")
                     }
                   />
                   {!selectedTriggerOption?.triggerBillable ? (
-                    <span className="af-picker-item__billing">ללא חיוב</span>
+                    <span className="af-picker-item__billing">{t("automations.catalog.noCharge")}</span>
                   ) : null}
                   {triggerCatalogError ? (
                     <div className="af-wa-template__state af-wa-template__state--error">
@@ -2264,7 +2281,7 @@ function EditorInner({
                         className="af-toolbar__btn"
                         onClick={() => void loadTriggerCatalog()}
                       >
-                        נסיון חוזר
+                        {t("automations.common.retry")}
                       </button>
                     </div>
                   ) : null}
@@ -2276,7 +2293,7 @@ function EditorInner({
                     String(selectedNode.data.triggerKey)
                   ) ? (
                     <p className="af-wa-template__state af-wa-template__state--error">
-                      טריגר ישן או לא נתמך — יש לבחור טריגר נתמך מחדש
+                      {t("automations.editor.unsupportedTrigger")}
                     </p>
                   ) : null}
                   <button
@@ -2291,16 +2308,16 @@ function EditorInner({
                       })
                     }
                   >
-                    החלף טריגר
+                    {t("automations.editor.replaceTrigger")}
                   </button>
                 </div>
 
                 {String(selectedNode.data?.triggerKey || "") ===
                 "lead_status_changed" ? (
                   <div className="af-trigger-fields">
-                    <p className="af-trigger-fields__heading">שדות חובה</p>
+                    <p className="af-trigger-fields__heading">{t("automations.common.requiredFields")}</p>
                     <label>
-                      לסטטוס
+                      {t("automations.editor.toStatus")}
                       <select
                         value={String(selectedNode.data?.toStatus || "")}
                         disabled={readOnly}
@@ -2311,24 +2328,24 @@ function EditorInner({
                         }
                       >
                         <option value="" disabled>
-                          בחרו סטטוס יעד
+                          {t("automations.editor.chooseTargetStatus")}
                         </option>
-                        <option value="new">חדש</option>
-                        <option value="contacted">נוצר קשר</option>
-                        <option value="interested">מתעניין</option>
-                        <option value="converted">הפך ללקוח</option>
-                        <option value="lost">אבוד</option>
-                        <option value="old">ישן</option>
+                        <option value="new">{t("automations.editor.statuses.new")}</option>
+                        <option value="contacted">{t("automations.editor.statuses.contacted")}</option>
+                        <option value="interested">{t("automations.editor.statuses.interested")}</option>
+                        <option value="converted">{t("automations.editor.statuses.converted")}</option>
+                        <option value="lost">{t("automations.editor.statuses.lost")}</option>
+                        <option value="old">{t("automations.editor.statuses.old")}</option>
                       </select>
                     </label>
                     {!String(selectedNode.data?.toStatus || "").trim() ? (
-                      <p className="af-field-error">יש לבחור סטטוס יעד</p>
+                      <p className="af-field-error">{t("automations.editor.needTargetStatus")}</p>
                     ) : null}
                     <p className="af-trigger-fields__heading af-trigger-fields__heading--optional">
-                      אופציונלי
+                      {t("automations.common.optional")}
                     </p>
                     <label>
-                      מסטטוס
+                      {t("automations.editor.fromStatus")}
                       <select
                         value={String(selectedNode.data?.fromStatus || "")}
                         disabled={readOnly}
@@ -2336,13 +2353,13 @@ function EditorInner({
                           updateSelectedData({ fromStatus: e.target.value })
                         }
                       >
-                        <option value="">כל סטטוס</option>
-                        <option value="new">חדש</option>
-                        <option value="contacted">נוצר קשר</option>
-                        <option value="interested">מתעניין</option>
-                        <option value="converted">הפך ללקוח</option>
-                        <option value="lost">אבוד</option>
-                        <option value="old">ישן</option>
+                        <option value="">{t("automations.editor.anyStatus")}</option>
+                        <option value="new">{t("automations.editor.statuses.new")}</option>
+                        <option value="contacted">{t("automations.editor.statuses.contacted")}</option>
+                        <option value="interested">{t("automations.editor.statuses.interested")}</option>
+                        <option value="converted">{t("automations.editor.statuses.converted")}</option>
+                        <option value="lost">{t("automations.editor.statuses.lost")}</option>
+                        <option value="old">{t("automations.editor.statuses.old")}</option>
                       </select>
                     </label>
                   </div>
@@ -2360,7 +2377,7 @@ function EditorInner({
                   />
                 ) : null}
                 <label>
-                  כמה תוצאות יחד מהטריגר
+                  {t("automations.editor.parallelFromTrigger")}
                   <input
                     type="number"
                     min={1}
@@ -2374,7 +2391,7 @@ function EditorInner({
                   />
                 </label>
                 <p className="af-inspector__hint-inline">
-                  כל תוצאה רצה במקביל — בלי מסלולים נפרדים.
+                  {t("automations.editor.parallelHint")}
                 </p>
                 <button
                   type="button"
@@ -2389,7 +2406,7 @@ function EditorInner({
                   }
                   data-demo-target="automations-add-action"
                 >
-                  הוסף תוצאה לטריגר
+                  {t("automations.editor.addResultToTrigger")}
                 </button>
                 {String(selectedNode.data?.triggerKey || "") ===
                   "appointment_reminder" ||
@@ -2398,7 +2415,7 @@ function EditorInner({
                 ) ? (
                   <>
                     <label>
-                      מתי לשלוח תזכורת (שעות לפני)
+                      {t("automations.editor.hoursBefore")}
                       <input
                         type="number"
                         min={1}
@@ -2416,10 +2433,10 @@ function EditorInner({
                     </label>
                     <div className="af-reminder-presets">
                       {[
-                        { hours: 2, label: "שעתיים לפני" },
-                        { hours: 24, label: "יום לפני" },
-                        { hours: 48, label: "יומיים לפני" },
-                        { hours: 72, label: "3 ימים לפני" },
+                        { hours: 2, label: t("automations.editor.preset2h") },
+                        { hours: 24, label: t("automations.editor.preset1d") },
+                        { hours: 48, label: t("automations.editor.preset2d") },
+                        { hours: 72, label: t("automations.editor.preset3d") },
                       ].map((preset) => (
                         <button
                           key={preset.hours}
@@ -2436,10 +2453,10 @@ function EditorInner({
                               hoursBefore: preset.hours,
                               label:
                                 preset.hours === 24
-                                  ? "תזכורת פגישה — יום לפני"
+                                  ? t("automations.editor.reminder1d")
                                   : preset.hours === 48
-                                    ? "תזכורת פגישה — יומיים לפני"
-                                    : `תזכורת פגישה — ${preset.hours} שעות לפני`,
+                                    ? t("automations.editor.reminder2d")
+                                    : t("automations.editor.reminderHours", { count: preset.hours }),
                             })
                           }
                         >
@@ -2455,7 +2472,7 @@ function EditorInner({
             {selectedNode.type === "router" && selectedRouter ? (
               <>
                 <label>
-                  כמה תוצאות יחד
+                  {t("automations.editor.routerCount")}
                   <input
                     type="number"
                     min={1}
@@ -2475,7 +2492,7 @@ function EditorInner({
                 </label>
                 {selectedRouter.paths.map((path, index) => (
                   <label key={path.id}>
-                    שם תוצאה {index + 1}
+                    {t("automations.editor.resultName", { n: index + 1 })}
                     <input
                       value={path.label}
                       onChange={(e) => {
@@ -2496,7 +2513,7 @@ function EditorInner({
             {selectedNode.type === "delay" ? (
               <>
                 <label>
-                  כמות
+                  {t("automations.editor.amount")}
                   <input
                     type="number"
                     min={1}
@@ -2509,7 +2526,7 @@ function EditorInner({
                   />
                 </label>
                 <label>
-                  יחידה
+                  {t("automations.editor.unit")}
                   <select
                     value={String(selectedNode.data?.unit || "minutes")}
                     onChange={(e) =>
@@ -2528,7 +2545,7 @@ function EditorInner({
 
             {selectedNode.type === "condition" ? (
               <label>
-                תנאי
+                {t("automations.editor.condition")}
                 <select
                   value={String(
                     selectedNode.data?.conditionKey || "no_response"
@@ -2555,7 +2572,7 @@ function EditorInner({
             {selectedNode.type === "action" ? (
               <>
                 <label>
-                  סוג פעולה
+                  {t("automations.editor.actionType")}
                   <select
                     value={String(
                       selectedNode.data?.actionKey || "whatsapp_template"
@@ -2582,7 +2599,7 @@ function EditorInner({
                           ? {
                               title:
                                 selectedNode.data?.title ||
-                                "פגישה עם {{appointment.clientName}}",
+                                t("automations.catalog.palette.meetingTitleDefault"),
                               manualEventDetails:
                                 selectedNode.data?.manualEventDetails === true,
                               attendeeEmail:
@@ -2610,7 +2627,8 @@ function EditorInner({
                     }}
                   >
                     {listInspectorActionOptions(
-                      String(selectedNode.data?.actionKey || "")
+                      String(selectedNode.data?.actionKey || ""),
+                      t
                     ).map((o) => (
                       <option key={o.value} value={o.value}>
                         {o.label}
@@ -2621,9 +2639,9 @@ function EditorInner({
                 {selectedAiTemplate ? (
                   <section className="af-ai-config">
                     <p className="af-inspector__hint-inline">
-                      {AI_BILLING_SAFE_MESSAGE}
+                      {t("automations.aiTab.billing")}
                     </p>
-                    <p className="af-trigger-fields__heading">הגדרות AI</p>
+                    <p className="af-trigger-fields__heading">{t("automations.editor.aiSettings")}</p>
                     {selectedAiTemplate.requiredConfiguration
                       .filter((field) => !field.advanced)
                       .map((field) => {
@@ -2663,11 +2681,11 @@ function EditorInner({
                         if (field.type === "select") {
                           const options =
                             field.key === "channel"
-                              ? [["whatsapp", "WhatsApp"], ["email", "אימייל"]]
+                              ? [["whatsapp", "WhatsApp"], ["email", t("automations.editor.channelEmail")]]
                               : [
-                                  ["professional", "מקצועי"],
-                                  ["friendly", "ידידותי"],
-                                  ["concise", "קצר"],
+                                  ["professional", t("automations.editor.toneProfessional")],
+                                  ["friendly", t("automations.editor.toneFriendly")],
+                                  ["concise", t("automations.editor.toneConcise")],
                                 ];
                           return (
                             <label key={field.key}>
@@ -2732,7 +2750,7 @@ function EditorInner({
                       (field) => field.advanced
                     ) ? (
                       <details>
-                        <summary>מתקדם</summary>
+                        <summary>{t("automations.editor.advanced")}</summary>
                         {selectedAiTemplate.requiredConfiguration
                           .filter((field) => field.advanced)
                           .map((field) => (
@@ -2761,17 +2779,16 @@ function EditorInner({
                   selectedNode.data?.actionKey || "whatsapp_template"
                 ) ? (
                   <div className="af-wa-template">
-                    <div className="af-wa-banner" dir="rtl">
-                      <strong>שליחה באמצעות מספר BizUply</strong>
+                    <div className="af-wa-banner" dir={dir}>
+                      <strong>{t("automations.editor.wa.bizuplyBannerTitle")}</strong>
                       <p>
-                        עד להפעלת חיבור WhatsApp אישי לעסק, ההודעות יישלחו מהמספר
-                        המרכזי של BizUply בשם העסק שלך.
+                        {t("automations.editor.wa.bizuplyBannerText")}
                       </p>
                     </div>
 
-                    <div className="af-wa-cost" dir="rtl">
+                    <div className="af-wa-cost" dir={dir}>
                       <span className="af-wa-cost__badge">
-                        ⚡ 1 פעולת אוטומציה
+                        {t("automations.editor.wa.oneAction")}
                       </span>
                       <span className="af-wa-cost__badge">
                         💬{" "}
@@ -2780,7 +2797,7 @@ function EditorInner({
                             waBillingUsage?.unitPriceIls
                           )
                         )}{" "}
-                        להודעת WhatsApp
+                        {t("automations.editor.wa.perMessage")}
                       </span>
                       {(() => {
                         const unit = resolveWhatsAppUnitPriceIls(
@@ -2796,23 +2813,25 @@ function EditorInner({
                         if (scheduled) {
                           return (
                             <p className="af-wa-cost__estimate">
-                              הערכה בלבד: לדוגמה הודעה אחת ביום ≈{" "}
-                              {formatHeIls(unit * 30)} לחודש
+                              {t("automations.editor.wa.estimateDaily", {
+                                amount: formatHeIls(unit * 30),
+                              })}
                             </p>
                           );
                         }
                         return (
                           <p className="af-wa-cost__estimate">
-                            הערכה בלבד: לדוגמה 100 הודעות ≈{" "}
-                            {formatHeIls(unit * 100)}
+                            {t("automations.editor.wa.estimate100", {
+                              amount: formatHeIls(unit * 100),
+                            })}
                           </p>
                         );
                       })()}
                     </div>
 
-                    <div className="af-wa-sender" dir="rtl">
+                    <div className="af-wa-sender" dir={dir}>
                       <label>
-                        שולח
+                        {t("automations.editor.wa.sender")}
                         <select
                           value={selectedWaSenderMode}
                           disabled={readOnly || (!waManagedModeEnabled && !waPrivateConnected)}
@@ -2836,23 +2855,23 @@ function EditorInner({
                             value="bizuply_managed"
                             disabled={!waManagedModeEnabled}
                           >
-                            מספר BizUply המנוהל
+                            {t("automations.editor.wa.managedNumber")}
                           </option>
                           <option
                             value="business_connected"
                             disabled={!waPrivateConnected}
                           >
                             {waPrivateConnected
-                              ? "מספר WhatsApp של העסק"
-                              : "חיבור מספר WhatsApp של העסק — חבר בהגדרות"}
+                              ? t("automations.editor.wa.businessNumber")
+                              : t("automations.editor.wa.connectBusinessNumber")}
                           </option>
                         </select>
                       </label>
                     </div>
 
-                    <div className="af-wa-recipient" dir="rtl">
+                    <div className="af-wa-recipient" dir={dir}>
                       <label>
-                        למי לשלוח את ההודעה?
+                        {t("automations.editor.wa.whoReceives")}
                         <select
                           value={String(
                             selectedNode.data?.recipientType ||
@@ -2874,19 +2893,19 @@ function EditorInner({
                             });
                           }}
                         >
-                          <option value="lead_phone">טלפון הליד</option>
-                          <option value="business_owner">בעל העסק</option>
-                          <option value="lead_owner">אחראי הליד</option>
-                          <option value="fixed_phone">מספר קבוע</option>
+                          <option value="lead_phone">{t("automations.catalog.recipients.lead_phone")}</option>
+                          <option value="business_owner">{t("automations.catalog.recipients.business_owner")}</option>
+                          <option value="lead_owner">{t("automations.catalog.recipients.lead_owner")}</option>
+                          <option value="fixed_phone">{t("automations.catalog.recipients.fixed_phone")}</option>
                         </select>
                       </label>
                       <p className="af-wa-recipient__hint">
-                        נמען:{" "}
+                        {t("automations.editor.wa.recipient")}{" "}
                         {{
-                          lead_phone: "טלפון הליד",
-                          business_owner: "בעל העסק",
-                          lead_owner: "אחראי הליד",
-                          fixed_phone: "מספר קבוע",
+                          lead_phone: t("automations.catalog.recipients.lead_phone"),
+                          business_owner: t("automations.catalog.recipients.business_owner"),
+                          lead_owner: t("automations.catalog.recipients.lead_owner"),
+                          fixed_phone: t("automations.catalog.recipients.fixed_phone"),
                         }[
                           String(
                             selectedNode.data?.recipientType ||
@@ -2905,7 +2924,7 @@ function EditorInner({
                       {String(selectedNode.data?.recipientType || "") ===
                       "fixed_phone" ? (
                         <label>
-                          מספר קבוע (E.164)
+                          {t("automations.editor.wa.fixedPhoneE164")}
                           <input
                             type="tel"
                             dir="ltr"
@@ -2924,7 +2943,7 @@ function EditorInner({
                     </div>
 
                     <div className="af-wa-template__head">
-                      <span>תבנית WhatsApp</span>
+                      <span>{t("automations.editor.wa.template")}</span>
                       <button
                         type="button"
                         className="af-toolbar__btn"
@@ -2938,25 +2957,25 @@ function EditorInner({
                         {waLoading ? (
                           <>
                             <Loader2 size={14} className="af-spin" />
-                            תבניות נטענות...
+                            {t("automations.editor.wa.loadingTemplates")}
                           </>
                         ) : (
-                          "רענון תבניות"
+                          t("automations.editor.wa.refresh")
                         )}
                       </button>
                     </div>
 
                     {waLoading && waTemplates.length === 0 ? (
                       <p className="af-wa-template__state">
-                        תבניות נטענות...
+                        {t("automations.editor.wa.loadingTemplates")}
                       </p>
                     ) : !waConnected ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {waManagedModeEnabled
                             ? waSyncError ||
-                              "לא הצלחנו לטעון את תבניות WhatsApp"
-                            : "יש לחבר WhatsApp Business של העסק — המצב המנוהל כבוי כרגע."}
+                              t("automations.editor.wa.loadTemplatesError")
+                            : t("automations.editor.wa.managedOff")}
                         </p>
                         {waManagedModeEnabled ? (
                           <button
@@ -2968,20 +2987,20 @@ function EditorInner({
                               )
                             }
                           >
-                            נסו שוב
+                            {t("automations.editor.wa.retry")}
                           </button>
                         ) : (
                           <a
                             className="af-toolbar__btn"
                             href={`/business/${businessId}/dashboard/whatsapp`}
                           >
-                            לחיבור WhatsApp Business
+                            {t("automations.editor.wa.connectCta")}
                           </a>
                         )}
                       </div>
                     ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>{waSyncError || "לא הצלחנו לטעון את תבניות WhatsApp"}</p>
+                        <p>{waSyncError || t("automations.editor.wa.loadTemplatesError")}</p>
                         <button
                           type="button"
                           className="af-toolbar__btn"
@@ -2991,7 +3010,7 @@ function EditorInner({
                               )
                             }
                         >
-                          נסו שוב
+                          {t("automations.editor.wa.retry")}
                         </button>
                       </div>
                     ) : waTemplates.filter(
@@ -3001,9 +3020,9 @@ function EditorInner({
                           !isTestTemplateName(String(tpl.metaTemplateName || ""))
                       ).length === 0 ? (
                       <div className="af-wa-template__state">
-                        <p>אין תבניות WhatsApp מאושרות זמינות</p>
+                        <p>{t("automations.editor.wa.noneApproved")}</p>
                         <p className="af-wa-template__state-secondary">
-                          לאחר אישור תבנית ב-Meta, רעננו את הרשימה.
+                          {t("automations.editor.wa.noneApprovedHint")}
                         </p>
                         <button
                           type="button"
@@ -3015,13 +3034,13 @@ function EditorInner({
                               )
                             }
                         >
-                          רענון תבניות
+                          {t("automations.editor.wa.refresh")}
                         </button>
                       </div>
                     ) : (
                       <>
                         <label className="af-wa-template__picker-label">
-                          בחירת תבנית
+                          {t("automations.editor.wa.chooseTemplate")}
                           <WhatsAppAutomationTemplateSelect
                             templates={waTemplates}
                             value={String(selectedNode.data?.templateId || "")}
@@ -3093,7 +3112,7 @@ function EditorInner({
                             ) || null;
                           if (!selectedTpl) return null;
                           return (
-                            <div className="af-wa-template__meta" dir="rtl">
+                            <div className="af-wa-template__meta" dir={dir}>
                               <strong>
                                 {selectedTpl.displayName ||
                                   selectedTpl.friendlyName ||
@@ -3109,7 +3128,7 @@ function EditorInner({
                                   }`}
                               </span>
                               {selectedTpl.isTestTemplate ? (
-                                <em>תבנית בדיקה</em>
+                                <em>{t("automations.editor.wa.testTemplate")}</em>
                               ) : null}
                             </div>
                           );
@@ -3140,11 +3159,12 @@ function EditorInner({
                           }
                           return (
                           <div className="af-wa-template__mappings">
-                            <p>מיפוי משתנים</p>
+                            <p>{t("automations.editor.wa.variableMapping")}</p>
                             {mappingRows.map((row, index) => {
                               const label = templateVariableLabel(
                                 String(selectedTpl.metaTemplateName || ""),
-                                String(row.variable)
+                                String(row.variable),
+                                t
                               );
                               return (
                               <div
@@ -3183,7 +3203,7 @@ function EditorInner({
                                       });
                                     }}
                                   >
-                                    <option value="">בחרו מיפוי</option>
+                                    <option value="">{t("automations.editor.wa.chooseMapping")}</option>
                                     {WA_MAPPING_PRESETS.map((preset) => (
                                       <option
                                         key={preset.key}
@@ -3198,7 +3218,7 @@ function EditorInner({
                                 row.source === "manual" ? (
                                   <input
                                     type="text"
-                                    placeholder="ערך"
+                                    placeholder={t("automations.common.value")}
                                     disabled={readOnly}
                                     value={String(row.constantValue || "")}
                                     onChange={(e) => {
@@ -3237,7 +3257,7 @@ function EditorInner({
                       recipientType={String(
                         selectedNode.data?.recipientType || ""
                       )}
-                      senderLabel="מספר BizUply המנוהל"
+                      senderLabel={t("automations.editor.wa.managedNumber")}
                       hasSelection={Boolean(
                         String(selectedNode.data?.templateId || "").trim()
                       )}
@@ -3245,36 +3265,38 @@ function EditorInner({
 
                     {waLastSyncAt ? (
                       <p className="af-wa-template__sync">
-                        סנכרון אחרון:{" "}
-                        {new Date(waLastSyncAt).toLocaleString("he-IL")}
+                        {t("automations.editor.wa.lastSync", {
+                          time: new Date(waLastSyncAt).toLocaleString(
+                            getIntlLocale(i18n.language)
+                          ),
+                        })}
                       </p>
                     ) : null}
                   </div>
                 ) : null}
                 {isGmailActionKey(selectedNode.data?.actionKey) ? (
                   <div className="af-wa-template">
-                    <div className="af-wa-banner" dir="rtl">
-                      <strong>שליחה דרך Gmail המחובר</strong>
+                    <div className="af-wa-banner" dir={dir}>
+                      <strong>{t("automations.editor.gmail.bannerTitle")}</strong>
                       <p>
-                        המייל יישלח מחשבון Gmail שחיברתם לעסק. אין שימוש ב-SMTP
-                        ואין שליחה דרך BizUply.
+                        {t("automations.editor.gmail.bannerText")}
                       </p>
                     </div>
 
                     {gmailLoading ? (
-                      <p className="af-wa-template__state">טוען סטטוס Gmail...</p>
+                      <p className="af-wa-template__state">{t("automations.editor.gmail.loading")}</p>
                     ) : !gmailAvailable ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {gmailMessage ||
-                            "Gmail נמצא כרגע בתהליך אישור מול Google"}
+                            t("automations.editor.gmail.pendingApproval")}
                         </p>
                       </div>
                     ) : gmailAccount?.connectionStatus !== "connected" ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {gmailMessage ||
-                            "יש לחבר חשבון Gmail לפני פרסום האוטומציה"}
+                            t("automations.editor.gmail.connectBeforePublish")}
                         </p>
                         <button
                           type="button"
@@ -3288,24 +3310,24 @@ function EditorInner({
                                 window.location.pathname
                               );
                               if (!data?.url) {
-                                throw new Error("לא התקבל קישור התחברות");
+                                throw new Error(t("automations.editor.gmail.noConnectUrl"));
                               }
                               window.location.href = data.url;
                             } catch (error: unknown) {
                               toast.error(
-                                readErrorMessage(error, "התחברות Gmail נכשלה")
+                                readErrorMessage(error, t("automations.editor.gmail.connectFailed"))
                               );
                             }
                           }}
                         >
-                          חיבור Gmail
+                          {t("automations.editor.gmail.connect")}
                         </button>
                       </div>
                     ) : (
                       <>
-                        <div className="af-wa-sender" dir="rtl">
+                        <div className="af-wa-sender" dir={dir}>
                           <label>
-                            שולח
+                            {t("automations.editor.wa.sender")}
                             <input
                               type="text"
                               dir="ltr"
@@ -3320,9 +3342,9 @@ function EditorInner({
                           </label>
                         </div>
 
-                        <div className="af-wa-recipient" dir="rtl">
+                        <div className="af-wa-recipient" dir={dir}>
                           <label>
-                            למי לשלוח את המייל?
+                            {t("automations.editor.gmail.whoReceives")}
                             <select
                               value={String(
                                 selectedNode.data?.recipientType || "lead_email"
@@ -3347,7 +3369,7 @@ function EditorInner({
                                 });
                               }}
                             >
-                              <option value="lead_email">אימייל הליד</option>
+                              <option value="lead_email">{t("automations.catalog.recipients.lead_email")}</option>
                               {triggerSupportsAppointmentCustomerEmail(
                                 selectedTriggerKey
                               ) ||
@@ -3355,7 +3377,7 @@ function EditorInner({
                                 selectedNode.data?.recipientType || ""
                               ) === "appointment_customer_email" ? (
                                 <option value="appointment_customer_email">
-                                  אימייל הלקוח שקבע תור
+                                  {t("automations.catalog.recipients.appointment_customer_email")}
                                 </option>
                               ) : null}
                               {triggerSupportsStoreCustomerEmail(
@@ -3365,29 +3387,27 @@ function EditorInner({
                                 selectedNode.data?.recipientType || ""
                               ) === "store_customer_email" ? (
                                 <option value="store_customer_email">
-                                  אימייל הלקוח בהזמנה
+                                  {t("automations.catalog.recipients.store_customer_email")}
                                 </option>
                               ) : null}
-                              <option value="business_owner">בעל העסק</option>
-                              <option value="lead_owner">אחראי הליד</option>
-                              <option value="fixed_email">כתובת קבועה</option>
+                              <option value="business_owner">{t("automations.catalog.recipients.business_owner")}</option>
+                              <option value="lead_owner">{t("automations.catalog.recipients.lead_owner")}</option>
+                              <option value="fixed_email">{t("automations.catalog.recipients.fixed_email")}</option>
                               <option value="custom_field">
-                                שדה מותאם אישית
+                                {t("automations.catalog.recipients.custom_field")}
                               </option>
                             </select>
                           </label>
                           <p className="af-wa-recipient__hint">
-                            נמען:{" "}
-                            {GMAIL_RECIPIENT_LABELS[
-                              String(
+                            {t("automations.editor.wa.recipient")}{" "}
+                            {getRecipientLabel(t, String(
                                 selectedNode.data?.recipientType || "lead_email"
-                              )
-                            ] || "—"}
+                              ))}
                           </p>
                           {String(selectedNode.data?.recipientType || "") ===
                           "fixed_email" ? (
                             <label>
-                              כתובת קבועה
+                              {t("automations.catalog.recipients.fixed_email")}
                               <input
                                 type="email"
                                 dir="ltr"
@@ -3408,7 +3428,7 @@ function EditorInner({
                           {String(selectedNode.data?.recipientType || "") ===
                           "custom_field" ? (
                             <label>
-                              שדה מותאם (מפתח)
+                              {t("automations.editor.email.customFieldKey")}
                               <input
                                 type="text"
                                 dir="ltr"
@@ -3446,7 +3466,7 @@ function EditorInner({
                                       "lead_email"
                                   );
                                   const base =
-                                    GMAIL_RECIPIENT_LABELS[type] || "\u2014";
+                                    getRecipientLabel(t, String(type));
                                   if (
                                     type === "fixed_email" &&
                                     selectedNode.data?.fixedEmail
@@ -3468,33 +3488,33 @@ function EditorInner({
                 ) : null}
                 {isGoogleCalendarActionKey(selectedNode.data?.actionKey) ? (
                   <div className="af-wa-template">
-                    <div className="af-wa-banner" dir="rtl">
+                    <div className="af-wa-banner" dir={dir}>
                       <strong>Google Calendar</strong>
                       <p>
                         {triggerSupportsAppointmentCustomerEmail(
                           selectedTriggerKey
                         )
-                          ? "פרטי האירוע יילקחו מהפגישה (תאריך, שעה, משך, משתתף ומיקום)."
-                          : "האירוע נוצר ביומן Google של העסק. ניתן להזין זמנים ידנית או להשאיר ריק כאשר יש פגישה בהקשר."}
+                          ? t("automations.editor.calendar.fromAppointment")
+                          : t("automations.editor.calendar.manualHint")}
                       </p>
                     </div>
                     {calendarLoading ? (
                       <p className="af-wa-template__state">
-                        טוען סטטוס Google Calendar...
+                        {t("automations.editor.calendar.loading")}
                       </p>
                     ) : !calendarStatus?.available ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {calendarMessage ||
-                            "Google Calendar אינו זמין לעסק זה כרגע"}
+                            t("automations.editor.calendar.unavailable")}
                         </p>
                       </div>
                     ) : !calendarStatus?.calendar?.connected ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {calendarStatus?.calendar?.needsGrant
-                            ? "יש לאשר הרשאת Calendar (Gmail כבר מחובר)"
-                            : "יש לחבר Google Calendar לפני פרסום האוטומציה"}
+                            ? t("automations.editor.calendar.needCalendarScope")
+                            : t("automations.editor.calendar.connectBeforePublish")}
                         </p>
                         <button
                           type="button"
@@ -3512,14 +3532,14 @@ function EditorInner({
                                 return;
                               }
                               if (!data?.url) {
-                                throw new Error("לא התקבל קישור התחברות");
+                                throw new Error(t("automations.editor.gmail.noConnectUrl"));
                               }
                               window.location.href = data.url;
                             } catch (error: unknown) {
                               toast.error(
                                 readErrorMessage(
                                   error,
-                                  "התחברות Google Calendar נכשלה"
+                                  t("automations.editor.calendar.connectFailed")
                                 )
                               );
                             }
@@ -3527,14 +3547,14 @@ function EditorInner({
                         >
                           {calendarStatus?.calendar?.needsGrant
                             ? "Grant Calendar access"
-                            : "חיבור Google Calendar"}
+                            : t("automations.editor.calendar.connect")}
                         </button>
                       </div>
                     ) : (
                       <>
-                        <div className="af-wa-sender" dir="rtl">
+                        <div className="af-wa-sender" dir={dir}>
                           <label>
-                            חשבון Google
+                            {t("automations.editor.calendar.googleAccount")}
                             <input
                               type="text"
                               dir="ltr"
@@ -3552,7 +3572,7 @@ function EditorInner({
                         "google_calendar_delete_event" ? (
                           <>
                             <label>
-                              כותרת
+                              {t("automations.common.title")}
                               <input
                                 type="text"
                                 disabled={readOnly}
@@ -3561,14 +3581,14 @@ function EditorInner({
                                     selectedNode.data?.summary ||
                                     ""
                                 )}
-                                placeholder="פגישה עם {{appointment.clientName}}"
+                                placeholder={t("automations.catalog.palette.meetingTitleDefault")}
                                 onChange={(e) =>
                                   updateSelectedData({ title: e.target.value })
                                 }
                               />
                             </label>
                             <label>
-                              תיאור
+                              {t("automations.editor.calendar.description")}
                               <textarea
                                 rows={3}
                                 disabled={readOnly}
@@ -3590,17 +3610,17 @@ function EditorInner({
                                 ) ? (
                                   <div
                                     className="af-wa-banner"
-                                    dir="rtl"
+                                    dir={dir}
                                     style={{ marginTop: 8 }}
                                   >
                                     <p style={{ margin: 0 }}>
-                                      פרטי האירוע יילקחו מהפגישה
+                                      {t("automations.editor.calendar.fromAppointmentNote")}
                                     </p>
                                   </div>
                                 ) : null}
                                 <label
                                   className="af-checkbox"
-                                  dir="rtl"
+                                  dir={dir}
                                   style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -3621,7 +3641,7 @@ function EditorInner({
                                       })
                                     }
                                   />
-                                  הגדר פרטי אירוע ידנית
+                                  {t("automations.editor.calendar.setManual")}
                                 </label>
                               </>
                             ) : null}
@@ -3631,7 +3651,7 @@ function EditorInner({
                                 true) && (
                               <>
                                 <label>
-                                  התחלה (אופציונלי — ברירת מחדל מפגישה)
+                                  {t("automations.editor.calendar.startOptional")}
                                   <input
                                     type="text"
                                     dir="ltr"
@@ -3639,7 +3659,7 @@ function EditorInner({
                                     value={String(
                                       selectedNode.data?.start || ""
                                     )}
-                                    placeholder="YYYY-MM-DD HH:mm או ריק"
+                                    placeholder={t("automations.editor.calendar.datetimePlaceholder")}
                                     onChange={(e) =>
                                       updateSelectedData({
                                         start: e.target.value,
@@ -3648,13 +3668,13 @@ function EditorInner({
                                   />
                                 </label>
                                 <label>
-                                  סיום (אופציונלי)
+                                  {t("automations.editor.calendar.endOptional")}
                                   <input
                                     type="text"
                                     dir="ltr"
                                     disabled={readOnly}
                                     value={String(selectedNode.data?.end || "")}
-                                    placeholder="YYYY-MM-DD HH:mm או ריק"
+                                    placeholder={t("automations.editor.calendar.datetimePlaceholder")}
                                     onChange={(e) =>
                                       updateSelectedData({
                                         end: e.target.value,
@@ -3663,7 +3683,7 @@ function EditorInner({
                                   />
                                 </label>
                                 <label>
-                                  משך בדקות (אם אין סיום)
+                                  {t("automations.editor.calendar.durationMinutes")}
                                   <input
                                     type="number"
                                     min={5}
@@ -3689,7 +3709,7 @@ function EditorInner({
                                   />
                                 </label>
                                 <label>
-                                  משתתף (אימייל)
+                                  {t("automations.editor.calendar.attendee")}
                                   <input
                                     type="text"
                                     dir="ltr"
@@ -3706,7 +3726,7 @@ function EditorInner({
                                   />
                                 </label>
                                 <label>
-                                  מיקום
+                                  {t("automations.editor.calendar.location")}
                                   <input
                                     type="text"
                                     disabled={readOnly}
@@ -3764,28 +3784,27 @@ function EditorInner({
                 ) : null}
                 {isOutlookActionKey(selectedNode.data?.actionKey) ? (
                   <div className="af-wa-template">
-                    <div className="af-wa-banner" dir="rtl">
-                      <strong>שליחה דרך Outlook / Microsoft 365 המחובר</strong>
+                    <div className="af-wa-banner" dir={dir}>
+                      <strong>{t("automations.editor.outlook.bannerTitle")}</strong>
                       <p>
-                        המייל יישלח מחשבון Outlook שחיברתם לעסק. אין שימוש ב-SMTP
-                        ואין fallback לספק אחר.
+                        {t("automations.editor.outlook.bannerText")}
                       </p>
                     </div>
 
                     {outlookLoading ? (
-                      <p className="af-wa-template__state">טוען סטטוס Outlook...</p>
+                      <p className="af-wa-template__state">{t("automations.editor.outlook.loading")}</p>
                     ) : !outlookAvailable ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {outlookMessage ||
-                            "Outlook / Microsoft 365 יהיה זמין בקרוב"}
+                            t("automations.editor.outlook.comingSoon")}
                         </p>
                       </div>
                     ) : outlookAccount?.connectionStatus !== "connected" ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {outlookMessage ||
-                            "יש לחבר חשבון Outlook לפני פרסום האוטומציה"}
+                            t("automations.editor.outlook.connectBeforePublish")}
                         </p>
                         <button
                           type="button"
@@ -3799,24 +3818,24 @@ function EditorInner({
                                 window.location.pathname
                               );
                               if (!data?.url) {
-                                throw new Error("לא התקבל קישור התחברות");
+                                throw new Error(t("automations.editor.gmail.noConnectUrl"));
                               }
                               window.location.href = data.url;
                             } catch (error: unknown) {
                               toast.error(
-                                readErrorMessage(error, "התחברות Outlook נכשלה")
+                                readErrorMessage(error, t("automations.editor.outlook.connectFailed"))
                               );
                             }
                           }}
                         >
-                          חיבור Outlook
+                          {t("automations.editor.outlook.connect")}
                         </button>
                       </div>
                     ) : (
                       <>
-                        <div className="af-wa-sender" dir="rtl">
+                        <div className="af-wa-sender" dir={dir}>
                           <label>
-                            שולח
+                            {t("automations.editor.wa.sender")}
                             <input
                               type="text"
                               dir="ltr"
@@ -3831,9 +3850,9 @@ function EditorInner({
                           </label>
                         </div>
 
-                        <div className="af-wa-recipient" dir="rtl">
+                        <div className="af-wa-recipient" dir={dir}>
                           <label>
-                            למי לשלוח את המייל?
+                            {t("automations.editor.gmail.whoReceives")}
                             <select
                               value={String(
                                 selectedNode.data?.recipientType || "lead_email"
@@ -3859,7 +3878,7 @@ function EditorInner({
                                 });
                               }}
                             >
-                              <option value="lead_email">אימייל הליד</option>
+                              <option value="lead_email">{t("automations.catalog.recipients.lead_email")}</option>
                               {triggerSupportsAppointmentCustomerEmail(
                                 selectedTriggerKey
                               ) ||
@@ -3867,7 +3886,7 @@ function EditorInner({
                                 selectedNode.data?.recipientType || ""
                               ) === "appointment_customer_email" ? (
                                 <option value="appointment_customer_email">
-                                  אימייל הלקוח שקבע תור
+                                  {t("automations.catalog.recipients.appointment_customer_email")}
                                 </option>
                               ) : null}
                               {triggerSupportsStoreCustomerEmail(
@@ -3877,29 +3896,27 @@ function EditorInner({
                                 selectedNode.data?.recipientType || ""
                               ) === "store_customer_email" ? (
                                 <option value="store_customer_email">
-                                  אימייל הלקוח בהזמנה
+                                  {t("automations.catalog.recipients.store_customer_email")}
                                 </option>
                               ) : null}
-                              <option value="business_owner">בעל העסק</option>
-                              <option value="lead_owner">אחראי הליד</option>
-                              <option value="fixed_email">כתובת קבועה</option>
+                              <option value="business_owner">{t("automations.catalog.recipients.business_owner")}</option>
+                              <option value="lead_owner">{t("automations.catalog.recipients.lead_owner")}</option>
+                              <option value="fixed_email">{t("automations.catalog.recipients.fixed_email")}</option>
                               <option value="custom_field">
-                                שדה מותאם אישית
+                                {t("automations.catalog.recipients.custom_field")}
                               </option>
                             </select>
                           </label>
                           <p className="af-wa-recipient__hint">
-                            נמען:{" "}
-                            {GMAIL_RECIPIENT_LABELS[
-                              String(
+                            {t("automations.editor.wa.recipient")}{" "}
+                            {getRecipientLabel(t, String(
                                 selectedNode.data?.recipientType || "lead_email"
-                              )
-                            ] || "—"}
+                              ))}
                           </p>
                           {String(selectedNode.data?.recipientType || "") ===
                           "fixed_email" ? (
                             <label>
-                              כתובת קבועה
+                              {t("automations.catalog.recipients.fixed_email")}
                               <input
                                 type="email"
                                 dir="ltr"
@@ -3921,7 +3938,7 @@ function EditorInner({
                           {String(selectedNode.data?.recipientType || "") ===
                           "custom_field" ? (
                             <label>
-                              שדה מותאם (מפתח)
+                              {t("automations.editor.email.customFieldKey")}
                               <input
                                 type="text"
                                 dir="ltr"
@@ -3960,7 +3977,7 @@ function EditorInner({
                                       "lead_email"
                                   );
                                   const base =
-                                    GMAIL_RECIPIENT_LABELS[type] || "\u2014";
+                                    getRecipientLabel(t, String(type));
                                   if (
                                     type === "fixed_email" &&
                                     selectedNode.data?.fixedEmail
@@ -3981,15 +3998,15 @@ function EditorInner({
                   </div>
                 ) : null}
                 {isBizuplySendEmailActionKey(selectedNode.data?.actionKey) ? (
-                  <div className="af-wa-template" dir="rtl">
+                  <div className="af-wa-template" dir={dir}>
                     <div className="af-wa-banner">
-                      <strong>מאת</strong>
-                      <p>המייל יישלח מכתובת עסקית מאומתת של העסק.</p>
+                      <strong>{t("automations.editor.email.from")}</strong>
+                      <p>{t("automations.editor.email.fromHelp")}</p>
                     </div>
                     {emailSenders.length ? (
                       <>
                         <label>
-                          מאת
+                          {t("automations.editor.email.from")}
                           <select
                             disabled={readOnly}
                             value={String(selectedNode.data?.senderId || "")}
@@ -4005,7 +4022,7 @@ function EditorInner({
                               });
                             }}
                           >
-                            <option value="">בחרו מייל עסקי מאומת</option>
+                            <option value="">{t("automations.editor.email.chooseVerified")}</option>
                             {(() => {
                               const selectedSenderId = String(
                                 selectedNode.data?.senderId || ""
@@ -4016,7 +4033,7 @@ function EditorInner({
                               if (!selectedSenderId || selectedKnown) return null;
                               const staleLabel =
                                 String(selectedNode.data?.senderEmail || "").trim() ||
-                                "שולח שנבחר אינו זמין";
+                                t("automations.editor.email.senderUnavailable");
                               return (
                                 <option value={selectedSenderId}>
                                   {staleLabel}
@@ -4037,25 +4054,24 @@ function EditorInner({
                             String(selectedNode.data?.senderId || "")
                         ) ? (
                           <p className="af-wa-template__state af-wa-template__state--error">
-                            {BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE}
+                            {t("automations.editor.email.senderUnavailable")}
                           </p>
                         ) : null}
                       </>
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>לא הוגדר מייל עסקי מאומת</p>
+                        <p>{t("automations.editor.email.noVerified")}</p>
                         <p>
-                          כדי לשלוח מהמייל העסקי של העסק, יש להשלים קודם את הגדרת
-                          המייל ואימותו.
+                          {t("automations.email.missingBody")}
                         </p>
                         <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
-                          הגדרת מייל עסקי
+                          {t("automations.email.settingsCta")}
                         </a>
                       </div>
                     )}
-                    <div className="af-wa-recipient" dir="rtl">
+                    <div className="af-wa-recipient" dir={dir}>
                       <label>
-                        אל
+                        {t("automations.editor.email.to")}
                         <select
                           value={String(
                             selectedNode.data?.recipientType ||
@@ -4077,14 +4093,14 @@ function EditorInner({
                             });
                           }}
                         >
-                          <option value="lead_email">אימייל הליד</option>
+                          <option value="lead_email">{t("automations.catalog.recipients.lead_email")}</option>
                           {triggerSupportsAppointmentCustomerEmail(
                             selectedTriggerKey
                           ) ||
                           String(selectedNode.data?.recipientType || "") ===
                             "appointment_customer_email" ? (
                             <option value="appointment_customer_email">
-                              אימייל הלקוח שקבע תור
+                              {t("automations.catalog.recipients.appointment_customer_email")}
                             </option>
                           ) : null}
                           {triggerSupportsStoreCustomerEmail(
@@ -4093,19 +4109,19 @@ function EditorInner({
                           String(selectedNode.data?.recipientType || "") ===
                             "store_customer_email" ? (
                             <option value="store_customer_email">
-                              אימייל הלקוח בהזמנה
+                              {t("automations.catalog.recipients.store_customer_email")}
                             </option>
                           ) : null}
-                          <option value="business_owner">בעל העסק</option>
-                          <option value="lead_owner">אחראי הליד</option>
-                          <option value="fixed_email">כתובת קבועה</option>
-                          <option value="custom_field">שדה מותאם אישית</option>
+                          <option value="business_owner">{t("automations.catalog.recipients.business_owner")}</option>
+                          <option value="lead_owner">{t("automations.catalog.recipients.lead_owner")}</option>
+                          <option value="fixed_email">{t("automations.catalog.recipients.fixed_email")}</option>
+                          <option value="custom_field">{t("automations.catalog.recipients.custom_field")}</option>
                         </select>
                       </label>
                       {String(selectedNode.data?.recipientType || "") ===
                       "fixed_email" ? (
                         <label>
-                          כתובת קבועה
+                          {t("automations.catalog.recipients.fixed_email")}
                           <input
                             type="email"
                             dir="ltr"
@@ -4124,7 +4140,7 @@ function EditorInner({
                       {String(selectedNode.data?.recipientType || "") ===
                       "custom_field" ? (
                         <label>
-                          שדה מותאם (מפתח)
+                          {t("automations.editor.email.customFieldKey")}
                           <input
                             type="text"
                             dir="ltr"
@@ -4153,7 +4169,7 @@ function EditorInner({
                             row.senderId ===
                             String(selectedNode.data?.senderId || "")
                         );
-                        if (!sender) return "לא הוגדר מייל שולח";
+                        if (!sender) return t("automations.editor.email.noSender");
                         const name = String(sender.displayName || "")
                           .replace(/[<>]/g, "")
                           .trim();
@@ -4166,7 +4182,7 @@ function EditorInner({
                           selectedNode.data?.recipientType ||
                             defaultEmailRecipientType(selectedTriggerKey)
                         );
-                        const base = GMAIL_RECIPIENT_LABELS[type] || "—";
+                        const base = getRecipientLabel(t, String(type));
                         if (type === "fixed_email" && selectedNode.data?.fixedEmail) {
                           return `${base} (${String(selectedNode.data.fixedEmail)})`;
                         }

@@ -1,3 +1,4 @@
+import i18n from "../../../../i18n/i18n";
 import API from "@api";
 
 const CLIENT_DATA_TAB_ID = "client_data_values";
@@ -110,8 +111,11 @@ export async function applyClientSessionConsumption(
   if (!dataTab) {
     dataTab = {
       id: CLIENT_DATA_TAB_ID,
-      title: "נתוני לקוח",
-      description: "ערכים אישיים לפי השדות שהוגדרו ב-CRM",
+      title: i18n.t("crm.common.clientData", "Client data"),
+      description: i18n.t(
+        "leftover.sessionFields.tabDesc",
+        "Personal values from the fields defined in CRM"
+      ),
       showInClientPortal: true,
       whoCanFill: "business",
       fields: [],
@@ -156,11 +160,21 @@ export async function applyClientSessionConsumption(
   const targetsTreatments =
     treatmentFields.length > 0
       ? treatmentFields
-      : [ensureField("treatments_left", "כמות טיפולים")];
+      : [
+          ensureField(
+            "treatments_left",
+            i18n.t("crm.clients.examples.treatmentsLeft", "Treatments left")
+          ),
+        ];
   const targetsSessions =
     sessionFields.length > 0
       ? sessionFields
-      : [ensureField("sessions_done", "מפגשים שבוצעו")];
+      : [
+          ensureField(
+            "sessions_done",
+            i18n.t("crm.clients.examples.sessionsDone", "Sessions completed")
+          ),
+        ];
 
   targetsTreatments.forEach((field) => {
     const current = toNonNegativeInt(field.value, 0);

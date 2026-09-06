@@ -1,5 +1,6 @@
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import i18n from "../../../../../i18n/i18n";
 
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 
@@ -294,7 +295,7 @@ function assertNoTemporaryMedia(label: string, payload: unknown) {
   });
 
   throw new Error(
-    "יש תמונה או וידאו שעדיין לא סיימו לעלות. המתיני לסיום ההעלאה ונסי שוב.",
+    i18n.t("leftover.errors.mediaUploading"),
   );
 }
 
@@ -1304,7 +1305,7 @@ export function useVisualSave({
 
         if (hasPendingVisualMedia(latestData)) {
           throw new Error(
-            "יש מדיה שעדיין עולה. המתיני לסיום ההעלאה ונסי שוב.",
+            i18n.t("leftover.errors.mediaUploadingShort"),
           );
         }
 
@@ -1371,8 +1372,8 @@ export function useVisualSave({
       } catch (error) {
         const fallback =
           status === "published"
-            ? "הפרסום נכשל"
-            : "השמירה נכשלה";
+            ? i18n.t("leftover.errors.publishFailed")
+            : i18n.t("leftover.errors.saveFailed");
 
         const message =
           error instanceof Error ? error.message : fallback;

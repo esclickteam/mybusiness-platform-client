@@ -110,15 +110,15 @@ export default function WhatsAppMain() {
     if (!flag) return;
     if (flag === "processing") {
       setCheckoutProcessingOpen(true);
-      toast.info("מעדכנים את חיוב WhatsApp...");
+      toast.info(t("automations.toasts.waCheckoutProcessing"));
     } else if (flag === "cancel") {
-      toast.info("הגדרת החיוב בוטלה — ניתן להגדיר מחדש בכל עת.");
+      toast.info(t("automations.toasts.waCheckoutCancel"));
     }
     const next = new URLSearchParams(searchParams);
     next.delete("waBilling");
     next.delete("whatsappBilling");
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, t]);
 
   const openSetupModal = (mode: "setup" | "manage") => {
     setSetupModalMode(mode);
@@ -129,10 +129,10 @@ export default function WhatsAppMain() {
     if (!businessId) return;
     try {
       await reactivateWhatsAppBilling(businessId);
-      toast.success("הביטול בוטל והחיוב יישאר פעיל.");
+      toast.success(t("automations.toasts.waReactivated"));
       await refreshBilling();
     } catch {
-      toast.error("לא הצלחנו להשאיר את החיוב פעיל.");
+      toast.error(t("automations.toasts.waReactivateError"));
     }
   };
 
@@ -167,7 +167,10 @@ export default function WhatsAppMain() {
                   target="whatsapp-demo-send"
                   className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
                 >
-                  שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+                  {t(
+                    "whatsapp.shell.demoSend",
+                    "Send a demo message — not sent to a real customer"
+                  )}
                 </GuidedDemoSandboxButton>
                 <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
                   <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />

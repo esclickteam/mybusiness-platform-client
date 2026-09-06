@@ -7,11 +7,15 @@ import {
   sitePortalMyOrders,
   sitePortalLogout,
 } from "../../../api/sitePortalApi";
+import i18n from "../../../i18n/i18n";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import {
   findStoredPortalTokenHint,
   getSitePortalToken,
 } from "../../../utils/sitePortalSession";
 import { resolvePortalPaths } from "./portalSitePaths";
+
+const t = (key, opts) => i18n.t(key, opts);
 
 function clearMount(el) {
   if (typeof el.replaceChildren === "function") {
@@ -78,7 +82,7 @@ function styleInput(input, theme) {
 
 function prepareMountShell(container) {
   clearMount(container);
-  container.dir = "rtl";
+  container.dir = getTextDirection(i18n.language);
   delete container.dataset.bizuplyPortalMounted;
   delete container.dataset.bizuplyPortalLive;
   // Legacy saves put switch/forgot href on the whole form shell — strip so
@@ -140,14 +144,16 @@ function bindEditorSafeLink(anchor, href, editorMode) {
   });
 }
 
-const PORTAL_AUTH_CONTROL_LABELS = {
-  submit: "כפתור שליחה",
-  switch: "קישור מעבר",
-  forgot: "שכחתי סיסמה",
-  title: "כותרת טופס",
-  subtitle: "תיאור טופס",
-  eyebrow: "כותרת עליונה",
-};
+function portalAuthControlLabels() {
+  return {
+    submit: t("publicWidgets.portal.submitButton"),
+    switch: t("publicWidgets.portal.switchLink"),
+    forgot: t("publicWidgets.portal.forgotPassword"),
+    title: t("publicWidgets.portal.formTitle"),
+    subtitle: t("publicWidgets.portal.formSubtitle"),
+    eyebrow: t("publicWidgets.portal.formEyebrow"),
+  };
+}
 
 const PORTAL_TEXT_CONTROL_KINDS = new Set(["title", "subtitle", "eyebrow"]);
 
@@ -171,7 +177,8 @@ function stampPortalAuthControl(node, container, kind, editorMode) {
   node.setAttribute("data-visual-type", isText ? "text" : "button");
   node.setAttribute(
     "data-visual-edit-label",
-    PORTAL_AUTH_CONTROL_LABELS[kind] || (isText ? "טקסט" : "כפתור"),
+    portalAuthControlLabels()[kind] ||
+      (isText ? t("publicWidgets.portal.text") : t("publicWidgets.portal.button")),
   );
   if (!isText) {
     node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
@@ -182,22 +189,24 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
   prepareMountShell(container);
   const theme = readPortalTheme(container);
   const copy = {
-    eyebrow: readPortalCopy(container, "eyebrow", "אזור אישי"),
+    eyebrow: readPortalCopy(container, "eyebrow", t("publicWidgets.portal.area")),
     title: readPortalCopy(
       container,
       "title",
-      siteName ? `התחברות ל${siteName}` : "התחברות",
+      siteName
+        ? t("publicWidgets.portal.loginTo", { name: siteName })
+        : t("publicWidgets.portal.login"),
     ),
     subtitle: readPortalCopy(
       container,
       "subtitle",
-      "הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.",
+      t("publicWidgets.portal.loginSubtitle"),
     ),
-    email: readPortalCopy(container, "email", "אימייל"),
-    password: readPortalCopy(container, "password", "סיסמה"),
-    submit: readPortalCopy(container, "submit", "התחברות"),
-    register: readPortalCopy(container, "switch", "אין לכם חשבון? הרשמה"),
-    forgot: readPortalCopy(container, "forgot", "שכחתי סיסמה"),
+    email: readPortalCopy(container, "email", t("publicWidgets.common.email")),
+    password: readPortalCopy(container, "password", t("publicWidgets.common.password")),
+    submit: readPortalCopy(container, "submit", t("publicWidgets.portal.login")),
+    register: readPortalCopy(container, "switch", t("publicWidgets.portal.noAccountRegister")),
+    forgot: readPortalCopy(container, "forgot", t("publicWidgets.portal.forgotPassword")),
   };
 
   const wrap = el("div", {
@@ -316,7 +325,7 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
 
     submit.disabled = true;
     submit.setAttribute("aria-busy", "true");
-    submit.textContent = "מתחבר...";
+    submit.textContent = t("publicWidgets.portal.signingIn");
     try {
       await sitePortalLogin({
         email: email.value,
@@ -326,7 +335,7 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
       });
       navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
-      errorBox.textContent = err?.message || "ההתחברות נכשלה";
+      errorBox.textContent = err?.message || t("publicWidgets.portal.loginFailed");
       errorBox.setAttribute("data-bizuply-portal-auth-error", "login");
       errorBox.style.display = "block";
     } finally {
@@ -395,23 +404,25 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
   prepareMountShell(container);
   const theme = readPortalTheme(container);
   const copy = {
-    eyebrow: readPortalCopy(container, "eyebrow", "אזור אישי"),
+    eyebrow: readPortalCopy(container, "eyebrow", t("publicWidgets.portal.area")),
     title: readPortalCopy(
       container,
       "title",
-      siteName ? `הרשמה ל${siteName}` : "הרשמה",
+      siteName
+        ? t("publicWidgets.portal.registerTo", { name: siteName })
+        : t("publicWidgets.portal.register"),
     ),
     subtitle: readPortalCopy(
       container,
       "subtitle",
-      "מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.",
+      t("publicWidgets.portal.registerSubtitle"),
     ),
-    name: readPortalCopy(container, "name", "שם מלא"),
-    email: readPortalCopy(container, "email", "אימייל"),
-    phone: readPortalCopy(container, "phone", "טלפון (אופציונלי)"),
-    password: readPortalCopy(container, "password", "סיסמה (לפחות 6 תווים)"),
-    submit: readPortalCopy(container, "submit", "יצירת חשבון"),
-    login: readPortalCopy(container, "switch", "כבר רשומים? התחברות"),
+    name: readPortalCopy(container, "name", t("publicWidgets.common.fullName")),
+    email: readPortalCopy(container, "email", t("publicWidgets.common.email")),
+    phone: readPortalCopy(container, "phone", t("publicWidgets.portal.phoneOptional")),
+    password: readPortalCopy(container, "password", t("publicWidgets.portal.passwordMin")),
+    submit: readPortalCopy(container, "submit", t("publicWidgets.portal.createAccount")),
+    login: readPortalCopy(container, "switch", t("publicWidgets.portal.alreadyLogin")),
   };
 
   const wrap = el("div", {
@@ -545,7 +556,7 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
 
     submit.disabled = true;
     submit.setAttribute("aria-busy", "true");
-    submit.textContent = "נרשם...";
+    submit.textContent = t("publicWidgets.portal.registering");
     try {
       await sitePortalRegister({
         email: email.value,
@@ -557,7 +568,7 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
       });
       navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
-      errorBox.textContent = err?.message || "ההרשמה נכשלה";
+      errorBox.textContent = err?.message || t("publicWidgets.portal.registerFailed");
       errorBox.style.display = "block";
     } finally {
       submitting = false;
@@ -692,36 +703,34 @@ function mountForgotPassword(container, { siteId, host, siteName, paths, editorM
   });
 
   portalHeading(wrap, theme, {
-    eyebrow: "אזור אישי",
-    title: "שכחתי סיסמה",
-    subtitle:
-      "הזינו את האימייל שאיתו נרשמתם ונשלח אליכם קישור לבחירת סיסמה חדשה.",
+    eyebrow: t("publicWidgets.portal.area"),
+    title: t("publicWidgets.portal.forgotPassword"),
+    subtitle: t("publicWidgets.portal.forgotSubtitle"),
   });
 
   const email = document.createElement("input");
   email.type = "email";
   email.required = true;
-  email.placeholder = "אימייל";
+  email.placeholder = t("publicWidgets.common.email");
   email.autocomplete = "email";
   styleInput(email, theme);
 
   const errorBox = portalNoticeBox(theme, "error");
   const successBox = portalNoticeBox(theme, "success");
-  const submit = portalPrimaryButton(theme, "שליחת קישור לאיפוס");
+  const submit = portalPrimaryButton(theme, t("publicWidgets.portal.sendResetLink"));
 
   submit.addEventListener("click", async () => {
     errorBox.style.display = "none";
     successBox.style.display = "none";
 
     if (editorMode) {
-      successBox.textContent =
-        "בתצוגת עריכה לא נשלח מייל. באתר המפורסם הלקוח יקבל קישור לאיפוס.";
+      successBox.textContent = t("publicWidgets.portal.editorNoEmail");
       successBox.style.display = "block";
       return;
     }
 
     submit.disabled = true;
-    submit.textContent = "שולח...";
+    submit.textContent = t("publicWidgets.portal.sending");
 
     try {
       const result = await sitePortalForgotPassword({
@@ -732,15 +741,14 @@ function mountForgotPassword(container, { siteId, host, siteName, paths, editorM
       });
 
       successBox.textContent =
-        result?.message ||
-        "אם קיים חשבון עם האימייל הזה, נשלח אליו קישור לאיפוס סיסמה.";
+        result?.message || t("publicWidgets.portal.resetSent");
       successBox.style.display = "block";
     } catch (err) {
-      errorBox.textContent = err?.message || "שליחת הקישור נכשלה";
+      errorBox.textContent = err?.message || t("publicWidgets.portal.resetSendFailed");
       errorBox.style.display = "block";
     } finally {
       submit.disabled = false;
-      submit.textContent = "שליחת קישור לאיפוס";
+      submit.textContent = t("publicWidgets.portal.sendResetLink");
     }
   });
 
@@ -751,7 +759,7 @@ function mountForgotPassword(container, { siteId, host, siteName, paths, editorM
 
   const backLink = document.createElement("a");
   backLink.href = paths?.login || "/portal/login";
-  backLink.textContent = "חזרה להתחברות";
+  backLink.textContent = t("publicWidgets.portal.backToLogin");
   Object.assign(backLink.style, {
     display: "inline-block",
     marginTop: "16px",
@@ -786,32 +794,31 @@ function mountResetPassword(container, { siteId, paths, editorMode }) {
   });
 
   portalHeading(wrap, theme, {
-    eyebrow: "אזור אישי",
-    title: "בחירת סיסמה חדשה",
-    subtitle: "בחרו סיסמה חדשה באורך 6 תווים לפחות.",
+    eyebrow: t("publicWidgets.portal.area"),
+    title: t("publicWidgets.portal.newPasswordTitle"),
+    subtitle: t("publicWidgets.portal.newPasswordSubtitle"),
   });
 
   const password = document.createElement("input");
   password.type = "password";
   password.required = true;
-  password.placeholder = "סיסמה חדשה";
+  password.placeholder = t("publicWidgets.portal.newPassword");
   password.autocomplete = "new-password";
   styleInput(password, theme);
 
   const confirm = document.createElement("input");
   confirm.type = "password";
   confirm.required = true;
-  confirm.placeholder = "אימות סיסמה";
+  confirm.placeholder = t("publicWidgets.portal.confirmPassword");
   confirm.autocomplete = "new-password";
   styleInput(confirm, theme);
 
   const errorBox = portalNoticeBox(theme, "error");
   const successBox = portalNoticeBox(theme, "success");
-  const submit = portalPrimaryButton(theme, "שמירת הסיסמה");
+  const submit = portalPrimaryButton(theme, t("publicWidgets.portal.savePassword"));
 
   if (!token && !editorMode) {
-    errorBox.textContent =
-      "הקישור חסר או אינו תקין. בקשו קישור חדש בעמוד «שכחתי סיסמה».";
+    errorBox.textContent = t("publicWidgets.portal.missingToken");
     errorBox.style.display = "block";
   }
 
@@ -820,36 +827,35 @@ function mountResetPassword(container, { siteId, paths, editorMode }) {
     successBox.style.display = "none";
 
     if (editorMode) {
-      successBox.textContent =
-        "בתצוגת עריכה לא מתבצע שינוי סיסמה. באתר המפורסם זה יעבוד מהקישור במייל.";
+      successBox.textContent = t("publicWidgets.portal.editorNoReset");
       successBox.style.display = "block";
       return;
     }
 
     if (password.value.length < 6) {
-      errorBox.textContent = "הסיסמה חייבת להיות באורך 6 תווים לפחות";
+      errorBox.textContent = t("publicWidgets.portal.passwordMinError");
       errorBox.style.display = "block";
       return;
     }
 
     if (password.value !== confirm.value) {
-      errorBox.textContent = "הסיסמאות אינן זהות";
+      errorBox.textContent = t("publicWidgets.portal.passwordsMismatch");
       errorBox.style.display = "block";
       return;
     }
 
     submit.disabled = true;
-    submit.textContent = "שומר...";
+    submit.textContent = t("publicWidgets.portal.saving");
 
     try {
       await sitePortalResetPassword({ token, password: password.value });
       navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
-      errorBox.textContent = err?.message || "איפוס הסיסמה נכשל";
+      errorBox.textContent = err?.message || t("publicWidgets.portal.resetFailed");
       errorBox.style.display = "block";
     } finally {
       submit.disabled = false;
-      submit.textContent = "שמירת הסיסמה";
+      submit.textContent = t("publicWidgets.portal.savePassword");
     }
   });
 
@@ -861,7 +867,7 @@ function mountResetPassword(container, { siteId, paths, editorMode }) {
 
   const backLink = document.createElement("a");
   backLink.href = paths?.login || "/portal/login";
-  backLink.textContent = "חזרה להתחברות";
+  backLink.textContent = t("publicWidgets.portal.backToLogin");
   Object.assign(backLink.style, {
     display: "inline-block",
     marginTop: "16px",
@@ -985,7 +991,7 @@ function flattenCustomDataValue(field) {
     return Array.isArray(value) ? value.join(" · ") : "";
   }
   if (type === "checkbox" || type === "boolean") {
-    return value ? "כן" : "לא";
+    return value ? t("publicWidgets.common.yes") : t("publicWidgets.common.no");
   }
   if (value == null) return "";
   return String(value);
@@ -996,7 +1002,7 @@ function formatCustomDataDisplay(field) {
   const value = field?.value;
 
   if (type === "checkbox" || type === "boolean") {
-    return value ? "כן" : "לא";
+    return value ? t("publicWidgets.common.yes") : t("publicWidgets.common.no");
   }
   if (type === "checklist") {
     return Array.isArray(value) && value.length ? value.join(" · ") : "—";
@@ -1040,7 +1046,7 @@ function renderTrackingHistoryTable(theme, field) {
 
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  ["תאריך", "שעה", field?.label || "ערך"].forEach((label) => {
+  [t("publicWidgets.common.date"), t("publicWidgets.common.time"), field?.label || t("publicWidgets.common.value")].forEach((label) => {
     const th = document.createElement("th");
     th.textContent = label;
     Object.assign(th.style, {
@@ -1062,7 +1068,7 @@ function renderTrackingHistoryTable(theme, field) {
     const emptyRow = document.createElement("tr");
     const emptyCell = document.createElement("td");
     emptyCell.colSpan = 3;
-    emptyCell.textContent = "אין מדידות עדיין";
+    emptyCell.textContent = t("publicWidgets.portal.noMeasurements");
     Object.assign(emptyCell.style, {
       padding: "14px 12px",
       color: theme.muted,
@@ -1145,7 +1151,7 @@ function renderPlainTableHistory(theme, field) {
     const emptyRow = document.createElement("tr");
     const emptyCell = document.createElement("td");
     emptyCell.colSpan = columns.length;
-    emptyCell.textContent = "אין נתונים בטבלה";
+    emptyCell.textContent = t("publicWidgets.portal.noTableData");
     Object.assign(emptyCell.style, {
       padding: "14px 12px",
       color: theme.muted,
@@ -1195,7 +1201,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
       fontWeight: "900",
       color: theme.ink,
     },
-    "הנתונים שלי",
+    t("publicWidgets.portal.myData"),
   );
   stampPortalAuthControl(title, container, "title", editorMode);
   wrap.appendChild(title);
@@ -1209,7 +1215,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
       color: theme.muted,
       lineHeight: "1.6",
     },
-    "ערכים מעודכנים מתיק הלקוח ב-CRM — לפי סוגי הנתונים שהעסק הגדיר.",
+    t("publicWidgets.portal.myDataSubtitle"),
   );
   stampPortalAuthControl(subtitle, container, "subtitle", editorMode);
   wrap.appendChild(subtitle);
@@ -1220,7 +1226,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
       ? [
           {
             key: "weight",
-            label: "משקל",
+            label: t("publicWidgets.portal.weight"),
             type: "tracking",
             value: {
               entries: [
@@ -1231,14 +1237,14 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
           },
           {
             key: "treatments_left",
-            label: "כמות טיפולים",
+            label: t("publicWidgets.portal.treatments"),
             type: "number",
             value: 4,
           },
-          { key: "balance", label: "יתרה", type: "number", value: 250 },
+          { key: "balance", label: t("publicWidgets.portal.balance"), type: "number", value: 250 },
           {
             key: "sessions_done",
-            label: "מפגשים שבוצעו",
+            label: t("publicWidgets.portal.sessionsDone"),
             type: "number",
             value: 8,
           },
@@ -1258,7 +1264,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
           color: theme.muted,
           fontSize: "14px",
         },
-        "אין עדיין נתונים משתנים מוצגים לחשבון זה.",
+        t("publicWidgets.portal.noCustomData"),
       ),
     );
     container.appendChild(wrap);
@@ -1302,7 +1308,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
             letterSpacing: "0.04em",
             marginBottom: "8px",
           },
-          field.label || field.key || "נתון",
+          field.label || field.key || t("publicWidgets.portal.dataItem"),
         ),
       );
       card.appendChild(
@@ -1343,7 +1349,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
           letterSpacing: "0.04em",
           marginBottom: "4px",
         },
-        field.label || field.key || "נתון",
+        field.label || field.key || t("publicWidgets.portal.dataItem"),
       ),
     );
 
@@ -1370,7 +1376,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
             fontWeight: "700",
             color: theme.muted,
           },
-          "היסטוריית מעקב",
+          t("publicWidgets.portal.trackingHistory"),
         ),
       );
       card.appendChild(renderTrackingHistoryTable(theme, field));
@@ -1413,7 +1419,7 @@ function appendCustomDataSummary(wrap, theme, fields) {
         letterSpacing: "0.04em",
         margin: "4px 0 8px",
       },
-      "נתונים מהתיק",
+      t("publicWidgets.portal.fileData"),
     ),
   );
 
@@ -1492,12 +1498,14 @@ function renderAccountPanel(
     fontWeight: "900",
     fontSize: "16px",
     flex: "0 0 auto",
-  }, String(member?.fullName || "ל").trim().charAt(0) || "ל");
+  }, String(member?.fullName || t("publicWidgets.portal.previewInitial")).trim().charAt(0) || t("publicWidgets.portal.previewInitial"));
   const identity = el("div", { flex: "1 1 auto", minWidth: "0" });
   const greeting = el(
     "h3",
     { margin: "0 0 4px", fontSize: "20px", fontWeight: "900", color: theme.ink },
-    `שלום ${member?.fullName || "לקוח/ה"}`,
+    t("publicWidgets.portal.helloName", {
+      name: member?.fullName || t("publicWidgets.portal.customer"),
+    }),
   );
   stampPortalAuthControl(greeting, container, "title", editorMode);
   identity.appendChild(greeting);
@@ -1519,9 +1527,9 @@ function renderAccountPanel(
 
   const statsValues = editorMode
     ? [
-        ["הזמנות", "3"],
-        ["קורסים", "2"],
-        ["הודעות", "0"],
+        [t("publicWidgets.portal.orders"), "3"],
+        [t("publicWidgets.portal.courses"), "2"],
+        [t("publicWidgets.portal.messages"), "0"],
       ]
     : [];
   if (statsValues.length) {
@@ -1569,19 +1577,19 @@ function renderAccountPanel(
     theme,
     editorMode && (!customData || !customData.length)
       ? [
-          { label: "משקל", value: 72, type: "number" },
-          { label: "כמות טיפולים", value: 4, type: "number" },
-          { label: "יתרה", value: 250, type: "number" },
-          { label: "מפגשים", value: 8, type: "number" },
+          { label: t("publicWidgets.portal.weight"), value: 72, type: "number" },
+          { label: t("publicWidgets.portal.treatments"), value: 4, type: "number" },
+          { label: t("publicWidgets.portal.balance"), value: 250, type: "number" },
+          { label: t("publicWidgets.portal.sessions"), value: 8, type: "number" },
         ]
       : customData,
   );
 
   const quickLinks = editorMode
     ? [
-        { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
-        { href: paths?.cart || "/cart", label: "העגלה שלי" },
-        { href: paths?.account || "/portal/account", label: "פרטי החשבון" },
+        { href: paths?.orders || "/orders", label: t("publicWidgets.portal.myOrders") },
+        { href: paths?.cart || "/cart", label: t("publicWidgets.portal.myCart") },
+        { href: paths?.account || "/portal/account", label: t("publicWidgets.portal.accountDetails") },
       ]
     : [];
   const quickRow = el("div", {
@@ -1620,7 +1628,7 @@ function renderAccountPanel(
       letterSpacing: "0.04em",
       marginBottom: "8px",
     },
-    "גישה מהירה",
+    t("publicWidgets.portal.quickAccess"),
   );
   const pageList = Array.isArray(pages) ? pages : [];
   const showPlaceholderPages = editorMode && !pageList.length;
@@ -1628,7 +1636,11 @@ function renderAccountPanel(
   wrap.appendChild(sectionTitle);
   }
   if (showPlaceholderPages) {
-    ["הזמנות קודמות", "עמוד מוגן ללקוחות", "המשך רכישה"].forEach((label) => {
+    [
+      t("publicWidgets.portal.pastOrders"),
+      t("publicWidgets.portal.protectedPage"),
+      t("publicWidgets.portal.continuePurchase"),
+    ].forEach((label) => {
       wrap.appendChild(
         el(
           "div",
@@ -1654,7 +1666,7 @@ function renderAccountPanel(
         page.path || `/${page.slug || page.id}`,
         editorMode,
       );
-      link.textContent = page.title || "עמוד";
+      link.textContent = page.title || t("publicWidgets.common.page");
       Object.assign(link.style, {
         display: "block",
         marginBottom: "8px",
@@ -1685,7 +1697,7 @@ function renderAccountPanel(
         fontWeight: "800",
         cursor: "pointer",
       },
-      "התנתקות",
+      t("publicWidgets.portal.logout"),
     );
     logout.type = "button";
     logout.setAttribute("data-bizuply-portal-logout", "");
@@ -1715,16 +1727,16 @@ function renderOrdersPanel(container, theme, orders) {
         letterSpacing: "0.04em",
         marginBottom: "10px",
       },
-      "היסטוריית הזמנות",
+      t("publicWidgets.portal.orderHistory"),
     ),
   );
 
   const list = Array.isArray(orders) && orders.length
     ? orders
     : [
-        { orderNumber: "1042", status: "שולמה", total: 249 },
-        { orderNumber: "1038", status: "בטיפול", total: 128.5 },
-        { orderNumber: "1021", status: "נשלחה", total: 89 },
+        { orderNumber: "1042", status: t("publicWidgets.portal.paid"), total: 249 },
+        { orderNumber: "1038", status: t("publicWidgets.portal.processing"), total: 128.5 },
+        { orderNumber: "1021", status: t("publicWidgets.portal.shipped"), total: 89 },
       ];
 
   const table = el("div", {
@@ -1746,7 +1758,7 @@ function renderOrdersPanel(container, theme, orders) {
     color: theme.muted,
     letterSpacing: "0.04em",
   });
-  ["הזמנה", "סטטוס", "סכום"].forEach((label) => {
+  [t("publicWidgets.portal.order"), t("publicWidgets.portal.status"), t("publicWidgets.portal.amount")].forEach((label) => {
     head.appendChild(el("div", {}, label));
   });
   table.appendChild(head);
@@ -1796,7 +1808,7 @@ function renderOrdersPanel(container, theme, orders) {
       invoice.href = order.morningDocumentUrl;
       invoice.target = "_blank";
       invoice.rel = "noopener noreferrer";
-      invoice.textContent = "חשבונית";
+      invoice.textContent = t("publicWidgets.portal.invoice");
       Object.assign(invoice.style, {
         display: "inline-block",
         margin: "0 14px 12px",
@@ -1826,7 +1838,7 @@ async function mountCustomData(container, { siteId, editorMode = false }) {
     el(
       "div",
       { padding: "24px", fontWeight: "700", color: theme.muted },
-      "טוען נתונים...",
+      t("publicWidgets.portal.loadingData"),
     ),
   );
 
@@ -1848,7 +1860,7 @@ async function mountCustomData(container, { siteId, editorMode = false }) {
             marginBottom: "12px",
             fontSize: "14px",
           },
-          "כדי לצפות בנתונים יש להתחבר לאזור האישי.",
+          t("publicWidgets.portal.loginToSeeData"),
         ),
       );
       container.appendChild(wrap);
@@ -1927,7 +1939,7 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
     renderAccountPanel(
       container,
       theme,
-      { fullName: "לקוח/ה לדוגמה", email: "client@example.com" },
+      { fullName: t("publicWidgets.portal.sampleCustomer"), email: "client@example.com" },
       [],
       { paths, editorMode: true },
     );
@@ -1938,7 +1950,7 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
   const loading = el(
     "div",
     { padding: "24px", fontWeight: "700", color: theme.muted },
-    "טוען חשבון...",
+    t("publicWidgets.portal.loadingAccount"),
   );
   container.appendChild(loading);
 
@@ -1967,12 +1979,12 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
           marginBottom: "12px",
           fontSize: "14px",
         },
-        "כדי לצפות בחשבון יש להתחבר.",
+        t("publicWidgets.portal.loginToSeeAccount"),
       ),
     );
     const login = document.createElement("a");
     login.href = paths?.login || "/portal/login";
-    login.textContent = "להתחברות";
+    login.textContent = t("publicWidgets.portal.goToLogin");
     Object.assign(login.style, {
       display: "inline-flex",
       background: theme.ink,
@@ -2004,24 +2016,28 @@ function readPackagesConfig(container) {
   if (!packages) {
     packages = [
       {
-        name: "בסיס",
+        name: t("publicWidgets.portal.pkgBasic"),
         price: "₪290",
-        period: "לחודש",
-        features: ["גישה לאזור אישי", "תמיכה במייל"],
+        period: t("publicWidgets.portal.perMonth"),
+        features: [t("publicWidgets.portal.pkgBasicF1"), t("publicWidgets.portal.pkgBasicF2")],
         featured: false,
       },
       {
-        name: "עסקי",
+        name: t("publicWidgets.portal.pkgBusiness"),
         price: "₪590",
-        period: "לחודש",
-        features: ["הכול בבסיס", "עמודים מוגנים", "עדיפות בתמיכה"],
+        period: t("publicWidgets.portal.perMonth"),
+        features: [
+          t("publicWidgets.portal.pkgBusinessF1"),
+          t("publicWidgets.portal.pkgBusinessF2"),
+          t("publicWidgets.portal.pkgBusinessF3"),
+        ],
         featured: true,
       },
       {
-        name: "פרימיום",
+        name: t("publicWidgets.portal.pkgPremium"),
         price: "₪990",
-        period: "לחודש",
-        features: ["הכול בעסקי", "ליווי אישי"],
+        period: t("publicWidgets.portal.perMonth"),
+        features: [t("publicWidgets.portal.pkgPremiumF1"), t("publicWidgets.portal.pkgPremiumF2")],
         featured: false,
       },
     ];
@@ -2034,12 +2050,12 @@ function renderPackagesPanel(container, theme, { editorMode = false } = {}) {
   prepareMountShell(container);
   const { paymentUrl, packages } = readPackagesConfig(container);
   const title =
-    container.getAttribute("data-portal-copy-title") || "בחרו חבילה";
+    container.getAttribute("data-portal-copy-title") || t("publicWidgets.portal.choosePackage");
   const subtitle =
     container.getAttribute("data-portal-copy-subtitle") ||
-    "לאחר התשלום בסליקה תיפתח הגישה לאזור האישי.";
+    t("publicWidgets.portal.packagesSubtitle");
   const ctaLabel =
-    container.getAttribute("data-portal-copy-submit") || "לתשלום בסליקה";
+    container.getAttribute("data-portal-copy-submit") || t("publicWidgets.portal.payCheckout");
 
   const wrap = el("div", {
     padding: "22px",
@@ -2086,7 +2102,7 @@ function renderPackagesPanel(container, theme, { editorMode = false } = {}) {
           fontWeight: "700",
           color: theme.muted,
         },
-        "הדביקו קישור סליקה במאפיין data-bizuply-portal-payment-url על הווידג׳ט (או על כפתורי החבילות בעמוד).",
+        t("publicWidgets.portal.editorPaymentHint"),
       ),
     );
   }
@@ -2112,14 +2128,14 @@ function renderPackagesPanel(container, theme, { editorMode = false } = {}) {
           color: featured ? "rgba(248,250,252,0.7)" : theme.muted,
           marginBottom: "6px",
         },
-        featured ? "הכי פופולרי" : "חבילה",
+        featured ? t("publicWidgets.portal.mostPopular") : t("publicWidgets.portal.package"),
       ),
     );
     card.appendChild(
       el(
         "div",
         { fontSize: "18px", fontWeight: "900", marginBottom: "4px" },
-        pkg.name || "חבילה",
+        pkg.name || t("publicWidgets.portal.package"),
       ),
     );
     card.appendChild(
@@ -2207,7 +2223,7 @@ async function mountOrders(container, { siteId, editorMode = false, paths }) {
     el(
       "div",
       { padding: "24px", fontWeight: "700", color: theme.muted },
-      "טוען הזמנות...",
+      t("publicWidgets.portal.loadingOrders"),
     ),
   );
 
@@ -2228,7 +2244,7 @@ async function mountOrders(container, { siteId, editorMode = false, paths }) {
             fontWeight: "700",
             color: theme.muted,
           },
-          "אין עדיין הזמנות משויכות לחשבון זה.",
+          t("publicWidgets.portal.noOrders"),
         ),
       );
       container.appendChild(wrap);
@@ -2247,12 +2263,12 @@ async function mountOrders(container, { siteId, editorMode = false, paths }) {
           marginBottom: "12px",
           fontSize: "14px",
         },
-        "כדי לצפות בהזמנות יש להתחבר.",
+        t("publicWidgets.portal.loginToSeeOrders"),
       ),
     );
     const login = document.createElement("a");
     login.href = paths?.login || "/portal/login";
-    login.textContent = "להתחברות";
+    login.textContent = t("publicWidgets.portal.goToLogin");
     Object.assign(login.style, {
       display: "inline-flex",
       background: theme.ink,
@@ -2291,7 +2307,7 @@ function mountCart(container, { businessId }) {
           fontWeight: "700",
           color: theme.muted,
         },
-        "העגלה ריקה כרגע.",
+        t("publicWidgets.portal.cartEmpty"),
       ),
     );
     container.appendChild(wrap);
@@ -2313,7 +2329,7 @@ function mountCart(container, { businessId }) {
       fontWeight: "700",
       fontSize: "13px",
     });
-    row.appendChild(el("span", {}, `${item.name || "מוצר"} × ${qty}`));
+    row.appendChild(el("span", {}, `${item.name || t("publicWidgets.portal.product")} × ${qty}`));
     row.appendChild(el("span", {}, `₪${(qty * price).toFixed(2)}`));
     wrap.appendChild(row);
   });
@@ -2326,7 +2342,7 @@ function mountCart(container, { businessId }) {
         fontWeight: "900",
         fontSize: "16px",
       },
-      `סה״כ: ₪${total.toFixed(2)}`,
+      t("publicWidgets.portal.total", { amount: `₪${total.toFixed(2)}` }),
     ),
   );
 
@@ -2341,7 +2357,7 @@ function mountCart(container, { businessId }) {
       fontWeight: "800",
       cursor: "pointer",
     },
-    "המשך לתשלום",
+    t("publicWidgets.portal.continueToPay"),
   );
   checkout.type = "button";
   checkout.addEventListener("click", () => {
@@ -2368,70 +2384,90 @@ export function pageHasPortalWidget(root) {
   );
 }
 
-const SAMPLE_CRM_FIELDS = [
-  {
-    key: "client_name",
-    label: "שם לקוח",
-    type: "text",
-    value: "[שם לקוח]",
-  },
-  {
-    key: "fullName",
-    label: "שם לקוח",
-    type: "text",
-    value: "[שם לקוח]",
-  },
-  {
-    key: "weight",
-    label: "משקל",
-    type: "tracking",
-    value: {
-      entries: [
-        { id: "sample_1", date: "[תאריך]", time: "[שעה]", value: "[משקל]" },
-      ],
+function sampleCrmFields() {
+  return [
+    {
+      key: "client_name",
+      label: t("publicWidgets.portal.clientName"),
+      type: "text",
+      value: t("publicWidgets.portal.sampleClientName"),
     },
-  },
-  {
-    key: "treatments_left",
-    label: "כמות טיפולים",
-    type: "number",
-    value: "[כמות]",
-  },
-  { key: "balance", label: "יתרה", type: "number", value: "[יתרה]" },
-  {
-    key: "sessions_done",
-    label: "מפגשים שבוצעו",
-    type: "number",
-    value: "[מפגשים]",
-  },
-  {
-    key: "summary",
-    label: "סיכום",
-    type: "summary",
-    value: "[סיכום מהתיק]",
-  },
-  {
-    key: "treatment_plan",
-    label: "תכנית טיפול",
-    type: "textarea",
-    value: "[תכנית מהתיק]",
-  },
-  {
-    key: "continuation_plan",
-    label: "תוכנית המשך",
-    type: "textarea",
-    value: "[תוכנית המשך מהתיק]",
-  },
-  {
-    key: "follow_up_plan",
-    label: "תכנית מעקב",
-    type: "table",
-    value: {
-      columns: ["תאריך", "פעולה", "סטטוס"],
-      rows: [["[תאריך]", "[פעולה]", "[סטטוס]"]],
+    {
+      key: "fullName",
+      label: t("publicWidgets.portal.clientName"),
+      type: "text",
+      value: t("publicWidgets.portal.sampleClientName"),
     },
-  },
-];
+    {
+      key: "weight",
+      label: t("publicWidgets.portal.weight"),
+      type: "tracking",
+      value: {
+        entries: [
+          {
+            id: "sample_1",
+            date: t("publicWidgets.portal.sampleDate"),
+            time: t("publicWidgets.portal.sampleTime"),
+            value: t("publicWidgets.portal.sampleWeight"),
+          },
+        ],
+      },
+    },
+    {
+      key: "treatments_left",
+      label: t("publicWidgets.portal.treatments"),
+      type: "number",
+      value: t("publicWidgets.portal.sampleQty"),
+    },
+    {
+      key: "balance",
+      label: t("publicWidgets.portal.balance"),
+      type: "number",
+      value: t("publicWidgets.portal.sampleBalance"),
+    },
+    {
+      key: "sessions_done",
+      label: t("publicWidgets.portal.sessionsDone"),
+      type: "number",
+      value: t("publicWidgets.portal.sampleSessions"),
+    },
+    {
+      key: "summary",
+      label: t("publicWidgets.portal.summary"),
+      type: "summary",
+      value: t("publicWidgets.portal.sampleSummary"),
+    },
+    {
+      key: "treatment_plan",
+      label: t("publicWidgets.portal.treatmentPlan"),
+      type: "textarea",
+      value: t("publicWidgets.portal.samplePlan"),
+    },
+    {
+      key: "continuation_plan",
+      label: t("publicWidgets.portal.continuationPlan"),
+      type: "textarea",
+      value: t("publicWidgets.portal.sampleFollowOn"),
+    },
+    {
+      key: "follow_up_plan",
+      label: t("publicWidgets.portal.followUpPlan"),
+      type: "table",
+      value: {
+        columns: [
+          t("publicWidgets.common.date"),
+          t("publicWidgets.portal.action"),
+          t("publicWidgets.portal.status"),
+        ],
+        rows: [[
+          t("publicWidgets.portal.sampleDate"),
+          t("publicWidgets.portal.sampleAction"),
+          t("publicWidgets.portal.sampleStatus"),
+        ]],
+      },
+    },
+  ];
+}
 
 function mergeMemberIntoCustomData(customData, member) {
   const list = Array.isArray(customData) ? [...customData] : [];
@@ -2460,10 +2496,10 @@ function mergeMemberIntoCustomData(customData, member) {
   };
 
   // Logged-in portal member identity wins for greeting / name widgets.
-  upsert("client_name", "שם לקוח", fullName, { force: true });
-  upsert("fullName", "שם לקוח", fullName, { force: true });
-  upsert("client_email", "מייל לקוח", email);
-  upsert("client_phone", "טלפון לקוח", phone);
+  upsert("client_name", t("publicWidgets.portal.clientName"), fullName, { force: true });
+  upsert("fullName", t("publicWidgets.portal.clientName"), fullName, { force: true });
+  upsert("client_email", t("publicWidgets.portal.clientEmail"), email);
+  upsert("client_phone", t("publicWidgets.portal.clientPhone"), phone);
   return list;
 }
 
@@ -2494,21 +2530,31 @@ function resolveBoundFieldText(field, part, key, options = {}) {
 
   if (format === "greeting") {
     if (!field) {
-      return options.editorMode ? "שלום, ישראל ישראלי" : "שלום, לקוח/ה";
+      return options.editorMode
+        ? t("publicWidgets.portal.greetingSample")
+        : t("publicWidgets.portal.greetingGuest");
     }
-    const value = formatCustomDataDisplay(field) || "לקוח/ה";
-    return `שלום, ${value}`;
+    const value = formatCustomDataDisplay(field);
+    if (!value) return t("publicWidgets.portal.greetingGuest");
+    return t("publicWidgets.portal.greetingNamed", { name: value });
   }
 
+  const fallbackLabel = t("publicWidgets.portal.dataItem");
+  const dash = t("publicWidgets.common.dash");
   if (!field) {
-    if (part === "label") return nodeLabel || key || "נתון";
-    if (part === "both") return `${nodeLabel || key || "נתון"} - —`;
-    return "—";
+    if (part === "label") return nodeLabel || key || fallbackLabel;
+    if (part === "both") {
+      return t("publicWidgets.portal.labelValue", {
+        label: nodeLabel || key || fallbackLabel,
+        value: dash,
+      });
+    }
+    return dash;
   }
-  const label = nodeLabel || field.label || key || "נתון";
+  const label = nodeLabel || field.label || key || fallbackLabel;
   const value = formatCustomDataDisplay(field);
   if (part === "label") return label;
-  if (part === "both") return `${label} - ${value}`;
+  if (part === "both") return t("publicWidgets.portal.labelValue", { label, value });
   return value;
 }
 
@@ -2528,7 +2574,7 @@ export function applyPortalCrmFieldBindings(root, customData, options = {}) {
     Array.isArray(customData) && customData.length
       ? customData
       : editorMode
-        ? SAMPLE_CRM_FIELDS
+        ? sampleCrmFields()
         : [],
   );
 
@@ -2590,8 +2636,9 @@ async function refreshPortalCrmFieldBindings(root, { siteId, editorMode }) {
   if (!hasBoundNodes) return;
 
   if (editorMode) {
-    syncPortalDataToWindow(SAMPLE_CRM_FIELDS);
-    applyPortalCrmFieldBindings(root, SAMPLE_CRM_FIELDS, { editorMode: true });
+    const sample = sampleCrmFields();
+    syncPortalDataToWindow(sample);
+    applyPortalCrmFieldBindings(root, sample, { editorMode: true });
     return;
   }
 

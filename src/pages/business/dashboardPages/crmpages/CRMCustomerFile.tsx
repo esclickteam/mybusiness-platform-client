@@ -70,6 +70,7 @@ export default function CRMCustomerFile({
   onClose,
   businessId,
 }: CRMCustomerFileProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<CustomerTab>("appointments");
@@ -158,7 +159,7 @@ export default function CRMCustomerFile({
     }
 
     if (!businessId) {
-      alert("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
+      alert(t("business.profileBuild.missingBusiness", "לא הצלחנו לזהות את העסק. רעננו את העמוד."));
       return;
     }
 

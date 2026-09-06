@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Filter, LogIn, MoreHorizontal, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n/localeUtils";
 import { enterPartnerClient, fetchPartnerClients, partnerApiError } from "../../lib/partnerApi";
 import type { PartnerClient } from "../../types/partner";
 import {
   PARTNER_CLIENT_STATUSES,
-  PARTNER_STATUS_LABEL,
   PARTNER_STATUS_TONE,
   partnerStatusLabel,
 } from "../../lib/partnerLabels";
@@ -27,6 +28,8 @@ import {
 } from "../../lib/partnerWork";
 
 export default function PartnerClients() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const navigate = useNavigate();
   const { loginWithToken } = useAuth() as {
     loginWithToken?: (
@@ -60,7 +63,7 @@ export default function PartnerClients() {
           setTotal(data.total || 0);
         }
       } catch (err: unknown) {
-        if (!cancelled) setError(partnerApiError(err, "שגיאה בטעינת לקוחות"));
+        if (!cancelled) setError(partnerApiError(err, t("partner.errors.clients")));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -68,7 +71,7 @@ export default function PartnerClients() {
     return () => {
       cancelled = true;
     };
-  }, [query]);
+  }, [query, t]);
 
   const pages = Math.max(1, Math.ceil(total / 20));
   const from = total === 0 ? 0 : (page - 1) * 20 + 1;
@@ -96,7 +99,7 @@ export default function PartnerClients() {
         replace: true,
       });
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן להיכנס לניהול הלקוח"));
+      setError(partnerApiError(err, t("partner.errors.enterClient")));
     } finally {
       setEnteringId("");
     }
@@ -106,13 +109,13 @@ export default function PartnerClients() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">לקוחות</h2>
-          <p className="text-sm font-bold text-slate-500">כל התיקים במורד — חיפוש, סטטוס ומעקב.</p>
+          <h2 className="text-2xl font-black text-slate-900">{t("partner.clientsPage.title")}</h2>
+          <p className="text-sm font-bold text-slate-500">{t("partner.clientsPage.subtitle")}</p>
         </div>
         <Link to="/partner/dashboard/clients/new">
           <PartnerPrimaryButton type="button">
             <Plus className="h-4 w-4" />
-            לקוח חדש
+            {t("partner.newClient")}
           </PartnerPrimaryButton>
         </Link>
       </div>
@@ -121,7 +124,7 @@ export default function PartnerClients() {
         <PartnerSearchField
           value={q}
           onChange={(value) => setQuery({ q: value, page: "1" })}
-          placeholder="חיפוש שם, טלפון, אימייל, סטטוס..."
+          placeholder={t("partner.clientsPage.searchPlaceholder")}
         />
         <PartnerSelect
           value={status}
@@ -130,7 +133,7 @@ export default function PartnerClients() {
         >
           {PARTNER_CLIENT_STATUSES.map((item) => (
             <option key={item || "all"} value={item}>
-              {item ? PARTNER_STATUS_LABEL[item] : "כל הסטטוסים"}
+              {item ? partnerStatusLabel(item, t) : t("partner.allStatuses")}
             </option>
           ))}
         </PartnerSelect>
@@ -143,21 +146,21 @@ export default function PartnerClients() {
       ) : null}
 
       {loading ? (
-        <BizuplyLoader label="טוען לקוחות..." />
+        <BizuplyLoader label={t("partner.clientsPage.loading")} />
       ) : (
         <PartnerCard className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[860px] text-right text-sm">
               <thead className="text-[11px] font-black uppercase tracking-wide text-slate-400">
                 <tr>
-                  <th className="px-5 py-3">לקוח</th>
-                  <th className="px-3 py-3">סטטוס</th>
-                  <th className="px-3 py-3">איש קשר</th>
-                  <th className="px-3 py-3">טלפון</th>
-                  <th className="px-3 py-3">סוג אירוע</th>
-                  <th className="px-3 py-3">מקור</th>
-                  <th className="px-3 py-3">תאריך יעד</th>
-                  <th className="px-3 py-3">משימות</th>
+                  <th className="px-5 py-3">{t("partner.client")}</th>
+                  <th className="px-3 py-3">{t("common.status")}</th>
+                  <th className="px-3 py-3">{t("partner.contact")}</th>
+                  <th className="px-3 py-3">{t("partner.phone")}</th>
+                  <th className="px-3 py-3">{t("partner.dashboard.eventType")}</th>
+                  <th className="px-3 py-3">{t("partner.clientsPage.source")}</th>
+                  <th className="px-3 py-3">{t("partner.dashboard.dueDate")}</th>
+                  <th className="px-3 py-3">{t("partner.tasks")}</th>
                   <th className="px-3 py-3" />
                 </tr>
               </thead>
@@ -187,7 +190,7 @@ export default function PartnerClients() {
                           PARTNER_STATUS_TONE[row.status] || "bg-slate-100"
                         }`}
                       >
-                        {PARTNER_STATUS_LABEL[row.status] || row.status}
+                        {partnerStatusLabel(row.status, t)}
                       </span>
                     </td>
                     <td className="px-3 py-4 font-bold text-slate-700">{row.contact?.contactName || "—"}</td>
@@ -196,10 +199,10 @@ export default function PartnerClients() {
                     </td>
                     <td className="px-3 py-4 font-bold text-slate-600">{eventTypeLabel(row)}</td>
                     <td className="px-3 py-4 font-bold text-slate-600">
-                      {partnerStatusLabel(row.source)}
+                      {partnerStatusLabel(row.source, t)}
                     </td>
                     <td className="px-3 py-4 font-bold text-slate-600">
-                      {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate)}
+                      {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate, locale)}
                     </td>
                     <td className="px-3 py-4">
                       <span className="inline-grid h-7 w-7 place-items-center rounded-full bg-slate-100 text-xs font-black text-slate-700">
@@ -215,7 +218,7 @@ export default function PartnerClients() {
                             className="!px-3 !py-1.5 text-xs"
                           >
                             <LogIn className="h-3.5 w-3.5" />
-                            {enteringId === row._id ? "נכנס..." : "כניסה"}
+                            {enteringId === row._id ? t("partner.clientsPage.entering") : t("partner.clientsPage.enter")}
                           </PartnerGhostButton>
                         ) : null}
                         <button
@@ -233,7 +236,7 @@ export default function PartnerClients() {
                             className="block w-full rounded-xl px-3 py-2 text-right text-sm font-bold hover:bg-violet-50"
                             onClick={() => navigate(`/partner/dashboard/crm/${row._id}`)}
                           >
-                            תיק לקוח
+                            {t("partner.clientsPage.clientFile")}
                           </button>
                           <button
                             type="button"
@@ -242,7 +245,7 @@ export default function PartnerClients() {
                               navigate(`/partner/dashboard/clients/new?clientId=${row._id}`)
                             }
                           >
-                            הצעת מחיר
+                            {t("partner.quote")}
                           </button>
                         </div>
                       ) : null}
@@ -252,7 +255,7 @@ export default function PartnerClients() {
                 {!items.length ? (
                   <tr>
                     <td colSpan={9} className="px-4 py-12 text-center font-bold text-slate-400">
-                      אין לקוחות להצגה — התחילו באשף לקוח חדש
+                      {t("partner.clientsPage.empty")}
                     </td>
                   </tr>
                 ) : null}
@@ -261,7 +264,7 @@ export default function PartnerClients() {
           </div>
           <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm font-bold text-slate-500">
             <span>
-              מציג {from}-{to} מתוך {total} לקוחות
+              {t("partner.clientsPage.showingRange", { from, to, total })}
             </span>
             <div className="flex items-center gap-2">
               <span className="grid h-8 w-8 place-items-center rounded-lg bg-violet-100 text-sm font-black text-violet-800">

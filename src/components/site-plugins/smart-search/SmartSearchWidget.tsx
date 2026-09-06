@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GripVertical, Search, X } from "lucide-react";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import {
   buildSiteSearchIndex,
@@ -23,6 +26,7 @@ export default function SmartSearchWidget({
   mode = "live",
   onPositionChange,
 }: SmartSearchWidgetProps) {
+  const { t, i18n } = useTranslation();
   const settings = useMemo(
     () => mergeSmartSearchSettings(settingsProp),
     [settingsProp]
@@ -125,7 +129,7 @@ export default function SmartSearchWidget({
       data-bizuply-smart-search="true"
       data-bizuply-plugin="smart-search"
       data-bizuply-plugin-runtime="true"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <style>{`
         .bizuply-search-highlight {
@@ -158,7 +162,7 @@ export default function SmartSearchWidget({
           <button
             type="button"
             onClick={openSearch}
-            aria-label="חיפוש באתר"
+            aria-label={t("publicWidgets.search.aria")}
             className="flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105"
             style={{ background: accent, color: "#fff" }}
           >
@@ -182,14 +186,14 @@ export default function SmartSearchWidget({
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={settings.placeholder || "חיפוש באתר..."}
+                placeholder={settings.placeholder || t("publicWidgets.search.placeholder")}
                 className="min-w-0 flex-1 bg-transparent text-base font-medium text-slate-800 outline-none placeholder:text-slate-400"
               />
               <button
                 type="button"
                 onClick={closeSearch}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
-                aria-label="סגירה"
+                aria-label={t("publicWidgets.common.close")}
               >
                 <X size={16} />
               </button>
@@ -198,11 +202,11 @@ export default function SmartSearchWidget({
             <div className="max-h-[min(60vh,420px)] overflow-y-auto p-2">
               {!query.trim() ? (
                 <p className="px-3 py-6 text-center text-sm text-slate-500">
-                  הקלידו מילה או ביטוי לחיפוש בתוכן האתר
+                  {t("publicWidgets.search.hint")}
                 </p>
               ) : results.length === 0 ? (
                 <p className="px-3 py-6 text-center text-sm text-slate-500">
-                  לא נמצאו תוצאות עבור «{query}»
+                  {t("publicWidgets.search.noResults", { query })}
                 </p>
               ) : (
                 <ul className="space-y-1">

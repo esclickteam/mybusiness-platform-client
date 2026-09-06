@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlignCenter,
   AlignLeft,
@@ -59,33 +60,33 @@ const FONT_SIZES = [
 ];
 
 const FONT_WEIGHTS = [
-  { label: "רגיל", value: "400" },
-  { label: "בינוני", value: "500" },
-  { label: "מודגש", value: "600" },
-  { label: "כבד", value: "700" },
-  { label: "שחור", value: "900" },
+  { labelKey: "studio.inspectorPanel.weightRegular", value: "400" },
+  { labelKey: "studio.inspectorPanel.weightMedium", value: "500" },
+  { labelKey: "studio.inspectorPanel.weightSemibold", value: "600" },
+  { labelKey: "studio.inspectorPanel.weightBold", value: "700" },
+  { labelKey: "studio.inspectorPanel.weightBlack", value: "900" },
 ];
 
 const DISPLAY_OPTIONS = [
-  { label: "ברירת מחדל", value: "" },
-  { label: "Block", value: "block" },
-  { label: "Inline", value: "inline" },
-  { label: "Inline block", value: "inline-block" },
-  { label: "Flex", value: "flex" },
-  { label: "Grid", value: "grid" },
-  { label: "None", value: "none" },
+  { labelKey: "studio.inspectorPanel.default", value: "" },
+  { labelKey: "Block", value: "block" },
+  { labelKey: "Inline", value: "inline" },
+  { labelKey: "Inline block", value: "inline-block" },
+  { labelKey: "Flex", value: "flex" },
+  { labelKey: "Grid", value: "grid" },
+  { labelKey: "None", value: "none" },
 ];
 
 const POSITION_OPTIONS = [
-  { label: "רגיל", value: "static" },
-  { label: "יחסי", value: "relative" },
-  { label: "חופשי", value: "absolute" },
-  { label: "קבוע", value: "fixed" },
-  { label: "דביק", value: "sticky" },
+  { labelKey: "studio.inspectorPanel.posStatic", value: "static" },
+  { labelKey: "studio.inspectorPanel.posRelative", value: "relative" },
+  { labelKey: "studio.inspectorPanel.posAbsolute", value: "absolute" },
+  { labelKey: "studio.inspectorPanel.posFixed", value: "fixed" },
+  { labelKey: "studio.inspectorPanel.posSticky", value: "sticky" },
 ];
 
 const ANIMATIONS = [
-  { label: "ללא", value: "" },
+{ labelKey: "studio.inspectorPanel.none", value: "" },
   { label: "Fade up", value: "fade-up" },
   { label: "Fade in", value: "fade-in" },
   { label: "Zoom", value: "zoom-in" },
@@ -98,14 +99,14 @@ const ANIMATIONS = [
 
 const TABS: Array<{
   value: InspectorTab;
-  label: string;
+  labelKey: string;
 }> = [
-  { value: "content", label: "תוכן" },
-  { value: "design", label: "עיצוב" },
-  { value: "layout", label: "פריסה" },
-  { value: "media", label: "מדיה" },
-  { value: "motion", label: "תנועה" },
-  { value: "advanced", label: "מתקדם" },
+  { value: "content", labelKey: "studio.inspectorPanel.tabContent" },
+  { value: "design", labelKey: "studio.inspectorPanel.tabDesign" },
+  { value: "layout", labelKey: "studio.inspectorPanel.tabLayout" },
+  { value: "media", labelKey: "studio.inspectorPanel.tabMedia" },
+  { value: "motion", labelKey: "studio.inspectorPanel.tabMotion" },
+  { value: "advanced", labelKey: "studio.inspectorPanel.tabAdvanced" },
 ];
 
 function isPlainObject(value: unknown): value is Record<string, any> {
@@ -509,6 +510,7 @@ function ToggleButton({
 export default function VisualInspectorPanel({
   editor,
 }: VisualInspectorPanelProps) {
+  const { t } = useTranslation();
   const element = editor?.selectedElement || null;
   const [activeTab, setActiveTab] = useState<InspectorTab>("content");
 
@@ -558,11 +560,11 @@ export default function VisualInspectorPanel({
         </div>
 
         <h2 className="text-xl font-black text-slate-800">
-          בחרי אלמנט לעריכה
+          {t("studio.inspectorPanel.selectToEdit")}
         </h2>
 
         <p className="mt-3 max-w-xs text-sm font-bold leading-7 text-slate-400">
-          לחצי על טקסט, תמונה, סרטון, כפתור, div או סקשן כדי לפתוח את כל אפשרויות העריכה.
+          {t("studio.inspectorPanel.selectToEditHint")}
         </p>
       </div>
     );
@@ -624,7 +626,7 @@ export default function VisualInspectorPanel({
             </p>
 
             <h2 className="mt-1 truncate text-xl font-black text-slate-800">
-              {element.label || "אלמנט"}
+{element.label || t("studio.element")}
             </h2>
 
             <p className="mt-1 truncate text-xs font-bold text-slate-400">
@@ -634,7 +636,7 @@ export default function VisualInspectorPanel({
 
           <div className="flex shrink-0 gap-2">
             <ToggleButton
-              title={locked ? "פתיחת נעילה" : "נעילת אלמנט"}
+              title={locked ? t("studio.inspectorPanel.unlock") : t("studio.inspectorPanel.lock")}
               active={locked}
               onClick={() =>
                 editor?.setElementLocked?.(elementId, !locked) ||
@@ -649,7 +651,7 @@ export default function VisualInspectorPanel({
             </ToggleButton>
 
             <ToggleButton
-              title={hidden ? "הצגה" : "הסתרה"}
+              title={hidden ? t("studio.inspectorPanel.show") : t("studio.inspectorPanel.hide")}
               active={hidden}
               onClick={() =>
                 editor?.setElementHidden?.(elementId, !hidden) ||
@@ -680,7 +682,7 @@ export default function VisualInspectorPanel({
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>
@@ -692,7 +694,7 @@ export default function VisualInspectorPanel({
             <>
               {(elementType === "text" || elementType === "button") ? (
                 <InspectorSection
-                  title="תוכן טקסט"
+                  title={t("studio.inspectorPanel.textContent")}
                   icon={<Type className="h-4 w-4" />}
                 >
                   <textarea
@@ -708,10 +710,10 @@ export default function VisualInspectorPanel({
 
               {(elementType === "button" || elementType === "text") ? (
                 <InspectorSection
-                  title="קישור"
+                  title={t("studio.inspectorPanel.link")}
                   icon={<Link2 className="h-4 w-4" />}
                 >
-                  <InspectorField label="כתובת">
+                  <InspectorField label={t("studio.inspectorPanel.address")}>
                     <InspectorInput
                       value={String(content.href || element.href || element.linkValue || "")}
                       disabled={locked}
@@ -731,7 +733,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="פתיחה">
+                  <InspectorField label={t("studio.inspectorPanel.open")}>
                     <InspectorSelect
                       value={String(
                         content.target ||
@@ -752,8 +754,8 @@ export default function VisualInspectorPanel({
                         })
                       }
                     >
-                      <option value="_self">באותו חלון</option>
-                      <option value="_blank">בחלון חדש</option>
+                      <option value="_self">{t("studio.inspectorPanel.sameWindow")}</option>
+                      <option value="_blank">{t("studio.inspectorPanel.newWindow")}</option>
                     </InspectorSelect>
                   </InspectorField>
                 </InspectorSection>
@@ -763,11 +765,11 @@ export default function VisualInspectorPanel({
               elementType !== "button" &&
               elementType !== "image" ? (
                 <InspectorSection
-                  title="מידע על האלמנט"
+                  title={t("studio.inspectorPanel.elementInfo")}
                   icon={<Box className="h-4 w-4" />}
                 >
                   <div className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-500">
-                    האלמנט הזה הוא {elementType}. אפשר לשנות אותו דרך לשוניות עיצוב, פריסה, תנועה ומתקדם.
+                    {t("studio.inspectorPanel.elementInfoText", { type: elementType })}
                   </div>
                 </InspectorSection>
               ) : null}
@@ -777,10 +779,10 @@ export default function VisualInspectorPanel({
           {activeTab === "design" ? (
             <>
               <InspectorSection
-                title="טיפוגרפיה"
+                title={t("studio.inspectorPanel.typography")}
                 icon={<Type className="h-4 w-4" />}
               >
-                <InspectorField label="גודל טקסט">
+                <InspectorField label={t("studio.inspectorPanel.fontSize")}>
                   <InspectorSelect
                     value={styleValue(style, "fontSize", "font-size")}
                     disabled={locked}
@@ -791,7 +793,7 @@ export default function VisualInspectorPanel({
                       } as StylePatch)
                     }
                   >
-                    <option value="">ברירת מחדל</option>
+                    <option value="">{t("studio.inspectorPanel.default")}</option>
 
                     {FONT_SIZES.map((size) => (
                       <option key={size} value={size}>
@@ -801,7 +803,7 @@ export default function VisualInspectorPanel({
                   </InspectorSelect>
                 </InspectorField>
 
-                <InspectorField label="משקל">
+                <InspectorField label={t("studio.inspectorPanel.weight")}>
                   <InspectorSelect
                     value={styleValue(style, "fontWeight", "font-weight")}
                     disabled={locked}
@@ -812,18 +814,18 @@ export default function VisualInspectorPanel({
                       } as StylePatch)
                     }
                   >
-                    <option value="">ברירת מחדל</option>
+                    <option value="">{t("studio.inspectorPanel.default")}</option>
 
                     {FONT_WEIGHTS.map((item) => (
                       <option key={item.value} value={item.value}>
-                        {item.label}
+                        {t(item.labelKey)}
                       </option>
                     ))}
                   </InspectorSelect>
                 </InspectorField>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="גובה שורה">
+                  <InspectorField label={t("studio.inspectorPanel.lineHeight")}>
                     <InspectorInput
                       value={styleValue(style, "lineHeight", "line-height")}
                       disabled={locked}
@@ -837,7 +839,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="ריווח אותיות">
+                  <InspectorField label={t("studio.inspectorPanel.letterSpacing")}>
                     <InspectorInput
                       value={styleValue(
                         style,
@@ -858,7 +860,7 @@ export default function VisualInspectorPanel({
 
                 <div className="flex flex-wrap gap-2">
                   <ToggleButton
-                    title="מודגש"
+                    title={t("studio.inspectorPanel.bold")}
                     disabled={locked}
                     active={[
                       "700",
@@ -888,7 +890,7 @@ export default function VisualInspectorPanel({
                   </ToggleButton>
 
                   <ToggleButton
-                    title="נטוי"
+                    title={t("studio.inspectorPanel.italic")}
                     disabled={locked}
                     active={
                       styleValue(style, "fontStyle", "font-style") ===
@@ -909,7 +911,7 @@ export default function VisualInspectorPanel({
                   </ToggleButton>
 
                   <ToggleButton
-                    title="קו תחתון"
+                    title={t("studio.inspectorPanel.underline")}
                     disabled={locked}
                     active={styleValue(
                       style,
@@ -935,7 +937,7 @@ export default function VisualInspectorPanel({
                   </ToggleButton>
 
                   <ToggleButton
-                    title="ימין"
+                    title={t("studio.inspectorPanel.right")}
                     disabled={locked}
                     active={
                       styleValue(style, "textAlign", "text-align") ===
@@ -952,7 +954,7 @@ export default function VisualInspectorPanel({
                   </ToggleButton>
 
                   <ToggleButton
-                    title="מרכז"
+                    title={t("studio.inspectorPanel.center")}
                     disabled={locked}
                     active={
                       styleValue(style, "textAlign", "text-align") ===
@@ -969,7 +971,7 @@ export default function VisualInspectorPanel({
                   </ToggleButton>
 
                   <ToggleButton
-                    title="שמאל"
+                    title={t("studio.inspectorPanel.left")}
                     disabled={locked}
                     active={
                       styleValue(style, "textAlign", "text-align") ===
@@ -988,11 +990,11 @@ export default function VisualInspectorPanel({
               </InspectorSection>
 
               <InspectorSection
-                title="צבעים ורקע"
+                title={t("studio.inspectorPanel.colorsBg")}
                 icon={<PaintBucket className="h-4 w-4" />}
               >
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="צבע טקסט">
+                  <InspectorField label={t("studio.inspectorPanel.textColor")}>
                     <InspectorColorInput
                       value={normalizeColor(
                         styleValue(style, "color"),
@@ -1017,7 +1019,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="רקע">
+                  <InspectorField label={t("studio.inspectorPanel.background")}>
                     <InspectorColorInput
                       value={normalizeColor(
                         styleValue(
@@ -1046,7 +1048,7 @@ export default function VisualInspectorPanel({
                   </InspectorField>
                 </div>
 
-                <InspectorField label="Gradient / רקע מתקדם">
+                <InspectorField label={t("studio.inspectorPanel.gradient")}>
                   <InspectorInput
                     value={styleValue(
                       style,
@@ -1066,7 +1068,7 @@ export default function VisualInspectorPanel({
                 </InspectorField>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="פינות">
+                  <InspectorField label={t("studio.inspectorPanel.corners")}>
                     <InspectorInput
                       value={styleValue(
                         style,
@@ -1084,7 +1086,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="שקיפות">
+                  <InspectorField label={t("studio.inspectorPanel.opacity")}>
                     <InspectorInput
                       value={styleValue(style, "opacity")}
                       disabled={locked}
@@ -1100,7 +1102,7 @@ export default function VisualInspectorPanel({
                   </InspectorField>
                 </div>
 
-                <InspectorField label="צל">
+                <InspectorField label={t("studio.inspectorPanel.shadow")}>
                   <InspectorInput
                     value={styleValue(
                       style,
@@ -1119,7 +1121,7 @@ export default function VisualInspectorPanel({
                   />
                 </InspectorField>
 
-                <InspectorField label="מסגרת">
+                <InspectorField label={t("studio.inspectorPanel.border")}>
                   <InspectorInput
                     value={styleValue(style, "border")}
                     disabled={locked}
@@ -1137,11 +1139,11 @@ export default function VisualInspectorPanel({
           {activeTab === "layout" ? (
             <>
               <InspectorSection
-                title="גודל"
+                title={t("studio.inspectorPanel.size")}
                 icon={<Box className="h-4 w-4" />}
               >
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="רוחב">
+                  <InspectorField label={t("studio.inspectorPanel.width")}>
                     <InspectorInput
                       value={styleValue(
                         layout,
@@ -1155,7 +1157,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="גובה">
+                  <InspectorField label={t("studio.inspectorPanel.height")}>
                     <InspectorInput
                       value={styleValue(
                         layout,
@@ -1171,7 +1173,7 @@ export default function VisualInspectorPanel({
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="רוחב מינימלי">
+                  <InspectorField label={t("studio.inspectorPanel.minWidth")}>
                     <InspectorInput
                       value={styleValue(layout, "minWidth")}
                       disabled={locked}
@@ -1182,7 +1184,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="גובה מינימלי">
+                  <InspectorField label={t("studio.inspectorPanel.minHeight")}>
                     <InspectorInput
                       value={styleValue(layout, "minHeight")}
                       disabled={locked}
@@ -1195,7 +1197,7 @@ export default function VisualInspectorPanel({
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="רוחב מקסימלי">
+                  <InspectorField label={t("studio.inspectorPanel.maxWidth")}>
                     <InspectorInput
                       value={styleValue(layout, "maxWidth")}
                       disabled={locked}
@@ -1206,7 +1208,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="גובה מקסימלי">
+                  <InspectorField label={t("studio.inspectorPanel.maxHeight")}>
                     <InspectorInput
                       value={styleValue(layout, "maxHeight")}
                       disabled={locked}
@@ -1220,7 +1222,7 @@ export default function VisualInspectorPanel({
               </InspectorSection>
 
               <InspectorSection
-                title="מיקום"
+                title={t("studio.inspectorPanel.position")}
                 icon={<Move className="h-4 w-4" />}
               >
                 <InspectorField label="Position">
@@ -1237,7 +1239,7 @@ export default function VisualInspectorPanel({
                   >
                     {POSITION_OPTIONS.map((item) => (
                       <option key={item.value} value={item.value}>
-                        {item.label}
+                        {t(item.labelKey)}
                       </option>
                     ))}
                   </InspectorSelect>
@@ -1295,7 +1297,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="סיבוב">
+                  <InspectorField label={t("studio.inspectorPanel.rotate")}>
                     <InspectorInput
                       value={String(layout?.rotate ?? "")}
                       disabled={locked}
@@ -1312,7 +1314,7 @@ export default function VisualInspectorPanel({
               </InspectorSection>
 
               <InspectorSection
-                title="מבנה"
+                title={t("studio.inspectorPanel.structure")}
                 icon={<Layers3 className="h-4 w-4" />}
               >
                 <InspectorField label="Display">
@@ -1328,7 +1330,7 @@ export default function VisualInspectorPanel({
                   >
                     {DISPLAY_OPTIONS.map((item) => (
                       <option key={item.value} value={item.value}>
-                        {item.label}
+                        {t(item.labelKey)}
                       </option>
                     ))}
                   </InspectorSelect>
@@ -1360,7 +1362,7 @@ export default function VisualInspectorPanel({
                         applyLayout({ overflow })
                       }
                     >
-                      <option value="">ברירת מחדל</option>
+                      <option value="">{t("studio.inspectorPanel.default")}</option>
                       <option value="visible">Visible</option>
                       <option value="hidden">Hidden</option>
                       <option value="auto">Auto</option>
@@ -1398,10 +1400,10 @@ export default function VisualInspectorPanel({
             <>
               {elementType === "image" ? (
                 <InspectorSection
-                  title="תמונה / וידאו"
+                  title={t("studio.inspectorPanel.imageVideo")}
                   icon={<ImageIcon className="h-4 w-4" />}
                 >
-                  <InspectorField label="כתובת מדיה">
+                  <InspectorField label={t("studio.inspectorPanel.mediaUrl")}>
                     <InspectorInput
                       value={String(
                         content.secureUrl ||
@@ -1419,12 +1421,12 @@ export default function VisualInspectorPanel({
                           secureUrl: src,
                         })
                       }
-                      placeholder="URL של תמונה או וידאו"
+                      placeholder={t("studio.inspectorPanel.mediaUrlPh")}
                       dir="ltr"
                     />
                   </InspectorField>
 
-                  <InspectorField label="Alt / תיאור">
+                  <InspectorField label={t("studio.inspectorPanel.alt")}>
                     <InspectorInput
                       value={String(
                         content.alt || element.alt || "",
@@ -1433,11 +1435,11 @@ export default function VisualInspectorPanel({
                       onChange={(alt) =>
                         editor?.updateImage?.(elementId, { alt })
                       }
-                      placeholder="תיאור לתמונה"
+                      placeholder={t("studio.inspectorPanel.altPh")}
                     />
                   </InspectorField>
 
-                  <InspectorField label="התאמה">
+                  <InspectorField label={t("studio.inspectorPanel.fit")}>
                     <InspectorSelect
                       value={styleValue(
                         style,
@@ -1452,7 +1454,7 @@ export default function VisualInspectorPanel({
                         } as StylePatch)
                       }
                     >
-                      <option value="">ברירת מחדל</option>
+                      <option value="">{t("studio.inspectorPanel.default")}</option>
                       <option value="cover">Cover</option>
                       <option value="contain">Contain</option>
                       <option value="fill">Fill</option>
@@ -1472,16 +1474,16 @@ export default function VisualInspectorPanel({
                   >
                     <Upload className="h-4 w-4" />
                     {editor?.isUploadingMedia
-                      ? "מעלה..."
-                      : "העלאה / החלפה"}
+                      ? t("studio.inspectorPanel.uploading")
+                      : t("studio.inspectorPanel.uploadReplace")}
                   </button>
                 </InspectorSection>
               ) : (
                 <InspectorSection
-                  title="רקע מדיה"
+                  title={t("studio.inspectorPanel.mediaBg")}
                   icon={<PanelTop className="h-4 w-4" />}
                 >
-                  <InspectorField label="תמונת רקע">
+                  <InspectorField label={t("studio.inspectorPanel.bgImage")}>
                     <InspectorInput
                       value={styleValue(
                         style,
@@ -1511,7 +1513,7 @@ export default function VisualInspectorPanel({
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Upload className="h-4 w-4" />
-                    העלאת תמונת רקע
+                    {t("studio.inspectorPanel.uploadBg")}
                   </button>
                 </InspectorSection>
               )}
@@ -1523,15 +1525,15 @@ export default function VisualInspectorPanel({
                   "",
               ) === "video" ? (
                 <InspectorSection
-                  title="אפשרויות וידאו"
+                  title={t("studio.inspectorPanel.videoOptions")}
                   icon={<ImageIcon className="h-4 w-4" />}
                 >
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      ["autoplay", "ניגון אוטומטי"],
-                      ["muted", "השתקה"],
-                      ["loop", "לולאה"],
-                      ["controls", "פקדים"],
+                      ["autoplay", t("studio.inspectorPanel.autoplay")],
+                      ["muted", t("studio.inspectorPanel.muted")],
+                      ["loop", t("studio.inspectorPanel.loop")],
+                      ["controls", t("studio.inspectorPanel.controls")],
                     ].map(([key, label]) => {
                       const active = Boolean(content?.[key]);
 
@@ -1568,14 +1570,14 @@ export default function VisualInspectorPanel({
           {activeTab === "motion" ? (
             <>
               <InspectorSection
-                title="אנימציה"
+                title={t("studio.inspectorPanel.animation")}
                 icon={<Sparkles className="h-4 w-4" />}
               >
                 <InspectorField
-                  label="אנימציה נוכחית"
+                  label={t("studio.inspectorPanel.currentAnimation")}
                   hint={
                     detectedAnimation?.name
-                      ? `זוהתה מהטמפלט: ${detectedAnimation.name}`
+                      ? t("studio.inspectorPanel.detectedFromTemplate", { name: detectedAnimation.name })
                       : undefined
                   }
                 >
@@ -1595,14 +1597,16 @@ export default function VisualInspectorPanel({
                         key={animation.value}
                         value={animation.value}
                       >
-                        {animation.label}
+                        {"labelKey" in animation
+                          ? t(animation.labelKey)
+                          : animation.label}
                       </option>
                     ))}
                   </InspectorSelect>
                 </InspectorField>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <InspectorField label="משך">
+                  <InspectorField label={t("studio.inspectorPanel.duration")}>
                     <InspectorInput
                       value={String(
                         content.animationDuration ||
@@ -1619,7 +1623,7 @@ export default function VisualInspectorPanel({
                     />
                   </InspectorField>
 
-                  <InspectorField label="השהיה">
+                  <InspectorField label={t("studio.inspectorPanel.delay")}>
                     <InspectorInput
                       value={String(
                         content.animationDelay ||
@@ -1663,7 +1667,7 @@ export default function VisualInspectorPanel({
                   }
                   className="h-11 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  תצוגה מקדימה
+                  {t("studio.inspectorPanel.preview")}
                 </button>
               </InspectorSection>
 
@@ -1709,10 +1713,10 @@ export default function VisualInspectorPanel({
           {activeTab === "advanced" ? (
             <>
               <InspectorSection
-                title="מאפיינים"
+                title={t("studio.inspectorPanel.attributes")}
                 icon={<Layers3 className="h-4 w-4" />}
               >
-                <InspectorField label="ID ויזואלי">
+                <InspectorField label={t("studio.inspectorPanel.visualId")}>
                   <InspectorInput
                     value={elementId}
                     onChange={() => undefined}
@@ -1766,7 +1770,7 @@ export default function VisualInspectorPanel({
               </InspectorSection>
 
               <InspectorSection
-                title="פעולות"
+                title={t("studio.inspectorPanel.actions")}
                 icon={<Layers3 className="h-4 w-4" />}
               >
                 <button
@@ -1775,7 +1779,7 @@ export default function VisualInspectorPanel({
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50"
                 >
                   <Layers3 className="h-4 w-4" />
-                  בחירת האלמנט ההורה
+                  {t("studio.inspectorPanel.selectParent")}
                 </button>
 
                 <button
@@ -1787,7 +1791,7 @@ export default function VisualInspectorPanel({
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Copy className="h-4 w-4" />
-                  שכפול
+                  {t("studio.inspectorPanel.duplicate")}
                 </button>
               </InspectorSection>
             </>
@@ -1803,7 +1807,7 @@ export default function VisualInspectorPanel({
           className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <RotateCcw className="h-4 w-4" />
-          איפוס
+          {t("studio.inspectorPanel.reset")}
         </button>
 
         <button
@@ -1816,7 +1820,7 @@ export default function VisualInspectorPanel({
           className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-600 text-sm font-black text-black transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Trash2 className="h-4 w-4" />
-          מחיקה
+          {t("studio.inspectorPanel.delete")}
         </button>
       </div>
     </div>

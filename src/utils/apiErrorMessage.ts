@@ -1,6 +1,8 @@
-const TECHNICAL_MESSAGES: Record<string, string> = {
-  NO_REFRESH_TOKEN: "יש להתחבר מחדש",
-  "Network error": "בעיית רשת — בדקו את החיבור",
+import i18n from "../i18n/i18n";
+
+const TECHNICAL_MESSAGE_KEYS: Record<string, string> = {
+  NO_REFRESH_TOKEN: "leftover.errors.reauth",
+  "Network error": "leftover.errors.network",
 };
 
 const TECHNICAL_PATTERN =
@@ -13,14 +15,14 @@ function asText(value: unknown): string {
 export function isTechnicalErrorMessage(message: string): boolean {
   const raw = asText(message);
   if (!raw) return false;
-  if (TECHNICAL_MESSAGES[raw]) return true;
+  if (TECHNICAL_MESSAGE_KEYS[raw]) return true;
   if (raw.startsWith("Request failed with status code")) return true;
   return TECHNICAL_PATTERN.test(raw);
 }
 
 export function getApiErrorMessage(
   err: unknown,
-  fallback = "שגיאה בטעינת הנתונים"
+  fallback = i18n.t("leftover.errors.loadData")
 ): string {
   const anyErr = err as {
     message?: string;
@@ -36,8 +38,8 @@ export function getApiErrorMessage(
   ].filter(Boolean);
 
   for (const raw of candidates) {
-    if (TECHNICAL_MESSAGES[raw]) {
-      return TECHNICAL_MESSAGES[raw];
+    if (TECHNICAL_MESSAGE_KEYS[raw]) {
+      return i18n.t(TECHNICAL_MESSAGE_KEYS[raw]);
     }
     if (isTechnicalErrorMessage(raw)) {
       return fallback;

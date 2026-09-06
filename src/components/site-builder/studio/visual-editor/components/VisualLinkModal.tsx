@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import {
   normalizePhoneForHref,
   normalizeWhatsAppPhone,
@@ -72,62 +74,64 @@ type TabDefinition = {
   icon: React.ReactNode;
 };
 
-const LINK_TABS: TabDefinition[] = [
-  {
-    id: "web",
-    label: "אינטרנט",
-    description: "אתר או כתובת URL",
-    icon: <Globe className="h-5 w-5" />,
-  },
-  {
-    id: "whatsapp",
-    label: "וואטסאפ",
-    description: "פתיחת שיחה ישירה",
-    icon: <MessageCircle className="h-5 w-5" />,
-  },
-  {
-    id: "phone",
-    label: "טלפון",
-    description: "חיוג בלחיצה",
-    icon: <Phone className="h-5 w-5" />,
-  },
-  {
-    id: "email",
-    label: "אימייל",
-    description: "פתיחת הודעה חדשה",
-    icon: <Mail className="h-5 w-5" />,
-  },
-  {
-    id: "page",
-    label: "עמוד",
-    description: "עמוד אחר באתר",
-    icon: <FileText className="h-5 w-5" />,
-  },
-  {
-    id: "section",
-    label: "סקשן",
-    description: "גלילה לאזור בעמוד",
-    icon: <SquareStack className="h-5 w-5" />,
-  },
-  {
-    id: "document",
-    label: "מסמך",
-    description: "PDF או קובץ להורדה",
-    icon: <ExternalLink className="h-5 w-5" />,
-  },
-  {
-    id: "address",
-    label: "כתובת",
-    description: "פתיחה במפות",
-    icon: <MapPin className="h-5 w-5" />,
-  },
-  {
-    id: "anchor",
-    label: "ראש / תחתית",
-    description: "ניווט מהיר בעמוד",
-    icon: <ArrowUp className="h-5 w-5" />,
-  },
-];
+function getLinkTabs(t: (key: string) => string): TabDefinition[] {
+  return [
+    {
+      id: "web",
+      label: t("studio.linkModal.tabs.web.label"),
+      description: t("studio.linkModal.tabs.web.description"),
+      icon: <Globe className="h-5 w-5" />,
+    },
+    {
+      id: "whatsapp",
+      label: t("studio.linkModal.tabs.whatsapp.label"),
+      description: t("studio.linkModal.tabs.whatsapp.description"),
+      icon: <MessageCircle className="h-5 w-5" />,
+    },
+    {
+      id: "phone",
+      label: t("studio.linkModal.tabs.phone.label"),
+      description: t("studio.linkModal.tabs.phone.description"),
+      icon: <Phone className="h-5 w-5" />,
+    },
+    {
+      id: "email",
+      label: t("studio.linkModal.tabs.email.label"),
+      description: t("studio.linkModal.tabs.email.description"),
+      icon: <Mail className="h-5 w-5" />,
+    },
+    {
+      id: "page",
+      label: t("studio.linkModal.tabs.page.label"),
+      description: t("studio.linkModal.tabs.page.description"),
+      icon: <FileText className="h-5 w-5" />,
+    },
+    {
+      id: "section",
+      label: t("studio.linkModal.tabs.section.label"),
+      description: t("studio.linkModal.tabs.section.description"),
+      icon: <SquareStack className="h-5 w-5" />,
+    },
+    {
+      id: "document",
+      label: t("studio.linkModal.tabs.document.label"),
+      description: t("studio.linkModal.tabs.document.description"),
+      icon: <ExternalLink className="h-5 w-5" />,
+    },
+    {
+      id: "address",
+      label: t("studio.linkModal.tabs.address.label"),
+      description: t("studio.linkModal.tabs.address.description"),
+      icon: <MapPin className="h-5 w-5" />,
+    },
+    {
+      id: "anchor",
+      label: t("studio.linkModal.tabs.anchor.label"),
+      description: t("studio.linkModal.tabs.anchor.description"),
+      icon: <ArrowUp className="h-5 w-5" />,
+    },
+  ];
+}
 
 function safeDecode(value: string) {
   try {
@@ -183,7 +187,7 @@ function getInitialTab(
 export default function VisualLinkModal({
   open,
   elementId,
-  elementLabel = "קישור",
+  elementLabel,
   href = "",
   sitePageId = "",
   phone = "",
@@ -196,6 +200,10 @@ export default function VisualLinkModal({
   onApply,
   onRemove,
 }: VisualLinkModalProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const linkTabs = getLinkTabs(t);
+  const displayLabel = elementLabel || t("studio.linkModal.defaultLabel");
   const [tab, setTab] = useState<VisualLinkModalTab>("web");
   const [hrefValue, setHrefValue] = useState(href);
   const [selectedPageId, setSelectedPageId] = useState(sitePageId);
@@ -274,8 +282,8 @@ export default function VisualLinkModal({
   });
 
   const activeTab = useMemo(
-    () => LINK_TABS.find((item) => item.id === tab) || LINK_TABS[0],
-    [tab],
+    () => linkTabs.find((item) => item.id === tab) || linkTabs[0],
+    [tab, linkTabs],
   );
 
   const previewValue = useMemo(() => {
@@ -306,12 +314,12 @@ export default function VisualLinkModal({
     if (tab === "address") {
       return addressValue.trim()
         ? `Google Maps · ${addressValue.trim()}`
-        : "Google Maps · כתובת העסק";
+        : t("studio.linkModal.mapsPreview");
     }
 
     if (tab === "anchor") return hrefValue || "#top";
 
-    return hrefValue || "לא הוגדר עדיין קישור";
+    return hrefValue || t("studio.linkModal.noLink");
   }, [
     tab,
     hrefValue,
@@ -320,6 +328,7 @@ export default function VisualLinkModal({
     subjectValue,
     messageValue,
     addressValue,
+    t,
   ]);
 
   const canApply = useMemo(() => {
@@ -470,7 +479,7 @@ export default function VisualLinkModal({
   return createPortal(
     <div
       className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
-      dir="rtl"
+      dir={pageDir}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -478,7 +487,7 @@ export default function VisualLinkModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="עריכת קישור"
+        aria-label={t("studio.linkModal.ariaEdit")}
         className="relative my-auto flex max-h-[calc(100vh-24px)] w-full max-w-[760px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.32)] sm:max-h-[calc(100vh-48px)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
@@ -492,10 +501,10 @@ export default function VisualLinkModal({
 
             <div className="min-w-0">
               <h2 className="text-2xl font-black tracking-tight text-slate-800 sm:text-[30px]">
-                הוספת קישור
+                {t("studio.linkModal.title")}
               </h2>
               <p className="mt-1 truncate text-sm font-semibold text-slate-500">
-                {elementLabel}
+                {displayLabel}
               </p>
             </div>
           </div>
@@ -504,7 +513,7 @@ export default function VisualLinkModal({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
-            aria-label="סגירה"
+            aria-label={t("studio.linkModal.close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -513,7 +522,7 @@ export default function VisualLinkModal({
         <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <section className="border-b border-slate-100 bg-slate-50/70 px-4 py-4 sm:px-7">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {LINK_TABS.map((item) => {
+              {linkTabs.map((item) => {
                 const isActive = tab === item.id;
 
                 return (
@@ -595,7 +604,7 @@ export default function VisualLinkModal({
               {tab === "page" ? (
                 <div className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
-                    בחרי עמוד מהאתר
+                    {t("studio.linkModal.pickPage")}
                   </span>
                   <div className="max-h-[min(52vh,360px)] overflow-y-auto rounded-2xl border border-slate-200 bg-white">
                     {pages.length ? (
@@ -653,7 +662,7 @@ export default function VisualLinkModal({
                       })
                     ) : (
                       <p className="px-4 py-8 text-center text-sm font-bold text-slate-400">
-                        אין עמודים זמינים
+                        {t("studio.linkModal.noPages")}
                       </p>
                     )}
                   </div>
@@ -663,7 +672,7 @@ export default function VisualLinkModal({
               {tab === "section" ? (
                 <label className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
-                    בחרי סקשן
+                    {t("studio.linkModal.pickSection")}
                   </span>
                   <select
                     value={hrefValue}
@@ -677,7 +686,7 @@ export default function VisualLinkModal({
                         </option>
                       ))
                     ) : (
-                      <option value="#top">אין סקשנים זמינים</option>
+                      <option value="#top">{t("studio.linkModal.noSections")}</option>
                     )}
                   </select>
                 </label>
@@ -687,8 +696,8 @@ export default function VisualLinkModal({
                 <label className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
                     {tab === "document"
-                      ? "כתובת הקובץ"
-                      : "כתובת האתר"}
+                      ? t("studio.linkModal.fileUrl")
+                      : t("studio.linkModal.siteUrl")}
                   </span>
                   <input
                     value={hrefValue}
@@ -702,8 +711,7 @@ export default function VisualLinkModal({
                     className={`${fieldClassName} text-left`}
                   />
                   <span className="mt-2 block text-xs font-semibold leading-5 text-slate-400">
-                    ניתן להדביק כתובת מלאה. אם חסר https:// הוא יתווסף
-                    אוטומטית.
+                    {t("studio.linkModal.urlHint")}
                   </span>
                 </label>
               ) : null}
@@ -712,7 +720,7 @@ export default function VisualLinkModal({
                 <div className="space-y-4">
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-700">
-                      מספר וואטסאפ
+                      {t("studio.linkModal.waNumber")}
                     </span>
                     <input
                       value={phoneValue}
@@ -728,14 +736,14 @@ export default function VisualLinkModal({
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-700">
-                      הודעה מוכנה מראש
+                      {t("studio.linkModal.readyMessage")}
                     </span>
                     <textarea
                       value={messageValue}
                       onChange={(event) =>
                         setMessageValue(event.target.value)
                       }
-                      placeholder="שלום, אשמח לקבל פרטים נוספים..."
+                      placeholder={t("studio.linkModal.messagePlaceholder")}
                       className={textareaClassName}
                     />
                   </label>
@@ -746,7 +754,7 @@ export default function VisualLinkModal({
                 <div className="space-y-4">
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-700">
-                      כתובת אימייל
+                      {t("studio.linkModal.emailAddress")}
                     </span>
                     <input
                       value={emailValue}
@@ -762,28 +770,28 @@ export default function VisualLinkModal({
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-700">
-                      נושא
+                      {t("studio.linkModal.subject")}
                     </span>
                     <input
                       value={subjectValue}
                       onChange={(event) =>
                         setSubjectValue(event.target.value)
                       }
-                      placeholder="נושא האימייל"
+                      placeholder={t("studio.linkModal.subjectPlaceholder")}
                       className={fieldClassName}
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-700">
-                      תוכן הודעה
+                      {t("studio.linkModal.body")}
                     </span>
                     <textarea
                       value={messageValue}
                       onChange={(event) =>
                         setMessageValue(event.target.value)
                       }
-                      placeholder="שלום, אשמח לקבל פרטים נוספים..."
+                      placeholder={t("studio.linkModal.messagePlaceholder")}
                       className={textareaClassName}
                     />
                   </label>
@@ -793,7 +801,7 @@ export default function VisualLinkModal({
               {tab === "phone" ? (
                 <label className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
-                    מספר טלפון
+                    {t("studio.linkModal.phone")}
                   </span>
                   <input
                     value={phoneValue}
@@ -806,7 +814,7 @@ export default function VisualLinkModal({
                     className={`${fieldClassName} text-left`}
                   />
                   <span className="mt-2 block text-xs font-semibold leading-5 text-slate-400">
-                    במובייל המספר ייפתח ישירות בחייגן.
+                    {t("studio.linkModal.phoneHint")}
                   </span>
                 </label>
               ) : null}
@@ -814,18 +822,18 @@ export default function VisualLinkModal({
               {tab === "address" ? (
                 <label className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
-                    כתובת העסק
+                    {t("studio.linkModal.address")}
                   </span>
                   <input
                     value={addressValue}
                     onChange={(event) =>
                       setAddressValue(event.target.value)
                     }
-                    placeholder="רחוב, עיר, מדינה"
+                    placeholder={t("studio.linkModal.addressPlaceholder")}
                     className={fieldClassName}
                   />
                   <span className="mt-2 block text-xs font-semibold leading-5 text-slate-400">
-                    הקישור ייפתח בחיפוש Google Maps.
+                    {t("studio.linkModal.mapsHint")}
                   </span>
                 </label>
               ) : null}
@@ -833,7 +841,7 @@ export default function VisualLinkModal({
               {tab === "anchor" ? (
                 <div>
                   <span className="mb-3 block text-sm font-black text-slate-700">
-                    לאן לגלול?
+                    {t("studio.linkModal.scrollWhere")}
                   </span>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -848,7 +856,7 @@ export default function VisualLinkModal({
                       ].join(" ")}
                     >
                       <ArrowUp className="h-5 w-5" />
-                      ראש העמוד
+                      {t("studio.linkModal.pageTop")}
                     </button>
 
                     <button
@@ -862,7 +870,7 @@ export default function VisualLinkModal({
                       ].join(" ")}
                     >
                       <ArrowDown className="h-5 w-5" />
-                      תחתית העמוד
+                      {t("studio.linkModal.pageBottom")}
                     </button>
                   </div>
                 </div>
@@ -877,7 +885,7 @@ export default function VisualLinkModal({
 
                 <div className="min-w-0">
                   <p className="text-xs font-black text-slate-500">
-                    תצוגת הקישור
+                    {t("studio.linkModal.preview")}
                   </p>
                   <p
                     className="mt-1 break-all text-sm font-bold text-slate-800"
@@ -909,7 +917,7 @@ export default function VisualLinkModal({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50 px-5 text-sm font-black text-red-600 transition hover:border-red-200 hover:bg-red-100"
           >
             <Trash2 className="h-4 w-4" />
-            הסרת קישור
+            {t("studio.linkModal.remove")}
           </button>
 
           <div className="flex items-center gap-3">
@@ -918,7 +926,7 @@ export default function VisualLinkModal({
               onClick={onClose}
               className="h-12 flex-1 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-600 transition hover:bg-slate-50 sm:flex-none"
             >
-              ביטול
+              {t("studio.linkModal.cancel")}
             </button>
 
             <button
@@ -928,7 +936,7 @@ export default function VisualLinkModal({
               className="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 sm:flex-none"
             >
               <Link2 className="h-4 w-4" />
-              שמירת קישור
+              {t("studio.linkModal.save")}
             </button>
           </div>
         </footer>

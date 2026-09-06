@@ -1,4 +1,7 @@
 import { submitPublicSiteLead, uploadPublicFormFile } from "../../../api/publicSiteLeadsApi";
+import i18n from "../../../i18n/i18n";
+
+const t = (key, opts) => i18n.t(key, opts);
 import {
   collectFileInputs,
   enhancePublicLeadForm,
@@ -110,7 +113,7 @@ function readFieldLabel(control) {
       control.getAttribute("placeholder") ||
       control.getAttribute("name") ||
       control.id ||
-      "שדה",
+      t("publicWidgets.common.field"),
   );
 }
 
@@ -353,7 +356,7 @@ async function handleLeadFormSubmit(form, options) {
 
   const collected = collectLeadFormPayload(form);
   if (!collected.name && !collected.phone && !collected.email && !collected.message) {
-    setFormStatus(form, "נא למלא את פרטי הטופס לפני השליחה", "error");
+    setFormStatus(form, t("publicWidgets.lead.fillForm"), "error");
     return;
   }
 
@@ -364,8 +367,8 @@ async function handleLeadFormSubmit(form, options) {
     "website-form";
 
   form.setAttribute("data-bizuply-lead-submitting", "true");
-  setFormBusy(form, true, "שולחים...");
-  setFormStatus(form, "שולחים את הפנייה...", "info");
+  setFormBusy(form, true, t("publicWidgets.lead.sending"));
+  setFormStatus(form, t("publicWidgets.lead.sendingRequest"), "info");
 
   try {
     const attachments = [];
@@ -389,7 +392,7 @@ async function handleLeadFormSubmit(form, options) {
           originalName: uploaded.originalName || file.name,
         });
         collected.fields.push({
-          label: readFieldLabel(input) || "קובץ",
+          label: readFieldLabel(input) || t("publicWidgets.common.file"),
           value: uploaded.originalName || file.name,
         });
       }
@@ -411,7 +414,7 @@ async function handleLeadFormSubmit(form, options) {
     const successMessage =
       safeText(response?.message) ||
       safeText(form.getAttribute("data-bizuply-success-message")) ||
-      "תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.";
+      t("publicWidgets.lead.thanks");
 
     form.setAttribute("data-bizuply-lead-submitted", "true");
     setFormStatus(form, successMessage, "success");
@@ -429,7 +432,7 @@ async function handleLeadFormSubmit(form, options) {
     const apiError =
       error?.response?.data?.error ||
       error?.message ||
-      "שגיאה בשליחת הטופס. נסו שוב בעוד רגע.";
+      t("publicWidgets.lead.sendError");
     setFormStatus(form, apiError, "error");
     // Keep the same idempotency key so an immediate retry of the SAME attempt
     // cannot create a duplicate if the first request already succeeded server-side.

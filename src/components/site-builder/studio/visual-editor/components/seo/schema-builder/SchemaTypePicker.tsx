@@ -1,16 +1,18 @@
 import React from "react";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import { SCHEMA_TYPE_DEFS, type SchemaTypeDef } from "./schemaTypes";
+import { getSchemaTypeDefs, type SchemaTypeDef } from "./schemaTypes";
 
 export default function SchemaTypePicker({
   onPick,
 }: {
   onPick: (def: SchemaTypeDef) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="grid gap-2 sm:grid-cols-2">
-      {SCHEMA_TYPE_DEFS.map((def) => (
+      {getSchemaTypeDefs().map((def) => (
         <button
           key={def.id}
           type="button"
@@ -25,7 +27,7 @@ export default function SchemaTypePicker({
               </span>
               {def.siteLevel ? (
                 <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
-                  רמת אתר
+                  {t("studio.schema.siteLevel")}
                 </span>
               ) : null}
             </span>

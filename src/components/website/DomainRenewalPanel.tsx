@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 import {
@@ -8,18 +9,19 @@ import {
   type DomainRegistration,
   type DomainRenewalUiCta,
 } from "../../services/domainService";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
 
-function formatDate(value?: string | null) {
+function formatDate(value?: string | null, locale = "en") {
   if (!value) return "—";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("he-IL");
+  return d.toLocaleDateString(locale);
 }
 
-function formatPrice(value?: number | null, currency = "ILS") {
+function formatPrice(value?: number | null, currency = "ILS", locale = "en") {
   if (!(typeof value === "number" && value > 0)) return null;
   try {
-    return new Intl.NumberFormat("he-IL", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency || "ILS",
       maximumFractionDigits: 0,
@@ -42,24 +44,30 @@ function resolveCta(reg: DomainRegistration): DomainRenewalUiCta {
   return "renew";
 }
 
-function ctaLabel(cta: DomainRenewalUiCta) {
+function ctaLabel(
+  cta: DomainRenewalUiCta,
+  t: (key: string) => string,
+) {
   switch (cta) {
     case "request_quote":
-      return "בקשת הצעת מחיר";
+      return t("sites.domain.requestQuote");
     case "continue_payment":
-      return "המשך לתשלום";
+      return t("sites.domain.continuePayment");
     case "in_progress":
-      return "החידוש בטיפול";
+      return t("sites.domain.inProgress");
     case "retry":
-      return "נסה חידוש מחדש";
+      return t("sites.domain.retry");
     case "renewed":
-      return "חודש";
+      return t("sites.domain.renewed");
     default:
-      return "חידוש לשנה";
+      return t("sites.domain.renewYear");
   }
 }
 
 export default function DomainRenewalPanel() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const intlLocale = getIntlLocale(i18n.language);
   const [items, setItems] = useState<DomainRegistration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -76,12 +84,12 @@ export default function DomainRenewalPanel() {
       setItems(list);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "טעינת הדומיינים לחידוש נכשלה",
+        err instanceof Error ? err.message : t("sites.domain.loadFailed"),
       );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -115,20 +123,18 @@ export default function DomainRenewalPanel() {
         window.location.href = url;
         return;
       }
-      throw new Error("לא התקבל קישור תשלום");
+      throw new Error(t("sites.domain.noCheckout"));
     } catch (err) {
       const code =
         err && typeof err === "object" && "code" in err
           ? String((err as { code?: string }).code || "")
           : "";
       if (code === "QUOTE_REQUIRED") {
-        setError(
-          "נדרשת הצעת מחיר ידנית לדומיין זה — נציג יחזור אליכם. לא ניתן להמשיך לתשלום אוטומטי כרגע.",
-        );
+        setError(t("sites.domain.quoteRequired"));
         await load();
       } else {
         setError(
-          err instanceof Error ? err.message : "פעולת החידוש נכשלה",
+          err instanceof Error ? err.message : t("sites.domain.actionFailed"),
         );
       }
     } finally {
@@ -138,8 +144,11 @@ export default function DomainRenewalPanel() {
 
   if (loading) {
     return (
-      <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-500">
-        טוען דומיינים רשומים…
+      <div
+        dir={pageDir}
+        className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-500"
+      >
+        {t("sites.domain.loading")}
       </div>
     );
   }
@@ -149,21 +158,21 @@ export default function DomainRenewalPanel() {
   }
 
   return (
-    <div className="mb-6 space-y-3">
+    <div dir={pageDir} className="mb-6 space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-black text-slate-900">
-            דומיינים רשומים לחידוש
+            {t("sites.domain.title")}
           </h3>
           <p className="mt-0.5 text-xs font-semibold text-slate-500">
-            חידוש ידני לשנה — ללא חיוב אוטומטי
+            {t("sites.domain.subtitle")}
           </p>
         </div>
         <button
           type="button"
           onClick={() => void load()}
           className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
-          aria-label="רענון"
+          aria-label={t("sites.domain.refresh")}
         >
           <RefreshCw className="h-4 w-4" />
         </button>
@@ -182,6 +191,7 @@ export default function DomainRenewalPanel() {
             reg.renewalQuote?.customerRenewalPrice ??
               reg.renewal?.customerRenewalPrice,
             reg.renewalQuote?.currency || reg.renewal?.currency || "ILS",
+            intlLocale,
           ) || "—";
         const days =
           typeof reg.daysUntilExpiry === "number"
@@ -207,20 +217,29 @@ export default function DomainRenewalPanel() {
                   {reg.domain}
                 </div>
                 <div className="text-xs font-semibold text-slate-500">
-                  תפוגה: {formatDate(reg.registration?.expirationDate)}
-                  {days != null ? ` · ${days} ימים` : ""}
+                  {t("sites.domain.expires", {
+                    date: formatDate(reg.registration?.expirationDate, intlLocale),
+                  })}
+                  {days != null
+                    ? ` · ${t("sites.domain.days", { count: days })}`
+                    : ""}
                 </div>
                 <div className="text-xs font-semibold text-slate-500">
-                  מחיר חידוש: {price}
+                  {t("sites.domain.renewPrice", { price })}
                   {reg.renewalQuote?.quoteExpiresAt || reg.renewal?.quoteExpiresAt
-                    ? ` · תוקף הצעה עד ${formatDate(
-                        reg.renewalQuote?.quoteExpiresAt ||
-                          reg.renewal?.quoteExpiresAt,
-                      )}`
+                    ? ` · ${t("sites.domain.quoteUntil", {
+                        date: formatDate(
+                          reg.renewalQuote?.quoteExpiresAt ||
+                            reg.renewal?.quoteExpiresAt,
+                          intlLocale,
+                        ),
+                      })}`
                     : ""}
                 </div>
                 <div className="text-xs font-bold text-violet-700">
-                  סטטוס: {reg.renewal?.status || reg.status}
+                  {t("sites.domain.status", {
+                    status: reg.renewal?.status || reg.status,
+                  })}
                 </div>
               </div>
 
@@ -230,21 +249,22 @@ export default function DomainRenewalPanel() {
                 onClick={() => void handleAction(reg)}
                 className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-violet-600 px-4 py-2.5 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
-                {busyId === reg._id ? "מעבד…" : ctaLabel(cta)}
+                {busyId === reg._id
+                  ? t("sites.domain.processing")
+                  : ctaLabel(cta, t)}
               </button>
             </div>
 
             {expired ? (
               <div className="mt-3 flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                הדומיין פג תוקף — מומלץ לחדש בהקדם כדי למנוע אובדן.
+                {t("sites.domain.expiredHint")}
               </div>
             ) : null}
 
             {quoteRequired ? (
               <div className="mt-3 rounded-2xl border border-violet-100 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">
-                {reg.renewalQuote?.message ||
-                  "נדרשת הצעת מחיר ידנית — דומיין פרימיום, תעריף חריג או מצב Grace/Redemption."}
+                {reg.renewalQuote?.message || t("sites.domain.quoteHint")}
               </div>
             ) : null}
           </div>

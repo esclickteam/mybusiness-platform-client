@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   sitePortalForgotPassword,
   sitePortalResetPassword,
 } from "../../../api/sitePortalApi";
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 type Props = {
   mode: "forgot" | "reset";
@@ -27,6 +29,7 @@ export default function SitePortalPasswordView({
   accountPath = "/portal/account",
   resetPath = "/portal/reset-password",
 }: Props) {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -52,12 +55,11 @@ export default function SitePortalPasswordView({
         resetPath,
       });
 
-      setNotice(
-        result?.message ||
-          "אם קיים חשבון עם האימייל הזה, נשלח אליו קישור לאיפוס סיסמה.",
-      );
+      setNotice(result?.message || t("publicWidgets.portal.resetSent"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "שליחת הקישור נכשלה");
+      setError(
+        err instanceof Error ? err.message : t("publicWidgets.portal.resetSendFailed"),
+      );
     } finally {
       setBusy(false);
     }
@@ -69,12 +71,12 @@ export default function SitePortalPasswordView({
     setNotice("");
 
     if (password.length < 6) {
-      setError("הסיסמה חייבת להיות באורך 6 תווים לפחות");
+      setError(t("publicWidgets.portal.passwordMinError"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("הסיסמאות אינן זהות");
+      setError(t("publicWidgets.portal.passwordsMismatch"));
       return;
     }
 
@@ -84,7 +86,9 @@ export default function SitePortalPasswordView({
       await sitePortalResetPassword({ token, password });
       window.location.replace(accountPath);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "איפוס הסיסמה נכשל");
+      setError(
+        err instanceof Error ? err.message : t("publicWidgets.portal.resetFailed"),
+      );
     } finally {
       setBusy(false);
     }
@@ -95,20 +99,24 @@ export default function SitePortalPasswordView({
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="flex min-h-screen items-center justify-center bg-slate-50 px-4"
     >
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-xs font-black tracking-wide text-slate-400">
-          אזור אישי
+          {t("publicWidgets.portal.area")}
         </p>
         <h1 className="mt-1 text-2xl font-black text-slate-900">
-          {mode === "forgot" ? "שכחתי סיסמה" : "בחירת סיסמה חדשה"}
+          {mode === "forgot"
+            ? t("publicWidgets.portal.forgotPassword")
+            : t("publicWidgets.portal.newPasswordTitle")}
         </h1>
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
           {mode === "forgot"
-            ? `הזינו את האימייל שאיתו נרשמתם${siteName ? ` ל${siteName}` : ""} ונשלח קישור לבחירת סיסמה חדשה.`
-            : "בחרו סיסמה חדשה באורך 6 תווים לפחות."}
+            ? siteName
+              ? t("publicWidgets.portal.forgotSubtitleNamed", { name: siteName })
+              : t("publicWidgets.portal.forgotSubtitle")
+            : t("publicWidgets.portal.newPasswordSubtitle")}
         </p>
 
         {error ? (
@@ -126,7 +134,7 @@ export default function SitePortalPasswordView({
         {mode === "forgot" ? (
           <form className="mt-5 space-y-4" onSubmit={handleForgot}>
             <label className="block text-xs font-black text-slate-500">
-              אימייל
+              {t("publicWidgets.common.email")}
               <input
                 type="email"
                 required
@@ -141,18 +149,20 @@ export default function SitePortalPasswordView({
               disabled={busy}
               className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition disabled:opacity-50"
             >
-              {busy ? "שולח..." : "שליחת קישור לאיפוס"}
+              {busy
+                ? t("publicWidgets.portal.sending")
+                : t("publicWidgets.portal.sendResetLink")}
             </button>
           </form>
         ) : (
           <form className="mt-5 space-y-4" onSubmit={handleReset}>
             {!token ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-                הקישור חסר או אינו תקין. בקשו קישור חדש בעמוד «שכחתי סיסמה».
+                {t("publicWidgets.portal.missingToken")}
               </div>
             ) : null}
             <label className="block text-xs font-black text-slate-500">
-              סיסמה חדשה
+              {t("publicWidgets.portal.newPassword")}
               <input
                 type="password"
                 required
@@ -163,7 +173,7 @@ export default function SitePortalPasswordView({
               />
             </label>
             <label className="block text-xs font-black text-slate-500">
-              אימות סיסמה
+              {t("publicWidgets.portal.confirmPassword")}
               <input
                 type="password"
                 required
@@ -178,7 +188,9 @@ export default function SitePortalPasswordView({
               disabled={busy || !token}
               className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition disabled:opacity-50"
             >
-              {busy ? "שומר..." : "שמירת הסיסמה"}
+              {busy
+                ? t("publicWidgets.portal.saving")
+                : t("publicWidgets.portal.savePassword")}
             </button>
           </form>
         )}
@@ -187,7 +199,7 @@ export default function SitePortalPasswordView({
           href={loginPath}
           className="mt-5 inline-block text-sm font-black text-slate-500 hover:text-slate-800"
         >
-          חזרה להתחברות
+          {t("publicWidgets.portal.backToLogin")}
         </a>
       </div>
     </div>

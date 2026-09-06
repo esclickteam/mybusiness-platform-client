@@ -24,6 +24,9 @@ import {
   normalizeCheckoutAppearance,
   type CheckoutAppearance,
 } from "../../store/checkoutAppearance";
+import { useTranslation } from "react-i18next";
+
+import { getIntlLocale, getTextDirection } from "../../../i18n/localeUtils";
 import { resolveStoreUnitPrice } from "../../../utils/storePricing";
 
 type CartItem = {
@@ -77,39 +80,59 @@ type PublicStoreCheckoutProps = {
 
 const CART_KEY = (businessId: string) => `bizuply_store_cart_${businessId}`;
 
-const PROVIDER_UI: Record<
-  string,
-  { title: string; subtitle: string; button: string; accent: string }
-> = {
-  paypal: {
-    title: "סל ותשלום",
-    subtitle: "תשלום מאובטח דרך PayPal",
-    button: "לתשלום מאובטח ב-PayPal",
-    accent: "#0070BA",
-  },
-  stripe: {
-    title: "סל ותשלום",
-    subtitle: "תשלום מאובטח דרך Stripe",
-    button: "לתשלום מאובטח ב-Stripe",
-    accent: "#635BFF",
-  },
-  manual: {
-    title: "סל והזמנה",
-    subtitle: "שליחת הזמנה לעסק (תשלום ידני / תיאום)",
-    button: "שליחת הזמנה",
-    accent: "#0f172a",
-  },
-  whatsapp: {
-    title: "סל והזמנה",
-    subtitle: "שליחת הזמנה לעסק דרך WhatsApp",
-    button: "שליחת הזמנה",
-    accent: "#128C7E",
-  },
-};
+function providerUiFor(
+  provider: string,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  payments?: PublicPaymentsInfo | null,
+) {
+  const map: Record<
+    string,
+    { title: string; subtitle: string; button: string; accent: string }
+  > = {
+    paypal: {
+      title: t("publicWidgets.store.cartAndPay"),
+      subtitle: t("publicWidgets.store.paypalSubtitle"),
+      button: t("publicWidgets.store.paypalButton"),
+      accent: "#0070BA",
+    },
+    stripe: {
+      title: t("publicWidgets.store.cartAndPay"),
+      subtitle: t("publicWidgets.store.stripeSubtitle"),
+      button: t("publicWidgets.store.stripeButton"),
+      accent: "#635BFF",
+    },
+    manual: {
+      title: t("publicWidgets.store.cartAndOrder"),
+      subtitle: t("publicWidgets.store.manualSubtitle"),
+      button: t("publicWidgets.store.sendOrder"),
+      accent: "#0f172a",
+    },
+    whatsapp: {
+      title: t("publicWidgets.store.cartAndOrder"),
+      subtitle: t("publicWidgets.store.whatsappSubtitle"),
+      button: t("publicWidgets.store.sendOrder"),
+      accent: "#128C7E",
+    },
+  };
+  return (
+    map[provider] || {
+      title: t("publicWidgets.store.cartAndPay"),
+      subtitle: provider
+        ? t("publicWidgets.store.payVia", {
+            provider:
+              payments?.providers?.find((item) => item.provider === provider)
+                ?.label || provider,
+          })
+        : t("publicWidgets.store.pickProvider"),
+      button: t("publicWidgets.store.continueToPay"),
+      accent: "#0f172a",
+    }
+  );
+}
 
-function formatMoney(amount: number, currency = "ILS") {
+function formatMoney(amount: number, currency = "ILS", locale?: string) {
   try {
-    return new Intl.NumberFormat("he-IL", {
+    return new Intl.NumberFormat(getIntlLocale(locale), {
       style: "currency",
       currency: currency || "ILS",
       maximumFractionDigits: 2,
@@ -172,11 +195,8 @@ export default function PublicStoreCheckout({
   language,
   shiftForLeftWidgets = false,
 }: PublicStoreCheckoutProps) {
-  const isEnglish =
-    String(
-      language ||
-        (typeof document !== "undefined" ? document.documentElement.lang : ""),
-    ).toLowerCase() === "en";
+  const { t, i18n } = useTranslation();
+  const uiLang = language || i18n.language;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -209,14 +229,7 @@ export default function PublicStoreCheckout({
       checkoutProvider === "whatsapp"
   );
 
-  const providerUi = PROVIDER_UI[checkoutProvider] || {
-    title: "סל ותשלום",
-    subtitle: checkoutProvider
-      ? `תשלום דרך ${payments?.providers?.find((item) => item.provider === checkoutProvider)?.label || checkoutProvider}`
-      : "בחרו ספק תשלום בלשונית תשלומים",
-    button: "המשך לתשלום",
-    accent: "#0f172a",
-  };
+  const providerUi = providerUiFor(checkoutProvider, t, payments);
 
   const checkoutTitle = appearance.title || providerUi.title;
   const checkoutButtonLabel = appearance.buttonLabel || providerUi.button;
@@ -251,7 +264,7 @@ export default function PublicStoreCheckout({
       if (variants.length > 0) {
         setMessage({
           type: "error",
-          text: `למוצר "${product.name}" יש וריאציות — בחרו מידה/צבע לפני הוספה לסל`,
+          text: t("publicWidgets.store.needVariant", { name: product.name }),
         });
         setOpen(true);
         return;
@@ -265,7 +278,7 @@ export default function PublicStoreCheckout({
       ) {
         setMessage({
           type: "error",
-          text: `"${product.name}" אזל מהמלאי`,
+          text: t("publicWidgets.store.outOfStock", { name: product.name }),
         });
         setOpen(true);
         return;
@@ -283,7 +296,10 @@ export default function PublicStoreCheckout({
           ) {
             setMessage({
               type: "error",
-              text: `מלאי לא מספיק עבור "${product.name}". זמין: ${available}`,
+              text: t("publicWidgets.store.notEnoughStock", {
+                name: product.name,
+                count: available,
+              }),
             });
             return prev;
           }
@@ -311,9 +327,12 @@ export default function PublicStoreCheckout({
         ];
       });
       setOpen(true);
-      setMessage({ type: "info", text: `${product.name} נוסף לסל` });
+      setMessage({
+        type: "info",
+        text: t("publicWidgets.store.addedToCart", { name: product.name }),
+      });
     },
-    [syncCart]
+    [syncCart, t]
   );
 
   useEffect(() => {
@@ -392,7 +411,7 @@ export default function PublicStoreCheckout({
       if (!checkoutReady) {
         setMessage({
           type: "error",
-          text: "אין ספק תשלום מחובר. חברו ספק תשלום בלשונית תשלומים בניהול האתר.",
+          text: t("publicWidgets.store.noProvider"),
         });
       } else {
         setMessage(null);
@@ -411,7 +430,7 @@ export default function PublicStoreCheckout({
         onOpenCheckout as EventListener
       );
     };
-  }, [businessId, checkoutReady, enabled, syncCart]);
+  }, [businessId, checkoutReady, enabled, syncCart, t]);
 
   useEffect(() => {
     if (!businessId || !enabled || !checkoutReady) return;
@@ -489,7 +508,7 @@ export default function PublicStoreCheckout({
     const provider = String(params.get("provider") || "").toLowerCase();
 
     if (paymentState === "cancel") {
-      setMessage({ type: "info", text: "התשלום בוטל. אפשר לנסות שוב מהסל." });
+      setMessage({ type: "info", text: t("publicWidgets.store.paymentCancelled") });
       setOpen(true);
       return;
     }
@@ -505,19 +524,16 @@ export default function PublicStoreCheckout({
           if (cancelled) return;
 
           syncCart([]);
+          const order = result.order?.orderNumber
+            ? t("publicWidgets.store.orderSuffix", {
+                number: result.order.orderNumber,
+              })
+            : "";
           setMessage({
             type: "success",
             text: result.paid
-              ? `התשלום התקבל בהצלחה${
-                  result.order?.orderNumber
-                    ? ` (הזמנה ${result.order.orderNumber})`
-                    : ""
-                }`
-              : `ההזמנה נשלחה לתשלום ב-PayPal${
-                  result.order?.orderNumber
-                    ? ` (הזמנה ${result.order.orderNumber})`
-                    : ""
-                }. נא לאשר את התשלום בחשבון PayPal של העסק.`,
+              ? t("publicWidgets.store.paidOk", { order })
+              : t("publicWidgets.store.paypalPending", { order }),
           });
           setOpen(true);
           return;
@@ -536,15 +552,19 @@ export default function PublicStoreCheckout({
           syncCart([]);
           setMessage({
             type: "success",
-            text: `התשלום התקבל בהצלחה${
-              result.order?.orderNumber ? ` (הזמנה ${result.order.orderNumber})` : ""
-            }`,
+            text: t("publicWidgets.store.paidOk", {
+              order: result.order?.orderNumber
+                ? t("publicWidgets.store.orderSuffix", {
+                    number: result.order.orderNumber,
+                  })
+                : "",
+            }),
           });
           setOpen(true);
         } else {
           setMessage({
             type: "info",
-            text: "התשלום עדיין בעיבוד. נסו לרענן בעוד רגע.",
+            text: t("publicWidgets.store.paymentProcessing"),
           });
         }
       } catch (err: any) {
@@ -554,7 +574,7 @@ export default function PublicStoreCheckout({
           text:
             err?.response?.data?.error ||
             err?.message ||
-            "אישור התשלום נכשל",
+            t("publicWidgets.store.confirmFailed"),
         });
       } finally {
         const url = new URL(window.location.href);
@@ -570,21 +590,21 @@ export default function PublicStoreCheckout({
     return () => {
       cancelled = true;
     };
-  }, [businessId, enabled, syncCart]);
+  }, [businessId, enabled, syncCart, t]);
 
   async function handlePay() {
     if (!customerName.trim()) {
-      setMessage({ type: "error", text: "נא להזין שם מלא" });
+      setMessage({ type: "error", text: t("publicWidgets.store.needName") });
       return;
     }
     if (!cart.length) {
-      setMessage({ type: "error", text: "הסל ריק" });
+      setMessage({ type: "error", text: t("publicWidgets.store.cartEmpty") });
       return;
     }
     if (!checkoutReady || !checkoutProvider) {
       setMessage({
         type: "error",
-        text: "אין ספק תשלום מחובר. חברו ספק תשלום בלשונית תשלומים בניהול האתר.",
+        text: t("publicWidgets.store.noProvider"),
       });
       return;
     }
@@ -614,8 +634,11 @@ export default function PublicStoreCheckout({
             type: "error",
             text:
               available <= 0
-                ? `"${item.name}" אזל מהמלאי`
-                : `מלאי לא מספיק עבור "${item.name}". זמין: ${available}`,
+                ? t("publicWidgets.store.outOfStock", { name: item.name })
+                : t("publicWidgets.store.notEnoughStock", {
+                    name: item.name,
+                    count: available,
+                  }),
           });
           setPaying(false);
           return;
@@ -644,16 +667,20 @@ export default function PublicStoreCheckout({
 
       const orderId = draft.order?._id;
       if (!orderId) {
-        throw new Error("לא נוצרה הזמנה");
+        throw new Error(t("publicWidgets.store.orderNotCreated"));
       }
 
       if (checkoutProvider === "manual" || checkoutProvider === "whatsapp") {
         syncCart([]);
         setMessage({
           type: "success",
-          text: `ההזמנה התקבלה בהצלחה${
-            draft.order?.orderNumber ? ` (מס׳ ${draft.order.orderNumber})` : ""
-          }. ניצור איתכם קשר להשלמת התשלום.`,
+          text: t("publicWidgets.store.orderReceived", {
+            order: draft.order?.orderNumber
+              ? t("publicWidgets.store.orderSuffix", {
+                  number: draft.order.orderNumber,
+                })
+              : "",
+          }),
         });
         setPaying(false);
         return;
@@ -677,7 +704,7 @@ export default function PublicStoreCheckout({
 
       const checkoutUrl = pay.checkoutUrl || "";
       if (!checkoutUrl) {
-        throw new Error("לא התקבל קישור לתשלום");
+        throw new Error(t("publicWidgets.store.noPayLink"));
       }
 
       window.location.href = checkoutUrl;
@@ -687,7 +714,7 @@ export default function PublicStoreCheckout({
         text:
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בפתיחת התשלום",
+          t("publicWidgets.store.openPayError"),
       });
       setPaying(false);
     }
@@ -701,7 +728,7 @@ export default function PublicStoreCheckout({
   if (!checkoutReady && !open) return null;
 
   return (
-    <div dir={isEnglish ? "ltr" : "rtl"} className="bizuply-public-store-checkout">
+    <div dir={getTextDirection(uiLang)} className="bizuply-public-store-checkout">
       {checkoutReady && !hasTemplateCartUi ? (
         <button
           type="button"
@@ -716,10 +743,10 @@ export default function PublicStoreCheckout({
             bottom: "1.25rem",
             left: shiftForLeftWidgets ? "5.75rem" : "1.25rem",
           }}
-          aria-label={isEnglish ? "Open cart" : "פתח סל קניות"}
+          aria-label={t("publicWidgets.store.openCart")}
         >
           <ShoppingBag size={18} />
-          {isEnglish ? "Cart" : "סל"}
+          {t("publicWidgets.store.cart")}
           {cartCount > 0 ? (
             <span
               className="grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-xs font-black"
@@ -775,13 +802,13 @@ export default function PublicStoreCheckout({
                   backgroundColor: `${appearance.borderColor}66`,
                   color: appearance.textColor,
                 }}
-                aria-label="סגור"
+                aria-label={t("publicWidgets.common.close")}
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 text-right">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 text-start">
               {message ? (
                 <div
                   className={`rounded-xl border px-3 py-2 text-sm ${
@@ -809,7 +836,7 @@ export default function PublicStoreCheckout({
                     className="mb-2 text-sm font-bold"
                     style={{ color: appearance.textColor }}
                   >
-                    מוצרים בחנות
+                    {t("publicWidgets.store.storeProducts")}
                   </h3>
                   <div className="max-h-40 space-y-2 overflow-y-auto">
                     {products.slice(0, 12).map((product) => (
@@ -832,7 +859,7 @@ export default function PublicStoreCheckout({
                             className="text-xs"
                             style={{ color: appearance.mutedTextColor }}
                           >
-                            {formatMoney(Number(product.price) || 0, currency)}
+                            {formatMoney(Number(product.price) || 0, currency, uiLang)}
                           </p>
                         </div>
                         <button
@@ -848,7 +875,7 @@ export default function PublicStoreCheckout({
                             ),
                           }}
                         >
-                          הוסף
+                          {t("publicWidgets.store.add")}
                         </button>
                       </div>
                     ))}
@@ -861,7 +888,7 @@ export default function PublicStoreCheckout({
                   className="mb-2 text-sm font-bold"
                   style={{ color: appearance.textColor }}
                 >
-                  הסל שלי
+                  {t("publicWidgets.store.myCart")}
                 </h3>
                 {cart.length ? (
                   <div className="space-y-2">
@@ -886,13 +913,13 @@ export default function PublicStoreCheckout({
                             className="text-xs"
                             style={{ color: appearance.mutedTextColor }}
                           >
-                            {formatMoney(item.price * item.quantity, currency)}
+                            {formatMoney(item.price * item.quantity, currency, uiLang)}
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
-                            aria-label="הקטן כמות"
+                            aria-label={t("publicWidgets.store.decreaseQty")}
                             className="grid h-7 w-7 place-items-center"
                             style={{
                               borderRadius: 8,
@@ -923,7 +950,7 @@ export default function PublicStoreCheckout({
                           </span>
                           <button
                             type="button"
-                            aria-label="הגדל כמות"
+                            aria-label={t("publicWidgets.store.increaseQty")}
                             className="grid h-7 w-7 place-items-center"
                             style={{
                               borderRadius: 8,
@@ -944,7 +971,7 @@ export default function PublicStoreCheckout({
                           </button>
                           <button
                             type="button"
-                            aria-label="הסר מהסל"
+                            aria-label={t("publicWidgets.store.removeFromCart")}
                             className="ms-1 grid h-7 px-2 place-items-center text-[11px] font-bold"
                             style={{
                               borderRadius: 8,
@@ -957,7 +984,7 @@ export default function PublicStoreCheckout({
                               )
                             }
                           >
-                            הסר מהסל
+                            {t("publicWidgets.store.removeFromCart")}
                           </button>
                         </div>
                       </div>
@@ -967,7 +994,9 @@ export default function PublicStoreCheckout({
                       data-bizuply-cart-total={cartTotal}
                       style={{ color: appearance.textColor }}
                     >
-                      סה״כ: {formatMoney(cartTotal, currency)}
+                      {t("publicWidgets.portal.total", {
+                        amount: formatMoney(cartTotal, currency, uiLang),
+                      })}
                     </p>
                   </div>
                 ) : (
@@ -975,7 +1004,7 @@ export default function PublicStoreCheckout({
                     className="text-sm"
                     style={{ color: appearance.mutedTextColor }}
                   >
-                    הסל ריק. הוסיפו מוצרים מהחנות ולחצו שוב על מעבר לתשלום.
+                    {t("publicWidgets.store.cartEmptyHint")}
                   </p>
                 )}
               </div>
@@ -985,7 +1014,7 @@ export default function PublicStoreCheckout({
                   className="text-sm font-bold"
                   style={{ color: appearance.textColor }}
                 >
-                  פרטי לקוח
+                  {t("publicWidgets.store.customerDetails")}
                 </h3>
                 <input
                   className="h-11 w-full px-3 text-sm outline-none"
@@ -995,7 +1024,7 @@ export default function PublicStoreCheckout({
                     color: appearance.textColor,
                     backgroundColor: appearance.panelBackground,
                   }}
-                  placeholder="שם מלא *"
+                  placeholder={t("publicWidgets.store.fullNameRequired")}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
@@ -1007,7 +1036,7 @@ export default function PublicStoreCheckout({
                     color: appearance.textColor,
                     backgroundColor: appearance.panelBackground,
                   }}
-                  placeholder="אימייל"
+                  placeholder={t("publicWidgets.common.email")}
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
@@ -1020,7 +1049,7 @@ export default function PublicStoreCheckout({
                     color: appearance.textColor,
                     backgroundColor: appearance.panelBackground,
                   }}
-                  placeholder="טלפון"
+                  placeholder={t("publicWidgets.common.phone")}
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                 />

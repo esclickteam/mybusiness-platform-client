@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Link,
   useNavigate,
@@ -19,6 +20,7 @@ type OutletCtx = {
 };
 
 export default function AutomationsEditorPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { workflowId = "" } = useParams<{ workflowId: string }>();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
@@ -39,7 +41,10 @@ export default function AutomationsEditorPage() {
         if (!cancelled) {
           setWorkflow(null);
           setError(
-            readAutomationErrorMessage(err, "לא ניתן לטעון את האוטומציה")
+            readAutomationErrorMessage(
+              err,
+              t("automations.editorPage.loadError", "Could not load the automation")
+            )
           );
         }
       })
@@ -49,17 +54,24 @@ export default function AutomationsEditorPage() {
     return () => {
       cancelled = true;
     };
-  }, [businessId, workflowId]);
+  }, [businessId, workflowId, t]);
 
   if (!businessId) {
-    return <div className="ax-empty">לא הצלחנו לזהות את העסק. רעננו את העמוד.</div>;
+    return (
+      <div className="ax-empty">
+        {t(
+          "automations.editorPage.unidentified",
+          "We could not identify the business. Refresh the page."
+        )}
+      </div>
+    );
   }
 
   if (loading) {
     return (
       <div className="ax-empty">
         <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-        טוען אוטומציה...
+        {t("automations.editorPage.loading", "Loading automation...")}
       </div>
     );
   }
@@ -67,10 +79,18 @@ export default function AutomationsEditorPage() {
   if (error || !workflow) {
     return (
       <div className="ax-empty ax-empty--card">
-        <strong>לא נמצאה אוטומציה</strong>
-        <p>{error || "ייתכן שהאוטומציה נמחקה או שאין הרשאה לצפייה."}</p>
+        <strong>
+          {t("automations.editorPage.notFound", "Automation not found")}
+        </strong>
+        <p>
+          {error ||
+            t(
+              "automations.editorPage.notFoundHint",
+              "The automation may have been deleted or you do not have permission to view it."
+            )}
+        </p>
         <Link to=".." className="ax-btn ax-btn--primary">
-          חזרה לרשימה
+          {t("automations.editorPage.backToList", "Back to the list")}
         </Link>
       </div>
     );

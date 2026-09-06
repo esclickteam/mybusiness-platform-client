@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -44,6 +45,7 @@ export default function AutomationPlanModal({
   onUsageUpdated,
   onOpenCancel,
 }: Props) {
+  const { t } = useTranslation();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [mode, setMode] = useState<ModalMode>(initialMode);
@@ -111,11 +113,13 @@ export default function AutomationPlanModal({
   }, [open, onClose, busyKey, reactivating, confirm, mode]);
 
   const heading = useMemo(() => {
-    if (confirm?.kind === "upgrade") return `שדרוג ל-${confirm.plan.name}`;
-    if (confirm?.kind === "downgrade") return "מעבר לחבילה נמוכה יותר";
-    if (mode === "manage" && hasPlan) return "ניהול חבילת האוטומציות";
-    return "בחירת חבילת אוטומציות";
-  }, [confirm, mode, hasPlan]);
+    if (confirm?.kind === "upgrade") {
+      return t("automations.billing.upgradeTo", { plan: confirm.plan.name });
+    }
+    if (confirm?.kind === "downgrade") return t("automations.billing.downgradeTitle");
+    if (mode === "manage" && hasPlan) return t("automations.billing.manageTitle");
+    return t("automations.billing.pickTitle");
+  }, [confirm, mode, hasPlan, t]);
 
   if (!open) return null;
 
@@ -128,13 +132,13 @@ export default function AutomationPlanModal({
     try {
       const result = await createAutomationPlanCheckout(businessId, plan.key);
       if (!result?.url) {
-        toast.error("לא הצלחנו להתחיל את התשלום. נסו שוב.");
+        toast.error(t("automations.billing.checkoutError"));
         setBusyKey(null);
         return;
       }
       window.location.assign(result.url);
     } catch {
-      toast.error("לא הצלחנו להתחיל את התשלום. נסו שוב.");
+      toast.error(t("automations.billing.checkoutError"));
       setBusyKey(null);
     }
   };
@@ -150,15 +154,15 @@ export default function AutomationPlanModal({
     try {
       const result = await changeAutomationPlan(businessId, plan.key);
       if (kind === "downgrade" || result.action === "downgrade_scheduled") {
-        toast.success("השינוי נקבע לחידוש הבא");
+        toast.success(t("automations.billing.changeScheduled"));
       } else {
-        toast.success(`עברתם לחבילת ${plan.name}`);
+        toast.success(t("automations.billing.changedTo", { plan: plan.name }));
       }
       setConfirm(null);
       await onUsageUpdated();
       onClose();
     } catch {
-      toast.error("לא הצלחנו לעדכן את החבילה כרגע. נסו שוב.");
+      toast.error(t("automations.billing.changeError"));
       setBusyKey(null);
     }
   };
@@ -186,21 +190,21 @@ export default function AutomationPlanModal({
     });
     try {
       await reactivateAutomationPlan(businessId);
-      toast.success("הביטול בוטל והחבילה תמשיך כרגיל.");
+      toast.success(t("automations.billing.reactivated"));
       await onUsageUpdated();
     } catch {
-      toast.error("לא הצלחנו להשאיר את החבילה פעילה. נסו שוב.");
+      toast.error(t("automations.billing.reactivateError"));
     } finally {
       setReactivating(false);
     }
   };
 
   const planCtaLabel = (plan: AutomationPlanDefinition) => {
-    if (!hasPlan) return "בחירת חבילה";
-    if (plan.key === currentKey) return "החבילה הנוכחית";
-    if (isUpgradePlan(currentKey, plan.key)) return "שדרוג";
-    if (isDowngradePlan(currentKey, plan.key)) return "מעבר לחבילה זו";
-    return "בחירה";
+    if (!hasPlan) return t("automations.billing.choosePlan");
+    if (plan.key === currentKey) return t("automations.billing.currentPlan");
+    if (isUpgradePlan(currentKey, plan.key)) return t("automations.billing.upgrade");
+    if (isDowngradePlan(currentKey, plan.key)) return t("automations.billing.switchToThis");
+    return t("automations.billing.select");
   };
 
   return (
@@ -223,7 +227,7 @@ export default function AutomationPlanModal({
         <button
           type="button"
           className="ax-billing-modal__close"
-          aria-label="סגור"
+          aria-label={t("automations.billing.close")}
           disabled={Boolean(busyKey) || reactivating}
           onClick={onClose}
         >
@@ -235,8 +239,8 @@ export default function AutomationPlanModal({
           {!confirm ? (
             <p>
               {hasPlan
-                ? "ניתן לשדרג מיידית או לתזמן מעבר לחבילה נמוכה יותר בחידוש הבא."
-                : "בחרו מכסת פעולות חודשית להפעלת האוטומציות בעסק."}
+                ? t("automations.billing.manageHint")
+                : t("automations.billing.pickHint")}
             </p>
           ) : null}
         </header>
@@ -246,18 +250,21 @@ export default function AutomationPlanModal({
             {confirm.kind === "upgrade" ? (
               <>
                 <p>
-                  המכסה תגדל ל-{formatHeNumber(confirm.plan.executionLimit)} פעולות
-                  בחודש.
+                  {t("automations.billing.quotaWillGrow", {
+                    count: formatHeNumber(confirm.plan.executionLimit),
+                  })}
                 </p>
-                <p>השימוש שכבר בוצע החודש נשמר.</p>
+                <p>{t("automations.billing.usageKept")}</p>
               </>
             ) : (
               <>
-                <p>המעבר לחבילה הנמוכה יותר ייכנס לתוקף בחידוש הבא.</p>
-                <p>עד אז תמשיכו ליהנות מהמכסה הנוכחית.</p>
+                <p>{t("automations.billing.downgradeAtRenewal")}</p>
+                <p>{t("automations.billing.keepQuotaUntilThen")}</p>
                 <p>
-                  החבילה החדשה: {confirm.plan.name} ·{" "}
-                  {formatHeNumber(confirm.plan.executionLimit)} פעולות בחודש
+                  {t("automations.billing.newPlanLine", {
+                    plan: confirm.plan.name,
+                    count: formatHeNumber(confirm.plan.executionLimit),
+                  })}
                 </p>
               </>
             )}
@@ -268,7 +275,7 @@ export default function AutomationPlanModal({
                 disabled={Boolean(busyKey)}
                 onClick={() => setConfirm(null)}
               >
-                חזרה
+                {t("automations.billing.back")}
               </button>
               <button
                 type="button"
@@ -279,7 +286,9 @@ export default function AutomationPlanModal({
                 {busyKey === confirm.plan.key ? (
                   <Loader2 size={16} className="ax-billing-spin" />
                 ) : null}
-                {confirm.kind === "upgrade" ? "אישור שדרוג" : "אישור מעבר"}
+                {confirm.kind === "upgrade"
+                  ? t("automations.billing.confirmUpgrade")
+                  : t("automations.billing.confirmSwitch")}
               </button>
             </div>
           </div>
@@ -302,21 +311,23 @@ export default function AutomationPlanModal({
                       .join(" ")}
                   >
                     {isPopular ? (
-                      <span className="ax-billing-plan__badge">הכי פופולרי</span>
+                      <span className="ax-billing-plan__badge">{t("automations.billing.mostPopular")}</span>
                     ) : null}
                     {isCurrent ? (
                       <span className="ax-billing-plan__current">
                         <Check size={14} aria-hidden />
-                        החבילה הנוכחית
+                        {t("automations.billing.currentPlan")}
                       </span>
                     ) : null}
                     <h3>{plan.name}</h3>
                     <p className="ax-billing-plan__price">
                       <strong>{formatHeNumber(plan.priceIls)}</strong>
-                      <span> ₪ / חודש</span>
+                      <span> {t("automations.billing.perMonth")}</span>
                     </p>
                     <p className="ax-billing-plan__limit">
-                      {formatHeNumber(plan.executionLimit)} פעולות בחודש
+                      {t("automations.billing.actionsPerMonth", {
+                        count: formatHeNumber(plan.executionLimit),
+                      })}
                     </p>
                     <button
                       type="button"
@@ -339,18 +350,19 @@ export default function AutomationPlanModal({
             </div>
 
             <p className="ax-billing-plans__note">
-              הודעות WhatsApp, SMS ושימושי AI עשויים להיות מחויבים בנפרד בהתאם
-              לשירות.
+              {t("automations.billing.extraCharges")}
             </p>
 
             {pendingKey ? (
               <p className="ax-billing-card__note" role="status">
-                בחידוש הבא: {getAutomationPlanDisplayName(pendingKey)}
+                {t("automations.billing.nextRenewal", {
+                  plan: getAutomationPlanDisplayName(pendingKey),
+                })}
               </p>
             ) : null}
 
             {hasPlan ? (
-              <section className="ax-billing-manage" aria-label="ניהול חבילה">
+              <section className="ax-billing-manage" aria-label={t("automations.billing.manageAria")}>
                 <div className="ax-billing-manage__tabs">
                   <button
                     type="button"
@@ -361,7 +373,7 @@ export default function AutomationPlanModal({
                     }
                     onClick={() => setMode("pick")}
                   >
-                    חבילות
+                    {t("automations.billing.plansTab")}
                   </button>
                   <button
                     type="button"
@@ -372,7 +384,7 @@ export default function AutomationPlanModal({
                     }
                     onClick={() => setMode("manage")}
                   >
-                    ניהול
+                    {t("automations.billing.manageTab")}
                   </button>
                 </div>
 
@@ -381,8 +393,11 @@ export default function AutomationPlanModal({
                     {cancelAtPeriodEnd ? (
                       <>
                         <p>
-                          החבילה מתוכננת לביטול
-                          {periodEndLabel ? ` ב־${periodEndLabel}` : ""}
+                          {t("automations.billing.cancelScheduled", {
+                            when: periodEndLabel
+                              ? t("automations.billing.cancelOn", { date: periodEndLabel })
+                              : "",
+                          })}
                         </p>
                         <button
                           type="button"
@@ -393,18 +408,18 @@ export default function AutomationPlanModal({
                           {reactivating ? (
                             <Loader2 size={16} className="ax-billing-spin" />
                           ) : null}
-                          השארת החבילה פעילה
+                          {t("automations.billing.keepActive")}
                         </button>
                       </>
                     ) : (
                       <>
-                        <p>ביטול חבילת האוטומציות ייכנס לתוקף בסוף תקופת החיוב.</p>
+                        <p>{t("automations.billing.cancelTakesEffect")}</p>
                         <button
                           type="button"
                           className="ax-btn ax-btn--secondary"
                           onClick={onOpenCancel}
                         >
-                          ביטול חבילת האוטומציות
+                          {t("automations.billing.cancelPlan")}
                         </button>
                       </>
                     )}

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
@@ -34,6 +35,7 @@ import "./automationFlow.css";
 import "./automationsHome.css";
 
 export default function AutomationsLayout() {
+  const { t } = useTranslation();
   const dir = useLocaleDir();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,11 +56,11 @@ export default function AutomationsLayout() {
     : "/";
 
   const tabs = [
-    { to: basePath, end: true, label: "האוטומציות שלי" },
-    { to: `${basePath}/templates`, end: false, label: "תבניות" },
-    { to: `${basePath}/runs`, end: false, label: "הרצות" },
-    { to: `${basePath}/ai-results`, end: false, label: "תוצאות AI" },
-    { to: `${basePath}/connections`, end: false, label: "חיבורים" },
+    { to: basePath, end: true, label: t("automations.layout.myAutomations", "האוטומציות שלי") },
+    { to: `${basePath}/templates`, end: false, label: t("automations.layout.templates", "תבניות") },
+    { to: `${basePath}/runs`, end: false, label: t("automations.layout.runs", "הרצות") },
+    { to: `${basePath}/ai-results`, end: false, label: t("automations.layout.aiResults", "תוצאות AI") },
+    { to: `${basePath}/connections`, end: false, label: t("automations.layout.connections", "חיבורים") },
   ] as const;
 
   const readOnly = isAutomationsReadOnly();
@@ -92,7 +94,7 @@ export default function AutomationsLayout() {
       aiRequestKey &&
       (!aiTemplate || aiTemplate.supported.endToEnd !== true)
     ) {
-      toast.error("תבנית AI זו אינה זמינה להפעלה");
+      toast.error(t("automations.layout.aiUnavailable", "תבנית AI זו אינה זמינה להפעלה"));
       const next = new URLSearchParams(searchParams);
       next.delete("recipe");
       next.delete("template");
@@ -126,7 +128,7 @@ export default function AutomationsLayout() {
           () => null
         );
         if (!hasActiveAutomationPlan(usage)) {
-          toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+          toast.error(t("automations.toasts.planRequired", "כדי להפעיל אוטומציה יש לבחור חבילת פעולות"));
           clearRecipeParam();
           const highlight =
             aiTemplate?.templateKey || requestedTemplate || recipeKey;
@@ -146,7 +148,7 @@ export default function AutomationsLayout() {
           successMessage: string
         ) => {
           if (aiTemplate) {
-            toast.success("האוטומציה נוצרה — השלימו את הגדרות ה-AI לפני פרסום");
+            toast.success(t("automations.layout.createdNeedAi", "האוטומציה נוצרה — השלימו את הגדרות ה-AI לפני פרסום"));
           } else try {
             await publishAutomationWorkflow(businessId, createdId);
             toast.success(successMessage);
@@ -154,7 +156,7 @@ export default function AutomationsLayout() {
             toast.error(
               readAutomationErrorMessage(
                 error,
-                "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה"
+                t("automations.toasts.createdNotEnabledBuilder", "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה")
               )
             );
           }
@@ -166,7 +168,7 @@ export default function AutomationsLayout() {
           const created = await createAutomationWorkflow(businessId, {
             recipe: recipeKey,
           });
-          await openCreated(created._id, "האוטומציה נוצרה והופעלה");
+          await openCreated(created._id, t("automations.toasts.createdAndEnabled", "האוטומציה נוצרה והופעלה"));
           return;
         } catch {
           const working = WORKING_TEMPLATES.find(
@@ -186,7 +188,7 @@ export default function AutomationsLayout() {
               nodes: graph.nodes,
               edges: graph.edges,
             });
-            await openCreated(created._id, "האוטומציה נוצרה מהתבנית העובדת");
+            await openCreated(created._id, t("automations.layout.createdFromWorking", "האוטומציה נוצרה מהתבנית העובדת"));
             return;
           }
           if (!local) throw new Error("no_local_fallback");
@@ -200,11 +202,11 @@ export default function AutomationsLayout() {
           });
           await openCreated(
             created._id,
-            "האוטומציה נוצרה מהתבנית המערכתית (טריגר ← תוצאה)"
+            t("automations.layout.createdFromSystem", "האוטומציה נוצרה מהתבנית המערכתית (טריגר ← תוצאה)")
           );
         }
       } catch (error: unknown) {
-        toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
+        toast.error(readAutomationErrorMessage(error, t("automations.toasts.createError", "שגיאה ביצירת אוטומציה")));
         clearRecipeParam();
         autoCreateHandled.current = null;
       }
@@ -217,6 +219,7 @@ export default function AutomationsLayout() {
     navigate,
     searchParams,
     setSearchParams,
+    t,
   ]);
 
   useEffect(() => {
@@ -245,12 +248,12 @@ export default function AutomationsLayout() {
           role="status"
           data-testid="automations-preview-banner"
         >
-          סביבת תצוגה מקדימה — פעולות עריכה והפעלה חסומות
+          {t("automations.layout.previewBanner", "סביבת תצוגה מקדימה — פעולות עריכה והפעלה חסומות")}
         </div>
       ) : null}
 
       {!isEditorRoute ? (
-        <nav className="ax-tabs" aria-label="ניווט אוטומציות">
+        <nav className="ax-tabs" aria-label={t("automations.layout.navAria", "ניווט אוטומציות")}>
           {tabs.map((tab) => (
             <NavLink
               key={tab.to}

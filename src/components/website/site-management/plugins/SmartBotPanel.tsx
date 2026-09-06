@@ -1,5 +1,6 @@
 import React from "react";
 import { Bot, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
@@ -25,14 +26,16 @@ import {
 } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { btnSecondary } from "../siteManagementUi";
 
-const OPTION_ACTIONS: Array<{ value: SmartBotOptionAction; label: string }> = [
-  { value: "next", label: "מעבר לשלב" },
-  { value: "reply", label: "תשובה ידנית (טקסט)" },
-  { value: "ask-input", label: "תשובה חופשית מהגולש" },
-  { value: "contact", label: "יצירת קשר" },
-  { value: "end", label: "סיום שיחה" },
-  { value: "open-link", label: "פתיחת קישור" },
-];
+function optionActions(t: (key: string) => string): Array<{ value: SmartBotOptionAction; label: string }> {
+  return [
+    { value: "next", label: t("sitePlugins.smartBot.actionNext") },
+    { value: "reply", label: t("sitePlugins.smartBot.actionReply") },
+    { value: "ask-input", label: t("sitePlugins.smartBot.actionAsk") },
+    { value: "contact", label: t("sitePlugins.smartBot.actionContact") },
+    { value: "end", label: t("sitePlugins.smartBot.actionEnd") },
+    { value: "open-link", label: t("sitePlugins.smartBot.actionLink") },
+  ];
+}
 
 function ColorField({
   label,
@@ -45,9 +48,10 @@ function ColorField({
   fallback: string;
   onChange: (v: string) => void;
 }) {
+  const { t } = useTranslation();
   const color = value || fallback;
   return (
-    <Field label={label} hint="קוד HEX">
+    <Field label={label} hint={t("sitePlugins.smartBot.hexHint")}>
       <div className="flex items-center gap-2">
         <input
           type="color"
@@ -62,6 +66,7 @@ function ColorField({
 }
 
 function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
+  const { t } = useTranslation();
   const triggerStyle = settings.triggerStyle || "both";
   const showIcon = triggerStyle === "icon" || triggerStyle === "both";
   const showLabel = triggerStyle === "label" || triggerStyle === "both";
@@ -71,17 +76,17 @@ function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
   const windowBg = settings.windowBgColor || "#FFFFFF";
   const botBubble = settings.botBubbleColor || "#F1F5F9";
   const botText = settings.botBubbleTextColor || "#0F172A";
-  const label = settings.triggerLabel || "צריכים עזרה?";
+  const label = settings.triggerLabel || t("sitePlugins.smartBot.defaultTrigger");
 
   return (
     <div className="space-y-3 md:sticky md:top-4">
       <div className="overflow-hidden rounded-2xl border border-teal-200/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 shadow-sm">
         <div className="border-b border-teal-100/80 px-4 py-3">
           <p className="text-[11px] font-bold uppercase tracking-wide text-teal-700">
-            תצוגה מקדימה
+            {t("sitePlugins.smartBot.preview")}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            הכפתור כפי שיופיע באתר
+            {t("sitePlugins.smartBot.previewHint")}
           </p>
         </div>
 
@@ -122,10 +127,10 @@ function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
           </span>
           <div className="min-w-0">
             <strong className="block truncate text-xs font-black">
-              {settings.botName || "בוט חכם"}
+              {settings.botName || t("sitePlugins.smartBot.defaultName")}
             </strong>
             <span className="block text-[10px] font-semibold text-white/80">
-              אונליין · עונה מיד
+              {t("sitePlugins.smartBot.online")}
             </span>
           </div>
         </div>
@@ -134,7 +139,7 @@ function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
             className="mr-auto max-w-[90%] rounded-2xl px-3 py-2 text-[11px] font-medium leading-5"
             style={{ background: botBubble, color: botText }}
           >
-            {settings.welcomeMessage || "שלום! איך אפשר לעזור לכם היום?"}
+            {settings.welcomeMessage || t("sitePlugins.smartBot.defaultWelcome")}
           </div>
           <div className="flex flex-wrap gap-1.5">
             {(settings.nodes?.[0]?.options || [])
@@ -152,14 +157,14 @@ function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
       </div>
 
       <InfoCallout variant="tip">
-        בעורך: תוספים → גררו את כפתור הבוט למיקום הרצוי. בלחיצה באתר החי נפתח חלון
-        השיחה לפי עץ השיחה שהגדרתם.
+        {t("sitePlugins.smartBot.editorTip")}
       </InfoCallout>
     </div>
   );
 }
 
 export default function SmartBotPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const { settings, loading, saving, message, save, updateField } =
     useSitePluginSettings(props.siteId, "smart-bot");
 
@@ -185,9 +190,9 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       ...nodes,
       {
         id,
-        title: `שלב ${nodes.length + 1}`,
-        message: "הודעת הבוט בשלב זה...",
-        options: [{ id: newOptionId({ id, title: "", message: "", options: [] }), label: "המשך", nextNodeId: merged.startNodeId }],
+        title: t("sitePlugins.smartBot.stepN", { n: nodes.length + 1 }),
+        message: t("sitePlugins.smartBot.defaultStepMessage"),
+        options: [{ id: newOptionId({ id, title: "", message: "", options: [] }), label: t("sitePlugins.smartBot.continue"), nextNodeId: merged.startNodeId }],
       },
     ]);
   }
@@ -202,27 +207,27 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       {...props}
       icon={Bot}
       accent="#0F766E"
-      title="בוט חכם"
-      description="עצי שיחה שהעסק בונה, כפתור עזרה מותאם, עיצוב חלון השיחה ואפשרות יצירת קשר."
+      title={t("sitePlugins.smartBot.title")}
+      description={t("sitePlugins.smartBot.description")}
       loading={loading}
       saving={saving}
       message={message}
       onSave={() => save()}
       sidebar={<SmartBotLivePreview settings={merged} />}
     >
-      <SettingsSection title="הפעלה" description="זמינות התוסף באתר">
+      <SettingsSection title={t("sitePlugins.smartBot.activation")} description={t("sitePlugins.smartBot.activationHint")}>
         <Toggle
-          label="תוסף פעיל באתר"
+          label={t("sitePlugins.smartBot.pluginActive")}
           checked={bool(settings.isActive, true)}
           onChange={(v) => updateField("isActive", v)}
         />
-        <Field label="שם הבוט">
+        <Field label={t("sitePlugins.smartBot.botName")}>
           <TextInput
-            value={str(settings.botName, "בוט חכם")}
+            value={str(settings.botName, t("sitePlugins.smartBot.defaultName"))}
             onChange={(v) => updateField("botName", v)}
           />
         </Field>
-        <Field label="הודעת פתיחה">
+        <Field label={t("sitePlugins.smartBot.welcome")}>
           <TextArea
             value={str(settings.welcomeMessage, merged.welcomeMessage || "")}
             onChange={(v) => updateField("welcomeMessage", v)}
@@ -231,10 +236,10 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       </SettingsSection>
 
       <SettingsSection
-        title="כפתור הפעלה"
-        description="איך נראה הטריגר שפותח את הבוט"
+        title={t("sitePlugins.smartBot.trigger")}
+        description={t("sitePlugins.smartBot.triggerHint")}
       >
-        <Field label="סגנון הכפתור">
+        <Field label={t("sitePlugins.smartBot.triggerStyle")}>
           <select
             className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-800 outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
             value={str(settings.triggerStyle, "both") as SmartBotTriggerStyle}
@@ -242,27 +247,27 @@ export default function SmartBotPanel(props: PluginPanelProps) {
               updateField("triggerStyle", e.target.value as SmartBotTriggerStyle)
             }
           >
-            <option value="icon">אייקון בוט בלבד</option>
-            <option value="label">כיתוב בלבד</option>
-            <option value="both">אייקון + כיתוב</option>
+            <option value="icon">{t("sitePlugins.smartBot.styleIcon")}</option>
+            <option value="label">{t("sitePlugins.smartBot.styleLabel")}</option>
+            <option value="both">{t("sitePlugins.smartBot.styleBoth")}</option>
           </select>
         </Field>
-        <Field label="טקסט הכפתור">
+        <Field label={t("sitePlugins.smartBot.triggerText")}>
           <TextInput
-            value={str(settings.triggerLabel, "צריכים עזרה?")}
+            value={str(settings.triggerLabel, t("sitePlugins.smartBot.defaultTrigger"))}
             onChange={(v) => updateField("triggerLabel", v)}
-            placeholder="צריכים עזרה?"
+            placeholder={t("sitePlugins.smartBot.defaultTrigger")}
           />
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
           <ColorField
-            label="צבע הכפתור"
+            label={t("sitePlugins.smartBot.triggerColor")}
             value={str(settings.triggerColor, "#0F766E")}
             fallback="#0F766E"
             onChange={(v) => updateField("triggerColor", v)}
           />
           <ColorField
-            label="צבע הטקסט"
+            label={t("sitePlugins.smartBot.textColor")}
             value={str(settings.triggerTextColor, "#FFFFFF")}
             fallback="#FFFFFF"
             onChange={(v) => updateField("triggerTextColor", v)}
@@ -271,42 +276,42 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       </SettingsSection>
 
       <SettingsSection
-        title="חלון השיחה"
-        description="עיצוב חלון הצ׳אט שנפתח באתר"
+        title={t("sitePlugins.smartBot.window")}
+        description={t("sitePlugins.smartBot.windowHint")}
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <ColorField
-            label="צבע כותרת"
+            label={t("sitePlugins.smartBot.headerColor")}
             value={str(settings.windowHeaderColor, "#0F766E")}
             fallback="#0F766E"
             onChange={(v) => updateField("windowHeaderColor", v)}
           />
           <ColorField
-            label="רקע החלון"
+            label={t("sitePlugins.smartBot.windowBg")}
             value={str(settings.windowBgColor, "#FFFFFF")}
             fallback="#FFFFFF"
             onChange={(v) => updateField("windowBgColor", v)}
           />
           <ColorField
-            label="בועת הבוט"
+            label={t("sitePlugins.smartBot.botBubble")}
             value={str(settings.botBubbleColor, "#F1F5F9")}
             fallback="#F1F5F9"
             onChange={(v) => updateField("botBubbleColor", v)}
           />
           <ColorField
-            label="טקסט בועת הבוט"
+            label={t("sitePlugins.smartBot.botBubbleText")}
             value={str(settings.botBubbleTextColor, "#0F172A")}
             fallback="#0F172A"
             onChange={(v) => updateField("botBubbleTextColor", v)}
           />
           <ColorField
-            label="בועת המשתמש"
+            label={t("sitePlugins.smartBot.userBubble")}
             value={str(settings.userBubbleColor, "#0F766E")}
             fallback="#0F766E"
             onChange={(v) => updateField("userBubbleColor", v)}
           />
           <ColorField
-            label="טקסט בועת המשתמש"
+            label={t("sitePlugins.smartBot.userBubbleText")}
             value={str(settings.userBubbleTextColor, "#FFFFFF")}
             fallback="#FFFFFF"
             onChange={(v) => updateField("userBubbleTextColor", v)}
@@ -315,35 +320,35 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       </SettingsSection>
 
       <SettingsSection
-        title="יצירת קשר"
-        description="אפשרות ליצירת קשר מתוך השיחה"
+        title={t("sitePlugins.smartBot.contact")}
+        description={t("sitePlugins.smartBot.contactHint")}
       >
         <Toggle
-          label="הצג אפשרות יצירת קשר"
+          label={t("sitePlugins.smartBot.showContact")}
           checked={bool(settings.contactEnabled, true)}
           onChange={(v) => updateField("contactEnabled", v)}
         />
-        <Field label="תווית הכפתור">
+        <Field label={t("sitePlugins.smartBot.contactLabel")}>
           <TextInput
-            value={str(settings.contactLabel, "צרו קשר")}
+            value={str(settings.contactLabel, t("sitePlugins.smartBot.defaultContact"))}
             onChange={(v) => updateField("contactLabel", v)}
           />
         </Field>
-        <Field label="טלפון">
+        <Field label={t("sitePlugins.smartBot.phone")}>
           <TextInput
             value={str(settings.contactPhone)}
             onChange={(v) => updateField("contactPhone", v)}
             placeholder="050-0000000"
           />
         </Field>
-        <Field label="WhatsApp" hint="מספר בינלאומי ללא +, למשל 97250...">
+        <Field label="WhatsApp" hint={t("sitePlugins.smartBot.whatsappHint")}>
           <TextInput
             value={str(settings.contactWhatsapp)}
             onChange={(v) => updateField("contactWhatsapp", v)}
             placeholder="97250..."
           />
         </Field>
-        <Field label="אימייל">
+        <Field label={t("sitePlugins.smartBot.email")}>
           <TextInput
             value={str(settings.contactEmail)}
             onChange={(v) => updateField("contactEmail", v)}
@@ -354,10 +359,10 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       </SettingsSection>
 
       <SettingsSection
-        title="עצי שיחה"
-        description="בנו את מסלול השיחה — שלבים, הודעות וכפתורי בחירה"
+        title={t("sitePlugins.smartBot.trees")}
+        description={t("sitePlugins.smartBot.treesHint")}
       >
-        <Field label="שלב התחלה">
+        <Field label={t("sitePlugins.smartBot.startStep")}>
           <select
             className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-800 outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
             value={str(settings.startNodeId, nodes[0]?.id || "welcome")}
@@ -379,7 +384,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
             >
               <div className="flex items-center justify-between gap-3">
                 <strong className="text-sm font-bold text-slate-800">
-                  שלב {index + 1}
+                  {t("sitePlugins.smartBot.stepN", { n: index + 1 })}
                 </strong>
                 <button
                   type="button"
@@ -388,17 +393,17 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                   className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-40"
                 >
                   <Trash2 size={14} />
-                  מחק
+                  {t("sitePlugins.smartBot.delete")}
                 </button>
               </div>
 
-              <Field label="כותרת השלב">
+              <Field label={t("sitePlugins.smartBot.stepTitle")}>
                 <TextInput
                   value={node.title}
                   onChange={(v) => updateNode(node.id, { title: v })}
                 />
               </Field>
-              <Field label="הודעת הבוט">
+              <Field label={t("sitePlugins.smartBot.botMessage")}>
                 <TextArea
                   value={node.message}
                   onChange={(v) => updateNode(node.id, { message: v })}
@@ -408,7 +413,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-slate-800">
-                    אפשרויות בחירה — ממציאים תשובות ומה קורה אחר כך
+                    {t("sitePlugins.smartBot.optionsHint")}
                   </span>
                   <button
                     type="button"
@@ -419,16 +424,16 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                           ...(node.options || []),
                           {
                             id: newOptionId(node),
-                            label: "אפשרות חדשה",
+                            label: t("sitePlugins.smartBot.newOption"),
                             action: "reply",
-                            replyText: "כאן כותבים את תשובת הבוט...",
+                            replyText: t("sitePlugins.smartBot.defaultReply"),
                           },
                         ],
                       })
                     }
                   >
                     <Plus size={14} className="ml-1 inline" />
-                    הוסף אפשרות
+                    {t("sitePlugins.smartBot.addOption")}
                   </button>
                 </div>
 
@@ -448,14 +453,14 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                     >
                       <div className="flex items-start gap-2">
                         <div className="min-w-0 flex-1 space-y-2">
-                          <Field label="טקסט הכפתור לגולש">
+                          <Field label={t("sitePlugins.smartBot.optionLabel")}>
                             <TextInput
                               value={option.label}
                               onChange={(v) => patchOption({ label: v })}
-                              placeholder="לדוגמה: מה המחיר?"
+                              placeholder={t("sitePlugins.smartBot.optionPlaceholder")}
                             />
                           </Field>
-                          <Field label="מה קורה אחרי לחיצה">
+                          <Field label={t("sitePlugins.smartBot.afterClick")}>
                             <select
                               className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
                               value={action}
@@ -470,7 +475,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                                 });
                               }}
                             >
-                              {OPTION_ACTIONS.map((item) => (
+                              {optionActions(t).map((item) => (
                                 <option key={item.value} value={item.value}>
                                   {item.label}
                                 </option>
@@ -487,7 +492,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                             updateNode(node.id, { options });
                           }}
                           className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-rose-600 hover:bg-rose-50"
-                          aria-label="מחק אפשרות"
+                          aria-label={t("sitePlugins.smartBot.deleteOption")}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -497,21 +502,21 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                         <Field
                           label={
                             action === "end"
-                              ? "הודעת סיום (ידנית)"
-                              : "תשובת הבוט (ידנית)"
+                              ? t("sitePlugins.smartBot.endMessage")
+                              : t("sitePlugins.smartBot.manualReply")
                           }
                         >
                           <TextArea
                             value={option.replyText || ""}
                             onChange={(v) => patchOption({ replyText: v })}
-                            placeholder="כתבו כאן את התשובה שהבוט יציג..."
+                            placeholder={t("sitePlugins.smartBot.replyPlaceholder")}
                           />
                         </Field>
                       ) : null}
 
                       {action === "ask-input" ? (
                         <>
-                          <Field label="שאלה לגולש לפני הכתיבה">
+                          <Field label={t("sitePlugins.smartBot.askPrompt")}>
                             <TextInput
                               value={option.payload?.prompt || ""}
                               onChange={(v) =>
@@ -519,21 +524,21 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                                   payload: { ...(option.payload || {}), prompt: v },
                                 })
                               }
-                              placeholder="כתבו לנו כאן את השאלה או הפרטים:"
+                              placeholder={t("sitePlugins.smartBot.askPlaceholder")}
                             />
                           </Field>
-                          <Field label="תשובת הבוט אחרי שהגולש כתב">
+                          <Field label={t("sitePlugins.smartBot.afterVisitor")}>
                             <TextArea
                               value={option.replyText || ""}
                               onChange={(v) => patchOption({ replyText: v })}
-                              placeholder="תודה! קיבלנו את ההודעה..."
+                              placeholder={t("sitePlugins.smartBot.thanksPlaceholder")}
                             />
                           </Field>
                         </>
                       ) : null}
 
                       {action === "open-link" ? (
-                        <Field label="כתובת קישור">
+                        <Field label={t("sitePlugins.smartBot.linkUrl")}>
                           <TextInput
                             value={option.payload?.url || ""}
                             onChange={(v) =>
@@ -548,14 +553,14 @@ export default function SmartBotPanel(props: PluginPanelProps) {
 
                       {action === "contact" ? (
                         <p className="text-xs text-slate-500">
-                          פותח את אפשרויות יצירת הקשר שהוגדרו למעלה
+                          {t("sitePlugins.smartBot.opensContact")}
                         </p>
                       ) : null}
 
                       {action === "next" ||
                       action === "reply" ||
                       action === "ask-input" ? (
-                        <Field label="ואז לעבור לשלב (אופציונלי)">
+                        <Field label={t("sitePlugins.smartBot.thenGo")}>
                           <div className="flex flex-wrap gap-2">
                             <select
                               className="h-11 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
@@ -566,8 +571,8 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                                   const id = newTreeNodeId(nodes);
                                   const created = {
                                     id,
-                                    title: `שלב ${nodes.length + 1}`,
-                                    message: "הודעת הבוט בשלב החדש...",
+                                    title: t("sitePlugins.smartBot.stepN", { n: nodes.length + 1 }),
+                                    message: t("sitePlugins.smartBot.newStepMessage"),
                                     options: [],
                                   };
                                   const nextNodes = nodes.map((n) => {
@@ -587,13 +592,13 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                                 });
                               }}
                             >
-                              <option value="">בלי מעבר לשלב</option>
+                              <option value="">{t("sitePlugins.smartBot.noNext")}</option>
                               {nodes.map((target) => (
                                 <option key={target.id} value={target.id}>
                                   → {target.title || target.id}
                                 </option>
                               ))}
-                              <option value="__new__">+ צור שלב חדש</option>
+                              <option value="__new__">{t("sitePlugins.smartBot.createStep")}</option>
                             </select>
                           </div>
                         </Field>
@@ -608,7 +613,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
 
         <button type="button" className={btnSecondary + " h-10 text-xs"} onClick={addNode}>
           <Plus size={14} className="ml-1 inline" />
-          הוסף שלב לעץ השיחה
+          {t("sitePlugins.smartBot.addStep")}
         </button>
       </SettingsSection>
     </SitePluginPanelFrame>

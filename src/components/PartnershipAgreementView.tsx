@@ -7,8 +7,10 @@ import React, {
 } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import html2pdf from "html2pdf.js";
+import { useTranslation } from "react-i18next";
 import API from "../api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { getIntlLocale, getTextDirection } from "../i18n/languages";
 
 type IdLike = string | { _id?: string } | null | undefined;
 
@@ -322,6 +324,8 @@ export default function PartnershipAgreementView({
   currentBusinessId,
   onClose,
 }: PartnershipAgreementViewProps) {
+  const { t, i18n } = useTranslation();
+  const textDir = getTextDirection(i18n.language);
   const [agreement, setAgreement] = useState<PartnershipAgreement | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSign, setShowSign] = useState(false);
@@ -371,7 +375,7 @@ export default function PartnershipAgreementView({
     const date = new Date(dateValue);
     if (Number.isNaN(date.getTime())) return "—";
 
-    return date.toLocaleDateString("he-IL");
+    return date.toLocaleDateString(getIntlLocale(i18n.language));
   };
 
   const formatList = (value?: string[] | string): string => {
@@ -381,42 +385,35 @@ export default function PartnershipAgreementView({
   };
 
   const translateStatus = (status?: string): string => {
-    switch ((status || "").toLowerCase()) {
-      case "approved":
-        return "מאושר";
-      case "pending":
-        return "ממתין לאישור";
-      case "rejected":
-        return "נדחה";
-      case "signed":
-        return "נחתם";
-      case "draft":
-        return "טיוטה";
-      default:
-        return status || "—";
-    }
+    const key = (status || "").toLowerCase();
+    const map: Record<string, string> = {
+      approved: "partnershipAgreement.status.approved",
+      pending: "partnershipAgreement.status.pending",
+      rejected: "partnershipAgreement.status.rejected",
+      signed: "partnershipAgreement.status.signed",
+      draft: "partnershipAgreement.status.draft",
+    };
+    return map[key] ? t(map[key]) : status || "—";
   };
 
   const translateAgreementType = (agreementType?: string): string => {
-    switch ((agreementType || "").toLowerCase()) {
-      case "two-sided":
-      case "two sided":
-        return "דו־צדדי";
-      case "one-sided":
-      case "one sided":
-        return "חד־צדדי";
-      default:
-        return agreementType || "—";
+    const key = (agreementType || "").toLowerCase();
+    if (key === "two-sided" || key === "two sided") {
+      return t("partnershipAgreement.type.twoSided");
     }
+    if (key === "one-sided" || key === "one sided") {
+      return t("partnershipAgreement.type.oneSided");
+    }
+    return agreementType || "—";
   };
 
   const yesNo = (value?: boolean): string => {
-    return value ? "כן" : "לא";
+    return value ? t("common.yes") : t("common.no");
   };
 
   const userSideLabel = (side: UserSide): string => {
-    if (side === "createdBy") return "שולח ההסכם";
-    if (side === "invitedBusiness") return "מקבל ההסכם";
+    if (side === "createdBy") return t("partnershipAgreement.sender");
+    if (side === "invitedBusiness") return t("partnershipAgreement.receiver");
     return "";
   };
 
@@ -425,7 +422,7 @@ export default function PartnershipAgreementView({
 
     if (!idStr) {
       setAgreement(null);
-      setError("חסר מזהה הסכם");
+      setError(t("partnershipAgreement.errors.missingId"));
       setLoading(false);
       return;
     }
@@ -440,7 +437,7 @@ export default function PartnershipAgreementView({
     } catch (err: any) {
       console.error("❌ Error loading agreement:", err);
       setAgreement(null);
-      setError(getApiErrorMessage(err, "שגיאה בטעינת ההסכם"));
+      setError(getApiErrorMessage(err, t("partnershipAgreement.errors.load")));
     } finally {
       setLoading(false);
     }
@@ -510,19 +507,19 @@ export default function PartnershipAgreementView({
     if (saving) return;
 
     if (!permissionData.userSide) {
-      setError("אין לך הרשאה לחתום על ההסכם הזה");
+      setError(t("partnershipAgreement.errors.noPermission"));
       return;
     }
 
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      setError("יש לחתום לפני השמירה");
+      setError(t("partnershipAgreement.errors.signFirst"));
       return;
     }
 
     const idStr = getAgreementId();
 
     if (!idStr) {
-      setError("חסר מזהה הסכם");
+      setError(t("partnershipAgreement.errors.missingId"));
       return;
     }
 
@@ -550,7 +547,7 @@ export default function PartnershipAgreementView({
       setSignaturePadWidth(0);
     } catch (err: any) {
       console.error("❌ Error saving signature:", err);
-      setError(getApiErrorMessage(err, "שגיאה בשמירת החתימה"));
+      setError(getApiErrorMessage(err, t("partnershipAgreement.errors.saveSignature")));
     } finally {
       setSaving(false);
     }
@@ -560,7 +557,7 @@ export default function PartnershipAgreementView({
     const element = document.getElementById("agreement-content");
 
     if (!element) {
-      setError("תוכן ההסכם לא נמצא");
+      setError(t("partnershipAgreement.errors.contentMissing"));
       return;
     }
 
@@ -641,7 +638,7 @@ export default function PartnershipAgreementView({
         .save();
     } catch (pdfError) {
       console.error("❌ Error downloading PDF:", pdfError);
-      setError("שגיאה בהורדת PDF");
+      setError(t("partnershipAgreement.errors.pdf"));
     } finally {
       if (pdfContainer) {
         pdfContainer.remove();
@@ -652,14 +649,14 @@ export default function PartnershipAgreementView({
   };
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="טוען את ההסכם..." />;
+    return <BizuplyLoader fullScreen label={t("partnershipAgreement.loading")} />;
   }
 
   if (!agreement) {
     return (
-      <div dir="rtl" className="w-full rounded-3xl bg-white p-6 shadow-xl">
+      <div dir={textDir} className="w-full rounded-3xl bg-white p-6 shadow-xl">
         <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-700">
-          {error || "ההסכם לא נמצא"}
+          {error || t("partnershipAgreement.errors.notFound")}
         </div>
 
         {onClose && (
@@ -669,7 +666,7 @@ export default function PartnershipAgreementView({
               onClick={onClose}
               className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl"
             >
-              סגור
+              {t("common.close")}
             </button>
           </div>
         )}
@@ -679,9 +676,9 @@ export default function PartnershipAgreementView({
 
   if (!proposal) {
     return (
-      <div dir="rtl" className="w-full rounded-3xl bg-white p-6 shadow-xl">
+      <div dir={textDir} className="w-full rounded-3xl bg-white p-6 shadow-xl">
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-medium text-amber-700">
-          נתוני ההצעה חסרים
+          {t("partnershipAgreement.errors.proposalMissing")}
         </div>
       </div>
     );
@@ -692,21 +689,21 @@ export default function PartnershipAgreementView({
 
   return (
     <div
-      dir="rtl"
-      className="w-full rounded-3xl bg-white p-4 text-right shadow-2xl sm:p-6 lg:p-8"
+      dir={textDir}
+      className="w-full rounded-3xl bg-white p-4 text-start shadow-2xl sm:p-6 lg:p-8"
     >
       <div className="mb-6 flex flex-col gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-purple-600">
-            שיתוף פעולה
+            {t("partnershipAgreement.badge")}
           </p>
 
           <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">
-            הסכם שיתוף פעולה
+            {t("partnershipAgreement.title")}
           </h2>
 
           <p className="mt-1 text-sm text-gray-500">
-            בדוק את פרטי ההסכם וחתום עליו דיגיטלית.
+            {t("partnershipAgreement.subtitle")}
           </p>
         </div>
 
@@ -717,7 +714,7 @@ export default function PartnershipAgreementView({
 
           {permissionData.userSigned && (
             <span className="rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700">
-              חתמת
+              {t("partnershipAgreement.youSigned")}
             </span>
           )}
         </div>
@@ -732,20 +729,20 @@ export default function PartnershipAgreementView({
       <div
         id="agreement-content"
         className="rounded-3xl border border-gray-100 bg-gray-50 p-5 sm:p-7"
-        style={{ direction: "rtl", textAlign: "right" }}
+        style={{ direction: textDir, textAlign: textDir === "rtl" ? "right" : "left" }}
       >
         <div className="pdf-avoid-break rounded-3xl bg-white p-5 shadow-sm sm:p-7">
           <div className="mb-6">
-            <h3 className="text-xl font-black text-gray-950">פרטי ההסכם</h3>
+            <h3 className="text-xl font-black text-gray-950">{t("partnershipAgreement.details")}</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              מזהה הסכם: {agreement._id || getAgreementId()}
+              {t("partnershipAgreement.agreementId", { id: agreement._id || getAgreementId() })}
             </p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <InfoCard
-              label="מעסק"
+              label={t("partnershipAgreement.fromBusiness")}
               value={
                 proposal.fromBusinessName ||
                 agreement.sender?.businessName ||
@@ -754,7 +751,7 @@ export default function PartnershipAgreementView({
             />
 
             <InfoCard
-              label="לעסק"
+              label={t("partnershipAgreement.toBusiness")}
               value={
                 proposal.toBusinessName ||
                 agreement.receiver?.businessName ||
@@ -763,48 +760,48 @@ export default function PartnershipAgreementView({
             />
 
             <InfoCard
-              label="איש קשר"
+              label={t("partnershipAgreement.contactName")}
               value={proposal.contactName || "—"}
             />
 
-            <InfoCard label="טלפון" value={proposal.phone || "—"} />
+            <InfoCard label={t("partnershipAgreement.phone")} value={proposal.phone || "—"} />
 
             <InfoCard
-              label="סוג שיתוף פעולה"
+              label={t("partnershipAgreement.collabType")}
               value={translateAgreementType(proposal.type || agreement.type)}
             />
 
             <InfoCard
-              label="תשלום / עמלה"
+              label={t("partnershipAgreement.payment")}
               value={proposal.payment || agreement.payment || "—"}
             />
 
             <InfoCard
-              label="סכום"
+              label={t("partnershipAgreement.amount")}
               value={String(proposal.amount || agreement.amount || "—")}
             />
 
             <InfoCard
-              label="תקופת ההסכם"
+              label={t("partnershipAgreement.period")}
               value={`${formatDate(
                 proposal.startDate || agreement.startDate
               )} – ${formatDate(proposal.endDate || agreement.endDate)}`}
             />
 
             <InfoCard
-              label="ניתן לביטול בכל זמן"
+              label={t("partnershipAgreement.cancelAnytime")}
               value={yesNo(proposal.cancelAnytime || agreement.cancelAnytime)}
             />
 
             <InfoCard
-              label="סעיף סודיות"
+              label={t("partnershipAgreement.confidentiality")}
               value={yesNo(proposal.confidentiality || agreement.confidentiality)}
             />
           </div>
 
           <div className="mt-5 rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
-              תיאור
+              {t("partnershipAgreement.description")}
             </p>
 
             <p
@@ -818,7 +815,7 @@ export default function PartnershipAgreementView({
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
-                מה אתה מספק
+                {t("partnershipAgreement.giving")}
               </p>
 
               <p className="mt-2 text-sm leading-7 text-gray-800" dir="auto">
@@ -828,7 +825,7 @@ export default function PartnershipAgreementView({
 
             <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
-                מה אתה מקבל
+                {t("partnershipAgreement.receiving")}
               </p>
 
               <p className="mt-2 text-sm leading-7 text-gray-800" dir="auto">
@@ -839,11 +836,11 @@ export default function PartnershipAgreementView({
         </div>
 
         <div className="pdf-avoid-break mt-5 rounded-3xl bg-white p-5 shadow-sm sm:p-7">
-          <h3 className="text-xl font-black text-gray-950">חתימות</h3>
+          <h3 className="text-xl font-black text-gray-950">{t("partnershipAgreement.signatures")}</h3>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <SignatureBox
-              title="שולח ההסכם"
+              title={t("partnershipAgreement.sender")}
               signed={senderSigned}
               signedAt={agreement.signatures?.createdBy?.signedAt}
               signatureDataUrl={
@@ -853,7 +850,7 @@ export default function PartnershipAgreementView({
             />
 
             <SignatureBox
-              title="מקבל ההסכם"
+              title={t("partnershipAgreement.receiver")}
               signed={receiverSigned}
               signedAt={agreement.signatures?.invitedBusiness?.signedAt}
               signatureDataUrl={
@@ -869,14 +866,14 @@ export default function PartnershipAgreementView({
         <div className="text-xs text-gray-500">
           {permissionData.userSide ? (
             <span>
-              אתה חותם בתור{" "}
+              {t("partnershipAgreement.signingAs")}{" "}
               <strong className="text-gray-900">
                 {userSideLabel(permissionData.userSide)}
               </strong>
             </span>
           ) : (
             <span className="font-semibold text-red-600">
-              אין לך הרשאה לחתום על ההסכם הזה.
+              {t("partnershipAgreement.errors.noPermission")}
             </span>
           )}
         </div>
@@ -888,7 +885,7 @@ export default function PartnershipAgreementView({
             disabled={downloadingPdf}
             className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-800 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {downloadingPdf ? "מכין PDF..." : "הורד PDF"}
+            {downloadingPdf ? t("partnershipAgreement.preparingPdf") : t("partnershipAgreement.downloadPdf")}
           </button>
 
           {permissionData.canSign && !showSign && (
@@ -902,7 +899,7 @@ export default function PartnershipAgreementView({
               disabled={saving}
               className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
             >
-              חתום על ההסכם
+              {t("partnershipAgreement.signCta")}
             </button>
           )}
 
@@ -912,7 +909,7 @@ export default function PartnershipAgreementView({
               onClick={onClose}
               className="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-bold text-black shadow-lg transition hover:bg-black"
             >
-              סגור
+              {t("common.close")}
             </button>
           )}
         </div>
@@ -920,7 +917,7 @@ export default function PartnershipAgreementView({
 
       {permissionData.userSigned && (
         <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
-          כבר חתמת על ההסכם הזה.
+          {t("partnershipAgreement.alreadySigned")}
         </div>
       )}
 
@@ -928,11 +925,11 @@ export default function PartnershipAgreementView({
         <div className="mt-6 rounded-3xl border border-purple-100 bg-purple-50 p-5">
           <div className="mb-4">
             <h3 className="text-lg font-black text-gray-950">
-              הוסף חתימה
+              {t("partnershipAgreement.addSignature")}
             </h3>
 
             <p className="mt-1 text-sm text-gray-600">
-              צייר את החתימה שלך למטה ולאחר מכן שמור אותה.
+              {t("partnershipAgreement.drawHint")}
             </p>
           </div>
 
@@ -956,7 +953,7 @@ export default function PartnershipAgreementView({
                 className="flex items-center justify-center bg-white text-sm font-semibold text-gray-400"
                 style={{ height: signaturePadHeight }}
               >
-                טוען משטח חתימה...
+                {t("partnershipAgreement.loadingPad")}
               </div>
             )}
           </div>
@@ -968,7 +965,7 @@ export default function PartnershipAgreementView({
               disabled={saving}
               className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              נקה
+              {t("partnershipAgreement.clear")}
             </button>
 
             <button
@@ -981,7 +978,7 @@ export default function PartnershipAgreementView({
               disabled={saving}
               className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              ביטול
+              {t("common.cancel")}
             </button>
 
             <button
@@ -990,7 +987,7 @@ export default function PartnershipAgreementView({
               disabled={saving}
               className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving ? "שומר..." : "שמור חתימה"}
+              {saving ? t("partnershipAgreement.saving") : t("partnershipAgreement.saveSignature")}
             </button>
           </div>
         </div>
@@ -1026,6 +1023,7 @@ function SignatureBox({
   signatureDataUrl?: string;
   formatDate: (dateValue?: string | Date | null) => string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="pdf-avoid-break rounded-2xl border border-gray-100 bg-gray-50 p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -1038,7 +1036,7 @@ function SignatureBox({
               : "bg-gray-200 text-gray-600"
           }`}
         >
-          {signed ? "נחתם" : "טרם נחתם"}
+          {signed ? t("partnershipAgreement.status.signed") : t("partnershipAgreement.notSignedYet")}
         </span>
       </div>
 
@@ -1049,19 +1047,19 @@ function SignatureBox({
         {signed && signatureDataUrl ? (
           <img
             src={signatureDataUrl}
-            alt={`חתימת ${title}`}
+            alt={t("partnershipAgreement.signatureAlt", { title })}
             className="block max-h-24 max-w-full object-contain"
           />
         ) : (
           <span className="text-sm font-medium text-gray-400">
-            עדיין אין חתימה
+            {t("partnershipAgreement.noSignature")}
           </span>
         )}
       </div>
 
       {signedAt && (
         <p className="mt-3 text-xs font-medium text-gray-500">
-          נחתם בתאריך: {formatDate(signedAt)}
+          {t("partnershipAgreement.signedOn", { date: formatDate(signedAt) })}
         </p>
       )}
     </div>

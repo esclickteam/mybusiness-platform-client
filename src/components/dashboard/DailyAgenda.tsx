@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import i18n from "../../i18n/i18n";
 import {
   CalendarDays,
   Clock,
@@ -134,7 +135,7 @@ function formatDisplayDate(date?: string, locale = "en-US"): string {
   const parsedDate = getValidDate(date);
 
   if (!parsedDate) {
-    return locale.startsWith("he") ? "לא זמין" : "Unavailable";
+    return i18n.t("leftover.dashboard.unavailable", "Unavailable");
   }
 
   return parsedDate.toLocaleDateString(locale, {
@@ -149,7 +150,7 @@ function formatEmailDate(date?: string, locale = "en-US"): string {
   const parsedDate = getValidDate(date);
 
   if (!parsedDate) {
-    return locale.startsWith("he") ? "לא זמין" : "Unavailable";
+    return i18n.t("leftover.dashboard.unavailable", "Unavailable");
   }
 
   return parsedDate.toLocaleDateString(locale, {

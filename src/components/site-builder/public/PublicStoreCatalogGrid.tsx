@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   getPublicShop,
   type PublicStoreProduct,
 } from "../../../api/publicStoreApi";
+import { getIntlLocale, getTextDirection } from "../../../i18n/localeUtils";
 import { resolveStoreUnitPrice } from "../../../utils/storePricing";
 
-function formatMoney(amount: number, currency = "ILS") {
+function formatMoney(amount: number, currency = "ILS", locale?: string) {
   try {
-    return new Intl.NumberFormat("he-IL", {
+    return new Intl.NumberFormat(getIntlLocale(locale), {
       style: "currency",
       currency: currency || "ILS",
       maximumFractionDigits: 2,
@@ -42,6 +44,7 @@ export default function PublicStoreCatalogGrid({
   businessId: string;
   enabled?: boolean;
 }) {
+  const { t, i18n } = useTranslation();
   const [products, setProducts] = useState<PublicStoreProduct[]>([]);
   const [currency, setCurrency] = useState("ILS");
   const [selected, setSelected] = useState<PublicStoreProduct | null>(null);
@@ -78,7 +81,7 @@ export default function PublicStoreCatalogGrid({
       data-bizuply-plugin-runtime="true"
       data-bizuply-block="products"
       className="relative z-[40] mx-auto my-8 max-w-6xl px-4"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       {shown ? (
         <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -87,7 +90,7 @@ export default function PublicStoreCatalogGrid({
             className="mb-4 text-sm font-bold text-slate-500"
             onClick={() => setSelected(null)}
           >
-            חזרה לחנות
+            {t("publicWidgets.store.backToStore")}
           </button>
           {productImage(shown) ? (
             <img
@@ -102,7 +105,7 @@ export default function PublicStoreCatalogGrid({
           )}
           <h1 className="text-3xl font-black text-slate-900">{shown.name}</h1>
           <p className="mt-2 text-xl font-black text-violet-700">
-            {formatMoney(resolveStoreUnitPrice(shown).price, currency)}
+            {formatMoney(resolveStoreUnitPrice(shown).price, currency, i18n.language)}
           </p>
           <p className="mt-3 text-sm leading-7 text-slate-600">
             {shown.shortDescription || shown.description || ""}
@@ -113,7 +116,7 @@ export default function PublicStoreCatalogGrid({
             data-product-id={shown._id}
             className="mt-5 rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white"
           >
-            הוספה לסל
+            {t("publicWidgets.store.addToCart")}
           </button>
         </article>
       ) : (
@@ -123,7 +126,7 @@ export default function PublicStoreCatalogGrid({
               key={product._id}
               className="flex flex-col rounded-3xl border border-slate-200 bg-white p-4 shadow-sm"
             >
-              <button type="button" onClick={() => setSelected(product)} className="text-right">
+              <button type="button" onClick={() => setSelected(product)} className="text-start">
                 {productImage(product) ? (
                   <img
                     src={productImage(product)}
@@ -137,7 +140,7 @@ export default function PublicStoreCatalogGrid({
                 )}
                 <h2 className="mt-4 text-xl font-black text-slate-900">{product.name}</h2>
                 <p className="mt-2 text-lg font-black text-violet-700">
-                  {formatMoney(resolveStoreUnitPrice(product).price, currency)}
+                  {formatMoney(resolveStoreUnitPrice(product).price, currency, i18n.language)}
                 </p>
               </button>
               <button
@@ -146,7 +149,7 @@ export default function PublicStoreCatalogGrid({
                 data-product-id={product._id}
                 className="mt-4 rounded-full bg-slate-900 px-4 py-2 text-sm font-black text-white"
               >
-                הוספה לסל
+                {t("publicWidgets.store.addToCart")}
               </button>
             </article>
           ))}

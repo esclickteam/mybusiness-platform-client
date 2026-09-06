@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
@@ -7,6 +8,7 @@ import { io } from "socket.io-client";
 import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function ClientChatSection() {
+  const { t } = useTranslation();
   const { businessId: businessIdFromParams, clientId, threadId } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
@@ -51,7 +53,7 @@ export default function ClientChatSection() {
 
     socketRef.current.on("connect_error", (err) => {
       console.error("❌ Socket error:", err);
-      setError("לא הצלחנו להתחבר לצ׳אט. נסו שוב.");
+      setError(t("leftover.errors.chatConnect"));
     });
 
     return () => {

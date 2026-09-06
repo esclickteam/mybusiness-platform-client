@@ -4,6 +4,7 @@ import React, {
   useState,
 } from "react";
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 import {
@@ -61,27 +62,64 @@ type LayerTransform = {
   opacity?: unknown;
 };
 
-const CATEGORY_OPTIONS: Array<{
-  id: LottieCategory;
-  label: string;
-}> = [
-  { id: "all", label: "הכול" },
-  { id: "business", label: "עסקים" },
-  { id: "commerce", label: "חנויות" },
-  { id: "communication", label: "יצירת קשר" },
-  { id: "success", label: "הצלחה" },
-  { id: "decorative", label: "דקורטיבי" },
+const CATEGORY_OPTIONS: LottieCategory[] = [
+  "all",
+  "business",
+  "commerce",
+  "communication",
+  "success",
+  "decorative",
 ];
 
-const PLAYBACK_OPTIONS: Array<{
-  value: PlaybackMode;
-  label: string;
-}> = [
-  { value: "forward", label: "קדימה" },
-  { value: "reverse", label: "אחורה" },
-  { value: "bounce", label: "קדימה ואחורה" },
-  { value: "reverse-bounce", label: "אחורה וקדימה" },
+const PLAYBACK_OPTIONS: PlaybackMode[] = [
+  "forward",
+  "reverse",
+  "bounce",
+  "reverse-bounce",
 ];
+
+const LOTTIE_CATEGORY_KEYS: Record<LottieCategory, string> = {
+  all: "studio.lottie.all",
+  business: "studio.lottie.business",
+  commerce: "studio.lottie.commerce",
+  communication: "studio.lottie.communication",
+  success: "studio.lottie.success",
+  decorative: "studio.lottie.decorative",
+};
+
+const LOTTIE_PLAYBACK_KEYS: Record<PlaybackMode, string> = {
+  forward: "studio.lottie.forward",
+  reverse: "studio.lottie.reverse",
+  bounce: "studio.lottie.bounce",
+  "reverse-bounce": "studio.lottie.reverseBounce",
+};
+
+const LOTTIE_STARTER_KEYS: Record<string, { title: string; description: string }> = {
+  "success-check": {
+    title: "studio.lottie.successCheckTitle",
+    description: "studio.lottie.successCheckDesc",
+  },
+  "analytics-growth": {
+    title: "studio.lottie.analyticsTitle",
+    description: "studio.lottie.analyticsDesc",
+  },
+  "messages-flow": {
+    title: "studio.lottie.messagesTitle",
+    description: "studio.lottie.messagesDesc",
+  },
+  "rocket-launch": {
+    title: "studio.lottie.rocketTitle",
+    description: "studio.lottie.rocketDesc",
+  },
+  "commerce-bag": {
+    title: "studio.lottie.commerceTitle",
+    description: "studio.lottie.commerceDesc",
+  },
+  "target-focus": {
+    title: "studio.lottie.targetTitle",
+    description: "studio.lottie.targetDesc",
+  },
+};
 
 const WEB_PLAYER_MODULE_URL =
   "https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm";
@@ -1000,8 +1038,8 @@ function buildTargetAnimation() {
 const STARTER_ANIMATIONS: LottieSource[] = [
   {
     id: "success-check",
-    title: "הצלחה מקצועית",
-    description: "סימון הצלחה עם ניצוצות ורקע שקוף",
+    title: "Professional success",
+    description: "A success check with sparks and a transparent background",
     category: "success",
     keywords: [
       "success",
@@ -1017,8 +1055,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "analytics-growth",
-    title: "צמיחה ונתונים",
-    description: "גרף עסקי עם עמודות וקו צמיחה",
+    title: "Growth and data",
+    description: "A business chart with bars and a growth line",
     category: "business",
     keywords: [
       "analytics",
@@ -1034,8 +1072,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "messages-flow",
-    title: "שיחה והודעות",
-    description: "בועות שיחה מודרניות בתנועה חלקה",
+    title: "Chat and messages",
+    description: "Modern chat bubbles with a smooth motion",
     category: "communication",
     keywords: [
       "messages",
@@ -1051,8 +1089,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "rocket-launch",
-    title: "השקה וצמיחה",
-    description: "רקטה מונפשת להשקות ועמודי מוצר",
+    title: "Launch and growth",
+    description: "An animated rocket for launches and product pages",
     category: "business",
     keywords: [
       "rocket",
@@ -1068,8 +1106,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "commerce-bag",
-    title: "חנות ומכירות",
-    description: "שקית קניות עם תנועה וניצוצות",
+    title: "Store and sales",
+    description: "A shopping bag with motion and sparks",
     category: "commerce",
     keywords: [
       "shop",
@@ -1085,8 +1123,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "target-focus",
-    title: "מטרה ומיקוד",
-    description: "מטרה עם טבעות וחץ בתנועה",
+    title: "Goal and focus",
+    description: "A target with rings and a moving arrow",
     category: "decorative",
     keywords: [
       "target",
@@ -1132,13 +1170,13 @@ function arrayBufferToDataUrl(
         return;
       }
 
-      reject(new Error("לא ניתן היה לקרוא את קובץ האנימציה"));
+      reject(new Error("Could not read the animation file"));
     };
 
     reader.onerror = () => {
       reject(
         reader.error ||
-          new Error("לא ניתן היה לקרוא את קובץ האנימציה"),
+          new Error("Could not read the animation file"),
       );
     };
 
@@ -1300,7 +1338,7 @@ async function insertHtmlIntoEditor({
 
   if (typeof editor?.addElement !== "function") {
     throw new Error(
-      "לא נמצאה בעורך פונקציה להוספת HTML. צריך לחבר onAddHtml או editor.addHtml.",
+      "The editor has no function to add HTML. Connect onAddHtml or editor.addHtml.",
     );
   }
 
@@ -1308,7 +1346,7 @@ async function insertHtmlIntoEditor({
   const elementId = extractElementId(created) || String(created || "");
 
   if (!elementId) {
-    throw new Error("לא ניתן היה ליצור אלמנט HTML בקנבס");
+    throw new Error("Could not create an HTML element on the canvas");
   }
 
   let contentUpdated = false;
@@ -1450,6 +1488,7 @@ export default function LottieAnimationBrowser({
   onInserted,
   onAddHtml,
 }: LottieAnimationBrowserProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [customAnimations, setCustomAnimations] = useState<
     LottieSource[]
@@ -1518,14 +1557,14 @@ export default function LottieAnimationBrowser({
 
       if (!isJson && !isDotLottie) {
         setError(
-          `הקובץ ${file.name} אינו קובץ JSON או Lottie תקין`,
+          t("studio.lottie.badFile", { name: file.name }),
         );
         continue;
       }
 
       if (file.size > 4 * 1024 * 1024) {
         setError(
-          `הקובץ ${file.name} גדול מדי. הגודל המרבי הוא 4MB`,
+          t("studio.lottie.tooBig", { name: file.name }),
         );
         continue;
       }
@@ -1536,14 +1575,14 @@ export default function LottieAnimationBrowser({
         try {
           JSON.parse(text);
         } catch {
-          setError(`קובץ ה־JSON ${file.name} אינו תקין`);
+          setError(t("studio.lottie.badJson", { name: file.name }));
           continue;
         }
 
         nextItems.push({
           id: `upload-${Date.now()}-${nextItems.length}`,
           title: file.name.replace(/\.json$/i, ""),
-          description: "אנימציה שהועלתה מהמחשב",
+          description: t("studio.lottie.uploadedDesc"),
           category: "decorative",
           keywords: [file.name, "upload", "העלאה"],
           data: text,
@@ -1556,7 +1595,7 @@ export default function LottieAnimationBrowser({
       nextItems.push({
         id: `upload-${Date.now()}-${nextItems.length}`,
         title: file.name.replace(/\.lottie$/i, ""),
-        description: "קובץ dotLottie שהועלה מהמחשב",
+        description: t("studio.lottie.uploadedDot"),
         category: "decorative",
         keywords: [file.name, "dotlottie", "upload", "העלאה"],
         data: buffer,
@@ -1570,7 +1609,7 @@ export default function LottieAnimationBrowser({
         ...current,
       ]);
       setSuccess(
-        `${nextItems.length} אנימציות נוספו למאגר המקומי`,
+        t("studio.lottie.addedLocal", { count: nextItems.length }),
       );
     }
   };
@@ -1579,7 +1618,7 @@ export default function LottieAnimationBrowser({
     const trimmed = urlInput.trim();
 
     if (!trimmed) {
-      setError("הדביקו קישור לקובץ JSON או Lottie");
+      setError(t("studio.lottie.pasteUrl"));
       return;
     }
 
@@ -1588,12 +1627,12 @@ export default function LottieAnimationBrowser({
     try {
       parsedUrl = new URL(trimmed);
     } catch {
-      setError("הקישור שהוזן אינו תקין");
+      setError(t("studio.lottie.badUrl"));
       return;
     }
 
     if (!/^https?:$/.test(parsedUrl.protocol)) {
-      setError("אפשר להוסיף רק קישור HTTP או HTTPS");
+      setError(t("studio.lottie.httpOnly"));
       return;
     }
 
@@ -1605,7 +1644,7 @@ export default function LottieAnimationBrowser({
       {
         id: `url-${Date.now()}`,
         title: fileName.replace(/\.(json|lottie)$/i, ""),
-        description: "אנימציה מקישור חיצוני",
+        description: t("studio.lottie.urlDesc"),
         category: "decorative",
         keywords: [fileName, "url", "link", "קישור"],
         src: trimmed,
@@ -1616,7 +1655,7 @@ export default function LottieAnimationBrowser({
 
     setUrlInput("");
     setError("");
-    setSuccess("האנימציה מהקישור נוספה לתצוגה");
+    setSuccess(t("studio.lottie.urlAdded"));
   };
 
   const getPersistentSource = async (
@@ -1635,7 +1674,7 @@ export default function LottieAnimationBrowser({
       );
     }
 
-    throw new Error("לא נמצא מקור תקין לאנימציה");
+    throw new Error("No valid animation source was found");
   };
 
   const addAnimationToCanvas = async (
@@ -1685,7 +1724,7 @@ export default function LottieAnimationBrowser({
 
       editor?.applyDataToDom?.();
       onInserted?.(elementId);
-      setSuccess(`${animation.title} נוספה לעמוד`);
+      setSuccess(t("studio.lottie.addedPage", { title: animation.title }));
     } catch (caughtError) {
       console.error(
         "[Bizuply Lottie] add animation failed",
@@ -1695,7 +1734,7 @@ export default function LottieAnimationBrowser({
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "הוספת האנימציה נכשלה",
+          : t("studio.lottie.addFailed"),
       );
     } finally {
       setAddingId("");
@@ -1724,7 +1763,7 @@ export default function LottieAnimationBrowser({
               onChange={(event) =>
                 setSearchQuery(event.target.value)
               }
-              placeholder="חיפוש אנימציה בעברית או באנגלית..."
+              placeholder={t("studio.lottie.search")}
               className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
             />
           </label>
@@ -1735,7 +1774,7 @@ export default function LottieAnimationBrowser({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             <Upload className="h-4 w-4" />
-            העלאת JSON / Lottie
+            {t("studio.lottie.upload")}
           </button>
         </div>
 
@@ -1765,24 +1804,24 @@ export default function LottieAnimationBrowser({
             onClick={addUrlAnimation}
             className="inline-flex h-11 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-5 text-xs font-black text-violet-700 transition hover:bg-violet-100"
           >
-            הוספה מקישור
+            {t("studio.lottie.addFromUrl")}
           </button>
         </div>
 
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
           {CATEGORY_OPTIONS.map((item) => (
             <button
-              key={item.id}
+              key={item}
               type="button"
-              onClick={() => setCategory(item.id)}
+              onClick={() => setCategory(item)}
               className={[
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
-                category === item.id
+                category === item
                   ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
-              {item.label}
+              {t(LOTTIE_CATEGORY_KEYS[item])}
             </button>
           ))}
         </div>
@@ -1790,7 +1829,7 @@ export default function LottieAnimationBrowser({
         <div className="mt-4 grid grid-cols-4 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           <label className="flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2">
             <span className="text-xs font-black text-slate-700">
-              הפעלה אוטומטית
+              {t("studio.lottie.autoplay")}
             </span>
             <input
               type="checkbox"
@@ -1805,7 +1844,7 @@ export default function LottieAnimationBrowser({
 
           <label className="flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2">
             <span className="text-xs font-black text-slate-700">
-              לולאה
+              {t("studio.lottie.loop")}
             </span>
             <input
               type="checkbox"
@@ -1819,7 +1858,7 @@ export default function LottieAnimationBrowser({
 
           <label className="flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2">
             <span className="text-xs font-black text-slate-700">
-              הפעלה ב־Hover
+              {t("studio.lottie.hover")}
             </span>
             <input
               type="checkbox"
@@ -1838,7 +1877,7 @@ export default function LottieAnimationBrowser({
 
           <label className="relative rounded-xl bg-white px-3 py-2">
             <span className="mb-1 block text-[10px] font-black text-slate-500">
-              מצב ניגון
+              {t("studio.lottie.playback")}
             </span>
             <select
               value={mode}
@@ -1849,10 +1888,10 @@ export default function LottieAnimationBrowser({
             >
               {PLAYBACK_OPTIONS.map((option) => (
                 <option
-                  key={option.value}
-                  value={option.value}
+                  key={option}
+                  value={option}
                 >
-                  {option.label}
+                  {t(LOTTIE_PLAYBACK_KEYS[option])}
                 </option>
               ))}
             </select>
@@ -1861,7 +1900,7 @@ export default function LottieAnimationBrowser({
 
           <label className="col-span-2 flex items-center gap-3 rounded-xl bg-white px-3 py-2">
             <span className="whitespace-nowrap text-xs font-black text-slate-700">
-              מהירות: {speed.toFixed(1)}×
+              {t("studio.lottie.speed", { value: speed.toFixed(1) })}
             </span>
             <input
               type="range"
@@ -1878,7 +1917,7 @@ export default function LottieAnimationBrowser({
 
           <label className="col-span-2 flex items-center gap-3 rounded-xl bg-white px-3 py-2">
             <span className="whitespace-nowrap text-xs font-black text-slate-700">
-              גודל: {size}px
+              {t("studio.lottie.size", { value: size })}
             </span>
             <input
               type="range"
@@ -1914,12 +1953,12 @@ export default function LottieAnimationBrowser({
           <div className="flex min-w-0 items-center gap-2">
             <Sparkles className="h-4 w-4 shrink-0 text-violet-600" />
             <p className="truncate text-xs font-bold text-slate-500">
-              אנימציות Lottie וקטוריות עם רקע שקוף
+              {t("studio.lottie.subtitle")}
             </p>
           </div>
 
           <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm">
-            {filteredAnimations.length} אנימציות
+            {t("studio.lottie.count", { count: filteredAnimations.length })}
           </span>
         </div>
 
@@ -1953,17 +1992,21 @@ export default function LottieAnimationBrowser({
                       {animation.sourceType === "built-in"
                         ? "Bizuply"
                         : animation.sourceType === "upload"
-                          ? "העלאה"
-                          : "קישור"}
+                          ? t("studio.lottie.uploadBadge")
+                          : t("studio.lottie.urlBadge")}
                     </span>
                   </div>
 
                   <div className="p-4">
                     <h3 className="text-sm font-black text-slate-800">
-                      {animation.title}
+                      {LOTTIE_STARTER_KEYS[animation.id]
+                        ? t(LOTTIE_STARTER_KEYS[animation.id].title)
+                        : animation.title}
                     </h3>
                     <p className="mt-1 min-h-10 text-xs font-bold leading-5 text-slate-400">
-                      {animation.description}
+                      {LOTTIE_STARTER_KEYS[animation.id]
+                        ? t(LOTTIE_STARTER_KEYS[animation.id].description)
+                        : animation.description}
                     </p>
 
                     <button
@@ -1982,8 +2025,8 @@ export default function LottieAnimationBrowser({
                         <Play className="h-4 w-4" />
                       )}
                       {isAdding
-                        ? "מוסיף לעמוד..."
-                        : "הוספה לעמוד"}
+                        ? t("studio.lottie.adding")
+                        : t("studio.lottie.addToPage")}
                     </button>
                   </div>
                 </article>
@@ -1994,11 +2037,10 @@ export default function LottieAnimationBrowser({
           <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-slate-200 bg-white px-8 text-center">
             <FileJson2 className="h-11 w-11 text-slate-300" />
             <h3 className="mt-4 text-base font-black text-slate-900">
-              לא נמצאו אנימציות
+              {t("studio.lottie.empty")}
             </h3>
             <p className="mt-2 text-sm font-bold text-slate-400">
-              נסו חיפוש אחר, עברו לקטגוריית הכול או העלו קובץ
-              JSON / Lottie
+              {t("studio.lottie.emptyHint")}
             </p>
           </div>
         )}

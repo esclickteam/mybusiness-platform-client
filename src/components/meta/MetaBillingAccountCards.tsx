@@ -1,8 +1,10 @@
 import React from "react";
 import { AlertTriangle, CheckCircle2, ExternalLink, Megaphone, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { MetaAdAccountBillingHealth } from "../../api/metaCampaignsApi";
 import type { WhatsAppWabaBillingHealth } from "../../api/whatsappApi";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { btnSecondary, cardBase } from "../../styles/bizuplyUi";
 
 type Props = {
@@ -38,10 +40,13 @@ function tone(severity?: string) {
   };
 }
 
-function severityLabel(severity?: string) {
-  if (severity === "ok") return "תקין";
-  if (severity === "error") return "דורש טיפול";
-  return "נדרשת בדיקה";
+function severityLabel(
+  severity: string | undefined,
+  t: (key: string, defaultValue?: string) => string
+) {
+  if (severity === "ok") return t("meta.billing.ok", "תקין");
+  if (severity === "error") return t("meta.billing.error", "דורש טיפול");
+  return t("meta.billing.warning", "נדרשת בדיקה");
 }
 
 function BillingCardShell({
@@ -57,9 +62,11 @@ function BillingCardShell({
   severity?: string;
   children: React.ReactNode;
 }) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const colors = tone(severity || "warning");
   return (
-    <div className={`${cardBase} ${colors.box} p-4`} dir="rtl">
+    <div className={`${cardBase} ${colors.box} p-4`} dir={pageDir}>
       <div className="mb-3 flex items-start gap-3">
         <div className={`mt-0.5 ${colors.icon}`}>{icon}</div>
         <div className="min-w-0 flex-1">
@@ -69,7 +76,7 @@ function BillingCardShell({
               <span
                 className={`rounded-full border px-2 py-0.5 text-[11px] font-bold ${colors.badge}`}
               >
-                {severityLabel(severity)}
+                {severityLabel(severity, t)}
               </span>
             ) : null}
           </div>
@@ -91,29 +98,37 @@ export default function MetaBillingAccountCards({
   showAdAccount = true,
   className = "",
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const emDash = t("crm.common.emDash", "—");
   const showBoth = showAdAccount && showWaba;
   const gridClass = showBoth
     ? "grid gap-3 lg:grid-cols-2"
     : "grid gap-3 grid-cols-1";
 
   return (
-    <div className={["space-y-3", className].join(" ")} dir="rtl">
+    <div className={["space-y-3", className].join(" ")} dir={pageDir}>
       {showBoth ? (
         <p className="text-xs font-semibold text-slate-500">
-          הוצאות פרסום וחיוב הודעות וואטסאפ מחויבים בנפרד על ידי מטא.
-          הכרטיסים האלה לא חולקים אמצעי תשלום.
+          {t(
+            "meta.billing.bothHint",
+            "הוצאות פרסום וחיוב הודעות וואטסאפ מחויבים בנפרד על ידי מטא. הכרטיסים האלה לא חולקים אמצעי תשלום."
+          )}
         </p>
       ) : showAdAccount ? (
         <p className="text-xs font-semibold text-slate-500">
-          הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות שנבחר.
+          {t(
+            "meta.billing.adsOnlyHint",
+            "הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות שנבחר."
+          )}
         </p>
       ) : null}
 
       <div className={gridClass}>
         {showAdAccount ? (
         <BillingCardShell
-          title="חשבון מודעות מטא"
-          subtitle="הוצאות קמפיינים בפייסבוק / אינסטגרם"
+          title={t("meta.billing.adTitle", "חשבון מודעות מטא")}
+          subtitle={t("meta.billing.adSubtitle", "הוצאות קמפיינים בפייסבוק / אינסטגרם")}
           icon={<Megaphone className="h-5 w-5" />}
           severity={
             adAccountBilling?.connected
@@ -123,21 +138,23 @@ export default function MetaBillingAccountCards({
         >
           {!adAccountBilling?.connected ? (
             <div className="space-y-2 text-sm font-semibold text-slate-700">
-              <p>לא נבחר חשבון מודעות מטא לסביבת העבודה הזו.</p>
+              <p>{t("meta.billing.noAdAccount", "לא נבחר חשבון מודעות מטא לסביבת העבודה הזו.")}</p>
               <Link to={adsSettingsPath} className={`${btnSecondary} inline-flex`}>
-                פתיחת הגדרות מודעות מטא
+                {t("meta.billing.openAdSettings", "פתיחת הגדרות מודעות מטא")}
               </Link>
             </div>
           ) : (
             <div className="space-y-2 text-sm">
               <p className="font-bold text-slate-900">
-                {adAccountBilling.name || "חשבון מודעות"}
+                {adAccountBilling.name || t("meta.billing.adAccountFallback", "חשבון מודעות")}
                 {adAccountBilling.accountId
                   ? ` · ${adAccountBilling.accountId}`
                   : ""}
               </p>
               <p className="text-xs font-semibold text-slate-600">
-                סטטוס החשבון: {adAccountBilling.statusLabel}
+                {t("meta.billing.accountStatus", "סטטוס החשבון: {{status}}", {
+                  status: adAccountBilling.statusLabel,
+                })}
                 {adAccountBilling.currency
                   ? ` · ${adAccountBilling.currency}`
                   : ""}
@@ -145,7 +162,7 @@ export default function MetaBillingAccountCards({
               {adAccountBilling.hasPaymentMethod === true ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  אמצעי תשלום שמור
+                  {t("meta.billing.paymentSaved", "אמצעי תשלום שמור")}
                   {adAccountBilling.paymentMethodDisplay
                     ? ` (${adAccountBilling.paymentMethodDisplay})`
                     : ""}
@@ -154,19 +171,24 @@ export default function MetaBillingAccountCards({
               {adAccountBilling.hasPaymentMethod === false ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  אין אמצעי תשלום — המודעות לא ישודרו
+                  {t("meta.billing.noPaymentAds", "אין אמצעי תשלום — המודעות לא ישודרו")}
                 </p>
               ) : null}
               {adAccountBilling.hasPaymentMethod == null ? (
                 <p className="text-xs font-semibold text-slate-500">
-                  פרטי אמצעי התשלום אינם זמינים בהרשאות הנוכחיות
-                  (סטטוס החשבון עדיין מוצג).
+                  {t(
+                    "meta.billing.paymentHidden",
+                    "פרטי אמצעי התשלום אינם זמינים בהרשאות הנוכחיות (סטטוס החשבון עדיין מוצג)."
+                  )}
                 </p>
               ) : null}
               <p className="text-[11px] font-semibold leading-relaxed text-slate-500">
                 {showWaba
                   ? adAccountBilling.billingSeparationNote
-                  : "הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות הזה."}
+                  : t(
+                      "meta.billing.adsChargedHere",
+                      "הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות הזה."
+                    )}
               </p>
               {(adAccountBilling.issues || []).map((issue) => (
                 <p
@@ -183,7 +205,7 @@ export default function MetaBillingAccountCards({
                   rel="noreferrer"
                   className={`${btnSecondary} inline-flex items-center gap-1.5`}
                 >
-                  {adAccountBilling.actionLabel || "פתיחת חיוב מטא"}
+                  {adAccountBilling.actionLabel || t("meta.billing.openMetaBilling", "פתיחת חיוב מטא")}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}
@@ -194,8 +216,8 @@ export default function MetaBillingAccountCards({
 
         {showWaba ? (
         <BillingCardShell
-          title="חשבון וואטסאפ עסקי"
-          subtitle="חיוב הודעות וואטסאפ"
+          title={t("meta.billing.wabaTitle", "חשבון וואטסאפ עסקי")}
+          subtitle={t("meta.billing.wabaSubtitle", "חיוב הודעות וואטסאפ")}
           icon={<MessageCircle className="h-5 w-5" />}
           severity={
             wabaBilling?.connected ? wabaBilling.severity : "warning"
@@ -203,47 +225,55 @@ export default function MetaBillingAccountCards({
         >
           {!wabaBilling?.connected ? (
             <div className="space-y-2 text-sm font-semibold text-slate-700">
-              <p>וואטסאפ עסקי אינו מחובר לסביבת העבודה הזו.</p>
+              <p>{t("meta.billing.wabaDisconnected", "וואטסאפ עסקי אינו מחובר לסביבת העבודה הזו.")}</p>
               {onOpenWhatsAppSettings ? (
                 <button
                   type="button"
                   onClick={onOpenWhatsAppSettings}
                   className={`${btnSecondary} inline-flex`}
                 >
-                  פתיחת הגדרות וואטסאפ
+                  {t("meta.billing.openWhatsappSettings", "פתיחת הגדרות וואטסאפ")}
                 </button>
               ) : (
                 <Link
                   to={whatsappSettingsPath}
                   className={`${btnSecondary} inline-flex`}
                 >
-                  פתיחת הגדרות וואטסאפ
+                  {t("meta.billing.openWhatsappSettings", "פתיחת הגדרות וואטסאפ")}
                 </Link>
               )}
             </div>
           ) : (
             <div className="space-y-2 text-sm">
               <p className="font-bold text-slate-900">
-                {wabaBilling.wabaName || "וואטסאפ עסקי"}
+                {wabaBilling.wabaName || t("meta.billing.wabaFallback", "וואטסאפ עסקי")}
               </p>
               <p className="text-xs font-semibold text-slate-600">
-                סטטוס החשבון: {wabaBilling.status || "—"}
+                {t("meta.billing.accountStatus", "סטטוס החשבון: {{status}}", {
+                  status: wabaBilling.status || emDash,
+                })}
                 {wabaBilling.canSendMessage
-                  ? ` · שליחה: ${wabaBilling.canSendMessage}`
+                  ? ` · ${t("meta.billing.sendLabel", "שליחה: {{value}}", {
+                      value: wabaBilling.canSendMessage,
+                    })}`
                   : ""}
                 {wabaBilling.currency ? ` · ${wabaBilling.currency}` : ""}
               </p>
               {wabaBilling.accountReviewStatus ? (
                 <p className="text-xs font-semibold text-slate-600">
-                  סטטוס בדיקת חשבון: {wabaBilling.accountReviewStatus}
+                  {t("meta.billing.reviewStatus", "סטטוס בדיקת חשבון: {{status}}", {
+                    status: wabaBilling.accountReviewStatus,
+                  })}
                 </p>
               ) : null}
               {wabaBilling.businessVerificationLabel ||
               wabaBilling.businessVerificationStatus ? (
                 <p className="text-xs font-semibold text-slate-600">
-                  אימות עסק:{" "}
-                  {wabaBilling.businessVerificationLabel ||
-                    wabaBilling.businessVerificationStatus}
+                  {t("meta.billing.businessVerify", "אימות עסק: {{status}}", {
+                    status:
+                      wabaBilling.businessVerificationLabel ||
+                      wabaBilling.businessVerificationStatus,
+                  })}
                 </p>
               ) : null}
               {wabaBilling.paymentMethodDisplay ||
@@ -251,7 +281,7 @@ export default function MetaBillingAccountCards({
               wabaBilling.hasPrimaryFundingId === true ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  אמצעי תשלום שמור
+                  {t("meta.billing.paymentSaved", "אמצעי תשלום שמור")}
                   {wabaBilling.paymentMethodDisplay
                     ? ` (${wabaBilling.paymentMethodDisplay})`
                     : ""}
@@ -262,7 +292,10 @@ export default function MetaBillingAccountCards({
                 wabaBilling.hasPrimaryFundingId === false) ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  אין אמצעי תשלום — הוסיפו אחד בהגדרות חשבון וואטסאפ במטא
+                  {t(
+                    "meta.billing.noPaymentWaba",
+                    "אין אמצעי תשלום — הוסיפו אחד בהגדרות חשבון וואטסאפ במטא"
+                  )}
                 </p>
               ) : null}
               {!wabaBilling.paymentMethodDisplay &&
@@ -273,10 +306,15 @@ export default function MetaBillingAccountCards({
                 <p className="inline-flex items-start gap-1 text-xs font-semibold text-slate-600">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
                   <span>
-                    אמצעי תשלום: בדקו בהגדרות חשבון וואטסאפ במטא
+                    {t(
+                      "meta.billing.checkPaymentMeta",
+                      "אמצעי תשלום: בדקו בהגדרות חשבון וואטסאפ במטא"
+                    )}
                     <span className="mt-0.5 block font-medium text-slate-500">
-                      מטא מציגה את הכרטיס שם (סיכום ← אמצעי תשלום). האפליקציה
-                      לא מקבלת מותג/4 ספרות אחרונות בסגנון חשבון מודעות עבור וואטסאפ.
+                      {t(
+                        "meta.billing.checkPaymentHint",
+                        "מטא מציגה את הכרטיס שם (סיכום ← אמצעי תשלום). האפליקציה לא מקבלת מותג/4 ספרות אחרונות בסגנון חשבון מודעות עבור וואטסאפ."
+                      )}
                     </span>
                   </span>
                 </p>
@@ -306,7 +344,7 @@ export default function MetaBillingAccountCards({
                   rel="noreferrer"
                   className={`${btnSecondary} inline-flex items-center gap-1.5`}
                 >
-                  {wabaBilling.actionLabel || "בדיקת חיוב וואטסאפ"}
+                  {wabaBilling.actionLabel || t("meta.billing.checkWabaBilling", "בדיקת חיוב וואטסאפ")}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}

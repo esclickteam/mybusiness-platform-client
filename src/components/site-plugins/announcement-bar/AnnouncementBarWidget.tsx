@@ -1,6 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import {
   announcementDismissKey,
@@ -78,6 +81,7 @@ export default function AnnouncementBarWidget({
   settings,
   mode = "live",
 }: AnnouncementBarWidgetProps) {
+  const { t, i18n } = useTranslation();
   const cfg = mergeAnnouncementBarSettings(settings);
   const [dismissed, setDismissed] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
@@ -134,15 +138,12 @@ export default function AnnouncementBarWidget({
 
   const linkUrl = String(cfg.linkUrl || "").trim();
   const linkLabel = String(cfg.linkLabel || "").trim();
-  const dir =
-    typeof document !== "undefined"
-      ? document.documentElement.getAttribute("dir") || "rtl"
-      : "rtl";
+  const dir = getTextDirection(i18n.language);
 
   const ui = (
     <div
       ref={barRef}
-      dir={dir === "ltr" ? "ltr" : "rtl"}
+      dir={dir}
       data-bizuply-widget="announcement-bar"
       data-bizuply-plugin="announcement-bar"
       data-bizuply-plugin-runtime="true"
@@ -168,13 +169,13 @@ export default function AnnouncementBarWidget({
               if (isEditor) e.preventDefault();
             }}
           >
-            {linkLabel || "לפרטים"}
+            {linkLabel || t("publicWidgets.announcement.details")}
           </a>
         ) : null}
         {cfg.dismissible ? (
           <button
             type="button"
-            aria-label="סגור"
+            aria-label={t("publicWidgets.common.close")}
             className="absolute start-3 top-1/2 -translate-y-1/2 rounded p-1 opacity-80 hover:opacity-100"
             onClick={() => {
               setDismissed(true);
@@ -192,7 +193,7 @@ export default function AnnouncementBarWidget({
         ) : null}
       </div>
       {isEditor ? (
-        <span className="sr-only">פס הודעות · מעל ההדר · לא נצמד בגלילה</span>
+        <span className="sr-only">{t("publicWidgets.announcement.editorHint")}</span>
       ) : null}
     </div>
   );

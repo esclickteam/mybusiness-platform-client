@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
@@ -117,13 +119,13 @@ function convertNaturalDateToISO(text: string) {
 const aiPackages: AiPackage[] = [
   {
     id: "ai_200",
-    label: "חבילת AI עם 200 שאלות",
+    label: "pkg200",
     price: 1,
     type: "ai-package",
   },
   {
     id: "ai_500",
-    label: "חבילת AI עם 500 שאלות",
+    label: "pkg500",
     price: 1,
     type: "ai-package",
   },
@@ -140,7 +142,15 @@ export default function AiPartnerTab({
   targetAudience,
   businessGoal,
 }: AiPartnerTabProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const navigate = useNavigate();
+  const packageLabel = (pkg: AiPackage | null) => {
+    if (!pkg) return "";
+    if (pkg.id === "ai_200") return t("aiPartner.pkg200");
+    if (pkg.id === "ai_500") return t("aiPartner.pkg500");
+    return pkg.label;
+  };
 
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -187,11 +197,11 @@ export default function AiPartnerTab({
   );
 
   const balanceText = useMemo(() => {
-    if (remainingQuestions === null) return "טוען מאזן";
-    if (remainingQuestions === 0) return "לא נשארו שאלות AI";
-    if (remainingQuestions === 1) return "נשארה שאלת AI אחת";
-    return `נשארו ${remainingQuestions} שאלות AI`;
-  }, [remainingQuestions]);
+    if (remainingQuestions === null) return t("aiPartner.balanceLoading");
+    if (remainingQuestions === 0) return t("aiPartner.noQuestions");
+    if (remainingQuestions === 1) return t("aiPartner.oneQuestion");
+    return t("aiPartner.questionsLeft", { count: remainingQuestions });
+  }, [remainingQuestions, t]);
 
   const filterText = useCallback((text: string) => {
     return text
@@ -230,7 +240,7 @@ export default function AiPartnerTab({
         },
       });
 
-      if (!res.ok) throw new Error("טעינת נתוני העסק נכשלה");
+      if (!res.ok) throw new Error(t("aiPartner.loadBusinessFailed"));
 
       const data = (await res.json()) as BusinessResponse;
       const business = data.business;
@@ -250,7 +260,7 @@ export default function AiPartnerTab({
       console.error("שגיאה ברענון יתרת השאלות:", error);
       setRemainingQuestions(null);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     void refreshRemainingQuestions();
@@ -272,7 +282,7 @@ export default function AiPartnerTab({
           }
         );
 
-        if (!res.ok) throw new Error("טעינת ההמלצות נכשלה");
+        if (!res.ok) throw new Error(t("aiPartner.loadRecsFailed"));
 
         const recs = (await res.json()) as RawRecommendation[];
         const valid = filterValidUniqueRecommendations(recs);
@@ -296,7 +306,7 @@ export default function AiPartnerTab({
     if (!showHistory) {
       void fetchRecommendations();
     }
-  }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
+  }, [businessId, token, filterValidUniqueRecommendations, showHistory, t]);
 
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
@@ -314,7 +324,7 @@ export default function AiPartnerTab({
         }
       );
 
-      if (!res.ok) throw new Error("טעינת היסטוריית פקודות ה-AI נכשלה");
+      if (!res.ok) throw new Error(t("aiPartner.loadHistoryFailed"));
 
       const data = (await res.json()) as AiCommandHistoryItem[];
       setAiCommandHistory(data);
@@ -325,7 +335,7 @@ export default function AiPartnerTab({
     } finally {
       setLoadingHistory(false);
     }
-  }, [businessId, token]);
+  }, [businessId, token, t]);
 
   useEffect(() => {
     if (showHistory) {
@@ -481,10 +491,10 @@ export default function AiPartnerTab({
       const data = (await res.json()) as AiPartnerResponse;
 
       if (!res.ok) {
-        throw new Error(data.error || "שליחת הפקודה נכשלה");
+        throw new Error(data.error || t("aiPartner.sendFailed"));
       }
 
-      setCommandResponse(data.answer || "לא התקבלה תשובה מה-AI.");
+      setCommandResponse(data.answer || t("aiPartner.noAnswer"));
 
       if (data.actionResult) {
         console.log("Action result:", data.actionResult);
@@ -497,7 +507,7 @@ export default function AiPartnerTab({
       await refreshRemainingQuestions();
     } catch (error) {
       const err = error as Error;
-      alert(`שגיאה בשליחת פקודת AI: ${err.message}`);
+      alert(t("aiPartner.sendError", { message: err.message }));
     } finally {
       setLoading(false);
       setCommandText("");
@@ -543,7 +553,7 @@ export default function AiPartnerTab({
         const data = (await res.json()) as { error?: string };
 
         if (!res.ok) {
-          throw new Error(data.error || "אישור ההמלצה נכשל");
+          throw new Error(data.error || t("aiPartner.approveFailed"));
         }
 
         setSuggestions((prev) =>
@@ -554,17 +564,17 @@ export default function AiPartnerTab({
           )
         );
 
-        alert("ההמלצה אושרה ונשלחה ללקוח!");
+        alert(t("aiPartner.approvedSent"));
         setActiveSuggestion(null);
       } catch (error) {
         const err = error as Error;
         console.error("שגיאה באישור ההמלצה:", err);
-        alert(`שגיאה באישור ההמלצה: ${err.message}`);
+        alert(t("aiPartner.approveError", { message: err.message }));
       } finally {
         setLoading(false);
       }
     },
-    [businessId, token, filterText]
+    [businessId, token, filterText, t]
   );
 
   const rejectSuggestion = useCallback((id: string) => {
@@ -595,7 +605,7 @@ export default function AiPartnerTab({
         const data = (await res.json()) as { error?: string };
 
         if (!res.ok) {
-          throw new Error(data.error || "עדכון ההמלצה נכשל");
+          throw new Error(data.error || t("aiPartner.updateFailed"));
         }
 
         setSuggestions((prev) =>
@@ -612,13 +622,13 @@ export default function AiPartnerTab({
           )
         );
 
-        alert("ההמלצה עודכנה ונשלחה בהצלחה!");
+        alert(t("aiPartner.updatedSent"));
         setActiveSuggestion(null);
         setEditing(false);
       } catch (error) {
         const err = error as Error;
         console.error("שגיאה בעדכון ההמלצה:", err);
-        alert(`שגיאה בעדכון ההמלצה: ${err.message}`);
+        alert(t("aiPartner.updateError", { message: err.message }));
       } finally {
         setLoading(false);
       }
@@ -672,7 +682,7 @@ export default function AiPartnerTab({
       const data = (await res.json()) as PaymentResponse;
 
       if (!res.ok) {
-        throw new Error(data.error || "שגיאה ברכישת החבילה");
+        throw new Error(data.error || t("aiPartner.purchaseFailed"));
       }
 
       if (data.paymentUrl) {
@@ -681,14 +691,17 @@ export default function AiPartnerTab({
       }
 
       setPurchaseMessage(
-        `החבילה ${selectedPackage.label} נרכשה בהצלחה במחיר ${selectedPackage.price}$.`
+        t("aiPartner.purchased", {
+          label: packageLabel(selectedPackage),
+          price: selectedPackage.price,
+        })
       );
 
       setSelectedPackage(null);
       await refreshRemainingQuestions();
     } catch (error) {
       const err = error as Error;
-      setPurchaseError(err.message || "שגיאה ברכישת החבילה");
+      setPurchaseError(err.message || t("aiPartner.purchaseFailed"));
     } finally {
       setPurchaseLoading(false);
     }
@@ -702,8 +715,8 @@ export default function AiPartnerTab({
 
   return (
     <section
-      dir="rtl"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 text-right !text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
+      dir={pageDir}
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 !text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-violet-300/35 blur-3xl" />
@@ -723,24 +736,22 @@ export default function AiPartnerTab({
             <div className="max-w-3xl">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-black !text-violet-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.8)]" />
-                שותף עסקי AI
+                {t("aiPartner.badge")}
               </div>
 
               <h2 className="max-w-2xl text-4xl font-black tracking-tight !text-slate-800 sm:text-5xl lg:text-6xl">
-                מרכז הפיקוד של ה-AI שלך
+                {t("aiPartner.title")}
               </h2>
 
               <p className="mt-4 max-w-2xl text-sm leading-7 !text-slate-600 sm:text-base">
-                תן לשותף ה-AI שלך משימות עסקיות, בדוק המלצות
-                חכמות, אשר הודעות ללקוחות ושמור כל פקודה
-                מסודרת במקום עבודה אחד ומקצועי.
+                {t("aiPartner.lead")}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[520px]">
               <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-slate-400">
-                  מאזן
+                  {t("aiPartner.balance")}
                 </p>
                 <p className="mt-2 text-4xl font-black !text-slate-800">
                   {remainingQuestions ?? "—"}
@@ -756,25 +767,25 @@ export default function AiPartnerTab({
 
               <div className="rounded-3xl border border-amber-100 bg-amber-50 p-4 shadow-[0_18px_50px_rgba(245,158,11,0.10)]">
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-amber-700/70">
-                  ממתין
+                  {t("aiPartner.pending")}
                 </p>
                 <p className="mt-2 text-4xl font-black !text-slate-800">
                   {pendingSuggestions.length}
                 </p>
                 <p className="mt-1 text-xs font-black !text-amber-700">
-                  המלצות
+                  {t("aiPartner.recommendations")}
                 </p>
               </div>
 
               <div className="rounded-3xl border border-cyan-100 bg-cyan-50 p-4 shadow-[0_18px_50px_rgba(6,182,212,0.10)]">
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-cyan-700/70">
-                  נשלחו
+                  {t("aiPartner.sent")}
                 </p>
                 <p className="mt-2 text-4xl font-black !text-slate-800">
                   {sentSuggestions.length}
                 </p>
                 <p className="mt-1 text-xs font-black !text-cyan-700">
-                  הושלמו
+                  {t("aiPartner.completed")}
                 </p>
               </div>
             </div>
@@ -786,7 +797,7 @@ export default function AiPartnerTab({
               onClick={() => setShowHistory((prev) => !prev)}
               className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
-              {showHistory ? "חזרה לשותף AI" : "צפה בהיסטוריית פקודות"}
+              {showHistory ? t("aiPartner.backToPartner") : t("aiPartner.viewHistory")}
             </button>
 
             <button
@@ -794,7 +805,7 @@ export default function AiPartnerTab({
               onClick={() => navigate(-1)}
               className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black !text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
             >
-              חזרה
+              {t("aiPartner.back")}
             </button>
           </div>
         </header>
@@ -805,23 +816,23 @@ export default function AiPartnerTab({
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-black !text-slate-800">
-                    היסטוריית פקודות
+                    {t("aiPartner.historyTitle")}
                   </h3>
                   <p className="mt-1 text-sm !text-slate-500">
-                    פקודות קודמות ותשובות AI.
+                    {t("aiPartner.historySubtitle")}
                   </p>
                 </div>
               </div>
 
               {loadingHistory && (
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm font-bold !text-slate-700">
-                  טוען היסטוריה...
+                  {t("aiPartner.loadingHistory")}
                 </div>
               )}
 
               {historyError && (
                 <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm font-bold !text-rose-700">
-                  שגיאה בטעינת ההיסטוריה: {historyError}
+                  {t("aiPartner.historyError", { error: historyError })}
                 </div>
               )}
 
@@ -829,7 +840,7 @@ export default function AiPartnerTab({
                 !historyError &&
                 aiCommandHistory.length === 0 && (
                   <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm font-bold !text-slate-500">
-                    אין פקודות AI קודמות.
+                    {t("aiPartner.emptyHistory")}
                   </div>
                 )}
 
@@ -852,7 +863,7 @@ export default function AiPartnerTab({
                         <div className="mt-4 grid gap-4 lg:grid-cols-2">
                           <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
                             <p className="mb-2 text-sm font-black !text-violet-800">
-                              פקודה
+                              {t("aiPartner.command")}
                             </p>
                             <pre className="whitespace-pre-wrap break-words text-sm leading-6 !text-slate-700">
                               {cmd.commandText}
@@ -861,7 +872,7 @@ export default function AiPartnerTab({
 
                           <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
                             <p className="mb-2 text-sm font-black !text-cyan-800">
-                              תשובת AI
+                              {t("aiPartner.aiAnswer")}
                             </p>
                             <pre className="whitespace-pre-wrap break-words text-sm leading-6 !text-slate-700">
                               {cmd.responseText}
@@ -878,21 +889,21 @@ export default function AiPartnerTab({
               <div className="space-y-5">
                 <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
                   <label className="mb-3 block text-sm font-black !text-slate-800">
-                    מה השותף AI שלך צריך לעשות?
+                    {t("aiPartner.askTitle")}
                   </label>
 
                   <textarea
                     rows={5}
                     value={commandText}
                     onChange={(event) => setCommandText(event.target.value)}
-                    placeholder="כתוב לשותף ה-AI מה צריך לעשות — לדוגמה: צור הודעת פולואפ ללקוחות שלא סגרו החודש."
+                    placeholder={t("aiPartner.placeholder")}
                     disabled={loading || isLimitReached}
                     className="min-h-36 w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold leading-7 !text-slate-900 outline-none transition placeholder:!text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-100"
                   />
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs font-bold !text-slate-500">
-                      טיפ: כדאי לכלול את המטרה, סוג הלקוח והפעולה הרצויה.
+                      {t("aiPartner.tip")}
                     </p>
 
                     <button
@@ -903,7 +914,7 @@ export default function AiPartnerTab({
                       }
                       className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0"
                     >
-                      {loading ? "עובד..." : "שלח ל-AI"}
+                      {loading ? t("aiPartner.working") : t("aiPartner.sendToAi")}
                     </button>
                   </div>
                 </div>
@@ -911,11 +922,10 @@ export default function AiPartnerTab({
                 {isLimitReached && (
                   <div className="rounded-[28px] border border-rose-200 bg-rose-50 p-5 shadow-sm">
                     <h3 className="text-lg font-black !text-rose-700">
-                      הגעת למגבלה החודשית
+                      {t("aiPartner.limitReached")}
                     </h3>
                     <p className="mt-2 text-sm leading-6 !text-rose-600">
-                      הגעת למגבלת השאלות החודשית. אפשר
-                      לרכוש חבילת AI נוספת.
+                      {t("aiPartner.limitText")}
                     </p>
 
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -938,7 +948,7 @@ export default function AiPartnerTab({
                             className="sr-only"
                           />
 
-                          <p className="text-sm font-black">{pkg.label}</p>
+                          <p className="text-sm font-black">{packageLabel(pkg)}</p>
                           <p className="mt-1 text-xs font-bold opacity-80">
                             ${pkg.price}
                           </p>
@@ -952,7 +962,7 @@ export default function AiPartnerTab({
                       disabled={purchaseLoading || !selectedPackage}
                       className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none sm:w-auto"
                     >
-                      {purchaseLoading ? "מעבד..." : "רכישת חבילה"}
+                      {purchaseLoading ? t("aiPartner.processing") : t("aiPartner.buyPack")}
                     </button>
 
                     {purchaseMessage && (
@@ -974,7 +984,7 @@ export default function AiPartnerTab({
                     <div className="mb-3 flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                       <h3 className="text-lg font-black !text-slate-800">
-                        תשובת AI
+                        {t("aiPartner.aiAnswer")}
                       </h3>
                     </div>
 
@@ -989,10 +999,10 @@ export default function AiPartnerTab({
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-black !text-slate-800">
-                      המלצות AI
+                      {t("aiPartner.recsTitle")}
                     </h3>
                     <p className="mt-1 text-sm !text-slate-500">
-                      בדוק, ערוך ואשר הודעות לפני שליחה.
+                      {t("aiPartner.recsSubtitle")}
                     </p>
                   </div>
                 </div>
@@ -1000,11 +1010,10 @@ export default function AiPartnerTab({
                 {suggestions.length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
                     <p className="text-sm font-black !text-slate-800">
-                      אין עדיין המלצות
+                      {t("aiPartner.noRecs")}
                     </p>
                     <p className="mt-2 text-xs leading-5 !text-slate-500">
-                      הצעות AI חדשות משיחות עם לקוחות יופיעו
-                      כאן.
+                      {t("aiPartner.noRecsText")}
                     </p>
                   </div>
                 ) : (
@@ -1027,7 +1036,7 @@ export default function AiPartnerTab({
                                   : "bg-emerald-100 !text-emerald-700"
                               }`}
                             >
-                              {isPending ? "ממתין" : "נשלח"}
+                              {isPending ? t("aiPartner.pending") : t("aiPartner.sent")}
                             </span>
 
                             {suggestion.timestamp && (
@@ -1045,7 +1054,7 @@ export default function AiPartnerTab({
 
                           {suggestion.isEdited && (
                             <p className="mt-3 text-xs font-black !text-cyan-700">
-                              המלצה נערכה
+                              {t("aiPartner.edited")}
                             </p>
                           )}
                         </button>
@@ -1071,10 +1080,10 @@ export default function AiPartnerTab({
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.22em] !text-violet-600">
-                  הודעת AI חדשה
+                  {t("aiPartner.newAiMessage")}
                 </p>
                 <h4 className="mt-2 text-2xl font-black !text-slate-800">
-                  בדיקת המלצה
+                  {t("aiPartner.reviewRec")}
                 </h4>
               </div>
 
@@ -1109,7 +1118,7 @@ export default function AiPartnerTab({
                     disabled={loading || !editedText.trim()}
                     className="min-h-12 rounded-2xl bg-emerald-500 px-5 text-sm font-black !text-white shadow-lg shadow-emerald-100 transition hover:-translate-y-0.5 hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    אשר ושלח
+                    {t("aiPartner.approveSend")}
                   </button>
 
                   <button
@@ -1121,7 +1130,7 @@ export default function AiPartnerTab({
                     }}
                     className="min-h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black !text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    ביטול
+                    {t("aiPartner.cancel")}
                   </button>
                 </div>
               </>
@@ -1154,7 +1163,7 @@ export default function AiPartnerTab({
                       disabled={loading}
                       className="min-h-12 rounded-2xl bg-emerald-500 px-5 text-sm font-black !text-white shadow-lg shadow-emerald-100 transition hover:-translate-y-0.5 hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      אשר ושלח
+                      {t("aiPartner.approveSend")}
                     </button>
 
                     <button
@@ -1163,7 +1172,7 @@ export default function AiPartnerTab({
                       onClick={() => setEditing(true)}
                       className="min-h-12 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black !text-white shadow-lg shadow-violet-100 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      עריכה
+                      {t("aiPartner.edit")}
                     </button>
 
                     <button
@@ -1172,13 +1181,12 @@ export default function AiPartnerTab({
                       onClick={() => rejectSuggestion(activeSuggestion.id)}
                       className="min-h-12 rounded-2xl border border-rose-200 bg-rose-50 px-5 text-sm font-black !text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      דחה
+                      {t("aiPartner.reject")}
                     </button>
                   </div>
                 ) : (
                   <p className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold !text-emerald-700">
-                    ההמלצה אושרה ונשלחה
-                    ללקוח.
+                    {t("aiPartner.approvedToCustomer")}
                   </p>
                 )}
               </>

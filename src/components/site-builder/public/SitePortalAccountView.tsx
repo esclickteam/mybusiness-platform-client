@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { sitePortalLogout, sitePortalMe } from "../../../api/sitePortalApi";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import type { SitePortalMember } from "../../../utils/sitePortalSession";
 
 type PortalPage = {
@@ -15,6 +18,8 @@ type Props = {
 };
 
 export default function SitePortalAccountView({ siteId, siteName = "" }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [member, setMember] = useState<SitePortalMember | null>(null);
   const [portalPages, setPortalPages] = useState<PortalPage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +37,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
           Array.isArray((data as any).portalPages) ? (data as any).portalPages : []
         );
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || "לא מחוברים לאזור האישי");
+        if (!cancelled) setError(err?.message || t("publicWidgets.portal.notSignedInError"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -51,23 +56,27 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
 
   if (loading) {
     return (
-      <div dir="rtl" className="grid min-h-screen place-items-center bg-white">
-        <p className="text-sm font-bold text-slate-500">טוען חשבון...</p>
+      <div dir={pageDir} className="grid min-h-screen place-items-center bg-white">
+        <p className="text-sm font-bold text-slate-500">
+          {t("publicWidgets.portal.loadingAccount")}
+        </p>
       </div>
     );
   }
 
   if (error || !member) {
     return (
-      <div dir="rtl" className="grid min-h-screen place-items-center bg-white px-4">
+      <div dir={pageDir} className="grid min-h-screen place-items-center bg-white px-4">
         <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center">
-          <h1 className="text-xl font-black text-slate-900">לא מחוברים</h1>
+          <h1 className="text-xl font-black text-slate-900">
+            {t("publicWidgets.portal.notSignedIn")}
+          </h1>
           <p className="mt-2 text-sm text-slate-500">{error}</p>
           <a
             href="/portal/login"
             className="mt-5 inline-flex rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
           >
-            להתחברות
+            {t("publicWidgets.portal.goToLogin")}
           </a>
         </div>
       </div>
@@ -76,14 +85,16 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       data-bizuply-portal-auth="account"
       className="relative z-[2147483000] flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4 py-10"
     >
       <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="text-xs font-bold text-sky-700">החשבון שלי</p>
+        <p className="text-xs font-bold text-sky-700">{t("publicWidgets.portal.myAccount")}</p>
         <h1 className="mt-2 text-2xl font-black text-slate-900">
-          שלום {member.fullName || "אורח/ת"}
+          {t("publicWidgets.portal.helloName", {
+            name: member.fullName || t("publicWidgets.portal.guest"),
+          })}
         </h1>
         {siteName ? (
           <p className="mt-1 text-sm font-medium text-slate-500">{siteName}</p>
@@ -91,26 +102,26 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
 
         <div className="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <div className="flex justify-between gap-3">
-            <span className="font-bold text-slate-500">אימייל</span>
+            <span className="font-bold text-slate-500">{t("publicWidgets.common.email")}</span>
             <span className="font-semibold text-slate-800">{member.email}</span>
           </div>
           {member.phone ? (
             <div className="flex justify-between gap-3">
-              <span className="font-bold text-slate-500">טלפון</span>
+              <span className="font-bold text-slate-500">{t("publicWidgets.common.phone")}</span>
               <span className="font-semibold text-slate-800">{member.phone}</span>
             </div>
           ) : null}
         </div>
 
         <div className="mt-6">
-          <h2 className="text-sm font-black text-slate-900">העמודים שלי</h2>
+          <h2 className="text-sm font-black text-slate-900">{t("publicWidgets.portal.myPages")}</h2>
           <p className="mt-1 text-xs font-medium text-slate-500">
-            אלה העמודים הפרטיים שהעסק בנה עבורכם באזור האישי.
+            {t("publicWidgets.portal.myPagesHint")}
           </p>
 
           {portalPages.length === 0 ? (
             <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
-              עדיין לא שויכו עמודים לחשבון זה.
+              {t("publicWidgets.portal.noPagesYet")}
             </p>
           ) : (
             <div className="mt-3 space-y-2">
@@ -125,7 +136,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
                     className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-sky-200 hover:bg-sky-50"
                   >
                     <span>{page.title}</span>
-                    <span className="text-xs text-sky-700">כניסה</span>
+                    <span className="text-xs text-sky-700">{t("publicWidgets.portal.enter")}</span>
                   </a>
                 );
               })}
@@ -138,7 +149,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
             href="/"
             className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700"
           >
-            חזרה לאתר
+            {t("publicWidgets.portal.backToSite")}
           </a>
           <button
             type="button"
@@ -146,7 +157,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
             onClick={handleLogout}
             className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
           >
-            התנתקות
+            {t("publicWidgets.portal.logout")}
           </button>
         </div>
       </div>

@@ -137,14 +137,14 @@ describe("Push preference E2E lifecycle", () => {
         expect(device.subscribed).toBe(false);
         const beforeRecover = snapshot(pref, device);
         expect(beforeRecover.pushOn).toBe(true);
-        expect(beforeRecover.copy.text).not.toContain("כבוי");
+        expect(beforeRecover.copy.kind).not.toBe("off");
       }
 
       applyLifecycle(pref, device, event);
       const state = snapshot(pref, device);
       expect(state.master).toBe(true);
       expect(state.pushOn).toBe(true);
-      expect(state.copy.text).not.toContain("כבוי");
+      expect(state.copy.kind).not.toBe("off");
     }
 
     expect(pref.writes).toEqual([]);

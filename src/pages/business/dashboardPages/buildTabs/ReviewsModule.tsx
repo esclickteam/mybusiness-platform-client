@@ -2,9 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 import StarRatingChart from "./StarRatingChart";
 import ReviewForm from "./ReviewForm";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 
 type ReviewValue = string | number | undefined | null;
 
@@ -63,74 +65,86 @@ type ParameterKey =
   | "goal"
   | "experience";
 
-const PARAMETERS: Record<ParameterKey, string> = {
-  service: "🤝 שירות",
-  professional: "💼 מקצועיות",
-  timing: "⏰ עמידה בזמנים",
-  availability: "📞 זמינות",
-  value: "💰 תמורה למחיר",
-  goal: "🎯 השגת מטרה",
-  experience: "🎉 חוויה כללית",
-};
-
-const exampleReviews: Review[] = [
-  {
-    id: "example-review-1",
-    user: "דוד ב.",
-    date: "10/03/2025",
-    comment:
-      "חוויית שירות מעולה! קיבלתי מענה מהיר, מחיר הוגן ועמידה מלאה בזמנים. ממליץ מאוד.",
-    service: "5",
-    professional: "4.5",
-    timing: "5",
-    availability: "5",
-    value: "4.5",
-    goal: "5",
-    experience: "4.5",
-    isExample: true,
-  },
+const PARAMETER_KEYS: { key: ParameterKey; emoji: string; labelKey: string; fallback: string }[] = [
+  { key: "service", emoji: "🤝", labelKey: "leftover.reviews.service", fallback: "Service" },
+  { key: "professional", emoji: "💼", labelKey: "leftover.reviews.professional", fallback: "Professionalism" },
+  { key: "timing", emoji: "⏰", labelKey: "leftover.reviews.timing", fallback: "Punctuality" },
+  { key: "availability", emoji: "📞", labelKey: "leftover.reviews.availability", fallback: "Availability" },
+  { key: "value", emoji: "💰", labelKey: "leftover.reviews.value", fallback: "Value for money" },
+  { key: "goal", emoji: "🎯", labelKey: "leftover.reviews.goal", fallback: "Goal achieved" },
+  { key: "experience", emoji: "🎉", labelKey: "leftover.reviews.experience", fallback: "Overall experience" },
 ];
+
+function buildExampleReviews(t: (key: string, fallback: string) => string): Review[] {
+  return [
+    {
+      id: "example-review-1",
+      user: t("leftover.reviews.exampleName", "David B."),
+      date: "10/03/2025",
+      comment: t(
+        "leftover.reviews.exampleComment",
+        "Excellent service! Fast response, fair price, and they kept every appointment. Highly recommended."
+      ),
+      service: "5",
+      professional: "4.5",
+      timing: "5",
+      availability: "5",
+      value: "4.5",
+      goal: "5",
+      experience: "4.5",
+      isExample: true,
+    },
+  ];
+}
 
 function toNumber(value: ReviewValue) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : null;
 }
 
-function formatDate(date?: string | Date) {
-  if (!date) return "לא צוין תאריך";
+function formatDate(
+  date: string | Date | undefined,
+  locale: string,
+  noDate: string
+) {
+  if (!date) return noDate;
 
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) {
     return String(date);
   }
 
-  return parsed.toLocaleDateString("he-IL", {
+  return parsed.toLocaleDateString(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
 }
 
-function getReviewUser(review: Review) {
+function getReviewUser(
+  review: Review,
+  exampleCustomer: string,
+  anonymous: string
+) {
   return (
     review.userName ||
     review.user ||
     review.name ||
-    (review.isExample ? "לקוח לדוגמה" : "לקוח אנונימי")
+    (review.isExample ? exampleCustomer : anonymous)
   );
 }
 
-function getReviewComment(review: Review) {
-  return review.text || review.comment || "לא נכתב תוכן לביקורת.";
+function getReviewComment(review: Review, noComment: string) {
+  return review.text || review.comment || noComment;
 }
 
 function getReviewKey(review: Review, index: number) {
-  return review._id || review.id || `${getReviewUser(review)}-${index}`;
+  return review._id || review.id || `${getReviewUser(review, "sample", "anon")}-${index}`;
 }
 
 function getReviewAverage(review: Review) {
-  const parameterValues = Object.keys(PARAMETERS)
-    .map((key) => toNumber(review[key as ParameterKey] as ReviewValue))
+  const parameterValues = PARAMETER_KEYS
+    .map(({ key }) => toNumber(review[key] as ReviewValue))
     .filter((value): value is number => value !== null);
 
   if (parameterValues.length > 0) {
@@ -142,7 +156,7 @@ function getReviewAverage(review: Review) {
   return directRating !== null ? Number(directRating.toFixed(1)) : null;
 }
 
-function StarDisplay({ rating }: { rating: number }) {
+function StarDisplay({ rating, ariaLabel }: { rating: number; ariaLabel: string }) {
   const safeRating = Math.max(0, Math.min(5, rating));
   const full = Math.floor(safeRating);
   const half = safeRating % 1 >= 0.5;
@@ -151,7 +165,7 @@ function StarDisplay({ rating }: { rating: number }) {
   return (
     <span
       dir="ltr"
-      aria-label={`דירוג ${safeRating} מתוך 5`}
+      aria-label={ariaLabel}
       className="whitespace-nowrap text-sm tracking-[1px] text-amber-500"
     >
       {"★".repeat(full)}
@@ -172,13 +186,22 @@ function ReviewCard({
   highlighted?: boolean;
   reviewDomId?: string;
 }) {
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
+  const pageDir = getTextDirection(i18n.language);
+  const intlLocale = getIntlLocale(i18n.language);
 
   const avg = getReviewAverage(review);
-  const comment = getReviewComment(review);
+  const comment = getReviewComment(
+    review,
+    t("leftover.reviews.noComment", "No review text was written.")
+  );
+  const starsAria = t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+    rating: avg !== null ? avg : 0,
+  });
 
-  const availableDetails = Object.entries(PARAMETERS).filter(([key]) => {
-    const value = review[key as ParameterKey] as ReviewValue;
+  const availableDetails = PARAMETER_KEYS.filter(({ key }) => {
+    const value = review[key] as ReviewValue;
     return value !== undefined && value !== null && value !== "";
   });
 
@@ -187,9 +210,10 @@ function ReviewCard({
   return (
     <div
       id={reviewDomId}
-      dir="rtl"
+      dir={pageDir}
       className={[
-        "overflow-hidden rounded-[1.5rem] border bg-white p-4 text-right shadow-[0_14px_38px_rgba(15,23,42,0.06)] transition",
+        "overflow-hidden rounded-[1.5rem] border bg-white p-4 shadow-[0_14px_38px_rgba(15,23,42,0.06)] transition",
+        pageDir === "rtl" ? "text-right" : "text-left",
         highlighted
           ? "border-violet-400 ring-4 ring-violet-200 shadow-[0_24px_70px_rgba(124,58,237,0.24)]"
           : review.isExample
@@ -201,18 +225,22 @@ function ReviewCard({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <strong className="block truncate text-sm font-black text-slate-800">
-            {getReviewUser(review)}
+            {getReviewUser(
+              review,
+              t("leftover.reviews.exampleCustomer", "Sample customer"),
+              t("leftover.reviews.anonymous", "Anonymous customer")
+            )}
           </strong>
 
           {review.isExample && (
             <span className="mt-2 inline-flex rounded-full bg-violet-100 px-3 py-1 text-[11px] font-black text-violet-700">
-              ביקורת לדוגמה
+              {t("leftover.reviews.exampleBadge", "Sample review")}
             </span>
           )}
         </div>
 
         <span className="shrink-0 text-xs font-bold text-slate-400">
-          🗓️ {formatDate(review.date)}
+          🗓️ {formatDate(review.date, intlLocale, t("leftover.reviews.noDate", "Date not specified"))}
         </span>
       </div>
 
@@ -221,7 +249,7 @@ function ReviewCard({
           ⭐ {avg !== null ? avg.toFixed(1) : "—"} / 5
         </span>
 
-        {avg !== null && <StarDisplay rating={avg} />}
+        {avg !== null && <StarDisplay rating={avg} ariaLabel={starsAria} />}
       </div>
 
       <p
@@ -239,14 +267,16 @@ function ReviewCard({
           onClick={() => setOpen((prev) => !prev)}
           className="mt-4 inline-flex rounded-2xl bg-slate-100 px-4 py-2 text-xs font-black text-slate-700 transition hover:bg-violet-100 hover:text-violet-700"
         >
-          {open ? "הסתר פירוט ▲" : "צפייה בביקורת המלאה ▼"}
+          {open
+            ? `${t("leftover.reviews.hideDetails", "Hide details")} ▲`
+            : `${t("leftover.reviews.showFull", "View the full review")} ▼`}
         </button>
       )}
 
       {shouldShowDetails && (
         <div className="mt-4 grid gap-2 border-t border-slate-200 pt-4">
-          {availableDetails.map(([key, label]) => {
-            const value = review[key as ParameterKey] as ReviewValue;
+          {availableDetails.map(({ key, emoji, labelKey, fallback }) => {
+            const value = review[key] as ReviewValue;
             const numericValue = toNumber(value);
 
             if (numericValue === null) return null;
@@ -256,10 +286,17 @@ function ReviewCard({
                 key={key}
                 className="flex flex-col gap-2 rounded-2xl bg-slate-50 px-3 py-3 text-sm font-bold text-slate-700 sm:flex-row sm:items-center sm:justify-between"
               >
-                <span>{label}</span>
+                <span>
+                  {emoji} {t(labelKey, fallback)}
+                </span>
 
                 <span className="flex items-center gap-2">
-                  <StarDisplay rating={numericValue} />
+                  <StarDisplay
+                    rating={numericValue}
+                    ariaLabel={t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+                      rating: numericValue,
+                    })}
+                  />
                   <span dir="ltr">({numericValue})</span>
                 </span>
               </div>
@@ -279,6 +316,8 @@ export default function ReviewsModule({
   isPreview = false,
   highlightedReviewId = "",
 }: ReviewsModuleProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [showForm, setShowForm] = useState(false);
   const [canReview, setCanReview] = useState(false);
   const [liveReviews, setLiveReviews] = useState<Review[]>(reviews);
@@ -329,17 +368,18 @@ export default function ReviewsModule({
 
   const displayReviews = useMemo(() => {
     if (liveReviews.length > 0) return liveReviews;
-    if (currentUser && !isPreview) return exampleReviews;
+    if (currentUser && !isPreview) return buildExampleReviews(t);
     return [];
-  }, [liveReviews, currentUser, isPreview]);
+  }, [liveReviews, currentUser, isPreview, t]);
 
   const showEmptyState = displayReviews.length === 0;
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className={[
-        "w-full text-right",
+        "w-full",
+        pageDir === "rtl" ? "text-right" : "text-left",
         isPreview ? "space-y-0" : "space-y-5",
       ].join(" ")}
     >
@@ -347,11 +387,14 @@ export default function ReviewsModule({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="m-0 text-2xl font-black tracking-tight text-slate-800">
-              ⭐ ביקורות לקוחות
+              ⭐ {t("leftover.reviews.title", "Customer reviews")}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              כאן מופיעות ביקורות שהלקוחות השאירו על העסק.
+              {t(
+                "leftover.reviews.subtitle",
+                "Reviews that customers left about the business appear here."
+              )}
             </p>
           </div>
 
@@ -361,7 +404,7 @@ export default function ReviewsModule({
               onClick={() => setShowForm(true)}
               className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl sm:w-auto"
             >
-              💬 כתיבת ביקורת
+              💬 {t("leftover.reviews.writeReview", "Write a review")}
             </button>
           )}
         </div>
@@ -393,12 +436,14 @@ export default function ReviewsModule({
           </div>
 
           <h3 className="mt-4 text-lg font-black text-slate-800">
-            עדיין אין ביקורות
+            {t("leftover.reviews.emptyTitle", "No reviews yet")}
           </h3>
 
           <p className="mt-2 max-w-sm text-sm leading-7 text-slate-500">
-            כשהלקוחות ישאירו ביקורות, הן יופיעו כאן ויעזרו לחזק את האמון
-            בפרופיל העסקי.
+            {t(
+              "leftover.reviews.emptyHint",
+              "When customers leave reviews, they will appear here and help build trust on the business profile."
+            )}
           </p>
         </div>
       ) : (

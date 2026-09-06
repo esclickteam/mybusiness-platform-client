@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const DESIGN_WIDTH = 1440;
 const DESIGN_HEIGHT = 2400;
@@ -28,6 +29,7 @@ export default function IframeCardPreview({
   eagerLoad = false,
   onLoad,
 }: IframeCardPreviewProps) {
+  const { t } = useTranslation();
   const frameRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(420);
   const [containerHeight, setContainerHeight] = useState(560);
@@ -112,7 +114,7 @@ export default function IframeCardPreview({
         >
           <iframe
             src={src}
-            title={title || "תצוגה מקדימה"}
+            title={title || t("leftover.templatePreview.preview", "Preview")}
             tabIndex={-1}
             scrolling="no"
             loading={eagerLoad || activateOn === "immediate" ? "eager" : "lazy"}

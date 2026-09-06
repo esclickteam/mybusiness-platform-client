@@ -1,20 +1,26 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 function BusinessJoin() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+
   return (
     <main
       className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
-      dir="rtl"
+      dir={pageDir}
     >
       <Helmet>
-        <title>
-          הצטרפות לעסקים - לידים, שיתופי פעולה וניהול חכם | Bizuply
-        </title>
+        <title>{t("business.profileBuild.seoTitle", "הצטרפות לעסקים - לידים, שיתופי פעולה וניהול חכם | Bizuply")}</title>
         <meta
           name="description"
-          content="הצטרפו ל־Bizuply וקבלו לידים, בניית אתר, חיבור Meta, שיתופי פעולה ו־CRM ותורים — הכל במקום אחד לצמיחת העסק."
+          content={t(
+            "business.profileBuild.seoDesc",
+            "הצטרפו ל־Bizuply וקבלו לידים, בניית אתר, חיבור Meta, שיתופי פעולה ו־CRM ותורים — הכל במקום אחד לצמיחת העסק."
+          )}
         />
         <link rel="canonical" href="https://bizuply.com/join" />
         <meta name="robots" content="index, follow" />
@@ -28,17 +34,18 @@ function BusinessJoin() {
         <div>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-bold text-amber-800 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            פלטפורמת צמיחה לעסקים מודרניים
+            {t("business.profileBuild.badge", "פלטפורמת צמיחה לעסקים מודרניים")}
           </div>
 
           <h1 className="max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            צמחו עם לידים, אתר, שיתופי פעולה וניהול חכם.
+            {t("business.profileBuild.heroTitle", "צמחו עם לידים, אתר, שיתופי פעולה וניהול חכם.")}
           </h1>
 
           <p className="mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-            Bizuply עוזרת לעסקים לקבל פניות, לבנות אתר, לחבר Lead Ads מ־Meta
-            (אפליקציה שעברה App Review), לשתף פעולה עם עסקים אחרים ולנהל תורים
-            ועבודה יומיומית מדשבורד אחד.
+            {t(
+              "business.profileBuild.heroBody",
+              "Bizuply עוזרת לעסקים לקבל פניות, לבנות אתר, לחבר Lead Ads מ־Meta (אפליקציה שעברה App Review), לשתף פעולה עם עסקים אחרים ולנהל תורים ועבודה יומיומית מדשבורד אחד."
+            )}
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
@@ -46,7 +53,7 @@ function BusinessJoin() {
               to="/pricing"
               className="group inline-flex items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-8 py-4 text-base font-black text-slate-800 shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
             >
-              הירשמו עכשיו
+              {t("product.registerNow", "הירשמו עכשיו")}
               <span className="me-2 transition group-hover:-translate-x-1">
                 ←
               </span>
@@ -56,15 +63,15 @@ function BusinessJoin() {
               to="/businesses"
               className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/75 px-8 py-4 text-base font-black text-slate-900 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white"
             >
-              גלו עסקים
+              {t("business.profileBuild.discoverBusinesses", "גלו עסקים")}
             </Link>
           </div>
 
           <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
             {[
-              ["CRM", "לידים ולקוחות"],
-              ["Meta", "Lead Ads מאושר"],
-              ["אתר", "תבניות וטפסים"],
+              ["CRM", t("business.profileBuild.statCrm", "לידים ולקוחות")],
+              ["Meta", t("business.profileBuild.statMeta", "Lead Ads מאושר")],
+              [t("business.profileBuild.statWebsite", "אתר"), t("business.profileBuild.statWebsiteHint", "תבניות וטפסים")],
             ].map(([title, text]) => (
               <div
                 key={title}
@@ -87,41 +94,45 @@ function BusinessJoin() {
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-amber-800">
-                    דשבורד Bizuply
+                    {t("business.profileBuild.dashBadge", "דשבורד Bizuply")}
                   </p>
-                  <h3 className="mt-1 text-2xl font-black">הצמיחה היום</h3>
+                  <h3 className="mt-1 text-2xl font-black">
+                    {t("business.profileBuild.dashTitle", "הצמיחה היום")}
+                  </h3>
                 </div>
 
                 <div className="rounded-2xl bg-white/40 px-4 py-2 text-sm font-black">
-                  חי
+                  {t("business.profileBuild.live", "חי")}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-3xl bg-white p-5 text-slate-800">
-                  <p className="text-sm font-bold text-slate-500">פניות חדשות</p>
+                  <p className="text-sm font-bold text-slate-500">
+                    {t("business.profileBuild.newInquiries", "פניות חדשות")}
+                  </p>
                   <p className="mt-3 text-4xl font-black">24</p>
                   <p className="mt-2 text-sm font-bold text-emerald-600">
-                    +18% השבוע
+                    {t("business.profileBuild.thisWeek", "+18% השבוע")}
                   </p>
                 </div>
 
                 <div className="rounded-3xl bg-amber-100 p-5 text-slate-800">
                   <p className="text-sm font-bold text-amber-800">
-                    שיתופי פעולה
+                    {t("business.profileBuild.collaborations", "שיתופי פעולה")}
                   </p>
                   <p className="mt-3 text-4xl font-black">8</p>
                   <p className="mt-2 text-sm font-bold text-amber-700">
-                    עסקאות פעילות
+                    {t("business.profileBuild.activeDeals", "עסקאות פעילות")}
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 space-y-3 rounded-3xl bg-white/40 p-4">
                 {[
-                  ["פנייה חדשה מהאתר", "פרויקט עיצוב אתר"],
-                  ["תור נקבע", "מחר ב־11:30"],
-                  ["ליד מ־Meta", "טופס Lead Ads"],
+                  [t("business.profileBuild.inquiryFromSite", "פנייה חדשה מהאתר"), t("business.profileBuild.designProject", "פרויקט עיצוב אתר")],
+                  [t("business.profileBuild.appointmentSet", "תור נקבע"), t("business.profileBuild.tomorrowAt", "מחר ב־11:30")],
+                  [t("business.profileBuild.metaLead", "ליד מ־Meta"), t("business.profileBuild.leadAdsForm", "טופס Lead Ads")],
                 ].map(([title, text]) => (
                   <div
                     key={title}
@@ -145,10 +156,10 @@ function BusinessJoin() {
       <section className="relative mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
         <div className="mb-10 text-center">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-700">
-            למה להצטרף ל־Bizuply
+            {t("business.profileBuild.whyJoin", "למה להצטרף ל־Bizuply")}
           </p>
           <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] text-slate-800 sm:text-5xl">
-            כל מה שהעסק צריך כדי לצמוח חכם יותר
+            {t("business.profileBuild.whyTitle", "כל מה שהעסק צריך כדי לצמוח חכם יותר")}
           </h2>
         </div>
 
@@ -156,32 +167,32 @@ function BusinessJoin() {
           {[
             {
               icon: "🚀",
-              title: "מה תקבלו",
+              title: t("business.profileBuild.cardWhatTitle", "מה תקבלו"),
               items: [
-                "אתר עסקי מתבנית מוכנה",
-                "יומן ותיאום תורים",
-                "CRM ללידים ולקוחות",
-                "חיבור Meta Lead Ads מאושר",
+                t("business.profileBuild.cardWhat1", "אתר עסקי מתבנית מוכנה"),
+                t("business.profileBuild.cardWhat2", "יומן ותיאום תורים"),
+                t("business.profileBuild.cardWhat3", "CRM ללידים ולקוחות"),
+                t("business.profileBuild.cardWhat4", "חיבור Meta Lead Ads מאושר"),
               ],
             },
             {
               icon: "🤝",
-              title: "יותר שיתופי פעולה",
+              title: t("business.profileBuild.cardCollabTitle", "יותר שיתופי פעולה"),
               items: [
-                "התחברות לעסקים משלימים",
-                "הפניות ישירות",
-                "שיתוף פעולה על פרויקטים ועסקאות",
-                "בניית רשת צמיחה חזקה",
+                t("business.profileBuild.cardCollab1", "התחברות לעסקים משלימים"),
+                t("business.profileBuild.cardCollab2", "הפניות ישירות"),
+                t("business.profileBuild.cardCollab3", "שיתוף פעולה על פרויקטים ועסקאות"),
+                t("business.profileBuild.cardCollab4", "בניית רשת צמיחה חזקה"),
               ],
             },
             {
               icon: "✨",
-              title: "3 צעדים פשוטים",
+              title: t("business.profileBuild.cardStepsTitle", "3 צעדים פשוטים"),
               items: [
-                "נרשמים ובוחרים מסלול",
-                "בונים עמוד עסקי ואתר",
-                "מתחילים לקבל פניות",
-                "נותנים למערכת לעבוד בשבילכם",
+                t("business.profileBuild.cardSteps1", "נרשמים ובוחרים מסלול"),
+                t("business.profileBuild.cardSteps2", "בונים עמוד עסקי ואתר"),
+                t("business.profileBuild.cardSteps3", "מתחילים לקבל פניות"),
+                t("business.profileBuild.cardSteps4", "נותנים למערכת לעבוד בשבילכם"),
               ],
             },
           ].map((card) => (
@@ -219,16 +230,18 @@ function BusinessJoin() {
         <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-14 text-center text-slate-800 shadow-2xl shadow-slate-900/20 sm:px-10 lg:py-16">
           <div className="mx-auto max-w-3xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-800">
-              מתחילים לצמוח היום
+              {t("business.profileBuild.ctaEyebrow", "מתחילים לצמוח היום")}
             </p>
 
             <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-slate-800 sm:text-5xl">
-              הצטרפו ל־Bizuply והפכו את העסק למכונת צמיחה.
+              {t("business.profileBuild.ctaTitle", "הצטרפו ל־Bizuply והפכו את העסק למכונת צמיחה.")}
             </h2>
 
             <p className="mt-5 text-lg font-medium leading-8 text-slate-600">
-              נהלו לידים, אתר, שיתופי פעולה, תורים ותזכורות — מפלטפורמה אחת
-              חזקה.
+              {t(
+                "business.profileBuild.ctaBody",
+                "נהלו לידים, אתר, שיתופי פעולה, תורים ותזכורות — מפלטפורמה אחת חזקה."
+              )}
             </p>
 
             <div className="mt-8">
@@ -236,7 +249,7 @@ function BusinessJoin() {
                 to="/pricing"
                 className="inline-flex items-center justify-center rounded-2xl bg-white px-9 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
               >
-                הירשמו עכשיו
+                {t("product.registerNow", "הירשמו עכשיו")}
                 <span className="me-2">←</span>
               </Link>
             </div>

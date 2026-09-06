@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
+import i18n from "../i18n/i18n";
 
 export type WorkSchedule = Record<
   string,
@@ -37,15 +38,15 @@ export function buildScheduleArray(
 }
 
 export function getWorkHoursLabel(schedule: WorkSchedule | null | undefined) {
-  if (!schedule) return "טוען...";
+  if (!schedule) return i18n.t("leftover.hours.loading");
 
   const openDays = Object.values(schedule).filter(
     (item) => item?.start && item?.end
   );
 
-  if (openDays.length === 0) return "לא הוגדרו שעות — הגדר כדי לתאם פגישות";
+  if (openDays.length === 0) return i18n.t("leftover.hours.noneSet");
 
-  return `${openDays.length} ימי פעילות`;
+  return i18n.t("leftover.hours.openDays", { count: openDays.length });
 }
 
 export function hasOpenWorkDays(schedule: WorkSchedule | null | undefined) {

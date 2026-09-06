@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   ArrowRight,
@@ -12,6 +13,7 @@ import type {
   SitePaymentProvider,
 } from "../../../../api/sitePaymentsApi";
 import { providerHasStoredSecret } from "../../../../api/sitePaymentsApi";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { btnGhost, btnPrimary, btnSecondary, inputBase } from "../siteManagementUi";
 import { SitePanelCard } from "../SitePanelShell";
 import type { PaymentProviderCatalogItem } from "./paymentProvidersCatalog";
@@ -55,6 +57,8 @@ export default function PaymentProviderConnectView({
   onConnect,
   onDisconnect,
 }: PaymentProviderConnectViewProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [credentials, setCredentials] = useState<SitePaymentCredentials>(() =>
     emptyCredentialsFromFields(catalogItem, existing)
   );
@@ -92,8 +96,17 @@ export default function PaymentProviderConnectView({
     onConnect({ credentials, installmentsEnabled, mode });
   }
 
+  const description = t(`payments.providers.${catalogItem.key}.description`, {
+    defaultValue: catalogItem.description,
+  });
+  const instructions = [1, 2, 3].map((n) =>
+    t(`payments.providers.${catalogItem.key}.step${n}`, {
+      defaultValue: catalogItem.instructions[n - 1] || "",
+    })
+  ).filter(Boolean);
+
   return (
-    <form dir="rtl" onSubmit={handleSubmit} className="space-y-4 text-right">
+    <form dir={pageDir} onSubmit={handleSubmit} className="space-y-4">
       <div className="flex flex-wrap items-start gap-3">
         <div
           className="grid h-12 w-12 shrink-0 place-items-center rounded-xl text-xs font-bold text-white"
@@ -101,35 +114,33 @@ export default function PaymentProviderConnectView({
         >
           {catalogItem.logoText}
         </div>
-        <div className="min-w-0 flex-1 text-right">
+        <div className="min-w-0 flex-1">
           <button
             type="button"
             onClick={onCancel}
             className="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-sky-700 hover:text-sky-800"
           >
             <ArrowRight size={16} />
-            חזרה לרשימת הספקים
+            {t("payments.gallery.back")}
           </button>
           <h2 className="text-xl font-bold text-slate-900">
-            חיבור {catalogItem.name}
+            {t("payments.gallery.connectTitle", { name: catalogItem.name })}
           </h2>
-          <p className="mt-0.5 text-sm text-slate-500">
-            {catalogItem.description}
-          </p>
+          <p className="mt-0.5 text-sm text-slate-500">{description}</p>
         </div>
       </div>
 
-      <SitePanelCard className="text-right">
-        <h3 className="text-right text-sm font-bold text-slate-900">
-          הוראות חיבור
+      <SitePanelCard>
+        <h3 className="text-sm font-bold text-slate-900">
+          {t("payments.gallery.instructions")}
         </h3>
         <div className="mt-3 space-y-2 text-sm text-slate-600">
-          {catalogItem.instructions.map((step, index) => (
-            <div key={step} className="flex items-start gap-2 text-right">
+          {instructions.map((step, index) => (
+            <div key={step} className="flex items-start gap-2">
               <span className="mt-0.5 w-5 shrink-0 font-semibold text-slate-800">
                 {index + 1}.
               </span>
-              <p className="min-w-0 flex-1 text-right leading-relaxed">{step}</p>
+              <p className="min-w-0 flex-1 leading-relaxed">{step}</p>
             </div>
           ))}
         </div>
@@ -141,7 +152,7 @@ export default function PaymentProviderConnectView({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-800"
             >
-              יצירת קשר עם {catalogItem.name}
+              {t("payments.gallery.contact", { name: catalogItem.name })}
               <ExternalLink size={13} />
             </a>
           ) : null}
@@ -152,30 +163,29 @@ export default function PaymentProviderConnectView({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-800"
             >
-              יצירת חשבון {catalogItem.name}
+              {t("payments.gallery.createAccount", { name: catalogItem.name })}
               <ExternalLink size={13} />
             </a>
           ) : null}
         </div>
 
-        <div className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-right text-sm text-amber-900">
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
           <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-          <p className="min-w-0 flex-1">
-            חשוב: המטבע באתר חייב להיות זהה למטבע בחשבון הספק. מומלץ להשתמש ב־ILS
-            (₪) לעסקים בישראל.
-          </p>
+          <p className="min-w-0 flex-1">{t("payments.gallery.currencyNote")}</p>
         </div>
       </SitePanelCard>
 
-      <SitePanelCard className="text-right">
-        <h3 className="text-right text-sm font-bold text-slate-900">פרטי חשבון</h3>
+      <SitePanelCard>
+        <h3 className="text-sm font-bold text-slate-900">
+          {t("payments.gallery.accountDetails")}
+        </h3>
         <div className="mt-4 space-y-3">
           {catalogItem.fields.map((field) => {
             const isPassword = field.type === "password";
             return (
-              <label key={field.key} className="block text-right">
-                <span className="mb-1.5 block text-right text-xs font-semibold text-slate-600">
-                  {field.label}
+              <label key={field.key} className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-slate-600">
+                  {t(`payments.fields.${field.key}`, { defaultValue: field.label })}
                   {field.required ? (
                     <span className="text-rose-500"> *</span>
                   ) : null}
@@ -189,24 +199,28 @@ export default function PaymentProviderConnectView({
                           : "password"
                         : field.type || "text"
                     }
-                    dir="rtl"
+                    dir={pageDir}
                     value={String(credentials[field.key] || "")}
                     onChange={(e) => updateField(field.key, e.target.value)}
                     placeholder={
                       isPassword && hasStoredSecret
-                        ? field.keepOnEmptyHint || "••••••••"
+                        ? t("payments.fields.keepSecret", {
+                            defaultValue: field.keepOnEmptyHint || "••••••••",
+                          })
                         : field.placeholder
                     }
-                    className={`${inputBase} text-right`}
+                    className={inputBase}
                     autoComplete={isPassword ? "new-password" : "off"}
                   />
                   {isPassword ? (
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500"
                     >
-                      {showPassword ? "הסתר" : "הצג"}
+                      {showPassword
+                        ? t("payments.gallery.hide")
+                        : t("payments.gallery.show")}
                     </button>
                   ) : null}
                 </div>
@@ -214,32 +228,34 @@ export default function PaymentProviderConnectView({
             );
           })}
 
-          <label className="block text-right">
-            <span className="mb-1.5 block text-right text-xs font-semibold text-slate-600">
-              מצב
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-slate-600">
+              {t("payments.gallery.mode")}
             </span>
             <select
-              dir="rtl"
+              dir={pageDir}
               value={mode}
               onChange={(e) =>
                 setMode(e.target.value === "test" ? "test" : "live")
               }
-              className={`${inputBase} text-right`}
+              className={inputBase}
             >
-              <option value="live">פעיל (Live)</option>
-              <option value="test">בדיקות (Test)</option>
+              <option value="live">{t("payments.gallery.liveMode")}</option>
+              <option value="test">{t("payments.gallery.testMode")}</option>
             </select>
           </label>
         </div>
       </SitePanelCard>
 
       {catalogItem.supportsInstallments ? (
-        <SitePanelCard className="text-right">
+        <SitePanelCard>
           <div className="flex items-center justify-between gap-3">
-            <div className="text-right">
-              <h3 className="text-sm font-bold text-slate-900">תשלומים</h3>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">
+                {t("payments.gallery.installments")}
+              </h3>
               <p className="mt-0.5 text-sm text-slate-500">
-                אפשר ללקוחות לשלם בתשלומים
+                {t("payments.gallery.installmentsHint")}
               </p>
             </div>
             <button
@@ -253,7 +269,7 @@ export default function PaymentProviderConnectView({
             >
               <span
                 className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition ${
-                  installmentsEnabled ? "left-0.5" : "left-[1.35rem]"
+                  installmentsEnabled ? "start-0.5" : "start-[1.35rem]"
                 }`}
               />
             </button>
@@ -261,12 +277,12 @@ export default function PaymentProviderConnectView({
         </SitePanelCard>
       ) : null}
 
-      <SitePanelCard className="text-right">
-        <h3 className="text-right text-sm font-bold text-slate-900">
-          אמצעי תשלום זמינים עם {catalogItem.name}
+      <SitePanelCard>
+        <h3 className="text-sm font-bold text-slate-900">
+          {t("payments.gallery.availableMethods", { name: catalogItem.name })}
         </h3>
-        <p className="mt-2 text-right text-sm text-slate-500">
-          כרטיסי אשראי וחיוב לפי התמיכה של הספק. אחרי חיבור, הקופה באתר החי תשתמש בספק זה.
+        <p className="mt-2 text-sm text-slate-500">
+          {t("payments.gallery.availableHint")}
         </p>
       </SitePanelCard>
 
@@ -278,7 +294,9 @@ export default function PaymentProviderConnectView({
             className={btnPrimary}
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : null}
-            {isEditing ? "שמירה" : "חיבור"}
+            {isEditing
+              ? t("common.save", { defaultValue: "Save" })
+              : t("payments.gallery.connect")}
           </button>
           <button
             type="button"
@@ -286,7 +304,7 @@ export default function PaymentProviderConnectView({
             disabled={saving || disconnecting}
             className={btnSecondary}
           >
-            ביטול
+            {t("payments.gallery.cancel")}
           </button>
         </div>
         <div>
@@ -302,7 +320,7 @@ export default function PaymentProviderConnectView({
               ) : (
                 <Unplug size={14} />
               )}
-              ניתוק
+              {t("payments.gallery.disconnect")}
             </button>
           ) : null}
         </div>

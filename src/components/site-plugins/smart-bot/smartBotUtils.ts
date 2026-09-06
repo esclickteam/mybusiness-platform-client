@@ -1,4 +1,6 @@
-export type SmartBotOptionAction =
+import i18n from "../../../i18n/i18n";
+
+export type SmartBotOptionAction = {
   | "next"
   | "contact"
   | "reply"
@@ -51,42 +53,62 @@ export type SmartBotSettings = {
   nodes?: SmartBotTreeNode[];
 };
 
-const DEFAULT_NODES: SmartBotTreeNode[] = [
-  {
-    id: "welcome",
-    title: "פתיחה",
-    message: "שלום! במה אפשר לעזור?",
-    options: [
-      { id: "opt-services", label: "מידע על השירותים", action: "next", nextNodeId: "services" },
-      {
-        id: "opt-custom",
-        label: "שאלה אחרת",
-        action: "ask-input",
-        replyText: "תודה! נחזור אליכם בהקדם עם מענה.",
-        payload: { prompt: "כתבו לנו כאן את השאלה או הפרטים:" },
-      },
-      { id: "opt-contact", label: "יצירת קשר", action: "contact" },
-    ],
-  },
-  {
-    id: "services",
-    title: "שירותים",
-    message: "נשמח לספר על השירותים שלנו. בחרו אפשרות:",
-    options: [
-      {
-        id: "opt-reply",
-        label: "מה כלול?",
-        action: "reply",
-        replyText: "אנחנו מציעים ליווי מלא, תיאום תורים ומענה מהיר בוואטסאפ.",
-        nextNodeId: "services",
-      },
-      { id: "opt-back", label: "חזרה לתפריט", action: "next", nextNodeId: "welcome" },
-      { id: "opt-contact-2", label: "יצירת קשר", action: "contact" },
-    ],
-  },
-];
+function defaultNodes(): SmartBotTreeNode[] {
+  return [
+    {
+      id: "welcome",
+      title: i18n.t("publicWidgets.smartBot.startTitle"),
+      message: i18n.t("publicWidgets.smartBot.startMessage"),
+      options: [
+        {
+          id: "opt-services",
+          label: i18n.t("publicWidgets.smartBot.optServices"),
+          action: "next",
+          nextNodeId: "services",
+        },
+        {
+          id: "opt-custom",
+          label: i18n.t("publicWidgets.smartBot.optOther"),
+          action: "ask-input",
+          replyText: i18n.t("publicWidgets.smartBot.optOtherReply"),
+          payload: { prompt: i18n.t("publicWidgets.smartBot.askPrompt") },
+        },
+        {
+          id: "opt-contact",
+          label: i18n.t("publicWidgets.smartBot.optContact"),
+          action: "contact",
+        },
+      ],
+    },
+    {
+      id: "services",
+      title: i18n.t("publicWidgets.smartBot.servicesTitle"),
+      message: i18n.t("publicWidgets.smartBot.servicesMessage"),
+      options: [
+        {
+          id: "opt-reply",
+          label: i18n.t("publicWidgets.smartBot.optIncluded"),
+          action: "reply",
+          replyText: i18n.t("publicWidgets.smartBot.optIncludedReply"),
+          nextNodeId: "services",
+        },
+        {
+          id: "opt-back",
+          label: i18n.t("publicWidgets.smartBot.optBack"),
+          action: "next",
+          nextNodeId: "welcome",
+        },
+        {
+          id: "opt-contact-2",
+          label: i18n.t("publicWidgets.smartBot.optContact"),
+          action: "contact",
+        },
+      ],
+    },
+  ];
+}
 
-export const SMART_BOT_DEFAULTS: Required<
+function smartBotDefaults(): Required<
   Pick<
     SmartBotSettings,
     | "isActive"
@@ -111,29 +133,33 @@ export const SMART_BOT_DEFAULTS: Required<
     | "startNodeId"
     | "nodes"
   >
-> = {
-  isActive: true,
-  botName: "בוט חכם",
-  welcomeMessage: "שלום! איך אפשר לעזור לכם היום?",
-  triggerStyle: "both",
-  triggerLabel: "צריכים עזרה?",
-  triggerPosition: { x: 8, y: 82 },
-  triggerColor: "#0F766E",
-  triggerTextColor: "#FFFFFF",
-  windowHeaderColor: "#0F766E",
-  windowBgColor: "#FFFFFF",
-  botBubbleColor: "#F1F5F9",
-  botBubbleTextColor: "#0F172A",
-  userBubbleColor: "#0F766E",
-  userBubbleTextColor: "#FFFFFF",
-  contactEnabled: true,
-  contactLabel: "צרו קשר",
-  contactPhone: "",
-  contactWhatsapp: "",
-  contactEmail: "",
-  startNodeId: "welcome",
-  nodes: DEFAULT_NODES,
-};
+> {
+  return {
+    isActive: true,
+    botName: i18n.t("publicWidgets.smartBot.defaultName"),
+    welcomeMessage: i18n.t("publicWidgets.smartBot.defaultWelcome"),
+    triggerStyle: "both",
+    triggerLabel: i18n.t("publicWidgets.smartBot.defaultTrigger"),
+    triggerPosition: { x: 8, y: 82 },
+    triggerColor: "#0F766E",
+    triggerTextColor: "#FFFFFF",
+    windowHeaderColor: "#0F766E",
+    windowBgColor: "#FFFFFF",
+    botBubbleColor: "#F1F5F9",
+    botBubbleTextColor: "#0F172A",
+    userBubbleColor: "#0F766E",
+    userBubbleTextColor: "#FFFFFF",
+    contactEnabled: true,
+    contactLabel: i18n.t("publicWidgets.smartBot.defaultContact"),
+    contactPhone: "",
+    contactWhatsapp: "",
+    contactEmail: "",
+    startNodeId: "welcome",
+    nodes: defaultNodes(),
+  };
+}
+
+export const SMART_BOT_DEFAULTS = smartBotDefaults();
 
 const VALID_ACTIONS = new Set<SmartBotOptionAction>([
   "next",
@@ -152,14 +178,14 @@ function normalizeAction(opt: SmartBotTreeOption): SmartBotOptionAction {
 
 function normalizeNodes(nodes?: SmartBotTreeNode[] | null): SmartBotTreeNode[] {
   if (!Array.isArray(nodes) || nodes.length === 0) {
-    return DEFAULT_NODES.map((n) => ({
+    return defaultNodes().map((n) => ({
       ...n,
       options: n.options.map((o) => ({ ...o })),
     }));
   }
   return nodes.map((node, index) => ({
     id: String(node?.id || `node-${index + 1}`),
-    title: String(node?.title || `שלב ${index + 1}`),
+    title: String(node?.title || i18n.t("publicWidgets.smartBot.stepN", { n: index + 1 })),
     message: String(node?.message || ""),
     options: Array.isArray(node?.options)
       ? node.options.map((opt, optIndex) => {
@@ -170,7 +196,7 @@ function normalizeNodes(nodes?: SmartBotTreeNode[] | null): SmartBotTreeNode[] {
               : undefined;
           return {
             id: String(opt?.id || `opt-${index + 1}-${optIndex + 1}`),
-            label: String(opt?.label || "אפשרות"),
+            label: String(opt?.label || i18n.t("publicWidgets.smartBot.option")),
             nextNodeId: opt?.nextNodeId ? String(opt.nextNodeId) : undefined,
             action,
             replyText: String(opt?.replyText || replyFromPayload || ""),
@@ -185,8 +211,9 @@ function normalizeNodes(nodes?: SmartBotTreeNode[] | null): SmartBotTreeNode[] {
 export function mergeSmartBotSettings(
   stored?: Partial<SmartBotSettings> | null
 ): SmartBotSettings {
+  const defaults = smartBotDefaults();
   const merged: SmartBotSettings = {
-    ...SMART_BOT_DEFAULTS,
+    ...defaults,
     ...(stored || {}),
   };
 
@@ -199,7 +226,7 @@ export function mergeSmartBotSettings(
       : "both";
 
   if (!merged.triggerPosition || typeof merged.triggerPosition !== "object") {
-    merged.triggerPosition = { ...SMART_BOT_DEFAULTS.triggerPosition };
+    merged.triggerPosition = { ...defaults.triggerPosition };
     merged.positionAnchor = "right-bottom";
   } else {
     let x = Number(merged.triggerPosition.x);

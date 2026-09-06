@@ -232,19 +232,13 @@ export default function WhatsAppAutomationsTab({
     if (auto.trigger === "appointment_reminder_hours") {
       const hours = auto.hoursBefore ?? 24;
       if (hours === 24) {
-        return t("whatsapp.automations.presets.day1", {
-          defaultValue: "יום לפני",
-        });
+        return t("whatsapp.automations.presets.day1");
       }
       if (hours === 48) {
-        return t("whatsapp.automations.presets.day2", {
-          defaultValue: "יומיים לפני",
-        });
+        return t("whatsapp.automations.presets.day2");
       }
       if (hours === 72) {
-        return t("whatsapp.automations.presets.day3", {
-          defaultValue: "3 ימים לפני",
-        });
+        return t("whatsapp.automations.presets.day3");
       }
       return t("whatsapp.automations.timing.hoursBefore", {
         count: hours,
@@ -381,36 +375,22 @@ export default function WhatsAppAutomationsTab({
                     onClick={() => {
                       setHoursBefore(preset.hours);
                       setName(
-                        t("whatsapp.automations.defaults.appointment_reminder_hours_named", {
-                          count: preset.hours,
-                          defaultValue:
-                            preset.hours === 24
-                              ? "תזכורת פגישה — יום לפני"
-                              : preset.hours === 48
-                                ? "תזכורת פגישה — יומיים לפני"
-                                : `תזכורת פגישה — ${preset.hours} שעות לפני`,
-                        })
+                        preset.hours === 24
+                          ? t("whatsapp.automations.defaults.appointment_reminder_1_day")
+                          : t(
+                              "whatsapp.automations.defaults.appointment_reminder_hours_named",
+                              { count: preset.hours }
+                            )
                       );
                     }}
                   >
-                    {t(preset.labelKey, {
-                      defaultValue:
-                        preset.hours === 2
-                          ? "שעתיים לפני"
-                          : preset.hours === 24
-                            ? "יום לפני"
-                            : preset.hours === 48
-                              ? "יומיים לפני"
-                              : "3 ימים לפני",
-                    })}
+                    {t(preset.labelKey)}
                   </button>
                 ))}
               </div>
               <label className="grid gap-1.5 max-w-xs">
                 <span className="text-xs font-semibold text-slate-500">
-                  {t("whatsapp.automations.customHours", {
-                    defaultValue: "או הזינו מספר שעות",
-                  })}
+                  {t("whatsapp.automations.customHours")}
                 </span>
                 <input
                   type="number"

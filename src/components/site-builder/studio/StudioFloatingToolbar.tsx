@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlignCenter,
   AlignLeft,
@@ -71,30 +72,30 @@ const fontSizes = [
   "96px",
 ];
 
-const radiusOptions = [
-  { label: "פינות", value: "" },
-  { label: "0", value: "0px" },
-  { label: "8", value: "8px" },
-  { label: "16", value: "16px" },
-  { label: "28", value: "28px" },
-  { label: "עגול", value: "999px" },
+const radiusValues = [
+  { key: "corners", value: "" },
+  { key: "0", value: "0px" },
+  { key: "8", value: "8px" },
+  { key: "16", value: "16px" },
+  { key: "28", value: "28px" },
+  { key: "round", value: "999px" },
 ];
 
-const shadowOptions = [
-  { label: "צל", value: "" },
-  { label: "ללא", value: "none" },
-  { label: "עדין", value: "0 12px 30px rgba(15,23,42,0.12)" },
-  { label: "בינוני", value: "0 22px 60px rgba(15,23,42,0.18)" },
-  { label: "חזק", value: "0 35px 100px rgba(15,23,42,0.25)" },
+const shadowValues = [
+  { key: "shadow", value: "" },
+  { key: "none", value: "none" },
+  { key: "soft", value: "0 12px 30px rgba(15,23,42,0.12)" },
+  { key: "medium", value: "0 22px 60px rgba(15,23,42,0.18)" },
+  { key: "strong", value: "0 35px 100px rgba(15,23,42,0.25)" },
 ];
 
-const animations = [
-  { label: "תנועה", value: "" },
-  { label: "ללא", value: "none" },
-  { label: "Fade Up", value: "bizuplyRevealUp 0.75s ease both" },
-  { label: "Float", value: "bizuplyFloatSoft 4.8s ease-in-out infinite" },
-  { label: "Fade", value: "bizuplyFadeIn 0.65s ease both" },
-  { label: "Zoom", value: "bizuplySoftZoom 0.7s ease both" },
+const animationValues = [
+  { key: "motion", value: "" },
+  { key: "none", value: "none" },
+  { key: "Fade Up", value: "bizuplyRevealUp 0.75s ease both" },
+  { key: "Float", value: "bizuplyFloatSoft 4.8s ease-in-out infinite" },
+  { key: "Fade", value: "bizuplyFadeIn 0.65s ease both" },
+  { key: "Zoom", value: "bizuplySoftZoom 0.7s ease both" },
 ];
 
 function getTag(component: any) {
@@ -384,6 +385,7 @@ export default function StudioFloatingToolbar({
   onClearAnimation,
   onClearSelection,
 }: StudioFloatingToolbarProps) {
+  const { t } = useTranslation();
   const [textValue, setTextValue] = useState("");
   const [hrefValue, setHrefValue] = useState("");
   const [linkOpen, setLinkOpen] = useState(false);
@@ -472,7 +474,7 @@ export default function StudioFloatingToolbar({
     if (!file) return;
 
     if (!isImageFile(file)) {
-      window.alert("אפשר להעלות רק קובץ תמונה.");
+      window.alert(t("studio.uploadImageOnly"));
       return;
     }
 
@@ -490,7 +492,7 @@ export default function StudioFloatingToolbar({
 
       setImageOpen(false);
     } catch {
-      window.alert("לא הצלחנו להעלות את התמונה. נסי קובץ אחר.");
+      window.alert(t("studio.uploadImageFailed"));
     }
   }
 
@@ -498,7 +500,7 @@ export default function StudioFloatingToolbar({
     if (!file) return;
 
     if (!isImageFile(file)) {
-      window.alert("אפשר להעלות רק קובץ תמונה.");
+      window.alert(t("studio.uploadImageOnly"));
       return;
     }
 
@@ -509,13 +511,12 @@ export default function StudioFloatingToolbar({
         src: dataUrl,
       });
     } catch {
-      window.alert("לא הצלחנו להעלות את תמונת הרקע. נסי קובץ אחר.");
+      window.alert(t("studio.uploadBackgroundFailed"));
     }
   }
 
   return (
     <div
-      dir="rtl"
       className="
         pointer-events-none fixed left-0 right-0 top-[74px] z-[999998]
         flex justify-center overflow-visible border-b border-slate-200 bg-white/95
@@ -555,11 +556,11 @@ export default function StudioFloatingToolbar({
       >
         <button
           type="button"
-          title="Ask Aria"
+          title={t("studio.askAria")}
           className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
         >
           <Sparkles className="h-4 w-4" />
-          Ask Aria
+          {t("studio.askAria")}
         </button>
 
         <ToolbarDivider />
@@ -576,7 +577,7 @@ export default function StudioFloatingToolbar({
                 onKeyDown={(event) => {
                   if (event.key === "Enter") submitText();
                 }}
-                placeholder="Edit Text"
+                placeholder={t("studio.editText")}
                 className="
                   h-9 w-full rounded-lg bg-transparent px-8 pl-2
                   text-sm font-bold text-slate-900 outline-none
@@ -600,9 +601,9 @@ export default function StudioFloatingToolbar({
                 apply({ "font-size": value } as StylePatch)
               }
               className="w-[74px]"
-              title="גודל טקסט"
+              title={t("studio.fontSizeTitle")}
             >
-              <option value="">גודל</option>
+              <option value="">{t("studio.fontSize")}</option>
 
               {fontSizes.map((size) => (
                 <option key={size} value={size}>
@@ -612,7 +613,7 @@ export default function StudioFloatingToolbar({
             </SelectControl>
 
             <ToolbarButton
-              title="Bold"
+              title={t("studio.bold")}
               active={
                 isStyleActive(style, "font-weight", "700") ||
                 isStyleActive(style, "font-weight", "bold")
@@ -631,7 +632,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="Italic"
+              title={t("studio.italic")}
               active={isStyleActive(style, "font-style", "italic")}
               onClick={() =>
                 apply({
@@ -645,7 +646,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="Underline"
+              title={t("studio.underline")}
               active={String(style["text-decoration"] || "").includes(
                 "underline",
               )}
@@ -663,7 +664,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לימין"
+              title={t("studio.alignRight")}
               active={isStyleActive(style, "text-align", "right")}
               onClick={() => apply({ "text-align": "right" } as StylePatch)}
             >
@@ -671,7 +672,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לאמצע"
+              title={t("studio.alignCenter")}
               active={isStyleActive(style, "text-align", "center")}
               onClick={() => apply({ "text-align": "center" } as StylePatch)}
             >
@@ -679,7 +680,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ToolbarButton
-              title="יישור לשמאל"
+              title={t("studio.alignLeft")}
               active={isStyleActive(style, "text-align", "left")}
               onClick={() => apply({ "text-align": "left" } as StylePatch)}
             >
@@ -687,7 +688,7 @@ export default function StudioFloatingToolbar({
             </ToolbarButton>
 
             <ColorControl
-              title="צבע טקסט"
+              title={t("studio.textColor")}
               value={currentColor}
               onChange={(value) => apply({ color: value } as StylePatch)}
             >
@@ -698,7 +699,7 @@ export default function StudioFloatingToolbar({
 
         {hasBackground && (
           <ColorControl
-            title="צבע רקע"
+            title={t("studio.backgroundColor")}
             value={currentBackground}
             onChange={(value) =>
               apply({ "background-color": value } as StylePatch)
@@ -716,11 +717,13 @@ export default function StudioFloatingToolbar({
                 apply({ "border-radius": value } as StylePatch)
               }
               className="w-[86px]"
-              title="פינות"
+              title={t("studio.corners")}
             >
-              {radiusOptions.map((item) => (
-                <option key={item.label} value={item.value}>
-                  {item.label}
+              {radiusValues.map((item) => (
+                <option key={item.key} value={item.value}>
+                  {item.key === "corners" || item.key === "round"
+                    ? t(`studio.${item.key}`)
+                    : item.key}
                 </option>
               ))}
             </SelectControl>
@@ -729,11 +732,11 @@ export default function StudioFloatingToolbar({
               value={currentShadow}
               onChange={(value) => apply({ "box-shadow": value } as StylePatch)}
               className="w-[86px]"
-              title="צל"
+              title={t("studio.shadow")}
             >
-              {shadowOptions.map((item) => (
-                <option key={item.label} value={item.value}>
-                  {item.label}
+              {shadowValues.map((item) => (
+                <option key={item.key} value={item.value}>
+                  {t(`studio.${item.key}`)}
                 </option>
               ))}
             </SelectControl>
@@ -746,7 +749,7 @@ export default function StudioFloatingToolbar({
               value={currentObjectFit}
               onChange={(value) => apply({ "object-fit": value } as StylePatch)}
               className="w-[92px]"
-              title="התאמת תמונה"
+              title={t("studio.imageFit")}
             >
               <option value="">Fit</option>
               <option value="cover">Cover</option>
@@ -756,16 +759,16 @@ export default function StudioFloatingToolbar({
 
             <button
               type="button"
-              title="העלאת תמונה מהמחשב"
+              title={t("studio.uploadFromComputer")}
               onClick={() => imageFileInputRef.current?.click()}
               className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               <Upload className="h-4 w-4" />
-              החלפת תמונה
+              {t("studio.replaceImage")}
             </button>
 
             <ToolbarButton
-              title="הדבקת כתובת תמונה"
+              title={t("studio.pasteImageUrl")}
               active={imageOpen}
               onClick={() => setImageOpen((value) => !value)}
             >
@@ -777,13 +780,13 @@ export default function StudioFloatingToolbar({
         {kind === "section" && (
           <>
             <ToolbarButton
-              title="העלאת תמונת רקע"
+              title={t("studio.uploadBackground")}
               onClick={() => backgroundFileInputRef.current?.click()}
             >
               <Upload className="h-4 w-4" />
             </ToolbarButton>
 
-            <ToolbarButton title="תמונת רקע לפי כתובת" onClick={onSetBackgroundImage}>
+            <ToolbarButton title={t("studio.backgroundFromUrl")} onClick={onSetBackgroundImage}>
               <PanelTop className="h-4 w-4" />
             </ToolbarButton>
           </>
@@ -794,7 +797,7 @@ export default function StudioFloatingToolbar({
             <ToolbarDivider />
 
             <ToolbarButton
-              title="קישור"
+              title={t("studio.link")}
               active={linkOpen}
               onClick={() => setLinkOpen((value) => !value)}
             >
@@ -816,35 +819,37 @@ export default function StudioFloatingToolbar({
             onSetAnimation(value);
           }}
           className="w-[98px]"
-          title="תנועה"
+          title={t("studio.motion")}
         >
-          {animations.map((animation) => (
-            <option key={animation.label} value={animation.value}>
-              {animation.label}
+          {animationValues.map((animation) => (
+            <option key={animation.key} value={animation.value}>
+              {animation.key === "motion" || animation.key === "none"
+                ? t(`studio.${animation.key}`)
+                : animation.key}
             </option>
           ))}
         </SelectControl>
 
         <ToolbarDivider />
 
-        <ToolbarButton title="קדימה" onClick={onBringForward}>
+        <ToolbarButton title={t("studio.forward")} onClick={onBringForward}>
           <MoveUp className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="אחורה" onClick={onSendBackward}>
+        <ToolbarButton title={t("studio.backward")} onClick={onSendBackward}>
           <MoveDown className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="שכפול" onClick={onDuplicate}>
+        <ToolbarButton title={t("studio.duplicate")} onClick={onDuplicate}>
           <Copy className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="מחיקה" danger onClick={onDelete}>
+        <ToolbarButton title={t("studio.delete")} danger onClick={onDelete}>
           <Trash2 className="h-4 w-4" />
         </ToolbarButton>
 
         <ToolbarButton
-          title="איפוס עיצוב"
+          title={t("studio.resetStyle")}
           onClick={() =>
             apply({
               "font-weight": "",
@@ -859,7 +864,7 @@ export default function StudioFloatingToolbar({
           <RotateCcw className="h-4 w-4" />
         </ToolbarButton>
 
-        <ToolbarButton title="סגור בחירה" onClick={onClearSelection}>
+        <ToolbarButton title={t("studio.closeSelection")} onClick={onClearSelection}>
           <X className="h-4 w-4" />
         </ToolbarButton>
       </div>
@@ -884,7 +889,7 @@ export default function StudioFloatingToolbar({
             onKeyDown={(event) => {
               if (event.key === "Enter") submitHref();
             }}
-            placeholder="https://example.com או #section"
+            placeholder={t("studio.linkPlaceholder")}
             className="
               h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4
               text-sm font-bold text-slate-800 outline-none transition
@@ -897,7 +902,7 @@ export default function StudioFloatingToolbar({
             onClick={submitHref}
             className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            שמור
+            {t("studio.save")}
           </button>
 
           <button
@@ -929,7 +934,7 @@ export default function StudioFloatingToolbar({
             onClick={() => imageFileInputRef.current?.click()}
             className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            העלאת תמונה
+            {t("studio.uploadFromComputer")}
           </button>
 
           <input
@@ -938,7 +943,7 @@ export default function StudioFloatingToolbar({
             onKeyDown={(event) => {
               if (event.key === "Enter") submitImage();
             }}
-            placeholder="או הדביקי כתובת תמונה..."
+            placeholder={t("studio.imageUrlPlaceholder")}
             dir="ltr"
             className="
               h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4
@@ -966,7 +971,7 @@ export default function StudioFloatingToolbar({
             onClick={submitImage}
             className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
-            החלף
+            {t("studio.replace")}
           </button>
 
           <button

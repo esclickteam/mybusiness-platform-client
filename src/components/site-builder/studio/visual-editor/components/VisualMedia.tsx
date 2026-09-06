@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../../../i18n/i18n";
 
 import {
   readVisualContent,
@@ -61,7 +62,7 @@ export default function VisualMedia({
   imageProps,
   videoProps,
   editable = true,
-  label = "תמונה / וידאו",
+  label = i18n.t("leftover.studioChrome.imageVideo"),
 }: VisualMediaProps) {
   const item = getVisualContentItem(data, id);
 
@@ -100,7 +101,7 @@ export default function VisualMedia({
           .join(" ")}
         style={style}
       >
-        אין מדיה
+        {i18n.t("leftover.studioChrome.noMedia")}
       </div>
     );
   }

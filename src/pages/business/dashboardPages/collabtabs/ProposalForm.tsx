@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertCircle,
   CheckCircle2,
@@ -17,6 +18,7 @@ import "react-phone-input-2/lib/style.css";
 
 import API from "../../../../api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 
 type BusinessTarget = {
   _id?: string;
@@ -138,8 +140,10 @@ export default function ProposalForm({
   onClose,
   onSent,
 }: ProposalFormProps) {
-  const providerBusinessName = fromBusinessName || "העסק השולח";
-  const receiverBusinessName = toBusiness?.businessName || "השוק הפתוח";
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const providerBusinessName = fromBusinessName || t("collab.proposal.senderFallback");
+  const receiverBusinessName = toBusiness?.businessName || t("collab.proposal.marketFallback");
 
   const [formData, setFormData] = useState<ProposalFormData>({
     ...initialFormData,
@@ -206,23 +210,23 @@ export default function ProposalForm({
       !formData.providerContactName.trim() ||
       !formData.providerPhone
     ) {
-      return "נא למלא את כל שדות החובה.";
+      return t("collab.proposal.requiredAll");
     }
 
     if (!formData.providerServiceName.trim()) {
-      return `נא למלא את שם השירות / המוצר של ${providerBusinessName}.`;
+      return t("collab.proposal.needServiceName", { name: providerBusinessName });
     }
 
     if (!formData.providerServiceDetails.trim()) {
-      return `נא למלא פירוט לשירות / מוצר של ${providerBusinessName}.`;
+      return t("collab.proposal.needServiceDetails", { name: providerBusinessName });
     }
 
     if (formData.type !== "One-sided" && !formData.receiverServiceName.trim()) {
-      return `נא למלא את שם השירות / המוצר של ${receiverBusinessName}.`;
+      return t("collab.proposal.needReceiverService", { name: receiverBusinessName });
     }
 
     if (formData.type !== "One-sided" && !formData.receiverContactName.trim()) {
-      return `נא למלא איש קשר עבור ${receiverBusinessName}.`;
+      return t("collab.proposal.needReceiverContact", { name: receiverBusinessName });
     }
 
     return "";
@@ -312,7 +316,7 @@ export default function ProposalForm({
         setToast({
           open: true,
           severity: "success",
-          message: "ההצעה נשלחה בהצלחה",
+          message: t("collab.proposal.sentSuccess"),
         });
 
         onSent?.(proposalId);
@@ -320,14 +324,14 @@ export default function ProposalForm({
         setToast({
           open: true,
           severity: "error",
-          message: "השליחה נכשלה. נסי שוב.",
+          message: t("collab.proposal.sendFailedRetry"),
         });
       }
     } catch (err: any) {
       setToast({
         open: true,
         severity: "error",
-        message: err?.response?.data?.error || "שגיאה בשליחת ההצעה. נסי שוב.",
+        message: err?.response?.data?.error || t("collab.proposal.sendError"),
       });
     } finally {
       setLoading(false);
@@ -338,8 +342,8 @@ export default function ProposalForm({
     <>
       <form
         onSubmit={handleSubmit}
-        dir="rtl"
-        className="mx-auto w-full max-w-5xl space-y-6 text-right"
+        dir={pageDir}
+        className="mx-auto w-full max-w-5xl space-y-6"
       >
         <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
           <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
@@ -349,16 +353,15 @@ export default function ProposalForm({
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
                 <FileSignature className="h-4 w-4" />
-                בונה הסכם עסקי
+                {t("collab.proposal.badge")}
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                הצעת שיתוף פעולה עסקי
+                {t("collab.proposal.title")}
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                צרי הצעת שיתוף פעולה מסודרת עם פרטי שני הצדדים, אנשי קשר,
-                שירותים, תנאי תשלום, תנאי שינוי, ביטול וסודיות.
+                {t("collab.proposal.lead")}
               </p>
             </div>
 
@@ -369,7 +372,7 @@ export default function ProposalForm({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-4 text-sm font-black text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
               >
                 <X className="h-5 w-5" />
-                סגירה
+                {t("collab.proposal.close")}
               </button>
             )}
           </div>
@@ -378,16 +381,16 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={Handshake}
-            title="פרטי העסקים"
-            subtitle="העסק ששולח את ההצעה והעסק שמקבל אותה."
+            title={t("collab.proposal.businessesTitle")}
+            subtitle={t("collab.proposal.businessesSubtitle")}
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="עסק שולח">
+            <FormField label={t("collab.proposal.sendingBusiness")}>
               <input value={providerBusinessName} disabled className={inputClass} />
             </FormField>
 
-            <FormField label="עסק מקבל">
+            <FormField label={t("collab.proposal.receivingBusiness")}>
               <input value={receiverBusinessName} disabled className={inputClass} />
             </FormField>
           </div>
@@ -396,28 +399,28 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={Sparkles}
-            title="פרטי ההצעה"
-            subtitle="המידע הבסיסי שמסביר את שיתוף הפעולה."
+            title={t("collab.proposal.proposalTitle")}
+            subtitle={t("collab.proposal.proposalSubtitle")}
           />
 
           <div className="mt-5 grid gap-4">
-            <FormField label="כותרת ההצעה" required>
+            <FormField label={t("collab.proposal.proposalName")} required>
               <input
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="לדוגמה: שיתוף פעולה חודשי לניהול לידים"
+                placeholder={t("collab.proposal.proposalNamePlaceholder")}
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="תיאור כללי" required>
+            <FormField label={t("collab.proposal.generalDescription")} required>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                placeholder="תארי בצורה ברורה ומקצועית מה מטרת שיתוף הפעולה..."
+                placeholder={t("collab.proposal.generalDescriptionPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
@@ -426,22 +429,22 @@ export default function ProposalForm({
 
         <section className="grid gap-5 xl:grid-cols-2">
           <AgreementSideCard
-            title={`צד של ${providerBusinessName}`}
-            subtitle="מה העסק הזה נותן במסגרת שיתוף הפעולה."
-            badge="צד ראשון"
+            title={t("collab.proposal.sideOf", { name: providerBusinessName })}
+            subtitle={t("collab.proposal.sideGiving")}
+            badge={t("collab.proposal.firstParty")}
           >
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField label="איש קשר" required>
+              <FormField label={t("collab.proposal.contact")} required>
                 <input
                   name="providerContactName"
                   value={formData.providerContactName}
                   onChange={handleChange}
-                  placeholder="שם איש קשר"
+                  placeholder={t("collab.proposal.contactPlaceholder")}
                   className={inputClass}
                 />
               </FormField>
 
-              <FormField label="טלפון" required>
+              <FormField label={t("collab.proposal.phone")} required>
                 <PhoneField
                   value={formData.providerPhone}
                   onChange={(value) =>
@@ -454,78 +457,78 @@ export default function ProposalForm({
               </FormField>
             </div>
 
-            <FormField label="שם השירות / המוצר" required>
+            <FormField label={t("collab.proposal.serviceName")} required>
               <input
                 name="providerServiceName"
                 value={formData.providerServiceName}
                 onChange={handleChange}
-                placeholder="לדוגמה: ניהול לידים לעסק"
+                placeholder={t("collab.proposal.serviceNamePlaceholder")}
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="פירוט השירות / המוצר" required>
+            <FormField label={t("collab.proposal.serviceDetails")} required>
               <textarea
                 name="providerServiceDetails"
                 value={formData.providerServiceDetails}
                 onChange={handleChange}
                 rows={4}
-                placeholder="פרטי בדיוק מה השירות או המוצר כולל..."
+                placeholder={t("collab.proposal.serviceDetailsPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label={`מה ${providerBusinessName} נותן`}>
+            <FormField label={t("collab.proposal.whatGives", { name: providerBusinessName })}>
               <textarea
                 name="giving"
                 value={formData.giving}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: 10 לידים איכותיים בחודש"}
+                placeholder={t("collab.proposal.whatGivesPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="מה כלול / היקף השירות">
+            <FormField label={t("collab.proposal.included")}>
               <textarea
                 name="providerIncludedItems"
                 value={formData.providerIncludedItems}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: מעקב יומי ב־CRM"}
+                placeholder={t("collab.proposal.includedPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="תוצרים / התחייבויות">
+            <FormField label={t("collab.proposal.deliverables")}>
               <textarea
                 name="providerDeliverables"
                 value={formData.providerDeliverables}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: דוח ביצועים חודשי"}
+                placeholder={t("collab.proposal.deliverablesPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
           </AgreementSideCard>
 
           <AgreementSideCard
-            title={`צד של ${receiverBusinessName}`}
-            subtitle="מה העסק הזה נותן או מתחייב לתת."
-            badge="צד שני"
+            title={t("collab.proposal.sideOf", { name: receiverBusinessName })}
+            subtitle={t("collab.proposal.receiverSideSubtitle")}
+            badge={t("collab.proposal.secondParty")}
           >
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField label="איש קשר" required={formData.type !== "One-sided"}>
+              <FormField label={t("collab.proposal.contact")} required={formData.type !== "One-sided"}>
                 <input
                   name="receiverContactName"
                   value={formData.receiverContactName}
                   onChange={handleChange}
-                  placeholder="שם איש קשר"
+                  placeholder={t("collab.proposal.contactPlaceholder")}
                   className={inputClass}
                 />
               </FormField>
 
-              <FormField label="טלפון">
+              <FormField label={t("collab.proposal.phone")}>
                 <PhoneField
                   value={formData.receiverPhone}
                   onChange={(value) =>
@@ -538,56 +541,56 @@ export default function ProposalForm({
               </FormField>
             </div>
 
-            <FormField label="שם השירות / המוצר" required={formData.type !== "One-sided"}>
+            <FormField label={t("collab.proposal.serviceName")} required={formData.type !== "One-sided"}>
               <input
                 name="receiverServiceName"
                 value={formData.receiverServiceName}
                 onChange={handleChange}
-                placeholder="לדוגמה: חבילת הפקת אירועים"
+                placeholder={t("collab.proposal.receiverServicePlaceholder")}
                 className={inputClass}
               />
             </FormField>
 
-            <FormField label="פירוט השירות / המוצר">
+            <FormField label={t("collab.proposal.serviceDetails")}>
               <textarea
                 name="receiverServiceDetails"
                 value={formData.receiverServiceDetails}
                 onChange={handleChange}
                 rows={4}
-                placeholder="פרטי מה העסק הזה נותן במסגרת שיתוף הפעולה..."
+                placeholder={t("collab.proposal.receiverDetailsPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label={`מה ${receiverBusinessName} נותן`}>
+            <FormField label={t("collab.proposal.whatGives", { name: receiverBusinessName })}>
               <textarea
                 name="receiving"
                 value={formData.receiving}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: עמלה על כל עסקה שנסגרת"}
+                placeholder={t("collab.proposal.receiverGivesPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="מה כלול / היקף השירות">
+            <FormField label={t("collab.proposal.included")}>
               <textarea
                 name="receiverIncludedItems"
                 value={formData.receiverIncludedItems}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: גישה לרשימת לקוחות רלוונטית"}
+                placeholder={t("collab.proposal.receiverIncludedPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
 
-            <FormField label="תוצרים / התחייבויות">
+            <FormField label={t("collab.proposal.deliverables")}>
               <textarea
                 name="receiverDeliverables"
                 value={formData.receiverDeliverables}
                 onChange={handleChange}
                 rows={4}
-                placeholder={"כל סעיף בשורה חדשה\nלדוגמה: דוח הפניות חתום"}
+                placeholder={t("collab.proposal.receiverDeliverablesPlaceholder")}
                 className={textareaClass}
               />
             </FormField>
@@ -597,25 +600,25 @@ export default function ProposalForm({
         <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <SectionTitle
             icon={DollarSign}
-            title="תנאים ותשלום"
-            subtitle="הגדירי תשלום, תאריכים, שינויים, ביטול וסודיות."
+            title={t("collab.proposal.termsTitle")}
+            subtitle={t("collab.proposal.termsSubtitle")}
           />
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <FormField label="סוג שיתוף פעולה">
+            <FormField label={t("collab.proposal.collabType")}>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
                 className={inputClass}
               >
-                <option value="One-sided">חד צדדי</option>
-                <option value="Two-sided">דו צדדי</option>
-                <option value="With commissions">כולל עמלות</option>
+                <option value="One-sided">{t("collab.proposal.oneSided")}</option>
+                <option value="Two-sided">{t("collab.proposal.twoSided")}</option>
+                <option value="With commissions">{t("collab.proposal.withCommissions")}</option>
               </select>
             </FormField>
 
-            <FormField label="סכום">
+            <FormField label={t("collab.proposal.amount")}>
               <div className="relative">
                 <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">
                   ₪
@@ -626,26 +629,26 @@ export default function ProposalForm({
                   type="number"
                   value={formData.amount}
                   onChange={handleChange}
-                  placeholder="אופציונלי"
+                  placeholder={t("collab.proposal.optional")}
                   className={`${inputClass} pr-10`}
                 />
               </div>
             </FormField>
 
             <div className="md:col-span-2">
-              <FormField label="פירוט תשלום / עמלה">
+              <FormField label={t("collab.proposal.paymentDetails")}>
                 <textarea
                   name="payment"
                   value={formData.payment}
                   onChange={handleChange}
                   rows={3}
-                  placeholder="לדוגמה: 10% עמלה על כל לקוח שנסגר, תשלום אחת לחודש."
+                  placeholder={t("collab.proposal.paymentPlaceholder")}
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
-            <FormField label="תאריך התחלה">
+            <FormField label={t("collab.proposal.startDate")}>
               <input
                 name="startDate"
                 type="date"
@@ -655,7 +658,7 @@ export default function ProposalForm({
               />
             </FormField>
 
-            <FormField label="תאריך סיום">
+            <FormField label={t("collab.proposal.endDate")}>
               <input
                 name="endDate"
                 type="date"
@@ -665,7 +668,7 @@ export default function ProposalForm({
               />
             </FormField>
 
-            <FormField label="תוקף ההצעה עד" required>
+            <FormField label={t("collab.proposal.validUntil")} required>
               <input
                 name="validUntil"
                 type="date"
@@ -680,66 +683,66 @@ export default function ProposalForm({
                 name="cancelAnytime"
                 checked={formData.cancelAnytime}
                 onChange={handleChange}
-                title="ניתן לביטול בכל זמן"
-                subtitle="מאפשר לכל צד לבטל בהתאם לתנאים הכתובים בהסכם."
+                title={t("collab.proposal.cancelAnytime")}
+                subtitle={t("collab.proposal.cancelAnytimeHint")}
               />
 
               <CheckboxCard
                 name="confidentiality"
                 checked={formData.confidentiality}
                 onChange={handleChange}
-                title="כולל סעיף סודיות"
-                subtitle="מסמן שההצעה כוללת תנאי סודיות בין הצדדים."
+                title={t("collab.proposal.confidentiality")}
+                subtitle={t("collab.proposal.confidentialityHint")}
               />
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="תנאי שינוי">
+              <FormField label={t("collab.proposal.changeTerms")}>
                 <textarea
                   name="changeTerms"
                   value={formData.changeTerms}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="לדוגמה: כל שינוי בהיקף השירות, במחיר או בלוחות הזמנים יתבצע רק באישור כתוב של שני הצדדים."
+                  placeholder={t("collab.proposal.changeTermsPlaceholder")}
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="תנאי ביטול">
+              <FormField label={t("collab.proposal.cancelTerms")}>
                 <textarea
                   name="cancellationTerms"
                   value={formData.cancellationTerms}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="לדוגמה: כל צד רשאי לבטל את ההתקשרות בהודעה כתובה של 14 ימים מראש. תשלום עבור עבודה שבוצעה לא יוחזר."
+                  placeholder={t("collab.proposal.cancelTermsPlaceholder")}
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="חריגים / מה לא כלול">
+              <FormField label={t("collab.proposal.exclusions")}>
                 <textarea
                   name="exclusions"
                   value={formData.exclusions}
                   onChange={handleChange}
                   rows={4}
-                  placeholder={"כל סעיף בשורה חדשה\nלדוגמה: תקציב פרסום ממומן אינו כלול"}
+                  placeholder={t("collab.proposal.exclusionsPlaceholder")}
                   className={textareaClass}
                 />
               </FormField>
             </div>
 
             <div className="md:col-span-2">
-              <FormField label="הערות נוספות">
+              <FormField label={t("collab.proposal.notes")}>
                 <textarea
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  placeholder="כל הערה נוספת להסכם..."
+                  placeholder={t("collab.proposal.notesPlaceholder")}
                   className={textareaClass}
                 />
               </FormField>
@@ -751,8 +754,8 @@ export default function ProposalForm({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <SectionTitle
               icon={PackageCheck}
-              title="תצוגה מקדימה להסכם"
-              subtitle="פתח תצוגה מקדימה מלאה של ההסכם לפני השליחה."
+              title={t("collab.proposal.previewTitle")}
+              subtitle={t("collab.proposal.previewSubtitle")}
             />
 
             <button
@@ -761,7 +764,7 @@ export default function ProposalForm({
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg transition hover:-translate-y-0.5 hover:bg-black"
             >
               <FileSignature className="h-5 w-5" />
-              צפייה בתצוגה מקדימה
+              {t("collab.proposal.viewPreview")}
             </button>
           </div>
         </section>
@@ -774,10 +777,10 @@ export default function ProposalForm({
 
             <div>
               <p className="text-sm font-black text-slate-800">
-                ההצעה מוכנה לשליחה
+                {t("collab.proposal.readyToSend")}
               </p>
               <p className="text-xs font-semibold text-slate-500">
-                ההצעה תישלח אל {receiverBusinessName}.
+                {t("collab.proposal.willSendTo", { name: receiverBusinessName })}
               </p>
             </div>
           </div>
@@ -792,7 +795,7 @@ export default function ProposalForm({
             ) : (
               <Send className="h-5 w-5" />
             )}
-            {loading ? "שולח..." : "שליחת הצעה"}
+            {loading ? t("collab.proposal.sending") : t("collab.proposal.sendProposal")}
           </button>
         </div>
       </form>
@@ -811,7 +814,7 @@ export default function ProposalForm({
       {toast.open && (
         <div className="fixed bottom-6 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
           <div
-            dir="rtl"
+            dir={pageDir}
             className={[
               "flex items-start gap-3 rounded-2xl border px-4 py-3 text-right shadow-2xl",
               toast.severity === "success"
@@ -966,6 +969,9 @@ function ProposalPreviewModal({
   previewReceiving: string[];
   onClose: () => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const intlLocale = getIntlLocale(i18n.language);
   const formatPreviewDate = (value: string) => {
     if (!value) return "—";
 
@@ -973,36 +979,36 @@ function ProposalPreviewModal({
 
     if (Number.isNaN(date.getTime())) return "—";
 
-    return date.toLocaleDateString("he-IL");
+    return date.toLocaleDateString(intlLocale);
   };
 
   const agreementTypeText: Record<ProposalFormData["type"], string> = {
-    "One-sided": "חד צדדי",
-    "Two-sided": "דו צדדי",
-    "With commissions": "כולל עמלות",
+    "One-sided": t("collab.proposal.oneSided"),
+    "Two-sided": t("collab.proposal.twoSided"),
+    "With commissions": t("collab.proposal.withCommissions"),
   };
 
-  const previewAmount = formData.amount ? `₪${Number(formData.amount).toLocaleString("he-IL")}` : "—";
+  const previewAmount = formData.amount ? `₪${Number(formData.amount).toLocaleString(intlLocale)}` : "—";
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/60 p-4 backdrop-blur-sm">
       <div
-        dir="rtl"
-        className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
+        dir={pageDir}
+        className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-5 sm:p-7">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <FileSignature className="h-4 w-4" />
-              תצוגה מקדימה
+              {t("collab.proposal.previewBadge")}
             </div>
 
             <h3 className="mt-4 text-2xl font-black text-slate-800">
-              הסכם שיתוף פעולה
+              {t("collab.proposal.previewHeading")}
             </h3>
 
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-              כאן אפשר לראות את ההסכם לפני שליחה. זה לא שולח את ההצעה.
+              {t("collab.proposal.previewLead")}
             </p>
           </div>
 
@@ -1019,110 +1025,110 @@ function ProposalPreviewModal({
           <div className="rounded-[2rem] border border-slate-100 bg-slate-50 p-5">
             <div className="rounded-[1.5rem] bg-white p-5 shadow-sm">
               <h4 className="text-xl font-black text-slate-800">
-                פרטי ההסכם
+                {t("collab.proposal.agreementDetails")}
               </h4>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {formData.title || "ללא כותרת"}
+                {formData.title || t("collab.proposal.untitled")}
               </p>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <PreviewInfo label="עסק שולח" value={providerBusinessName} />
-                <PreviewInfo label="עסק מקבל" value={receiverBusinessName} />
-                <PreviewInfo label="איש קשר שולח" value={formData.providerContactName || "—"} />
-                <PreviewInfo label="טלפון שולח" value={formData.providerPhone || "—"} />
-                <PreviewInfo label="איש קשר מקבל" value={formData.receiverContactName || "—"} />
-                <PreviewInfo label="טלפון מקבל" value={formData.receiverPhone || "—"} />
-                <PreviewInfo label="סוג שיתוף פעולה" value={agreementTypeText[formData.type]} />
-                <PreviewInfo label="סכום" value={previewAmount} />
-                <PreviewInfo label="תאריך התחלה" value={formatPreviewDate(formData.startDate)} />
-                <PreviewInfo label="תאריך סיום" value={formatPreviewDate(formData.endDate)} />
-                <PreviewInfo label="תוקף ההצעה עד" value={formatPreviewDate(formData.validUntil)} />
-                <PreviewInfo label="ניתן לביטול בכל זמן" value={formData.cancelAnytime ? "כן" : "לא"} />
-                <PreviewInfo label="כולל סעיף סודיות" value={formData.confidentiality ? "כן" : "לא"} />
+                <PreviewInfo label={t("collab.proposal.sendingBusiness")} value={providerBusinessName} />
+                <PreviewInfo label={t("collab.proposal.receivingBusiness")} value={receiverBusinessName} />
+                <PreviewInfo label={t("collab.proposal.senderContact")} value={formData.providerContactName || "—"} />
+                <PreviewInfo label={t("collab.proposal.senderPhone")} value={formData.providerPhone || "—"} />
+                <PreviewInfo label={t("collab.proposal.receiverContact")} value={formData.receiverContactName || "—"} />
+                <PreviewInfo label={t("collab.proposal.receiverPhone")} value={formData.receiverPhone || "—"} />
+                <PreviewInfo label={t("collab.proposal.collabType")} value={agreementTypeText[formData.type]} />
+                <PreviewInfo label={t("collab.proposal.amount")} value={previewAmount} />
+                <PreviewInfo label={t("collab.proposal.startDate")} value={formatPreviewDate(formData.startDate)} />
+                <PreviewInfo label={t("collab.proposal.endDate")} value={formatPreviewDate(formData.endDate)} />
+                <PreviewInfo label={t("collab.proposal.validUntil")} value={formatPreviewDate(formData.validUntil)} />
+                <PreviewInfo label={t("collab.proposal.cancelAnytime")} value={formData.cancelAnytime ? t("collab.proposal.yes") : t("collab.proposal.no")} />
+                <PreviewInfo label={t("collab.proposal.confidentiality")} value={formData.confidentiality ? t("collab.proposal.yes") : t("collab.proposal.no")} />
               </div>
 
               <PreviewTextBlock
-                title="תיאור כללי"
+                title={t("collab.proposal.generalDescription")}
                 value={formData.description || "—"}
               />
 
               <PreviewTextBlock
-                title={`פירוט השירות / המוצר של ${providerBusinessName}`}
+                title={t("collab.proposal.serviceDetailsOf", { name: providerBusinessName })}
                 value={formData.providerServiceDetails || "—"}
               />
 
               <PreviewListBlock
-                title={`מה ${providerBusinessName} נותן`}
+                title={t("collab.proposal.whatGivesOf", { name: providerBusinessName })}
                 items={previewGiving}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewListBlock
-                title={`מה כלול אצל ${providerBusinessName}`}
+                title={t("collab.proposal.includedOf", { name: providerBusinessName })}
                 items={splitLines(formData.providerIncludedItems)}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewListBlock
-                title={`תוצרים / התחייבויות של ${providerBusinessName}`}
+                title={t("collab.proposal.deliverablesOf", { name: providerBusinessName })}
                 items={splitLines(formData.providerDeliverables)}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewTextBlock
-                title={`פירוט השירות / המוצר של ${receiverBusinessName}`}
+                title={t("collab.proposal.serviceDetailsOf", { name: receiverBusinessName })}
                 value={formData.receiverServiceDetails || "—"}
               />
 
               <PreviewListBlock
-                title={`מה ${receiverBusinessName} נותן`}
+                title={t("collab.proposal.whatGivesOf", { name: receiverBusinessName })}
                 items={previewReceiving}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewListBlock
-                title={`מה כלול אצל ${receiverBusinessName}`}
+                title={t("collab.proposal.includedOf", { name: receiverBusinessName })}
                 items={splitLines(formData.receiverIncludedItems)}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewListBlock
-                title={`תוצרים / התחייבויות של ${receiverBusinessName}`}
+                title={t("collab.proposal.deliverablesOf", { name: receiverBusinessName })}
                 items={splitLines(formData.receiverDeliverables)}
-                emptyText="עדיין לא הוזנו סעיפים."
+                emptyText={t("collab.proposal.emptyItems")}
               />
 
               <PreviewTextBlock
-                title="פירוט תשלום / עמלה"
+                title={t("collab.proposal.paymentDetails")}
                 value={formData.payment || "—"}
               />
 
               <PreviewTextBlock
-                title="תנאי שינוי"
+                title={t("collab.proposal.changeTerms")}
                 value={formData.changeTerms || "—"}
               />
 
               <PreviewTextBlock
-                title="תנאי ביטול"
+                title={t("collab.proposal.cancelTerms")}
                 value={formData.cancellationTerms || "—"}
               />
 
               <PreviewListBlock
-                title="חריגים / מה לא כלול"
+                title={t("collab.proposal.exclusions")}
                 items={splitLines(formData.exclusions)}
-                emptyText="אין חריגים שהוזנו."
+                emptyText={t("collab.proposal.noExclusions")}
               />
 
               <PreviewTextBlock
-                title="הערות נוספות"
+                title={t("collab.proposal.notes")}
                 value={formData.notes || "—"}
               />
 
               <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
-                <p className="text-sm font-black text-slate-900">חתימות</p>
+                <p className="text-sm font-black text-slate-900">{t("collab.proposal.signatures")}</p>
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  לאחר שליחת ההצעה ואישור הצד השני, ההסכם יעבור לחתימה דיגיטלית של הצדדים.
+                  {t("collab.proposal.signaturesHint")}
                 </p>
               </div>
             </div>
@@ -1135,7 +1141,7 @@ function ProposalPreviewModal({
             onClick={onClose}
             className="inline-flex h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-black"
           >
-            סגירה
+            {t("collab.proposal.close")}
           </button>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
+import { getTextDirection } from "../../../i18n/localeUtils";
 import {
   cookieConsentKey,
   mergeCookieBannerSettings,
@@ -17,6 +19,7 @@ export default function CookieBannerWidget({
   settings,
   mode = "live",
 }: CookieBannerWidgetProps) {
+  const { t, i18n } = useTranslation();
   const cfg = mergeCookieBannerSettings(settings);
   const [hidden, setHidden] = useState(mode !== "editor");
 
@@ -55,7 +58,7 @@ export default function CookieBannerWidget({
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-bizuply-widget="cookie-banner"
       data-bizuply-plugin="cookie-banner"
       data-bizuply-plugin-runtime="true"
@@ -77,7 +80,7 @@ export default function CookieBannerWidget({
               className="underline underline-offset-2 opacity-90 hover:opacity-100"
               style={{ color: "inherit" }}
             >
-              {cfg.policyLabel || "מדיניות פרטיות"}
+              {cfg.policyLabel || t("publicWidgets.cookie.policy")}
             </a>
           ) : null}
         </p>
@@ -87,7 +90,7 @@ export default function CookieBannerWidget({
             onClick={() => choose("declined")}
             className="rounded-lg border border-white/25 px-3 py-2 text-xs font-semibold transition hover:bg-white/10"
           >
-            {cfg.declineLabel || "דחייה"}
+            {cfg.declineLabel || t("publicWidgets.cookie.decline")}
           </button>
           <button
             type="button"
@@ -95,7 +98,7 @@ export default function CookieBannerWidget({
             className="rounded-lg px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90"
             style={{ background: cfg.accentColor || "#0F766E" }}
           >
-            {cfg.acceptLabel || "אני מסכים/ה"}
+            {cfg.acceptLabel || t("publicWidgets.cookie.accept")}
           </button>
         </div>
       </div>

@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export const bizuplyCanvasCss = `
 * {
   box-sizing: border-box;
@@ -391,7 +393,14 @@ a {
 }
 `;
 
-export const defaultBizuplyHtml = `
+export function getDefaultBizuplyHtml() {
+  const home = String(i18n.t("studio.nav.home"));
+  const about = String(i18n.t("studio.nav.about"));
+  const services = String(i18n.t("studio.nav.services"));
+  const gallery = String(i18n.t("studio.nav.gallery"));
+  const booking = String(i18n.t("studio.nav.booking"));
+  const contact = String(i18n.t("studio.nav.contact"));
+  return `
 <div class="biz-page">
   <header class="biz-nav">
     <div class="biz-brand">
@@ -403,12 +412,12 @@ export const defaultBizuplyHtml = `
     </div>
 
     <nav class="biz-nav-links">
-      <a href="#">דף הבית</a>
-      <a href="#">אודות</a>
-      <a href="#">שירותים</a>
-      <a href="#">גלריה</a>
-      <a href="#">תורים</a>
-      <a href="#">צור קשר</a>
+      <a href="#">${home}</a>
+      <a href="#">${about}</a>
+      <a href="#">${services}</a>
+      <a href="#">${gallery}</a>
+      <a href="#">${booking}</a>
+      <a href="#">${contact}</a>
     </nav>
   </header>
 
@@ -474,3 +483,6 @@ export const defaultBizuplyHtml = `
   </section>
 </div>
 `;
+}
+
+export const defaultBizuplyHtml = getDefaultBizuplyHtml();

@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type StudioTemplate = {
   id: string;
   name: string;
@@ -6,7 +8,11 @@ export type StudioTemplate = {
   html: string;
 };
 
-export const studioTemplates: StudioTemplate[] = [
+function templateText(id: string, field: "name" | "description", fallback: string) {
+  return String(i18n.t(`studio.studioTemplates.${id}.${field}`, { defaultValue: fallback }));
+}
+
+const studioTemplateSeeds: StudioTemplate[] = [
   {
     id: "luxury-beauty",
     name: "יוקרתי",
@@ -160,3 +166,13 @@ export const studioTemplates: StudioTemplate[] = [
 `,
   },
 ];
+
+export function getStudioTemplates(): StudioTemplate[] {
+  return studioTemplateSeeds.map((template) => ({
+    ...template,
+    name: templateText(template.id, "name", template.name),
+    description: templateText(template.id, "description", template.description),
+  }));
+}
+
+export const studioTemplates = getStudioTemplates();

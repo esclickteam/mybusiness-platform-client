@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import i18n from "../i18n/i18n";
 import {
-  DEMO_ACTIVITY_TIMELINE,
-  DEMO_ADVISOR_RECOMMENDATION,
-  DEMO_COLLAB_PARTNERS,
   DEMO_DASHBOARD_OVERLAY,
+  getDemoActivityTimeline,
+  getDemoAdvisorRecommendation,
+  getDemoCollabPartners,
 } from "./demoOverlayData";
 
 describe("guided demo overlay data", () => {
@@ -13,16 +14,27 @@ describe("guided demo overlay data", () => {
     expect(DEMO_DASHBOARD_OVERLAY.leads.newCount).toBe(8);
     expect(DEMO_DASHBOARD_OVERLAY.leads.untreatedCount).toBe(3);
     expect(DEMO_DASHBOARD_OVERLAY.reviews.averageRating).toBe(4.8);
-    expect(DEMO_ACTIVITY_TIMELINE.length).toBeGreaterThanOrEqual(4);
+    expect(getDemoActivityTimeline().length).toBeGreaterThanOrEqual(4);
   });
 
   it("keeps collab and advisor examples in demo-only ids", () => {
-    expect(DEMO_COLLAB_PARTNERS.every((partner) => String(partner._id).startsWith("demo-partner-"))).toBe(
+    expect(getDemoCollabPartners().every((partner) => String(partner._id).startsWith("demo-partner-"))).toBe(
       true
     );
-    expect(DEMO_ADVISOR_RECOMMENDATION.title).toBe("המלצה השבוע");
-    expect(DEMO_ADVISOR_RECOMMENDATION.question).toContain("אילו לידים");
-    expect(DEMO_ADVISOR_RECOMMENDATION.actionLabel).toContain("לידים");
-    expect(DEMO_ADVISOR_RECOMMENDATION.resultBody).toContain("בדמו");
+    expect(getDemoAdvisorRecommendation().title).toBe(
+      i18n.t("leftover.demoOverlay.recTitle", "This week's recommendation")
+    );
+    expect(getDemoAdvisorRecommendation().question).toBe(
+      i18n.t("leftover.demoOverlay.recQuestion", "Which leads should I follow up with today?")
+    );
+    expect(getDemoAdvisorRecommendation().actionLabel).toBe(
+      i18n.t("leftover.demoOverlay.recAction", "Open the relevant lead list")
+    );
+    expect(getDemoAdvisorRecommendation().resultBody).toBe(
+      i18n.t(
+        "leftover.demoOverlay.recResultBody",
+        "The list of 3 leads to follow up with today was opened. No real message was sent in the demo."
+      )
+    );
   });
 });

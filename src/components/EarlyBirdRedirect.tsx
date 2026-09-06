@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import API from "../api";
 import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function EarlyBirdRedirect() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const startedRef = useRef(false);
 
@@ -23,11 +25,11 @@ export default function EarlyBirdRedirect() {
         if (res.data?.url) {
           window.location.replace(res.data.url);
         } else {
-          alert("לא ניתן לפתוח את מסך התשלום כרגע");
+          alert(t("leftover.errors.checkoutUnavailable"));
         }
       } catch (err) {
         console.error("Early Bird redirect error:", err);
-        alert("אירעה שגיאה, נסה שוב בעוד רגע");
+          alert(t("leftover.errors.tryAgainSoon"));
       }
     };
 

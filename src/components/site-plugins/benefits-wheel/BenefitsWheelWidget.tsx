@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GripVertical, X } from "lucide-react";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import BenefitsWheelSpinWheel from "./BenefitsWheelSpinWheel";
 import {
@@ -40,6 +43,7 @@ export default function BenefitsWheelWidget({
   onPositionChange,
   onDeactivate,
 }: BenefitsWheelWidgetProps) {
+  const { t, i18n } = useTranslation();
   const segmentCount = Math.min(12, Math.max(3, Number(settings.segmentCount) || 6));
   const segments = useMemo(
     () => normalizeSegments(settings.segments, segmentCount),
@@ -134,7 +138,7 @@ export default function BenefitsWheelWidget({
       extraSpins
     );
     const prize: WonPrize = {
-      label: segments[winIndex]?.label || "הטבה",
+      label: segments[winIndex]?.label || t("publicWidgets.wheel.perk"),
       index: winIndex,
       couponCode: segments[winIndex]?.couponCode?.trim() || "",
     };
@@ -264,7 +268,7 @@ export default function BenefitsWheelWidget({
         >
           <div className="flex min-h-full items-center justify-center py-4">
             <div
-              dir="rtl"
+              dir={getTextDirection(i18n.language)}
               className="relative w-full max-w-sm rounded-2xl border border-violet-100 bg-white shadow-[0_24px_80px_rgba(99,102,241,0.25)]"
               onMouseDown={(e) => e.stopPropagation()}
             >
@@ -275,7 +279,7 @@ export default function BenefitsWheelWidget({
                 onClick={closeModal}
                 disabled={spinning}
                 className="absolute right-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
-                aria-label="סגירה"
+                aria-label={t("publicWidgets.common.close")}
               >
                 <X size={18} strokeWidth={2.5} />
               </button>
@@ -283,10 +287,10 @@ export default function BenefitsWheelWidget({
               <div className="grid grid-rows-[auto_278px_190px] px-6 pb-5 pt-5 text-center">
                 <div>
                   <h3 className="text-xl font-black text-slate-900">
-                    {settings.title || "גלגל ההטבות"}
+                    {settings.title || t("publicWidgets.wheel.defaultTitle")}
                   </h3>
                   <p className="mt-1 text-sm text-slate-500">
-                    {settings.subtitle || "סובבו וגלו מה זכיתם!"}
+                    {settings.subtitle || t("publicWidgets.wheel.defaultSubtitle")}
                   </p>
                 </div>
 
@@ -302,17 +306,17 @@ export default function BenefitsWheelWidget({
                 <div className="flex flex-col justify-center">
                   {wonPrize && !spinning ? (
                     <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-                      <p className="text-xs font-semibold text-emerald-700">🎉 מזל טוב!</p>
+                      <p className="text-xs font-semibold text-emerald-700">{t("publicWidgets.wheel.congrats")}</p>
                       <p className="mt-1 text-lg font-black text-emerald-900">{wonPrize.label}</p>
                       {wonPrize.couponCode ? (
                         <p className="mt-2 text-sm text-emerald-800">
-                          <span className="font-bold">קוד הטבה: </span>
+                          <span className="font-bold">{t("publicWidgets.wheel.perkCode")}</span>
                           <span className="font-mono text-base font-black tracking-wider text-emerald-900">
                             {wonPrize.couponCode}
                           </span>
                         </p>
                       ) : null}
-                      <p className="mt-2 text-[11px] text-emerald-600">ההטבה נשמרה עבורך</p>
+                      <p className="mt-2 text-[11px] text-emerald-600">{t("publicWidgets.wheel.saved")}</p>
                     </div>
                   ) : (
                     <div className="mb-3 h-[108px]" aria-hidden />
@@ -324,7 +328,7 @@ export default function BenefitsWheelWidget({
                       onClick={() => setWonPrize(null)}
                       className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
                     >
-                      סובבו שוב!
+                      {t("publicWidgets.wheel.spinAgain")}
                     </button>
                   ) : canSpin && !wonPrize ? (
                     <button
@@ -333,24 +337,24 @@ export default function BenefitsWheelWidget({
                       onClick={handleSpin}
                       className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg disabled:opacity-60"
                     >
-                      {spinning ? "מסתובב..." : "סובבו את הגלגל!"}
+                      {spinning ? t("publicWidgets.wheel.spinning") : t("publicWidgets.wheel.spin")}
                     </button>
                   ) : !canSpin && !wonPrize ? (
-                    <p className="text-sm font-semibold text-slate-500">כבר השתמשתם בסיבובים שלכם</p>
+                    <p className="text-sm font-semibold text-slate-500">{t("publicWidgets.wheel.noSpins")}</p>
                   ) : wonPrize ? (
                     <button
                       type="button"
                       onClick={closeModal}
                       className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
                     >
-                      סגירה
+                      {t("publicWidgets.common.close")}
                     </button>
                   ) : null}
 
                   {isEditor ? (
                     <div className="mt-3 space-y-2">
                       <p className="text-[11px] text-violet-600">
-                        מצב עורך — גררו את הכפתור הצף למיקום הרצוי
+                        {t("publicWidgets.wheel.editorHint")}
                       </p>
                       {onDeactivate ? (
                         <button
@@ -361,7 +365,7 @@ export default function BenefitsWheelWidget({
                           }}
                           className="text-[11px] font-bold text-rose-600 underline-offset-2 hover:underline"
                         >
-                          הסרת התוסף מהאתר
+                          {t("publicWidgets.wheel.removePlugin")}
                         </button>
                       ) : null}
                     </div>

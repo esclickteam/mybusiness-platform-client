@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RefreshCw, Search, Sparkles, ExternalLink } from "lucide-react";
 import {
@@ -13,18 +14,18 @@ type OutletCtx = {
   readOnly: boolean;
 };
 
-const FILTERS: { key: string; label: string }[] = [
-  { key: "all", label: "הכל" },
-  { key: "leads", label: "לידים" },
-  { key: "drafts", label: "טיוטות" },
-  { key: "digests", label: "תקצירים" },
-  { key: "tasks", label: "משימות" },
-];
+const FILTERS = [
+  { key: "all", labelKey: "automations.common.all", fallback: "All" },
+  { key: "leads", labelKey: "automations.aiResults.filterLeads", fallback: "Leads" },
+  { key: "drafts", labelKey: "automations.aiResults.filterDrafts", fallback: "Drafts" },
+  { key: "digests", labelKey: "automations.aiResults.filterDigests", fallback: "Digests" },
+  { key: "tasks", labelKey: "automations.aiResults.filterTasks", fallback: "Tasks" },
+] as const;
 
-function formatWhen(value?: string) {
+function formatWhen(value: string | undefined, locale: string) {
   if (!value) return "";
   try {
-    return new Date(value).toLocaleString("he-IL", {
+    return new Date(value).toLocaleString(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -36,22 +37,26 @@ function formatWhen(value?: string) {
   }
 }
 
-function categoryLabel(cat?: string) {
+function categoryLabel(
+  cat: string | undefined,
+  t: (key: string, defaultValue?: string) => string
+) {
   switch (cat) {
     case "leads":
-      return "לידים";
+      return t("automations.aiResults.filterLeads", "Leads");
     case "drafts":
-      return "טיוטות";
+      return t("automations.aiResults.filterDrafts", "Drafts");
     case "digests":
-      return "תקצירים";
+      return t("automations.aiResults.filterDigests", "Digests");
     case "tasks":
-      return "משימות";
+      return t("automations.aiResults.filterTasks", "Tasks");
     default:
       return cat || "";
   }
 }
 
 export default function AutomationsAiResultsPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -88,7 +93,7 @@ export default function AutomationsAiResultsPage() {
   };
 
   if (!businessId) {
-    return <div className="auto-page">טוען...</div>;
+    return <div className="auto-page">{t("automations.common.loading")}</div>;
   }
 
   return (
@@ -96,9 +101,14 @@ export default function AutomationsAiResultsPage() {
       <header className="ai-results-header">
         <div>
           <h1>
-            <Sparkles size={20} /> תוצאות AI
+            <Sparkles size={20} /> {t("automations.layout.aiResults")}
           </h1>
-          <p>היסטוריית תוצאות אוטומציות AI לעסק — נשמרות גם אחרי מחיקת התראות.</p>
+          <p>
+            {t(
+              "automations.aiResults.subtitle",
+              "AI automation result history for the business — kept even after notifications are deleted."
+            )}
+          </p>
         </div>
         <button
           type="button"
@@ -107,7 +117,7 @@ export default function AutomationsAiResultsPage() {
           disabled={query.isFetching}
         >
           {query.isFetching ? <Loader2 className="spin" size={16} /> : <RefreshCw size={16} />}
-          רענון
+          {t("automations.runs.refresh")}
         </button>
       </header>
 
@@ -125,7 +135,7 @@ export default function AutomationsAiResultsPage() {
                 setSearchParams(next);
               }}
             >
-              {f.label}
+              {t(f.labelKey, f.fallback)}
             </button>
           ))}
         </div>
@@ -143,17 +153,23 @@ export default function AutomationsAiResultsPage() {
           <input
             value={localQ}
             onChange={(e) => setLocalQ(e.target.value)}
-            placeholder="חיפוש לפי ליד, תבנית או טקסט"
+            placeholder={t(
+              "automations.aiResults.searchPlaceholder",
+              "Search by lead, template, or text"
+            )}
           />
         </form>
       </div>
 
       {query.isLoading ? (
         <div className="ai-results-empty">
-          <Loader2 className="spin" size={20} /> טוען תוצאות...
+          <Loader2 className="spin" size={20} />{" "}
+          {t("automations.aiResults.loading", "Loading results...")}
         </div>
       ) : !(query.data?.items || []).length ? (
-        <div className="ai-results-empty">אין עדיין תוצאות AI להצגה.</div>
+        <div className="ai-results-empty">
+          {t("automations.aiResults.empty", "No AI results to show yet.")}
+        </div>
       ) : (
         <div className="ai-results-list">
           {(query.data?.items || []).map((row) => (
@@ -161,18 +177,31 @@ export default function AutomationsAiResultsPage() {
               <div className="ai-results-row-main">
                 <div className="ai-results-row-title">
                   <strong>{AI_TEMPLATE_LABELS[row.templateKey] || row.title}</strong>
-                  <span>{categoryLabel(row.resultCategory)}</span>
-                  <span className={`status ${row.status}`}>{row.status === "completed" ? "הושלם" : row.status}</span>
+                  <span>{categoryLabel(row.resultCategory, t)}</span>
+                  <span className={`status ${row.status}`}>
+                    {row.status === "completed"
+                      ? t("automations.aiResults.completed", "Completed")
+                      : row.status}
+                  </span>
                 </div>
                 <div className="ai-results-row-meta">
-                  <span>{formatWhen(row.generatedAt || row.createdAt)}</span>
-                  {row.leadName ? <span>ליד: {row.leadName}</span> : null}
-                  {row.taskId ? <span>משימה מקושרת</span> : null}
+                  <span>{formatWhen(row.generatedAt || row.createdAt, i18n.language)}</span>
+                  {row.leadName ? (
+                    <span>
+                      {t("automations.aiResults.lead", {
+                        name: row.leadName,
+                        defaultValue: "Lead: {{name}}",
+                      })}
+                    </span>
+                  ) : null}
+                  {row.taskId ? (
+                    <span>{t("automations.aiResults.linkedTask", "Linked task")}</span>
+                  ) : null}
                 </div>
                 <p className="ai-results-preview">{row.preview || row.summary || ""}</p>
               </div>
               <button type="button" className="auto-btn primary" onClick={() => openResult(row)}>
-                פתח <ExternalLink size={14} />
+                {t("automations.runs.open")} <ExternalLink size={14} />
               </button>
             </article>
           ))}
@@ -191,14 +220,16 @@ export default function AutomationsAiResultsPage() {
                 setSearchParams(next);
               }}
             >
-              סגור
+              {t("automations.common.close")}
             </button>
           </header>
-          <p className="ai-results-drawer-meta">{formatWhen(selected.generatedAt || selected.createdAt)}</p>
+          <p className="ai-results-drawer-meta">
+            {formatWhen(selected.generatedAt || selected.createdAt, i18n.language)}
+          </p>
           <pre className="ai-results-drawer-body">{selected.summary || selected.preview || ""}</pre>
           {selected.targetUrl ? (
             <button type="button" className="auto-btn primary" onClick={() => navigate(selected.targetUrl!)}>
-              פתח יעד
+              {t("automations.aiResults.openTarget", "Open target")}
             </button>
           ) : null}
         </aside>

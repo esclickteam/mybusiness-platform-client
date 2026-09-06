@@ -10,16 +10,18 @@ import {
   LayoutDashboard,
   Check,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../api";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 const CRM_FEATURES = [
-  { icon: ClipboardList, label: "ניהול לידים ו-pipeline מלא" },
-  { icon: Users, label: "ניהול לקוחות ופרטי ליד/לקוח" },
-  { icon: StickyNote, label: "הערות, משימות ומעקבים" },
-  { icon: Filter, label: "חיפוש וסינון מתקדם" },
-  { icon: History, label: "היסטוריית פעילות CRM" },
-  { icon: LayoutDashboard, label: "לוח בקרה ונתוני CRM" },
+  { icon: ClipboardList, labelKey: "leftover.offerCrm.featureLeads", fallback: "Full lead and pipeline management" },
+  { icon: Users, labelKey: "leftover.offerCrm.featureClients", fallback: "Customer and lead/client details" },
+  { icon: StickyNote, labelKey: "leftover.offerCrm.featureNotes", fallback: "Notes, tasks, and follow-ups" },
+  { icon: Filter, labelKey: "leftover.offerCrm.featureSearch", fallback: "Advanced search and filters" },
+  { icon: History, labelKey: "leftover.offerCrm.featureHistory", fallback: "CRM activity history" },
+  { icon: LayoutDashboard, labelKey: "leftover.offerCrm.featureDash", fallback: "CRM dashboard and data" },
 ];
 
 /**
@@ -27,6 +29,8 @@ const CRM_FEATURES = [
  * Direct URL only. Marked noindex,nofollow (Helmet + X-Robots-Tag + DOM meta).
  */
 export default function CrmOfferPage() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -63,17 +67,20 @@ export default function CrmOfferPage() {
         window.location.assign(data.url);
         return;
       }
-      setError("אירעה שגיאה ביצירת התשלום. נסו שוב.");
+      setError(t("leftover.offerCrm.payError", "We could not start payment. Try again."));
     } catch (err) {
       const code = err?.response?.data?.code;
       if (code === "SUBSCRIPTION_ALREADY_ACTIVE") {
         setError(
-          "כבר קיים מנוי פעיל בחשבון שלכם. לניהול או שינוי המנוי פנו לאזור החיוב."
+          t(
+            "leftover.offerCrm.alreadyActive",
+            "An active subscription already exists on your account. Manage or change it in billing."
+          )
         );
       } else {
         setError(
           err?.response?.data?.error ||
-            "אירעה שגיאה ביצירת התשלום. נסו שוב."
+            t("leftover.offerCrm.payError", "We could not start payment. Try again.")
         );
       }
     } finally {
@@ -83,12 +90,12 @@ export default function CrmOfferPage() {
 
   return (
     <div
-      dir="rtl"
-      lang="he"
+      dir={pageDir}
+      lang={i18n.language}
       className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4 py-12"
     >
       <Helmet>
-        <title>CRM בלבד — BizUply</title>
+        <title>{t("leftover.offerCrm.seoTitle", "CRM only — BizUply")}</title>
         <meta name="robots" content="noindex,nofollow" />
         <meta name="googlebot" content="noindex,nofollow" />
       </Helmet>
@@ -96,37 +103,37 @@ export default function CrmOfferPage() {
       <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 shadow-xl sm:p-10">
         <div className="text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-1 text-sm font-bold text-emerald-700">
-            הצעה מיוחדת
+            {t("leftover.offerCrm.badge", "Special offer")}
           </span>
           <h1 className="mt-5 text-3xl font-black text-slate-900 sm:text-4xl">
-            CRM בלבד
+            {t("leftover.offerCrm.title", "CRM only")}
           </h1>
           <p className="mt-3 text-base font-medium text-slate-600">
-            ניהול כל הלידים והלקוחות שלכם במקום אחד.
+            {t("leftover.offerCrm.subtitle", "Manage all of your leads and customers in one place.")}
           </p>
 
           <div className="mt-6 flex items-end justify-center gap-2">
             <span className="text-5xl font-black text-slate-900">89 ₪</span>
             <span className="mb-2 text-lg font-semibold text-slate-500">
-              / לחודש
+              {t("leftover.offerCrm.perMonth", "/ month")}
             </span>
           </div>
           <p className="mt-1 text-sm font-medium text-slate-500">
-            חיוב חודשי מתחדש.
+            {t("leftover.offerCrm.billingHint", "Renews monthly.")}
           </p>
         </div>
 
         <ul className="mt-8 space-y-3">
-          {CRM_FEATURES.map(({ icon: Icon, label }) => (
+          {CRM_FEATURES.map(({ icon: Icon, labelKey, fallback }) => (
             <li
-              key={label}
+              key={labelKey}
               className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                 <Icon size={18} aria-hidden="true" />
               </span>
               <span className="text-sm font-semibold text-slate-700">
-                {label}
+                {t(labelKey, fallback)}
               </span>
               <Check
                 size={18}
@@ -152,11 +159,13 @@ export default function CrmOfferPage() {
           disabled={loading}
           className="mt-8 w-full rounded-2xl bg-emerald-600 px-6 py-4 text-lg font-black text-white shadow-lg transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "רגע אחד…" : "התחילו עם CRM"}
+          {loading
+            ? t("leftover.offerCrm.wait", "One moment…")
+            : t("leftover.offerCrm.cta", "Start with CRM")}
         </button>
 
         <p className="mt-4 text-center text-xs font-medium text-slate-400">
-          תשלום מאובטח באמצעות Stripe · ניתן לביטול בכל עת.
+          {t("leftover.offerCrm.secure", "Secure payment with Stripe · Cancel anytime.")}
         </p>
       </div>
     </div>

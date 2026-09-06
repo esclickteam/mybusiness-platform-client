@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import i18n from "../../../../../i18n/i18n";
+import { localizeBuiltInTemplateSeed, localizeBuiltInText } from "../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 
@@ -560,11 +562,11 @@ async function uploadVisualMediaToCloudinary({
   );
 
   if (!signData?.ok && !signData?.success) {
-    throw new Error(signData?.message || signData?.error || "יצירת חתימת העלאה נכשלה");
+    throw new Error(signData?.message || signData?.error || String(i18n.t("studio.upload.signFailed")));
   }
 
   if (!signData.apiKey || !signData.timestamp || !signData.signature || !signData.uploadUrl) {
-    throw new Error("לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.");
+    throw new Error(String(i18n.t("studio.upload.cannotStart")));
   }
 
   const formData = new FormData();
@@ -591,7 +593,7 @@ async function uploadVisualMediaToCloudinary({
     (await cloudinaryResponse.json().catch(() => null)) as CloudinaryUploadResult | null;
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
+    throw new Error(String(i18n.t("studio.upload.fileFailed")));
   }
 
   const resourceType = String(cloudinaryResult.resource_type || "image");
@@ -964,11 +966,11 @@ function getDefaultInsertedElementPayload(
     return {
       item: {
         ...base,
-        label: "טקסט חדש",
+        label: String(i18n.t("studio.defaults.newText")),
         tagName: "div",
       },
       content: {
-        text: "טקסט חדש",
+        text: String(i18n.t("studio.defaults.newText")),
       },
       style: {
         color: "#111827",
@@ -995,11 +997,11 @@ function getDefaultInsertedElementPayload(
     return {
       item: {
         ...base,
-        label: "כפתור חדש",
+        label: String(i18n.t("studio.defaults.newButton")),
         tagName: "button",
       },
       content: {
-        text: "כפתור חדש",
+        text: String(i18n.t("studio.defaults.newButton")),
         href: "#",
         target: "_self",
       },
@@ -1032,7 +1034,9 @@ function getDefaultInsertedElementPayload(
     return {
       item: {
         ...base,
-        label: isVideo ? "סרטון חדש" : "תמונה חדשה",
+        label: isVideo
+          ? String(i18n.t("studio.defaults.newVideo"))
+          : String(i18n.t("studio.defaults.newImage")),
         tagName: isVideo ? "video" : "img",
       },
       content: {
@@ -1078,7 +1082,7 @@ function getDefaultInsertedElementPayload(
     return {
       item: {
         ...base,
-        label: "קו מפריד",
+        label: String(i18n.t("studio.defaults.divider")),
         tagName: "div",
       },
       content: {},
@@ -1103,7 +1107,7 @@ function getDefaultInsertedElementPayload(
   return {
     item: {
       ...base,
-      label: "קופסה חדשה",
+      label: String(i18n.t("studio.defaults.newBox")),
       tagName: "div",
     },
     content: {},
@@ -1173,7 +1177,7 @@ export function useVisualEditorState({
   }>({
     open: false,
     elementId: "",
-    elementLabel: "מדיה",
+    elementLabel: String(i18n.t("studio.defaults.media")),
     mode: "change",
     target: "media",
     currentSrc: "",
@@ -1202,7 +1206,7 @@ export function useVisualEditorState({
   }>({
     open: false,
     elementId: "",
-    elementLabel: "קישור",
+    elementLabel: String(i18n.t("studio.defaults.link")),
     href: "",
     sitePageId: "",
     phone: "",
@@ -2273,7 +2277,7 @@ export function useVisualEditorState({
             const message =
               error instanceof Error
                 ? error.message
-                : "העלאת המדיה נכשלה";
+                : String(i18n.t("studio.upload.mediaFailed"));
 
             window.alert(message);
           }
@@ -2384,7 +2388,7 @@ export function useVisualEditorState({
         elementLabel:
           target.node?.getAttribute("data-visual-edit-label") ||
           target.node?.getAttribute("alt") ||
-          "מדיה",
+          String(i18n.t("studio.defaults.media")),
         mode,
         target: options?.target === "background" ? "background" : "media",
         currentSrc,
@@ -2486,7 +2490,7 @@ export function useVisualEditorState({
         elementLabel:
           selection.selectedElement?.label ||
           selection.selectedElement?.id ||
-          "קישור",
+          String(i18n.t("studio.defaults.link")),
         href: String(contentItem?.href || ""),
         sitePageId:
           String(contentItem?.sitePageId || "").trim() ||
@@ -3402,7 +3406,7 @@ export function useVisualEditorState({
           type: "embed",
           parentId: sectionId,
           sectionId,
-          label: `טבלה ${rows}×${cols}`,
+          label: String(i18n.t("studio.defaults.tableLabel", { rows, cols })),
           tagName: "div",
           createdAt: now,
           updatedAt: now,
@@ -3471,13 +3475,18 @@ export function useVisualEditorState({
         options?.fieldKey || (isGreeting ? "client_name" : ""),
       ).trim();
       const label = String(
-        options?.label || (isGreeting ? "שם לקוח" : "נתון"),
-      ).trim() || "נתון";
+        options?.label ||
+          (isGreeting
+            ? String(i18n.t("studio.defaults.clientName"))
+            : String(i18n.t("studio.defaults.crmField"))),
+      ).trim() || String(i18n.t("studio.defaults.crmField"));
       const sampleValue =
         String(
           options?.sampleValue ||
-            (isGreeting ? "ישראל ישראלי" : "[ערך מהתיק]"),
-        ).trim() || "[ערך מהתיק]";
+            (isGreeting
+              ? String(i18n.t("studio.defaults.samplePerson"))
+              : String(i18n.t("studio.defaults.sampleValue"))),
+        ).trim() || String(i18n.t("studio.defaults.sampleValue"));
 
       const root = canvasRef.current;
       if (!root) return "";
@@ -3582,7 +3591,7 @@ export function useVisualEditorState({
               border: "none",
               padding: "0",
             } as StylePatch,
-            `תווית CRM · ${label}`,
+            String(i18n.t("studio.defaults.crmLabel", { label })),
           );
           next = insertOne(
             next,
@@ -3616,11 +3625,11 @@ export function useVisualEditorState({
               border: "none",
               padding: "0",
             } as StylePatch,
-            `נתון CRM · ${label}`,
+            String(i18n.t("studio.defaults.crmValue", { label })),
           );
         } else {
           const sampleText = isGreeting
-            ? `שלום, ${sampleValue}`
+            ? String(i18n.t("studio.defaults.greeting", { name: sampleValue }))
             : part === "label"
               ? label
               : part === "both"
@@ -3660,10 +3669,10 @@ export function useVisualEditorState({
               padding: "0",
             } as StylePatch,
             isGreeting
-              ? "שלום, שם לקוח"
+              ? String(i18n.t("studio.defaults.greetingLabel"))
               : fieldKey
-                ? `נתון CRM · ${label}`
-                : "נתון CRM",
+                ? String(i18n.t("studio.defaults.crmValue", { label }))
+                : String(i18n.t("studio.defaults.crmValuePlain")),
           );
         }
 
@@ -3724,7 +3733,7 @@ export function useVisualEditorState({
           id: sectionId,
           anchorId,
           placement,
-          label: template.title,
+          label: localizeBuiltInText(template.title, i18n.language),
           libraryId: template.id,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -3759,7 +3768,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId: template.id,
             localKey: nodeTemplate.key,
@@ -3768,7 +3777,11 @@ export function useVisualEditorState({
           });
 
           if (nodeTemplate.content) {
-            next = writeVisualContentItem(next, id, nodeTemplate.content);
+            next = writeVisualContentItem(
+              next,
+              id,
+              localizeBuiltInTemplateSeed(nodeTemplate.content, i18n.language),
+            );
           }
           if (nodeTemplate.style) {
             next = writeVisualStyleItem(
@@ -3891,7 +3904,7 @@ export function useVisualEditorState({
         next = writeVisualInsertedSection(next, {
           ...insertedSections[sectionId],
           id: sectionId,
-          label: template.title,
+          label: localizeBuiltInText(template.title, i18n.language),
           libraryId: template.id,
           updatedAt: new Date().toISOString(),
         });
@@ -3924,7 +3937,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId: template.id,
             localKey: nodeTemplate.key,
@@ -4034,7 +4047,7 @@ export function useVisualEditorState({
             id,
             anchorId,
             placement,
-            label: "סקשן חדש",
+            label: localizeBuiltInText("סקשן חדש", i18n.language),
             createdAt: new Date().toISOString(),
           },
         );
@@ -4099,7 +4112,9 @@ export function useVisualEditorState({
 
       const id = createVisualCustomId("custom-html");
       const now = new Date().toISOString();
-      const label = String(options?.label || "תוסף").trim() || "תוסף";
+      const label =
+        String(options?.label || i18n.t("studio.defaults.plugin")).trim() ||
+        String(i18n.t("studio.defaults.plugin"));
       const width = Math.max(160, Number(options?.width) || 520);
       const height = Math.max(80, Number(options?.height) || 180);
       const x = 72;
@@ -4601,7 +4616,11 @@ export function useVisualEditorState({
           let next = writeVisualInsertedSection(current || {}, {
             ...sourceSection,
             id: newSectionId,
-            label: `${sourceSection.label || "סקשן"} (עותק)`,
+            label: String(
+              i18n.t("studio.defaults.copy", {
+                label: sourceSection.label || i18n.t("studio.defaults.section"),
+              }),
+            ),
             anchorId: selectedId,
             placement: "after",
             createdAt: new Date().toISOString(),
@@ -4670,7 +4689,11 @@ export function useVisualEditorState({
           let next = writeVisualInsertedElement(current || {}, {
             ...sourceElement,
             id: nextId,
-            label: `${sourceElement.label || "אלמנט"} (עותק)`,
+            label: String(
+              i18n.t("studio.defaults.copy", {
+                label: sourceElement.label || i18n.t("studio.defaults.element"),
+              }),
+            ),
             anchorId: selectedId,
             placement: "after",
             createdAt: new Date().toISOString(),
@@ -4770,11 +4793,11 @@ export function useVisualEditorState({
         String(
           sourceNode.getAttribute("data-visual-edit-label") ||
             sourceNode.textContent ||
-            "אלמנט",
+            i18n.t("studio.defaults.element"),
         )
           .replace(/\s+/g, " ")
           .trim()
-          .slice(0, 48) || "אלמנט";
+          .slice(0, 48) || String(i18n.t("studio.defaults.element"));
 
       const liveText = String(sourceNode.textContent || "")
         .replace(/\s+/g, " ")
@@ -4819,7 +4842,7 @@ export function useVisualEditorState({
           type: inferredType,
           parentId,
           sectionId,
-          label: `${label} (עותק)`,
+          label: String(i18n.t("studio.defaults.copy", { label })),
           tagName:
             tagName === "button" || tagName === "a" || tagName === "span"
               ? tagName
@@ -4961,7 +4984,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId,
             groupId,
@@ -4971,7 +4994,11 @@ export function useVisualEditorState({
           });
 
           if (nodeTemplate.content) {
-            next = writeVisualContentItem(next, id, nodeTemplate.content);
+            next = writeVisualContentItem(
+              next,
+              id,
+              localizeBuiltInTemplateSeed(nodeTemplate.content, i18n.language),
+            );
           }
 
           if (nodeTemplate.style) {
@@ -5255,7 +5282,7 @@ export function useVisualEditorState({
         status: autosaveStatus,
       });
       throw new Error(
-        "יש שינויים שעדיין לא נשמרו. נסי שוב לפני הפרסום.",
+        String(i18n.t("studio.upload.unsavedBeforePublish")),
       );
     }
     await waitForPendingMediaUploads();

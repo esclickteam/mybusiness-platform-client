@@ -10,6 +10,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n/localeUtils";
 import { fetchPartnerClients, fetchPartnerDashboard, fetchPartnerMe, partnerApiError } from "../../lib/partnerApi";
 import type {
   PartnerClient,
@@ -19,7 +21,7 @@ import type {
 } from "../../types/partner";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { formatIls } from "../../lib/partnerMoney";
-import { PARTNER_STATUS_LABEL, PARTNER_STATUS_TONE } from "../../lib/partnerLabels";
+import { PARTNER_STATUS_TONE, partnerStatusLabel } from "../../lib/partnerLabels";
 import {
   PartnerCard,
   PartnerMetricCard,
@@ -35,15 +37,17 @@ import {
 } from "../../lib/partnerWork";
 
 const PRESETS = [
-  { id: "today", label: "היום" },
-  { id: "week", label: "השבוע" },
-  { id: "month", label: "החודש" },
-  { id: "last_month", label: "החודש הקודם" },
-  { id: "3m", label: "3 חודשים" },
-  { id: "6m", label: "6 חודשים" },
-  { id: "year", label: "השנה" },
-  { id: "custom", label: "טווח מותאם אישית" },
+  { id: "today" },
+  { id: "week" },
+  { id: "month" },
+  { id: "last_month" },
+  { id: "3m" },
+  { id: "6m" },
+  { id: "year" },
+  { id: "custom" },
 ];
+
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 function ils(value: number | null | undefined) {
   if (value == null) return "—";
@@ -51,6 +55,8 @@ function ils(value: number | null | undefined) {
 }
 
 export default function PartnerDashboard() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -85,7 +91,7 @@ export default function PartnerDashboard() {
       } catch (err: unknown) {
         if (!cancelled) {
           setData(null);
-          setError(partnerApiError(err, "שגיאה בטעינת הדשבורד"));
+          setError(partnerApiError(err, t("partner.errors.dashboard")));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -94,7 +100,7 @@ export default function PartnerDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [preset, from, to]);
+  }, [preset, from, to, t]);
 
   useEffect(() => {
     fetchPartnerMe()
@@ -105,7 +111,7 @@ export default function PartnerDashboard() {
       .catch(() => {});
   }, []);
 
-  if (loading && !data) return <BizuplyLoader fullScreen label="טוען לוח פרטנר..." />;
+  if (loading && !data) return <BizuplyLoader fullScreen label={t("partner.dashboard.loading")} />;
 
   const partner = data?.partner as PartnerMe | undefined;
   const subscription = data?.partnerSubscription || null;
@@ -124,7 +130,7 @@ export default function PartnerDashboard() {
 
       {!data ? (
         <p className="text-sm font-bold text-slate-500">
-          לא ניתן להציג מדדים עד שהדשבורד נטען בהצלחה.
+          {t("partner.dashboard.unavailable")}
         </p>
       ) : (
         <>
@@ -135,12 +141,13 @@ export default function PartnerDashboard() {
             onPreset={setPreset}
             onFrom={setFrom}
             onTo={setTo}
+            t={t}
           />
 
           {personalUrl ? (
             <PartnerCard className="flex flex-wrap items-center justify-between gap-3 p-5">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">הקישור האישי שלי</p>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">{t("partner.dashboard.personalLink")}</p>
                 <p className="mt-1 break-all text-sm font-bold text-slate-700">{personalUrl}</p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -153,18 +160,18 @@ export default function PartnerDashboard() {
                     setTimeout(() => setCopied(false), 1500);
                   }}
                 >
-                  {copied ? "הועתק" : "Copy"}
+                  {copied ? t("partner.copied") : t("partner.copy")}
                 </button>
                 <a href={personalUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
-                  Open
+                  {t("partner.open")}
                 </a>
                 {plansUrl ? (
                   <a href={plansUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
-                    עמוד חבילות
+                    {t("partner.dashboard.plansPage")}
                   </a>
                 ) : null}
                 <Link to="/partner/dashboard/settings" className="rounded-2xl border px-4 py-2 text-sm font-black">
-                  מיתוג
+                  {t("partner.dashboard.branding")}
                 </Link>
               </div>
             </PartnerCard>
@@ -174,11 +181,10 @@ export default function PartnerDashboard() {
             <PartnerCard className="space-y-3 border border-amber-200 bg-amber-50 p-5">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">
-                  שולם – דורש טיפול
+                  {t("partner.dashboard.attentionTitle")}
                 </p>
                 <p className="mt-1 text-sm font-bold text-amber-900">
-                  יש {data.attentionDeals.length} עסקאות ששולמו אך הלקוח עדיין לא הופעל. העמלה ממתינה
-                  עד השלמת ההפעלה.
+                  {t("partner.dashboard.attentionText", { count: data.attentionDeals.length })}
                 </p>
               </div>
               <ul className="space-y-2">
@@ -189,7 +195,7 @@ export default function PartnerDashboard() {
                       to={`/partner/dashboard/deals/${deal._id}`}
                       className="rounded-2xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
                     >
-                      טיפול בהפעלה
+                      {t("partner.dashboard.handleActivation")}
                     </Link>
                   </li>
                 ))}
@@ -201,24 +207,27 @@ export default function PartnerDashboard() {
             <PartnerCard className="space-y-3 border border-violet-200 bg-violet-50 p-5">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-800">
-                  צירוף פרטנר – ₪500
+                  {t("partner.dashboard.referralTitle")}
                 </p>
                 <p className="mt-1 text-sm font-bold text-violet-900">
-                  התגמול נזקף אוטומטית אחרי 40 ימי פעילות. כניסה ללוח זה מריצה את הבדיקה.
+                  {t("partner.dashboard.referralText")}
                 </p>
               </div>
               <ul className="space-y-2">
                 {data.referrals.qualifying.map((row) => (
                   <li key={row._id} className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm font-black text-slate-800">
-                      {row.referredName || "פרטנר שהופנה"} — יום {row.daysActive ?? 0} מתוך{" "}
-                      {row.qualificationDays || 40}
+                      {row.referredName || t("partner.dashboard.referredPartner")} —{" "}
+                      {t("partner.dashboard.referralDay", {
+                        current: row.daysActive ?? 0,
+                        total: row.qualificationDays || 40,
+                      })}
                     </span>
                     <Link
                       to="/partner/dashboard/referrals"
                       className="rounded-2xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
                     >
-                      מעקב הפניות
+                      {t("partner.dashboard.trackReferrals")}
                     </Link>
                   </li>
                 ))}
@@ -230,25 +239,25 @@ export default function PartnerDashboard() {
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-3">
                 <PartnerMetricCard
-                  label="לקוחות פעילים"
+                  label={t("partner.dashboard.activeClients")}
                   value={String(counts?.active ?? 0)}
-                  hint={`${counts?.total ?? 0} סה״כ בתיק`}
+                  hint={t("partner.dashboard.totalInPortfolio", { count: counts?.total ?? 0 })}
                   href="/partner/dashboard/crm?status=active"
                   icon={<Users className="h-5 w-5" />}
                   iconClassName="bg-violet-100 text-violet-700"
                 />
                 <PartnerMetricCard
-                  label="עסקאות פתוחות"
+                  label={t("partner.dashboard.openDeals")}
                   value={String(metrics?.transactionCount ?? 0)}
-                  hint="בטווח שנבחר"
+                  hint={t("partner.dashboard.inSelectedRange")}
                   href="/partner/dashboard/transactions"
                   icon={<CheckCircle2 className="h-5 w-5" />}
                   iconClassName="bg-emerald-100 text-emerald-700"
                 />
                 <PartnerMetricCard
-                  label="משימות פתוחות"
+                  label={t("partner.dashboard.openTasks")}
                   value={String(metrics?.openTasks ?? 0)}
-                  hint="מעקב בתיקי הלקוחות"
+                  hint={t("partner.dashboard.clientFollowup")}
                   href="/partner/dashboard/tasks"
                   icon={<CalendarCheck className="h-5 w-5" />}
                   iconClassName="bg-rose-100 text-rose-600"
@@ -257,25 +266,25 @@ export default function PartnerDashboard() {
                   {metrics?.pendingCommission != null || metrics?.eligibleCommission != null ? (
                 <div className="grid gap-4 sm:grid-cols-3">
                   <PartnerMetricCard
-                    label="עמלה ממתינה"
+                    label={t("partner.dashboard.pendingCommission")}
                     value={ils(metrics?.pendingCommission)}
-                    hint="מחכה להפעלת הלקוח והמוצרים"
+                    hint={t("partner.dashboard.pendingHint")}
                     href="/partner/dashboard/transactions"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-amber-100 text-amber-700"
                   />
                   <PartnerMetricCard
-                    label="זמינה למשיכה"
+                    label={t("partner.dashboard.eligibleCommission")}
                     value={ils(metrics?.eligibleCommission)}
-                    hint="רק אחרי שהעסקה הושלמה"
+                    hint={t("partner.dashboard.eligibleHint")}
                     href="/partner/dashboard/withdrawals"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-emerald-100 text-emerald-700"
                   />
                   <PartnerMetricCard
-                    label="עמלה ששולמה"
+                    label={t("partner.dashboard.paidCommission")}
                     value={ils(metrics?.paidCommission)}
-                    hint="כבר הועברה"
+                    hint={t("partner.dashboard.paidHint")}
                     href="/partner/dashboard/withdrawals"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-slate-100 text-slate-700"
@@ -285,25 +294,25 @@ export default function PartnerDashboard() {
               {metrics?.oneTimeCommission != null || metrics?.recurringCommission != null ? (
                 <div className="grid gap-4 sm:grid-cols-3">
                   <PartnerMetricCard
-                    label="עמלות חד-פעמיות"
+                    label={t("partner.dashboard.oneTimeCommission")}
                     value={ils(metrics?.oneTimeCommission)}
-                    hint="מכירות לקוח חד-פעמיות בטווח"
+                    hint={t("partner.dashboard.oneTimeHint")}
                     href="/partner/dashboard/transactions"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-violet-100 text-violet-700"
                   />
                   <PartnerMetricCard
-                    label="MRR מעמלות"
+                    label={t("partner.dashboard.commissionMrr")}
                     value={ils(metrics?.commissionMrr)}
-                    hint="עמלות חודשיות בטווח"
+                    hint={t("partner.dashboard.mrrHint")}
                     href="/partner/dashboard/transactions"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-sky-100 text-sky-700"
                   />
                   <PartnerMetricCard
-                    label="עמלות צירוף פרטנרים"
+                    label={t("partner.dashboard.referralCommission")}
                     value={ils(metrics?.referralCommission)}
-                    hint="₪500 אחרי 40 ימים — לא חלק מ-MRR"
+                    hint={t("partner.dashboard.referralHint")}
                     href="/partner/dashboard/referrals"
                     icon={<UserPlus className="h-5 w-5" />}
                     iconClassName="bg-amber-100 text-amber-800"
@@ -313,26 +322,26 @@ export default function PartnerDashboard() {
 
               <PartnerCard className="overflow-hidden">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-                  <h2 className="text-lg font-black text-slate-900">לקוחות</h2>
+                  <h2 className="text-lg font-black text-slate-900">{t("partner.clients")}</h2>
                   <Link
                     to="/partner/dashboard/clients/new"
                     className="inline-flex items-center gap-2 rounded-2xl bg-[#0F172A] px-4 py-2.5 text-sm font-black text-white"
                   >
                     <Plus className="h-4 w-4" />
-                    לקוח חדש
+                    {t("partner.newClient")}
                   </Link>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[720px] text-right text-sm">
                     <thead className="text-[11px] font-black uppercase tracking-wide text-slate-400">
                       <tr>
-                        <th className="px-5 py-3">לקוח</th>
-                        <th className="px-3 py-3">סטטוס</th>
-                        <th className="px-3 py-3">איש קשר</th>
-                        <th className="px-3 py-3">טלפון</th>
-                        <th className="px-3 py-3">סוג אירוע</th>
-                        <th className="px-3 py-3">תאריך יעד</th>
-                        <th className="px-3 py-3">משימות</th>
+                        <th className="px-5 py-3">{t("partner.client")}</th>
+                        <th className="px-3 py-3">{t("common.status")}</th>
+                        <th className="px-3 py-3">{t("partner.contact")}</th>
+                        <th className="px-3 py-3">{t("partner.phone")}</th>
+                        <th className="px-3 py-3">{t("partner.dashboard.eventType")}</th>
+                        <th className="px-3 py-3">{t("partner.dashboard.dueDate")}</th>
+                        <th className="px-3 py-3">{t("partner.tasks")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -358,7 +367,7 @@ export default function PartnerDashboard() {
                                 PARTNER_STATUS_TONE[row.status] || "bg-slate-100"
                               }`}
                             >
-                              {PARTNER_STATUS_LABEL[row.status] || row.status}
+                              {partnerStatusLabel(row.status, t)}
                             </span>
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-700">
@@ -371,7 +380,7 @@ export default function PartnerDashboard() {
                             {eventTypeLabel(row)}
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-600">
-                            {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate)}
+                            {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate, locale)}
                           </td>
                           <td className="px-3 py-3.5">
                             <span className="inline-grid h-7 w-7 place-items-center rounded-full bg-slate-100 text-xs font-black text-slate-700">
@@ -383,7 +392,7 @@ export default function PartnerDashboard() {
                       {!tableRows.length ? (
                         <tr>
                           <td colSpan={7} className="px-5 py-12 text-center font-bold text-slate-400">
-                            אין לקוחות עדיין — התחילו בלקוח חדש
+                            {t("partner.dashboard.emptyClients")}
                           </td>
                         </tr>
                       ) : null}
@@ -392,10 +401,13 @@ export default function PartnerDashboard() {
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-xs font-bold text-slate-500">
                   <span>
-                    מציג {tableRows.length} מתוך {counts?.total ?? tableRows.length} לקוחות
+                    {t("partner.dashboard.showingClients", {
+                      shown: tableRows.length,
+                      total: counts?.total ?? tableRows.length,
+                    })}
                   </span>
                   <Link to="/partner/dashboard/crm" className="font-black text-violet-700">
-                    לכל הלקוחות
+                    {t("partner.dashboard.allClients")}
                   </Link>
                 </div>
               </PartnerCard>
@@ -403,41 +415,41 @@ export default function PartnerDashboard() {
 
             <div className="space-y-4">
               <PartnerCard className="p-4">
-                <h3 className="mb-2 px-1 text-sm font-black text-slate-900">פעולות מהירות</h3>
+                <h3 className="mb-2 px-1 text-sm font-black text-slate-900">{t("partner.dashboard.quickActions")}</h3>
                 <PartnerQuickAction
                   to="/partner/dashboard/clients/new"
-                  label="לקוח חדש"
+                  label={t("partner.newClient")}
                   icon={<UserPlus className="h-4 w-4" />}
                   tone="violet"
                 />
                 <PartnerQuickAction
                   to="/partner/dashboard/tasks?new=1"
-                  label="משימה חדשה"
+                  label={t("partner.dashboard.newTask")}
                   icon={<CalendarCheck className="h-4 w-4" />}
                   tone="emerald"
                 />
                 <PartnerQuickAction
                   to="/partner/dashboard/reminders?new=1"
-                  label="תזכורת חדשה"
+                  label={t("partner.dashboard.newReminder")}
                   icon={<Bell className="h-4 w-4" />}
                   tone="orange"
                 />
                 <PartnerQuickAction
                   to="/partner/dashboard/clients/new"
-                  label="הצעת מחיר"
+                  label={t("partner.quote")}
                   icon={<FileText className="h-4 w-4" />}
                   tone="sky"
                 />
                 <PartnerQuickAction
                   to="/partner/dashboard/withdrawals"
-                  label="משיכת עמלה"
+                  label={t("partner.dashboard.withdrawCommission")}
                   icon={<Wallet className="h-4 w-4" />}
                   tone="sky"
                 />
               </PartnerCard>
 
               <PartnerCard className="p-4">
-                <h3 className="mb-3 px-1 text-sm font-black text-slate-900">תזכורות קרובות</h3>
+                <h3 className="mb-3 px-1 text-sm font-black text-slate-900">{t("partner.dashboard.upcomingReminders")}</h3>
                 <div className="space-y-2">
                   {reminders.map((item) => (
                     <Link
@@ -447,23 +459,23 @@ export default function PartnerDashboard() {
                     >
                       <p className="text-sm font-black text-slate-900">{item.title}</p>
                       <p className="text-[11px] font-bold text-slate-500">
-                        {item.clientName} · {formatPartnerDateTime(item.dueAt)}
+                        {item.clientName} · {formatPartnerDateTime(item.dueAt, locale)}
                       </p>
                     </Link>
                   ))}
                   {!reminders.length ? (
-                    <p className="px-1 text-sm font-bold text-slate-400">אין תזכורות קרובות</p>
+                    <p className="px-1 text-sm font-bold text-slate-400">{t("partner.dashboard.noReminders")}</p>
                   ) : null}
                 </div>
                 <Link
                   to="/partner/dashboard/reminders"
                   className="mt-3 inline-flex items-center gap-1 px-1 text-xs font-black text-violet-700"
                 >
-                  לכל התזכורות
+                  {t("partner.dashboard.allReminders")}
                 </Link>
               </PartnerCard>
 
-              <MyPartnerSubscriptionCard partner={partner} subscription={subscription} />
+              <MyPartnerSubscriptionCard partner={partner} subscription={subscription} t={t} locale={locale} />
             </div>
           </div>
         </>
@@ -479,6 +491,7 @@ function DateRangeBar({
   onPreset,
   onFrom,
   onTo,
+  t: tProp,
 }: {
   preset: string;
   from: string;
@@ -486,7 +499,10 @@ function DateRangeBar({
   onPreset: (value: string) => void;
   onFrom: (value: string) => void;
   onTo: (value: string) => void;
+  t?: TranslateFn;
 }) {
+  const { t: tHook } = useTranslation();
+  const t = tProp || tHook;
   return (
     <section className="rounded-[16px] border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap gap-2">
@@ -502,14 +518,14 @@ function DateRangeBar({
                 : "bg-slate-50 text-slate-600 hover:bg-slate-100",
             ].join(" ")}
           >
-            {item.label}
+            {t(`partner.${item.id}`)}
           </button>
         ))}
       </div>
       {preset === "custom" ? (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-black text-slate-500">
-            מ
+            {t("partner.from")}
             <input
               type="date"
               value={from}
@@ -518,7 +534,7 @@ function DateRangeBar({
             />
           </label>
           <label className="text-xs font-black text-slate-500">
-            עד
+            {t("partner.to")}
             <input
               type="date"
               value={to}
@@ -532,42 +548,46 @@ function DateRangeBar({
   );
 }
 
-function paymentLabel(value?: string | null) {
-  if (value === "paid" || value === "waived") return "שולם";
-  if (value === "unpaid") return "לא שולם";
+function paymentLabel(value: string | null | undefined, t: TranslateFn) {
+  if (value === "paid" || value === "waived") return t("partner.paid");
+  if (value === "unpaid") return t("partner.unpaid");
   return "—";
 }
 
-function statusLabel(value?: string | null) {
-  if (value === "active") return "פעיל";
-  if (value === "inactive") return "לא פעיל";
+function statusLabel(value: string | null | undefined, t: TranslateFn) {
+  if (value === "active") return t("partner.active");
+  if (value === "inactive") return t("partner.inactive");
   return value || "—";
 }
 
 function MyPartnerSubscriptionCard({
   partner,
   subscription,
+  t,
+  locale,
 }: {
   partner?: PartnerMe;
   subscription: PartnerSubscriptionSnapshot | null;
+  t: TranslateFn;
+  locale: string;
 }) {
-  const planName = subscription?.planName || partner?.plan?.nameHe || partner?.planKey || "מנוי Partner";
+  const planName = subscription?.planName || partner?.plan?.nameHe || partner?.planKey || t("partner.dashboard.partnerPlan");
   const monthly = subscription?.monthlyFeeIls ?? partner?.plan?.monthlyIls ?? null;
   const renewal = partner?.nextRenewalAt || partner?.currentPeriodEnd;
   return (
     <PartnerCard className="overflow-hidden p-5">
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7C3AED]">
-        המנוי שלי
+        {t("partner.dashboard.mySubscription")}
       </p>
       <p className="mt-1 text-lg font-black text-slate-900">{planName}</p>
       <p className="text-sm font-black text-slate-700">
-        {monthly != null ? `${ils(monthly)} לחודש` : "—"}
+        {monthly != null ? t("partner.dashboard.perMonthPlain", { amount: ils(monthly) }) : "—"}
       </p>
       <p className="mt-2 text-xs font-bold text-slate-500">
-        {statusLabel(subscription?.monthlyStatus)} / {paymentLabel(subscription?.currentMonthPayment)}
+        {statusLabel(subscription?.monthlyStatus, t)} / {paymentLabel(subscription?.currentMonthPayment, t)}
       </p>
       <p className="text-xs font-bold text-slate-500">
-        חידוש: {renewal ? new Date(renewal).toLocaleDateString("he-IL") : "—"}
+        {t("partner.dashboard.renewal", { date: renewal ? formatPartnerDate(renewal, locale) : "—" })}
       </p>
     </PartnerCard>
   );

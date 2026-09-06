@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 const RECOMMEND_LIMIT = 60; // Approval limit threshold
 
 const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
+  const { t } = useTranslation();
   const [recommendations, setRecommendations] = useState([]);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
@@ -32,7 +34,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return res.json();
       })
       .then((data) => setRecommendations(data))
-      .catch(() => setError("לא הצלחנו לטעון את ההמלצות. נסו שוב."));
+      .catch(() =>
+        setError(
+          t(
+            "leftover.aiRecs.load",
+            "We could not load the recommendations. Try again."
+          )
+        )
+      );
 
     // Load existing approval count
     fetch(`/api/business/my`, {
@@ -159,7 +168,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return next;
       });
     } catch (err) {
-      setError("לא הצלחנו לאשר את ההמלצה. נסו שוב.");
+      setError(
+        t(
+          "leftover.aiRecs.approve",
+          "We could not approve the recommendation. Try again."
+        )
+      );
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -190,7 +204,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         )
       );
     } catch (err) {
-      setError("לא הצלחנו לדחות את ההמלצה. נסו שוב.");
+      setError(
+        t(
+          "leftover.aiRecs.reject",
+          "We could not reject the recommendation. Try again."
+        )
+      );
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -234,7 +253,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       );
       cancelEditing();
     } catch (err) {
-      setError("לא הצלחנו לשמור את הטיוטה. נסו שוב.");
+      setError(
+        t("leftover.aiRecs.saveDraft", "We could not save the draft. Try again.")
+      );
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -276,7 +297,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       );
       cancelEditing();
     } catch (err) {
-      setError("לא הצלחנו לשמור ולאשר. נסו שוב.");
+      setError(
+        t(
+          "leftover.aiRecs.saveApprove",
+          "We could not save and approve. Try again."
+        )
+      );
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);

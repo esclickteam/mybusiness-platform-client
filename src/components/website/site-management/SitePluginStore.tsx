@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ChevronDown,
   Package,
@@ -11,13 +12,15 @@ import {
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import SitePluginHelpModal from "./SitePluginHelpModal";
 import PluginCoverImage from "./PluginCoverImage";
 import {
+  CATEGORY_GROUP_KEYS,
   CATEGORY_GROUPS,
+  CATEGORY_LABEL_KEYS,
   CATEGORY_LABELS,
   filterAndSortPlugins,
-  formatPluginPrice,
   getPluginRating,
   type InstallFilter,
   type SortOption,
@@ -51,6 +54,7 @@ function PluginStoreCard({
   onToggle: () => void;
   onUpgrade?: () => void;
 }) {
+  const { t } = useTranslation();
   const Icon = getPluginIcon(plugin.key);
   const accent = getPluginAccent(plugin.key, plugin.accent);
   const rating = getPluginRating(plugin.key);
@@ -83,7 +87,7 @@ function PluginStoreCard({
           {wasDetected && !isEnabled ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 shadow-sm">
               <Sparkles size={11} />
-              חדש
+              {t("sites.plugins.newBadge")}
             </span>
           ) : (
             <span />
@@ -91,7 +95,7 @@ function PluginStoreCard({
 
           {isEnabled && plugin.entitled === true ? (
             <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
-              {plugin.statusLabel || "מנוי פעיל"}
+              {plugin.statusLabel || t("sites.plugins.activeSub")}
             </span>
           ) : plugin.statusLabel ? (
             <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
@@ -116,7 +120,9 @@ function PluginStoreCard({
           </span>
           <span className="text-[11px] text-slate-400">·</span>
           <span className="truncate text-[11px] font-medium text-slate-500">
-            {CATEGORY_LABELS[plugin.category] || plugin.category}
+            {t(CATEGORY_LABEL_KEYS[plugin.category] || "", {
+              defaultValue: CATEGORY_LABELS[plugin.category] || plugin.category,
+            })}
           </span>
         </div>
 
@@ -134,10 +140,19 @@ function PluginStoreCard({
             }}
             className="text-xs font-semibold text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
           >
-            עזרה
+            {t("sites.plugins.help")}
           </button>
           <span className="text-xs font-semibold text-emerald-600">
-            {formatPluginPrice(plugin)}
+            {plugin.displayPriceLabel ||
+              plugin.priceLabel ||
+              (plugin.priceMonthly == null
+                ? t("sites.plugins.included")
+                : plugin.priceMax && plugin.priceMax > (plugin.priceMonthly || 0)
+                  ? t("sites.plugins.priceRange", {
+                      min: plugin.priceMonthly,
+                      max: plugin.priceMax,
+                    })
+                  : t("sites.plugins.priceMonth", { price: plugin.priceMonthly }))}
           </span>
           {plugin.secondaryCtaLabel && onUpgrade ? (
             <button
@@ -175,11 +190,11 @@ function PluginStoreCard({
             {saving ? (
               <BizuplyLoader size="xs" compact />
             ) : isEnabled && plugin.entitled === true ? (
-              "הסרה"
+              t("sites.plugins.remove")
             ) : plugin.ctaLabel ? (
               plugin.ctaLabel
             ) : (
-              "התקנה"
+              t("sites.plugins.install")
             )}
           </button>
         </div>
@@ -198,6 +213,8 @@ export default function SitePluginStore({
   onToggle,
   onUpgrade,
 }: SitePluginStoreProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortOption>("relevant");
@@ -228,8 +245,10 @@ export default function SitePluginStore({
 
   const sectionTitle =
     category === "all"
-      ? "כל התוספים"
-      : CATEGORY_LABELS[category] || category;
+      ? t("sites.plugins.allPlugins")
+      : t(CATEGORY_LABEL_KEYS[category] || "", {
+          defaultValue: CATEGORY_LABELS[category] || category,
+        });
 
   const availableCategories = useMemo(() => {
     const set = new Set(catalog.map((item) => item.category));
@@ -237,7 +256,7 @@ export default function SitePluginStore({
   }, [catalog]);
 
   return (
-    <div dir="rtl" className="relative min-h-[600px]">
+    <div dir={pageDir} className="relative min-h-[600px]">
       {/* Search bar — Chrome Web Store style */}
       <div className="mb-6 flex justify-center">
         <div className="relative w-full max-w-2xl">
@@ -248,7 +267,7 @@ export default function SitePluginStore({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="חיפוש תוספים וכלים"
+            placeholder={t("sites.plugins.search")}
             className="h-12 w-full rounded-full border border-slate-200 bg-white pr-14 pl-5 text-sm text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
           />
         </div>
@@ -268,7 +287,7 @@ export default function SitePluginStore({
                     : "text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                הכול
+                {t("sites.plugins.all")}
               </button>
             </div>
 
@@ -279,9 +298,11 @@ export default function SitePluginStore({
               if (visible.length === 0) return null;
 
               return (
-                <div key={group.title}>
+                <div key={group.id}>
                   <p className="mb-2 px-4 text-xs font-bold uppercase tracking-wide text-slate-400">
-                    {group.title}
+                    {t(CATEGORY_GROUP_KEYS[group.id] || "", {
+                      defaultValue: group.title,
+                    })}
                   </p>
                   <ul className="space-y-0.5">
                     {visible.map((cat) => (
@@ -295,7 +316,9 @@ export default function SitePluginStore({
                               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                           }`}
                         >
-                          {CATEGORY_LABELS[cat] || cat}
+                          {t(CATEGORY_LABEL_KEYS[cat] || "", {
+                            defaultValue: CATEGORY_LABELS[cat] || cat,
+                          })}
                         </button>
                       </li>
                     ))}
@@ -306,7 +329,7 @@ export default function SitePluginStore({
 
             {installedCount > 0 ? (
               <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-4">
-                <p className="text-xs font-medium text-slate-500">מותקנים באתר</p>
+                <p className="text-xs font-medium text-slate-500">{t("sites.plugins.installedOnSite")}</p>
                 <p className="mt-1 text-2xl font-bold text-slate-900">
                   {installedCount}
                 </p>
@@ -318,7 +341,7 @@ export default function SitePluginStore({
                   }}
                   className="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-800"
                 >
-                  הצג הכל →
+                  {t("sites.plugins.showAll")}
                 </button>
               </div>
             ) : null}
@@ -338,7 +361,7 @@ export default function SitePluginStore({
                   : "border border-slate-200 bg-white text-slate-600"
               }`}
             >
-              הכול
+              {t("sites.plugins.all")}
             </button>
             {Array.from(availableCategories).map((cat) => (
               <button
@@ -351,7 +374,9 @@ export default function SitePluginStore({
                     : "border border-slate-200 bg-white text-slate-600"
                 }`}
               >
-                {CATEGORY_LABELS[cat] || cat}
+                {t(CATEGORY_LABEL_KEYS[cat] || "", {
+                  defaultValue: CATEGORY_LABELS[cat] || cat,
+                })}
               </button>
             ))}
           </div>
@@ -373,9 +398,9 @@ export default function SitePluginStore({
                   }
                   className="h-9 appearance-none rounded-lg border border-slate-200 bg-white py-0 pl-8 pr-9 text-xs font-medium text-slate-700 outline-none focus:border-blue-300"
                 >
-                  <option value="all">סינון: הכול</option>
-                  <option value="installed">מותקנים</option>
-                  <option value="available">זמינים להתקנה</option>
+                  <option value="all">{t("sites.plugins.filterAll")}</option>
+                  <option value="installed">{t("sites.plugins.filterInstalled")}</option>
+                  <option value="available">{t("sites.plugins.filterAvailable")}</option>
                 </select>
                 <ChevronDown
                   size={14}
@@ -389,10 +414,10 @@ export default function SitePluginStore({
                   onChange={(e) => setSort(e.target.value as SortOption)}
                   className="h-9 appearance-none rounded-lg border border-slate-200 bg-white py-0 pl-8 pr-4 text-xs font-medium text-slate-700 outline-none focus:border-blue-300"
                 >
-                  <option value="relevant">מיון: רלוונטי</option>
-                  <option value="name-asc">שם (א–ת)</option>
-                  <option value="name-desc">שם (ת–א)</option>
-                  <option value="price-asc">מחיר (נמוך לגבוה)</option>
+                  <option value="relevant">{t("sites.plugins.sortRelevant")}</option>
+                  <option value="name-asc">{t("sites.plugins.sortNameAsc")}</option>
+                  <option value="name-desc">{t("sites.plugins.sortNameDesc")}</option>
+                  <option value="price-asc">{t("sites.plugins.sortPriceAsc")}</option>
                 </select>
                 <ChevronDown
                   size={14}
@@ -403,8 +428,7 @@ export default function SitePluginStore({
           </div>
 
           <p className="mb-5 rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-2.5 text-xs leading-relaxed text-blue-900">
-            תוספים בתשלום נפתחים ב-Stripe Checkout. בלי מנוי תראו מחיר וכפתור
-            «רכישה». אזור אישי הוא מנוי ב־199 ₪ לחודש.
+            {t("sites.plugins.billingNote")}
           </p>
 
           {/* 4-column grid */}
@@ -429,10 +453,10 @@ export default function SitePluginStore({
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-20 text-center">
               <Package size={40} className="mx-auto text-slate-300" />
               <p className="mt-4 text-sm font-semibold text-slate-700">
-                לא נמצאו תוספים
+                {t("sites.plugins.empty")}
               </p>
               <p className="mt-1 text-xs text-slate-500">
-                נסו לשנות את החיפוש או הסינון
+                {t("sites.plugins.emptyHint")}
               </p>
               <button
                 type="button"
@@ -443,7 +467,7 @@ export default function SitePluginStore({
                 }}
                 className="mt-4 rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                ניקוי סינון
+                {t("sites.plugins.clearFilter")}
               </button>
             </div>
           ) : null}

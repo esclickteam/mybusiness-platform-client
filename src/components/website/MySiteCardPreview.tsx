@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LayoutTemplate } from "lucide-react";
 
 import type { MySiteSummary } from "../../api/mySitesApi";
@@ -10,11 +11,12 @@ type MySiteCardPreviewProps = {
 };
 
 function NeutralSitePlaceholder({ label }: { label?: string }) {
+  const { t } = useTranslation();
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#eef1f4] p-4">
       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" aria-hidden />
       <span className="max-w-[85%] truncate text-center text-xs font-bold text-[#6b7280]">
-        {label || "האתר שלי"}
+        {label || t("leftover.templatePreview.mySite", "My website")}
       </span>
     </div>
   );
@@ -28,9 +30,13 @@ export default function MySiteCardPreview({
   site,
   eager = false,
 }: MySiteCardPreviewProps) {
+  const { t } = useTranslation();
   const src = getSiteCardScreenshotUrl(site);
   const [failed, setFailed] = useState(false);
-  const label = site.name || site.templateName || "האתר שלי";
+  const label =
+    site.name ||
+    site.templateName ||
+    t("leftover.templatePreview.mySite", "My website");
 
   if (!src || failed) {
     return (

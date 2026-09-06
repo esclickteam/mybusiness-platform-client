@@ -1,4 +1,5 @@
 import API from "../api";
+import i18n from "../i18n/i18n";
 
 export type MySiteDomainSummary = {
   domain?: string;
@@ -236,7 +237,7 @@ export async function connectSiteCustomDomain(
     { customDomain },
   );
   if (!data?.success) {
-    throw new Error(data?.error || "חיבור הדומיין נכשל");
+    throw new Error(data?.error || i18n.t("leftover.errors.connectDomain"));
   }
   return data as SiteCustomDomainResult;
 }
@@ -247,7 +248,7 @@ export async function disconnectSiteCustomDomain(siteId: string) {
     { disconnect: true },
   );
   if (!data?.success) {
-    throw new Error(data?.error || "ניתוק הדומיין נכשל");
+    throw new Error(data?.error || i18n.t("leftover.errors.disconnectDomain"));
   }
   return data as SiteCustomDomainResult;
 }

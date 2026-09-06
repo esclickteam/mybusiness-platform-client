@@ -1,14 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 /**
  * Shown instead of a blocked module for plan-limited accounts
  * (e.g. "website only" buyers trying to open CRM / automations / AI).
  */
 export default function UpgradeRequired({ businessId }) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       style={{
         minHeight: "60vh",
         display: "flex",
@@ -32,13 +37,10 @@ export default function UpgradeRequired({ businessId }) {
           &#128274;
         </div>
         <h2 style={{ margin: "0 0 12px", fontSize: 24, color: "#111827" }}>
-          המודול הזה לא כלול בחבילה שלך
+          {t("billing.upgrade.title")}
         </h2>
-        <p style={{ margin: "0 0 24px", color: "#4b5563", lineHeight: 1.8 }}>
-          החבילה הנוכחית שלך כוללת ניהול אתר ודומיין בלבד.
-          <br />
-          כדי לקבל גישה ל-CRM, לידים, פגישות, שיתופי פעולה, אוטומציות
-          ול-AI העסקי — שדרגו לחבילה העסקית.
+        <p style={{ margin: "0 0 24px", color: "#4b5563", lineHeight: 1.8, whiteSpace: "pre-line" }}>
+          {t("billing.upgrade.text")}
         </p>
         <div
           style={{
@@ -59,7 +61,7 @@ export default function UpgradeRequired({ businessId }) {
               textDecoration: "none",
             }}
           >
-            שדרוג לחבילה העסקית
+            {t("billing.upgrade.upgradeCta")}
           </Link>
           {businessId ? (
             <Link
@@ -73,7 +75,7 @@ export default function UpgradeRequired({ businessId }) {
                 textDecoration: "none",
               }}
             >
-              חזרה לניהול האתר
+              {t("billing.upgrade.backToWebsite")}
             </Link>
           ) : null}
         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";
 import {
   getAutomationExecution,
@@ -14,10 +15,8 @@ import {
   formatExecutionDateTime,
   getExecutionDurationMs,
   getExecutionEndAt,
-  getExecutionStatusLabel,
   getExecutionStatusTone,
   getFailedStep,
-  getNodeStatusLabel,
   getNodeStatusSymbol,
   getTriggerSummary,
   summarizeJson,
@@ -31,12 +30,37 @@ type Props = {
   onClose: () => void;
 };
 
+function executionStatusLabel(
+  status: string | null | undefined,
+  t: (key: string, defaultValue?: string) => string
+) {
+  switch (String(status || "").toLowerCase()) {
+    case "completed":
+    case "success":
+      return t("automations.runs.success");
+    case "failed":
+    case "error":
+      return t("automations.runs.failed");
+    case "running":
+      return t("automations.runs.running");
+    case "waiting":
+    case "pending":
+      return t("automations.runs.pending");
+    case "cancelled":
+    case "canceled":
+      return t("automations.runs.cancelled");
+    default:
+      return status ? String(status) : t("automations.common.none");
+  }
+}
+
 export default function AutomationExecutionDetailDrawer({
   businessId,
   executionId,
   workflowName,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [execution, setExecution] = useState<AutomationExecution | null>(null);
@@ -71,7 +95,7 @@ export default function AutomationExecutionDetailDrawer({
           setError(
             readAutomationErrorMessage(
               err,
-              "לא ניתן לטעון את פרטי ההרצה"
+              t("automations.runsDetail.loadError", "Could not load run details")
             )
           );
         }
@@ -83,7 +107,7 @@ export default function AutomationExecutionDetailDrawer({
     return () => {
       cancelled = true;
     };
-  }, [businessId, executionId]);
+  }, [businessId, executionId, t]);
 
   const workflowOrder = useMemo(
     () =>
@@ -112,7 +136,7 @@ export default function AutomationExecutionDetailDrawer({
     workflowName ||
     workflow?.name ||
     execution?.workflowId ||
-    "אוטומציה";
+    t("automations.runs.automation");
 
   return (
     <div className="ax-exec-backdrop" role="presentation" onClick={onClose}>
@@ -120,12 +144,14 @@ export default function AutomationExecutionDetailDrawer({
         className="ax-exec-drawer"
         role="dialog"
         aria-modal="true"
-        aria-label={"פרטי הרצה"}
+        aria-label={t("automations.runsDetail.title", "Run details")}
         onClick={(event) => event.stopPropagation()}
       >
         <header className="ax-exec-drawer__header">
           <div>
-            <p className="ax-exec-drawer__eyebrow">פרטי הרצה</p>
+            <p className="ax-exec-drawer__eyebrow">
+              {t("automations.runsDetail.title", "Run details")}
+            </p>
             <h2>{title}</h2>
             <p className="ax-exec-drawer__meta">{executionId}</p>
           </div>
@@ -133,7 +159,7 @@ export default function AutomationExecutionDetailDrawer({
             type="button"
             className="ax-exec-drawer__close"
             onClick={onClose}
-            aria-label={"סגירה"}
+            aria-label={t("automations.common.close")}
           >
             <X size={16} />
           </button>
@@ -143,25 +169,30 @@ export default function AutomationExecutionDetailDrawer({
           {loading ? (
             <div className="ax-empty">
               <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-              טוען פרטי הרצה...
+              {t("automations.runsDetail.loading", "Loading run details...")}
             </div>
           ) : error || !execution ? (
             <div className="ax-empty ax-empty--card">
-              <strong>לא ניתן לטעון את ההרצה</strong>
-              <p>{error || "ההרצה לא נמצאה."}</p>
+              <strong>
+                {t("automations.runsDetail.loadFailed", "Could not load the run")}
+              </strong>
+              <p>
+                {error ||
+                  t("automations.runsDetail.notFound", "The run was not found.")}
+              </p>
             </div>
           ) : (
             <>
               <section className="ax-exec-summary">
                 <div className="ax-exec-summary__grid">
                   <div>
-                    <span>סטטוס</span>
+                    <span>{t("automations.runs.status")}</span>
                     <strong className={`ax-result ax-result--${tone}`}>
-                      {getExecutionStatusLabel(execution.status)}
+                      {executionStatusLabel(execution.status, t)}
                     </strong>
                   </div>
                   <div>
-                    <span>התחלה</span>
+                    <span>{t("automations.runs.started")}</span>
                     <strong>
                       {formatExecutionDateTime(
                         execution.startedAt || execution.createdAt
@@ -169,41 +200,49 @@ export default function AutomationExecutionDetailDrawer({
                     </strong>
                   </div>
                   <div>
-                    <span>סיום</span>
+                    <span>{t("automations.runsDetail.ended", "Ended")}</span>
                     <strong>
                       {formatExecutionDateTime(getExecutionEndAt(execution))}
                     </strong>
                   </div>
                   <div>
-                    <span>משך</span>
+                    <span>{t("automations.runs.duration")}</span>
                     <strong>{formatDurationMs(duration)}</strong>
                   </div>
                   <div>
-                    <span>Trigger</span>
+                    <span>{t("automations.runs.trigger")}</span>
                     <strong>{getTriggerSummary(execution)}</strong>
                   </div>
                   <div>
-                    <span>מצב</span>
+                    <span>{t("automations.runsDetail.mode", "Mode")}</span>
                     <strong>
                       {execution.mode === "test"
-                        ? "בדיקה"
-                        : "חי"}
+                        ? t("automations.runsDetail.modeTest", "Test")
+                        : t("automations.runsDetail.modeLive", "Live")}
                     </strong>
                   </div>
                 </div>
 
                 {execution.status === "failed" ? (
                   <div className="ax-exec-error" role="alert">
-                    <strong>כשלון</strong>
+                    <strong>
+                      {t("automations.runsDetail.failure", "Failure")}
+                    </strong>
                     <p>
                       {failedStep?.label
-                        ? `שלב: ${failedStep.label}`
-                        : "ההרצה נכשלה"}
+                        ? t("automations.runsDetail.failedStep", {
+                            label: failedStep.label,
+                            defaultValue: "Step: {{label}}",
+                          })
+                        : t("automations.runsDetail.runFailed", "The run failed")}
                     </p>
                     <p>
                       {execution.error ||
                         failedStep?.error ||
-                        "אין פרטי שגיאה"}
+                        t(
+                          "automations.runsDetail.noErrorDetails",
+                          "No error details"
+                        )}
                     </p>
                     {execution.errorCode ? (
                       <code>{execution.errorCode}</code>
@@ -219,7 +258,10 @@ export default function AutomationExecutionDetailDrawer({
                       to={`../${execution.workflowId}`}
                       className="ax-btn ax-btn--secondary"
                     >
-                      פתח אוטומציה
+                      {t(
+                        "automations.runsDetail.openAutomation",
+                        "Open automation"
+                      )}
                     </Link>
                   </div>
                 ) : null}
@@ -227,11 +269,23 @@ export default function AutomationExecutionDetailDrawer({
 
               <section className="ax-exec-flow">
                 <div className="ax-exec-flow__head">
-                  <h3>מהלך ההרצה</h3>
-                  <span>תצוגה לקריאה בלבד — לא ניתן לערוך את האוטומציה מכאן</span>
+                  <h3>
+                    {t("automations.runsDetail.flowTitle", "Run timeline")}
+                  </h3>
+                  <span>
+                    {t(
+                      "automations.runsDetail.flowHint",
+                      "Read-only view — you cannot edit the automation from here"
+                    )}
+                  </span>
                 </div>
                 {steps.length === 0 ? (
-                  <div className="ax-empty">אין שלבים זמינים עבור הרצה זו.</div>
+                  <div className="ax-empty">
+                    {t(
+                      "automations.runsDetail.noSteps",
+                      "No steps are available for this run."
+                    )}
+                  </div>
                 ) : (
                   <ol className="ax-exec-steps">
                     {steps.map((step) => {
@@ -253,7 +307,7 @@ export default function AutomationExecutionDetailDrawer({
                             <span className="ax-exec-step__main">
                               <strong>{step.label}</strong>
                               <em>
-                                {getNodeStatusLabel(step.status)}
+                                {executionStatusLabel(step.status, t)}
                                 {step.type
                                   ? ` · ${step.type}`
                                   : ""}
@@ -273,38 +327,43 @@ export default function AutomationExecutionDetailDrawer({
               {selectedStep ? (
                 <section className="ax-exec-node">
                   <div className="ax-exec-flow__head">
-                    <h3>פרטי שלב</h3>
+                    <h3>
+                      {t("automations.runsDetail.stepDetails", "Step details")}
+                    </h3>
                     <button
                       type="button"
                       className="ax-btn ax-btn--secondary"
                       onClick={() => setSelectedStepId(null)}
                     >
-                      נקה בחירה
+                      {t(
+                        "automations.runsDetail.clearSelection",
+                        "Clear selection"
+                      )}
                     </button>
                   </div>
                   <div className="ax-exec-summary__grid">
                     <div>
-                      <span>שם</span>
+                      <span>{t("automations.runsDetail.name", "Name")}</span>
                       <strong>{selectedStep.label}</strong>
                     </div>
                     <div>
-                      <span>סטטוס</span>
+                      <span>{t("automations.runs.status")}</span>
                       <strong
                         className={`ax-result ax-result--${getExecutionStatusTone(
                           selectedStep.status
                         )}`}
                       >
-                        {getNodeStatusLabel(selectedStep.status)}
+                        {executionStatusLabel(selectedStep.status, t)}
                       </strong>
                     </div>
                     <div>
-                      <span>התחלה</span>
+                      <span>{t("automations.runs.started")}</span>
                       <strong>
                         {formatExecutionDateTime(selectedStep.startedAt)}
                       </strong>
                     </div>
                     <div>
-                      <span>משך</span>
+                      <span>{t("automations.runs.duration")}</span>
                       <strong>
                         {formatDurationMs(
                           selectedStep.startedAt
@@ -321,17 +380,19 @@ export default function AutomationExecutionDetailDrawer({
                   </div>
                   {selectedStep.error ? (
                     <div className="ax-exec-error ax-exec-error--compact">
-                      <strong>שגיאת שלב</strong>
+                      <strong>
+                        {t("automations.runsDetail.stepError", "Step error")}
+                      </strong>
                       <p>{selectedStep.error}</p>
                     </div>
                   ) : null}
                   <div className="ax-exec-io">
                     <div>
-                      <span>Input</span>
+                      <span>{t("automations.runsDetail.input", "Input")}</span>
                       <pre>{summarizeJson(selectedStep.input, 1200)}</pre>
                     </div>
                     <div>
-                      <span>Output</span>
+                      <span>{t("automations.runsDetail.output", "Output")}</span>
                       <pre>{summarizeJson(selectedStep.output, 1200)}</pre>
                     </div>
                   </div>

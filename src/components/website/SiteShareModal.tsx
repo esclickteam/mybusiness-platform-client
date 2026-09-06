@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { X, UserPlus, ArrowRightLeft, Mail, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { X, UserPlus, ArrowRightLeft, Mail } from "lucide-react";
+import { getTextDirection } from "../../i18n/localeUtils";
 import type { MySiteSummary } from "../../api/mySitesApi";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
@@ -18,6 +20,8 @@ type Props = {
 };
 
 export default function SiteShareModal({ site, open, onClose }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [email, setEmail] = useState("");
   const [mode, setMode] = useState<"share" | "transfer">("share");
   const [role, setRole] = useState<"editor" | "viewer">("editor");
@@ -44,7 +48,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
         setPending(data.pendingInvites);
       })
       .catch((err) => {
-        setError(err?.message || "לא ניתן לטעון את רשימת השותפים");
+        setError(err?.message || t("sites.share.loadPartnersError"));
       })
       .finally(() => setLoadingList(false));
   }, [open, site._id]);
@@ -57,13 +61,16 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
     setMessage("");
 
     if (!email.trim()) {
-      setError("נא להזין כתובת מייל");
+      setError(t("sites.share.needEmail"));
       return;
     }
 
     if (mode === "transfer") {
       const ok = window.confirm(
-        `להעביר את הבעלות על "${site.name || "האתר"}" ל־${email.trim()}?\nלאחר האישור בצד השני, האתר יוסר מהחשבון שלכם.`
+        t("sites.share.confirmTransfer", {
+          name: site.name || t("sites.share.siteFallback"),
+          email: email.trim(),
+        })
       );
       if (!ok) return;
     }
@@ -77,15 +84,15 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
       });
       setMessage(
         mode === "transfer"
-          ? "נשלחה הזמנת העברה למייל. הבעלות תעבור רק אחרי שהצד השני יאשר."
-          : "נשלחה הזמנת שיתוף למייל."
+          ? t("sites.share.transferSent")
+          : t("sites.share.shareSent")
       );
       setEmail("");
       const data = await listSiteCollaborators(site._id);
       setCollaborators(data.collaborators);
       setPending(data.pendingInvites);
     } catch (err: any) {
-      setError(err?.message || "שליחת ההזמנה נכשלה");
+      setError(err?.message || t("sites.share.sendError"));
     } finally {
       setSending(false);
     }
@@ -97,7 +104,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
       const next = await removeSiteCollaborator(site._id, id);
       setCollaborators(next);
     } catch (err: any) {
-      setError(err?.message || "הסרת השותף נכשלה");
+      setError(err?.message || t("sites.share.removeError"));
     }
   }
 
@@ -106,13 +113,13 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
       await revokeSiteInvite(id);
       setPending((prev) => prev.filter((i) => i._id !== id));
     } catch (err: any) {
-      setError(err?.message || "ביטול ההזמנה נכשל");
+      setError(err?.message || t("sites.share.revokeError"));
     }
   }
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className="fixed inset-0 z-[90] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-[2px]"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -122,17 +129,17 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
         <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
-              שיתוף והעברת אתר
+              {t("sites.share.title")}
             </h2>
             <p className="mt-0.5 text-sm text-slate-500">
-              {site.name || "האתר שלי"}
+              {site.name || t("sites.share.mySite")}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-            aria-label="סגירה"
+            aria-label={t("sites.share.close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -141,7 +148,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
         <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-              מייל של המשתמש
+              {t("sites.share.emailLabel")}
             </label>
             <div className="relative">
               <Mail className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -158,7 +165,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
 
           <div>
             <p className="mb-2 text-sm font-semibold text-slate-700">
-              מה תרצו לעשות?
+              {t("sites.share.whatToDo")}
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
               <button
@@ -172,10 +179,10 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
               >
                 <div className="mb-1 flex items-center gap-2 font-semibold text-slate-900">
                   <UserPlus className="h-4 w-4" />
-                  שיתוף בנוסף
+                  {t("sites.share.shareAlso")}
                 </div>
                 <p className="text-xs text-slate-500">
-                  האתר נשאר אצלכם, והשותף מקבל גישה לעריכה או צפייה.
+                  {t("sites.share.shareAlsoHint")}
                 </p>
               </button>
 
@@ -190,10 +197,10 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
               >
                 <div className="mb-1 flex items-center gap-2 font-semibold text-slate-900">
                   <ArrowRightLeft className="h-4 w-4" />
-                  העברה מלאה
+                  {t("sites.share.fullTransfer")}
                 </div>
                 <p className="text-xs text-slate-500">
-                  הבעלות עוברת רק אליו — האתר יוסר מהרשימה שלכם.
+                  {t("sites.share.fullTransferHint")}
                 </p>
               </button>
             </div>
@@ -201,7 +208,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
 
           {mode === "share" ? (
             <div>
-              <p className="mb-2 text-sm font-semibold text-slate-700">הרשאה</p>
+              <p className="mb-2 text-sm font-semibold text-slate-700">{t("sites.share.permission")}</p>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -212,7 +219,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                       : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  עריכה
+                  {t("sites.share.edit")}
                 </button>
                 <button
                   type="button"
@@ -223,7 +230,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                       : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  צפייה בלבד
+                  {t("sites.share.viewOnly")}
                 </button>
               </div>
             </div>
@@ -246,19 +253,19 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
             className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-sm font-semibold text-black hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
           >
             {sending ? <BizuplyLoader size="xs" compact /> : null}
-            {mode === "transfer" ? "שליחת הזמנת העברה" : "שליחת הזמנת שיתוף"}
+            {mode === "transfer" ? t("sites.share.sendTransfer") : t("sites.share.sendShare")}
           </button>
         </form>
 
         <div className="border-t border-slate-100 px-5 py-4">
-          <h3 className="mb-2 text-sm font-bold text-slate-800">שותפים והזמנות</h3>
+          <h3 className="mb-2 text-sm font-bold text-slate-800">{t("sites.share.partnersTitle")}</h3>
 
           {loadingList ? (
-            <p className="text-sm text-slate-500">טוען...</p>
+            <p className="text-sm text-slate-500">{t("sites.share.loading")}</p>
           ) : (
             <div className="space-y-3">
               {collaborators.length === 0 && pending.length === 0 ? (
-                <p className="text-sm text-slate-500">עדיין אין שותפים או הזמנות ממתינות.</p>
+                <p className="text-sm text-slate-500">{t("sites.share.noneYet")}</p>
               ) : null}
 
               {collaborators.map((c) => (
@@ -268,10 +275,10 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-800" dir="ltr">
-                      {c.email || "שותף"}
+                      {c.email || t("sites.share.partner")}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {c.role === "viewer" ? "צפייה" : "עריכה"}
+                      {c.role === "viewer" ? t("sites.share.view") : t("sites.share.edit")}
                     </p>
                   </div>
                   {c._id ? (
@@ -280,7 +287,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                       onClick={() => handleRemoveCollaborator(c._id)}
                       className="text-xs font-semibold text-rose-600 hover:underline"
                     >
-                      הסרה
+                      {t("sites.share.remove")}
                     </button>
                   ) : null}
                 </div>
@@ -296,8 +303,9 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                       {invite.toEmail}
                     </p>
                     <p className="text-xs text-slate-500">
-                      ממתין לאישור ·{" "}
-                      {invite.mode === "transfer" ? "העברה" : "שיתוף"}
+                      {t("sites.share.pending", {
+                        mode: invite.mode === "transfer" ? t("sites.share.transfer") : t("sites.share.share"),
+                      })}
                     </p>
                   </div>
                   <button
@@ -305,7 +313,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                     onClick={() => handleRevokeInvite(invite._id)}
                     className="text-xs font-semibold text-slate-600 hover:underline"
                   >
-                    ביטול
+                    {t("sites.share.revoke")}
                   </button>
                 </div>
               ))}

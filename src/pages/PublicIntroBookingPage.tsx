@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, Check, ChevronLeft, ChevronRight, Info, Phone, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import API from "../api";
+import { getIntlLocale, getTextDirection } from "../i18n/localeUtils";
 
 type Slot = { startAt: string; endAt: string; label: string };
 type DateRow = { key: string; slots: Slot[]; sampleIso: string };
@@ -19,23 +21,23 @@ function dayKey(iso: string) {
   }).format(new Date(iso));
 }
 
-function formatDateCard(iso: string) {
-  return new Intl.DateTimeFormat("he-IL", {
+function formatDateCard(iso: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: TIMEZONE,
     day: "2-digit",
     month: "2-digit",
   }).format(new Date(iso));
 }
 
-function formatWeekday(iso: string) {
-  return new Intl.DateTimeFormat("he-IL", {
+function formatWeekday(iso: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: TIMEZONE,
     weekday: "long",
   }).format(new Date(iso));
 }
 
-function formatTime(iso: string) {
-  return new Intl.DateTimeFormat("he-IL", {
+function formatTime(iso: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
@@ -43,8 +45,8 @@ function formatTime(iso: string) {
   }).format(new Date(iso));
 }
 
-function formatWhen(iso: string) {
-  return new Intl.DateTimeFormat("he-IL", {
+function formatWhen(iso: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: TIMEZONE,
     weekday: "long",
     day: "numeric",
@@ -55,9 +57,9 @@ function formatWhen(iso: string) {
   }).format(new Date(iso));
 }
 
-function formatPickerLabel(key: string, sampleIso: string) {
+function formatPickerLabel(key: string, sampleIso: string, locale: string) {
   try {
-    return new Intl.DateTimeFormat("he-IL", {
+    return new Intl.DateTimeFormat(locale, {
       timeZone: TIMEZONE,
       weekday: "long",
       day: "numeric",
@@ -88,6 +90,8 @@ function DateCard({
   onSelect: (key: string) => void;
   compact?: boolean;
 }) {
+  const { i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   return (
     <button
       type="button"
@@ -98,15 +102,16 @@ function DateCard({
         compact ? "w-[72px] shrink-0 snap-center" : "w-full",
       ].join(" ")}
     >
-      <span className="text-sm font-black tabular-nums">{formatDateCard(day.sampleIso)}</span>
+      <span className="text-sm font-black tabular-nums">{formatDateCard(day.sampleIso, locale)}</span>
       <span className="mt-0.5 text-center text-[10px] font-bold leading-tight">
-        {formatWeekday(day.sampleIso)}
+        {formatWeekday(day.sampleIso, locale)}
       </span>
     </button>
   );
 }
 
 function DatePickerCube({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -114,7 +119,9 @@ function DatePickerCube({ onClick }: { onClick: () => void }) {
       className="flex min-h-[72px] w-[72px] shrink-0 snap-center flex-col items-center justify-center rounded-2xl border border-dashed border-[#7C4DFF]/40 bg-[#7C4DFF]/5 px-1 py-2 text-[#7C4DFF] transition hover:border-[#7C4DFF]/60 hover:bg-[#7C4DFF]/10"
     >
       <Calendar className="h-5 w-5" strokeWidth={2.2} />
-      <span className="mt-1 text-center text-[10px] font-black leading-tight">בחירת תאריך</span>
+      <span className="mt-1 text-center text-[10px] font-black leading-tight">
+        {t("public.booking.pickDate", "בחירת תאריך")}
+      </span>
     </button>
   );
 }
@@ -135,6 +142,8 @@ function DatePickerModal({
   const availableKeys = useMemo(() => new Set(dates.map((d) => d.key)), [dates]);
   const minDate = dates[0]?.key || "";
   const maxDate = dates[dates.length - 1]?.key || "";
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const [draft, setDraft] = useState(selectedDateKey);
   const [pickerError, setPickerError] = useState("");
 
@@ -149,7 +158,7 @@ function DatePickerModal({
 
   function applyDate(key: string) {
     if (!availableKeys.has(key)) {
-      setPickerError("אין מועדים פנויים בתאריך זה. בחרו תאריך אחר.");
+      setPickerError(t("public.booking.noSlotsOnDate", "אין מועדים פנויים בתאריך זה. בחרו תאריך אחר."));
       return;
     }
     onSelect(key);
@@ -161,7 +170,7 @@ function DatePickerModal({
       className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center"
       role="dialog"
       aria-modal="true"
-      aria-label="בחירת תאריך"
+      aria-label={t("public.booking.pickDate", "בחירת תאריך")}
       onClick={onClose}
     >
       <div
@@ -169,18 +178,18 @@ function DatePickerModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between gap-2">
-          <h3 className="text-base font-black text-[#1E1B4B]">בחרו תאריך</h3>
+          <h3 className="text-base font-black text-[#1E1B4B]">{t("public.booking.pickDateTitle", "בחרו תאריך")}</h3>
           <button
             type="button"
             onClick={onClose}
-            aria-label="סגירה"
+            aria-label={t("common.close", "סגירה")}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-500"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <label className="block text-xs font-bold text-slate-500">תאריך</label>
+        <label className="block text-xs font-bold text-slate-500">{t("public.booking.date", "תאריך")}</label>
         <input
           type="date"
           dir="ltr"
@@ -211,8 +220,10 @@ function DatePickerModal({
                   : "border-slate-100 bg-slate-50 text-slate-700 hover:border-[#7C4DFF]/30",
               ].join(" ")}
             >
-              <span>{formatPickerLabel(day.key, day.sampleIso)}</span>
-              <span className="text-xs tabular-nums text-slate-500">{day.slots.length} מועדים</span>
+              <span>{formatPickerLabel(day.key, day.sampleIso, locale)}</span>
+              <span className="text-xs tabular-nums text-slate-500">
+                {t("public.booking.slotsCount", "{{count}} מועדים", { count: day.slots.length })}
+              </span>
             </button>
           ))}
         </div>
@@ -222,7 +233,7 @@ function DatePickerModal({
           onClick={() => applyDate(draft)}
           className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#7C4DFF] text-sm font-black text-white"
         >
-          אישור תאריך
+          {t("public.booking.confirmDate", "אישור תאריך")}
         </button>
       </div>
     </div>
@@ -230,10 +241,11 @@ function DatePickerModal({
 }
 
 function Stepper() {
+  const { t } = useTranslation();
   const steps = [
-    { label: "לקוח", done: true },
-    { label: "שירות", done: true },
-    { label: "מועד", active: true, number: 3 },
+    { label: t("public.booking.stepCustomer", "לקוח"), done: true },
+    { label: t("public.booking.stepService", "שירות"), done: true },
+    { label: t("public.booking.stepTime", "מועד"), active: true, number: 3 },
   ];
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-3">
@@ -271,6 +283,9 @@ function Stepper() {
 }
 
 export default function PublicIntroBookingPage() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const intlLocale = getIntlLocale(i18n.language);
   const navigate = useNavigate();
   const { token, businessId } = useParams();
   const rawToken = String(token || businessId || "").trim();
@@ -296,7 +311,7 @@ export default function PublicIntroBookingPage() {
         if (!cancelled) setData(res);
       } catch (err: any) {
         if (!cancelled) {
-          setError(err?.response?.data?.error || "קישור התיאום אינו תקף או שפג תוקפו.");
+          setError(err?.response?.data?.error || t("public.booking.invalidLink", "קישור התיאום אינו תקף או שפג תוקפו."));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -306,11 +321,11 @@ export default function PublicIntroBookingPage() {
     return () => {
       cancelled = true;
     };
-  }, [rawToken]);
+  }, [rawToken, t]);
 
   const timezone = data?.timezone || TIMEZONE;
   const durationMinutes = data?.durationMinutes || 15;
-  const serviceName = "שיחה ראשונית";
+  const serviceName = t("public.booking.introCall", "שיחה ראשונית");
 
   const dates = useMemo(() => {
     const map = new Map<string, Slot[]>();
@@ -399,7 +414,7 @@ export default function PublicIntroBookingPage() {
       });
       setDone(res.booking);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "לא ניתן לקבוע את המועד. ייתכן שהוא כבר נתפס.");
+      setError(err?.response?.data?.error || t("public.booking.slotTaken", "לא ניתן לקבוע את המועד. ייתכן שהוא כבר נתפס."));
       try {
         const { data: res } = await API.get(`/public/book/${encodeURIComponent(rawToken)}`);
         setData(res);
@@ -415,7 +430,7 @@ export default function PublicIntroBookingPage() {
   return (
     <div
       className="flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#F7F4FF]"
-      dir="rtl"
+      dir={pageDir}
       style={{ fontFamily: '"Assistant", "Heebo", "Rubik", sans-serif' }}
     >
       <header className="shrink-0 border-b border-purple-100/80 bg-white/90 px-4 pb-4 pt-3 backdrop-blur sm:px-6">
@@ -423,7 +438,7 @@ export default function PublicIntroBookingPage() {
           <button
             type="button"
             onClick={goBack}
-            aria-label="חזרה"
+            aria-label={t("common.back", "חזרה")}
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
           >
             <X className="h-5 w-5" />
@@ -431,11 +446,13 @@ export default function PublicIntroBookingPage() {
           <div className="min-w-0 flex-1 text-center">
             <p className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#7C4DFF]">
               <Calendar className="h-3.5 w-3.5" />
-              יומן BizUply
+              {t("public.booking.calendarBrand", "יומן BizUply")}
             </p>
-            <h1 className="mt-1 text-xl font-black text-[#1E1B4B] sm:text-2xl">תיאום חדש</h1>
+            <h1 className="mt-1 text-xl font-black text-[#1E1B4B] sm:text-2xl">
+              {t("public.booking.newBooking", "תיאום חדש")}
+            </h1>
             <p className="mt-0.5 text-sm font-semibold text-slate-500">
-              בחרו מועד לשיחה הראשונית
+              {t("public.booking.chooseIntro", "בחרו מועד לשיחה הראשונית")}
             </p>
           </div>
           <span className="h-10 w-10 shrink-0" aria-hidden />
@@ -447,7 +464,7 @@ export default function PublicIntroBookingPage() {
 
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-4 sm:px-6">
         {loading ? (
-          <p className="text-center text-sm font-bold text-slate-500">טוען מועדים…</p>
+          <p className="text-center text-sm font-bold text-slate-500">{t("public.booking.loadingSlots", "טוען מועדים…")}</p>
         ) : null}
 
         {error ? (
@@ -458,23 +475,27 @@ export default function PublicIntroBookingPage() {
 
         {done ? (
           <section className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-black text-emerald-800">השיחה נקבעה בהצלחה</h2>
+            <h2 className="text-xl font-black text-emerald-800">{t("public.booking.bookedOk", "השיחה נקבעה בהצלחה")}</h2>
             <p className="mt-3 font-black text-[#1E1B4B]">{done.serviceName || serviceName}</p>
             <p className="mt-1 font-bold text-slate-700">
-              {new Date(done.startAt).toLocaleDateString("he-IL", {
+              {new Date(done.startAt).toLocaleDateString(intlLocale, {
                 timeZone: done.timezone || timezone,
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
               })}{" "}
-              בשעה {formatTime(done.startAt)}
+              {t("public.booking.atTime", "בשעה {{time}}", { time: formatTime(done.startAt, intlLocale) })}
             </p>
-            <p className="mt-1 font-black text-[#7C4DFF]">{done.durationMinutes || durationMinutes} דקות</p>
-            <p className="mt-4 text-sm font-bold text-slate-500">ניצור איתך קשר במועד שנבחר.</p>
+            <p className="mt-1 font-black text-[#7C4DFF]">
+              {t("public.booking.minutes", "{{count}} דקות", {
+                count: done.durationMinutes || durationMinutes,
+              })}
+            </p>
+            <p className="mt-4 text-sm font-bold text-slate-500">{t("public.booking.weWillContact", "ניצור איתך קשר במועד שנבחר.")}</p>
           </section>
         ) : data?.alreadyBooked ? (
           <section className="rounded-[24px] border border-emerald-200 bg-white p-5">
-            <p className="font-black text-emerald-800">כבר נקבעה לכם שיחה ראשונית.</p>
+            <p className="font-black text-emerald-800">{t("public.booking.alreadyBooked", "כבר נקבעה לכם שיחה ראשונית.")}</p>
           </section>
         ) : (
           <div className="flex flex-1 flex-col gap-4">
@@ -485,30 +506,35 @@ export default function PublicIntroBookingPage() {
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-black text-[#1E1B4B]">
-                    {serviceName} — {durationMinutes} דקות
+                    {t("public.booking.serviceMinutes", "{{name}} — {{count}} דקות", {
+                      name: serviceName,
+                      count: durationMinutes,
+                    })}
                   </p>
                   <p className="text-xs font-semibold text-slate-500">
-                    משך הפגישה: {durationMinutes} דקות
+                    {t("public.booking.duration", "משך הפגישה: {{count}} דקות", {
+                      count: durationMinutes,
+                    })}
                   </p>
                 </div>
               </div>
             </section>
 
             {!dates.length && !loading ? (
-              <p className="text-center text-sm font-bold text-slate-500">אין מועדים פנויים כרגע.</p>
+              <p className="text-center text-sm font-bold text-slate-500">{t("public.booking.noSlots", "אין מועדים פנויים כרגע.")}</p>
             ) : null}
 
             {dates.length ? (
               <>
                 <section className="min-w-0 overflow-hidden">
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <h2 className="text-sm font-black text-slate-800">בחרו תאריך</h2>
+                    <h2 className="text-sm font-black text-slate-800">{t("public.booking.pickDateTitle", "בחרו תאריך")}</h2>
                     <div className="hidden items-center gap-1 sm:flex">
                       <button
                         type="button"
                         disabled={!hasPrevDates}
                         onClick={() => setDatePage((p) => Math.max(0, p - 1))}
-                        aria-label="תאריכים קודמים"
+                        aria-label={t("public.booking.prevDates", "תאריכים קודמים")}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -517,7 +543,7 @@ export default function PublicIntroBookingPage() {
                         type="button"
                         disabled={!hasMoreDates}
                         onClick={() => setDatePage((p) => p + 1)}
-                        aria-label="תאריכים הבאים"
+                        aria-label={t("public.booking.nextDates", "תאריכים הבאים")}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -561,7 +587,7 @@ export default function PublicIntroBookingPage() {
                 </section>
 
                 <section>
-                  <h2 className="mb-2 text-sm font-black text-slate-800">בחרו מועד לשיחה</h2>
+                  <h2 className="mb-2 text-sm font-black text-slate-800">{t("public.booking.chooseCallTime", "בחרו מועד לשיחה")}</h2>
                   <div className="grid grid-cols-4 gap-2">
                     {visibleTimes.map((slot) => {
                       const active = selected === slot.startAt;
@@ -577,7 +603,7 @@ export default function PublicIntroBookingPage() {
                               : "border-slate-200 bg-white text-slate-800 hover:border-[#7C4DFF]/30",
                           ].join(" ")}
                         >
-                          {formatTime(slot.startAt)}
+                          {formatTime(slot.startAt, intlLocale)}
                           {active ? (
                             <span className="absolute -bottom-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[#7C4DFF] shadow">
                               <Check className="h-2.5 w-2.5" strokeWidth={3} />
@@ -592,7 +618,7 @@ export default function PublicIntroBookingPage() {
                         onClick={() => setTimePage((p) => p + 1)}
                         className="flex min-h-11 flex-col items-center justify-center rounded-2xl border border-dashed border-[#7C4DFF]/40 bg-[#7C4DFF]/5 px-1 text-[11px] font-black text-[#7C4DFF]"
                       >
-                        עוד זמנים
+                        {t("public.booking.moreTimes", "עוד זמנים")}
                       </button>
                     ) : null}
                   </div>
@@ -602,18 +628,22 @@ export default function PublicIntroBookingPage() {
                       onClick={() => setTimePage((p) => Math.max(0, p - 1))}
                       className="mt-2 text-xs font-bold text-[#7C4DFF] hover:underline"
                     >
-                      ← זמנים קודמים
+                      {t("public.booking.earlierTimes", "← זמנים קודמים")}
                     </button>
                   ) : null}
                 </section>
 
                 <div className="flex items-start gap-2 text-xs font-semibold text-slate-500">
                   <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                  <span>כל המועדים מוצגים לפי שעון ישראל (GMT+3)</span>
+                  <span>{t("public.booking.israelTz", "כל המועדים מוצגים לפי שעון ישראל (GMT+3)")}</span>
                 </div>
 
                 {selected ? (
-                  <p className="text-xs font-bold text-slate-600">נבחר: {formatWhen(selected)}</p>
+                  <p className="text-xs font-bold text-slate-600">
+                    {t("public.booking.selected", "נבחר: {{when}}", {
+                      when: formatWhen(selected, intlLocale),
+                    })}
+                  </p>
                 ) : null}
               </>
             ) : null}
@@ -629,7 +659,7 @@ export default function PublicIntroBookingPage() {
               onClick={goBack}
               className="inline-flex h-12 min-w-[96px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-[#7C4DFF]"
             >
-              חזרה
+              {t("common.back", "חזרה")}
             </button>
             <button
               type="button"
@@ -637,7 +667,9 @@ export default function PublicIntroBookingPage() {
               onClick={book}
               className="inline-flex h-12 flex-1 items-center justify-center rounded-2xl bg-[#7C4DFF] px-4 text-sm font-black text-white shadow-sm disabled:opacity-50"
             >
-              {saving ? "קובע מועד…" : "אישור תיאום"}
+              {saving
+                ? t("public.booking.booking", "קובע מועד…")
+                : t("public.booking.confirmBooking", "אישור תיאום")}
             </button>
           </div>
         </footer>

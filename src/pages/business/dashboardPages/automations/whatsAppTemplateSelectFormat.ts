@@ -1,5 +1,6 @@
 ﻿import type { ApprovedWhatsAppTemplate } from "../../../../api/whatsappApi";
-import { MANAGED_TEMPLATE_DISPLAY_NAMES } from "./whatsappAutomationMetaTemplates";
+import i18n from "../../../../i18n/i18n";
+import { getManagedTemplateDisplayName } from "./whatsappAutomationMetaTemplates";
 
 /** Humanize snake_case Meta names for UI-only fallback. */
 export function humanizeWhatsAppTemplateName(metaTemplateName = ""): string {
@@ -28,16 +29,15 @@ export function resolveWhatsAppTemplateDisplayName(
     if (meta && value.toLowerCase() === meta.toLowerCase()) continue;
     return value;
   }
-  const managedDisplay =
-    MANAGED_TEMPLATE_DISPLAY_NAMES[meta.toLowerCase()] || "";
+  const managedDisplay = getManagedTemplateDisplayName(meta);
   if (managedDisplay) return managedDisplay;
   return humanizeWhatsAppTemplateName(meta) || meta || "—";
 }
 
 export function formatWhatsAppTemplateLanguage(language = ""): string {
   const lang = String(language || "").toLowerCase().replace(/-/g, "_");
-  if (lang.startsWith("he")) return "עברית";
-  if (lang.startsWith("en")) return "אנגלית";
+  if (lang.startsWith("he")) return i18n.t("leftover.waTemplate.he", "Hebrew");
+  if (lang.startsWith("en")) return i18n.t("leftover.waTemplate.en", "English");
   if (lang.startsWith("ar")) return "العربية";
   if (lang.startsWith("fr")) return "Français";
   if (lang.startsWith("es")) return "Español";
@@ -51,9 +51,9 @@ export function formatWhatsAppTemplateCategory(
 ): string {
   if (template?.categoryLabelHe) return String(template.categoryLabelHe);
   const meta = String(template?.metaCategory || "").toUpperCase();
-  if (meta === "MARKETING") return "שיווק";
-  if (meta === "UTILITY") return "שירות";
-  if (meta === "AUTHENTICATION") return "אימות";
+  if (meta === "MARKETING") return i18n.t("leftover.waTemplate.marketing", "Marketing");
+  if (meta === "UTILITY") return i18n.t("leftover.waTemplate.utility", "Utility");
+  if (meta === "AUTHENTICATION") return i18n.t("leftover.waTemplate.auth", "Authentication");
   const local = String(template?.category || "").trim();
   return local || "—";
 }
@@ -61,8 +61,8 @@ export function formatWhatsAppTemplateCategory(
 export function formatWhatsAppVariableCountLabel(count = 0): string {
   const n = Number(count) || 0;
   if (n <= 0) return "";
-  if (n === 1) return "1 משתנה";
-  return `${n} משתנים`;
+  if (n === 1) return i18n.t("leftover.waTemplate.oneVar", "1 variable");
+  return i18n.t("leftover.waTemplate.manyVars", "{{count}} variables", { count: n });
 }
 
 export function buildWhatsAppTemplateSecondaryLine(
@@ -110,11 +110,22 @@ export function filterWhatsAppTemplatesByQuery<
 }
 
 /** Tenant/business templates that Automations cannot send yet. */
-export const TENANT_TEMPLATE_NOT_SENDABLE_HE =
-  "זמינה בחשבון WhatsApp של העסק — שליחה מתבניות עסקיות באוטומציות עדיין אינה זמינה.";
+export function getTenantTemplateNotSendable() {
+  return i18n.t(
+    "leftover.waTemplate.tenantNotSendable",
+    "Available in the business WhatsApp account — sending business templates from automations is not available yet."
+  );
+}
 
-export const SAVED_TEMPLATE_NOT_APPROVED_HE =
-  "התבנית אינה מאושרת כרגע ולא ניתן לשלוח אותה.";
+export function getSavedTemplateNotApproved() {
+  return i18n.t(
+    "leftover.waTemplate.notApproved",
+    "The template is not approved right now and cannot be sent."
+  );
+}
+
+export const TENANT_TEMPLATE_NOT_SENDABLE_HE = getTenantTemplateNotSendable;
+export const SAVED_TEMPLATE_NOT_APPROVED_HE = getSavedTemplateNotApproved;
 
 /** True only for templates that Automations can newly select and send today. */
 export function isAutomationSendableTemplate(
@@ -176,7 +187,7 @@ export function resolveAutomationTemplateWarning(opts: {
   if (selected && selected.automationSendable === false) {
     return {
       kind: "tenant_not_sendable",
-      message: TENANT_TEMPLATE_NOT_SENDABLE_HE,
+      message: getTenantTemplateNotSendable(),
     };
   }
 
@@ -185,14 +196,14 @@ export function resolveAutomationTemplateWarning(opts: {
   if (match && match.automationSendable === false) {
     return {
       kind: "tenant_not_sendable",
-      message: TENANT_TEMPLATE_NOT_SENDABLE_HE,
+      message: getTenantTemplateNotSendable(),
     };
   }
 
   if (value || savedName) {
     return {
       kind: "not_approved",
-      message: SAVED_TEMPLATE_NOT_APPROVED_HE,
+      message: getSavedTemplateNotApproved(),
     };
   }
 

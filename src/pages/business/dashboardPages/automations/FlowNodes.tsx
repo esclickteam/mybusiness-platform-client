@@ -1,4 +1,6 @@
 import React, { memo } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import {
   Clock3,
@@ -24,7 +26,7 @@ import {
   nodeSummary,
   type AutomationNodeType,
 } from "./automationFlowTypes";
-import { nodeBillingBadgeLabel } from "./automationActionCost";
+import { getAutomationActionCost } from "./automationActionCost";
 import { MixedBidiText } from "./automation-builder/bidiText";
 
 const ICONS = {
@@ -62,18 +64,32 @@ const TRIGGER_KEY_ICONS: Record<string, LucideIcon> = {
   scheduled: Clock3,
 };
 
-function providerLabel(type: AutomationNodeType, data: Record<string, unknown>) {
-  if (type === "trigger") return "טריגר";
-  if (type === "delay") return "המתנה";
-  if (type === "condition") return "תנאי";
-  if (type === "router") return "פיצול";
+function providerLabel(
+  type: AutomationNodeType,
+  data: Record<string, unknown>,
+  t: TFunction
+) {
+  if (type === "trigger") return t("automations.catalog.nodeTypes.trigger");
+  if (type === "delay") return t("automations.catalog.nodeTypes.delay");
+  if (type === "condition") return t("automations.catalog.nodeTypes.condition");
+  if (type === "router") return t("automations.catalog.nodeTypes.router");
   const key = String(data.actionKey || "");
-  if (key.includes("gmail")) return "תוצאה · Gmail";
-  if (key.includes("outlook")) return "תוצאה · Outlook";
-  if (key.includes("calendar")) return "תוצאה · Calendar";
-  if (key.includes("whatsapp") || key === "send_whatsapp") return "תוצאה · WhatsApp";
-  if (key.startsWith("ai_")) return "תוצאה · AI";
-  return "תוצאה";
+  if (key.includes("gmail")) {
+    return t("automations.catalog.palette.resultPrefix", { label: "Gmail" });
+  }
+  if (key.includes("outlook")) {
+    return t("automations.catalog.palette.resultPrefix", { label: "Outlook" });
+  }
+  if (key.includes("calendar")) {
+    return t("automations.catalog.palette.resultPrefix", { label: "Calendar" });
+  }
+  if (key.includes("whatsapp") || key === "send_whatsapp") {
+    return t("automations.catalog.palette.resultPrefix", { label: "WhatsApp" });
+  }
+  if (key.startsWith("ai_")) {
+    return t("automations.catalog.palette.resultPrefix", { label: "AI" });
+  }
+  return t("automations.catalog.nodeTypes.action");
 }
 
 function RouteHandles({
@@ -119,6 +135,7 @@ function FlowNodeShell({
   data: Record<string, unknown>;
   selected?: boolean;
 }) {
+  const { t } = useTranslation();
   const meta = TYPE_META[type];
   const triggerKey = String(data.triggerKey || "");
   const TriggerIcon =
@@ -132,18 +149,27 @@ function FlowNodeShell({
   const summary = nodeSummary(data, type);
   const routeCount = clampRouteCount(data.routeCount, 1);
   const router = type === "router" ? ensureRouterPaths(data) : null;
-  const provider = providerLabel(type, data);
+  const provider = providerLabel(type, data, t);
   const isWhatsAppAction =
     type === "action" &&
     (String(data.actionKey || "").includes("whatsapp") ||
       String(data.actionKey || "") === "send_whatsapp");
-  const costLabel = nodeBillingBadgeLabel({
+  const actionKey = String(data.actionKey || "");
+  const isAiAction = actionKey.startsWith("ai_");
+  const isFree = !isAiAction && getAutomationActionCost({
     nodeType: type,
-    actionKey: String(data.actionKey || ""),
-  });
+    actionKey,
+  }) === 0;
+  const costLabel = isAiAction
+    ? t("automations.flow.aiAction", "Automation action")
+    : isFree
+      ? t("automations.catalog.noCharge")
+      : t("automations.flow.billedAction", "⚡ 1 action");
   const triggerRouteLabels =
     type === "trigger" && routeCount > 1
-      ? Array.from({ length: routeCount }, (_, i) => `תוצאה ${i + 1}`)
+      ? Array.from({ length: routeCount }, (_, i) =>
+          t("automations.catalog.palette.resultN", { n: i + 1 })
+        )
       : undefined;
   const showDuplicateSummary =
     type === "trigger"
@@ -178,15 +204,21 @@ function FlowNodeShell({
         </div>
         <span
           className={`af-node__cost${
-            costLabel === "ללא חיוב" ? " af-node__cost--free" : ""
+            isFree ? " af-node__cost--free" : ""
           }`}
         >
           {costLabel}
         </span>
       </div>
       {isWhatsAppAction ? (
-        <span className="af-node__wa-cost" title="0.20 ₪ להודעת WhatsApp">
-          💬 0.20 ₪
+        <span
+          className="af-node__wa-cost"
+          title={t(
+            "automations.flow.waCostTitle",
+            "₪0.20 per WhatsApp message"
+          )}
+        >
+          {t("automations.flow.waCost", "💬 ₪0.20")}
         </span>
       ) : null}
       <MixedBidiText as="strong" className="af-node__title" text={title} />
@@ -212,8 +244,12 @@ function FlowNodeShell({
 
       {type === "condition" ? (
         <>
-          <span className="af-route-label af-route-label--yes">כן</span>
-          <span className="af-route-label af-route-label--no">לא</span>
+          <span className="af-route-label af-route-label--yes">
+            {t("automations.common.yes")}
+          </span>
+          <span className="af-route-label af-route-label--no">
+            {t("automations.common.no")}
+          </span>
           <Handle
             type="source"
             position={Position.Right}

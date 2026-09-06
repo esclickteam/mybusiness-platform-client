@@ -1,3 +1,9 @@
+import i18n from "../i18n/i18n";
+
+function domainMsg(key: string, fallback: string) {
+  return i18n.t(`leftover.domain.${key}`, fallback);
+}
+
 const RAW_API_URL = String(
   import.meta.env.VITE_API_URL ||
     import.meta.env.VITE_API_BASE_URL ||
@@ -297,20 +303,23 @@ function getApiErrorMessage(
   fallback: string,
 ) {
   if (response.status === 401) {
-    return "אין הרשאה לביצוע הפעולה. התחברו מחדש ונסו שוב.";
+    return domainMsg(
+      "unauthorizedReauth",
+      "You do not have permission for this action. Sign in again and try once more."
+    );
   }
 
   if (response.status === 403) {
     return (
       data?.error ||
-      "אין הרשאה לביצוע הפעולה."
+      domainMsg("forbidden", "You do not have permission for this action.")
     );
   }
 
   if (response.status === 404) {
     return (
       data?.error ||
-      "הנתיב המבוקש לא נמצא בשרת."
+      domainMsg("notFound", "The requested path was not found on the server.")
     );
   }
 
@@ -328,7 +337,7 @@ export async function checkDomainAvailability(
 
   if (!isValidDomain(domain)) {
     throw new Error(
-      "יש להזין דומיין תקין, לדוגמה mybusiness.co.il",
+      domainMsg("invalidDomain", "Enter a valid domain, for example mybusiness.co.il"),
     );
   }
 
@@ -352,7 +361,7 @@ export async function checkDomainAvailability(
       getApiErrorMessage(
         response,
         data,
-        "בדיקת זמינות הדומיין נכשלה",
+        domainMsg("checkFailed", "Domain availability check failed"),
       ),
     );
   }
@@ -368,7 +377,7 @@ export async function createDomainContact(
 
   if (!isValidDomain(cleanDomain)) {
     throw new Error(
-      "חובה לצרף דומיין תקין ליצירת איש הקשר",
+      domainMsg("contactDomainRequired", "A valid domain is required to create the contact"),
     );
   }
 
@@ -474,7 +483,7 @@ export async function createDomainContact(
       getApiErrorMessage(
         response,
         data,
-        "יצירת איש הקשר נכשלה",
+        domainMsg("contactFailed", "Contact creation failed"),
       ),
     );
   }
@@ -559,7 +568,7 @@ export async function estimateDomainRegistration(payload: {
 }): Promise<DomainQuoteResult> {
   const domain = String(payload.domain || "").trim().toLowerCase();
   if (!domain) {
-    throw new Error("חסר דומיין להערכת מחיר");
+    throw new Error(domainMsg("estimateMissing", "A domain is required for the price estimate"));
   }
 
   const response = await fetch(
@@ -578,12 +587,12 @@ export async function estimateDomainRegistration(payload: {
   const data = await readJson<DomainQuoteResult>(response);
   if (!response.ok || !data?.success) {
     throw new Error(
-      getApiErrorMessage(response, data, "הערכת מחיר הדומיין נכשלה"),
+      getApiErrorMessage(response, data, domainMsg("estimateFailed", "Domain price estimate failed")),
     );
   }
   const price = Number(data.price);
   if (!(price > 0) && !data.freeYearApplied) {
-    throw new Error("הערכת מחיר הדומיין החזירה מחיר לא תקין");
+    throw new Error(domainMsg("estimateInvalid", "The domain price estimate returned an invalid price"));
   }
   return data;
 }
@@ -595,7 +604,7 @@ export async function quoteDomainRegistration(payload: {
 }): Promise<DomainQuoteResult> {
   const registrationId = String(payload.registrationId || "").trim();
   if (!registrationId) {
-    throw new Error("חסר מזהה רישום");
+    throw new Error(domainMsg("missingRegistrationId", "Registration ID is missing"));
   }
 
   const response = await fetch(
@@ -615,7 +624,7 @@ export async function quoteDomainRegistration(payload: {
   const data = await readJson<DomainQuoteResult>(response);
   if (!response.ok || !data?.success) {
     throw new Error(
-      getApiErrorMessage(response, data, "קבלת מחיר הדומיין נכשלה"),
+      getApiErrorMessage(response, data, domainMsg("quoteFailed", "Could not get the domain price")),
     );
   }
   return data;
@@ -628,7 +637,7 @@ export async function checkoutDomainRegistration(payload: {
 }): Promise<DomainCheckoutResult> {
   const registrationId = String(payload.registrationId || "").trim();
   if (!registrationId) {
-    throw new Error("חסר מזהה רישום");
+    throw new Error(domainMsg("missingRegistrationId", "Registration ID is missing"));
   }
 
   const response = await fetch(
@@ -648,7 +657,7 @@ export async function checkoutDomainRegistration(payload: {
   const data = await readJson<DomainCheckoutResult>(response);
   if (!response.ok || !data?.success) {
     throw new Error(
-      getApiErrorMessage(response, data, "יצירת תשלום לדומיין נכשלה"),
+      getApiErrorMessage(response, data, domainMsg("checkoutFailed", "Could not create the domain payment")),
     );
   }
   return data;
@@ -663,7 +672,7 @@ export async function registerDomain(
 
   if (!registrationId) {
     throw new Error(
-      "חסר מזהה רישום. צרו איש קשר לפני רישום הדומיין",
+      domainMsg("registerMissingId", "Registration ID is missing. Create a contact before registering the domain"),
     );
   }
 
@@ -688,7 +697,7 @@ export async function registerDomain(
       getApiErrorMessage(
         response,
         data,
-        "רישום הדומיין נכשל",
+        domainMsg("registerFailed", "Domain registration failed"),
       ),
     );
   }
@@ -718,7 +727,7 @@ export async function getDomainRegistrations(): Promise<
       getApiErrorMessage(
         response,
         data,
-        "טעינת רישומי הדומיין נכשלה",
+        domainMsg("loadFailed", "Could not load domain registrations"),
       ),
     );
   }
@@ -766,7 +775,7 @@ export async function createDomainRenewalCheckout(
 ): Promise<DomainRenewalCheckoutResult> {
   const id = String(domainId || "").trim();
   if (!id) {
-    throw new Error("חסר מזהה דומיין לחידוש");
+    throw new Error(domainMsg("renewMissingId", "A domain ID is required for renewal"));
   }
 
   const response = await fetch(
@@ -783,7 +792,7 @@ export async function createDomainRenewalCheckout(
 
   if (!response.ok || !data?.success) {
     const err = new Error(
-      getApiErrorMessage(response, data, "יצירת תשלום לחידוש הדומיין נכשלה"),
+      getApiErrorMessage(response, data, domainMsg("renewCheckoutFailed", "Could not create the domain renewal payment")),
     ) as Error & { code?: string; quote?: DomainRenewalQuote | null };
     err.code = data?.code || undefined;
     err.quote = data?.quote || null;
@@ -802,7 +811,7 @@ export async function retryDomainRenewal(
 ): Promise<DomainRenewalRetryResult> {
   const id = String(domainId || "").trim();
   if (!id) {
-    throw new Error("חסר מזהה דומיין לניסיון חידוש מחדש");
+    throw new Error(domainMsg("retryMissingId", "A domain ID is required to retry renewal"));
   }
 
   const response = await fetch(
@@ -819,7 +828,7 @@ export async function retryDomainRenewal(
 
   if (!response.ok || !data?.success) {
     throw new Error(
-      getApiErrorMessage(response, data, "ניסיון החידוש מחדש נכשל"),
+      getApiErrorMessage(response, data, domainMsg("retryFailed", "The renewal retry failed")),
     );
   }
 

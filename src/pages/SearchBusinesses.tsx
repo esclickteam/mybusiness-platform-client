@@ -7,7 +7,9 @@ import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import BusinessCardSkeleton from "../components/BusinessCardSkeleton";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { useTranslation } from "react-i18next";
 import ALL_CATEGORIES from "../data/categories";
+import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 import { fetchCities } from "../data/cities";
 import CityAutocomplete from "@components/CityAutocomplete";
 
@@ -64,6 +66,7 @@ function getBusinessName(business: Business) {
 export default function SearchBusinesses({
   resetSearchFilters,
 }: SearchBusinessesProps = {}) {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -88,9 +91,9 @@ export default function SearchBusinesses({
     () =>
       ALL_CATEGORIES.map((category: string) => ({
         value: category,
-        label: category,
+        label: translateBusinessCategory(category, t),
       })),
-    []
+    [t]
   );
 
   const clearFilters = useCallback(() => {

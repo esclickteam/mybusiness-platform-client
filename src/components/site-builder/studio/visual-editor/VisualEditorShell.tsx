@@ -9,6 +9,7 @@ import {
   Tablet,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
@@ -38,16 +39,6 @@ import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
 import { buildPublicSiteUrl, getPublicSiteDomain } from "../../../../utils/publicSiteHost";
-
-const DEVICE_OPTIONS: Array<{
-  value: VisualDeviceMode;
-  label: string;
-  icon: React.ReactNode;
-}> = [
-  { value: "desktop", label: "דסקטופ", icon: <Monitor className="h-4 w-4" /> },
-  { value: "tablet", label: "טאבלט", icon: <Tablet className="h-4 w-4" /> },
-  { value: "mobile", label: "מובייל", icon: <Smartphone className="h-4 w-4" /> },
-];
 
 type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   templateName?: string;
@@ -134,7 +125,17 @@ export default function VisualEditorShell({
   onSelectSitePage,
   onSitePageAction,
 }: VisualEditorShellProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const deviceOptions: Array<{
+    value: VisualDeviceMode;
+    label: string;
+    icon: React.ReactNode;
+  }> = [
+    { value: "desktop", label: t("studio.desktop"), icon: <Monitor className="h-4 w-4" /> },
+    { value: "tablet", label: t("studio.tablet"), icon: <Tablet className="h-4 w-4" /> },
+    { value: "mobile", label: t("studio.mobile"), icon: <Smartphone className="h-4 w-4" /> },
+  ];
   const [actionError, setActionError] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
     | "add"
@@ -237,7 +238,7 @@ export default function VisualEditorShell({
     editor.templateName ||
     editor.renderer?.name ||
     editor.templateKey ||
-    "עורך אתר";
+    t("studio.siteEditor");
 
   const isPreviewMode = Boolean(editor.isPreviewMode);
   const isInlineEditing = Boolean(editor.isInlineEditing);
@@ -364,7 +365,7 @@ export default function VisualEditorShell({
     try {
       await action();
     } catch (error) {
-      setActionError(getApiErrorMessage(error, "הפעולה נכשלה. נסו שוב."));
+      setActionError(getApiErrorMessage(error, t("studio.actionFailed")));
     }
   }
 
@@ -400,7 +401,7 @@ export default function VisualEditorShell({
         return;
       }
 
-      throw new Error("פעולת הפרסום אינה מחוברת לעורך.");
+      throw new Error(t("studio.publishNotConnected"));
     });
   }
 
@@ -416,7 +417,6 @@ export default function VisualEditorShell({
       ]
         .filter(Boolean)
         .join(" ")}
-      dir="rtl"
     >
       <header className="relative z-[2147483100] flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-3 shadow-sm backdrop-blur-xl lg:px-5">
         <div className="min-w-0">
@@ -433,7 +433,7 @@ export default function VisualEditorShell({
         </div>
 
         <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-          {DEVICE_OPTIONS.map((device) => (
+          {deviceOptions.map((device) => (
             <button
               key={device.value}
               type="button"
@@ -462,10 +462,10 @@ export default function VisualEditorShell({
                 )
               }
               className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
-              title="פאנל ניהול"
+              title={t("studio.managePanel")}
             >
               <Settings2 className="h-4 w-4" />
-              <span className="hidden sm:inline">פאנל ניהול</span>
+              <span className="hidden sm:inline">{t("studio.managePanel")}</span>
             </button>
           ) : null}
 
@@ -480,7 +480,7 @@ export default function VisualEditorShell({
               <Eye className="h-4 w-4" />
             )}
             <span className="hidden sm:inline">
-              {isPreviewMode ? "חזרה לעריכה" : "תצוגה מקדימה"}
+              {isPreviewMode ? t("studio.backToEdit") : t("studio.previewTitle")}
             </span>
           </button>
 
@@ -506,14 +506,14 @@ export default function VisualEditorShell({
                   await editor.saveDraft();
                   return;
                 }
-                throw new Error("פעולת השמירה אינה מחוברת לעורך.");
+                throw new Error(t("studio.saveNotConnected"));
               });
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
             data-testid="visual-studio-save"
             data-demo-target="website-save"
           >
-            {isSaving ? "שומר..." : "שמירה"}
+            {isSaving ? t("studio.saving") : t("studio.save")}
           </button>
 
           <button
@@ -523,7 +523,7 @@ export default function VisualEditorShell({
             data-demo-target="website-publish"
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
-            {isSaving ? "מפרסם..." : "פרסום"}
+            {isSaving ? t("studio.publishing") : t("studio.publish")}
           </button>
         </div>
       </header>
@@ -665,10 +665,10 @@ export default function VisualEditorShell({
                   kind: "page",
                   tab: "pages",
                   category: "hero",
-                  title: "עמוד חדש",
-                  description: "עמוד ריק לעריכה מלאה",
+                  title: t("studio.newPage"),
+                  description: t("studio.newPageDescription"),
                   slugSuggestion: "new-page",
-                  keywords: ["ריק", "עריכה", "blank"],
+                  keywords: ["blank"],
                   sectionIds: [],
                 });
                 return;
@@ -695,7 +695,7 @@ export default function VisualEditorShell({
         <VisualLinkModal
           open={Boolean((editor as any).linkModal?.open)}
           elementId={(editor as any).linkModal?.elementId || ""}
-          elementLabel={(editor as any).linkModal?.elementLabel || "קישור"}
+          elementLabel={(editor as any).linkModal?.elementLabel || t("studio.link")}
           href={(editor as any).linkModal?.href || ""}
           sitePageId={(editor as any).linkModal?.sitePageId || ""}
           phone={(editor as any).linkModal?.phone || ""}
@@ -740,7 +740,7 @@ export default function VisualEditorShell({
           open={Boolean((editor as any).mediaModal?.open)}
           mode={(editor as any).mediaModal?.mode || "change"}
           elementId={(editor as any).mediaModal?.elementId || ""}
-          elementLabel={(editor as any).mediaModal?.elementLabel || "מדיה"}
+          elementLabel={(editor as any).mediaModal?.elementLabel || t("studio.media")}
           currentSrc={(editor as any).mediaModal?.currentSrc || ""}
           currentAlt={(editor as any).mediaModal?.currentAlt || ""}
           mediaType={(editor as any).mediaModal?.mediaType || "image"}

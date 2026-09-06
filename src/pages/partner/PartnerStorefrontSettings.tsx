@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchPartnerStorefront, updatePartnerStorefront } from "../../lib/partnerApi";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
@@ -9,6 +10,7 @@ import {
 } from "../../components/partner/partnerUi";
 
 export default function PartnerStorefrontSettings() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     slug: "",
     logoUrl: "",
@@ -50,8 +52,8 @@ export default function PartnerStorefrontSettings() {
           personalUrl: data.urls?.personalUrl || "",
         });
       })
-      .catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת חנות"));
-  }, []);
+      .catch((err) => setError(err.response?.data?.error || t("partner.errors.store")));
+  }, [t]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -60,18 +62,20 @@ export default function PartnerStorefrontSettings() {
     try {
       const data = await updatePartnerStorefront(form);
       setForm((prev) => ({ ...prev, slug: data.slug || prev.slug }));
-      setSaved("נשמר");
+      setSaved(t("partner.storefront.saved"));
     } catch (err: any) {
-      setError(err.response?.data?.error || "שגיאה בשמירה");
+      setError(err.response?.data?.error || t("partner.errors.save"));
     }
   }
+
+  const previewUrl = meta.personalUrl || `/p/${form.slug}`;
 
   return (
     <form onSubmit={save} className="space-y-5">
       <PartnerPageHeader
-        eyebrow="קטלוג"
-        title="הגדרות קטלוג מוצרים"
-        subtitle="קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הופעל."
+        eyebrow={t("partner.storefront.title")}
+        title={t("partner.storefront.subtitle")}
+        subtitle={t("partner.storefront.intro")}
       />
       <PartnerCard className="space-y-4 p-6">
       {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
@@ -84,25 +88,23 @@ export default function PartnerStorefrontSettings() {
       <PartnerInput
         value={form.logoUrl}
         onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
-        placeholder="לוגו URL"
+        placeholder={t("partner.storefront.logoUrl")}
       />
-      <p className="text-xs font-bold text-slate-500">
-        אם מוגדר לוגו, הוא יופיע בהצעת העסקה ובקישור שנשלח ללקוח.
-      </p>
+      <p className="text-xs font-bold text-slate-500">{t("partner.storefront.logoHint")}</p>
       <PartnerTextarea
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
-        placeholder="תיאור"
+        placeholder={t("partner.storefront.description")}
       />
       <PartnerInput
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        placeholder="טלפון"
+        placeholder={t("partner.phone")}
       />
       <PartnerInput
         value={form.email}
         onChange={(e) => setForm({ ...form, email: e.target.value })}
-        placeholder="אימייל"
+        placeholder={t("partner.email")}
       />
       <PartnerInput
         value={form.whatsapp}
@@ -115,7 +117,7 @@ export default function PartnerStorefrontSettings() {
           checked={form.enabled}
           onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
         />{" "}
-        הפעל עמוד מכירה
+        {t("partner.storefront.enableSalesPage")}
       </label>
       <label className="block text-sm font-bold">
         <input
@@ -123,7 +125,7 @@ export default function PartnerStorefrontSettings() {
           checked={form.showRetailComparison}
           onChange={(e) => setForm({ ...form, showRetailComparison: e.target.checked })}
         />{" "}
-        הצג מחיר Retail להשוואה בלבד
+        {t("partner.storefront.showRetail")}
       </label>
       {meta.canHideBizuplyBranding ? (
         <label className="block text-sm font-bold">
@@ -132,25 +134,23 @@ export default function PartnerStorefrontSettings() {
             checked={form.hideBizuplyBranding}
             onChange={(e) => setForm({ ...form, hideBizuplyBranding: e.target.checked })}
           />{" "}
-          הסתר מיתוג Bizuply בעמוד המכירה
+          {t("partner.storefront.hideBizuply")}
         </label>
       ) : null}
       {meta.customDomainEligible ? (
-        <p className="text-sm font-bold text-slate-500">
-          דומיין מותאם זכאי במסלול זה — החיבור עצמו יגיע ב-Phase 1B.
-        </p>
+        <p className="text-sm font-bold text-slate-500">{t("partner.storefront.domainHint")}</p>
       ) : null}
       {form.slug ? (
         <a
-          href={meta.personalUrl || `/p/${form.slug}`}
+          href={previewUrl}
           target="_blank"
           rel="noreferrer"
           className="block text-sm font-black text-[#7C4DFF]"
         >
-          תצוגה מקדימה: {meta.personalUrl || `/p/${form.slug}`}
+          {t("partner.storefront.previewUrl", { url: previewUrl })}
         </a>
       ) : null}
-      <PartnerPrimaryButton type="submit">שמור</PartnerPrimaryButton>
+      <PartnerPrimaryButton type="submit">{t("partner.save")}</PartnerPrimaryButton>
       </PartnerCard>
     </form>
   );

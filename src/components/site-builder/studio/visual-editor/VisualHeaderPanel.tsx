@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   Check,
   Link2,
@@ -39,6 +41,7 @@ type ChromeItem = {
 type PortalFormField = {
   key: string;
   label: string;
+  labelKey: string;
   /** text = copy/label; link = destination page for a form text-button */
   kind?: "text" | "link";
 };
@@ -62,37 +65,40 @@ const CHROME_SELECTOR = [
 ].join(",");
 
 const LOGIN_FORM_FIELDS: PortalFormField[] = [
-  { key: "title", label: "כותרת" },
-  { key: "subtitle", label: "תיאור" },
-  { key: "email", label: "שדה אימייל" },
-  { key: "password", label: "שדה סיסמה" },
-  { key: "submit", label: "טקסט כפתור התחברות" },
-  { key: "switch", label: "טקסט: אין לכם חשבון? הרשמה" },
-  { key: "forgot", label: "טקסט: שכחתי סיסמה" },
+  { key: "title", label: "Title", labelKey: "fieldTitle" },
+  { key: "subtitle", label: "Description", labelKey: "fieldSubtitle" },
+  { key: "email", label: "Email field", labelKey: "fieldEmail" },
+  { key: "password", label: "Password field", labelKey: "fieldPassword" },
+  { key: "submit", label: "Sign-in button text", labelKey: "loginSubmit" },
+  { key: "switch", label: "Text: No account? Sign up", labelKey: "loginSwitch" },
+  { key: "forgot", label: "Text: Forgot password", labelKey: "loginForgot" },
   {
     key: "switch",
-    label: "לאן מוביל «הרשמה»",
+    label: "Where Sign up goes",
+    labelKey: "loginSwitchLink",
     kind: "link",
   },
   {
     key: "forgot",
-    label: "לאן מוביל «שכחתי סיסמה»",
+    label: "Where Forgot password goes",
+    labelKey: "loginForgotLink",
     kind: "link",
   },
 ];
 
 const REGISTER_FORM_FIELDS: PortalFormField[] = [
-  { key: "title", label: "כותרת" },
-  { key: "subtitle", label: "תיאור" },
-  { key: "name", label: "שדה שם" },
-  { key: "email", label: "שדה אימייל" },
-  { key: "phone", label: "שדה טלפון" },
-  { key: "password", label: "שדה סיסמה" },
-  { key: "submit", label: "טקסט כפתור יצירת חשבון" },
-  { key: "switch", label: "טקסט: כבר רשומים? התחברות" },
+  { key: "title", label: "Title", labelKey: "fieldTitle" },
+  { key: "subtitle", label: "Description", labelKey: "fieldSubtitle" },
+  { key: "name", label: "Name field", labelKey: "fieldName" },
+  { key: "email", label: "Email field", labelKey: "fieldEmail" },
+  { key: "phone", label: "Phone field", labelKey: "fieldPhone" },
+  { key: "password", label: "Password field", labelKey: "fieldPassword" },
+  { key: "submit", label: "Create-account button text", labelKey: "registerSubmit" },
+  { key: "switch", label: "Text: Already registered? Sign in", labelKey: "registerSwitch" },
   {
     key: "switch",
-    label: "לאן מוביל «התחברות»",
+    label: "Where Sign in goes",
+    labelKey: "registerSwitchLink",
     kind: "link",
   },
 ];
@@ -178,6 +184,7 @@ function isButtonLike(node: HTMLElement) {
 function collectChromeItems(
   root: HTMLElement | null,
   data: Record<string, any>,
+  labels: { button: string; text: string },
 ): ChromeItem[] {
   if (!root) return [];
 
@@ -260,7 +267,7 @@ function collectChromeItems(
           kind: buttonLike ? "button" : "text",
           label:
             String(node.getAttribute("data-visual-edit-label") || "").trim() ||
-            (buttonLike ? "כפתור" : "טקסט"),
+            (buttonLike ? labels.button : labels.text),
           text,
           href,
         });
@@ -271,7 +278,10 @@ function collectChromeItems(
   return items;
 }
 
-function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
+function collectPortalForms(
+  root: HTMLElement | null,
+  titles: { login: string; register: string },
+): PortalFormItem[] {
   if (!root) return [];
 
   const items: PortalFormItem[] = [];
@@ -316,7 +326,7 @@ function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
       items.push({
         elementId,
         kind,
-        title: kind === "portal-login" ? "טופס התחברות" : "טופס הרשמה",
+        title: kind === "portal-login" ? titles.login : titles.register,
         fields,
         values,
         links,
@@ -327,6 +337,8 @@ function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
 }
 
 export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [items, setItems] = useState<ChromeItem[]>([]);
   const [forms, setForms] = useState<PortalFormItem[]>([]);
   const [drafts, setDrafts] = useState<
@@ -364,11 +376,11 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
 
     (targets?.pages || []).forEach((page) => push(page.href, page.label));
     (targets?.sections || []).forEach((section) =>
-      push(section.href, `מקטע: ${section.label}`),
+      push(section.href, t("studio.headerPanel.sectionPrefix", { label: section.label })),
     );
 
     return options;
-  }, [editor, open]);
+  }, [editor, open, t]);
 
   /*
     Read through refs so a data change elsewhere in the editor cannot wipe the
@@ -382,8 +394,14 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     const root =
       (currentEditor?.canvasRef?.current as HTMLElement | null) || null;
 
-    const next = collectChromeItems(root, asPlainObject(currentEditor?.data));
-    const nextForms = collectPortalForms(root);
+    const next = collectChromeItems(root, asPlainObject(currentEditor?.data), {
+      button: t("studio.headerPanel.button"),
+      text: t("studio.headerPanel.text"),
+    });
+    const nextForms = collectPortalForms(root, {
+      login: t("studio.headerPanel.loginForm"),
+      register: t("studio.headerPanel.registerForm"),
+    });
 
     setItems(next);
     setForms(nextForms);
@@ -410,7 +428,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
         return acc;
       }, {}),
     );
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!open) return;
@@ -594,7 +612,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
   return (
     <aside
       className="absolute inset-y-0 right-0 z-[2147483000] flex w-[340px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-white shadow-[-18px_0_50px_rgba(15,23,42,0.12)]"
-      dir="rtl"
+      dir={pageDir}
     >
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
         <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-sm">
@@ -602,17 +620,17 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-sm font-black text-slate-800">
                 <PanelTop className="h-4 w-4 text-slate-500" />
-                עריכת הידר, פוטר וטפסים
+                {t("studio.headerPanel.title")}
               </h2>
               <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
-                שנו שם כפתור, קישור או כיתוב בטופס — ואז לחצו החל.
+                {t("studio.headerPanel.subtitle")}
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white"
-              aria-label="סגירה"
+              aria-label={t("studio.headerPanel.close")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -622,9 +640,9 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
             <div className="flex flex-1 rounded-xl bg-slate-100 p-1">
               {(
                 [
-                  ["header", "הידר"],
-                  ["footer", "פוטר"],
-                  ["forms", "טפסים"],
+                  ["header", t("studio.headerPanel.header")],
+                  ["footer", t("studio.headerPanel.footer")],
+                  ["forms", t("studio.headerPanel.forms")],
                 ] as const
               ).map(([value, label]) => (
                 <button
@@ -653,7 +671,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
             <button
               type="button"
               onClick={refresh}
-              title="רענון הרשימה"
+              title={t("studio.headerPanel.refresh")}
               className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white"
             >
               <RefreshCw className="h-4 w-4" />
@@ -664,8 +682,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
         {area === "forms" ? (
           !forms.length ? (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-center text-[12px] font-bold leading-6 text-slate-500">
-              אין טופס התחברות/הרשמה בעמוד הזה. הוסיפי עמוד מאזור אישי
-              מהספרייה.
+              {t("studio.headerPanel.noForms")}
             </div>
           ) : (
             <div className="space-y-3">
@@ -691,22 +708,21 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                     </div>
 
                     <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-bold leading-5 text-amber-900">
-                      כפתורי הטופס לא נבחרים בנפרד בקנבס. כאן מקשרים את
-                      «הרשמה» / «שכחתי סיסמה» / «התחברות».
+                      {t("studio.headerPanel.formButtonsHint")}
                     </div>
 
                     {linkFields.length ? (
                       <div className="mb-3 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
                         <div className="flex items-center gap-1.5 text-[11px] font-black text-slate-700">
                           <Link2 className="h-3.5 w-3.5" />
-                          קישורי כפתורים בטופס
+                          {t("studio.headerPanel.formLinks")}
                         </div>
                         {linkFields.map((field) => (
                           <label
                             key={`link-${field.key}`}
                             className="block text-[11px] font-black text-slate-500"
                           >
-                            {field.label}
+                            {t(`studio.headerPanel.${field.labelKey}`, field.label)}
                             <select
                               value={draft.links[field.key] || ""}
                               onChange={(event) =>
@@ -724,7 +740,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                               className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                             >
                               <option value="">
-                                אוטומטי (עמוד האזור האישי המתאים)
+                                {t("studio.headerPanel.autoPage")}
                               </option>
                               {linkOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -737,7 +753,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                                   option.value === draft.links[field.key],
                               ) ? (
                                 <option value={draft.links[field.key]}>
-                                  מותאם: {draft.links[field.key]}
+                                  {t("studio.headerPanel.custom", { value: draft.links[field.key] })}
                                 </option>
                               ) : null}
                             </select>
@@ -752,7 +768,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                           key={`text-${field.key}`}
                           className="block text-[11px] font-black text-slate-500"
                         >
-                          {field.label}
+                          {t(`studio.headerPanel.${field.labelKey}`, field.label)}
                           <input
                             value={draft.values[field.key] || ""}
                             onChange={(event) =>
@@ -789,10 +805,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                       {appliedId === form.elementId ? (
                         <>
                           <Check className="h-4 w-4" />
-                          נשמר בטופס
+                          {t("studio.headerPanel.savedForm")}
                         </>
                       ) : (
-                        "החל על הטופס"
+                        t("studio.headerPanel.applyForm")
                       )}
                     </button>
                   </div>
@@ -802,8 +818,11 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
           )
         ) : !visibleItems.length ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-center text-[12px] font-bold leading-6 text-slate-500">
-            לא נמצאו כפתורים או טקסטים ב{area === "header" ? "הידר" : "פוטר"}.
-            נסי לרענן, או לבחור אלמנט בקנבס.
+            {t("studio.headerPanel.noneInArea", {
+              area: area === "header"
+                ? t("studio.headerPanel.header")
+                : t("studio.headerPanel.footer"),
+            })}
           </div>
         ) : (
           <div className="space-y-2">
@@ -834,12 +853,12 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                       )}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-[11px] font-black text-slate-500">
-                      {item.kind === "button" ? "כפתור / קישור" : "טקסט"}
+                      {item.kind === "button" ? t("studio.headerPanel.buttonLink") : t("studio.headerPanel.text")}
                     </span>
                   </div>
 
                   <label className="block text-[11px] font-black text-slate-500">
-                    שם הכפתור
+                    {t("studio.headerPanel.buttonName")}
                     <input
                       value={draft.text}
                       onChange={(event) =>
@@ -857,14 +876,14 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                         applyItem(item);
                       }}
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
-                      placeholder="לדוגמה: אזור אישי"
+                      placeholder={t("studio.headerPanel.buttonNamePh")}
                     />
                   </label>
 
                   {item.kind === "button" ? (
                     <div className="mt-2">
                       <span className="block text-[11px] font-black text-slate-500">
-                        לאן הכפתור מקשר
+                        {t("studio.headerPanel.buttonGoes")}
                       </span>
                       <div className="mt-1 flex gap-2">
                         <select
@@ -886,7 +905,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                           }}
                           className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                         >
-                          <option value="">בלי קישור</option>
+                          <option value="">{t("studio.headerPanel.noLink")}</option>
                           {linkOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
@@ -897,13 +916,13 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                             (option) => option.value === draft.href,
                           ) ? (
                             <option value="__custom__">
-                              מותאם: {draft.href}
+                              {t("studio.headerPanel.custom", { value: draft.href })}
                             </option>
                           ) : null}
                         </select>
                         <button
                           type="button"
-                          title="בחירה מתקדמת (טלפון, וואטסאפ, מייל, כתובת)"
+                          title={t("studio.headerPanel.advancedLink")}
                           onClick={() =>
                             editor?.openLinkSettings?.(item.elementId)
                           }
@@ -931,10 +950,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                     {appliedId === item.elementId ? (
                       <>
                         <Check className="h-4 w-4" />
-                        הוחל על כל העמודים
+                        {t("studio.headerPanel.appliedAll")}
                       </>
                     ) : (
-                      "החל"
+                      t("studio.headerPanel.apply")
                     )}
                   </button>
                 </div>

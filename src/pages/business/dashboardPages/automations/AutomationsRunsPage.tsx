@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Link,
   useNavigate,
@@ -55,7 +56,29 @@ const MAX_WORKFLOWS_FOR_ALL = 40;
  * Phase 5: professional Execution History (Make / n8n style).
  * Reuses existing list/get execution APIs — no engine/schema changes.
  */
+function runStatusKey(status?: string | null) {
+  switch (String(status || "").toLowerCase()) {
+    case "completed":
+    case "success":
+      return "success";
+    case "failed":
+    case "error":
+      return "failed";
+    case "running":
+      return "running";
+    case "waiting":
+    case "pending":
+      return "pending";
+    case "cancelled":
+    case "canceled":
+      return "cancelled";
+    default:
+      return "";
+  }
+}
+
 export default function AutomationsRunsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -136,7 +159,7 @@ export default function AutomationsRunsPage() {
             return executions.map((execution) => {
               const row: RunRow = {
                 ...execution,
-                workflowName: workflow.name || "אוטומציה",
+                workflowName: workflow.name || t("automations.runs.automation"),
                 workflowTriggerLabel: getTriggerLabel(workflow),
               };
               return row;
@@ -167,7 +190,7 @@ export default function AutomationsRunsPage() {
   const loading = Boolean(businessId) && runsQuery.isLoading && !runsQuery.data;
   const refreshing = runsQuery.isFetching && Boolean(runsQuery.data);
   const error = runsQuery.isError
-    ? readAutomationErrorMessage(runsQuery.error, "שגיאה בטעינת הרצות")
+    ? readAutomationErrorMessage(runsQuery.error, t("automations.runs.loadError"))
     : "";
 
   const load = useCallback(async () => {
@@ -178,7 +201,7 @@ export default function AutomationsRunsPage() {
   useEffect(() => {
     if (!runsQuery.isError) return;
     toast.error(
-      readAutomationErrorMessage(runsQuery.error, "שגיאה בטעינת הרצות")
+      readAutomationErrorMessage(runsQuery.error, t("automations.runs.loadError"))
     );
   }, [runsQuery.isError, runsQuery.error]);
 
@@ -219,10 +242,10 @@ export default function AutomationsRunsPage() {
     }
     try {
       await retryAutomationExecution(businessId, executionId);
-      toast.success("ההרצה נשלחה לניסיון חוזר");
+      toast.success(t("automations.runs.retrySuccess"));
       await load();
     } catch (err: unknown) {
-      toast.error(readAutomationErrorMessage(err, "שגיאה בניסיון חוזר"));
+      toast.error(readAutomationErrorMessage(err, t("automations.runs.retryError")));
     }
   };
 
@@ -230,9 +253,9 @@ export default function AutomationsRunsPage() {
     <div className="ax-page">
       <header className="ax-page__header">
         <div>
-          <h1 className="ax-home__title">הרצות</h1>
+          <h1 className="ax-home__title">{t("automations.runs.title")}</h1>
           <p className="ax-home__subtitle">
-            צפה בהיסטוריית ההרצות, סטטוסים ושגיאות של האוטומציות שלך
+            {t("automations.runs.subtitle")}
           </p>
         </div>
         <button
@@ -242,30 +265,30 @@ export default function AutomationsRunsPage() {
           disabled={loading || refreshing}
         >
           <RefreshCw size={14} className={refreshing ? "ax-spin" : undefined} />
-          רענון
+          {t("automations.runs.refresh")}
         </button>
       </header>
 
       <div className="ax-runs-filters">
         <label className="ax-sort">
-          <span>אוטומציה</span>
+          <span>{t("automations.runs.automation")}</span>
           <select
             value={workflowFilter}
             onChange={(event) =>
               patchParams({ workflow: event.target.value || null })
             }
           >
-            <option value="">כל האוטומציות</option>
+            <option value="">{t("automations.runs.allAutomations")}</option>
             {workflows.map((workflow) => (
               <option key={workflow._id} value={workflow._id}>
-                {workflow.name || "אוטומציה"}
+                {workflow.name || t("automations.runs.automation")}
               </option>
             ))}
           </select>
         </label>
 
         <label className="ax-sort">
-          <span>סטטוס</span>
+          <span>{t("automations.runs.status")}</span>
           <select
             value={statusFilter}
             onChange={(event) =>
@@ -274,26 +297,26 @@ export default function AutomationsRunsPage() {
               })
             }
           >
-            <option value="all">הכל</option>
-            <option value="completed">הצלחה</option>
-            <option value="failed">נכשלה</option>
-            <option value="running">בתהליך</option>
-            <option value="cancelled">בוטלה</option>
+            <option value="all">{t("automations.runs.all")}</option>
+            <option value="completed">{t("automations.runs.success")}</option>
+            <option value="failed">{t("automations.runs.failed")}</option>
+            <option value="running">{t("automations.runs.running")}</option>
+            <option value="cancelled">{t("automations.runs.cancelled")}</option>
           </select>
         </label>
 
         <label className="ax-sort">
-          <span>תאריך</span>
+          <span>{t("automations.runs.date")}</span>
           <select
             value={dateFilter}
             onChange={(event) =>
               patchParams({ range: event.target.value as DateRangeFilter })
             }
           >
-            <option value="all">הכל</option>
-            <option value="24h">24 שעות</option>
-            <option value="7d">7 ימים</option>
-            <option value="30d">30 ימים</option>
+            <option value="all">{t("automations.runs.all")}</option>
+            <option value="24h">{t("automations.runs.last24h")}</option>
+            <option value="7d">{t("automations.runs.last7d")}</option>
+            <option value="30d">{t("automations.runs.last30d")}</option>
           </select>
         </label>
 
@@ -304,42 +327,43 @@ export default function AutomationsRunsPage() {
             onChange={(event) =>
               patchParams({ q: event.target.value || null })
             }
-            placeholder="חיפוש לפי שם, טריגר או מזהה הרצה"
+            placeholder={t("automations.runs.searchPlaceholder")}
           />
         </label>
       </div>
 
       {!workflowFilter ? (
         <p className="ax-runs-note">
-          מציג עד {PER_WORKFLOW_LIMIT} הרצות אחרונות לכל אוטומציה (עד{" "}
-          {MAX_WORKFLOWS_FOR_ALL} אוטומציות). ה-API תומך ב-limit בלבד — אין
-          cursor/pagination עדיין.
+          {t("automations.runs.note", {
+            per: PER_WORKFLOW_LIMIT,
+            max: MAX_WORKFLOWS_FOR_ALL,
+          })}
         </p>
       ) : null}
 
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען הרצות...
+          {t("automations.runs.loading")}
         </div>
       ) : error ? (
         <div className="ax-empty ax-empty--card">
-          <strong>שגיאה בטעינה</strong>
+          <strong>{t("automations.runs.loadErrorTitle")}</strong>
           <p>{error}</p>
           <button
             type="button"
             className="ax-btn ax-btn--primary"
             onClick={() => void load()}
           >
-            נסה שוב
+            {t("automations.runs.retry")}
           </button>
         </div>
       ) : workflows.length === 0 || visibleRows.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>אין עדיין הרצות</strong>
-          <p>הרצות יופיעו כאן לאחר שהאוטומציות יתחילו לפעול.</p>
+          <strong>{t("automations.runs.emptyTitle")}</strong>
+          <p>{t("automations.runs.emptyText")}</p>
           <Link to=".." className="ax-btn ax-btn--primary">
-            חזרה לאוטומציות
+            {t("automations.runs.backToAutomations")}
           </Link>
         </div>
       ) : (
@@ -348,13 +372,13 @@ export default function AutomationsRunsPage() {
             <table className="ax-table ax-runs-table">
               <thead>
                 <tr>
-                  <th>אוטומציה</th>
-                  <th>התחלה</th>
-                  <th>משך</th>
-                  <th>סטטוס</th>
-                  <th>Trigger</th>
-                  <th>Steps</th>
-                  <th>פעולות</th>
+                  <th>{t("automations.runs.automation")}</th>
+                  <th>{t("automations.runs.started")}</th>
+                  <th>{t("automations.runs.duration")}</th>
+                  <th>{t("automations.runs.status")}</th>
+                  <th>{t("automations.runs.trigger")}</th>
+                  <th>{t("automations.runs.steps")}</th>
+                  <th>{t("automations.runs.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,7 +410,9 @@ export default function AutomationsRunsPage() {
                         <span className={`ax-result ax-result--${tone}`}>
                           {tone === "success" ? "✓ " : ""}
                           {tone === "failed" ? "✕ " : ""}
-                          {getExecutionStatusLabel(row.status)}
+                          {runStatusKey(row.status)
+                            ? t(`automations.runs.${runStatusKey(row.status)}`)
+                            : getExecutionStatusLabel(row.status)}
                         </span>
                       </td>
                       <td className="ax-table__muted">
@@ -408,7 +434,7 @@ export default function AutomationsRunsPage() {
                               title={writeBlockedTitle}
                               onClick={() => void handleRetry(row.executionId)}
                             >
-                              נסה שוב
+                              {t("automations.runs.retry")}
                             </button>
                           ) : null}
                           <button
@@ -417,7 +443,7 @@ export default function AutomationsRunsPage() {
                             onClick={() =>
                               setSelectedExecutionId(row.executionId)
                             }
-                            aria-label="פתח פרטי הרצה"
+                            aria-label={t("automations.runs.openDetails")}
                           >
                             <ChevronLeft size={16} />
                           </button>
@@ -452,7 +478,9 @@ export default function AutomationsRunsPage() {
                       </p>
                     </div>
                     <span className={`ax-result ax-result--${tone}`}>
-                      {getExecutionStatusLabel(row.status)}
+                      {runStatusKey(row.status)
+                        ? t(`automations.runs.${runStatusKey(row.status)}`)
+                        : getExecutionStatusLabel(row.status)}
                     </span>
                   </div>
                   <div className="ax-mobile-card__bottom">
@@ -467,7 +495,7 @@ export default function AutomationsRunsPage() {
                         navigate(`../${row.workflowId}`);
                       }}
                     >
-                      פתח
+                      {t("automations.runs.open")}
                     </button>
                   </div>
                 </article>

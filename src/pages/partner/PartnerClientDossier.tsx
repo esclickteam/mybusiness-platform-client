@@ -10,6 +10,7 @@ import {
   StickyNote,
   User,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   activatePartnerClient,
   addPartnerNote,
@@ -20,28 +21,26 @@ import {
   togglePartnerTask,
 } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
+import { billingLabel } from "../../lib/partnerDealMath";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
 import PartnerMarkupBreakdown from "../../components/partner/PartnerMarkupBreakdown";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { useAuth } from "../../context/AuthContext";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
-import { PARTNER_STATUS_LABEL } from "../../lib/partnerLabels";
+import { partnerStatusLabel } from "../../lib/partnerLabels";
+import { getIntlLocale } from "../../i18n/localeUtils";
+import { formatPartnerDate, formatPartnerDateTime } from "../../lib/partnerWork";
 
-const MODE_LABEL: Record<string, string> = {
-  partner: "הפרטנר מנהל",
-  customer: "הלקוח מנהל",
-  shared: "ניהול משותף",
+const MODE_TITLE_KEY: Record<string, string> = {
+  partner: "partner.modePartnerTitle",
+  customer: "partner.modeCustomerTitle",
+  shared: "partner.modeSharedTitle",
 };
 
-function formatWhen(value?: string | null) {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("he-IL");
-}
-
 export default function PartnerClientDossier() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const { clientId } = useParams();
   const navigate = useNavigate();
   const { loginWithToken } = useAuth() as {
@@ -74,7 +73,7 @@ export default function PartnerClientDossier() {
           setDeals(data.deals || []);
         }
       } catch (err: any) {
-        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון את תיק הלקוח"));
+        if (!cancelled) setError(partnerApiError(err, t("partner.errors.clientFile")));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -82,7 +81,7 @@ export default function PartnerClientDossier() {
     return () => {
       cancelled = true;
     };
-  }, [clientId]);
+  }, [clientId, t]);
 
   async function saveNote() {
     if (!client || !note.trim()) return;
@@ -109,7 +108,7 @@ export default function PartnerClientDossier() {
         replace: true,
       });
     } catch (err: any) {
-      setError(partnerApiError(err, "לא ניתן להיכנס לניהול הלקוח"));
+      setError(partnerApiError(err, t("partner.errors.enterClient")));
     } finally {
       setEntering(false);
     }
@@ -125,17 +124,17 @@ export default function PartnerClientDossier() {
       setClient(refreshed.client);
       setDeals(refreshed.deals || []);
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן להפעיל את הלקוח"));
+      setError(partnerApiError(err, t("partner.errors.activateClient")));
     } finally {
       setActivating(false);
     }
   }
 
-  if (loading) return <BizuplyLoader label="טוען תיק לקוח..." />;
+  if (loading) return <BizuplyLoader label={t("partner.dossier.loading")} />;
   if (!client) {
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-        {error || "לקוח לא נמצא"}
+        {error || t("partner.dossier.notFound")}
       </div>
     );
   }
@@ -169,11 +168,11 @@ export default function PartnerClientDossier() {
         className="inline-flex items-center gap-1 text-sm font-black text-slate-500 hover:text-slate-900"
       >
         <ArrowRight className="h-4 w-4" />
-        חזרה ללקוחות
+        {t("partner.dossier.back")}
       </Link>
 
       <PartnerPageHeader
-        eyebrow="תיק לקוח מלא"
+        eyebrow={t("partner.dossier.fullFile")}
         title={client.contact.businessName}
         subtitle={`${client.contact.contactName} · ${client.contact.email}`}
         actions={
@@ -189,7 +188,7 @@ export default function PartnerClientDossier() {
                 onClick={activateClient}
                 className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
               >
-                {activating ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
+                {activating ? t("partner.dossier.activating") : t("partner.dossier.activateAfterPayment", { defaultValue: "הפעלת חשבון אחרי תשלום" })}
               </button>
             ) : null}
             {client.canEnterClient ? (
@@ -200,11 +199,11 @@ export default function PartnerClientDossier() {
                 className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-slate-900/15"
               >
                 <LogIn className="h-4 w-4" />
-                {entering ? "נכנס לניהול..." : "כניסה לניהול הלקוח"}
+                {entering ? t("partner.dossier.entering") : t("partner.dossier.enterClient")}
               </button>
             ) : (
               <span className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-800">
-                כניסה לניהול זמינה אחרי הפעלה
+                {t("partner.dossier.enterAfterActivation")}
               </span>
             )}
           </>
@@ -219,16 +218,16 @@ export default function PartnerClientDossier() {
 
       <section className="flex flex-wrap gap-2">
         {[
-          ["overview", "סקירה"],
-          ["details", "פרטי לקוח"],
-          ["products", "החבילה והשירותים"],
-          ["deals", "היסטוריית עסקאות"],
-          ["pricing", "תמחור פנימי"],
-          ["permissions", "הרשאות"],
-          ["tasks", "משימות"],
-          ["notes", "הערות"],
-          ["history", "היסטוריה"],
-        ].map(([id, label]) => (
+          ["overview", "partner.dossier.overview"],
+          ["details", "partner.dossier.details"],
+          ["products", "partner.dossier.packageServices"],
+          ["deals", "partner.dossier.dealHistory"],
+          ["pricing", "partner.dossier.internalPricing"],
+          ["permissions", "partner.dossier.permissions"],
+          ["tasks", "partner.dossier.tasks"],
+          ["notes", "partner.dossier.notes"],
+          ["history", "partner.dossier.history"],
+        ].map(([id, labelKey]) => (
           <button
             key={id}
             type="button"
@@ -240,36 +239,40 @@ export default function PartnerClientDossier() {
                 : "bg-white text-slate-600 shadow-sm",
             ].join(" ")}
           >
-            {label}
+            {t(labelKey)}
           </button>
         ))}
         <Link
           to="/partner/dashboard/transactions"
           className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black"
         >
-          עסקאות
+          {t("partner.dossier.deals")}
         </Link>
       </section>
 
       {tab === "overview" || tab === "details" || tab === "history" ? (
       <section className="grid gap-3 md:grid-cols-4">
-        <InfoCard icon={User} label="סטטוס" value={PARTNER_STATUS_LABEL[client.status] || client.status} />
-        <InfoCard icon={Shield} label="מצב ניהול" value={MODE_LABEL[client.managementMode] || client.managementMode} />
-        <InfoCard icon={Mail} label="אימייל" value={client.contact.email} />
-        <InfoCard icon={Phone} label="טלפון" value={client.contact.phone || "—"} />
+        <InfoCard icon={User} label={t("partner.status")} value={partnerStatusLabel(client.status, t)} />
+        <InfoCard
+          icon={Shield}
+          label={t("partner.dossier.managementMode")}
+          value={MODE_TITLE_KEY[client.managementMode] ? t(MODE_TITLE_KEY[client.managementMode]) : client.managementMode}
+        />
+        <InfoCard icon={Mail} label={t("partner.email")} value={client.contact.email} />
+        <InfoCard icon={Phone} label={t("partner.phone")} value={client.contact.phone || "—"} />
       </section>
       ) : null}
 
       <section className="grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 md:grid-cols-4">
-        <DateCell label="נוצר" value={formatWhen(client.createdAt)} />
-        <DateCell label="הופעל" value={formatWhen(client.activatedAt)} />
-        <DateCell label="הצטרף" value={formatWhen(client.joinedAt)} />
-        <DateCell label="חיוב הבא" value={formatWhen(client.nextBillingDate)} />
+        <DateCell label={t("partner.dossier.created")} value={formatPartnerDate(client.createdAt, locale)} />
+        <DateCell label={t("partner.dossier.activated")} value={formatPartnerDate(client.activatedAt, locale)} />
+        <DateCell label={t("partner.dossier.joined")} value={formatPartnerDate(client.joinedAt, locale)} />
+        <DateCell label={t("partner.dossier.nextBilling")} value={formatPartnerDate(client.nextBillingDate, locale)} />
       </section>
 
       <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-3">
         <MoneyCell
-          label="חבילה"
+          label={t("partner.dossier.package")}
           value={
             (client.selectedSkus || []).find((line) =>
               ["monthly", "yearly", "website_only"].includes(String(line.sku))
@@ -277,12 +280,14 @@ export default function PartnerClientDossier() {
           }
         />
         <MoneyCell
-          label="שירותים"
-          value={`${(client.selectedSkus || []).filter((line) => !line.included).length} פעילים`}
+          label={t("partner.dossier.services")}
+          value={t("partner.dossier.activeCount", {
+            count: (client.selectedSkus || []).filter((line) => !line.included).length,
+          })}
         />
-        <MoneyCell label="תשלום חודשי" value={formatIls(client.mrrCustomer)} />
+        <MoneyCell label={t("partner.dossier.monthlyPayment")} value={formatIls(client.mrrCustomer)} />
         <MoneyCell
-          label="חד-פעמי"
+          label={t("partner.dossier.oneTime")}
           value={formatIls(
             (client.selectedSkus || []).reduce(
               (sum, line) =>
@@ -297,7 +302,7 @@ export default function PartnerClientDossier() {
           )}
         />
         <MoneyCell
-          label="הכנסה חד-פעמית שלך"
+          label={t("partner.dossier.yourOneTime")}
           value={formatIls(
             (client.selectedSkus || []).reduce(
               (sum, line) => sum + Number(line.oneTimePartnerShare || 0),
@@ -306,13 +311,15 @@ export default function PartnerClientDossier() {
           )}
         />
         <MoneyCell
-          label="הכנסה חודשית שלך"
-          value={`${formatIls(
-            (client.selectedSkus || []).reduce(
-              (sum, line) => sum + Number(line.recurringPartnerShare || 0),
-              0
-            )
-          )} / חודש`}
+          label={t("partner.dossier.yourMonthly")}
+          value={t("partner.perMonth", {
+            amount: formatIls(
+              (client.selectedSkus || []).reduce(
+                (sum, line) => sum + Number(line.recurringPartnerShare || 0),
+                0
+              )
+            ),
+          })}
         />
       </section>
       {deals[0] ? (
@@ -321,20 +328,20 @@ export default function PartnerClientDossier() {
             to={`/partner/dashboard/deals/${deals[deals.length - 1]._id}`}
             className="inline-flex rounded-2xl border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800"
           >
-            תיק העסקה – תשלום והפעלה
+            {t("partner.dossier.dealFile")}
           </Link>
           <Link
             to={`/partner/deals/${deals[deals.length - 1]._id}`}
             className="inline-flex rounded-2xl border px-4 py-2 text-sm font-black text-slate-600"
           >
-            סיכום ללקוח
+            {t("partner.dossier.customerSummary")}
           </Link>
         </div>
       ) : null}
 
       {client.contact.notes ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
-          <h3 className="mb-2 font-black">רקע מסחרי</h3>
+          <h3 className="mb-2 font-black">{t("partner.dossier.commercialBackground")}</h3>
           <p className="whitespace-pre-wrap text-sm font-bold leading-6 text-slate-600">
             {client.contact.notes}
           </p>
@@ -343,12 +350,12 @@ export default function PartnerClientDossier() {
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-black">החבילה והשירותים</h3>
+          <h3 className="font-black">{t("partner.dossier.packageServices")}</h3>
           <Link
             to={`/partner/dashboard/clients/new?clientId=${client._id}`}
             className="rounded-2xl border px-3 py-2 text-sm font-black"
           >
-            עסקה חדשה / תוספת
+            {t("partner.dossier.newDeal")}
           </Link>
         </div>
         {(client.selectedSkus || []).map((line) => (
@@ -360,38 +367,42 @@ export default function PartnerClientDossier() {
               <div>
                 <p className="text-lg font-black">{line.nameHe || line.nameEn}</p>
                 <p className="text-sm font-bold text-slate-500">
-                  {line.billing === "recurring_month"
-                    ? "חודשי"
-                    : line.billing === "recurring_year"
-                      ? "שנתי"
-                      : "חד-פעמי"}
+                  {billingLabel(line.billing, t)}
                 </p>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black">
                 {client.status === "active"
-                  ? "פעיל"
+                  ? t("partner.active")
                   : client.status === "waiting_payment"
-                    ? "ממתין לתשלום"
+                    ? t("partner.dossier.waitingPayment")
                     : client.status === "payment_issue"
-                      ? "בעיית תשלום"
+                      ? t("partner.dossier.paymentIssue")
                       : client.status === "cancelled"
-                        ? "בוטל"
-                        : PARTNER_STATUS_LABEL[client.status] || client.status}
+                        ? t("partner.dossier.cancelled")
+                        : partnerStatusLabel(client.status, t)}
               </span>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm font-bold">
               <p>
-                מחיר{" "}
+                {t("partner.dossier.priceLabel")}{" "}
                 {Number(line.customerOneTimeAmount) || Number(line.customerRecurringAmount)
-                  ? `${Number(line.customerOneTimeAmount) ? `${formatIls(line.customerOneTimeAmount)} חד-פעמי` : ""}${
+                  ? `${Number(line.customerOneTimeAmount) ? t("partner.dossier.oneTimeAmount", { amount: formatIls(line.customerOneTimeAmount) }) : ""}${
                       Number(line.customerOneTimeAmount) && Number(line.customerRecurringAmount)
                         ? " + "
                         : ""
-                    }${Number(line.customerRecurringAmount) ? `${formatIls(line.customerRecurringAmount)} / חודש` : ""}`
+                    }${Number(line.customerRecurringAmount) ? t("partner.perMonth", { amount: formatIls(line.customerRecurringAmount) }) : ""}`
                   : formatIls(line.customerFinalPrice)}
               </p>
-              <p>הכנסה חד-פעמית {formatIls(line.oneTimePartnerShare)}</p>
-              <p>הכנסה חודשית {formatIls(line.recurringPartnerShare)} / חודש</p>
+              <p>
+                {t("partner.dossier.oneTimeIncome", {
+                  amount: formatIls(line.oneTimePartnerShare),
+                })}
+              </p>
+              <p>
+                {t("partner.dossier.monthlyIncome", {
+                  amount: formatIls(line.recurringPartnerShare),
+                })}
+              </p>
             </div>
             {tab === "pricing" ? (
               <div className="mt-4">
@@ -402,34 +413,34 @@ export default function PartnerClientDossier() {
         ))}
         {!client.selectedSkus?.length ? (
           <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm font-bold text-slate-500">
-            עדיין לא נבחרו מוצרים ללקוח זה
+            {t("partner.dossier.noProducts")}
           </p>
         ) : tab === "pricing" ? (
           <div className="rounded-3xl border border-slate-900 bg-slate-900 p-5 text-white">
-            <p className="text-xs font-black text-white/60">פירוט פנימי</p>
+            <p className="text-xs font-black text-white/60">{t("partner.dossier.internalBreakdown")}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <p className="text-[11px] font-bold text-white/55">מחיר Bizuply עבורך</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.bizuplyPrice")}</p>
                 <p className="text-lg font-black">{formatIls(wholesaleTotal)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">סה״כ עמלה</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.totalCommission")}</p>
                 <p className="text-lg font-black">{formatIls(extra)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">מחיר סופי ללקוח</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.customerFinal")}</p>
                 <p className="text-lg font-black">{formatIls(finalTotal)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">העמלה שלך</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.yourCommission")}</p>
                 <p className="text-lg font-black">{formatIls(partnerShare)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">חלק Bizuply</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.bizuplyShare")}</p>
                 <p className="text-lg font-black">{formatIls(bizuplyShare)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">לתשלום ל-Bizuply</p>
+                <p className="text-[11px] font-bold text-white/55">{t("partner.dossier.payBizuply")}</p>
                 <p className="text-lg font-black">{formatIls(dueTotal)}</p>
               </div>
             </div>
@@ -439,7 +450,7 @@ export default function PartnerClientDossier() {
 
       {tab === "deals" || tab === "overview" ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
-          <h3 className="mb-3 font-black">היסטוריית עסקאות</h3>
+          <h3 className="mb-3 font-black">{t("partner.dossier.dealHistory")}</h3>
           <div className="space-y-2">
             {deals.map((deal) => (
               <Link
@@ -450,14 +461,14 @@ export default function PartnerClientDossier() {
                 <div>
                   <p className="font-black">{deal.dealNumber}</p>
                   <p className="text-xs font-bold text-slate-500">
-                    {deal.createdAt ? new Date(deal.createdAt).toLocaleDateString("he-IL") : "—"} · {deal.status}
+                    {formatPartnerDate(deal.createdAt, locale)} · {partnerStatusLabel(deal.status, t)}
                   </p>
                 </div>
                 <p className="font-black">{formatIls(deal.totals?.customerNow)}</p>
               </Link>
             ))}
             {!deals.length ? (
-              <p className="text-sm font-bold text-slate-400">אין עדיין עסקאות</p>
+              <p className="text-sm font-bold text-slate-400">{t("partner.dossier.noDeals")}</p>
             ) : null}
           </div>
         </section>
@@ -465,7 +476,7 @@ export default function PartnerClientDossier() {
 
       {client.enabledEntitlements?.length ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
-          <h3 className="mb-2 font-black">הרשאות שהופעלו בעסק</h3>
+          <h3 className="mb-2 font-black">{t("partner.dossier.enabledPermissions")}</h3>
           <div className="flex flex-wrap gap-2">
             {client.enabledEntitlements.map((item) => (
               <span key={item} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black">
@@ -480,19 +491,19 @@ export default function PartnerClientDossier() {
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
           <div className="mb-3 flex items-center gap-2">
             <StickyNote className="h-4 w-4 text-violet-600" />
-            <h3 className="font-black">יומן תיעוד</h3>
+            <h3 className="font-black">{t("partner.dossier.notesLog")}</h3>
           </div>
           <div className="space-y-2">
             {(client.notes || []).map((item) => (
               <div key={item._id} className="rounded-2xl bg-slate-50 px-3 py-3">
                 <p className="text-sm font-bold text-slate-800">{item.text}</p>
                 <p className="mt-1 text-[11px] font-bold text-slate-400">
-                  {formatWhen(item.createdAt)}
+                  {formatPartnerDateTime(item.createdAt, locale)}
                 </p>
               </div>
             ))}
             {!client.notes?.length ? (
-              <p className="text-sm font-bold text-slate-400">אין עדיין הערות בתיק</p>
+              <p className="text-sm font-bold text-slate-400">{t("partner.dossier.noNotes")}</p>
             ) : null}
           </div>
           <div className="mt-3 flex gap-2">
@@ -500,14 +511,14 @@ export default function PartnerClientDossier() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-sm font-bold"
-              placeholder="הוספת תיעוד — שיחה, הסכם, משימה מסחרית"
+              placeholder={t("partner.dossier.addNote")}
             />
             <button
               type="button"
               onClick={saveNote}
               className="rounded-2xl bg-slate-900 px-3 py-2 text-sm font-black text-white"
             >
-              שמור
+              {t("partner.save")}
             </button>
           </div>
         </section>
@@ -515,7 +526,7 @@ export default function PartnerClientDossier() {
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
           <div className="mb-3 flex items-center gap-2">
             <CheckSquare className="h-4 w-4 text-violet-600" />
-            <h3 className="font-black">משימות מעקב</h3>
+            <h3 className="font-black">{t("partner.dossier.followupTasks")}</h3>
           </div>
           <div className="space-y-2">
             {(client.tasks || []).map((item) => (
@@ -536,14 +547,14 @@ export default function PartnerClientDossier() {
                 <span className={item.done ? "font-bold text-slate-400 line-through" : "font-bold"}>
                   {item.title}
                   <span className="mt-1 block text-[11px] font-bold text-slate-400">
-                    {formatWhen(item.createdAt)}
-                    {item.dueAt ? ` · יעד ${formatWhen(item.dueAt)}` : ""}
+                    {formatPartnerDateTime(item.createdAt, locale)}
+                    {item.dueAt ? ` · ${t("partner.dossier.duePrefix", { when: formatPartnerDateTime(item.dueAt, locale) })}` : ""}
                   </span>
                 </span>
               </label>
             ))}
             {!client.tasks?.length ? (
-              <p className="text-sm font-bold text-slate-400">אין משימות פתוחות</p>
+              <p className="text-sm font-bold text-slate-400">{t("partner.dossier.noOpenTasks")}</p>
             ) : null}
           </div>
           <div className="mt-3 flex gap-2">
@@ -551,14 +562,14 @@ export default function PartnerClientDossier() {
               value={task}
               onChange={(e) => setTask(e.target.value)}
               className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-sm font-bold"
-              placeholder="משימה חדשה — שיחת מעקב, גבייה, הקמה"
+              placeholder={t("partner.dossier.newTask")}
             />
             <button
               type="button"
               onClick={saveTask}
               className="rounded-2xl bg-slate-900 px-3 py-2 text-sm font-black text-white"
             >
-              הוסף
+              {t("partner.dossier.add")}
             </button>
           </div>
         </section>

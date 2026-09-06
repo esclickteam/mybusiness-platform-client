@@ -1,3 +1,4 @@
+import i18n from "../../../../../../../i18n/i18n";
 import type { SeoSchemaType } from "../../../../types";
 
 export type SchemaBuilderContext = {
@@ -24,59 +25,80 @@ export type SchemaTypeDef = {
   siteLevel?: boolean;
 };
 
-export const SCHEMA_TYPE_DEFS: SchemaTypeDef[] = [
+const SCHEMA_TYPE_META: Array<Omit<SchemaTypeDef, "label" | "description"> & {
+  labelKey: string;
+  descriptionKey: string;
+}> = [
   {
     id: "LocalBusiness",
-    label: "עסק מקומי",
-    description: "כתובת, טלפון ושעות — מפעיל את כרטיס העסק בגוגל.",
+    labelKey: "studio.schema.localBusiness",
+    descriptionKey: "studio.schema.localBusinessDesc",
     singletonPerPage: true,
   },
   {
     id: "Service",
-    label: "שירות",
-    description: "שירות שהעסק מספק, כולל מחיר ואזור שירות.",
+    labelKey: "studio.schema.service",
+    descriptionKey: "studio.schema.serviceDesc",
     singletonPerPage: false,
   },
   {
     id: "FAQPage",
-    label: "שאלות ותשובות",
-    description: "בלוק שו״ת שיכול להופיע ישירות בתוצאות החיפוש.",
+    labelKey: "studio.schema.faq",
+    descriptionKey: "studio.schema.faqDesc",
     singletonPerPage: true,
   },
   {
     id: "Product",
-    label: "מוצר",
-    description: "מוצר עם מחיר וזמינות — תוצאות עשירות.",
+    labelKey: "studio.schema.product",
+    descriptionKey: "studio.schema.productDesc",
     singletonPerPage: false,
   },
   {
     id: "Organization",
-    label: "ארגון",
-    description: "זהות העסק, לוגו וקישורים. מומלץ ברמת האתר.",
+    labelKey: "studio.schema.organization",
+    descriptionKey: "studio.schema.organizationDesc",
     singletonPerPage: true,
     siteLevel: true,
   },
   {
     id: "WebSite",
-    label: "אתר אינטרנט",
-    description: "שם האתר ותיבת חיפוש. מומלץ ברמת האתר.",
+    labelKey: "studio.schema.website",
+    descriptionKey: "studio.schema.websiteDesc",
     singletonPerPage: true,
     siteLevel: true,
   },
   {
     id: "BreadcrumbList",
-    label: "פירורי לחם",
-    description: "היררכיית ניווט שמופיעה בתוצאות החיפוש.",
+    labelKey: "studio.schema.breadcrumb",
+    descriptionKey: "studio.schema.breadcrumbDesc",
     singletonPerPage: true,
   },
 ];
 
+export function getSchemaTypeDefs(): SchemaTypeDef[] {
+  return SCHEMA_TYPE_META.map((def) => ({
+    id: def.id,
+    label: String(i18n.t(def.labelKey)),
+    description: String(i18n.t(def.descriptionKey)),
+    singletonPerPage: def.singletonPerPage,
+    siteLevel: def.siteLevel,
+  }));
+}
+
+export const SCHEMA_TYPE_DEFS: SchemaTypeDef[] = SCHEMA_TYPE_META.map((def) => ({
+  id: def.id,
+  label: def.id,
+  description: "",
+  singletonPerPage: def.singletonPerPage,
+  siteLevel: def.siteLevel,
+}));
+
 export function getSchemaTypeDef(type?: string) {
-  return SCHEMA_TYPE_DEFS.find((def) => def.id === type) || null;
+  return getSchemaTypeDefs().find((def) => def.id === type) || null;
 }
 
 export function getSchemaTypeLabel(type?: string) {
-  return getSchemaTypeDef(type)?.label || "מותאם אישית";
+  return getSchemaTypeDef(type)?.label || String(i18n.t("studio.schema.custom"));
 }
 
 export const LOCAL_BUSINESS_TYPES = [
@@ -113,15 +135,26 @@ export const PRODUCT_CONDITION = [
   "DamagedCondition",
 ];
 
-export const WEEK_DAYS: Array<{ id: string; label: string }> = [
-  { id: "Sunday", label: "ראשון" },
-  { id: "Monday", label: "שני" },
-  { id: "Tuesday", label: "שלישי" },
-  { id: "Wednesday", label: "רביעי" },
-  { id: "Thursday", label: "חמישי" },
-  { id: "Friday", label: "שישי" },
-  { id: "Saturday", label: "שבת" },
-];
+const WEEK_DAY_IDS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+] as const;
+
+export function getWeekDays(): Array<{ id: string; label: string }> {
+  return WEEK_DAY_IDS.map((id) => ({
+    id,
+    label: String(i18n.t(`studio.seo.${id.toLowerCase()}`)),
+  }));
+}
+
+export const WEEK_DAYS: Array<{ id: string; label: string }> = WEEK_DAY_IDS.map(
+  (id) => ({ id, label: id }),
+);
 
 /* ============ Form data shapes ============ */
 

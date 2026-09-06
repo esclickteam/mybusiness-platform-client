@@ -1,5 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ShoppingBag, X } from "lucide-react";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 import StoreProductsManager from "../../../store/StoreProductsManager";
 
@@ -14,6 +16,7 @@ export default function VisualStorePanel({
   businessId,
   onClose,
 }: VisualStorePanelProps) {
+  const { t, i18n } = useTranslation();
   if (!open) return null;
 
   return (
@@ -23,14 +26,14 @@ export default function VisualStorePanel({
     >
       <button
         type="button"
-        aria-label="סגירת ניהול חנות"
+        aria-label={t("leftover.storePanel.closeAria")}
         data-studio-dismiss-backdrop="true"
         className="pointer-events-auto absolute inset-y-0 left-0 right-0 bg-slate-900/20 backdrop-blur-[1px]"
         onClick={onClose}
       />
 
       <aside
-        dir="rtl"
+        dir={getTextDirection(i18n.language)}
         className="pointer-events-auto relative flex h-full w-full max-w-[min(100%,860px)] flex-col border-l border-slate-200 bg-[#f7f8fc] shadow-[-20px_0_60px_rgba(15,23,42,0.18)]"
       >
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
@@ -40,10 +43,10 @@ export default function VisualStorePanel({
             </div>
             <div className="min-w-0">
               <h2 className="truncate text-base font-black text-slate-800">
-                ניהול חנות
+                {t("leftover.storePanel.title")}
               </h2>
               <p className="truncate text-xs font-bold text-slate-500">
-                מוצרים, מלאי, הזמנות והגדרות
+                {t("leftover.storePanel.subtitle")}
               </p>
             </div>
           </div>
@@ -63,10 +66,10 @@ export default function VisualStorePanel({
           ) : (
             <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center">
               <p className="text-sm font-black text-slate-700">
-                לא נמצא מזהה עסק לניהול החנות
+                {t("leftover.storePanel.missingBusiness")}
               </p>
               <p className="mt-2 text-xs font-bold text-slate-500">
-                רעננו את העורך או פתחו את האתר מתוך לוח הבקרה
+                {t("leftover.storePanel.missingHint")}
               </p>
             </div>
           )}

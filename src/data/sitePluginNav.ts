@@ -54,12 +54,24 @@ export function resolvePluginSection(pluginKey: string): SitePanelSection {
   return (PLUGIN_SECTION_MAP[pluginKey] as SitePanelSection) || pluginKey;
 }
 
+type TranslateFn = (key: string, options?: { defaultValue?: string }) => string;
+
 export function getSectionMetaForPlugin(
   section: SitePanelSection,
-  catalog?: Array<{ key: string; name: string; description: string }>
+  catalog?: Array<{ key: string; name: string; description: string }>,
+  t?: TranslateFn
 ) {
   const known = SECTION_META[section as keyof typeof SECTION_META];
-  if (known) return known;
+  if (known) {
+    if (!t) return known;
+    return {
+      ...known,
+      label: t(`sitePlugins.nav.${section}.label`, { defaultValue: known.label }),
+      description: t(`sitePlugins.nav.${section}.description`, {
+        defaultValue: known.description,
+      }),
+    };
+  }
 
   const fromCatalog = catalog?.find(
     (p) => p.key === section || PLUGIN_SECTION_MAP[p.key] === section

@@ -1,29 +1,71 @@
+import i18n from "../../../../i18n/i18n";
+
 export type EmailProviderId = "gmail" | "outlook" | "business";
 
-export const EMAIL_PROVIDER_REQUIRED_HE =
-  "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365";
+export function getEmailProviderRequired() {
+  return i18n.t(
+    "leftover.emailProvider.required",
+    "To use this automation, connect Gmail or Outlook / Microsoft 365"
+  );
+}
 
-export const EMAIL_TEMPLATE_CONNECT_CTA_HE =
-  "כדי להפעיל את התבנית יש לחבר Gmail או Outlook / Microsoft 365";
+export function getEmailTemplateConnectCta() {
+  return i18n.t(
+    "leftover.emailProvider.connectCta",
+    "To enable the template, connect Gmail or Outlook / Microsoft 365"
+  );
+}
 
-export const BUSINESS_EMAIL_MISSING_TITLE_HE = "לא הוגדר מייל עסקי מאומת";
+export function getBusinessEmailMissingTitle() {
+  return i18n.t("leftover.emailProvider.missingTitle", "No verified business email is set");
+}
 
-export const BUSINESS_EMAIL_MISSING_BODY_HE =
-  "כדי לשלוח מהמייל העסקי של העסק, יש להשלים קודם את הגדרת המייל ואימותו.";
+export function getBusinessEmailMissingBody() {
+  return i18n.t(
+    "leftover.emailProvider.missingBody",
+    "To send from the business email, finish setting it up and verifying it first."
+  );
+}
 
-export const BUSINESS_EMAIL_SETTINGS_CTA_HE = "הגדרת מייל עסקי";
+export function getBusinessEmailSettingsCta() {
+  return i18n.t("leftover.emailProvider.settingsCta", "Set up business email");
+}
 
-export const BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE =
-  "המייל השולח שנבחר אינו זמין או אינו מאומת. יש לבחור מייל שולח אחר.";
+export function getBusinessEmailSenderUnavailable() {
+  return i18n.t(
+    "leftover.emailProvider.senderUnavailable",
+    "The selected sender email is unavailable or not verified. Choose another sender."
+  );
+}
 
-export const EMAIL_PROVIDER_OPTIONS: Array<{
+export const EMAIL_PROVIDER_REQUIRED_HE = getEmailProviderRequired;
+export const EMAIL_TEMPLATE_CONNECT_CTA_HE = getEmailTemplateConnectCta;
+export const BUSINESS_EMAIL_MISSING_TITLE_HE = getBusinessEmailMissingTitle;
+export const BUSINESS_EMAIL_MISSING_BODY_HE = getBusinessEmailMissingBody;
+export const BUSINESS_EMAIL_SETTINGS_CTA_HE = getBusinessEmailSettingsCta;
+export const BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE = getBusinessEmailSenderUnavailable;
+
+export function getEmailProviderOptions(): Array<{
   id: EmailProviderId;
   label: string;
-}> = [
-  { id: "gmail", label: "Gmail" },
-  { id: "outlook", label: "Outlook / Microsoft 365" },
-  { id: "business", label: "מייל עסקי" },
-];
+}> {
+  return [
+    { id: "gmail", label: "Gmail" },
+    { id: "outlook", label: "Outlook / Microsoft 365" },
+    {
+      id: "business",
+      label: i18n.t("leftover.emailProvider.businessMail", "Business email"),
+    },
+  ];
+}
+
+export const EMAIL_PROVIDER_OPTIONS = {
+  map: (...args: Parameters<Array<{ id: EmailProviderId; label: string }>["map"]>) =>
+    getEmailProviderOptions().map(...args),
+  [Symbol.iterator]: function* () {
+    yield* getEmailProviderOptions();
+  },
+} as Array<{ id: EmailProviderId; label: string }>;
 
 /** Placeholder action key in template graphs — rewritten before publish. */
 export const CONNECTED_EMAIL_ACTION_KEY = "connected_email";

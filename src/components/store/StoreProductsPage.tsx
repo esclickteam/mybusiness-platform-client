@@ -1,15 +1,18 @@
 import React from "react";
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import StoreProductsManager from "../../components/store/StoreProductsManager";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 export default function StoreProductsPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   return (
     <main
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="
         min-h-screen bg-[#F7F8FC]
         px-4 py-6
@@ -36,17 +39,18 @@ export default function StoreProductsPage() {
                 "
               >
                 <ShoppingBag size={15} />
-                ניהול חנות
+                {t("leftover.store.badge", "Store management")}
               </div>
 
               <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
-                מוצרים, קטגוריות והגדרות חנות
+                {t("leftover.store.title", "Products, categories, and store settings")}
               </h1>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                כאן מוסיפים מוצרים פעם אחת. המוצרים נשמרים בשרת, מופיעים
-                אוטומטית בגריד החנות באתר, וכל מוצר יקבל דף מוצר אוטומטי לפי
-                העיצוב שתבחרי.
+                {t(
+                  "leftover.store.hint",
+                  "Add products once. They are saved on the server, appear automatically in the store grid, and each product gets an automatic product page matching the design you choose."
+                )}
               </p>
             </div>
 
@@ -61,7 +65,7 @@ export default function StoreProductsPage() {
               "
             >
               <ArrowRight size={17} />
-              חזרה לסטודיו
+              {t("leftover.store.backStudio", "Back to Studio")}
             </button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import type {
   AutomationLastExecution,
   AutomationStatus,
@@ -20,20 +21,24 @@ export function getWorkflowStatus(
   return workflow.enabled ? "active" : "draft";
 }
 
-export function getStatusLabel(status: AutomationStatus | string): string {
+export function getStatusLabel(
+  status: AutomationStatus | string,
+  t?: TFunction
+): string {
+  const label = (key: string, en: string) => (t ? t(key, en) : en);
   switch (status) {
     case "active":
-      return "פעילה";
+      return label("automations.toolbar.active", "Active");
     case "draft":
-      return "טיוטה";
+      return label("automations.toolbar.draft", "Draft");
     case "paused":
-      return "מושהית";
+      return label("automations.toolbar.paused", "Paused");
     case "failed":
-      return "שגיאה";
+      return label("automations.list.statusFailed", "Error");
     case "archived":
-      return "ארכיון";
+      return label("automations.list.statusArchived", "Archived");
     default:
-      return "טיוטה";
+      return label("automations.toolbar.draft", "Draft");
   }
 }
 
@@ -47,20 +52,34 @@ export function getTriggerLabel(workflow: AutomationWorkflow): string {
 }
 
 export function getLastResultLabel(
-  lastExecution?: AutomationLastExecution
+  lastExecution?: AutomationLastExecution,
+  t?: TFunction
 ): { label: string; tone: "success" | "failed" | "neutral" | "running" } {
+  const label = (key: string, en: string) => (t ? t(key, en) : en);
   if (!lastExecution?.status) {
-    return { label: "אין עדיין", tone: "neutral" };
+    return {
+      label: label("automations.list.resultNone", "None yet"),
+      tone: "neutral",
+    };
   }
   const status = String(lastExecution.status).toLowerCase();
   if (status === "completed" || status === "success") {
-    return { label: "הצלחה", tone: "success" };
+    return {
+      label: label("automations.runs.success", "Success"),
+      tone: "success",
+    };
   }
   if (status === "failed" || status === "error") {
-    return { label: "נכשלה", tone: "failed" };
+    return {
+      label: label("automations.runs.failed", "Failed"),
+      tone: "failed",
+    };
   }
   if (status === "running" || status === "waiting") {
-    return { label: "רצה", tone: "running" };
+    return {
+      label: label("automations.list.resultRunning", "Running"),
+      tone: "running",
+    };
   }
   return { label: lastExecution.status, tone: "neutral" };
 }
@@ -84,7 +103,9 @@ export function formatRelativeTime(
   if (absMs < hour) return rtf.format(Math.round(diffMs / minute), "minute");
   if (absMs < day) return rtf.format(Math.round(diffMs / hour), "hour");
   if (absMs < 30 * day) return rtf.format(Math.round(diffMs / day), "day");
-  return date.toLocaleDateString("he-IL");
+  const dateLocale =
+    locale === "he" || locale.startsWith("he-") ? "he-IL" : locale;
+  return date.toLocaleDateString(dateLocale);
 }
 
 export function matchesStatusFilter(

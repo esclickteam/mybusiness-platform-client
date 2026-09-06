@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../../../../i18n/localeUtils";
 
 import type { ProductFormData } from "../schemaTypes";
 import { PRODUCT_AVAILABILITY, PRODUCT_CONDITION } from "../schemaTypes";
@@ -16,34 +18,36 @@ type Props = {
 };
 
 export default function ProductSchemaForm({ value, onChange }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const set = <K extends keyof ProductFormData>(
     key: K,
     val: ProductFormData[K],
   ) => onChange({ ...value, [key]: val });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={pageDir}>
       <div className={FIELD_GRID}>
         <TextField
-          label="שם המוצר"
+          label={t("studio.seo.productName")}
           value={value.name || ""}
           onChange={(v) => set("name", v)}
         />
         <TextField
-          label="מותג"
+          label={t("studio.seo.brand")}
           value={value.brand || ""}
           onChange={(v) => set("brand", v)}
         />
       </div>
 
       <TextAreaField
-        label="תיאור"
+        label={t("studio.seo.description")}
         value={value.description || ""}
         onChange={(v) => set("description", v)}
       />
 
       <TagsField
-        label="תמונות (URL)"
+        label={t("studio.seo.images")}
         values={value.images || []}
         onChange={(v) => set("images", v)}
         placeholder="https://..."
@@ -51,7 +55,7 @@ export default function ProductSchemaForm({ value, onChange }: Props) {
 
       <div className={FIELD_GRID}>
         <TextField
-          label="כתובת עמוד המוצר"
+          label={t("studio.seo.productPageUrl")}
           value={value.url || ""}
           onChange={(v) => set("url", v)}
           dir="ltr"
@@ -60,39 +64,39 @@ export default function ProductSchemaForm({ value, onChange }: Props) {
         <TextField label="GTIN" value={value.gtin || ""} onChange={(v) => set("gtin", v)} dir="ltr" />
         <TextField label="MPN" value={value.mpn || ""} onChange={(v) => set("mpn", v)} dir="ltr" />
         <TextField
-          label="מחיר"
+          label={t("studio.seo.price")}
           value={value.price || ""}
           onChange={(v) => set("price", v)}
           dir="ltr"
           type="number"
         />
         <TextField
-          label="מחיר מבצע"
+          label={t("studio.seo.salePrice")}
           value={value.salePrice || ""}
           onChange={(v) => set("salePrice", v)}
           dir="ltr"
           type="number"
         />
         <TextField
-          label="מטבע"
+          label={t("studio.seo.currency")}
           value={value.currency || "ILS"}
           onChange={(v) => set("currency", v)}
           dir="ltr"
         />
         <SelectField
-          label="זמינות"
+          label={t("studio.seo.availability")}
           value={value.availability || "InStock"}
           onChange={(v) => set("availability", v)}
           options={PRODUCT_AVAILABILITY.map((a) => ({ value: a, label: a }))}
         />
         <SelectField
-          label="מצב המוצר"
+          label={t("studio.seo.condition")}
           value={value.condition || "NewCondition"}
           onChange={(v) => set("condition", v)}
           options={PRODUCT_CONDITION.map((c) => ({ value: c, label: c }))}
         />
         <TextField
-          label="שם המוכר"
+          label={t("studio.seo.sellerName")}
           value={value.sellerName || ""}
           onChange={(v) => set("sellerName", v)}
         />
@@ -100,19 +104,19 @@ export default function ProductSchemaForm({ value, onChange }: Props) {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-3">
         <p className="mb-2 text-xs font-black text-slate-700">
-          דירוג (רק אם קיימות ביקורות אמיתיות)
+          {t("studio.seo.ratingTitle")}
         </p>
         <div className={FIELD_GRID}>
           <TextField
-            label="דירוג ממוצע"
+            label={t("studio.seo.averageRating")}
             value={value.ratingValue || ""}
             onChange={(v) => set("ratingValue", v)}
             dir="ltr"
             type="number"
-            hint="1 עד 5"
+            hint={t("studio.seo.ratingHint")}
           />
           <TextField
-            label="מספר ביקורות"
+            label={t("studio.seo.reviewCount")}
             value={value.reviewCount || ""}
             onChange={(v) => set("reviewCount", v)}
             dir="ltr"

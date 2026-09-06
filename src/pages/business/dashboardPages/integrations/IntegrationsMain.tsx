@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useSearchParams } from "react-router-dom";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 import {
   disconnectGmail,
   getGmailConnectUrl,
@@ -39,11 +41,15 @@ type IntegrationsMainProps = {
 
 export default function IntegrationsMain({
   returnPath,
-  title = "אינטגרציות",
-  description = "חיבורי שירותים חיצוניים לעסק — Gmail, Google Calendar ו-Outlook.",
+  title,
+  description,
   embedded = false,
   businessId: businessIdProp,
 }: IntegrationsMainProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const pageTitle = title ?? t("integrations.title");
+  const pageDescription = description ?? t("integrations.description");
   const { businessId: businessIdParam = "" } = useParams();
   const businessId = String(businessIdProp || businessIdParam || "");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,37 +74,34 @@ export default function IntegrationsMain({
 
   const banner = useMemo(() => {
     if (searchParams.get("gmail_connected") === "1") {
-      return `Gmail חובר בהצלחה${
-        searchParams.get("gmail_email")
-          ? `: ${searchParams.get("gmail_email")}`
-          : ""
-      }`;
+      const email = searchParams.get("gmail_email");
+      return email
+        ? t("integrations.gmailConnectedWithEmail", { email })
+        : t("integrations.gmailConnected");
     }
     if (searchParams.get("gmail_error")) {
       return String(searchParams.get("gmail_error"));
     }
     if (searchParams.get("gcal_connected") === "1") {
-      return `Google Calendar חובר בהצלחה${
-        searchParams.get("gcal_email")
-          ? `: ${searchParams.get("gcal_email")}`
-          : ""
-      }`;
+      const email = searchParams.get("gcal_email");
+      return email
+        ? t("integrations.gcalConnectedWithEmail", { email })
+        : t("integrations.gcalConnected");
     }
     if (searchParams.get("gcal_error")) {
       return String(searchParams.get("gcal_error"));
     }
     if (searchParams.get("outlook_connected") === "1") {
-      return `Outlook חובר בהצלחה${
-        searchParams.get("outlook_email")
-          ? `: ${searchParams.get("outlook_email")}`
-          : ""
-      }`;
+      const email = searchParams.get("outlook_email");
+      return email
+        ? t("integrations.outlookConnectedWithEmail", { email })
+        : t("integrations.outlookConnected");
     }
     if (searchParams.get("outlook_error")) {
       return String(searchParams.get("outlook_error"));
     }
     return "";
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   async function load() {
     if (!businessId) return;
@@ -108,7 +111,7 @@ export default function IntegrationsMain({
       const data = await getGmailStatus(businessId);
       setStatus(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "שגיאה בטעינת Gmail");
+      setError(e instanceof Error ? e.message : t("integrations.loadGmailError"));
     } finally {
       setLoading(false);
     }
@@ -123,7 +126,7 @@ export default function IntegrationsMain({
       setOutlookStatus(data);
     } catch (e) {
       setOutlookError(
-        e instanceof Error ? e.message : "שגיאה בטעינת Outlook"
+        e instanceof Error ? e.message : t("integrations.loadOutlookError")
       );
     } finally {
       setOutlookLoading(false);
@@ -139,7 +142,7 @@ export default function IntegrationsMain({
       setCalendarStatus(data);
     } catch (e) {
       setCalendarError(
-        e instanceof Error ? e.message : "שגיאה בטעינת Google Calendar"
+        e instanceof Error ? e.message : t("integrations.loadCalendarError")
       );
     } finally {
       setCalendarLoading(false);
@@ -176,10 +179,10 @@ export default function IntegrationsMain({
     setError("");
     try {
       const data = await getGmailConnectUrl(businessId, oauthReturnPath);
-      if (!data?.url) throw new Error("לא התקבל קישור התחברות");
+      if (!data?.url) throw new Error(t("integrations.noConnectUrl"));
       window.location.href = data.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "התחברות נכשלה");
+      setError(e instanceof Error ? e.message : t("integrations.connectFailed"));
       setBusy(false);
     }
   }
@@ -193,7 +196,7 @@ export default function IntegrationsMain({
       await load();
       await loadCalendar();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "ניתוק נכשל");
+      setError(e instanceof Error ? e.message : t("integrations.disconnectFailed"));
     } finally {
       setBusy(false);
     }
@@ -213,10 +216,10 @@ export default function IntegrationsMain({
         setCalendarBusy(false);
         return;
       }
-      if (!data?.url) throw new Error("לא התקבל קישור התחברות");
+      if (!data?.url) throw new Error(t("integrations.noConnectUrl"));
       window.location.href = data.url;
     } catch (e) {
-      setCalendarError(e instanceof Error ? e.message : "התחברות נכשלה");
+      setCalendarError(e instanceof Error ? e.message : t("integrations.connectFailed"));
       setCalendarBusy(false);
     }
   }
@@ -230,7 +233,7 @@ export default function IntegrationsMain({
       await loadCalendar();
       await load();
     } catch (e) {
-      setCalendarError(e instanceof Error ? e.message : "ניתוק Calendar נכשל");
+      setCalendarError(e instanceof Error ? e.message : t("integrations.disconnectCalendarFailed"));
     } finally {
       setCalendarBusy(false);
     }
@@ -242,10 +245,10 @@ export default function IntegrationsMain({
     setOutlookError("");
     try {
       const data = await getOutlookConnectUrl(businessId, oauthReturnPath);
-      if (!data?.url) throw new Error("לא התקבל קישור התחברות");
+      if (!data?.url) throw new Error(t("integrations.noConnectUrl"));
       window.location.href = data.url;
     } catch (e) {
-      setOutlookError(e instanceof Error ? e.message : "התחברות נכשלה");
+      setOutlookError(e instanceof Error ? e.message : t("integrations.connectFailed"));
       setOutlookBusy(false);
     }
   }
@@ -258,7 +261,7 @@ export default function IntegrationsMain({
       await disconnectOutlook(businessId);
       await loadOutlook();
     } catch (e) {
-      setOutlookError(e instanceof Error ? e.message : "ניתוק נכשל");
+      setOutlookError(e instanceof Error ? e.message : t("integrations.disconnectFailed"));
     } finally {
       setOutlookBusy(false);
     }
@@ -268,7 +271,7 @@ export default function IntegrationsMain({
     if (!businessId) return;
     const to = String(testEmail || "").trim().toLowerCase();
     if (!to) {
-      setOutlookError("יש להזין כתובת מייל לבדיקה");
+      setOutlookError(t("integrations.testEmailRequired"));
       return;
     }
     setOutlookBusy(true);
@@ -280,10 +283,10 @@ export default function IntegrationsMain({
         to,
         confirm: true,
       });
-      setTestMessage(`מייל בדיקה נשלח אל ${to}`);
+      setTestMessage(t("integrations.testEmailSent", { to }));
     } catch (e) {
       setOutlookError(
-        e instanceof Error ? e.message : "שליחת מייל בדיקה נכשלה"
+        e instanceof Error ? e.message : t("integrations.testEmailFailed")
       );
     } finally {
       setOutlookBusy(false);
@@ -319,18 +322,18 @@ export default function IntegrationsMain({
     calendarInfo?.googleEmail || calendarStatus?.account?.email || "";
 
   function calendarBadgeLabel() {
-    if (!calendarAvailable) return "לא זמין";
-    if (calendarConnected) return "מחובר";
-    if (calendarNeedsReconnect) return "נדרש חיבור מחדש";
-    if (calendarNeedsGrant) return "נדרשת הרשאת יומן";
-    return "לא מחובר";
+    if (!calendarAvailable) return t("integrations.unavailable");
+    if (calendarConnected) return t("integrations.connected");
+    if (calendarNeedsReconnect) return t("integrations.needsReconnect");
+    if (calendarNeedsGrant) return t("integrations.needsCalendarGrant");
+    return t("integrations.notConnected");
   }
 
   function calendarPrimaryCta() {
-    if (calendarNeedsReconnect) return "חיבור מחדש";
-    if (calendarNeedsGrant) return "Grant Calendar access";
-    if (calendarConnected) return "חיבור מחדש";
-    return "Connect Google Calendar";
+    if (calendarNeedsReconnect) return t("integrations.reconnect");
+    if (calendarNeedsGrant) return t("integrations.grantCalendar");
+    if (calendarConnected) return t("integrations.reconnect");
+    return t("integrations.connectCalendar");
   }
 
   return (
@@ -340,10 +343,10 @@ export default function IntegrationsMain({
           ? "ax-integrations-embedded"
           : "p-4 md:p-6 max-w-3xl mx-auto"
       }
-      dir="rtl"
+      dir={pageDir}
     >
-      <h1 className="text-2xl font-bold mb-2">{title}</h1>
-      <p className="text-slate-600 mb-6">{description}</p>
+      <h1 className="text-2xl font-bold mb-2">{pageTitle}</h1>
+      <p className="text-slate-600 mb-6">{pageDescription}</p>
 
       {banner ? (
         <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
@@ -373,7 +376,7 @@ export default function IntegrationsMain({
             <div>
               <h2 className="text-lg font-semibold">Gmail</h2>
               <p className="text-sm text-slate-600 mt-1">
-                שליחת מיילים מאוטומציות דרך חשבון Google של העסק
+                {t("integrations.gmailSubtitle")}
               </p>
             </div>
             <span
@@ -388,49 +391,48 @@ export default function IntegrationsMain({
               }`}
             >
               {!available
-                ? "בתהליך אישור"
+                ? t("integrations.pendingApproval")
                 : needsGmailGrant
-                  ? "נדרשת הרשאת שליחה"
+                  ? t("integrations.needsSendGrant")
                   : connected
-                    ? "מחובר"
+                    ? t("integrations.connected")
                     : needsReconnect
-                      ? "נדרש חיבור מחדש"
-                      : "לא מחובר"}
+                      ? t("integrations.needsReconnect")
+                      : t("integrations.notConnected")}
             </span>
           </div>
 
           {loading ? (
-            <p className="mt-4 text-sm text-slate-500">טוען...</p>
+            <p className="mt-4 text-sm text-slate-500">{t("integrations.loading")}</p>
           ) : !available ? (
             <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-              Gmail נמצא כרגע בתהליך אישור מול Google
+              {t("integrations.gmailPendingGoogle")}
             </p>
           ) : account && (connected || needsReconnect) ? (
             <div className="mt-4 space-y-2 text-sm">
               {needsGmailGrant ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  חסרה הרשאת שליחה של Gmail — יש לאשר מחדש (החיבור ל-Google
-                  עדיין פעיל)
+                  {t("integrations.gmailMissingSend")}
                 </p>
               ) : needsReconnect ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  חיבור Gmail פג תוקף — יש להתחבר מחדש
+                  {t("integrations.gmailExpired")}
                 </p>
               ) : null}
               <div>
-                <span className="text-slate-500">חשבון: </span>
+                <span className="text-slate-500">{t("integrations.account")} </span>
                 <span dir="ltr">{account.email}</span>
               </div>
               {account.displayName ? (
                 <div>
-                  <span className="text-slate-500">שם: </span>
+                  <span className="text-slate-500">{t("integrations.name")} </span>
                   {account.displayName}
                 </div>
               ) : null}
               <div>
-                <span className="text-slate-500">אימות אחרון: </span>
+                <span className="text-slate-500">{t("integrations.lastVerified")} </span>
                 {account.lastVerifiedAt
-                  ? new Date(account.lastVerifiedAt).toLocaleString("he-IL")
+                  ? new Date(account.lastVerifiedAt).toLocaleString(getIntlLocale(i18n.language))
                   : "—"}
               </div>
               <div className="flex flex-wrap gap-2 pt-3">
@@ -440,7 +442,7 @@ export default function IntegrationsMain({
                   onClick={() => void connect()}
                   className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm"
                 >
-                  חיבור מחדש
+                  {t("integrations.reconnect")}
                 </button>
                 {connected ? (
                   <button
@@ -449,7 +451,7 @@ export default function IntegrationsMain({
                     onClick={() => void disconnect()}
                     className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
                   >
-                    ניתוק
+                    {t("integrations.disconnect")}
                   </button>
                 ) : null}
               </div>
@@ -462,7 +464,7 @@ export default function IntegrationsMain({
                 onClick={() => void connect()}
                 className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm"
               >
-                חיבור Gmail
+                {t("integrations.connectGmail")}
               </button>
             </div>
           )}
@@ -473,7 +475,7 @@ export default function IntegrationsMain({
             <div>
               <h2 className="text-lg font-semibold">Google Calendar</h2>
               <p className="text-sm text-slate-600 mt-1">
-                יצירת אירועי יומן מאוטומציות דרך חשבון Google של העסק
+                {t("integrations.calendarSubtitle")}
               </p>
             </div>
             <span
@@ -492,28 +494,27 @@ export default function IntegrationsMain({
           </div>
 
           {calendarLoading ? (
-            <p className="mt-4 text-sm text-slate-500">טוען...</p>
+            <p className="mt-4 text-sm text-slate-500">{t("integrations.loading")}</p>
           ) : !calendarAvailable ? (
             <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
               {calendarStatus?.message ||
-                "Google Calendar אינו זמין לעסק זה כרגע"}
+                t("integrations.calendarUnavailable")}
             </p>
           ) : (
             <div className="mt-4 space-y-2 text-sm">
               {calendarNeedsReconnect ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  חיבור Google פג תוקף — יש להתחבר מחדש ליומן
+                  {t("integrations.calendarExpired")}
                 </p>
               ) : null}
               {calendarNeedsGrant ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  Gmail מחובר, אך חסרה הרשאת Google Calendar. אישור ההרשאה לא
-                  מנתק את Gmail.
+                  {t("integrations.calendarMissingGrant")}
                 </p>
               ) : null}
               {calendarEmail ? (
                 <div>
-                  <span className="text-slate-500">חשבון Google: </span>
+                  <span className="text-slate-500">{t("integrations.googleAccount")} </span>
                   <span dir="ltr">{calendarEmail}</span>
                 </div>
               ) : null}
@@ -533,13 +534,13 @@ export default function IntegrationsMain({
                     onClick={() => void disconnectCalendar()}
                     className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
                   >
-                    ניתוק Calendar
+                    {t("integrations.disconnectCalendar")}
                   </button>
                 ) : null}
               </div>
               {calendarConnected ? (
                 <p className="text-xs text-slate-500 pt-1">
-                  ניתוק Calendar אינו מנתק את Gmail.
+                  {t("integrations.disconnectCalendarHint")}
                 </p>
               ) : null}
             </div>
@@ -551,8 +552,7 @@ export default function IntegrationsMain({
             <div>
               <h2 className="text-lg font-semibold">Outlook</h2>
               <p className="text-sm text-slate-600 mt-1">
-                שליחת מיילים מאוטומציות דרך חשבון Outlook או Microsoft 365 של
-                העסק
+                {t("integrations.outlookSubtitle")}
               </p>
             </div>
             <span
@@ -567,37 +567,37 @@ export default function IntegrationsMain({
               }`}
             >
               {!outlookAvailable
-                ? "לא זמין"
+                ? t("integrations.unavailable")
                 : outlookConnected
-                  ? "מחובר"
+                  ? t("integrations.connected")
                   : outlookNeedsReconnect
-                    ? "נדרש חיבור מחדש"
-                    : "לא מחובר"}
+                    ? t("integrations.needsReconnect")
+                    : t("integrations.notConnected")}
             </span>
           </div>
 
           {outlookLoading ? (
-            <p className="mt-4 text-sm text-slate-500">טוען...</p>
+            <p className="mt-4 text-sm text-slate-500">{t("integrations.loading")}</p>
           ) : !outlookAvailable ? (
             <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
               {outlookStatus?.message ||
-                "Outlook / Microsoft 365 אינו זמין לעסק זה כרגע"}
+                t("integrations.outlookUnavailable")}
             </p>
           ) : outlookAccount && (outlookConnected || outlookNeedsReconnect) ? (
             <div className="mt-4 space-y-2 text-sm">
               {outlookNeedsReconnect ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  חיבור Outlook פג תוקף — יש להתחבר מחדש
+                  {t("integrations.outlookExpired")}
                 </p>
               ) : null}
               <div>
-                <span className="text-slate-500">חשבון: </span>
+                <span className="text-slate-500">{t("integrations.account")} </span>
                 <span dir="ltr">{outlookAccount.email}</span>
               </div>
               {outlookConnected ? (
                 <div className="space-y-2 pt-2">
                   <label className="block text-sm">
-                    <span className="text-slate-500">מייל בדיקה</span>
+                    <span className="text-slate-500">{t("integrations.testEmail")}</span>
                     <input
                       type="email"
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -621,7 +621,7 @@ export default function IntegrationsMain({
                     onClick={() => void sendTestOutlookEmail()}
                     className="px-3 py-2 rounded-lg bg-sky-700 text-white text-sm"
                   >
-                    שליחת מייל בדיקה
+                    {t("integrations.sendTestEmail")}
                   </button>
                 ) : null}
                 <button
@@ -630,7 +630,7 @@ export default function IntegrationsMain({
                   onClick={() => void connectOutlook()}
                   className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm"
                 >
-                  חיבור מחדש
+                  {t("integrations.reconnect")}
                 </button>
                 {outlookConnected ? (
                   <button
@@ -639,7 +639,7 @@ export default function IntegrationsMain({
                     onClick={() => void disconnectOutlookAccount()}
                     className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
                   >
-                    ניתוק
+                    {t("integrations.disconnect")}
                   </button>
                 ) : null}
               </div>
@@ -652,7 +652,7 @@ export default function IntegrationsMain({
                 onClick={() => void connectOutlook()}
                 className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm"
               >
-                חיבור Outlook
+                {t("integrations.connectOutlook")}
               </button>
             </div>
           )}

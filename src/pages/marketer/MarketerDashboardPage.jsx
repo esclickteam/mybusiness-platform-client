@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Megaphone, Plus, LogIn, Users, Building2, Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import API from "@api";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 const emptyForm = {
   businessName: "",
@@ -16,6 +19,8 @@ const emptyForm = {
 };
 
 export default function MarketerDashboardPage() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { user, loginWithToken, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -41,11 +46,11 @@ export default function MarketerDashboardPage() {
       setMarketer(data.marketer || null);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error || "שגיאה בטעינת לוח המשווק");
+      setError(err.response?.data?.error || t("marketer.errorLoad"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (user && user.role !== "marketer") {
@@ -69,13 +74,13 @@ export default function MarketerDashboardPage() {
 
     try {
       const { data } = await API.post("/marketer/create-client", form);
-      setCreateMessage(data.message || "הלקוח נוצר בהצלחה");
+      setCreateMessage(data.message || t("marketer.created"));
       setCreatedCredentials(data.client || null);
       setForm(emptyForm);
       setShowForm(false);
       await refresh();
     } catch (err) {
-      setError(err.response?.data?.error || "שגיאה ביצירת לקוח");
+      setError(err.response?.data?.error || t("marketer.createError"));
     } finally {
       setCreating(false);
     }
@@ -84,7 +89,7 @@ export default function MarketerDashboardPage() {
   const handleEnterClient = async (client) => {
     if (
       !window.confirm(
-        `להיכנס לחשבון של ${client.businessName || "הלקוח"}?\nתוכלו לנהל קמפיינים ו-CRM בשמו.`
+        t("marketer.enterConfirm", { name: client.businessName || t("marketer.clientFallback") })
       )
     ) {
       return;
@@ -108,7 +113,7 @@ export default function MarketerDashboardPage() {
       navigate(path, { replace: true });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error || "לא ניתן להיכנס ללקוח");
+      setError(err.response?.data?.error || t("marketer.enterError"));
     } finally {
       setEnteringId(null);
     }
@@ -123,12 +128,12 @@ export default function MarketerDashboardPage() {
   };
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="טוען לוח משווק..." />;
+    return <BizuplyLoader fullScreen label={t("marketer.loading")} />;
   }
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className="min-h-screen bg-[radial-gradient(circle_at_top_right,#e8f0ff,transparent_40%),radial-gradient(circle_at_bottom_left,#f0f7f4,transparent_45%),#f7f8fc] text-slate-800"
       style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
     >
@@ -140,25 +145,27 @@ export default function MarketerDashboardPage() {
             </span>
             <div>
               <h1 className="text-lg font-black text-slate-900 md:text-xl">
-                לוח משווק
+                {t("marketer.title")}
               </h1>
               <p className="text-xs font-bold text-slate-500">
-                {marketer?.name || user?.name || "משווק"} · ניהול קמפיינים ו-CRM
-                ללקוחות
+                {marketer?.name || user?.name || t("marketer.role")} · {t("marketer.subtitle")}
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-          >
-            התנתקות
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate("/login", { replace: true });
+              }}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+            >
+              {t("marketer.signOut")}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -177,20 +184,20 @@ export default function MarketerDashboardPage() {
 
         {createdCredentials ? (
           <div className="mb-6 rounded-2xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-950">
-            <p className="mb-2 font-black">פרטי התחברות ללקוח החדש:</p>
+            <p className="mb-2 font-black">{t("marketer.credentialsTitle")}</p>
             <div className="flex flex-wrap items-center gap-3">
               <span>
-                אימייל: <strong>{createdCredentials.email}</strong>
+                {t("marketer.emailLabel")} <strong>{createdCredentials.email}</strong>
               </span>
               <button
                 type="button"
                 onClick={() => copyText(createdCredentials.email)}
                 className="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-white px-2 py-1 text-xs font-bold"
               >
-                <Copy className="h-3.5 w-3.5" /> העתק
+                <Copy className="h-3.5 w-3.5" /> {t("marketer.copy")}
               </button>
               <span>
-                סיסמה זמנית:{" "}
+                {t("marketer.tempPassword")}{" "}
                 <strong>{createdCredentials.temporaryPassword}</strong>
               </span>
               <button
@@ -200,11 +207,11 @@ export default function MarketerDashboardPage() {
                 }
                 className="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-white px-2 py-1 text-xs font-bold"
               >
-                <Copy className="h-3.5 w-3.5" /> העתק
+                <Copy className="h-3.5 w-3.5" /> {t("marketer.copy")}
               </button>
             </div>
             <p className="mt-2 text-xs font-bold text-sky-800/80">
-              ללקוח פתוחים רק ניהול קמפיינים ו-CRM.
+              {t("marketer.modulesHint")}
             </p>
           </div>
         ) : null}
@@ -213,7 +220,7 @@ export default function MarketerDashboardPage() {
           <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm">
             <div className="mb-2 flex items-center gap-2 text-slate-500">
               <Users className="h-4 w-4" />
-              <span className="text-xs font-bold">סה״כ לקוחות</span>
+              <span className="text-xs font-bold">{t("marketer.totalClients")}</span>
             </div>
             <p className="text-3xl font-black text-slate-900">
               {clients.length}
@@ -222,19 +229,19 @@ export default function MarketerDashboardPage() {
           <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm">
             <div className="mb-2 flex items-center gap-2 text-slate-500">
               <Building2 className="h-4 w-4" />
-              <span className="text-xs font-bold">מודולים ללקוחות</span>
+              <span className="text-xs font-bold">{t("marketer.clientModules")}</span>
             </div>
             <p className="text-base font-black text-slate-900">
-              CRM · ניהול קמפיינים
+              {t("marketer.crmCampaigns")}
             </p>
           </div>
         </section>
 
         <section className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-black text-slate-900">הלקוחות שלי</h2>
+            <h2 className="text-xl font-black text-slate-900">{t("marketer.myClients")}</h2>
             <p className="text-sm font-bold text-slate-500">
-              פתיחת לקוח חדש עם CRM וקמפיינים, וכניסה לניהול מלא אצלו
+              {t("marketer.createHint")}
             </p>
           </div>
           <button
@@ -243,7 +250,7 @@ export default function MarketerDashboardPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-800"
           >
             <Plus className="h-4 w-4" />
-            {showForm ? "סגור טופס" : "לקוח חדש"}
+            {showForm ? t("marketer.closeForm") : t("marketer.newClient")}
           </button>
         </section>
 
@@ -253,29 +260,29 @@ export default function MarketerDashboardPage() {
             className="mb-8 grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-2"
           >
             <label className="block text-sm font-bold text-slate-700">
-              שם העסק *
+              {t("marketer.businessName")}
               <input
                 name="businessName"
                 value={form.businessName}
                 onChange={handleChange}
                 required
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium outline-none focus:border-slate-400"
-                placeholder="לדוגמה: סטודיו נועה"
+                placeholder={t("marketer.businessExample")}
               />
             </label>
             <label className="block text-sm font-bold text-slate-700">
-              איש קשר *
+              {t("marketer.contactName")}
               <input
                 name="contactName"
                 value={form.contactName}
                 onChange={handleChange}
                 required
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium outline-none focus:border-slate-400"
-                placeholder="שם מלא"
+                placeholder={t("marketer.fullName")}
               />
             </label>
             <label className="block text-sm font-bold text-slate-700">
-              אימייל *
+              {t("marketer.email")}
               <input
                 type="email"
                 name="email"
@@ -287,7 +294,7 @@ export default function MarketerDashboardPage() {
               />
             </label>
             <label className="block text-sm font-bold text-slate-700">
-              טלפון *
+              {t("marketer.phone")}
               <input
                 name="phone"
                 value={form.phone}
@@ -298,7 +305,7 @@ export default function MarketerDashboardPage() {
               />
             </label>
             <label className="block text-sm font-bold text-slate-700 md:col-span-2">
-              סיסמה (אופציונלי — אם ריק תיווצר סיסמה זמנית)
+              {t("marketer.passwordOptional")}
               <input
                 type="text"
                 name="password"
@@ -306,7 +313,7 @@ export default function MarketerDashboardPage() {
                 onChange={handleChange}
                 minLength={6}
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium outline-none focus:border-slate-400"
-                placeholder="לפחות 6 תווים"
+                placeholder={t("marketer.minPassword")}
               />
             </label>
             <div className="md:col-span-2">
@@ -315,7 +322,7 @@ export default function MarketerDashboardPage() {
                 disabled={creating}
                 className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-black text-white transition hover:bg-emerald-500 disabled:opacity-60"
               >
-                {creating ? "יוצר..." : "צור לקוח עם CRM + קמפיינים"}
+                {creating ? t("marketer.creating") : t("marketer.createCta")}
               </button>
             </div>
           </form>
@@ -324,10 +331,10 @@ export default function MarketerDashboardPage() {
         {clients.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-6 py-12 text-center">
             <p className="text-base font-black text-slate-800">
-              עדיין אין לקוחות
+              {t("marketer.empty")}
             </p>
             <p className="mt-1 text-sm font-bold text-slate-500">
-              פתחו לקוח חדש כדי להתחיל לנהל עבורו קמפיינים ולידים ב-CRM
+              {t("marketer.emptyHint")}
             </p>
           </div>
         ) : (
@@ -335,12 +342,12 @@ export default function MarketerDashboardPage() {
             <table className="w-full text-right text-sm">
               <thead className="bg-slate-50 text-xs font-black text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">עסק</th>
-                  <th className="hidden px-4 py-3 md:table-cell">איש קשר</th>
-                  <th className="hidden px-4 py-3 sm:table-cell">אימייל</th>
-                  <th className="hidden px-4 py-3 lg:table-cell">טלפון</th>
-                  <th className="px-4 py-3">גישה</th>
-                  <th className="px-4 py-3">פעולות</th>
+                  <th className="px-4 py-3">{t("marketer.business")}</th>
+                  <th className="hidden px-4 py-3 md:table-cell">{t("marketer.contact")}</th>
+                  <th className="hidden px-4 py-3 sm:table-cell">{t("common.email")}</th>
+                  <th className="hidden px-4 py-3 lg:table-cell">{t("common.phone")}</th>
+                  <th className="px-4 py-3">{t("marketer.access")}</th>
+                  <th className="px-4 py-3">{t("marketer.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -363,7 +370,7 @@ export default function MarketerDashboardPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-black text-slate-700">
-                        CRM · קמפיינים
+                        {t("marketer.crmCampaigns")}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -375,8 +382,8 @@ export default function MarketerDashboardPage() {
                       >
                         <LogIn className="h-3.5 w-3.5" />
                         {enteringId === client._id
-                          ? "נכנס..."
-                          : "כניסה ללקוח"}
+                          ? t("marketer.entering")
+                          : t("marketer.enterClient")}
                       </button>
                     </td>
                   </tr>

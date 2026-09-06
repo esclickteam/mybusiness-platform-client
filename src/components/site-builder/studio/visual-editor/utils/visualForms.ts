@@ -1,3 +1,4 @@
+import i18n from "../../../../../i18n/i18n";
 import type {
   BizuplyFormConfig,
   BizuplyFormField,
@@ -293,11 +294,11 @@ export function collectFormConfigFromDom(
 
     fields.push({
       id: fieldId,
-      label: getInputLabel(fieldNode, `שדה ${index + 1}`),
+      label: getInputLabel(fieldNode, String(i18n.t("studio.defaults.fieldN", { n: index + 1 }))),
       type: toBizuplyFormFieldType(inputType),
       placeholder:
         fieldNode.getAttribute("placeholder") ||
-        getInputLabel(fieldNode, `שדה ${index + 1}`),
+        getInputLabel(fieldNode, String(i18n.t("studio.defaults.fieldN", { n: index + 1 }))),
       required: fieldNode.hasAttribute("required"),
       options:
         fieldNode instanceof HTMLSelectElement
@@ -407,32 +408,32 @@ export function toBizuplyFormFieldType(value: string): BizuplyFormFieldType {
 export function createDefaultFormBuilderConfig(): BizuplyFormConfig {
   return {
     id: "contact-form",
-    title: "טופס יצירת קשר",
-    submitText: "שליחת הודעה",
-    successMessage: "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם.",
+    title: String(i18n.t("studio.forms.contactTitle")),
+    submitText: String(i18n.t("studio.forms.submit")),
+    successMessage: String(i18n.t("studio.forms.success")),
     colors: { ...DEFAULT_FORM_COLORS },
     fields: [
       {
         id: "name",
-        label: "שם מלא",
+        label: String(i18n.t("studio.forms.fullName")),
         type: "text",
-        placeholder: "שם מלא",
+        placeholder: String(i18n.t("studio.forms.fullName")),
         required: true,
         options: [],
       },
       {
         id: "phone",
-        label: "טלפון",
+        label: String(i18n.t("studio.forms.phone")),
         type: "phone",
-        placeholder: "טלפון",
+        placeholder: String(i18n.t("studio.forms.phone")),
         required: true,
         options: [],
       },
       {
         id: "message",
-        label: "הודעה",
+        label: String(i18n.t("studio.forms.message")),
         type: "textarea",
-        placeholder: "איך אפשר לעזור?",
+        placeholder: String(i18n.t("studio.forms.messagePh")),
         required: false,
         options: [],
       },
@@ -469,7 +470,7 @@ export function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
     fields: Array.isArray(source.fields)
       ? source.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
-          label: String(field?.label || `שדה ${index + 1}`),
+          label: String(field?.label || i18n.t("studio.defaults.fieldN", { n: index + 1 })),
           type: field?.type || "text",
           placeholder: String(field?.placeholder || ""),
           required: Boolean(field?.required),
@@ -569,7 +570,7 @@ function getFieldIconSvg(type: BizuplyFormFieldType) {
 
 export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   const id = normalizeFormFieldDomId(field.id || field.label, index);
-  const label = escapeFormHtml(field.label || `שדה ${index + 1}`);
+  const label = escapeFormHtml(field.label || String(i18n.t("studio.defaults.fieldN", { n: index + 1 })));
   const placeholder = escapeFormHtml(field.placeholder || field.label || "");
   const required = field.required ? ' required aria-required="true"' : "";
   const requiredMark = field.required
@@ -637,7 +638,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     const options = (
       field.options?.length
         ? field.options
-        : ["אפשרות 1", "אפשרות 2"]
+        : [String(i18n.t("studio.forms.optionN", { n: 1 })), String(i18n.t("studio.forms.optionN", { n: 2 }))]
     )
       .map((option) => {
         const clean = escapeFormHtml(option);
@@ -649,7 +650,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
       ${labelHtml}
       <div class="relative">
         <select id="${name}" name="${name}"${required} ${fieldAttrs} class="${inputClass} appearance-none" style="${controlStyle}">
-          <option value="" selected disabled>${placeholder || "בחרו אפשרות"}</option>
+          <option value="" selected disabled>${placeholder || i18n.t("studio.forms.chooseOption")}</option>
           ${options}
         </select>
         ${iconHtml}
@@ -684,10 +685,10 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
           </span>
           <span>
             <span class="block text-sm font-black" style="color:var(--biz-form-title,#1e293b)">${label}</span>
-            <span class="mt-1 block text-xs font-semibold" style="color:var(--biz-form-subtitle,#64748b)">לחצו לבחירת קובץ</span>
+            <span class="mt-1 block text-xs font-semibold" style="color:var(--biz-form-subtitle,#64748b)">${i18n.t("studio.forms.clickToChooseFile")}</span>
           </span>
         </span>
-        <span class="rounded-xl px-4 py-2 text-xs font-black shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">העלאה</span>
+        <span class="rounded-xl px-4 py-2 text-xs font-black shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">${i18n.t("studio.forms.upload")}</span>
         <input id="${name}" name="${name}" type="file"${required} ${fieldAttrs} class="sr-only" />
       </label>
     `;
@@ -715,10 +716,10 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
   const safeForm = normalizeFormBuilderConfig(form);
   const fields = safeForm.fields;
   const title = escapeFormHtml(
-    safeForm.title || "בואו נדבר",
+    safeForm.title || String(i18n.t("studio.forms.letsTalk")),
   );
   const submitText = escapeFormHtml(
-    safeForm.submitText || "שליחת הודעה",
+    safeForm.submitText || String(i18n.t("studio.forms.submit")),
   );
 
   const fieldHtml = fields
@@ -728,7 +729,7 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         width === "full" ? "md:col-span-2" : "md:col-span-1";
 
       const fieldId = escapeFormHtml(field.id || `field-${index + 1}`);
-      const fieldLabel = escapeFormHtml(field.label || `שדה ${index + 1}`);
+      const fieldLabel = escapeFormHtml(field.label || String(i18n.t("studio.defaults.fieldN", { n: index + 1 })));
 
       return `
         <div
@@ -758,8 +759,8 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
       <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">
         ${getFieldIconSvg("text")}
       </div>
-      <p class="mt-4 text-base font-black" style="color:var(--biz-form-title,#1e293b)">הטופס עדיין ריק</p>
-      <p class="mt-1 text-sm font-semibold" style="color:var(--biz-form-subtitle,#64748b)">הוסיפו שדות מתוך עורך הטופס</p>
+      <p class="mt-4 text-base font-black" style="color:var(--biz-form-title,#1e293b)">${i18n.t("studio.forms.formEmpty")}</p>
+      <p class="mt-1 text-sm font-semibold" style="color:var(--biz-form-subtitle,#64748b)">${i18n.t("studio.forms.addFieldsHint")}</p>
     </div>
   `;
 
@@ -771,10 +772,10 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         data-visual-editable="true"
         data-visual-edit-id="form.badge"
         data-visual-edit-type="text"
-        data-visual-edit-label="תגית טופס"
+        data-visual-edit-label="${i18n.t("studio.forms.formBadge")}"
       >
         <span class="h-2 w-2 rounded-full" style="background:var(--biz-form-accent,#0f766e)" data-visual-ignore-select="true"></span>
-        נשמח לשמוע מכם
+        ${i18n.t("studio.forms.weWouldLove")}
       </div>
       <h2
         class="mt-4 text-3xl font-black tracking-tight md:text-4xl"
@@ -793,9 +794,9 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         data-visual-editable="true"
         data-visual-edit-id="form.subtitle"
         data-visual-edit-type="text"
-        data-visual-edit-label="תיאור טופס"
+        data-visual-edit-label="${i18n.t("studio.forms.formDescription")}"
       >
-        השאירו פרטים ונחזור אליכם בהקדם.
+        ${i18n.t("studio.forms.leaveDetails")}
       </p>
     </div>
 
@@ -884,7 +885,7 @@ function createTemplateFieldControl(
   if (node instanceof HTMLSelectElement) {
     const options = field.options?.length
       ? field.options
-      : [field.placeholder || field.label || "בחרו אפשרות"];
+      : [field.placeholder || field.label || String(i18n.t("studio.forms.chooseOption"))];
     options.forEach((option, index) => {
       const opt = document.createElement("option");
       opt.value = option;

@@ -1,3 +1,5 @@
+import i18n from "../../../../i18n/i18n";
+
 /**
  * Client mirror of server automationActionPolicy (0|1 action billing).
  * Billing unit = billable automation ACTION, not workflow execution.
@@ -109,8 +111,12 @@ export function getAutomationActionCost(
 export function nodeBillingBadgeLabel(
   input: AutomationActionCostInput = {}
 ): string {
-  if (String(input.actionKey || input.key || "").startsWith("ai_")) return "פעולת אוטומציה";
-  return getAutomationActionCost(input) > 0 ? "⚡ 1 פעולה" : "ללא חיוב";
+  if (String(input.actionKey || input.key || "").startsWith("ai_")) {
+    return i18n.t("leftover.autoUi.aiAction", "Automation action");
+  }
+  return getAutomationActionCost(input) > 0
+    ? i18n.t("leftover.autoUi.oneAction", "⚡ 1 action")
+    : i18n.t("leftover.autoUi.noCharge", "No charge");
 }
 
 export type EstimateGraphNode = {
