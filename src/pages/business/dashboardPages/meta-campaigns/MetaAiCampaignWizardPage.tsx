@@ -100,6 +100,17 @@ function readPersisted(businessId: string) {
   }
 }
 
+function suggestedBudgetAmount(session: AiCampaignSessionResponse | null): number | null {
+  const fromQuestion = Number(session?.question?.suggestedValue);
+  if (Number.isFinite(fromQuestion) && fromQuestion > 0) return fromQuestion;
+  const fromIntent = Number(
+    (session?.intent as { dailyBudget?: { value?: { amount?: number } } } | undefined)
+      ?.dailyBudget?.value?.amount
+  );
+  if (Number.isFinite(fromIntent) && fromIntent > 0) return fromIntent;
+  return null;
+}
+
 export default function MetaAiCampaignWizardPage() {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
@@ -141,6 +152,12 @@ export default function MetaAiCampaignWizardPage() {
     },
     [tenantId]
   );
+
+  useEffect(() => {
+    const amount = suggestedBudgetAmount(session);
+    if (amount == null) return;
+    setBudgetDraft((current) => current || String(amount));
+  }, [session]);
 
   const boot = useCallback(async () => {
     if (!tenantId) return;

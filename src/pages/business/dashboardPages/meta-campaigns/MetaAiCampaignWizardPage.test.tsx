@@ -360,6 +360,65 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByTestId("meta-ai-recommend-budget")).toBeTruthy();
   });
 
+  it("prefills the suggested daily budget", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "budget",
+          type: "currency",
+          currency: "ILS",
+          suggestedValue: 70,
+          suggestedState: "SUGGESTED",
+          message: "אני מציע להתחיל ב-70 ILS ליום. אפשר לאשר או לשנות.",
+          options: [{ value: "RECOMMEND", label: "תמליץ לי" }],
+        },
+        intent: {
+          promotedItem: { state: "CONFIRMED", value: { name: "טיפול פנים" } },
+          dailyBudget: { state: "SUGGESTED", value: { amount: 70, currency: "ILS" } },
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-currency"));
+    expect((screen.getByTestId("meta-ai-currency") as HTMLInputElement).value).toBe("70");
+  });
+
+  it("shows the proposal after confirming the prefilled budget without a second generate click", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "budget",
+          type: "currency",
+          currency: "ILS",
+          suggestedValue: 70,
+          message: "אני מציע להתחיל ב-70 ILS ליום. אפשר לאשר או לשנות.",
+          options: [{ value: "RECOMMEND", label: "תמליץ לי" }],
+        },
+      })
+    );
+    api.answerAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => {
+      expect((screen.getByTestId("meta-ai-currency") as HTMLInputElement).value).toBe(
+        "70"
+      );
+    });
+    fireEvent.submit(screen.getByTestId("meta-ai-question"));
+    await waitFor(() =>
+      expect(api.answerAiCampaignSession).toHaveBeenCalledWith("biz-1", "sess-1", {
+        field: "budget",
+        answer: 70,
+      })
+    );
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    expect(api.generateAiCampaign).not.toHaveBeenCalled();
+  });
+
   it("renders a confirmation question", async () => {
     api.startAiCampaignSession.mockResolvedValue(
       questionSession({
