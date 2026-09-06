@@ -14,7 +14,8 @@
     "generate-sitemap": "node generate-sitemap.js",
     "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs",
     "test:template-parity": "vitest run src/components/site-builder/studio/data/templates/shared/templateLeadForm.test.ts src/components/site-builder/studio/visual-editor/utils/visualForms.templateSkin.test.ts src/components/site-builder/public/mountPublicLeadForms.templateSkin.test.js",
-    "audit:template-parity": "node scripts/template-parity-visual.mjs"
+    "audit:template-parity": "node scripts/template-parity-visual.mjs",
+    "audit:i18n": "node scripts/audit-hardcoded-i18n.mjs"
   },
   "dependencies": {
     "@animateicons/react": "^0.3.4",
