@@ -1698,7 +1698,19 @@
     "modalExamples": "Ejemplos",
     "platformBadge": "Paquetes de sistema",
     "platformTitle": "Paquetes de sistema",
-    "platformSubtitle": "CRM, citas, colaboraciones e IA. Agregue un upsell único del sitio web: el total de las actualizaciones de pago se actualiza automáticamente."
+    "platformSubtitle": "CRM, citas, colaboraciones e IA. Agregue un upsell único del sitio web: el total de las actualizaciones de pago se actualiza automáticamente.",
+    "choosePurchase": "Elegir compra",
+    "categories": {
+      "all": "Todo",
+      "setup": "Puesta en marcha e implementación",
+      "growth": "Marketing y crecimiento",
+      "agents": "Agentes y servicio humano",
+      "support": "Soporte mensual"
+    },
+    "websiteAddon": {
+      "label": "₪550 único — sitio de autoservicio como extra del plan",
+      "hint": "Pago único, sin renovación automática · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año"
+    }
   },
   "howItWorks": {
     "seoTitle": "Cómo funciona - BizUply  Guía de la plataforma",
@@ -10962,6 +10974,457 @@
       "googlePreview": "Vista previa en Google",
       "sharePreview": "Vista previa para compartir",
       "noShareImage": "No hay imagen para compartir"
+    },
+    "kindHint": {
+      "header": "Menú superior, logo, navegación, botones y acceso",
+      "hero": "Apertura, hero, titular e imagen de ambiente",
+      "welcome": "Apertura suave, saludo, presentación y llamada a la acción",
+      "about": "Historia, valores, experiencia y foto",
+      "team": "Equipo, dueño, perfiles y roles",
+      "services": "Tarjetas de servicio, precios y paquetes",
+      "gallery": "Fotos, trabajos, carrusel y media",
+      "contact": "Formularios, WhatsApp, teléfono y mapa",
+      "promotion": "Promos, cupones y banners",
+      "subscribe": "Newsletter, lista de espera y cupón",
+      "testimonials": "Testimonios y prueba social",
+      "reviews": "Reseñas, valoraciones y formulario",
+      "clients": "Logos, clientes y socios",
+      "store": "Productos, precio y comercio",
+      "booking": "Calendario de citas conectado al CRM",
+      "bookings": "Compatibilidad con el nombre bookings",
+      "events": "Eventos, agenda y talleres",
+      "club": "VIP, cupones y registro",
+      "bot": "Asistente IA, chat y citas",
+      "social": "Instagram, Facebook y más",
+      "course": "Cursos, clases y temario",
+      "miniSaas": "Mini sistema, panel y pago",
+      "basic": "Secciones básicas, CTA y texto",
+      "text": "Títulos, párrafos y citas",
+      "list": "Listas, pasos, FAQ y precios",
+      "form": "Formularios de contacto y registro",
+      "forms": "Compatibilidad con el nombre forms"
+    },
+    "library": {
+      "categories": {
+        "text": "Texto",
+        "image": "Imagen",
+        "button": "Botón",
+        "strip": "Sección",
+        "decorative": "Decoración",
+        "box": "Caja",
+        "gallery": "Galería",
+        "menu": "Menú",
+        "forms": "Formularios",
+        "video": "Video",
+        "interactive": "Interactivo",
+        "list": "Listas",
+        "embed": "Embed",
+        "social": "Social",
+        "payments": "Pagos",
+        "store": "Tienda",
+        "bookings": "Citas",
+        "bizuply": "Bizuply"
+      },
+      "elements": {
+        "text-h1": {
+          "label": "Título H1 gigante",
+          "description": "Titular principal grande e impactante"
+        },
+        "text-h2": {
+          "label": "Título H2",
+          "description": "Título grande de sección"
+        },
+        "text-h3": {
+          "label": "Título de tarjeta",
+          "description": "Título para servicio, producto o ventaja"
+        },
+        "text-paragraph": {
+          "label": "Párrafo",
+          "description": "Texto explicativo profesional"
+        },
+        "text-kicker": {
+          "label": "Título pequeño",
+          "description": "Etiqueta sobre el título"
+        },
+        "text-pill": {
+          "label": "Etiqueta pastilla",
+          "description": "Etiqueta redondeada para oferta o estado"
+        },
+        "text-highlight": {
+          "label": "Frase destacada",
+          "description": "Una frase grande que atrae la atención"
+        },
+        "text-quote": {
+          "label": "Cita",
+          "description": "Cita de cliente o frase inspiradora"
+        },
+        "text-stat-row": {
+          "label": "Números de confianza",
+          "description": "Tres datos cortos"
+        },
+        "text-marquee": {
+          "label": "Texto en movimiento",
+          "description": "Línea promocional en movimiento"
+        },
+        "image-basic": {
+          "label": "Imagen",
+          "description": "Imagen con marco premium"
+        },
+        "image-rounded": {
+          "label": "Imagen redonda",
+          "description": "Imagen de perfil / dueño"
+        },
+        "image-wide": {
+          "label": "Imagen ancha",
+          "description": "Imagen ancha para cabecera"
+        },
+        "image-background-card": {
+          "label": "Imagen de fondo",
+          "description": "Tarjeta con imagen de fondo y texto"
+        },
+        "image-before-after": {
+          "label": "Antes / después",
+          "description": "Compara dos imágenes"
+        },
+        "image-stack": {
+          "label": "Dos imágenes superpuestas",
+          "description": "Visualización de imágenes premium"
+        },
+        "button-primary": {
+          "label": "Botón principal",
+          "description": "Botón de acción principal"
+        },
+        "button-secondary": {
+          "label": "Botón secundario",
+          "description": "Un botón más suave"
+        },
+        "button-double": {
+          "label": "Dos botones",
+          "description": "Dos botones de acción juntos"
+        },
+        "button-whatsapp": {
+          "label": "Botón de WhatsApp",
+          "description": "Enlace rápido a WhatsApp"
+        },
+        "button-phone": {
+          "label": "Botón de llamada",
+          "description": "Enlace para llamar"
+        },
+        "button-floating": {
+          "label": "Botón flotante",
+          "description": "Botón flotante al pie del sitio"
+        },
+        "strip-light": {
+          "label": "Sección clara",
+          "description": "Sección limpia"
+        },
+        "strip-soft": {
+          "label": "Sección suave",
+          "description": "Sección con fondo suave y sombra"
+        },
+        "strip-dark": {
+          "label": "Sección oscura",
+          "description": "Sección oscura de lujo"
+        },
+        "strip-background-image": {
+          "label": "Sección con imagen de fondo",
+          "description": "Sección con superposición"
+        },
+        "strip-split": {
+          "label": "Sección dividida",
+          "description": "Texto a un lado e imagen al otro"
+        },
+        "strip-cta": {
+          "label": "CTA amplio",
+          "description": "Área de llamada a la acción"
+        },
+        "decor-divider": {
+          "label": "Separador",
+          "description": "Línea de transición sutil"
+        },
+        "decor-spacer": {
+          "label": "Espacio",
+          "description": "Espacio vertical"
+        },
+        "decor-gradient-orb": {
+          "label": "Orbe degradado",
+          "description": "Elemento decorativo"
+        },
+        "decor-badge": {
+          "label": "Insignia flotante",
+          "description": "Insignia de oferta"
+        },
+        "decor-wave": {
+          "label": "Ola de transición",
+          "description": "Transición decorativa entre zonas"
+        },
+        "box-card": {
+          "label": "Tarjeta de información",
+          "description": "Tarjeta básica"
+        },
+        "box-price": {
+          "label": "Tarjeta de precio",
+          "description": "Servicio con precio"
+        },
+        "box-feature": {
+          "label": "Tarjeta de ventaja",
+          "description": "Una ventaja que genera confianza"
+        },
+        "box-contact": {
+          "label": "Tarjeta de contacto",
+          "description": "Teléfono, WhatsApp y datos"
+        },
+        "box-testimonial": {
+          "label": "Tarjeta de reseña",
+          "description": "Reseña de cliente"
+        },
+        "box-team": {
+          "label": "Tarjeta de equipo",
+          "description": "Perfil de miembro del equipo"
+        },
+        "gallery-grid": {
+          "label": "Galería en cuadrícula",
+          "description": "Cuatro imágenes ordenadas"
+        },
+        "gallery-carousel": {
+          "label": "Carrusel de imágenes",
+          "description": "Galería de desplazamiento horizontal"
+        },
+        "gallery-featured": {
+          "label": "Galería destacada",
+          "description": "Una imagen grande junto a otras pequeñas"
+        },
+        "gallery-masonry": {
+          "label": "Galería masonry",
+          "description": "Galería alta/baja"
+        },
+        "menu-simple": {
+          "label": "Menú simple",
+          "description": "Enlaces de navegación"
+        },
+        "menu-header": {
+          "label": "Encabezado completo",
+          "description": "Logo, nombre y menú"
+        },
+        "menu-footer": {
+          "label": "Pie de página",
+          "description": "Pie de página completo"
+        },
+        "form-lead": {
+          "label": "Formulario de lead",
+          "description": "Formulario de consulta al CRM"
+        },
+        "form-newsletter": {
+          "label": "Boletín",
+          "description": "Registro para novedades"
+        },
+        "form-booking-request": {
+          "label": "Solicitud de cita",
+          "description": "Formulario de solicitud de cita"
+        },
+        "video-youtube": {
+          "label": "Video de YouTube",
+          "description": "Insertar un video"
+        },
+        "video-background": {
+          "label": "Video de fondo",
+          "description": "Sección con aspecto de video de fondo"
+        },
+        "interactive-accordion": {
+          "label": "Preguntas desplegables",
+          "description": "FAQ"
+        },
+        "interactive-tabs": {
+          "label": "Pestañas",
+          "description": "Pestañas para mostrar contenido"
+        },
+        "interactive-counters": {
+          "label": "Números animados",
+          "description": "Números que generan confianza"
+        },
+        "interactive-popup-box": {
+          "label": "Popup / cupón",
+          "description": "Tarjeta de mensaje o cupón"
+        },
+        "list-checks": {
+          "label": "Lista de ventajas",
+          "description": "Lista con marcas de verificación"
+        },
+        "list-steps": {
+          "label": "Pasos del proceso",
+          "description": "3 pasos claros"
+        },
+        "list-pricing": {
+          "label": "Lista de precios",
+          "description": "Lista de servicios y precios"
+        },
+        "embed-map": {
+          "label": "Mapa",
+          "description": "Google Maps"
+        },
+        "embed-html": {
+          "label": "Embed HTML",
+          "description": "Espacio para código externo"
+        },
+        "social-row": {
+          "label": "Enlaces sociales",
+          "description": "Instagram, Facebook y TikTok"
+        },
+        "social-card": {
+          "label": "Tarjeta social",
+          "description": "Seguir en redes"
+        },
+        "social-icons": {
+          "label": "Iconos sociales",
+          "description": "Fila de iconos redondos"
+        },
+        "payments-box": {
+          "label": "Pago",
+          "description": "Bloque de pago seguro"
+        },
+        "payments-deposit": {
+          "label": "Seña de cita",
+          "description": "Cobrar seña antes de la cita"
+        },
+        "payments-pricing-table": {
+          "label": "Tabla de paquetes",
+          "description": "3 paquetes de pago"
+        },
+        "store-product-card": {
+          "label": "Producto",
+          "description": "Tarjeta de un producto"
+        },
+        "store-products-grid": {
+          "label": "Cuadrícula de productos",
+          "description": "3 productos para comprar"
+        },
+        "store-featured-product": {
+          "label": "Producto destacado",
+          "description": "Un producto grande"
+        },
+        "booking-times": {
+          "label": "Horas disponibles",
+          "description": "Elegir una hora disponible"
+        },
+        "booking-dark": {
+          "label": "Reserva oscura",
+          "description": "Reservas con diseño oscuro"
+        },
+        "booking-calendar-card": {
+          "label": "Tarjeta de calendario",
+          "description": "Vista profesional del calendario"
+        },
+        "bizuply-services": {
+          "label": "Servicios del negocio",
+          "description": "Luego se reemplaza por los servicios del negocio"
+        },
+        "bizuply-booking": {
+          "label": "Reservar citas",
+          "description": "Bloque inteligente de citas"
+        },
+        "bizuply-products": {
+          "label": "Productos de la tienda",
+          "description": "Luego se reemplaza por los productos del negocio"
+        },
+        "bizuply-lead-form": {
+          "label": "Formulario CRM",
+          "description": "Cada lead entra al sistema"
+        },
+        "bizuply-reviews": {
+          "label": "Reseñas del sistema",
+          "description": "Reseñas de clientes"
+        },
+        "bizuply-club": {
+          "label": "Club de clientes",
+          "description": "Registro y cupones"
+        }
+      },
+      "items": {
+        "text-display-xl": {
+          "title": "Título gigante",
+          "description": "Titular hero grande y destacado"
+        },
+        "text-heading-lg": {
+          "title": "Título principal",
+          "description": "Título H1 profesional"
+        },
+        "text-heading-gradient": {
+          "title": "Título degradado",
+          "description": "Texto degradado de color"
+        },
+        "text-subtitle": {
+          "title": "Subtítulo",
+          "description": "Título medio para secciones"
+        },
+        "button-outline": {
+          "title": "Botón con borde",
+          "description": "Botón limpio con borde"
+        },
+        "button-gradient": {
+          "title": "Botón degradado",
+          "description": "Botón con mezcla de color"
+        },
+        "button-icon": {
+          "title": "Botón con flecha",
+          "description": "Texto e icono en una capa"
+        },
+        "shape-card": {
+          "title": "Tarjeta blanca",
+          "description": "Caja con sombra y esquinas"
+        },
+        "shape-gradient": {
+          "title": "Caja degradada",
+          "description": "Fondo de color para capas"
+        },
+        "shape-circle": {
+          "title": "Círculo",
+          "description": "Forma redonda de color"
+        },
+        "image-caption": {
+          "title": "Imagen con texto",
+          "description": "Imagen y título encima"
+        },
+        "video-standard": {
+          "title": "Video",
+          "description": "Video automático reemplazable"
+        },
+        "video-overlay": {
+          "title": "Video con texto",
+          "description": "Texto y botón sobre el video"
+        },
+        "graphic-badge": {
+          "title": "Insignia",
+          "description": "Insignia con icono y texto"
+        },
+        "graphic-rating": {
+          "title": "Valoración de estrellas",
+          "description": "Cinco estrellas y una recomendación"
+        },
+        "form-contact": {
+          "title": "Formulario de contacto",
+          "description": "Nombre, teléfono y botón enviar"
+        },
+        "button-dark-pill": {
+          "title": "Botón oscuro redondeado",
+          "description": "CTA oscuro y elegante"
+        },
+        "button-soft-rose": {
+          "title": "Botón rosa suave",
+          "description": "Acento rosa suave"
+        },
+        "button-glass": {
+          "title": "Botón de cristal",
+          "description": "Transparente con borde claro"
+        },
+        "social-floating-round": {
+          "title": "Social flotante redondo",
+          "description": "Iconos redondos flotando al lado"
+        },
+        "social-bar-inline": {
+          "title": "Fila social",
+          "description": "Fila horizontal de iconos"
+        }
+      }
     }
   },
   "partnerNav": {
@@ -12619,5 +13082,250 @@
     "actions": "Acciones",
     "subtitle": "Cree clientes y gestione campañas y CRM por ellos",
     "tempPassword": "Contraseña temporal"
+  },
+  "business": {
+    "categoryNames": {
+      "other": "Otra / categoría personalizada",
+      "serviceProviders": "Prestadores de servicios",
+      "businessServices": "Servicios para empresas",
+      "businessConsulting": "Consultoría empresarial",
+      "personalBusinessCoach": "Coach personal / empresarial",
+      "speakerMentor": "Conferenciante / mentor",
+      "communityNonprofits": "Servicios comunitarios / ONG",
+      "officeAdmin": "Oficina / administración",
+      "customerService": "Atención al cliente",
+      "sales": "Ventas",
+      "projectManagement": "Gestión de proyectos",
+      "digitalMarketing": "Marketing digital",
+      "paidAdsExpert": "Especialista en anuncios de pago",
+      "socialManagement": "Gestión de redes sociales",
+      "contentCreator": "Creador de contenido",
+      "copywriting": "Redacción / copywriting",
+      "websiteBuilding": "Creación de sitios web",
+      "webDevelopment": "Desarrollo web",
+      "softwareDevelopment": "Desarrollo de software",
+      "apps": "Aplicaciones",
+      "graphicDesigner": "Diseñador gráfico",
+      "businessBranding": "Branding empresarial",
+      "advertisingMedia": "Publicidad y medios",
+      "videography": "Videografía",
+      "videoEditing": "Edición de video",
+      "computerTech": "Técnico de computadoras",
+      "mobileTech": "Técnico de móviles",
+      "cybersecurity": "Ciberseguridad",
+      "businessAutomations": "Automatizaciones para empresas",
+      "crmSystems": "Sistemas CRM",
+      "aiForBusiness": "IA para empresas",
+      "beautyCare": "Belleza y cuidado",
+      "cosmetician": "Cosmetóloga",
+      "beautySalon": "Salón de belleza",
+      "hairSalon": "Peluquería",
+      "barbershop": "Barbería",
+      "manicurePedicure": "Manicura / pedicura",
+      "nailExtensions": "Uñas esculpidas",
+      "browDesign": "Diseño de cejas",
+      "permanentMakeup": "Maquillaje permanente",
+      "makeupArtist": "Maquilladora",
+      "hairStyling": "Peinado",
+      "hairStraightening": "Alisado de cabello",
+      "facialTreatments": "Tratamientos faciales",
+      "hairRemoval": "Depilación",
+      "gelPolish": "Esmalte en gel",
+      "lashes": "Pestañas",
+      "sprayTan": "Bronceado en spray",
+      "healthFitness": "Salud y fitness",
+      "fitnessTrainer": "Entrenador personal",
+      "yogaPilates": "Yoga / pilates",
+      "swimInstructor": "Instructor de natación / socorrista",
+      "nutritionist": "Nutricionista / dietista",
+      "emotionalTherapist": "Terapeuta emocional / PNL",
+      "psychologist": "Psicólogo / consejero",
+      "alternativeMedicine": "Medicina complementaria",
+      "holisticTherapy": "Terapia holística",
+      "massage": "Masaje",
+      "physiotherapy": "Fisioterapia",
+      "privateClinic": "Clínica privada",
+      "aestheticMedicine": "Medicina estética",
+      "couplesTherapist": "Terapeuta de pareja",
+      "familyTherapist": "Terapeuta familiar",
+      "coaching": "Coaching",
+      "foodDining": "Comida y restauración",
+      "restaurant": "Restaurante",
+      "cafe": "Cafetería",
+      "catering": "Catering",
+      "homeCooking": "Comida casera",
+      "patisserie": "Pastelería",
+      "bakery": "Panadería",
+      "privateChef": "Chef privado",
+      "foodStall": "Puesto de comida",
+      "barPub": "Bar / pub",
+      "drinksCocktails": "Bebidas y cócteles",
+      "hostingTrays": "Bandejas para eventos",
+      "foodPackages": "Paquetes de comida",
+      "healthyFood": "Comida saludable",
+      "veganFood": "Comida vegana",
+      "kosherFood": "Comida kosher",
+      "events": "Eventos",
+      "eventHall": "Salón de eventos",
+      "eventGarden": "Jardín de eventos",
+      "eventProduction": "Producción de eventos",
+      "eventPhotographer": "Fotógrafo de eventos",
+      "eventMagnets": "Imanes para eventos",
+      "dj": "DJ",
+      "eventDesign": "Diseño de eventos",
+      "bridalGowns": "Vestidos de novia",
+      "eventAttractions": "Atracciones para eventos",
+      "balloonsDecor": "Globos y decoración",
+      "bridalBeauty": "Maquillaje y peinado de novia",
+      "eventCatering": "Catering para eventos",
+      "activeBar": "Barra activa",
+      "eventProducer": "Productor de eventos",
+      "eventManagement": "Gestión de eventos",
+      "homeMaintenance": "Hogar y mantenimiento",
+      "renovations": "Reformas",
+      "renovationContractor": "Contratista de reformas",
+      "handyman": "Manitas",
+      "plumber": "Fontanero",
+      "electrician": "Electricista",
+      "acTech": "Técnico de aire acondicionado",
+      "carpenter": "Carpintero",
+      "welder": "Soldador / herrero",
+      "gardening": "Jardinería",
+      "pestControl": "Control de plagas",
+      "cleaning": "Limpieza",
+      "floorPolish": "Abrillantado",
+      "moving": "Mudanzas",
+      "painter": "Pintor",
+      "aluminum": "Aluminio",
+      "shuttersWindows": "Persianas y ventanas",
+      "kitchens": "Cocinas",
+      "homeFurniture": "Muebles para el hogar",
+      "constructionEngineering": "Construcción e ingeniería",
+      "buildingEngineer": "Ingeniero de edificación",
+      "civilEngineer": "Ingeniero civil",
+      "architect": "Arquitecto",
+      "licensedSurveyor": "Topógrafo colegiado",
+      "constructionSupervisor": "Supervisor de obra",
+      "planningConsultant": "Consultor de planificación y obra",
+      "structuralEngineer": "Ingeniero estructural",
+      "interiorDesigner": "Diseñador de interiores",
+      "safetyConsultant": "Consultor de seguridad",
+      "accessibilityConsultant": "Consultor de accesibilidad",
+      "electricalConsultant": "Consultor eléctrico",
+      "plumbingConsultant": "Consultor de fontanería",
+      "hvacConsultant": "Consultor de climatización",
+      "kidsFamily": "Niños y familia",
+      "kindergarten": "Jardín de infancia",
+      "homeDaycare": "Guardería familiar",
+      "afterSchool": "Ludoteca / extraescolares",
+      "babysitter": "Niñera",
+      "privateTutor": "Profesor particular",
+      "musicTeacher": "Profesor de música",
+      "artTeacher": "Profesor de arte",
+      "kidsClasses": "Clases para niños",
+      "parentCoaching": "Orientación para padres",
+      "childTherapy": "Terapia infantil",
+      "kidsCourses": "Cursos para niños",
+      "kidsActivities": "Actividades para niños",
+      "developmentalSupport": "Acompañamiento del desarrollo",
+      "autoTransport": "Auto y transporte",
+      "driverDelivery": "Conductor / entregas",
+      "deliveries": "Entregas",
+      "garage": "Taller",
+      "carWash": "Lavado de autos",
+      "carAccessories": "Accesorios para autos",
+      "carRental": "Alquiler de autos",
+      "towing": "Grúa",
+      "drivingInstructor": "Profesor de manejo",
+      "shuttles": "Traslados",
+      "leasingAuto": "Leasing y autos",
+      "financeInsurance": "Finanzas y seguros",
+      "insurance": "Seguros",
+      "financialConsulting": "Consultoría financiera",
+      "taxAccountant": "Asesor fiscal / contador",
+      "bookkeeping": "Contabilidad",
+      "mortgages": "Hipotecas",
+      "mortgageConsulting": "Asesoría hipotecaria",
+      "realEstateAgent": "Agente inmobiliario",
+      "realEstateBrokerage": "Corretaje inmobiliario",
+      "investments": "Inversiones",
+      "pensionConsulting": "Asesoría de pensiones",
+      "loansFinance": "Préstamos y financiación",
+      "legal": "Legal",
+      "lawyer": "Abogado",
+      "notary": "Notario",
+      "mediation": "Mediación",
+      "legalConsulting": "Asesoría jurídica",
+      "familyLaw": "Derecho de familia",
+      "laborLaw": "Derecho laboral",
+      "realEstateLaw": "Derecho inmobiliario",
+      "enforcement": "Ejecución / cobros",
+      "defamation": "Difamación",
+      "contracts": "Contratos y acuerdos",
+      "fashionLifestyle": "Moda y estilo de vida",
+      "clothing": "Ropa",
+      "womensFashion": "Moda femenina",
+      "mensFashion": "Moda masculina",
+      "kidsFashion": "Moda infantil",
+      "jewelry": "Joyería",
+      "accessories": "Accesorios",
+      "stylist": "Estilista",
+      "fashionDesign": "Diseño de moda",
+      "boutique": "Boutique",
+      "secondHand": "Segunda mano",
+      "sewingRepairs": "Costura y arreglos",
+      "shopsCommerce": "Tiendas y comercio",
+      "onlineStore": "Tienda online",
+      "gifts": "Artículos de regalo",
+      "toys": "Juguetes",
+      "babyProducts": "Productos para bebés",
+      "homeProducts": "Productos para el hogar",
+      "electronics": "Electrónica",
+      "officeSupplies": "Material de oficina",
+      "pharmacyBeauty": "Farmacia y cosmética",
+      "florist": "Floristería",
+      "nursery": "Vivero",
+      "pets": "Mascotas",
+      "sportsGear": "Material deportivo",
+      "travelLeisure": "Turismo y ocio",
+      "tourGuide": "Guía turístico",
+      "travelAgency": "Agencia de viajes",
+      "lodging": "Alojamiento / B&B",
+      "attractions": "Atracciones",
+      "workshops": "Talleres",
+      "organizedTours": "Viajes organizados",
+      "equipmentRental": "Alquiler de equipo",
+      "membersClub": "Club de socios",
+      "experiencesLeisure": "Experiencias y ocio",
+      "coursesLearning": "Cursos y formación",
+      "digitalCourse": "Curso digital",
+      "collegeSchool": "Colegio / escuela",
+      "privateLessons": "Clases particulares",
+      "languageStudies": "Estudios de idiomas",
+      "trainings": "Capacitaciones",
+      "proWorkshops": "Talleres profesionales",
+      "businessTraining": "Formación para empresas",
+      "computerStudies": "Estudios de informática",
+      "musicStudies": "Estudios de música",
+      "animals": "Animales",
+      "dogGrooming": "Peluquería canina",
+      "dogTraining": "Adiestramiento canino",
+      "dogWalker": "Paseador de perros",
+      "dogBoarding": "Residencia canina",
+      "veterinarian": "Veterinario",
+      "petSupplies": "Artículos para mascotas",
+      "animalCare": "Cuidado de animales",
+      "photoArt": "Fotografía y arte",
+      "photographer": "Fotógrafo",
+      "photoStudio": "Estudio fotográfico",
+      "productPhotography": "Fotografía de producto",
+      "brandPhotography": "Fotografía de marca",
+      "familyPhotography": "Fotografía familiar",
+      "maternityPhotography": "Fotografía de embarazo",
+      "artist": "Artista",
+      "gallery": "Galería",
+      "painting": "Pintura",
+      "handmadeDesign": "Diseño artesanal"
+    }
   }
 }

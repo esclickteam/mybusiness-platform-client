@@ -16,6 +16,14 @@ import type {
 
 import { elementCategories, studioElements } from "./data/elementLibrary";
 import { sectionCategories, sectionTemplates } from "./data/sectionTemplates";
+import {
+  studioCategoryLabel,
+  studioElementDescription,
+  studioElementLabel,
+  studioSectionDescription,
+  studioSectionKindLabel,
+  studioSectionTitle,
+} from "../../../i18n/studioLibraryLabels";
 import { fontOptions, themePalettes } from "./data/themePalettes";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -239,8 +247,54 @@ export default function StudioSidebar({
     });
   }, [normalizedSearch, pages]);
 
+  const localizedElementCategories = useMemo(
+    () =>
+      elementCategories.map((category) => ({
+        ...category,
+        label: studioCategoryLabel(t, category.key, category.label),
+      })),
+    [t]
+  );
+
+  const localizedSectionCategories = useMemo(
+    () =>
+      sectionCategories.map((category) => ({
+        ...category,
+        label: studioSectionKindLabel(t, category.key, category.label),
+      })),
+    [t]
+  );
+
+  const localizedStudioElements = useMemo(
+    () =>
+      studioElements.map((element) => ({
+        ...element,
+        label: studioElementLabel(t, element.id, element.label),
+        description: studioElementDescription(
+          t,
+          element.id,
+          element.description || ""
+        ),
+      })),
+    [t]
+  );
+
+  const localizedSectionTemplates = useMemo(
+    () =>
+      sectionTemplates.map((section) => ({
+        ...section,
+        title: studioSectionTitle(t, section.id, section.title),
+        description: studioSectionDescription(
+          t,
+          section.id,
+          section.description || ""
+        ),
+      })),
+    [t]
+  );
+
   const filteredElements = useMemo(() => {
-    return studioElements.filter((element) => {
+    return localizedStudioElements.filter((element) => {
       const matchesCategory = element.category === elementCategory;
 
       if (!normalizedSearch) return matchesCategory;
@@ -251,10 +305,10 @@ export default function StudioSidebar({
 
       return matchesCategory && haystack.includes(normalizedSearch);
     });
-  }, [elementCategory, normalizedSearch]);
+  }, [elementCategory, localizedStudioElements, normalizedSearch]);
 
   const filteredSections = useMemo(() => {
-    return sectionTemplates.filter((section) => {
+    return localizedSectionTemplates.filter((section) => {
       const matchesCategory = section.category === sectionCategory;
 
       if (!normalizedSearch) return matchesCategory;
@@ -265,11 +319,11 @@ export default function StudioSidebar({
 
       return matchesCategory && haystack.includes(normalizedSearch);
     });
-  }, [sectionCategory, normalizedSearch]);
+  }, [localizedSectionTemplates, normalizedSearch, sectionCategory]);
 
   const storeSectionTemplates = useMemo(() => {
-    return sectionTemplates.filter((section) => section.category === "store");
-  }, []);
+    return localizedSectionTemplates.filter((section) => section.category === "store");
+  }, [localizedSectionTemplates]);
 
   const clearSearch = () => setSearch("");
 
@@ -422,7 +476,7 @@ export default function StudioSidebar({
                 />
 
                 <CategoryGrid>
-                  {elementCategories.map((category) => (
+                  {localizedElementCategories.map((category) => (
                     <CategoryButton
                       key={category.key}
                       active={elementCategory === category.key}
@@ -464,7 +518,7 @@ export default function StudioSidebar({
                 />
 
                 <CategoryGrid>
-                  {sectionCategories.map((category) => (
+                  {localizedSectionCategories.map((category) => (
                     <CategoryButton
                       key={category.key}
                       active={sectionCategory === category.key}

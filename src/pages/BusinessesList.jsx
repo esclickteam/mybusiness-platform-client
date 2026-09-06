@@ -3,7 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
+import { useTranslation } from "react-i18next";
 import ALL_CATEGORIES from "../data/categories";
+import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 import { fetchCities } from "../data/cities";
 import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
@@ -18,6 +20,7 @@ const debounce = (fn, delay = 400) => {
 };
 
 export default function BusinessesList() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   /* ================= URL Params ================= */
@@ -35,7 +38,10 @@ export default function BusinessesList() {
   const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
-  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
+  const categoryOptions = ALL_CATEGORIES.map((c) => ({
+    value: c,
+    label: translateBusinessCategory(c, t),
+  }));
   const cityOptions = cities.map(c => ({ value: c, label: c }));
 
   /* ================= Load Cities ================= */
@@ -46,7 +52,10 @@ export default function BusinessesList() {
       setCities(fetched);
 
       if (categoryParam && ALL_CATEGORIES.includes(categoryParam)) {
-        setCategory({ value: categoryParam, label: categoryParam });
+        setCategory({
+          value: categoryParam,
+          label: translateBusinessCategory(categoryParam, t),
+        });
       }
 
       if (cityParam && fetched.includes(cityParam)) {
@@ -55,7 +64,7 @@ export default function BusinessesList() {
 
       setLoadingCities(false);
     })();
-  }, [categoryParam, cityParam]);
+  }, [categoryParam, cityParam, t]);
 
   /* ================= Fetch Businesses ================= */
   const fetchBusinesses = async (cat, city, name) => {

@@ -1698,7 +1698,19 @@
     "modalExamples": "أمثلة",
     "platformBadge": "حزم النظام",
     "platformTitle": "حزم النظام",
-    "platformSubtitle": "CRM ، المواعيد ، التعاون ، و AI. إضافة موقع ويب لمرة واحدة upsell - إجمالي التحديثات الخروج تلقائيا."
+    "platformSubtitle": "CRM ، المواعيد ، التعاون ، و AI. إضافة موقع ويب لمرة واحدة upsell - إجمالي التحديثات الخروج تلقائيا.",
+    "choosePurchase": "اختيار الشراء",
+    "categories": {
+      "all": "الكل",
+      "setup": "إعداد وتطبيق",
+      "growth": "تسويق ونمو",
+      "agents": "مندوبون وخدمة بشرية",
+      "support": "دعم شهري"
+    },
+    "websiteAddon": {
+      "label": "₪550 لمرة واحدة — موقع ذاتي كإضافة للخطة",
+      "hint": "دفعة واحدة دون تجديد تلقائي · قوالب ومحرر مرئي مرتبط بـ CRM — نطاق مجاني لسنة"
+    }
   },
   "howItWorks": {
     "seoTitle": "كيف يعمل - BizUply  دليل المنصة",
@@ -10962,6 +10974,457 @@
       "googlePreview": "معاينة في جوجل",
       "sharePreview": "معاينة المشاركة",
       "noShareImage": "لا توجد صورة مشاركة"
+    },
+    "kindHint": {
+      "header": "قائمة علوية وشعار وتنقل وأزرار وتسجيل دخول",
+      "hero": "افتتاح الموقع وعنوان وصورة أجواء",
+      "welcome": "افتتاح لطيف وترحيب وعرض للعمل ودعوة",
+      "about": "قصة العمل والقيم والخبرة وصورة",
+      "team": "فريق المالك وملفات وأدوار",
+      "services": "بطاقات خدمات وأسعار وباقات",
+      "gallery": "صور وأعمال ومعرض ووسائط",
+      "contact": "نماذج وواتساب وهاتف وخريطة",
+      "promotion": "عروض وكوبونات ولافتات",
+      "subscribe": "نشرة وقائمة انتظار وكوبون",
+      "testimonials": "شهادات ودليل اجتماعي",
+      "reviews": "مراجعات وتقييمات ونموذج",
+      "clients": "شعارات وعملاء وشركاء",
+      "store": "منتجات وسعر وتجارة",
+      "booking": "تقويم مواعيد متصل بنظام CRM",
+      "bookings": "دعم الاسم القديم bookings",
+      "events": "فعاليات وجدول وورش",
+      "club": "VIP وكوبونات وتسجيل",
+      "bot": "مساعد ذكي ودردشة ومواعيد",
+      "social": "إنستغرام وفيسبوك والمزيد",
+      "course": "دورات ودروس ومنهج",
+      "miniSaas": "نظام صغير ولوحة ودفع",
+      "basic": "أقسام أساسية ودعوة ونص",
+      "text": "عناوين وفقرات واقتباسات",
+      "list": "قوائم وخطوات وأسئلة وأسعار",
+      "form": "نماذج تواصل وتسجيل",
+      "forms": "دعم الاسم القديم forms"
+    },
+    "library": {
+      "categories": {
+        "text": "نص",
+        "image": "صورة",
+        "button": "زر",
+        "strip": "قسم",
+        "decorative": "تصميم",
+        "box": "صندوق",
+        "gallery": "معرض",
+        "menu": "قائمة",
+        "forms": "نماذج",
+        "video": "فيديو",
+        "interactive": "تفاعلي",
+        "list": "قوائم",
+        "embed": "تضمين",
+        "social": "تواصل",
+        "payments": "مدفوعات",
+        "store": "متجر",
+        "bookings": "مواعيد",
+        "bizuply": "Bizuply"
+      },
+      "elements": {
+        "text-h1": {
+          "label": "عنوان H1 ضخم",
+          "description": "عنوان رئيسي كبير ومميز"
+        },
+        "text-h2": {
+          "label": "عنوان H2",
+          "description": "عنوان قسم كبير"
+        },
+        "text-h3": {
+          "label": "عنوان بطاقة",
+          "description": "عنوان لخدمة أو منتج أو ميزة"
+        },
+        "text-paragraph": {
+          "label": "فقرة",
+          "description": "نص شرح احترافي"
+        },
+        "text-kicker": {
+          "label": "عنوان صغير",
+          "description": "وسم فوق العنوان"
+        },
+        "text-pill": {
+          "label": "وسم حبة",
+          "description": "وسم دائري لعرض أو حالة"
+        },
+        "text-highlight": {
+          "label": "جملة بارزة",
+          "description": "جملة كبيرة تلفت الانتباه"
+        },
+        "text-quote": {
+          "label": "اقتباس",
+          "description": "اقتباس عميل أو جملة ملهمة"
+        },
+        "text-stat-row": {
+          "label": "أرقام ثقة",
+          "description": "ثلاثة أرقام قصيرة"
+        },
+        "text-marquee": {
+          "label": "نص متحرك",
+          "description": "سطر إعلان متحرك"
+        },
+        "image-basic": {
+          "label": "صورة",
+          "description": "صورة بإطار فاخر"
+        },
+        "image-rounded": {
+          "label": "صورة دائرية",
+          "description": "صورة للملف / صاحب العمل"
+        },
+        "image-wide": {
+          "label": "صورة عريضة",
+          "description": "صورة عريضة لرأس القسم"
+        },
+        "image-background-card": {
+          "label": "صورة خلفية",
+          "description": "بطاقة بصورة خلفية ونص"
+        },
+        "image-before-after": {
+          "label": "قبل / بعد",
+          "description": "مقارنة صورتين"
+        },
+        "image-stack": {
+          "label": "صورتان متداخلتان",
+          "description": "عرض صور فاخر"
+        },
+        "button-primary": {
+          "label": "زر رئيسي",
+          "description": "زر الإجراء الرئيسي"
+        },
+        "button-secondary": {
+          "label": "زر ثانوي",
+          "description": "زر أكثر هدوءاً"
+        },
+        "button-double": {
+          "label": "زرّان",
+          "description": "زرّا إجراء معاً"
+        },
+        "button-whatsapp": {
+          "label": "زر واتساب",
+          "description": "رابط سريع لواتساب"
+        },
+        "button-phone": {
+          "label": "زر اتصال",
+          "description": "رابط للاتصال"
+        },
+        "button-floating": {
+          "label": "زر عائم",
+          "description": "زر عائم أسفل الموقع"
+        },
+        "strip-light": {
+          "label": "قسم فاتح",
+          "description": "قسم نظيف"
+        },
+        "strip-soft": {
+          "label": "قسم ناعم",
+          "description": "قسم بخلفية ناعمة وظل"
+        },
+        "strip-dark": {
+          "label": "قسم داكن",
+          "description": "قسم داكن فاخر"
+        },
+        "strip-background-image": {
+          "label": "قسم بصورة خلفية",
+          "description": "قسم مع طبقة تغطية"
+        },
+        "strip-split": {
+          "label": "قسم مقسوم",
+          "description": "نص في جانب وصورة في الآخر"
+        },
+        "strip-cta": {
+          "label": "دعوة عريضة",
+          "description": "منطقة دعوة لاتخاذ إجراء"
+        },
+        "decor-divider": {
+          "label": "فاصل",
+          "description": "خط انتقال خفيف"
+        },
+        "decor-spacer": {
+          "label": "مسافة",
+          "description": "مسافة رأسية"
+        },
+        "decor-gradient-orb": {
+          "label": "كرة تدرج",
+          "description": "عنصر زخرفي"
+        },
+        "decor-badge": {
+          "label": "شارة عائمة",
+          "description": "شارة عرض"
+        },
+        "decor-wave": {
+          "label": "موجة انتقال",
+          "description": "انتقال زخرفي بين المناطق"
+        },
+        "box-card": {
+          "label": "بطاقة معلومات",
+          "description": "بطاقة أساسية"
+        },
+        "box-price": {
+          "label": "بطاقة سعر",
+          "description": "خدمة مع سعر"
+        },
+        "box-feature": {
+          "label": "بطاقة ميزة",
+          "description": "ميزة تبني الثقة"
+        },
+        "box-contact": {
+          "label": "بطاقة تواصل",
+          "description": "هاتف وواتساب وبيانات"
+        },
+        "box-testimonial": {
+          "label": "بطاقة مراجعة",
+          "description": "مراجعة عميل"
+        },
+        "box-team": {
+          "label": "بطاقة فريق",
+          "description": "ملف عضو فريق"
+        },
+        "gallery-grid": {
+          "label": "معرض شبكي",
+          "description": "أربع صور مرتبة"
+        },
+        "gallery-carousel": {
+          "label": "شريط صور",
+          "description": "معرض أفقي"
+        },
+        "gallery-featured": {
+          "label": "معرض مميز",
+          "description": "صورة كبيرة بجانب أصغر"
+        },
+        "gallery-masonry": {
+          "label": "معرض متدرج",
+          "description": "معرض بارتفاعات مختلفة"
+        },
+        "menu-simple": {
+          "label": "قائمة بسيطة",
+          "description": "روابط تنقل"
+        },
+        "menu-header": {
+          "label": "ترويسة كاملة",
+          "description": "شعار واسم وقائمة"
+        },
+        "menu-footer": {
+          "label": "تذييل",
+          "description": "تذييل كامل للموقع"
+        },
+        "form-lead": {
+          "label": "نموذج عميل محتمل",
+          "description": "نموذج استفسار إلى CRM"
+        },
+        "form-newsletter": {
+          "label": "نشرة",
+          "description": "التسجيل للتحديثات"
+        },
+        "form-booking-request": {
+          "label": "طلب موعد",
+          "description": "نموذج طلب موعد"
+        },
+        "video-youtube": {
+          "label": "فيديو يوتيوب",
+          "description": "تضمين فيديو"
+        },
+        "video-background": {
+          "label": "فيديو خلفية",
+          "description": "قسم يبدو كفيديو خلفية"
+        },
+        "interactive-accordion": {
+          "label": "أسئلة قابلة للفتح",
+          "description": "أسئلة شائعة"
+        },
+        "interactive-tabs": {
+          "label": "تبويبات",
+          "description": "تبويبات لعرض المحتوى"
+        },
+        "interactive-counters": {
+          "label": "أرقام متحركة",
+          "description": "أرقام تبني الثقة"
+        },
+        "interactive-popup-box": {
+          "label": "نافذة / كوبون",
+          "description": "بطاقة رسالة أو كوبون"
+        },
+        "list-checks": {
+          "label": "قائمة ميزات",
+          "description": "قائمة بعلامات صح"
+        },
+        "list-steps": {
+          "label": "خطوات العملية",
+          "description": "3 خطوات واضحة"
+        },
+        "list-pricing": {
+          "label": "قائمة أسعار",
+          "description": "قائمة خدمات وأسعار"
+        },
+        "embed-map": {
+          "label": "خريطة",
+          "description": "خرائط Google"
+        },
+        "embed-html": {
+          "label": "تضمين HTML",
+          "description": "مكان لكود خارجي"
+        },
+        "social-row": {
+          "label": "روابط تواصل",
+          "description": "إنستغرام وفيسبوك وتيك توك"
+        },
+        "social-card": {
+          "label": "بطاقة تواصل",
+          "description": "متابعة على الشبكات"
+        },
+        "social-icons": {
+          "label": "أيقونات تواصل",
+          "description": "صف أيقونات دائرية"
+        },
+        "payments-box": {
+          "label": "دفع",
+          "description": "كتلة دفع آمنة"
+        },
+        "payments-deposit": {
+          "label": "عربون موعد",
+          "description": "تحصيل عربون قبل الموعد"
+        },
+        "payments-pricing-table": {
+          "label": "جدول باقات",
+          "description": "3 باقات دفع"
+        },
+        "store-product-card": {
+          "label": "منتج",
+          "description": "بطاقة منتج واحد"
+        },
+        "store-products-grid": {
+          "label": "شبكة منتجات",
+          "description": "3 منتجات للشراء"
+        },
+        "store-featured-product": {
+          "label": "منتج مميز",
+          "description": "منتج واحد كبير"
+        },
+        "booking-times": {
+          "label": "ساعات متاحة",
+          "description": "اختيار وقت متاح"
+        },
+        "booking-dark": {
+          "label": "حجز داكن",
+          "description": "حجز بتصميم داكن"
+        },
+        "booking-calendar-card": {
+          "label": "بطاقة تقويم",
+          "description": "عرض تقويم احترافي"
+        },
+        "bizuply-services": {
+          "label": "خدمات العمل",
+          "description": "يُستبدل لاحقاً بخدمات العمل"
+        },
+        "bizuply-booking": {
+          "label": "تنسيق مواعيد",
+          "description": "كتلة مواعيد ذكية"
+        },
+        "bizuply-products": {
+          "label": "منتجات المتجر",
+          "description": "يُستبدل بمنتجات العمل"
+        },
+        "bizuply-lead-form": {
+          "label": "نموذج CRM",
+          "description": "كل عميل محتمل يدخل النظام"
+        },
+        "bizuply-reviews": {
+          "label": "مراجعات النظام",
+          "description": "مراجعات العملاء"
+        },
+        "bizuply-club": {
+          "label": "نادي العملاء",
+          "description": "تسجيل وكوبونات"
+        }
+      },
+      "items": {
+        "text-display-xl": {
+          "title": "عنوان ضخم",
+          "description": "عنوان بطل كبير وبارز"
+        },
+        "text-heading-lg": {
+          "title": "عنوان رئيسي",
+          "description": "عنوان H1 احترافي"
+        },
+        "text-heading-gradient": {
+          "title": "عنوان متدرج",
+          "description": "نص متدرج الألوان"
+        },
+        "text-subtitle": {
+          "title": "عنوان فرعي",
+          "description": "عنوان متوسط للأقسام"
+        },
+        "button-outline": {
+          "title": "زر بإطار",
+          "description": "زر نظيف بإطار"
+        },
+        "button-gradient": {
+          "title": "زر متدرج",
+          "description": "زر بمزيج ألوان"
+        },
+        "button-icon": {
+          "title": "زر بسهم",
+          "description": "نص وأيقونة في طبقة واحدة"
+        },
+        "shape-card": {
+          "title": "بطاقة بيضاء",
+          "description": "صندوق بظل وزوايا"
+        },
+        "shape-gradient": {
+          "title": "صندوق متدرج",
+          "description": "خلفية ملونة للطبقات"
+        },
+        "shape-circle": {
+          "title": "دائرة",
+          "description": "شكل دائري ملون"
+        },
+        "image-caption": {
+          "title": "صورة مع تعليق",
+          "description": "صورة وعنوان فوقها"
+        },
+        "video-standard": {
+          "title": "فيديو",
+          "description": "فيديو تلقائي قابل للاستبدال"
+        },
+        "video-overlay": {
+          "title": "فيديو مع نص",
+          "description": "تعليق وزر فوق الفيديو"
+        },
+        "graphic-badge": {
+          "title": "شارة",
+          "description": "شارة بأيقونة ونص"
+        },
+        "graphic-rating": {
+          "title": "تقييم نجوم",
+          "description": "خمس نجوم وتوصية"
+        },
+        "form-contact": {
+          "title": "نموذج تواصل",
+          "description": "اسم وهاتف وزر إرسال"
+        },
+        "button-dark-pill": {
+          "title": "زر داكن دائري",
+          "description": "دعوة داكنة أنيقة"
+        },
+        "button-soft-rose": {
+          "title": "زر وردي ناعم",
+          "description": "تمييز وردي لطيف"
+        },
+        "button-glass": {
+          "title": "زر زجاجي",
+          "description": "شفاف بإطار فاتح"
+        },
+        "social-floating-round": {
+          "title": "تواصل عائم دائري",
+          "description": "أيقونات دائرية عائمة على الجانب"
+        },
+        "social-bar-inline": {
+          "title": "صف تواصل",
+          "description": "صف أفقي من الأيقونات"
+        }
+      }
     }
   },
   "partnerNav": {
@@ -12619,5 +13082,250 @@
     "actions": "إجراءات",
     "subtitle": "أنشئ عملاء وأدر الحملات وCRM نيابة عنهم",
     "tempPassword": "كلمة مرور مؤقتة"
+  },
+  "business": {
+    "categoryNames": {
+      "other": "أخرى / فئة مخصصة",
+      "serviceProviders": "مقدمو الخدمات",
+      "businessServices": "خدمات للأعمال",
+      "businessConsulting": "استشارات أعمال",
+      "personalBusinessCoach": "مدرب شخصي / للأعمال",
+      "speakerMentor": "محاضر / موجّه",
+      "communityNonprofits": "خدمات مجتمعية / جمعيات",
+      "officeAdmin": "مكتب / إدارة",
+      "customerService": "خدمة العملاء",
+      "sales": "مبيعات",
+      "projectManagement": "إدارة المشاريع",
+      "digitalMarketing": "تسويق رقمي",
+      "paidAdsExpert": "أخصائي إعلانات مدفوعة",
+      "socialManagement": "إدارة التواصل الاجتماعي",
+      "contentCreator": "صانع محتوى",
+      "copywriting": "كتابة محتوى / صياغة إعلانية",
+      "websiteBuilding": "بناء مواقع",
+      "webDevelopment": "تطوير مواقع",
+      "softwareDevelopment": "تطوير برمجيات",
+      "apps": "تطبيقات",
+      "graphicDesigner": "مصمم جرافيك",
+      "businessBranding": "هوية تجارية",
+      "advertisingMedia": "إعلان وإعلام",
+      "videography": "تصوير فيديو",
+      "videoEditing": "مونتاج فيديو",
+      "computerTech": "فني حاسوب",
+      "mobileTech": "فني جوالات",
+      "cybersecurity": "أمن سيبراني",
+      "businessAutomations": "أتمتة للأعمال",
+      "crmSystems": "أنظمة CRM",
+      "aiForBusiness": "ذكاء اصطناعي للأعمال",
+      "beautyCare": "جمال وعناية",
+      "cosmetician": "أخصائية تجميل",
+      "beautySalon": "صالون تجميل",
+      "hairSalon": "صالون شعر",
+      "barbershop": "حلاقة رجالية",
+      "manicurePedicure": "مانيكير / باديكير",
+      "nailExtensions": "تركيب أظافر",
+      "browDesign": "تصميم حواجب",
+      "permanentMakeup": "مكياج دائم",
+      "makeupArtist": "خبيرة مكياج",
+      "hairStyling": "تصفيف شعر",
+      "hairStraightening": "فرد شعر",
+      "facialTreatments": "علاجات وجه",
+      "hairRemoval": "إزالة شعر",
+      "gelPolish": "طلاء جل",
+      "lashes": "رموش",
+      "sprayTan": "تسمير بالرش",
+      "healthFitness": "صحة ولياقة",
+      "fitnessTrainer": "مدرب لياقة",
+      "yogaPilates": "يوغا / بيلاتيس",
+      "swimInstructor": "مدرب سباحة / منقذ",
+      "nutritionist": "أخصائية تغذية",
+      "emotionalTherapist": "معالج عاطفي / NLP",
+      "psychologist": "طبيب نفسي / مستشار",
+      "alternativeMedicine": "طب تكميلي",
+      "holisticTherapy": "علاج شمولي",
+      "massage": "تدليك",
+      "physiotherapy": "علاج طبيعي",
+      "privateClinic": "عيادة خاصة",
+      "aestheticMedicine": "طب تجميلي",
+      "couplesTherapist": "معالج أزواج",
+      "familyTherapist": "معالج أسري",
+      "coaching": "تدريب شخصي",
+      "foodDining": "طعام ومطاعم",
+      "restaurant": "مطعم",
+      "cafe": "مقهى",
+      "catering": "تموين",
+      "homeCooking": "طعام منزلي",
+      "patisserie": "حلويات",
+      "bakery": "مخبز",
+      "privateChef": "طاهٍ خاص",
+      "foodStall": "كشك طعام",
+      "barPub": "بار / حانة",
+      "drinksCocktails": "مشروبات وكوكتيل",
+      "hostingTrays": "صواني ضيافة",
+      "foodPackages": "طرود طعام",
+      "healthyFood": "طعام صحي",
+      "veganFood": "طعام نباتي",
+      "kosherFood": "طعام كوشر",
+      "events": "مناسبات",
+      "eventHall": "قاعة مناسبات",
+      "eventGarden": "حديقة مناسبات",
+      "eventProduction": "إنتاج مناسبات",
+      "eventPhotographer": "مصور مناسبات",
+      "eventMagnets": "مغناطيس للمناسبات",
+      "dj": "دي جي",
+      "eventDesign": "تصميم مناسبات",
+      "bridalGowns": "فساتين زفاف",
+      "eventAttractions": "فعاليات للمناسبات",
+      "balloonsDecor": "بالونات وديكور",
+      "bridalBeauty": "مكياج وشعر للعرائس",
+      "eventCatering": "تموين مناسبات",
+      "activeBar": "بار تفاعلي",
+      "eventProducer": "منتج مناسبات",
+      "eventManagement": "إدارة مناسبة",
+      "homeMaintenance": "منزل وصيانة",
+      "renovations": "تجديدات",
+      "renovationContractor": "مقاول تجديد",
+      "handyman": "صنايعي",
+      "plumber": "سباك",
+      "electrician": "كهربائي",
+      "acTech": "فني تكييف",
+      "carpenter": "نجار",
+      "welder": "لحّام / حداد",
+      "gardening": "بستنة",
+      "pestControl": "مكافحة حشرات",
+      "cleaning": "تنظيف",
+      "floorPolish": "تلميع أرضيات",
+      "moving": "نقل عفش",
+      "painter": "دهّان",
+      "aluminum": "ألمنيوم",
+      "shuttersWindows": "ستائر ونوافذ",
+      "kitchens": "مطابخ",
+      "homeFurniture": "أثاث منزلي",
+      "constructionEngineering": "بناء وهندسة",
+      "buildingEngineer": "مهندس مباني",
+      "civilEngineer": "مهندس مدني",
+      "architect": "مهندس معماري",
+      "licensedSurveyor": "مساح مرخّص",
+      "constructionSupervisor": "مراقب بناء",
+      "planningConsultant": "مستشار تخطيط وبناء",
+      "structuralEngineer": "مهندس إنشائي",
+      "interiorDesigner": "مصمم داخلي",
+      "safetyConsultant": "مستشار سلامة",
+      "accessibilityConsultant": "مستشار إمكانية وصول",
+      "electricalConsultant": "مستشار كهرباء",
+      "plumbingConsultant": "مستشار سباكة",
+      "hvacConsultant": "مستشار تكييف",
+      "kidsFamily": "أطفال وأسرة",
+      "kindergarten": "روضة أطفال",
+      "homeDaycare": "حضانة منزلية",
+      "afterSchool": "رعاية بعد المدرسة",
+      "babysitter": "جليسة أطفال",
+      "privateTutor": "معلم خصوصي",
+      "musicTeacher": "معلم موسيقى",
+      "artTeacher": "معلم فنون",
+      "kidsClasses": "دورات للأطفال",
+      "parentCoaching": "إرشاد للأهالي",
+      "childTherapy": "علاج للأطفال",
+      "kidsCourses": "دورات للأطفال",
+      "kidsActivities": "أنشطة للأطفال",
+      "developmentalSupport": "مرافقة تطورية",
+      "autoTransport": "سيارات ونقل",
+      "driverDelivery": "سائق / توصيل",
+      "deliveries": "توصيل",
+      "garage": "ورشة سيارات",
+      "carWash": "غسيل سيارات",
+      "carAccessories": "إكسسوارات سيارات",
+      "carRental": "تأجير سيارات",
+      "towing": "سطحة",
+      "drivingInstructor": "مدرب قيادة",
+      "shuttles": "نقل ركاب",
+      "leasingAuto": "تأجير تمويلي وسيارات",
+      "financeInsurance": "مالية وتأمين",
+      "insurance": "تأمين",
+      "financialConsulting": "استشارات مالية",
+      "taxAccountant": "مستشار ضرائب / محاسب",
+      "bookkeeping": "مسك دفاتر",
+      "mortgages": "رهون عقارية",
+      "mortgageConsulting": "استشارات رهن",
+      "realEstateAgent": "وكيل عقارات",
+      "realEstateBrokerage": "وساطة عقارية",
+      "investments": "استثمارات",
+      "pensionConsulting": "استشارات تقاعد",
+      "loansFinance": "قروض وتمويل",
+      "legal": "قانون",
+      "lawyer": "محامٍ",
+      "notary": "كاتب عدل",
+      "mediation": "وساطة",
+      "legalConsulting": "استشارات قانونية",
+      "familyLaw": "قانون الأسرة",
+      "laborLaw": "قانون العمل",
+      "realEstateLaw": "عقارات وأملاك",
+      "enforcement": "تنفيذ أحكام",
+      "defamation": "تشهير",
+      "contracts": "عقود واتفاقيات",
+      "fashionLifestyle": "أزياء ونمط حياة",
+      "clothing": "ملابس",
+      "womensFashion": "أزياء نسائية",
+      "mensFashion": "أزياء رجالية",
+      "kidsFashion": "أزياء أطفال",
+      "jewelry": "مجوهرات",
+      "accessories": "إكسسوارات",
+      "stylist": "منسقة أزياء",
+      "fashionDesign": "تصميم أزياء",
+      "boutique": "بوتيك",
+      "secondHand": "مستعمل",
+      "sewingRepairs": "خياطة وإصلاح",
+      "shopsCommerce": "متاجر وتجارة",
+      "onlineStore": "متجر إلكتروني",
+      "gifts": "منتجات هدايا",
+      "toys": "ألعاب",
+      "babyProducts": "منتجات أطفال",
+      "homeProducts": "منتجات منزلية",
+      "electronics": "أجهزة كهربائية",
+      "officeSupplies": "مستلزمات مكتبية",
+      "pharmacyBeauty": "صيدلية وتجميل",
+      "florist": "محل ورد",
+      "nursery": "مشتل",
+      "pets": "حيوانات أليفة",
+      "sportsGear": "معدات رياضة",
+      "travelLeisure": "سياحة وترفيه",
+      "tourGuide": "مرشد سياحي",
+      "travelAgency": "وكالة سفر",
+      "lodging": "إقامة ونُزُل",
+      "attractions": "معالم",
+      "workshops": "ورش عمل",
+      "organizedTours": "رحلات منظمة",
+      "equipmentRental": "تأجير معدات",
+      "membersClub": "نادي أعضاء",
+      "experiencesLeisure": "تجارب وترفيه",
+      "coursesLearning": "دورات وتعليم",
+      "digitalCourse": "دورة رقمية",
+      "collegeSchool": "كلية / مدرسة",
+      "privateLessons": "دروس خصوصية",
+      "languageStudies": "تعلم لغات",
+      "trainings": "تدريبات",
+      "proWorkshops": "ورش مهنية",
+      "businessTraining": "تدريب للأعمال",
+      "computerStudies": "دراسة حاسوب",
+      "musicStudies": "دراسة موسيقى",
+      "animals": "حيوانات",
+      "dogGrooming": "تجميل كلاب",
+      "dogTraining": "تدريب كلاب",
+      "dogWalker": "ممشّي كلاب",
+      "dogBoarding": "إقامة كلاب",
+      "veterinarian": "طبيب بيطري",
+      "petSupplies": "مستلزمات حيوانات",
+      "animalCare": "رعاية حيوانات",
+      "photoArt": "تصوير وفنون",
+      "photographer": "مصور",
+      "photoStudio": "استوديو تصوير",
+      "productPhotography": "تصوير منتجات",
+      "brandPhotography": "تصوير هوية",
+      "familyPhotography": "تصوير عائلي",
+      "maternityPhotography": "تصوير حمل",
+      "artist": "فنان",
+      "gallery": "معرض",
+      "painting": "رسم",
+      "handmadeDesign": "تصميم يدوي"
+    }
   }
 }

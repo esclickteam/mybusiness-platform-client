@@ -22,7 +22,11 @@ export function classifySourcePath(rel) {
     r.startsWith("pages/admin/") ||
     r.includes("/pages/admin/") ||
     r.includes("AdminSoftphone") ||
-    r.includes("AdminSoftphoneHost")
+    r.includes("AdminSoftphoneHost") ||
+    r.includes("AdminNotifications") ||
+    r.includes("AdminPushPermission") ||
+    r.includes("AdminDialButton") ||
+    /(^|\/)components\/Admin[^/]+$/.test(r)
   ) {
     return "A";
   }
@@ -40,9 +44,23 @@ export function classifySourcePath(rel) {
     r.includes(".spec.") ||
     r.includes("/__tests__/") ||
     r.endsWith(".css") ||
-    r.endsWith(".md")
+    r.endsWith(".md") ||
+    r.endsWith("partnerLabels.ts") ||
+    r.endsWith("businessCategoryLabels.js") ||
+    r.endsWith("data/categories.js") ||
+    r.endsWith("data/pricingAddonsData.ts") ||
+    r.endsWith("data/pricingPackagesData.ts")
   ) {
     return "D";
   }
   return "E";
+}
+
+/** Default customer-site HTML / canvas seed copy is category C, even inside Studio files. */
+export function isDefaultSiteContentString(value) {
+  const text = String(value || "");
+  if (!text) return false;
+  if (/<[a-zA-Z][\s\S]*?>/.test(text)) return true;
+  if (/<\/[a-zA-Z]/.test(text)) return true;
+  return false;
 }

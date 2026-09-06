@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ALL_CATEGORIES from "../data/categories";
+import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 
 type CategoryAutocompleteProps = {
   value?: string;
@@ -110,8 +111,13 @@ export default function CategoryAutocomplete({
       .map((category) => normalizeCategoryValue(category))
       .filter(Boolean);
 
-    return uniqueCategories([otherLabel, ...cleaned]);
-  }, [otherLabel]);
+    return uniqueCategories([otherLabel, ...cleaned]).map((value) => ({
+      value,
+      label: isOtherCategory(value, otherLabel)
+        ? otherLabel
+        : translateBusinessCategory(value, t),
+    }));
+  }, [otherLabel, t]);
 
   useEffect(() => {
     const cleanValue = normalizeCategoryValue(value);
@@ -133,7 +139,7 @@ export default function CategoryAutocomplete({
     }
 
     const existsInCategories = categories.some(
-      (category) => category.toLowerCase() === cleanValue.toLowerCase()
+      (category) => category.value.toLowerCase() === cleanValue.toLowerCase()
     );
 
     setQuery(cleanValue);
@@ -147,33 +153,41 @@ export default function CategoryAutocomplete({
   const suggestions = useMemo(() => {
     const cleanQuery = searchValue.trim().toLowerCase();
 
+    const matchesQuery = (category: { value: string; label: string }) => {
+      const label = category.label.toLowerCase();
+      const value = category.value.toLowerCase();
+      return { label, value, haystack: `${label} ${value}` };
+    };
+
     if (!cleanQuery) {
       return categories.slice(0, 30);
     }
 
-    const startsWithResults = categories.filter((category) =>
-      category.toLowerCase().startsWith(cleanQuery)
-    );
+    const startsWithResults = categories.filter((category) => {
+      const { label, value } = matchesQuery(category);
+      return label.startsWith(cleanQuery) || value.startsWith(cleanQuery);
+    });
 
     const includesResults = categories.filter((category) => {
-      const cleanCategory = category.toLowerCase();
-
-      return (
-        !cleanCategory.startsWith(cleanQuery) &&
-        cleanCategory.includes(cleanQuery)
-      );
+      const { label, value } = matchesQuery(category);
+      const starts = label.startsWith(cleanQuery) || value.startsWith(cleanQuery);
+      return !starts && (label.includes(cleanQuery) || value.includes(cleanQuery));
     });
 
     const filtered = [...startsWithResults, ...includesResults];
 
-    const exactMatch = categories.some(
-      (category) => category.toLowerCase() === cleanQuery
-    );
+    const exactMatch = categories.some((category) => {
+      const { label, value } = matchesQuery(category);
+      return label === cleanQuery || value === cleanQuery;
+    });
 
     if (!exactMatch && searchValue.trim()) {
       return [
         ...filtered,
-        `${customPrefix} ${searchValue.trim()}`,
+        {
+          value: `${customPrefix} ${searchValue.trim()}`,
+          label: `${customPrefix} ${searchValue.trim()}`,
+        },
       ].slice(0, 30);
     }
 
@@ -284,7 +298,7 @@ export default function CategoryAutocomplete({
     if (event.key === "Enter") {
       if (open && activeIndex >= 0 && suggestions[activeIndex]) {
         event.preventDefault();
-        commitValue(suggestions[activeIndex]);
+        commitValue(suggestions[activeIndex].value);
         return;
       }
 
@@ -302,7 +316,14 @@ export default function CategoryAutocomplete({
     }
   };
 
-  const selectedText = customMode ? otherLabel : query;
+  const selectedKnown = categories.find(
+    (category) => category.value.toLowerCase() === query.trim().toLowerCase()
+  );
+  const selectedText = customMode
+    ? otherLabel
+    : selectedKnown
+      ? selectedKnown.label
+      : query;
   const showSuggestions = open && suggestions.length > 0;
   const showNoResults = open && searchValue.trim() && suggestions.length === 0;
 
@@ -353,15 +374,15 @@ export default function CategoryAutocomplete({
               const active = index === activeIndex;
               const selected =
                 !customMode &&
-                query.trim().toLowerCase() === category.toLowerCase();
-              const customSuggestion = hasCustomPrefix(category, customPrefix);
+                query.trim().toLowerCase() === category.value.toLowerCase();
+              const customSuggestion = hasCustomPrefix(category.value, customPrefix);
 
               return (
-                <li key={`${category}-${index}`}>
+                <li key={`${category.value}-${index}`}>
                   <button
                     type="button"
                     onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => commitValue(category)}
+                    onClick={() => commitValue(category.value)}
                     onMouseEnter={() => setActiveIndex(index)}
                     className={[
                       "flex w-full items-center justify-between gap-3 px-4 py-3 text-start text-sm font-bold transition",
@@ -371,7 +392,7 @@ export default function CategoryAutocomplete({
                       customSuggestion ? "text-emerald-700" : "",
                     ].join(" ")}
                   >
-                    <span>{category}</span>
+                    <span>{category.label}</span>
 
                     {selected && (
                       <span className="text-xs font-black text-violet-600">

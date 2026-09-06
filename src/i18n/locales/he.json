@@ -1698,7 +1698,19 @@
     "modalExamples": "דוגמאות",
     "platformBadge": "חבילות מערכת",
     "platformTitle": "חבילות המערכת",
-    "platformSubtitle": "CRM, תורים, שיתופי פעולה ו-AI. אפשר להוסיף תוספת אתר חד־פעמי — והמחיר מתעדכן אוטומטית בתשלום."
+    "platformSubtitle": "CRM, תורים, שיתופי פעולה ו-AI. אפשר להוסיף תוספת אתר חד־פעמי — והמחיר מתעדכן אוטומטית בתשלום.",
+    "choosePurchase": "לבחירת רכישה",
+    "categories": {
+      "all": "הכול",
+      "setup": "הקמה והטמעה",
+      "growth": "שיווק וצמיחה",
+      "agents": "נציגים ושירות אנושי",
+      "support": "תמיכה חודשית"
+    },
+    "websiteAddon": {
+      "label": "550₪ חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית",
+      "hint": "תשלום חד־פעמי, ללא חידוש אוטומטי · תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה"
+    }
   },
   "howItWorks": {
     "seoTitle": "איך זה עובד - Bizuply | מדריך לפלטפורמה",
@@ -10951,6 +10963,457 @@
       "googlePreview": "תצוגה מקדימה בגוגל",
       "sharePreview": "תצוגה מקדימה לשיתוף",
       "noShareImage": "אין תמונת שיתוף"
+    },
+    "kindHint": {
+      "header": "תפריט עליון, לוגו, ניווט, כפתורים וכניסה/יציאה",
+      "hero": "פתיחת אתר, Hero, כותרת ראשית ותמונת אווירה",
+      "welcome": "פתיחה רכה, ברכה, הצגת העסק והנעה לפעולה",
+      "about": "סיפור העסק, ערכים, ניסיון ותמונה",
+      "team": "אנשי צוות, בעל העסק, פרופילים ותפקידים",
+      "services": "כרטיסי שירותים, מחירון, חבילות ותיאור שירות",
+      "gallery": "תמונות, עבודות, קרוסלה, גריד ומדיה",
+      "contact": "טפסים, וואטסאפ, טלפון, מפה ופרטי עסק",
+      "promotion": "מבצעים, קופונים, באנרים והנעה לרכישה",
+      "subscribe": "ניוזלטר, רשימת המתנה, קופון והרשמה לעדכונים",
+      "testimonials": "המלצות לקוחות, ציטוטים וסושיאל פרוף",
+      "reviews": "ביקורות, דירוגים, כוכבים וטופס ביקורת",
+      "clients": "לוגואים, לקוחות, מותגים ושותפים",
+      "store": "מוצרים, מחיר, כפתור רכישה, קולקציות ו־Ecommerce",
+      "booking": "יומן פגישות — מחובר אוטומטית ליומן, שירותים ושעות מה-CRM",
+      "bookings": "תמיכה בשם הישן bookings",
+      "events": "אירועים, לו״ז, הרצאות, סדנאות והרשמה",
+      "club": "VIP, קופונים, הטבות והרשמת לקוחות",
+      "bot": "AI Assistant, צ׳אט, לידים, וואטסאפ ותורים",
+      "social": "אינסטגרם, פייסבוק, טיקטוק, יוטיוב, לינקדאין ווואטסאפ",
+      "course": "קורסים, שיעורים, תוכן, מחירון וסילבוס",
+      "miniSaas": "מערכת קטנה לעסק, דשבורד, התחברות ותשלום",
+      "basic": "סקשנים בסיסיים, ריקים, מספרים, CTA וטקסט",
+      "text": "כותרות, פסקאות, ציטוטים ותוכן טקסטואלי",
+      "list": "רשימות, שלבים, יתרונות, FAQ ומחירון",
+      "form": "טפסי ליד, יצירת קשר, הרשמה, בקשה ותמיכה",
+      "forms": "תמיכה בשם הישן forms"
+    },
+    "library": {
+      "categories": {
+        "text": "טקסט",
+        "image": "תמונה",
+        "button": "כפתור",
+        "strip": "סקציה",
+        "decorative": "עיצוב",
+        "box": "קופסה",
+        "gallery": "גלריה",
+        "menu": "תפריט",
+        "forms": "טפסים",
+        "video": "וידאו",
+        "interactive": "אינטראקטיבי",
+        "list": "רשימות",
+        "embed": "Embed",
+        "social": "סושיאל",
+        "payments": "תשלומים",
+        "store": "חנות",
+        "bookings": "תורים",
+        "bizuply": "Bizuply"
+      },
+      "elements": {
+        "text-h1": {
+          "label": "כותרת H1 ענקית",
+          "description": "כותרת ראשית גדולה ומרשימה"
+        },
+        "text-h2": {
+          "label": "כותרת H2",
+          "description": "כותרת גדולה לסקשן"
+        },
+        "text-h3": {
+          "label": "כותרת כרטיס",
+          "description": "כותרת לשירות, מוצר או יתרון"
+        },
+        "text-paragraph": {
+          "label": "פסקה",
+          "description": "טקסט הסבר מקצועי"
+        },
+        "text-kicker": {
+          "label": "כותרת קטנה",
+          "description": "תגית מעל כותרת"
+        },
+        "text-pill": {
+          "label": "תגית Pill",
+          "description": "תגית מעוגלת למבצע או סטטוס"
+        },
+        "text-highlight": {
+          "label": "משפט מודגש",
+          "description": "משפט גדול שמושך תשומת לב"
+        },
+        "text-quote": {
+          "label": "ציטוט",
+          "description": "ציטוט לקוח או משפט השראה"
+        },
+        "text-stat-row": {
+          "label": "מספרי אמון",
+          "description": "שלושה נתונים קצרים"
+        },
+        "text-marquee": {
+          "label": "טקסט נע",
+          "description": "שורת פרסום נעה"
+        },
+        "image-basic": {
+          "label": "תמונה",
+          "description": "תמונה עם מסגרת פרימיום"
+        },
+        "image-rounded": {
+          "label": "תמונה עגולה",
+          "description": "תמונה לפרופיל / בעל עסק"
+        },
+        "image-wide": {
+          "label": "תמונה רחבה",
+          "description": "תמונה רחבה לראש סקשן"
+        },
+        "image-background-card": {
+          "label": "תמונת רקע",
+          "description": "כרטיס עם תמונה כרקע וטקסט"
+        },
+        "image-before-after": {
+          "label": "לפני / אחרי",
+          "description": "השוואת שתי תמונות"
+        },
+        "image-stack": {
+          "label": "שתי תמונות מדורגות",
+          "description": "תצוגת תמונות יוקרתית"
+        },
+        "button-primary": {
+          "label": "כפתור ראשי",
+          "description": "כפתור פעולה מרכזי"
+        },
+        "button-secondary": {
+          "label": "כפתור משני",
+          "description": "כפתור רגוע יותר"
+        },
+        "button-double": {
+          "label": "שני כפתורים",
+          "description": "שני כפתורי פעולה יחד"
+        },
+        "button-whatsapp": {
+          "label": "כפתור וואטסאפ",
+          "description": "קישור מהיר לוואטסאפ"
+        },
+        "button-phone": {
+          "label": "כפתור שיחה",
+          "description": "קישור להתקשרות"
+        },
+        "button-floating": {
+          "label": "כפתור צף",
+          "description": "כפתור צף בתחתית האתר"
+        },
+        "strip-light": {
+          "label": "סקציה בהירה",
+          "description": "סקציה נקייה"
+        },
+        "strip-soft": {
+          "label": "סקציה רכה",
+          "description": "סקציה עם רקע רך וצל"
+        },
+        "strip-dark": {
+          "label": "סקציה כהה",
+          "description": "סקציה כהה יוקרתית"
+        },
+        "strip-background-image": {
+          "label": "סקציה עם תמונת רקע",
+          "description": "סקציה עם Overlay"
+        },
+        "strip-split": {
+          "label": "סקציה חצויה",
+          "description": "טקסט בצד ותמונה בצד"
+        },
+        "strip-cta": {
+          "label": "CTA רחב",
+          "description": "אזור הנעה לפעולה"
+        },
+        "decor-divider": {
+          "label": "קו מפריד",
+          "description": "קו מעבר עדין"
+        },
+        "decor-spacer": {
+          "label": "רווח",
+          "description": "רווח אנכי"
+        },
+        "decor-gradient-orb": {
+          "label": "עיגול גרדיאנט",
+          "description": "אלמנט דקורטיבי"
+        },
+        "decor-badge": {
+          "label": "תגית צפה",
+          "description": "תגית מבצע"
+        },
+        "decor-wave": {
+          "label": "גל מעבר",
+          "description": "מעבר דקורטיבי בין אזורים"
+        },
+        "box-card": {
+          "label": "כרטיס מידע",
+          "description": "כרטיס בסיסי"
+        },
+        "box-price": {
+          "label": "כרטיס מחיר",
+          "description": "שירות עם מחיר"
+        },
+        "box-feature": {
+          "label": "כרטיס יתרון",
+          "description": "יתרון לבניית אמון"
+        },
+        "box-contact": {
+          "label": "כרטיס קשר",
+          "description": "טלפון, וואטסאפ ופרטי קשר"
+        },
+        "box-testimonial": {
+          "label": "כרטיס ביקורת",
+          "description": "ביקורת לקוח"
+        },
+        "box-team": {
+          "label": "כרטיס איש צוות",
+          "description": "פרופיל איש צוות"
+        },
+        "gallery-grid": {
+          "label": "גלריית גריד",
+          "description": "ארבע תמונות מסודרות"
+        },
+        "gallery-carousel": {
+          "label": "קרוסלת תמונות",
+          "description": "גלריה נגללת לרוחב"
+        },
+        "gallery-featured": {
+          "label": "גלריה Featured",
+          "description": "תמונה גדולה לצד קטנות"
+        },
+        "gallery-masonry": {
+          "label": "גלריית Masonry",
+          "description": "גלריה גבוהה/נמוכה"
+        },
+        "menu-simple": {
+          "label": "תפריט פשוט",
+          "description": "קישורי ניווט"
+        },
+        "menu-header": {
+          "label": "Header מלא",
+          "description": "לוגו, שם עסק ותפריט"
+        },
+        "menu-footer": {
+          "label": "Footer",
+          "description": "פוטר מלא לאתר"
+        },
+        "form-lead": {
+          "label": "טופס ליד",
+          "description": "טופס פנייה ל־CRM"
+        },
+        "form-newsletter": {
+          "label": "ניוזלטר",
+          "description": "הרשמה לעדכונים"
+        },
+        "form-booking-request": {
+          "label": "בקשת תור",
+          "description": "טופס בקשת תור"
+        },
+        "video-youtube": {
+          "label": "וידאו YouTube",
+          "description": "הטמעת סרטון"
+        },
+        "video-background": {
+          "label": "וידאו רקע",
+          "description": "סקשן שנראה כמו וידאו רקע"
+        },
+        "interactive-accordion": {
+          "label": "שאלות נפתחות",
+          "description": "FAQ"
+        },
+        "interactive-tabs": {
+          "label": "Tabs",
+          "description": "טאבים להצגת תוכן"
+        },
+        "interactive-counters": {
+          "label": "מספרים עולים",
+          "description": "מספרים ליצירת אמון"
+        },
+        "interactive-popup-box": {
+          "label": "פופאפ / קופון",
+          "description": "כרטיס הודעה או קופון"
+        },
+        "list-checks": {
+          "label": "רשימת יתרונות",
+          "description": "רשימה עם סימוני וי"
+        },
+        "list-steps": {
+          "label": "שלבי תהליך",
+          "description": "3 שלבים ברורים"
+        },
+        "list-pricing": {
+          "label": "מחירון",
+          "description": "רשימת שירותים ומחירים"
+        },
+        "embed-map": {
+          "label": "מפה",
+          "description": "Google Maps"
+        },
+        "embed-html": {
+          "label": "Embed HTML",
+          "description": "מקום לקוד חיצוני"
+        },
+        "social-row": {
+          "label": "קישורי סושיאל",
+          "description": "אינסטגרם, פייסבוק וטיקטוק"
+        },
+        "social-card": {
+          "label": "כרטיס סושיאל",
+          "description": "מעקב ברשתות"
+        },
+        "social-icons": {
+          "label": "אייקוני סושיאל",
+          "description": "שורת אייקונים עגולים"
+        },
+        "payments-box": {
+          "label": "תשלום",
+          "description": "בלוק תשלום מאובטח"
+        },
+        "payments-deposit": {
+          "label": "מקדמה לתור",
+          "description": "גביית מקדמה לפני תור"
+        },
+        "payments-pricing-table": {
+          "label": "טבלת חבילות",
+          "description": "3 חבילות תשלום"
+        },
+        "store-product-card": {
+          "label": "מוצר",
+          "description": "כרטיס מוצר בודד"
+        },
+        "store-products-grid": {
+          "label": "גריד מוצרים",
+          "description": "3 מוצרים לרכישה"
+        },
+        "store-featured-product": {
+          "label": "מוצר מוביל",
+          "description": "מוצר אחד גדול"
+        },
+        "booking-times": {
+          "label": "שעות פנויות",
+          "description": "בחירת שעה פנויה"
+        },
+        "booking-dark": {
+          "label": "תיאום תורים כהה",
+          "description": "תיאום תורים בעיצוב כהה"
+        },
+        "booking-calendar-card": {
+          "label": "כרטיס יומן",
+          "description": "תצוגת יומן מקצועית"
+        },
+        "bizuply-services": {
+          "label": "שירותים מהעסק",
+          "description": "יוחלף בהמשך בשירותי העסק"
+        },
+        "bizuply-booking": {
+          "label": "תיאום תורים",
+          "description": "בלוק תורים חכם"
+        },
+        "bizuply-products": {
+          "label": "מוצרים מהחנות",
+          "description": "יוחלף במוצרי העסק"
+        },
+        "bizuply-lead-form": {
+          "label": "טופס ל־CRM",
+          "description": "כל ליד ייכנס למערכת"
+        },
+        "bizuply-reviews": {
+          "label": "ביקורות מהמערכת",
+          "description": "ביקורות לקוחות"
+        },
+        "bizuply-club": {
+          "label": "מועדון לקוחות",
+          "description": "הרשמה וקופונים"
+        }
+      },
+      "items": {
+        "text-display-xl": {
+          "title": "כותרת ענקית",
+          "description": "כותרת Hero גדולה ובולטת"
+        },
+        "text-heading-lg": {
+          "title": "כותרת ראשית",
+          "description": "כותרת H1 מקצועית"
+        },
+        "text-heading-gradient": {
+          "title": "כותרת מיקס צבעים",
+          "description": "Gradient צבעוני לטקסט"
+        },
+        "text-subtitle": {
+          "title": "כותרת משנה",
+          "description": "כותרת בינונית לסקשנים"
+        },
+        "button-outline": {
+          "title": "כפתור מסגרת",
+          "description": "כפתור נקי עם מסגרת"
+        },
+        "button-gradient": {
+          "title": "כפתור Gradient",
+          "description": "כפתור עם מיקס צבעים"
+        },
+        "button-icon": {
+          "title": "כפתור עם חץ",
+          "description": "טקסט ואייקון בשכבה אחת"
+        },
+        "shape-card": {
+          "title": "כרטיס לבן",
+          "description": "קופסה עם צל ופינות"
+        },
+        "shape-gradient": {
+          "title": "קופסת Gradient",
+          "description": "רקע צבעוני לשכבות"
+        },
+        "shape-circle": {
+          "title": "עיגול",
+          "description": "צורה עגולה צבעונית"
+        },
+        "image-caption": {
+          "title": "תמונה עם כיתוב",
+          "description": "תמונה וכותרת בשכבה מעליה"
+        },
+        "video-standard": {
+          "title": "סרטון",
+          "description": "סרטון אוטומטי שניתן להחלפה"
+        },
+        "video-overlay": {
+          "title": "וידאו עם טקסט",
+          "description": "כיתוב וכפתור מעל הסרטון"
+        },
+        "graphic-badge": {
+          "title": "תגית",
+          "description": "Badge עם אייקון וטקסט"
+        },
+        "graphic-rating": {
+          "title": "דירוג כוכבים",
+          "description": "חמישה כוכבים והמלצה"
+        },
+        "form-contact": {
+          "title": "טופס יצירת קשר",
+          "description": "שם, טלפון וכפתור שליחה"
+        },
+        "button-dark-pill": {
+          "title": "כפתור כהה מעוגל",
+          "description": "CTA כהה ואלגנטי"
+        },
+        "button-soft-rose": {
+          "title": "כפתור ורוד רך",
+          "description": "הדגשה עדינה בגוון ורוד"
+        },
+        "button-glass": {
+          "title": "כפתור זכוכית",
+          "description": "שקוף עם מסגרת בהירה"
+        },
+        "social-floating-round": {
+          "title": "סושיאל צף עגול",
+          "description": "אייקונים עגולים צפים בצד"
+        },
+        "social-bar-inline": {
+          "title": "שורת סושיאל",
+          "description": "שורה אופקית של אייקונים"
+        }
+      }
     }
   },
   "partnerNav": {
@@ -12608,5 +13071,250 @@
     "actions": "פעולות",
     "subtitle": "צרו לקוחות ונהלו עבורם קמפיינים ו-CRM",
     "tempPassword": "סיסמה זמנית"
+  },
+  "business": {
+    "categoryNames": {
+      "other": "אחר / קטגוריה מותאמת",
+      "serviceProviders": "נותני שירות",
+      "businessServices": "שירותים לעסקים",
+      "businessConsulting": "ייעוץ עסקי",
+      "personalBusinessCoach": "מאמן אישי / עסקי",
+      "speakerMentor": "מרצה / מנטור",
+      "communityNonprofits": "שירותי קהילה / עמותות",
+      "officeAdmin": "משרד / אדמיניסטרציה",
+      "customerService": "שירות לקוחות",
+      "sales": "מכירות",
+      "projectManagement": "ניהול פרויקטים",
+      "digitalMarketing": "שיווק דיגיטלי",
+      "paidAdsExpert": "מומחה קידום ממומן",
+      "socialManagement": "ניהול סושיאל",
+      "contentCreator": "יוצר תוכן",
+      "copywriting": "כתיבת תוכן / קופירייטינג",
+      "websiteBuilding": "בניית אתרים",
+      "webDevelopment": "פיתוח אתרים",
+      "softwareDevelopment": "פיתוח תוכנה",
+      "apps": "אפליקציות",
+      "graphicDesigner": "מעצב גרפי",
+      "businessBranding": "מיתוג עסקי",
+      "advertisingMedia": "פרסום ומדיה",
+      "videography": "צילום וידאו",
+      "videoEditing": "עריכת וידאו",
+      "computerTech": "טכנאי מחשבים",
+      "mobileTech": "טכנאי מובייל",
+      "cybersecurity": "סייבר ואבטחת מידע",
+      "businessAutomations": "אוטומציות לעסקים",
+      "crmSystems": "מערכות CRM",
+      "aiForBusiness": "AI לעסקים",
+      "beautyCare": "יופי וטיפוח",
+      "cosmetician": "קוסמטיקאית",
+      "beautySalon": "סלון יופי",
+      "hairSalon": "מספרה",
+      "barbershop": "ברברשופ",
+      "manicurePedicure": "מניקור / פדיקור",
+      "nailExtensions": "בניית ציפורניים",
+      "browDesign": "עיצוב גבות",
+      "permanentMakeup": "איפור קבוע",
+      "makeupArtist": "מאפרת",
+      "hairStyling": "עיצוב שיער",
+      "hairStraightening": "החלקות שיער",
+      "facialTreatments": "טיפולי פנים",
+      "hairRemoval": "הסרת שיער",
+      "gelPolish": "לק ג׳ל",
+      "lashes": "ריסים",
+      "sprayTan": "שיזוף בהתזה",
+      "healthFitness": "בריאות וכושר",
+      "fitnessTrainer": "מאמן כושר",
+      "yogaPilates": "יוגה / פילאטיס",
+      "swimInstructor": "מדריך שחייה / מציל",
+      "nutritionist": "תזונאית / דיאטנית",
+      "emotionalTherapist": "מטפל רגשי / NLP",
+      "psychologist": "פסיכולוג / יועץ",
+      "alternativeMedicine": "רפואה משלימה",
+      "holisticTherapy": "טיפול הוליסטי",
+      "massage": "עיסוי",
+      "physiotherapy": "פיזיותרפיה",
+      "privateClinic": "קליניקה פרטית",
+      "aestheticMedicine": "רפואה אסתטית",
+      "couplesTherapist": "מטפל זוגי",
+      "familyTherapist": "מטפל משפחתי",
+      "coaching": "קואצ׳ינג",
+      "foodDining": "אוכל ומסעדנות",
+      "restaurant": "מסעדה",
+      "cafe": "בית קפה",
+      "catering": "קייטרינג",
+      "homeCooking": "אוכל ביתי",
+      "patisserie": "קונדיטוריה",
+      "bakery": "מאפייה",
+      "privateChef": "שף פרטי",
+      "foodStall": "דוכן אוכל",
+      "barPub": "בר / פאב",
+      "drinksCocktails": "משקאות וקוקטיילים",
+      "hostingTrays": "מגשי אירוח",
+      "foodPackages": "מארזי אוכל",
+      "healthyFood": "אוכל בריא",
+      "veganFood": "אוכל טבעוני",
+      "kosherFood": "אוכל כשר",
+      "events": "אירועים",
+      "eventHall": "אולם אירועים",
+      "eventGarden": "גן אירועים",
+      "eventProduction": "הפקת אירועים",
+      "eventPhotographer": "צלם אירועים",
+      "eventMagnets": "מגנטים לאירועים",
+      "dj": "די.ג׳יי",
+      "eventDesign": "עיצוב אירועים",
+      "bridalGowns": "שמלות כלה",
+      "eventAttractions": "אטרקציות לאירועים",
+      "balloonsDecor": "בלונים ועיצוב",
+      "bridalBeauty": "איפור ושיער לכלות",
+      "eventCatering": "קייטרינג לאירועים",
+      "activeBar": "בר אקטיבי",
+      "eventProducer": "מפיק אירועים",
+      "eventManagement": "ניהול אירוע",
+      "homeMaintenance": "בית ותחזוקה",
+      "renovations": "שיפוצים",
+      "renovationContractor": "קבלן שיפוצים",
+      "handyman": "הנדימן",
+      "plumber": "אינסטלטור",
+      "electrician": "חשמלאי",
+      "acTech": "טכנאי מזגנים",
+      "carpenter": "נגר",
+      "welder": "מסגר / רתך",
+      "gardening": "גינון",
+      "pestControl": "הדברה",
+      "cleaning": "ניקיון",
+      "floorPolish": "פוליש",
+      "moving": "הובלות",
+      "painter": "צבעי",
+      "aluminum": "אלומיניום",
+      "shuttersWindows": "תריסים וחלונות",
+      "kitchens": "מטבחים",
+      "homeFurniture": "ריהוט לבית",
+      "constructionEngineering": "בנייה והנדסה",
+      "buildingEngineer": "הנדסאי בניין",
+      "civilEngineer": "מהנדס אזרחי",
+      "architect": "אדריכל",
+      "licensedSurveyor": "מודד מוסמך",
+      "constructionSupervisor": "מפקח בנייה",
+      "planningConsultant": "יועץ תכנון ובנייה",
+      "structuralEngineer": "קונסטרוקטור",
+      "interiorDesigner": "מעצב פנים",
+      "safetyConsultant": "יועץ בטיחות",
+      "accessibilityConsultant": "יועץ נגישות",
+      "electricalConsultant": "יועץ חשמל",
+      "plumbingConsultant": "יועץ אינסטלציה",
+      "hvacConsultant": "יועץ מיזוג אוויר",
+      "kidsFamily": "ילדים ומשפחה",
+      "kindergarten": "גן ילדים",
+      "homeDaycare": "משפחתון",
+      "afterSchool": "צהרון",
+      "babysitter": "בייביסיטר",
+      "privateTutor": "מורה פרטי",
+      "musicTeacher": "מורה למוזיקה",
+      "artTeacher": "מורה לאמנות",
+      "kidsClasses": "חוגים לילדים",
+      "parentCoaching": "הדרכת הורים",
+      "childTherapy": "טיפול בילדים",
+      "kidsCourses": "קורסים לילדים",
+      "kidsActivities": "פעילויות לילדים",
+      "developmentalSupport": "ליווי התפתחותי",
+      "autoTransport": "רכב ותחבורה",
+      "driverDelivery": "נהג / שליחויות",
+      "deliveries": "שליחויות",
+      "garage": "מוסך",
+      "carWash": "שטיפת רכב",
+      "carAccessories": "אביזרי רכב",
+      "carRental": "השכרת רכב",
+      "towing": "גרר",
+      "drivingInstructor": "מורה נהיגה",
+      "shuttles": "הסעות",
+      "leasingAuto": "ליסינג ורכב",
+      "financeInsurance": "פיננסים וביטוח",
+      "insurance": "ביטוח",
+      "financialConsulting": "ייעוץ פיננסי",
+      "taxAccountant": "יועץ מס / רואה חשבון",
+      "bookkeeping": "הנהלת חשבונות",
+      "mortgages": "משכנתאות",
+      "mortgageConsulting": "ייעוץ משכנתא",
+      "realEstateAgent": "סוכן נדל״ן",
+      "realEstateBrokerage": "תיווך נדל״ן",
+      "investments": "השקעות",
+      "pensionConsulting": "ייעוץ פנסיוני",
+      "loansFinance": "הלוואות ומימון",
+      "legal": "משפטים",
+      "lawyer": "עורך דין",
+      "notary": "נוטריון",
+      "mediation": "גישור",
+      "legalConsulting": "ייעוץ משפטי",
+      "familyLaw": "דיני משפחה",
+      "laborLaw": "דיני עבודה",
+      "realEstateLaw": "נדל״ן ומקרקעין",
+      "enforcement": "הוצאה לפועל",
+      "defamation": "לשון הרע",
+      "contracts": "חוזים והסכמים",
+      "fashionLifestyle": "אופנה ולייף סטייל",
+      "clothing": "בגדים",
+      "womensFashion": "אופנת נשים",
+      "mensFashion": "אופנת גברים",
+      "kidsFashion": "אופנת ילדים",
+      "jewelry": "תכשיטים",
+      "accessories": "אקססוריז",
+      "stylist": "סטייליסטית",
+      "fashionDesign": "עיצוב אופנה",
+      "boutique": "בוטיק",
+      "secondHand": "יד שנייה",
+      "sewingRepairs": "תפירה ותיקונים",
+      "shopsCommerce": "חנויות ומסחר",
+      "onlineStore": "חנות אונליין",
+      "gifts": "מוצרי מתנה",
+      "toys": "צעצועים",
+      "babyProducts": "מוצרי תינוקות",
+      "homeProducts": "מוצרי בית",
+      "electronics": "מוצרי חשמל",
+      "officeSupplies": "ציוד משרדי",
+      "pharmacyBeauty": "פארם וקוסמטיקה",
+      "florist": "חנות פרחים",
+      "nursery": "משתלה",
+      "pets": "חיות מחמד",
+      "sportsGear": "ציוד ספורט",
+      "travelLeisure": "תיירות ופנאי",
+      "tourGuide": "מדריך טיולים",
+      "travelAgency": "סוכנות נסיעות",
+      "lodging": "צימרים ואירוח",
+      "attractions": "אטרקציות",
+      "workshops": "סדנאות",
+      "organizedTours": "טיולים מאורגנים",
+      "equipmentRental": "השכרת ציוד",
+      "membersClub": "מועדון חברים",
+      "experiencesLeisure": "חוויות ופנאי",
+      "coursesLearning": "קורסים ולימודים",
+      "digitalCourse": "קורס דיגיטלי",
+      "collegeSchool": "מכללה / בית ספר",
+      "privateLessons": "שיעורים פרטיים",
+      "languageStudies": "לימודי שפות",
+      "trainings": "הדרכות",
+      "proWorkshops": "סדנאות מקצועיות",
+      "businessTraining": "הכשרות לעסקים",
+      "computerStudies": "לימודי מחשבים",
+      "musicStudies": "לימודי מוזיקה",
+      "animals": "בעלי חיים",
+      "dogGrooming": "מספרת כלבים",
+      "dogTraining": "אילוף כלבים",
+      "dogWalker": "דוג ווקר",
+      "dogBoarding": "פנסיון לכלבים",
+      "veterinarian": "וטרינר",
+      "petSupplies": "ציוד לבעלי חיים",
+      "animalCare": "טיפול בבעלי חיים",
+      "photoArt": "צילום ואמנות",
+      "photographer": "צלם",
+      "photoStudio": "סטודיו לצילום",
+      "productPhotography": "צילום מוצרים",
+      "brandPhotography": "צילום תדמית",
+      "familyPhotography": "צילום משפחה",
+      "maternityPhotography": "צילום הריון",
+      "artist": "אמן",
+      "gallery": "גלריה",
+      "painting": "ציור",
+      "handmadeDesign": "עיצוב בעבודת יד"
+    }
   }
 }

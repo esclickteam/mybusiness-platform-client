@@ -1022,8 +1022,12 @@ export default function VisualAddLayersPanel({
       const isCrm = category === "crm";
       return {
         id: item.id,
-        title: item.title,
-        description: item.description,
+        title: t(`studio.library.items.${item.id}.title`, {
+          defaultValue: item.title,
+        }),
+        description: t(`studio.library.items.${item.id}.description`, {
+          defaultValue: item.description,
+        }),
         category,
         preview: isCrm
           ? ("crm" as const)

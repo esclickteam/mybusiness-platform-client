@@ -13,7 +13,10 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { classifySourcePath } from "../src/i18n/hardcodedAuditScope.js";
+import {
+  classifySourcePath,
+  isDefaultSiteContentString,
+} from "../src/i18n/hardcodedAuditScope.js";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "src");
 const HE = /[\u0590-\u05FF]/;
@@ -69,6 +72,21 @@ for (const file of files) {
   const raw = fs.readFileSync(file, "utf8");
   const source = cat === "D" ? raw : stripComments(raw);
   const hits = extractHebrewStrings(source);
+  if (cat === "E") {
+    const chromeHits = hits.filter((value) => !isDefaultSiteContentString(value));
+    const contentHits = hits.filter((value) => isDefaultSiteContentString(value));
+    if (contentHits.length) {
+      buckets.C.push({
+        file: rel,
+        count: contentHits.length,
+        samples: contentHits.slice(0, 8),
+        note: "default site HTML / canvas seed copy",
+      });
+    }
+    if (!chromeHits.length) continue;
+    buckets.E.push({ file: rel, count: chromeHits.length, samples: chromeHits.slice(0, 8) });
+    continue;
+  }
   if (!hits.length) continue;
   buckets[cat].push({ file: rel, count: hits.length, samples: hits.slice(0, 8) });
 }
