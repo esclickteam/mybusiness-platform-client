@@ -37,6 +37,9 @@ import {
   type IntensityLevel,
   type SaturationLevel,
 } from "./accessibilityUtils";
+import { useTranslation } from "react-i18next";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 import "./AccessibilityWidget.css";
 
 type AccessibilityWidgetProps = {
@@ -86,6 +89,7 @@ export default function AccessibilityWidget({
   mode = "live",
   onPositionChange,
 }: AccessibilityWidgetProps) {
+  const { t, i18n } = useTranslation();
   const settings = useMemo(
     () => mergeAccessibilitySettings(settingsProp),
     [settingsProp]
@@ -322,6 +326,7 @@ export default function AccessibilityWidget({
   const ui = (
     <div
       className="bizuply-a11y-root"
+      dir={getTextDirection(i18n.language)}
       style={{ ["--biz-a11y-primary" as string]: accent }}
       data-bizuply-accessibility-widget="true"
       data-bizuply-widget="accessibility"
@@ -346,10 +351,10 @@ export default function AccessibilityWidget({
               }
             : undefined
         }
-        aria-label="פתח תפריט נגישות"
+        aria-label={t("publicWidgets.a11y.open")}
         aria-haspopup="dialog"
         aria-expanded={open}
-        title={isEditor ? "גררו לכל מקום בעמוד" : "תפריט נגישות (Ctrl+U)"}
+        title={isEditor ? t("publicWidgets.a11y.dragHint") : t("publicWidgets.a11y.title")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -388,17 +393,17 @@ export default function AccessibilityWidget({
                 <button
                   type="button"
                   className="bizuply-a11y-close"
-                  aria-label="סגור תפריט נגישות"
+                  aria-label={t("publicWidgets.a11y.close")}
                   onClick={() => setOpen(false)}
                 >
                   <X size={18} aria-hidden="true" />
                 </button>
                 <div className="bizuply-a11y-header-text">
                   <h2 id={titleId} className="bizuply-a11y-title">
-                    תפריט נגישות (Ctrl+U)
+                    {t("publicWidgets.a11y.title")}
                   </h2>
                   <p className="bizuply-a11y-subtitle">
-                    התאמות נגישות מובנות של BizUply
+                    {t("publicWidgets.a11y.subtitle")}
                   </p>
                 </div>
               </div>
@@ -409,14 +414,18 @@ export default function AccessibilityWidget({
             </header>
 
             <div className="bizuply-a11y-body">
-              <div className="bizuply-a11y-grid" role="group" aria-label="אפשרויות נגישות">
+              <div className="bizuply-a11y-grid" role="group" aria-label={t("publicWidgets.a11y.options")}>
                 {visibleFeatures.map((feature) => {
                   const Icon =
                     feature.key === "dyslexia"
                       ? DyslexiaIcon
                       : FEATURE_ICONS[feature.key];
                   const active = isFeatureActive(state, feature.key);
-                  const label = getFeatureLabel(feature.key, state, feature.label);
+                  const label = getFeatureLabel(
+                    feature.key,
+                    state,
+                    t(feature.labelKey),
+                  );
                   const level =
                     feature.key === "contrast"
                       ? state.contrast
@@ -434,7 +443,7 @@ export default function AccessibilityWidget({
                       type="button"
                       className={`bizuply-a11y-tile${active ? " is-active" : ""}`}
                       aria-pressed={active}
-                      title={feature.description}
+                      title={t(feature.descriptionKey)}
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.preventDefault();
@@ -461,7 +470,7 @@ export default function AccessibilityWidget({
               {isFeatureEnabled(settings, "largeText") ? (
                 <div className="bizuply-a11y-scale">
                   <label htmlFor="bizuply-a11y-font-scale">
-                    <span>גודל טקסט</span>
+                    <span>{t("publicWidgets.a11y.fontSize")}</span>
                     <span>{state.fontScale}%</span>
                   </label>
                   <input
@@ -486,9 +495,9 @@ export default function AccessibilityWidget({
                 disabled={isEditor}
               >
                 <RefreshCw size={18} aria-hidden="true" />
-                איפוס את כל הגדרות הנגישות
+                {t("publicWidgets.a11y.reset")}
               </button>
-              <div className="bizuply-a11y-powered">מופעל על ידי BizUply · ללא עלות חיצונית</div>
+              <div className="bizuply-a11y-powered">{t("publicWidgets.a11y.powered")}</div>
             </footer>
           </div>
         </div>

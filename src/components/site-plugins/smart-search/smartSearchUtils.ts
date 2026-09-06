@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type SmartSearchSettings = {
   isActive?: boolean;
   showTrigger?: boolean;
@@ -16,21 +18,24 @@ export type SiteSearchResult = {
   elementId?: string;
 };
 
-const DEFAULTS: SmartSearchSettings = {
-  isActive: true,
-  showTrigger: true,
-  triggerPosition: { x: 6, y: 12 },
-  placeholder: "חיפוש באתר...",
-  accentColor: "#2563EB",
-  showPages: true,
-};
+function smartSearchDefaults(): SmartSearchSettings {
+  return {
+    isActive: true,
+    showTrigger: true,
+    triggerPosition: { x: 6, y: 12 },
+    placeholder: i18n.t("publicWidgets.search.placeholder"),
+    accentColor: "#2563EB",
+    showPages: true,
+  };
+}
 
 export function mergeSmartSearchSettings(
   stored?: Partial<SmartSearchSettings> | null
 ): SmartSearchSettings {
-  const merged = { ...DEFAULTS, ...(stored || {}) };
+  const defaults = smartSearchDefaults();
+  const merged = { ...defaults, ...(stored || {}) };
   if (!merged.triggerPosition || typeof merged.triggerPosition !== "object") {
-    merged.triggerPosition = { ...DEFAULTS.triggerPosition! };
+    merged.triggerPosition = { ...defaults.triggerPosition! };
   } else {
     merged.triggerPosition = {
       x: Math.min(96, Math.max(4, Number(merged.triggerPosition.x) || 6)),
@@ -88,7 +93,9 @@ export function buildSiteSearchIndex(
       push({
         id: `page-${slug || title}`,
         title,
-        snippet: slug ? `עמוד · ${slug}` : "עמוד באתר",
+        snippet: slug
+          ? i18n.t("publicWidgets.search.pageSlug", { slug })
+          : i18n.t("publicWidgets.search.sitePage"),
         kind: "page",
         href: slug.startsWith("/") ? slug : slug ? `/${slug}` : undefined,
       });
@@ -117,7 +124,7 @@ export function buildSiteSearchIndex(
     push({
       id: elementId,
       title,
-      snippet: isHeading ? "כותרת בעמוד" : text.slice(0, 120),
+      snippet: isHeading ? i18n.t("publicWidgets.search.heading") : text.slice(0, 120),
       kind,
       elementId,
     });

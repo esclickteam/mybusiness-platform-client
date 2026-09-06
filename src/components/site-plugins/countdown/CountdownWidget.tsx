@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GripVertical } from "lucide-react";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import CountdownEffects, { COUNTDOWN_EFFECT_STYLES } from "./CountdownEffects";
 import {
@@ -118,6 +121,7 @@ function CountdownBody({
   expired: boolean;
   endMs: number | null;
 }) {
+  const { t, i18n } = useTranslation();
   const preset = settings.stylePreset || "cards";
   const font = resolveFontFamily(settings.fontPreset);
   const sizeClasses = resolveSizeClasses(settings.sizePreset);
@@ -160,18 +164,18 @@ function CountdownBody({
       ) : null}
 
       {!endMs && !preview ? (
-        <p className="text-center text-sm text-slate-500">הגדירו תאריך סיום בהגדרות התוסף</p>
+        <p className="text-center text-sm text-slate-500">{t("publicWidgets.countdown.setEndDate")}</p>
       ) : expired && !preview ? (
         <p
           className="text-center text-lg font-black"
           style={{ color: settings.accentColor || "#7C3AED", fontFamily: font }}
         >
-          {settings.expiredMessage || "המבצע הסתיים"}
+          {settings.expiredMessage || t("publicWidgets.countdown.defaultExpired")}
         </p>
       ) : (
         <div
           className={`flex flex-wrap items-center justify-center ${sizeClasses.gap}`}
-          dir="rtl"
+          dir={getTextDirection(i18n.language)}
         >
           {displayUnits.map((unit) => (
             <UnitBlock
@@ -194,6 +198,7 @@ export default function CountdownWidget({
   editorMode = false,
   onFloatingPositionChange,
 }: CountdownWidgetProps) {
+  const { t, i18n } = useTranslation();
   const timerSettings = useCountdownPreviewSettings(settings, preview);
   const { units, expired, endMs } = useCountdownTimer(timerSettings);
   const font = resolveFontFamily(timerSettings.fontPreset);
@@ -329,14 +334,14 @@ export default function CountdownWidget({
           {editorMode ? (
             <button
               type="button"
-              aria-label="גרירת שעון"
+              aria-label={t("publicWidgets.countdown.dragAria")}
               className="absolute -top-3 left-1/2 flex -translate-x-1/2 cursor-grab items-center gap-1 rounded-full border border-violet-200 bg-white px-2 py-1 text-[10px] font-black text-violet-700 shadow active:cursor-grabbing"
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
             >
               <GripVertical size={12} />
-              גרירה
+              {t("publicWidgets.countdown.drag")}
             </button>
           ) : null}
           <div className="p-3">{body}</div>
@@ -348,7 +353,7 @@ export default function CountdownWidget({
   return (
     <div
       ref={containerRef}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="bizuply-countdown-widget flex h-full w-full min-h-0 items-center justify-center overflow-visible"
       data-bizuply-countdown="true"
       data-bizuply-widget="countdown"

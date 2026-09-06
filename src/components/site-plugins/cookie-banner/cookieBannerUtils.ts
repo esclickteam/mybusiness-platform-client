@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type CookieBannerSettings = {
   isActive: boolean;
   message: string;
@@ -11,24 +13,25 @@ export type CookieBannerSettings = {
   position: "bottom" | "top";
 };
 
-const DEFAULTS: CookieBannerSettings = {
-  isActive: true,
-  message:
-    "אנחנו משתמשים בעוגיות כדי לשפר את חוויית הגלישה ולנתח שימוש באתר.",
-  acceptLabel: "אני מסכים/ה",
-  declineLabel: "דחייה",
-  policyUrl: "/privacy",
-  policyLabel: "מדיניות פרטיות",
-  backgroundColor: "#0F172A",
-  textColor: "#FFFFFF",
-  accentColor: "#0F766E",
-  position: "bottom",
-};
+function defaultCookieBannerSettings(): CookieBannerSettings {
+  return {
+    isActive: true,
+    message: i18n.t("publicWidgets.cookie.message"),
+    acceptLabel: i18n.t("publicWidgets.cookie.accept"),
+    declineLabel: i18n.t("publicWidgets.cookie.decline"),
+    policyUrl: "/privacy",
+    policyLabel: i18n.t("publicWidgets.cookie.policy"),
+    backgroundColor: "#0F172A",
+    textColor: "#FFFFFF",
+    accentColor: "#0F766E",
+    position: "bottom",
+  };
+}
 
 export function mergeCookieBannerSettings(
   stored?: Partial<CookieBannerSettings> | null
 ): CookieBannerSettings {
-  return { ...DEFAULTS, ...(stored || {}) };
+  return { ...defaultCookieBannerSettings(), ...(stored || {}) };
 }
 
 export function cookieConsentKey(siteKey: string) {

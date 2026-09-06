@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
+
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import { submitPublicSiteLead } from "../../../api/publicSiteLeadsApi";
 import { postPublicSiteEvent } from "../../../api/publicSiteRuntimeApi";
@@ -26,6 +29,7 @@ export default function ExitPopupWidget({
   settings,
   mode = "live",
 }: ExitPopupWidgetProps) {
+  const { t, i18n } = useTranslation();
   const cfg = useMemo(() => mergeExitPopupSettings(settings), [settings]);
   const [open, setOpen] = useState(mode === "editor");
   const [name, setName] = useState("");
@@ -109,11 +113,11 @@ export default function ExitPopupWidget({
     e.preventDefault();
     setError("");
     if (!String(name).trim()) {
-      setError("נא למלא שם");
+      setError(t("publicWidgets.exitPopup.needName"));
       return;
     }
     if (cfg.requirePhone && !String(phone).trim()) {
-      setError("נא למלא טלפון");
+      setError(t("publicWidgets.exitPopup.needPhone"));
       return;
     }
     if (mode === "editor") {
@@ -128,7 +132,7 @@ export default function ExitPopupWidget({
         name: String(name).trim(),
         phone: String(phone).trim(),
         email: String(email).trim(),
-        message: "ליד מפופאפ לידים",
+        message: t("publicWidgets.exitPopup.leadMessage"),
         pagePath: typeof window !== "undefined" ? window.location.pathname : "",
       });
       setDone(true);
@@ -138,7 +142,7 @@ export default function ExitPopupWidget({
         source: "exit-popup",
       });
     } catch {
-      setError("שליחה נכשלה — נסו שוב");
+      setError(t("publicWidgets.exitPopup.sendFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -146,14 +150,14 @@ export default function ExitPopupWidget({
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-bizuply-widget="exit-popup"
       data-bizuply-plugin="exit-popup"
       data-bizuply-plugin-runtime="true"
       className="fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-900/50 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={cfg.headline || "פופאפ לידים"}
+      aria-label={cfg.headline || t("publicWidgets.exitPopup.aria")}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) setOpen(false);
       }}
@@ -161,7 +165,7 @@ export default function ExitPopupWidget({
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <button
           type="button"
-          aria-label="סגירה"
+          aria-label={t("publicWidgets.common.close")}
           className="absolute left-3 top-3 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           onClick={() => setOpen(false)}
         >
@@ -185,21 +189,21 @@ export default function ExitPopupWidget({
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="שם מלא"
+                placeholder={t("publicWidgets.common.fullName")}
                 className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-slate-400"
               />
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="טלפון"
+                placeholder={t("publicWidgets.common.phone")}
                 className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-slate-400"
               />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="אימייל (אופציונלי)"
+                placeholder={t("publicWidgets.exitPopup.emailOptional")}
                 className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-slate-400"
               />
               {error ? (
@@ -223,7 +227,7 @@ export default function ExitPopupWidget({
                   }).catch(() => undefined);
                 }}
               >
-                {submitting ? "שולח..." : cfg.ctaLabel || "שלחו"}
+                {submitting ? t("publicWidgets.portal.sending") : cfg.ctaLabel || t("publicWidgets.exitPopup.send")}
               </button>
             </form>
           </>

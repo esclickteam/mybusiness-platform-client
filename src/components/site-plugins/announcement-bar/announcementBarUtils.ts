@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type AnnouncementBarSettings = {
   isActive: boolean;
   message: string;
@@ -8,22 +10,25 @@ export type AnnouncementBarSettings = {
   dismissible: boolean;
 };
 
-const DEFAULTS: AnnouncementBarSettings = {
-  isActive: true,
-  message: "משלוח חינם בהזמנות מעל 300 ₪ — לפרטים לחצו כאן",
-  linkUrl: "",
-  linkLabel: "לפרטים",
-  backgroundColor: "#0F172A",
-  textColor: "#FFFFFF",
-  dismissible: true,
-};
+function defaultAnnouncementBarSettings(): AnnouncementBarSettings {
+  return {
+    isActive: true,
+    message: i18n.t("publicWidgets.announcement.message"),
+    linkUrl: "",
+    linkLabel: i18n.t("publicWidgets.announcement.details"),
+    backgroundColor: "#0F172A",
+    textColor: "#FFFFFF",
+    dismissible: true,
+  };
+}
 
 export function mergeAnnouncementBarSettings(
   stored?: Partial<AnnouncementBarSettings> | null
 ): AnnouncementBarSettings {
-  const merged = { ...DEFAULTS, ...(stored || {}) };
+  const defaults = defaultAnnouncementBarSettings();
+  const merged = { ...defaults, ...(stored || {}) };
   if (!String(merged.message || "").trim()) {
-    merged.message = DEFAULTS.message;
+    merged.message = defaults.message;
   }
   if (merged.isActive == null) merged.isActive = true;
   return merged;

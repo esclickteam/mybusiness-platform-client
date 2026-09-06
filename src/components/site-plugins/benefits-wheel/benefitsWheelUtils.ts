@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type BenefitsWheelSegment = {
   label: string;
   color?: string;
@@ -57,7 +59,9 @@ export function normalizeSegments(
   const n = Math.min(12, Math.max(3, count || 6));
   const base = Array.isArray(segments) ? segments : [];
   return Array.from({ length: n }, (_, i) => ({
-    label: String(base[i]?.label || `הטבה ${i + 1}`).trim() || `הטבה ${i + 1}`,
+    label:
+      String(base[i]?.label || i18n.t("publicWidgets.wheel.perkN", { n: i + 1 })).trim() ||
+      i18n.t("publicWidgets.wheel.perkN", { n: i + 1 }),
     color: base[i]?.color || WHEEL_COLORS[i % WHEEL_COLORS.length],
     couponCode: String(base[i]?.couponCode || "").trim(),
   }));
@@ -161,8 +165,11 @@ export function rotationForSegmentIndex(index: number, segmentCount: number, ext
 export function resolveTriggerPresentation(settings: BenefitsWheelSettings) {
   const shape = settings.triggerShape || "pill";
   const label =
-    String(settings.triggerLabel || settings.title || "גלגל הטבות").trim() ||
-    "גלגל הטבות";
+    String(
+      settings.triggerLabel ||
+        settings.title ||
+        i18n.t("publicWidgets.wheel.defaultTitleShort"),
+    ).trim() || i18n.t("publicWidgets.wheel.defaultTitleShort");
   const colorStart = settings.triggerColor || "#7C3AED";
   const colorEnd = settings.triggerColorEnd || settings.triggerColor || "#a855f7";
   const textColor = settings.triggerTextColor || "#ffffff";

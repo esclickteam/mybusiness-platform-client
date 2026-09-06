@@ -1,5 +1,8 @@
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { sitePortalLogin } from "../../../api/sitePortalApi";
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 type Props = {
   siteName?: string;
@@ -14,6 +17,7 @@ export default function SitePortalLoginView({
   returnPath = "/",
   onSuccess,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,7 +50,7 @@ export default function SitePortalLoginView({
       window.history.replaceState({}, "", target);
       window.dispatchEvent(new PopStateEvent("popstate"));
     } catch (err: any) {
-      setError(err?.message || "ההתחברות נכשלה");
+      setError(err?.message || t("publicWidgets.portal.loginFailed"));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -55,17 +59,21 @@ export default function SitePortalLoginView({
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-bizuply-portal-auth="login"
       className="relative z-[2147483000] flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-sky-50 px-4 py-10"
     >
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-        <p className="text-xs font-bold tracking-wide text-sky-700">אזור אישי</p>
+        <p className="text-xs font-bold tracking-wide text-sky-700">
+          {t("publicWidgets.portal.area")}
+        </p>
         <h1 className="mt-2 text-2xl font-black text-slate-900">
-          {siteName ? `התחברות ל${siteName}` : "התחברות לאזור האישי"}
+          {siteName
+            ? t("publicWidgets.portal.loginTo", { name: siteName })
+            : t("publicWidgets.portal.loginTitle")}
         </h1>
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
+          {t("publicWidgets.portal.loginSubtitle")}
         </p>
 
         <form
@@ -75,7 +83,7 @@ export default function SitePortalLoginView({
         >
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
-              אימייל
+              {t("publicWidgets.common.email")}
             </span>
             <input
               type="email"
@@ -92,7 +100,7 @@ export default function SitePortalLoginView({
 
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
-              סיסמה
+              {t("publicWidgets.common.password")}
             </span>
             <input
               type="password"
@@ -124,14 +132,14 @@ export default function SitePortalLoginView({
             data-bizuply-portal-auth-submit="login"
             className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
           >
-            {loading ? "מתחבר..." : "התחברות"}
+            {loading ? t("publicWidgets.portal.signingIn") : t("publicWidgets.portal.login")}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm font-medium text-slate-500">
-          אין לכם חשבון?{" "}
+          {t("publicWidgets.portal.noAccount")}{" "}
           <a href="/portal/register" className="font-bold text-sky-700 hover:underline">
-            הרשמה
+            {t("publicWidgets.portal.register")}
           </a>
         </p>
       </div>

@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type AccessibilityWidgetPosition = "bottom-left" | "bottom-right";
 
 /** Contrast cycles like UserWay: off → +contrast → dark → invert → off */
@@ -48,110 +50,118 @@ export type AccessibilitySettings = {
   features?: Partial<Record<AccessibilityFeatureKey, boolean>>;
 };
 
-export const CONTRAST_LABELS: Record<ContrastLevel, string> = {
-  0: "+ ניגודיות",
-  1: "+ ניגודיות",
-  2: "ניגודיות כהה",
-  3: "היפוך צבעים",
-};
+export function contrastLabels(): Record<ContrastLevel, string> {
+  return {
+    0: i18n.t("publicWidgets.a11y.contrast"),
+    1: i18n.t("publicWidgets.a11y.contrast"),
+    2: i18n.t("publicWidgets.a11y.contrastDark"),
+    3: i18n.t("publicWidgets.a11y.contrastInvert"),
+  };
+}
 
-export const SATURATION_LABELS: Record<SaturationLevel, string> = {
-  0: "רוויה",
-  1: "רוויה גבוהה",
-  2: "רוויה נמוכה",
-  3: "גווני אפור",
-};
+export function saturationLabels(): Record<SaturationLevel, string> {
+  return {
+    0: i18n.t("publicWidgets.a11y.saturation"),
+    1: i18n.t("publicWidgets.a11y.saturationHigh"),
+    2: i18n.t("publicWidgets.a11y.saturationLow"),
+    3: i18n.t("publicWidgets.a11y.grayscale"),
+  };
+}
 
-export const SPACING_LABELS: Record<IntensityLevel, string> = {
-  0: "ריווח טקסט",
-  1: "ריווח קל",
-  2: "ריווח טקסט",
-  3: "ריווח מוגבר",
-};
+export function spacingLabels(): Record<IntensityLevel, string> {
+  return {
+    0: i18n.t("publicWidgets.a11y.textSpacing"),
+    1: i18n.t("publicWidgets.a11y.spacingLight"),
+    2: i18n.t("publicWidgets.a11y.textSpacing"),
+    3: i18n.t("publicWidgets.a11y.spacingStrong"),
+  };
+}
 
-export const LINE_HEIGHT_LABELS: Record<IntensityLevel, string> = {
-  0: "גובה שורה",
-  1: "גובה שורה +",
-  2: "גובה שורה ++",
-  3: "גובה שורה +++",
-};
+export function lineHeightLabels(): Record<IntensityLevel, string> {
+  return {
+    0: i18n.t("publicWidgets.a11y.lineHeight"),
+    1: i18n.t("publicWidgets.a11y.lineHeight1"),
+    2: i18n.t("publicWidgets.a11y.lineHeight2"),
+    3: i18n.t("publicWidgets.a11y.lineHeight3"),
+  };
+}
 
 export const ACCESSIBILITY_FEATURES: Array<{
   key: AccessibilityFeatureKey;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   kind: "toggle" | "cycle";
 }> = [
   {
     key: "highlightLinks",
-    label: "הדגשת קישורים",
-    description: "סימון בולט לכל הקישורים",
+    labelKey: "publicWidgets.a11y.highlightLinks",
+    descriptionKey: "publicWidgets.a11y.highlightLinksHint",
     kind: "toggle",
   },
   {
     key: "contrast",
-    label: "+ ניגודיות",
-    description: "לחצו שוב למעבר בין מצבי ניגודיות",
+    labelKey: "publicWidgets.a11y.contrast",
+    descriptionKey: "publicWidgets.a11y.contrastHint",
     kind: "cycle",
   },
   {
     key: "textSpacing",
-    label: "ריווח טקסט",
-    description: "ריווח אותיות ומילים",
+    labelKey: "publicWidgets.a11y.textSpacing",
+    descriptionKey: "publicWidgets.a11y.textSpacingHint",
     kind: "cycle",
   },
   {
     key: "largeText",
-    label: "טקסט גדול",
-    description: "הגדלת גופן באתר",
+    labelKey: "publicWidgets.a11y.largeText",
+    descriptionKey: "publicWidgets.a11y.largeTextHint",
     kind: "toggle",
   },
   {
     key: "hideImages",
-    label: "הסתרת תמונות",
-    description: "הסתרת תמונות ורקעים",
+    labelKey: "publicWidgets.a11y.hideImages",
+    descriptionKey: "publicWidgets.a11y.hideImagesHint",
     kind: "toggle",
   },
   {
     key: "stopAnimations",
-    label: "ביטול הנפשות",
-    description: "עצירת אנימציות ותנועה",
+    labelKey: "publicWidgets.a11y.stopAnimations",
+    descriptionKey: "publicWidgets.a11y.stopAnimationsHint",
     kind: "toggle",
   },
   {
     key: "largeCursor",
-    label: "סמן",
-    description: "סמן עכבר מוגדל",
+    labelKey: "publicWidgets.a11y.largeCursor",
+    descriptionKey: "publicWidgets.a11y.largeCursorHint",
     kind: "toggle",
   },
   {
     key: "dyslexia",
-    label: "תמיכה בדיסלקציה",
-    description: "גופן ידידותי לדיסלקציה",
+    labelKey: "publicWidgets.a11y.dyslexia",
+    descriptionKey: "publicWidgets.a11y.dyslexiaHint",
     kind: "toggle",
   },
   {
     key: "lineHeight",
-    label: "גובה שורה",
-    description: "הגדלת מרווח בין שורות",
+    labelKey: "publicWidgets.a11y.lineHeight",
+    descriptionKey: "publicWidgets.a11y.lineHeightHint",
     kind: "cycle",
   },
   {
     key: "descriptions",
-    label: "תאורים",
-    description: "הצגת תיאורי תמונות וקישורים",
+    labelKey: "publicWidgets.a11y.descriptions",
+    descriptionKey: "publicWidgets.a11y.descriptionsHint",
     kind: "toggle",
   },
   {
     key: "saturation",
-    label: "רוויה",
-    description: "שינוי רוויית צבעים",
+    labelKey: "publicWidgets.a11y.saturation",
+    descriptionKey: "publicWidgets.a11y.saturationHint",
     kind: "cycle",
   },
   {
     key: "textAlign",
-    label: "יישור טקסט",
-    description: "יישור טקסט לימין לקריאה נוחה",
+    labelKey: "publicWidgets.a11y.textAlign",
+    descriptionKey: "publicWidgets.a11y.textAlignHint",
     kind: "toggle",
   },
 ];
@@ -657,9 +667,9 @@ export function getFeatureLabel(
   state: AccessibilityVisitorState,
   fallback: string
 ): string {
-  if (key === "contrast") return CONTRAST_LABELS[state.contrast] || fallback;
-  if (key === "saturation") return SATURATION_LABELS[state.saturation] || fallback;
-  if (key === "textSpacing") return SPACING_LABELS[state.textSpacing] || fallback;
-  if (key === "lineHeight") return LINE_HEIGHT_LABELS[state.lineHeight] || fallback;
+  if (key === "contrast") return contrastLabels()[state.contrast] || fallback;
+  if (key === "saturation") return saturationLabels()[state.saturation] || fallback;
+  if (key === "textSpacing") return spacingLabels()[state.textSpacing] || fallback;
+  if (key === "lineHeight") return lineHeightLabels()[state.lineHeight] || fallback;
   return fallback;
 }

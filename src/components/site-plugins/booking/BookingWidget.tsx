@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   createPublicBooking,
@@ -6,6 +7,7 @@ import {
   getPublicBookingSlots,
   type PublicBookingService,
 } from "../../../api/publicBookingApi";
+import { getIntlLocale, getTextDirection } from "../../../i18n/localeUtils";
 import { parseRequiredBookingEmail } from "../../../utils/bookingEmail";
 
 export type BookingWidgetVariant = "week" | "month";
@@ -34,27 +36,30 @@ type BookingWidgetProps = {
   theme?: BookingWidgetTheme;
 };
 
-const HEB_DAYS = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
-const HEB_MONTHS = [
-  "ינואר",
-  "פברואר",
-  "מרץ",
-  "אפריל",
-  "מאי",
-  "יוני",
-  "יולי",
-  "אוגוסט",
-  "ספטמבר",
-  "אוקטובר",
-  "נובמבר",
-  "דצמבר",
-];
+function weekdayLabels(locale?: string) {
+  const intl = getIntlLocale(locale);
+  return Array.from({ length: 7 }, (_, i) => {
+    const day = new Date(Date.UTC(2020, 5, 7 + i));
+    return new Intl.DateTimeFormat(intl, {
+      weekday: "narrow",
+      timeZone: "UTC",
+    }).format(day);
+  });
+}
 
-const DEMO_SERVICES: PublicBookingService[] = [
-  { _id: "demo-1", name: "ייעוץ ראשוני", duration: 30, price: 150 },
-  { _id: "demo-2", name: "טיפול / מפגש", duration: 60, price: 280 },
-  { _id: "demo-3", name: "חבילת ליווי", duration: 90, price: 450 },
-];
+function monthLabel(monthIndex: number, locale?: string) {
+  return new Intl.DateTimeFormat(getIntlLocale(locale), { month: "long" }).format(
+    new Date(2020, monthIndex, 1),
+  );
+}
+
+function demoServices(tr: (key: string) => string): PublicBookingService[] {
+  return [
+    { _id: "demo-1", name: tr("publicWidgets.booking.demoConsult"), duration: 30, price: 150 },
+    { _id: "demo-2", name: tr("publicWidgets.booking.demoSession"), duration: 60, price: 280 },
+    { _id: "demo-3", name: tr("publicWidgets.booking.demoPackage"), duration: 90, price: 450 },
+  ];
+}
 
 const DEMO_SLOTS = ["09:00", "10:30", "12:00", "14:00", "16:30", "18:00"];
 
@@ -382,8 +387,11 @@ function buildStyles(
 }
 
 function ServiceMeta({ service }: { service: PublicBookingService }) {
+  const { t } = useTranslation();
   const parts = [
-    service.duration ? `${service.duration} דק׳` : "",
+    service.duration
+      ? t("publicWidgets.booking.minutes", { count: service.duration })
+      : "",
     service.price != null ? `₪${service.price}` : "",
   ].filter(Boolean);
   return <span>{parts.join(" · ")}</span>;
@@ -398,11 +406,12 @@ function BookingSplitShell({
   servicesPanel: React.ReactNode;
   calendarPanel: React.ReactNode;
 }) {
+  const { i18n } = useTranslation();
   return (
     <div
       className="bizuply-booking-widget-root"
       style={styles.root}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <aside style={styles.servicesCol}>{servicesPanel}</aside>
       <div style={styles.calendarCol}>{calendarPanel}</div>
@@ -421,6 +430,9 @@ function DemoBooking({
   theme?: BookingWidgetTheme;
   editorMode?: boolean;
 }) {
+  const { t: tr, i18n } = useTranslation();
+  const days = weekdayLabels(i18n.language);
+  const services = demoServices(tr);
   const t = resolveTheme(theme);
   const styles = useMemo(
     () => buildStyles(t, chrome),
@@ -438,7 +450,7 @@ function DemoBooking({
   );
   const today = startOfDay(new Date());
   const [selectedServiceId, setSelectedServiceId] = useState(
-    serviceIdOf(DEMO_SERVICES[0]),
+    serviceIdOf(services[0]),
   );
   const [monthCursor, setMonthCursor] = useState(() => ({
     year: today.getFullYear(),
@@ -464,12 +476,12 @@ function DemoBooking({
         servicesPanel={
           <>
             <div style={styles.header}>
-              <p style={styles.eyebrow}>השירותים שלכם</p>
-              <h3 style={styles.title}>בחרו שירות</h3>
-              <p style={styles.copy}>מסונכרן ליומן ול-CRM של העסק.</p>
+              <p style={styles.eyebrow}>{tr("publicWidgets.booking.yourServices")}</p>
+              <h3 style={styles.title}>{tr("publicWidgets.booking.chooseService")}</h3>
+              <p style={styles.copy}>{tr("publicWidgets.booking.syncedHint")}</p>
             </div>
             <div style={styles.serviceList}>
-              {DEMO_SERVICES.map((service) => {
+              {services.map((service) => {
                 const id = serviceIdOf(service);
                 const active = id === selectedServiceId;
                 return (
@@ -493,8 +505,8 @@ function DemoBooking({
         calendarPanel={
           <>
             <div style={styles.header}>
-              <p style={styles.eyebrow}>מחובר ליומן העסק</p>
-              <h3 style={styles.title}>קביעת פגישה</h3>
+              <p style={styles.eyebrow}>{tr("publicWidgets.booking.calendarHint")}</p>
+              <h3 style={styles.title}>{tr("publicWidgets.booking.bookTitle")}</h3>
             </div>
 
             {variant === "month" ? (
@@ -503,7 +515,7 @@ function DemoBooking({
                   <button
                     type="button"
                     style={styles.monthNav}
-                    aria-label="חודש קודם"
+                    aria-label={tr("publicWidgets.booking.prevMonth")}
                     onClick={() =>
                       setMonthCursor((cur) => {
                         const d = new Date(cur.year, cur.month - 1, 1);
@@ -514,12 +526,12 @@ function DemoBooking({
                     ›
                   </button>
                   <strong style={styles.monthTitle}>
-                    {HEB_MONTHS[monthCursor.month]} {monthCursor.year}
+                    {monthLabel(monthCursor.month, i18n.language)} {monthCursor.year}
                   </strong>
                   <button
                     type="button"
                     style={styles.monthNav}
-                    aria-label="חודש הבא"
+                    aria-label={tr("publicWidgets.booking.nextMonth")}
                     onClick={() =>
                       setMonthCursor((cur) => {
                         const d = new Date(cur.year, cur.month + 1, 1);
@@ -531,7 +543,7 @@ function DemoBooking({
                   </button>
                 </div>
                 <div style={styles.monthDow}>
-                  {HEB_DAYS.map((d) => (
+                  {days.map((d) => (
                     <span key={d} style={styles.monthDowCell}>
                       {d}
                     </span>
@@ -570,16 +582,16 @@ function DemoBooking({
                   <button
                     type="button"
                     style={styles.monthNav}
-                    aria-label="שבוע קודם"
+                    aria-label={tr("publicWidgets.booking.prevWeek")}
                     onClick={() => setWeekOffset((v) => Math.max(0, v - 1))}
                   >
                     ›
                   </button>
-                  <strong style={styles.monthTitle}>השבוע הקרוב</strong>
+                  <strong style={styles.monthTitle}>{tr("publicWidgets.booking.upcomingWeek")}</strong>
                   <button
                     type="button"
                     style={styles.monthNav}
-                    aria-label="שבוע הבא"
+                    aria-label={tr("publicWidgets.booking.nextWeek")}
                     onClick={() => setWeekOffset((v) => v + 1)}
                   >
                     ‹
@@ -600,7 +612,7 @@ function DemoBooking({
                         }}
                       >
                         <span style={styles.weekName}>
-                          {HEB_DAYS[day.getDay()]}
+                          {days[day.getDay()]}
                         </span>
                         <strong style={styles.weekNum}>{day.getDate()}</strong>
                       </button>
@@ -628,20 +640,20 @@ function DemoBooking({
                 );
               })}
             </div>
-            <input style={styles.input} placeholder="שם מלא" disabled />
-            <input style={styles.input} placeholder="טלפון" disabled />
+            <input style={styles.input} placeholder={tr("publicWidgets.common.fullName")} disabled />
+            <input style={styles.input} placeholder={tr("publicWidgets.common.phone")} disabled />
             <input
               style={styles.input}
-              placeholder="אימייל"
+              placeholder={tr("publicWidgets.common.email")}
               name="email"
               type="email"
               autoComplete="email"
               inputMode="email"
               disabled
-              aria-label="אימייל"
+              aria-label={tr("publicWidgets.common.email")}
             />
             <button type="button" style={styles.primaryBtn} disabled>
-              אישור תור
+              {tr("publicWidgets.booking.confirm")}
             </button>
           </>
         }
@@ -659,6 +671,8 @@ export default function BookingWidget({
   chrome = "card",
   theme,
 }: BookingWidgetProps) {
+  const { t: tr, i18n } = useTranslation();
+  const days = weekdayLabels(i18n.language);
   const live = Boolean(pluginEnabled && businessId && !preview);
   const t = resolveTheme(theme);
   const styles = useMemo(
@@ -722,7 +736,7 @@ export default function BookingWidget({
       .catch(() => {
         if (!cancelled) {
           setServices([]);
-          setError("לא ניתן לטעון שירותים מהיומן");
+          setError(tr("publicWidgets.booking.loadServicesError"));
         }
       })
       .finally(() => {
@@ -731,7 +745,7 @@ export default function BookingWidget({
     return () => {
       cancelled = true;
     };
-  }, [live, businessId]);
+  }, [live, businessId, tr]);
 
   useEffect(() => {
     if (!live || !businessId || !selectedServiceId || !selectedDate) return;
@@ -764,7 +778,7 @@ export default function BookingWidget({
     event?.preventDefault?.();
     if (!live || !businessId || !selectedServiceId || !selectedSlot) return;
     if (!clientName.trim() || !clientPhone.trim()) {
-      setError("נא למלא שם וטלפון");
+      setError(tr("publicWidgets.booking.needNamePhone"));
       return;
     }
     const emailParsed = parseRequiredBookingEmail(clientEmail);
@@ -790,7 +804,7 @@ export default function BookingWidget({
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בקביעת התור",
+          tr("publicWidgets.booking.bookError"),
       );
     } finally {
       setSubmitting(false);
@@ -810,9 +824,9 @@ export default function BookingWidget({
 
   if (success) {
     return (
-      <div style={{ ...styles.root, flexDirection: "column" }} dir="rtl">
-        <p style={styles.eyebrow}>התור נשמר ביומן</p>
-        <h3 style={styles.title}>תודה! ניצור איתכם קשר לאישור</h3>
+      <div style={{ ...styles.root, flexDirection: "column" }} dir={getTextDirection(i18n.language)}>
+        <p style={styles.eyebrow}>{tr("publicWidgets.booking.savedEyebrow")}</p>
+        <h3 style={styles.title}>{tr("publicWidgets.booking.thanks")}</h3>
         <p style={styles.copy}>
           {formatDateKey(selectedDate)} · {selectedSlot}
         </p>
@@ -824,20 +838,20 @@ export default function BookingWidget({
     <div
       className="bizuply-booking-widget-root"
       style={styles.root}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-bizuply-booking-live="true"
       data-bizuply-plugin-runtime="true"
     >
       <aside style={styles.servicesCol}>
         <div style={styles.header}>
-          <p style={styles.eyebrow}>השירותים שלכם</p>
-          <h3 style={styles.title}>בחרו שירות</h3>
+          <p style={styles.eyebrow}>{tr("publicWidgets.booking.yourServices")}</p>
+          <h3 style={styles.title}>{tr("publicWidgets.booking.chooseService")}</h3>
         </div>
         {loadingServices ? (
-          <p style={styles.copy}>טוען שירותים מהיומן...</p>
+          <p style={styles.copy}>{tr("publicWidgets.booking.loadingServices")}</p>
         ) : services.length === 0 ? (
           <p style={styles.copy}>
-            אין שירותים עדיין — הוסיפו שירותים בפאנל ניהול היומן.
+            {tr("publicWidgets.booking.noServices")}
           </p>
         ) : (
           <div style={styles.serviceList}>
@@ -854,7 +868,7 @@ export default function BookingWidget({
                     ...(active ? styles.serviceBtnActive : null),
                   }}
                 >
-                  <strong>{service.name || "שירות"}</strong>
+                  <strong>{service.name || tr("publicWidgets.booking.service")}</strong>
                   <ServiceMeta service={service} />
                 </button>
               );
@@ -865,8 +879,8 @@ export default function BookingWidget({
 
       <div style={styles.calendarCol}>
         <div style={styles.header}>
-          <p style={styles.eyebrow}>מחובר ליומן העסק</p>
-          <h3 style={styles.title}>קביעת פגישה</h3>
+          <p style={styles.eyebrow}>{tr("publicWidgets.booking.calendarHint")}</p>
+          <h3 style={styles.title}>{tr("publicWidgets.booking.bookTitle")}</h3>
         </div>
 
         {variant === "month" ? (
@@ -875,7 +889,7 @@ export default function BookingWidget({
               <button
                 type="button"
                 style={styles.monthNav}
-                aria-label="חודש קודם"
+                aria-label={tr("publicWidgets.booking.prevMonth")}
                 onClick={() =>
                   setMonthCursor((cur) => {
                     const d = new Date(cur.year, cur.month - 1, 1);
@@ -886,12 +900,12 @@ export default function BookingWidget({
                 ›
               </button>
               <strong style={styles.monthTitle}>
-                {HEB_MONTHS[monthCursor.month]} {monthCursor.year}
+                {monthLabel(monthCursor.month, i18n.language)} {monthCursor.year}
               </strong>
               <button
                 type="button"
                 style={styles.monthNav}
-                aria-label="חודש הבא"
+                aria-label={tr("publicWidgets.booking.nextMonth")}
                 onClick={() =>
                   setMonthCursor((cur) => {
                     const d = new Date(cur.year, cur.month + 1, 1);
@@ -903,7 +917,7 @@ export default function BookingWidget({
               </button>
             </div>
             <div style={styles.monthDow}>
-              {HEB_DAYS.map((d) => (
+              {days.map((d) => (
                 <span key={d} style={styles.monthDowCell}>
                   {d}
                 </span>
@@ -941,16 +955,16 @@ export default function BookingWidget({
               <button
                 type="button"
                 style={styles.monthNav}
-                aria-label="שבוע קודם"
+                aria-label={tr("publicWidgets.booking.prevWeek")}
                 onClick={() => setWeekOffset((v) => Math.max(0, v - 1))}
               >
                 ›
               </button>
-              <strong style={styles.monthTitle}>בחרו יום</strong>
+              <strong style={styles.monthTitle}>{tr("publicWidgets.booking.chooseDay")}</strong>
               <button
                 type="button"
                 style={styles.monthNav}
-                aria-label="שבוע הבא"
+                aria-label={tr("publicWidgets.booking.nextWeek")}
                 onClick={() => setWeekOffset((v) => v + 1)}
               >
                 ‹
@@ -971,7 +985,7 @@ export default function BookingWidget({
                     }}
                   >
                     <span style={styles.weekName}>
-                      {HEB_DAYS[day.getDay()]}
+                      {days[day.getDay()]}
                     </span>
                     <strong style={styles.weekNum}>{day.getDate()}</strong>
                   </button>
@@ -983,9 +997,9 @@ export default function BookingWidget({
 
         <div style={styles.slotGrid}>
           {loadingSlots ? (
-            <p style={styles.copy}>טוען שעות פנויות...</p>
+            <p style={styles.copy}>{tr("publicWidgets.booking.loadingSlots")}</p>
           ) : slots.length === 0 ? (
-            <p style={styles.copy}>אין שעות פנויות ביום זה</p>
+            <p style={styles.copy}>{tr("publicWidgets.booking.noSlots")}</p>
           ) : (
             slots.map((time) => {
               const active = time === selectedSlot;
@@ -1008,26 +1022,26 @@ export default function BookingWidget({
 
         <input
           style={styles.input}
-          placeholder="שם מלא"
+          placeholder={tr("publicWidgets.common.fullName")}
           name="name"
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           autoComplete="name"
-          aria-label="שם מלא"
+          aria-label={tr("publicWidgets.common.fullName")}
         />
         <input
           style={styles.input}
-          placeholder="טלפון"
+          placeholder={tr("publicWidgets.common.phone")}
           name="phone"
           value={clientPhone}
           onChange={(e) => setClientPhone(e.target.value)}
           autoComplete="tel"
           inputMode="tel"
-          aria-label="טלפון"
+          aria-label={tr("publicWidgets.common.phone")}
         />
         <input
           style={styles.input}
-          placeholder="אימייל"
+          placeholder={tr("publicWidgets.common.email")}
           name="email"
           type="email"
           value={clientEmail}
@@ -1035,7 +1049,7 @@ export default function BookingWidget({
           autoComplete="email"
           inputMode="email"
           required
-          aria-label="אימייל"
+          aria-label={tr("publicWidgets.common.email")}
           dir="ltr"
         />
 
@@ -1047,7 +1061,7 @@ export default function BookingWidget({
           disabled={submitting}
           onClick={handleSubmit}
         >
-          {submitting ? "שומר ביומן..." : "אישור תור"}
+          {submitting ? tr("publicWidgets.booking.saving") : tr("publicWidgets.booking.confirm")}
         </button>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import i18n from "../../../i18n/i18n";
+
 export type ExitPopupSettings = {
   isActive: boolean;
   headline: string;
@@ -17,23 +19,25 @@ export type ExitPopupSettings = {
   variantKey?: string;
 };
 
-const DEFAULTS: ExitPopupSettings = {
-  isActive: true,
-  headline: "לפני שאתם הולכים",
-  subheadline: "השאירו פרטים ונחזור אליכם עם הצעה מותאמת",
-  ctaLabel: "שלחו לי הצעה",
-  successMessage: "תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם.",
-  trigger: "exit-or-delay",
-  delaySeconds: 25,
-  showOncePerDays: 7,
-  requirePhone: true,
-  accentColor: "#EF4444",
-};
+function exitPopupDefaults(): ExitPopupSettings {
+  return {
+    isActive: true,
+    headline: i18n.t("publicWidgets.exitPopup.headline"),
+    subheadline: i18n.t("publicWidgets.exitPopup.subheadline"),
+    ctaLabel: i18n.t("publicWidgets.exitPopup.cta"),
+    successMessage: i18n.t("publicWidgets.exitPopup.success"),
+    trigger: "exit-or-delay",
+    delaySeconds: 25,
+    showOncePerDays: 7,
+    requirePhone: true,
+    accentColor: "#EF4444",
+  };
+}
 
 export function mergeExitPopupSettings(
   stored?: Partial<ExitPopupSettings> | null
 ): ExitPopupSettings {
-  return { ...DEFAULTS, ...(stored || {}) };
+  return { ...exitPopupDefaults(), ...(stored || {}) };
 }
 
 export function exitPopupSeenKey(siteKey: string) {

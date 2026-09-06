@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { sitePortalAcceptInvite } from "../../../api/sitePortalApi";
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 type Props = {
   siteName?: string;
@@ -10,6 +13,7 @@ export default function SitePortalAcceptInviteView({
   siteName = "",
   onSuccess,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const inviteToken = useMemo(() => {
     if (typeof window === "undefined") return "";
     return new URLSearchParams(window.location.search).get("token") || "";
@@ -25,17 +29,17 @@ export default function SitePortalAcceptInviteView({
     event.preventDefault();
 
     if (!inviteToken) {
-      setError("חסר טוקן הזמנה בקישור");
+      setError(t("publicWidgets.portal.missingInviteToken"));
       return;
     }
 
     if (password.length < 6) {
-      setError("הסיסמה חייבת להכיל לפחות 6 תווים");
+      setError(t("publicWidgets.portal.passwordMinError"));
       return;
     }
 
     if (password !== confirm) {
-      setError("הסיסמאות אינן תואמות");
+      setError(t("publicWidgets.portal.passwordsMismatch"));
       return;
     }
 
@@ -53,7 +57,7 @@ export default function SitePortalAcceptInviteView({
       window.history.replaceState({}, "", "/portal/account");
       window.dispatchEvent(new PopStateEvent("popstate"));
     } catch (err: any) {
-      setError(err?.message || "אישור ההזמנה נכשל");
+      setError(err?.message || t("publicWidgets.portal.inviteFailed"));
     } finally {
       setLoading(false);
     }
@@ -61,29 +65,31 @@ export default function SitePortalAcceptInviteView({
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-emerald-50 px-4 py-10"
     >
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <p className="text-xs font-bold tracking-wide text-emerald-700">
-          הזמנה לאזור אישי
+          {t("publicWidgets.portal.inviteTitle")}
         </p>
         <h1 className="mt-2 text-2xl font-black text-slate-900">
-          {siteName ? `הצטרפות ל${siteName}` : "השלמת הרשמה"}
+          {siteName
+            ? t("publicWidgets.portal.joinNamed", { name: siteName })
+            : t("publicWidgets.portal.completeSignup")}
         </h1>
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          בחרו סיסמה כדי להפעיל את הגישה לאזור האישי של האתר.
+          {t("publicWidgets.portal.inviteSubtitle")}
         </p>
 
         {!inviteToken ? (
           <p className="mt-6 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600">
-            קישור ההזמנה אינו תקין. בקשו מהעסק קישור חדש.
+            {t("publicWidgets.portal.inviteInvalid")}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <label className="block">
               <span className="mb-1.5 block text-xs font-bold text-slate-600">
-                שם מלא (אופציונלי)
+                {t("publicWidgets.portal.fullNameOptional")}
               </span>
               <input
                 type="text"
@@ -95,7 +101,7 @@ export default function SitePortalAcceptInviteView({
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-bold text-slate-600">
-                סיסמה חדשה
+                {t("publicWidgets.portal.newPassword")}
               </span>
               <input
                 type="password"
@@ -109,7 +115,7 @@ export default function SitePortalAcceptInviteView({
 
             <label className="block">
               <span className="mb-1.5 block text-xs font-bold text-slate-600">
-                אימות סיסמה
+                {t("publicWidgets.portal.confirmPassword")}
               </span>
               <input
                 type="password"
@@ -132,7 +138,9 @@ export default function SitePortalAcceptInviteView({
               disabled={loading}
               className="w-full rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-black text-white transition hover:bg-emerald-800 disabled:opacity-60"
             >
-              {loading ? "מפעיל..." : "הפעלת גישה"}
+              {loading
+                ? t("publicWidgets.portal.activating")
+                : t("publicWidgets.portal.activateAccess")}
             </button>
           </form>
         )}

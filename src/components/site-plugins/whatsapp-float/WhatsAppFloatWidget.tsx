@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { GripVertical } from "lucide-react";
 
 import {
@@ -41,6 +42,7 @@ export default function WhatsAppFloatWidget({
   siteSlug,
   onPositionChange,
 }: WhatsAppFloatWidgetProps) {
+  const { t } = useTranslation();
   const cfg = mergeWhatsAppFloatSettings(settings);
   const agents = Array.isArray(cfg.agents) ? cfg.agents.filter((a) => a.phone) : [];
   const [agentId, setAgentId] = useState(agents[0]?.id || "");
@@ -195,8 +197,8 @@ export default function WhatsAppFloatWidget({
           aria-label="WhatsApp"
           title={
             missingPhone
-              ? "הגדירו מספר WhatsApp בהגדרות התוסף"
-              : "גררו לכל מקום בעמוד"
+              ? t("publicWidgets.whatsapp.setNumber")
+              : t("publicWidgets.whatsapp.dragHint")
           }
           className={triggerClassName}
           style={triggerStyle}
@@ -254,7 +256,7 @@ export default function WhatsAppFloatWidget({
       ) : null}
       {isEditor ? (
         <div className="mt-1 rounded-md bg-slate-900/80 px-2 py-0.5 text-center text-[10px] font-bold text-white">
-          WhatsApp · גררו
+          {t("publicWidgets.whatsapp.dragLabel")}
         </div>
       ) : null}
     </div>
