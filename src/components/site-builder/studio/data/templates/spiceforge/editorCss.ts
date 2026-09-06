@@ -2,7 +2,7 @@ export const spiceforgeEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="spiceforge"], [data-template-id="spiceforge"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a0f0a; --tpl-surface: #2a1810; --tpl-text: #fff1e0;
   --tpl-muted: #c4a08a; --tpl-primary: #e76f51; --tpl-primary-text: #1a0f0a;

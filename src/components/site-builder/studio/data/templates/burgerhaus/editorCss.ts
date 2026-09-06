@@ -2,7 +2,7 @@ export const burgerhausEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="burgerhaus"], [data-template-id="burgerhaus"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #111111; --tpl-surface: #1a1a1a; --tpl-text: #f5f5f5;
   --tpl-muted: #a3a3a3; --tpl-primary: #f59e0b; --tpl-primary-text: #111111;

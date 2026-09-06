@@ -2,7 +2,7 @@ export const horizonixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="horizonix"], [data-template-id="horizonix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0d1117; --tpl-surface: #161b22; --tpl-text: #f0f6fc;
   --tpl-muted: #8b949e; --tpl-primary: #58a6ff; --tpl-primary-text: #0d1117;

@@ -2,7 +2,7 @@ export const brewlineEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;600;700;800&display=swap');
 [data-template-id="brewline"], [data-template-id="brewline"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #8B5E3C;
   --clay: #8B5E3C;

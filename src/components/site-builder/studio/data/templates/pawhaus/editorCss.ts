@@ -4,7 +4,7 @@ export const pawhausEditorCss = `
 [data-template-id="pawhaus"],
 [data-template-id="pawhaus"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #F59E0B;
   --bg: #FAF7F2;

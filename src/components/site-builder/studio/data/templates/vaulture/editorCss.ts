@@ -2,7 +2,7 @@ export const vaultureEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="vaulture"], [data-template-id="vaulture"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0c0a08; --tpl-surface: #1a1612; --tpl-text: #f5f0e8;
   --tpl-muted: #a89880; --tpl-primary: #d4af37; --tpl-primary-text: #0c0a08;

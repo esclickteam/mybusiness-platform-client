@@ -2,7 +2,7 @@ export const gelatixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="gelatix"], [data-template-id="gelatix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #fff5f8; --tpl-surface: #ffffff; --tpl-text: #2b1822;
   --tpl-muted: #9a6b7c; --tpl-primary: #e85a8c; --tpl-primary-text: #ffffff;

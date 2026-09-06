@@ -3,8 +3,8 @@ export const arboraEditorCss = `
 
 [data-template-id="arbora"],
 [data-template-id="arbora"] {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   font-family: "Assistant", Heebo, sans-serif;
 }
 

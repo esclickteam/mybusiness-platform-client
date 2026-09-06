@@ -11,7 +11,7 @@ export const influencixEditorCss = `
   font-family: "Alef", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="influencix"] .text-center,
 [data-template-id="influencix"] .text-center { text-align: center; }

@@ -2,7 +2,7 @@ export const shawarmiaEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@600;800&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="shawarmia"], [data-template-id="shawarmia"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #14110e; --tpl-surface: #1e1914; --tpl-text: #f5ebe0;
   --tpl-muted: #b9a08a; --tpl-primary: #d97706; --tpl-primary-text: #14110e;

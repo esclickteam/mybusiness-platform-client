@@ -2,7 +2,7 @@ export const tidehausEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="tidehaus"], [data-template-id="tidehaus"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #eef6fb; --tpl-surface: #ffffff; --tpl-text: #0c2a3a;
   --tpl-muted: #4a7185; --tpl-primary: #0077b6; --tpl-primary-text: #ffffff;

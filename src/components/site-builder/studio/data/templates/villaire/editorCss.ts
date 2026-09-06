@@ -2,7 +2,7 @@ export const villaireEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="villaire"], [data-template-id="villaire"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0a0a0a; --tpl-surface: #141414; --tpl-text: #f4efe6;
   --tpl-muted: #a89a86; --tpl-primary: #e2c7a0; --tpl-primary-text: #0a0a0a;

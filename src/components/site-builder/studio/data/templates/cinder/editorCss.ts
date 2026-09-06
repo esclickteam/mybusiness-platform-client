@@ -3,8 +3,8 @@ export const cinderEditorCss = `
 
 [data-template-id="cinder"],
 [data-template-id="cinder"] {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
 }
 

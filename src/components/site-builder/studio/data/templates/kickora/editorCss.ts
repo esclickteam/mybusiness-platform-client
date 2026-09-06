@@ -17,7 +17,7 @@ export const kickoraEditorCss = `
     radial-gradient(1100px 520px at 100% -10%, #11182722, transparent 55%),
     radial-gradient(900px 480px at 0% 100%, #F43F5E18, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="kickora"] .store-display,
 [data-template-id="kickora"] .store-display {

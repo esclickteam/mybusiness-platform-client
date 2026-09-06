@@ -11,7 +11,7 @@ export const seoraEditorCss = `
   font-family: "Frank Ruhl Libre", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="seora"] .text-center,
 [data-template-id="seora"] .text-center { text-align: center; }

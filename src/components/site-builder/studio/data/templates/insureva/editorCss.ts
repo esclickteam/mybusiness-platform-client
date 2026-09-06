@@ -11,7 +11,7 @@ export const insurevaEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="insureva"] .text-center,
 [data-template-id="insureva"] .text-center { text-align: center; }

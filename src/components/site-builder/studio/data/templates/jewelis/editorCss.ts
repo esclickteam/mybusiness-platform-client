@@ -17,7 +17,7 @@ export const jewelisEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #A1620722, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #E7C87318, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="jewelis"] .store-display,
 [data-template-id="jewelis"] .store-display {

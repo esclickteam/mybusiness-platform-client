@@ -1,6 +1,6 @@
 export const nestiqEditorCss = `
 [data-template-id="nestiq"], [data-template-id="nestiq"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #faf5ff; --tpl-surface: #ffffff; --tpl-text: #1e1b4b;
   --tpl-muted: #6366f1; --tpl-primary: #7c3aed; --tpl-primary-text: #ffffff;

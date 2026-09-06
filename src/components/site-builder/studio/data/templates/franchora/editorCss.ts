@@ -11,7 +11,7 @@ export const franchoraEditorCss = `
   font-family: "Bellefair", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="franchora"] .text-center,
 [data-template-id="franchora"] .text-center { text-align: center; }

@@ -2,7 +2,7 @@ export const neuralisEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 [data-template-id="neuralis"], [data-template-id="neuralis"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #22D3EE;
   --p2: #0EA5E9;

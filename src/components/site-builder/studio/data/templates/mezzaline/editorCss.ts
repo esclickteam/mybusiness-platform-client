@@ -2,7 +2,7 @@ export const mezzalineEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="mezzaline"], [data-template-id="mezzaline"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f7f1e6; --tpl-surface: #fffdf8; --tpl-text: #2c2a22;
   --tpl-muted: #7a7260; --tpl-primary: #5c7a4a; --tpl-primary-text: #f7f1e6;

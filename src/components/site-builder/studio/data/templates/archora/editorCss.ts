@@ -12,7 +12,7 @@ export const archoraEditorCss = `
   color: var(--text);
   background: var(--bg);
   scroll-behavior: smooth;
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="archora"] .text-center,
 [data-template-id="archora"] .text-center {
@@ -81,7 +81,7 @@ export const archoraEditorCss = `
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(245, 245, 240, 0.18);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="archora"] .ar-field::placeholder,
 [data-template-id="archora"] .ar-field::placeholder {

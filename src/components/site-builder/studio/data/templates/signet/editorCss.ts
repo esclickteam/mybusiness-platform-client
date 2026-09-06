@@ -2,7 +2,7 @@ export const signetEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="signet"], [data-template-id="signet"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a1814; --tpl-surface: #2a2620; --tpl-text: #f5f0e6;
   --tpl-muted: #b8a898; --tpl-primary: #b8860b; --tpl-primary-text: #1a1814;

@@ -11,7 +11,7 @@ export const contentraEditorCss = `
   font-family: "Noto Serif Hebrew", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="contentra"] .text-center,
 [data-template-id="contentra"] .text-center { text-align: center; }

@@ -2,7 +2,7 @@ export const openhausEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="openhaus"], [data-template-id="openhaus"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #fffbf7; --tpl-surface: #ffffff; --tpl-text: #292524;
   --tpl-muted: #78716c; --tpl-primary: #ea580c; --tpl-primary-text: #ffffff;

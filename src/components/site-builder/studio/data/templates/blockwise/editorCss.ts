@@ -2,7 +2,7 @@ export const blockwiseEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans+Hebrew:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="blockwise"], [data-template-id="blockwise"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #e8e4df; --tpl-surface: #f5f2ee; --tpl-text: #1a1a1a;
   --tpl-muted: #666666; --tpl-primary: #e63946; --tpl-primary-text: #ffffff;

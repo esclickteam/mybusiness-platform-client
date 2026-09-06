@@ -11,7 +11,7 @@ export const mediavaultEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="mediavault"] .text-center,
 [data-template-id="mediavault"] .text-center { text-align: center; }

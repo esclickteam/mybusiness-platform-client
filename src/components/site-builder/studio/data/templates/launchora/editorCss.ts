@@ -11,7 +11,7 @@ export const launchoraEditorCss = `
   font-family: "Varela Round", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="launchora"] .text-center,
 [data-template-id="launchora"] .text-center { text-align: center; }

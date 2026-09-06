@@ -17,7 +17,7 @@ export const glowlabEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #BE185D22, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #F9A8D418, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="glowlab"] .store-display,
 [data-template-id="glowlab"] .store-display {

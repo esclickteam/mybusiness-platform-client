@@ -2,7 +2,7 @@ export const seabloomEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Heebo:wght@400;500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="seabloom"], [data-template-id="seabloom"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f5faf5; --tpl-surface: #ffffff; --tpl-text: #1a3d2e;
   --tpl-muted: #5a8a72; --tpl-primary: #2d8a6e; --tpl-primary-text: #ffffff;

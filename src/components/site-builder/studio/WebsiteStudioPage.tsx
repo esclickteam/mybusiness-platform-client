@@ -1730,7 +1730,6 @@ body {
 }
 
 [data-template-id="${safeTemplateId}"] {
-  direction: rtl;
   min-height: 100vh;
 }
 

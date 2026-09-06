@@ -2,7 +2,7 @@ export const pastaforaEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="pastafora"], [data-template-id="pastafora"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #faf7f2; --tpl-surface: #ffffff; --tpl-text: #2c1810;
   --tpl-muted: #8b6b5a; --tpl-primary: #b91c1c; --tpl-primary-text: #faf7f2;

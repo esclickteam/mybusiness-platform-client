@@ -88,7 +88,7 @@ export const luminelleEditorCss = `
   min-height: 3.35rem;
   outline: none;
   padding: 0.95rem 1rem;
-  text-align: right;
+  text-align: start;
   transition: border-color 220ms ease, background 220ms ease;
   width: 100%;
 }

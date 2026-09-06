@@ -2,7 +2,7 @@ export const homaraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="homara"], [data-template-id="homara"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f3f0e8; --tpl-surface: #ebe6da; --tpl-text: #243028;
   --tpl-muted: #6d7568; --tpl-primary: #3f6f5a; --tpl-primary-text: #f3f0e8;

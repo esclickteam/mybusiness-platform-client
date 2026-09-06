@@ -17,7 +17,7 @@ export const playoraEditorCss = `
     radial-gradient(1100px 520px at 100% -10%, #DB277722, transparent 55%),
     radial-gradient(900px 480px at 0% 100%, #FDE04718, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="playora"] .store-display,
 [data-template-id="playora"] .store-display {

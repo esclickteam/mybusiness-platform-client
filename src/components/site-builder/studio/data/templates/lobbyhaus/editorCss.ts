@@ -11,7 +11,7 @@ export const lobbyhausEditorCss = `
   font-family: "IBM Plex Sans Hebrew", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="lobbyhaus"] .text-center,
 [data-template-id="lobbyhaus"] .text-center { text-align: center; }

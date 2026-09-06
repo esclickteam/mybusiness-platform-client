@@ -2,7 +2,7 @@ export const mirageEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="mirage"], [data-template-id="mirage"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f7f0e4; --tpl-surface: #fff9f0; --tpl-text: #4a3828;
   --tpl-muted: #9a8268; --tpl-primary: #d4a574; --tpl-primary-text: #2a1e12;

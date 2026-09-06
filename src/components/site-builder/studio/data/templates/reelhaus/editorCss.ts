@@ -11,7 +11,7 @@ export const reelhausEditorCss = `
   font-family: "David Libre", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="reelhaus"] .text-center,
 [data-template-id="reelhaus"] .text-center { text-align: center; }

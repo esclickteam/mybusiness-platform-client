@@ -2,7 +2,7 @@ export const plantoraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="plantora"], [data-template-id="plantora"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f4f7f0; --tpl-surface: #ffffff; --tpl-text: #1a2e1a;
   --tpl-muted: #5c7a5c; --tpl-primary: #65a30d; --tpl-primary-text: #f4f7f0;

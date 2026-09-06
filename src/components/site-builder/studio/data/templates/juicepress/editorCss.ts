@@ -2,7 +2,7 @@ export const juicepressEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="juicepress"], [data-template-id="juicepress"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #fffbeb; --tpl-surface: #ffffff; --tpl-text: #1c1917;
   --tpl-muted: #78716c; --tpl-primary: #f59e0b; --tpl-primary-text: #1c1917;

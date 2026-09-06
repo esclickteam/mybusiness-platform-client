@@ -11,7 +11,7 @@ export const productixEditorCss = `
   font-family: "Noto Sans Hebrew", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="productix"] .text-center,
 [data-template-id="productix"] .text-center { text-align: center; }

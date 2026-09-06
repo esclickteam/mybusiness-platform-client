@@ -2,7 +2,7 @@ export const skyholdEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="skyhold"], [data-template-id="skyhold"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0f1419; --tpl-surface: #1a2332; --tpl-text: #e8edf5;
   --tpl-muted: #7a8fa8; --tpl-primary: #38bdf8; --tpl-primary-text: #0f1419;

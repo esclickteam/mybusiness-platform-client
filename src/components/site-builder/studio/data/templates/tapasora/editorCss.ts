@@ -2,7 +2,7 @@ export const tapasoraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="tapasora"], [data-template-id="tapasora"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #12081a; --tpl-surface: #1e1028; --tpl-text: #f8eef8;
   --tpl-muted: #b89bc4; --tpl-primary: #ff2d95; --tpl-primary-text: #12081a;

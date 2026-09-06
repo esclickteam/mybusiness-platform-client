@@ -2,7 +2,7 @@ export const azurelineEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="azureline"], [data-template-id="azureline"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f8fcff; --tpl-surface: #ffffff; --tpl-text: #0a2540;
   --tpl-muted: #5a7a96; --tpl-primary: #0066cc; --tpl-primary-text: #ffffff;

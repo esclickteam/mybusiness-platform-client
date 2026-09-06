@@ -17,7 +17,7 @@ export const loungoraEditorCss = `
     radial-gradient(1100px 520px at 100% -10%, #5B21B622, transparent 55%),
     radial-gradient(900px 480px at 0% 100%, #C4B5FD18, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="loungora"] .store-display,
 [data-template-id="loungora"] .store-display {

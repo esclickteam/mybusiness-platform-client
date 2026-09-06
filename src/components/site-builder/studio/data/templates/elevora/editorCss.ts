@@ -19,7 +19,7 @@ export const elevoraEditorCss = `
   --elevora-radius-xl: 34px;
   --elevora-radius-lg: 24px;
   --elevora-radius-md: 18px;
-  direction: rtl;
+  
   width: 100%;
   min-height: 100%;
   background:

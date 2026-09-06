@@ -11,7 +11,7 @@ export const talentixEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="talentix"] .text-center,
 [data-template-id="talentix"] .text-center { text-align: center; }

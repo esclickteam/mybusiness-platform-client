@@ -2,7 +2,7 @@ export const streetbiteEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="streetbite"], [data-template-id="streetbite"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0d1117; --tpl-surface: #161b22; --tpl-text: #e6edf3;
   --tpl-muted: #8b949e; --tpl-primary: #39d353; --tpl-primary-text: #0d1117;

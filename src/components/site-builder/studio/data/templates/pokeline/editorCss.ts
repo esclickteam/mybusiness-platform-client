@@ -2,7 +2,7 @@ export const pokelineEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="pokeline"], [data-template-id="pokeline"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #071a1f; --tpl-surface: #0d262c; --tpl-text: #e8f7f6;
   --tpl-muted: #7eb8b4; --tpl-primary: #2dd4bf; --tpl-primary-text: #071a1f;

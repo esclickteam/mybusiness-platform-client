@@ -5,7 +5,7 @@ export const spalcioEditorCss = `
 }
 
 [data-template-id="spalcio"] {
-  direction: rtl;
+  
   background: #f7f3ec;
   color: #111827;
   font-family:
@@ -16,7 +16,7 @@ export const spalcioEditorCss = `
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  text-align: right;
+  text-align: start;
   overflow-x: hidden;
 }
 
@@ -38,7 +38,7 @@ export const spalcioEditorCss = `
 [data-template-id="spalcio"] header,
 [data-template-id="spalcio"] section,
 [data-template-id="spalcio"] footer {
-  direction: rtl;
+  
 }
 
 /* כפתור ראשי — צבעוני ולא שחור */
@@ -180,8 +180,8 @@ export const spalcioEditorCss = `
 /* טופס */
 [data-template-id="spalcio"] .spalcio-form input,
 [data-template-id="spalcio"] .spalcio-form textarea {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
 }
 
 [data-template-id="spalcio"] .spalcio-form input::placeholder,

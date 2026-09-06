@@ -3,8 +3,8 @@ export const meridianEditorCss = `
 
 [data-template-id="meridian"],
 [data-template-id="meridian"] {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
 }
 

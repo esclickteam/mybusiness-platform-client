@@ -2,7 +2,7 @@ export const sushisenEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="sushisen"], [data-template-id="sushisen"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0b0b0b; --tpl-surface: #161616; --tpl-text: #f2f0ea;
   --tpl-muted: #9a958c; --tpl-primary: #d4af37; --tpl-primary-text: #0b0b0b;

@@ -2,7 +2,7 @@ export const seafoodixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="seafoodix"], [data-template-id="seafoodix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #04151c; --tpl-surface: #0a2430; --tpl-text: #e6f4f8;
   --tpl-muted: #7aa8b8; --tpl-primary: #38bdf8; --tpl-primary-text: #04151c;

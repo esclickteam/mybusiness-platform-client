@@ -2,8 +2,8 @@ export const fluxoraEditorCss = `
 [data-template-id="fluxora"],
 [data-template-id="fluxora"] {
   position: relative;
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
 }
 
 [data-template-id="fluxora"] input,
@@ -12,8 +12,8 @@ export const fluxoraEditorCss = `
 [data-template-id="fluxora"] input,
 [data-template-id="fluxora"] textarea,
 [data-template-id="fluxora"] select {
-  text-align: right;
-  direction: rtl;
+  text-align: start;
+  
 }
 
 [data-visual-template-canvas="true"] [data-template-id="fluxora"] > header {

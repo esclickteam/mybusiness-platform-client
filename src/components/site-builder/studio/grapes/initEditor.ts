@@ -810,7 +810,7 @@ function injectCanvasRuntimeAssets(editor: Editor) {
         width: 100%;
         min-width: 100%;
         min-height: 100%;
-        direction: rtl;
+        direction: ${grapesEditorDir()};
         font-family: Assistant, Heebo, Arial, sans-serif;
         background: #ffffff;
         color: var(--biz-text, #171321);

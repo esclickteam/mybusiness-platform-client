@@ -4,7 +4,7 @@ export const atelierxEditorCss = `
 [data-template-id="atelierx"],
 [data-template-id="atelierx"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #111111;
   --a: #E11D48;

@@ -2,7 +2,7 @@ export const urbanixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="urbanix"], [data-template-id="urbanix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #141516; --tpl-surface: #1e2022; --tpl-text: #f2f2f0;
   --tpl-muted: #9a9d98; --tpl-primary: #c8f542; --tpl-primary-text: #101210;

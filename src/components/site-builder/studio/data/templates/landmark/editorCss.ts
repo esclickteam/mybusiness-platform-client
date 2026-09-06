@@ -2,7 +2,7 @@ export const landmarkEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="landmark"], [data-template-id="landmark"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f0f4f8; --tpl-surface: #ffffff; --tpl-text: #1e293b;
   --tpl-muted: #64748b; --tpl-primary: #0ea5e9; --tpl-primary-text: #ffffff;

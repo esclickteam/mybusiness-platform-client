@@ -17,7 +17,7 @@ export const lumenwareEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #0EA5E922, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #38BDF818, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="lumenware"] .store-display,
 [data-template-id="lumenware"] .store-display {

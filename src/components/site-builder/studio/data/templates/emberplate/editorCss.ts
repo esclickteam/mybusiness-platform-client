@@ -2,7 +2,7 @@ export const emberplateEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="emberplate"], [data-template-id="emberplate"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #140c08; --tpl-surface: #1f1410; --tpl-text: #f6ebe0;
   --tpl-muted: #b89a82; --tpl-primary: #e85d04; --tpl-primary-text: #140c08;

@@ -2,7 +2,7 @@ export const floriqueEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@400;500;600;700;800&display=swap');
 [data-template-id="florique"], [data-template-id="florique"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #E11D8C;
   --rose: #BE185D;

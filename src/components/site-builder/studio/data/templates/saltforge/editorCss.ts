@@ -2,7 +2,7 @@ export const saltforgeEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="saltforge"], [data-template-id="saltforge"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #e8e4df; --tpl-surface: #f5f2ed; --tpl-text: #2a2826;
   --tpl-muted: #6b6560; --tpl-primary: #c45c26; --tpl-primary-text: #ffffff;

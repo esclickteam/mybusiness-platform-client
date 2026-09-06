@@ -2,7 +2,7 @@ export const sunriftEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="sunrift"], [data-template-id="sunrift"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a0f0a; --tpl-surface: #2a1810; --tpl-text: #fff4e8;
   --tpl-muted: #c9a484; --tpl-primary: #ff8c42; --tpl-primary-text: #1a0f0a;

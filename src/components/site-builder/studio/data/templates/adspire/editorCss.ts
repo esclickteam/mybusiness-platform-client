@@ -11,7 +11,7 @@ export const adspireEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="adspire"] .text-center,
 [data-template-id="adspire"] .text-center { text-align: center; }
