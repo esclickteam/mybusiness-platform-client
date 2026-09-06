@@ -415,6 +415,18 @@ describe("localizeBuiltInTemplateSeed", () => {
         "ar",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "גוון טבעי בלי הלם. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.",
+        "en",
+      ),
+    ).toMatch(/Natural tone without shock/i);
+    expect(
+      localizeBuiltInText(
+        "גוון טבעי בלי הלם. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

@@ -24,6 +24,7 @@ import unique9ExactLexicon from "./templateExactLexicon.unique9.json";
 import unique10ExactLexicon from "./templateExactLexicon.unique10.json";
 import unique11ExactLexicon from "./templateExactLexicon.unique11.json";
 import unique12ExactLexicon from "./templateExactLexicon.unique12.json";
+import unique13ExactLexicon from "./templateExactLexicon.unique13.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -60,6 +61,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique10ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique11ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique12ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique13ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -158,6 +160,8 @@ const STORE_SITE_PAGES_RE =
   /^חנות (.+) מלאה עם עמודים, תתי[־-]עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות\.$/;
 const STORE_BUILD_RE =
   /^אנחנו בונים חנות (.+) שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות\.$/;
+const BEAUTY_PROTOCOL_RE =
+  /^(.+?)\s+כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו\.$/;
 const STORE_EXPERIENCE_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית חנות מלאה\.$/;
 const STORE_POWERED_RE = /^([A-Za-z][\w.-]*) · (.+) · Powered by Bizuply$/;
 const PROJECT_CODE_RE = /^פרויקט (Alpha|Beta|Gamma)$/;
@@ -598,6 +602,23 @@ function localizeStoreBuildLine(text: string, locale: string): string {
   return `We build a ${kind} store that respects both design and operations: categories, filters, product pages, and a cart — all connected to the store add-on.`;
 }
 
+function localizeBeautyProtocolLine(text: string, locale: string): string {
+  const match = text.match(BEAUTY_PROTOCOL_RE);
+  if (!match) return "";
+  const prefix = localizeFragment(match[1], locale);
+  if (!prefix) return "";
+  if (locale === "es") {
+    return `${prefix} Incluye un diagnóstico breve, una adaptación personal, trabajo preciso y recomendaciones escritas para que el resultado siga bonito después de salir del estudio.`;
+  }
+  if (locale === "pt-BR") {
+    return `${prefix} Inclui um diagnóstico curto, uma adaptação pessoal, trabalho preciso e recomendações escritas para o resultado continuar bonito depois de sair do estúdio.`;
+  }
+  if (locale === "ar") {
+    return `${prefix} يشمل تشخيصاً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات متابعة مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو.`;
+  }
+  return `${prefix} Includes a short diagnosis, a personal match, precise work, and written aftercare so the result stays beautiful after you leave the studio.`;
+}
+
 function isUsableTranslation(source: string, translated: string, locale: string): boolean {
   if (!translated || translated === source) return false;
   if (locale === "he") return true;
@@ -733,6 +754,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const storeBuildLine = localizeStoreBuildLine(text, locale);
   if (isUsableTranslation(text, storeBuildLine, locale)) {
     return adaptBuiltInDirectionalCss(storeBuildLine, locale);
+  }
+
+  const beautyProtocolLine = localizeBeautyProtocolLine(text, locale);
+  if (isUsableTranslation(text, beautyProtocolLine, locale)) {
+    return adaptBuiltInDirectionalCss(beautyProtocolLine, locale);
   }
 
   const storeExperienceLine = localizeStoreExperienceLine(text, locale);
