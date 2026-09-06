@@ -1,6 +1,6 @@
 import i18n from "../../../i18n/i18n";
 
-export type SmartBotOptionAction = {
+export type SmartBotOptionAction =
   | "next"
   | "contact"
   | "reply"

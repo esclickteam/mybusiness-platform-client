@@ -1,0 +1,638 @@
+{
+  "מידע נוסף": {
+    "en": "More info",
+    "es": "Más información",
+    "pt-BR": "Mais informações",
+    "ar": "مزيد من المعلومات"
+  },
+  "השארת פרטים": {
+    "en": "Leave your details",
+    "es": "Dejar datos",
+    "pt-BR": "Deixar seus dados",
+    "ar": "ترك بياناتكم"
+  },
+  "השארת פרטים.": {
+    "en": "Leave your details.",
+    "es": "Dejar datos.",
+    "pt-BR": "Deixar seus dados.",
+    "ar": "ترك بياناتكم."
+  },
+  "שירות ראשון": {
+    "en": "First service",
+    "es": "Primer servicio",
+    "pt-BR": "Primeiro serviço",
+    "ar": "الخدمة الأولى"
+  },
+  "ספריית UGC": {
+    "en": "UGC library",
+    "es": "Biblioteca UGC",
+    "pt-BR": "Biblioteca UGC",
+    "ar": "مكتبة UGC"
+  },
+  "כלול במסלולים נבחרים.": {
+    "en": "Included in selected plans.",
+    "es": "Incluido en planes seleccionados.",
+    "pt-BR": "Incluído em planos selecionados.",
+    "ar": "مضمّن في خطط مختارة."
+  },
+  "נרשמים ובוחרים תבנית.": {
+    "en": "Sign up and choose a template.",
+    "es": "Regístrate y elige una plantilla.",
+    "pt-BR": "Cadastre-se e escolha um modelo.",
+    "ar": "سجّلوا واختاروا قالباً."
+  },
+  "חזרנו לקוחות קבועים.": {
+    "en": "We came back as regulars.",
+    "es": "Volvimos como clientes fijos.",
+    "pt-BR": "Voltamos como clientes fiéis.",
+    "ar": "عدنا كزبائن دائمين."
+  },
+  "הרגשנו בידיים טובות.": {
+    "en": "We felt in good hands.",
+    "es": "Nos sentimos en buenas manos.",
+    "pt-BR": "Sentimo-nos em boas mãos.",
+    "ar": "شعرنا أننا بأيدٍ أمينة."
+  },
+  "צוותים ופרויקטים.": {
+    "en": "Teams and projects.",
+    "es": "Equipos y proyectos.",
+    "pt-BR": "Equipes e projetos.",
+    "ar": "فرق ومشاريع."
+  },
+  "לא לשלב הניסיון.": {
+    "en": "Not for the trial stage.",
+    "es": "No en la etapa de prueba.",
+    "pt-BR": "Não na etapa de teste.",
+    "ar": "ليس في مرحلة التجربة."
+  },
+  "אם צריך — פונים.": {
+    "en": "If needed — we reach out.",
+    "es": "Si hace falta — contactamos.",
+    "pt-BR": "Se precisar — entram em contato.",
+    "ar": "إذا لزم — نتواصل."
+  },
+  "כבר שלחנו חברים.": {
+    "en": "We already sent friends.",
+    "es": "Ya enviamos a amigos.",
+    "pt-BR": "Já indicamos amigos.",
+    "ar": "أرسلنا أصدقاء مسبقاً."
+  },
+  "בלגן וכלים רבים.": {
+    "en": "Clutter and too many tools.",
+    "es": "Desorden y demasiadas herramientas.",
+    "pt-BR": "Bagunça e ferramentas demais.",
+    "ar": "فوضى وأدوات كثيرة."
+  },
+  "מספרים אמיתיים.": {
+    "en": "Real numbers.",
+    "es": "Números reales.",
+    "pt-BR": "Números reais.",
+    "ar": "أرقام حقيقية."
+  },
+  "חוזרים תוך יום.": {
+    "en": "We reply within a day.",
+    "es": "Respondemos en un día.",
+    "pt-BR": "Respondemos em um dia.",
+    "ar": "نرد خلال يوم."
+  },
+  "צמיחה דיגיטלית.": {
+    "en": "Digital growth.",
+    "es": "Crecimiento digital.",
+    "pt-BR": "Crescimento digital.",
+    "ar": "نمو رقمي."
+  },
+  "ויזואל וממשקים.": {
+    "en": "Visuals and interfaces.",
+    "es": "Visual e interfaces.",
+    "pt-BR": "Visual e interfaces.",
+    "ar": "بصريات وواجهات."
+  },
+  "מאחורי הקלעים.": {
+    "en": "Behind the scenes.",
+    "es": "Entre bastidores.",
+    "pt-BR": "Nos bastidores.",
+    "ar": "خلف الكواليس."
+  },
+  "חוזרים לעבודה.": {
+    "en": "Back to work.",
+    "es": "De vuelta al trabajo.",
+    "pt-BR": "De volta ao trabalho.",
+    "ar": "العودة إلى العمل."
+  },
+  "משאירים פרטים.": {
+    "en": "Leave details.",
+    "es": "Dejan datos.",
+    "pt-BR": "Deixam dados.",
+    "ar": "يتركون بياناتهم."
+  },
+  "חיסכון בחבילה.": {
+    "en": "Savings in the pack.",
+    "es": "Ahorro en el pack.",
+    "pt-BR": "Economia no pacote.",
+    "ar": "توفير في الباقة."
+  },
+  "מוכן להזדמנות.": {
+    "en": "Ready for the opportunity.",
+    "es": "Listo para la oportunidad.",
+    "pt-BR": "Pronto para a oportunidade.",
+    "ar": "جاهز للفرصة."
+  },
+  "לקוחות מרוצים.": {
+    "en": "Happy customers.",
+    "es": "Clientes satisfechos.",
+    "pt-BR": "Clientes satisfeitos.",
+    "ar": "عملاء راضون."
+  },
+  "מועדון לקוחות": {
+    "en": "Customer club",
+    "es": "Club de clientes",
+    "pt-BR": "Clube de clientes",
+    "ar": "نادي العملاء"
+  },
+  "מעבירים הלאה.": {
+    "en": "They pass it on.",
+    "es": "Lo recomiendan.",
+    "pt-BR": "Recomendam adiante.",
+    "ar": "ينقلونه للآخرين."
+  },
+  "מה עם דומיין?": {
+    "en": "What about a domain?",
+    "es": "¿Y el dominio?",
+    "pt-BR": "E o domínio?",
+    "ar": "ماذا عن النطاق؟"
+  },
+  "מוצאים תשובה.": {
+    "en": "They find an answer.",
+    "es": "Encuentran una respuesta.",
+    "pt-BR": "Encontram uma resposta.",
+    "ar": "يجدون جواباً."
+  },
+  "התחלה מיידית.": {
+    "en": "Immediate start.",
+    "es": "Inicio inmediato.",
+    "pt-BR": "Início imediato.",
+    "ar": "بداية فورية."
+  },
+  "שלושה קליקים.": {
+    "en": "Three clicks.",
+    "es": "Tres clics.",
+    "pt-BR": "Três cliques.",
+    "ar": "ثلاث نقرات."
+  },
+  "בוחרים מסלול.": {
+    "en": "Choose a plan.",
+    "es": "Eligen un plan.",
+    "pt-BR": "Escolhem um plano.",
+    "ar": "يختارون خطة."
+  },
+  "הורדה מיידית.": {
+    "en": "Instant download.",
+    "es": "Descarga inmediata.",
+    "pt-BR": "Download imediato.",
+    "ar": "تنزيل فوري."
+  },
+  "קוד וביצועים.": {
+    "en": "Code and performance.",
+    "es": "Código y rendimiento.",
+    "pt-BR": "Código e desempenho.",
+    "ar": "كود وأداء."
+  },
+  "״שירות מדהים״": {
+    "en": "“Amazing service”",
+    "es": "“Servicio increíble”",
+    "pt-BR": "“Serviço incrível”",
+    "ar": "«خدمة مذهلة»"
+  },
+  "״מהיר ומדויק״": {
+    "en": "“Fast and precise”",
+    "es": "“Rápido y preciso”",
+    "pt-BR": "“Rápido e preciso”",
+    "ar": "«سريع ودقيق»"
+  },
+  "״שווה כל שקל״": {
+    "en": "“Worth every shekel”",
+    "es": "“Vale cada shekel”",
+    "pt-BR": "“Vale cada shekel”",
+    "ar": "«يستحق كل شيكل»"
+  },
+  "ממליצים הלאה.": {
+    "en": "They recommend us.",
+    "es": "Nos recomiendan.",
+    "pt-BR": "Recomendam adiante.",
+    "ar": "يوصون بنا."
+  },
+  "צפייה בגלריה": {
+    "en": "View gallery",
+    "es": "Ver galería",
+    "pt-BR": "Ver galeria",
+    "ar": "عرض المعرض"
+  },
+  "פס 1 - כותרת": {
+    "en": "Band 1 - title",
+    "es": "Franja 1 - título",
+    "pt-BR": "Faixa 1 - título",
+    "ar": "شريط 1 - عنوان"
+  },
+  "פס 1 - תמונה": {
+    "en": "Band 1 - image",
+    "es": "Franja 1 - imagen",
+    "pt-BR": "Faixa 1 - imagem",
+    "ar": "شريط 1 - صورة"
+  },
+  "פס 1 - טקסט": {
+    "en": "Band 1 - text",
+    "es": "Franja 1 - texto",
+    "pt-BR": "Faixa 1 - texto",
+    "ar": "شريط 1 - نص"
+  },
+  "פס 2 - כותרת": {
+    "en": "Band 2 - title",
+    "es": "Franja 2 - título",
+    "pt-BR": "Faixa 2 - título",
+    "ar": "شريط 2 - عنوان"
+  },
+  "פס 2 - טקסט": {
+    "en": "Band 2 - text",
+    "es": "Franja 2 - texto",
+    "pt-BR": "Faixa 2 - texto",
+    "ar": "شريط 2 - نص"
+  },
+  "שלב אחר שלב.": {
+    "en": "Step by step.",
+    "es": "Paso a paso.",
+    "pt-BR": "Passo a passo.",
+    "ar": "خطوة بخطوة."
+  },
+  "מהיר ליישום.": {
+    "en": "Fast to apply.",
+    "es": "Rápido de aplicar.",
+    "pt-BR": "Rápido de aplicar.",
+    "ar": "سريع التطبيق."
+  },
+  "פותחים פוסט.": {
+    "en": "Open a post.",
+    "es": "Abren una publicación.",
+    "pt-BR": "Abrem um post.",
+    "ar": "يفتحون منشوراً."
+  },
+  "הודעה מהירה.": {
+    "en": "A quick message.",
+    "es": "Mensaje rápido.",
+    "pt-BR": "Mensagem rápida.",
+    "ar": "رسالة سريعة."
+  },
+  "ביקור במשרד.": {
+    "en": "Office visit.",
+    "es": "Visita a la oficina.",
+    "pt-BR": "Visita ao escritório.",
+    "ar": "زيارة المكتب."
+  },
+  "פגישה מרחוק.": {
+    "en": "Remote meeting.",
+    "es": "Reunión remota.",
+    "pt-BR": "Reunião remota.",
+    "ar": "اجتماع عن بُعد."
+  },
+  "בלי סיבובים.": {
+    "en": "No runaround.",
+    "es": "Sin rodeos.",
+    "pt-BR": "Sem rodeios.",
+    "ar": "بدون لَف ودوران."
+  },
+  "למידה מעשית.": {
+    "en": "Hands-on learning.",
+    "es": "Aprendizaje práctico.",
+    "pt-BR": "Aprendizado prático.",
+    "ar": "تعلّم عملي."
+  },
+  "פותחים נושא.": {
+    "en": "Open a topic.",
+    "es": "Abren un tema.",
+    "pt-BR": "Abrem um tema.",
+    "ar": "يفتحون موضوعاً."
+  },
+  "מתנה בהרשמה.": {
+    "en": "A gift on signup.",
+    "es": "Regalo al registrarse.",
+    "pt-BR": "Presente no cadastro.",
+    "ar": "هدية عند التسجيل."
+  },
+  "הגישה נפתחת.": {
+    "en": "Access opens.",
+    "es": "Se abre el acceso.",
+    "pt-BR": "O acesso abre.",
+    "ar": "يُفتح الوصول."
+  },
+  "מהמדף עכשיו.": {
+    "en": "From the shelf now.",
+    "es": "Del estante ahora.",
+    "pt-BR": "Da prateleira agora.",
+    "ar": "من الرف الآن."
+  },
+  "אריזה מוכנה.": {
+    "en": "Ready packaging.",
+    "es": "Empaque listo.",
+    "pt-BR": "Embalagem pronta.",
+    "ar": "تغليف جاهز."
+  },
+  "תוכן ומסרים.": {
+    "en": "Content and messages.",
+    "es": "Contenido y mensajes.",
+    "pt-BR": "Conteúdo e mensagens.",
+    "ar": "محتوى ورسائل."
+  },
+  "חשיבה עסקית.": {
+    "en": "Business thinking.",
+    "es": "Pensamiento de negocio.",
+    "pt-BR": "Pensamento de negócio.",
+    "ar": "تفكير تجاري."
+  },
+  "תפקיד ראשון.": {
+    "en": "First role.",
+    "es": "Primer rol.",
+    "pt-BR": "Primeiro papel.",
+    "ar": "الدور الأول."
+  },
+  "ראינו תוצאה.": {
+    "en": "We saw a result.",
+    "es": "Vimos un resultado.",
+    "pt-BR": "Vimos um resultado.",
+    "ar": "رأينا نتيجة."
+  },
+  "לא עוד מספר.": {
+    "en": "Not just a number.",
+    "es": "No otro número.",
+    "pt-BR": "Não mais um número.",
+    "ar": "لستم مجرد رقم."
+  },
+  "סדר ותוצאות.": {
+    "en": "Order and results.",
+    "es": "Orden y resultados.",
+    "pt-BR": "Ordem e resultados.",
+    "ar": "ترتيب ونتائج."
+  },
+  "יומן BizUply": {
+    "en": "BizUply journal",
+    "es": "Diario BizUply",
+    "pt-BR": "Diário BizUply",
+    "ar": "يوميات BizUply"
+  },
+  "שיחה ישירה.": {
+    "en": "Direct call.",
+    "es": "Llamada directa.",
+    "pt-BR": "Ligação direta.",
+    "ar": "مكالمة مباشرة."
+  },
+  "תיאום יומן.": {
+    "en": "Calendar booking.",
+    "es": "Agenda la cita.",
+    "pt-BR": "Agendar no calendário.",
+    "ar": "تنسيق في التقويم."
+  },
+  "כן, 14 יום.": {
+    "en": "Yes, 14 days.",
+    "es": "Sí, 14 días.",
+    "pt-BR": "Sim, 14 dias.",
+    "ar": "نعم، 14 يوماً."
+  },
+  "צריך כרטיס?": {
+    "en": "Need a card?",
+    "es": "¿Hace falta tarjeta?",
+    "pt-BR": "Precisa de cartão?",
+    "ar": "هل تحتاجون بطاقة؟"
+  },
+  "צ׳אט ומייל.": {
+    "en": "Chat and email.",
+    "es": "Chat y email.",
+    "pt-BR": "Chat e e-mail.",
+    "ar": "دردشة وبريد."
+  },
+  "מחיר מוגבל.": {
+    "en": "Limited price.",
+    "es": "Precio limitado.",
+    "pt-BR": "Preço limitado.",
+    "ar": "سعر محدود."
+  },
+  "רואים הבדל.": {
+    "en": "You see the difference.",
+    "es": "Se nota la diferencia.",
+    "pt-BR": "Dá para ver a diferença.",
+    "ar": "ترون الفرق."
+  },
+  "מידות וצבע.": {
+    "en": "Sizes and color.",
+    "es": "Tallas y color.",
+    "pt-BR": "Tamanhos e cor.",
+    "ar": "مقاسات ولون."
+  },
+  "עובדים שוב.": {
+    "en": "They work with us again.",
+    "es": "Vuelven a trabajar.",
+    "pt-BR": "Trabalham de novo.",
+    "ar": "يعملون معنا مجدداً."
+  },
+  "לפוסט הבא.": {
+    "en": "To the next post.",
+    "es": "Al siguiente post.",
+    "pt-BR": "Para o próximo post.",
+    "ar": "إلى المنشور التالي."
+  },
+  "מענה כתוב.": {
+    "en": "Written reply.",
+    "es": "Respuesta escrita.",
+    "pt-BR": "Resposta escrita.",
+    "ar": "رد مكتوب."
+  },
+  "בלי בוטים.": {
+    "en": "No bots.",
+    "es": "Sin bots.",
+    "pt-BR": "Sem bots.",
+    "ar": "بدون روبوتات."
+  },
+  "הצעה בכתב.": {
+    "en": "A written quote.",
+    "es": "Presupuesto por escrito.",
+    "pt-BR": "Orçamento por escrito.",
+    "ar": "عرض مكتوب."
+  },
+  "יש ניסיון?": {
+    "en": "Is there a trial?",
+    "es": "¿Hay prueba?",
+    "pt-BR": "Tem teste?",
+    "ar": "هل هناك تجربة؟"
+  },
+  "אפשר לבטל?": {
+    "en": "Can I cancel?",
+    "es": "¿Se puede cancelar?",
+    "pt-BR": "Dá para cancelar?",
+    "ar": "هل يمكن الإلغاء؟"
+  },
+  "אפשר לחבר.": {
+    "en": "You can connect it.",
+    "es": "Se puede conectar.",
+    "pt-BR": "Dá para conectar.",
+    "ar": "يمكن الربط."
+  },
+  "בלי סיכון.": {
+    "en": "No risk.",
+    "es": "Sin riesgo.",
+    "pt-BR": "Sem risco.",
+    "ar": "بدون مخاطرة."
+  },
+  "הכי מבוקש.": {
+    "en": "Most requested.",
+    "es": "El más pedido.",
+    "pt-BR": "O mais pedido.",
+    "ar": "الأكثر طلباً."
+  },
+  "הכול בזמן.": {
+    "en": "Everything on time.",
+    "es": "Todo a tiempo.",
+    "pt-BR": "Tudo no prazo.",
+    "ar": "كل شيء في الوقت."
+  },
+  "״יחס אישי״": {
+    "en": "“Personal care”",
+    "es": "“Trato personal”",
+    "pt-BR": "“Atendimento pessoal”",
+    "ar": "«اهتمام شخصي»"
+  },
+  "לניוזלטר.": {
+    "en": "To the newsletter.",
+    "es": "Al boletín.",
+    "pt-BR": "Para a newsletter.",
+    "ar": "إلى النشرة."
+  },
+  "מוצר חדש.": {
+    "en": "A new product.",
+    "es": "Producto nuevo.",
+    "pt-BR": "Produto novo.",
+    "ar": "منتج جديد."
+  },
+  "יש תמיכה?": {
+    "en": "Is there support?",
+    "es": "¿Hay soporte?",
+    "pt-BR": "Tem suporte?",
+    "ar": "هل يوجد دعم؟"
+  },
+  "לפי צורך.": {
+    "en": "As needed.",
+    "es": "Según necesidad.",
+    "pt-BR": "Conforme a necessidade.",
+    "ar": "حسب الحاجة."
+  },
+  "כל הכלים.": {
+    "en": "All the tools.",
+    "es": "Todas las herramientas.",
+    "pt-BR": "Todas as ferramentas.",
+    "ar": "كل الأدوات."
+  },
+  "מלאי קטן.": {
+    "en": "Small stock.",
+    "es": "Stock reducido.",
+    "pt-BR": "Estoque pequeno.",
+    "ar": "مخزون صغير."
+  },
+  "מוצר אחד.": {
+    "en": "One product.",
+    "es": "Un producto.",
+    "pt-BR": "Um produto.",
+    "ar": "منتج واحد."
+  },
+  "בכל רגע.": {
+    "en": "Anytime.",
+    "es": "En cualquier momento.",
+    "pt-BR": "A qualquer momento.",
+    "ar": "في أي لحظة."
+  },
+  "חללים חמים ומדויקים.": {
+    "en": "Warm, precise spaces.",
+    "es": "Espacios cálidos y precisos.",
+    "pt-BR": "Espaços quentes e precisos.",
+    "ar": "مساحات دافئة ودقيقة."
+  },
+  "שפה ויזואלית עקבית.": {
+    "en": "A consistent visual language.",
+    "es": "Lenguaje visual coherente.",
+    "pt-BR": "Linguagem visual consistente.",
+    "ar": "لغة بصرية متسقة."
+  },
+  "המלצות פעולה לעסק.": {
+    "en": "Action tips for the business.",
+    "es": "Recomendaciones de acción.",
+    "pt-BR": "Recomendações de ação.",
+    "ar": "توصيات إجراء للنشاط."
+  },
+  "נוכחות רחוב חזקה.": {
+    "en": "A strong street presence.",
+    "es": "Presencia de calle fuerte.",
+    "pt-BR": "Presença de rua forte.",
+    "ar": "حضور شارع قوي."
+  },
+  "מה אנחנו מציעים": {
+    "en": "What we offer",
+    "es": "Qué ofrecemos",
+    "pt-BR": "O que oferecemos",
+    "ar": "ماذا نقدم"
+  },
+  "פרויקט מגורים": {
+    "en": "A residential project",
+    "es": "Proyecto residencial",
+    "pt-BR": "Projeto residencial",
+    "ar": "مشروع سكني"
+  },
+  "רגעים שנבחרו.": {
+    "en": "Chosen moments.",
+    "es": "Momentos elegidos.",
+    "pt-BR": "Momentos escolhidos.",
+    "ar": "لحظات مختارة."
+  },
+  "ממשקים נקיים.": {
+    "en": "Clean interfaces.",
+    "es": "Interfaces limpias.",
+    "pt-BR": "Interfaces limpas.",
+    "ar": "واجهات نظيفة."
+  },
+  "צילום שמוכר.": {
+    "en": "Photography that sells.",
+    "es": "Foto que vende.",
+    "pt-BR": "Foto que vende.",
+    "ar": "تصوير يبيع."
+  },
+  "הצוות שלנו": {
+    "en": "Our team",
+    "es": "Nuestro equipo",
+    "pt-BR": "Nossa equipe",
+    "ar": "فريقنا"
+  },
+  "הצעת מחיר": {
+    "en": "A quote",
+    "es": "Presupuesto",
+    "pt-BR": "Orçamento",
+    "ar": "عرض سعر"
+  },
+  "פגישת ייעוץ": {
+    "en": "A consultation",
+    "es": "Consulta",
+    "pt-BR": "Consulta",
+    "ar": "جلسة استشارة"
+  },
+  "תיאום פגישות": {
+    "en": "Appointment booking",
+    "es": "Reserva de citas",
+    "pt-BR": "Agendamento",
+    "ar": "تنسيق المواعيد"
+  },
+  "לקוחה מרוצה": {
+    "en": "A happy client",
+    "es": "Clienta satisfecha",
+    "pt-BR": "Cliente satisfeita",
+    "ar": "عميلة راضية"
+  },
+  "דיני עבודה": {
+    "en": "Labor law",
+    "es": "Derecho laboral",
+    "pt-BR": "Direito trabalhista",
+    "ar": "قانون العمل"
+  }
+}

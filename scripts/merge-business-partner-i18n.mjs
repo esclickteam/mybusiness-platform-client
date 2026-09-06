@@ -30,6 +30,7 @@ import { extraLocalTemplatesLocaleObject } from "./i18n-batch-local-templates.mj
 import { extraMetaCampaignsRestLocaleObject } from "./i18n-batch-meta-campaigns-rest.mjs";
 import { extraPartnerCatalogProductsLocaleObject } from "./i18n-batch-partner-catalog-products.mjs";
 import { extraPricingAddonsLocaleObject } from "./i18n-batch-pricing-addons.mjs";
+import { extraWhatsappMappingLocaleObject } from "./i18n-batch-whatsapp-mapping.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -390,6 +391,7 @@ for (const locale of LOCALES) {
     extraMetaCampaignsRestLocaleObject(locale),
     extraPartnerCatalogProductsLocaleObject(locale),
     extraPricingAddonsLocaleObject(locale),
+    extraWhatsappMappingLocaleObject(locale),
   ].reduce((acc, patch) => deepMerge(acc, patch), current);
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {

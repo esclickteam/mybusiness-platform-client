@@ -37,32 +37,24 @@ import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
 import { WhatsAppMetaTemplateContent } from "./WhatsAppMetaTemplateContent";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
 import { formatWhatsAppTemplateCategory } from "../automations/whatsAppTemplateSelectFormat";
+import {
+  metaTemplateStatusKey,
+  metaTemplateStatusLabel,
+} from "../../../../i18n/whatsappMappingCopy";
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 function getMetaStatusKey(tpl: WhatsAppTemplate): string {
-  const meta = String(tpl.metaStatus || "").toUpperCase();
-  const quality = String(tpl.metaQualityScore || "").toUpperCase();
-  if (meta === "PENDING") return "pending";
-  if (meta === "IN_APPEAL") return "inAppeal";
-  if (meta === "REJECTED") return "rejected";
-  if (meta === "DISABLED") return "disabled";
-  if (meta === "PAUSED") return "paused";
-  if (meta === "APPROVED") {
-    if (!quality || quality === "UNKNOWN" || quality === "PENDING") {
-      return "activePendingQuality";
-    }
-    if (quality === "GREEN" || quality === "HIGH") return "activeHighQuality";
-    if (quality === "YELLOW" || quality === "MEDIUM") return "activeMediumQuality";
-    if (quality === "RED" || quality === "LOW") return "activeLowQuality";
-    return "active";
-  }
-  if (meta === "LOCAL" || tpl.source === "local") return "localDraft";
-  return "localDraft";
+  return metaTemplateStatusKey(tpl.metaStatus, tpl.metaQualityScore, tpl.source);
 }
 
 function getMetaStatusLabel(tpl: WhatsAppTemplate, t: TranslateFn): string {
-  return t(`whatsapp.templates.metaStatus.${getMetaStatusKey(tpl)}`);
+  return metaTemplateStatusLabel(
+    t,
+    tpl.metaStatus,
+    tpl.metaQualityScore,
+    tpl.source,
+  );
 }
 
 function getMappingStatusKey(tpl: WhatsAppTemplate): string | null {
@@ -86,13 +78,13 @@ function getMappingStatusLabel(
 function getMetaStatusClass(tpl: WhatsAppTemplate): string {
   const key = getMetaStatusKey(tpl);
   if (key.startsWith("active")) return "bg-emerald-50 text-emerald-700";
-  if (key === "pending" || key === "inAppeal") {
+  if (key === "pending" || key === "inAppeal" || key === "pendingDeletion") {
     return "bg-amber-50 text-amber-700";
   }
-  if (key === "rejected" || key === "disabled") {
+  if (key === "rejected" || key === "disabled" || key === "deleted") {
     return "bg-rose-50 text-rose-700";
   }
-  if (key === "paused") return "bg-orange-50 text-orange-700";
+  if (key === "paused" || key === "limitExceeded") return "bg-orange-50 text-orange-700";
   return "bg-slate-100 text-slate-600";
 }
 
@@ -258,7 +250,10 @@ export default function WhatsAppTemplatesTab() {
       const result = await syncWhatsAppTemplates(businessId);
       setTemplates(result.templates || (await listWhatsAppTemplates(businessId)));
       const statusSummary = (result.rawStatuses || [])
-        .map((row) => `${row.name}: ${row.labelHe || row.status}`)
+        .map(
+          (row) =>
+            `${row.name}: ${metaTemplateStatusLabel(t, row.status, row.qualityScore)}`
+        )
         .slice(0, 5)
         .join(" · ");
       toast.success(

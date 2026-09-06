@@ -657,6 +657,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שמפו בוטני", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique33 leftover FAQ, contact, and studio chrome", () => {
+    expect(localizeBuiltInText("מידע נוסף", "en")).toMatch(/more info|learn more/i);
+    expect(localizeBuiltInText("מידע נוסף", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("השארת פרטים", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("נרשמים ובוחרים תבנית.", "pt-BR")).toMatch(/modelo|cadastre/i);
+    expect(localizeBuiltInText("בכל רגע.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("פס 1 - כותרת", "en")).toMatch(/band 1/i);
+    expect(localizeBuiltInText("הצוות שלנו", "pt-BR")).toMatch(/equipe/i);
+    expect(localizeBuiltInText("צ׳אט ומייל.", "es")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
