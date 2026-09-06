@@ -88,7 +88,7 @@ function LoteraCinematicHero({ data, goTo, onCta }: { data: Record<string, any>;
               style={{ borderColor: "rgba(238,245,251,0.16)" }}>
               <span className="text-xs font-bold tracking-[0.24em]" style={{ color: "#5eb4ff" }}>0{index + 1} / {meta}</span>
               <strong className="tpl-display mt-3 block text-2xl font-bold">{title}</strong>
-              <span className="mt-2 block text-sm leading-6" style={{ color: "#adc4d8" }}>{text}</span>
+              <span className="mt-2 block text-sm leading-6" style={{ color: "#adc4d8" }}>{tx(text)}</span>
             </button>
           ))}
         </div>

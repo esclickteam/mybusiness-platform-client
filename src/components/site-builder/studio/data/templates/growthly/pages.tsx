@@ -128,7 +128,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className="ag-card group relative min-h-[220px] overflow-hidden border border-white/15 bg-[var(--surface)] p-7 text-start">
                 <span className="ag-display absolute -left-2 -top-4 text-3xl md:text-8xl font-black text-[var(--p)]/15">0{i+1}</span>
                 <h3 className="relative text-2xl font-bold">{title}</h3>
-                <p className="relative mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="relative mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -175,7 +175,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                     <p className="ag-display text-2xl md:text-5xl font-black text-[var(--accent)]">0{i + 2}</p>
                     <div>
                       <h3 className="text-2xl font-bold">{title}</h3>
-                      <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                      <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                     </div>
                   </div>
                 </article>
@@ -284,7 +284,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 <p className="ag-display text-3xl md:text-6xl font-black text-[var(--p)]/40">0{i + 1}</p>
                 <div>
                   <h3 className="text-2xl font-bold md:text-3xl">{title}</h3>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <button type="button" onClick={() => goTo("contact")} className="w-fit border border-white/15 px-5 py-3 text-sm font-black text-[var(--p)]">{tx("קראו עוד")}</button>
               </article>
@@ -318,7 +318,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <div className="relative z-10 grid h-16 w-16 place-items-center rounded-full border border-white/15 bg-[var(--bg)] text-lg font-black text-[var(--accent)] shadow-[0_0_0_10px_var(--surface)]">0{i + 1}</div>
                 <div className="ag-card mt-8 border border-white/15 bg-[var(--bg)] p-6">
                   <h3 className="text-xl font-bold">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

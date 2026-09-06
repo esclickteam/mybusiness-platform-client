@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import {
   CalendarClock,
   Globe,
@@ -51,12 +52,12 @@ const MODULES = [
 
 /** Every module the platform ships, each one a door into its own page. */
 export default function ProductsGrid() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <section
       className="relative overflow-hidden bg-white py-16 text-slate-800 sm:py-24"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-100/60 blur-3xl" />

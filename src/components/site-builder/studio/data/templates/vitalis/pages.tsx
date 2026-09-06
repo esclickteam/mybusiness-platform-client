@@ -66,7 +66,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#51707c]">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-[#51707c]">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -337,9 +337,9 @@ function TrustStrip({ data }: { data: Record<string, any> }) {
     <section className="px-5 pb-4 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-4 rounded-[28px] border border-[#0891b2]/8 bg-white p-6 shadow-lg shadow-[#0f2a36]/5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item) => (
-          <div key={item} className="flex items-center gap-3">
+          <div key={tx(item)} className="flex items-center gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#0ea5a4]/12 text-[#0891b2]">✓</span>
-            <span className="text-sm font-semibold text-[#0f2a36]">{item}</span>
+            <span className="text-sm font-semibold text-[#0f2a36]">{tx(item)}</span>
           </div>
         ))}
       </div>
@@ -376,9 +376,9 @@ function AboutSection({ data }: { data: Record<string, any> }) {
               "הסבר מלא לכל שלב בטיפול",
               "צוות שמקשיב ומלווה באמת",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-3 text-[#334155]">
+              <div key={tx(item)} className="flex items-center gap-3 text-[#334155]">
                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#0ea5a4]/12 text-[#0891b2]">✓</span>
-                <span className="text-base font-medium">{item}</span>
+                <span className="text-base font-medium">{tx(item)}</span>
               </div>
             ))}
           </div>
@@ -418,7 +418,7 @@ function ServicesSection({
                 {icon}
               </span>
               <h3 className="mt-6 text-xl font-bold text-[#0f2a36]">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#51707c]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[#51707c]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -454,7 +454,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {index + 1}
               </div>
               <h3 className="text-2xl font-bold text-[#0f2a36]">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-[#51707c]">{text}</p>
+              <p className="mt-3 text-base leading-7 text-[#51707c]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -510,7 +510,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[28px] border border-[#0891b2]/8 bg-white p-8 shadow-lg shadow-[#0f2a36]/5 transition duration-500 hover:-translate-y-2 hover:shadow-xl"
             >
               <div className="mb-5 text-[#0891b2]">★★★★★</div>
-              <p className="text-base leading-8 text-[#334155]">“{text}”</p>
+              <p className="text-base leading-8 text-[#334155]">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-[#0891b2]/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-sm font-bold text-white">
                   {String(name).charAt(0)}

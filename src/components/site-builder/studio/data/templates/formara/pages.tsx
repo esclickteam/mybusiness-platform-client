@@ -50,7 +50,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         </div>
         <nav className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.22em] text-white/62 lg:flex">
           {navItems.map((item) => (
-            <span key={item}>{item}</span>
+            <span key={tx(item)}>{tx(item)}</span>
           ))}
         </nav>
         <button
@@ -123,7 +123,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 <div className="p-6">
                   <span className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-3 text-2xl font-semibold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -158,7 +158,7 @@ function Showcase({ data }: { data: Record<string, any> }) {
                 <div className="p-8 lg:p-12">
                   <span className="t-display text-3xl md:text-6xl text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-5 text-3xl font-semibold text-white lg:text-4xl">{title}</h3>
-                  <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                   <div className="mt-8 h-px w-28 bg-[var(--p)]" />
                 </div>
               </article>
@@ -208,7 +208,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="h-full border border-[var(--p)]/25 bg-[#1E1C1A] p-5">
                 <span className="grid h-20 w-20 place-items-center bg-[var(--p)] text-2xl font-bold text-white">0{index + 1}</span>
                 <h3 className="mt-8 text-2xl font-semibold text-white">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -274,7 +274,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 110}>
               <blockquote className="h-full border-b border-[var(--p)]/25 py-9 lg:border-b-0 lg:border-l lg:px-8">
-                <p className="text-lg leading-9 text-white">"{text}"</p>
+                <p className="text-lg leading-9 text-white">"{tx(text)}"</p>
                 <footer className="mt-8">
                   <p className="font-bold text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>

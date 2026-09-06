@@ -66,7 +66,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -232,10 +232,10 @@ function BookingModal({
               {["אישור מיידי בטלפון", "התאמת יינות לפי המנות", "אפשרות לערב שף פרטי"].map(
                 (item) => (
                   <div
-                    key={item}
+                    key={tx(item)}
                     className="rounded-2xl border border-[#c9a24b]/15 bg-black/20 px-4 py-3 text-sm font-semibold text-[#e6dcc8]"
                   >
-                    ✦ {item}
+                    ✦ {tx(item)}
                   </div>
                 ),
               )}
@@ -398,7 +398,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 className="rounded-3xl border border-[#c9a24b]/15 bg-[#1a1510]/70 p-5 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
               >
                 <p className="font-serif text-lg font-semibold text-[#c9a24b]">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{text}</p>
+                <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
               </div>
             ))}
           </div>
@@ -460,7 +460,7 @@ function MenuSection({
                   {price}
                 </span>
               </div>
-              <p className="text-sm leading-6 text-[#cdbfa6]">{text}</p>
+              <p className="text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -504,7 +504,7 @@ function ExperienceSection({ data }: { data: Record<string, any> }) {
                 {num}
               </span>
               <h3 className="mt-5 font-serif text-2xl font-semibold text-[#f5eee1]">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[#cdbfa6]">{text}</p>
+              <p className="mt-3 text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -575,7 +575,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[34px] border border-[#c9a24b]/15 bg-[#1a1510]/70 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
             >
               <div className="mb-5 text-[#c9a24b]">★★★★★</div>
-              <p className="text-lg leading-8 text-[#e6dcc8]">“{text}”</p>
+              <p className="text-lg leading-8 text-[#e6dcc8]">“{tx(text)}”</p>
               <div className="mt-7 border-t border-[#c9a24b]/12 pt-5">
                 <p className="font-serif text-lg font-semibold text-[#f5eee1]">{name}</p>
                 <p className="mt-1 text-sm text-[#a2957c]">{role}</p>

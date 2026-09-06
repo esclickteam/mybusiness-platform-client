@@ -110,7 +110,7 @@ function SectionTitle({
             light ? "text-[#e8ddd0]" : "text-[#6b645c]",
           )}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -298,9 +298,9 @@ function MarketStrip() {
     <section className="border-b border-[#1c1c1c]/10 bg-[#fffdf9]">
       <div className="mx-auto flex max-w-7xl flex-wrap">
         {serviceNotes.map((item) => (
-          <div key={item} className="border-l border-[#1c1c1c]/10 px-5 py-4 last:border-l-0 lg:px-8">
+          <div key={tx(item)} className="border-l border-[#1c1c1c]/10 px-5 py-4 last:border-l-0 lg:px-8">
             <TemplateText as="span" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#8f6d4b]">
-              {item}
+              {tx(item)}
             </TemplateText>
           </div>
         ))}
@@ -391,7 +391,7 @@ function ServiceGrid({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 max-w-xl text-base leading-7 text-[#6b645c]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -429,7 +429,7 @@ function PropertyShowcase({ data }: { data: Record<string, any> }) {
                 </TemplateText>
               </div>
               <TemplateText as="p" className="mt-6 text-base leading-7 text-[#d6cec4]">
-                {text}
+                {tx(text)}
               </TemplateText>
               <div className="mt-8 grid gap-3 border-t border-[#b8956b]/20 pt-5 text-sm text-[#efe4d7]">
                 <TemplateText as="div">{propertyMeta[index]?.size}</TemplateText>
@@ -465,7 +465,7 @@ function ProcessAxis({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-3 text-sm leading-7 text-[#6b645c]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -531,7 +531,7 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
                   {title}
                 </TemplateText>
                 <TemplateText as="p" className="mt-4 text-base leading-7 text-[#6b645c]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </article>
             ))}
@@ -550,7 +550,7 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
                     {title}
                   </TemplateText>
                   <TemplateText as="p" className="mt-2 text-sm leading-7 text-[#e7ddd2]">
-                    {text}
+                    {tx(text)}
                   </TemplateText>
                 </div>
               ))}
@@ -621,7 +621,7 @@ function PageHero({
     <section className="border-b border-[#1c1c1c]/10 bg-[#fffdf9]">
       <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-          <SectionTitle eyebrow={eyebrow} title={title} text={text} />
+          <SectionTitle eyebrow={eyebrow} title={title} text={tx(text)} />
         </div>
         <div className="border-r border-[#1c1c1c]/10 p-3">
           <img src={image} alt="" className="h-[320px] w-full object-cover lg:h-[420px]" />

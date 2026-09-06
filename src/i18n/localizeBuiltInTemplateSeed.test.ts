@@ -153,4 +153,16 @@ describe("localizeBuiltInTemplateSeed", () => {
       ),
     ).toEqual({ direction: "rtl", textAlign: "start" });
   });
+
+  it("translates remaining unique hero and CTA defaultData", () => {
+    expect(localizeBuiltInText("למנות", "en")).toBe("See the dishes");
+    expect(localizeBuiltInText("קבעו ביקור", "es")).toBe("Reserven una visita");
+    expect(localizeBuiltInText("בדקו זמינות", "en")).toMatch(/availability|available/i);
+    expect(localizeBuiltInText("לתיאום פגישה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("הצעד הבא בלמידה מתחיל בשיחה קצרה — בלי התחייבות.", "en"),
+    ).toMatch(/next step|short conversation/i);
+    expect(localizeBuiltInText("אבחון לפני התחלה", "pt-BR")).toMatch(/Diagnóstico/i);
+    expect(localizeBuiltInText("ביטול עד 24 שעות ללא חיוב", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
 });

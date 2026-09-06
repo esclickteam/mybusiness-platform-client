@@ -98,7 +98,7 @@ function TastingTimeline({ data }: { data: Record<string, any> }) {
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#9b2335", background: "#1a1218" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#9b2335" }}>{meta}</p>
                 <h3 className="tpl-display text-2xl font-semibold">{title}</h3>
-                <p className="text-sm leading-7" style={{ color: "#a8959a" }}>{text}</p>
+                <p className="text-sm leading-7" style={{ color: "#a8959a" }}>{tx(text)}</p>
               </div>
             </Reveal>
           ))}

@@ -585,10 +585,10 @@ function MarqueeSection({ data }: { data: Record<string, any> }) {
       >
         {[...items, ...items].map((item, index) => (
           <div
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="gridline-marquee-item border px-5 py-3 font-mono text-xs uppercase tracking-[0.34em] text-black"
           >
-            {item}
+            {tx(item)}
           </div>
         ))}
       </div>

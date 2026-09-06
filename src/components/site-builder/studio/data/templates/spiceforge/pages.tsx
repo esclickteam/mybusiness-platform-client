@@ -102,7 +102,7 @@ function SpiceWheelMenu({ data }: { data: Record<string, any> }) {
                 <div className="border-r-4 pr-4" style={{ borderColor: "#e76f51" }}>
                   <p className="text-xs" style={{ color: "#e76f51" }}>{meta}</p>
                   <h3 className="tpl-display mt-1 text-2xl font-bold">{title}</h3>
-                  <p className="mt-1 text-sm" style={{ color: "#c4a08a" }}>{text}</p>
+                  <p className="mt-1 text-sm" style={{ color: "#c4a08a" }}>{tx(text)}</p>
                 </div>
               </Reveal>
             ))}

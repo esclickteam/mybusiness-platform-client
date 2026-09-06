@@ -152,7 +152,7 @@ function Treatments({ data }: { data: Record<string, any> }) {
                 <h3 className="text-xl font-semibold text-[var(--l-ink)]">{title}</h3>
                 <p className="mt-2 text-sm font-semibold text-[var(--l-sage)]">{duration}</p>
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-[var(--l-muted)] md:text-base">{text}</p>
+              <p className="max-w-2xl text-sm leading-7 text-[var(--l-muted)] md:text-base">{tx(text)}</p>
               <p className="text-sm font-bold text-[var(--l-ink)] md:text-left">{price}</p>
             </article>
           ))}
@@ -226,7 +226,7 @@ function ProductsStrip({ data }: { data: Record<string, any> }) {
             {products.map(([name, text]) => (
               <div key={String(name)} className="border-r border-[var(--l-line)] pr-4">
                 <p className="text-sm font-bold text-[var(--l-ink)]">{name}</p>
-                <p className="mt-2 text-xs leading-5 text-[var(--l-muted)]">{text}</p>
+                <p className="mt-2 text-xs leading-5 text-[var(--l-muted)]">{tx(text)}</p>
               </div>
             ))}
           </div>
@@ -310,7 +310,7 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
                 <p className="text-xs font-bold tracking-[0.22em] text-[var(--l-sage)]">0{index + 1}</p>
                 <h3 className="l-display mt-5 text-2xl font-bold leading-tight">{name}</h3>
                 <p className="mt-5 text-2xl sm:text-4xl font-bold text-[var(--l-ink)]">{price}</p>
-                <p className="mt-5 text-sm leading-7 text-[var(--l-muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-7 text-[var(--l-muted)]">{tx(text)}</p>
                 <ul className="mt-7 space-y-3 border-t border-[var(--l-line)] pt-6 text-sm text-[var(--l-ink)]">
                   {(features as string[]).map((feature) => (
                     <li key={feature} className="flex gap-3">

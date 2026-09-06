@@ -582,10 +582,10 @@ function MarqueeSection({ data }: { data: Record<string, any> }) {
       >
         {[...items, ...items].map((item, index) => (
           <div
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="monolith-marquee-item border px-6 py-3 text-xs uppercase tracking-[0.34em] text-[#f6f1e7]"
           >
-            {item}
+            {tx(item)}
           </div>
         ))}
       </div>

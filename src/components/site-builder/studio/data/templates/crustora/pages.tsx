@@ -103,7 +103,7 @@ function TriMasonryMenu({ data }: { data: Record<string, any> }) {
                 </div>
                 <p className="mt-4 text-xs font-bold" style={{ color: "#c1121f" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-2xl font-black">{title}</h3>
-                <p className="mt-2 text-sm" style={{ color: "#8b6b52" }}>{text}</p>
+                <p className="mt-2 text-sm" style={{ color: "#8b6b52" }}>{tx(text)}</p>
               </article>
             </Reveal>
           ))}

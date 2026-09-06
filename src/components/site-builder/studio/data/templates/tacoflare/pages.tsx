@@ -142,7 +142,7 @@ function PapelHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
               <blockquote className="border-r-4 pr-5" style={{ borderColor: "#e85d04" }}>
-                <p className="text-lg leading-8">״{text}״</p>
+                <p className="text-lg leading-8">״{tx(text)}״</p>
                 <footer className="mt-3 text-sm font-bold" style={{ color: "#c49a7a" }}>{name} · {role}</footer>
               </blockquote>
             </Reveal>
@@ -238,7 +238,7 @@ function PapelFullMenuBoard({ data }: { data: Record<string, any> }) {
                     <h3 className="tpl-display text-xl font-bold">{title}</h3>
                     <span className="text-xs font-bold" style={{ color: "#e85d04" }}>{meta}</span>
                   </div>
-                  <p className="mt-2 text-sm" style={{ color: "#c49a7a" }}>{text}</p>
+                  <p className="mt-2 text-sm" style={{ color: "#c49a7a" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -378,7 +378,7 @@ function PapelAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#e85d04", background: "#1a0e0a" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#e85d04" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

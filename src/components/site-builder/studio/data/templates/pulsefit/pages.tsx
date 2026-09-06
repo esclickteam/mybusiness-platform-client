@@ -122,7 +122,7 @@ function Programs({ data }: { data: Record<string, any> }) {
                     <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">0{index + 1}</span>
                     <div>
                       <h3 className="t-display text-3xl font-bold uppercase text-white md:text-5xl">{title}</h3>
-                      <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                     </div>
                   </div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{meta}</p>
@@ -190,7 +190,7 @@ function Method({ data }: { data: Record<string, any> }) {
               <article className="pulsefit-method-panel h-full border border-white/15 bg-[var(--surface)] p-8 lg:min-h-[300px]" style={{ clipPath: "polygon(0 0, 92% 0, 100% 100%, 8% 100%)" }}>
                 <span className="t-display text-3xl md:text-6xl font-bold text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display mt-8 text-3xl font-bold uppercase text-white">{title}</h3>
-                <p className="mt-4 text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -221,7 +221,7 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
               <article className={`min-h-[420px] border-2 p-8 md:p-10 ${index === 0 ? "border-white/20 bg-[var(--bg)]" : "border-[var(--p)] bg-[var(--p)] text-black"}`}>
                 <p className="t-display text-2xl sm:text-4xl font-bold uppercase">{name}</p>
                 <p className="t-display mt-8 text-3xl md:text-7xl font-bold uppercase">{price}</p>
-                <p className={`mt-5 max-w-xl text-base font-semibold leading-8 ${index === 0 ? "text-[var(--muted)]" : "text-black/70"}`}>{text}</p>
+                <p className={`mt-5 max-w-xl text-base font-semibold leading-8 ${index === 0 ? "text-[var(--muted)]" : "text-black/70"}`}>{tx(text)}</p>
                 <div className={`mt-8 space-y-3 border-t pt-6 text-sm font-bold ${index === 0 ? "border-white/15 text-white" : "border-black/20 text-black"}`}>
                   {String(features).split("|").map((feature) => (
                     <p key={feature}>/ {feature}</p>
@@ -280,7 +280,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up" className="flex-1">
               <blockquote className="flex aspect-square flex-col justify-between border-2 border-[var(--p)] p-7">
-                <p className="t-display text-2xl sm:text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{text}"</p>
+                <p className="t-display text-2xl sm:text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{tx(text)}"</p>
                 <footer className="text-sm font-black uppercase tracking-[0.2em] text-white">{name}</footer>
               </blockquote>
             </Reveal>

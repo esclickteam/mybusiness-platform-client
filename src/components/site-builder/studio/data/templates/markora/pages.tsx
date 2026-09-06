@@ -113,7 +113,7 @@ function Services({ data }: { data: Record<string, any> }) {
               <article className="m-service-row grid gap-5 border-b border-white/12 bg-[var(--bg)] px-2 py-8 last:border-b-0 md:grid-cols-[120px_1fr_0.85fr] md:items-center">
                 <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display text-3xl font-black tracking-[-0.03em] md:text-5xl">{title}</h3>
-                <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -195,7 +195,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="m-step-block min-h-[270px] border border-[var(--p)]/50 bg-[var(--surface)] p-7">
                 <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">{num}</span>
                 <h3 className="t-display mt-8 text-3xl font-black leading-none">{title}</h3>
-                <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -255,7 +255,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={160 + index * 110} variant="left">
               <blockquote className="m-quote-bar grid gap-5 border-r-8 border-[var(--p)] bg-[var(--surface)] p-6 md:grid-cols-[1fr_240px] md:items-center md:p-8">
-                <p className="text-xl font-bold leading-9 text-white md:text-3xl">"{text}"</p>
+                <p className="text-xl font-bold leading-9 text-white md:text-3xl">"{tx(text)}"</p>
                 <footer className="border-t border-white/10 pt-5 md:border-r md:border-t-0 md:pr-6 md:pt-0">
                   <p className="font-black text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>

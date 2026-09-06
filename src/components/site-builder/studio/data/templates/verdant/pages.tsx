@@ -122,7 +122,7 @@ function Properties({ data }: { data: Record<string, any> }) {
               <div className="mt-5 border-t border-white/10 pt-5">
                 <p className="text-xs font-semibold tracking-[0.2em] text-[var(--v-moss)]">{meta}</p>
                 <h3 className="v-display mt-2 text-2xl font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{text}</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -226,7 +226,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-8 lg:grid-cols-3">
           {reviews.map(([text, name, role]) => (
             <blockquote key={name} className="border-t border-[var(--v-moss)]/40 pt-8">
-              <p className="v-display text-xl leading-9 text-[var(--v-stone)]">“{text}”</p>
+              <p className="v-display text-xl leading-9 text-[var(--v-stone)]">“{tx(text)}”</p>
               <footer className="mt-6">
                 <p className="font-semibold">{name}</p>
                 <p className="text-sm text-[var(--v-muted)]">{role}</p>
@@ -254,7 +254,7 @@ function Process({ data }: { data: Record<string, any> }) {
             <div key={num}>
               <div className="v-display text-2xl md:text-5xl text-[var(--v-moss)]">{num}</div>
               <h3 className="mt-4 text-xl font-semibold">{title}</h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{text}</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{tx(text)}</p>
             </div>
           ))}
         </div>

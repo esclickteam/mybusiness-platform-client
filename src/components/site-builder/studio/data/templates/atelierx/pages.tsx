@@ -203,7 +203,7 @@ function EditorialStory({ data }: { data: Record<string, any> }) {
                 </div>
                 <div className="bg-white p-8 md:p-12">
                   <h3 className="t-display text-5xl font-black leading-none tracking-[-0.06em] md:text-7xl">{title}</h3>
-                  <p className="mt-8 max-w-xl text-xl font-semibold leading-9 text-black/70">{text}</p>
+                  <p className="mt-8 max-w-xl text-xl font-semibold leading-9 text-black/70">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -235,7 +235,7 @@ function ServicesList({ data }: { data: Record<string, any> }) {
               <div className="grid gap-5 border-b border-black py-7 md:grid-cols-[0.2fr_0.42fr_1fr] md:items-baseline">
                 <span className="text-xs font-black uppercase tracking-[0.28em] text-[var(--a)]">0{index + 1}</span>
                 <h3 className="t-display text-4xl font-black tracking-[-0.06em] md:text-6xl">{title}</h3>
-                <p className="text-xl font-semibold leading-8 text-black/65">{text}</p>
+                <p className="text-xl font-semibold leading-8 text-black/65">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

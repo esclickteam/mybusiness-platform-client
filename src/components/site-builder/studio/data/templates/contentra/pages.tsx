@@ -328,9 +328,9 @@ function About({ data }: { data: Record<string, any> }) {
           <p className="mt-6 text-base leading-8 text-[var(--muted)]">{getValue(data, "aboutText")}</p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             {[getValue(data, "whyOneTitle"), getValue(data, "whyTwoTitle"), getValue(data, "whyThreeTitle")].map((item, i) => (
-              <div key={item} className="ag-card rounded-3xl border border-current/10 bg-[var(--surface)] p-5">
+              <div key={tx(item)} className="ag-card rounded-3xl border border-current/10 bg-[var(--surface)] p-5">
                 <span className="ag-display text-3xl font-black text-[var(--a)]">0{i + 1}</span>
-                <p className="mt-3 text-sm font-bold">{item}</p>
+                <p className="mt-3 text-sm font-bold">{tx(item)}</p>
               </div>
             ))}
           </div>
@@ -364,7 +364,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                   <span className="h-12 w-12 rounded-full bg-[var(--a)]/20 transition group-hover:scale-125" />
                 </div>
                 <h3 className="mt-8 text-2xl font-black">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <button type="button" onClick={() => goTo("contact")} className="mt-6 text-xs font-black text-[var(--a)]">{tx("בדקו התאמה ←")}</button>
               </article>
             </Reveal>
@@ -398,7 +398,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 <div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-7 text-white">
                   <span className="mb-5 w-fit rounded-full bg-[var(--a)] px-4 py-2 text-xs font-black text-[var(--dark)]">CASE 0{i + 1}</span>
                   <h3 className="ag-display text-3xl font-black md:text-5xl">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/75">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-white/75">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -494,7 +494,7 @@ function WhyUs({ data, goTo }: { data: Record<string, any>; goTo?: (id: string) 
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-start">
                 <div className="mb-7 h-2 w-12 rounded-full bg-[var(--a)]" />
                 <h3 className="text-2xl font-black">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 
               </article>
             </Reveal>
@@ -521,7 +521,7 @@ function Method({ data }: { data: Record<string, any> }) {
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)]/80 p-6 text-start text-[var(--text)]">
                 <span className="ag-display grid h-14 w-14 place-items-center rounded-full bg-[var(--p)] text-xl font-black text-white">0{i + 1}</span>
                 <h3 className="mt-8 text-2xl font-black">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -570,7 +570,7 @@ function Outcomes({ data, goTo }: { data: Record<string, any>; goTo?: (id: strin
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-start">
                 <div className="mb-7 h-2 w-12 rounded-full bg-[var(--a)]" />
                 <h3 className="text-2xl font-black">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 
               </article>
             </Reveal>
@@ -601,7 +601,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo?: (id: strin
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-start">
                 <div className="mb-7 h-2 w-12 rounded-full bg-[var(--a)]" />
                 <h3 className="text-2xl font-black">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <button type="button" onClick={() => goTo?.("contact")} className="mt-6 text-xs font-black text-[var(--p)]">{tx("קראו עוד")}</button>
               </article>
             </Reveal>
@@ -628,7 +628,7 @@ function Pricing({ data }: { data: Record<string, any> }) {
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-start">
                 <h3 className="text-2xl font-black">{title}</h3>
                 <p className="ag-display mt-6 text-2xl sm:text-4xl font-black text-[var(--p)]">{price}</p>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}

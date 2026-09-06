@@ -67,7 +67,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-white/55">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-white/55">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -327,7 +327,7 @@ function Marquee({ data }: { data: Record<string, any> }) {
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-center text-lg font-black uppercase tracking-tight text-[#0a0a0a]">
         {[0, 1, 2].map((i) => (
           <span key={i} className="flex items-center gap-6">
-            {text}
+            {tx(text)}
             <span className="text-2xl">✦</span>
           </span>
         ))}
@@ -367,7 +367,7 @@ function ServicesSection({
                 </span>
               </div>
               <h3 className="mt-6 text-3xl font-black uppercase text-white">{title}</h3>
-              <p className="mt-4 max-w-md text-base leading-7 text-white/55">{text}</p>
+              <p className="mt-4 max-w-md text-base leading-7 text-white/55">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -455,7 +455,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 0{index + 1}
               </span>
               <h3 className="mt-5 text-2xl font-black uppercase text-white">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-white/55">{text}</p>
+              <p className="mt-3 text-base leading-7 text-white/55">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -528,7 +528,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[28px] border border-white/8 bg-white/5 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c3ff00]/40"
             >
               <div className="mb-5 text-[#c3ff00]">★★★★★</div>
-              <p className="text-lg leading-8 text-white/80">“{text}”</p>
+              <p className="text-lg leading-8 text-white/80">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-white/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-[#c3ff00] text-sm font-black text-[#0a0a0a]">
                   {String(name).charAt(0)}

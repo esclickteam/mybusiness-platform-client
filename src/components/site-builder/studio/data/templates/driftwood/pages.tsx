@@ -114,7 +114,7 @@ function MenuScroll({ data }: { data: Record<string, any> }) {
               <div className="p-4">
                 <p className="text-xs" style={{ color: "#8b5e3c" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-6" style={{ color: "#8b7355" }}>{text}</p>
+                <p className="mt-2 text-sm leading-6" style={{ color: "#8b7355" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

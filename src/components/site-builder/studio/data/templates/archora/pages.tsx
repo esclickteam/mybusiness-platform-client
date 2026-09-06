@@ -163,8 +163,8 @@ function ProjectMarquee({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="marquee" className="overflow-hidden border-y border-[var(--p)] bg-[var(--p)] py-5 text-[#111]">
       <div className="ar-marquee-track flex w-max items-center gap-10 whitespace-nowrap">
         {[...items, ...items, ...items].map((item, index) => (
-          <span key={`${item}-${index}`} className="ar-display text-2xl font-extrabold md:text-4xl">
-            {item}
+          <span key={`${tx(item)}-${index}`} className="ar-display text-2xl font-extrabold md:text-4xl">
+            {tx(item)}
             <span className="mx-8 inline-block h-3 w-3 bg-[#111]" />
           </span>
         ))}
@@ -264,7 +264,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 <span className="ar-latin text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{index + 1}</span>
                 <div>
                   <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/72">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-white/72">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -324,7 +324,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   <span className="ar-node absolute right-0 top-1 grid h-10 w-10 place-items-center border border-[var(--p)] bg-[#0A0A0A] text-xs font-black text-[var(--p)]">{index + 1}</span>
                   <div className="border border-white/12 bg-white/[0.03] p-6">
                     <h3 className="text-2xl font-bold text-white">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-white/72">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-white/72">{tx(text)}</p>
                   </div>
                 </article>
               </Reveal>

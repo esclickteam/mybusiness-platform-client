@@ -139,7 +139,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
             <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full text-2xl font-bold text-white" style={{background:["#10B981","#FBBF24","#34D399"][i]}}>{i+1}</span>
             <div className="flex-1 rounded-3xl bg-white p-5 shadow-sm">
               <h3 className="text-xl font-bold text-[var(--dark)]">{title}</h3>
-              <p className="text-sm text-[var(--muted)]">{text}</p>
+              <p className="text-sm text-[var(--muted)]">{tx(text)}</p>
             </div>
           </Reveal>
         ))}
@@ -157,7 +157,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
           <Reveal key={t} delayMs={i*80} variant="up" className="t-hover rounded-3xl border-4 border-dashed p-6 text-center">
             <div className="t-float mx-auto h-3 w-3 rounded-full" style={{background:["#10B981","#FBBF24","#34D399","#F59E0B"][i]}} />
             <h3 className="mt-3 text-lg font-bold text-[var(--dark)]">{t}</h3>
-            <p className="text-sm text-[var(--muted)]">{d}</p>
+            <p className="text-sm text-[var(--muted)]">{tx(d)}</p>
           </Reveal>
         ))}
       </div>
@@ -207,7 +207,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         {[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text,name],i) => (
           <Reveal key={name} delayMs={i*90} className="t-hover relative rounded-[2rem] bg-[var(--bg)] p-6">
             <div className="absolute -top-3 right-6 rounded-full bg-[var(--a)] px-3 py-1 text-xs font-bold">{tx("הורה")}</div>
-            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">"{text}"</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">"{tx(text)}"</p>
             <p className="mt-4 font-bold text-[var(--p)]">{name}</p>
           </Reveal>
         ))}
@@ -327,7 +327,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           <Reveal key={title} delayMs={i * 80} className="t-hover rounded-[2rem] bg-white p-6 shadow-sm">
             <span className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">{i + 1}</span>
             <h3 className="text-xl font-bold">{title}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
           </Reveal>
         ))}
       </div>
@@ -347,7 +347,7 @@ function Method({ data }: { data: Record<string, any> }) {
           <Reveal key={title} delayMs={i * 90} className="t-hover rounded-[2rem] bg-white p-6 shadow-sm">
             <p className="t-display text-2xl sm:text-4xl text-[var(--a)]">{String(i + 1).padStart(2, "0")}</p>
             <h3 className="mt-4 text-lg font-bold">{title}</h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
           </Reveal>
         ))}
       </div>
@@ -386,7 +386,7 @@ function Outcomes({ data }: { data: Record<string, any> }) {
           {outcomeItems(data).map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90} className="t-hover border-t border-[var(--p)]/25 pt-6">
               <p className="t-display text-2xl sm:text-4xl font-bold text-[var(--a)]">{title}</p>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </Reveal>
           ))}
         </div>
@@ -407,7 +407,7 @@ function Pricing({ data, goTo }: Pick<PageProps, "data" | "goTo">) {
           <Reveal key={title} delayMs={i * 90} className="t-hover rounded-[2rem] bg-white p-6 shadow-sm">
             <p className="text-sm text-[var(--muted)]">{title}</p>
             <p className="t-display mt-4 text-2xl sm:text-4xl font-bold">₪{price}</p>
-            <p className="mt-4 min-h-14 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-4 min-h-14 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             <button type="button" onClick={() => goTo("contact")} className="mt-8 w-full px-5 py-3 text-sm font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">{getValue(data,"ctaBandButton")}</button>
           </Reveal>
         ))}
@@ -430,7 +430,7 @@ function Insights({ data, goTo }: Pick<PageProps, "data" | "goTo">) {
             <Reveal key={title} delayMs={i * 80} className="t-hover rounded-[2rem] bg-white p-6 shadow-sm">
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--a)]">article 0{i + 1}</p>
               <h3 className="mt-3 text-2xl font-bold">{title}</h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </Reveal>
           ))}
         </div>

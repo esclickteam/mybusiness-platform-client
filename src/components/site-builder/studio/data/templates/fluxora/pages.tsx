@@ -67,7 +67,7 @@ function SectionTitle({
       <h2 className="text-4xl font-bold leading-[1.08] tracking-tight text-[#f4f8fc] md:text-5xl">
         {title}
       </h2>
-      {text ? <p className="mt-5 text-lg leading-8 text-slate-400">{text}</p> : null}
+      {text ? <p className="mt-5 text-lg leading-8 text-slate-400">{tx(text)}</p> : null}
     </div>
   );
 }
@@ -413,7 +413,7 @@ function FeaturesSection({ data }: { data: Record<string, any> }) {
                   {icon}
                 </span>
                 <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -442,7 +442,7 @@ function WorkflowSection({ data }: { data: Record<string, any> }) {
             >
               <span className="text-2xl md:text-5xl font-bold text-[#3dffa8]">{num}</span>
               <h3 className="mt-5 text-2xl font-bold text-white">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-slate-400">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -472,7 +472,7 @@ function CommunitySection({ data }: { data: Record<string, any> }) {
               className="rounded-[28px] border border-white/8 bg-gradient-to-b from-[#3dffa8]/8 to-transparent p-8 transition duration-500 hover:-translate-y-2"
             >
               <h3 className="text-2xl font-bold text-white">{title}</h3>
-              <p className="mt-4 text-sm leading-7 text-slate-300">{text}</p>
+              <p className="mt-4 text-sm leading-7 text-slate-300">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -535,7 +535,7 @@ function PricingSection({
                 <span className="text-2xl md:text-5xl font-bold text-white">{price}</span>
                 <span className="text-sm text-slate-400">{period}</span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-400">{tx(text)}</p>
               <ul className="mt-7 space-y-3 text-sm text-slate-300">
                 {(features as readonly string[]).map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
@@ -585,7 +585,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
               className="rounded-[28px] border border-white/8 bg-white/[0.03] p-8 transition duration-500 hover:-translate-y-2 hover:border-[#3dffa8]/30"
             >
               <div className="mb-5 text-[#3dffa8]">★★★★★</div>
-              <p className="text-base leading-8 text-slate-200">“{text}”</p>
+              <p className="text-base leading-8 text-slate-200">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-white/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-[#3dffa8] text-sm font-bold text-[#07110c]">
                   {String(name).charAt(0)}

@@ -142,7 +142,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
             <Reveal key={title} delayMs={i*90} variant="up">
               <article className="ag-card border-r-4 border-r-[var(--p)] border border-black/10 bg-[var(--surface)] p-7 text-start">
                 <h3 className="text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -185,7 +185,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 </div>
                 <div className="border-r border-black/10 pr-5">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--p)] md:hidden">Outcome</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)] md:mt-0">{text}</p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--muted)] md:mt-0">{tx(text)}</p>
                 </div>
                 <p className="ag-display text-left text-3xl font-extrabold text-[var(--p)]">0{i + 1}</p>
               </article>
@@ -282,7 +282,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 <p className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{i + 1}</p>
                 <div>
                   <h3 className="text-2xl font-bold">{title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <button type="button" onClick={() => goTo("contact")} className="border border-black/10 px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-[var(--p)]">Playbook</button>
               </article>
@@ -316,7 +316,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   <p className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--p)]">0{i + 1}</p>
                   <div>
                     <h3 className="text-2xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                 </article>
               </Reveal>

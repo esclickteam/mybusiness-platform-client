@@ -110,7 +110,7 @@ function MasonryGrid({ data }: { data: Record<string, any> }) {
               <div className="p-4">
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "#c45c26" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm" style={{ color: "#6b6560" }}>{text}</p>
+                <p className="mt-2 text-sm" style={{ color: "#6b6560" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

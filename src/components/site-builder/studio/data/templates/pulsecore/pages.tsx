@@ -559,14 +559,14 @@ function PricingSection({
 
               <div className="mt-8 grid gap-3">
                 {plan.items.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-bold">
+                  <div key={tx(item)} className="flex items-center gap-3 text-sm font-bold">
                     <CheckCircle2
                       className={[
                         "h-5 w-5",
                         plan.featured ? "text-black" : "text-[#D7FF36]",
                       ].join(" ")}
                     />
-                    <span>{item}</span>
+                    <span>{tx(item)}</span>
                   </div>
                 ))}
               </div>
@@ -653,7 +653,7 @@ function TestimonialsSection() {
                 key={index}
                 className="rounded-[28px] border border-white/10 bg-white/[0.06] p-6"
               >
-                <p className="text-sm leading-7 text-white/70">“{text}”</p>
+                <p className="text-sm leading-7 text-white/70">“{tx(text)}”</p>
 
                 <div className="mt-5 flex gap-1 text-[#D7FF36]">
                   {Array.from({ length: 5 }).map((_, starIndex) => (

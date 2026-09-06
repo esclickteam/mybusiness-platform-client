@@ -162,7 +162,7 @@ function Occasions({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#3b1028]/78 via-[#3b1028]/15 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-7 text-white">
                   <p className="florique-script text-2xl md:text-5xl leading-none">{title}</p>
-                  <p className="mt-3 text-sm font-semibold leading-7 text-white/82">{text}</p>
+                  <p className="mt-3 text-sm font-semibold leading-7 text-white/82">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -202,7 +202,7 @@ function BouquetMosaic({ data }: { data: Record<string, any> }) {
                 <div className="relative z-10 p-7 text-start">
                   <div className="mb-4 inline-flex bg-[var(--p)] px-4 py-2 text-sm font-black text-white">{price}</div>
                   <h3 className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</h3>
-                  <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -237,7 +237,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   0{index + 1}
                 </div>
                 <h3 className="mt-7 text-2xl font-bold text-[var(--text)]">{title}</h3>
-                <p className="mt-3 text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -337,7 +337,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="flex aspect-square flex-col justify-between border border-[var(--line)] bg-white p-7 shadow-[0_24px_60px_rgba(225,29,140,0.10)]">
-                <p className="text-xl font-semibold leading-9 text-[var(--text)]">"{text}"</p>
+                <p className="text-xl font-semibold leading-9 text-[var(--text)]">"{tx(text)}"</p>
                 <footer>
                   <p className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</p>
                   <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)]">{role}</p>

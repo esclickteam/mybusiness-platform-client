@@ -138,7 +138,7 @@ function Classes({ data }: { data: Record<string, any> }) {
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--p)]">{meta}</p>
                     <h3 className="t-display mt-4 text-3xl font-semibold leading-tight text-white">{title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                 </div>
               </article>
@@ -194,7 +194,7 @@ function Benefits({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 110} variant={index % 2 ? "left" : "right"}>
               <article className="aura-floating-band border border-white/10 bg-[var(--surface)]/80 p-7 shadow-2xl shadow-black/20 backdrop-blur-md md:p-9" style={{ marginInlineStart: `${index * 7}%` }}>
                 <h3 className="t-display text-2xl sm:text-4xl font-semibold text-white">{title}</h3>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -312,7 +312,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 120} variant="up">
               <blockquote className="aura-review min-h-[320px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-sm">
                 <p className="t-display text-3xl md:text-7xl font-semibold leading-none text-[var(--p)]">”</p>
-                <p className="mt-8 text-2xl font-light leading-10 text-white">{text}</p>
+                <p className="mt-8 text-2xl font-light leading-10 text-white">{tx(text)}</p>
                 <footer className="mt-10 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">{name}</footer>
               </blockquote>
             </Reveal>

@@ -101,7 +101,7 @@ function NigiriSnapRail({ data }: { data: Record<string, any> }) {
               <img src={img} alt="" className="aspect-[4/3] w-full object-cover" />
               <p className="mt-3 text-xs tracking-wider" style={{ color: "#d4af37" }}>{meta}</p>
               <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-              <p className="mt-2 text-sm" style={{ color: "#9a958c" }}>{text}</p>
+              <p className="mt-2 text-sm" style={{ color: "#9a958c" }}>{tx(text)}</p>
             </article>
           ))}
         </div>

@@ -728,7 +728,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                   )}
                 >
                   <MediaElement
-                    value={item}
+                    value={tx(item)}
                     fallback={cycloraDefaultData.hero.orbitMedia[index]}
                     field={`hero.orbitMedia.${index}`}
                     alt={`מדיה מרחפת ${index + 1}`}
@@ -1675,7 +1675,7 @@ function CtaSection({ data, mode }: SharedProps) {
               style={{ transform: `rotate(${layout.rotate}deg)` }}
             >
               <MediaElement
-                value={item}
+                value={tx(item)}
                 fallback={cycloraDefaultData.cta.orbitMedia[index]}
                 field={`cta.orbitMedia.${index}`}
                 alt={`מדיה קריאה לפעולה ${index + 1}`}

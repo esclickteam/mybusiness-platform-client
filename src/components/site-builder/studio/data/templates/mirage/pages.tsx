@@ -115,7 +115,7 @@ function OasisCards({ data }: { data: Record<string, any> }) {
                   <span className="text-sm font-bold">{temps[i]}</span>
                 </div>
                 <h3 className="tpl-display mt-2 text-2xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#9a8268" }}>{text}</p>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#9a8268" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

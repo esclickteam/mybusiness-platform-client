@@ -57,7 +57,7 @@ export default function EmbedSitePreviewPage() {
     new URLSearchParams(window.location.search).get("shot") === "1";
 
   return (
-    <div dir="rtl" style={{ minHeight: "100vh", background: "#fff" }}>
+    <div style={{ minHeight: "100vh", background: "#fff" }}>
       {isScreenshotCapture ? (
         <style>{`
           [data-reveal], [data-animate], [data-motion], .bizuply-reveal-up,

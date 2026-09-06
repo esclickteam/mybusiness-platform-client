@@ -316,5 +316,119 @@
     "es": "¿Cómo me inscribo?",
     "pt-BR": "Como me inscrevo?",
     "ar": "كيف أسجّل؟"
+  },
+  "הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.": {
+    "en": "We built a place that listens to the person in front of us first, before choosing a color, material, or protocol.",
+    "es": "Creamos un lugar que primero escucha a la persona delante, antes de elegir color, material o protocolo.",
+    "pt-BR": "Criamos um lugar que primeiro escuta a pessoa à frente, antes de escolher cor, material ou protocolo.",
+    "ar": "بنينا مكاناً يستمع أولاً إلى الشخص أمامنا، قبل اختيار اللون أو المادة أو البروتوكول."
+  },
+  "כל טיפול מתועד בכרטיס לקוחה, עם העדפות, תגובות עור והמלצות המשך ברורות.": {
+    "en": "Every treatment is recorded on the client card, with preferences, skin reactions, and clear next-step recommendations.",
+    "es": "Cada tratamiento queda documentado en la ficha, con preferencias, reacciones de la piel y recomendaciones claras.",
+    "pt-BR": "Cada tratamento fica registrado na ficha da cliente, com preferências, reações da pele e recomendações claras.",
+    "ar": "كل علاج يُوثَّق في بطاقة العميلة، مع التفضيلات وردود فعل البشرة وتوصيات واضحة للمتابعة."
+  },
+  "הצוות נפגש בכל שבוע לסקירת תוצאות, שיפור תהליכים ובדיקת חומרי עבודה חדשים.": {
+    "en": "The team meets every week to review results, improve processes, and check new working materials.",
+    "es": "El equipo se reúne cada semana para revisar resultados, mejorar procesos y probar materiales nuevos.",
+    "pt-BR": "A equipe se reúne toda semana para revisar resultados, melhorar processos e testar materiais novos.",
+    "ar": "يلتقي الفريق كل أسبوع لمراجعة النتائج وتحسين العمليات وفحص مواد العمل الجديدة."
+  },
+  "אבחון לפני התחלה": {
+    "en": "Diagnosis before we start",
+    "es": "Diagnóstico antes de empezar",
+    "pt-BR": "Diagnóstico antes de começar",
+    "ar": "تشخيص قبل البدء"
+  },
+  "עבודה בשכבות": {
+    "en": "Work in layers",
+    "es": "Trabajo por capas",
+    "pt-BR": "Trabalho em camadas",
+    "ar": "عمل بطبقات"
+  },
+  "סיום עם המלצות בית": {
+    "en": "Finish with at-home recommendations",
+    "es": "Cierre con recomendaciones para casa",
+    "pt-BR": "Encerramento com recomendações para casa",
+    "ar": "ختام مع توصيات للبيت"
+  },
+  "מסכת הרגעה": {
+    "en": "Calming mask",
+    "es": "Mascarilla calmante",
+    "pt-BR": "Máscara calmante",
+    "ar": "قناع مهدئ"
+  },
+  "עיסוי קרקפת": {
+    "en": "Scalp massage",
+    "es": "Masaje de cuero cabelludo",
+    "pt-BR": "Massagem no couro cabeludo",
+    "ar": "تدليك فروة الرأس"
+  },
+  "אמפולת זוהר": {
+    "en": "Glow ampoule",
+    "es": "Ampolla de glow",
+    "pt-BR": "Ampola de glow",
+    "ar": "أمبولة إشراق"
+  },
+  "תיקון מהיר": {
+    "en": "Quick fix",
+    "es": "Retoque rápido",
+    "pt-BR": "Retoque rápido",
+    "ar": "تصحيح سريع"
+  },
+  "ייעוץ ביתי": {
+    "en": "Home advice",
+    "es": "Consejo para casa",
+    "pt-BR": "Orientação para casa",
+    "ar": "استشارة منزلية"
+  },
+  "צילום תוצאה": {
+    "en": "Result photo",
+    "es": "Foto del resultado",
+    "pt-BR": "Foto do resultado",
+    "ar": "تصوير النتيجة"
+  },
+  "א-ה": {
+    "en": "Sun–Thu",
+    "es": "Dom–jue",
+    "pt-BR": "Dom–qui",
+    "ar": "أحد–خميس"
+  },
+  "מענה": {
+    "en": "Reply",
+    "es": "Respuesta",
+    "pt-BR": "Resposta",
+    "ar": "رد"
+  },
+  "עד שעה לאישור": {
+    "en": "Up to an hour to confirm",
+    "es": "Hasta una hora para confirmar",
+    "pt-BR": "Até uma hora para confirmar",
+    "ar": "حتى ساعة للتأكيد"
+  },
+  "ביטול עד 24 שעות ללא חיוב": {
+    "en": "Cancel up to 24 hours with no charge",
+    "es": "Cancelación hasta 24 horas sin cargo",
+    "pt-BR": "Cancelamento até 24 horas sem cobrança",
+    "ar": "إلغاء حتى 24 ساعة دون رسوم"
+  },
+  "איחור מעל 15 דקות עלול לקצר טיפול": {
+    "en": "Arriving more than 15 minutes late may shorten the treatment",
+    "es": "Un retraso de más de 15 minutos puede acortar el tratamiento",
+    "pt-BR": "Atraso de mais de 15 minutos pode encurtar o tratamento",
+    "ar": "التأخر أكثر من 15 دقيقة قد يقصّر العلاج"
+  },
+  "רגישות או מצב רפואי יש לעדכן מראש": {
+    "en": "Tell us in advance about any sensitivity or medical condition",
+    "es": "Avisad con antelación de cualquier sensibilidad o condición médica",
+    "pt-BR": "Avisem com antecedência sobre qualquer sensibilidade ou condição médica",
+    "ar": "يجب إبلاغنا مسبقاً بأي حساسية أو حالة طبية"
+  },
+  "פרק": {
+    "en": "Chapter",
+    "es": "Capítulo",
+    "pt-BR": "Capítulo",
+    "ar": "فصل"
   }
 }

@@ -103,7 +103,7 @@ function BentoTapas({ data }: { data: Record<string, any> }) {
                 <div className="p-4">
                   <p className="text-xs font-semibold" style={{ color: "#ff2d95" }}>{meta}</p>
                   <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                  <p className="mt-1 text-sm" style={{ color: "#b89bc4" }}>{text}</p>
+                  <p className="mt-1 text-sm" style={{ color: "#b89bc4" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

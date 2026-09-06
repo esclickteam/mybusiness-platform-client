@@ -141,7 +141,7 @@ function SugarHomeReviews({ data }: { data: Record<string, any> }) {
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#e879f9", background: "#241832" }}>
-              <p className="text-sm leading-7" style={{ color: "#b89bb8" }}>״{text}״</p>
+              <p className="text-sm leading-7" style={{ color: "#b89bb8" }}>״{tx(text)}״</p>
               <footer className="mt-4 text-sm font-bold">{name}</footer>
             </blockquote>
           ))}
@@ -206,7 +206,7 @@ function SugarFullMenuBoard({ data }: { data: Record<string, any> }) {
             <div key={title} className="flex items-start justify-between gap-4 py-5">
               <div>
                 <h3 className="tpl-display text-xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm" style={{ color: "#b89bb8" }}>{text}</p>
+                <p className="mt-1 text-sm" style={{ color: "#b89bb8" }}>{tx(text)}</p>
               </div>
               <span className="whitespace-nowrap text-sm font-bold" style={{ color: "#e879f9" }}>{meta}</span>
             </div>
@@ -363,7 +363,7 @@ function SugarAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#e879f9", background: "#1a1220" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#e879f9" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

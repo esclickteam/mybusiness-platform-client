@@ -196,7 +196,7 @@ function Treatments({ data }: { data: Record<string, any> }) {
               <article className="grid gap-4 border-t border-slate-200 px-5 py-7 first:border-t-0 md:grid-cols-[0.65fr_1fr_0.5fr] md:items-center md:px-8">
                 <h3 className="text-2xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{title}</h3>
                 <div className="grid gap-3 md:grid-cols-[1fr_0.28fr] md:items-center">
-                  <p className="text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   <span className="de-dot-leader hidden h-4 md:block" />
                 </div>
                 <strong className="text-start text-lg font-black text-[var(--p)] md:text-xl">{price}</strong>
@@ -313,7 +313,7 @@ function ComfortTech({ data }: { data: Record<string, any> }) {
                 <div className="p-4 md:p-8">
                   <span className="block h-1 w-24 bg-[var(--p)]" />
                   <h3 className="de-display mt-7 text-4xl font-semibold tracking-[-0.05em] text-[var(--dark)] md:text-6xl">{title}</h3>
-                  <p className="mt-5 text-base leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -343,7 +343,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 110} variant="scale">
               <article className="de-quote flex aspect-square flex-col justify-between border border-[var(--p)]/35 bg-white p-7">
                 <span className="de-display text-3xl md:text-7xl leading-none text-[var(--p)]">“</span>
-                <p className="text-base font-semibold leading-8 text-[var(--dark)]">{text}</p>
+                <p className="text-base font-semibold leading-8 text-[var(--dark)]">{tx(text)}</p>
                 <strong className="text-sm font-black text-[var(--p)]">{name}</strong>
               </article>
             </Reveal>

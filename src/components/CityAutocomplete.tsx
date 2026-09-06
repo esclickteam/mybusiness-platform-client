@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import { getTextDirection } from "../i18n/localeUtils";
 
 type CityItem = {
   id: number | string;
@@ -24,6 +26,7 @@ export default function CityAutocomplete({
   placeholder = "",
   disabled = false,
 }: CityAutocompleteProps) {
+  const { i18n } = useTranslation();
   const [query, setQuery] = useState<string>(value || "");
   const [suggestions, setSuggestions] = useState<CityItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -110,7 +113,7 @@ export default function CityAutocomplete({
   };
 
   return (
-    <div ref={wrapperRef} dir="rtl" className="relative w-full">
+    <div ref={wrapperRef} dir={getTextDirection(i18n.language)} className="relative w-full">
       <input
         type="text"
         value={query}
@@ -122,7 +125,7 @@ export default function CityAutocomplete({
         onFocus={() => {
           if (!disabled) setOpen(true);
         }}
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-right text-sm font-semibold text-slate-900 outline-none transition placeholder:text-transparent focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-transparent focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
       />
 
       {open && suggestions.length > 0 && !disabled && (

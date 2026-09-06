@@ -116,7 +116,7 @@ function Services({ data }: { data: Record<string, any> }) {
             <article key={`${title}-${index}`} className="a-service-panel aspect-square min-w-[260px] border border-[var(--p)]/30 bg-[var(--surface)] p-7 md:min-w-[320px]">
               <span className="text-sm font-bold text-[var(--p)]">0{(index % services.length) + 1}</span>
               <h3 className="t-display mt-10 text-3xl font-bold leading-tight">{title}</h3>
-              <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -210,7 +210,7 @@ function CaseStudies({ data }: { data: Record<string, any> }) {
                 <div className="p-7 lg:p-9">
                   <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--p)]">{tag}</p>
                   <h3 className="t-display mt-4 text-3xl font-bold leading-tight md:text-4xl">{title}</h3>
-                  <p className="mt-5 leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 leading-8 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -244,7 +244,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <span className="absolute -right-[45px] top-1 h-7 w-7 border-4 border-[var(--bg)] bg-[var(--p)]" />
                 <p className="text-sm font-bold text-[var(--p)]">{num}</p>
                 <h3 className="t-display mt-2 text-3xl font-bold">{title}</h3>
-                <p className="mt-3 max-w-2xl leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-2xl leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -272,7 +272,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         </Reveal>
         <Reveal delayMs={190} variant="scale">
           <blockquote className="mt-12 border-y border-[var(--p)]/30 py-10 text-center md:py-16">
-            <p className="t-display text-3xl font-bold leading-snug md:text-6xl">"{text}"</p>
+            <p className="t-display text-3xl font-bold leading-snug md:text-6xl">"{tx(text)}"</p>
             <footer className="mt-9">
               <p className="text-lg font-bold text-[var(--p)]">{name}</p>
               <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>

@@ -2,6 +2,7 @@
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 import {
   TourAppointmentsDemo,
@@ -51,7 +52,7 @@ function LiveFor({ kind }: { kind: NonNullable<Step["live"]> }) {
 }
 
 export default function ScrollStory() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const bulletsFor = (id: string) => {
     const value = t(`tour.${id}Bullets`, { returnObjects: true }) as unknown;
@@ -61,7 +62,7 @@ export default function ScrollStory() {
   return (
     <section
       className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />

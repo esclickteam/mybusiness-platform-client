@@ -114,7 +114,7 @@ function SectionIntro({ eyebrow, title, text }: { eyebrow: string; title: string
       <h2 className="vc-display vc-anim vc-anim-d1 mt-4 text-4xl font-semibold leading-tight text-[var(--vc-text)] md:text-5xl">
         {title}
       </h2>
-      {text ? <p className="vc-anim vc-anim-d2 mt-5 text-base leading-8 text-[var(--vc-muted)]">{text}</p> : null}
+      {text ? <p className="vc-anim vc-anim-d2 mt-5 text-base leading-8 text-[var(--vc-muted)]">{tx(text)}</p> : null}
     </div>
   );
 }
@@ -147,7 +147,7 @@ function Specialties({ data }: { data: Record<string, any> }) {
                 {String(index + 1).padStart(2, "0")}
               </div>
               <h3 className="mt-7 text-xl font-semibold text-[var(--vc-text)]">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -235,7 +235,7 @@ function Doctors({ data }: { data: Record<string, any> }) {
               <div className="p-7">
                 <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{name}</h3>
                 <p className="mt-2 text-sm font-semibold text-[var(--vc-primary)]">{role}</p>
-                <p className="mt-4 text-sm leading-7 text-[var(--vc-muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--vc-muted)]">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -296,7 +296,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
               className="vc-card-hover rounded-3xl border border-[var(--vc-line)] bg-[var(--vc-surface)] p-8"
             >
               <div className="h-px w-16 bg-[var(--vc-accent)]" />
-              <p className="mt-7 text-lg leading-9 text-[var(--vc-text)]">״{text}״</p>
+              <p className="mt-7 text-lg leading-9 text-[var(--vc-text)]">״{tx(text)}״</p>
               <footer className="mt-8 border-t border-[var(--vc-line)] pt-5">
                 <p className="font-semibold text-[var(--vc-text)]">{name}</p>
                 <p className="mt-1 text-sm text-[var(--vc-muted)]">{role}</p>

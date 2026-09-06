@@ -80,7 +80,7 @@ function SectionTitle({
       </h2>
       {text ? (
         <p className={cx("mt-5 text-lg leading-8", light ? "text-[#c9d2e3]" : "text-[#4a5568]")}>
-          {text}
+          {tx(text)}
         </p>
       ) : null}
     </div>
@@ -352,7 +352,7 @@ function ValuesSection({ data }: { data: Record<string, any> }) {
           >
             <span className="font-serif text-3xl font-semibold text-[#b8935a]">0{index + 1}</span>
             <h3 className="mt-4 font-serif text-xl font-semibold text-[#0f1e3d]">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-[#4a5568]">{text}</p>
+            <p className="mt-2 text-sm leading-6 text-[#4a5568]">{tx(text)}</p>
           </div>
         ))}
       </div>
@@ -389,9 +389,9 @@ function AboutSection({ data }: { data: Record<string, any> }) {
               "ליווי אישי מהפגישה הראשונה ועד לתוצאה",
               "ניסיון מוכח מול הרשויות ובתי המשפט",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-3 text-[#334155]">
+              <div key={tx(item)} className="flex items-center gap-3 text-[#334155]">
                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#b8935a]/15 text-[#b8935a]">✓</span>
-                <span className="text-base font-medium">{item}</span>
+                <span className="text-base font-medium">{tx(item)}</span>
               </div>
             ))}
           </div>
@@ -438,7 +438,7 @@ function ServicesSection({
                 </span>
               </div>
               <h3 className="mt-5 font-serif text-2xl font-semibold text-[#f6f5f1]">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-[#c9d2e3]">{text}</p>
+              <p className="mt-3 text-base leading-7 text-[#c9d2e3]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -474,7 +474,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {index + 1}
               </div>
               <h3 className="font-serif text-2xl font-semibold text-[#0f1e3d]">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-[#4a5568]">{text}</p>
+              <p className="mt-3 text-base leading-7 text-[#4a5568]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -504,7 +504,7 @@ function CasesSection({ data }: { data: Record<string, any> }) {
                 {tag}
               </span>
               <h3 className="mt-5 font-serif text-2xl font-semibold text-[#0f1e3d]">{title}</h3>
-              <p className="mt-3 flex-1 text-base leading-7 text-[#4a5568]">{text}</p>
+              <p className="mt-3 flex-1 text-base leading-7 text-[#4a5568]">{tx(text)}</p>
               <div className="mt-6 border-t border-[#0f1e3d]/8 pt-4 text-sm font-semibold text-[#b8935a]">{tx("קרא עוד ←")}</div>
             </article>
           ))}

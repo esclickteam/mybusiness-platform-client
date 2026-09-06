@@ -137,7 +137,7 @@ function Programs({ data }: { data: Record<string, any> }) {
                   <p className="t-display text-3xl md:text-6xl leading-none text-[var(--p)]">0{index + 1}</p>
                   <div>
                     <h3 className="t-display text-5xl uppercase leading-none text-white md:text-7xl">{title}</h3>
-                    <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)] md:text-start">{meta}</p>
                 </div>
@@ -225,7 +225,7 @@ function Events({ data }: { data: Record<string, any> }) {
                 <p className="t-display text-3xl md:text-7xl uppercase leading-none text-[var(--p)]">{date}</p>
                 <div>
                   <h3 className="t-display text-5xl uppercase leading-none text-white md:text-6xl">{title}</h3>
-                  <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

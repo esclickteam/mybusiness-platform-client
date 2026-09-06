@@ -1437,7 +1437,7 @@ function PricingSection({ data }: { data: any }) {
                 <ul className="mt-7 space-y-3">
                   {plan.items.map((item: string, itemIndex: number) => (
                     <li
-                      key={item}
+                      key={tx(item)}
                       className="flex items-center gap-3 text-sm font-bold"
                       data-visual-editable="true"
                       data-visual-edit-id={`pricing.${index}.item.${itemIndex}`}
@@ -1450,7 +1450,7 @@ function PricingSection({ data }: { data: any }) {
                           plan.featured ? "bg-[#f0cdb4]" : "bg-[#b78563]",
                         )}
                       />
-                      {item}
+                      {tx(item)}
                     </li>
                   ))}
                 </ul>
@@ -1904,7 +1904,7 @@ function PageHero({
           data-visual-edit-type="text"
           data-visual-edit-label={tx("טקסט עמוד פנימי")}
         >
-          {text}
+          {tx(text)}
         </p>
       </div>
     </section>

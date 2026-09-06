@@ -6,6 +6,7 @@ import generatedExactLexicon from "./templateExactLexicon.generated.json";
 import studioExactLexicon from "./templateExactLexicon.studio.json";
 import storeExactLexicon from "./templateExactLexicon.store.json";
 import sharedExactLexicon from "./templateExactLexicon.shared.json";
+import heroesExactLexicon from "./templateExactLexicon.heroes.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -24,6 +25,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(studioExactLexicon as Record<string, PhraseTranslation>),
   ...(storeExactLexicon as Record<string, PhraseTranslation>),
   ...(sharedExactLexicon as Record<string, PhraseTranslation>),
+  ...(heroesExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 

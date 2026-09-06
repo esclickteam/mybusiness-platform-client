@@ -110,7 +110,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 </div>
                 <div>
                   <h3 className="t-display text-2xl md:text-5xl leading-none text-white">{title}</h3>
-                  <p className="mt-4 min-h-[56px] text-sm font-medium leading-6 text-white/58">{text}</p>
+                  <p className="mt-4 min-h-[56px] text-sm font-medium leading-6 text-white/58">{tx(text)}</p>
                 </div>
                 <div className="mt-7 flex items-end justify-between border-t border-white/15 pt-5">
                   <span className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--a)]">{tx("מחיר")}</span>

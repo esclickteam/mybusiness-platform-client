@@ -143,7 +143,7 @@ function Menu({ data }: { data: Record<string, any> }) {
               >
                 <div>
                   <h3 className="s-display text-2xl font-semibold text-[var(--s-text)]">{title}</h3>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--s-muted)]">{text}</p>
+                  <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--s-muted)]">{tx(text)}</p>
                 </div>
                 <p className="s-display text-3xl font-bold text-[var(--s-primary)]">₪{price}</p>
               </article>
@@ -237,7 +237,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
         <div className="mt-16 grid gap-10 lg:grid-cols-3">
           {reviews.map(([text, name, role]) => (
             <blockquote key={name} className="border-t border-[var(--s-line-strong)] pt-8">
-              <p className="s-display text-2xl font-semibold leading-10 text-[var(--s-text)]">״{text}״</p>
+              <p className="s-display text-2xl font-semibold leading-10 text-[var(--s-text)]">״{tx(text)}״</p>
               <footer className="mt-8">
                 <p className="font-bold text-[var(--s-primary)]">{name}</p>
                 <p className="mt-1 text-sm text-[var(--s-muted)]">{role}</p>
@@ -274,7 +274,7 @@ function Events({ data, openModal }: { data: Record<string, any>; openModal: () 
               <p className="s-display text-2xl md:text-5xl font-bold text-[var(--s-primary)]">{number}</p>
               <div>
                 <h3 className="text-2xl font-extrabold text-[var(--s-text)]">{title}</h3>
-                <p className="mt-3 max-w-2xl leading-8 text-[var(--s-muted)]">{text}</p>
+                <p className="mt-3 max-w-2xl leading-8 text-[var(--s-muted)]">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -305,8 +305,8 @@ function HoursLocation({ data }: { data: Record<string, any> }) {
               <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[var(--s-primary)]">{tx("שעות")}</p>
               <div className="mt-5 space-y-4">
                 {hours.map((item) => (
-                  <p key={item} className="border-b border-[var(--s-line)] pb-4 text-[var(--s-text)]">
-                    {item}
+                  <p key={tx(item)} className="border-b border-[var(--s-line)] pb-4 text-[var(--s-text)]">
+                    {tx(item)}
                   </p>
                 ))}
               </div>

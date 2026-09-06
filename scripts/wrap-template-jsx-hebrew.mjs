@@ -43,6 +43,20 @@ function wrapFile(filePath) {
     return `>{tx(${JSON.stringify(trimmed)})}<`;
   });
 
+  src = src.replace(/\{(text|item|d)\}/g, (full, name, offset) => {
+    const after = src[offset + full.length] || "";
+    if (after === "." || after === "?" || after === ":") return full;
+    const before = src.slice(Math.max(0, offset - 12), offset);
+    if (before.includes("tx(")) return full;
+    changed += 1;
+    return `{tx(${name})}`;
+  });
+
+  src = src.replace(/פרק \{i\+1\}/g, () => {
+    changed += 1;
+    return `{tx("פרק")} {i+1}`;
+  });
+
   src = src.replace(
     /(placeholder|aria-label|title|alt|label|text|data-visual-edit-label|data-bizuply-success-message)=(["'])([^"']*[\u0590-\u05FF][^"']*)\2/g,
     (full, attr, _quote, value) => {

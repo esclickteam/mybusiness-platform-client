@@ -50,7 +50,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         </div>
         <nav className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--dark)]/62 lg:flex">
           {navItems.map((item) => (
-            <span key={item}>{item}</span>
+            <span key={tx(item)}>{tx(item)}</span>
           ))}
         </nav>
         <button
@@ -116,7 +116,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--p)]">0{index + 1}</p>
                   <h3 className="mt-5 text-3xl font-semibold text-[var(--dark)]">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <p className="border-t border-[var(--p)]/15 pt-4 text-sm font-semibold text-[var(--p)]">{detail}</p>
               </article>
@@ -193,7 +193,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 0{index + 1}
               </div>
               <h3 className="mt-7 text-xl font-semibold text-[var(--dark)]">{title}</h3>
-              <p className="mx-auto mt-3 max-w-[230px] text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mx-auto mt-3 max-w-[230px] text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </Reveal>
           ))}
         </div>
@@ -246,7 +246,7 @@ function LoveStories({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 130} variant={index === 0 ? "right" : "left"}>
               <blockquote className="h-full bg-white p-8 shadow-[0_22px_60px_rgba(91,124,153,0.12)] ring-1 ring-[var(--p)]/12 lg:p-12">
                 <span className="t-script text-3xl md:text-7xl leading-none text-[var(--p)]" style={{ opacity: 0.4 }}>love</span>
-                <p className="mt-4 text-xl leading-9 text-[var(--dark)]">"{text}"</p>
+                <p className="mt-4 text-xl leading-9 text-[var(--dark)]">"{tx(text)}"</p>
                 <footer className="mt-10 border-t border-[var(--p)]/20 pt-5">
                   <p className="font-bold text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>

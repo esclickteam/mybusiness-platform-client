@@ -1068,7 +1068,7 @@ function PageHero({
             {title}
           </h1>
           <p className="elevora-page-text" data-editable="text">
-            {text}
+            {tx(text)}
           </p>
         </div>
       </div>

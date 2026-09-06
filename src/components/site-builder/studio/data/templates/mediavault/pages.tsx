@@ -156,7 +156,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                   <span className="h-2 w-2 rounded-full bg-[var(--p)]" />
                 </div>
                 <h3 className="text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -198,7 +198,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   <h3 className="text-2xl font-bold">{title}</h3>
                   <div className="mt-5 border border-white/15 bg-[var(--bg)] p-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">KPI STRIP</p>
-                    <p className="ag-display mt-2 text-2xl font-extrabold text-[var(--accent)]">{text}</p>
+                    <p className="ag-display mt-2 text-2xl font-extrabold text-[var(--accent)]">{tx(text)}</p>
                   </div>
                 </div>
               </article>
@@ -303,7 +303,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   <div className="mt-6 h-2 bg-white/10">
                     <span className="block h-full bg-[var(--p)]" style={{ width: `${82 - i * 14}%` }} />
                   </div>
@@ -342,7 +342,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   <span className="h-2 w-2 rounded-full bg-[var(--p)]" />
                 </div>
                 <h3 className="mt-8 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-1">
                   {Array.from({ length: 6 }).map((_, barIndex) => (
                     <span key={barIndex} className={`h-1.5 ${barIndex <= i + 1 ? "bg-[var(--accent)]" : "bg-white/10"}`} />

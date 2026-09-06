@@ -393,7 +393,7 @@ function SectionTitle({
             align === "center" && "mx-auto"
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -418,9 +418,9 @@ function Marquee({
         )}
       >
         {doubled.map((item, index) => (
-          <React.Fragment key={`${item}-${index}`}>
+          <React.Fragment key={`${tx(item)}-${index}`}>
             <span className="text-xl font-black uppercase tracking-[-0.04em] text-white/80 sm:text-3xl">
-              {item}
+              {tx(item)}
             </span>
             <span className="text-[#f7c873]">✦</span>
           </React.Fragment>
@@ -650,10 +650,10 @@ function Partners() {
           {["Northway", "Moment", "Frontier", "Skyline", "Nova", "Studio X"].map(
             (item) => (
               <div
-                key={item}
+                key={tx(item)}
                 className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-[#10100e]/50 text-sm font-black uppercase tracking-[0.25em] text-white/42 transition duration-500 hover:bg-white hover:text-[#10100e]"
               >
-                {item}
+                {tx(item)}
               </div>
             )
           )}

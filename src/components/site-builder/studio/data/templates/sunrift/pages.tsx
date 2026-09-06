@@ -123,7 +123,7 @@ function CocktailCards({ data }: { data: Record<string, any> }) {
               <div className="p-5" style={{ background: "#2a1810" }}>
                 <p className="text-xs font-semibold" style={{ color: "#ff8c42" }}>{meta}</p>
                 <h3 className="tpl-display mt-2 text-2xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#c9a484" }}>{text}</p>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#c9a484" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

@@ -662,13 +662,13 @@ function About() {
 
           <div className="mt-8 grid gap-4">
             {spalcioData.about.bullets.map((item) => (
-              <div key={item} className="flex items-center gap-3">
+              <div key={tx(item)} className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-blue-600" />
                 <span
                   data-editable="true"
                   className="spalcio-editable font-semibold text-slate-700"
                 >
-                  {item}
+                  {tx(item)}
                 </span>
               </div>
             ))}

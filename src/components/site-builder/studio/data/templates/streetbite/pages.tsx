@@ -104,7 +104,7 @@ function NightCardStack({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="text-xs font-black" style={{ color: "#39d353" }}>{meta}</p>
                   <h3 className="tpl-display text-xl font-black">{title}</h3>
-                  <p className="text-xs" style={{ color: "#8b949e" }}>{text}</p>
+                  <p className="text-xs" style={{ color: "#8b949e" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

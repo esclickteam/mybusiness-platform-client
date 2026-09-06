@@ -130,7 +130,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
             <Reveal key={title} delayMs={i*80}>
               <article className="ag-card grid gap-4 border border-white/15 bg-[var(--surface)] p-5 md:grid-cols-[80px_1fr_auto] md:items-center">
                 <span className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--accent)]">0{i+1}</span>
-                <div className="text-start"><h3 className="text-2xl font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></div>
+                <div className="text-start"><h3 className="text-2xl font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{tx(text)}</p></div>
                 <button type="button" onClick={() => goTo("contact")} className="border border-[var(--p)] px-4 py-2 text-xs font-black text-[var(--p)]">GO</button>
               </article>
             </Reveal>
@@ -167,7 +167,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 <div className="px-2 py-3">
                   <p className="ag-display text-2xl md:text-5xl font-extrabold text-white/10">0{i + 1}</p>
                   <h3 className="-mt-4 text-2xl font-black uppercase">{title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <img src={image} alt="" className="h-28 w-full object-cover md:h-24" />
               </article>
@@ -271,7 +271,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                   <span className="ag-display text-2xl md:text-5xl font-extrabold text-white/10">0{i + 1}</span>
                 </div>
                 <h3 className="mt-8 text-2xl font-black uppercase">{title}</h3>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <button type="button" onClick={() => goTo("contact")} className="mt-6 bg-[var(--p)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white">Use this card</button>
               </article>
             </Reveal>
@@ -308,7 +308,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--accent)]">{i === 0 ? "Lead" : i === 1 ? "Qualify" : i === 2 ? "Close" : "Expand"}</p>
                 <h3 className="mt-3 text-2xl font-black uppercase">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}

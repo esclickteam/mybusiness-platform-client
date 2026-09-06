@@ -262,7 +262,7 @@ function PanelProcessRail({ data }: { data: Record<string, any> }) {
         {steps.map(([t,d],i) => (
           <div key={t} className="tpl-climb border-t pt-4" style={{ borderColor: "#ea580c", animationDelay: `${i*0.1}s` }}>
             <span className="text-2xl font-bold" style={{ color: "#ea580c" }}>0{i+1}</span>
-            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#78716c" }}>{d}</p>
+            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#78716c" }}>{tx(d)}</p>
           </div>
         ))}
       </div>

@@ -99,7 +99,7 @@ function ServicesFilmstrip({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-x-0 bottom-0 p-5">
                   <span className="text-xs font-bold text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-2 text-2xl font-bold tracking-[-0.05em]">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-white/70">{text}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/70">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -166,7 +166,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                   <span className="text-sm font-bold text-[var(--p)]">0{index + 1}</span>
                   <h3 className="text-2xl font-bold tracking-[-0.05em]">{title}</h3>
                 </div>
-                <p className="border-y border-dashed border-white/14 py-4 text-sm leading-7 text-white/64 md:border-x md:border-y-0 md:px-8 md:py-0">{text}</p>
+                <p className="border-y border-dashed border-white/14 py-4 text-sm leading-7 text-white/64 md:border-x md:border-y-0 md:px-8 md:py-0">{tx(text)}</p>
                 <div className="text-left">
                   <span className="block text-xs font-bold uppercase tracking-[0.2em] text-white/42">starting</span>
                   <strong className="text-3xl text-[var(--p)]">{price}</strong>
@@ -201,7 +201,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 {index < steps.length - 1 ? <span className="absolute left-0 top-1/2 hidden h-16 w-px -translate-y-1/2 bg-[var(--p)] lg:block" /> : null}
                 <div className="text-2xl md:text-5xl font-bold tracking-[-0.08em] text-[var(--p)]">0{index + 1}</div>
                 <h3 className="mt-4 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/58">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-white/58">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -260,7 +260,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
                   <img src={image} alt="" className="h-full w-full object-cover grayscale transition duration-700 hover:grayscale-0" />
                 </div>
                 <figcaption className="border-x border-b border-white/12 bg-black p-5">
-                  <p className="text-sm leading-7 text-white/76">"{text}"</p>
+                  <p className="text-sm leading-7 text-white/76">"{tx(text)}"</p>
                   <p className="mt-4 font-bold text-[var(--p)]">{name}</p>
                   <p className="text-xs text-white/45">{role}</p>
                 </figcaption>

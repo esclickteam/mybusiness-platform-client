@@ -235,7 +235,7 @@ function ImageBand({
       <div className={cx("mx-auto grid max-w-7xl lg:grid-cols-2", reverse && "lg:[&>*:first-child]:order-2")}>
         <div className="flex flex-col justify-center px-5 py-16 lg:px-12 lg:py-24">
           <h2 className="tpl-display text-4xl font-bold leading-[1.08] md:text-5xl">{title}</h2>
-          <p className="mt-6 max-w-md text-base leading-8" style={{ color: "#a89a88" }}>{text}</p>
+          <p className="mt-6 max-w-md text-base leading-8" style={{ color: "#a89a88" }}>{tx(text)}</p>
         </div>
         <div className="min-h-[320px] lg:min-h-[520px]">
           <img src={image} alt="" className="h-full w-full object-cover" />
@@ -260,7 +260,7 @@ function ItemsList({ data }: { data: Record<string, any> }) {
             <div key={title} className="grid gap-3 border-t py-8 md:grid-cols-[0.9fr_0.4fr_1.2fr] md:items-baseline" style={{ borderColor: "rgba(243,235,225,0.14)" }}>
               <h3 className="tpl-display text-2xl font-bold">{title}</h3>
               <p className="text-sm font-semibold" style={{ color: "#c4a574" }}>{meta}</p>
-              <p className="text-base leading-7" style={{ color: "#a89a88" }}>{text}</p>
+              <p className="text-base leading-7" style={{ color: "#a89a88" }}>{tx(text)}</p>
             </div>
           ))}
         </div>

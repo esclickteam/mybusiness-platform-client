@@ -212,7 +212,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <span className="t-display text-3xl md:text-7xl font-semibold text-white/10">0{index + 1}</span>
                 <div>
                   <h3 className="t-display text-2xl md:text-5xl font-semibold">{title}</h3>
-                  <p className="mt-4 min-h-[84px] text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 min-h-[84px] text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <p className="t-display text-2xl md:text-5xl font-semibold text-[var(--p)]">{price}</p>
               </article>

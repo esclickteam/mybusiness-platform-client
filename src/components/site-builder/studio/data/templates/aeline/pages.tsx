@@ -509,10 +509,10 @@ function HeroCardRail() {
                 <div className="mt-3 grid gap-1">
                   {["מודעות", "לידים", "רימרקטינג"].map((item, itemIndex) => (
                     <div
-                      key={`${item}-${itemIndex}`}
+                      key={`${tx(item)}-${itemIndex}`}
                       className="flex items-center justify-between rounded-md bg-[#160f2e]/5 px-2 py-1 text-[8px] font-bold"
                     >
-                      <span>{item}</span>
+                      <span>{tx(item)}</span>
                       <span>₪720</span>
                     </div>
                   ))}
@@ -929,9 +929,9 @@ function PricingSection({
 
               <div className="mt-8 grid gap-3">
                 {plan.items.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-bold">
+                  <div key={tx(item)} className="flex items-center gap-3 text-sm font-bold">
                     <CheckCircle2 className="h-5 w-5 text-[#7FFFD4]" />
-                    <span>{item}</span>
+                    <span>{tx(item)}</span>
                   </div>
                 ))}
               </div>
@@ -985,7 +985,7 @@ function TestimonialsSection() {
                 className="rounded-[26px] border border-white/10 bg-white/5 p-6 transition hover:-translate-y-2"
               >
                 <p data-gjs-type="text" className="text-sm leading-7 text-white/70">
-                  “{text}”
+                  “{tx(text)}”
                 </p>
 
                 <p className="mt-5 text-sm font-black text-white">

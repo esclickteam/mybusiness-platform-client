@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { Bell, MessageCircle, Phone } from "lucide-react";
 
 type Source = "meta" | "site" | "google" | "whatsapp";
@@ -55,7 +56,7 @@ const MAX = 14;
  * still screenshot after a couple of seconds.
  */
 export default function LiveStage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
 
   const people = useMemo(
@@ -175,7 +176,7 @@ export default function LiveStage() {
   ];
 
   return (
-    <div className="relative flex h-full w-full flex-col" dir="rtl">
+    <div className="relative flex h-full w-full flex-col" dir={getTextDirection(i18n.language)}>
       {/* Atmosphere — clipped so it never expands the page */}
       <div
         className="pointer-events-none absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-400/25 via-violet-300/20 to-cyan-300/25 blur-3xl"

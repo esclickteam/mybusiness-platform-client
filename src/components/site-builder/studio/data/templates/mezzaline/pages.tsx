@@ -112,7 +112,7 @@ function PlatterScroll({ data }: { data: Record<string, any> }) {
                 <div className="p-4">
                   <p className="text-xs" style={{ color: "#5c7a4a" }}>{meta}</p>
                   <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                  <p className="mt-2 text-sm leading-6" style={{ color: "#7a7260" }}>{text}</p>
+                  <p className="mt-2 text-sm leading-6" style={{ color: "#7a7260" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

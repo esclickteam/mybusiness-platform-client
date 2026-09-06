@@ -117,9 +117,9 @@ function WeekendCalendar({ data }: { data: Record<string, any> }) {
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(58,42,30,0.12)" }}>
       <div className="mx-auto grid max-w-3xl grid-cols-1 md:grid-cols-3 gap-3">
         {days.map(([d, h], i) => (
-          <Reveal key={d} delayMs={i * 70} variant="up">
+          <Reveal key={tx(d)} delayMs={i * 70} variant="up">
             <div className="border p-4 text-center" style={{ borderColor: "rgba(58,42,30,0.12)", background: "#fff8f0" }}>
-              <div className="tpl-display text-2xl font-bold" style={{ color: "#f4a261" }}>{d}</div>
+              <div className="tpl-display text-2xl font-bold" style={{ color: "#f4a261" }}>{tx(d)}</div>
               <p className="mt-1 text-sm" style={{ color: "#9a7b62" }}>{h}</p>
             </div>
           </Reveal>

@@ -109,7 +109,7 @@ function SurfboardRail({ data }: { data: Record<string, any> }) {
               <div className="p-4">
                 <p className="text-xs font-bold" style={{ color: "#0077b6" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm" style={{ color: "#4a7185" }}>{text}</p>
+                <p className="mt-2 text-sm" style={{ color: "#4a7185" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

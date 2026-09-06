@@ -151,7 +151,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className={`ag-card border border-black/10 bg-[var(--surface)] p-6 text-start ${i%2===0?"lg:translate-y-6":""}`}>
                 <div className="mb-4 h-2 w-12 bg-[var(--p)]" />
                 <h3 className="text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -195,7 +195,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                       ))}
                     </div>
                     <h3 className="ag-display mt-5 text-3xl font-extrabold">{title}</h3>
-                    <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                   <div className="mt-8 border-t border-black/10 pt-4">
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--muted)]">Outcome</p>
@@ -320,7 +320,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className={`ag-card border border-black/10 bg-[var(--bg)] p-7 text-start shadow-[12px_12px_0_rgba(8,145,178,0.12)] ${rotations[i]}`}>
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">Recruiter note 0{i + 1}</p>
                 <h3 className="mt-5 text-2xl font-extrabold">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <button type="button" onClick={() => goTo("contact")} className="mt-7 border-b border-[var(--p)] pb-1 text-sm font-black text-[var(--p)]">{tx("דברו עם מגייס/ת")}</button>
               </article>
             </Reveal>
@@ -352,7 +352,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <article className="border border-black/10 bg-[var(--surface)] p-6 text-center">
                   <p className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[var(--p)] text-sm font-black text-white">0{i + 1}</p>
                   <h3 className="ag-display mt-4 text-2xl font-extrabold">{title}</h3>
-                  <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </article>
                 {i < steps.length - 1 ? (
                   <div className="mx-auto my-4 h-8 w-8 rotate-45 border-b-4 border-r-4 border-[var(--p)]" />

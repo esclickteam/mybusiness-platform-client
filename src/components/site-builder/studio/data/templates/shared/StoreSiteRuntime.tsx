@@ -266,7 +266,7 @@ function SectionHeading({
       <h2 className={cx("store-display mt-3 font-black leading-tight", giant ? "text-5xl md:text-7xl" : "text-4xl md:text-5xl")}>
         {title}
       </h2>
-      {text ? <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p> : null}
+      {text ? <p className="mt-4 text-base leading-8 text-[var(--muted)]">{tx(text)}</p> : null}
     </Reveal>
   );
 }
@@ -653,7 +653,7 @@ export default function StoreSiteRuntime({
     <section {...sectionProps(id, "products", label)} className={cx("px-5 py-20 lg:px-8", className)} data-bizuply-widget="products">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <SectionHeading eyebrow={g("productsEyebrow")} title={title} text={text} />
+          <SectionHeading eyebrow={g("productsEyebrow")} title={title} text={tx(text)} />
           <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em]">{tx("לכל המוצרים")}</button>
         </div>
         {loading ? (
@@ -689,7 +689,7 @@ export default function StoreSiteRuntime({
             <article className={cx("store-card h-full border border-[var(--line)] bg-[var(--surface)] p-7 text-start", cardClassName)}>
               <p className="text-sm font-black text-[var(--p)]">0{index + 1}</p>
               <h3 className="store-display mt-4 text-2xl font-black">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </article>
           </Reveal>
         ))}
@@ -803,7 +803,7 @@ export default function StoreSiteRuntime({
           ].map(([name, text], index) => (
             <Reveal key={name} delayMs={index * 110} variant="scale">
               <blockquote className="h-full border border-white/15 bg-white/5 p-7 text-start backdrop-blur">
-                <p className="text-sm leading-7 text-white/80">"{text}"</p>
+                <p className="text-sm leading-7 text-white/80">"{tx(text)}"</p>
                 <footer className="mt-6 text-sm font-black text-[var(--accent)]">{name}</footer>
               </blockquote>
             </Reveal>
@@ -817,8 +817,8 @@ export default function StoreSiteRuntime({
     <section {...sectionProps("shipping-teaser", "shipping", "משלוחים")} className={cx("px-5 py-16 lg:px-8", className)}>
       <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
         {[g("shipBenefit"), g("returnBenefit"), g("supportBenefit"), g("secureBenefit")].map((text, i) => (
-          <Reveal key={text} delayMs={i * 80}>
-            <div className="border border-[var(--line)] bg-[var(--surface)] p-5 text-center text-sm font-bold">{text}</div>
+          <Reveal key={tx(text)} delayMs={i * 80}>
+            <div className="border border-[var(--line)] bg-[var(--surface)] p-5 text-center text-sm font-bold">{tx(text)}</div>
           </Reveal>
         ))}
       </div>
@@ -871,7 +871,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("cinema-spec-strip", "features", "פס מפרטים")} className="border-y border-cyan-300/20 bg-cyan-300/10 px-5 py-12 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-              {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <Reveal key={text} delayMs={i * 80}><p className="text-start text-sm leading-7 text-cyan-50">{text}</p></Reveal>)}
+              {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <Reveal key={tx(text)} delayMs={i * 80}><p className="text-start text-sm leading-7 text-cyan-50">{tx(text)}</p></Reveal>)}
             </div>
           </section>
           <ValuesStrip className="bg-black text-white" cardClassName="bg-white/5" />
@@ -1188,7 +1188,7 @@ export default function StoreSiteRuntime({
           <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={x} />)}</div></section>
           <ProductRail id="tool-benches" label={tx("ספסלי מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
           <section {...sectionProps("yard-categories", "categories", "קירות כלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
-          <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={text} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{text}</p></div>)}</div></section>
+          <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={tx(text)} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{tx(text)}</p></div>)}</div></section>
           <section {...sectionProps("project-story", "about", "סיפור פרויקט")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[16/10] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <ValuesStrip className="bg-[var(--bg-soft)]" />
           <Testimonials />
@@ -1417,8 +1417,8 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("product-details", "features", "פרטים")} className="bg-[var(--bg-soft)] px-5 py-16 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
           {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => (
-            <Reveal key={text} delayMs={i * 80}>
-              <div className="border border-[var(--line)] bg-[var(--surface)] p-6 text-start text-sm leading-7">{text}</div>
+            <Reveal key={tx(text)} delayMs={i * 80}>
+              <div className="border border-[var(--line)] bg-[var(--surface)] p-6 text-start text-sm leading-7">{tx(text)}</div>
             </Reveal>
           ))}
         </div>
@@ -1696,7 +1696,7 @@ export default function StoreSiteRuntime({
               <Reveal key={title} delayMs={i * 70}>
                 <article className="border border-[var(--line)] bg-[var(--surface)] p-6">
                   <h3 className="font-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </article>
               </Reveal>
             ))}

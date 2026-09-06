@@ -390,10 +390,10 @@ function SteelMarquee({ data }: { data: Record<string, any> }) {
       <div className="flex w-max items-center">
         {[...items, ...items].map((item, index) => (
           <span
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="steelworks-marquee-item shrink-0 border-l px-7 text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]"
           >
-            {item}
+            {tx(item)}
           </span>
         ))}
       </div>
@@ -470,10 +470,10 @@ function SteelAboutBand({
           />
           <div className="mt-8 grid gap-3">
             {checkpoints.map((item) => (
-              <div key={item} className="grid grid-cols-[20px_1fr] items-start gap-4 border-t border-white/10 pt-4">
+              <div key={tx(item)} className="grid grid-cols-[20px_1fr] items-start gap-4 border-t border-white/10 pt-4">
                 <span className="mt-1 h-2 w-2 bg-[#ff6b2c]" />
                 <TemplateText as="p" className="text-sm leading-7 text-[#ddd4c7]">
-                  {item}
+                  {tx(item)}
                 </TemplateText>
               </div>
             ))}

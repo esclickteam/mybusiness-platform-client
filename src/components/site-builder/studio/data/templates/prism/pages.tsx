@@ -374,10 +374,10 @@ function PrismManifestoBand({ data }: { data: Record<string, any> }) {
       <div className="flex w-max items-center">
         {[...items, ...items].map((item, index) => (
           <span
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="prism-marquee-item shrink-0 border-l border-black px-7 text-[11px] font-black uppercase tracking-[0.34em] text-[#0057ff]"
           >
-            {item}
+            {tx(item)}
           </span>
         ))}
       </div>
@@ -452,13 +452,13 @@ function PrismAboutBand({
                 "אנחנו מחברים קונספט, אתר ומסרים למערכת אחת עקבית.",
                 "כל עמוד מדבר בשפה גרפית אחת עם היררכיה חדה.",
               ].map((item, index) => (
-                <div key={item} className="grid grid-cols-[26px_1fr] items-start gap-4 border-t border-black pt-4">
+                <div key={tx(item)} className="grid grid-cols-[26px_1fr] items-start gap-4 border-t border-black pt-4">
                   <span
                     className="mt-1 h-4 w-4 border border-black"
                     style={{ background: index === 0 ? PRISM_RED : index === 1 ? PRISM_BLUE : PRISM_YELLOW }}
                   />
                   <TemplateText as="p" className="text-sm leading-7 text-[#4d4a43]">
-                    {item}
+                    {tx(item)}
                   </TemplateText>
                 </div>
               ))}

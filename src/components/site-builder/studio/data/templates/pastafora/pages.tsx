@@ -150,7 +150,7 @@ function NoodleHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
               <blockquote className="border-r-4 pr-5" style={{ borderColor: "#b91c1c" }}>
-                <p className="text-lg leading-8">״{text}״</p>
+                <p className="text-lg leading-8">״{tx(text)}״</p>
                 <footer className="mt-3 text-sm font-bold" style={{ color: "#8b6b5a" }}>{name} · {role}</footer>
               </blockquote>
             </Reveal>
@@ -246,7 +246,7 @@ function NoodleFullMenuBoard({ data }: { data: Record<string, any> }) {
                     <h3 className="tpl-display text-xl font-bold">{title}</h3>
                     <span className="text-xs font-bold" style={{ color: "#b91c1c" }}>{meta}</span>
                   </div>
-                  <p className="mt-2 text-sm" style={{ color: "#8b6b5a" }}>{text}</p>
+                  <p className="mt-2 text-sm" style={{ color: "#8b6b5a" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -386,7 +386,7 @@ function NoodleAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#b91c1c", background: "#faf7f2" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#b91c1c" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

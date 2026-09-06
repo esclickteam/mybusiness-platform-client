@@ -354,7 +354,7 @@ function SectionTitle({
             light ? "text-[#fbf6ec]/72" : "text-[#5d6c61]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       ) : null}
     </div>
@@ -519,10 +519,10 @@ function BookingModal({
                 "התאמה אישית לפי סוג השירות",
               ].map((item) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold backdrop-blur"
                 >
-                  ✓ {item}
+                  ✓ {tx(item)}
                 </div>
               ))}
             </div>
@@ -661,10 +661,10 @@ function Hero({
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((item) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="rounded-2xl bg-[#f2eadc] px-3 py-2 text-center text-xs font-semibold text-[#244236]"
                 >
-                  {item}
+                  {tx(item)}
                 </div>
               ))}
             </div>
@@ -715,7 +715,7 @@ function ExperienceStrip({
                 <span className="h-2 w-2 rounded-full bg-[#b8cfae] transition duration-500 group-hover:scale-[2]" />
               </div>
               <h3 className="text-xl font-semibold tracking-[-0.04em]">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{text}</p>
+              <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{tx(text)}</p>
             </div>
           ))}
 
@@ -773,7 +773,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           <div className="mt-9 grid gap-4 md:grid-cols-2">
             {bullets.map((item, index) => (
               <div
-                key={item}
+                key={tx(item)}
                 className={cx(
                   "group rounded-[30px] border border-[#244236]/10 bg-white/62 p-5 text-[#405349] shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:bg-white/85",
                   index === 1 || index === 2 ? "md:translate-y-6" : "",
@@ -782,7 +782,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 <span className="mb-4 grid h-10 w-10 place-items-center rounded-full bg-[#b8cfae]/45 text-[#244236] transition duration-500 group-hover:bg-[#244236] group-hover:text-[#fbf6ec]">
                   ✓
                 </span>
-                <p className="text-base font-semibold leading-7">{item}</p>
+                <p className="text-base font-semibold leading-7">{tx(item)}</p>
               </div>
             ))}
           </div>
@@ -1004,7 +1004,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {title}
               </h3>
 
-              <p className="mt-4 text-lg leading-8 text-[#5f6c62]">{text}</p>
+              <p className="mt-4 text-lg leading-8 text-[#5f6c62]">{tx(text)}</p>
 
               <div className="mt-7 h-2 w-full overflow-hidden rounded-full bg-[#244236]/8">
                 <div
@@ -1076,7 +1076,7 @@ function PricingSection({
               </div>
 
               <p className={cx("mt-5 leading-7", index === 1 ? "text-[#fbf6ec]/75" : "text-[#5f6c62]")}>
-                {text}
+                {tx(text)}
               </p>
 
               <ul className={cx("mt-7 space-y-3 text-sm", index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]")}>
@@ -1223,7 +1223,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
                 {title}
               </h3>
 
-              <p className="mt-4 leading-7 text-[#5f6c62]">{text}</p>
+              <p className="mt-4 leading-7 text-[#5f6c62]">{tx(text)}</p>
 
               <div className="mt-7 h-1.5 w-full overflow-hidden rounded-full bg-[#244236]/10">
                 <div

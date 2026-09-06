@@ -150,7 +150,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">0{index + 1}</p>
                   <h3 className="t-serif mt-4 text-3xl font-black tracking-[-0.04em] text-[var(--dark)]">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <p className="border-t border-[var(--p)]/20 pt-4 text-sm font-black text-[var(--p)]">{meta}</p>
               </article>
@@ -192,7 +192,7 @@ function DaycareMosaic({ data }: { data: Record<string, any> }) {
               <Reveal key={title} delayMs={index * 110}>
                 <article className="h-full bg-[var(--p)] p-6 text-white">
                   <h3 className="text-2xl font-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-white/80">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/80">{tx(text)}</p>
                 </article>
               </Reveal>
             ))}
@@ -326,7 +326,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="h-full bg-[var(--bg)] p-7 shadow-[0_16px_48px_rgba(69,45,12,0.06)]">
                 <p className="t-serif text-3xl md:text-6xl font-black leading-none text-[var(--p)]">"</p>
-                <p className="mt-2 text-lg font-bold leading-8 text-[var(--dark)]">{text}</p>
+                <p className="mt-2 text-lg font-bold leading-8 text-[var(--dark)]">{tx(text)}</p>
                 <footer className="mt-8 border-t border-[var(--p)]/20 pt-5">
                   <p className="font-black text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>

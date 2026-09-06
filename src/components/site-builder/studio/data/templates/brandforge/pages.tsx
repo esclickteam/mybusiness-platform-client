@@ -132,7 +132,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
             <Reveal key={title} delayMs={i*80}>
               <article className={`ag-card min-h-[200px] p-8 text-start ${i%2===0?"bg-[var(--dark)] text-white":"bg-[var(--accent)] text-[var(--dark)]"}`}>
                 <h3 className="ag-display text-3xl font-extrabold">{title}</h3>
-                <p className="mt-4 text-sm leading-7 opacity-80">{text}</p>
+                <p className="mt-4 text-sm leading-7 opacity-80">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -169,7 +169,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                     <p className="ag-display text-3xl md:text-7xl font-extrabold leading-none text-[var(--dark)]/10">0{i + 1}</p>
                     <h3 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{title}</h3>
                   </div>
-                  <p className="mt-8 max-w-xl text-base font-semibold leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-8 max-w-xl text-base font-semibold leading-8 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -270,7 +270,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                   <h3 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{title}</h3>
                 </div>
                 <div>
-                  <p className="text-base font-semibold leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="text-base font-semibold leading-8 text-[var(--muted)]">{tx(text)}</p>
                   <button type="button" onClick={() => goTo("contact")} className="mt-5 border-b-2 border-[var(--p)] text-sm font-black text-[var(--p)]">{tx("ליישום במותג")}</button>
                 </div>
               </article>
@@ -305,7 +305,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className={`ag-card min-h-[280px] border-black/10 p-8 text-start md:p-10 ${i === 0 || i === 3 ? "bg-[var(--dark)] text-white" : "bg-[var(--bg)] text-[var(--dark)]"}`}>
                 <p className={`ag-display text-8xl font-extrabold leading-none ${i === 0 || i === 3 ? "text-white/20" : "text-[var(--accent)]"}`}>0{i + 1}</p>
                 <h3 className="ag-display mt-6 text-2xl sm:text-4xl font-extrabold">{title}</h3>
-                <p className={`mt-4 text-sm font-semibold leading-7 ${i === 0 || i === 3 ? "text-white/70" : "text-[var(--muted)]"}`}>{text}</p>
+                <p className={`mt-4 text-sm font-semibold leading-7 ${i === 0 || i === 3 ? "text-white/70" : "text-[var(--muted)]"}`}>{tx(text)}</p>
               </article>
             </Reveal>
           ))}

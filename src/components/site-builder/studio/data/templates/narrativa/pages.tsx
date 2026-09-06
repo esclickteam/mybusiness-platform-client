@@ -143,7 +143,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className={`border-b border-black/10 p-7 text-start md:border-l ${i<2?"md:border-b":"md:border-b-0"}`}>
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-[var(--p)]">Column 0{i+1}</p>
                 <h3 className="ag-display mt-3 text-3xl font-bold">{title}</h3>
-                <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -177,7 +177,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   </div>
                   <img src={image} alt="" className="h-24 w-24 shrink-0 border border-black/10 object-cover" />
                 </div>
-                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{tx(text)}</p>
                 <div className="mt-8 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
                   <span>Clipping 0{i + 1}</span>
                   <span>{getValue(data, "brandName")}</span>
@@ -282,7 +282,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className="border-b border-black/10 pb-8 text-start">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">Column 0{i + 1}</p>
                 <h3 className="ag-display mt-3 text-3xl font-bold">{title}</h3>
-                <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                 <blockquote className="mt-6 border-r-4 border-[var(--p)] bg-[var(--surface)] p-5 text-xl font-bold leading-9">
                   "{i === 0 ? "כותרת טובה מתחילה בזווית, לא ברשימת מסרים." : i === 1 ? "מדיה אוהבת קצב עקבי יותר מהבטחה גדולה." : "משבר נמדד בדקות הראשונות ובשקט שאחריו."}"
                 </blockquote>
@@ -316,7 +316,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="min-h-full border-b border-black/10 p-6 text-start md:border-b-0 md:border-l md:last:border-l-0">
                 <p className="ag-display text-3xl font-bold text-[var(--p)]">Week {i + 1}</p>
                 <h3 className="mt-5 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}

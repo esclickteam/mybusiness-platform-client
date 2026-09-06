@@ -995,7 +995,7 @@ function TrustStrip({ data, scope }: SharedProps & ScopedProps) {
                 `יתרון מהיר ${index + 1}`,
               )}
             >
-              {item}
+              {tx(item)}
             </span>
           ))}
         </div>
@@ -1849,7 +1849,7 @@ function SectionTitle({
           data-editable="text"
           {...visualProps(`${scope}.text`, "text", "תיאור האזור")}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -2077,7 +2077,7 @@ function PageHero({
             data-editable="text"
             {...visualProps(textId, "text", "תיאור העמוד")}
           >
-            {text}
+            {tx(text)}
           </p>
         </div>
       </div>

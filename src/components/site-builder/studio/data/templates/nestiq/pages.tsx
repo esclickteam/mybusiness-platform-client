@@ -274,7 +274,7 @@ function CounterProcessRail({ data }: { data: Record<string, any> }) {
         {steps.map(([t,d],i) => (
           <div key={t} className="tpl-climb border-t pt-4" style={{ borderColor: "#7c3aed", animationDelay: `${i*0.1}s` }}>
             <span className="text-2xl font-bold" style={{ color: "#7c3aed" }}>0{i+1}</span>
-            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#6366f1" }}>{d}</p>
+            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#6366f1" }}>{tx(d)}</p>
           </div>
         ))}
       </div>

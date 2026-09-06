@@ -209,7 +209,7 @@ function SectionTitle({
 
       {text && (
         <p className="mt-5 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -397,10 +397,10 @@ function Hero({
             <div className="mb-8 flex flex-wrap justify-start gap-3">
               {chips.map((item) => (
                 <span
-                  key={item}
+                  key={tx(item)}
                   className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/62"
                 >
-                  {item}
+                  {tx(item)}
                 </span>
               ))}
             </div>
@@ -446,10 +446,10 @@ function Partners({ data }: { data: NadlanistData }) {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {partners.map((item) => (
             <div
-              key={item}
+              key={tx(item)}
               className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-[#06101f] text-sm font-black uppercase tracking-[0.14em] text-white/50 transition duration-500 hover:bg-[#c9a85f] hover:text-[#071426]"
             >
-              {item}
+              {tx(item)}
             </div>
           ))}
         </div>

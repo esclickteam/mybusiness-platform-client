@@ -364,12 +364,12 @@ function Header({
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCategories.map((item) => (
                       <button
-                        key={item}
+                        key={tx(item)}
                         type="button"
                         onClick={() => onNavigate("collection")}
                         className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white"
                       >
-                        {item}
+                        {tx(item)}
                       </button>
                     ))}
                   </div>
@@ -380,12 +380,12 @@ function Header({
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCollections.map((item) => (
                       <button
-                        key={item}
+                        key={tx(item)}
                         type="button"
                         onClick={() => onNavigate("collection")}
                         className="block w-full rounded-xl px-3 py-2 text-left transition hover:bg-white"
                       >
-                        {item}
+                        {tx(item)}
                       </button>
                     ))}
                   </div>
@@ -893,10 +893,10 @@ function ProductPage({
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
               {["משלוח מהיר", "החזרה קלה", "תשלום מאובטח"].map((item) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="rounded-[1.25rem] border border-zinc-200 bg-[#fbf7ef] p-4 text-center text-xs font-black uppercase tracking-[0.12em]"
                 >
-                  {item}
+                  {tx(item)}
                 </div>
               ))}
             </div>

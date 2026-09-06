@@ -5,8 +5,7 @@
     height: 100vh;
     background: #f5f7fa;
     text-align: center;
-    direction: rtl; /* RTL לעברית */
-    padding: 20px; /* רווח פנימי למכשירים קטנים */
+    padding: 20px;
     box-sizing: border-box;
 }
 

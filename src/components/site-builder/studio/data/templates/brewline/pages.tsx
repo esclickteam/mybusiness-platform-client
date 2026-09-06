@@ -148,7 +148,7 @@ function Menu({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 80} variant="up">
               <article className="bl-menu-row grid gap-3 border-b border-[var(--espresso)]/20 py-7 last:border-b-0 md:grid-cols-[1fr_1.25fr_auto] md:items-end">
                 <h3 className="t-serif text-5xl leading-none tracking-[-0.04em] md:text-7xl">{name}</h3>
-                <p className="max-w-xl text-sm font-semibold leading-7 text-[#6B5749]">{text}</p>
+                <p className="max-w-xl text-sm font-semibold leading-7 text-[#6B5749]">{tx(text)}</p>
                 <strong className="t-serif text-start text-3xl md:text-6xl leading-none text-[var(--clay)]">{price}</strong>
               </article>
             </Reveal>
@@ -185,7 +185,7 @@ function Origins({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-x-0 bottom-0 p-6">
                   <span className="text-xs font-black uppercase tracking-[0.28em] text-[var(--clay)]">מקור 0{index + 1}</span>
                   <h3 className="t-serif mt-2 text-2xl md:text-5xl leading-none text-[var(--cream)]">{title}</h3>
-                  <p className="mt-4 text-sm font-medium leading-6 text-white/72">{text}</p>
+                  <p className="mt-4 text-sm font-medium leading-6 text-white/72">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -216,7 +216,7 @@ function BrewMethods({ data }: { data: Record<string, any> }) {
               <article className="bl-step-card relative min-h-[300px] border border-[var(--clay)]/35 bg-[var(--surface)] p-6">
                 <span className="t-serif text-3xl md:text-7xl leading-none text-[var(--clay)]/55">0{index + 1}</span>
                 <h3 className="t-serif mt-10 text-2xl sm:text-4xl leading-none text-[var(--cream)]">{title}</h3>
-                <p className="mt-5 text-sm font-medium leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm font-medium leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -294,7 +294,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="aspect-square border border-white/14 bg-[var(--surface)] p-7">
                 <span className="t-serif text-3xl md:text-7xl leading-none text-[var(--clay)]">”</span>
-                <p className="mt-5 text-lg leading-8 text-[var(--cream)]">{text}</p>
+                <p className="mt-5 text-lg leading-8 text-[var(--cream)]">{tx(text)}</p>
                 <footer className="mt-8 text-sm font-black uppercase tracking-[0.22em] text-[var(--clay)]">{name}</footer>
               </blockquote>
             </Reveal>

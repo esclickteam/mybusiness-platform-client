@@ -181,7 +181,7 @@ function VisualText({
       data-gjs-type="text"
       className={className}
     >
-      {text}
+      {tx(text)}
     </TextTag>
   );
 }
@@ -362,9 +362,9 @@ function Header({
         <div className="hidden items-center gap-3 xl:flex">
           {base.brand.socialLinks.map((item, index) => (
             <VisualText
-              key={`${item}-${index}`}
+              key={`${tx(item)}-${index}`}
               id={`brand.socialLinks.${index}`}
-              fallback={item}
+              fallback={tx(item)}
               className="text-sm font-black text-[#301b12]/55 transition hover:text-[#301b12]"
             />
           ))}
@@ -453,7 +453,7 @@ function Hero({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
 
                 <div className="flex gap-4 text-sm font-black text-[#301b12]/45">
                   {base.brand.socialLinks.map((item, index) => (
-                    <VisualText key={`${item}-${index}`} id={`brand.socialLinks.${index}`} fallback={`${item} /`} />
+                    <VisualText key={`${tx(item)}-${index}`} id={`brand.socialLinks.${index}`} fallback={`${tx(item)} /`} />
                   ))}
                 </div>
               </div>
@@ -1111,7 +1111,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
 
         <div className="flex gap-4">
           {base.brand.socialLinks.map((item, index) => (
-            <VisualText key={`${item}-${index}`} id={`brand.socialLinks.${index}`} fallback={item} />
+            <VisualText key={`${tx(item)}-${index}`} id={`brand.socialLinks.${index}`} fallback={tx(item)} />
           ))}
         </div>
       </div>

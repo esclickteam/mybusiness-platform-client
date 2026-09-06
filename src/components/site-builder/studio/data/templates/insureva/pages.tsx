@@ -128,7 +128,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className="relative mr-12 border border-black/10 bg-[var(--surface)] p-6 text-start">
                 <span className="absolute -right-12 top-6 grid h-10 w-10 place-items-center rounded-full bg-[var(--p)] text-sm font-black text-white">{i+1}</span>
                 <h3 className="text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -160,7 +160,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 </div>
                 <div className="flex-1 px-1 md:px-4">
                   <h3 className="text-2xl font-bold md:text-3xl">{title}</h3>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <span className="grid h-16 w-14 shrink-0 place-items-center bg-[var(--p)] text-sm font-black text-white [clip-path:polygon(50%_0,100%_18%,100%_72%,50%_100%,0_72%,0_18%)]">0{i + 1}</span>
               </article>
@@ -254,7 +254,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h3 className="text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/10 text-xs font-black text-[var(--p)]">?</span>
                 </div>
@@ -291,7 +291,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
                     <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>
                 ) : (
                   <div className="hidden md:block" />
@@ -301,7 +301,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
                     <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>
                 ) : (
                   <div className="hidden md:block" />

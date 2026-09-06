@@ -100,7 +100,7 @@ function SectionIntro({
       </TemplateText>
       {text ? (
         <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#9a9a9a]">
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -460,7 +460,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                   0{index + 1} / {title}
                 </TemplateText>
                 <TemplateText as="p" className="text-sm leading-7 text-[#9a9a9a]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
@@ -532,7 +532,7 @@ function ServicesSection({
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 flex-1 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
               <button
                 type="button"
@@ -649,7 +649,7 @@ function InsightsSection({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -685,7 +685,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}

@@ -143,7 +143,7 @@ function OrbitHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
               <blockquote className="border-r-4 pr-5" style={{ borderColor: "#2dd4bf" }}>
-                <p className="text-lg leading-8">״{text}״</p>
+                <p className="text-lg leading-8">״{tx(text)}״</p>
                 <footer className="mt-3 text-sm font-bold" style={{ color: "#7eb8b4" }}>{name} · {role}</footer>
               </blockquote>
             </Reveal>
@@ -239,7 +239,7 @@ function OrbitFullMenuBoard({ data }: { data: Record<string, any> }) {
                     <h3 className="tpl-display text-xl font-bold">{title}</h3>
                     <span className="text-xs font-bold" style={{ color: "#2dd4bf" }}>{meta}</span>
                   </div>
-                  <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{text}</p>
+                  <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -379,7 +379,7 @@ function OrbitAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#2dd4bf", background: "#071a1f" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#2dd4bf" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

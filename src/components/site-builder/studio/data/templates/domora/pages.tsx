@@ -218,7 +218,7 @@ function SectionIntro({
             dark ? "text-white/62" : "text-[#6d7378]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>

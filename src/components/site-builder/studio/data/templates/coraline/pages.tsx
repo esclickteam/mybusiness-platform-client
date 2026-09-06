@@ -109,7 +109,7 @@ function GlassCards({ data }: { data: Record<string, any> }) {
               <div className="p-5">
                 <p className="text-xs font-semibold" style={{ color: "#3dffd4" }}>{meta}</p>
                 <h3 className="tpl-display mt-2 text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7" style={{ color: "#7eb8d4" }}>{text}</p>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#7eb8d4" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

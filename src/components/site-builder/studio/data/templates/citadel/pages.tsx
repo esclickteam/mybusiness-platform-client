@@ -152,7 +152,7 @@ function SectionHeading({
           className="mt-5 text-base leading-8 md:text-lg"
           style={{ color: citadelTheme.muted }}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -466,7 +466,7 @@ function SignalTicker({ data }: { data: TemplateData }) {
       <div className="rect-marquee-track flex w-max gap-0">
         {[...items, ...items].map((item, index) => (
           <span
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="citadel-marquee-item shrink-0 border-l px-7 text-xs font-bold uppercase tracking-[0.34em]"
             style={{ borderColor: citadelTheme.border, color: citadelTheme.accent }}
           >

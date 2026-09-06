@@ -111,7 +111,7 @@ function TreatmentCarousel({ data }: { data: Record<string, any> }) {
               <div className="p-5">
                 <p className="text-xs font-semibold" style={{ color: "#2d8a6e" }}>{meta}</p>
                 <h3 className="tpl-display mt-2 text-2xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#5a8a72" }}>{text}</p>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#5a8a72" }}>{tx(text)}</p>
               </div>
             </article>
           ))}

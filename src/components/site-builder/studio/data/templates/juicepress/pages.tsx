@@ -146,7 +146,7 @@ function CitrusHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
               <blockquote className="border p-5" style={{ borderColor: "rgba(28,25,23,0.1)", background: "#ffffff" }}>
-                <p className="text-sm leading-7" style={{ color: "#78716c" }}>״{text}״</p>
+                <p className="text-sm leading-7" style={{ color: "#78716c" }}>״{tx(text)}״</p>
                 <footer className="mt-4 text-sm font-bold">{name} <span className="font-normal" style={{ color: "#78716c" }}>· {role}</span></footer>
               </blockquote>
             </Reveal>
@@ -219,7 +219,7 @@ function CitrusFullMenuBoard({ data }: { data: Record<string, any> }) {
               <img src={img} alt="" className="aspect-square w-full object-cover" />
               <div>
                 <h3 className="tpl-display text-2xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm leading-7" style={{ color: "#78716c" }}>{text}</p>
+                <p className="mt-1 text-sm leading-7" style={{ color: "#78716c" }}>{tx(text)}</p>
               </div>
               <p className="text-sm font-bold" style={{ color: "#f59e0b" }}>{meta}</p>
             </article>
@@ -376,7 +376,7 @@ function CitrusAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#f59e0b", background: "#fffbeb" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#f59e0b" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

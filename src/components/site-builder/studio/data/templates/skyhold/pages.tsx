@@ -266,7 +266,7 @@ function TowerProcessRail({ data }: { data: Record<string, any> }) {
         {steps.map(([t,d],i) => (
           <div key={t} className="tpl-climb border-t pt-4" style={{ borderColor: "#38bdf8", animationDelay: `${i*0.1}s` }}>
             <span className="text-2xl font-bold" style={{ color: "#38bdf8" }}>0{i+1}</span>
-            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#7a8fa8" }}>{d}</p>
+            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#7a8fa8" }}>{tx(d)}</p>
           </div>
         ))}
       </div>

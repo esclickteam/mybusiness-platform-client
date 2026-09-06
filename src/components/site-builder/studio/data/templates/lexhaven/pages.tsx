@@ -98,7 +98,7 @@ function PracticeAreas({ data }: { data: Record<string, any> }) {
               <article className="lexhaven-practice-row grid gap-5 py-8 md:grid-cols-[120px_0.8fr_1.2fr] md:items-center">
                 <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">{String(index + 1).padStart(2, "0")}</span>
                 <h3 className="text-2xl font-bold text-[var(--text)]">{title}</h3>
-                <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -193,7 +193,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="relative z-10 bg-[var(--bg)] pl-8 md:pl-10">
                 <span className="grid h-16 w-16 place-items-center border-2 border-[var(--p)] bg-[var(--bg)] text-lg font-bold text-[var(--p)]">{num}</span>
                 <h3 className="mt-6 text-xl font-bold">{title}</h3>
-                <p className="mt-3 max-w-xs text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-xs text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}

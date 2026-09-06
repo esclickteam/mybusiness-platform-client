@@ -117,7 +117,7 @@ function UrbanixPriceMenu({ data }: { data: Record<string, any> }) {
               <div className="hidden h-px border-t border-dotted md:block" style={{ borderColor: "rgba(200,245,66,0.55)" }} />
               <div className="md:text-left">
                 <p className="tpl-display text-3xl font-black" style={{ color: "#c8f542" }}>{price}</p>
-                <p className="mt-1 text-sm" style={{ color: "#9a9d98" }}>{text}</p>
+                <p className="mt-1 text-sm" style={{ color: "#9a9d98" }}>{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -187,7 +187,7 @@ function UrbanixBrutalistFooter({ data }: { data: Record<string, any> }) {
     <footer className="border-t" style={{ borderColor: "rgba(242,242,240,0.12)", background: "#0a0b0c" }}>
       <div className="mx-auto grid max-w-7xl border-r text-sm md:grid-cols-4" style={{ borderColor: "rgba(242,242,240,0.12)", color: "#f2f2f0" }}>
         {[v(data, "brandName"), v(data, "email"), v(data, "phone"), "NO SOFT CORNERS"].map((item, index) => (
-          <div key={item} className="border-b border-l p-5 font-black md:border-b-0" style={{ borderColor: "rgba(242,242,240,0.12)", color: index === 3 ? "#c8f542" : "#f2f2f0" }}>{item}</div>
+          <div key={tx(item)} className="border-b border-l p-5 font-black md:border-b-0" style={{ borderColor: "rgba(242,242,240,0.12)", color: index === 3 ? "#c8f542" : "#f2f2f0" }}>{tx(item)}</div>
         ))}
       </div>
     </footer>

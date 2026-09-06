@@ -92,7 +92,7 @@ function EditorialIntro({
       </TemplateText>
       {text ? (
         <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#5e5e5e]">
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -413,7 +413,7 @@ function MastheadStrip({ data }: { data: Record<string, any> }) {
             as="div"
             className="px-3 text-center text-[11px] font-bold uppercase tracking-[0.34em] text-white/80"
           >
-            {item}
+            {tx(item)}
           </TemplateText>
         ))}
       </div>
@@ -476,7 +476,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                   {title}
                 </TemplateText>
                 <TemplateText as="p" className="mt-3 text-sm leading-7 text-[#5e5e5e]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
@@ -523,7 +523,7 @@ function ServicesSection({
                   {title}
                 </TemplateText>
                 <TemplateText as="p" className="mt-3 max-w-2xl text-sm leading-7 text-[#5e5e5e]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
               <div className="md:text-left">
@@ -632,7 +632,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-3 text-sm leading-7 text-[#5e5e5e]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}

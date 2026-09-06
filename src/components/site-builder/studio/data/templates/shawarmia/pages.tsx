@@ -154,7 +154,7 @@ function SpitHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
               <blockquote className="border p-5" style={{ borderColor: "rgba(245,235,224,0.12)", background: "#1e1914" }}>
-                <p className="text-sm leading-7" style={{ color: "#b9a08a" }}>״{text}״</p>
+                <p className="text-sm leading-7" style={{ color: "#b9a08a" }}>״{tx(text)}״</p>
                 <footer className="mt-4 text-sm font-bold">{name} <span className="font-normal" style={{ color: "#b9a08a" }}>· {role}</span></footer>
               </blockquote>
             </Reveal>
@@ -227,7 +227,7 @@ function SpitFullMenuBoard({ data }: { data: Record<string, any> }) {
               <img src={img} alt="" className="aspect-square w-full object-cover" />
               <div>
                 <h3 className="tpl-display text-2xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm leading-7" style={{ color: "#b9a08a" }}>{text}</p>
+                <p className="mt-1 text-sm leading-7" style={{ color: "#b9a08a" }}>{tx(text)}</p>
               </div>
               <p className="text-sm font-bold" style={{ color: "#d97706" }}>{meta}</p>
             </article>
@@ -384,7 +384,7 @@ function SpitAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#d97706", background: "#14110e" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#d97706" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}

@@ -109,7 +109,7 @@ function LedgerSectionTitle({
             light ? "text-[#d9e4de]" : "text-[#5a6b62]",
           )}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -272,7 +272,7 @@ function LedgerHero({
                   {label}
                 </TemplateText>
                 <TemplateText as="p" className="mt-2 text-sm leading-7 text-[#5a6b62]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             </div>
@@ -332,7 +332,7 @@ function AboutLedger({ data }: { data: Record<string, any> }) {
                   {label}
                 </TemplateText>
                 <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
@@ -365,7 +365,7 @@ function ServicesLedger({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -397,7 +397,7 @@ function WorkflowRegister({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -457,7 +457,7 @@ function WorkRegister({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#d9e4de]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -531,7 +531,7 @@ function PageHero({
     <section className="border-b border-[#102018]/10 bg-[#fffdf8]">
       <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-          <LedgerSectionTitle eyebrow={eyebrow} title={title} text={text} />
+          <LedgerSectionTitle eyebrow={eyebrow} title={title} text={tx(text)} />
         </div>
         <div className="border-r border-[#102018]/10 p-3">
           <img src={image} alt="" className="h-[320px] w-full object-cover lg:h-[420px]" />

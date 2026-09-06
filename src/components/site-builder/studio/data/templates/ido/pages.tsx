@@ -146,7 +146,7 @@ function AnimatedTitle({
       ].join(" ")}
       style={{ transitionDelay: `${startDelay}ms` }}
     >
-      {text}
+      {tx(text)}
     </TemplateText>
   );
 }

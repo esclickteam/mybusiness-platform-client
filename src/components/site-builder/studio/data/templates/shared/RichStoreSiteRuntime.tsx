@@ -770,7 +770,7 @@ function SectionHeading({
         {title}
       </h2>
       {text ? (
-        <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p>
+        <p className="mt-4 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
       ) : null}
     </Reveal>
   );
@@ -1405,7 +1405,7 @@ export default function RichStoreSiteRuntime({
           <SectionHeading
             eyebrow={g("productsEyebrow")}
             title={title}
-            text={text}
+            text={tx(text)}
             skin={skin}
           />
           <button
@@ -1464,7 +1464,7 @@ export default function RichStoreSiteRuntime({
               <h3 className={cx("store-display mt-4 text-2xl font-black", skin.title)}>
                 {title}
               </h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </article>
           </Reveal>
         ))}
@@ -1498,7 +1498,7 @@ export default function RichStoreSiteRuntime({
           ].map(([name, text], index) => (
             <Reveal key={name} delayMs={index * 90} variant="scale">
               <blockquote className="h-full border border-white/15 bg-white/5 p-7 text-start backdrop-blur">
-                <p className="text-sm leading-7 text-white/80">"{text}"</p>
+                <p className="text-sm leading-7 text-white/80">"{tx(text)}"</p>
                 <footer className="mt-6 text-sm font-black text-[var(--accent)]">
                   {name}
                 </footer>
@@ -1647,9 +1647,9 @@ export default function RichStoreSiteRuntime({
       <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
         {[g("shipBenefit"), g("returnBenefit"), g("supportBenefit"), g("secureBenefit")].map(
           (text, index) => (
-            <Reveal key={text} delayMs={index * 70}>
+            <Reveal key={tx(text)} delayMs={index * 70}>
               <div className={cx("border p-5 text-center text-sm font-black", skin.softCard)}>
-                {text}
+                {tx(text)}
               </div>
             </Reveal>
           ),
@@ -1721,7 +1721,7 @@ export default function RichStoreSiteRuntime({
           {title}
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--muted)]">
-          {text}
+          {tx(text)}
         </p>
       </div>
     </section>
@@ -1904,7 +1904,7 @@ export default function RichStoreSiteRuntime({
         <div>
           {Header}
           <section {...sectionProps("chef-cookbook-cover", "hero", "שער ספר מתכונים")} className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]"><Reveal className="text-start"><p className="text-xs font-black uppercase tracking-[0.35em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 border-y border-[var(--line)] py-6 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[5/4] object-cover" /></div></section>
-          <section {...sectionProps("chef-magazine-columns", "features", "טורי מגזין")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">{[g("valueOneText"), g("valueTwoText"), g("valueThreeText")].map((text, i) => <Reveal key={text} delayMs={i * 80}><article className="border-r border-[var(--line)] pr-6 text-start"><p className="font-serif text-5xl text-[var(--p)]">0{i + 1}</p><p className="mt-4 text-sm leading-8 text-[var(--muted)]">{text}</p></article></Reveal>)}</div></section>
+          <section {...sectionProps("chef-magazine-columns", "features", "טורי מגזין")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">{[g("valueOneText"), g("valueTwoText"), g("valueThreeText")].map((text, i) => <Reveal key={tx(text)} delayMs={i * 80}><article className="border-r border-[var(--line)] pr-6 text-start"><p className="font-serif text-5xl text-[var(--p)]">0{i + 1}</p><p className="mt-4 text-sm leading-8 text-[var(--muted)]">{tx(text)}</p></article></Reveal>)}</div></section>
           <ProductRail id="chef-recipe-products" label={tx("מוצרי מתכון")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <section {...sectionProps("chef-pantry-categories", "categories", "מזווה")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4]" />)}</div></section>
           <SimpleInfoSection id="chef-test-kitchen" kind="about" label={tx("מטבח ניסוי")} title={g("aboutTitle")} text={g("aboutText")} />

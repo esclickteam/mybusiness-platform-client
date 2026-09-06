@@ -333,7 +333,7 @@ function SectionTitle({
             light ? "!text-[#fff6e9]/70" : "text-[#6d5f55]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       ) : null}
     </div>
@@ -695,10 +695,10 @@ function ConsultationModal({
                 {["בדיקת התאמה", "שיחת ייעוץ ראשונית", "בניית כיוון משפטי"].map(
                   (item) => (
                     <div
-                      key={item}
+                      key={tx(item)}
                       className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold backdrop-blur"
                     >
-                      ✓ {item}
+                      ✓ {tx(item)}
                     </div>
                   ),
                 )}
@@ -1003,13 +1003,13 @@ function PracticeAreasSection({
         <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
           <div className="grid gap-6">
             {rightColumn.map((item, index) => (
-              <PracticeCard key={item.title} item={item} index={index * 2} />
+              <PracticeCard key={item.title} item={tx(item)} index={index * 2} />
             ))}
           </div>
 
           <div className="grid gap-6 lg:pt-20">
             {leftColumn.map((item, index) => (
-              <PracticeCard key={item.title} item={item} index={index * 2 + 1} />
+              <PracticeCard key={item.title} item={tx(item)} index={index * 2 + 1} />
             ))}
           </div>
         </div>
@@ -1296,7 +1296,7 @@ function CaseDetailPage({
                     <h3 className="text-xl font-semibold !text-[#2b1b1d]">
                       {title}
                     </h3>
-                    <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                    <p className="mt-4 leading-8 text-[#6d5f55]">{tx(text)}</p>
                   </article>
                 ))}
               </div>
@@ -1375,7 +1375,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
                   <h3 className="text-2xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
                     “{title}”
                   </h3>
-                  <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{text}"</p>
+                  <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{tx(text)}"</p>
                 </div>
 
                 <div className="hidden rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white sm:block">
@@ -1426,10 +1426,10 @@ function FreeReviewSection({
             {["בדיקת סיכונים", "איסוף פרטים", "כיוון פעולה", "הערכת המשך טיפול"].map(
               (item, index) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="flex items-center justify-between rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:bg-white/10"
                 >
-                  <span className="font-semibold">{item}</span>
+                  <span className="font-semibold">{tx(item)}</span>
                   <span className="text-[#d8b88f]">0{index + 1}</span>
                 </div>
               ),
@@ -1494,7 +1494,7 @@ function BlogSection({
                 {title}
               </h3>
 
-              <p className="mt-4 max-w-xl leading-8 text-[#6d5f55]">{text}</p>
+              <p className="mt-4 max-w-xl leading-8 text-[#6d5f55]">{tx(text)}</p>
 
               <a
                 href={getJustoraHref("blog")}

@@ -780,7 +780,7 @@ function ProductDetailPage({
               {safeArray(fallback.gallery).map((item, index) => (
                 <div key={`gallery-${index}`} className="aspect-square overflow-hidden bg-[#f5f0e8]">
                   <MediaElement
-                    value={item}
+                    value={tx(item)}
                     fallback={chanelDefaultData.productPage.gallery[index]}
                     field={`productPage.gallery.${index}`}
                     alt={`תמונת מוצר ${index + 1}`}

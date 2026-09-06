@@ -139,7 +139,7 @@ function TourPackages({ data }: { data: Record<string, any> }) {
           <div key={title} className="border p-5" style={{ borderColor: "rgba(240,246,252,0.12)" }}>
             <p className="text-xs font-semibold" style={{ color: "#58a6ff" }}>{meta}</p>
             <h3 className="tpl-display mt-2 text-xl font-bold">{title}</h3>
-            <p className="mt-2 text-sm" style={{ color: "#8b949e" }}>{text}</p>
+            <p className="mt-2 text-sm" style={{ color: "#8b949e" }}>{tx(text)}</p>
           </div>
         ))}
       </div>

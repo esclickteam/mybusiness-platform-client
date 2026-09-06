@@ -66,7 +66,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-slate-400">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-slate-400">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -378,7 +378,7 @@ function FeaturesSection({ data }: { data: Record<string, any> }) {
                   {icon}
                 </span>
                 <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -409,7 +409,7 @@ function WorkflowSection({ data }: { data: Record<string, any> }) {
                 {num}
               </span>
               <h3 className="mt-5 text-2xl font-bold text-white">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-slate-400">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -472,7 +472,7 @@ function PricingSection({
                 <span className="text-2xl md:text-5xl font-bold text-white">{price}</span>
                 <span className="text-sm text-slate-400">{period}</span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-400">{tx(text)}</p>
               <ul className="mt-7 space-y-3 text-sm text-slate-300">
                 {(features as readonly string[]).map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
@@ -519,7 +519,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[28px] border border-white/8 bg-white/5 p-8 backdrop-blur transition duration-500 hover:-translate-y-2 hover:border-indigo-400/30"
             >
               <div className="mb-5 text-indigo-400">★★★★★</div>
-              <p className="text-base leading-8 text-slate-200">“{text}”</p>
+              <p className="text-base leading-8 text-slate-200">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-white/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white">
                   {String(name).charAt(0)}

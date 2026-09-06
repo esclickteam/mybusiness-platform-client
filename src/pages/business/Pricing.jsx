@@ -44,7 +44,7 @@ import {
 } from "../../utils/pendingPurchaseIntent";
 import { getActivePricingPlan } from "../../utils/servicePurchaseFlow";
 import { coerceSupportedLanguage } from "../../i18n/languages";
-import { getIntlLocale } from "../../i18n/localeUtils";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
 import { useBillingMarket } from "../../billing/useBillingMarket";
 import {
   formatMarketMoney,
@@ -563,7 +563,10 @@ export default function Plans() {
   };
 
   return (
-    <div className="pricing-wow pm relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f4f7ff_38%,#eefaf8_72%,#ffffff_100%)] text-slate-800">
+    <div
+      className="pricing-wow pm relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f4f7ff_38%,#eefaf8_72%,#ffffff_100%)] text-slate-800"
+      dir={getTextDirection(i18n.language)}
+    >
       <Helmet>
         <title>{t("pricing.seoTitle")}</title>
         <meta name="description" content={t("pricing.seoDescription")} />

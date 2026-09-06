@@ -126,7 +126,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
             <Reveal key={title} delayMs={i*90} className="min-w-[280px] shrink-0">
               <article className="ag-card flex aspect-square flex-col justify-between border border-white/15 bg-[var(--surface)] p-7 text-start">
                 <span className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{i+1}</span>
-                <div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p></div>
+                <div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p></div>
               </article>
             </Reveal>
           ))}
@@ -158,7 +158,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 <div className="absolute bottom-0 right-0 left-0 p-6">
                   <p className="ag-display text-3xl md:text-6xl font-extrabold text-white/20">0{i + 1}</p>
                   <h3 className="-mt-4 text-3xl font-black text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-white/75">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/75">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -250,7 +250,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className={`ag-card min-h-[280px] border border-white/15 bg-[var(--surface)] p-7 text-start ${i === 0 ? "md:col-span-4" : i === 1 ? "md:col-span-2" : "md:col-span-6"}`}>
                 <p className="ag-display text-3xl md:text-7xl font-extrabold leading-none text-[var(--p)]/80">0{i + 1}</p>
                 <h3 className="mt-8 text-2xl font-black">{title}</h3>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <button type="button" onClick={() => goTo("contact")} className="mt-6 border border-[var(--accent)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-[var(--accent)]">Brief it</button>
               </article>
             </Reveal>
@@ -283,7 +283,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[var(--accent)]">{i === 0 ? "Spark" : i === 1 ? "Script" : i === 2 ? "Launch" : "Learn"}</p>
                   <h3 className="mt-2 text-2xl font-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>

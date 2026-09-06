@@ -101,7 +101,7 @@ function RadialDishes({ data }: { data: Record<string, any> }) {
                 </div>
                 <p className="mt-3 text-xs" style={{ color: "#3dd6c6" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-lg font-bold">{title}</h3>
-                <p className="mt-1 text-xs leading-5" style={{ color: "#8aa89a" }}>{text}</p>
+                <p className="mt-1 text-xs leading-5" style={{ color: "#8aa89a" }}>{tx(text)}</p>
               </article>
             </Reveal>
           ))}

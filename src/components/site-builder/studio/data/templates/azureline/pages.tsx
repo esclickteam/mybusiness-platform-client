@@ -115,7 +115,7 @@ function RouteDots({ data }: { data: Record<string, any> }) {
                 <p className="text-xs font-semibold" style={{ color: "#0066cc" }}>{meta}</p>
                 <h3 className="tpl-display mt-1 text-2xl font-bold">{title}</h3>
               </div>
-              <p className="text-sm leading-7" style={{ color: "#5a7a96" }}>{text}</p>
+              <p className="text-sm leading-7" style={{ color: "#5a7a96" }}>{tx(text)}</p>
             </div>
           ))}
         </div>

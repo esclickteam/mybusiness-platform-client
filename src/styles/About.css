@@ -165,7 +165,6 @@
 }
 
 .about-bidi {
-  direction: rtl;
   unicode-bidi: isolate;
   text-align: center;
 }
@@ -285,7 +284,6 @@
 }
 
 .about-who-copy {
-  direction: rtl;
   text-align: center;
 }
 
