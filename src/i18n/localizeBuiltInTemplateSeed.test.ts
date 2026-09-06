@@ -355,6 +355,18 @@ describe("localizeBuiltInTemplateSeed", () => {
         "es",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "היי! ברוכים הבאים ל־Novastra. צריכים עזרה לבחור קפסולה, מידה או לוק? אנחנו כאן.",
+        "en",
+      ),
+    ).toMatch(/Welcome to Novastra/);
+    expect(
+      localizeBuiltInText(
+        "היי! ברוכים הבאים ל־Novastra. צריכים עזרה לבחור קפסולה, מידה או לוק? אנחנו כאן.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
