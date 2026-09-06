@@ -13327,5 +13327,67 @@
       "painting": "Painting",
       "handmadeDesign": "Handmade design"
     }
+  },
+  "partnershipAgreement": {
+    "badge": "Collaboration",
+    "title": "Partnership agreement",
+    "subtitle": "Review the agreement details and sign digitally.",
+    "youSigned": "You signed",
+    "details": "Agreement details",
+    "agreementId": "Agreement ID: {{id}}",
+    "fromBusiness": "From business",
+    "toBusiness": "To business",
+    "contactName": "Contact person",
+    "phone": "Phone",
+    "collabType": "Collaboration type",
+    "payment": "Payment / commission",
+    "amount": "Amount",
+    "period": "Agreement period",
+    "cancelAnytime": "Can be cancelled anytime",
+    "confidentiality": "Confidentiality clause",
+    "description": "Description",
+    "giving": "What you provide",
+    "receiving": "What you receive",
+    "signatures": "Signatures",
+    "sender": "Agreement sender",
+    "receiver": "Agreement recipient",
+    "signingAs": "You are signing as",
+    "preparingPdf": "Preparing PDF...",
+    "downloadPdf": "Download PDF",
+    "signCta": "Sign the agreement",
+    "alreadySigned": "You already signed this agreement.",
+    "addSignature": "Add a signature",
+    "drawHint": "Draw your signature below and then save it.",
+    "loadingPad": "Loading signature pad...",
+    "clear": "Clear",
+    "saving": "Saving...",
+    "saveSignature": "Save signature",
+    "notSignedYet": "Not signed yet",
+    "signatureAlt": "Signature of {{title}}",
+    "noSignature": "No signature yet",
+    "signedOn": "Signed on: {{date}}",
+    "loading": "Loading the agreement...",
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending approval",
+      "rejected": "Rejected",
+      "signed": "Signed",
+      "draft": "Draft"
+    },
+    "type": {
+      "twoSided": "Two-sided",
+      "oneSided": "One-sided"
+    },
+    "errors": {
+      "missingId": "Agreement ID is missing",
+      "load": "Could not load the agreement",
+      "noPermission": "You do not have permission to sign this agreement",
+      "signFirst": "Please sign before saving",
+      "saveSignature": "Could not save the signature",
+      "contentMissing": "Agreement content was not found",
+      "pdf": "Could not download the PDF",
+      "notFound": "Agreement not found",
+      "proposalMissing": "Proposal data is missing"
+    }
   }
 }

@@ -13327,5 +13327,67 @@
       "painting": "رسم",
       "handmadeDesign": "تصميم يدوي"
     }
+  },
+  "partnershipAgreement": {
+    "badge": "تعاون",
+    "title": "اتفاقية شراكة",
+    "subtitle": "راجع التفاصيل ووقّع رقمياً.",
+    "youSigned": "وقّعت",
+    "details": "تفاصيل الاتفاقية",
+    "agreementId": "معرّف الاتفاقية: {{id}}",
+    "fromBusiness": "من العمل",
+    "toBusiness": "إلى العمل",
+    "contactName": "جهة اتصال",
+    "phone": "هاتف",
+    "collabType": "نوع التعاون",
+    "payment": "دفع / عمولة",
+    "amount": "المبلغ",
+    "period": "مدة الاتفاقية",
+    "cancelAnytime": "يمكن الإلغاء في أي وقت",
+    "confidentiality": "بند السرية",
+    "description": "الوصف",
+    "giving": "ما تقدمه",
+    "receiving": "ما تتلقاه",
+    "signatures": "التوقيعات",
+    "sender": "مرسل الاتفاقية",
+    "receiver": "مستلم الاتفاقية",
+    "signingAs": "أنت توقّع بصفة",
+    "preparingPdf": "جارٍ إعداد PDF...",
+    "downloadPdf": "تنزيل PDF",
+    "signCta": "توقيع الاتفاقية",
+    "alreadySigned": "لقد وقّعت هذه الاتفاقية بالفعل.",
+    "addSignature": "إضافة توقيع",
+    "drawHint": "ارسم توقيعك أدناه ثم احفظه.",
+    "loadingPad": "جارٍ تحميل لوحة التوقيع...",
+    "clear": "مسح",
+    "saving": "جارٍ الحفظ...",
+    "saveSignature": "حفظ التوقيع",
+    "notSignedYet": "لم يُوقَّع بعد",
+    "signatureAlt": "توقيع {{title}}",
+    "noSignature": "لا يوجد توقيع بعد",
+    "signedOn": "وُقّع في: {{date}}",
+    "loading": "جارٍ تحميل الاتفاقية...",
+    "status": {
+      "approved": "موافق عليه",
+      "pending": "بانتظار الموافقة",
+      "rejected": "مرفوض",
+      "signed": "موقَّع",
+      "draft": "مسودة"
+    },
+    "type": {
+      "twoSided": "ثنائي الجانب",
+      "oneSided": "أحادي الجانب"
+    },
+    "errors": {
+      "missingId": "معرّف الاتفاقية مفقود",
+      "load": "تعذّر تحميل الاتفاقية",
+      "noPermission": "ليست لديك صلاحية لتوقيع هذه الاتفاقية",
+      "signFirst": "يرجى التوقيع قبل الحفظ",
+      "saveSignature": "تعذّر حفظ التوقيع",
+      "contentMissing": "لم يتم العثور على محتوى الاتفاقية",
+      "pdf": "تعذّر تنزيل PDF",
+      "notFound": "الاتفاقية غير موجودة",
+      "proposalMissing": "بيانات العرض مفقودة"
+    }
   }
 }

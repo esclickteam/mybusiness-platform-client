@@ -13316,5 +13316,67 @@
       "painting": "ציור",
       "handmadeDesign": "עיצוב בעבודת יד"
     }
+  },
+  "partnershipAgreement": {
+    "badge": "שיתוף פעולה",
+    "title": "הסכם שיתוף פעולה",
+    "subtitle": "בדוק את פרטי ההסכם וחתום עליו דיגיטלית.",
+    "youSigned": "חתמת",
+    "details": "פרטי ההסכם",
+    "agreementId": "מזהה הסכם: {{id}}",
+    "fromBusiness": "מעסק",
+    "toBusiness": "לעסק",
+    "contactName": "איש קשר",
+    "phone": "טלפון",
+    "collabType": "סוג שיתוף פעולה",
+    "payment": "תשלום / עמלה",
+    "amount": "סכום",
+    "period": "תקופת ההסכם",
+    "cancelAnytime": "ניתן לביטול בכל זמן",
+    "confidentiality": "סעיף סודיות",
+    "description": "תיאור",
+    "giving": "מה אתה מספק",
+    "receiving": "מה אתה מקבל",
+    "signatures": "חתימות",
+    "sender": "שולח ההסכם",
+    "receiver": "מקבל ההסכם",
+    "signingAs": "אתה חותם בתור",
+    "preparingPdf": "מכין PDF...",
+    "downloadPdf": "הורד PDF",
+    "signCta": "חתום על ההסכם",
+    "alreadySigned": "כבר חתמת על ההסכם הזה.",
+    "addSignature": "הוסף חתימה",
+    "drawHint": "צייר את החתימה שלך למטה ולאחר מכן שמור אותה.",
+    "loadingPad": "טוען משטח חתימה...",
+    "clear": "נקה",
+    "saving": "שומר...",
+    "saveSignature": "שמור חתימה",
+    "notSignedYet": "טרם נחתם",
+    "signatureAlt": "חתימת {{title}}",
+    "noSignature": "עדיין אין חתימה",
+    "signedOn": "נחתם בתאריך: {{date}}",
+    "loading": "טוען את ההסכם...",
+    "status": {
+      "approved": "מאושר",
+      "pending": "ממתין לאישור",
+      "rejected": "נדחה",
+      "signed": "נחתם",
+      "draft": "טיוטה"
+    },
+    "type": {
+      "twoSided": "דו־צדדי",
+      "oneSided": "חד־צדדי"
+    },
+    "errors": {
+      "missingId": "חסר מזהה הסכם",
+      "load": "שגיאה בטעינת ההסכם",
+      "noPermission": "אין לך הרשאה לחתום על ההסכם הזה",
+      "signFirst": "יש לחתום לפני השמירה",
+      "saveSignature": "שגיאה בשמירת החתימה",
+      "contentMissing": "תוכן ההסכם לא נמצא",
+      "pdf": "שגיאה בהורדת PDF",
+      "notFound": "ההסכם לא נמצא",
+      "proposalMissing": "נתוני ההצעה חסרים"
+    }
   }
 }

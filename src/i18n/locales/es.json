@@ -13327,5 +13327,67 @@
       "painting": "Pintura",
       "handmadeDesign": "Diseño artesanal"
     }
+  },
+  "partnershipAgreement": {
+    "badge": "Colaboración",
+    "title": "Acuerdo de colaboración",
+    "subtitle": "Revisa los detalles y firma digitalmente.",
+    "youSigned": "Firmaste",
+    "details": "Detalles del acuerdo",
+    "agreementId": "ID del acuerdo: {{id}}",
+    "fromBusiness": "Desde el negocio",
+    "toBusiness": "Hacia el negocio",
+    "contactName": "Persona de contacto",
+    "phone": "Teléfono",
+    "collabType": "Tipo de colaboración",
+    "payment": "Pago / comisión",
+    "amount": "Importe",
+    "period": "Periodo del acuerdo",
+    "cancelAnytime": "Se puede cancelar en cualquier momento",
+    "confidentiality": "Cláusula de confidencialidad",
+    "description": "Descripción",
+    "giving": "Lo que aportas",
+    "receiving": "Lo que recibes",
+    "signatures": "Firmas",
+    "sender": "Remitente del acuerdo",
+    "receiver": "Destinatario del acuerdo",
+    "signingAs": "Firmas como",
+    "preparingPdf": "Preparando PDF...",
+    "downloadPdf": "Descargar PDF",
+    "signCta": "Firmar el acuerdo",
+    "alreadySigned": "Ya firmaste este acuerdo.",
+    "addSignature": "Añadir firma",
+    "drawHint": "Dibuja tu firma abajo y luego guárdala.",
+    "loadingPad": "Cargando el área de firma...",
+    "clear": "Borrar",
+    "saving": "Guardando...",
+    "saveSignature": "Guardar firma",
+    "notSignedYet": "Aún no firmado",
+    "signatureAlt": "Firma de {{title}}",
+    "noSignature": "Todavía no hay firma",
+    "signedOn": "Firmado el: {{date}}",
+    "loading": "Cargando el acuerdo...",
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente de aprobación",
+      "rejected": "Rechazado",
+      "signed": "Firmado",
+      "draft": "Borrador"
+    },
+    "type": {
+      "twoSided": "Bilateral",
+      "oneSided": "Unilateral"
+    },
+    "errors": {
+      "missingId": "Falta el ID del acuerdo",
+      "load": "No se pudo cargar el acuerdo",
+      "noPermission": "No tienes permiso para firmar este acuerdo",
+      "signFirst": "Firma antes de guardar",
+      "saveSignature": "No se pudo guardar la firma",
+      "contentMissing": "No se encontró el contenido del acuerdo",
+      "pdf": "No se pudo descargar el PDF",
+      "notFound": "Acuerdo no encontrado",
+      "proposalMissing": "Faltan los datos de la propuesta"
+    }
   }
 }

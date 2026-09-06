@@ -218,8 +218,77 @@ const PRICING_SHARED = {
   },
 };
 
+const PARTNERSHIP_AGREEMENT = {
+  badge: row("Collaboration", "שיתוף פעולה", "Colaboración", "Colaboração", "تعاون"),
+  title: row("Partnership agreement", "הסכם שיתוף פעולה", "Acuerdo de colaboración", "Acordo de parceria", "اتفاقية شراكة"),
+  subtitle: row("Review the agreement details and sign digitally.", "בדוק את פרטי ההסכם וחתום עליו דיגיטלית.", "Revisa los detalles y firma digitalmente.", "Revise os detalhes e assine digitalmente.", "راجع التفاصيل ووقّع رقمياً."),
+  youSigned: row("You signed", "חתמת", "Firmaste", "Você assinou", "وقّعت"),
+  details: row("Agreement details", "פרטי ההסכם", "Detalles del acuerdo", "Detalhes do acordo", "تفاصيل الاتفاقية"),
+  agreementId: row("Agreement ID: {{id}}", "מזהה הסכם: {{id}}", "ID del acuerdo: {{id}}", "ID do acordo: {{id}}", "معرّف الاتفاقية: {{id}}"),
+  fromBusiness: row("From business", "מעסק", "Desde el negocio", "Do negócio", "من العمل"),
+  toBusiness: row("To business", "לעסק", "Hacia el negocio", "Para o negócio", "إلى العمل"),
+  contactName: row("Contact person", "איש קשר", "Persona de contacto", "Pessoa de contato", "جهة اتصال"),
+  phone: row("Phone", "טלפון", "Teléfono", "Telefone", "هاتف"),
+  collabType: row("Collaboration type", "סוג שיתוף פעולה", "Tipo de colaboración", "Tipo de colaboração", "نوع التعاون"),
+  payment: row("Payment / commission", "תשלום / עמלה", "Pago / comisión", "Pagamento / comissão", "دفع / عمولة"),
+  amount: row("Amount", "סכום", "Importe", "Valor", "المبلغ"),
+  period: row("Agreement period", "תקופת ההסכם", "Periodo del acuerdo", "Período do acordo", "مدة الاتفاقية"),
+  cancelAnytime: row("Can be cancelled anytime", "ניתן לביטול בכל זמן", "Se puede cancelar en cualquier momento", "Pode ser cancelado a qualquer momento", "يمكن الإلغاء في أي وقت"),
+  confidentiality: row("Confidentiality clause", "סעיף סודיות", "Cláusula de confidencialidad", "Cláusula de confidencialidade", "بند السرية"),
+  description: row("Description", "תיאור", "Descripción", "Descrição", "الوصف"),
+  giving: row("What you provide", "מה אתה מספק", "Lo que aportas", "O que você oferece", "ما تقدمه"),
+  receiving: row("What you receive", "מה אתה מקבל", "Lo que recibes", "O que você recebe", "ما تتلقاه"),
+  signatures: row("Signatures", "חתימות", "Firmas", "Assinaturas", "التوقيعات"),
+  sender: row("Agreement sender", "שולח ההסכם", "Remitente del acuerdo", "Remetente do acordo", "مرسل الاتفاقية"),
+  receiver: row("Agreement recipient", "מקבל ההסכם", "Destinatario del acuerdo", "Destinatário do acordo", "مستلم الاتفاقية"),
+  signingAs: row("You are signing as", "אתה חותם בתור", "Firmas como", "Você assina como", "أنت توقّع بصفة"),
+  preparingPdf: row("Preparing PDF...", "מכין PDF...", "Preparando PDF...", "Preparando PDF...", "جارٍ إعداد PDF..."),
+  downloadPdf: row("Download PDF", "הורד PDF", "Descargar PDF", "Baixar PDF", "تنزيل PDF"),
+  signCta: row("Sign the agreement", "חתום על ההסכם", "Firmar el acuerdo", "Assinar o acordo", "توقيع الاتفاقية"),
+  alreadySigned: row("You already signed this agreement.", "כבר חתמת על ההסכם הזה.", "Ya firmaste este acuerdo.", "Você já assinou este acordo.", "لقد وقّعت هذه الاتفاقية بالفعل."),
+  addSignature: row("Add a signature", "הוסף חתימה", "Añadir firma", "Adicionar assinatura", "إضافة توقيع"),
+  drawHint: row("Draw your signature below and then save it.", "צייר את החתימה שלך למטה ולאחר מכן שמור אותה.", "Dibuja tu firma abajo y luego guárdala.", "Desenhe sua assinatura abaixo e salve.", "ارسم توقيعك أدناه ثم احفظه."),
+  loadingPad: row("Loading signature pad...", "טוען משטח חתימה...", "Cargando el área de firma...", "Carregando a área de assinatura...", "جارٍ تحميل لوحة التوقيع..."),
+  clear: row("Clear", "נקה", "Borrar", "Limpar", "مسح"),
+  saving: row("Saving...", "שומר...", "Guardando...", "Salvando...", "جارٍ الحفظ..."),
+  saveSignature: row("Save signature", "שמור חתימה", "Guardar firma", "Salvar assinatura", "حفظ التوقيع"),
+  notSignedYet: row("Not signed yet", "טרם נחתם", "Aún no firmado", "Ainda não assinado", "لم يُوقَّع بعد"),
+  signatureAlt: row("Signature of {{title}}", "חתימת {{title}}", "Firma de {{title}}", "Assinatura de {{title}}", "توقيع {{title}}"),
+  noSignature: row("No signature yet", "עדיין אין חתימה", "Todavía no hay firma", "Ainda sem assinatura", "لا يوجد توقيع بعد"),
+  signedOn: row("Signed on: {{date}}", "נחתם בתאריך: {{date}}", "Firmado el: {{date}}", "Assinado em: {{date}}", "وُقّع في: {{date}}"),
+  loading: row("Loading the agreement...", "טוען את ההסכם...", "Cargando el acuerdo...", "Carregando o acordo...", "جارٍ تحميل الاتفاقية..."),
+  status: {
+    approved: row("Approved", "מאושר", "Aprobado", "Aprovado", "موافق عليه"),
+    pending: row("Pending approval", "ממתין לאישור", "Pendiente de aprobación", "Aguardando aprovação", "بانتظار الموافقة"),
+    rejected: row("Rejected", "נדחה", "Rechazado", "Recusado", "مرفوض"),
+    signed: row("Signed", "נחתם", "Firmado", "Assinado", "موقَّع"),
+    draft: row("Draft", "טיוטה", "Borrador", "Rascunho", "مسودة"),
+  },
+  type: {
+    twoSided: row("Two-sided", "דו־צדדי", "Bilateral", "Bilateral", "ثنائي الجانب"),
+    oneSided: row("One-sided", "חד־צדדי", "Unilateral", "Unilateral", "أحادي الجانب"),
+  },
+  errors: {
+    missingId: row("Agreement ID is missing", "חסר מזהה הסכם", "Falta el ID del acuerdo", "Falta o ID do acordo", "معرّف الاتفاقية مفقود"),
+    load: row("Could not load the agreement", "שגיאה בטעינת ההסכם", "No se pudo cargar el acuerdo", "Não foi possível carregar o acordo", "تعذّر تحميل الاتفاقية"),
+    noPermission: row("You do not have permission to sign this agreement", "אין לך הרשאה לחתום על ההסכם הזה", "No tienes permiso para firmar este acuerdo", "Você não tem permissão para assinar este acordo", "ليست لديك صلاحية لتوقيع هذه الاتفاقية"),
+    signFirst: row("Please sign before saving", "יש לחתום לפני השמירה", "Firma antes de guardar", "Assine antes de salvar", "يرجى التوقيع قبل الحفظ"),
+    saveSignature: row("Could not save the signature", "שגיאה בשמירת החתימה", "No se pudo guardar la firma", "Não foi possível salvar a assinatura", "تعذّر حفظ التوقيع"),
+    contentMissing: row("Agreement content was not found", "תוכן ההסכם לא נמצא", "No se encontró el contenido del acuerdo", "O conteúdo do acordo não foi encontrado", "لم يتم العثور على محتوى الاتفاقية"),
+    pdf: row("Could not download the PDF", "שגיאה בהורדת PDF", "No se pudo descargar el PDF", "Não foi possível baixar o PDF", "تعذّر تنزيل PDF"),
+    notFound: row("Agreement not found", "ההסכם לא נמצא", "Acuerdo no encontrado", "Acordo não encontrado", "الاتفاقية غير موجودة"),
+    proposalMissing: row("Proposal data is missing", "נתוני ההצעה חסרים", "Faltan los datos de la propuesta", "Faltam os dados da proposta", "بيانات العرض مفقودة"),
+  },
+};
+
 function localeObject(locale) {
   return {
+    partnershipAgreement: Object.fromEntries(
+      Object.entries(PARTNERSHIP_AGREEMENT).map(([key, value]) => {
+        if (value.en) return [key, value[locale] || value.en];
+        return [key, pickLocaleMap(value, locale)];
+      })
+    ),
     business: { categoryNames: categoryNamesCatalog(locale) },
     pricing: {
       choosePurchase: PRICING_SHARED.choosePurchase[locale],

@@ -13327,5 +13327,67 @@
       "painting": "Pintura",
       "handmadeDesign": "Design artesanal"
     }
+  },
+  "partnershipAgreement": {
+    "badge": "Colaboração",
+    "title": "Acordo de parceria",
+    "subtitle": "Revise os detalhes e assine digitalmente.",
+    "youSigned": "Você assinou",
+    "details": "Detalhes do acordo",
+    "agreementId": "ID do acordo: {{id}}",
+    "fromBusiness": "Do negócio",
+    "toBusiness": "Para o negócio",
+    "contactName": "Pessoa de contato",
+    "phone": "Telefone",
+    "collabType": "Tipo de colaboração",
+    "payment": "Pagamento / comissão",
+    "amount": "Valor",
+    "period": "Período do acordo",
+    "cancelAnytime": "Pode ser cancelado a qualquer momento",
+    "confidentiality": "Cláusula de confidencialidade",
+    "description": "Descrição",
+    "giving": "O que você oferece",
+    "receiving": "O que você recebe",
+    "signatures": "Assinaturas",
+    "sender": "Remetente do acordo",
+    "receiver": "Destinatário do acordo",
+    "signingAs": "Você assina como",
+    "preparingPdf": "Preparando PDF...",
+    "downloadPdf": "Baixar PDF",
+    "signCta": "Assinar o acordo",
+    "alreadySigned": "Você já assinou este acordo.",
+    "addSignature": "Adicionar assinatura",
+    "drawHint": "Desenhe sua assinatura abaixo e salve.",
+    "loadingPad": "Carregando a área de assinatura...",
+    "clear": "Limpar",
+    "saving": "Salvando...",
+    "saveSignature": "Salvar assinatura",
+    "notSignedYet": "Ainda não assinado",
+    "signatureAlt": "Assinatura de {{title}}",
+    "noSignature": "Ainda sem assinatura",
+    "signedOn": "Assinado em: {{date}}",
+    "loading": "Carregando o acordo...",
+    "status": {
+      "approved": "Aprovado",
+      "pending": "Aguardando aprovação",
+      "rejected": "Recusado",
+      "signed": "Assinado",
+      "draft": "Rascunho"
+    },
+    "type": {
+      "twoSided": "Bilateral",
+      "oneSided": "Unilateral"
+    },
+    "errors": {
+      "missingId": "Falta o ID do acordo",
+      "load": "Não foi possível carregar o acordo",
+      "noPermission": "Você não tem permissão para assinar este acordo",
+      "signFirst": "Assine antes de salvar",
+      "saveSignature": "Não foi possível salvar a assinatura",
+      "contentMissing": "O conteúdo do acordo não foi encontrado",
+      "pdf": "Não foi possível baixar o PDF",
+      "notFound": "Acordo não encontrado",
+      "proposalMissing": "Faltam os dados da proposta"
+    }
   }
 }
