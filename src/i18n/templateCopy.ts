@@ -38,6 +38,10 @@ import unique23ExactLexicon from "./templateExactLexicon.unique23.json";
 import unique24ExactLexicon from "./templateExactLexicon.unique24.json";
 import unique25ExactLexicon from "./templateExactLexicon.unique25.json";
 import unique26ExactLexicon from "./templateExactLexicon.unique26.json";
+import unique27ExactLexicon from "./templateExactLexicon.unique27.json";
+import unique28ExactLexicon from "./templateExactLexicon.unique28.json";
+import unique29ExactLexicon from "./templateExactLexicon.unique29.json";
+import unique30ExactLexicon from "./templateExactLexicon.unique30.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -88,6 +92,10 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique24ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique25ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique26ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique27ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique28ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique29ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique30ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -202,7 +210,15 @@ const MONTH_YEAR_RE = /^([א-ת׳']+)\s+(\d{4})$/;
 const WEEKDAY_TIME_RE = /^(ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)\s+(\d{1,2}:\d{2})$/;
 const DURATION_RE = /^(\d+)\s*(דק׳|דקות|ש׳|שעות)$/;
 const DURATION_STUCK_RE = /^(\d+)(ד׳|ש׳)$/;
-const FROM_PRICE_RE = /^החל מ[־\-]?₪(\d+)$/;
+const FROM_PRICE_RE = /^החל מ[־\-]?₪([\d,]+)(?:\s+(.+))?$/;
+const FROM_SHEKEL_RE = /^החל מ-(\d+)\s*ש״ח$/;
+const READ_TIME_RE = /^(\d+)\s*דק׳ קריאה · (.+)$/;
+const ROOM_COUNT_RE = /^(\d+)\s*(?:חד[׳']|חדרים)\s*·\s*(.+)$/;
+const SQM_DOT_RE = /^(\d+)\s*מ״ר · (.+)$/;
+const GUESTS_DOT_RE = /^(\d+)\s*אורחים · (.+)$/;
+const DURATION_DOT_PREFIX_RE = /^(\d+)\s*דק׳ · (.+)$/;
+const DURATION_DOT_LABEL_RE = /^(.+) · (\d+)\s*דק׳$/;
+const SESSION_SLASH_RE = /^(.+) \/ (\d+)\s*דק׳$/;
 const BURGER_SMASH_RE = /^(.+) — לחמנייה, בשר, גבינה — בלי פילוסופיה\.$/;
 const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהליך חד ותוצאות מדידות\.$/;
 const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
@@ -468,14 +484,148 @@ function localizeDuration(text: string, locale: string): string {
   return isMin ? `${n} min` : `${n} h`;
 }
 
-function localizeFromPrice(text: string, locale: string): string {
-  const match = text.match(FROM_PRICE_RE);
-  if (!match) return "";
-  const amount = `₪${match[1]}`;
+function fromPricePrefix(locale: string, amount: string): string {
   if (locale === "es") return `Desde ${amount}`;
   if (locale === "pt-BR") return `A partir de ${amount}`;
   if (locale === "ar") return `ابتداءً من ${amount}`;
   return `From ${amount}`;
+}
+
+const FROM_PRICE_SUFFIXES: Record<string, PhraseTranslation> = {
+  לשן: { en: "per tooth", es: "por diente", "pt-BR": "por dente", ar: "للسن" },
+};
+
+function localizeFromPrice(text: string, locale: string): string {
+  const shekelWord = text.match(FROM_SHEKEL_RE);
+  if (shekelWord) {
+    return fromPricePrefix(locale, `₪${shekelWord[1]}`);
+  }
+  const match = text.match(FROM_PRICE_RE);
+  if (!match) return "";
+  const amount = `₪${match[1]}`;
+  const head = fromPricePrefix(locale, amount);
+  if (!match[2]) return head;
+  const suffix =
+    pickLocaleCopy(FROM_PRICE_SUFFIXES[match[2]], locale) || localizeFragment(match[2], locale);
+  if (!suffix || HE.test(suffix)) return "";
+  return `${head} ${suffix}`;
+}
+
+const READ_TIME_WHEN: Record<string, PhraseTranslation> = {
+  היום: { en: "today", es: "hoy", "pt-BR": "hoje", ar: "اليوم" },
+  אתמול: { en: "yesterday", es: "ayer", "pt-BR": "ontem", ar: "أمس" },
+  השבוע: { en: "this week", es: "esta semana", "pt-BR": "esta semana", ar: "هذا الأسبوع" },
+};
+
+function localizeReadTime(text: string, locale: string): string {
+  const match = text.match(READ_TIME_RE);
+  if (!match) return "";
+  const when =
+    pickLocaleCopy(READ_TIME_WHEN[match[2]], locale) || localizeFragment(match[2], locale);
+  if (!when || HE.test(when)) return "";
+  if (locale === "es") return `${match[1]} min de lectura · ${when}`;
+  if (locale === "pt-BR") return `${match[1]} min de leitura · ${when}`;
+  if (locale === "ar") return `${match[1]} د قراءة · ${when}`;
+  return `${match[1]} min read · ${when}`;
+}
+
+function minutesLabel(n: string, locale: string): string {
+  if (locale === "ar") return `${n} د`;
+  return `${n} min`;
+}
+
+function localizeDurationDot(text: string, locale: string): string {
+  const prefix = text.match(DURATION_DOT_PREFIX_RE);
+  if (prefix) {
+    const label = localizeFragment(prefix[2], locale);
+    if (!label) return "";
+    return `${minutesLabel(prefix[1], locale)} · ${label}`;
+  }
+  const labeled = text.match(DURATION_DOT_LABEL_RE);
+  if (labeled) {
+    const label = localizeFragment(labeled[1], locale);
+    if (!label) return "";
+    return `${label} · ${minutesLabel(labeled[2], locale)}`;
+  }
+  const slash = text.match(SESSION_SLASH_RE);
+  if (slash) {
+    const label = localizeFragment(slash[1], locale);
+    if (!label) return "";
+    return `${label} / ${minutesLabel(slash[2], locale)}`;
+  }
+  return "";
+}
+
+function roomsWord(locale: string): string {
+  if (locale === "es") return "hab.";
+  if (locale === "pt-BR") return "cômodos";
+  if (locale === "ar") return "غرف";
+  return "rooms";
+}
+
+function localizeFloorToken(text: string, locale: string): string {
+  const match = text.match(/^קומה\s*(\d+)$/);
+  if (!match) return "";
+  if (locale === "es") return `piso ${match[1]}`;
+  if (locale === "pt-BR") return `andar ${match[1]}`;
+  if (locale === "ar") return `طابق ${match[1]}`;
+  return `floor ${match[1]}`;
+}
+
+function localizeSqmToken(text: string): string {
+  const match = text.match(/^(\d+)\s*מ״ר$/);
+  if (!match) return "";
+  return `${match[1]} m²`;
+}
+
+function localizeFeatureToken(text: string, locale: string): string {
+  const floor = localizeFloorToken(text, locale);
+  if (floor) return floor;
+  const sqm = localizeSqmToken(text);
+  if (sqm) return sqm;
+  const extra = pickLocaleCopy(ROOM_FEATURE_EXTRA[text], locale);
+  if (extra && !HE.test(extra)) return extra;
+  return localizeFragment(text, locale);
+}
+
+const ROOM_FEATURE_EXTRA: Record<string, PhraseTranslation> = {
+  נוף: { en: "a view", es: "vista", "pt-BR": "vista", ar: "إطلالة" },
+  מרכז: { en: "center", es: "centro", "pt-BR": "centro", ar: "مركز" },
+  צפון: { en: "north", es: "norte", "pt-BR": "norte", ar: "شمال" },
+  דרום: { en: "south", es: "sur", "pt-BR": "sul", ar: "جنوب" },
+  מזרח: { en: "east", es: "este", "pt-BR": "leste", ar: "شرق" },
+};
+
+function localizeJoinedFeatures(raw: string, locale: string): string {
+  const parts = raw.split(/\s*·\s*/).map((part) => localizeFeatureToken(part.trim(), locale));
+  if (parts.some((part) => !part || HE.test(part))) return "";
+  return parts.join(" · ");
+}
+
+function localizeRoomCountLine(text: string, locale: string): string {
+  const match = text.match(ROOM_COUNT_RE);
+  if (!match) return "";
+  const features = localizeJoinedFeatures(match[2], locale);
+  if (!features) return "";
+  return `${match[1]} ${roomsWord(locale)} · ${features}`;
+}
+
+function localizeSqmDotLine(text: string, locale: string): string {
+  const match = text.match(SQM_DOT_RE);
+  if (!match) return "";
+  const features = localizeJoinedFeatures(match[2], locale);
+  if (!features) return "";
+  return `${match[1]} m² · ${features}`;
+}
+
+function localizeGuestsDotLine(text: string, locale: string): string {
+  const match = text.match(GUESTS_DOT_RE);
+  if (!match) return "";
+  const features = localizeJoinedFeatures(match[2], locale);
+  if (!features) return "";
+  const guests =
+    locale === "es" ? "huéspedes" : locale === "pt-BR" ? "hóspedes" : locale === "ar" ? "ضيوف" : "guests";
+  return `${match[1]} ${guests} · ${features}`;
 }
 
 function localizePriceDot(text: string, locale: string): string {
@@ -926,6 +1076,19 @@ function localizePlainBuiltInText(text: string, locale: string): string {
     return adaptBuiltInDirectionalCss(exact, locale);
   }
 
+  if (text.includes("\n")) {
+    const parts = text.split("\n");
+    const localized = parts.map((part) => {
+      if (!part || !HE.test(part)) return part;
+      return localizePlainBuiltInText(part, locale);
+    });
+    const ok = parts.every((part, index) => {
+      if (!HE.test(part)) return localized[index] === part;
+      return isUsableTranslation(part, localized[index], locale);
+    });
+    if (ok) return adaptBuiltInDirectionalCss(localized.join("\n"), locale);
+  }
+
   const categoryHit = pickLocaleCopy(CATALOG_CATEGORY[text], locale);
   if (isUsableTranslation(text, categoryHit, locale)) {
     return adaptBuiltInDirectionalCss(categoryHit, locale);
@@ -968,6 +1131,26 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const priceDot = localizePriceDot(text, locale);
   if (isUsableTranslation(text, priceDot, locale)) {
     return adaptBuiltInDirectionalCss(priceDot, locale);
+  }
+  const readTime = localizeReadTime(text, locale);
+  if (isUsableTranslation(text, readTime, locale)) {
+    return adaptBuiltInDirectionalCss(readTime, locale);
+  }
+  const durationDot = localizeDurationDot(text, locale);
+  if (isUsableTranslation(text, durationDot, locale)) {
+    return adaptBuiltInDirectionalCss(durationDot, locale);
+  }
+  const roomCount = localizeRoomCountLine(text, locale);
+  if (isUsableTranslation(text, roomCount, locale)) {
+    return adaptBuiltInDirectionalCss(roomCount, locale);
+  }
+  const sqmDot = localizeSqmDotLine(text, locale);
+  if (isUsableTranslation(text, sqmDot, locale)) {
+    return adaptBuiltInDirectionalCss(sqmDot, locale);
+  }
+  const guestsDot = localizeGuestsDotLine(text, locale);
+  if (isUsableTranslation(text, guestsDot, locale)) {
+    return adaptBuiltInDirectionalCss(guestsDot, locale);
   }
 
   const openingHours = localizeOpeningHours(text, locale);

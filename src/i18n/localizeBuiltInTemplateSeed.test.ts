@@ -623,6 +623,27 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("א׳-ה׳ 08:30-19:00", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique27 titles, read-time, shekel-from, and multiline chrome", () => {
+    expect(localizeBuiltInText("נדל״ן ועסקאות מורכבות", "en")).toMatch(/real estate/i);
+    expect(localizeBuiltInText("נדל״ן ועסקאות מורכבות", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("12 דק׳ קריאה · אתמול", "en")).toBe("12 min read · yesterday");
+    expect(localizeBuiltInText("6 דק׳ קריאה · השבוע", "es")).toMatch(/lectura/i);
+    expect(localizeBuiltInText("החל מ-220 ש״ח", "pt-BR")).toMatch(/220/);
+    expect(localizeBuiltInText("החל מ-220 ש״ח", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("החל מ-₪3,400 לשן", "en")).toMatch(/tooth/i);
+    expect(localizeBuiltInText("₪54 · חריף עדין", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שלושה מנועים.\nאפס קוסמטיקה.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("4 חדרים · שתי חזיתות", "en")).toMatch(/2 facades|two facades/i);
+    expect(localizeBuiltInText("טיפול · 90 דק׳", "es")).toMatch(/90 min/i);
+    expect(localizeBuiltInText("שיקום מחסום העור", "en")).toMatch(/skin barrier/i);
+    expect(localizeBuiltInText("שיקום מחסום העור", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מחירים שקופים", "en")).toMatch(/transparent/i);
+    expect(localizeBuiltInText("3 חד׳ · קומה 4", "en")).toMatch(/floor 4/i);
+    expect(localizeBuiltInText("4 חד׳ · נוף", "en")).toMatch(/view/i);
+    expect(localizeBuiltInText("צבע וגוונים", "es")).toMatch(/color/i);
+    expect(localizeBuiltInText("ליווי ציבורי שוטף.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
