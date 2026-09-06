@@ -122,4 +122,19 @@ describe("sessionInvalidation", () => {
     expect(localStorage.getItem("businessDetails")).toBeNull();
     expect(window.location.replace).not.toHaveBeenCalled();
   });
+
+  it("does not clear the selected language on logout / session invalidation", () => {
+    localStorage.setItem("bizuply_lang_preference", "es");
+    localStorage.setItem("i18nextLng", "es");
+    sessionStorage.setItem("bizuply_lang_session", "es");
+
+    handleSessionInvalidated({ code: "SESSION_REVOKED", redirect: false });
+    clearPersistedAuthState({ clearDashboardRoute: true });
+
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("businessDetails")).toBeNull();
+    expect(localStorage.getItem("bizuply_lang_preference")).toBe("es");
+    expect(localStorage.getItem("i18nextLng")).toBe("es");
+    expect(sessionStorage.getItem("bizuply_lang_session")).toBe("es");
+  });
 });

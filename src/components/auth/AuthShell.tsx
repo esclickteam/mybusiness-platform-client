@@ -8,6 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
+import LanguageSwitcher from "../LanguageSwitcher";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
@@ -88,6 +89,9 @@ export default function AuthShell({
       className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-800"
       style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
     >
+      <div className="absolute inset-inline-end-4 top-4 z-20 sm:inset-inline-end-8 sm:top-6">
+        <LanguageSwitcher />
+      </div>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 top-16 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
         <div className="absolute left-10 top-10 hidden h-40 w-40 bg-[radial-gradient(circle,#94a3b8_1.2px,transparent_1.2px)] opacity-30 [background-size:14px_14px] lg:block" />

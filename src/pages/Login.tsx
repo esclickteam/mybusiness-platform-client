@@ -182,9 +182,9 @@ export default function Login() {
         clearPostLoginRedirect();
       }
 
-      const lang = searchParams.get("lang");
+      const lang = normalizeLanguage(searchParams.get("lang"));
       const withReviewLang = (path) => {
-        if (lang !== "en" && lang !== "he") return path;
+        if (!lang) return path;
         const [pathname, search = ""] = String(path || "/").split("?");
         const params = new URLSearchParams(search);
         params.set("lang", lang);
@@ -229,7 +229,7 @@ export default function Login() {
             </p>
           ) : null}
 
-          <div className="text-right">
+          <div className="text-start">
             <label
               htmlFor="email"
               className="mb-2 block text-sm font-bold text-slate-700"
@@ -237,7 +237,7 @@ export default function Login() {
               {t("login.emailLabel")}
             </label>
             <div className="relative">
-              <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="email"
                 id="email"
@@ -249,12 +249,12 @@ export default function Login() {
                 autoComplete="email"
                 placeholder="name@company.com"
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
               />
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-start">
             <label
               htmlFor="password"
               className="mb-2 block text-sm font-bold text-slate-700"
@@ -262,7 +262,7 @@ export default function Login() {
               {t("login.passwordLabel")}
             </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -274,13 +274,13 @@ export default function Login() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-12 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
-                className="absolute left-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
               >
                 {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
@@ -321,7 +321,7 @@ export default function Login() {
             className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {loading ? t("login.loggingIn") : t("login.signIn")}
-            {!loading ? <span aria-hidden>←</span> : null}
+            {!loading ? <span aria-hidden className="rtl-flip">←</span> : null}
           </button>
 
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">

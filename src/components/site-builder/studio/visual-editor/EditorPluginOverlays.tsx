@@ -511,6 +511,7 @@ export default function EditorPluginOverlays({
 
       {languageEnabled ? (
         <LanguageSwitcherWidget
+          applyToDocument={false}
           languages={
             (languageSettings?.languages as Array<{
               code: string;

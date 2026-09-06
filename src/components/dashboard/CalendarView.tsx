@@ -91,8 +91,9 @@ const eventColorClasses = [
   "border-orange-100 bg-orange-50 text-orange-950",
 ];
 
-function isHebrewLocale(locale: string): boolean {
-  return locale === "he" || locale === "he-IL";
+function isRtlLocale(locale: string): boolean {
+  const base = String(locale || "").toLowerCase();
+  return base === "he" || base.startsWith("he-") || base === "ar" || base.startsWith("ar-");
 }
 
 function getTodayIso(): string {
@@ -169,7 +170,7 @@ const CalendarView = React.memo(
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
-    const isRtl = isHebrewLocale(locale);
+    const isRtl = isRtlLocale(locale);
 
     const weekDays = useMemo(() => getWeekDays(locale), [locale]);
 

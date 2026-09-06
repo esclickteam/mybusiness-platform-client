@@ -1,0 +1,47 @@
+/* Global direction support. Prefer logical properties in components;
+   these rules cover remaining physical-property and mixed-script cases. */
+
+html[dir="rtl"],
+html[dir="ltr"] {
+  text-align: start;
+}
+
+.ltr-isolate,
+[data-ltr-isolate] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="url"],
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] input[type="number"],
+[dir="rtl"] input[inputmode="email"],
+[dir="rtl"] input[inputmode="tel"],
+[dir="rtl"] input[inputmode="url"],
+[dir="rtl"] input[inputmode="numeric"],
+[dir="rtl"] input[inputmode="decimal"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+
+[dir="auto"],
+[data-user-content] {
+  unicode-bidi: plaintext;
+}
+
+/* Only directional chevrons/arrows should flip. Decorative icons stay as-is. */
+[dir="rtl"] .rtl-flip,
+[dir="rtl"] [data-rtl-flip] {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .Toastify__toast {
+  text-align: start;
+}
+
+[dir="rtl"] .recharts-legend-item {
+  margin-inline: 8px 0;
+}

@@ -8,6 +8,7 @@ import { Buffer } from "buffer";
 
 /* i18n */
 import "./i18n/i18n";
+import "./styles/rtl.css";
 
 /* Contexts */
 import { AuthProvider } from "./context/AuthContext";

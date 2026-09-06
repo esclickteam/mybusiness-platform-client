@@ -45,6 +45,7 @@ function fromLocale() {
 function fromAppLanguage() {
   try {
     const stored =
+      localStorage.getItem("bizuply_lang_preference") ||
       localStorage.getItem("i18nextLng") ||
       localStorage.getItem("bizuply_lang") ||
       "";

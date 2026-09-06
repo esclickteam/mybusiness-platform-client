@@ -5,7 +5,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
-import { getTextDirection, isHebrewLanguage } from "../../i18n/localeUtils";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
+import { getTextDirection, isRtlLanguage } from "../../i18n/localeUtils";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
 import API from "../../api";
@@ -202,7 +203,7 @@ export default function BusinessDashboardLayout() {
   const businessId = useDashboardBusinessId();
   const isAdmin = user?.role === "admin";
   const layoutDir = getTextDirection(i18n.language);
-  const isRtl = isHebrewLanguage(i18n.language);
+  const isRtl = isRtlLanguage(i18n.language);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const partnerBranding = brandingFromUser(user, host);
   const partnerLogo = partnerFacingLogo(partnerBranding, host);
@@ -588,7 +589,7 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && isMobile && showSidebar && (
             <button
               type="button"
-              aria-label="Close menu"
+              aria-label={t("common.closeMenu")}
               onClick={() => setShowSidebar(false)}
               className="fixed inset-0 z-40 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 backdrop-blur-sm"
             />
@@ -770,15 +771,15 @@ export default function BusinessDashboardLayout() {
               "
               style={{
                 top: showTopBanner ? 56 : isAdmin ? 40 : 0,
-                left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
-                right: isMobile ? 0 : isRtl ? sidebarWidth : 0,
+                insetInlineStart: isMobile ? 0 : sidebarWidth,
+                insetInlineEnd: 0,
               }}
             >
               <div className="flex min-w-0 items-center gap-3">
                 {isMobile && (
                   <button
                     type="button"
-                    aria-label="Open menu"
+                    aria-label={t("common.openMenu")}
                     onClick={() => setShowSidebar((value) => !value)}
                     className="
                       flex h-10 w-10 items-center justify-center rounded-2xl
@@ -798,13 +799,14 @@ export default function BusinessDashboardLayout() {
                   </span>
                   {isAdmin && (
                     <span className="ms-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
-                      Admin
+                      {t("common.admin")}
                     </span>
                   )}
                 </div>
               </div>
 
               <div className="flex shrink-0 items-center gap-3">
+                <LanguageSwitcher />
                 <div className="relative">
                   <FacebookStyleNotifications />
                 </div>
@@ -842,9 +844,7 @@ export default function BusinessDashboardLayout() {
             style={
               isWebsiteFullScreen || isMobile
                 ? undefined
-                : isRtl
-                  ? { paddingRight: sidebarWidth }
-                  : { paddingLeft: sidebarWidth }
+                : { paddingInlineStart: sidebarWidth }
             }
           >
             <div

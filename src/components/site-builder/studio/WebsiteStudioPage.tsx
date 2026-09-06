@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
+import { useTranslation } from "react-i18next";
 
 import type {
   DeviceMode,
@@ -4781,6 +4783,8 @@ export default function WebsiteStudioPage({
   forceTemplateLoad = false,
   onSave,
 }: WebsiteStudioPageRuntimeProps) {
+  const studioChromeDir = useLocaleDir();
+  const { t } = useTranslation();
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
   const stylesRef = useRef<HTMLDivElement | null>(null);
   const traitsRef = useRef<HTMLDivElement | null>(null);
@@ -8710,7 +8714,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     return (
       <BizuplyLoader
         fullScreen
-        label="טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים"
+        label={t("studio.loadingSavedSite")}
       />
     );
   }
@@ -8719,7 +8723,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     return (
       <BizuplyLoader
         fullScreen
-        label="טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים"
+        label={t("studio.loadingSavedSite")}
       />
     );
   }
@@ -8727,34 +8731,34 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   if (isVisualReactTemplate && selectedTemplateRenderer) {
     return (
       <div
-        dir="rtl"
+        dir={studioChromeDir}
         className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-800"
       >
         {publishSuccessOpen ? (
           <div
-            dir="rtl"
+            dir={studioChromeDir}
             data-testid="visual-publish-success"
             className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 px-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-[640px] overflow-hidden rounded-[34px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
+            <div className="w-full max-w-[640px] overflow-hidden rounded-[34px] border border-white/80 bg-white text-start shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
               <div className="border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-7 py-8">
                 <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-3xl font-black text-black shadow-lg shadow-emerald-500/30">
                   ✓
                 </div>
 
                 <h2 className="text-center text-3xl font-black tracking-[-0.04em] text-slate-800">
-                  האתר פורסם בהצלחה
+                  {t("studio.publishSuccessTitle")}
                 </h2>
 
                 <p className="mx-auto mt-3 max-w-md text-center text-sm font-bold leading-7 text-slate-500">
-                  האתר שלך באוויר. אפשר לפתוח אותו, להעתיק את הקישור או להמשיך לערוך.
+                  {t("studio.publishSuccessText")}
                 </p>
               </div>
 
               <div className="px-7 py-6">
                 <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
                   <div className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-violet-600">
-                    כתובת האתר שלך
+                    {t("studio.yourSiteUrl")}
                   </div>
 
                   <div className="flex items-center gap-2 rounded-2xl border border-violet-100 bg-white p-3">
@@ -8773,14 +8777,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(publishedSiteUrl);
-                          alert("הקישור הועתק");
+                          alert(t("studio.linkCopied"));
                         } catch {
-                          alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
+                          alert(t("studio.copyFailed"));
                         }
                       }}
                       className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
                     >
-                      העתקה
+                      {t("studio.copy")}
                     </button>
                   </div>
 
@@ -8791,8 +8795,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   >
                     {publishCustomDomainPhase === "active" ||
                     publishCustomDomainPhase === "provisioning"
-                      ? "ניהול דומיין"
-                      : "חיבור דומיין מותאם"}
+                      ? t("studio.manageDomain")
+                      : t("studio.connectCustomDomain")}
                   </button>
                 </div>
 
@@ -8808,7 +8812,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     }}
                     className="h-12 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
-                    פתיחת האתר
+                    {t("studio.openSite")}
                   </button>
 
                   <button
@@ -8816,7 +8820,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={() => setConnectDomainOpen(true)}
                     className="h-12 rounded-2xl border border-violet-200 bg-violet-50 px-5 text-sm font-black text-violet-800 transition hover:bg-violet-100"
                   >
-                    חיבור דומיין
+                    {t("studio.connectDomain")}
                   </button>
 
                   <button
@@ -8824,14 +8828,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={async () => {
                       try {
                         await navigator.clipboard.writeText(publishedSiteUrl);
-                        alert("הקישור הועתק");
+                        alert(t("studio.linkCopied"));
                       } catch {
-                        alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
+                        alert(t("studio.copyFailed"));
                       }
                     }}
                     className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:bg-slate-50"
                   >
-                    העתקת קישור
+                    {t("studio.copyLink")}
                   </button>
 
                   <button
@@ -8839,12 +8843,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={() => setPublishSuccessOpen(false)}
                     className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:bg-slate-50"
                   >
-                    המשך עריכה
+                    {t("studio.keepEditing")}
                   </button>
                 </div>
 
                 <p className="mt-5 text-center text-xs font-bold leading-6 text-slate-400">
-                  אפשר להמשיך לערוך ולפרסם שוב בכל רגע. השינויים הבאים יופיעו באותה כתובת.
+                  {t("studio.continueHint")}
                 </p>
               </div>
             </div>
@@ -9313,7 +9317,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   return (
     <div
-      dir="rtl"
+      dir={studioChromeDir}
       className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-800"
     >
       <div className="flex h-full w-full flex-col">

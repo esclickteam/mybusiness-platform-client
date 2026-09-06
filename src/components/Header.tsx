@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaGlobe, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
-import {
-  getTextDirection,
-  normalizeLanguage,
-  setSessionLanguageOverride,
-} from "../i18n/localeUtils";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { getTextDirection } from "../i18n/localeUtils";
 import "../styles/SiteHeader.css";
 
 type NavLink = {
@@ -36,8 +33,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const currentLangCode = normalizeLanguage(i18n.language);
-  const headerDir = getTextDirection(currentLangCode);
+  const headerDir = getTextDirection(i18n.language);
   const accountPath =
     user?.role === "partner"
       ? "/partner/dashboard"
@@ -48,12 +44,6 @@ export default function Header() {
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
-
-  const handleToggleLanguage = async () => {
-    const next = currentLangCode === "he" ? "en" : "he";
-    setSessionLanguageOverride(next);
-    await i18n.changeLanguage(next);
-  };
 
   const handleLogout = async () => {
     try {
@@ -92,18 +82,7 @@ export default function Header() {
           </div>
 
           <div className="site-header__actions">
-            <button
-              type="button"
-              onClick={handleToggleLanguage}
-              className="site-header__icon-btn"
-              aria-label={t("common.changeLanguage")}
-              title={currentLangCode === "he" ? "English" : "עברית"}
-            >
-              <FaGlobe size={16} />
-              <span className="site-header__lang-code">
-                {currentLangCode === "he" ? "EN" : "HE"}
-              </span>
-            </button>
+            <LanguageSwitcher />
 
             {!user ? (
               <>
@@ -136,14 +115,7 @@ export default function Header() {
           </div>
 
           <div className="site-header__mobile">
-            <button
-              type="button"
-              onClick={handleToggleLanguage}
-              className="site-header__icon-btn"
-              aria-label={t("common.changeLanguage")}
-            >
-              <FaGlobe size={15} />
-            </button>
+            <LanguageSwitcher />
 
             {!user ? (
               <Link

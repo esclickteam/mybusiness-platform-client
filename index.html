@@ -1,33 +1,56 @@
 ﻿<!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (function () {
         try {
-          var SUPPORTED = { en: 1, he: 1, fr: 1, de: 1, es: 1, nl: 1, it: 1 };
+          function normalize(raw) {
+            if (!raw) return null;
+            var value = String(raw).trim().replace(/_/g, "-");
+            var lower = value.toLowerCase();
+            if (lower === "pt-br") return "pt-BR";
+            if (lower === "iw" || lower.indexOf("iw-") === 0) return "he";
+            var parts = lower.split("-");
+            var base = parts[0];
+            var region = parts[1] || "";
+            if (base === "pt") return region === "br" ? "pt-BR" : null;
+            if (base === "en" || base === "he" || base === "es" || base === "ar") return base;
+            return null;
+          }
+
+          function readCookie(name) {
+            var match = document.cookie.match(
+              new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&") + "=([^;]*)")
+            );
+            return match ? decodeURIComponent(match[1]) : null;
+          }
+
           var lang = null;
 
           try {
-            var urlLang = new URLSearchParams(location.search).get("lang");
-            if (urlLang) {
-              urlLang = String(urlLang).split("-")[0].toLowerCase();
-              if (urlLang === "en" || urlLang === "he") lang = urlLang;
-            }
+            lang = normalize(new URLSearchParams(location.search).get("lang"));
           } catch (eUrl) {}
 
           if (!lang) {
             try {
-              var manual = localStorage.getItem("bizuply_lang_preference");
-              if (manual && SUPPORTED[manual]) lang = manual;
+              lang = normalize(localStorage.getItem("bizuply_lang_preference"));
             } catch (e0) {}
           }
 
-          if (!lang) lang = "he";
+          if (!lang) lang = normalize(readCookie("bizuply_lang"));
+          if (!lang) lang = normalize(readCookie("bizuply_geo_lang"));
+          if (!lang) {
+            try {
+              var nav = [navigator.language].concat(navigator.languages || []);
+              for (var i = 0; i < nav.length && !lang; i++) lang = normalize(nav[i]);
+            } catch (eNav) {}
+          }
+          if (!lang) lang = "en";
 
           document.documentElement.lang = lang;
-          document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+          document.documentElement.dir = lang === "he" || lang === "ar" ? "rtl" : "ltr";
         } catch (e) {}
       })();
     </script>
