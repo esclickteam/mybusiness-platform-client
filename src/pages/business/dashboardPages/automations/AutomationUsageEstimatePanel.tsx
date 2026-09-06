@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle } from "lucide-react";
 import { formatHeNumber } from "./billing/automationBillingFormat";
 import {
@@ -26,6 +27,7 @@ export default function AutomationUsageEstimatePanel({
   planName,
   onOpenPlans,
 }: Props) {
+  const { t } = useTranslation();
   const normalized = useMemo(
     () => normalizeScheduleConfig(schedule || {}),
     [schedule]
@@ -60,24 +62,34 @@ export default function AutomationUsageEstimatePanel({
 
   return (
     <aside className="af-usage-estimate" dir="rtl" role="status">
-      <strong className="af-usage-estimate__title">הערכת שימוש חודשי</strong>
+      <strong className="af-usage-estimate__title">
+        {t("automations.estimate.title", "Monthly usage estimate")}
+      </strong>
       <p className="af-usage-estimate__line">
-        עד{" "}
-        <strong>{formatHeNumber(estimate.actionsPerRun)}</strong> פעולות
-        להרצה · ≈{" "}
-        <strong>{formatHeNumber(estimate.runsPerMonth)}</strong> הרצות בחודש
+        {t("automations.estimate.line", {
+          actions: formatHeNumber(estimate.actionsPerRun),
+          runs: formatHeNumber(estimate.runsPerMonth),
+          defaultValue:
+            "Up to {{actions}} actions per run · ≈ {{runs}} runs per month",
+        })}
       </p>
       <p className="af-usage-estimate__total">
-        הערכה:{" "}
-        <strong>{formatHeNumber(estimate.actionsPerMonth)}</strong> פעולות
-        בחודש
-        {hasLimit ? (
-          <>
-            {" "}
-            מתוך {formatHeNumber(limit)}
-            {planName ? ` (${planName})` : ""}
-          </>
-        ) : null}
+        {t("automations.estimate.total", {
+          count: formatHeNumber(estimate.actionsPerMonth),
+          defaultValue: "Estimate: {{count}} actions per month",
+        })}
+        {hasLimit
+          ? planName
+            ? t("automations.estimate.ofLimitNamed", {
+                limit: formatHeNumber(limit),
+                plan: planName,
+                defaultValue: " of {{limit}} ({{plan}})",
+              })
+            : t("automations.estimate.ofLimit", {
+                limit: formatHeNumber(limit),
+                defaultValue: " of {{limit}}",
+              })
+          : null}
       </p>
 
       {overPlan || recommendHigher ? (
@@ -86,17 +98,31 @@ export default function AutomationUsageEstimatePanel({
           <div>
             <strong>
               {overPlan
-                ? "ההערכה חורגת ממכסת החבילה הנוכחית"
-                : "מומלץ לשקול חבילה גבוהה יותר"}
+                ? t(
+                    "automations.estimate.overPlan",
+                    "The estimate exceeds the current plan quota"
+                  )
+                : t(
+                    "automations.estimate.considerHigher",
+                    "Consider a higher plan"
+                  )}
             </strong>
             {recommendation.plan ? (
               <p>
-                מומלץ: {recommendation.plan.name} ·{" "}
-                {formatHeNumber(recommendation.plan.executionLimit)} פעולות
-                בחודש
+                {t("automations.estimate.recommended", {
+                  plan: recommendation.plan.name,
+                  count: formatHeNumber(recommendation.plan.executionLimit),
+                  defaultValue:
+                    "Recommended: {{plan}} · {{count}} actions per month",
+                })}
               </p>
             ) : recommendation.exceedsAll ? (
-              <p>ההערכה גבוהה מכל החבילות הזמינות — כדאי להקטין את התדירות.</p>
+              <p>
+                {t(
+                  "automations.estimate.exceedsAll",
+                  "The estimate is higher than every available plan — consider lowering the frequency."
+                )}
+              </p>
             ) : null}
             {onOpenPlans ? (
               <button
@@ -104,17 +130,23 @@ export default function AutomationUsageEstimatePanel({
                 className="af-btn af-btn--primary"
                 onClick={onOpenPlans}
               >
-                צפייה בחבילות
+                {t("automations.estimate.viewPlans", "View plans")}
               </button>
             ) : null}
             <p className="af-usage-estimate__note">
-              זו הערכה בלבד — אין שדרוג אוטומטי.
+              {t(
+                "automations.estimate.estimateOnlyNoUpgrade",
+                "This is an estimate only — there is no automatic upgrade."
+              )}
             </p>
           </div>
         </div>
       ) : (
         <p className="af-usage-estimate__note">
-          הערכה בלבד לפי המסלול היקר ביותר והתדירות שנבחרה.
+          {t(
+            "automations.estimate.estimateNote",
+            "Estimate only, based on the most expensive path and the selected frequency."
+          )}
         </p>
       )}
     </aside>

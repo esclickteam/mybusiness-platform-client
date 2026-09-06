@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   DEFAULT_TIMEZONE,
   MIN_INTERVAL_MINUTES,
@@ -7,15 +8,7 @@ import {
   type ScheduleFrequency,
 } from "./automationSchedule";
 
-const WEEKDAY_OPTIONS: Array<{ value: number; label: string }> = [
-  { value: 0, label: "א׳" },
-  { value: 1, label: "ב׳" },
-  { value: 2, label: "ג׳" },
-  { value: 3, label: "ד׳" },
-  { value: 4, label: "ה׳" },
-  { value: 5, label: "ו׳" },
-  { value: 6, label: "ש׳" },
-];
+const WEEKDAY_VALUES = [0, 1, 2, 3, 4, 5, 6] as const;
 
 const TIMEZONE_OPTIONS = [
   "Asia/Jerusalem",
@@ -51,8 +44,13 @@ export default function ScheduleTriggerFields({
   disabled,
   onChange,
 }: Props) {
+  const { t } = useTranslation();
   const config = ensureConfig(value);
   const activeEnabled = Boolean(config.activeHours);
+  const weekdayDefaults = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const weekdayLabels = WEEKDAY_VALUES.map((day) =>
+    t(`automations.schedule.day${day}`, weekdayDefaults[day])
+  );
 
   const patch = (partial: Partial<AutomationScheduleConfig>) => {
     const next = normalizeScheduleConfig({ ...config, ...partial });
@@ -89,22 +87,26 @@ export default function ScheduleTriggerFields({
   return (
     <div className="af-schedule" dir="rtl">
       <label>
-        תדירות
+        {t("automations.schedule.frequency", "Frequency")}
         <select
           value={config.frequency}
           disabled={disabled}
           onChange={(e) => setFrequency(e.target.value as ScheduleFrequency)}
         >
-          <option value="every_minutes">כל X דקות</option>
-          <option value="every_hours">כל X שעות</option>
-          <option value="daily">יומי</option>
-          <option value="weekly">שבועי</option>
+          <option value="every_minutes">
+            {t("automations.schedule.everyMinutes", "Every X minutes")}
+          </option>
+          <option value="every_hours">
+            {t("automations.schedule.everyHours", "Every X hours")}
+          </option>
+          <option value="daily">{t("automations.schedule.daily", "Daily")}</option>
+          <option value="weekly">{t("automations.schedule.weekly", "Weekly")}</option>
         </select>
       </label>
 
       {config.frequency === "every_minutes" ? (
         <label>
-          כל כמה דקות
+          {t("automations.schedule.everyNMinutes", "Every how many minutes")}
           <input
             type="number"
             min={MIN_INTERVAL_MINUTES}
@@ -121,14 +123,17 @@ export default function ScheduleTriggerFields({
             }
           />
           <span className="af-schedule__hint">
-            מינימום {MIN_INTERVAL_MINUTES} דקות
+            {t("automations.schedule.minMinutes", {
+              count: MIN_INTERVAL_MINUTES,
+              defaultValue: "Minimum {{count}} minutes",
+            })}
           </span>
         </label>
       ) : null}
 
       {config.frequency === "every_hours" ? (
         <label>
-          כל כמה שעות
+          {t("automations.schedule.everyNHours", "Every how many hours")}
           <input
             type="number"
             min={1}
@@ -146,7 +151,7 @@ export default function ScheduleTriggerFields({
 
       {config.frequency === "daily" || config.frequency === "weekly" ? (
         <label>
-          שעת הפעלה
+          {t("automations.schedule.timeOfDay", "Run time")}
           <input
             type="time"
             value={config.timeOfDay || "09:00"}
@@ -161,32 +166,37 @@ export default function ScheduleTriggerFields({
       config.frequency === "every_hours" ? (
         <div className="af-schedule__weekdays">
           <span className="af-schedule__label">
-            {config.frequency === "weekly" ? "ימים בשבוע" : "ימי פעילות (אופציונלי)"}
+            {config.frequency === "weekly"
+              ? t("automations.schedule.weekdays", "Days of the week")
+              : t(
+                  "automations.schedule.activeDaysOptional",
+                  "Active days (optional)"
+                )}
           </span>
           <div className="af-schedule__weekday-row">
-            {WEEKDAY_OPTIONS.map((day) => {
+            {WEEKDAY_VALUES.map((day) => {
               const active =
                 config.weekdays.length === 0
                   ? config.frequency !== "weekly"
-                  : config.weekdays.includes(day.value);
+                  : config.weekdays.includes(day);
               return (
                 <button
-                  key={day.value}
+                  key={day}
                   type="button"
                   className={`af-schedule__day${active ? " af-schedule__day--active" : ""}`}
                   disabled={disabled}
                   aria-pressed={active}
                   onClick={() => {
                     if (config.frequency === "weekly") {
-                      toggleWeekday(day.value);
+                      toggleWeekday(day);
                       return;
                     }
                     const set = new Set(config.weekdays);
                     if (set.size === 0) {
-                      WEEKDAY_OPTIONS.forEach((d) => set.add(d.value));
+                      WEEKDAY_VALUES.forEach((d) => set.add(d));
                     }
-                    if (set.has(day.value)) set.delete(day.value);
-                    else set.add(day.value);
+                    if (set.has(day)) set.delete(day);
+                    else set.add(day);
                     const weekdays = [...set].sort((a, b) => a - b);
                     patch({
                       weekdays:
@@ -196,7 +206,7 @@ export default function ScheduleTriggerFields({
                     });
                   }}
                 >
-                  {day.label}
+                  {weekdayLabels[day]}
                 </button>
               );
             })}
@@ -218,12 +228,12 @@ export default function ScheduleTriggerFields({
               })
             }
           />
-          הגבלת שעות פעילות
+          {t("automations.schedule.limitHours", "Limit active hours")}
         </label>
         {activeEnabled && config.activeHours ? (
           <div className="af-schedule__active-row">
             <label>
-              מ־
+              {t("automations.schedule.from", "From")}
               <input
                 type="time"
                 value={config.activeHours.start}
@@ -239,7 +249,7 @@ export default function ScheduleTriggerFields({
               />
             </label>
             <label>
-              עד
+              {t("automations.schedule.until", "Until")}
               <input
                 type="time"
                 value={config.activeHours.end}
@@ -259,7 +269,7 @@ export default function ScheduleTriggerFields({
       </div>
 
       <label>
-        אזור זמן
+        {t("automations.schedule.timezone", "Time zone")}
         <select
           value={config.timezone || DEFAULT_TIMEZONE}
           disabled={disabled}
@@ -269,7 +279,12 @@ export default function ScheduleTriggerFields({
         >
           {TIMEZONE_OPTIONS.map((tz) => (
             <option key={tz} value={tz}>
-              {tz === "Asia/Jerusalem" ? "Asia/Jerusalem (ישראל)" : tz}
+              {tz === "Asia/Jerusalem"
+                ? t(
+                    "automations.schedule.timezoneIsrael",
+                    "Asia/Jerusalem (Israel)"
+                  )
+                : tz}
             </option>
           ))}
           {!TIMEZONE_OPTIONS.includes(

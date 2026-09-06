@@ -1,4 +1,6 @@
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import {
   emailVariablesForTrigger,
   insertTokenAtCursor,
@@ -25,6 +27,66 @@ type Props = {
   businessName?: string;
 };
 
+const VAR_KEYS: Record<string, string> = {
+  "{{appointment.clientName}}": "automations.editor.mapping.clientName",
+  "{{business.name}}": "automations.editor.mapping.businessName",
+  "{{appointment.date}}": "automations.editor.mapping.date",
+  "{{appointment.time}}": "automations.editor.mapping.appointmentTime",
+  "{{appointment.duration}}": "automations.emailFields.varDuration",
+  "{{appointment.serviceName}}": "automations.editor.mapping.service",
+  "{{appointment.location}}": "automations.emailFields.varLocation",
+  "{{appointment.notes}}": "automations.emailFields.varNotes",
+  "{{lead.name}}": "automations.editor.mapping.leadName",
+  "{{lead.email}}": "automations.editor.mapping.leadEmail",
+  "{{lead.phone}}": "automations.editor.mapping.leadPhone",
+  "{{lead.source}}": "automations.editor.mapping.leadSource",
+  "{{customer.firstName}}": "automations.emailFields.varFirstName",
+  "{{customer.fullName}}": "automations.editor.mapping.clientName",
+  "{{order.number}}": "automations.emailFields.varOrderNumber",
+  "{{order.total}}": "automations.emailFields.varOrderTotal",
+  "{{order.items}}": "automations.emailFields.varOrderItems",
+  "{{order.shippingAddress}}": "automations.emailFields.varShippingAddress",
+  "{{store.name}}": "automations.emailFields.varStoreName",
+  "{{customer.email}}": "automations.emailFields.varCustomerEmail",
+  "{{customer.phone}}": "automations.emailFields.varCustomerPhone",
+  "{{order.productName}}": "automations.emailFields.varProductName",
+  "{{order.variant}}": "automations.emailFields.varVariant",
+  "{{order.quantity}}": "automations.emailFields.varQuantity",
+  "{{order.subtotal}}": "automations.emailFields.varSubtotal",
+  "{{order.discount}}": "automations.emailFields.varDiscount",
+  "{{order.shipping}}": "automations.emailFields.varShipping",
+  "{{order.tax}}": "automations.emailFields.varTax",
+  "{{order.viewUrl}}": "automations.emailFields.varOrderUrl",
+};
+
+const VAR_FALLBACKS: Record<string, string> = {
+  "automations.emailFields.varDuration": "Appointment duration",
+  "automations.emailFields.varLocation": "Location",
+  "automations.emailFields.varNotes": "Notes",
+  "automations.emailFields.varFirstName": "First name",
+  "automations.emailFields.varOrderNumber": "Order number",
+  "automations.emailFields.varOrderTotal": "Total",
+  "automations.emailFields.varOrderItems": "Items",
+  "automations.emailFields.varShippingAddress": "Shipping address",
+  "automations.emailFields.varStoreName": "Store name",
+  "automations.emailFields.varCustomerEmail": "Customer email",
+  "automations.emailFields.varCustomerPhone": "Customer phone",
+  "automations.emailFields.varProductName": "Product name",
+  "automations.emailFields.varVariant": "Variant",
+  "automations.emailFields.varQuantity": "Quantity",
+  "automations.emailFields.varSubtotal": "Subtotal",
+  "automations.emailFields.varDiscount": "Discount",
+  "automations.emailFields.varShipping": "Shipping",
+  "automations.emailFields.varTax": "Tax",
+  "automations.emailFields.varOrderUrl": "Order link",
+};
+
+function variableLabel(token: string, fallback: string, t: TFunction) {
+  const key = VAR_KEYS[token];
+  if (!key) return fallback;
+  return t(key, VAR_FALLBACKS[key] || fallback);
+}
+
 export function EmailActionTemplateFields({
   triggerKey,
   readOnly = false,
@@ -36,6 +98,7 @@ export function EmailActionTemplateFields({
   previewToLabel,
   businessName,
 }: Props) {
+  const { t } = useTranslation();
   const focusRef = useRef<EmailField>("html");
   const subjectRef = useRef<HTMLInputElement | null>(null);
   const htmlRef = useRef<HTMLTextAreaElement | null>(null);
@@ -84,9 +147,14 @@ export function EmailActionTemplateFields({
   return (
     <>
       <div className="af-email-vars" dir="rtl">
-        <strong className="af-email-vars__label">משתנים זמינים</strong>
+        <strong className="af-email-vars__label">
+          {t("automations.emailFields.availableVars", "Available variables")}
+        </strong>
         <p className="af-email-vars__hint">
-          לחצו כדי להוסיף לשדה המסומן (נושא, HTML או טקסט)
+          {t(
+            "automations.emailFields.varsHint",
+            "Click to insert into the focused field (subject, HTML, or text)"
+          )}
         </p>
         <div className="af-email-vars__chips">
           {variables.map((item) => (
@@ -98,21 +166,24 @@ export function EmailActionTemplateFields({
               title={item.token}
               onClick={() => insertToken(item.token)}
             >
-              {item.label}
-              {item.optional ? " (אופציונלי)" : ""}
+              {variableLabel(item.token, item.label, t)}
+              {item.optional ? ` (${t("automations.common.optional")})` : ""}
             </button>
           ))}
         </div>
       </div>
 
       <label>
-        נושא
+        {t("automations.emailFields.subject", "Subject")}
         <input
           ref={subjectRef}
           type="text"
           disabled={readOnly}
           value={subject}
-          placeholder="הודעה מ{{business.name}}"
+          placeholder={t("automations.emailFields.subjectPh", {
+            token: "{{business.name}}",
+            defaultValue: "Message from {{token}}",
+          })}
           onFocus={() => {
             focusRef.current = "subject";
           }}
@@ -121,13 +192,16 @@ export function EmailActionTemplateFields({
       </label>
 
       <label>
-        תוכן (HTML)
+        {t("automations.emailFields.html", "Content (HTML)")}
         <textarea
           ref={htmlRef}
           rows={8}
           disabled={readOnly}
           value={html}
-          placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
+          placeholder={t("automations.emailFields.htmlPh", {
+            token: "{{lead.name}}",
+            defaultValue: '<div dir="rtl"><p>Hello {{token}}</p></div>',
+          })}
           onFocus={() => {
             focusRef.current = "html";
           }}
@@ -141,13 +215,16 @@ export function EmailActionTemplateFields({
       </label>
 
       <label>
-        טקסט פשוט (אופציונלי)
+        {t("automations.emailFields.plainText", "Plain text (optional)")}
         <textarea
           ref={textRef}
           rows={3}
           disabled={readOnly}
           value={text}
-          placeholder="גרסת טקסט ללא HTML"
+          placeholder={t(
+            "automations.emailFields.textPh",
+            "Plain-text version without HTML"
+          )}
           onFocus={() => {
             focusRef.current = "text";
           }}
@@ -156,14 +233,31 @@ export function EmailActionTemplateFields({
       </label>
 
       <div className="af-gmail-preview" dir="rtl">
-        <strong>תצוגה מקדימה</strong>
+        <strong>{t("automations.emailFields.preview", "Preview")}</strong>
         <div className="af-gmail-preview__headers">
-          <span>מ: {previewFromLabel}</span>
-          <span>אל: {previewToLabel}</span>
-          <span>נושא: {previewSubject.trim() || "—"}</span>
+          <span>
+            {t("automations.emailFields.fromLine", {
+              value: previewFromLabel,
+              defaultValue: "From: {{value}}",
+            })}
+          </span>
+          <span>
+            {t("automations.emailFields.toLine", {
+              value: previewToLabel,
+              defaultValue: "To: {{value}}",
+            })}
+          </span>
+          <span>
+            {t("automations.emailFields.subjectLine", {
+              value: previewSubject.trim() || t("automations.common.none"),
+              defaultValue: "Subject: {{value}}",
+            })}
+          </span>
         </div>
         {!previewHtml.trim() && !previewText.trim() ? (
-          <div className="af-gmail-preview__empty">אין עדיין תוכן להצגה</div>
+          <div className="af-gmail-preview__empty">
+            {t("automations.emailFields.emptyPreview", "No content to preview yet")}
+          </div>
         ) : (
           <>
             {previewHtml.trim() ? (

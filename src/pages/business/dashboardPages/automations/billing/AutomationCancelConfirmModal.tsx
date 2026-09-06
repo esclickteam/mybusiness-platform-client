@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -23,6 +24,7 @@ export default function AutomationCancelConfirmModal({
   onClose,
   onCancelled,
 }: Props) {
+  const { t } = useTranslation();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -83,13 +85,24 @@ export default function AutomationCancelConfirmModal({
       const endLabel = formatHeDate(result.currentPeriodEnd) || periodEnd;
       toast.success(
         endLabel
-          ? `החבילה תבוטל בסוף תקופת החיוב (${endLabel})`
-          : "החבילה תבוטל בסוף תקופת החיוב"
+          ? t("automations.billing.cancel.toastWithDate", {
+              date: endLabel,
+              defaultValue: "החבילה תבוטל בסוף תקופת החיוב ({{date}})",
+            })
+          : t(
+              "automations.billing.cancel.toast",
+              "החבילה תבוטל בסוף תקופת החיוב"
+            )
       );
       onCancelled();
       onClose();
     } catch {
-      toast.error("לא הצלחנו לבטל את החבילה כרגע. נסו שוב.");
+      toast.error(
+        t(
+          "automations.billing.cancel.error",
+          "לא הצלחנו לבטל את החבילה כרגע. נסו שוב."
+        )
+      );
       setSubmitting(false);
     }
   };
@@ -112,20 +125,33 @@ export default function AutomationCancelConfirmModal({
         <button
           type="button"
           className="ax-billing-modal__close"
-          aria-label="סגור"
+          aria-label={t("automations.billing.close")}
           disabled={submitting}
           onClick={onClose}
         >
           <X size={16} />
         </button>
 
-        <h2 id={titleId}>ביטול חבילת האוטומציות</h2>
-        <p>החבילה תישאר פעילה עד סוף תקופת החיוב הנוכחית.</p>
+        <h2 id={titleId}>{t("automations.billing.cancelPlan")}</h2>
         <p>
-          לאחר מכן אוטומציות לא יוכלו להתחיל פעולות חדשות עד לבחירת חבילה חדשה.
+          {t(
+            "automations.billing.cancel.stayActive",
+            "החבילה תישאר פעילה עד סוף תקופת החיוב הנוכחית."
+          )}
+        </p>
+        <p>
+          {t(
+            "automations.billing.cancel.afterCancel",
+            "לאחר מכן אוטומציות לא יוכלו להתחיל פעולות חדשות עד לבחירת חבילה חדשה."
+          )}
         </p>
         {periodEnd ? (
-          <p className="ax-billing-cancel__date">סוף התקופה: {periodEnd}</p>
+          <p className="ax-billing-cancel__date">
+            {t("automations.billing.cancel.periodEnd", {
+              date: periodEnd,
+              defaultValue: "סוף התקופה: {{date}}",
+            })}
+          </p>
         ) : null}
 
         <div className="ax-billing-modal__actions">
@@ -135,7 +161,7 @@ export default function AutomationCancelConfirmModal({
             disabled={submitting}
             onClick={onClose}
           >
-            חזרה
+            {t("automations.billing.back")}
           </button>
           <button
             type="button"
@@ -144,7 +170,7 @@ export default function AutomationCancelConfirmModal({
             onClick={() => void handleCancel()}
           >
             {submitting ? <Loader2 size={16} className="ax-billing-spin" /> : null}
-            ביטול החבילה
+            {t("automations.billing.cancel.confirm", "ביטול החבילה")}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Copy,
@@ -47,6 +48,7 @@ function RowActionsMenu({
   onHistory: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const status = getWorkflowStatus(workflow);
@@ -73,7 +75,7 @@ function RowActionsMenu({
       <button
         type="button"
         className="ax-menu__trigger"
-        aria-label="פעולות"
+        aria-label={t("automations.list.actionsAria", "Actions")}
         aria-expanded={open}
         onClick={(event) => {
           event.stopPropagation();
@@ -93,7 +95,7 @@ function RowActionsMenu({
             }}
           >
             <PencilLine size={14} />
-            עריכה
+            {t("automations.list.edit", "Edit")}
           </button>
           <button
             type="button"
@@ -106,7 +108,7 @@ function RowActionsMenu({
             }}
           >
             <Copy size={14} />
-            שכפול
+            {t("automations.list.duplicate", "Duplicate")}
           </button>
           {canToggle ? (
             <button
@@ -120,7 +122,9 @@ function RowActionsMenu({
               }}
             >
               {status === "active" ? <Pause size={14} /> : <Play size={14} />}
-              {status === "active" ? "השהיה" : "הפעלה"}
+              {status === "active"
+                ? t("automations.toolbar.pause")
+                : t("automations.toolbar.resume")}
             </button>
           ) : null}
           <button
@@ -132,7 +136,7 @@ function RowActionsMenu({
             }}
           >
             <History size={14} />
-            הרצות
+            {t("automations.layout.runs")}
           </button>
           <button
             type="button"
@@ -146,7 +150,7 @@ function RowActionsMenu({
             }}
           >
             <Trash2 size={14} />
-            מחיקה
+            {t("automations.list.delete", "Delete")}
           </button>
         </div>
       ) : null}
@@ -163,6 +167,7 @@ export default function AutomationsWorkflowList({
   onHistory,
   onDelete,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -171,18 +176,20 @@ export default function AutomationsWorkflowList({
         <table className="ax-table">
           <thead>
             <tr>
-              <th>שם האוטומציה</th>
-              <th>טריגר</th>
-              <th>סטטוס</th>
-              <th>הרצה אחרונה</th>
-              <th>תוצאה אחרונה</th>
-              <th className="ax-table__actions-col">פעולות</th>
+              <th>{t("automations.list.name", "Automation name")}</th>
+              <th>{t("automations.runs.trigger")}</th>
+              <th>{t("automations.runs.status")}</th>
+              <th>{t("automations.list.lastRun", "Last run")}</th>
+              <th>{t("automations.list.lastResult", "Last result")}</th>
+              <th className="ax-table__actions-col">
+                {t("automations.runs.actions")}
+              </th>
             </tr>
           </thead>
           <tbody>
             {workflows.map((workflow) => {
               const status = getWorkflowStatus(workflow);
-              const result = getLastResultLabel(workflow.lastExecution);
+              const result = getLastResultLabel(workflow.lastExecution, t);
               const lastRunAt =
                 workflow.lastExecution?.startedAt ||
                 workflow.lastExecution?.completedAt ||
@@ -200,17 +207,21 @@ export default function AutomationsWorkflowList({
                       className="ax-table__name"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      {workflow.name || "אוטומציה ללא שם"}
+                      {workflow.name ||
+                        t("automations.list.unnamed", "Untitled automation")}
                     </Link>
                   </td>
                   <td className="ax-table__muted">{getTriggerLabel(workflow)}</td>
                   <td>
                     <span className={`ax-badge ax-badge--${status}`}>
-                      {getStatusLabel(status === "failed" ? "failed" : status)}
+                      {getStatusLabel(
+                        status === "failed" ? "failed" : status,
+                        t
+                      )}
                     </span>
                   </td>
                   <td className="ax-table__muted">
-                    {formatRelativeTime(lastRunAt)}
+                    {formatRelativeTime(lastRunAt, i18n.language)}
                   </td>
                   <td>
                     <span className={`ax-result ax-result--${result.tone}`}>
@@ -244,7 +255,7 @@ export default function AutomationsWorkflowList({
       <div className="ax-mobile-list">
         {workflows.map((workflow) => {
           const status = getWorkflowStatus(workflow);
-          const result = getLastResultLabel(workflow.lastExecution);
+          const result = getLastResultLabel(workflow.lastExecution, t);
           const lastRunAt =
             workflow.lastExecution?.startedAt ||
             workflow.lastExecution?.completedAt ||
@@ -259,7 +270,8 @@ export default function AutomationsWorkflowList({
               <div className="ax-mobile-card__top">
                 <div className="min-w-0">
                   <h3 className="ax-mobile-card__name">
-                    {workflow.name || "אוטומציה ללא שם"}
+                    {workflow.name ||
+                      t("automations.list.unnamed", "Untitled automation")}
                   </h3>
                   <p className="ax-mobile-card__meta">
                     {getTriggerLabel(workflow)}
@@ -280,10 +292,10 @@ export default function AutomationsWorkflowList({
               </div>
               <div className="ax-mobile-card__bottom">
                 <span className={`ax-badge ax-badge--${status}`}>
-                  {getStatusLabel(status)}
+                  {getStatusLabel(status, t)}
                 </span>
                 <span className="ax-mobile-card__meta">
-                  {formatRelativeTime(lastRunAt)}
+                  {formatRelativeTime(lastRunAt, i18n.language)}
                 </span>
                 <span className={`ax-result ax-result--${result.tone}`}>
                   {result.label}

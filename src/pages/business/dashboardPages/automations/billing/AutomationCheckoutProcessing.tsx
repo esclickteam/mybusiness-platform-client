@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";
 import {
   getAutomationBillingUsage,
@@ -38,6 +39,7 @@ export default function AutomationCheckoutProcessing({
   onDone,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<"polling" | "success" | "timeout">("polling");
@@ -147,7 +149,7 @@ export default function AutomationCheckoutProcessing({
         <button
           type="button"
           className="ax-billing-modal__close"
-          aria-label="סגור"
+          aria-label={t("automations.billing.close")}
           onClick={onClose}
         >
           <X size={16} />
@@ -158,27 +160,54 @@ export default function AutomationCheckoutProcessing({
             <div className="ax-billing-processing__spinner" aria-hidden>
               <Loader2 size={28} className="ax-billing-spin" />
             </div>
-            <h2 id={titleId}>התשלום התקבל</h2>
-            <p>מעדכנים את חבילת האוטומציות...</p>
+            <h2 id={titleId}>
+              {t("automations.billing.checkout.received", "התשלום התקבל")}
+            </h2>
+            <p>
+              {t(
+                "automations.billing.checkout.updating",
+                "מעדכנים את חבילת האוטומציות..."
+              )}
+            </p>
           </>
         ) : null}
 
         {phase === "success" ? (
           <>
-            <h2 id={titleId}>חבילת {planName} הופעלה בהצלחה</h2>
-            <p>אפשר לחזור ולהמשיך לעבוד עם האוטומציות.</p>
+            <h2 id={titleId}>
+              {t("automations.billing.checkout.activated", {
+                plan: planName,
+                defaultValue: "חבילת {{plan}} הופעלה בהצלחה",
+              })}
+            </h2>
+            <p>
+              {t(
+                "automations.billing.checkout.continueHint",
+                "אפשר לחזור ולהמשיך לעבוד עם האוטומציות."
+              )}
+            </p>
             <button type="button" className="ax-btn ax-btn--primary" onClick={onClose}>
-              חזרה לאוטומציות
+              {t("automations.runs.backToAutomations")}
             </button>
           </>
         ) : null}
 
         {phase === "timeout" ? (
           <>
-            <h2 id={titleId}>התשלום התקבל והעדכון עדיין מתבצע.</h2>
-            <p>רוב העדכונים מסתיימים תוך זמן קצר.</p>
+            <h2 id={titleId}>
+              {t(
+                "automations.billing.checkout.timeoutTitle",
+                "התשלום התקבל והעדכון עדיין מתבצע."
+              )}
+            </h2>
+            <p>
+              {t(
+                "automations.billing.checkout.timeoutHint",
+                "רוב העדכונים מסתיימים תוך זמן קצר."
+              )}
+            </p>
             <button type="button" className="ax-btn ax-btn--primary" onClick={onClose}>
-              חזרה לאוטומציות
+              {t("automations.runs.backToAutomations")}
             </button>
           </>
         ) : null}

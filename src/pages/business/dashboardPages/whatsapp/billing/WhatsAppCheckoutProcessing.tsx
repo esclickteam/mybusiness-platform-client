@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";
 import {
   getWhatsAppBillingUsage,
@@ -31,6 +32,7 @@ export default function WhatsAppCheckoutProcessing({
   onDone,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<"polling" | "success" | "timeout">(
@@ -108,7 +110,7 @@ export default function WhatsAppCheckoutProcessing({
         <button
           type="button"
           className="wa-billing-modal__close"
-          aria-label="סגור"
+          aria-label={t("whatsapp.billing.close")}
           onClick={onClose}
         >
           <X size={16} />
@@ -119,35 +121,62 @@ export default function WhatsAppCheckoutProcessing({
             <div className="wa-billing-processing__spinner" aria-hidden>
               <Loader2 size={28} className="wa-billing-spin" />
             </div>
-            <h2 id={titleId}>התשלום התקבל</h2>
-            <p>מעדכנים את חיוב וואטסאפ...</p>
+            <h2 id={titleId}>
+              {t("whatsapp.checkout.received", "Payment received")}
+            </h2>
+            <p>
+              {t(
+                "whatsapp.checkout.updating",
+                "Updating WhatsApp billing..."
+              )}
+            </p>
           </>
         ) : null}
 
         {phase === "success" ? (
           <>
-            <h2 id={titleId}>חיוב וואטסאפ הופעל בהצלחה</h2>
-            <p>אפשר לחזור ולשלוח הודעות — החיוב לפי השימוש בפועל.</p>
+            <h2 id={titleId}>
+              {t(
+                "whatsapp.checkout.activated",
+                "WhatsApp billing was activated successfully"
+              )}
+            </h2>
+            <p>
+              {t(
+                "whatsapp.checkout.continueHint",
+                "You can go back and send messages — billing is based on actual usage."
+              )}
+            </p>
             <button
               type="button"
               className="wa-billing-btn wa-billing-btn--primary"
               onClick={onClose}
             >
-              המשך
+              {t("whatsapp.checkout.continue", "Continue")}
             </button>
           </>
         ) : null}
 
         {phase === "timeout" ? (
           <>
-            <h2 id={titleId}>התשלום התקבל והעדכון עדיין מתבצע.</h2>
-            <p>רוב העדכונים מסתיימים תוך זמן קצר.</p>
+            <h2 id={titleId}>
+              {t(
+                "whatsapp.checkout.timeoutTitle",
+                "Payment received and the update is still in progress."
+              )}
+            </h2>
+            <p>
+              {t(
+                "whatsapp.checkout.timeoutHint",
+                "Most updates finish shortly."
+              )}
+            </p>
             <button
               type="button"
               className="wa-billing-btn wa-billing-btn--primary"
               onClick={onClose}
             >
-              המשך
+              {t("whatsapp.checkout.continue", "Continue")}
             </button>
           </>
         ) : null}
