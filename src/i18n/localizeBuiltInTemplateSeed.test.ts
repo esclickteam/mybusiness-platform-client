@@ -293,6 +293,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(
       localizeBuiltInText("זרימות תפעול פשוטות שחוסכות זמן ומשפרות את חוויית הלקוח.", "en"),
     ).toMatch(/operations|client experience/i);
+    expect(localizeBuiltInText("שפה 01", "en")).toBe("Language 01");
+    expect(localizeBuiltInText("תיק 12", "en")).toBe("Case 12");
+    expect(localizeBuiltInText("סגור תפריט", "es")).toMatch(/Cerrar menú/i);
+    expect(
+      localizeBuiltInText("ניהול שוטף לעוסק עם נפח מסמכים קבוע ודוחות חודשיים פשוטים.", "en"),
+    ).toMatch(/bookkeeping|monthly reports/i);
+    expect(localizeBuiltInText("> מתחילים בדיקת היקף", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

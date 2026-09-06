@@ -137,7 +137,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
       <div className="mx-auto mt-10 max-w-5xl space-y-6">
         {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title,text],i) => (
           <Reveal key={title} delayMs={i*100} className="t-hover flex flex-col gap-2 border-b border-[var(--p)]/30 pb-6 md:flex-row md:items-end md:justify-between">
-            <div><p className="text-xs text-[var(--p)]">מסלול 0{i+1}</p><h3 className="t-display text-3xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm text-[var(--muted)]">{tx(text)}</p></div>
+            <div><p className="text-xs text-[var(--p)]">{tx(`מסלול 0${i+1}`)}</p><h3 className="t-display text-3xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm text-[var(--muted)]">{tx(text)}</p></div>
             <span className="text-xl font-bold text-[var(--p)]">₪{[2400,3600,4800][i]}/חודש</span>
           </Reveal>
         ))}

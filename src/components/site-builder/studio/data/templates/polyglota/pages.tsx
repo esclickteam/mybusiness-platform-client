@@ -142,7 +142,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
       <div className="mx-auto mt-8 max-w-5xl divide-y divide-[var(--p)]/15">
         {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title,text],i) => (
           <Reveal key={title} delayMs={i*80} className="t-hover grid gap-2 py-6 md:grid-cols-[140px_1fr_100px] md:items-center">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--p)]">שפה 0{i+1}</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--p)]">{tx(`שפה 0${i+1}`)}</span>
             <div><h3 className="text-xl font-bold text-[var(--dark)]">{title}</h3><p className="text-sm text-[var(--muted)]">{tx(text)}</p></div>
             <button type="button" onClick={openModal} className="justify-self-start text-sm font-bold text-[var(--p)] md:justify-self-end">{tx("הרשמה ←")}</button>
           </Reveal>

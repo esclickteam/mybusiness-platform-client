@@ -16,6 +16,7 @@ import uniqueExactLexicon from "./templateExactLexicon.unique.json";
 import unique2ExactLexicon from "./templateExactLexicon.unique2.json";
 import unique3ExactLexicon from "./templateExactLexicon.unique3.json";
 import unique4ExactLexicon from "./templateExactLexicon.unique4.json";
+import unique5ExactLexicon from "./templateExactLexicon.unique5.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -44,6 +45,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique2ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique3ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique4ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique5ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -435,9 +437,33 @@ function localizeAgencySignatureLine(text: string, locale: string): string {
 function localizeIndexedEditorLabel(text: string, locale: string): string {
   const match = text.match(INDEXED_LABEL_RE);
   if (!match) return "";
-  const prefix = localizeFragment(match[1], locale);
+  const prefix = localizeIndexedPrefix(match[1], locale);
   if (!prefix) return "";
   return `${prefix} ${match[2]}`;
+}
+
+const EXTRA_INDEXED_PREFIXES: Record<string, PhraseTranslation> = {
+  תיק: { en: "Case", es: "Expediente", "pt-BR": "Processo", ar: "ملف" },
+  שפה: { en: "Language", es: "Idioma", "pt-BR": "Idioma", ar: "لغة" },
+  מסלול: { en: "Track", es: "Itinerario", "pt-BR": "Percurso", ar: "مسار" },
+  שלב: { en: "Step", es: "Paso", "pt-BR": "Etapa", ar: "خطوة" },
+  מקור: { en: "Origin", es: "Origen", "pt-BR": "Origem", ar: "مصدر" },
+  קלייה: { en: "Roast", es: "Tueste", "pt-BR": "Torrefação", ar: "تحميص" },
+  ערוץ: { en: "Channel", es: "Canal", "pt-BR": "Canal", ar: "قناة" },
+  שכבה: { en: "Layer", es: "Capa", "pt-BR": "Camada", ar: "طبقة" },
+  מידה: { en: "Size", es: "Talla", "pt-BR": "Tamanho", ar: "مقاس" },
+  בד: { en: "Fabric", es: "Tela", "pt-BR": "Tecido", ar: "قماش" },
+  ערך: { en: "Value", es: "Valor", "pt-BR": "Valor", ar: "قيمة" },
+  מטרה: { en: "Goal", es: "Objetivo", "pt-BR": "Meta", ar: "هدف" },
+  מד: { en: "Meter", es: "Medidor", "pt-BR": "Medidor", ar: "مقياس" },
+};
+
+function localizeIndexedPrefix(text: string, locale: string): string {
+  const fragment = localizeFragment(text, locale);
+  if (fragment) return fragment;
+  const extra = pickLocaleCopy(EXTRA_INDEXED_PREFIXES[text], locale);
+  if (isUsableTranslation(text, extra, locale)) return extra;
+  return "";
 }
 
 function localizePrefixedEditorLabel(text: string, locale: string): string {

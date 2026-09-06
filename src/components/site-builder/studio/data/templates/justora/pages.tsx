@@ -1215,7 +1215,7 @@ function CasesSection({
                       </div>
                     </div>
 
-                    <p className="text-sm !text-[#ead9c5]">תיק {item.number}</p>
+                    <p className="text-sm !text-[#ead9c5]">{tx(`תיק ${item.number}`)}</p>
                   </div>
                 </div>
 

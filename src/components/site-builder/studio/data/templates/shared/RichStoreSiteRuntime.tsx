@@ -881,10 +881,10 @@ function StatPill({
       )}
     >
       <p className={cx("store-display text-3xl font-black text-[var(--p)]", skin.title)}>
-        {value}
+        {tx(value)}
       </p>
       <p className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-[var(--muted)]">
-        {label}
+        {tx(label)}
       </p>
     </div>
   );
@@ -1258,7 +1258,7 @@ export default function RichStoreSiteRuntime({
           <button
             type="button"
             aria-expanded={navOpen}
-            aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"}
+            aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")}
             onClick={() => setNavOpen((open) => !open)}
             className={cx("inline-flex h-10 w-10 items-center justify-center xl:hidden", skin.outlineButton)}
           >

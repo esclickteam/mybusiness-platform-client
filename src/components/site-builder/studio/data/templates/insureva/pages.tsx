@@ -289,7 +289,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-5 pb-10 md:grid-cols-[1fr_56px_1fr] md:items-start">
                 {i % 2 === 0 ? (
                   <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
-                    <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
+                    <p className="text-sm font-black text-[var(--p)]">{tx(`שלב 0${i + 1}`)}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>
@@ -299,7 +299,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <span className="absolute right-0 top-0 z-10 grid h-12 w-12 place-items-center rounded-full border border-black/10 bg-[var(--surface)] text-sm font-black text-[var(--p)] md:static md:h-14 md:w-14">0{i + 1}</span>
                 {i % 2 === 1 ? (
                   <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
-                    <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
+                    <p className="text-sm font-black text-[var(--p)]">{tx(`שלב 0${i + 1}`)}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>

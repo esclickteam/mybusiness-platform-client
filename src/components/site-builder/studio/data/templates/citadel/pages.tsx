@@ -414,7 +414,7 @@ function HeroSection({
                     "> מסובבים הרשאות ומחילים MFA",
                     "> מסנכרנים מסלולי הסלמה ל־SOC",
                   ].map((line) => (
-                    <div key={line} className="citadel-code-line">{line}</div>
+                    <div key={line} className="citadel-code-line">{tx(line)}</div>
                   ))}
                 </div>
                 <div className="relative overflow-hidden rounded-sm border" style={{ borderColor: citadelTheme.border }}>
