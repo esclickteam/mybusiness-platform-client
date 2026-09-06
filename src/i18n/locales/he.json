@@ -18282,7 +18282,10 @@
       "sampleExtra": "תוספת × 2",
       "chooseVariant": "בחרו וריאציה לפני הוספה לסל",
       "leftInStock": "נותרו {{count}} במלאי",
-      "soldOut": "אזל מהמלאי"
+      "soldOut": "אזל מהמלאי",
+      "productCount": "{{count}} מוצרים",
+      "fromYourStore": " · המוצרים מהחנות שלך",
+      "demoTemporary": " · דמו זמני — הוסיפו מוצרים בפאנל חנות"
     },
     "site": {
       "skipLink": "דלג לתוכן הראשי",

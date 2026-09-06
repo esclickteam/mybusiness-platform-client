@@ -18293,7 +18293,10 @@
       "sampleExtra": "Extra × 2",
       "chooseVariant": "Escolha uma variação antes de adicionar ao carrinho",
       "leftInStock": "Restam {{count}} em estoque",
-      "soldOut": "Esgotado"
+      "soldOut": "Esgotado",
+      "productCount": "{{count}} produtos",
+      "fromYourStore": " · produtos da sua loja",
+      "demoTemporary": " · demo temporário — adicionem produtos no painel da loja"
     },
     "site": {
       "skipLink": "Ir ao conteúdo principal",

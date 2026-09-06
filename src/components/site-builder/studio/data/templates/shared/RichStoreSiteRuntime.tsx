@@ -2276,10 +2276,10 @@ export default function RichStoreSiteRuntime({
               {title}
             </h2>
             <p className="mt-2 text-sm text-[var(--muted)]">
-              {filteredProducts.length} מוצרים
+              {i18n.t("publicWidgets.store.productCount", { count: filteredProducts.length })}
               {fromPlugin
-                ? " · המוצרים מהחנות שלך"
-                : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
+                ? i18n.t("publicWidgets.store.fromYourStore")
+                : i18n.t("publicWidgets.store.demoTemporary")}
             </p>
           </div>
           <button

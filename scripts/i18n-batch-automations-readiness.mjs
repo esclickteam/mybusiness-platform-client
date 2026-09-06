@@ -101,6 +101,27 @@ const STORE_RUNTIME = {
     "تبقّى {{count}} في المخزون",
   ),
   soldOut: row("Out of stock", "אזל מהמלאי", "Agotado", "Esgotado", "نفد من المخزون"),
+  productCount: row(
+    "{{count}} products",
+    "{{count}} מוצרים",
+    "{{count}} productos",
+    "{{count}} produtos",
+    "{{count}} منتجات",
+  ),
+  fromYourStore: row(
+    " · products from your store",
+    " · המוצרים מהחנות שלך",
+    " · productos de vuestra tienda",
+    " · produtos da sua loja",
+    " · منتجات من متجركم",
+  ),
+  demoTemporary: row(
+    " · temporary demo — add products in the store panel",
+    " · דמו זמני — הוסיפו מוצרים בפאנל חנות",
+    " · demo temporal — añadid productos en el panel de tienda",
+    " · demo temporário — adicionem produtos no painel da loja",
+    " · عرض مؤقت — أضيفوا منتجات في لوحة المتجر",
+  ),
 };
 
 export function extraAutomationsReadinessLocaleObject(locale) {

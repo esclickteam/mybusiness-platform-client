@@ -18293,7 +18293,10 @@
       "sampleExtra": "إضافة × 2",
       "chooseVariant": "اختاروا خياراً قبل الإضافة إلى السلة",
       "leftInStock": "تبقّى {{count}} في المخزون",
-      "soldOut": "نفد من المخزون"
+      "soldOut": "نفد من المخزون",
+      "productCount": "{{count}} منتجات",
+      "fromYourStore": " · منتجات من متجركم",
+      "demoTemporary": " · عرض مؤقت — أضيفوا منتجات في لوحة المتجر"
     },
     "site": {
       "skipLink": "تخطٍّ إلى المحتوى الرئيسي",

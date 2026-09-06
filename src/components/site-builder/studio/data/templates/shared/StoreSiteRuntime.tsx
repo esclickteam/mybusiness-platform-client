@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import i18n from "../../../../../../i18n/i18n";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { Reveal } from "./Reveal";
@@ -1299,10 +1300,10 @@ export default function StoreSiteRuntime({
           ) : (
             <>
               <p className="mb-8 text-sm text-[var(--muted)]">
-                {filteredProducts.length} מוצרים
+                {i18n.t("publicWidgets.store.productCount", { count: filteredProducts.length })}
                 {fromPlugin
-                  ? " · המוצרים מהחנות שלך"
-                  : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
+                  ? i18n.t("publicWidgets.store.fromYourStore")
+                  : i18n.t("publicWidgets.store.demoTemporary")}
               </p>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product, index) => (

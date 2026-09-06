@@ -48,6 +48,7 @@ import unique33ExactLexicon from "./templateExactLexicon.unique33.json";
 import unique34ExactLexicon from "./templateExactLexicon.unique34.json";
 import unique35ExactLexicon from "./templateExactLexicon.unique35.json";
 import unique36ExactLexicon from "./templateExactLexicon.unique36.json";
+import unique37ExactLexicon from "./templateExactLexicon.unique37.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -108,6 +109,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique34ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique35ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique36ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique37ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -234,6 +236,7 @@ const SESSION_SLASH_RE = /^(.+) \/ (\d+)\s*דק׳$/;
 const BURGER_SMASH_RE = /^(.+) — לחמנייה, בשר, גבינה — בלי פילוסופיה\.$/;
 const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהליך חד ותוצאות מדידות\.$/;
 const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
+const NUMBERED_DASH_RE = /^(.+?)\s+(\d+)\s+-\s+(.+)$/;
 const STORE_SHOPPING_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית קנייה מלאה\.$/;
 const SOIL_TO_PLATE_RE = /^(.+) — מהאדמה לצלחת — בלי פשרות על טעם\.$/;
 const AGENCY_SIGNATURE_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם חתימת (.+)$/;
@@ -326,6 +329,26 @@ const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   "פתיחת שאלה": { en: "Question open", es: "Apertura de pregunta", "pt-BR": "Abertura da pergunta", ar: "فتح السؤال" },
   "תגית מוצר": { en: "Product tag", es: "Etiqueta de producto", "pt-BR": "Tag do produto", ar: "وسم المنتج" },
   תוצאה: { en: "Result", es: "Resultado", "pt-BR": "Resultado", ar: "نتيجة" },
+  "יתרון בפרויקט": { en: "Project advantage", es: "Ventaja del proyecto", "pt-BR": "Vantagem do projeto", ar: "ميزة في المشروع" },
+  "אייקון שירות": { en: "Service icon", es: "Icono de servicio", "pt-BR": "Ícone de serviço", ar: "أيقونة الخدمة" },
+  "יתרון מהיר": { en: "Quick advantage", es: "Ventaja rápida", "pt-BR": "Vantagem rápida", ar: "ميزة سريعة" },
+  "אייקון שלב": { en: "Step icon", es: "Icono de paso", "pt-BR": "Ícone da etapa", ar: "أيقونة الخطوة" },
+  "שאלה נפוצה": { en: "Common question", es: "Pregunta frecuente", "pt-BR": "Pergunta frequente", ar: "سؤال شائع" },
+  יתרון: { en: "Advantage", es: "Ventaja", "pt-BR": "Vantagem", ar: "ميزة" },
+  "כרטיס פיד": { en: "Feed card", es: "Tarjeta del feed", "pt-BR": "Cartão do feed", ar: "بطاقة الخلاصة" },
+};
+
+const NUMBERED_DASH_LEFT: Record<string, PhraseTranslation> = {
+  יכולת: { en: "Capability", es: "Capacidad", "pt-BR": "Capacidade", ar: "قدرة" },
+  פס: { en: "Band", es: "Franja", "pt-BR": "Faixa", ar: "شريط" },
+  חבילה: { en: "Package", es: "Paquete", "pt-BR": "Pacote", ar: "باقة" },
+};
+
+const NUMBERED_DASH_RIGHT: Record<string, PhraseTranslation> = {
+  כותרת: { en: "title", es: "título", "pt-BR": "título", ar: "عنوان" },
+  טקסט: { en: "text", es: "texto", "pt-BR": "texto", ar: "نص" },
+  שם: { en: "name", es: "nombre", "pt-BR": "nome", ar: "اسم" },
+  מחיר: { en: "price", es: "precio", "pt-BR": "preço", ar: "سعر" },
 };
 
 const HEBREW_MONTHS: Record<string, PhraseTranslation> = {
@@ -703,6 +726,19 @@ function localizeIndexedEditorLabel(text: string, locale: string): string {
   const prefix = localizeIndexedPrefix(match[1], locale);
   if (!prefix) return "";
   return `${prefix} ${match[2]}`;
+}
+
+function localizeNumberedDashLabel(text: string, locale: string): string {
+  const match = text.match(NUMBERED_DASH_RE);
+  if (!match) return "";
+  const left =
+    pickLocaleCopy(NUMBERED_DASH_LEFT[match[1]], locale) ||
+    localizeIndexedPrefix(match[1], locale);
+  const right =
+    pickLocaleCopy(NUMBERED_DASH_RIGHT[match[3]], locale) ||
+    localizeFragment(match[3], locale);
+  if (!left || !right || HE.test(left) || HE.test(right)) return "";
+  return `${left} ${match[2]} - ${right}`;
 }
 
 const EXTRA_INDEXED_PREFIXES: Record<string, PhraseTranslation> = {
@@ -1168,6 +1204,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const openingHours = localizeOpeningHours(text, locale);
   if (isUsableTranslation(text, openingHours, locale)) {
     return adaptBuiltInDirectionalCss(openingHours, locale);
+  }
+
+  const numberedDash = localizeNumberedDashLabel(text, locale);
+  if (isUsableTranslation(text, numberedDash, locale)) {
+    return adaptBuiltInDirectionalCss(numberedDash, locale);
   }
 
   const indexedLabel = localizeIndexedEditorLabel(text, locale);

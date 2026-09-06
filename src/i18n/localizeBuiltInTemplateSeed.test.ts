@@ -705,6 +705,19 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("עבודות חשמל מסודרות ומקצועיות", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique37 leftover insert-default section and editor chrome", () => {
+    expect(localizeBuiltInText("חבילות ומחירים ברורים", "en")).toMatch(/package|price/i);
+    expect(localizeBuiltInText("חבילות ומחירים ברורים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("האנשים מאחורי המותג", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שאלות שחשוב לשאול", "pt-BR")).toMatch(/pergunt/i);
+    expect(localizeBuiltInText("נתונים וסטטיסטיקות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("יתרון בפרויקט 1", "en")).toMatch(/advantage|project/i);
+    expect(localizeBuiltInText("יתרון בפרויקט 1", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("יכולת 1 - כותרת", "en")).toMatch(/capability|title/i);
+    expect(localizeBuiltInText("יכולת 1 - כותרת", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("טופס בקשת שירות", "pt-BR")).toMatch(/formul[aá]rio|servi[cç]o/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },

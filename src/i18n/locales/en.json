@@ -18293,7 +18293,10 @@
       "sampleExtra": "Add-on × 2",
       "chooseVariant": "Choose a variant before adding to the cart",
       "leftInStock": "{{count}} left in stock",
-      "soldOut": "Out of stock"
+      "soldOut": "Out of stock",
+      "productCount": "{{count}} products",
+      "fromYourStore": " · products from your store",
+      "demoTemporary": " · temporary demo — add products in the store panel"
     },
     "site": {
       "skipLink": "Skip to main content",
