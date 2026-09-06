@@ -48,6 +48,15 @@ type GraphBuildOptions = {
   businessSender?: BusinessEmailSender | null;
 };
 
+function localizeActionDefaults(defaults?: Record<string, unknown>) {
+  if (!defaults) return {};
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(defaults)) {
+    out[key] = typeof value === "string" ? localizeBuiltInText(value) : value;
+  }
+  return out;
+}
+
 function actionNode(
   id: string,
   action: LocalTemplateAction,
@@ -61,7 +70,7 @@ function actionNode(
       label: localizeBuiltInText(action.label),
       actionKey: action.actionKey,
       templateId: "",
-      ...(action.defaults || {}),
+      ...localizeActionDefaults(action.defaults),
     },
   };
 }

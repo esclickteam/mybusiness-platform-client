@@ -1883,6 +1883,92 @@
       "option1": "Hot",
       "option2": "Medium",
       "option3": "Cold"
+    },
+    "local": {
+      "local_appointment_reminder_1_day": {
+        "name": "Appointment reminder — 1 day before",
+        "description": "Trigger: upcoming appointment 1 day before. Result: WhatsApp reminder.",
+        "trigger": "Upcoming appointment (1 day before)",
+        "result1": "WhatsApp reminder"
+      },
+      "local_appointment_reminder_2_days": {
+        "name": "Appointment reminder — 2 days before",
+        "description": "Trigger: upcoming appointment 2 days before. Result: WhatsApp reminder.",
+        "trigger": "Upcoming appointment (2 days before)",
+        "result1": "WhatsApp reminder"
+      },
+      "local_appointment_reminder_hours": {
+        "name": "Appointment reminder — 2 hours before",
+        "description": "Trigger: upcoming appointment 2 hours before. Result: WhatsApp reminder. Hours can be changed in the builder.",
+        "trigger": "Upcoming appointment (2 hours before)",
+        "result1": "WhatsApp reminder"
+      },
+      "local_appointment_thanks": {
+        "name": "Thank-you after an appointment",
+        "description": "Trigger: new or completed appointment. Result: WhatsApp thank-you.",
+        "trigger": "Appointment",
+        "result1": "WhatsApp thank-you"
+      },
+      "local_appointment_review": {
+        "name": "Review request after an appointment",
+        "description": "Trigger: appointment. Result: WhatsApp review request.",
+        "trigger": "Appointment",
+        "result1": "WhatsApp review request"
+      },
+      "local_appointment_gcal": {
+        "name": "Appointment → Google Calendar",
+        "description": "Trigger: new appointment. Result: create a Google Calendar event (Calendar connection).",
+        "trigger": "New appointment",
+        "result1": "Google Calendar event"
+      },
+      "local_appointment_email": {
+        "name": "Appointment → confirmation email",
+        "description": "Trigger: new appointment. Result: send a confirmation email to the client.",
+        "trigger": "New appointment",
+        "result1": "Confirmation email"
+      },
+      "local_lead_multi_results": {
+        "name": "New lead — several results together",
+        "description": "Trigger: new CRM lead. Results together: WhatsApp, a task for the agent, and an owner alert.",
+        "trigger": "New CRM lead",
+        "result1": "Immediate WhatsApp",
+        "result2": "Task for the agent",
+        "result3": "Owner alert"
+      },
+      "local_lead_email_welcome": {
+        "name": "New lead → email + task",
+        "description": "Trigger: new lead. Results: email and a CRM follow-up task.",
+        "trigger": "New CRM lead",
+        "result1": "Email",
+        "result2": "Follow-up task"
+      },
+      "local_lead_no_response": {
+        "name": "New lead → opening + follow-ups by reply",
+        "description": "Immediate opening; if there is no WhatsApp reply — follow-up after 24h and after 3 days.",
+        "trigger": "New CRM lead",
+        "result1": "WhatsApp opening",
+        "result2": "Follow-up #1",
+        "result3": "Follow-up #2"
+      },
+      "local_lead_followup_2": {
+        "name": "Second lead follow-up (merged)",
+        "description": "Merged into the unified path “New lead → opening + follow-ups by reply”.",
+        "trigger": "Lead without conversion",
+        "result1": "Second WhatsApp follow-up"
+      },
+      "local_new_client_welcome": {
+        "name": "New client — welcome",
+        "description": "Trigger: new client. Results: opening message and a retention task.",
+        "trigger": "New client",
+        "result1": "Opening message",
+        "result2": "Retention task"
+      },
+      "local_inactive_client": {
+        "name": "Inactive client — a nudge",
+        "description": "Trigger: inactive client. Result: WhatsApp nudge.",
+        "trigger": "Inactive client",
+        "result1": "WhatsApp nudge"
+      }
     }
   },
   "layout": {

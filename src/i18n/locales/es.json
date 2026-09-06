@@ -1883,6 +1883,92 @@
       "option1": "Caliente",
       "option2": "Medio",
       "option3": "Frío"
+    },
+    "local": {
+      "local_appointment_reminder_1_day": {
+        "name": "Recordatorio de cita — 1 día antes",
+        "description": "Disparador: cita próxima 1 día antes. Resultado: recordatorio de WhatsApp.",
+        "trigger": "Cita próxima (1 día antes)",
+        "result1": "Recordatorio de WhatsApp"
+      },
+      "local_appointment_reminder_2_days": {
+        "name": "Recordatorio de cita — 2 días antes",
+        "description": "Disparador: cita próxima 2 días antes. Resultado: recordatorio de WhatsApp.",
+        "trigger": "Cita próxima (2 días antes)",
+        "result1": "Recordatorio de WhatsApp"
+      },
+      "local_appointment_reminder_hours": {
+        "name": "Recordatorio de cita — 2 horas antes",
+        "description": "Disparador: cita próxima 2 horas antes. Resultado: recordatorio de WhatsApp. Las horas se pueden cambiar en el constructor.",
+        "trigger": "Cita próxima (2 horas antes)",
+        "result1": "Recordatorio de WhatsApp"
+      },
+      "local_appointment_thanks": {
+        "name": "Agradecimiento después de una cita",
+        "description": "Disparador: cita nueva o terminada. Resultado: agradecimiento por WhatsApp.",
+        "trigger": "Cita",
+        "result1": "Agradecimiento de WhatsApp"
+      },
+      "local_appointment_review": {
+        "name": "Pedido de reseña después de una cita",
+        "description": "Disparador: cita. Resultado: pedido de reseña por WhatsApp.",
+        "trigger": "Cita",
+        "result1": "Pedido de reseña de WhatsApp"
+      },
+      "local_appointment_gcal": {
+        "name": "Cita → Google Calendar",
+        "description": "Disparador: cita nueva. Resultado: crear un evento en Google Calendar (conexión Calendar).",
+        "trigger": "Cita nueva",
+        "result1": "Evento en Google Calendar"
+      },
+      "local_appointment_email": {
+        "name": "Cita → email de confirmación",
+        "description": "Disparador: cita nueva. Resultado: enviar un email de confirmación al cliente.",
+        "trigger": "Cita nueva",
+        "result1": "Email de confirmación"
+      },
+      "local_lead_multi_results": {
+        "name": "Nuevo lead — varios resultados juntos",
+        "description": "Disparador: nuevo lead en el CRM. Resultados juntos: WhatsApp, tarea para el agente y aviso al dueño.",
+        "trigger": "Nuevo lead en el CRM",
+        "result1": "WhatsApp inmediato",
+        "result2": "Tarea para el agente",
+        "result3": "Aviso al dueño"
+      },
+      "local_lead_email_welcome": {
+        "name": "Nuevo lead → email + tarea",
+        "description": "Disparador: nuevo lead. Resultados: email y tarea de seguimiento en el CRM.",
+        "trigger": "Nuevo lead en el CRM",
+        "result1": "Email",
+        "result2": "Tarea de seguimiento"
+      },
+      "local_lead_no_response": {
+        "name": "Nuevo lead → apertura + seguimientos según respuesta",
+        "description": "Apertura inmediata; si no hay respuesta de WhatsApp — seguimiento a las 24 h y a los 3 días.",
+        "trigger": "Nuevo lead en el CRM",
+        "result1": "Apertura de WhatsApp",
+        "result2": "Seguimiento #1",
+        "result3": "Seguimiento #2"
+      },
+      "local_lead_followup_2": {
+        "name": "Segundo seguimiento de lead (fusionado)",
+        "description": "Fusionado en la ruta unificada “Nuevo lead → apertura + seguimientos según respuesta”.",
+        "trigger": "Lead sin conversión",
+        "result1": "Segundo seguimiento de WhatsApp"
+      },
+      "local_new_client_welcome": {
+        "name": "Cliente nuevo — bienvenida",
+        "description": "Disparador: cliente nuevo. Resultados: mensaje de apertura y tarea de retención.",
+        "trigger": "Cliente nuevo",
+        "result1": "Mensaje de apertura",
+        "result2": "Tarea de retención"
+      },
+      "local_inactive_client": {
+        "name": "Cliente inactivo — un toque",
+        "description": "Disparador: cliente inactivo. Resultado: toque por WhatsApp.",
+        "trigger": "Cliente inactivo",
+        "result1": "Toque de WhatsApp"
+      }
     }
   },
   "layout": {

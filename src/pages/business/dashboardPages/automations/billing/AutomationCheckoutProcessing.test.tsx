@@ -89,7 +89,7 @@ describe("AutomationCheckoutProcessing", () => {
       />
     );
 
-    expect(screen.getByText("התשלום התקבל")).toBeInTheDocument();
+    expect(screen.getByText("Payment received")).toBeInTheDocument();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2000);
@@ -99,11 +99,11 @@ describe("AutomationCheckoutProcessing", () => {
       expect(onDone).toHaveBeenCalled();
     });
     expect(
-      await screen.findByText(/הופעלה בהצלחה/)
+      await screen.findByText(/activated successfully/)
     ).toBeInTheDocument();
   });
 
-  it("polling timeout does not claim payment failure (soft Hebrew message)", async () => {
+  it("polling timeout does not claim payment failure (soft status message)", async () => {
     getAutomationBillingUsage.mockResolvedValue(pendingUsage());
 
     render(
@@ -121,7 +121,7 @@ describe("AutomationCheckoutProcessing", () => {
     });
 
     expect(
-      await screen.findByText("התשלום התקבל והעדכון עדיין מתבצע.")
+      await screen.findByText("Payment received and the update is still in progress.")
     ).toBeInTheDocument();
     expect(screen.queryByText(/נכשל/)).not.toBeInTheDocument();
     expect(screen.queryByText(/תשלום נכשל/)).not.toBeInTheDocument();

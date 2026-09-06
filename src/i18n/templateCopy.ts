@@ -29,6 +29,7 @@ import unique14ExactLexicon from "./templateExactLexicon.unique14.json";
 import unique15ExactLexicon from "./templateExactLexicon.unique15.json";
 import unique16ExactLexicon from "./templateExactLexicon.unique16.json";
 import unique17ExactLexicon from "./templateExactLexicon.unique17.json";
+import unique18ExactLexicon from "./templateExactLexicon.unique18.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -70,6 +71,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique15ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique16ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique17ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique18ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -191,6 +193,13 @@ const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
 const STORE_SHOPPING_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית קנייה מלאה\.$/;
 const SOIL_TO_PLATE_RE = /^(.+) — מהאדמה לצלחת — בלי פשרות על טעם\.$/;
 const AGENCY_SIGNATURE_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם חתימת (.+)$/;
+const STEAM_BASKET_RE = /^(.+) — הקיטור מרים — הסל יורד לשולחן\.$/;
+const FRESH_DOUGH_RE = /^(.+) — הבצק טרי — הרטב מספר סיפור\.$/;
+const SUGAR_INGREDIENT_RE = /^(.+) — סוכר כחומר גלם — לא רק מתיקות\.$/;
+const LOW_SMOKE_RE = /^(.+) — עשן נמוך, חום ארוך, טעם עמוק\.$/;
+const SEA_PLATE_RE = /^(.+) — הים מגיע לצלחת — בלי עיכובים\.$/;
+const SPIT_TASTE_RE = /^(.+) — השיפוד מסתובב — הטעם נשאר\.$/;
+const BOWL_PATH_RE = /^(.+) — כל קערה היא מסלול טעמים\.$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -539,6 +548,64 @@ function localizeSoilToPlate(text: string, locale: string): string {
   if (locale === "ar") return `${dish} — من الأرض إلى الصحن — بلا تنازل عن الطعم.`;
   return `${dish} — from the soil to the plate — no compromise on taste.`;
 }
+
+function localizeDishSuffix(
+  text: string,
+  locale: string,
+  re: RegExp,
+  copy: PhraseTranslation,
+): string {
+  const match = text.match(re);
+  if (!match) return "";
+  const dish = localizeFragment(match[1], locale) || (HE.test(match[1]) ? "" : match[1]);
+  if (!dish) return "";
+  const suffix = pickLocaleCopy(copy, locale);
+  if (!suffix || HE.test(suffix)) return "";
+  return `${dish} — ${suffix}`;
+}
+
+const STEAM_BASKET_COPY: PhraseTranslation = {
+  en: "steam lifts — the basket lands on the table.",
+  es: "el vapor sube — la cesta llega a la mesa.",
+  "pt-BR": "o vapor sobe — a cesta chega à mesa.",
+  ar: "البخار يرتفع — والسلة تصل إلى الطاولة.",
+};
+const FRESH_DOUGH_COPY: PhraseTranslation = {
+  en: "the dough is fresh — the sauce tells the story.",
+  es: "la masa está fresca — la salsa cuenta la historia.",
+  "pt-BR": "a massa está fresca — o molho conta a história.",
+  ar: "العجين طازج — والصلصة تروي القصة.",
+};
+const SUGAR_INGREDIENT_COPY: PhraseTranslation = {
+  en: "sugar as an ingredient — not just sweetness.",
+  es: "el azúcar como ingrediente — no solo dulzor.",
+  "pt-BR": "açúcar como ingrediente — não só doçura.",
+  ar: "السكر كمكون — ليس حلاوة فقط.",
+};
+const LOW_SMOKE_COPY: PhraseTranslation = {
+  en: "low smoke, long heat, deep flavor.",
+  es: "humo bajo, calor largo, sabor profundo.",
+  "pt-BR": "fumaça baixa, calor longo, sabor fundo.",
+  ar: "دخان منخفض وحرارة طويلة وطعم عميق.",
+};
+const SEA_PLATE_COPY: PhraseTranslation = {
+  en: "the sea reaches the plate — no delays.",
+  es: "el mar llega al plato — sin demoras.",
+  "pt-BR": "o mar chega ao prato — sem atrasos.",
+  ar: "البحر يصل إلى الصحن — بلا تأخير.",
+};
+const SPIT_TASTE_COPY: PhraseTranslation = {
+  en: "the spit turns — the flavor stays.",
+  es: "el asador gira — el sabor se queda.",
+  "pt-BR": "o espeto gira — o sabor fica.",
+  ar: "السيخ يدور — والطعم يبقى.",
+};
+const BOWL_PATH_COPY: PhraseTranslation = {
+  en: "every bowl is a flavor path.",
+  es: "cada bowl es un recorrido de sabor.",
+  "pt-BR": "cada tigela é um caminho de sabor.",
+  ar: "كل وعاء مسار نكهات.",
+};
 
 function localizeOpeningHours(text: string, locale: string): string {
   if (!/א[׳']/.test(text) || !/\d{1,2}:\d{2}/.test(text)) return "";
@@ -907,6 +974,35 @@ function localizePlainBuiltInText(text: string, locale: string): string {
     return adaptBuiltInDirectionalCss(soilToPlate, locale);
   }
 
+  const steamBasket = localizeDishSuffix(text, locale, STEAM_BASKET_RE, STEAM_BASKET_COPY);
+  if (isUsableTranslation(text, steamBasket, locale)) {
+    return adaptBuiltInDirectionalCss(steamBasket, locale);
+  }
+  const freshDough = localizeDishSuffix(text, locale, FRESH_DOUGH_RE, FRESH_DOUGH_COPY);
+  if (isUsableTranslation(text, freshDough, locale)) {
+    return adaptBuiltInDirectionalCss(freshDough, locale);
+  }
+  const sugarIngredient = localizeDishSuffix(text, locale, SUGAR_INGREDIENT_RE, SUGAR_INGREDIENT_COPY);
+  if (isUsableTranslation(text, sugarIngredient, locale)) {
+    return adaptBuiltInDirectionalCss(sugarIngredient, locale);
+  }
+  const lowSmoke = localizeDishSuffix(text, locale, LOW_SMOKE_RE, LOW_SMOKE_COPY);
+  if (isUsableTranslation(text, lowSmoke, locale)) {
+    return adaptBuiltInDirectionalCss(lowSmoke, locale);
+  }
+  const seaPlate = localizeDishSuffix(text, locale, SEA_PLATE_RE, SEA_PLATE_COPY);
+  if (isUsableTranslation(text, seaPlate, locale)) {
+    return adaptBuiltInDirectionalCss(seaPlate, locale);
+  }
+  const spitTaste = localizeDishSuffix(text, locale, SPIT_TASTE_RE, SPIT_TASTE_COPY);
+  if (isUsableTranslation(text, spitTaste, locale)) {
+    return adaptBuiltInDirectionalCss(spitTaste, locale);
+  }
+  const bowlPath = localizeDishSuffix(text, locale, BOWL_PATH_RE, BOWL_PATH_COPY);
+  if (isUsableTranslation(text, bowlPath, locale)) {
+    return adaptBuiltInDirectionalCss(bowlPath, locale);
+  }
+
   const bookHit = pickLocaleCopy(book[text], locale);
   if (isUsableTranslation(text, bookHit, locale)) {
     return adaptBuiltInDirectionalCss(bookHit, locale);
@@ -915,7 +1011,7 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   // Short punchy lines must be exact. Word-by-word smash turns
   // "לילה קטן. טעמים גדולים." into "night small. flavors large."
   // Composed chrome like "דף הבית – פתיחה מפוצלת" can still use fragments.
-  if (text.length <= 48 && !/[–·]/.test(text)) {
+  if (text.length <= 48 && !/[–—·]/.test(text)) {
     return adaptBuiltInDirectionalCss(text, locale);
   }
 

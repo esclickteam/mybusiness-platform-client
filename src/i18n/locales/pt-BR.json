@@ -1883,6 +1883,92 @@
       "option1": "Quente",
       "option2": "Médio",
       "option3": "Frio"
+    },
+    "local": {
+      "local_appointment_reminder_1_day": {
+        "name": "Lembrete de agendamento — 1 dia antes",
+        "description": "Gatilho: agendamento próximo 1 dia antes. Resultado: lembrete no WhatsApp.",
+        "trigger": "Agendamento próximo (1 dia antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_reminder_2_days": {
+        "name": "Lembrete de agendamento — 2 dias antes",
+        "description": "Gatilho: agendamento próximo 2 dias antes. Resultado: lembrete no WhatsApp.",
+        "trigger": "Agendamento próximo (2 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_reminder_hours": {
+        "name": "Lembrete de agendamento — 2 horas antes",
+        "description": "Gatilho: agendamento próximo 2 horas antes. Resultado: lembrete no WhatsApp. As horas podem ser alteradas no construtor.",
+        "trigger": "Agendamento próximo (2 horas antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_thanks": {
+        "name": "Agradecimento depois de um agendamento",
+        "description": "Gatilho: agendamento novo ou encerrado. Resultado: agradecimento no WhatsApp.",
+        "trigger": "Agendamento",
+        "result1": "Agradecimento no WhatsApp"
+      },
+      "local_appointment_review": {
+        "name": "Pedido de avaliação depois de um agendamento",
+        "description": "Gatilho: agendamento. Resultado: pedido de avaliação no WhatsApp.",
+        "trigger": "Agendamento",
+        "result1": "Pedido de avaliação no WhatsApp"
+      },
+      "local_appointment_gcal": {
+        "name": "Agendamento → Google Calendar",
+        "description": "Gatilho: novo agendamento. Resultado: criar um evento no Google Calendar (conexão Calendar).",
+        "trigger": "Novo agendamento",
+        "result1": "Evento no Google Calendar"
+      },
+      "local_appointment_email": {
+        "name": "Agendamento → e-mail de confirmação",
+        "description": "Gatilho: novo agendamento. Resultado: enviar um e-mail de confirmação ao cliente.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação"
+      },
+      "local_lead_multi_results": {
+        "name": "Novo lead — vários resultados juntos",
+        "description": "Gatilho: novo lead no CRM. Resultados juntos: WhatsApp, tarefa para o agente e alerta ao dono.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp imediato",
+        "result2": "Tarefa para o agente",
+        "result3": "Alerta ao dono"
+      },
+      "local_lead_email_welcome": {
+        "name": "Novo lead → e-mail + tarefa",
+        "description": "Gatilho: novo lead. Resultados: e-mail e tarefa de acompanhamento no CRM.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail",
+        "result2": "Tarefa de acompanhamento"
+      },
+      "local_lead_no_response": {
+        "name": "Novo lead → abertura + follow-ups por resposta",
+        "description": "Abertura imediata; se não houver resposta no WhatsApp — follow-up após 24h e após 3 dias.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Abertura no WhatsApp",
+        "result2": "Follow-up #1",
+        "result3": "Follow-up #2"
+      },
+      "local_lead_followup_2": {
+        "name": "Segundo follow-up de lead (mesclado)",
+        "description": "Mesclado no caminho unificado “Novo lead → abertura + follow-ups por resposta”.",
+        "trigger": "Lead sem conversão",
+        "result1": "Segundo follow-up no WhatsApp"
+      },
+      "local_new_client_welcome": {
+        "name": "Cliente novo — boas-vindas",
+        "description": "Gatilho: cliente novo. Resultados: mensagem de abertura e tarefa de retenção.",
+        "trigger": "Cliente novo",
+        "result1": "Mensagem de abertura",
+        "result2": "Tarefa de retenção"
+      },
+      "local_inactive_client": {
+        "name": "Cliente inativo — um toque",
+        "description": "Gatilho: cliente inativo. Resultado: toque no WhatsApp.",
+        "trigger": "Cliente inativo",
+        "result1": "Toque no WhatsApp"
+      }
     }
   },
   "layout": {

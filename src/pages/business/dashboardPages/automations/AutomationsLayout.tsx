@@ -30,6 +30,7 @@ import {
 } from "./localTemplateGraphs";
 import { WORKING_TEMPLATES } from "./workingTemplates";
 import { workingTemplateCopy } from "../../../../i18n/workingTemplateCopy";
+import { localTemplateCopy } from "../../../../i18n/localTemplateCopy";
 import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import { useAutomationsRealtime } from "./useAutomationsRealtime";
 import "./automationFlow.css";
@@ -194,10 +195,11 @@ export default function AutomationsLayout() {
           }
           if (!local) throw new Error("no_local_fallback");
           const graph = buildLocalAutomationGraph(local);
+          const copy = localTemplateCopy(t, local);
           const created = await createAutomationWorkflow(businessId, {
             useStarter: false,
-            name: local.name,
-            description: local.description,
+            name: copy.name,
+            description: copy.description,
             nodes: graph.nodes,
             edges: graph.edges,
           });

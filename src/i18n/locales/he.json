@@ -1883,6 +1883,92 @@
       "option1": "חם",
       "option2": "בינוני",
       "option3": "קר"
+    },
+    "local": {
+      "local_appointment_reminder_1_day": {
+        "name": "תזכורת פגישה — יום לפני",
+        "description": "טריגר: פגישה קרובה יום לפני. תוצאה: הודעת תזכורת WhatsApp.",
+        "trigger": "פגישה קרובה (יום לפני)",
+        "result1": "הודעת תזכורת WhatsApp"
+      },
+      "local_appointment_reminder_2_days": {
+        "name": "תזכורת פגישה — יומיים לפני",
+        "description": "טריגר: פגישה קרובה יומיים לפני. תוצאה: הודעת תזכורת WhatsApp.",
+        "trigger": "פגישה קרובה (יומיים לפני)",
+        "result1": "הודעת תזכורת WhatsApp"
+      },
+      "local_appointment_reminder_hours": {
+        "name": "תזכורת פגישה — שעתיים לפני",
+        "description": "טריגר: פגישה קרובה שעתיים לפני. תוצאה: הודעת תזכורת WhatsApp. ניתן לשנות שעות בבונה.",
+        "trigger": "פגישה קרובה (שעתיים לפני)",
+        "result1": "הודעת תזכורת WhatsApp"
+      },
+      "local_appointment_thanks": {
+        "name": "תודה אחרי פגישה",
+        "description": "טריגר: פגישה חדשה/הסתיימה. תוצאה: הודעת תודה ב-WhatsApp.",
+        "trigger": "פגישה",
+        "result1": "הודעת תודה WhatsApp"
+      },
+      "local_appointment_review": {
+        "name": "בקשת ביקורת אחרי פגישה",
+        "description": "טריגר: פגישה. תוצאה: בקשת ביקורת ב-WhatsApp.",
+        "trigger": "פגישה",
+        "result1": "בקשת ביקורת WhatsApp"
+      },
+      "local_appointment_gcal": {
+        "name": "פגישה → Google Calendar",
+        "description": "טריגר: פגישה חדשה. תוצאה: יצירת אירוע ביומן Google (חיבור Calendar).",
+        "trigger": "פגישה חדשה",
+        "result1": "אירוע ב-Google Calendar"
+      },
+      "local_appointment_email": {
+        "name": "פגישה → אימייל אישור",
+        "description": "טריגר: פגישה חדשה. תוצאה: שליחת אימייל אישור ללקוח.",
+        "trigger": "פגישה חדשה",
+        "result1": "אימייל אישור"
+      },
+      "local_lead_multi_results": {
+        "name": "ליד חדש — כמה תוצאות יחד",
+        "description": "טריגר: ליד חדש ב-CRM. תוצאות יחד: WhatsApp, משימה לנציג והתראה לבעל העסק.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "WhatsApp מיידי",
+        "result2": "משימה לנציג",
+        "result3": "התראה לבעל העסק"
+      },
+      "local_lead_email_welcome": {
+        "name": "ליד חדש → אימייל + משימה",
+        "description": "טריגר: ליד חדש. תוצאות: אימייל ומשימת מעקב ב-CRM.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "אימייל",
+        "result2": "משימת מעקב"
+      },
+      "local_lead_no_response": {
+        "name": "ליד חדש → פתיחה + פולואפים לפי תגובה",
+        "description": "פתיחה מיידית; אם אין תשובת WhatsApp — פולואפ אחרי 24ש׳ ואחרי 3 ימים.",
+        "trigger": "ליד חדש ב-CRM",
+        "result1": "פתיחה WhatsApp",
+        "result2": "פולואפ #1",
+        "result3": "פולואפ #2"
+      },
+      "local_lead_followup_2": {
+        "name": "פולואפ שני לליד (מיזוג)",
+        "description": "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה».",
+        "trigger": "ליד ללא המרה",
+        "result1": "WhatsApp פולואפ שני"
+      },
+      "local_new_client_welcome": {
+        "name": "לקוח חדש — ברוכים הבאים",
+        "description": "טריגר: לקוח חדש. תוצאות: הודעת פתיחה ומשימת שימור.",
+        "trigger": "לקוח חדש",
+        "result1": "הודעת פתיחה",
+        "result2": "משימת שימור"
+      },
+      "local_inactive_client": {
+        "name": "לקוח לא פעיל — נגיעה",
+        "description": "טריגר: לקוח לא פעיל. תוצאה: הודעת נגיעה ב-WhatsApp.",
+        "trigger": "לקוח לא פעיל",
+        "result1": "הודעת נגיעה WhatsApp"
+      }
     }
   },
   "layout": {

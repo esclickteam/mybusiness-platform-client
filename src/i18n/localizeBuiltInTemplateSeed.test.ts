@@ -539,6 +539,18 @@ describe("localizeBuiltInTemplateSeed", () => {
     );
   });
 
+  it("localizes unique18 dish suffixes and leftover sentences", () => {
+    expect(localizeBuiltInText("בורגר עדשים — מהאדמה לצלחת — בלי פשרות על טעם.", "en")).toMatch(/lentil/i);
+    expect(localizeBuiltInText("טארטלט לימון — סוכר כחומר גלם — לא רק מתיקות.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שיאו לונג באו — הקיטור מרים — הסל יורד לשולחן.", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מטבח שנולד מאהבה לחומר הגלם ולאנשים סביב השולחן.", "en")).toMatch(/kitchen/i);
+    expect(localizeBuiltInText("כתבו כתובת, גודל ומחיר מבוקש — נחזור עם הערכה.", "pt-BR")).toMatch(/endereço/i);
+    expect(localizeBuiltInText("פגישה עם {{appointment.clientName}}", "en")).toBe(
+      "Appointment with {{appointment.clientName}}",
+    );
+    expect(localizeBuiltInText("בורגר עדשים — מהאדמה לצלחת — בלי פשרות על טעם.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
