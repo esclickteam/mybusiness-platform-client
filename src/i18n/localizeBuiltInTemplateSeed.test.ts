@@ -594,6 +594,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("סוכר הוא מבנה — לא רק מתיקות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique23 leftover sentences", () => {
+    expect(localizeBuiltInText("בית טוב מורגש — לא רק נראה.", "en")).toMatch(/felt/i);
+    expect(localizeBuiltInText("בית טוב מורגש — לא רק נראה.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שלושה מנועים.", "es")).toMatch(/Tres motores/i);
+    expect(localizeBuiltInText("הזמינו טאקוס — נצרוב עכשיו.", "pt-BR")).toMatch(/tacos/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
