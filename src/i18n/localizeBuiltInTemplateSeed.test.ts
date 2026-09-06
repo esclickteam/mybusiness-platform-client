@@ -198,6 +198,12 @@ describe("localizeBuiltInTemplateSeed", () => {
         "en",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מוצר אביזרים מתוך קטלוג Sportifya.", "en")).toBe(
+      "Accessories product from the Sportifya catalog.",
+    );
+    expect(localizeBuiltInText("מוצר ירקות מתוך קטלוג Greenbite.", "es")).toMatch(
+      /verduras|Greenbite/i,
+    );
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

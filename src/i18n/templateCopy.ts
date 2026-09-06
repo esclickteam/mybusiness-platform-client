@@ -53,6 +53,52 @@ function pickLocaleCopy(entry: PhraseTranslation | LocaleCopy | undefined, local
   return entry.en || "";
 }
 
+const CATALOG_PRODUCT_RE = /^מוצר (.+) מתוך קטלוג (.+)\.$/;
+const CATALOG_CATEGORY: Record<string, PhraseTranslation> = {
+  אביזרים: { en: "accessories", es: "accesorios", "pt-BR": "acessórios", ar: "إكسسوارات" },
+  דקור: { en: "decor", es: "decoración", "pt-BR": "decoração", ar: "ديكور" },
+  "סמארט הום": { en: "smart home", es: "hogar inteligente", "pt-BR": "casa inteligente", ar: "منزل ذكي" },
+  צעצועים: { en: "toys", es: "juguetes", "pt-BR": "brinquedos", ar: "ألعاب" },
+  ממרחים: { en: "spreads", es: "untables", "pt-BR": "pastas", ar: "دهون" },
+  טקסטיל: { en: "textiles", es: "textiles", "pt-BR": "têxteis", ar: "منسوجات" },
+  רהיטים: { en: "furniture", es: "muebles", "pt-BR": "móveis", ar: "أثاث" },
+  טיולים: { en: "travel", es: "viajes", "pt-BR": "viagens", ar: "سفر" },
+  מחברות: { en: "notebooks", es: "cuadernos", "pt-BR": "cadernos", ar: "دفاتر" },
+  ירקות: { en: "vegetables", es: "verduras", "pt-BR": "legumes", ar: "خضار" },
+  פירות: { en: "fruit", es: "frutas", "pt-BR": "frutas", ar: "فاكهة" },
+  דגנים: { en: "grains", es: "cereales", "pt-BR": "cereais", ar: "حبوب" },
+  שרשראות: { en: "necklaces", es: "collares", "pt-BR": "colares", ar: "قلائد" },
+  אודיו: { en: "audio", es: "audio", "pt-BR": "áudio", ar: "صوت" },
+  ביגוד: { en: "apparel", es: "ropa", "pt-BR": "roupa", ar: "ملابس" },
+  ידניים: { en: "hand tools", es: "herramientas manuales", "pt-BR": "ferramentas manuais", ar: "أدوات يدوية" },
+  בטיחות: { en: "safety", es: "seguridad", "pt-BR": "segurança", ar: "سلامة" },
+  ספרות: { en: "literature", es: "literatura", "pt-BR": "literatura", ar: "أدب" },
+  ילדים: { en: "kids", es: "infantil", "pt-BR": "infantil", ar: "أطفال" },
+  כתיבה: { en: "writing", es: "escritura", "pt-BR": "escrita", ar: "كتابة" },
+  עגילים: { en: "earrings", es: "pendientes", "pt-BR": "brincos", ar: "أقراط" },
+  שעונים: { en: "watches", es: "relojes", "pt-BR": "relógios", ar: "ساعات" },
+  אחסון: { en: "storage", es: "almacenaje", "pt-BR": "armazenamento", ar: "تخزين" },
+  טיפוח: { en: "care", es: "cuidado", "pt-BR": "cuidado", ar: "عناية" },
+  איפור: { en: "makeup", es: "maquillaje", "pt-BR": "maquiagem", ar: "مكياج" },
+  טבעות: { en: "rings", es: "anillos", "pt-BR": "anéis", ar: "خواتم" },
+  חשמל: { en: "electrical", es: "electricidad", "pt-BR": "elétrica", ar: "كهرباء" },
+  חדר: { en: "room", es: "habitación", "pt-BR": "quarto", ar: "غرفة" },
+  שיער: { en: "hair", es: "cabello", "pt-BR": "cabelo", ar: "شعر" },
+  מיטות: { en: "beds", es: "camas", "pt-BR": "camas", ar: "أسرّة" },
+};
+
+function localizeCatalogProductLine(text: string, locale: string): string {
+  const match = text.match(CATALOG_PRODUCT_RE);
+  if (!match) return "";
+  const category = pickLocaleCopy(CATALOG_CATEGORY[match[1]], locale);
+  if (!category) return "";
+  const brand = match[2];
+  if (locale === "es") return `Producto de ${category} del catálogo ${brand}.`;
+  if (locale === "pt-BR") return `Produto de ${category} do catálogo ${brand}.`;
+  if (locale === "ar") return `منتج ${category} من كتالوج ${brand}.`;
+  return `${category.charAt(0).toUpperCase()}${category.slice(1)} product from the ${brand} catalog.`;
+}
+
 function isUsableTranslation(source: string, translated: string, locale: string): boolean {
   if (!translated || translated === source) return false;
   if (locale === "he") return true;
@@ -103,6 +149,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
   if (isUsableTranslation(text, exact, locale)) {
     return adaptBuiltInDirectionalCss(exact, locale);
+  }
+
+  const catalogLine = localizeCatalogProductLine(text, locale);
+  if (isUsableTranslation(text, catalogLine, locale)) {
+    return adaptBuiltInDirectionalCss(catalogLine, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);
