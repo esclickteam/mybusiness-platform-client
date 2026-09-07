@@ -814,5 +814,113 @@
     "es": "Estaremos encantados de entender la avería, coordinar una visita y dar un presupuesto ordenado.",
     "pt-BR": "Vamos ficar felizes em entender a falha, agendar uma visita e dar um orçamento organizado.",
     "ar": "يسعدنا فهم العطل وتنسيق زيارة وتقديم عرض سعر مرتّب."
+  },
+  "התחלת פרויקט": {
+    "en": "Start a project",
+    "es": "Empezar un proyecto",
+    "pt-BR": "Começar um projeto",
+    "ar": "بدء مشروع"
+  },
+  "עסקים שמחפשים תהליך ברור, מקצועי וממיר.": {
+    "en": "Businesses looking for a clear, professional, converting process.",
+    "es": "Negocios que buscan un proceso claro, profesional y que convierta.",
+    "pt-BR": "Negócios que buscam um processo claro, profissional e que converta.",
+    "ar": "أعمال تبحث عن عملية واضحة ومهنية وتحويلية."
+  },
+  "כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.": {
+    "en": "Everything a business needs to look professional and close more customers.",
+    "es": "Todo lo que un negocio necesita para verse profesional y cerrar más clientes.",
+    "pt-BR": "Tudo o que um negócio precisa para parecer profissional e fechar mais clientes.",
+    "ar": "كل ما يحتاجه عمل ليبدو مهنياً ويغلق المزيد من الزبائن."
+  },
+  "קראו עוד עלינו": {
+    "en": "Read more about us",
+    "es": "Leer más sobre nosotros",
+    "pt-BR": "Ler mais sobre nós",
+    "ar": "اقرأوا المزيد عنا"
+  },
+  "תהליך קצר, ברור וממוקד תוצאות.": {
+    "en": "A short, clear, results-focused process.",
+    "es": "Un proceso corto, claro y centrado en resultados.",
+    "pt-BR": "Um processo curto, claro e focado em resultados.",
+    "ar": "عملية قصيرة وواضحة ومركّزة على النتائج."
+  },
+  "אתר עסקי צריך להיראות טוב — אבל גם לבנות אמון.": {
+    "en": "A business site should look good — and also build trust.",
+    "es": "Un sitio de negocio debe verse bien — y también construir confianza.",
+    "pt-BR": "Um site de negócio deve parecer bom — e também construir confiança.",
+    "ar": "موقع أعمال يجب أن يبدو جيداً — وأن يبني ثقة أيضاً."
+  },
+  "כל מה שצריך לדעת לפני שמתחילים.": {
+    "en": "Everything you need to know before you start.",
+    "es": "Todo lo que hay que saber antes de empezar.",
+    "pt-BR": "Tudo o que é preciso saber antes de começar.",
+    "ar": "كل ما يلزم معرفته قبل البدء."
+  },
+  "בקשת שירות מהירה": {
+    "en": "Fast service request",
+    "es": "Solicitud de servicio rápida",
+    "pt-BR": "Pedido de serviço rápido",
+    "ar": "طلب خدمة سريع"
+  },
+  "השאירו פרטים ונחזור אליכם עם הצעה.": {
+    "en": "Leave your details and we will get back with a quote.",
+    "es": "Deja tus datos y te responderemos con una propuesta.",
+    "pt-BR": "Deixe seus dados e voltaremos com uma proposta.",
+    "ar": "اتركوا التفاصيل وسنعود بعرض."
+  },
+  "שירות חשמלאי מקצועי 24/7": {
+    "en": "Professional electrician service 24/7",
+    "es": "Servicio de electricista profesional 24/7",
+    "pt-BR": "Serviço de eletricista profissional 24/7",
+    "ar": "خدمة كهربائي مهنية 24/7"
+  },
+  "שירותי חשמל שעושים את ההבדל": {
+    "en": "Electrical services that make the difference",
+    "es": "Servicios eléctricos que marcan la diferencia",
+    "pt-BR": "Serviços elétricos que fazem a diferença",
+    "ar": "خدمات كهرباء تصنع الفرق"
+  },
+  "העבודה שלנו": {
+    "en": "Our work",
+    "es": "Nuestro trabajo",
+    "pt-BR": "Nosso trabalho",
+    "ar": "عملنا"
+  },
+  "פתרונות חשמל מתקדמים, בטוחים ונוחים.": {
+    "en": "Advanced, safe, and convenient electrical solutions.",
+    "es": "Soluciones eléctricas avanzadas, seguras y cómodas.",
+    "pt-BR": "Soluções elétricas avançadas, seguras e cômodas.",
+    "ar": "حلول كهرباء متقدمة وآمنة ومريحة."
+  },
+  "התקנות, תיקונים ולוחות חשמל בצורה שמחזקת אמון ומראה ללקוח עבודה מסודרת, בטיחותית ומקצועית.": {
+    "en": "Installations, repairs, and electrical panels in a way that builds trust and shows the client organized, safe, professional work.",
+    "es": "Instalaciones, reparaciones y cuadros eléctricos de forma que refuerzan la confianza y muestran al cliente un trabajo ordenado, seguro y profesional.",
+    "pt-BR": "Instalações, reparos e quadros elétricos de um jeito que reforça confiança e mostra ao cliente um trabalho organizado, seguro e profissional.",
+    "ar": "تركيبات وإصلاحات ولوحات كهرباء بطريقة تعزّز الثقة وتُظهر للزبون عملاً مرتّباً وآمناً ومهنياً."
+  },
+  "בדיקה מקיפה לפני עבודה": {
+    "en": "A thorough check before work starts",
+    "es": "Una revisión completa antes del trabajo",
+    "pt-BR": "Uma verificação completa antes do trabalho",
+    "ar": "فحص شامل قبل العمل"
+  },
+  "חייגו עכשיו": {
+    "en": "Call now",
+    "es": "Llamad ahora",
+    "pt-BR": "Liguem agora",
+    "ar": "اتصلوا الآن"
+  },
+  "קראו עוד ←": {
+    "en": "Read more ←",
+    "es": "Leer más ←",
+    "pt-BR": "Ler mais ←",
+    "ar": "اقرأوا المزيد ←"
+  },
+  "כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.": {
+    "en": "Clean, clear cards like the mockup — an orange icon, a title, a short description, and a call to action.",
+    "es": "Tarjetas limpias y claras como el mockup — un icono naranja, un título, una descripción corta y una llamada a la acción.",
+    "pt-BR": "Cartões limpos e claros como o mockup — um ícone laranja, um título, uma descrição curta e um chamado à ação.",
+    "ar": "بطاقات نظيفة وواضحة كما في النموذج — أيقونة برتقالية وعنوان ووصف قصير ودعوة للفعل."
   }
 }

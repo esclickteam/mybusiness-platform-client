@@ -537,6 +537,86 @@ const rows = {
     "Vamos ficar felizes em entender a falha, agendar uma visita e dar um orçamento organizado.",
     "يسعدنا فهم العطل وتنسيق زيارة وتقديم عرض سعر مرتّب.",
   ),
+  "התחלת פרויקט": r("Start a project", "Empezar un proyecto", "Começar um projeto", "بدء مشروع"),
+  "עסקים שמחפשים תהליך ברור, מקצועי וממיר.": r(
+    "Businesses looking for a clear, professional, converting process.",
+    "Negocios que buscan un proceso claro, profesional y que convierta.",
+    "Negócios que buscam um processo claro, profissional e que converta.",
+    "أعمال تبحث عن عملية واضحة ومهنية وتحويلية.",
+  ),
+  "כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.": r(
+    "Everything a business needs to look professional and close more customers.",
+    "Todo lo que un negocio necesita para verse profesional y cerrar más clientes.",
+    "Tudo o que um negócio precisa para parecer profissional e fechar mais clientes.",
+    "كل ما يحتاجه عمل ليبدو مهنياً ويغلق المزيد من الزبائن.",
+  ),
+  "קראו עוד עלינו": r("Read more about us", "Leer más sobre nosotros", "Ler mais sobre nós", "اقرأوا المزيد عنا"),
+  "תהליך קצר, ברור וממוקד תוצאות.": r(
+    "A short, clear, results-focused process.",
+    "Un proceso corto, claro y centrado en resultados.",
+    "Um processo curto, claro e focado em resultados.",
+    "عملية قصيرة وواضحة ومركّزة على النتائج.",
+  ),
+  "אתר עסקי צריך להיראות טוב — אבל גם לבנות אמון.": r(
+    "A business site should look good — and also build trust.",
+    "Un sitio de negocio debe verse bien — y también construir confianza.",
+    "Um site de negócio deve parecer bom — e também construir confiança.",
+    "موقع أعمال يجب أن يبدو جيداً — وأن يبني ثقة أيضاً.",
+  ),
+  "כל מה שצריך לדעת לפני שמתחילים.": r(
+    "Everything you need to know before you start.",
+    "Todo lo que hay que saber antes de empezar.",
+    "Tudo o que é preciso saber antes de começar.",
+    "كل ما يلزم معرفته قبل البدء.",
+  ),
+  "בקשת שירות מהירה": r("Fast service request", "Solicitud de servicio rápida", "Pedido de serviço rápido", "طلب خدمة سريع"),
+  "השאירו פרטים ונחזור אליכם עם הצעה.": r(
+    "Leave your details and we will get back with a quote.",
+    "Deja tus datos y te responderemos con una propuesta.",
+    "Deixe seus dados e voltaremos com uma proposta.",
+    "اتركوا التفاصيل وسنعود بعرض.",
+  ),
+  "שירות חשמלאי מקצועי 24/7": r(
+    "Professional electrician service 24/7",
+    "Servicio de electricista profesional 24/7",
+    "Serviço de eletricista profissional 24/7",
+    "خدمة كهربائي مهنية 24/7",
+  ),
+  "שירותי חשמל שעושים את ההבדל": r(
+    "Electrical services that make the difference",
+    "Servicios eléctricos que marcan la diferencia",
+    "Serviços elétricos que fazem a diferença",
+    "خدمات كهرباء تصنع الفرق",
+  ),
+  "העבודה שלנו": r("Our work", "Nuestro trabajo", "Nosso trabalho", "عملنا"),
+  "פתרונות חשמל מתקדמים, בטוחים ונוחים.": r(
+    "Advanced, safe, and convenient electrical solutions.",
+    "Soluciones eléctricas avanzadas, seguras y cómodas.",
+    "Soluções elétricas avançadas, seguras e cômodas.",
+    "حلول كهرباء متقدمة وآمنة ومريحة.",
+  ),
+  "התקנות, תיקונים ולוחות חשמל בצורה שמחזקת אמון ומראה ללקוח עבודה מסודרת, בטיחותית ומקצועית.":
+    r(
+      "Installations, repairs, and electrical panels in a way that builds trust and shows the client organized, safe, professional work.",
+      "Instalaciones, reparaciones y cuadros eléctricos de forma que refuerzan la confianza y muestran al cliente un trabajo ordenado, seguro y profesional.",
+      "Instalações, reparos e quadros elétricos de um jeito que reforça confiança e mostra ao cliente um trabalho organizado, seguro e profissional.",
+      "تركيبات وإصلاحات ولوحات كهرباء بطريقة تعزّز الثقة وتُظهر للزبون عملاً مرتّباً وآمناً ومهنياً.",
+    ),
+  "בדיקה מקיפה לפני עבודה": r(
+    "A thorough check before work starts",
+    "Una revisión completa antes del trabajo",
+    "Uma verificação completa antes do trabalho",
+    "فحص شامل قبل العمل",
+  ),
+  "חייגו עכשיו": r("Call now", "Llamad ahora", "Liguem agora", "اتصلوا الآن"),
+  "קראו עוד ←": r("Read more ←", "Leer más ←", "Ler mais ←", "اقرأوا المزيد ←"),
+  "כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.":
+    r(
+      "Clean, clear cards like the mockup — an orange icon, a title, a short description, and a call to action.",
+      "Tarjetas limpias y claras como el mockup — un icono naranja, un título, una descripción corta y una llamada a la acción.",
+      "Cartões limpos e claros como o mockup — um ícone laranja, um título, uma descrição curta e um chamado à ação.",
+      "بطاقات نظيفة وواضحة كما في النموذج — أيقونة برتقالية وعنوان ووصف قصير ودعوة للفعل.",
+    ),
 };
 
 const out = join(
