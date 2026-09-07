@@ -1176,6 +1176,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("רוצים לדעת עוד?", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique76 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("רוצים גם תוצאה כזאת?", "en")).toMatch(/result/i);
+    expect(localizeBuiltInText("רוצים גם תוצאה כזאת?", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בחרו שעה שמתאימה לכם.", "es")).toMatch(/Elegid/i);
+    expect(localizeBuiltInText("השאירו אימייל ונעדכן אתכם.", "pt-BR")).toMatch(/e-mail|você/i);
+    expect(localizeBuiltInText("שאלה? בקשה? אנחנו כאן.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
