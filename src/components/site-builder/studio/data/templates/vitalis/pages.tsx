@@ -597,7 +597,7 @@ function ContactSection({
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
             {info.map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">{label}</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">{tx(label)}</div>
                 <div className="mt-1 text-base font-semibold text-white">{value}</div>
               </div>
             ))}
