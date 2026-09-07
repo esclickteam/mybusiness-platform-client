@@ -82,6 +82,7 @@ import unique67ExactLexicon from "./templateExactLexicon.unique67.json";
 import unique68ExactLexicon from "./templateExactLexicon.unique68.json";
 import unique69ExactLexicon from "./templateExactLexicon.unique69.json";
 import unique70ExactLexicon from "./templateExactLexicon.unique70.json";
+import unique71ExactLexicon from "./templateExactLexicon.unique71.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -176,6 +177,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique68ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique69ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique70ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique71ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -335,6 +337,7 @@ const BEHIND_SCENES_RE = /^(.+) — מאחורי הקלעים\.$/;
 const PRICE_DOT_RE = /^₪(\d+) · (.+)$/;
 const UNIT_COUNT_RE = /^(\d+)\s*יח׳$/;
 const WEEK_RANGE_RE = /^שבוע (\d+)[-–](\d+)$/;
+const EN_DASH_PAIR_RE = /^(.+?)\s+[–—]\s+(.+)$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -855,6 +858,18 @@ function localizeNumberedDashLabel(text: string, locale: string): string {
     localizeFragment(match[3], locale);
   if (!left || !right || HE.test(left) || HE.test(right)) return "";
   return `${left} ${match[2]} - ${right}`;
+}
+
+function localizeEnDashPair(text: string, locale: string): string {
+  const match = text.match(EN_DASH_PAIR_RE);
+  if (!match) return "";
+  const left = localizeFragment(match[1], locale);
+  const right = localizeFragment(match[2], locale);
+  if (!left || !right || HE.test(left) || HE.test(right)) return "";
+  if (locale === "es") return `${left} – ${right}`;
+  if (locale === "pt-BR") return `${left} – ${right}`;
+  if (locale === "ar") return `${left} – ${right}`;
+  return `${left} – ${right}`;
 }
 
 const EXTRA_INDEXED_PREFIXES: Record<string, PhraseTranslation> = {
@@ -1440,6 +1455,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const numberedDash = localizeNumberedDashLabel(text, locale);
   if (isUsableTranslation(text, numberedDash, locale)) {
     return adaptBuiltInDirectionalCss(numberedDash, locale);
+  }
+
+  const enDashPair = localizeEnDashPair(text, locale);
+  if (isUsableTranslation(text, enDashPair, locale)) {
+    return adaptBuiltInDirectionalCss(enDashPair, locale);
   }
 
   const indexedLabel = localizeIndexedEditorLabel(text, locale);

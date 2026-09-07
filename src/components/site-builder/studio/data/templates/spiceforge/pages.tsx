@@ -47,7 +47,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
           ))}
         </nav>
         <button type="button" onClick={() => { setNavOpen(false); onCta(); }} className="px-5 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "heroPrimary")}</button>
-        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
           <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
         </button>
       </div>
@@ -350,7 +350,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
               <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(featured.tag)}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#c4a08a" }}>{featured.text}</p>
               </div>
@@ -363,7 +363,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
                 <div className="p-5 text-start sm:p-6">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(post.tag)}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{post.text}</p>
                 </div>

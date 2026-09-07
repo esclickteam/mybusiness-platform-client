@@ -1081,6 +1081,21 @@ describe("localizeBuiltInTemplateSeed", () => {
     ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique71 insert-library dash titles and descriptions", () => {
+    expect(localizeBuiltInText("דף הבית – פתיחה מפוצלת", "en")).toMatch(/home page/i);
+    expect(localizeBuiltInText("דף הבית – פתיחה מפוצלת", "en")).toMatch(/split/i);
+    expect(localizeBuiltInText("דף הבית – פתיחה מפוצלת", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שירותים – כרטיסים", "es")).toMatch(/tarjeta/i);
+    expect(localizeBuiltInText("שירותים – כרטיסים", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הירו מפוצל, כרטיסי ערך ומספרים", "en")).toMatch(/split hero/i);
+    expect(localizeBuiltInText("הירו מפוצל, כרטיסי ערך ומספרים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("מכון יופי יוקרתי עם הירו מגזיני, גלריה, טיפולים ויומן.", "pt-BR"),
+    ).toMatch(/salão de beleza/i);
+    expect(localizeBuiltInText("פתיח מגזיני", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("החשבון שלי", "en")).toMatch(/my account/i);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
