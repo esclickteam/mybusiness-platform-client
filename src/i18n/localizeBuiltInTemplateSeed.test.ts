@@ -1109,6 +1109,52 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שוברי מתנה", "es")).toMatch(/vale|regalo/i);
     expect(localizeBuiltInText("מדורים", "en")).toMatch(/section/i);
     expect(localizeBuiltInText("מדורים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("© NOVASTRA. כל הזכויות שמורות.", "en")).toMatch(
+      /all rights reserved/i,
+    );
+    expect(localizeBuiltInText("© NOVASTRA. כל הזכויות שמורות.", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+  });
+
+  it("localizes copyright chrome for Latin brands, years, and HTML aria-labels", () => {
+    expect(localizeBuiltInText("© 2026 כל הזכויות שמורות", "en")).toMatch(
+      /all rights reserved/i,
+    );
+    expect(localizeBuiltInText("© 2026 כל הזכויות שמורות", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("© 2026 BizUply. כל הזכויות שמורות.", "es")).toMatch(
+      /derechos reservados/i,
+    );
+    expect(
+      localizeBuiltInText("© כל הזכויות שמורות · מדיניות פרטיות", "pt-BR"),
+    ).toMatch(/direitos reservados/i);
+    expect(
+      localizeBuiltInText("© כל הזכויות שמורות · מדיניות פרטיות", "pt-BR"),
+    ).toMatch(/privacidade/i);
+    expect(
+      localizeBuiltInText("© כל הזכויות שמורות · מדיניות פרטיות", "ar"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText('<button aria-label="פתיחת תפריט">☰</button>', "en"),
+    ).toMatch(/aria-label="Open menu"/);
+    expect(
+      localizeBuiltInText('<button aria-label="פתיחת תפריט">☰</button>', "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("© 2026 ברקמן. כל הזכויות שמורות.", "en"),
+    ).toMatch(/ברקמן/);
+  });
+
+  it("localizes unique73 leftover tx() chrome", () => {
+    expect(localizeBuiltInText("המשך לתשלום", "en")).toMatch(/payment/i);
+    expect(localizeBuiltInText("המשך לתשלום", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הסל ריק כרגע.", "es")).toMatch(/carrito/i);
+    expect(localizeBuiltInText("ספרו לנו על הרעיון", "es")).toMatch(/Contadnos/i);
+    expect(localizeBuiltInText("אולי תרצו להוסיף", "pt-BR")).toMatch(/você/i);
+    expect(localizeBuiltInText("אין מוצרים להצגה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מדיניות פרטיות", "en")).toMatch(/privacy/i);
   });
 
   it("localizes unique69 leftover gallery catalog chrome", () => {

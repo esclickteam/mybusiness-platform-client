@@ -2203,7 +2203,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
               "זכויות יוצרים",
             )}
           >
-            © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
+            © {new Date().getFullYear()} {data.brand.name}. {tx("כל הזכויות שמורות.")}
           </span>
 
           <nav>

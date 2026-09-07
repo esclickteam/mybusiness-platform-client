@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
+import { localizeBuiltInText, tx } from "../../../i18n/localizeBuiltInTemplateSeed";
 import {
   sectionLayoutVariants,
   type SectionKind,
@@ -63,10 +64,16 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
 
       if (!search) return true;
 
+      const title = tx(variant.title);
+      const description = tx(variant.description);
+      const tags = (variant.tags || []).map((tag) => tx(tag));
       return (
         variant.title.toLowerCase().includes(search) ||
         variant.description.toLowerCase().includes(search) ||
-        variant.tags?.some((tag) => tag.toLowerCase().includes(search))
+        title.toLowerCase().includes(search) ||
+        description.toLowerCase().includes(search) ||
+        variant.tags?.some((tag) => tag.toLowerCase().includes(search)) ||
+        tags.some((tag) => tag.toLowerCase().includes(search))
       );
     });
   }, [activeKind, query]);
@@ -242,25 +249,27 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
 
                       {variant.badge ? (
                         <div className="absolute left-4 top-4 z-10 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 shadow-lg">
-                          {variant.badge}
+                          {tx(variant.badge)}
                         </div>
                       ) : null}
 
                       <div className="h-full w-full origin-top scale-[0.42] overflow-hidden bg-white">
                         <div
                           className="pointer-events-none w-[238%]"
-                          dangerouslySetInnerHTML={{ __html: variant.html }}
+                          dangerouslySetInnerHTML={{
+                            __html: localizeBuiltInText(variant.html),
+                          }}
                         />
                       </div>
                     </div>
 
                     <div className="border-t border-slate-100 p-5">
                       <h4 className="text-xl font-black text-slate-800">
-                        {variant.title}
+                        {tx(variant.title)}
                       </h4>
 
                       <p className="mt-2 min-h-[44px] text-sm font-bold leading-6 text-slate-500">
-                        {variant.description}
+                        {tx(variant.description)}
                       </p>
 
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -270,7 +279,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                               key={tag}
                               className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-400"
                             >
-                              {tag}
+                              {tx(tag)}
                             </span>
                           ))}
                         </div>

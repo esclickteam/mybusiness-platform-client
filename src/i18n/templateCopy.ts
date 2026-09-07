@@ -84,6 +84,7 @@ import unique69ExactLexicon from "./templateExactLexicon.unique69.json";
 import unique70ExactLexicon from "./templateExactLexicon.unique70.json";
 import unique71ExactLexicon from "./templateExactLexicon.unique71.json";
 import unique72ExactLexicon from "./templateExactLexicon.unique72.json";
+import unique73ExactLexicon from "./templateExactLexicon.unique73.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -180,6 +181,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique70ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique71ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique72ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique73ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -340,6 +342,12 @@ const PRICE_DOT_RE = /^₪(\d+) · (.+)$/;
 const UNIT_COUNT_RE = /^(\d+)\s*יח׳$/;
 const WEEK_RANGE_RE = /^שבוע (\d+)[-–](\d+)$/;
 const EN_DASH_PAIR_RE = /^(.+?)\s+[–—]\s+(.+)$/;
+const COPYRIGHT_LATIN_BRAND_RE =
+  /^©\s*(?:(\d{4})\s+)?([A-Za-z][\w.-]*)\.?\s*כל הזכויות שמורות\.?$/;
+const COPYRIGHT_YEAR_ONLY_RE = /^©\s*(\d{4})\s+כל הזכויות שמורות\.?$/;
+const COPYRIGHT_PLAIN_RE = /^©\s*כל הזכויות שמורות\.?$/;
+const COPYRIGHT_PRIVACY_RE =
+  /^©\s*כל הזכויות שמורות\s*[·•]\s*מדיניות פרטיות\.?$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -484,6 +492,48 @@ function localizeStoryOfBrand(text: string, locale: string): string {
   if (locale === "pt-BR") return `A história de ${brand}.`;
   if (locale === "ar") return `قصة ${brand}.`;
   return `The story of ${brand}.`;
+}
+
+function copyrightRightsClause(locale: string, withPeriod: boolean): string {
+  const rights =
+    locale === "es"
+      ? "Todos los derechos reservados"
+      : locale === "pt-BR"
+        ? "Todos os direitos reservados"
+        : locale === "ar"
+          ? "جميع الحقوق محفوظة"
+          : "All rights reserved";
+  return withPeriod ? `${rights}.` : rights;
+}
+
+function localizeCopyrightLine(text: string, locale: string): string {
+  const withPeriod = text.includes("שמורות.");
+  const rights = copyrightRightsClause(locale, withPeriod);
+  const privacy =
+    locale === "es"
+      ? "Política de privacidad"
+      : locale === "pt-BR"
+        ? "Política de privacidade"
+        : locale === "ar"
+          ? "سياسة الخصوصية"
+          : "Privacy policy";
+
+  const latin = text.match(COPYRIGHT_LATIN_BRAND_RE);
+  if (latin) {
+    const year = latin[1];
+    const brand = latin[2];
+    if (year) return `© ${year} ${brand}. ${rights}`;
+    return `© ${brand}. ${rights}`;
+  }
+
+  const yearOnly = text.match(COPYRIGHT_YEAR_ONLY_RE);
+  if (yearOnly) return `© ${yearOnly[1]} ${rights}`;
+
+  if (COPYRIGHT_PLAIN_RE.test(text)) return `© ${rights}`;
+
+  if (COPYRIGHT_PRIVACY_RE.test(text)) return `© ${rights.replace(/\.$/, "")} · ${privacy}`;
+
+  return "";
 }
 
 function localizeCatalogProductLine(text: string, locale: string): string {
@@ -1324,8 +1374,24 @@ function looksLikeHtml(text: string): boolean {
   return /<[a-zA-Z][\s\S]*?>/.test(text) || /<\/[a-zA-Z]/.test(text);
 }
 
+const LOCALIZABLE_HTML_ATTRS =
+  /^(?:aria-label|aria-placeholder|aria-roledescription|placeholder|alt|title|data-visual-edit-label|data-section-title)$/i;
+
+function localizeHtmlAttributes(html: string, locale: string): string {
+  return html.replace(
+    /\s([A-Za-z_:][\w:.-]*)=(["'])([^"'<>]*[\u0590-\u05FF][^"'<>]*)\2/g,
+    (full, attr: string, quote: string, value: string) => {
+      if (!LOCALIZABLE_HTML_ATTRS.test(attr)) return full;
+      const localized = localizePlainBuiltInText(value, locale);
+      if (!isUsableTranslation(value, localized, locale)) return full;
+      return ` ${attr}=${quote}${localized}${quote}`;
+    },
+  );
+}
+
 function localizeHtmlDocument(html: string, locale: string): string {
-  const localized = html.replace(
+  const withAttrs = localizeHtmlAttributes(html, locale);
+  const localized = withAttrs.replace(
     /(>)([^<]*[\u0590-\u05FF][^<]*)(<)/g,
     (full, open: string, text: string, close: string) => {
       const leading = text.match(/^\s*/)[0];
@@ -1487,6 +1553,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const storyLine = localizeStoryOfBrand(text, locale);
   if (isUsableTranslation(text, storyLine, locale)) {
     return adaptBuiltInDirectionalCss(storyLine, locale);
+  }
+
+  const copyrightLine = localizeCopyrightLine(text, locale);
+  if (isUsableTranslation(text, copyrightLine, locale)) {
+    return adaptBuiltInDirectionalCss(copyrightLine, locale);
   }
 
   const storeAddonLine = localizeStoreAddonLine(text, locale);

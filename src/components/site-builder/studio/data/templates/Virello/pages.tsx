@@ -1107,7 +1107,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
       </div>
 
       <div className="mx-auto mt-10 flex max-w-[1520px] flex-col justify-between gap-4 border-t border-[#301b12]/10 pt-6 text-sm font-bold text-[#301b12]/45 md:flex-row">
-        <VisualText id="footer.copyright" fallback={`© 2026 ${base.brand.name}. כל הזכויות שמורות`} as="p" />
+        <VisualText id="footer.copyright" fallback={`© 2026 ${base.brand.name}. ${tx("כל הזכויות שמורות")}`} as="p" />
 
         <div className="flex gap-4">
           {base.brand.socialLinks.map((item, index) => (
