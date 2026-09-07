@@ -1678,7 +1678,7 @@ function Footer({
     {
       title: data.navDemos,
       items: [
-        ["home", "בית"],
+        ["home", tx("בית")],
         ["about", data.navAbout],
         ["gallery", data.navGallery],
       ],
@@ -1686,9 +1686,9 @@ function Footer({
     {
       title: data.navServices,
       items: [
-        ["services", "עיצוב גבות"],
-        ["services", "מניקור"],
-        ["services", "תספורות"],
+        ["services", tx("עיצוב גבות")],
+        ["services", tx("מניקור")],
+        ["services", tx("תספורות")],
       ],
     },
     {
@@ -1700,7 +1700,7 @@ function Footer({
       ],
     },
     {
-      title: "מידע",
+      title: tx("מידע"),
       items: [
         ["gallery", data.navGallery],
         ["contact", data.navContact],

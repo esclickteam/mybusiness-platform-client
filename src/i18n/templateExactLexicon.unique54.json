@@ -23,6 +23,30 @@
     "pt-BR": "Assistente de IA embutido",
     "ar": "مساعد ذكاء اصطناعي مدمج"
   },
+  "מניקור": {
+    "en": "Manicure",
+    "es": "Manicura",
+    "pt-BR": "Manicure",
+    "ar": "مانيكير"
+  },
+  "הרמת ריסים": {
+    "en": "Lash lift",
+    "es": "Lifting de pestañas",
+    "pt-BR": "Lifting de cílios",
+    "ar": "رفع رموش"
+  },
+  "חוויית Shinora": {
+    "en": "Shinora experience",
+    "es": "Experiencia Shinora",
+    "pt-BR": "Experiência Shinora",
+    "ar": "تجربة Shinora"
+  },
+  "סרטון הסלון": {
+    "en": "Salon video",
+    "es": "Vídeo del salón",
+    "pt-BR": "Vídeo do salão",
+    "ar": "فيديو الصالون"
+  },
   "לראות שירותים": {
     "en": "See services",
     "es": "Ver servicios",
