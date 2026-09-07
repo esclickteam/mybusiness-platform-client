@@ -823,6 +823,52 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("קביעת שיחת ייעוץ", "en")).toMatch(/consult/i);
   });
 
+  it("localizes unique44 leftover PulseCore and Servora built-in seed copy", () => {
+    expect(
+      localizeBuiltInText(
+        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
+        "en",
+      ),
+    ).toMatch(/short|heart|strength/i);
+    expect(
+      localizeBuiltInText(
+        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עילית", "es")).toMatch(/élite|elite/i);
+    expect(localizeBuiltInText("פנייה ואבחון", "pt-BR")).toMatch(
+      /consulta|diagnóstico/i,
+    );
+    expect(localizeBuiltInText("צריך ניסיון קודם?", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("חבילת התחלה", "en")).toMatch(/starter|start/i);
+  });
+
+  it("localizes unique44 leftover PulseCore and Servora built-in seed copy", () => {
+    expect(
+      localizeBuiltInText(
+        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
+        "en",
+      ),
+    ).toMatch(/short|heart|strength/i);
+    expect(
+      localizeBuiltInText(
+        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עילית", "es")).toMatch(/élite|elite/i);
+    expect(localizeBuiltInText("פנייה ואבחון", "pt-BR")).toMatch(
+      /consulta|diagnóstico/i,
+    );
+    expect(localizeBuiltInText("צריך ניסיון קודם?", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("חבילת התחלה", "en")).toMatch(/starter|start/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

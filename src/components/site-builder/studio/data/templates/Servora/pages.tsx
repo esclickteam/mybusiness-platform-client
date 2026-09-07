@@ -1832,7 +1832,7 @@ function SectionTitle({
         data-editable="text"
         {...visualProps(`${scope}.eyebrow`, "text", "כותרת קטנה")}
       >
-        {eyebrow}
+        {tx(eyebrow)}
       </span>
 
       <h2

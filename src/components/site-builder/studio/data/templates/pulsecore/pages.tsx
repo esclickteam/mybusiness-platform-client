@@ -455,11 +455,11 @@ function ProgramsSection({
                 </div>
 
                 <h3 className="mt-24 text-2xl sm:text-4xl font-black tracking-[-0.06em]">
-                  {program.title}
+                  {tx(program.title)}
                 </h3>
 
                 <p className="mt-6 text-base font-medium leading-8 text-white/55 group-hover:text-black/55">
-                  {program.text}
+                  {tx(program.text)}
                 </p>
 
                 <button
@@ -505,7 +505,7 @@ function TrainersSection() {
 
               <div className="p-7">
                 <p className="text-sm font-black text-[#D7FF36]">
-                  {trainer.role}
+                  {tx(trainer.role)}
                 </p>
 
                 <h3 className="mt-2 text-3xl font-black tracking-[-0.06em]">
@@ -513,7 +513,7 @@ function TrainersSection() {
                 </h3>
 
                 <p className="mt-4 text-sm leading-7 text-white/55">
-                  {trainer.text}
+                  {tx(trainer.text)}
                 </p>
               </div>
             </article>
@@ -549,13 +549,13 @@ function PricingSection({
                   : "border-white/10 bg-white/[0.06] text-white",
               ].join(" ")}
             >
-              <p className="text-sm font-black opacity-55">{plan.name}</p>
+              <p className="text-sm font-black opacity-55">{tx(plan.name)}</p>
 
               <h3 className="mt-7 text-3xl md:text-6xl font-black tracking-[-0.08em]">
                 {plan.price}
               </h3>
 
-              <p className="mt-4 text-sm leading-7 opacity-60">{plan.text}</p>
+              <p className="mt-4 text-sm leading-7 opacity-60">{tx(plan.text)}</p>
 
               <div className="mt-8 grid gap-3">
                 {plan.items.map((item) => (
@@ -700,8 +700,8 @@ function FaqSection() {
               key={faq.q}
               className="rounded-[28px] border border-white/10 bg-white/[0.06] p-6"
             >
-              <h3 className="text-2xl font-black">{faq.q}</h3>
-              <p className="mt-3 text-sm leading-7 text-white/55">{faq.a}</p>
+              <h3 className="text-2xl font-black">{tx(faq.q)}</h3>
+              <p className="mt-3 text-sm leading-7 text-white/55">{tx(faq.a)}</p>
             </article>
           ))}
         </div>
