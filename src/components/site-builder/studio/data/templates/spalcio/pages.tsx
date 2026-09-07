@@ -895,8 +895,7 @@ function Footer() {
         </div>
 
         <p className="text-sm text-white/45">
-          © {new Date().getFullYear()} {spalcioData.brand.name}. כל הזכויות
-          שמורות.
+          © {new Date().getFullYear()} {spalcioData.brand.name}. {tx("כל הזכויות שמורות.")}
         </p>
       </div>
     </footer>

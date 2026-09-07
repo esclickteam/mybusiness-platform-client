@@ -684,7 +684,7 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
             <h2 className="elevora-section-title" data-editable="text">{tx("כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.")}</h2>
           </div>
 
-          <p className="elevora-section-text" data-editable="text">{tx("מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות\n            וטופס ליד שמוביל לפעולה.")}</p>
+          <p className="elevora-section-text" data-editable="text">{tx("מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות\nוטופס ליד שמוביל לפעולה.")}</p>
         </div>
 
         <div className="elevora-services-grid">
@@ -961,7 +961,7 @@ function ContactPage({ data }: SharedProps) {
             <div className="elevora-contact-panel elevora-reveal">
               <span className="elevora-eyebrow" data-editable="text">{tx("יצירת קשר")}</span>
               <h2 className="elevora-section-title" data-editable="text">{tx("בואו נדבר על הצעד הבא של העסק.")}</h2>
-              <p className="elevora-section-text" data-editable="text">{tx("אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס\n                למערכת הלידים.")}</p>
+              <p className="elevora-section-text" data-editable="text">{tx("אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס\nלמערכת הלידים.")}</p>
 
               <div className="elevora-contact-info">
                 <div className="elevora-info-line">

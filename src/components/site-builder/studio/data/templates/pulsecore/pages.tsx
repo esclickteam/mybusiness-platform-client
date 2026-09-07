@@ -394,7 +394,7 @@ function HeroSection({
         <p
           data-gjs-type="text"
           className="mx-auto mt-8 max-w-2xl text-base font-semibold leading-8 text-white/76 drop-shadow-[0_10px_25px_rgba(0,0,0,0.75)] md:text-lg"
-        >{tx("תכנית כושר אישית, מותאמת, סטודיו פרטי וחדר כושר פרימיום להצגת\n          תוצאות אימון אמיתיות, מחירים והצטרפות מהירה.")}</p>
+        >{tx("תכנית כושר אישית, מותאמת, סטודיו פרטי וחדר כושר פרימיום להצגת\nתוצאות אימון אמיתיות, מחירים והצטרפות מהירה.")}</p>
 
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>{tx("לקביעת אימון ניסיון")}<ArrowLeft className="h-4 w-4" />
@@ -614,11 +614,11 @@ function ScheduleSection({
               key={`${item.day}-${item.time}-${item.name}`}
               className="group grid gap-4 rounded-[28px] border border-white/10 bg-white/[0.06] p-5 transition duration-300 hover:-translate-y-1 hover:bg-white hover:text-black md:grid-cols-[1fr_1fr_1.5fr_auto]"
             >
-              <p className="text-xl font-black">{item.day}</p>
+              <p className="text-xl font-black">{tx(item.day)}</p>
               <p className="text-xl font-black text-[#D7FF36] group-hover:text-black">
                 {item.time}
               </p>
-              <p className="text-xl font-black">{item.name}</p>
+              <p className="text-xl font-black">{tx(item.name)}</p>
 
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF4D1D] text-white">
                 {index + 1}
@@ -719,7 +719,7 @@ function ContactSection() {
 
           <h2 className="mt-7 text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl">{tx("מוכנים להתחיל לזוז?")}</h2>
 
-          <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{tx("השאירו פרטים ונחזור אליכם לתיאום אימון ניסיון, התאמת מסלול או\n            שיחת היכרות קצרה.")}</p>
+          <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{tx("השאירו פרטים ונחזור אליכם לתיאום אימון ניסיון, התאמת מסלול או\nשיחת היכרות קצרה.")}</p>
         </div>
 
         <ContactLeadForm />
@@ -766,7 +766,7 @@ function ContactLeadForm() {
         type="submit"
         className="h-14 rounded-full bg-black text-sm font-black text-white transition hover:-translate-y-1"
       >
-        {sent ? "נשלח — נחזור אליכם בקרוב" : "שליחה"}
+        {sent ? tx("נשלח — נחזור אליכם בקרוב") : tx("שליחה")}
       </button>
     </form>
   );
@@ -783,7 +783,7 @@ function Footer({
         <div>
           <p className="text-3xl font-black tracking-[-0.06em]">PulseCore</p>
 
-          <p className="mt-5 max-w-md text-sm leading-7 text-white/45">{tx("תבנית פיטנס אנרגטית למאמנים, חדרי כושר וסטודיואים שרוצים אתר\n            שמרגיש חזק, חי וממיר.")}</p>
+          <p className="mt-5 max-w-md text-sm leading-7 text-white/45">{tx("תבנית פיטנס אנרגטית למאמנים, חדרי כושר וסטודיואים שרוצים אתר\nשמרגיש חזק, חי וממיר.")}</p>
         </div>
 
         <div>

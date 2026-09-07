@@ -747,6 +747,25 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("ניהול סושיאל", "pt-BR")).toMatch(/social/i);
   });
 
+  it("localizes unique40 leftover gallery preview body after unique39", () => {
+    expect(
+      localizeBuiltInText(
+        "סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי\nלעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.",
+        "en",
+      ),
+    ).toMatch(/digital studio|CRM/i);
+    expect(
+      localizeBuiltInText(
+        "סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי\nלעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מערכת לידים ומכירות", "es")).toMatch(/lead|venta/i);
+    expect(localizeBuiltInText("כל הזכויות שמורות.", "pt-BR")).toMatch(/direitos reservados/i);
+    expect(localizeBuiltInText("נשלח — נחזור אליכם בקרוב", "en")).toMatch(/sent|back/i);
+    expect(localizeBuiltInText("מעגל כוח", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

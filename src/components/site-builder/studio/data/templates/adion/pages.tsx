@@ -676,7 +676,7 @@ function Manifesto({ setPage }: { setPage: (page: AdionPageId) => void }) {
             <div className="mb-8 h-16 w-16 rounded-full bg-[#f7c873] p-4 text-center text-2xl text-[#10100e]">
               ▶
             </div>
-            <p className="text-xl leading-9 text-white/66">{tx("אנחנו הופכים רעיונות לחוויות ויזואליות קולנועיות. אסטרטגיה,\n              צילום, הפקה ועריכה מתחברים יחד כדי ליצור תוכן שנראה חד,\n              רגשי ופרימיום.")}</p>
+            <p className="text-xl leading-9 text-white/66">{tx("אנחנו הופכים רעיונות לחוויות ויזואליות קולנועיות. אסטרטגיה,\nצילום, הפקה ועריכה מתחברים יחד כדי ליצור תוכן שנראה חד,\nרגשי ופרימיום.")}</p>
             <div className="mt-8">
               <Button variant="ghost" onClick={() => setPage("about")}>{tx("הסיפור שלנו")}</Button>
             </div>
@@ -1114,7 +1114,7 @@ function AboutPage() {
         <div>
           <Eyebrow>{tx("אודות")}</Eyebrow>
           <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">{tx("סטודיו")}<br />{tx("לסיפורים")}<br />{tx("קולנועיים.")}</h1>
-          <p className="mt-8 max-w-3xl text-xl leading-9 text-white/62">{tx("Adion הוא סטודיו ויזואלי לצלמים, יוצרי וידאו וצוותי הפקה שרוצים\n            נוכחות דיגיטלית יוקרתית. התבנית משלבת טיפוגרפיה גדולה,\n            תמונות חזקות ותנועה קולנועית.")}</p>
+          <p className="mt-8 max-w-3xl text-xl leading-9 text-white/62">{tx("Adion הוא סטודיו ויזואלי לצלמים, יוצרי וידאו וצוותי הפקה שרוצים\nנוכחות דיגיטלית יוקרתית. התבנית משלבת טיפוגרפיה גדולה,\nתמונות חזקות ותנועה קולנועית.")}</p>
         </div>
       </div>
 
@@ -1130,7 +1130,7 @@ function AboutPage() {
           >
             <div className="text-3xl md:text-7xl font-black tracking-[-0.1em]">{num}</div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.25em] text-white/45">
-              {label}
+              {tx(label)}
             </div>
           </div>
         ))}
@@ -1260,10 +1260,10 @@ function ContactPage() {
           ].map(([label, placeholder]) => (
             <label key={label} className="mb-5 block">
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
-                {label}
+                {tx(label)}
               </span>
               <input
-                placeholder={placeholder}
+                placeholder={tx(placeholder)}
                 className="w-full rounded-2xl border border-white/10 bg-[#10100e] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#f7c873]"
               />
             </label>

@@ -586,7 +586,7 @@ function HeroSection({
         <p
           data-gjs-type="text"
           className="mx-auto mt-5 max-w-2xl px-1 text-sm font-semibold leading-7 text-white/86 sm:mt-7 sm:text-base sm:leading-8"
-        >{tx("סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי\n          לעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.")}</p>
+        >{tx("סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי\nלעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.")}</p>
 
         <div className="relative z-30 mx-auto mt-7 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
           <AelineButton onClick={() => onPageChange("contact")}>{tx("קבעו שיחת התאמה")}<ArrowRight className="h-4 w-4" />
@@ -668,7 +668,7 @@ function AboutSection() {
             <p
               data-gjs-type="text"
               className="mt-5 text-base font-medium leading-6"
-            >{tx("“פתאום כל הפניות, המשימות והמעקבים נמצאים במקום אחד. הצוות פשוט\n              יודע מה לעשות.”")}</p>
+            >{tx("“פתאום כל הפניות, המשימות והמעקבים נמצאים במקום אחד. הצוות פשוט\nיודע מה לעשות.”")}</p>
           </article>
 
           <div className="grid gap-5">
@@ -680,7 +680,7 @@ function AboutSection() {
               <p
                 data-gjs-type="text"
                 className="mt-9 max-w-sm text-base font-medium leading-6"
-              >{tx("פניות עברו דרך תהליכים דיגיטליים שמסדרים טיפול, תזכורות\n                ופולואפים.")}</p>
+              >{tx("פניות עברו דרך תהליכים דיגיטליים שמסדרים טיפול, תזכורות\nופולואפים.")}</p>
             </article>
 
             <article className="flex items-center justify-between rounded-[24px] bg-[#160f2e] p-6 text-white transition duration-300 hover:-translate-y-2">
@@ -742,14 +742,14 @@ function ServicesSection({
                 data-gjs-type="text"
                 className="mt-10 text-3xl font-black tracking-[-0.06em] sm:mt-28 sm:text-4xl"
               >
-                {service.title}
+                {tx(service.title)}
               </h3>
 
               <p
                 data-gjs-type="text"
                 className="mt-5 text-base leading-7 text-[#160f2e]/55 group-hover:text-white/60 sm:mt-7 sm:text-lg sm:leading-8"
               >
-                {service.text}
+                {tx(service.text)}
               </p>
             </article>
           ))}
@@ -860,14 +860,14 @@ function ExpertiseSection() {
                 data-gjs-type="text"
                 className="mt-6 text-center text-3xl font-medium tracking-[-0.05em]"
               >
-                {card.title}
+                {tx(card.title)}
               </h3>
 
               <p
                 data-gjs-type="text"
                 className="mx-auto mt-4 max-w-xl text-center text-base leading-7 text-[#160f2e]/60"
               >
-                {card.text}
+                {tx(card.text)}
               </p>
             </article>
           ))}
@@ -910,7 +910,7 @@ function PricingSection({
               ].join(" ")}
             >
               <p className="text-sm font-black tracking-[0.12em] opacity-45">
-                {plan.name}
+                {tx(plan.name)}
               </p>
 
               <h3
@@ -924,7 +924,7 @@ function PricingSection({
                 data-gjs-type="text"
                 className="mt-3 text-sm leading-7 opacity-55"
               >
-                {plan.text}
+                {tx(plan.text)}
               </p>
 
               <div className="mt-8 grid gap-3">
@@ -1046,14 +1046,14 @@ function BlogSection({
                   data-gjs-type="text"
                   className="mt-4 text-2xl font-black tracking-[-0.05em]"
                 >
-                  {post.title}
+                  {tx(post.title)}
                 </h3>
 
                 <p
                   data-gjs-type="text"
                   className="mt-3 text-sm leading-7 text-[#160f2e]/55"
                 >
-                  {post.text}
+                  {tx(post.text)}
                 </p>
               </div>
             </article>
@@ -1117,7 +1117,7 @@ function Footer({
           <p
             data-gjs-type="text"
             className="mt-5 max-w-md text-sm leading-7 text-white/55"
-          >{tx("תבנית פרימיום לעסקים שרוצים להציג תהליך חכם, חוויית לקוח חזקה\n            ומערכת שמובילה לפניות איכותיות.")}</p>
+          >{tx("תבנית פרימיום לעסקים שרוצים להציג תהליך חכם, חוויית לקוח חזקה\nומערכת שמובילה לפניות איכותיות.")}</p>
         </div>
 
         <div>
@@ -1322,7 +1322,7 @@ export default function AelinePages({
                       <p
                         data-gjs-type="text"
                         className="mt-5 text-sm leading-7 text-white/55"
-                      >{tx("כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות\n                        בצורה מסודרת.")}</p>
+                      >{tx("כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות\nבצורה מסודרת.")}</p>
                     </div>
 
                     <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aeline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
