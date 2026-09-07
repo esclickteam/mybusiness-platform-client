@@ -1,0 +1,650 @@
+{
+  "המלצות בכרטיסים": {
+    "en": "Testimonials in cards",
+    "es": "Recomendaciones en tarjetas",
+    "pt-BR": "Depoimentos em cartões",
+    "ar": "توصيات في بطاقات"
+  },
+  "המלצות כהה פרימיום": {
+    "en": "Dark premium testimonials",
+    "es": "Recomendaciones oscuras premium",
+    "pt-BR": "Depoimentos escuros premium",
+    "ar": "توصيات داكنة فاخرة"
+  },
+  "המלצות לחנות": {
+    "en": "Store testimonials",
+    "es": "Recomendaciones para tienda",
+    "pt-BR": "Depoimentos para loja",
+    "ar": "توصيات للمتجر"
+  },
+  "המלצות מינימליסטי": {
+    "en": "Minimal testimonials",
+    "es": "Recomendaciones minimalistas",
+    "pt-BR": "Depoimentos minimalistas",
+    "ar": "توصيات بسيطة"
+  },
+  "המלצות על רקע תמונה": {
+    "en": "Testimonials on a photo background",
+    "es": "Recomendaciones sobre foto",
+    "pt-BR": "Depoimentos sobre foto",
+    "ar": "توصيات على خلفية صورة"
+  },
+  "המלצות עם טופס ליד": {
+    "en": "Testimonials with a lead form",
+    "es": "Recomendaciones con formulario de lead",
+    "pt-BR": "Depoimentos com formulário de lead",
+    "ar": "توصيات مع نموذج عميل محتمل"
+  },
+  "המלצות עם לוגואים": {
+    "en": "Testimonials with logos",
+    "es": "Recomendaciones con logos",
+    "pt-BR": "Depoimentos com logos",
+    "ar": "توصيات مع شعارات"
+  },
+  "המלצות עם תמונה": {
+    "en": "Testimonials with a photo",
+    "es": "Recomendaciones con foto",
+    "pt-BR": "Depoimentos com foto",
+    "ar": "توصيات مع صورة"
+  },
+  "המלצות קומפקטיות": {
+    "en": "Compact testimonials",
+    "es": "Recomendaciones compactas",
+    "pt-BR": "Depoimentos compactos",
+    "ar": "توصيات مدمجة"
+  },
+  "הרשמה Glass וואו": {
+    "en": "Glass signup Wow",
+    "es": "Registro Glass Wow",
+    "pt-BR": "Inscrição Glass Wow",
+    "ar": "تسجيل Glass Wow"
+  },
+  "הרשמה כהה פרימיום": {
+    "en": "Dark premium signup",
+    "es": "Registro oscuro premium",
+    "pt-BR": "Inscrição escura premium",
+    "ar": "تسجيل داكن فاخر"
+  },
+  "הרשמה לחנות": {
+    "en": "Store signup",
+    "es": "Registro para tienda",
+    "pt-BR": "Inscrição para loja",
+    "ar": "تسجيل للمتجر"
+  },
+  "הרשמה מינימליסטית": {
+    "en": "Minimal signup",
+    "es": "Registro minimalista",
+    "pt-BR": "Inscrição minimalista",
+    "ar": "تسجيل بسيط"
+  },
+  "הרשמה נקייה": {
+    "en": "Clean signup",
+    "es": "Registro limpio",
+    "pt-BR": "Inscrição limpa",
+    "ar": "تسجيل نظيف"
+  },
+  "הרשמה על תמונת רקע": {
+    "en": "Signup on a background photo",
+    "es": "Registro sobre foto de fondo",
+    "pt-BR": "Inscrição sobre foto de fundo",
+    "ar": "تسجيل على صورة خلفية"
+  },
+  "הרשמה עם Freebie": {
+    "en": "Signup with a freebie",
+    "es": "Registro con freebie",
+    "pt-BR": "Inscrição com freebie",
+    "ar": "تسجيل مع هدية"
+  },
+  "הרשמה עם WhatsApp": {
+    "en": "Signup with WhatsApp",
+    "es": "Registro con WhatsApp",
+    "pt-BR": "Inscrição com WhatsApp",
+    "ar": "تسجيل مع واتساب"
+  },
+  "הרשמה עם הטבה": {
+    "en": "Signup with an offer",
+    "es": "Registro con oferta",
+    "pt-BR": "Inscrição com oferta",
+    "ar": "تسجيل مع عرض"
+  },
+  "הרשמה עם המלצה": {
+    "en": "Signup with a testimonial",
+    "es": "Registro con recomendación",
+    "pt-BR": "Inscrição com depoimento",
+    "ar": "تسجيل مع توصية"
+  },
+  "הרשמה עם מדיה להוספה": {
+    "en": "Signup with media to add",
+    "es": "Registro con media para añadir",
+    "pt-BR": "Inscrição com mídia para adicionar",
+    "ar": "تسجيل مع وسائط للإضافة"
+  },
+  "הרשמה עם סטטיסטיקות": {
+    "en": "Signup with stats",
+    "es": "Registro con estadísticas",
+    "pt-BR": "Inscrição com estatísticas",
+    "ar": "تسجيل مع إحصاءات"
+  },
+  "השוואת חבילות": {
+    "en": "Package comparison",
+    "es": "Comparación de paquetes",
+    "pt-BR": "Comparação de pacotes",
+    "ar": "مقارنة باقات"
+  },
+  "השקת מוצר": {
+    "en": "Product launch",
+    "es": "Lanzamiento de producto",
+    "pt-BR": "Lançamento de produto",
+    "ar": "إطلاق منتج"
+  },
+  "וואו טופס זכוכית": {
+    "en": "Wow glass form",
+    "es": "Formulario de cristal Wow",
+    "pt-BR": "Formulário de vidro Wow",
+    "ar": "نموذج زجاج Wow"
+  },
+  "וואטסאפ בסיסי": {
+    "en": "Basic WhatsApp",
+    "es": "WhatsApp básico",
+    "pt-BR": "WhatsApp básico",
+    "ar": "واتساب أساسي"
+  },
+  "וואטסאפ חזק": {
+    "en": "Strong WhatsApp",
+    "es": "WhatsApp fuerte",
+    "pt-BR": "WhatsApp forte",
+    "ar": "واتساب قوي"
+  },
+  "וואטסאפ ראשון": {
+    "en": "WhatsApp first",
+    "es": "WhatsApp primero",
+    "pt-BR": "WhatsApp primeiro",
+    "ar": "واتساب أولاً"
+  },
+  "וובינר / אונליין": {
+    "en": "Webinar / online",
+    "es": "Webinar / online",
+    "pt-BR": "Webinar / online",
+    "ar": "ندوة / أونلاين"
+  },
+  "וידאו / מדיה": {
+    "en": "Video / media",
+    "es": "Vídeo / media",
+    "pt-BR": "Vídeo / mídia",
+    "ar": "فيديو / وسائط"
+  },
+  "וידאו בסיסי": {
+    "en": "Basic video",
+    "es": "Vídeo básico",
+    "pt-BR": "Vídeo básico",
+    "ar": "فيديو أساسي"
+  },
+  "חבילות שירות": {
+    "en": "Service packages",
+    "es": "Paquetes de servicio",
+    "pt-BR": "Pacotes de serviço",
+    "ar": "باقات خدمة"
+  },
+  "חזון ומשימה": {
+    "en": "Vision and mission",
+    "es": "Visión y misión",
+    "pt-BR": "Visão e missão",
+    "ar": "رؤية ومهمة"
+  },
+  "חנות + ביקורות": {
+    "en": "Store + reviews",
+    "es": "Tienda + reseñas",
+    "pt-BR": "Loja + avaliações",
+    "ar": "متجر + تقييمات"
+  },
+  "חנות + ניוזלטר": {
+    "en": "Store + newsletter",
+    "es": "Tienda + newsletter",
+    "pt-BR": "Loja + newsletter",
+    "ar": "متجر + نشرة"
+  },
+  "חנות / מוצר": {
+    "en": "Store / product",
+    "es": "Tienda / producto",
+    "pt-BR": "Loja / produto",
+    "ar": "متجر / منتج"
+  },
+  "חנות כהה פרימיום": {
+    "en": "Dark premium store",
+    "es": "Tienda oscura premium",
+    "pt-BR": "Loja escura premium",
+    "ar": "متجر داكن فاخر"
+  },
+  "חנות עם וידאו": {
+    "en": "Store with video",
+    "es": "Tienda con vídeo",
+    "pt-BR": "Loja com vídeo",
+    "ar": "متجر مع فيديو"
+  },
+  "חנות עם מדיה להוספה": {
+    "en": "Store with media to add",
+    "es": "Tienda con media para añadir",
+    "pt-BR": "Loja com mídia para adicionar",
+    "ar": "متجر مع وسائط للإضافة"
+  },
+  "חתונה / הזמנה": {
+    "en": "Wedding / invitation",
+    "es": "Boda / invitación",
+    "pt-BR": "Casamento / convite",
+    "ar": "زفاف / دعوة"
+  },
+  "טופס + מפה": {
+    "en": "Form + map",
+    "es": "Formulario + mapa",
+    "pt-BR": "Formulário + mapa",
+    "ar": "نموذج + خريطة"
+  },
+  "טופס + תמונה": {
+    "en": "Form + photo",
+    "es": "Formulario + foto",
+    "pt-BR": "Formulário + foto",
+    "ar": "نموذج + صورة"
+  },
+  "טופס Glass וואו": {
+    "en": "Glass form Wow",
+    "es": "Formulario Glass Wow",
+    "pt-BR": "Formulário Glass Wow",
+    "ar": "نموذج Glass Wow"
+  },
+  "טופס RSVP": {
+    "en": "RSVP form",
+    "es": "Formulario RSVP",
+    "pt-BR": "Formulário RSVP",
+    "ar": "نموذج RSVP"
+  },
+  "טופס SaaS Demo": {
+    "en": "SaaS demo form",
+    "es": "Formulario demo SaaS",
+    "pt-BR": "Formulário demo SaaS",
+    "ar": "نموذج تجربة SaaS"
+  },
+  "טופס בסיסי": {
+    "en": "Basic form",
+    "es": "Formulario básico",
+    "pt-BR": "Formulário básico",
+    "ar": "نموذج أساسي"
+  },
+  "טופס הצעת מחיר": {
+    "en": "Quote form",
+    "es": "Formulario de presupuesto",
+    "pt-BR": "Formulário de orçamento",
+    "ar": "نموذج عرض سعر"
+  },
+  "טופס כהה פרימיום": {
+    "en": "Dark premium form",
+    "es": "Formulario oscuro premium",
+    "pt-BR": "Formulário escuro premium",
+    "ar": "نموذج داكن فاخر"
+  },
+  "טופס ליד בצד": {
+    "en": "Side lead form",
+    "es": "Formulario de lead al lado",
+    "pt-BR": "Formulário de lead ao lado",
+    "ar": "نموذج عميل محتمل جانبي"
+  },
+  "טופס ליד מקצועי": {
+    "en": "Professional lead form",
+    "es": "Formulario de lead profesional",
+    "pt-BR": "Formulário de lead profissional",
+    "ar": "نموذج عميل محتمل مهني"
+  },
+  "טופס על תמונת רקע": {
+    "en": "Form on a background photo",
+    "es": "Formulario sobre foto de fondo",
+    "pt-BR": "Formulário sobre foto de fundo",
+    "ar": "نموذج على صورة خلفية"
+  },
+  "טופס עם אמון": {
+    "en": "Form with trust",
+    "es": "Formulario con confianza",
+    "pt-BR": "Formulário com confiança",
+    "ar": "نموذج مع ثقة"
+  },
+  "טופס עם וידאו": {
+    "en": "Form with video",
+    "es": "Formulario con vídeo",
+    "pt-BR": "Formulário com vídeo",
+    "ar": "نموذج مع فيديو"
+  },
+  "טופס עם מדיה להוספה": {
+    "en": "Form with media to add",
+    "es": "Formulario con media para añadir",
+    "pt-BR": "Formulário com mídia para adicionar",
+    "ar": "نموذج مع وسائط للإضافة"
+  },
+  "טופס קלאסי מקצועי": {
+    "en": "Classic professional form",
+    "es": "Formulario clásico profesional",
+    "pt-BR": "Formulário clássico profissional",
+    "ar": "نموذج كلاسيكي مهني"
+  },
+  "טופס תור מהיר": {
+    "en": "Fast booking form",
+    "es": "Formulario de cita rápida",
+    "pt-BR": "Formulário de agendamento rápido",
+    "ar": "نموذج موعد سريع"
+  },
+  "טופס תיאום תור": {
+    "en": "Booking form",
+    "es": "Formulario de cita",
+    "pt-BR": "Formulário de agendamento",
+    "ar": "نموذج تنسيق موعد"
+  },
+  "טופס תמיכה": {
+    "en": "Support form",
+    "es": "Formulario de soporte",
+    "pt-BR": "Formulário de suporte",
+    "ar": "نموذج دعم"
+  },
+  "טקסט + טופס": {
+    "en": "Text + form",
+    "es": "Texto + formulario",
+    "pt-BR": "Texto + formulário",
+    "ar": "نص + نموذج"
+  },
+  "טקסט + תמונה": {
+    "en": "Text + photo",
+    "es": "Texto + foto",
+    "pt-BR": "Texto + foto",
+    "ar": "نص + صورة"
+  },
+  "טקסט בשלבים": {
+    "en": "Text in stages",
+    "es": "Texto en etapas",
+    "pt-BR": "Texto em etapas",
+    "ar": "نص بمراحل"
+  },
+  "טקסט כהה פרימיום": {
+    "en": "Dark premium text",
+    "es": "Texto oscuro premium",
+    "pt-BR": "Texto escuro premium",
+    "ar": "نص داكن فاخر"
+  },
+  "טקסט מינימליסטי": {
+    "en": "Minimal text",
+    "es": "Texto minimalista",
+    "pt-BR": "Texto minimalista",
+    "ar": "نص بسيط"
+  },
+  "טקסט על תמונת רקע": {
+    "en": "Text on a background photo",
+    "es": "Texto sobre foto de fondo",
+    "pt-BR": "Texto sobre foto de fundo",
+    "ar": "نص على صورة خلفية"
+  },
+  "טקסט עם המלצה": {
+    "en": "Text with a testimonial",
+    "es": "Texto con recomendación",
+    "pt-BR": "Texto com depoimento",
+    "ar": "نص مع توصية"
+  },
+  "טקסט עם וידאו": {
+    "en": "Text with video",
+    "es": "Texto con vídeo",
+    "pt-BR": "Texto com vídeo",
+    "ar": "نص مع فيديو"
+  },
+  "טקסט עם נתונים": {
+    "en": "Text with numbers",
+    "es": "Texto con datos",
+    "pt-BR": "Texto com dados",
+    "ar": "نص مع بيانات"
+  },
+  "טקסט עם רשימה": {
+    "en": "Text with a list",
+    "es": "Texto con lista",
+    "pt-BR": "Texto com lista",
+    "ar": "نص مع قائمة"
+  },
+  "יומן תורים מקצועי": {
+    "en": "Professional booking journal",
+    "es": "Agenda de citas profesional",
+    "pt-BR": "Agenda de horários profissional",
+    "ar": "يوميات مواعيد مهنية"
+  },
+  "יצירת קשר עם שעות פעילות": {
+    "en": "Contact with opening hours",
+    "es": "Contacto con horario",
+    "pt-BR": "Contato com horário",
+    "ar": "تواصل مع ساعات عمل"
+  },
+  "כותרת ופסקה ממורכזת": {
+    "en": "Centered title and paragraph",
+    "es": "Título y párrafo centrados",
+    "pt-BR": "Título e parágrafo centralizados",
+    "ar": "عنوان وفقرة مركزية"
+  },
+  "כפתורי סושיאל מקצועיים": {
+    "en": "Professional social buttons",
+    "es": "Botones sociales profesionales",
+    "pt-BR": "Botões sociais profissionais",
+    "ar": "أزرار اجتماعية مهنية"
+  },
+  "כרטיס צד": {
+    "en": "Side card",
+    "es": "Tarjeta lateral",
+    "pt-BR": "Cartão lateral",
+    "ar": "بطاقة جانبية"
+  },
+  "כרטיסי יצירת קשר": {
+    "en": "Contact cards",
+    "es": "Tarjetas de contacto",
+    "pt-BR": "Cartões de contato",
+    "ar": "بطاقات تواصل"
+  },
+  "כרטיסי רשתות": {
+    "en": "Network cards",
+    "es": "Tarjetas de redes",
+    "pt-BR": "Cartões de redes",
+    "ar": "بطاقات شبكات"
+  },
+  "כרטיסים ומחירים": {
+    "en": "Cards and prices",
+    "es": "Tarjetas y precios",
+    "pt-BR": "Cartões e preços",
+    "ar": "بطاقات وأسعار"
+  },
+  "לוגואים / לקוחות": {
+    "en": "Logos / customers",
+    "es": "Logos / clientes",
+    "pt-BR": "Logos / clientes",
+    "ar": "شعارات / زبائن"
+  },
+  "לוגואים כהה פרימיום": {
+    "en": "Dark premium logos",
+    "es": "Logos oscuros premium",
+    "pt-BR": "Logos escuros premium",
+    "ar": "شعارات داكنة فاخرة"
+  },
+  "לוגואים קלאסי": {
+    "en": "Classic logos",
+    "es": "Logos clásicos",
+    "pt-BR": "Logos clássicos",
+    "ar": "شعارات كلاسيكية"
+  },
+  "לו״ז אירוע": {
+    "en": "Event schedule",
+    "es": "Horario del evento",
+    "pt-BR": "Horário do evento",
+    "ar": "جدول فعالية"
+  },
+  "לפני / אחרי + המלצה": {
+    "en": "Before / after + testimonial",
+    "es": "Antes / después + recomendación",
+    "pt-BR": "Antes / depois + depoimento",
+    "ar": "قبل / بعد + توصية"
+  },
+  "לקוחות + המלצות": {
+    "en": "Customers + testimonials",
+    "es": "Clientes + recomendaciones",
+    "pt-BR": "Clientes + depoimentos",
+    "ar": "زبائن + توصيات"
+  },
+  "לקוחות + טקסט": {
+    "en": "Customers + text",
+    "es": "Clientes + texto",
+    "pt-BR": "Clientes + texto",
+    "ar": "زبائن + نص"
+  },
+  "לקוחות SaaS": {
+    "en": "SaaS customers",
+    "es": "Clientes SaaS",
+    "pt-BR": "Clientes SaaS",
+    "ar": "زبائن SaaS"
+  },
+  "לקוחות לחנות": {
+    "en": "Store customers",
+    "es": "Clientes para tienda",
+    "pt-BR": "Clientes para loja",
+    "ar": "زبائن للمتجر"
+  },
+  "לקוחות מינימליסטי": {
+    "en": "Minimal customers",
+    "es": "Clientes minimalistas",
+    "pt-BR": "Clientes minimalistas",
+    "ar": "زبائن بسيط"
+  },
+  "לקוחות על תמונת רקע": {
+    "en": "Customers on a background photo",
+    "es": "Clientes sobre foto de fondo",
+    "pt-BR": "Clientes sobre foto de fundo",
+    "ar": "زبائن على صورة خلفية"
+  },
+  "לקוחות עם CTA": {
+    "en": "Customers with CTA",
+    "es": "Clientes con CTA",
+    "pt-BR": "Clientes com CTA",
+    "ar": "زبائن مع CTA"
+  },
+  "לקוחות עם מדיה": {
+    "en": "Customers with media",
+    "es": "Clientes con media",
+    "pt-BR": "Clientes com mídia",
+    "ar": "زبائن مع وسائط"
+  },
+  "לקוחות עם מספרים": {
+    "en": "Customers with numbers",
+    "es": "Clientes con números",
+    "pt-BR": "Clientes com números",
+    "ar": "زبائن مع أرقام"
+  },
+  "לקוחות עם תמונות": {
+    "en": "Customers with photos",
+    "es": "Clientes con fotos",
+    "pt-BR": "Clientes com fotos",
+    "ar": "زبائن مع صور"
+  },
+  "לקוחות עם תמונת מותג": {
+    "en": "Customers with a brand photo",
+    "es": "Clientes con foto de marca",
+    "pt-BR": "Clientes com foto de marca",
+    "ar": "زبائن مع صورة علامة"
+  },
+  "לקוחות עם תעשיות": {
+    "en": "Customers with industries",
+    "es": "Clientes con industrias",
+    "pt-BR": "Clientes com indústrias",
+    "ar": "زبائن مع صناعات"
+  },
+  "מאמר / תוכן ארוך": {
+    "en": "Article / long content",
+    "es": "Artículo / contenido largo",
+    "pt-BR": "Artigo / conteúdo longo",
+    "ar": "مقال / محتوى طويل"
+  },
+  "מבצע Hero ענק": {
+    "en": "Giant promo Hero",
+    "es": "Hero de oferta enorme",
+    "pt-BR": "Hero de oferta enorme",
+    "ar": "Hero عرض عملاق"
+  },
+  "מבצע SaaS": {
+    "en": "SaaS promo",
+    "es": "Oferta SaaS",
+    "pt-BR": "Oferta SaaS",
+    "ar": "عرض SaaS"
+  },
+  "מבצע וואטסאפ": {
+    "en": "WhatsApp promo",
+    "es": "Oferta WhatsApp",
+    "pt-BR": "Oferta WhatsApp",
+    "ar": "عرض واتساب"
+  },
+  "מבצע כהה פרימיום": {
+    "en": "Dark premium promo",
+    "es": "Oferta oscura premium",
+    "pt-BR": "Oferta escura premium",
+    "ar": "عرض داكن فاخر"
+  },
+  "מבצע מוצר": {
+    "en": "Product promo",
+    "es": "Oferta de producto",
+    "pt-BR": "Oferta de produto",
+    "ar": "عرض منتج"
+  },
+  "מבצע מינימליסטי": {
+    "en": "Minimal promo",
+    "es": "Oferta minimalista",
+    "pt-BR": "Oferta minimalista",
+    "ar": "عرض بسيط"
+  },
+  "מבצע עם Countdown": {
+    "en": "Promo with countdown",
+    "es": "Oferta con countdown",
+    "pt-BR": "Oferta com countdown",
+    "ar": "عرض مع عدّاد"
+  },
+  "מבצע עם גלריה": {
+    "en": "Promo with a gallery",
+    "es": "Oferta con galería",
+    "pt-BR": "Oferta com galeria",
+    "ar": "عرض مع معرض"
+  },
+  "מבצע עם המלצה": {
+    "en": "Promo with a testimonial",
+    "es": "Oferta con recomendación",
+    "pt-BR": "Oferta com depoimento",
+    "ar": "عرض مع توصية"
+  },
+  "מבצע עם הרשמה": {
+    "en": "Promo with signup",
+    "es": "Oferta con registro",
+    "pt-BR": "Oferta com inscrição",
+    "ar": "عرض مع تسجيل"
+  },
+  "מבצע עם טופס ליד": {
+    "en": "Promo with a lead form",
+    "es": "Oferta con formulario de lead",
+    "pt-BR": "Oferta com formulário de lead",
+    "ar": "عرض مع نموذج عميل محتمل"
+  },
+  "מבצע עם מדיה להוספה": {
+    "en": "Promo with media to add",
+    "es": "Oferta con media para añadir",
+    "pt-BR": "Oferta com mídia para adicionar",
+    "ar": "عرض مع وسائط للإضافة"
+  },
+  "מבצע קורס": {
+    "en": "Course promo",
+    "es": "Oferta de curso",
+    "pt-BR": "Oferta de curso",
+    "ar": "عرض دورة"
+  },
+  "מבצע שירות": {
+    "en": "Service promo",
+    "es": "Oferta de servicio",
+    "pt-BR": "Oferta de serviço",
+    "ar": "عرض خدمة"
+  },
+  "מדיה להוספה": {
+    "en": "Media to add",
+    "es": "Media para añadir",
+    "pt-BR": "Mídia para adicionar",
+    "ar": "وسائط للإضافة"
+  }
+}

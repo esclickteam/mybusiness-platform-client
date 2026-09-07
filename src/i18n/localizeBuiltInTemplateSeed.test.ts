@@ -1240,6 +1240,30 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("אנחנו מאמינים בשקיפות, מקצועיות, זמינות וחוויה נעימה — מהרגע הראשון ועד לסיום השירות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique84 leftover section-picker titles", () => {
+    expect(localizeBuiltInText("Hero וידאו", "en")).toMatch(/video hero/i);
+    expect(localizeBuiltInText("Hero וידאו", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("אודות עם מדיה להוספה", "es")).toMatch(/Sobre|media/i);
+    expect(localizeBuiltInText("בוט שירות לקוחות", "pt-BR")).toMatch(/atendimento|bot/i);
+    expect(localizeBuiltInText("CTA וואו", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique85 leftover section-picker titles", () => {
+    expect(localizeBuiltInText("השקת מוצר", "en")).toMatch(/launch|product/i);
+    expect(localizeBuiltInText("השקת מוצר", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("טופס הצעת מחיר", "es")).toMatch(/presupuesto/i);
+    expect(localizeBuiltInText("חזון ומשימה", "pt-BR")).toMatch(/visão|missão/i);
+    expect(localizeBuiltInText("מדיה להוספה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique86 leftover section-picker titles", () => {
+    expect(localizeBuiltInText("פיד אינסטגרם", "en")).toMatch(/instagram/i);
+    expect(localizeBuiltInText("פיד אינסטגרם", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קרוסלת מוצרים", "es")).toMatch(/Carrusel|productos/i);
+    expect(localizeBuiltInText("תור בבית הלקוח", "pt-BR")).toMatch(/casa|cliente/i);
+    expect(localizeBuiltInText("תמונת רקע מלאה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
