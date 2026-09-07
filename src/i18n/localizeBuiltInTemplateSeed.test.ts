@@ -986,6 +986,24 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מייסד, Pulse", "en")).toMatch(/founder/i);
   });
 
+  it("localizes unique69 leftover gallery catalog chrome", () => {
+    expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
+    expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("סיקלורה", "es")).toBe("Cyclora");
+    expect(
+      localizeBuiltInText(
+        "תבנית פיטנס אנרגטית למאמנים, חדרי כושר וסטודיואים עם Hero חזק, תוכניות, מאמנים, מחירים, מערכת שעות וטופס הצטרפות.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "תבנית יוקרה לאקססוריז ואיקומרס, עם פס קידום, קטגוריות, מוצרים נבחרים, ערכים, קהילה, המלצות, אומנות ייצור, יומן, ניוזלטר ותחתית — בעיצוב קרם ושחור אלגנטי.",
+        "pt-BR",
+      ),
+    ).toMatch(/e-commerce|acessório/i);
+  });
+
   it("localizes unique66 leftover Emberplate through Tacoflare food chrome", () => {
     expect(localizeBuiltInText("ציר הבשר", "en")).toMatch(/meat|axis/i);
     expect(localizeBuiltInText("ציר הבשר", "en")).not.toMatch(/[\u0590-\u05FF]/);
