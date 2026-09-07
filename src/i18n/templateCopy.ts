@@ -276,6 +276,19 @@ const STORE_BUILD_RE =
   /^אנחנו בונים חנות (.+) שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות\.$/;
 const BEAUTY_PROTOCOL_RE =
   /^(.+?)\s+כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו\.$/;
+const BEAUTY_PLACE_RE =
+  /^([A-Za-z][\w.-]*) נבנה כמקום שמחבר בין טיפול מקצועי לחוויה רגועה: כל ביקור מתחיל בשיחה קצרה, ממשיך בבחירת פרוטוקול מדויק ומסתיים בהנחיות ברורות להמשך בבית\. הצוות מתעד העדפות, רגישויות ותוצאות כדי שכל מפגש הבא יהיה אישי יותר, נעים יותר ומדויק יותר\.$/;
+const BEAUTY_CATALOG_INTRO_RE =
+  /^קטלוג הטיפולים של ([A-Za-z][\w.-]*) מפרט מה מקבלים בכל שירות, כמה זמן כדאי לפנות, למי הוא מתאים ואילו תוספות יכולות לשדרג את התוצאה\. המטרה היא שתבחרו טיפול מתוך ידע מלא ולא מתוך ניחוש\.$/;
+const TELL_US_WHERE_RE =
+  /^ספרו לנו איפה ([A-Za-z][\w.-]*) יכולה לעזור ונחזור עם כיוון פעולה ברור\.$/;
+const FOOD_FULL_EXPERIENCE_RE =
+  /^([A-Za-z][\w.-]*) מציגה חוויה מלאה: תפריט, סיפור המטבח, צוות, גלריה וכל מה שצריך כדי לתכנן ביקור בלתי נשכח\.$/;
+const THREE_REASONS_RE = /^שלוש סיבות ש-([A-Za-z][\w.-]*) מרגישה אחרת$/;
+const ORDER_FROM_BRAND_RE = /^הזמינו מ-([A-Za-z][\w.-]*) — נדאג לשאר\.$/;
+const TEMPLATE_MULTI_PAGE_RE =
+  /^תבנית ([A-Za-z][\w.-]*) — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה\.$/;
+const WEEKEND_HABIT_RE = /^([A-Za-z][\w.-]*) הפך להרגל שלי בסופי שבוע\.$/;
 const FOOD_TEAM_RE =
   /^(.+?)\s+מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון\.$/;
 const STORE_BUILT_LARGE_RE =
@@ -1105,6 +1118,116 @@ function localizeBeautyProtocolLine(text: string, locale: string): string {
   return `${prefix} Includes a short diagnosis, a personal match, precise work, and written aftercare so the result stays beautiful after you leave the studio.`;
 }
 
+function localizeBeautyPlaceLine(text: string, locale: string): string {
+  const match = text.match(BEAUTY_PLACE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `${brand} se construyó como un lugar que une un tratamiento profesional con una experiencia serena: cada visita empieza con una conversación breve, sigue con un protocolo preciso y termina con indicaciones claras para casa. El equipo registra preferencias, sensibilidades y resultados para que la siguiente cita sea más personal, más agradable y más precisa.`;
+  }
+  if (locale === "pt-BR") {
+    return `${brand} foi feito como um lugar que une um tratamento profissional a uma experiência calma: cada visita começa com uma conversa curta, segue com um protocolo preciso e termina com orientações claras para casa. A equipe registra preferências, sensibilidades e resultados para a próxima visita ser mais pessoal, mais agradável e mais precisa.`;
+  }
+  if (locale === "ar") {
+    return `${brand} بُني كمكان يربط بين علاج مهني وتجربة هادئة: كل زيارة تبدأ بحديث قصير، وتستمر ببروتوكول دقيق، وتنتهي بإرشادات واضحة للمتابعة في البيت. الفريق يوثّق التفضيلات والحساسيات والنتائج حتى تكون الزيارة التالية أكثر شخصية وهدوءاً ودقة.`;
+  }
+  return `${brand} was built as a place that connects professional care with a calm experience: every visit starts with a short conversation, continues with a precise protocol, and ends with clear home instructions. The team records preferences, sensitivities, and results so the next visit is more personal, more pleasant, and more precise.`;
+}
+
+function localizeBeautyCatalogIntro(text: string, locale: string): string {
+  const match = text.match(BEAUTY_CATALOG_INTRO_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `El catálogo de tratamientos de ${brand} detalla qué recibís en cada servicio, cuánto tiempo conviene reservar, a quién le encaja y qué extras pueden mejorar el resultado. El objetivo es que elijáis un tratamiento con conocimiento completo y no a ciegas.`;
+  }
+  if (locale === "pt-BR") {
+    return `O catálogo de tratamentos da ${brand} detalha o que você recebe em cada serviço, quanto tempo vale reservar, para quem combina e quais extras podem melhorar o resultado. O objetivo é você escolher um tratamento com conhecimento completo, não no achismo.`;
+  }
+  if (locale === "ar") {
+    return `كتالوج علاجات ${brand} يفصّل ماذا تحصلون في كل خدمة، وكم من الوقت يجدر تخصيصه، ولمن يناسب، وأي إضافات يمكن أن ترقّي النتيجة. الهدف أن تختاروا علاجاً عن معرفة كاملة وليس عن تخمين.`;
+  }
+  return `The ${brand} treatment catalog spells out what you get in each service, how much time to allow, who it suits, and which add-ons can upgrade the result. The goal is that you choose a treatment from full knowledge, not from guesswork.`;
+}
+
+function localizeTellUsWhereLine(text: string, locale: string): string {
+  const match = text.match(TELL_US_WHERE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `Contadnos dónde ${brand} puede ayudar y volveremos con una dirección de acción clara.`;
+  }
+  if (locale === "pt-BR") {
+    return `Contem onde a ${brand} pode ajudar e voltaremos com uma direção de ação clara.`;
+  }
+  if (locale === "ar") {
+    return `أخبرونا أين يمكن لـ ${brand} أن تساعد وسنعود باتجاه عمل واضح.`;
+  }
+  return `Tell us where ${brand} can help and we will come back with a clear direction.`;
+}
+
+function localizeFoodFullExperienceLine(text: string, locale: string): string {
+  const match = text.match(FOOD_FULL_EXPERIENCE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `${brand} presenta una experiencia completa: menú, la historia de la cocina, equipo, galería y todo lo necesario para planear una visita inolvidable.`;
+  }
+  if (locale === "pt-BR") {
+    return `${brand} apresenta uma experiência completa: cardápio, a história da cozinha, equipe, galeria e tudo o que você precisa para planejar uma visita inesquecível.`;
+  }
+  if (locale === "ar") {
+    return `${brand} تقدّم تجربة كاملة: قائمة، قصة المطبخ، فريق، معرض وكل ما يلزم لتخطيط زيارة لا تُنسى.`;
+  }
+  return `${brand} presents a full experience: menu, the kitchen story, team, gallery, and everything needed to plan an unforgettable visit.`;
+}
+
+function localizeThreeReasonsLine(text: string, locale: string): string {
+  const match = text.match(THREE_REASONS_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") return `Tres razones por las que ${brand} se siente distinta`;
+  if (locale === "pt-BR") return `Três razões pelas quais ${brand} parece diferente`;
+  if (locale === "ar") return `ثلاثة أسباب تجعل ${brand} تشعر مختلفة`;
+  return `Three reasons ${brand} feels different`;
+}
+
+function localizeOrderFromBrandLine(text: string, locale: string): string {
+  const match = text.match(ORDER_FROM_BRAND_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") return `Pedid de ${brand} — nos ocupamos del resto.`;
+  if (locale === "pt-BR") return `Peça da ${brand} — a gente cuida do resto.`;
+  if (locale === "ar") return `اطلبوا من ${brand} — وسنتولى الباقي.`;
+  return `Order from ${brand} — we will take care of the rest.`;
+}
+
+function localizeTemplateMultiPageLine(text: string, locale: string): string {
+  const match = text.match(TEMPLATE_MULTI_PAGE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") {
+    return `Plantilla ${brand} — un sitio profesional de varias páginas con diseño rectangular y movimiento.`;
+  }
+  if (locale === "pt-BR") {
+    return `Modelo ${brand} — um site profissional de várias páginas com design retangular e movimento.`;
+  }
+  if (locale === "ar") {
+    return `قالب ${brand} — موقع احترافي متعدد الصفحات بتصميم مستطيل وحركة.`;
+  }
+  return `${brand} template — a professional multi-page site with rectangular design and motion.`;
+}
+
+function localizeWeekendHabitLine(text: string, locale: string): string {
+  const match = text.match(WEEKEND_HABIT_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") return `${brand} se ha convertido en mi hábito de fin de semana.`;
+  if (locale === "pt-BR") return `${brand} virou meu hábito de fim de semana.`;
+  if (locale === "ar") return `${brand} صار عادتي في عطلة الأسبوع.`;
+  return `${brand} has become my weekend habit.`;
+}
+
 function localizeFoodTeamLine(text: string, locale: string): string {
   const match = text.match(FOOD_TEAM_RE);
   if (!match) return "";
@@ -1367,6 +1490,46 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const beautyProtocolLine = localizeBeautyProtocolLine(text, locale);
   if (isUsableTranslation(text, beautyProtocolLine, locale)) {
     return adaptBuiltInDirectionalCss(beautyProtocolLine, locale);
+  }
+
+  const beautyPlaceLine = localizeBeautyPlaceLine(text, locale);
+  if (isUsableTranslation(text, beautyPlaceLine, locale)) {
+    return adaptBuiltInDirectionalCss(beautyPlaceLine, locale);
+  }
+
+  const beautyCatalogIntro = localizeBeautyCatalogIntro(text, locale);
+  if (isUsableTranslation(text, beautyCatalogIntro, locale)) {
+    return adaptBuiltInDirectionalCss(beautyCatalogIntro, locale);
+  }
+
+  const tellUsWhere = localizeTellUsWhereLine(text, locale);
+  if (isUsableTranslation(text, tellUsWhere, locale)) {
+    return adaptBuiltInDirectionalCss(tellUsWhere, locale);
+  }
+
+  const foodFullExperience = localizeFoodFullExperienceLine(text, locale);
+  if (isUsableTranslation(text, foodFullExperience, locale)) {
+    return adaptBuiltInDirectionalCss(foodFullExperience, locale);
+  }
+
+  const threeReasons = localizeThreeReasonsLine(text, locale);
+  if (isUsableTranslation(text, threeReasons, locale)) {
+    return adaptBuiltInDirectionalCss(threeReasons, locale);
+  }
+
+  const orderFromBrand = localizeOrderFromBrandLine(text, locale);
+  if (isUsableTranslation(text, orderFromBrand, locale)) {
+    return adaptBuiltInDirectionalCss(orderFromBrand, locale);
+  }
+
+  const templateMultiPage = localizeTemplateMultiPageLine(text, locale);
+  if (isUsableTranslation(text, templateMultiPage, locale)) {
+    return adaptBuiltInDirectionalCss(templateMultiPage, locale);
+  }
+
+  const weekendHabit = localizeWeekendHabitLine(text, locale);
+  if (isUsableTranslation(text, weekendHabit, locale)) {
+    return adaptBuiltInDirectionalCss(weekendHabit, locale);
   }
 
   const foodTeamLine = localizeFoodTeamLine(text, locale);

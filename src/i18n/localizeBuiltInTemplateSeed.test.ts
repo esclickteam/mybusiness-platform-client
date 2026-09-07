@@ -1011,6 +1011,76 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תבנית Studiora · Bizuply Studio", "es")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes branded beauty catalog and place paragraphs as real prose", () => {
+    const catalog =
+      "קטלוג הטיפולים של Gelora מפרט מה מקבלים בכל שירות, כמה זמן כדאי לפנות, למי הוא מתאים ואילו תוספות יכולות לשדרג את התוצאה. המטרה היא שתבחרו טיפול מתוך ידע מלא ולא מתוך ניחוש.";
+    const place =
+      "Gelora נבנה כמקום שמחבר בין טיפול מקצועי לחוויה רגועה: כל ביקור מתחיל בשיחה קצרה, ממשיך בבחירת פרוטוקול מדויק ומסתיים בהנחיות ברורות להמשך בבית. הצוות מתעד העדפות, רגישויות ותוצאות כדי שכל מפגש הבא יהיה אישי יותר, נעים יותר ומדויק יותר.";
+    const enCatalog = localizeBuiltInText(catalog, "en");
+    expect(enCatalog).toMatch(/Gelora treatment catalog/i);
+    expect(enCatalog).toMatch(/guesswork/i);
+    expect(enCatalog).not.toMatch(/catalog the treatments of/i);
+    expect(enCatalog).not.toMatch(/[\u0590-\u05FF]/);
+    const esCatalog = localizeBuiltInText(catalog, "es");
+    expect(esCatalog).toMatch(/catálogo de tratamientos de Gelora/i);
+    expect(esCatalog).toMatch(/elijáis|recibís/i);
+    expect(esCatalog).not.toMatch(/[\u0590-\u05FF]/);
+    const ptCatalog = localizeBuiltInText(catalog, "pt-BR");
+    expect(ptCatalog).toMatch(/catálogo de tratamentos da Gelora/i);
+    expect(ptCatalog).toMatch(/você/i);
+    expect(ptCatalog).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText(catalog, "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    const enPlace = localizeBuiltInText(place, "en");
+    expect(enPlace).toMatch(/Gelora was built/i);
+    expect(enPlace).toMatch(/calm experience/i);
+    expect(enPlace).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText(place, "es")).toMatch(/Gelora se construyó/i);
+    expect(localizeBuiltInText(place, "pt-BR")).toMatch(/Gelora foi feito/i);
+    expect(localizeBuiltInText(place, "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes branded agency, food, and template chrome as real prose", () => {
+    expect(
+      localizeBuiltInText(
+        "ספרו לנו איפה UXForge יכולה לעזור ונחזור עם כיוון פעולה ברור.",
+        "en",
+      ),
+    ).toMatch(/Tell us where UXForge can help/i);
+    expect(
+      localizeBuiltInText(
+        "ספרו לנו איפה UXForge יכולה לעזור ונחזור עם כיוון פעולה ברור.",
+        "es",
+      ),
+    ).toMatch(/Contadnos/i);
+    expect(
+      localizeBuiltInText(
+        "Crustora מציגה חוויה מלאה: תפריט, סיפור המטבח, צוות, גלריה וכל מה שצריך כדי לתכנן ביקור בלתי נשכח.",
+        "en",
+      ),
+    ).toMatch(/Crustora presents a full experience/i);
+    expect(localizeBuiltInText("שלוש סיבות ש-Crustora מרגישה אחרת", "es")).toMatch(
+      /Tres razones/i,
+    );
+    expect(localizeBuiltInText("הזמינו מ-Seafoodix — נדאג לשאר.", "pt-BR")).toMatch(
+      /Peça da Seafoodix/i,
+    );
+    expect(
+      localizeBuiltInText(
+        "תבנית Citadel — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.",
+        "en",
+      ),
+    ).toMatch(/Citadel template/i);
+    expect(localizeBuiltInText("Burgerhaus הפך להרגל שלי בסופי שבוע.", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(
+      localizeBuiltInText(
+        "ספרו לנו איפה UXForge יכולה לעזור ונחזור עם כיוון פעולה ברור.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
