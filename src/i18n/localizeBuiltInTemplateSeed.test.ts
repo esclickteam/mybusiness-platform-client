@@ -1208,6 +1208,38 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("יום חמישי · 24.06.2026 · 20:30 · שם האולם", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique80 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("מצאתם משהו שאהבתם? קנו עכשיו או שאלו אותנו", "en")).toMatch(/buy|ask/i);
+    expect(localizeBuiltInText("מצאתם משהו שאהבתם? קנו עכשיו או שאלו אותנו", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("תנו ללקוחות לראות את המקום, התהליך והתוצאה", "es")).toMatch(/Dejad/i);
+    expect(localizeBuiltInText("השאירו אימייל ונעדכן אתכם רק בדברים החשובים.", "pt-BR")).toMatch(/e-mail|email/i);
+    expect(localizeBuiltInText("מתאים לדפי נחיתה, עמודים ארוכים או אזור אמון קצר.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique81 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("הבוט עונה, ממליץ, אוסף פרטים ומוביל את הלקוח לצעד הבא — 24/7.", "en")).toMatch(/24\/7/);
+    expect(localizeBuiltInText("הבוט עונה, ממליץ, אוסף פרטים ומוביל את הלקוח לצעד הבא — 24/7.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הציגו אנשי צוות, תפקידים, מומחיות וניסיון בצורה נקייה וברורה.", "es")).toMatch(/Mostrad/i);
+    expect(localizeBuiltInText("מלאו פרטים או שלחו הודעה ונחזור אליכם עם מענה מקצועי, מהיר וברור.", "pt-BR")).toMatch(/Preencha|mensagem/i);
+    expect(localizeBuiltInText("כל הערוצים במקום אחד — אינסטגרם, פייסבוק, טיקטוק, יוטיוב ווואטסאפ.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique82 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("מענה מהיר, איסוף פניות, שאלות נפוצות והובלה לפעולה — הכל במקום אחד.", "en")).toMatch(/FAQ|inquir/i);
+    expect(localizeBuiltInText("מענה מהיר, איסוף פניות, שאלות נפוצות והובלה לפעולה — הכל במקום אחד.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עקבו אחרי העדכונים, התמונות, הסרטונים, המוצרים והסיפורים שמאחורי העסק.", "es")).toMatch(/Seguid/i);
+    expect(localizeBuiltInText("רוב הלקוחות קובעים תור מהטלפון. המבנה הזה מדגיש חוויית מובייל ברורה ומהירה.", "pt-BR")).toMatch(/telefone|mobile/i);
+    expect(localizeBuiltInText("ספרו למה המוצר מיוחד, ממה הוא עשוי, למי הוא מתאים ומה הערך שהוא נותן.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique83 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("חברו את כל הערוצים שלכם: אינסטגרם, פייסבוק, טיקטוק, יוטיוב, לינקדאין ווואטסאפ.", "en")).toMatch(/LinkedIn|WhatsApp/i);
+    expect(localizeBuiltInText("חברו את כל הערוצים שלכם: אינסטגרם, פייסבוק, טיקטוק, יוטיוב, לינקדאין ווואטסאפ.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הוסיפו כתובת, טלפון, שעות פעילות ומפה כדי שהלקוח יוכל להגיע או ליצור קשר בקלות.", "es")).toMatch(/Añadid/i);
+    expect(localizeBuiltInText("השאירו פרטים ונחזור אליכם עם מענה מקצועי, ברור ומהיר. מתאים ללידים, ייעוץ, תיאום תור או בקשת הצעת מחיר.", "pt-BR")).toMatch(/Deixe|orçamento/i);
+    expect(localizeBuiltInText("אנחנו מאמינים בשקיפות, מקצועיות, זמינות וחוויה נעימה — מהרגע הראשון ועד לסיום השירות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
