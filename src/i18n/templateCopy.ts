@@ -99,6 +99,7 @@ import unique84ExactLexicon from "./templateExactLexicon.unique84.json";
 import unique85ExactLexicon from "./templateExactLexicon.unique85.json";
 import unique86ExactLexicon from "./templateExactLexicon.unique86.json";
 import unique87ExactLexicon from "./templateExactLexicon.unique87.json";
+import unique88ExactLexicon from "./templateExactLexicon.unique88.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -210,6 +211,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique85ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique86ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique87ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique88ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 

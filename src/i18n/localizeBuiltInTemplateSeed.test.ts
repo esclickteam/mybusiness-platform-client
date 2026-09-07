@@ -1272,6 +1272,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("סקשן קריאה לפעולה קצר, צבעוני וממיר.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique88 leftover section-picker descriptions", () => {
+    expect(localizeBuiltInText("גריד פוסטים ויזואלי בסגנון אינסטגרם.", "en")).toMatch(/instagram/i);
+    expect(localizeBuiltInText("גריד פוסטים ויזואלי בסגנון אינסטגרם.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בחירת איש צוות / מומחה לפני בחירת שעה.", "es")).toMatch(/Elegid/i);
+    expect(localizeBuiltInText("טופס קביעת תור עם בחירת שירות, יום ושעה.", "pt-BR")).toMatch(/agendamento|serviço/i);
+    expect(localizeBuiltInText("סקשן שירותים שמוביל ישירות לשיחת וואטסאפ.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
