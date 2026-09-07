@@ -799,7 +799,7 @@ function Footer({
                 data-bizuply-page-id={page.id}
                 className="text-start text-sm font-bold text-white/55 transition hover:text-white"
               >
-                {page.name}
+                {tx(page.name)}
               </button>
             ))}
           </div>

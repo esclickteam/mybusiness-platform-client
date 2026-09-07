@@ -857,6 +857,22 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("ליד חדש", "en")).toMatch(/lead/i);
   });
 
+  it("localizes unique46 leftover Aeline testimonial quotes", () => {
+    expect(
+      localizeBuiltInText(
+        "הפסקנו לאבד פניות. כל ליד מקבל טיפול מסודר וברור.",
+        "en",
+      ),
+    ).toMatch(/inquir|lead/i);
+    expect(
+      localizeBuiltInText(
+        "הפסקנו לאבד פניות. כל ליד מקבל טיפול מסודר וברור.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עסק #1", "pt-BR")).toMatch(/negócio/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

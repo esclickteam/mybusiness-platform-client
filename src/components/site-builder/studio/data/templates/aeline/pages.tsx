@@ -917,7 +917,7 @@ function PricingSection({
                 data-gjs-type="text"
                 className="mt-6 text-4xl font-black tracking-[-0.07em] sm:mt-8 sm:text-5xl"
               >
-                {plan.price}
+                {tx(plan.price)}
               </h3>
 
               <p
@@ -989,7 +989,7 @@ function TestimonialsSection() {
                 </p>
 
                 <p className="mt-5 text-sm font-black text-white">
-                  עסק #{index + 1}
+                  {tx(`עסק #${index + 1}`)}
                 </p>
               </article>
             ))}
@@ -1131,7 +1131,7 @@ function Footer({
                 onClick={() => onPageChange(page.id)}
                 className="text-start text-sm font-bold text-white/60 transition hover:text-white"
               >
-                {page.name}
+                {tx(page.name)}
               </button>
             ))}
           </div>
