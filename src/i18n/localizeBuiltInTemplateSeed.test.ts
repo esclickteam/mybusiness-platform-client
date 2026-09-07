@@ -718,6 +718,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("טופס בקשת שירות", "pt-BR")).toMatch(/formul[aá]rio|servi[cç]o/i);
   });
 
+  it("localizes unique38 leftover built-in preview headlines", () => {
+    expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
+    expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שמוכרת בשבילך", "es")).toMatch(/vende/i);
+    expect(localizeBuiltInText("לא מעלים פוסטים.", "pt-BR")).toMatch(/postamos|publicamos/i);
+    expect(localizeBuiltInText("מייצרים פניות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בונים ביקוש.", "en")).toMatch(/demand/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
