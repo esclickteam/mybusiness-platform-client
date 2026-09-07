@@ -1,0 +1,650 @@
+{
+  "קבעו צילום": {
+    "en": "Book a shoot",
+    "es": "Reservad una sesión",
+    "pt-BR": "Marquem um ensaio",
+    "ar": "احجزوا تصويراً"
+  },
+  "צפייה בעבודות": {
+    "en": "View work",
+    "es": "Ver trabajos",
+    "pt-BR": "Ver trabalhos",
+    "ar": "عرض الأعمال"
+  },
+  "לקוחות ושותפים": {
+    "en": "Clients and partners",
+    "es": "Clientes y socios",
+    "pt-BR": "Clientes e parceiros",
+    "ar": "زبائن وشركاء"
+  },
+  "שבו": {
+    "en": "where",
+    "es": "donde",
+    "pt-BR": "onde",
+    "ar": "حيث"
+  },
+  "הופך": {
+    "en": "becomes",
+    "es": "se convierte",
+    "pt-BR": "se torna",
+    "ar": "يصبح"
+  },
+  "לסיפור": {
+    "en": "a story",
+    "es": "una historia",
+    "pt-BR": "uma história",
+    "ar": "قصة"
+  },
+  "ויזואלי.": {
+    "en": "visual.",
+    "es": "visual.",
+    "pt-BR": "visual.",
+    "ar": "بصرياً."
+  },
+  "מהרעיון": {
+    "en": "From the idea",
+    "es": "Desde la idea",
+    "pt-BR": "Da ideia",
+    "ar": "من الفكرة"
+  },
+  "ועד הפריים הסופי.": {
+    "en": "to the final frame.",
+    "es": "hasta el fotograma final.",
+    "pt-BR": "até o frame final.",
+    "ar": "حتى الإطار الأخير."
+  },
+  "סטודיו ויזואלי מלא לצילום, סרטוני מותג, תוכן לסושיאל וקמפיינים פרימיום.": {
+    "en": "A full visual studio for photography, brand films, social content, and premium campaigns.",
+    "es": "Un estudio visual completo para foto, películas de marca, contenido social y campañas premium.",
+    "pt-BR": "Um estúdio visual completo para foto, filmes de marca, conteúdo social e campanhas premium.",
+    "ar": "استوديو بصري كامل للتصوير وأفلام العلامة ومحتوى السوشيال والحملات الفاخرة."
+  },
+  "עם אימפקט ויזואלי.": {
+    "en": "with visual impact.",
+    "es": "con impacto visual.",
+    "pt-BR": "com impacto visual.",
+    "ar": "مع أثر بصري."
+  },
+  "מה הלקוחות": {
+    "en": "What clients",
+    "es": "Lo que los clientes",
+    "pt-BR": "O que os clientes",
+    "ar": "ماذا يقول الزبائن"
+  },
+  "אומרים.": {
+    "en": "say.",
+    "es": "dicen.",
+    "pt-BR": "dizem.",
+    "ar": "يقولون."
+  },
+  "מילים אמיתיות ממותגים ויוצרים שחיפשו תוצאה ויזואלית ברמה גבוהה ותהליך חלק.": {
+    "en": "Real words from brands and creators who wanted a high-level visual result and a smooth process.",
+    "es": "Palabras reales de marcas y creadores que buscaban un resultado visual de alto nivel y un proceso fluido.",
+    "pt-BR": "Palavras reais de marcas e criadores que queriam um resultado visual de alto nível e um processo fluido.",
+    "ar": "كلمات حقيقية من علامات وصنّاع أرادوا نتيجة بصرية عالية المستوى وعملية سلسة."
+  },
+  "חבילות ברורות.": {
+    "en": "Clear packages.",
+    "es": "Paquetes claros.",
+    "pt-BR": "Pacotes claros.",
+    "ar": "باقات واضحة."
+  },
+  "תוצאה פרימיום.": {
+    "en": "A premium result.",
+    "es": "Un resultado premium.",
+    "pt-BR": "Um resultado premium.",
+    "ar": "نتيجة فاخرة."
+  },
+  "חבילות פשוטות ששומרות על תהליך מקצועי, מדויק וממוקד.": {
+    "en": "Simple packages that keep the process professional, precise, and focused.",
+    "es": "Paquetes simples que mantienen un proceso profesional, preciso y enfocado.",
+    "pt-BR": "Pacotes simples que mantêm um processo profissional, preciso e focado.",
+    "ar": "باقات بسيطة تحافظ على عملية مهنية ودقيقة ومركّزة."
+  },
+  "התחלת פרויקט ←": {
+    "en": "Start a project ←",
+    "es": "Empezar un proyecto ←",
+    "pt-BR": "Começar um projeto ←",
+    "ar": "بدء مشروع ←"
+  },
+  "מה כלול:": {
+    "en": "What's included:",
+    "es": "Qué incluye:",
+    "pt-BR": "O que está incluso:",
+    "ar": "ما الذي يشمله:"
+  },
+  "עדיין יש": {
+    "en": "Still have",
+    "es": "¿Todavía hay",
+    "pt-BR": "Ainda têm",
+    "ar": "لا تزال هناك"
+  },
+  "שאלות?": {
+    "en": "questions?",
+    "es": "preguntas?",
+    "pt-BR": "perguntas?",
+    "ar": "أسئلة؟"
+  },
+  "כל מה שלקוחות בדרך כלל שואלים לפני שמתחילים הפקה ויזואלית.": {
+    "en": "Everything clients usually ask before starting a visual production.",
+    "es": "Todo lo que los clientes suelen preguntar antes de empezar una producción visual.",
+    "pt-BR": "Tudo o que os clientes costumam perguntar antes de começar uma produção visual.",
+    "ar": "كل ما يسأله الزبائن عادة قبل بدء إنتاج بصري."
+  },
+  "הפקה ויזואלית": {
+    "en": "Visual production",
+    "es": "Producción visual",
+    "pt-BR": "Produção visual",
+    "ar": "إنتاج بصري"
+  },
+  "ניצור": {
+    "en": "create",
+    "es": "creemos",
+    "pt-BR": "criemos",
+    "ar": "نصنع"
+  },
+  "את הסרטון": {
+    "en": "the film",
+    "es": "la película",
+    "pt-BR": "o filme",
+    "ar": "الفيلم"
+  },
+  "שלכם.": {
+    "en": "of yours.",
+    "es": "vuestra.",
+    "pt-BR": "de vocês.",
+    "ar": "الخاص بكم."
+  },
+  "מייסד הסטודיו": {
+    "en": "Studio founder",
+    "es": "Fundador del estudio",
+    "pt-BR": "Fundador do estúdio",
+    "ar": "مؤسس الاستوديو"
+  },
+  "לסיפורים": {
+    "en": "for cinematic",
+    "es": "para historias",
+    "pt-BR": "para histórias",
+    "ar": "لقصص"
+  },
+  "קולנועיים.": {
+    "en": "stories.",
+    "es": "cinematográficas.",
+    "pt-BR": "cinematográficas.",
+    "ar": "سينمائية."
+  },
+  "עם נוכחות.": {
+    "en": "with presence.",
+    "es": "con presencia.",
+    "pt-BR": "com presença.",
+    "ar": "مع حضور."
+  },
+  "עמוד עבודות בסגנון קייס סטאדי, עם כרטיסי תמונה גדולים, שנים, קטגוריות ותנועה פרימיום.": {
+    "en": "A case-study style work page, with large image cards, years, categories, and premium motion.",
+    "es": "Una página de trabajos tipo case study, con tarjetas de imagen grandes, años, categorías y movimiento premium.",
+    "pt-BR": "Uma página de trabalhos estilo case study, com cartões de imagem grandes, anos, categorias e movimento premium.",
+    "ar": "صفحة أعمال بأسلوب دراسة حالة، مع بطاقات صور كبيرة وسنوات وفئات وحركة فاخرة."
+  },
+  "בחרו את": {
+    "en": "Choose",
+    "es": "Elegid",
+    "pt-BR": "Escolham",
+    "ar": "اختاروا"
+  },
+  "ההפקה שלכם.": {
+    "en": "your production.",
+    "es": "vuestra producción.",
+    "pt-BR": "a produção de vocês.",
+    "ar": "إنتاجكم."
+  },
+  "עמוד לחבילות, הצעות מחיר מותאמות ותהליך עבודה ברור.": {
+    "en": "A page for packages, tailored quotes, and a clear workflow.",
+    "es": "Una página para paquetes, presupuestos a medida y un flujo de trabajo claro.",
+    "pt-BR": "Uma página para pacotes, orçamentos sob medida e um fluxo de trabalho claro.",
+    "ar": "صفحة للباقات وعروض الأسعار المخصصة وسير عمل واضح."
+  },
+  "כרטיסים עריכתיים למדריכים, עדכונים וסיפורים מאחורי הקלעים.": {
+    "en": "Editorial cards for guides, updates, and behind-the-scenes stories.",
+    "es": "Tarjetas editoriales para guías, actualizaciones e historias detrás de cámaras.",
+    "pt-BR": "Cartões editoriais para guias, atualizações e histórias dos bastidores.",
+    "ar": "بطاقات تحريرية لأدلة وتحديثات وقصص من خلف الكواليس."
+  },
+  "תקציר קצר למאמר שיוכל להתחבר בהמשך למערכת הבלוג שלכם.": {
+    "en": "A short article summary that can later connect to your blog system.",
+    "es": "Un resumen corto de artículo que luego puede conectarse a vuestro sistema de blog.",
+    "pt-BR": "Um resumo curto de artigo que depois pode ligar ao sistema de blog de vocês.",
+    "ar": "ملخص مقال قصير يمكن ربطه لاحقاً بمنظومة المدونة لديكم."
+  },
+  "מתחילים": {
+    "en": "Let's start",
+    "es": "Empezamos",
+    "pt-BR": "Vamos começar",
+    "ar": "نبدأ"
+  },
+  "את": {
+    "en": "the",
+    "es": "el",
+    "pt-BR": "o",
+    "ar": "ال"
+  },
+  "הפרויקט.": {
+    "en": "project.",
+    "es": "proyecto.",
+    "pt-BR": "projeto.",
+    "ar": "المشروع."
+  },
+  "ספרו לנו מה תרצו לצלם, מתי אתם צריכים את זה ואיזו תוצאה תרצו ליצור.": {
+    "en": "Tell us what you want to shoot, when you need it, and what result you want to create.",
+    "es": "Contadnos qué queréis filmar, cuándo lo necesitáis y qué resultado queréis crear.",
+    "pt-BR": "Contem o que vocês querem filmar, quando precisam e que resultado querem criar.",
+    "ar": "أخبرونا ماذا تريدون تصويره ومتى تحتاجونه وأي نتيجة تريدون صنعها."
+  },
+  "ספרו לנו על הפרויקט...": {
+    "en": "Tell us about the project...",
+    "es": "Contadnos el proyecto...",
+    "pt-BR": "Contem sobre o projeto...",
+    "ar": "أخبرونا عن المشروع..."
+  },
+  "שליחת הודעה ←": {
+    "en": "Send a message ←",
+    "es": "Enviar un mensaje ←",
+    "pt-BR": "Enviar uma mensagem ←",
+    "ar": "إرسال رسالة ←"
+  },
+  "בונים מותגים ויזואליים עם אסטרטגיה, תנועה וקריאייטיב קולנועי.": {
+    "en": "We build visual brands with strategy, motion, and cinematic creative.",
+    "es": "Construimos marcas visuales con estrategia, movimiento y creativo cinematográfico.",
+    "pt-BR": "Construímos marcas visuais com estratégia, movimento e criativo cinematográfico.",
+    "ar": "نبني علامات بصرية باستراتيجية وحركة وإبداع سينمائي."
+  },
+  "קביעת שיחת היכרות": {
+    "en": "Book an intro call",
+    "es": "Reservar una llamada de presentación",
+    "pt-BR": "Marcar uma chamada de apresentação",
+    "ar": "حجز مكالمة تعارف"
+  },
+  "חוויה רגועה שמובילה לפנייה בלי לחץ.": {
+    "en": "A calm experience that leads to an inquiry without pressure.",
+    "es": "Una experiencia serena que lleva a una consulta sin presión.",
+    "pt-BR": "Uma experiência calma que leva a uma consulta sem pressão.",
+    "ar": "تجربة هادئة تؤدي إلى استفسار بلا ضغط."
+  },
+  "מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.": {
+    "en": "A focused CTA modal that lets you leave details without hunting for the form further down the page.",
+    "es": "Un modal de CTA enfocado que permite dejar datos sin buscar el formulario más abajo.",
+    "pt-BR": "Um modal de CTA focado que permite deixar dados sem procurar o formulário mais abaixo.",
+    "ar": "نافذة CTA مركّزة تتيح ترك التفاصيل دون البحث عن النموذج أسفل الصفحة."
+  },
+  "חוויה רגועה": {
+    "en": "A calm experience",
+    "es": "Una experiencia serena",
+    "pt-BR": "Uma experiência calma",
+    "ar": "تجربة هادئة"
+  },
+  "להתחיל תהליך": {
+    "en": "Start a process",
+    "es": "Empezar un proceso",
+    "pt-BR": "Começar um processo",
+    "ar": "بدء عملية"
+  },
+  "היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.": {
+    "en": "A clean hierarchy: trust first, then services, then a clear inquiry.",
+    "es": "Una jerarquía limpia: primero confianza, luego servicios, y después una consulta clara.",
+    "pt-BR": "Uma hierarquia limpa: primeiro confiança, depois serviços, e então uma consulta clara.",
+    "ar": "تسلسل نظيف: الثقة أولاً ثم الخدمات ثم استفسار واضح."
+  },
+  "4 שירותים": {
+    "en": "4 services",
+    "es": "4 servicios",
+    "pt-BR": "4 serviços",
+    "ar": "4 خدمات"
+  },
+  "בדיקת התאמה ראשונית": {
+    "en": "An initial fit check",
+    "es": "Una revisión inicial de encaje",
+    "pt-BR": "Uma checagem inicial de encaixe",
+    "ar": "فحص ملاءمة أولي"
+  },
+  "Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה.": {
+    "en": "Sticky storytelling: one side stays, and the steps move beside it clearly.",
+    "es": "Sticky storytelling: un lado se queda y los pasos pasan a su lado con claridad.",
+    "pt-BR": "Sticky storytelling: um lado fica e as etapas passam ao lado com clareza.",
+    "ar": "سرد ثابت: جانب يبقى والخطوات تمر بجانبه بوضوح."
+  },
+  "מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.": {
+    "en": "A calm user journey, but with a real premium feel.",
+    "es": "Un journey de usuario sereno, pero con una sensación premium real.",
+    "pt-BR": "Uma jornada de usuário calma, mas com uma sensação premium de verdade.",
+    "ar": "مسار مستخدم هادئ، لكن بشعور فاخر حقيقي."
+  },
+  "מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה.": {
+    "en": "A clear price list with a recommended track, micro-interactions, and a call to action.",
+    "es": "Un tarifario claro con un recorrido recomendado, microinteracciones y una llamada a la acción.",
+    "pt-BR": "Um preço claro com um plano recomendado, microinterações e um chamado à ação.",
+    "ar": "قائمة أسعار واضحة مع مسار موصى به وتفاعلات صغيرة ودعوة للفعل."
+  },
+  "• התאמה מלאה למובייל": {
+    "en": "• Fully mobile-ready",
+    "es": "• Adaptación total a móvil",
+    "pt-BR": "• Adaptação total ao celular",
+    "ar": "• ملاءمة كاملة للجوال"
+  },
+  "• אזורי אמון ו־CTA": {
+    "en": "• Trust areas and CTA",
+    "es": "• Zonas de confianza y CTA",
+    "pt-BR": "• Áreas de confiança e CTA",
+    "ar": "• مناطق ثقة وCTA"
+  },
+  "• מבנה שמוביל לפנייה": {
+    "en": "• A layout that leads to an inquiry",
+    "es": "• Una estructura que lleva a una consulta",
+    "pt-BR": "• Uma estrutura que leva a uma consulta",
+    "ar": "• بنية تؤدي إلى استفسار"
+  },
+  "בחירת מסלול": {
+    "en": "Choose a track",
+    "es": "Elegir un recorrido",
+    "pt-BR": "Escolher um plano",
+    "ar": "اختيار مسار"
+  },
+  "גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה.": {
+    "en": "A magazine grid like a premium template, not four boring photos in a row.",
+    "es": "Un grid de revista como una plantilla premium, no cuatro fotos aburridas en fila.",
+    "pt-BR": "Um grid de revista como um modelo premium, não quatro fotos chatas em fila.",
+    "ar": "شبكة مجلة كقالب فاخر، لا أربع صور مملة في صف."
+  },
+  "אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם.": {
+    "en": "A smooth accordion in Tailwind only, with no custom CSS.",
+    "es": "Un acordeón suave solo con Tailwind, sin CSS a medida.",
+    "pt-BR": "Um acordeão suave só com Tailwind, sem CSS sob medida.",
+    "ar": "أكورديون سلس بـ Tailwind فقط، بلا CSS مخصص."
+  },
+  "לפתיחת חלון פנייה מהירה": {
+    "en": "To open a fast inquiry window",
+    "es": "Para abrir una ventana de consulta rápida",
+    "pt-BR": "Para abrir uma janela de consulta rápida",
+    "ar": "لفتح نافذة استفسار سريعة"
+  },
+  "חוויה רגועה, נקייה ויותר פרימיום.": {
+    "en": "A calmer, cleaner, more premium experience.",
+    "es": "Una experiencia más serena, limpia y premium.",
+    "pt-BR": "Uma experiência mais calma, limpa e premium.",
+    "ar": "تجربة أهدأ وأنظف وأكثر فخامة."
+  },
+  "תבנית Serenova · Bizuply Studio": {
+    "en": "Serenova template · Bizuply Studio",
+    "es": "Plantilla Serenova · Bizuply Studio",
+    "pt-BR": "Modelo Serenova · Bizuply Studio",
+    "ar": "قالب Serenova · Bizuply Studio"
+  },
+  "השאירו פרטים ונחזור עם כיוון פעולה ברור.": {
+    "en": "Leave your details and we will come back with a clear next step.",
+    "es": "Dejad los datos y volveremos con una dirección de acción clara.",
+    "pt-BR": "Deixem os dados e voltaremos com um próximo passo claro.",
+    "ar": "اتركوا التفاصيل وسنعود باتجاه عمل واضح."
+  },
+  "טופס ייעוץ קצר, דיסקרטי וברור שמוריד חיכוך ומוביל לפנייה איכותית.": {
+    "en": "A short, discreet, clear consult form that lowers friction and leads to a quality inquiry.",
+    "es": "Un formulario de consulta corto, discreto y claro que baja fricción y lleva a una consulta de calidad.",
+    "pt-BR": "Um formulário de consultoria curto, discreto e claro que reduz atrito e leva a uma consulta de qualidade.",
+    "ar": "نموذج استشارة قصير وسري وواضح يقلل الاحتكاك ويؤدي إلى استفسار نوعي."
+  },
+  "תחום משפטי": {
+    "en": "Legal field",
+    "es": "Ámbito legal",
+    "pt-BR": "Área jurídica",
+    "ar": "مجال قانوني"
+  },
+  "כמה מילים על המקרה": {
+    "en": "A few words about the case",
+    "es": "Unas palabras sobre el caso",
+    "pt-BR": "Algumas palavras sobre o caso",
+    "ar": "بضع كلمات عن القضية"
+  },
+  "המשרד המשפטי שלך": {
+    "en": "Your law firm",
+    "es": "Vuestro despacho legal",
+    "pt-BR": "O escritório jurídico de vocês",
+    "ar": "مكتبكم القانوني"
+  },
+  "מגוון רחב של תחומי התמחות משפטיים": {
+    "en": "A wide range of legal practice areas",
+    "es": "Una amplia gama de áreas de práctica legal",
+    "pt-BR": "Uma ampla gama de áreas de prática jurídica",
+    "ar": "مجموعة واسعة من مجالات التخصص القانوني"
+  },
+  "לכל תחומי ההתמחות": {
+    "en": "All practice areas",
+    "es": "Todas las áreas de práctica",
+    "pt-BR": "Todas as áreas de prática",
+    "ar": "كل مجالات التخصص"
+  },
+  "קבעו פגישה פרונטלית או ייעוץ משפטי אונליין.": {
+    "en": "Book an in-person meeting or an online legal consult.",
+    "es": "Reservad una reunión presencial o una consulta legal online.",
+    "pt-BR": "Marquem uma reunião presencial ou uma consultoria jurídica online.",
+    "ar": "احجزوا اجتماعاً حضورياً أو استشارة قانونية عبر الإنترنت."
+  },
+  "בלוק ברור שמוביל לפעולה אחת — קביעת ייעוץ בלי הסחות דעת.": {
+    "en": "A clear block that leads to one action — booking a consult without distractions.",
+    "es": "Un bloque claro que lleva a una sola acción — reservar una consulta sin distracciones.",
+    "pt-BR": "Um bloco claro que leva a uma ação — marcar uma consultoria sem distrações.",
+    "ar": "كتلة واضحة تؤدي إلى فعل واحد — حجز استشارة بلا تشتيت."
+  },
+  "שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין.": {
+    "en": "A mix of value, professional points, and trustworthy photos of lawyers.",
+    "es": "Una mezcla de valor, puntos profesionales y fotos fiables de abogados.",
+    "pt-BR": "Uma mistura de valor, pontos profissionais e fotos confiáveis de advogados.",
+    "ar": "مزيج من القيمة ونقاط مهنية وصور موثوقة لمحامين."
+  },
+  "כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס.": {
+    "en": "Large case cards with an amount, field, and description — to show experience without clutter.",
+    "es": "Tarjetas de casos grandes con importe, ámbito y descripción — para mostrar experiencia sin saturar.",
+    "pt-BR": "Cartões de casos grandes com valor, área e descrição — para mostrar experiência sem sobrecarregar.",
+    "ar": "بطاقات قضايا كبيرة مع مبلغ ومجال ووصف — لإظهار الخبرة بلا ازدحام."
+  },
+  "כל התיקים": {
+    "en": "All cases",
+    "es": "Todos los casos",
+    "pt-BR": "Todos os casos",
+    "ar": "كل القضايا"
+  },
+  "קריאת מקרה": {
+    "en": "Read the case",
+    "es": "Leer el caso",
+    "pt-BR": "Ler o caso",
+    "ar": "قراءة القضية"
+  },
+  "חזרה לתיקים": {
+    "en": "Back to cases",
+    "es": "Volver a los casos",
+    "pt-BR": "Voltar aos casos",
+    "ar": "العودة إلى القضايا"
+  },
+  "סכום / ערך תיק": {
+    "en": "Amount / case value",
+    "es": "Importe / valor del caso",
+    "pt-BR": "Valor / valor do caso",
+    "ar": "المبلغ / قيمة القضية"
+  },
+  "לבדוק מקרה דומה": {
+    "en": "Check a similar case",
+    "es": "Revisar un caso similar",
+    "pt-BR": "Ver um caso semelhante",
+    "ar": "فحص قضية مشابهة"
+  },
+  "המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה.": {
+    "en": "Clear, trustworthy testimonials that strengthen confidence before the inquiry.",
+    "es": "Testimonios claros y fiables que refuerzan la confianza antes de la consulta.",
+    "pt-BR": "Depoimentos claros e confiáveis que reforçam a confiança antes da consulta.",
+    "ar": "شهادات واضحة وموثوقة تعزّز الشعور بالثقة قبل الاستفسار."
+  },
+  "בלוק פעולה גדול, ממוקד וברור שמוביל לפנייה בלי עומס ובלי בלבול.": {
+    "en": "A large, focused, clear action block that leads to an inquiry without clutter or confusion.",
+    "es": "Un bloque de acción grande, enfocado y claro que lleva a una consulta sin saturación ni confusión.",
+    "pt-BR": "Um bloco de ação grande, focado e claro que leva a uma consulta sem sobrecarga nem confusão.",
+    "ar": "كتلة فعل كبيرة ومركّزة وواضحة تؤدي إلى استفسار بلا ازدحام وبلا ارتباك."
+  },
+  "ידע משפטי שמחזק אמון לפני שיחת הייעוץ.": {
+    "en": "Legal knowledge that builds trust before the consult call.",
+    "es": "Conocimiento legal que refuerza la confianza antes de la llamada de consulta.",
+    "pt-BR": "Conhecimento jurídico que reforça confiança antes da chamada de consultoria.",
+    "ar": "معرفة قانونية تعزّز الثقة قبل مكالمة الاستشارة."
+  },
+  "שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור.": {
+    "en": "Two large articles, a tag, a date, and short text — to give value, not only to sell.",
+    "es": "Dos artículos grandes, una etiqueta, una fecha y texto corto — para dar valor y no solo vender.",
+    "pt-BR": "Dois artigos grandes, uma tag, uma data e texto curto — para dar valor e não só vender.",
+    "ar": "مقالان كبيران ووسم وتاريخ ونص قصير — لإعطاء قيمة لا للبيع فقط."
+  },
+  "תמונות שמייצרות אמון ותחושת משרד פעיל.": {
+    "en": "Photos that create trust and the feel of an active firm.",
+    "es": "Fotos que generan confianza y la sensación de un despacho activo.",
+    "pt-BR": "Fotos que geram confiança e a sensação de um escritório ativo.",
+    "ar": "صور تصنع ثقة وشعور مكتب ناشط."
+  },
+  "אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית.": {
+    "en": "A wide photo area that gives life, credibility, and a professional feel.",
+    "es": "Una zona amplia de fotos que da vida, credibilidad y una sensación profesional.",
+    "pt-BR": "Uma área ampla de fotos que dá vida, credibilidade e uma sensação profissional.",
+    "ar": "منطقة صور واسعة تعطي حياة ومصداقية وشعوراً مهنياً."
+  },
+  "שאלות נפוצות לפני שיחת ייעוץ ראשונית.": {
+    "en": "FAQ before a first consult call.",
+    "es": "Preguntas frecuentes antes de una primera llamada de consulta.",
+    "pt-BR": "Perguntas frequentes antes de uma primeira chamada de consultoria.",
+    "ar": "أسئلة شائعة قبل مكالمة استشارة أولى."
+  },
+  "לפתיחת חלון ייעוץ מהיר": {
+    "en": "To open a fast consult window",
+    "es": "Para abrir una ventana de consulta rápida",
+    "pt-BR": "Para abrir uma janela de consultoria rápida",
+    "ar": "لفتح نافذة استشارة سريعة"
+  },
+  "עמוד מאמר": {
+    "en": "Article page",
+    "es": "Página de artículo",
+    "pt-BR": "Página de artigo",
+    "ar": "صفحة مقال"
+  },
+  "Novastra — דף הבית": {
+    "en": "Novastra — Home",
+    "es": "Novastra — Inicio",
+    "pt-BR": "Novastra — Início",
+    "ar": "Novastra — الرئيسية"
+  },
+  "קטגוריה": {
+    "en": "Category",
+    "es": "Categoría",
+    "pt-BR": "Categoria",
+    "ar": "فئة"
+  },
+  "פתיחת תפריט": {
+    "en": "Open menu",
+    "es": "Abrir menú",
+    "pt-BR": "Abrir menu",
+    "ar": "فتح القائمة"
+  },
+  "סגירת תפריט": {
+    "en": "Close menu",
+    "es": "Cerrar menú",
+    "pt-BR": "Fechar menu",
+    "ar": "إغلاق القائمة"
+  },
+  "חזרה למוצרים": {
+    "en": "Back to products",
+    "es": "Volver a productos",
+    "pt-BR": "Voltar aos produtos",
+    "ar": "العودة إلى المنتجات"
+  },
+  "4.9 · 128 ביקורות": {
+    "en": "4.9 · 128 reviews",
+    "es": "4.9 · 128 reseñas",
+    "pt-BR": "4.9 · 128 avaliações",
+    "ar": "4.9 · 128 تقييمات"
+  },
+  "קנה עכשיו": {
+    "en": "Buy now",
+    "es": "Comprar ahora",
+    "pt-BR": "Comprar agora",
+    "ar": "اشتروا الآن"
+  },
+  "מוצרים נוספים": {
+    "en": "More products",
+    "es": "Más productos",
+    "pt-BR": "Mais produtos",
+    "ar": "منتجات إضافية"
+  },
+  "אולי תאהבי גם": {
+    "en": "You may also like",
+    "es": "También te puede gustar",
+    "pt-BR": "Você também pode gostar",
+    "ar": "قد يعجبكم أيضاً"
+  },
+  "סל הקניות שלך": {
+    "en": "Your cart",
+    "es": "Tu carrito",
+    "pt-BR": "Seu carrinho",
+    "ar": "سلة تسوقكم"
+  },
+  "הסל ריק": {
+    "en": "The cart is empty",
+    "es": "El carrito está vacío",
+    "pt-BR": "O carrinho está vazio",
+    "ar": "السلة فارغة"
+  },
+  "עדיין לא הוספת מוצרים לסל. חזרי לקולקציה ובחרי פריטים.": {
+    "en": "You have not added products to the cart yet. Go back to the collection and pick items.",
+    "es": "Todavía no has añadido productos al carrito. Vuelve a la colección y elige piezas.",
+    "pt-BR": "Você ainda não adicionou produtos ao carrinho. Volte à coleção e escolha itens.",
+    "ar": "لم تضيفوا منتجات إلى السلة بعد. عودوا إلى المجموعة واختاروا قطعاً."
+  },
+  "מעבר לקולקציה": {
+    "en": "Go to the collection",
+    "es": "Ir a la colección",
+    "pt-BR": "Ir à coleção",
+    "ar": "الانتقال إلى المجموعة"
+  },
+  "הסרת פריט": {
+    "en": "Remove item",
+    "es": "Quitar artículo",
+    "pt-BR": "Remover item",
+    "ar": "إزالة قطعة"
+  },
+  "סכום ביניים": {
+    "en": "Subtotal",
+    "es": "Subtotal",
+    "pt-BR": "Subtotal",
+    "ar": "المجموع الفرعي"
+  },
+  "מעבר לתשלום": {
+    "en": "Go to checkout",
+    "es": "Ir al pago",
+    "pt-BR": "Ir ao pagamento",
+    "ar": "الانتقال للدفع"
+  },
+  "סגירת צ׳אט": {
+    "en": "Close chat",
+    "es": "Cerrar chat",
+    "pt-BR": "Fechar chat",
+    "ar": "إغلاق الدردشة"
+  },
+  "פתיחת צ׳אט": {
+    "en": "Open chat",
+    "es": "Abrir chat",
+    "pt-BR": "Abrir chat",
+    "ar": "فتح الدردشة"
+  },
+  "שיחה פרטית": {
+    "en": "A private call",
+    "es": "Una llamada privada",
+    "pt-BR": "Uma chamada particular",
+    "ar": "مكالمة خاصة"
+  },
+  "תקציר קצר שיכול להתחבר בהמשך למערכת הבלוג שלך.": {
+    "en": "A short summary that can later connect to your blog system.",
+    "es": "Un resumen corto que luego puede conectarse a tu sistema de blog.",
+    "pt-BR": "Um resumo curto que depois pode ligar ao seu sistema de blog.",
+    "ar": "ملخص قصير يمكن ربطه لاحقاً بمنظومة المدونة لديكم."
+  }
+}

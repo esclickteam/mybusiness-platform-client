@@ -873,6 +873,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("עסק #1", "pt-BR")).toMatch(/negócio/i);
   });
 
+  it("localizes unique47 leftover Adion, Serenova, Justora, and Novastra chrome", () => {
+    expect(localizeBuiltInText("קבעו צילום", "en")).toMatch(/book|shoot/i);
+    expect(localizeBuiltInText("קבעו צילום", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קביעת שיחת היכרות", "es")).toMatch(/llamada|present/i);
+    expect(localizeBuiltInText("כל התיקים", "pt-BR")).toMatch(/casos/i);
+    expect(localizeBuiltInText("קנה עכשיו", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חבילות ברורות.", "en")).toMatch(/package|clear/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
