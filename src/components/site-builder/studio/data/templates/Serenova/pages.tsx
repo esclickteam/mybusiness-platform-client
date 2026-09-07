@@ -239,10 +239,17 @@ function SerenovaLeadForm({
   textareaClassName?: string;
 }) {
   const resolved = resolveTemplateLeadForm(data, formId, {
-    fields: fallbackFields,
-    submitText: String(getValue(data, "contactButton") || "שליחת פרטים"),
+    fields: fallbackFields.map((field) => ({
+      ...field,
+      label: tx(field.label),
+      placeholder: tx(field.placeholder || ""),
+      options: Array.isArray(field.options)
+        ? field.options.map((option) => tx(String(option)))
+        : field.options,
+    })),
+    submitText: String(getValue(data, "contactButton") || tx("שליחת פרטים")),
     title: "",
-    successMessage: "תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.",
+    successMessage: tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."),
   });
 
   return (

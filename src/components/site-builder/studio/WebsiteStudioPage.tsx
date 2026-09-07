@@ -5,6 +5,7 @@ import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../i18n/i18n";
 import { getIntlLocale } from "../../../i18n/localeUtils";
+import { localizeBuiltInText } from "../../../i18n/localizeBuiltInTemplateSeed";
 
 import type {
   DeviceMode,
@@ -1811,7 +1812,9 @@ function createPagesFromRegisteredRenderer(
 
     return {
       id: pageId,
-      title: String(page.label || page.name || page.title || pageId),
+      title: localizeBuiltInText(
+        String(page.label || page.name || page.title || pageId)
+      ),
       slug: cleanSlug,
       type: (isHome ? "home" : pageId === "shop" ? "store" : "blank") as StudioSitePageType,
       isHome,

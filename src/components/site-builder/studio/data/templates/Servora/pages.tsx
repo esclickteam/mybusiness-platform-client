@@ -67,7 +67,7 @@ function sectionProps(
     ...visualProps(id, "section", label),
     "data-template-section-id": id,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
   };
 }
 

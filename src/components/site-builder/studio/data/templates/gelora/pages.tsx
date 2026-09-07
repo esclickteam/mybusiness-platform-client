@@ -73,10 +73,10 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         </button>
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-6 whitespace-nowrap text-sm md:flex">
           {[
-            { id: "home", label: getValue(data, "navHome") || "בית" },
-            { id: "about", label: getValue(data, "navAbout") || "אודות" },
-            { id: "services", label: getValue(data, "navServices") || "שירותים" },
-            { id: "booking", label: getValue(data, "navBooking") || "תורים" },
+            { id: "home", label: getValue(data, "navHome") || tx("בית") },
+            { id: "about", label: getValue(data, "navAbout") || tx("אודות") },
+            { id: "services", label: getValue(data, "navServices") || tx("שירותים") },
+            { id: "booking", label: getValue(data, "navBooking") || tx("תורים") },
           ].map((p) => (
             <button
               key={p.id}

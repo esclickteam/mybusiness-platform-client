@@ -95,7 +95,7 @@ function buildNav(data: TemplateData) {
       contact: "navContact",
     };
 
-    return [page.id, getValue(data, labelMap[page.id] || page.label)] as const;
+    return [page.id, getValue(data, labelMap[page.id]) || tx(page.label)] as const;
   });
 }
 
@@ -118,7 +118,7 @@ function TerminalLabel({
         background: "rgba(57, 255, 20, 0.05)",
       }}
     >
-      {formatBracketLabel(label)}
+      {formatBracketLabel(tx(label))}
     </span>
   );
 }
@@ -379,14 +379,14 @@ function HeroSection({
                 style={{ animationDelay: `${420 + index * 90}ms` }}
               >
                 <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.28em]" style={{ color: citadelTheme.accent }}>
-                  {formatBracketLabel(block)}
+                  {formatBracketLabel(tx(block))}
                 </div>
                 <div className="text-sm leading-7" style={{ color: citadelTheme.muted }}>
                   {block === "הצפנה"
-                    ? "חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות."
+                    ? tx("חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות.")
                     : block === "ניטור"
-                      ? "טלמטריה רציפה, זיהוי חריגות ומיפוי חשיפות."
-                      : "פלייבוקים לאירועים, ניתוב הכלה ודיווח ברמת דירקטוריון."}
+                      ? tx("טלמטריה רציפה, זיהוי חריגות ומיפוי חשיפות.")
+                      : tx("פלייבוקים לאירועים, ניתוב הכלה ודיווח ברמת דירקטוריון.")}
                 </div>
               </div>
             ))}
@@ -453,10 +453,10 @@ function HeroSection({
 
 function SignalTicker({ data }: { data: TemplateData }) {
   const items = [
-    "הצפנה",
+    tx("הצפנה"),
     "SOC 24/7",
     "Zero Trust",
-    "ציד איומים",
+    tx("ציד איומים"),
     getValue(data, "brandName").toUpperCase(),
     getValue(data, "tagline").toUpperCase(),
   ];
@@ -742,7 +742,7 @@ function ContactSection({ data }: { data: TemplateData }) {
                 style={{ borderColor: citadelTheme.border }}
               >
                 <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.28em]" style={{ color: citadelTheme.accent }}>
-                  {formatBracketLabel(label)}
+                  {formatBracketLabel(tx(label))}
                 </div>
                 <TemplateText as="div" className="text-sm leading-7" style={{ color: citadelTheme.light }}>
                   {value}

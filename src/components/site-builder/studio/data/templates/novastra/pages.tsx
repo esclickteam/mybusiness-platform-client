@@ -867,7 +867,7 @@ function ProductPage({
 
           <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8 lg:sticky lg:top-32 lg:self-start">
             <p className="text-xs font-black uppercase tracking-[0.26em] text-zinc-500">
-              {product.category || "קולקציה"}
+              {product.category || tx("קולקציה")}
             </p>
 
             <h1 className="mt-4 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl">

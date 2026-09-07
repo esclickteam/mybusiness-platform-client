@@ -953,7 +953,7 @@ function ProductDetailPage({
               {...visualProps("productPage.secondaryButton", "button", "המשך קניות")}
             >
               <span data-editable="text">
-                {fallback.secondaryButton || "חזרה לחנות"}
+                {fallback.secondaryButton || tx("חזרה לחנות")}
               </span>
             </button>
           </div>
@@ -1069,7 +1069,7 @@ function CartPage({
                 className="mt-6 block w-full bg-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-opacity hover:opacity-85"
                 {...visualProps("cartPage.checkoutButton", "button", "לתשלום")}
               >
-                <span data-editable="text">{cart.checkoutButton || "לתשלום"}</span>
+                <span data-editable="text">{cart.checkoutButton || tx("לתשלום")}</span>
               </button>
               <button
                 type="button"
@@ -1077,7 +1077,7 @@ function CartPage({
                 className="mt-3 block w-full border border-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
                 {...visualProps("cartPage.continueButton", "button", "המשך קניות")}
               >
-                <span data-editable="text">{cart.continueButton || "המשך קניות"}</span>
+                <span data-editable="text">{cart.continueButton || tx("המשך קניות")}</span>
               </button>
             </aside>
           </div>
@@ -1088,7 +1088,7 @@ function CartPage({
               data-editable="text"
               {...visualProps("cartPage.emptyText", "text", "עגלה ריקה")}
             >
-              {cart.emptyText || "העגלה ריקה כרגע."}
+              {cart.emptyText || tx("העגלה ריקה כרגע.")}
             </p>
             <button
               type="button"

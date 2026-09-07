@@ -367,7 +367,7 @@ function Hero({
 
             <div className="nadlanist-float absolute left-5 top-28 z-20 flex h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/15 text-white backdrop-blur-xl">
               <span className="text-center text-[10px] font-black uppercase leading-4 tracking-[0.18em]">
-                {String(hero.floatingLabel || "תיאום סיור")
+                {String(hero.floatingLabel || tx("תיאום סיור"))
                   .split(/\s+/)
                   .map((word, index) => (
                     <React.Fragment key={`${word}-${index}`}>
@@ -976,10 +976,10 @@ function ContactPage({ data }: { data: NadlanistData }) {
           ].map(([label, placeholder]) => (
             <label key={label} className="mb-5 block">
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">
-                {label}
+                {tx(label)}
               </span>
               <input
-                placeholder={placeholder}
+                placeholder={tx(placeholder)}
                 className="w-full rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-start text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
               />
             </label>

@@ -230,7 +230,7 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
         <Reveal className="mb-8 flex flex-col gap-3 text-start md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || "Deal room"}</p>
-            <h2 className="ag-display mt-3 text-3xl font-extrabold uppercase md:text-5xl">{getValue(data, "galleryTitle") || "ארבעה רגעים לפני סגירה"}</h2>
+            <h2 className="ag-display mt-3 text-3xl font-extrabold uppercase md:text-5xl">{getValue(data, "galleryTitle") || tx("ארבעה רגעים לפני סגירה")}</h2>
           </div>
           <span className="text-xs font-black uppercase tracking-[0.24em] text-[var(--muted)]">Pipeline evidence</span>
         </Reveal>

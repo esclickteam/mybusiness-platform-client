@@ -81,6 +81,7 @@ import unique66ExactLexicon from "./templateExactLexicon.unique66.json";
 import unique67ExactLexicon from "./templateExactLexicon.unique67.json";
 import unique68ExactLexicon from "./templateExactLexicon.unique68.json";
 import unique69ExactLexicon from "./templateExactLexicon.unique69.json";
+import unique70ExactLexicon from "./templateExactLexicon.unique70.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -174,6 +175,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique67ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique68ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique69ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique70ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -416,6 +418,8 @@ const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   "שאלה נפוצה": { en: "Common question", es: "Pregunta frecuente", "pt-BR": "Pergunta frequente", ar: "سؤال شائع" },
   יתרון: { en: "Advantage", es: "Ventaja", "pt-BR": "Vantagem", ar: "ميزة" },
   "כרטיס פיד": { en: "Feed card", es: "Tarjeta del feed", "pt-BR": "Cartão do feed", ar: "بطاقة الخلاصة" },
+  פירוט: { en: "Detail", es: "Detalle", "pt-BR": "Detalhe", ar: "تفصيل" },
+  "פריט עגלה": { en: "Cart item", es: "Artículo del carrito", "pt-BR": "Item da sacola", ar: "عنصر السلة" },
 };
 
 const NUMBERED_DASH_LEFT: Record<string, PhraseTranslation> = {

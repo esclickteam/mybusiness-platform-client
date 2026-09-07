@@ -1,0 +1,164 @@
+{
+  "העגלה ריקה כרגע.": {
+    "en": "The cart is empty right now.",
+    "es": "El carrito está vacío ahora.",
+    "pt-BR": "A sacola está vazia no momento.",
+    "ar": "السلة فارغة الآن."
+  },
+  "מבט לסוכנות": {
+    "en": "A look at the agency",
+    "es": "Una mirada a la agencia",
+    "pt-BR": "Um olhar para a agência",
+    "ar": "نظرة إلى الوكالة"
+  },
+  "עגלה ריקה": {
+    "en": "Empty cart",
+    "es": "Carrito vacío",
+    "pt-BR": "Sacola vazia",
+    "ar": "سلة فارغة"
+  },
+  "לוגו ומותג": {
+    "en": "Logo and brand",
+    "es": "Logo y marca",
+    "pt-BR": "Logo e marca",
+    "ar": "شعار وعلامة"
+  },
+  "כותרת ראשית": {
+    "en": "Main title",
+    "es": "Título principal",
+    "pt-BR": "Título principal",
+    "ar": "العنوان الرئيسي"
+  },
+  "ערך סטטיסטי": {
+    "en": "Statistic value",
+    "es": "Valor estadístico",
+    "pt-BR": "Valor estatístico",
+    "ar": "قيمة إحصائية"
+  },
+  "כותרת הטופס": {
+    "en": "Form title",
+    "es": "Título del formulario",
+    "pt-BR": "Título do formulário",
+    "ar": "عنوان النموذج"
+  },
+  "תיאור הטופס": {
+    "en": "Form description",
+    "es": "Descripción del formulario",
+    "pt-BR": "Descrição do formulário",
+    "ar": "وصف النموذج"
+  },
+  "כותרת אזור": {
+    "en": "Section title",
+    "es": "Título de zona",
+    "pt-BR": "Título da área",
+    "ar": "عنوان المنطقة"
+  },
+  "כותרת האזור": {
+    "en": "Section title",
+    "es": "Título de la zona",
+    "pt-BR": "Título da área",
+    "ar": "عنوان المنطقة"
+  },
+  "תיאור האזור": {
+    "en": "Section description",
+    "es": "Descripción de la zona",
+    "pt-BR": "Descrição da área",
+    "ar": "وصف المنطقة"
+  },
+  "כותרת העמוד": {
+    "en": "Page title",
+    "es": "Título de la página",
+    "pt-BR": "Título da página",
+    "ar": "عنوان الصفحة"
+  },
+  "כותרת משנה לעמוד": {
+    "en": "Page subtitle",
+    "es": "Subtítulo de página",
+    "pt-BR": "Subtítulo da página",
+    "ar": "عنوان فرعي للصفحة"
+  },
+  "כותרת הפרויקט": {
+    "en": "Project title",
+    "es": "Título del proyecto",
+    "pt-BR": "Título do projeto",
+    "ar": "عنوان المشروع"
+  },
+  "תיאור הפרויקט": {
+    "en": "Project description",
+    "es": "Descripción del proyecto",
+    "pt-BR": "Descrição do projeto",
+    "ar": "وصف المشروع"
+  },
+  "תוכן קריאה לפעולה": {
+    "en": "Call-to-action content",
+    "es": "Contenido de llamada a la acción",
+    "pt-BR": "Conteúdo de chamada para ação",
+    "ar": "محتوى دعوة للإجراء"
+  },
+  "תיאור קריאה לפעולה": {
+    "en": "Call-to-action description",
+    "es": "Descripción de la llamada a la acción",
+    "pt-BR": "Descrição da chamada para ação",
+    "ar": "وصف دعوة للإجراء"
+  },
+  "קישור טלפון": {
+    "en": "Phone link",
+    "es": "Enlace de teléfono",
+    "pt-BR": "Link de telefone",
+    "ar": "رابط الهاتف"
+  },
+  "מספר טלפון": {
+    "en": "Phone number",
+    "es": "Número de teléfono",
+    "pt-BR": "Número de telefone",
+    "ar": "رقم الهاتف"
+  },
+  "תיאור העסק": {
+    "en": "Business description",
+    "es": "Descripción del negocio",
+    "pt-BR": "Descrição do negócio",
+    "ar": "وصف العمل"
+  },
+  "רקע אזור פתיחה": {
+    "en": "Hero background",
+    "es": "Fondo del hero",
+    "pt-BR": "Fundo do hero",
+    "ar": "خلفية الهيرو"
+  },
+  "תפריט נייד": {
+    "en": "Mobile menu",
+    "es": "Menú móvil",
+    "pt-BR": "Menu mobile",
+    "ar": "قائمة الجوال"
+  },
+  "כותרת קטנה": {
+    "en": "Small title",
+    "es": "Título pequeño",
+    "pt-BR": "Título pequeno",
+    "ar": "عنوان صغير"
+  },
+  "תיאור העמוד": {
+    "en": "Page description",
+    "es": "Descripción de la página",
+    "pt-BR": "Descrição da página",
+    "ar": "وصف الصفحة"
+  },
+  "חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות.": {
+    "en": "Hardening traffic, identity, and data layers with policy-based controls.",
+    "es": "Refuerzo de capas de tráfico, identidad y datos con controles basados en política.",
+    "pt-BR": "Reforço de camadas de tráfego, identidade e dados com controles baseados em política.",
+    "ar": "تعزيز طبقات المرور والهوية والبيانات بضوابط مبنية على سياسة."
+  },
+  "טלמטריה רציפה, זיהוי חריגות ומיפוי חשיפות.": {
+    "en": "Continuous telemetry, anomaly detection, and exposure mapping.",
+    "es": "Telemetría continua, detección de anomalías y mapeo de exposiciones.",
+    "pt-BR": "Telemetria contínua, detecção de anomalias e mapeamento de exposições.",
+    "ar": "قياس عن بُعد مستمر وكشف شذوذ وتعيين انكشافات."
+  },
+  "פלייבוקים לאירועים, ניתוב הכלה ודיווח ברמת דירקטוריון.": {
+    "en": "Incident playbooks, containment routing, and board-level reporting.",
+    "es": "Playbooks de incidentes, enrutado de contención e informes a nivel de consejo.",
+    "pt-BR": "Playbooks de incidentes, roteamento de contenção e relatórios em nível de diretoria.",
+    "ar": "أدلة أحداث وتوجيه احتواء وتقارير على مستوى مجلس الإدارة."
+  }
+}

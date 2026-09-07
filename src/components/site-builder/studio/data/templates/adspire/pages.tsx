@@ -214,7 +214,7 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-8 text-start">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || "Showreel"}</p>
-          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || "פריימים שמחזיקים קמפיין"}</h2>
+          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || tx("פריימים שמחזיקים קמפיין")}</h2>
         </Reveal>
         <div className="flex snap-x gap-4 overflow-x-auto pb-5">
           {images.map((src, i) => (

@@ -88,7 +88,7 @@ const navLabelKeys: Record<string, string> = {
 type PageProps = { data: Record<string, any>; openModal: () => void; goTo: (pageId: string) => void };
 
 function getNavLabel(data: Record<string, any>, page: { id: string; label: string }) {
-  return getValue(data, navLabelKeys[page.id]) || page.label;
+  return getValue(data, navLabelKeys[page.id]) || tx(page.label);
 }
 
 function Header({ data, currentPage, goTo, openModal }: { data: Record<string, any>; currentPage: string; goTo: (pageId: string) => void; openModal: () => void }) {
@@ -117,7 +117,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
           <Reveal variant="right">
             <p className="text-xs uppercase tracking-[0.3em] text-[var(--p)]">{getValue(data,"heroEyebrow")}</p>
             <h1 className="t-display mt-4 text-6xl font-bold leading-[0.95] text-[var(--p)] md:text-8xl">{getValue(data,"brandName")}</h1>
-            <p className="mt-4 whitespace-pre-line text-2xl text-white md:text-3xl">{getValue(data,"heroTitle").replace(getValue(data,"brandName"),"").trim() || "ליווי שמשנה מסלול."}</p>
+            <p className="mt-4 whitespace-pre-line text-2xl text-white md:text-3xl">{getValue(data,"heroTitle").replace(getValue(data,"brandName"),"").trim() || tx("ליווי שמשנה מסלול.")}</p>
             <p className="mt-6 max-w-md text-[var(--muted)]">{getValue(data,"heroSubtitle")}</p>
             <button type="button" onClick={openModal} className="t-pulse mt-8 w-fit bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
           </Reveal>

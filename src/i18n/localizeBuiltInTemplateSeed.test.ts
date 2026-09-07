@@ -986,6 +986,23 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מייסד, Pulse", "en")).toMatch(/founder/i);
   });
 
+  it("localizes unique70 leftover cart, agency, and editor chrome", () => {
+    expect(localizeBuiltInText("העגלה ריקה כרגע.", "en")).toMatch(/cart|empty/i);
+    expect(localizeBuiltInText("העגלה ריקה כרגע.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מבט לסוכנות", "es")).toMatch(/agencia/i);
+    expect(localizeBuiltInText("מבט לסוכנות", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("לוגו ומותג", "pt-BR")).toMatch(/logo|marca/i);
+    expect(localizeBuiltInText("כותרת ראשית", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("פירוט 2", "en")).toMatch(/detail/i);
+    expect(localizeBuiltInText("פריט עגלה 3", "en")).toMatch(/cart item/i);
+    expect(
+      localizeBuiltInText(
+        "חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות.",
+        "en",
+      ),
+    ).toMatch(/traffic|identity|policy/i);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);

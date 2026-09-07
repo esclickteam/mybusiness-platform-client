@@ -88,7 +88,7 @@ const navLabelKeys: Record<string, string> = {
 type PageProps = { data: Record<string, any>; openModal: () => void; goTo: (pageId: string) => void };
 
 function getNavLabel(data: Record<string, any>, page: { id: string; label: string }) {
-  return getValue(data, navLabelKeys[page.id]) || page.label;
+  return getValue(data, navLabelKeys[page.id]) || tx(page.label);
 }
 
 function Header({ data, currentPage, goTo, openModal }: { data: Record<string, any>; currentPage: string; goTo: (pageId: string) => void; openModal: () => void }) {

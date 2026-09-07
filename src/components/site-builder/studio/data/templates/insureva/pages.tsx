@@ -216,8 +216,8 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
     <section className="px-5 py-16 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-8 text-center">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || "מבט לסוכנות"}</p>
-          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || "מרחבי שירות וביטחון"}</h2>
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || tx("מבט לסוכנות")}</p>
+          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || tx("מרחבי שירות וביטחון")}</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-2">
           {images.map((src, i) => (
