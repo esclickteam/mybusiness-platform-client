@@ -65,7 +65,7 @@ export const TEMPLATE_EXACT_LEXICON: Record<string, LocaleCopy> = {
   "כתבו כתובת וכמות — נאפה ונצא לדרך.": r(
     "Write an address and quantity — we bake and go.",
     "Escribe dirección y cantidad — horneamos y salimos.",
-    "Escreva morada e quantidade — assamos e saímos.",
+    "Escreva endereço e quantidade — assamos e saímos.",
     "اكتبوا عنواناً والكمية — نخبز وننطلق."
   ),
   "למה אצלנו": r("Why us", "Por qué nosotros", "Porque nós", "لماذا نحن"),
@@ -156,7 +156,7 @@ export const TEMPLATE_EXACT_LEXICON: Record<string, LocaleCopy> = {
   מדריך: r("Guide", "Guía", "Guia", "دليل"),
   סיפור: r("Story", "Historia", "História", "قصة"),
   טיפים: r("Tips", "Consejos", "Dicas", "نصائح"),
-  כתובת: r("Address", "Dirección", "Morada", "العنوان"),
+  כתובת: r("Address", "Dirección", "Endereço", "العنوان"),
   "תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.": r(
     "Thanks! We received your inquiry and will get back to you shortly.",
     "¡Gracias! Recibimos tu consulta y te responderemos pronto.",

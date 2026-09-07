@@ -962,6 +962,20 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique55 leftover Fluxora through Advisora chrome", () => {
+    expect(localizeBuiltInText("הפיד שלי", "en")).toMatch(/feed/i);
+    expect(localizeBuiltInText("הפיד שלי", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קהילות בסיסיות", "es")).toMatch(/comunidad/i);
+    expect(localizeBuiltInText("ליווי עד חתימה", "pt-BR")).toMatch(/assinatura|acompanh/i);
+    expect(localizeBuiltInText("בקשת אירוע", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("לקביעת תור אישי", "en")).toMatch(/book|appoint/i);
+    expect(localizeBuiltInText("רפואת ילדים", "en")).toMatch(/pediatric/i);
+    expect(localizeBuiltInText("מה התקלה?", "es")).toMatch(/avería|falla|problema/i);
+    expect(localizeBuiltInText("שיחת אבחון", "pt-BR")).toMatch(/diagnóstico|chamada/i);
+    expect(localizeBuiltInText("תבנית Fluxora · Bizuply Studio", "en")).toMatch(/fluxora|template/i);
+    expect(localizeBuiltInText("תבנית Fluxora · Bizuply Studio", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique54 leftover Shinora and Nexora chrome", () => {
     expect(localizeBuiltInText("לקביעת ייעוץ", "en")).toMatch(/consult|book/i);
     expect(localizeBuiltInText("לקביעת ייעוץ", "en")).not.toMatch(/[\u0590-\u05FF]/);

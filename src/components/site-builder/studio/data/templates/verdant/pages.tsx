@@ -178,7 +178,7 @@ function Agents({ data }: { data: Record<string, any> }) {
                 }}
               />
               <h3 className="v-display text-2xl font-semibold">{name}</h3>
-              <p className="mt-2 text-sm text-[var(--v-muted)]">{role}</p>
+              <p className="mt-2 text-sm text-[var(--v-muted)]">{tx(role)}</p>
             </div>
           ))}
         </div>
@@ -253,7 +253,7 @@ function Process({ data }: { data: Record<string, any> }) {
           {steps.map(([num, title, text]) => (
             <div key={num}>
               <div className="v-display text-2xl md:text-5xl text-[var(--v-moss)]">{num}</div>
-              <h3 className="mt-4 text-xl font-semibold">{title}</h3>
+              <h3 className="mt-4 text-xl font-semibold">{tx(title)}</h3>
               <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{tx(text)}</p>
             </div>
           ))}

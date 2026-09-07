@@ -285,7 +285,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
                 type="button"
                 onClick={() => setActive(index)}
                 className={`h-3 w-12 border border-[var(--p)] transition ${active === index ? "bg-[var(--p)]" : "bg-transparent"}`}
-                aria-label={`עדות ${index + 1}`}
+                aria-label={`${tx("עדות")} ${index + 1}`}
               />
             ))}
           </div>
