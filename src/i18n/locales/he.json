@@ -5320,7 +5320,10 @@
     },
     "errors": {
       "missingBusiness": "לא נמצא מזהה עסק לטעינת החיובים.",
-      "loadFailed": "טעינת מרכז החיובים נכשלה. נסו שוב."
+      "loadFailed": "טעינת מרכז החיובים נכשלה. נסו שוב.",
+      "pricingConfiguration": "התשלום אינו זמין כרגע. צוות BizUply קיבל התראה ומטפל בכך.",
+      "subscriptionAlreadyActive": "כבר קיים מנוי פעיל בחשבון. לניהול או שינוי המנוי פנו לאזור החיוב.",
+      "addonRequiresPlan": "תוספת אתר זמינה רק ללקוחות עם חבילה עסקית פעילה."
     },
     "plans": {
       "trial": "ניסיון",
@@ -5331,7 +5334,9 @@
       "yearly": "חבילה עסקית שנתית",
       "monthly": "חבילה עסקית חודשית",
       "website": "בניית אתר בלבד",
-      "trial": "מסלול ניסיון"
+      "trial": "מסלול ניסיון",
+      "crm_only": "CRM בלבד",
+      "earlybird": "חבילה עסקית חודשית (Early Bird)"
     },
     "statusLabels": {
       "active": "פעיל",
@@ -5376,7 +5381,8 @@
     "history": {
       "transaction": "מספר עסקה",
       "description": "תיאור",
-      "type": "סוג"
+      "type": "סוג",
+      "domainRenewal": "חידוש דומיין {{domain}}"
     },
     "filters": {
       "all": "הכול",
@@ -5429,7 +5435,8 @@
     "upcoming": {
       "badge": "קרובים",
       "title": "החיובים הקרובים שלך",
-      "cancelScheduled": "ביטול מתוכנן בסוף התקופה"
+      "cancelScheduled": "ביטול מתוכנן בסוף התקופה",
+      "websiteRenewal": "חידוש אתר לשנה נוספת"
     },
     "failed": {
       "banner": "יש תשלומים שנכשלו ודורשים טיפול",
@@ -5522,6 +5529,16 @@
     },
     "regional": {
       "unavailable": "המחיר האזורי הזה עדיין לא מוגדר לתשלום. פנו לתמיכה — לא נחייב במטבע אחר."
+    },
+    "addons": {
+      "push_notifications": "התראות Push",
+      "client_portal": "אזור אישי",
+      "automation_actions": "חבילת פעולות אוטומציה",
+      "site_plugin": "תוסף אתר",
+      "whatsapp_usage": "חיוב שימוש WhatsApp"
+    },
+    "earlyBird": {
+      "redirecting": "ההצעה הבלעדית מוכנה — מעבירים אתכם לתשלום…"
     }
   },
   "collab": {

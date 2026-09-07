@@ -127,12 +127,91 @@ const REGIONAL = {
   ),
 };
 
+const PLAN_NAMES = {
+  crm_only: row("CRM only", "CRM בלבד", "Solo CRM", "Apenas CRM", "CRM فقط"),
+  earlybird: row(
+    "Monthly business plan (Early Bird)",
+    "חבילה עסקית חודשית (Early Bird)",
+    "Plan de negocio mensual (Early Bird)",
+    "Plano mensal de negócio (Early Bird)",
+    "باقة الأعمال الشهرية (Early Bird)"
+  ),
+};
+
+const ADDONS = {
+  push_notifications: row("Push notifications", "התראות Push", "Notificaciones push", "Notificações push", "إشعارات الدفع"),
+  client_portal: row("Client portal", "אזור אישי", "Área personal", "Área pessoal", "المنطقة الشخصية"),
+  automation_actions: row("Automation actions plan", "חבילת פעולות אוטומציה", "Plan de acciones de automatización", "Plano de ações de automação", "باقة إجراءات الأتمتة"),
+  site_plugin: row("Site plugin", "תוסף אתר", "Complemento del sitio", "Plugin do site", "إضافة الموقع"),
+  whatsapp_usage: row("WhatsApp usage billing", "חיוב שימוש WhatsApp", "Facturación de uso de WhatsApp", "Cobrança de uso do WhatsApp", "فوترة استخدام واتساب"),
+};
+
+const BILLING_ERRORS = {
+  pricingConfiguration: row(
+    "Payment is temporarily unavailable. The BizUply team has been notified.",
+    "התשלום אינו זמין כרגע. צוות BizUply קיבל התראה ומטפל בכך.",
+    "El pago no está disponible ahora. El equipo de BizUply ha sido avisado.",
+    "O pagamento está indisponível no momento. A equipe da BizUply foi avisada.",
+    "الدفع غير متاح حالياً. تم إشعار فريق BizUply."
+  ),
+  subscriptionAlreadyActive: row(
+    "An active subscription already exists. Manage or change it from billing.",
+    "כבר קיים מנוי פעיל בחשבון. לניהול או שינוי המנוי פנו לאזור החיוב.",
+    "Ya hay una suscripción activa. Gestiona o cámbiala desde facturación.",
+    "Já existe uma assinatura ativa. Gerencie ou altere em faturamento.",
+    "هناك اشتراك نشط بالفعل. أديروه أو غيّروه من الفوترة."
+  ),
+  addonRequiresPlan: row(
+    "The website add-on is only available to customers with an active business plan.",
+    "תוספת אתר זמינה רק ללקוחות עם חבילה עסקית פעילה.",
+    "El extra de web solo está disponible con un plan de negocio activo.",
+    "O extra de website só está disponível com um plano de negócio ativo.",
+    "إضافة الموقع متاحة فقط للعملاء الذين لديهم باقة أعمال نشطة."
+  ),
+};
+
+const UPCOMING = {
+  websiteRenewal: row(
+    "Website renewal for another year",
+    "חידוש אתר לשנה נוספת",
+    "Renovación del sitio por otro año",
+    "Renovação do site por mais um ano",
+    "تجديد الموقع لسنة إضافية"
+  ),
+};
+
+const HISTORY = {
+  domainRenewal: row(
+    "Domain renewal {{domain}}",
+    "חידוש דומיין {{domain}}",
+    "Renovación de dominio {{domain}}",
+    "Renovação de domínio {{domain}}",
+    "تجديد النطاق {{domain}}"
+  ),
+};
+
+const EARLY_BIRD = {
+  redirecting: row(
+    "Your exclusive offer is ready — taking you to payment…",
+    "ההצעה הבלעדית מוכנה — מעבירים אתכם לתשלום…",
+    "Tu oferta exclusiva está lista — te llevamos al pago…",
+    "Sua oferta exclusiva está pronta — levando você ao pagamento…",
+    "عرضكم الحصري جاهز — ننقلكم إلى الدفع…"
+  ),
+};
+
 export function extraPricingMarketsLocaleObject(locale) {
   return {
     billing: {
       markets: pick(MARKETS, locale),
       upgrade: pick(UPGRADE, locale),
       regional: pick(REGIONAL, locale),
+      planNames: pick(PLAN_NAMES, locale),
+      addons: pick(ADDONS, locale),
+      errors: pick(BILLING_ERRORS, locale),
+      upcoming: pick(UPCOMING, locale),
+      history: pick(HISTORY, locale),
+      earlyBird: pick(EARLY_BIRD, locale),
     },
     leftover: {
       upgradeBanner: pick(BANNER, locale),

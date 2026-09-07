@@ -5331,7 +5331,10 @@
     },
     "errors": {
       "missingBusiness": "No pudimos identificar el negocio. Por favor, actualice la página.",
-      "loadFailed": "No se pudo cargar el centro de facturación. Por favor, inténtalo de nuevo."
+      "loadFailed": "No se pudo cargar el centro de facturación. Por favor, inténtalo de nuevo.",
+      "pricingConfiguration": "El pago no está disponible ahora. El equipo de BizUply ha sido avisado.",
+      "subscriptionAlreadyActive": "Ya hay una suscripción activa. Gestiona o cámbiala desde facturación.",
+      "addonRequiresPlan": "El extra de web solo está disponible con un plan de negocio activo."
     },
     "plans": {
       "trial": "Juicio",
@@ -5342,7 +5345,9 @@
       "yearly": "Plan de negocios anual",
       "monthly": "Plan de negocios mensual",
       "website": "Solo sitio web",
-      "trial": "Plan de prueba"
+      "trial": "Plan de prueba",
+      "crm_only": "Solo CRM",
+      "earlybird": "Plan de negocio mensual (Early Bird)"
     },
     "statusLabels": {
       "active": "Activo",
@@ -5387,7 +5392,8 @@
     "history": {
       "transaction": "Transacción",
       "description": "Descripción",
-      "type": "Tipo"
+      "type": "Tipo",
+      "domainRenewal": "Renovación de dominio {{domain}}"
     },
     "filters": {
       "all": "Todo",
@@ -5440,7 +5446,8 @@
     "upcoming": {
       "badge": "Próximamente",
       "title": "Sus próximas cargas",
-      "cancelScheduled": "Cancelación programada al final del período"
+      "cancelScheduled": "Cancelación programada al final del período",
+      "websiteRenewal": "Renovación del sitio por otro año"
     },
     "failed": {
       "banner": "Hay pagos fallidos que necesitan atención",
@@ -5533,6 +5540,16 @@
     },
     "regional": {
       "unavailable": "Este precio regional aún no está configurado para el pago. Contacta con soporte — no cobraremos otra moneda."
+    },
+    "addons": {
+      "push_notifications": "Notificaciones push",
+      "client_portal": "Área personal",
+      "automation_actions": "Plan de acciones de automatización",
+      "site_plugin": "Complemento del sitio",
+      "whatsapp_usage": "Facturación de uso de WhatsApp"
+    },
+    "earlyBird": {
+      "redirecting": "Tu oferta exclusiva está lista — te llevamos al pago…"
     }
   },
   "collab": {

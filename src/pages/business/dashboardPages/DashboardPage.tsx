@@ -40,7 +40,7 @@ import {
   type PreloadableComponent,
 } from "@/utils/lazyWithPreload";
 
-import DashboardSkeleton from "@/components/DashboardSkeleton";
+import { billingCheckoutErrorMessage } from "@/components/billing/billingCopy";
 import BizuplyLoader from "@/components/ui/BizuplyLoader";
 import UpgradeOfferCard from "@/components/UpgradeOfferCard";
 import DashboardOverview from "@/components/dashboard/overview/DashboardOverview";
@@ -1643,6 +1643,7 @@ export default function DashboardPage() {
       const res = await API.post("/stripe/create-checkout-session", {
         userId: checkoutUserId,
         plan: "monthly",
+        language: i18n.language,
       });
 
       if (res.data?.url) {
@@ -1653,8 +1654,12 @@ export default function DashboardPage() {
       throw new Error("Missing payment link");
     } catch (err) {
       console.error("Early Bird payment error:", err);
+      const code = (err as { response?: { data?: { code?: string } } })?.response
+        ?.data?.code;
       setAlertMessage(
-        tx("dashboard.states.somethingWrong", "Something went wrong. Please try again.")
+        code
+          ? billingCheckoutErrorMessage(t, code, "dashboard.states.somethingWrong")
+          : tx("dashboard.states.somethingWrong", "Something went wrong. Please try again.")
       );
     }
   };

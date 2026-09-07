@@ -5331,7 +5331,10 @@
     },
     "errors": {
       "missingBusiness": "We couldn't identify the business. Please refresh the page.",
-      "loadFailed": "Failed to load the billing center. Please try again."
+      "loadFailed": "Failed to load the billing center. Please try again.",
+      "pricingConfiguration": "Payment is temporarily unavailable. The BizUply team has been notified.",
+      "subscriptionAlreadyActive": "An active subscription already exists. Manage or change it from billing.",
+      "addonRequiresPlan": "The website add-on is only available to customers with an active business plan."
     },
     "plans": {
       "trial": "Trial",
@@ -5342,7 +5345,9 @@
       "yearly": "Yearly business plan",
       "monthly": "Monthly business plan",
       "website": "Website only",
-      "trial": "Trial plan"
+      "trial": "Trial plan",
+      "crm_only": "CRM only",
+      "earlybird": "Monthly business plan (Early Bird)"
     },
     "statusLabels": {
       "active": "Active",
@@ -5387,7 +5392,8 @@
     "history": {
       "transaction": "Transaction",
       "description": "Description",
-      "type": "Type"
+      "type": "Type",
+      "domainRenewal": "Domain renewal {{domain}}"
     },
     "filters": {
       "all": "All",
@@ -5440,7 +5446,8 @@
     "upcoming": {
       "badge": "Upcoming",
       "title": "Your upcoming charges",
-      "cancelScheduled": "Cancellation scheduled at period end"
+      "cancelScheduled": "Cancellation scheduled at period end",
+      "websiteRenewal": "Website renewal for another year"
     },
     "failed": {
       "banner": "There are failed payments that need attention",
@@ -5533,6 +5540,16 @@
     },
     "regional": {
       "unavailable": "This regional price is not configured for checkout yet. Contact support — we will not charge a different currency."
+    },
+    "addons": {
+      "push_notifications": "Push notifications",
+      "client_portal": "Client portal",
+      "automation_actions": "Automation actions plan",
+      "site_plugin": "Site plugin",
+      "whatsapp_usage": "WhatsApp usage billing"
+    },
+    "earlyBird": {
+      "redirecting": "Your exclusive offer is ready — taking you to payment…"
     }
   },
   "collab": {

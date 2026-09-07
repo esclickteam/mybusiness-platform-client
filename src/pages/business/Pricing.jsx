@@ -52,6 +52,7 @@ import {
   planAmount,
   readStoredBillingCountry,
 } from "../../billing/billingMarkets";
+import { billingCheckoutErrorMessage } from "../../components/billing/billingCopy";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -266,6 +267,7 @@ export default function Plans() {
       const res = await API.post("/stripe/create-checkout-session", {
         plan: plan.checkoutPlan,
         includeWebsiteAddon: wantsWebsiteAddon,
+        language: i18n.language,
         billingCountry: persistBillingCountry(
           user?.billingCountry || readStoredBillingCountry()
         ),
@@ -274,7 +276,7 @@ export default function Plans() {
       const data = res.data || {};
 
       if (data.code === "REGIONAL_PRICE_UNAVAILABLE") {
-        alert(t("billing.regional.unavailable"));
+        alert(billingCheckoutErrorMessage(t, data.code));
         setLoadingPlan(null);
         return;
       }
@@ -290,9 +292,11 @@ export default function Plans() {
       console.error(err);
       const code = err?.response?.data?.code;
       alert(
-        code === "REGIONAL_PRICE_UNAVAILABLE"
-          ? t("billing.regional.unavailable")
-          : t("pricing.alertGenericError")
+        billingCheckoutErrorMessage(
+          t,
+          code,
+          "pricing.alertGenericError"
+        )
       );
       setLoadingPlan(null);
     }

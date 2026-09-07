@@ -5331,7 +5331,10 @@
     },
     "errors": {
       "missingBusiness": "لم نستطع تحديد العمل يرجى تحديث الصفحة.",
-      "loadFailed": "فشل في تحميل مركز الفوترة. رجاءً حاول ثانيةً."
+      "loadFailed": "فشل في تحميل مركز الفوترة. رجاءً حاول ثانيةً.",
+      "pricingConfiguration": "الدفع غير متاح حالياً. تم إشعار فريق BizUply.",
+      "subscriptionAlreadyActive": "هناك اشتراك نشط بالفعل. أديروه أو غيّروه من الفوترة.",
+      "addonRequiresPlan": "إضافة الموقع متاحة فقط للعملاء الذين لديهم باقة أعمال نشطة."
     },
     "plans": {
       "trial": "المحاكمة",
@@ -5342,7 +5345,9 @@
       "yearly": "خطة العمل السنوية",
       "monthly": "خطة العمل الشهرية",
       "website": "الموقع فقط",
-      "trial": "خطة المحاكمة"
+      "trial": "خطة المحاكمة",
+      "crm_only": "CRM فقط",
+      "earlybird": "باقة الأعمال الشهرية (Early Bird)"
     },
     "statusLabels": {
       "active": "نشط",
@@ -5387,7 +5392,8 @@
     "history": {
       "transaction": "المعاملة",
       "description": "الوصف",
-      "type": "النوع"
+      "type": "النوع",
+      "domainRenewal": "تجديد النطاق {{domain}}"
     },
     "filters": {
       "all": "الكل",
@@ -5440,7 +5446,8 @@
     "upcoming": {
       "badge": "القادمون",
       "title": "رسومك القادمة",
-      "cancelScheduled": "الإلغاء المقرر في نهاية الفترة"
+      "cancelScheduled": "الإلغاء المقرر في نهاية الفترة",
+      "websiteRenewal": "تجديد الموقع لسنة إضافية"
     },
     "failed": {
       "banner": "هناك مدفوعات فاشلة تحتاج إلى الاهتمام",
@@ -5533,6 +5540,16 @@
     },
     "regional": {
       "unavailable": "هذا السعر الإقليمي غير مُعدّ للدفع بعد. تواصلوا مع الدعم — لن نحصّل بعملة أخرى."
+    },
+    "addons": {
+      "push_notifications": "إشعارات الدفع",
+      "client_portal": "المنطقة الشخصية",
+      "automation_actions": "باقة إجراءات الأتمتة",
+      "site_plugin": "إضافة الموقع",
+      "whatsapp_usage": "فوترة استخدام واتساب"
+    },
+    "earlyBird": {
+      "redirecting": "عرضكم الحصري جاهز — ننقلكم إلى الدفع…"
     }
   },
   "collab": {

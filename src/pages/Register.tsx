@@ -293,6 +293,14 @@ export default function Register() {
         setError(t("billing.regional.unavailable"));
         return;
       }
+      if (apiError.response?.data?.code === "PRICING_CONFIGURATION_ERROR") {
+        setError(t("billing.errors.pricingConfiguration"));
+        return;
+      }
+      if (apiError.response?.data?.code === "EMAIL_ALREADY_REGISTERED") {
+        setError(t("register.emailExists"));
+        return;
+      }
 
       if (apiError.response?.status === 400) {
         setError(t("register.emailExists"));
