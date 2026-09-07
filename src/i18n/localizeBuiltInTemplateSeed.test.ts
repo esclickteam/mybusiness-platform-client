@@ -975,6 +975,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שפה 01", "en")).toMatch(/language 01/i);
   });
 
+  it("localizes unique68 leftover Virello through Studiora chrome", () => {
+    expect(localizeBuiltInText("פרינט", "en")).toBe("Print");
+    expect(localizeBuiltInText("מפתח", "en")).toMatch(/developer/i);
+    expect(localizeBuiltInText("מורות", "es")).toMatch(/profesor/i);
+    expect(localizeBuiltInText("שמאים", "pt-BR")).toMatch(/avaliador/i);
+    expect(localizeBuiltInText("נדיר", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מסאז׳ עם שמנים טרופיים.", "en")).toMatch(/massage|tropical/i);
+    expect(localizeBuiltInText("UI/UX · מובייל", "en")).toMatch(/mobile/i);
+    expect(localizeBuiltInText("מייסד, Pulse", "en")).toMatch(/founder/i);
+  });
+
   it("localizes unique66 leftover Emberplate through Tacoflare food chrome", () => {
     expect(localizeBuiltInText("ציר הבשר", "en")).toMatch(/meat|axis/i);
     expect(localizeBuiltInText("ציר הבשר", "en")).not.toMatch(/[\u0590-\u05FF]/);
