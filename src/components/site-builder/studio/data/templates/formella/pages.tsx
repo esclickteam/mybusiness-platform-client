@@ -307,7 +307,7 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-6 lg:grid-cols-[120px_1fr]">
             <div className="font-mono text-sm text-[var(--p)]">FORM<div className="mt-3 h-24 w-px bg-[var(--p)]/50" /></div>
-            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"hoursTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><Reveal className="mt-8 grid gap-4 md:grid-cols-3">{[["א-ה","09:00-20:00"],["ו","09:00-14:00"],["מענה","עד שעה לאישור"]].map(([d,h]) => (<div key={tx(d)} className="border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm text-[var(--muted)]">{tx(d)}</p><strong className="text-2xl text-[var(--p)]">{h}</strong></div>))}</Reveal></div>
+            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"hoursTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><Reveal className="mt-8 grid gap-4 md:grid-cols-3">{[["א-ה","09:00-20:00"],["ו","09:00-14:00"],["מענה","עד שעה לאישור"]].map(([d,h]) => (<div key={tx(d)} className="border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm text-[var(--muted)]">{tx(d === "ו" ? "שישי" : d)}</p><strong className="text-2xl text-[var(--p)]">{tx(h)}</strong></div>))}</Reveal></div>
           </div>
         </div>
       </section>

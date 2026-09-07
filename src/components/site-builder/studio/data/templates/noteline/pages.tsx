@@ -156,7 +156,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
           {["טכניקה","רפרטואר","אימפרוביזציה","במה"].map((s,i) => (
             <Reveal key={s} delayMs={i*80} className="t-hover border border-[var(--a)]/30 p-5 text-center">
               <div className="t-wave mx-auto mb-3 h-8 w-1 bg-[var(--a)]" style={{animationDelay:`${i*0.2}s`}} />
-              <p className="font-bold">{s}</p>
+              <p className="font-bold">{tx(s)}</p>
             </Reveal>
           ))}
         </div>
@@ -175,7 +175,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
             <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-700 hover:scale-110" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black p-6">
               <p className="t-display text-2xl">{n}</p>
-              <p className="text-sm text-[var(--a)]">{r}</p>
+              <p className="text-sm text-[var(--a)]">{tx(r)}</p>
             </div>
           </Reveal>
         ))}

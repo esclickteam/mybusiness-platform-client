@@ -307,7 +307,7 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto mb-8 h-16 w-px bg-[var(--p)]" />
           <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">PEARL / hoursPanel</p>
-          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"hoursTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><Reveal className="mt-8 grid gap-4 md:grid-cols-3">{[["א-ה","09:00-20:00"],["ו","09:00-14:00"],["מענה","עד שעה לאישור"]].map(([d,h]) => (<div key={tx(d)} className="border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm text-[var(--muted)]">{tx(d)}</p><strong className="text-2xl text-[var(--p)]">{h}</strong></div>))}</Reveal>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"hoursTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><Reveal className="mt-8 grid gap-4 md:grid-cols-3">{[["א-ה","09:00-20:00"],["ו","09:00-14:00"],["מענה","עד שעה לאישור"]].map(([d,h]) => (<div key={tx(d)} className="border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm text-[var(--muted)]">{tx(d === "ו" ? "שישי" : d)}</p><strong className="text-2xl text-[var(--p)]">{tx(h)}</strong></div>))}</Reveal>
         </div>
       </section>
       <section data-template-section-type="policies" data-section-kind="policies" className="beauty-bridalPearl-policies-frame-9 px-5 py-20 lg:px-8">

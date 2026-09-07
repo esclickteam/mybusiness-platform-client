@@ -154,7 +154,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         <div className="t-pulse absolute h-64 w-64 rounded-full border border-[var(--p)]/40" />
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {["אבחון","מיפוי","ליווי","מדידה"].map((s,i) => (
-            <Reveal key={s} delayMs={i*90} variant="scale" className="t-float grid h-28 w-28 place-items-center rounded-full border border-[var(--p)] bg-[var(--bg)] text-center text-sm font-bold">{s}</Reveal>
+            <Reveal key={s} delayMs={i*90} variant="scale" className="t-float grid h-28 w-28 place-items-center rounded-full border border-[var(--p)] bg-[var(--bg)] text-center text-sm font-bold">{tx(s)}</Reveal>
           ))}
         </div>
       </div>

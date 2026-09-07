@@ -140,7 +140,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
         {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title,text],i) => (
           <Reveal key={title} delayMs={i*70} className="t-hover grid grid-cols-[1fr_100px_80px] items-center border-t border-[var(--p)]/10 px-4 py-4">
             <div><p className="font-bold text-[var(--dark)]">{title}</p><p className="text-xs text-[var(--muted)]">{tx(text)}</p></div>
-            <span className="text-sm text-[var(--p)]">{["5 יח׳","אקדמי","מתקדם"][i]}</span>
+            <span className="text-sm text-[var(--p)]">{tx(["5 יח׳","אקדמי","מתקדם"][i])}</span>
             <span className="font-bold text-[var(--dark)]">{[45,60,90][i]}</span>
           </Reveal>
         ))}
@@ -176,7 +176,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
         {[["ד״ר יעל אברהם","מתמטיקה"],["פרופ׳ דן לוי","אנגלית"],["מיכל כץ","פסיכומטרי"]].map(([n,r],i) => (
           <Reveal key={n} delayMs={i*80} className="t-hover flex items-center gap-5 p-5">
             <div className="h-14 w-14 overflow-hidden rounded-full bg-[var(--bg)]"><SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" /></div>
-            <div className="flex-1"><p className="font-bold text-[var(--dark)]">{n}</p><p className="text-sm text-[var(--p)]">{r}</p></div>
+            <div className="flex-1"><p className="font-bold text-[var(--dark)]">{n}</p><p className="text-sm text-[var(--p)]">{tx(r)}</p></div>
             <span className="text-xs text-[var(--muted)]">{tx("קבלה")}</span>
           </Reveal>
         ))}
@@ -225,7 +225,7 @@ function Faq({ data }: { data: Record<string, any> }) {
         <p className="text-sm text-[var(--muted)]">University Q&A</p></Reveal>
         {[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q,a],i) => (
           <Reveal key={q} delayMs={i*70} className="mb-3 border border-[var(--p)]/20 p-5">
-            <p className="font-bold text-[var(--dark)]">ש{i+1}. {q}</p>
+            <p className="font-bold text-[var(--dark)]">{tx(`שאלה ${i+1}`)}. {q}</p>
             <p className="mt-2 text-sm text-[var(--muted)]">{a}</p>
           </Reveal>
         ))}

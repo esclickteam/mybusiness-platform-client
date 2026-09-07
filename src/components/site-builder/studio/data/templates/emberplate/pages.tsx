@@ -129,7 +129,7 @@ function GlowHourChips({ data }: { data: Record<string, any> }) {
           <Reveal key={tx(d)} delayMs={i * 80} variant="scale">
             <div className="tpl-glow-chip border px-6 py-4 text-center" style={{ borderColor: "#e85d04", background: "#1f1410", animationDelay: `${i * 0.3}s` }}>
               <div className="text-xs font-bold tracking-wider" style={{ color: "#e85d04" }}>{tx(d === "ו׳" ? "שישי" : d)}</div>
-              <div className="mt-1 text-sm font-semibold">{h}</div>
+              <div className="mt-1 text-sm font-semibold">{tx(h)}</div>
             </div>
           </Reveal>
         ))}
@@ -357,7 +357,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
               <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(featured.tag)}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#b89a82" }}>{featured.text}</p>
               </div>
@@ -370,7 +370,7 @@ function Insights({ data }: { data: Record<string, any> }) {
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
                 <div className="p-5 text-start sm:p-6">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(post.tag)}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#b89a82" }}>{post.text}</p>
                 </div>

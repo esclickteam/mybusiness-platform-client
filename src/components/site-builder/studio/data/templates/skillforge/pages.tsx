@@ -150,7 +150,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
           <Reveal key={s} delayMs={i*90} className="t-hover min-w-[220px] shrink-0 border border-[var(--p)] p-6">
             <div className="mb-4 h-1 w-full bg-[var(--p)]" />
             <p className="text-xs text-[var(--p)]">STAGE {i+1}</p>
-            <p className="mt-2 text-xl font-bold uppercase">{s}</p>
+            <p className="mt-2 text-xl font-bold uppercase">{tx(s)}</p>
           </Reveal>
         ))}
       </div>

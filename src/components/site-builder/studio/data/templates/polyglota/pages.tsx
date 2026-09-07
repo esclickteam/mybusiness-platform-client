@@ -128,7 +128,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
       </div>
       <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden border-y border-[var(--p)]/25 bg-[var(--bg)]/80 py-3 backdrop-blur-sm">
         <div className="t-marquee flex gap-10 text-sm font-bold text-[var(--p)]">
-          {["עברית","English","Español","العربية","Français","Deutsch","עברית","English","Español","العربية"].map((l,i) => <span key={i}>{l}</span>)}
+          {["עברית","English","Español","العربية","Français","Deutsch","עברית","English","Español","العربية"].map((l,i) => <span key={i}>{tx(l)}</span>)}
         </div>
       </div>
     </section>
@@ -160,7 +160,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         {[["היכרות","מילים ראשונות וביטחון"],["תרגול","שיחה חיה פעמיים בשבוע"],["שטף","פרויקט דיבור אישי"]].map(([t,d],i) => (
           <Reveal key={t} delayMs={i*90} className={`flex items-center gap-6 ${i%2===1?"flex-row-reverse text-left":""}`}>
             <div className="t-float grid h-20 w-20 shrink-0 place-items-center rounded-full bg-[var(--p)] text-xl font-bold text-white">{i+1}</div>
-            <div><h3 className="text-xl font-bold text-[var(--dark)]">{t}</h3><p className="text-sm text-[var(--muted)]">{tx(d)}</p></div>
+            <div><h3 className="text-xl font-bold text-[var(--dark)]">{tx(t)}</h3><p className="text-sm text-[var(--muted)]">{tx(d)}</p></div>
           </Reveal>
         ))}
       </div>

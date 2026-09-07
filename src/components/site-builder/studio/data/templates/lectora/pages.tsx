@@ -163,7 +163,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
             <Reveal key={n} delayMs={i*70}>
               <details className="t-hover group border border-[var(--p)]/25 bg-[var(--surface)] open:border-[var(--a)]">
                 <summary className="flex cursor-pointer list-none items-center gap-5 p-5 font-bold">
-                  <span className="t-display text-2xl text-[var(--p)]">{n}</span>{t}
+                  <span className="t-display text-2xl text-[var(--p)]">{n}</span>{tx(t)}
                 </summary>
                 <p className="px-5 pb-5 text-sm text-[var(--muted)]">{tx("שיעורים מוקלטים + מפגש חי שבועי עם המנחה.")}</p>
               </details>
@@ -186,7 +186,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
               <SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover opacity-80 transition duration-700 hover:scale-110" />
             </div>
             <p className="mt-3 font-bold">{n}</p>
-            <p className="text-sm text-[var(--p)]">{r}</p>
+            <p className="text-sm text-[var(--p)]">{tx(r)}</p>
           </Reveal>
         ))}
       </div>

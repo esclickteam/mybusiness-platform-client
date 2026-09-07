@@ -78,6 +78,7 @@ import unique63ExactLexicon from "./templateExactLexicon.unique63.json";
 import unique64ExactLexicon from "./templateExactLexicon.unique64.json";
 import unique65ExactLexicon from "./templateExactLexicon.unique65.json";
 import unique66ExactLexicon from "./templateExactLexicon.unique66.json";
+import unique67ExactLexicon from "./templateExactLexicon.unique67.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -168,6 +169,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique64ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique65ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique66ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique67ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -313,6 +315,7 @@ const INGREDIENT_FIT_RE = /^חומרי גלם שמתאימים ל(.+)$/;
 const BEHIND_SCENES_RE = /^(.+) — מאחורי הקלעים\.$/;
 const PRICE_DOT_RE = /^₪(\d+) · (.+)$/;
 const UNIT_COUNT_RE = /^(\d+)\s*יח׳$/;
+const WEEK_RANGE_RE = /^שבוע (\d+)[-–](\d+)$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -595,6 +598,17 @@ function localizeDuration(text: string, locale: string): string {
   if (locale === "pt-BR") return isMin ? `${n} min` : `${n} h`;
   if (locale === "ar") return isMin ? `${n} د` : `${n} س`;
   return isMin ? `${n} min` : `${n} h`;
+}
+
+function localizeWeekRange(text: string, locale: string): string {
+  const match = text.match(WEEK_RANGE_RE);
+  if (!match) return "";
+  const a = match[1];
+  const b = match[2];
+  if (locale === "es") return `Semanas ${a}–${b}`;
+  if (locale === "pt-BR") return `Semanas ${a}–${b}`;
+  if (locale === "ar") return `الأسابيع ${a}–${b}`;
+  return `Weeks ${a}–${b}`;
 }
 
 function fromPricePrefix(locale: string, amount: string): string {
@@ -1248,6 +1262,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const duration = localizeDuration(text, locale);
   if (isUsableTranslation(text, duration, locale)) {
     return adaptBuiltInDirectionalCss(duration, locale);
+  }
+
+  const weekRange = localizeWeekRange(text, locale);
+  if (isUsableTranslation(text, weekRange, locale)) {
+    return adaptBuiltInDirectionalCss(weekRange, locale);
   }
 
   const fromPrice = localizeFromPrice(text, locale);

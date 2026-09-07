@@ -158,7 +158,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
           <Reveal key={s} delayMs={i*90} className={`relative mb-10 flex ${i%2?"justify-start":"justify-end"}`}>
             <div className="w-64 border border-[var(--p)] bg-[var(--dark)] p-5">
               <span className="text-[var(--p)]">0{i+1}</span>
-              <p className="mt-2 text-xl font-bold">{s}</p>
+              <p className="mt-2 text-xl font-bold">{tx(s)}</p>
             </div>
           </Reveal>
         ))}

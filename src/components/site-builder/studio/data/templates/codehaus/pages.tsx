@@ -155,7 +155,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         {[["feat: setup env","שבוע 1-2"],["feat: first app","שבוע 3-6"],["feat: APIs","שבוע 7-10"],["release: portfolio","שבוע 11-12"]].map(([c,w],i) => (
           <Reveal key={c} delayMs={i*90} className="relative mb-8">
             <span className="absolute -right-[41px] top-1 h-4 w-4 rounded-full bg-[var(--p)]" />
-            <p className="text-xs text-[var(--muted)]">commit {i+1} · {w}</p>
+            <p className="text-xs text-[var(--muted)]">commit {i+1} · {tx(w)}</p>
             <p className="text-lg text-white">{c}</p>
           </Reveal>
         ))}

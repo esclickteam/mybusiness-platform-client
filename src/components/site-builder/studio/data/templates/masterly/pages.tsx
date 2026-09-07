@@ -162,7 +162,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         {[["I","פתיחה והקשר"],["II","עומק ותרגול"],["III","שיא ובמה"]].map(([n,t],i) => (
           <Reveal key={n} delayMs={i*100} className="t-hover flex items-baseline gap-8 border-b border-white/10 pb-8">
             <span className="t-display text-7xl text-[var(--p)]/40 md:text-9xl">{n}</span>
-            <div><p className="text-xs uppercase tracking-[0.3em] text-[var(--a)]">Chapter</p><h3 className="mt-2 text-2xl text-white">{t}</h3></div>
+            <div><p className="text-xs uppercase tracking-[0.3em] text-[var(--a)]">Chapter</p><h3 className="mt-2 text-2xl text-white">{tx(t)}</h3></div>
           </Reveal>
         ))}
       </div>

@@ -962,6 +962,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique67 peer critique and week ranges", () => {
+    expect(localizeBuiltInText("ביקורת עמיתים", "en")).toMatch(/peer|critique/i);
+    expect(localizeBuiltInText("ביקורת עמיתים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("ביקורת עמיתים", "es")).toMatch(/crítica|compañer/i);
+    expect(localizeBuiltInText("שבוע 1-2", "en")).toMatch(/weeks 1/i);
+    expect(localizeBuiltInText("שבוע 11-12", "pt-BR")).toMatch(/semanas/i);
+    expect(localizeBuiltInText("שבוע 3-6", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique66 leftover Emberplate through Tacoflare food chrome", () => {
     expect(localizeBuiltInText("ציר הבשר", "en")).toMatch(/meat|axis/i);
     expect(localizeBuiltInText("ציר הבשר", "en")).not.toMatch(/[\u0590-\u05FF]/);
