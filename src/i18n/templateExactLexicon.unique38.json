@@ -70,5 +70,23 @@
     "es": "clientes y resultados medibles.",
     "pt-BR": "clientes e resultados mensuráveis.",
     "ar": "عملاء ونتائج قابلة للقياس."
+  },
+  "קביעת שיחת ייעוץ": {
+    "en": "Book a consultation",
+    "es": "Reservar una consulta",
+    "pt-BR": "Agendar uma consultoria",
+    "ar": "حجز استشارة"
+  },
+  "צפייה בשירותים": {
+    "en": "View services",
+    "es": "Ver servicios",
+    "pt-BR": "Ver serviços",
+    "ar": "عرض الخدمات"
+  },
+  "קביעת שיחה": {
+    "en": "Book a call",
+    "es": "Reservar una llamada",
+    "pt-BR": "Agendar uma chamada",
+    "ar": "حجز مكالمة"
   }
 }

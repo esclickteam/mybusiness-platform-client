@@ -81,6 +81,24 @@ const rows = {
     "clientes e resultados mensuráveis.",
     "عملاء ونتائج قابلة للقياس.",
   ),
+  "קביעת שיחת ייעוץ": r(
+    "Book a consultation",
+    "Reservar una consulta",
+    "Agendar uma consultoria",
+    "حجز استشارة",
+  ),
+  "צפייה בשירותים": r(
+    "View services",
+    "Ver servicios",
+    "Ver serviços",
+    "عرض الخدمات",
+  ),
+  "קביעת שיחה": r(
+    "Book a call",
+    "Reservar una llamada",
+    "Agendar uma chamada",
+    "حجز مكالمة",
+  ),
 };
 
 const out = join(

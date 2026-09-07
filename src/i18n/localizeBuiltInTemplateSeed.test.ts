@@ -737,6 +737,9 @@ describe("localizeBuiltInTemplateSeed", () => {
         "pt-BR",
       ),
     ).toMatch(/marca digital|confiança|leads/i);
+    expect(localizeBuiltInText("קביעת שיחת ייעוץ", "en")).toMatch(/consult/i);
+    expect(localizeBuiltInText("צפייה בשירותים", "es")).toMatch(/servicio/i);
+    expect(localizeBuiltInText("קביעת שיחה", "pt-BR")).toMatch(/chamada|agendar/i);
   });
 
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
