@@ -88,7 +88,7 @@ function MediaElement({
         "data-visual-edit-type": "image",
         "data-visual-type": "image",
         "data-visual-editable": "true",
-        "data-visual-edit-label": alt || "תמונה",
+        "data-visual-edit-label": alt || tx("תמונה"),
         "data-visual-media-type": mediaType,
         "data-resource-type": mediaType,
         "data-visual-current-src": cleanSrc,
@@ -933,7 +933,7 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
     <>
       <PageHero
-        eyebrow="השירותים שלנו"
+        eyebrow={tx("השירותים שלנו")}
         title={tx("פתרונות עסקיים לאתר מקצועי, לידים ותהליך מכירה ברור.")}
         text={tx("עמוד שירותים שמתאים לעסקים שרוצים להסביר במה הם עוזרים, למה לבחור בהם ואיך להשאיר פרטים.")}
       />
@@ -1082,7 +1082,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
       <div className="elevora-shell">
         <div className="elevora-footer-inner">
           <div>
-            © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
+            © {new Date().getFullYear()} {data.brand.name}. {tx("כל הזכויות שמורות.")}
           </div>
 
           <div className="elevora-nav">

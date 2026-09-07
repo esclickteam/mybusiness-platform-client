@@ -806,6 +806,23 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("קביעת ייעוץ", "en")).toMatch(/consult/i);
   });
 
+  it("localizes unique43 leftover Spalcio, Elevora, and Servora built-in seed copy", () => {
+    expect(localizeBuiltInText("אסטרטגיה, צמיחה ותוצאות", "en")).toMatch(
+      /strategy|growth/i,
+    );
+    expect(localizeBuiltInText("אסטרטגיה, צמיחה ותוצאות", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("אתר עסקי שמרגיש יוקרתי, ברור ומוכן להביא לקוחות.", "es")).toMatch(
+      /lujo|negocio/i,
+    );
+    expect(localizeBuiltInText("מתקנים, משדרגים ומשפצים מערכות חשמל", "pt-BR")).toMatch(
+      /elétric/i,
+    );
+    expect(localizeBuiltInText("לקביעת ביקור", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קביעת שיחת ייעוץ", "en")).toMatch(/consult/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
