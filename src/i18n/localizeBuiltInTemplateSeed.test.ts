@@ -1001,6 +1001,9 @@ describe("localizeBuiltInTemplateSeed", () => {
         "en",
       ),
     ).toMatch(/traffic|identity|policy/i);
+    expect(localizeBuiltInText("פס קידום", "es")).toMatch(/promo/i);
+    expect(localizeBuiltInText("ערכים", "pt-BR")).toMatch(/valor/i);
+    expect(localizeBuiltInText("מדד 1", "en")).toMatch(/metric/i);
   });
 
   it("localizes unique69 leftover gallery catalog chrome", () => {

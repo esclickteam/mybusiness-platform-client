@@ -420,6 +420,8 @@ const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   "כרטיס פיד": { en: "Feed card", es: "Tarjeta del feed", "pt-BR": "Cartão do feed", ar: "بطاقة الخلاصة" },
   פירוט: { en: "Detail", es: "Detalle", "pt-BR": "Detalhe", ar: "تفصيل" },
   "פריט עגלה": { en: "Cart item", es: "Artículo del carrito", "pt-BR": "Item da sacola", ar: "عنصر السلة" },
+  מדד: { en: "Metric", es: "Indicador", "pt-BR": "Indicador", ar: "مؤشر" },
+  "תווית מדד": { en: "Metric label", es: "Etiqueta de indicador", "pt-BR": "Rótulo do indicador", ar: "تسمية المؤشر" },
 };
 
 const NUMBERED_DASH_LEFT: Record<string, PhraseTranslation> = {

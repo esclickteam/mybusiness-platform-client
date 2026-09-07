@@ -160,5 +160,257 @@
     "es": "Playbooks de incidentes, enrutado de contención e informes a nivel de consejo.",
     "pt-BR": "Playbooks de incidentes, roteamento de contenção e relatórios em nível de diretoria.",
     "ar": "أدلة أحداث وتوجيه احتواء وتقارير على مستوى مجلس الإدارة."
+  },
+  "הדגשת ייצור": {
+    "en": "Craft accent",
+    "es": "Acento de oficio",
+    "pt-BR": "Destaque de ofício",
+    "ar": "إبراز الحرفة"
+  },
+  "הערת פרטיות": {
+    "en": "Privacy note",
+    "es": "Nota de privacidad",
+    "pt-BR": "Nota de privacidade",
+    "ar": "ملاحظة خصوصية"
+  },
+  "טקסט הוכחה": {
+    "en": "Proof text",
+    "es": "Texto de prueba",
+    "pt-BR": "Texto de prova",
+    "ar": "نص إثبات"
+  },
+  "טקסט כפתור יצירת קשר": {
+    "en": "Contact button text",
+    "es": "Texto del botón de contacto",
+    "pt-BR": "Texto do botão de contato",
+    "ar": "نص زر التواصل"
+  },
+  "טקסט משלים": {
+    "en": "Supporting text",
+    "es": "Texto de apoyo",
+    "pt-BR": "Texto de apoio",
+    "ar": "نص مساند"
+  },
+  "טקסט קידום": {
+    "en": "Promo text",
+    "es": "Texto promocional",
+    "pt-BR": "Texto promocional",
+    "ar": "نص ترويج"
+  },
+  "כותרת ייצור": {
+    "en": "Craft title",
+    "es": "Título de oficio",
+    "pt-BR": "Título de ofício",
+    "ar": "عنوان الحرفة"
+  },
+  "כותרת מרכזית": {
+    "en": "Center title",
+    "es": "Título central",
+    "pt-BR": "Título central",
+    "ar": "عنوان مركزي"
+  },
+  "כותרת ניוזלטר": {
+    "en": "Newsletter title",
+    "es": "Título del boletín",
+    "pt-BR": "Título da newsletter",
+    "ar": "عنوان النشرة"
+  },
+  "כותרת תחתונה": {
+    "en": "Footer title",
+    "es": "Título del pie",
+    "pt-BR": "Título do rodapé",
+    "ar": "عنوان التذييل"
+  },
+  "כפתור הרשמה": {
+    "en": "Subscribe button",
+    "es": "Botón de registro",
+    "pt-BR": "Botão de inscrição",
+    "ar": "زر التسجيل"
+  },
+  "כפתור ייצור": {
+    "en": "Craft button",
+    "es": "Botón de oficio",
+    "pt-BR": "Botão de ofício",
+    "ar": "زر الحرفة"
+  },
+  "מחיר לפני הנחה": {
+    "en": "Price before discount",
+    "es": "Precio antes del descuento",
+    "pt-BR": "Preço antes do desconto",
+    "ar": "السعر قبل الخصم"
+  },
+  "מטא הוכחה": {
+    "en": "Proof meta",
+    "es": "Meta de prueba",
+    "pt-BR": "Meta de prova",
+    "ar": "وصف إثبات"
+  },
+  "עמוד מוצר": {
+    "en": "Product page",
+    "es": "Página de producto",
+    "pt-BR": "Página do produto",
+    "ar": "صفحة المنتج"
+  },
+  "ערכים": {
+    "en": "Values",
+    "es": "Valores",
+    "pt-BR": "Valores",
+    "ar": "قيم"
+  },
+  "פס יתרונות": {
+    "en": "Benefits bar",
+    "es": "Barra de ventajas",
+    "pt-BR": "Barra de vantagens",
+    "ar": "شريط المزايا"
+  },
+  "פס קידום": {
+    "en": "Promo bar",
+    "es": "Barra promocional",
+    "pt-BR": "Barra promocional",
+    "ar": "شريط ترويج"
+  },
+  "פרויקט מוביל": {
+    "en": "Featured project",
+    "es": "Proyecto destacado",
+    "pt-BR": "Projeto em destaque",
+    "ar": "مشروع بارز"
+  },
+  "קטלוג מוצרים": {
+    "en": "Product catalog",
+    "es": "Catálogo de productos",
+    "pt-BR": "Catálogo de produtos",
+    "ar": "كتالوج المنتجات"
+  },
+  "קישור קידום": {
+    "en": "Promo link",
+    "es": "Enlace promocional",
+    "pt-BR": "Link promocional",
+    "ar": "رابط ترويج"
+  },
+  "שם תוכנית": {
+    "en": "Plan name",
+    "es": "Nombre del plan",
+    "pt-BR": "Nome do plano",
+    "ar": "اسم الخطة"
+  },
+  "תגית ייצור": {
+    "en": "Craft tag",
+    "es": "Etiqueta de oficio",
+    "pt-BR": "Tag de ofício",
+    "ar": "وسم الحرفة"
+  },
+  "תגית פתיחה": {
+    "en": "Opening tag",
+    "es": "Etiqueta de apertura",
+    "pt-BR": "Tag de abertura",
+    "ar": "وسم الافتتاح"
+  },
+  "תגית קריאה לפעולה": {
+    "en": "CTA tag",
+    "es": "Etiqueta de CTA",
+    "pt-BR": "Tag de CTA",
+    "ar": "وسم دعوة للإجراء"
+  },
+  "תגית תוכנית": {
+    "en": "Plan tag",
+    "es": "Etiqueta de plan",
+    "pt-BR": "Tag do plano",
+    "ar": "وسم الخطة"
+  },
+  "תווית הוכחה": {
+    "en": "Proof label",
+    "es": "Etiqueta de prueba",
+    "pt-BR": "Rótulo de prova",
+    "ar": "تسمية إثبات"
+  },
+  "תיאור ייצור": {
+    "en": "Craft description",
+    "es": "Descripción de oficio",
+    "pt-BR": "Descrição de ofício",
+    "ar": "وصف الحرفة"
+  },
+  "תיאור ניוזלטר": {
+    "en": "Newsletter description",
+    "es": "Descripción del boletín",
+    "pt-BR": "Descrição da newsletter",
+    "ar": "وصف النشرة"
+  },
+  "תיאור עמוד מוצרים": {
+    "en": "Products page description",
+    "es": "Descripción de la página de productos",
+    "pt-BR": "Descrição da página de produtos",
+    "ar": "وصف صفحة المنتجات"
+  },
+  "תיאור מוצר": {
+    "en": "Product description",
+    "es": "Descripción del producto",
+    "pt-BR": "Descrição do produto",
+    "ar": "وصف المنتج"
+  },
+  "עמודת מדיה וטופס": {
+    "en": "Media and form column",
+    "es": "Columna de media y formulario",
+    "pt-BR": "Coluna de mídia e formulário",
+    "ar": "عمود وسائط ونموذج"
+  },
+  "כרטיס תמונה ראשי": {
+    "en": "Main image card",
+    "es": "Tarjeta de imagen principal",
+    "pt-BR": "Cartão de imagem principal",
+    "ar": "بطاقة الصورة الرئيسية"
+  },
+  "תוכן אזור הפתיחה": {
+    "en": "Hero content",
+    "es": "Contenido del hero",
+    "pt-BR": "Conteúdo do hero",
+    "ar": "محتوى الهيرو"
+  },
+  "הדגשת הכותרת": {
+    "en": "Title accent",
+    "es": "Acento del título",
+    "pt-BR": "Destaque do título",
+    "ar": "إبراز العنوان"
+  },
+  "כרטיס שירות חירום": {
+    "en": "Emergency service card",
+    "es": "Tarjeta de servicio de emergencia",
+    "pt-BR": "Cartão de serviço de emergência",
+    "ar": "بطاقة خدمة طوارئ"
+  },
+  "כותרת שירות חירום": {
+    "en": "Emergency service title",
+    "es": "Título de servicio de emergencia",
+    "pt-BR": "Título de serviço de emergência",
+    "ar": "عنوان خدمة الطوارئ"
+  },
+  "תיאור שירות חירום": {
+    "en": "Emergency service description",
+    "es": "Descripción del servicio de emergencia",
+    "pt-BR": "Descrição do serviço de emergência",
+    "ar": "وصف خدمة الطوارئ"
+  },
+  "כפתור חייגו עכשיו": {
+    "en": "Call now button",
+    "es": "Botón de llamar ahora",
+    "pt-BR": "Botão de ligar agora",
+    "ar": "زر اتصلوا الآن"
+  },
+  "כרטיס הוכחת מקצועיות": {
+    "en": "Proof card",
+    "es": "Tarjeta de prueba profesional",
+    "pt-BR": "Cartão de prova profissional",
+    "ar": "بطاقة إثبات مهني"
+  },
+  "כותרת הכרטיס": {
+    "en": "Card title",
+    "es": "Título de la tarjeta",
+    "pt-BR": "Título do cartão",
+    "ar": "عنوان البطاقة"
+  },
+  "תיאור הכרטיס": {
+    "en": "Card description",
+    "es": "Descripción de la tarjeta",
+    "pt-BR": "Descrição do cartão",
+    "ar": "وصف البطاقة"
   }
 }
