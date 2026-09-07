@@ -382,7 +382,7 @@ function SectionTitle({
         align === "center" ? "text-center" : "text-start"
       )}
     >
-      <Eyebrow>{eyebrow}</Eyebrow>
+      <Eyebrow>{tx(eyebrow)}</Eyebrow>
       <h2 className="text-5xl font-black uppercase leading-[0.86] tracking-[-0.08em] text-[#f6efe3] sm:text-7xl lg:text-8xl">
         {title}
       </h2>
