@@ -221,6 +221,7 @@ const rows = {
     "مساؤكم التالي يبدأ في Savory.",
   ),
   "בקשת אירוע": r("Request an event", "Pedir un evento", "Pedir um evento", "طلب مناسبة"),
+  "אירוח פרטי": r("Private hosting", "Hospitalidad privada", "Hospitalidade privada", "ضيافة خاصة"),
   "שעות ומיקום": r("Hours and location", "Horario y ubicación", "Horário e local", "ساعات وموقع"),
   "סגירת חלון": r("Close window", "Cerrar ventana", "Fechar janela", "إغلاق النافذة"),
 

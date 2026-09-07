@@ -47,6 +47,8 @@ const rows = {
     "O que vocês querem divulgar?",
     "ماذا تريدون تسويقه؟",
   ),
+  "אירוח פרטי": r("Private hosting", "Hospitalidad privada", "Hospitalidade privada", "ضيافة خاصة"),
+  "שעות ומיקום": r("Hours and location", "Horario y ubicación", "Horário e local", "ساعات وموقع"),
 
   // Glintica
   "חבילות מרובעות": r("Square packages", "Packs cuadrados", "Pacotes quadrados", "باقات مربعة"),

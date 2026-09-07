@@ -35,6 +35,18 @@
     "pt-BR": "O que vocês querem divulgar?",
     "ar": "ماذا تريدون تسويقه؟"
   },
+  "אירוח פרטי": {
+    "en": "Private hosting",
+    "es": "Hospitalidad privada",
+    "pt-BR": "Hospitalidade privada",
+    "ar": "ضيافة خاصة"
+  },
+  "שעות ומיקום": {
+    "en": "Hours and location",
+    "es": "Horario y ubicación",
+    "pt-BR": "Horário e local",
+    "ar": "ساعات وموقع"
+  },
   "חבילות מרובעות": {
     "en": "Square packages",
     "es": "Packs cuadrados",

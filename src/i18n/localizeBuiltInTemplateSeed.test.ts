@@ -971,6 +971,8 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("צילום מוצר", "en")).toMatch(/product|photo/i);
     expect(localizeBuiltInText("דוחות הנהלה", "es")).toMatch(/informe|dirección/i);
     expect(localizeBuiltInText("שירותי סטודיו", "pt-BR")).toMatch(/estúdio|serviço/i);
+    expect(localizeBuiltInText("אירוח פרטי", "en")).toMatch(/private|host/i);
+    expect(localizeBuiltInText("אירוח פרטי", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("localizes unique55 leftover Fluxora through Advisora chrome", () => {
