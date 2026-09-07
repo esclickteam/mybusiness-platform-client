@@ -614,10 +614,10 @@ export function initBizuplyEditor({
 
     studioElements.forEach((element) => {
       editor.BlockManager.add(element.id, {
-        label: element.label,
+        label: localizeVariantChrome(element.label),
         media: element.icon,
         category: element.category,
-        content: element.html,
+        content: localizeVariantHtml(element.html),
       });
     });
 

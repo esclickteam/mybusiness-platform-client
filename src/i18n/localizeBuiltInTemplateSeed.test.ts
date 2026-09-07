@@ -1304,6 +1304,24 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מחלקות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique92 leftover insert-library chrome", () => {
+    expect(localizeBuiltInText("כותרת סקשן", "en")).toBe("Section title");
+    expect(localizeBuiltInText("כותרת סקשן", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שם א-ת", "en")).toBe("Name A–Z");
+    expect(localizeBuiltInText("תא 1", "en")).toBe("Cell 1");
+    expect(localizeBuiltInText("עמודה א׳", "es")).toMatch(/Columna/i);
+    expect(localizeBuiltInText("בקשת תור", "pt-BR")).toMatch(/agendamento|pedido/i);
+    expect(localizeBuiltInText("מה תרצו למדוד או לאיזה אירוע?", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique93 leftover insert-library sentences", () => {
+    expect(localizeBuiltInText("כל ליד ייכנס ל־CRM של העסק.", "en")).toMatch(/CRM/i);
+    expect(localizeBuiltInText("כל ליד ייכנס ל־CRM של העסק.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הדביקו קוד Embed דרך סרגל העריכה", "es")).toMatch(/Pegad|Embed/i);
+    expect(localizeBuiltInText("> מתחילים בדיקת היקף", "pt-BR")).toMatch(/escopo|Começamos/i);
+    expect(localizeBuiltInText("זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם אחריות מלאה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);

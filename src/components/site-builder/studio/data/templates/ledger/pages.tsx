@@ -269,7 +269,7 @@ function LedgerHero({
               </TemplateText>
               <div className="text-start">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#102018]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="p" className="mt-2 text-sm leading-7 text-[#5a6b62]">
                   {tx(text)}
@@ -329,7 +329,7 @@ function AboutLedger({ data }: { data: Record<string, any> }) {
             {governanceRows.map(([label, text]) => (
               <div key={label} className="grid gap-2 border-b border-[#102018]/10 py-4 md:grid-cols-[180px_1fr]">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#0d5c45]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
                   {tx(text)}
@@ -365,7 +365,7 @@ function ServicesLedger({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                {tx(text)}
+                {text}
               </TemplateText>
             </article>
           ))}
@@ -397,7 +397,7 @@ function WorkflowRegister({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                {tx(text)}
+                {text}
               </TemplateText>
             </div>
           ))}
@@ -423,7 +423,7 @@ function RegisterTable() {
                 {quarter}
               </TemplateText>
               <TemplateText as="div" className="text-sm leading-7 text-[#5a6b62]">
-                {scope}
+                {tx(scope)}
               </TemplateText>
               <TemplateText as="div" className="text-sm font-semibold text-[#102018]">
                 Ready for board review
@@ -457,7 +457,7 @@ function WorkRegister({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#d9e4de]">
-                {tx(text)}
+                {text}
               </TemplateText>
             </div>
           ))}
@@ -488,7 +488,7 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             {info.map(([label, value]) => (
               <div key={label} className="grid gap-2 border-b border-[#d8e8e2]/20 py-4 md:grid-cols-[120px_1fr]">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d8e8e2]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="div" className="text-sm leading-7 text-[#f6f3ea]">
                   {value}

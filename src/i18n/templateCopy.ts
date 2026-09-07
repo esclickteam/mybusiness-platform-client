@@ -103,6 +103,8 @@ import unique88ExactLexicon from "./templateExactLexicon.unique88.json";
 import unique89ExactLexicon from "./templateExactLexicon.unique89.json";
 import unique90ExactLexicon from "./templateExactLexicon.unique90.json";
 import unique91ExactLexicon from "./templateExactLexicon.unique91.json";
+import unique92ExactLexicon from "./templateExactLexicon.unique92.json";
+import unique93ExactLexicon from "./templateExactLexicon.unique93.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -218,6 +220,8 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique89ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique90ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique91ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique92ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique93ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -974,6 +978,7 @@ const EXTRA_INDEXED_PREFIXES: Record<string, PhraseTranslation> = {
   ערך: { en: "Value", es: "Valor", "pt-BR": "Valor", ar: "قيمة" },
   מטרה: { en: "Goal", es: "Objetivo", "pt-BR": "Meta", ar: "هدف" },
   מד: { en: "Meter", es: "Medidor", "pt-BR": "Medidor", ar: "مقياس" },
+  תא: { en: "Cell", es: "Celda", "pt-BR": "Célula", ar: "خلية" },
 };
 
 function localizeIndexedPrefix(text: string, locale: string): string {
