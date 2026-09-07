@@ -474,15 +474,15 @@ function HeroCardRail() {
         ) : (
           <>
             <p className="text-[10px] font-black leading-4 tracking-[0.06em] opacity-55">
-              {card.title}
+              {tx(card.title)}
             </p>
 
             <p className="mt-3 text-2xl font-black leading-7 tracking-[-0.05em]">
-              {card.value}
+              {tx(card.value)}
             </p>
 
             <p className="mt-1 text-[10px] font-bold opacity-45">
-              {card.small}
+              {tx(card.small)}
             </p>
 
             {card.type === "chart" && (

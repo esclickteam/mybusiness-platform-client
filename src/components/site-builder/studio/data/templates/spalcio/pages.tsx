@@ -890,7 +890,7 @@ function Footer() {
             data-editable="true"
             className="spalcio-editable mt-1 text-sm text-white/55"
           >
-            {spalcioData.brand.footerText}
+            {tx(spalcioData.brand.footerText)}
           </p>
         </div>
 

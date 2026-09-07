@@ -846,27 +846,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("חבילת התחלה", "en")).toMatch(/starter|start/i);
   });
 
-  it("localizes unique44 leftover PulseCore and Servora built-in seed copy", () => {
-    expect(
-      localizeBuiltInText(
-        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
-        "en",
-      ),
-    ).toMatch(/short|heart|strength/i);
-    expect(
-      localizeBuiltInText(
-        "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
-        "en",
-      ),
-    ).not.toMatch(/[\u0590-\u05FF]/);
-    expect(localizeBuiltInText("עילית", "es")).toMatch(/élite|elite/i);
-    expect(localizeBuiltInText("פנייה ואבחון", "pt-BR")).toMatch(
-      /consulta|diagnóstico/i,
-    );
-    expect(localizeBuiltInText("צריך ניסיון קודם?", "ar")).not.toMatch(
+  it("localizes unique45 leftover Aeline, PulseCore, Servora, and Spalcio chrome", () => {
+    expect(localizeBuiltInText("הופכים פניות", "en")).toMatch(/inquir|turn/i);
+    expect(localizeBuiltInText("הופכים פניות", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("אימון חזק.", "es")).toMatch(/entreno|fuerte/i);
+    expect(localizeBuiltInText("לתיאום ייעוץ", "pt-BR")).toMatch(/consult/i);
+    expect(localizeBuiltInText("תהליך מדויק שמוביל לפנייה", "ar")).not.toMatch(
       /[\u0590-\u05FF]/,
     );
-    expect(localizeBuiltInText("חבילת התחלה", "en")).toMatch(/starter|start/i);
+    expect(localizeBuiltInText("ליד חדש", "en")).toMatch(/lead/i);
   });
 
   it("localizes unique38 leftover built-in preview headlines", () => {
