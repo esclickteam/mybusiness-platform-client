@@ -1,0 +1,524 @@
+{
+  "CRO ודפי נחיתה": {
+    "en": "CRO and landing pages",
+    "es": "CRO y landing pages",
+    "pt-BR": "CRO e landing pages",
+    "ar": "CRO وصفحات هبوط"
+  },
+  "קמפיינים נבחרים": {
+    "en": "Selected campaigns",
+    "es": "Campañas seleccionadas",
+    "pt-BR": "Campanhas selecionadas",
+    "ar": "حملات مختارة"
+  },
+  "השקת מוצר B2C ב-14 יום": {
+    "en": "A B2C product launch in 14 days",
+    "es": "Lanzamiento de producto B2C en 14 días",
+    "pt-BR": "Lançamento de produto B2C em 14 dias",
+    "ar": "إطلاق منتج B2C خلال 14 يوماً"
+  },
+  "מייסד מותג DTC": {
+    "en": "DTC brand founder",
+    "es": "Fundador de marca DTC",
+    "pt-BR": "Fundador de marca DTC",
+    "ar": "مؤسس علامة DTC"
+  },
+  "אם זה נראה כמו כולם,\nזה לא Markora.": {
+    "en": "If it looks like everyone else,\nit's not Markora.",
+    "es": "Si parece como todos los demás,\nno es Markora.",
+    "pt-BR": "Se parece com todo mundo,\nnão é Markora.",
+    "ar": "إذا بدا مثل الجميع،\nفهذا ليس Markora."
+  },
+  "מה אתם רוצים לשווק?": {
+    "en": "What do you want to market?",
+    "es": "¿Qué queréis comercializar?",
+    "pt-BR": "O que vocês querem divulgar?",
+    "ar": "ماذا تريدون تسويقه؟"
+  },
+  "חבילות מרובעות": {
+    "en": "Square packages",
+    "es": "Packs cuadrados",
+    "pt-BR": "Pacotes quadrados",
+    "ar": "باقات مربعة"
+  },
+  "כלות מספרות": {
+    "en": "Brides tell their story",
+    "es": "Las novias cuentan",
+    "pt-BR": "Noivas contam",
+    "ar": "عرائس يروين"
+  },
+  "הפקת אופנה": {
+    "en": "Fashion production",
+    "es": "Producción de moda",
+    "pt-BR": "Produção de moda",
+    "ar": "إنتاج أزياء"
+  },
+  "אירוע ערב": {
+    "en": "Evening event",
+    "es": "Evento de noche",
+    "pt-BR": "Evento noturno",
+    "ar": "مناسبة مسائية"
+  },
+  "האם יש פגישת ניסיון?": {
+    "en": "Is there a trial session?",
+    "es": "¿Hay una sesión de prueba?",
+    "pt-BR": "Tem sessão experimental?",
+    "ar": "هل هناك جلسة تجريبية؟"
+  },
+  "יומן פתוח": {
+    "en": "Open calendar",
+    "es": "Agenda abierta",
+    "pt-BR": "Agenda aberta",
+    "ar": "يومية مفتوحة"
+  },
+  "קבעו מועד": {
+    "en": "Book a date",
+    "es": "Reservad una fecha",
+    "pt-BR": "Marquem uma data",
+    "ar": "احجزوا موعداً"
+  },
+  "רמת גן · ניידות לכל הארץ": {
+    "en": "Ramat Gan · mobile nationwide",
+    "es": "Ramat Gan · movilidad a todo el país",
+    "pt-BR": "Ramat Gan · mobilidade para o país todo",
+    "ar": "رمات غان · تنقّل لكل البلاد"
+  },
+  "היום המושלם מתחיל באור הנכון.": {
+    "en": "The perfect day starts with the right light.",
+    "es": "El día perfecto empieza con la luz correcta.",
+    "pt-BR": "O dia perfeito começa com a luz certa.",
+    "ar": "اليوم المثالي يبدأ بالضوء الصحيح."
+  },
+  "חצי": {
+    "en": "Half",
+    "es": "Mitad",
+    "pt-BR": "Meio",
+    "ar": "منتصف"
+  },
+  "השוואת לפני ואחרי": {
+    "en": "Before and after comparison",
+    "es": "Comparación antes y después",
+    "pt-BR": "Comparação antes e depois",
+    "ar": "مقارنة قبل وبعد"
+  },
+  "תאריך האירוע": {
+    "en": "Event date",
+    "es": "Fecha del evento",
+    "pt-BR": "Data do evento",
+    "ar": "تاريخ المناسبة"
+  },
+  "מה תרצי שנדע?": {
+    "en": "What would you like us to know?",
+    "es": "¿Qué te gustaría que sepamos?",
+    "pt-BR": "O que você quer que a gente saiba?",
+    "ar": "ماذا تريدين أن نعرف؟"
+  },
+  "הספרים": {
+    "en": "The barbers",
+    "es": "Los barberos",
+    "pt-BR": "Os barbeiros",
+    "ar": "الحلاقون"
+  },
+  "הכיסא": {
+    "en": "The chair",
+    "es": "La silla",
+    "pt-BR": "A cadeira",
+    "ar": "الكرسي"
+  },
+  "הלהב": {
+    "en": "The blade",
+    "es": "La hoja",
+    "pt-BR": "A lâmina",
+    "ar": "النصل"
+  },
+  "החדר": {
+    "en": "The room",
+    "es": "La sala",
+    "pt-BR": "A sala",
+    "ar": "الغرفة"
+  },
+  "מוצש": {
+    "en": "Sat night",
+    "es": "Sáb noche",
+    "pt-BR": "Sáb à noite",
+    "ar": "مساء السبت"
+  },
+  "בתיאום": {
+    "en": "By appointment",
+    "es": "Con cita",
+    "pt-BR": "Com agendamento",
+    "ar": "بتنسيق مسبق"
+  },
+  "לקוח קבוע": {
+    "en": "Regular client",
+    "es": "Cliente habitual",
+    "pt-BR": "Cliente regular",
+    "ar": "زبون ثابت"
+  },
+  "צריך לקבוע מראש?": {
+    "en": "Do you need to book ahead?",
+    "es": "¿Hay que reservar con antelación?",
+    "pt-BR": "Precisa marcar com antecedência?",
+    "ar": "هل يجب الحجز مسبقاً؟"
+  },
+  "יש שירותי זקן?": {
+    "en": "Are there beard services?",
+    "es": "¿Hay servicios de barba?",
+    "pt-BR": "Tem serviços de barba?",
+    "ar": "هل هناك خدمات لحية؟"
+  },
+  "שמרו מקום": {
+    "en": "Hold a seat",
+    "es": "Reservad sitio",
+    "pt-BR": "Guarden um lugar",
+    "ar": "احجزوا مكاناً"
+  },
+  "תור עכשיו": {
+    "en": "Book now",
+    "es": "Cita ahora",
+    "pt-BR": "Horário agora",
+    "ar": "موعد الآن"
+  },
+  "שירות מבוקש": {
+    "en": "Requested service",
+    "es": "Servicio solicitado",
+    "pt-BR": "Serviço pedido",
+    "ar": "خدمة مطلوبة"
+  },
+  "תהליך הליווי": {
+    "en": "The guidance process",
+    "es": "El proceso de acompañamiento",
+    "pt-BR": "O processo de acompanhamento",
+    "ar": "عملية المرافقة"
+  },
+  "בקשת ייעוץ ראשוני": {
+    "en": "Request an initial consultation",
+    "es": "Pedir una consulta inicial",
+    "pt-BR": "Pedir uma consulta inicial",
+    "ar": "طلب استشارة أولى"
+  },
+  "שותף, חברות": {
+    "en": "Partner, corporate",
+    "es": "Socio, sociedades",
+    "pt-BR": "Sócio, sociedades",
+    "ar": "شريك، شركات"
+  },
+  "פעולה": {
+    "en": "Action",
+    "es": "Acción",
+    "pt-BR": "Ação",
+    "ar": "فعل"
+  },
+  "ספרו לנו בקצרה על הסוגיה": {
+    "en": "Tell us briefly about the issue",
+    "es": "Contadnos en breve la cuestión",
+    "pt-BR": "Contem em breve sobre a questão",
+    "ar": "أخبرونا باختصار عن المسألة"
+  },
+  "תוצאות בשטח": {
+    "en": "Results in the field",
+    "es": "Resultados en el terreno",
+    "pt-BR": "Resultados no campo",
+    "ar": "نتائج في الميدان"
+  },
+  "לפני / אחרי — שינוי של 90 יום": {
+    "en": "Before / after — a 90-day change",
+    "es": "Antes / después — un cambio de 90 días",
+    "pt-BR": "Antes / depois — uma mudança de 90 dias",
+    "ar": "قبل / بعد — تغيير خلال 90 يوماً"
+  },
+  "חיטוב": {
+    "en": "Toning",
+    "es": "Definición",
+    "pt-BR": "Definição",
+    "ar": "نحت"
+  },
+  "12 שבועות / כוח": {
+    "en": "12 weeks / strength",
+    "es": "12 semanas / fuerza",
+    "pt-BR": "12 semanas / força",
+    "ar": "12 أسبوعاً / قوة"
+  },
+  "Reset אישי": {
+    "en": "Personal reset",
+    "es": "Reset personal",
+    "pt-BR": "Reset pessoal",
+    "ar": "إعادة ضبط شخصية"
+  },
+  "ליווי 1:1": {
+    "en": "1:1 coaching",
+    "es": "Acompañamiento 1:1",
+    "pt-BR": "Acompanhamento 1:1",
+    "ar": "مرافقة 1:1"
+  },
+  "דירוג ממוצע אחרי 30 ימים": {
+    "en": "Average rating after 30 days",
+    "es": "Valoración media a los 30 días",
+    "pt-BR": "Nota média depois de 30 dias",
+    "ar": "تقييم متوسط بعد 30 يوماً"
+  },
+  "סוף סוף יש מספרים.": {
+    "en": "Finally there are numbers.",
+    "es": "Por fin hay números.",
+    "pt-BR": "Finalmente há números.",
+    "ar": "أخيراً هناك أرقام."
+  },
+  "מתחילים באבחון קצר.": {
+    "en": "We start with a short assessment.",
+    "es": "Empezamos con un diagnóstico breve.",
+    "pt-BR": "Começamos com um diagnóstico curto.",
+    "ar": "نبدأ بتشخيص قصير."
+  },
+  "אולפן כוח · תל אביב": {
+    "en": "Power studio · Tel Aviv",
+    "es": "Estudio de fuerza · Tel Aviv",
+    "pt-BR": "Estúdio de força · Tel Aviv",
+    "ar": "استوديو قوة · تل أبيب"
+  },
+  "הגוף הבא שלכם מחכה לאימון הראשון.": {
+    "en": "Your next body is waiting for the first session.",
+    "es": "Vuestro siguiente cuerpo espera el primer entrenamiento.",
+    "pt-BR": "O próximo corpo de vocês espera o primeiro treino.",
+    "ar": "جسمكم التالي ينتظر التمرين الأول."
+  },
+  "מטרה: חיטוב / כוח / כושר": {
+    "en": "Goal: tone / strength / fitness",
+    "es": "Objetivo: definición / fuerza / forma",
+    "pt-BR": "Meta: definição / força / condicionamento",
+    "ar": "هدف: نحت / قوة / لياقة"
+  },
+  "מה חייב להשתנות ב-90 הימים הקרובים?": {
+    "en": "What must change in the next 90 days?",
+    "es": "¿Qué tiene que cambiar en los próximos 90 días?",
+    "pt-BR": "O que precisa mudar nos próximos 90 dias?",
+    "ar": "ماذا يجب أن يتغيّر في الـ90 يوماً القادمة؟"
+  },
+  "סטים מוכנים לצילום": {
+    "en": "Sets ready for a shoot",
+    "es": "Sets listos para fotografiar",
+    "pt-BR": "Sets prontos para fotografar",
+    "ar": "مجموعات جاهزة للتصوير"
+  },
+  "צילום מוצר": {
+    "en": "Product photography",
+    "es": "Fotografía de producto",
+    "pt-BR": "Fotografia de produto",
+    "ar": "تصوير منتجات"
+  },
+  "צילום מותג": {
+    "en": "Brand photography",
+    "es": "Fotografía de marca",
+    "pt-BR": "Fotografia de marca",
+    "ar": "تصوير علامة"
+  },
+  "אירועים והשקות": {
+    "en": "Events and launches",
+    "es": "Eventos y lanzamientos",
+    "pt-BR": "Eventos e lançamentos",
+    "ar": "مناسبات وإطلاقات"
+  },
+  "תוכן לרשתות": {
+    "en": "Social content",
+    "es": "Contenido para redes",
+    "pt-BR": "Conteúdo para redes",
+    "ar": "محتوى للشبكات"
+  },
+  "גלריה נבחרת": {
+    "en": "Selected gallery",
+    "es": "Galería seleccionada",
+    "pt-BR": "Galeria selecionada",
+    "ar": "معرض مختار"
+  },
+  "חבילות צילום": {
+    "en": "Photo packages",
+    "es": "Packs de foto",
+    "pt-BR": "Pacotes de foto",
+    "ar": "باقات تصوير"
+  },
+  "בריף": {
+    "en": "Brief",
+    "es": "Brief",
+    "pt-BR": "Brief",
+    "ar": "موجز"
+  },
+  "מייסד North Coffee": {
+    "en": "Founder, North Coffee",
+    "es": "Fundador, North Coffee",
+    "pt-BR": "Fundador, North Coffee",
+    "ar": "مؤسس، North Coffee"
+  },
+  "בואו נבנה יום צילום": {
+    "en": "Let's build a shoot day",
+    "es": "Construyamos un día de foto",
+    "pt-BR": "Vamos construir um dia de foto",
+    "ar": "لنبنِ يوم تصوير"
+  },
+  "איזה צילום אתם צריכים?": {
+    "en": "What kind of photography do you need?",
+    "es": "¿Qué fotografía necesitáis?",
+    "pt-BR": "Que tipo de fotografia vocês precisam?",
+    "ar": "أي تصوير تحتاجون؟"
+  },
+  "דוחות הנהלה": {
+    "en": "Management reports",
+    "es": "Informes de dirección",
+    "pt-BR": "Relatórios de direção",
+    "ar": "تقارير إدارة"
+  },
+  "שנות ניסיון מקצועי": {
+    "en": "Years of professional experience",
+    "es": "Años de experiencia profesional",
+    "pt-BR": "Anos de experiência profissional",
+    "ar": "سنوات خبرة مهنية"
+  },
+  "עצמאי": {
+    "en": "Freelance",
+    "es": "Autónomo",
+    "pt-BR": "Autônomo",
+    "ar": "مستقل"
+  },
+  "עד 60 מסמכים בחודש": {
+    "en": "Up to 60 documents a month",
+    "es": "Hasta 60 documentos al mes",
+    "pt-BR": "Até 60 documentos por mês",
+    "ar": "حتى 60 مستنداً في الشهر"
+  },
+  "צוות קטן": {
+    "en": "Small team",
+    "es": "Equipo pequeño",
+    "pt-BR": "Equipe pequena",
+    "ar": "فريق صغير"
+  },
+  "עד 5 עובדים": {
+    "en": "Up to 5 employees",
+    "es": "Hasta 5 empleados",
+    "pt-BR": "Até 5 funcionários",
+    "ar": "حتى 5 موظفين"
+  },
+  "רשות המסים": {
+    "en": "Tax Authority",
+    "es": "Agencia tributaria",
+    "pt-BR": "Receita federal",
+    "ar": "سلطة الضرائب"
+  },
+  "ביטוח לאומי": {
+    "en": "National Insurance",
+    "es": "Seguridad Social",
+    "pt-BR": "Previdência",
+    "ar": "التأمين الوطني"
+  },
+  "לקוחות שמרגישים שליטה": {
+    "en": "Clients who feel in control",
+    "es": "Clientes que sienten control",
+    "pt-BR": "Clientes que sentem controle",
+    "ar": "عملاء يشعرون بالسيطرة"
+  },
+  "בעלים, סטודיו לעיצוב": {
+    "en": "Owner, design studio",
+    "es": "Propietario, estudio de diseño",
+    "pt-BR": "Dono, estúdio de design",
+    "ar": "مالك، استوديو تصميم"
+  },
+  "מנכ״ל, חברת SaaS": {
+    "en": "CEO, SaaS company",
+    "es": "CEO, empresa SaaS",
+    "pt-BR": "CEO, empresa SaaS",
+    "ar": "المدير التنفيذي، شركة SaaS"
+  },
+  "מתחילים בבדיקת מצב קצרה": {
+    "en": "We start with a short status check",
+    "es": "Empezamos con una revisión breve",
+    "pt-BR": "Começamos com uma checagem curta",
+    "ar": "نبدأ بفحص وضع قصير"
+  },
+  "רחובות · שירות ארצי אונליין": {
+    "en": "Rehovot · nationwide online service",
+    "es": "Rehovot · servicio nacional online",
+    "pt-BR": "Rehovot · serviço nacional online",
+    "ar": "رحوفوت · خدمة وطنية عبر الإنترنت"
+  },
+  "דוח חודשי": {
+    "en": "Monthly report",
+    "es": "Informe mensual",
+    "pt-BR": "Relatório mensal",
+    "ar": "تقرير شهري"
+  },
+  "כמה עובדים / חשבוניות בחודש?": {
+    "en": "How many employees / invoices a month?",
+    "es": "¿Cuántos empleados / facturas al mes?",
+    "pt-BR": "Quantos funcionários / notas por mês?",
+    "ar": "كم موظفاً / فاتورة في الشهر؟"
+  },
+  "שירותי סטודיו": {
+    "en": "Studio services",
+    "es": "Servicios de estudio",
+    "pt-BR": "Serviços de estúdio",
+    "ar": "خدمات استوديو"
+  },
+  "דירות בוטיק": {
+    "en": "Boutique apartments",
+    "es": "Pisos boutique",
+    "pt-BR": "Apartamentos boutique",
+    "ar": "شقق بوتيك"
+  },
+  "דירת גן בכרם התימנים": {
+    "en": "Garden apartment in Kerem HaTeimanim",
+    "es": "Piso jardín en Kerem HaTeimanim",
+    "pt-BR": "Apartamento jardim em Kerem HaTeimanim",
+    "ar": "شقة حديقة في كيرم هتيمانيم"
+  },
+  "קו עיצובי של Formara": {
+    "en": "Formara's design line",
+    "es": "La línea de diseño de Formara",
+    "pt-BR": "A linha de design da Formara",
+    "ar": "خط تصميم Formara"
+  },
+  "קריאת חלל": {
+    "en": "Reading the space",
+    "es": "Lectura del espacio",
+    "pt-BR": "Leitura do espaço",
+    "ar": "قراءة الفراغ"
+  },
+  "חימר": {
+    "en": "Clay",
+    "es": "Arcilla",
+    "pt-BR": "Argila",
+    "ar": "طين"
+  },
+  "מילים מהשטח": {
+    "en": "Words from the field",
+    "es": "Palabras del terreno",
+    "pt-BR": "Palavras do campo",
+    "ar": "كلمات من الميدان"
+  },
+  "לקוחות מספרים בשקט": {
+    "en": "Clients speak quietly",
+    "es": "Los clientes cuentan en silencio",
+    "pt-BR": "Os clientes contam em silêncio",
+    "ar": "العملاء يروون بهدوء"
+  },
+  "דירת גן בתל אביב": {
+    "en": "Garden apartment in Tel Aviv",
+    "es": "Piso jardín en Tel Aviv",
+    "pt-BR": "Apartamento jardim em Tel Aviv",
+    "ar": "شقة حديقة في تل أبيب"
+  },
+  "ספרו לנו על החלל": {
+    "en": "Tell us about the space",
+    "es": "Contadnos sobre el espacio",
+    "pt-BR": "Contem sobre o espaço",
+    "ar": "أخبرونا عن الفراغ"
+  },
+  "החלל הבא שלכם מתחיל בקו חומר אחד.": {
+    "en": "Your next space starts with one material line.",
+    "es": "Vuestro siguiente espacio empieza con una línea de material.",
+    "pt-BR": "O próximo espaço de vocês começa com uma linha de material.",
+    "ar": "فراغكم التالي يبدأ بخط مادة واحد."
+  },
+  "מה תרצו לעצב?": {
+    "en": "What would you like to design?",
+    "es": "¿Qué os gustaría diseñar?",
+    "pt-BR": "O que vocês querem desenhar?",
+    "ar": "ماذا تريدون تصميمه؟"
+  }
+}

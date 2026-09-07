@@ -234,7 +234,7 @@ function Hours({ data }: { data: Record<string, any> }) {
         <div className="mt-10 border-y-4 border-black">
           {hours.map(([days, time]) => (
             <div key={days} className="grid gap-3 border-b-2 border-black py-6 last:border-b-0 md:grid-cols-[1fr_auto] md:items-end">
-              <span className="t-display text-6xl leading-none md:text-8xl">{days}</span>
+              <span className="t-display text-6xl leading-none md:text-8xl">{tx(days === "ו" ? "שישי" : days)}</span>
               <span className="t-display text-6xl leading-none text-[var(--a)] md:text-8xl">{time}</span>
             </div>
           ))}

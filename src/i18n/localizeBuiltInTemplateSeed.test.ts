@@ -962,6 +962,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique56 leftover Markora through Formara chrome", () => {
+    expect(localizeBuiltInText("מה אתם רוצים לשווק?", "en")).toMatch(/market/i);
+    expect(localizeBuiltInText("מה אתם רוצים לשווק?", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("השוואת לפני ואחרי", "es")).toMatch(/antes|después/i);
+    expect(localizeBuiltInText("שמרו מקום", "pt-BR")).toMatch(/lugar|reserv/i);
+    expect(localizeBuiltInText("תהליך הליווי", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("צילום מוצר", "en")).toMatch(/product|photo/i);
+    expect(localizeBuiltInText("דוחות הנהלה", "es")).toMatch(/informe|dirección/i);
+    expect(localizeBuiltInText("שירותי סטודיו", "pt-BR")).toMatch(/estúdio|serviço/i);
+  });
+
   it("localizes unique55 leftover Fluxora through Advisora chrome", () => {
     expect(localizeBuiltInText("הפיד שלי", "en")).toMatch(/feed/i);
     expect(localizeBuiltInText("הפיד שלי", "en")).not.toMatch(/[\u0590-\u05FF]/);

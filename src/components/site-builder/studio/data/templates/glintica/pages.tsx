@@ -146,7 +146,7 @@ function BeforeAfter({ data }: { data: Record<string, any> }) {
                 onClick={() => setCompare(value)}
                 className="border border-[var(--p)]/30 px-4 py-2 text-xs tracking-[0.22em] text-[var(--p)] transition hover:bg-[var(--p)] hover:text-[var(--dark)]"
               >
-                {value === 40 ? "לפני" : value === 50 ? "חצי" : "אחרי"}
+                {value === 40 ? tx("לפני") : value === 50 ? tx("חצי") : tx("אחרי")}
               </button>
             ))}
           </div>
