@@ -934,6 +934,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מוכנים לערב?", "en")).toMatch(/evening|ready/i);
   });
 
+  it("localizes unique52 leftover Cyclora and Chanel split headlines", () => {
+    expect(localizeBuiltInText("גלו את", "en")).toMatch(/discover/i);
+    expect(localizeBuiltInText("גלו את", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("אסטרטגיות", "es")).toMatch(/estrateg/i);
+    expect(localizeBuiltInText("הקהילה שלנו", "pt-BR")).toMatch(/comunidade/i);
+    expect(localizeBuiltInText("תוצאות מוכחות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
