@@ -942,6 +942,35 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תוצאות מוכחות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique53 leftover Cyclora pricing/FAQ and Chanel craft/journal", () => {
+    expect(localizeBuiltInText("השקעה בצמיחה", "en")).toMatch(/invest|growth/i);
+    expect(localizeBuiltInText("השקעה בצמיחה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("כולל:", "es")).toMatch(/incluye/i);
+    expect(
+      localizeBuiltInText(
+        "כל פריט עובר תהליך ייצור מוקפד — מבחירת העור ועד הגימור הסופי. אנו עובדים עם אומנים מנוסים באיטליה וצרפת כדי להבטיח שכל מוצר יישאר יפה לאורך שנים.",
+        "en",
+      ),
+    ).toMatch(/italy|france|leather/i);
+    expect(
+      localizeBuiltInText(
+        "כל פריט עובר תהליך ייצור מוקפד — מבחירת העור ועד הגימור הסופי. אנו עובדים עם אומנים מנוסים באיטליה וצרפת כדי להבטיח שכל מוצר יישאר יפה לאורך שנים.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("היומן", "pt-BR")).toMatch(/diário/i);
+    expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique54 leftover Shinora and Nexora chrome", () => {
+    expect(localizeBuiltInText("לקביעת ייעוץ", "en")).toMatch(/consult|book/i);
+    expect(localizeBuiltInText("לקביעת ייעוץ", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חנות מוצרי טיפוח", "es")).toMatch(/tienda|cuidado/i);
+    expect(localizeBuiltInText("עד 3 משתמשים", "pt-BR")).toMatch(/usuários|3/i);
+    expect(localizeBuiltInText("תיאום דמו", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בואו נראה לכם את Nexora בפעולה.", "en")).toMatch(/nexora|action/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

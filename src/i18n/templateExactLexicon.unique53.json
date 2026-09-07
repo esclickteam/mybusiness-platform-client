@@ -1,0 +1,548 @@
+{
+  "השקעה בצמיחה": {
+    "en": "An investment in growth",
+    "es": "Una inversión en crecimiento",
+    "pt-BR": "Um investimento em crescimento",
+    "ar": "استثمار في النمو"
+  },
+  "תוכניות שנבנו": {
+    "en": "Plans built",
+    "es": "Planes hechos",
+    "pt-BR": "Planos feitos",
+    "ar": "خطط بُنيت"
+  },
+  "כדי לגדול": {
+    "en": "to grow",
+    "es": "para crecer",
+    "pt-BR": "para crescer",
+    "ar": "لكي تنمو"
+  },
+  "תוכניות שנבנו כדי לגדול": {
+    "en": "Plans built to grow",
+    "es": "Planes hechos para crecer",
+    "pt-BR": "Planos feitos para crescer",
+    "ar": "خطط بُنيت لكي تنمو"
+  },
+  "/ חודש": {
+    "en": "/ month",
+    "es": "/ mes",
+    "pt-BR": "/ mês",
+    "ar": "/ شهر"
+  },
+  "מעטפת ממוקדת לעסק שרוצה לבנות בסיס שיווקי ברור ולהתחיל לגדול באופן עקבי.": {
+    "en": "A focused wrap for a business that wants a clear marketing base and steady growth.",
+    "es": "Una envoltura centrada para un negocio que quiere una base de marketing clara y crecer de forma constante.",
+    "pt-BR": "Uma envoltória focada para um negócio que quer uma base de marketing clara e crescer de forma constante.",
+    "ar": "غلاف مركّز لعمل يريد قاعدة تسويق واضحة والنمو بثبات."
+  },
+  "אסטרטגיית שיווק ומסרים": {
+    "en": "Marketing and messaging strategy",
+    "es": "Estrategia de marketing y mensajes",
+    "pt-BR": "Estratégia de marketing e mensagens",
+    "ar": "استراتيجية تسويق ورسائل"
+  },
+  "ניהול קמפיין מרכזי": {
+    "en": "Core campaign management",
+    "es": "Gestión de campaña central",
+    "pt-BR": "Gestão de campanha central",
+    "ar": "إدارة حملة مركزية"
+  },
+  "אוטומציית לידים בסיסית": {
+    "en": "Basic lead automation",
+    "es": "Automatización básica de leads",
+    "pt-BR": "Automação básica de leads",
+    "ar": "أتمتة أساسية للعملاء المحتملين"
+  },
+  "דוח ביצועים חודשי": {
+    "en": "Monthly performance report",
+    "es": "Informe mensual de rendimiento",
+    "pt-BR": "Relatório mensal de desempenho",
+    "ar": "تقرير أداء شهري"
+  },
+  "פגישת מיטוב": {
+    "en": "Optimization meeting",
+    "es": "Reunión de mejora",
+    "pt-BR": "Reunião de melhoria",
+    "ar": "اجتماع تحسين"
+  },
+  "פתרון מתקדם למותגים שרוצים לגדול בכמה ערוצים עם נתונים, קריאייטיב ואוטומציה.": {
+    "en": "An advanced solution for brands that want to grow across channels with data, creative, and automation.",
+    "es": "Una solución avanzada para marcas que quieren crecer en varios canales con datos, creativo y automatización.",
+    "pt-BR": "Uma solução avançada para marcas que querem crescer em vários canais com dados, criativo e automação.",
+    "ar": "حل متقدم لعلامات تريد النمو عبر قنوات مع بيانات وإبداع وأتمتة."
+  },
+  "אסטרטגיית צמיחה רב־ערוצית": {
+    "en": "Multi-channel growth strategy",
+    "es": "Estrategia de crecimiento multicanal",
+    "pt-BR": "Estratégia de crescimento multicanal",
+    "ar": "استراتيجية نمو متعددة القنوات"
+  },
+  "ניהול קמפיינים מלא": {
+    "en": "Full campaign management",
+    "es": "Gestión completa de campañas",
+    "pt-BR": "Gestão completa de campanhas",
+    "ar": "إدارة حملات كاملة"
+  },
+  "מערכי ניהול לקוחות ואוטומציה": {
+    "en": "Client-management systems and automation",
+    "es": "Sistemas de gestión de clientes y automatización",
+    "pt-BR": "Sistemas de gestão de clientes e automação",
+    "ar": "منظومات إدارة زبائن وأتمتة"
+  },
+  "קריאייטיב שוטף": {
+    "en": "Ongoing creative",
+    "es": "Creativo continuo",
+    "pt-BR": "Criativo contínuo",
+    "ar": "إبداع مستمر"
+  },
+  "לוח בקרת נתונים": {
+    "en": "Data control board",
+    "es": "Panel de control de datos",
+    "pt-BR": "Painel de controle de dados",
+    "ar": "لوحة تحكم بيانات"
+  },
+  "ליווי שבועי": {
+    "en": "Weekly guidance",
+    "es": "Acompañamiento semanal",
+    "pt-BR": "Acompanhamento semanal",
+    "ar": "مرافقة أسبوعية"
+  },
+  "בונים צמיחה": {
+    "en": "Build growth",
+    "es": "Construid crecimiento",
+    "pt-BR": "Construam crescimento",
+    "ar": "ابنوا نمواً"
+  },
+  "כולל:": {
+    "en": "Includes:",
+    "es": "Incluye:",
+    "pt-BR": "Inclui:",
+    "ar": "يشمل:"
+  },
+  "יוצא דופן": {
+    "en": "Outstanding",
+    "es": "Excepcional",
+    "pt-BR": "Fora do comum",
+    "ar": "استثنائي"
+  },
+  "עברנו מניחושים להחלטות מבוססות נתונים. השילוב בין אסטרטגיה, אוטומציה וקריאייטיב נתן לנו תוצאות מהירות ומדידות.": {
+    "en": "We moved from guesses to data-based decisions. The mix of strategy, automation, and creative gave us fast, measurable results.",
+    "es": "Pasamos de conjeturas a decisiones basadas en datos. La mezcla de estrategia, automatización y creativo nos dio resultados rápidos y medibles.",
+    "pt-BR": "Passamos de palpites para decisões baseadas em dados. A mistura de estratégia, automação e criativo nos deu resultados rápidos e mensuráveis.",
+    "ar": "انتقلنا من التخمين إلى قرارات مبنية على البيانات. مزيج الاستراتيجية والأتمتة والإبداع أعطانا نتائج سريعة وقابلة للقياس."
+  },
+  "מנהלת צמיחה": {
+    "en": "Growth director",
+    "es": "Directora de crecimiento",
+    "pt-BR": "Diretora de crescimento",
+    "ar": "مديرة نمو"
+  },
+  "הצוות הצליח לפשט מוצר מורכב ולבנות מסע שמרגיש מדויק בכל נקודת מגע. גם המספרים וגם חוויית המותג השתפרו.": {
+    "en": "The team simplified a complex product and built a journey that feels precise at every touchpoint. Both the numbers and the brand experience improved.",
+    "es": "El equipo simplificó un producto complejo y construyó un viaje que se siente preciso en cada punto de contacto. Mejoraron los números y la experiencia de marca.",
+    "pt-BR": "A equipe simplificou um produto complexo e construiu uma jornada que parece precisa em cada ponto de contato. Melhoraram os números e a experiência da marca.",
+    "ar": "الفريق بسّط منتجاً معقداً وبنى رحلة دقيقة في كل نقطة تواصل. تحسّنت الأرقام وتجربة العلامة معاً."
+  },
+  "מנהל אסטרטגיה": {
+    "en": "Strategy director",
+    "es": "Director de estrategia",
+    "pt-BR": "Diretor de estratégia",
+    "ar": "مدير استراتيجية"
+  },
+  "צוות חושב קדימה. האנליטיקה החיזויית נתנה לנו בהירות וביטחון בכל החלטה.": {
+    "en": "A team that thinks ahead. Predictive analytics gave us clarity and confidence in every decision.",
+    "es": "Un equipo que piensa hacia delante. La analítica predictiva nos dio claridad y confianza en cada decisión.",
+    "pt-BR": "Uma equipe que pensa à frente. A analytics preditiva nos deu clareza e confiança em cada decisão.",
+    "ar": "فريق يفكر إلى الأمام. التحليلات التنبؤية منحتنا وضوحاً وثقة في كل قرار."
+  },
+  "סמנכ״לית שיווק": {
+    "en": "VP of marketing",
+    "es": "Vicepresidenta de marketing",
+    "pt-BR": "VP de marketing",
+    "ar": "نائبة رئيس التسويق"
+  },
+  "רמת התובנות שיושמו עזרה לנו להוריד עלויות ולהגדיל ביצועים בכל קמפיין.": {
+    "en": "The level of insight they applied helped us cut costs and raise performance in every campaign.",
+    "es": "El nivel de insights que aplicaron nos ayudó a bajar costes y subir el rendimiento en cada campaña.",
+    "pt-BR": "O nível de insights que aplicaram nos ajudou a baixar custos e subir o desempenho em cada campanha.",
+    "ar": "مستوى الرؤى التي طُبّقت ساعدنا على خفض التكاليف ورفع الأداء في كل حملة."
+  },
+  "אסטרטגית מותג": {
+    "en": "Brand strategist",
+    "es": "Estratega de marca",
+    "pt-BR": "Estrategista de marca",
+    "ar": "استراتيجية علامة"
+  },
+  "שיעורי ההמרה עלו משמעותית אחרי יישום הגישה החכמה שלהם לפרסונליזציה.": {
+    "en": "Conversion rates rose significantly after we applied their smart approach to personalization.",
+    "es": "Las tasas de conversión subieron bastante después de aplicar su enfoque inteligente a la personalización.",
+    "pt-BR": "As taxas de conversão subiram bastante depois de aplicar a abordagem inteligente deles à personalização.",
+    "ar": "ارتفعت نسب التحويل بشكل واضح بعد تطبيق نهجهم الذكي في التخصيص."
+  },
+  "ראש דיגיטל": {
+    "en": "Head of digital",
+    "es": "Responsable de digital",
+    "pt-BR": "Head de digital",
+    "ar": "رئيس الرقمي"
+  },
+  "שכבר ענינו": {
+    "en": "we already answered",
+    "es": "que ya respondimos",
+    "pt-BR": "que já respondemos",
+    "ar": "أجبنا عنها"
+  },
+  "במה הגישה שלכם שונה מסוכנות רגילה?": {
+    "en": "How is your approach different from a regular agency?",
+    "es": "¿En qué se diferencia vuestro enfoque de una agencia normal?",
+    "pt-BR": "Em que a abordagem de vocês é diferente de uma agência comum?",
+    "ar": "بماذا يختلف نهجكم عن وكالة عادية؟"
+  },
+  "אנחנו מחברים אסטרטגיה, קריאייטיב, מדיה, ניהול לקוחות ואוטומציות למערכת אחת. כך כל פעולה משרתת את אותה מטרת צמיחה.": {
+    "en": "We connect strategy, creative, media, client management, and automations into one system. Every action then serves the same growth goal.",
+    "es": "Conectamos estrategia, creativo, medios, gestión de clientes y automatizaciones en un sistema. Así cada acción sirve al mismo objetivo de crecimiento.",
+    "pt-BR": "Conectamos estratégia, criativo, mídia, gestão de clientes e automações num sistema. Assim cada ação serve o mesmo objetivo de crescimento.",
+    "ar": "نربط الاستراتيجية والإبداع والوسائط وإدارة الزبائن والأتمتة في منظومة واحدة. بذلك تخدم كل خطوة هدف النمو نفسه."
+  },
+  "איך בינה מלאכותית משפרת את ביצועי הקמפיינים?": {
+    "en": "How does AI improve campaign performance?",
+    "es": "¿Cómo mejora la IA el rendimiento de las campañas?",
+    "pt-BR": "Como a IA melhora o desempenho das campanhas?",
+    "ar": "كيف يحسّن الذكاء الاصطناعي أداء الحملات؟"
+  },
+  "בינה מלאכותית עוזרת לנתח התנהגות, לזהות דפוסים, לייצר וריאציות ולתעדף פעולות. ההחלטות המרכזיות נשארות תחת בקרה אנושית.": {
+    "en": "AI helps analyze behavior, find patterns, create variations, and prioritize actions. The core decisions stay under human control.",
+    "es": "La IA ayuda a analizar conducta, detectar patrones, crear variaciones y priorizar acciones. Las decisiones centrales siguen bajo control humano.",
+    "pt-BR": "A IA ajuda a analisar comportamento, achar padrões, criar variações e priorizar ações. As decisões centrais continuam sob controle humano.",
+    "ar": "الذكاء الاصطناعي يساعد على تحليل السلوك واكتشاف الأنماط وإنتاج تنويعات وترتيب الأولويات. القرارات الأساسية تبقى تحت رقابة بشرية."
+  },
+  "האם השירות מתאים גם לעסק קטן?": {
+    "en": "Does the service also fit a small business?",
+    "es": "¿El servicio también encaja en un negocio pequeño?",
+    "pt-BR": "O serviço também serve para um negócio pequeno?",
+    "ar": "هل الخدمة تناسب عملاً صغيراً أيضاً؟"
+  },
+  "כן. אנחנו מתאימים את היקף העבודה, הערוצים והתהליך לשלב שבו העסק נמצא ולתקציב הקיים.": {
+    "en": "Yes. We fit the scope, channels, and process to the stage the business is in and to the current budget.",
+    "es": "Sí. Adaptamos el alcance, los canales y el proceso a la etapa del negocio y al presupuesto actual.",
+    "pt-BR": "Sim. Ajustamos o alcance, os canais e o processo ao estágio do negócio e ao orçamento atual.",
+    "ar": "نعم. نلائم نطاق العمل والقنوات والعملية مع مرحلة العمل والميزانية الحالية."
+  },
+  "תוך כמה זמן רואים תוצאות?": {
+    "en": "How soon do you see results?",
+    "es": "¿En cuánto tiempo se ven resultados?",
+    "pt-BR": "Em quanto tempo se veem resultados?",
+    "ar": "خلال كم من الوقت تظهر النتائج؟"
+  },
+  "שיפורים ראשונים נראים לרוב בשבועות הראשונים, אבל בניית מנוע צמיחה יציב היא תהליך של מדידה, למידה ואופטימיזציה.": {
+    "en": "First improvements usually show in the first weeks, but building a stable growth engine is a process of measurement, learning, and optimization.",
+    "es": "Las primeras mejoras suelen verse en las primeras semanas, pero construir un motor de crecimiento estable es un proceso de medición, aprendizaje y optimización.",
+    "pt-BR": "As primeiras melhoras costumam aparecer nas primeiras semanas, mas construir um motor de crescimento estável é um processo de medição, aprendizado e otimização.",
+    "ar": "التحسينات الأولى تظهر غالباً في الأسابيع الأولى، لكن بناء محرك نمو ثابت عملية قياس وتعلّم وتحسين."
+  },
+  "האם אתם עובדים עם חברות חדשות וגם עם עסקים ותיקים?": {
+    "en": "Do you work with new companies and also with established businesses?",
+    "es": "¿Trabajáis con empresas nuevas y también con negocios consolidados?",
+    "pt-BR": "Vocês trabalham com empresas novas e também com negócios estabelecidos?",
+    "ar": "هل تعملون مع شركات جديدة وأيضاً مع أعمال قائمة؟"
+  },
+  "כן. אנחנו עובדים עם חברות בשלבי השקה, צמיחה והתרחבות, ומתאימים את המערכת למורכבות וליעדים של כל עסק.": {
+    "en": "Yes. We work with companies in launch, growth, and expansion stages, and fit the system to each business's complexity and goals.",
+    "es": "Sí. Trabajamos con empresas en etapas de lanzamiento, crecimiento y expansión, y adaptamos el sistema a la complejidad y los objetivos de cada negocio.",
+    "pt-BR": "Sim. Trabalhamos com empresas em estágios de lançamento, crescimento e expansão, e ajustamos o sistema à complexidade e aos objetivos de cada negócio.",
+    "ar": "نعم. نعمل مع شركات في مراحل الإطلاق والنمو والتوسع، ونلائم المنظومة لتعقيد وأهداف كل عمل."
+  },
+  "איך מודדים הצלחה?": {
+    "en": "How do you measure success?",
+    "es": "¿Cómo medís el éxito?",
+    "pt-BR": "Como vocês medem o sucesso?",
+    "ar": "كيف تقيسون النجاح؟"
+  },
+  "מגדירים מראש מדדי הצלחה עסקיים: עלות ליד, שיעור המרה, הכנסה, מהירות טיפול, ערך לקוח ועוד.": {
+    "en": "We define business success metrics up front: cost per lead, conversion rate, revenue, handling speed, customer value, and more.",
+    "es": "Definimos de antemano métricas de éxito: coste por lead, tasa de conversión, ingresos, velocidad de gestión, valor de cliente y más.",
+    "pt-BR": "Definimos de antemão métricas de sucesso: custo por lead, taxa de conversão, receita, velocidade de atendimento, valor do cliente e mais.",
+    "ar": "نحدد مسبقاً مؤشرات نجاح عمل: تكلفة العميل المحتمل، نسبة التحويل، الإيراد، سرعة المعالجة، قيمة الزبون والمزيد."
+  },
+  "מתחילים עכשיו": {
+    "en": "Start now",
+    "es": "Empezad ahora",
+    "pt-BR": "Comecem agora",
+    "ar": "ابدأوا الآن"
+  },
+  "בואו נניע": {
+    "en": "Let's set",
+    "es": "Pongamos",
+    "pt-BR": "Vamos pôr",
+    "ar": "لنحرّك"
+  },
+  "מערכת שיווק חכמה, מותאמת לעסק שלכם ונבנית כדי להפוך תשומת לב לתוצאות.": {
+    "en": "A smart marketing system, fitted to your business and built to turn attention into results.",
+    "es": "Un sistema de marketing inteligente, adaptado a vuestro negocio y hecho para convertir atención en resultados.",
+    "pt-BR": "Um sistema de marketing inteligente, ajustado ao negócio de vocês e feito para transformar atenção em resultados.",
+    "ar": "منظومة تسويق ذكية ملائمة لعملكم ومبنية لتحويل الانتباه إلى نتائج."
+  },
+  "קובעים שיחת היכרות": {
+    "en": "Book an intro call",
+    "es": "Reservad una llamada de presentación",
+    "pt-BR": "Marquem uma chamada de apresentação",
+    "ar": "حددوا مكالمة تعارف"
+  },
+  "שיווק חכם לצמיחה מדידה.": {
+    "en": "Smart marketing for measurable growth.",
+    "es": "Marketing inteligente para un crecimiento medible.",
+    "pt-BR": "Marketing inteligente para crescimento mensurável.",
+    "ar": "تسويق ذكي لنمو قابل للقياس."
+  },
+  "© 2026 סיקלורה. כל הזכויות שמורות.": {
+    "en": "© 2026 Cyclora. All rights reserved.",
+    "es": "© 2026 Cyclora. Todos los derechos reservados.",
+    "pt-BR": "© 2026 Cyclora. Todos os direitos reservados.",
+    "ar": "© 2026 Cyclora. جميع الحقوق محفوظة."
+  },
+  "כל פריט עובר תהליך ייצור מוקפד — מבחירת העור ועד הגימור הסופי. אנו עובדים עם אומנים מנוסים באיטליה וצרפת כדי להבטיח שכל מוצר יישאר יפה לאורך שנים.": {
+    "en": "Every piece goes through a careful production process — from choosing the leather to the final finish. We work with experienced artisans in Italy and France to keep every product beautiful for years.",
+    "es": "Cada pieza pasa por un proceso de fabricación cuidadoso — desde la elección del cuero hasta el acabado final. Trabajamos con artesanos expertos en Italia y Francia para que cada producto siga bello durante años.",
+    "pt-BR": "Cada peça passa por um processo de fabricação cuidadoso — da escolha do couro até o acabamento final. Trabalhamos com artesãos experientes na Itália e na França para que cada produto continue bonito por anos.",
+    "ar": "كل قطعة تمر بعملية تصنيع دقيقة — من اختيار الجلد حتى التشطيب النهائي. نعمل مع حرفيين متمرسين في إيطاليا وفرنسا ليبقى كل منتج جميلاً لسنوات."
+  },
+  "שנות מסורת": {
+    "en": "years of tradition",
+    "es": "años de tradición",
+    "pt-BR": "anos de tradição",
+    "ar": "سنوات من التقليد"
+  },
+  "עור איטלקי": {
+    "en": "Italian leather",
+    "es": "Cuero italiano",
+    "pt-BR": "Couro italiano",
+    "ar": "جلد إيطالي"
+  },
+  "קראו את הסיפור": {
+    "en": "Read the story",
+    "es": "Leed la historia",
+    "pt-BR": "Leiam a história",
+    "ar": "اقرأوا القصة"
+  },
+  "היומן": {
+    "en": "The journal",
+    "es": "El diario",
+    "pt-BR": "O diário",
+    "ar": "اليوميات"
+  },
+  "וסטייל": {
+    "en": "and style",
+    "es": "y estilo",
+    "pt-BR": "e estilo",
+    "ar": "وأسلوب"
+  },
+  "השראה וסטייל": {
+    "en": "Inspiration and style",
+    "es": "Inspiración y estilo",
+    "pt-BR": "Inspiração e estilo",
+    "ar": "إلهام وأسلوب"
+  },
+  "איך לבחור תיק עור מושלם": {
+    "en": "How to choose a perfect leather bag",
+    "es": "Cómo elegir un bolso de cuero perfecto",
+    "pt-BR": "Como escolher uma bolsa de couro perfeita",
+    "ar": "كيف تختارون حقيبة جلد مثالية"
+  },
+  "מדריך לבחירת התיק שמתאים לסגנון החיים שלכם — מגודל ועד גימור.": {
+    "en": "A guide to choosing the bag that fits your lifestyle — from size to finish.",
+    "es": "Una guía para elegir el bolso que encaja con vuestro estilo de vida — del tamaño al acabado.",
+    "pt-BR": "Um guia para escolher a bolsa que combina com o estilo de vida de vocês — do tamanho ao acabamento.",
+    "ar": "دليل لاختيار الحقيبة التي تناسب أسلوب حياتكم — من الحجم حتى التشطيب."
+  },
+  "מרץ 2026": {
+    "en": "March 2026",
+    "es": "Marzo 2026",
+    "pt-BR": "Março 2026",
+    "ar": "مارس 2026"
+  },
+  "טרנדים באקססוריז לאביב 2026": {
+    "en": "Accessory trends for spring 2026",
+    "es": "Tendencias de accesorios para primavera 2026",
+    "pt-BR": "Tendências de acessórios para a primavera 2026",
+    "ar": "اتجاهات الإكسسوارات لربيع 2026"
+  },
+  "הצבעים, החומרים והצורות שמגדירים את העונה הקרובה.": {
+    "en": "The colors, materials, and shapes that define the coming season.",
+    "es": "Los colores, materiales y formas que definen la próxima temporada.",
+    "pt-BR": "As cores, os materiais e as formas que definem a temporada que vem.",
+    "ar": "الألوان والخامات والأشكال التي تعرّف الموسم القادم."
+  },
+  "פברואר 2026": {
+    "en": "February 2026",
+    "es": "Febrero 2026",
+    "pt-BR": "Fevereiro 2026",
+    "ar": "فبراير 2026"
+  },
+  "מאחורי הקלעים: בית הייצור שלנו": {
+    "en": "Behind the scenes: our atelier",
+    "es": "Entre bastidores: nuestro taller",
+    "pt-BR": "Nos bastidores: nosso ateliê",
+    "ar": "خلف الكواليس: بيت التصنيع لدينا"
+  },
+  "מסע אל האומנים שיוצרים כל פריט ביד — מעור גולמי למוצר מוגמר.": {
+    "en": "A journey to the artisans who make every piece by hand — from raw leather to a finished product.",
+    "es": "Un viaje a los artesanos que crean cada pieza a mano — del cuero crudo al producto terminado.",
+    "pt-BR": "Uma jornada até os artesãos que criam cada peça à mão — do couro cru ao produto pronto.",
+    "ar": "رحلة إلى الحرفيين الذين يصنعون كل قطعة يدوياً — من الجلد الخام إلى المنتج النهائي."
+  },
+  "ינואר 2026": {
+    "en": "January 2026",
+    "es": "Enero 2026",
+    "pt-BR": "Janeiro 2026",
+    "ar": "يناير 2026"
+  },
+  "הצטרפו לעולם שאנל": {
+    "en": "Join the Chanel world",
+    "es": "Entrad en el mundo Chanel",
+    "pt-BR": "Entrem no mundo Chanel",
+    "ar": "انضموا إلى عالم Chanel"
+  },
+  "קבלו גישה מוקדמת לקולקציות חדשות, טיפים לסטיילינג והטבות בלעדיות.": {
+    "en": "Get early access to new collections, styling tips, and exclusive offers.",
+    "es": "Obtened acceso anticipado a colecciones nuevas, consejos de styling y ofertas exclusivas.",
+    "pt-BR": "Recebam acesso antecipado a coleções novas, dicas de styling e ofertas exclusivas.",
+    "ar": "احصلوا على وصول مبكر لمجموعات جديدة ونصائح تنسيق وعروض حصرية."
+  },
+  "כתובת האימייל שלכם": {
+    "en": "Your email address",
+    "es": "Vuestra dirección de email",
+    "pt-BR": "O e-mail de vocês",
+    "ar": "عنوان بريدكم"
+  },
+  "בהרשמה אתם מסכימים לקבל עדכונים. ניתן לבטל בכל עת.": {
+    "en": "By signing up you agree to receive updates. You can cancel at any time.",
+    "es": "Al registraros aceptáis recibir actualizaciones. Podéis cancelar en cualquier momento.",
+    "pt-BR": "Ao se registrar vocês concordam em receber atualizações. Dá para cancelar a qualquer momento.",
+    "ar": "بالتسجيل توافقون على تلقي التحديثات. يمكن الإلغاء في أي وقت."
+  },
+  "התכשיטים נראים עוד יותר יפים בחיים. האריזה הייתה מושלמת — מתנה שממש הרשימה.": {
+    "en": "The jewelry looks even more beautiful in real life. The packaging was perfect — a gift that truly impressed.",
+    "es": "Las joyas se ven todavía más hermosas en la vida real. El empaque fue perfecto — un regalo que realmente impresionó.",
+    "pt-BR": "As joias ficam ainda mais bonitas na vida real. A embalagem foi perfeita — um presente que realmente impressionou.",
+    "ar": "المجوهرات تبدو أجمل في الحياة. التغليف كان مثالياً — هدية أثارت الإعجاب حقاً."
+  },
+  "סוף סוף מצאתי מותג שמשלב יוקרה עם שירות אישי. הצעיף הוא הפריט האהוב עליי בכל ארון.": {
+    "en": "I finally found a brand that combines luxury with personal service. The scarf is my favorite piece in the whole closet.",
+    "es": "Por fin encontré una marca que combina lujo con servicio personal. El pañuelo es mi pieza favorita de todo el armario.",
+    "pt-BR": "Finalmente achei uma marca que mistura luxo com serviço pessoal. O lenço é a peça favorita no guarda-roupa todo.",
+    "ar": "أخيراً وجدت علامة تمزج الفخامة مع خدمة شخصية. الوشاح هو قطعتي المفضلة في الخزانة كلها."
+  },
+  "השעון שקניתי לבעלי הפך לפריט קבוע בכל אירוע. מומלץ בחום לכל מי שמחפש איכות אמיתית.": {
+    "en": "The watch I bought for my husband became a staple at every event. Highly recommended for anyone looking for real quality.",
+    "es": "El reloj que compré para mi marido se volvió un básico en cada evento. Muy recomendable para quien busca calidad de verdad.",
+    "pt-BR": "O relógio que comprei para meu marido virou peça fixa em cada evento. Super recomendado para quem busca qualidade de verdade.",
+    "ar": "الساعة التي اشتريتها لزوجي صارت قطعة ثابتة في كل مناسبة. أنصح بها بشدة لكل من يبحث عن جودة حقيقية."
+  },
+  "אקססוריז יוקרה בעיצוב נצחי — מיוצרים באהבה, נשלחים אליכם בקפידה.": {
+    "en": "Luxury accessories in timeless design — made with care, sent to you with precision.",
+    "es": "Accesorios de lujo con diseño eterno — hechos con cariño, enviados con cuidado.",
+    "pt-BR": "Acessórios de luxo com design atemporal — feitos com carinho, enviados com cuidado.",
+    "ar": "إكسسوارات فاخرة بتصميم خالد — تُصنع بحب وتُرسل إليكم بعناية."
+  },
+  "© 2026 שאנל. כל הזכויות שמורות.": {
+    "en": "© 2026 Chanel. All rights reserved.",
+    "es": "© 2026 Chanel. Todos los derechos reservados.",
+    "pt-BR": "© 2026 Chanel. Todos os direitos reservados.",
+    "ar": "© 2026 Chanel. جميع الحقوق محفوظة."
+  },
+  "הקולקציה המלאה": {
+    "en": "The full collection",
+    "es": "La colección completa",
+    "pt-BR": "A coleção completa",
+    "ar": "المجموعة الكاملة"
+  },
+  "המוצרים": {
+    "en": "products",
+    "es": "productos",
+    "pt-BR": "produtos",
+    "ar": "المنتجات"
+  },
+  "גלו את כל פריטי היוקרה של שאנל — מעור איטלקי, תכשיטים נבחרים ואקססוריז מעוצבים.": {
+    "en": "Discover every Chanel luxury piece — Italian leather, selected jewelry, and designed accessories.",
+    "es": "Descubrid cada pieza de lujo Chanel — cuero italiano, joyas seleccionadas y accesorios diseñados.",
+    "pt-BR": "Descubram cada peça de luxo Chanel — couro italiano, joias escolhidas e acessórios desenhados.",
+    "ar": "اكتشفوا كل قطع Chanel الفاخرة — جلد إيطالي ومجوهرات مختارة وإكسسوارات مصمّمة."
+  },
+  "תיק עור איטלקי מלאכת יד עם גימור פנימי מוקפד, רצועת כתף מתכווננת וסגירה מגנטית. פריט יומיומי שנראה כמו יצירת אומנות.": {
+    "en": "A handcrafted Italian leather bag with a careful inner finish, an adjustable shoulder strap, and a magnetic close. An everyday piece that looks like a work of art.",
+    "es": "Un bolso de cuero italiano hecho a mano con acabado interior cuidadoso, correa de hombro ajustable y cierre magnético. Una pieza diaria que parece una obra de arte.",
+    "pt-BR": "Uma bolsa de couro italiano feita à mão com acabamento interno cuidadoso, alça de ombro ajustável e fechamento magnético. Uma peça do dia a dia que parece obra de arte.",
+    "ar": "حقيبة جلد إيطالي مصنوعة يدوياً مع تشطيب داخلي دقيق وحزام كتف قابل للضبط وإغلاق مغناطيسي. قطعة يومية تبدو كعمل فني."
+  },
+  "עור עגל איטלקי מלאכת יד": {
+    "en": "Handcrafted Italian calf leather",
+    "es": "Cuero de ternera italiano hecho a mano",
+    "pt-BR": "Couro de bezerro italiano feito à mão",
+    "ar": "جلد عجل إيطالي مصنوع يدوياً"
+  },
+  "ריפוד פנימי מבד פרימיום": {
+    "en": "Premium fabric inner lining",
+    "es": "Forro interior de tela premium",
+    "pt-BR": "Forro interno de tecido premium",
+    "ar": "بطانة داخلية من قماش فاخر"
+  },
+  "משלוח חינם מעל ₪500": {
+    "en": "Free shipping over ₪500",
+    "es": "Envío gratis por encima de ₪500",
+    "pt-BR": "Frete grátis acima de ₪500",
+    "ar": "شحن مجاني فوق ₪500"
+  },
+  "אחריות לשנה על תפרים וגימור": {
+    "en": "One-year warranty on stitching and finish",
+    "es": "Garantía de un año en costuras y acabado",
+    "pt-BR": "Garantia de um ano em costuras e acabamento",
+    "ar": "ضمان سنة على الغرز والتشطيب"
+  },
+  "הוספה לעגלה": {
+    "en": "Add to cart",
+    "es": "Añadir al carrito",
+    "pt-BR": "Adicionar à sacola",
+    "ar": "إضافة إلى السلة"
+  },
+  "המשך קניות": {
+    "en": "Continue shopping",
+    "es": "Seguid comprando",
+    "pt-BR": "Continuem comprando",
+    "ar": "تابعوا التسوق"
+  },
+  "העגלה שלכם": {
+    "en": "Your cart",
+    "es": "Vuestro carrito",
+    "pt-BR": "A sacola de vocês",
+    "ar": "سلتكم"
+  },
+  "סיכום": {
+    "en": "Summary",
+    "es": "Resumen",
+    "pt-BR": "Resumo",
+    "ar": "ملخص"
+  },
+  "הזמנה": {
+    "en": "order",
+    "es": "pedido",
+    "pt-BR": "pedido",
+    "ar": "طلب"
+  },
+  "העגלה ריקה כרגע — גלו את הקולקציה ומצאו את הפריט המושלם.": {
+    "en": "The cart is empty for now — discover the collection and find the perfect piece.",
+    "es": "El carrito está vacío ahora — descubrid la colección y encontrad la pieza perfecta.",
+    "pt-BR": "A sacola está vazia agora — descubram a coleção e achem a peça perfeita.",
+    "ar": "السلة فارغة الآن — اكتشفوا المجموعة وابحثوا عن القطعة المثالية."
+  },
+  "סכום ביניים": {
+    "en": "Subtotal",
+    "es": "Subtotal",
+    "pt-BR": "Subtotal",
+    "ar": "المجموع الفرعي"
+  },
+  "לתשלום מאובטח": {
+    "en": "Secure checkout",
+    "es": "Pago seguro",
+    "pt-BR": "Pagamento seguro",
+    "ar": "دفع آمن"
+  }
+}

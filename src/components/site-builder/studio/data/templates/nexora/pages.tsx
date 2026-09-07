@@ -477,7 +477,7 @@ function PricingSection({
                 {(features as readonly string[]).map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
                     <span className="text-indigo-400">✓</span>
-                    {feature}
+                    {tx(feature)}
                   </li>
                 ))}
               </ul>
@@ -636,7 +636,7 @@ function ContactSection({
           <div className="mt-10 grid gap-3">
             {info.map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-white/8 bg-white/5 px-4 py-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{tx(label)}</div>
                 <div className="mt-1 text-base font-semibold text-white">{value}</div>
               </div>
             ))}

@@ -223,7 +223,8 @@ async function safeLoad(loader?: GlobLoader) {
   if (!loader) return null;
   try {
     return (await loader()) as Record<string, unknown>;
-  } catch {
+  } catch (error) {
+    console.error("[studio] template asset failed to load", error);
     return null;
   }
 }

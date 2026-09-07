@@ -1,0 +1,614 @@
+{
+  "Beauty salon • טיפוח אישי • חוויית פרימיום": {
+    "en": "Beauty salon • personal care • a premium experience",
+    "es": "Beauty salon • cuidado personal • una experiencia premium",
+    "pt-BR": "Beauty salon • cuidado pessoal • uma experiência premium",
+    "ar": "صالون تجميل • عناية شخصية • تجربة فاخرة"
+  },
+  "לקביעת ייעוץ": {
+    "en": "Book a consultation",
+    "es": "Reservad una consulta",
+    "pt-BR": "Marquem uma consulta",
+    "ar": "احجزوا استشارة"
+  },
+  "לראות שירותים": {
+    "en": "See services",
+    "es": "Ver servicios",
+    "pt-BR": "Ver serviços",
+    "ar": "رؤية الخدمات"
+  },
+  "לפרטי טיפול ←": {
+    "en": "Treatment details ←",
+    "es": "Detalles del tratamiento ←",
+    "pt-BR": "Detalhes do tratamento ←",
+    "ar": "تفاصيل العلاج ←"
+  },
+  "לקריאה ←": {
+    "en": "Read more ←",
+    "es": "Leer más ←",
+    "pt-BR": "Ler mais ←",
+    "ar": "للقراءة ←"
+  },
+  "גלריית טיפולים ואווירה": {
+    "en": "Treatments and atmosphere gallery",
+    "es": "Galería de tratamientos y ambiente",
+    "pt-BR": "Galeria de tratamentos e atmosfera",
+    "ar": "معرض علاجات وأجواء"
+  },
+  "מחירון וחבילות": {
+    "en": "Price list and packages",
+    "es": "Tarifa y packs",
+    "pt-BR": "Tabela e pacotes",
+    "ar": "قائمة أسعار وباقات"
+  },
+  "חנות מוצרי טיפוח": {
+    "en": "Care product shop",
+    "es": "Tienda de productos de cuidado",
+    "pt-BR": "Loja de produtos de cuidado",
+    "ar": "متجر منتجات عناية"
+  },
+  "הצוות המקצועי": {
+    "en": "The professional team",
+    "es": "El equipo profesional",
+    "pt-BR": "A equipe profissional",
+    "ar": "الفريق المهني"
+  },
+  "ייעוץ ראשוני לפני קביעת טיפול": {
+    "en": "An initial consultation before booking a treatment",
+    "es": "Una consulta inicial antes de reservar un tratamiento",
+    "pt-BR": "Uma consulta inicial antes de marcar um tratamento",
+    "ar": "استشارة أولى قبل حجز علاج"
+  },
+  "לראות גלריה": {
+    "en": "See the gallery",
+    "es": "Ver la galería",
+    "pt-BR": "Ver a galeria",
+    "ar": "رؤية المعرض"
+  },
+  "הדפדפן לא תומך בניגון וידאו.": {
+    "en": "The browser does not support video playback.",
+    "es": "El navegador no admite la reproducción de vídeo.",
+    "pt-BR": "O navegador não oferece reprodução de vídeo.",
+    "ar": "المتصفح لا يدعم تشغيل الفيديو."
+  },
+  "איזה טיפול מעניין אותך?": {
+    "en": "Which treatment interests you?",
+    "es": "¿Qué tratamiento te interesa?",
+    "pt-BR": "Qual tratamento te interessa?",
+    "ar": "أي علاج يهمك؟"
+  },
+  "ספרי לנו בקצרה מה חשוב לך": {
+    "en": "Tell us briefly what matters to you",
+    "es": "Cuéntanos en breve qué te importa",
+    "pt-BR": "Conte em breve o que importa para você",
+    "ar": "أخبرينا باختصار ما الذي يهمك"
+  },
+  "ייעוץ חינמי": {
+    "en": "Free consultation",
+    "es": "Consulta gratis",
+    "pt-BR": "Consulta gratuita",
+    "ar": "استشارة مجانية"
+  },
+  "מי אנחנו": {
+    "en": "Who we are",
+    "es": "Quiénes somos",
+    "pt-BR": "Quem somos",
+    "ar": "من نحن"
+  },
+  "ייעוץ וקביעת תור": {
+    "en": "Consultation and booking",
+    "es": "Consulta y reserva",
+    "pt-BR": "Consulta e agendamento",
+    "ar": "استشارة وحجز موعد"
+  },
+  "חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית.": {
+    "en": "Clear packages for treatments, events, and monthly upkeep.",
+    "es": "Packs claros para tratamientos, eventos y mantenimiento mensual.",
+    "pt-BR": "Pacotes claros para tratamentos, eventos e manutenção mensal.",
+    "ar": "باقات واضحة للعلاجات والمناسبات والصيانة الشهرية."
+  },
+  "תמונות אווירה, טיפולים ותוצאות מתוך הסלון.": {
+    "en": "Atmosphere photos, treatments, and results from the salon.",
+    "es": "Fotos de ambiente, tratamientos y resultados del salón.",
+    "pt-BR": "Fotos de atmosfera, tratamentos e resultados do salão.",
+    "ar": "صور أجواء وعلاجات ونتائج من الصالون."
+  },
+  "מוצרי טיפוח משלימים לחוויית סלון גם בבית.": {
+    "en": "Care products that extend the salon experience at home.",
+    "es": "Productos de cuidado que alargan la experiencia del salón en casa.",
+    "pt-BR": "Produtos de cuidado que prolongam a experiência do salão em casa.",
+    "ar": "منتجات عناية تُكمل تجربة الصالون في البيت أيضاً."
+  },
+  "יחס אישי, צוות מומחיות, מוצרים פרימיום ואווירה שמרגישה כמו רגע לעצמך — בדיוק כמו אתר סלון יוקרתי צריך לשדר.": {
+    "en": "Personal care, an expert team, premium products, and an atmosphere that feels like a moment for yourself — exactly what a luxury salon site should convey.",
+    "es": "Atención personal, un equipo experto, productos premium y un ambiente que se siente como un momento para ti — exactamente lo que un sitio de salón de lujo debe transmitir.",
+    "pt-BR": "Atenção pessoal, uma equipe especialista, produtos premium e uma atmosfera que parece um momento para você — exatamente o que um site de salão de luxo precisa transmitir.",
+    "ar": "اهتمام شخصي وفريق خبرة ومنتجات فاخرة وأجواء تشعر وكأنها لحظة لنفسك — تماماً كما يجب أن يبدو موقع صالون فاخر."
+  },
+  "סרטון אווירה אחד שמראה את החוויה בסלון": {
+    "en": "One atmosphere video that shows the salon experience",
+    "es": "Un vídeo de ambiente que muestra la experiencia del salón",
+    "pt-BR": "Um vídeo de atmosfera que mostra a experiência do salão",
+    "ar": "فيديو أجواء واحد يُظهر تجربة الصالון"
+  },
+  "במקום עיגולים, טאבים ותמונה סטטית — אזור וידאו גדול ונקי שמציג את הסלון, הטיפולים והתחושה שהלקוחה מקבלת עוד לפני שהיא קובעת תור.": {
+    "en": "Instead of circles, tabs, and a static photo — a large, clean video area that shows the salon, the treatments, and the feeling the client gets before she books.",
+    "es": "En vez de círculos, pestañas y una foto estática — un área de vídeo grande y limpia que muestra el salón, los tratamientos y la sensación que recibe la clienta antes de reservar.",
+    "pt-BR": "Em vez de círculos, abas e uma foto estática — uma área de vídeo grande e limpa que mostra o salão, os tratamentos e a sensação que a cliente recebe antes de marcar.",
+    "ar": "بدلاً من دوائر وتبويبات وصورة ثابتة — منطقة فيديو كبيرة ونظيفة تعرض الصالون والعلاجات والإحساس الذي تحصل عليه العميلة قبل الحجز."
+  },
+  "אפשר להחליף את הסרטון לכל קובץ MP4 של העסק: סיור בסלון, רגעי טיפול, לפני־אחרי או סרטון תדמית קצר.": {
+    "en": "You can replace the video with any MP4 from the business: a salon tour, treatment moments, before-and-after, or a short brand film.",
+    "es": "Podéis cambiar el vídeo por cualquier MP4 del negocio: un recorrido por el salón, momentos de tratamiento, antes y después, o un vídeo de marca breve.",
+    "pt-BR": "Dá para trocar o vídeo por qualquer MP4 do negócio: um tour no salão, momentos de tratamento, antes e depois, ou um filme de marca curto.",
+    "ar": "يمكن استبدال الفيديو بأي ملف MP4 من العمل: جولة في الصالون أو لحظات علاج أو قبل وبعد أو فيلم تعريفي قصير."
+  },
+  "כך אנחנו עובדות": {
+    "en": "This is how we work",
+    "es": "Así trabajamos",
+    "pt-BR": "É assim que trabalhamos",
+    "ar": "هكذا نعمل"
+  },
+  "הצצה קצרה לאווירה, לחדרי הטיפול ולדרך שבה אנחנו בונות לכל לקוחה חוויה רגועה ומדויקת.": {
+    "en": "A short look at the atmosphere, the treatment rooms, and how we build a calm, precise experience for every client.",
+    "es": "Una mirada breve al ambiente, a las salas de tratamiento y a cómo construimos una experiencia calmada y precisa para cada clienta.",
+    "pt-BR": "Uma olhada curta na atmosfera, nas salas de tratamento e no jeito como montamos uma experiência calma e precisa para cada cliente.",
+    "ar": "نظرة قصيرة إلى الأجواء وغرف العلاج والطريقة التي نبني بها لكل عميلة تجربة هادئة ودقيقة."
+  },
+  "אנחנו בונות לכל לקוחה מסלול טיפול אישי — לא טיפול גנרי. המטרה היא תוצאה מחמיאה, רגועה ומדויקת שמרגישה באמת שלך.": {
+    "en": "We build a personal treatment path for every client — not a generic treatment. The goal is a flattering, calm, precise result that truly feels like yours.",
+    "es": "Construimos un recorrido de tratamiento personal para cada clienta — no un tratamiento genérico. El objetivo es un resultado favorecedor, calmado y preciso que se sienta realmente tuyo.",
+    "pt-BR": "Montamos um percurso de tratamento pessoal para cada cliente — não um tratamento genérico. O objetivo é um resultado lisonjeiro, calmo e preciso que realmente pareça seu.",
+    "ar": "نبني لكل عميلة مسار علاج شخصي — لا علاجاً عاماً. الهدف نتيجة مُرضية وهادئة ودقيقة تشعر وكأنها لك حقاً."
+  },
+  "מהרגע שאת נכנסת, את עטופה באווירה של רוגע, יוקרה וטיפול אישי.": {
+    "en": "From the moment you walk in, you are wrapped in an atmosphere of calm, luxury, and personal care.",
+    "es": "Desde que entras, estás envuelta en un ambiente de calma, lujo y atención personal.",
+    "pt-BR": "Desde que você entra, está envolvida numa atmosfera de calma, luxo e cuidado pessoal.",
+    "ar": "من لحظة دخولك تكونين ملفوفة بأجواء هدوء وفخامة وعناية شخصية."
+  },
+  "מה הלקוחות אומרות": {
+    "en": "What clients say",
+    "es": "Lo que dicen las clientas",
+    "pt-BR": "O que as clientes dizem",
+    "ar": "ماذا تقول الزبونات"
+  },
+  "חוויית לקוחה רגועה, יחס אישי ותוצאה שמחזיקה — אלה הדברים שהלקוחות חוזרות אליהם שוב ושוב.": {
+    "en": "A calm client experience, personal care, and a result that lasts — those are the things clients come back to again and again.",
+    "es": "Una experiencia de clienta calmada, atención personal y un resultado que dura — eso es a lo que las clientas vuelven una y otra vez.",
+    "pt-BR": "Uma experiência de cliente calma, atenção pessoal e um resultado que dura — é isso que as clientes repetem de novo e de novo.",
+    "ar": "تجربة زبونة هادئة واهتمام شخصي ونتيجة تدوم — هذه الأمور التي تعود إليها الزبونات مرة بعد مرة."
+  },
+  "מותגים ומוצרים שעובדים איתנו": {
+    "en": "Brands and products that work with us",
+    "es": "Marcas y productos que trabajan con nosotras",
+    "pt-BR": "Marcas e produtos que trabalham conosco",
+    "ar": "علامات ومنتجات تعمل معنا"
+  },
+  "פוסטים פופולריים מהבלוג": {
+    "en": "Popular posts from the blog",
+    "es": "Entradas populares del blog",
+    "pt-BR": "Posts populares do blog",
+    "ar": "منشورات شائعة من المدونة"
+  },
+  "לכל המאמרים": {
+    "en": "See all articles",
+    "es": "Ver todos los artículos",
+    "pt-BR": "Ver todos os artigos",
+    "ar": "إلى كل المقالات"
+  },
+  "צרי קשר לקביעת תור או ייעוץ אישי לפני טיפול.": {
+    "en": "Get in touch to book an appointment or a personal consultation before a treatment.",
+    "es": "Contacta para reservar cita o una consulta personal antes de un tratamiento.",
+    "pt-BR": "Entre em contato para marcar horário ou uma consulta pessoal antes de um tratamento.",
+    "ar": "تواصلي لحجز موعد أو استشارة شخصية قبل علاج."
+  },
+  "טיפים, מבצעים ותורים פנויים לפני כולם.": {
+    "en": "Tips, offers, and open slots before everyone else.",
+    "es": "Consejos, ofertas y huecos libres antes que el resto.",
+    "pt-BR": "Dicas, ofertas e horários livres antes de todo mundo.",
+    "ar": "نصائح وعروض ومواعيد شاغرة قبل الجميع."
+  },
+  "דיוק טבעי למסגרת הפנים, התאמה לצורה האישית וגימור נקי שמחזיק.": {
+    "en": "Natural precision for the face frame, a fit to your personal shape, and a clean finish that lasts.",
+    "es": "Precisión natural para el marco del rostro, un ajuste a tu forma personal y un acabado limpio que aguanta.",
+    "pt-BR": "Precisão natural para o contorno do rosto, um ajuste à forma pessoal e um acabamento limpo que dura.",
+    "ar": "دقة طبيعية لإطار الوجه وملاءمة للشكل الشخصي وتشطيب نظيف يدوم."
+  },
+  "מראה פתוח ועדין בלי עומס, עם תוצאה רכה שמדגישה את העיניים.": {
+    "en": "An open, delicate look without heaviness, with a soft result that highlights the eyes.",
+    "es": "Una mirada abierta y delicada sin carga, con un resultado suave que destaca los ojos.",
+    "pt-BR": "Um olhar aberto e delicado sem peso, com um resultado macio que destaca os olhos.",
+    "ar": "إطلالة مفتوحة ورقيقة بلا ثقل، مع نتيجة ناعمة تبرز العينين."
+  },
+  "מבנה נקי, צבע מדויק וגימור מבריק שמרגיש יוקרתי ומוקפד.": {
+    "en": "A clean structure, precise color, and a glossy finish that feels luxurious and careful.",
+    "es": "Una estructura limpia, color preciso y un acabado brillante que se siente lujoso y cuidado.",
+    "pt-BR": "Uma estrutura limpa, cor precisa e um acabamento brilhante que parece luxuoso e cuidado.",
+    "ar": "بنية نظيفة ولون دقيق وتشطيب لامع يبدو فاخرًا ودقيقًا."
+  },
+  "ריכוך, ניקוי, עיסוי וגימור מושלם לחוויה מפנקת ונקייה.": {
+    "en": "Softening, cleaning, massage, and a perfect finish for a pampering, clean experience.",
+    "es": "Suavizado, limpieza, masaje y un acabado perfecto para una experiencia mimosa y limpia.",
+    "pt-BR": "Amolecimento, limpeza, massagem e um acabamento perfeito para uma experiência mimada e limpa.",
+    "ar": "ترطيب وتنظيف وتدليك وتشطيب مثالي لتجربة مدلّلة ونظيفة."
+  },
+  "אבחון מבנה פנים, בחירת אורך וגימור שמתאים לשגרה ולסגנון שלך.": {
+    "en": "A face-shape diagnosis, length choice, and a finish that fits your routine and style.",
+    "es": "Un diagnóstico de la forma del rostro, elección de largo y un acabado que encaja con tu rutina y estilo.",
+    "pt-BR": "Um diagnóstico do formato do rosto, escolha de comprimento e um acabamento que combina com a rotina e o estilo.",
+    "ar": "تشخيص شكل الوجه واختيار طول وتشطيب يناسب روتينك وأسلوبك."
+  },
+  "בחירת גוון, שמירה על ברק השיער ותוצאה רכה שלא נראית מלאכותית.": {
+    "en": "Shade choice, keeping hair shine, and a soft result that does not look fake.",
+    "es": "Elección de tono, mantener el brillo del cabello y un resultado suave que no se ve artificial.",
+    "pt-BR": "Escolha de tom, manter o brilho do cabelo e um resultado macio que não parece artificial.",
+    "ar": "اختيار درجة والحفاظ على لمعان الشعر ونتيجة ناعمة لا تبدو مصطنعة."
+  },
+  "זה הסלון הקבוע שלי לכל מה שקשור ליופי. הצוות מקצועי, האווירה רגועה וכל פעם אני יוצאת מרוצה מחדש.": {
+    "en": "This is my regular salon for everything beauty. The team is professional, the atmosphere is calm, and I leave happy every time.",
+    "es": "Este es mi salón fijo para todo lo de belleza. El equipo es profesional, el ambiente es calmado y cada vez salgo contenta de nuevo.",
+    "pt-BR": "Este é o meu salão fixo para tudo de beleza. A equipe é profissional, a atmosfera é calma e toda vez eu saio satisfeita de novo.",
+    "ar": "هذا صالوني الثابت لكل ما يتعلق بالجمال. الفريق مهني والأجواء هادئة وفي كل مرة أخرج راضية من جديد."
+  },
+  "עשיתי איפור ושיער לפני אירוע והרגשתי שממש הקשיבו לי. יצא עדין, יוקרתי ומאוד מחמיא.": {
+    "en": "I did makeup and hair before an event and felt they really listened. It came out delicate, luxurious, and very flattering.",
+    "es": "Hice maquillaje y peinado antes de un evento y sentí que de verdad me escucharon. Salió delicado, lujoso y muy favorecedor.",
+    "pt-BR": "Fiz maquiagem e cabelo antes de um evento e senti que realmente me ouviram. Ficou delicado, luxuoso e muito lisonjeiro.",
+    "ar": "عملت مكياجاً وشعراً قبل مناسبة وشعرت أنهم استمعوا إلي حقاً. خرج رقيقاً وفاخراً ومُرضياً جداً."
+  },
+  "מהרגע שנכנסתי הכול הרגיש יוקרתי ומרגיע. הטיפול היה מדויק והתוצאה נשארה יפה לאורך זמן.": {
+    "en": "From the moment I walked in, everything felt luxurious and calming. The treatment was precise and the result stayed beautiful over time.",
+    "es": "Desde que entré, todo se sintió lujoso y relajante. El tratamiento fue preciso y el resultado se mantuvo bello con el tiempo.",
+    "pt-BR": "Desde que entrei, tudo pareceu luxuoso e calmante. O tratamento foi preciso e o resultado ficou bonito com o tempo.",
+    "ar": "من لحظة دخولي بدا كل شيء فاخرًا ومريحاً. كان العلاج دقيقاً وبقيت النتيجة جميلة مع الوقت."
+  },
+  "האתר משדר בדיוק את התחושה בסלון: נקי, רגוע, מקצועי ואישי. היה לי קל לבחור שירות ולקבוע ייעוץ.": {
+    "en": "The site conveys exactly the salon feeling: clean, calm, professional, and personal. It was easy to choose a service and book a consultation.",
+    "es": "El sitio transmite exactamente la sensación del salón: limpio, calmado, profesional y personal. Fue fácil elegir un servicio y reservar una consulta.",
+    "pt-BR": "O site transmite exatamente a sensação do salão: limpo, calmo, profissional e pessoal. Foi fácil escolher um serviço e marcar uma consulta.",
+    "ar": "الموقع ينقل تماماً إحساس الصالون: نظيف وهادئ ومهني وشخصي. كان سهلاً اختيار خدمة وحجز استشارة."
+  },
+  "טיפול קצר ומדויק לפגישה ראשונה או תחזוקה חודשית.": {
+    "en": "A short, precise treatment for a first visit or monthly upkeep.",
+    "es": "Un tratamiento breve y preciso para una primera visita o mantenimiento mensual.",
+    "pt-BR": "Um tratamento curto e preciso para a primeira visita ou manutenção mensal.",
+    "ar": "علاج قصير ودقيق لزيارة أولى أو صيانة شهرية."
+  },
+  "חבילת טיפוח מלאה לפני אירוע, צילומים או התחלה חדשה.": {
+    "en": "A full care package before an event, a shoot, or a fresh start.",
+    "es": "Un pack de cuidado completo antes de un evento, una sesión o un comienzo nuevo.",
+    "pt-BR": "Um pacote de cuidado completo antes de um evento, um ensaio ou um começo novo.",
+    "ar": "باقة عناية كاملة قبل مناسبة أو تصوير أو بداية جديدة."
+  },
+  "לוק שלם לכלה או אירוע מיוחד עם תכנון מראש.": {
+    "en": "A complete look for a bride or a special event, planned in advance.",
+    "es": "Un look completo para novia o un evento especial, planificado de antemano.",
+    "pt-BR": "Um look completo para noiva ou um evento especial, planejado de antemão.",
+    "ar": "إطلالة كاملة لعروس أو مناسبة خاصة مع تخطيط مسبق."
+  },
+  "איך לבחור תספורת שמתאימה למבנה הפנים": {
+    "en": "How to choose a haircut that fits your face shape",
+    "es": "Cómo elegir un corte que encaje con la forma del rostro",
+    "pt-BR": "Como escolher um corte que combine com o formato do rosto",
+    "ar": "كيف تختارين قصة تناسب شكل الوجه"
+  },
+  "מדריך קצר שיעזור להבין איזה אורך, נפח וקווים יחמיאו לך.": {
+    "en": "A short guide to help you understand which length, volume, and lines will flatter you.",
+    "es": "Una guía breve para entender qué largo, volumen y líneas te favorecerán.",
+    "pt-BR": "Um guia curto para entender qual comprimento, volume e linhas vão te favorecer.",
+    "ar": "دليل قصير يساعدك على فهم أي طول وحجم وخطوط ستُرضيك."
+  },
+  "11 ביוני 2024": {
+    "en": "11 June 2024",
+    "es": "11 de junio de 2024",
+    "pt-BR": "11 de junho de 2024",
+    "ar": "11 يونيو 2024"
+  },
+  "איך להתמודד עם שיער דליל ולעודד מראה מלא": {
+    "en": "How to handle thinning hair and encourage a fuller look",
+    "es": "Cómo afrontar el cabello fino y favorecer un aspecto más lleno",
+    "pt-BR": "Como lidar com cabelo ralo e favorecer um visual mais cheio",
+    "ar": "كيف تتعاملين مع الشعر الخفيف وتشجّعين مظهراً أكثر امتلاءً"
+  },
+  "מה כדאי לבדוק, איזה חומרים עובדים ומה לא לעשות לבד בבית.": {
+    "en": "What to check, which products work, and what not to do alone at home.",
+    "es": "Qué conviene revisar, qué productos funcionan y qué no hacer sola en casa.",
+    "pt-BR": "O que vale checar, quais produtos funcionam e o que não fazer sozinha em casa.",
+    "ar": "ما الذي يستحق الفحص، وأي مواد تعمل، وما الذي لا تفعلينه وحدك في البيت."
+  },
+  "היתרונות של איפור מקצועי לאירועים מיוחדים": {
+    "en": "The benefits of professional makeup for special events",
+    "es": "Las ventajas del maquillaje profesional para eventos especiales",
+    "pt-BR": "As vantagens da maquiagem profissional para eventos especiais",
+    "ar": "فوائد المكياج المهني للمناسبات الخاصة"
+  },
+  "איך ליצור לוק שנראה טוב בתאורה, בצילומים ולאורך כל הערב.": {
+    "en": "How to create a look that holds up in lighting, in photos, and through the whole evening.",
+    "es": "Cómo crear un look que aguante la luz, las fotos y toda la noche.",
+    "pt-BR": "Como criar um look que aguente a luz, as fotos e a noite toda.",
+    "ar": "كيف تصنعين إطلالة تبدو جيدة تحت الإضاءة وفي الصور وطوال المساء."
+  },
+  "תיאום דמו": {
+    "en": "Book a demo",
+    "es": "Reservad una demo",
+    "pt-BR": "Marquem um demo",
+    "ar": "تنسيق عرض"
+  },
+  "בואו נראה לכם את Nexora בפעולה.": {
+    "en": "Let us show you Nexora in action.",
+    "es": "Os mostramos Nexora en acción.",
+    "pt-BR": "Vamos mostrar a Nexora em ação para vocês.",
+    "ar": "دعونا نريكم Nexora قيد العمل."
+  },
+  "תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.": {
+    "en": "Thank you! We received the inquiry and will get back to you soon.",
+    "es": "¡Gracias! Recibimos la consulta y volveremos pronto.",
+    "pt-BR": "Obrigado! Recebemos o contato e voltamos em breve.",
+    "ar": "شكراً! استلمنا الطلب وسنعود إليك قريباً."
+  },
+  "ספרו לנו על הצוות שלכם": {
+    "en": "Tell us about your team",
+    "es": "Contadnos sobre vuestro equipo",
+    "pt-BR": "Contem sobre a equipe de vocês",
+    "ar": "أخبرونا عن فريقكم"
+  },
+  "תבנית Nexora · Bizuply Studio": {
+    "en": "Nexora template · Bizuply Studio",
+    "es": "Plantilla Nexora · Bizuply Studio",
+    "pt-BR": "Modelo Nexora · Bizuply Studio",
+    "ar": "قالب Nexora · Bizuply Studio"
+  },
+  "כל מה שצריך כדי לנהל, לאמן ולהצמיח — בממשק אחד.": {
+    "en": "Everything you need to manage, train, and grow — in one interface.",
+    "es": "Todo lo que hace falta para gestionar, formar y crecer — en una sola interfaz.",
+    "pt-BR": "Tudo o que precisa para gerir, treinar e crescer — numa interface só.",
+    "ar": "كل ما يلزم للإدارة والتدريب والنمو — في واجهة واحدة."
+  },
+  "בנו תהליכים אוטומטיים בגרירה אחת, ותנו למערכת לרוץ במקומכם 24/7 בלי קוד.": {
+    "en": "Build automated flows with one drag, and let the system run for you 24/7 with no code.",
+    "es": "Construid flujos automáticos con un arrastre, y dejad que el sistema corra por vosotros 24/7 sin código.",
+    "pt-BR": "Montem fluxos automáticos com um arrastar, e deixem o sistema rodar por vocês 24/7 sem código.",
+    "ar": "ابنوا تدفقات مؤتمتة بسحبة واحدة ودعوا المنظومة تعمل بدلاً منكم على مدار الساعة بلا كود."
+  },
+  "לוחות מחוונים חיים עם המדדים שחשובים לכם — הכנסות, שימור, ביצועי צוות.": {
+    "en": "Live dashboards with the metrics that matter to you — revenue, retention, team performance.",
+    "es": "Dashboards en vivo con las métricas que os importan — ingresos, retención, rendimiento de equipo.",
+    "pt-BR": "Dashboards ao vivo com as métricas que importam para vocês — receita, retenção, desempenho de equipe.",
+    "ar": "لوحات حية بالمؤشرات التي تهمكم — إيراد واحتفاظ وأداء فريق."
+  },
+  "מתחברים למאות כלים שאתם כבר משתמשים בהם — CRM, תשלומים, דיוור וצ׳אט.": {
+    "en": "Connect to hundreds of tools you already use — CRM, payments, email, and chat.",
+    "es": "Conectaos a cientos de herramientas que ya usáis — CRM, pagos, email y chat.",
+    "pt-BR": "Conectem a centenas de ferramentas que vocês já usam — CRM, pagamentos, e-mail e chat.",
+    "ar": "اتصلوا بمئات الأدوات التي تستخدمونها أصلاً — CRM ودفع وبريد ودردشة."
+  },
+  "הצפנה מקצה לקצה, הרשאות מבוססות תפקיד ותאימות מלאה לתקני אבטחה.": {
+    "en": "End-to-end encryption, role-based permissions, and full alignment with security standards.",
+    "es": "Cifrado de extremo a extremo, permisos por rol y alineación total con normas de seguridad.",
+    "pt-BR": "Criptografia de ponta a ponta, permissões por função e alinhamento total com normas de segurança.",
+    "ar": "تشفير من طرف إلى طرف وصلاحيات حسب الدور وتوافق كامل مع معايير الأمن."
+  },
+  "משימות, הערות ותהליכים משותפים — כל הצוות מסונכרן על אותו מקור אמת.": {
+    "en": "Tasks, notes, and shared flows — the whole team stays on the same source of truth.",
+    "es": "Tareas, notas y flujos compartidos — todo el equipo queda sincronizado sobre la misma fuente de verdad.",
+    "pt-BR": "Tarefas, notas e fluxos compartilhados — a equipe toda fica sincronizada na mesma fonte da verdade.",
+    "ar": "مهام وملاحظات وتدفقات مشتركة — الفريق كله متزامن على مصدر الحقيقة نفسه."
+  },
+  "בקשו סיכומים, תחזיות והמלצות בשפה חופשית — וקבלו תשובות מיידיות מהנתונים.": {
+    "en": "Ask for summaries, forecasts, and recommendations in plain language — and get instant answers from the data.",
+    "es": "Pedid resúmenes, previsiones y recomendaciones en lenguaje libre — y recibid respuestas inmediatas de los datos.",
+    "pt-BR": "Peçam resumos, previsões e recomendações em linguagem livre — e recebam respostas imediatas dos dados.",
+    "ar": "اطلبوا ملخصات وتوقعات وتوصيات بلغة حرة — واحصلوا على إجابات فورية من البيانات."
+  },
+  "מהרעיון להרצה מלאה בשלושה צעדים.": {
+    "en": "From idea to a full run in three steps.",
+    "es": "De la idea a una ejecución completa en tres pasos.",
+    "pt-BR": "Da ideia à execução completa em três passos.",
+    "ar": "من الفكرة إلى تشغيل كامل في ثلاث خطوات."
+  },
+  "מחברים את הכלים והנתונים הקיימים בלחיצה, בלי הטמעה מורכבת.": {
+    "en": "Connect existing tools and data in a click, without a complex rollout.",
+    "es": "Conectáis las herramientas y los datos existentes con un clic, sin una implantación compleja.",
+    "pt-BR": "Conectam as ferramentas e os dados existentes num clique, sem uma implantação complexa.",
+    "ar": "توصلون الأدوات والبيانات القائمة بنقرة، بلا تثبيت معقّد."
+  },
+  "מגדירים אוטומציות ולוחות מחוונים שמתאימים בדיוק לעסק שלכם.": {
+    "en": "Set automations and dashboards that fit your business exactly.",
+    "es": "Definís automatizaciones y dashboards que encajan exactamente con vuestro negocio.",
+    "pt-BR": "Definem automações e dashboards que combinam exatamente com o negócio de vocês.",
+    "ar": "تعرّفون أتمتة ولوحات تناسب عملكم تماماً."
+  },
+  "המערכת רצה, מודדת ומשתפרת — ואתם מתמקדים במה שחשוב באמת.": {
+    "en": "The system runs, measures, and improves — and you focus on what actually matters.",
+    "es": "El sistema corre, mide y mejora — y vosotros os centráis en lo que de verdad importa.",
+    "pt-BR": "O sistema roda, mede e melhora — e vocês focam no que realmente importa.",
+    "ar": "المنظومة تعمل وتقيس وتتحسّن — وأنتم تركزون على ما يهم حقاً."
+  },
+  "תוכניות שקופות שגדלות יחד אתכם.": {
+    "en": "Transparent plans that grow with you.",
+    "es": "Planes transparentes que crecen con vosotros.",
+    "pt-BR": "Planos transparentes que crescem com vocês.",
+    "ar": "خطط شفافة تنمو معكم."
+  },
+  "לצוותים קטנים שרוצים להתחיל.": {
+    "en": "For small teams that want to start.",
+    "es": "Para equipos pequeños que quieren empezar.",
+    "pt-BR": "Para equipes pequenas que querem começar.",
+    "ar": "لفرق صغيرة تريد أن تبدأ."
+  },
+  "לעסקים בצמיחה שרוצים אוטומציה מלאה.": {
+    "en": "For growing businesses that want full automation.",
+    "es": "Para negocios en crecimiento que quieren automatización completa.",
+    "pt-BR": "Para negócios em crescimento que querem automação completa.",
+    "ar": "لأعمال في نمو تريد أتمتة كاملة."
+  },
+  "לארגונים עם דרישות מתקדמות ואבטחה.": {
+    "en": "For organizations with advanced needs and security.",
+    "es": "Para organizaciones con requisitos avanzados y seguridad.",
+    "pt-BR": "Para organizações com requisitos avançados e segurança.",
+    "ar": "لمؤسسات ذات متطلبات متقدمة وأمن."
+  },
+  "עד 3 משתמשים": {
+    "en": "Up to 3 users",
+    "es": "Hasta 3 usuarios",
+    "pt-BR": "Até 3 usuários",
+    "ar": "حتى 3 مستخدمين"
+  },
+  "אוטומציות בסיס": {
+    "en": "Basic automations",
+    "es": "Automatizaciones base",
+    "pt-BR": "Automações básicas",
+    "ar": "أتمتة أساسية"
+  },
+  "תמיכה בקהילה": {
+    "en": "Community support",
+    "es": "Soporte de comunidad",
+    "pt-BR": "Suporte da comunidade",
+    "ar": "دعم المجتمع"
+  },
+  "משתמשים ללא הגבלה": {
+    "en": "Unlimited users",
+    "es": "Usuarios ilimitados",
+    "pt-BR": "Usuários ilimitados",
+    "ar": "مستخدمون بلا حد"
+  },
+  "אוטומציות מתקדמות": {
+    "en": "Advanced automations",
+    "es": "Automatizaciones avanzadas",
+    "pt-BR": "Automações avançadas",
+    "ar": "أتمتة متقدمة"
+  },
+  "תמיכה מהירה": {
+    "en": "Fast support",
+    "es": "Soporte rápido",
+    "pt-BR": "Suporte rápido",
+    "ar": "دعم سريع"
+  },
+  "הכול ב-Growth": {
+    "en": "Everything in Growth",
+    "es": "Todo en Growth",
+    "pt-BR": "Tudo no Growth",
+    "ar": "كل شيء في Growth"
+  },
+  "אבטחת ארגון": {
+    "en": "Organization security",
+    "es": "Seguridad de organización",
+    "pt-BR": "Segurança de organização",
+    "ar": "أمن مؤسسة"
+  },
+  "מנהל לקוח אישי": {
+    "en": "A personal account manager",
+    "es": "Un gestor de cuenta personal",
+    "pt-BR": "Um gerente de conta pessoal",
+    "ar": "مدير حساب شخصي"
+  },
+  "SLA מובטח": {
+    "en": "Guaranteed SLA",
+    "es": "SLA garantizado",
+    "pt-BR": "SLA garantido",
+    "ar": "SLA مضمون"
+  },
+  "תוך חודש חסכנו 20 שעות עבודה ידנית בשבוע. האוטומציות פשוט עובדות, וההטמעה הייתה מהירה בטירוף.": {
+    "en": "Within a month we saved 20 hours of manual work a week. The automations just work, and rollout was insanely fast.",
+    "es": "En un mes ahorramos 20 horas de trabajo manual a la semana. Las automatizaciones simplemente funcionan, y la implantación fue rapidísima.",
+    "pt-BR": "Em um mês economizamos 20 horas de trabalho manual por semana. As automações simplesmente funcionam, e a implantação foi rápida demais.",
+    "ar": "خلال شهر وفّرنا 20 ساعة عمل يدوي في الأسبوع. الأتمتة تعمل ببساطة وكان التثبيت سريعاً جداً."
+  },
+  "לראשונה יש לנו תמונה אחת אמיתית של הנתונים. קיבלנו החלטות טובות יותר, מהר יותר.": {
+    "en": "For the first time we have one true picture of the data. We made better decisions, faster.",
+    "es": "Por primera vez tenemos una sola imagen real de los datos. Tomamos mejores decisiones, más rápido.",
+    "pt-BR": "Pela primeira vez temos uma imagem só, de verdade, dos dados. Tomamos decisões melhores, mais rápido.",
+    "ar": "للمرة الأولى لدينا صورة واحدة حقيقية للبيانات. اتخذنا قرارات أفضل وبسرعة أكبر."
+  },
+  "העוזר החכם הפך להיות חלק מהצוות. אנחנו שואלים אותו הכול והוא עונה מהנתונים שלנו.": {
+    "en": "The smart assistant became part of the team. We ask it everything and it answers from our data.",
+    "es": "El asistente inteligente pasó a ser parte del equipo. Le preguntamos de todo y responde desde nuestros datos.",
+    "pt-BR": "O assistente inteligente passou a ser parte da equipe. Perguntamos tudo e ele responde a partir dos nossos dados.",
+    "ar": "المساعد الذكي صار جزءاً من الفريق. نسأله عن كل شيء ويجيب من بياناتنا."
+  },
+  "כל מה שרציתם לדעת לפני שמתחילים.": {
+    "en": "Everything you wanted to know before you start.",
+    "es": "Todo lo que queríais saber antes de empezar.",
+    "pt-BR": "Tudo o que vocês queriam saber antes de começar.",
+    "ar": "كل ما أردتم معرفته قبل البدء."
+  },
+  "רוב הצוותים עולים לאוויר תוך יום. יש אשף הקמה מודרך ואינטגרציות מוכנות מראש.": {
+    "en": "Most teams go live within a day. There is a guided setup wizard and integrations ready in advance.",
+    "es": "La mayoría de equipos salen al aire en un día. Hay un asistente de alta guiado e integraciones listas de antemano.",
+    "pt-BR": "A maioria das equipes entra no ar em um dia. Tem um assistente de setup guiado e integrações prontas de antemão.",
+    "ar": "معظم الفرق تصعد للجو خلال يوم. هناك معالج إعداد موجّه وتكاملات جاهزة مسبقاً."
+  },
+  "האם יש תקופת ניסיון?": {
+    "en": "Is there a trial period?",
+    "es": "¿Hay un periodo de prueba?",
+    "pt-BR": "Tem um período de teste?",
+    "ar": "هل هناك فترة تجريبية؟"
+  },
+  "כן, אפשר להתחיל בחינם לגמרי וללא כרטיס אשראי, ולשדרג רק כשמוכנים.": {
+    "en": "Yes, you can start completely free with no credit card, and upgrade only when you are ready.",
+    "es": "Sí, podéis empezar del todo gratis y sin tarjeta, y subir de plan solo cuando estéis listos.",
+    "pt-BR": "Sim, dá para começar de graça de verdade e sem cartão, e subir só quando estiverem prontos.",
+    "ar": "نعم، يمكن البدء مجاناً تماماً ومن دون بطاقة، والترقية فقط عند الجاهزية."
+  },
+  "האם הנתונים שלי מאובטחים?": {
+    "en": "Is my data secure?",
+    "es": "¿Están seguros mis datos?",
+    "pt-BR": "Seus dados estão seguros?",
+    "ar": "هل بياناتي مؤمّنة؟"
+  },
+  "בהחלט. אנחנו משתמשים בהצפנה מקצה לקצה, גיבויים אוטומטיים והרשאות מבוססות תפקיד.": {
+    "en": "Absolutely. We use end-to-end encryption, automatic backups, and role-based permissions.",
+    "es": "Por supuesto. Usamos cifrado de extremo a extremo, copias automáticas y permisos por rol.",
+    "pt-BR": "Com certeza. Usamos criptografia de ponta a ponta, backups automáticos e permissões por função.",
+    "ar": "بالتأكيد. نستخدم تشفيراً من طرف إلى طرف ونسخاً احتياطياً تلقائياً وصلاحيات حسب الدور."
+  },
+  "בנינו את הכלי שתמיד רצינו שיהיה לנו.": {
+    "en": "We built the tool we always wanted to have.",
+    "es": "Construimos la herramienta que siempre quisimos tener.",
+    "pt-BR": "Construímos a ferramenta que sempre quisemos ter.",
+    "ar": "بنينا الأداة التي أردنا دائماً أن تكون لدينا."
+  },
+  "מוכנים לראות את Nexora בפעולה?": {
+    "en": "Ready to see Nexora in action?",
+    "es": "¿Listos para ver Nexora en acción?",
+    "pt-BR": "Prontos para ver a Nexora em ação?",
+    "ar": "مستعدون لرؤية Nexora قيد العمل؟"
+  },
+  "השאירו פרטים ונחזור אליכם עם דמו אישי, מותאם בדיוק לצרכים של הצוות שלכם.": {
+    "en": "Leave your details and we will come back with a personal demo, fitted exactly to your team's needs.",
+    "es": "Dejad los datos y volveremos con una demo personal, adaptada exactamente a las necesidades de vuestro equipo.",
+    "pt-BR": "Deixem os dados e voltamos com um demo pessoal, ajustado exatamente às necessidades da equipe de vocês.",
+    "ar": "اتركوا البيانات وسنعود بعرض شخصي ملائم تماماً لاحتياجات فريقكم."
+  },
+  "לתיאום דמו": {
+    "en": "To book a demo",
+    "es": "Para reservar una demo",
+    "pt-BR": "Para marcar um demo",
+    "ar": "لتنسيق عرض"
+  },
+  "התחילו לבנות את מנוע הצמיחה שלכם עוד היום.": {
+    "en": "Start building your growth engine today.",
+    "es": "Empezad a construir vuestro motor de crecimiento hoy.",
+    "pt-BR": "Comecem a construir o motor de crescimento de vocês ainda hoje.",
+    "ar": "ابدأوا بناء محرك نموكم اليوم."
+  },
+  "מנכ״ל, TechFlow": {
+    "en": "CEO, TechFlow",
+    "es": "CEO, TechFlow",
+    "pt-BR": "CEO, TechFlow",
+    "ar": "المدير التنفيذي، TechFlow"
+  },
+  "VP צמיחה, Scaleo": {
+    "en": "VP of growth, Scaleo",
+    "es": "VP de crecimiento, Scaleo",
+    "pt-BR": "VP de crescimento, Scaleo",
+    "ar": "نائب رئيس النمو، Scaleo"
+  },
+  "מייסד, Loopy": {
+    "en": "Founder, Loopy",
+    "es": "Fundador, Loopy",
+    "pt-BR": "Fundador, Loopy",
+    "ar": "مؤسس، Loopy"
+  }
+}

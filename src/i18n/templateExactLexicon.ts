@@ -248,7 +248,7 @@ export const TEMPLATE_EXACT_LEXICON: Record<string, LocaleCopy> = {
   "טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור.": r(
     "Tips, guides, and ideas for care, hair, and makeup.",
     "Consejos, guías e ideas de cuidado, cabello y maquillaje.",
-    "Dicas, guias e ideias de cuidado, cabelo e maquilhagem.",
+    "Dicas, guias e ideias de cuidado, cabelo e maquiagem.",
     "نصائح وأدلة وأفكار للعناية والشعر والمكياج."
   ),
   שינורה: r("Shinora", "Shinora", "Shinora", "شينورا"),
