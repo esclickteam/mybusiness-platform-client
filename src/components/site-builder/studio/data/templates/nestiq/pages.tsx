@@ -119,7 +119,7 @@ function BadgeCards({ data }: { data: Record<string, any> }) {
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor:"rgba(30,27,75,0.1)", background:"#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 lg:grid-cols-4">
         {[1,2,3,4].map((i)=>(<article key={i} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}>
-          <div className="mb-3 flex flex-wrap gap-1">{badges.slice(0,2).map((b)=><span key={b} className="rounded px-2 py-0.5 text-[10px] font-bold" style={{ background:"#7c3aed22", color:"#7c3aed" }}>{b}</span>)}</div>
+          <div className="mb-3 flex flex-wrap gap-1">{badges.slice(0,2).map((b)=><span key={b} className="rounded px-2 py-0.5 text-[10px] font-bold" style={{ background:"#7c3aed22", color:"#7c3aed" }}>{tx(b)}</span>)}</div>
           <h3 className="tpl-display text-lg font-bold">{v(data,`item${i}Title`)}</h3>
           <p className="mt-2 text-sm" style={{ color:"#7c3aed" }}>{v(data,`item${i}Price`)}</p>
         </article>))}
@@ -132,7 +132,7 @@ function FaqVisual({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor:"rgba(30,27,75,0.1)" }}>
       <div className="mx-auto max-w-3xl grid gap-3">
-        {faqs.map(([q,a])=>(<div key={q} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}><p className="font-bold">{q}</p><p className="mt-2 text-sm" style={{ color:"#6366f1" }}>{a}</p></div>))}
+        {faqs.map(([q,a])=>(<div key={q} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}><p className="font-bold">{tx(q)}</p><p className="mt-2 text-sm" style={{ color:"#6366f1" }}>{tx(a)}</p></div>))}
       </div>
     </section>
   );

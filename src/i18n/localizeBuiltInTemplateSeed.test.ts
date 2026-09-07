@@ -962,6 +962,40 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique62 leftover Growthly through Franchora chrome", () => {
+    expect(localizeBuiltInText("קולנוע של עבודה שמתקדמת", "en")).toMatch(/cinema|work/i);
+    expect(localizeBuiltInText("קולנוע של עבודה שמתקדמת", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("ארבעה רגעים לפני סגירה", "es")).toMatch(/cierre|momento/i);
+    expect(localizeBuiltInText("דברו עם מגייס/ת", "pt-BR")).toMatch(/recrut/i);
+    expect(localizeBuiltInText("מילות מפתח", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique61 leftover Horizon through Axispoint chrome", () => {
+    expect(localizeBuiltInText("וילות על הדיונות", "en")).toMatch(/villa|dune/i);
+    expect(localizeBuiltInText("וילות על הדיונות", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מחירים אמיתיים", "es")).toMatch(/precio/i);
+    expect(localizeBuiltInText("מחשבון משכנתא (הדגמה)", "pt-BR")).toMatch(/hipoteca|calcul/i);
+    expect(localizeBuiltInText("סגירת עסקה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("תחום 1 - כותרת", "en")).toMatch(/practice|title/i);
+    expect(localizeBuiltInText("תחום 1 - כותרת", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique60 leftover Gridline through Citadel chrome", () => {
+    expect(localizeBuiltInText("תוכנית עבודה", "en")).toMatch(/work plan/i);
+    expect(localizeBuiltInText("תוכנית עבודה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מקומות עבודה", "es")).toMatch(/trabajo/i);
+    expect(localizeBuiltInText("שם מלא / חברה", "pt-BR")).toMatch(/nome|empresa/i);
+    expect(localizeBuiltInText("יעד הפרויקט", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique59 leftover Arbora through Vitalis chrome", () => {
+    expect(localizeBuiltInText("אדריכלות נוף", "en")).toMatch(/landscape/i);
+    expect(localizeBuiltInText("אדריכלות נוף", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שקט ביום הגדול", "es")).toMatch(/quietud|día/i);
+    expect(localizeBuiltInText("פגישת אבחון", "pt-BR")).toMatch(/diagnóstico|reunião/i);
+    expect(localizeBuiltInText("צפו בפרויקטים", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique58 leftover Lotera through Vespera chrome", () => {
     expect(localizeBuiltInText("שלחו בקשת סיור", "en")).toMatch(/tour|request/i);
     expect(localizeBuiltInText("שלחו בקשת סיור", "en")).not.toMatch(/[\u0590-\u05FF]/);

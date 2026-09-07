@@ -1,0 +1,698 @@
+{
+  "הירו Gridline": {
+    "en": "Gridline hero",
+    "es": "Hero de Gridline",
+    "pt-BR": "Hero do Gridline",
+    "ar": "هيرو Gridline"
+  },
+  "אודות Gridline": {
+    "en": "About Gridline",
+    "es": "Sobre Gridline",
+    "pt-BR": "Sobre o Gridline",
+    "ar": "عن Gridline"
+  },
+  "הירו Monolith": {
+    "en": "Monolith hero",
+    "es": "Hero de Monolith",
+    "pt-BR": "Hero do Monolith",
+    "ar": "هيرو Monolith"
+  },
+  "אודות Monolith": {
+    "en": "About Monolith",
+    "es": "Sobre Monolith",
+    "pt-BR": "Sobre o Monolith",
+    "ar": "عن Monolith"
+  },
+  "ספרו לנו על השטח, היעד, הלו״ז והאתגר": {
+    "en": "Tell us about the site, the goal, the schedule, and the challenge",
+    "es": "Contadnos sobre el terreno, el objetivo, el calendario y el reto",
+    "pt-BR": "Contem sobre o terreno, o objetivo, o cronograma e o desafio",
+    "ar": "أخبرونا عن الموقع والهدف والجدول والتحدي"
+  },
+  "ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג": {
+    "en": "Tell us about the business goal, the organizational complexity, and the timing",
+    "es": "Contadnos sobre el objetivo de negocio, la complejidad organizativa y el timing",
+    "pt-BR": "Contem sobre o objetivo de negócio, a complexidade organizacional e o timing",
+    "ar": "أخبرونا عن الهدف التجاري والتعقيد التنظيمي والتوقيت"
+  },
+  "השהייה": {
+    "en": "Delay",
+    "es": "Retraso",
+    "pt-BR": "Atraso",
+    "ar": "تأخير"
+  },
+  "מרכז עסקים עירוני": {
+    "en": "Urban business center",
+    "es": "Centro de negocios urbano",
+    "pt-BR": "Centro de negócios urbano",
+    "ar": "مركز أعمال حضري"
+  },
+  "מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה.": {
+    "en": "The content structure combines brand pages, property inventory, and market insight to create a full real-estate experience — not just a landing page.",
+    "es": "La estructura de contenido combina páginas de marca, inventario de inmuebles e insights de mercado para una experiencia inmobiliaria completa — no solo una landing.",
+    "pt-BR": "A estrutura de conteúdo combina páginas de marca, inventário de imóveis e insights de mercado para uma experiência imobiliária completa — não só uma landing.",
+    "ar": "بنية المحتوى تجمع صفحات هوية ومخزون عقارات ورؤى سوق لتجربة عقارية كاملة — وليس مجرد صفحة هبوط."
+  },
+  "תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.": {
+    "en": "Content that works as a sales tool, internal working material, and proof of expertise.",
+    "es": "Contenido que sirve como herramienta de venta, material de trabajo interno y prueba de expertise.",
+    "pt-BR": "Conteúdo que serve como ferramenta de venda, material de trabalho interno e prova de especialidade.",
+    "ar": "محتوى يعمل كأداة بيع ومادة عمل داخلية وإثبات خبرة."
+  },
+  "פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.": {
+    "en": "An intro meeting includes full briefing, a market check, and a first sketch of the path forward.",
+    "es": "Una reunión de presentación incluye briefing completo, revisión de mercado y un primer croquis del recorrido.",
+    "pt-BR": "Uma reunião de apresentação inclui briefing completo, checagem de mercado e um primeiro esboço do caminho.",
+    "ar": "اجتماع تعارف يشمل توصيفاً كاملاً وفحص سوق ومسودة أولى لمسار التقدم."
+  },
+  "דף שירותים מלא עם רמות ליווי, מהלכי ביצוע ומבנה ברור שמרגיש כמו משרד בוטיק לנכסי יוקרה.": {
+    "en": "A full services page with guidance levels, execution moves, and a clear structure that feels like a boutique luxury-property firm.",
+    "es": "Una página de servicios completa con niveles de acompañamiento, movimientos de ejecución y una estructura clara de despacho boutique de lujo.",
+    "pt-BR": "Uma página de serviços completa com níveis de acompanhamento, movimentos de execução e uma estrutura clara de escritório boutique de luxo.",
+    "ar": "صفحة خدمات كاملة بمستويات مرافقة وخطوات تنفيذ وبنية واضحة تشبه مكتب بوتيك للعقارات الفاخرة."
+  },
+  "נכסים, פרויקטים ומסלולי עבודה שמודגשים כשילוב של מלאי איכותי, מידע שיווקי וסטוריטלינג מכירתי.": {
+    "en": "Properties, projects, and work paths highlighted as a mix of quality inventory, marketing information, and sales storytelling.",
+    "es": "Inmuebles, proyectos y recorridos de trabajo destacados como mezcla de inventario de calidad, información de marketing y storytelling comercial.",
+    "pt-BR": "Imóveis, projetos e percursos de trabalho destacados como mistura de inventário de qualidade, informação de marketing e storytelling comercial.",
+    "ar": "عقارات ومشاريع ومسارات عمل تُبرز كمزيج من مخزون جودة ومعلومات تسويق وسرد بيعي."
+  },
+  "מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק.": {
+    "en": "A page structure that looks like a working document, not just marketing.",
+    "es": "Una estructura de páginas que parece un documento de trabajo, no solo marketing.",
+    "pt-BR": "Uma estrutura de páginas que parece um documento de trabalho, não só marketing.",
+    "ar": "بنية صفحات تبدو كوثيقة عمل وليس تسويقاً فقط."
+  },
+  "הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה.": {
+    "en": "The template is built with table units, control rows, and info cells that serve finance offices, accountants, and executive advisory.",
+    "es": "La plantilla está hecha con unidades de tabla, filas de control y celdas de información para despachos financieros, contables y asesoría de dirección.",
+    "pt-BR": "O modelo é feito com unidades de tabela, linhas de controle e células de informação para escritórios financeiros, contadores e consultoria de direção.",
+    "ar": "القالب مبني بوحدات جدول وصفوف تحكم وخلايا معلومات تخدم مكاتب مالية ومحاسبين واستشارة إدارة."
+  },
+  "ספרו לנו מה תרצו למדוד, לייעל או לייצב.": {
+    "en": "Tell us what you want to measure, streamline, or stabilize.",
+    "es": "Contadnos qué queréis medir, optimizar o estabilizar.",
+    "pt-BR": "Contem o que vocês querem medir, otimizar ou estabilizar.",
+    "ar": "أخبرونا ماذا تريدون قياسه أو تحسينه أو تثبيته."
+  },
+  "שיחת ההתנעה מיועדת למנהלים, בעלי עסקים וגורמי כספים שמבקשים תהליך מסודר ולא רק ייעוץ חד-פעמי.": {
+    "en": "The kickoff call is for managers, business owners, and finance stakeholders who want an ordered process — not a one-off consult.",
+    "es": "La llamada de arranque es para gerentes, dueños y responsables financieros que quieren un proceso ordenado, no solo una consulta puntual.",
+    "pt-BR": "A chamada de partida é para gestores, donos e responsáveis financeiros que querem um processo organizado, não só uma consultoria pontual.",
+    "ar": "مكالمة الانطلاق مخصّصة لمدراء وأصحاب أعمال وجهات مالية يريدون عملية مرتبة وليس استشارة لمرة واحدة."
+  },
+  "עמוד שירותים שנבנה כמו מסמך Scope: טבלאות, תאי בקרה ותחומי אחריות ברורים לכל שלב.": {
+    "en": "A services page built like a scope document: tables, control cells, and clear ownership for every stage.",
+    "es": "Una página de servicios construida como un documento de alcance: tablas, celdas de control y responsabilidades claras en cada etapa.",
+    "pt-BR": "Uma página de serviços construída como um documento de escopo: tabelas, células de controle e responsabilidades claras em cada etapa.",
+    "ar": "صفحة خدمات مبنية كوثيقة نطاق: جداول وخلايا تحكم ومسؤوليات واضحة لكل مرحلة."
+  },
+  "פרויקטים מוצגים כלוג עבודה: מה הבעיה, מה בוצע, ומה היה השינוי העסקי אחרי הסגירה.": {
+    "en": "Projects are shown as a work log: what the problem was, what was done, and what business change followed close-out.",
+    "es": "Los proyectos se muestran como un registro de trabajo: cuál era el problema, qué se hizo y qué cambio de negocio hubo al cerrar.",
+    "pt-BR": "Os projetos são mostrados como um registro de trabalho: qual era o problema, o que foi feito e qual mudança de negócio veio após o fechamento.",
+    "ar": "تُعرض المشاريع كسجل عمل: ما المشكلة، ماذا نُفّذ، وما التغيير التجاري بعد الإغلاق."
+  },
+  "אימונים שבנויים למדידה ולא לניחוש.": {
+    "en": "Training built for measurement, not guesswork.",
+    "es": "Entrenamientos construidos para medir, no para adivinar.",
+    "pt-BR": "Treinos construídos para medir, não para adivinhar.",
+    "ar": "تدريبات مبنية للقياس لا للتخمين."
+  },
+  "שילוב בין טכניקה, עומס וקצב בלי בזבוז זמן.": {
+    "en": "A mix of technique, load, and pace with no wasted time.",
+    "es": "Una mezcla de técnica, carga y ritmo sin perder tiempo.",
+    "pt-BR": "Uma mistura de técnica, carga e ritmo sem perder tempo.",
+    "ar": "مزيج من تقنية وحمل وإيقاع دون إضاعة وقت."
+  },
+  "שפה חזקה שמתורגמת גם לאתר וגם לרצפת הסטודיו.": {
+    "en": "A strong language that translates both to the site and to the studio floor.",
+    "es": "Un lenguaje fuerte que se traduce al sitio y al suelo del estudio.",
+    "pt-BR": "Uma linguagem forte que se traduz no site e no chão do estúdio.",
+    "ar": "لغة قوية تُترجم إلى الموقع وإلى أرضية الاستوديو."
+  },
+  "עמודים בנויים להנעה מהירה לפעולה.": {
+    "en": "Pages built to drive fast action.",
+    "es": "Páginas construidas para impulsar acción rápida.",
+    "pt-BR": "Páginas construídas para impulsionar ação rápida.",
+    "ar": "صفحات مبنية لدفع فعل سريع."
+  },
+  "הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג.": {
+    "en": "The template holds training tracks, a class board, result walls, and contact pages without losing the brand voice.",
+    "es": "La plantilla sostiene recorridos de entrenamiento, un tablero de clases, muros de resultado y páginas de contacto sin perder la voz de marca.",
+    "pt-BR": "O modelo sustenta percursos de treino, um quadro de aulas, paredes de resultado e páginas de contato sem perder a voz da marca.",
+    "ar": "القالب يحمل مسارات تدريب ولوح حصص وجدران نتائج وصفحات تواصل دون فقدان لغة العلامة."
+  },
+  "דף יצירת קשר נבנה כמו מסך המרה קשוח: מעט הסחות, הרבה בהירות, והזמנה ברורה לשיעור ניסיון.": {
+    "en": "The contact page is built like a hard conversion screen: few distractions, lots of clarity, and a clear invite to a trial class.",
+    "es": "La página de contacto está hecha como una pantalla de conversión dura: pocas distracciones, mucha claridad y una invitación clara a una clase de prueba.",
+    "pt-BR": "A página de contato é feita como uma tela de conversão dura: poucas distrações, muita clareza e um convite claro para uma aula experimental.",
+    "ar": "صفحة التواصل مبنية كشاشة تحويل صارمة: تشتيت قليل ووضوح كثير ودعوة واضحة لحصة تجريبية."
+  },
+  "הצלחות, מסלולי התקדמות ושפה תחרותית שממחישה איך העבודה נראית מבפנים ולא רק איך היא משווקת.": {
+    "en": "Wins, progress tracks, and competitive language that show how the work looks from the inside — not only how it is marketed.",
+    "es": "Éxitos, recorridos de progreso y un lenguaje competitivo que muestra cómo se ve el trabajo por dentro, no solo cómo se comercializa.",
+    "pt-BR": "Vitórias, percursos de progresso e uma linguagem competitiva que mostra como o trabalho parece por dentro, não só como é vendido.",
+    "ar": "نجاحات ومسارات تقدم ولغة تنافسية تُظهر كيف يبدو العمل من الداخل وليس فقط كيف يُسوَّق."
+  },
+  "פרויקטים נבחרים עם דגש על חוסן, כיסוי בקרות וזמן תגובה מהיר יותר בסביבות סיכון גבוה.": {
+    "en": "Selected projects with a focus on resilience, control coverage, and faster response time in high-risk environments.",
+    "es": "Proyectos seleccionados con foco en resiliencia, cobertura de controles y un tiempo de respuesta más rápido en entornos de alto riesgo.",
+    "pt-BR": "Projetos selecionados com foco em resiliência, cobertura de controles e um tempo de resposta mais rápido em ambientes de alto risco.",
+    "ar": "مشاريع مختارة بتركيز على الصمود وتغطية الضوابط وزمن استجابة أسرع في بيئات عالية المخاطر."
+  },
+  "מודל תפעול ממושמע שעובר מגילוי חשיפות לחיזוק, אימות ושיפור מתמשך.": {
+    "en": "A disciplined operating model that moves from exposure discovery to hardening, verification, and ongoing improvement.",
+    "es": "Un modelo operativo disciplinado que pasa del descubrimiento de exposiciones al refuerzo, la verificación y la mejora continua.",
+    "pt-BR": "Um modelo operacional disciplinado que passa da descoberta de exposições ao reforço, à verificação e à melhoria contínua.",
+    "ar": "نموذج تشغيل منضبط ينتقل من اكتشاف التعرضات إلى التعزيز والتحقق والتحسين المستمر."
+  },
+  "ניתוח מעשי לצוותים שצריכים לתדרך הנהלה, לתעדף תיקון ולהישאר לפני סטייה תפעולית.": {
+    "en": "Practical analysis for teams that need to brief leadership, prioritize fixes, and stay ahead of operational drift.",
+    "es": "Análisis práctico para equipos que necesitan informar a dirección, priorizar correcciones y adelantarse a la deriva operativa.",
+    "pt-BR": "Análise prática para equipes que precisam informar a direção, priorizar correções e ficar à frente da deriva operacional.",
+    "ar": "تحليل عملي لفرق تحتاج إلى إحاطة الإدارة وترتيب أولوية الإصلاح والبقاء أمام الانحراف التشغيلي."
+  },
+  "וילות על הדיונות": {
+    "en": "Villas on the dunes",
+    "es": "Villas sobre las dunas",
+    "pt-BR": "Vilas nas dunas",
+    "ar": "فيلات على الكثبان"
+  },
+  "נוף לים": {
+    "en": "Sea view",
+    "es": "Vista al mar",
+    "pt-BR": "Vista para o mar",
+    "ar": "إطلالة على البحر"
+  },
+  "קונסיירז": {
+    "en": "Concierge",
+    "es": "Concierge",
+    "pt-BR": "Concierge",
+    "ar": "كونسيرج"
+  },
+  "קורסים וצלילות": {
+    "en": "Courses and dives",
+    "es": "Cursos e inmersiones",
+    "pt-BR": "Cursos e mergulhos",
+    "ar": "دورات وغطسات"
+  },
+  "שחייה": {
+    "en": "Swimming",
+    "es": "Natación",
+    "pt-BR": "Natação",
+    "ar": "سباحة"
+  },
+  "ציר עומק": {
+    "en": "Depth axis",
+    "es": "Eje de profundidad",
+    "pt-BR": "Eixo de profundidade",
+    "ar": "محور عمق"
+  },
+  "ערבי שקיעה": {
+    "en": "Sunset evenings",
+    "es": "Tardes de atardecer",
+    "pt-BR": "Noites de pôr do sol",
+    "ar": "أمسيات غروب"
+  },
+  "מסילת גלשנים": {
+    "en": "A surfboard rail",
+    "es": "Un raíl de tablas",
+    "pt-BR": "Um trilho de pranchas",
+    "ar": "سكة ألواح"
+  },
+  "תחזית גלים היום": {
+    "en": "Today's wave forecast",
+    "es": "Pronóstico de olas de hoy",
+    "pt-BR": "Previsão de ondas de hoje",
+    "ar": "توقّع الأمواج اليوم"
+  },
+  "אואזיס בין מדבר לים": {
+    "en": "An oasis between desert and sea",
+    "es": "Un oasis entre desierto y mar",
+    "pt-BR": "Um oásis entre deserto e mar",
+    "ar": "واحة بين صحراء وبحر"
+  },
+  "תפריט החוף": {
+    "en": "The beach menu",
+    "es": "El menú de la playa",
+    "pt-BR": "O cardápio da praia",
+    "ar": "قائمة الشاطئ"
+  },
+  "מסלולי הפלגה": {
+    "en": "Sailing routes",
+    "es": "Rutas de navegación",
+    "pt-BR": "Rotas de navegação",
+    "ar": "مسارات إبحار"
+  },
+  "מסאז׳ עם שמנים טרופיים.": {
+    "en": "A massage with tropical oils.",
+    "es": "Un masaje con aceites tropicales.",
+    "pt-BR": "Uma massagem com óleos tropicais.",
+    "ar": "مساج بزيوت استوائية."
+  },
+  "טיפולים טרופיים": {
+    "en": "Tropical treatments",
+    "es": "Tratamientos tropicales",
+    "pt-BR": "Tratamentos tropicais",
+    "ar": "علاجات استوائية"
+  },
+  "250g · גס": {
+    "en": "250g · coarse",
+    "es": "250g · grueso",
+    "pt-BR": "250g · grosso",
+    "ar": "250g · خشن"
+  },
+  "150g · תערובת": {
+    "en": "150g · blend",
+    "es": "150g · mezcla",
+    "pt-BR": "150g · mistura",
+    "ar": "150g · خلطة"
+  },
+  "מוצרי חוף": {
+    "en": "Shore products",
+    "es": "Productos de costa",
+    "pt-BR": "Produtos de costa",
+    "ar": "منتجات ساحل"
+  },
+  "גלריית חוף": {
+    "en": "A beach gallery",
+    "es": "Una galería de playa",
+    "pt-BR": "Uma galeria de praia",
+    "ar": "معرض شاطئ"
+  },
+  "גלריית נכסים קולנועית": {
+    "en": "A cinematic property gallery",
+    "es": "Una galería de inmuebles cinematográfica",
+    "pt-BR": "Uma galeria de imóveis cinematográfica",
+    "ar": "معرض عقارات سينمائي"
+  },
+  "צוות הפרימיום": {
+    "en": "The premium team",
+    "es": "El equipo premium",
+    "pt-BR": "A equipe premium",
+    "ar": "فريق البريميوم"
+  },
+  "תובנות Ticker": {
+    "en": "Ticker insights",
+    "es": "Insights Ticker",
+    "pt-BR": "Insights Ticker",
+    "ar": "رؤى Ticker"
+  },
+  "סינון נכסים": {
+    "en": "Filter properties",
+    "es": "Filtrar inmuebles",
+    "pt-BR": "Filtrar imóveis",
+    "ar": "تصفية عقارات"
+  },
+  "סגירת עסקה": {
+    "en": "Closing a deal",
+    "es": "Cerrar una operación",
+    "pt-BR": "Fechar um negócio",
+    "ar": "إغلاق صفقة"
+  },
+  "תובנות Bento": {
+    "en": "Bento insights",
+    "es": "Insights Bento",
+    "pt-BR": "Insights Bento",
+    "ar": "رؤى Bento"
+  },
+  "מחשבון משכנתא (הדגמה)": {
+    "en": "Mortgage calculator (demo)",
+    "es": "Calculadora hipotecaria (demo)",
+    "pt-BR": "Calculadora de hipoteca (demo)",
+    "ar": "حاسبة رهن (عرض)"
+  },
+  "סכום: ₪2,400,000": {
+    "en": "Amount: ₪2,400,000",
+    "es": "Importe: ₪2,400,000",
+    "pt-BR": "Valor: ₪2,400,000",
+    "ar": "المبلغ: ₪2,400,000"
+  },
+  "ריבית: 4.8%": {
+    "en": "Rate: 4.8%",
+    "es": "Interés: 4.8%",
+    "pt-BR": "Juros: 4.8%",
+    "ar": "فائدة: 4.8%"
+  },
+  "החזר חודשי: ₪12,640": {
+    "en": "Monthly payment: ₪12,640",
+    "es": "Cuota mensual: ₪12,640",
+    "pt-BR": "Parcela mensal: ₪12,640",
+    "ar": "قسط شهري: ₪12,640"
+  },
+  "תובנות Plan": {
+    "en": "Plan insights",
+    "es": "Insights Plan",
+    "pt-BR": "Insights Plan",
+    "ar": "رؤى Plan"
+  },
+  "ליווי מקצועי מהרגע הראשון.": {
+    "en": "Professional guidance from the first moment.",
+    "es": "Acompañamiento profesional desde el primer momento.",
+    "pt-BR": "Acompanhamento profissional desde o primeiro momento.",
+    "ar": "مرافقة مهنية من اللحظة الأولى."
+  },
+  "שקיפות מלאה בכל שלב.": {
+    "en": "Full transparency at every stage.",
+    "es": "Transparencia total en cada etapa.",
+    "pt-BR": "Transparência total em cada etapa.",
+    "ar": "شفافية كاملة في كل مرحلة."
+  },
+  "תובנות Vault": {
+    "en": "Vault insights",
+    "es": "Insights Vault",
+    "pt-BR": "Insights Vault",
+    "ar": "رؤى Vault"
+  },
+  "תובנות Block": {
+    "en": "Block insights",
+    "es": "Insights Block",
+    "pt-BR": "Insights Block",
+    "ar": "رؤى Block"
+  },
+  "גובה שמשנה פרספקטיבה.": {
+    "en": "Height that changes perspective.",
+    "es": "Una altura que cambia la perspectiva.",
+    "pt-BR": "Uma altura que muda a perspectiva.",
+    "ar": "ارتفاع يغيّر المنظور."
+  },
+  "קומה": {
+    "en": "Floor",
+    "es": "Planta",
+    "pt-BR": "Andar",
+    "ar": "طابق"
+  },
+  "תובנות Tower": {
+    "en": "Tower insights",
+    "es": "Insights Tower",
+    "pt-BR": "Insights Tower",
+    "ar": "رؤى Tower"
+  },
+  "ערים": {
+    "en": "Cities",
+    "es": "Ciudades",
+    "pt-BR": "Cidades",
+    "ar": "مدن"
+  },
+  "תובנות Pin": {
+    "en": "Pin insights",
+    "es": "Insights Pin",
+    "pt-BR": "Insights Pin",
+    "ar": "رؤى Pin"
+  },
+  "תובנות Panel": {
+    "en": "Panel insights",
+    "es": "Insights Panel",
+    "pt-BR": "Insights Panel",
+    "ar": "رؤى Panel"
+  },
+  "מחירים אמיתיים": {
+    "en": "Real prices",
+    "es": "Precios reales",
+    "pt-BR": "Preços reais",
+    "ar": "أسعار حقيقية"
+  },
+  "פוטנציאל": {
+    "en": "Potential",
+    "es": "Potencial",
+    "pt-BR": "Potencial",
+    "ar": "إمكان"
+  },
+  "ראו מה אפשר": {
+    "en": "See what is possible",
+    "es": "Ved lo que es posible",
+    "pt-BR": "Veja o que é possível",
+    "ar": "شاهدوا ما يمكن"
+  },
+  "עד סגירה": {
+    "en": "Until closing",
+    "es": "Hasta el cierre",
+    "pt-BR": "Até o fechamento",
+    "ar": "حتى الإغلاق"
+  },
+  "תובנות Slide": {
+    "en": "Slide insights",
+    "es": "Insights Slide",
+    "pt-BR": "Insights Slide",
+    "ar": "رؤى Slide"
+  },
+  "השקעה": {
+    "en": "Investment",
+    "es": "Inversión",
+    "pt-BR": "Investimento",
+    "ar": "استثمار"
+  },
+  "משופץ": {
+    "en": "Renovated",
+    "es": "Reformado",
+    "pt-BR": "Reformado",
+    "ar": "مجدَّد"
+  },
+  "משאירים פרטים ומקבלים התאמות.": {
+    "en": "Leave details and get matches.",
+    "es": "Dejad datos y recibid encajes.",
+    "pt-BR": "Deixem dados e recebam combinações.",
+    "ar": "اتركوا تفاصيل واحصلوا على مطابقات."
+  },
+  "שקוף ומוסכם מראש.": {
+    "en": "Transparent and agreed in advance.",
+    "es": "Transparente y acordado de antemano.",
+    "pt-BR": "Transparente e combinado de antemão.",
+    "ar": "شفاف ومتفق عليه مسبقاً."
+  },
+  "כמה זמן?": {
+    "en": "How long?",
+    "es": "¿Cuánto tiempo?",
+    "pt-BR": "Quanto tempo?",
+    "ar": "كم من الوقت؟"
+  },
+  "בממוצע 42 ימים.": {
+    "en": "42 days on average.",
+    "es": "42 días de media.",
+    "pt-BR": "42 dias em média.",
+    "ar": "42 يوماً في المتوسط."
+  },
+  "תובנות Counter": {
+    "en": "Counter insights",
+    "es": "Insights Counter",
+    "pt-BR": "Insights Counter",
+    "ar": "رؤى Counter"
+  },
+  "סינון": {
+    "en": "Filter",
+    "es": "Filtro",
+    "pt-BR": "Filtro",
+    "ar": "تصفية"
+  },
+  "סיור": {
+    "en": "Tour",
+    "es": "Visita",
+    "pt-BR": "Tour",
+    "ar": "جولة"
+  },
+  "נכס השבוע": {
+    "en": "Property of the week",
+    "es": "Inmueble de la semana",
+    "pt-BR": "Imóvel da semana",
+    "ar": "عقار الأسبوع"
+  },
+  "תובנות Signet": {
+    "en": "Signet insights",
+    "es": "Insights Signet",
+    "pt-BR": "Insights Signet",
+    "ar": "رؤى Signet"
+  },
+  "תובנות Axis": {
+    "en": "Axis insights",
+    "es": "Insights Axis",
+    "pt-BR": "Insights Axis",
+    "ar": "رؤى Axis"
+  },
+  "דירת גן נווה צדק": {
+    "en": "Garden apartment, Neve Tzedek",
+    "es": "Piso jardín, Neve Tzedek",
+    "pt-BR": "Apartamento jardim, Neve Tzedek",
+    "ar": "شقة حديقة، نيفيه تسيدك"
+  },
+  "לופט יפו העתיקה": {
+    "en": "Loft in Old Jaffa",
+    "es": "Loft en Jaffa antigua",
+    "pt-BR": "Loft na Jaffa antiga",
+    "ar": "لوفت في يافا القديمة"
+  },
+  "פנטהאוז מגדל צפון": {
+    "en": "North tower penthouse",
+    "es": "Ático en torre norte",
+    "pt-BR": "Cobertura na torre norte",
+    "ar": "بنتهاوس برج الشمال"
+  },
+  "לופט קו רכבת": {
+    "en": "Rail-line loft",
+    "es": "Loft junto a la vía",
+    "pt-BR": "Loft na linha do trem",
+    "ar": "لوفت على خط القطار"
+  },
+  "צי יאכטות": {
+    "en": "Yacht fleet",
+    "es": "Flota de yates",
+    "pt-BR": "Frota de iates",
+    "ar": "أسطول يخوت"
+  },
+  "קונסierge": {
+    "en": "Concierge",
+    "es": "Concierge",
+    "pt-BR": "Concierge",
+    "ar": "كونسيرج"
+  },
+  "אasis בין מדבר לים": {
+    "en": "An oasis between desert and sea",
+    "es": "Un oasis entre desierto y mar",
+    "pt-BR": "Um oásis entre deserto e mar",
+    "ar": "واحة بين صحراء وبحر"
+  },
+  "פסטה עם קalmari ושרimp.": {
+    "en": "Pasta with calamari and shrimp.",
+    "es": "Pasta con calamar y camarones.",
+    "pt-BR": "Massa com lula e camarão.",
+    "ar": "باستا مع كالاماري وروبيان."
+  },
+  "גובה שמשנה פרspektיבה.": {
+    "en": "Height that changes perspective.",
+    "es": "Una altura que cambia la perspectiva.",
+    "pt-BR": "Uma altura que muda a perspectiva.",
+    "ar": "ارتفاع يغيّر المنظور."
+  },
+  "שטח פרטי, מרina view ועיצוב אדריכלי.": {
+    "en": "Private grounds, marina view, and architectural design.",
+    "es": "Terreno privado, vista marina y diseño arquitectónico.",
+    "pt-BR": "Terreno privado, vista da marina e design arquitetônico.",
+    "ar": "أرض خاصة وإطلالة مارينا وتصميم معماري."
+  },
+  "פנטהאוז מגדל עזrieli": {
+    "en": "Azrieli tower penthouse",
+    "es": "Ático en la torre Azrieli",
+    "pt-BR": "Cobertura na torre Azrieli",
+    "ar": "بنتهاوس برج عزريئيلي"
+  },
+  "מגדל חדש, בריכה וקונcierge.": {
+    "en": "A new tower, a pool, and concierge.",
+    "es": "Una torre nueva, piscina y concierge.",
+    "pt-BR": "Uma torre nova, piscina e concierge.",
+    "ar": "برج جديد وبركة وكونسيرج."
+  },
+  "דירת גן כפר סבא": {
+    "en": "Garden apartment, Kfar Saba",
+    "es": "Piso jardín, Kfar Saba",
+    "pt-BR": "Apartamento jardim, Kfar Saba",
+    "ar": "شقة حديقة، كفار سابا"
+  },
+  "שבת 09:30 · כפר סבא": {
+    "en": "Saturday 09:30 · Kfar Saba",
+    "es": "Sábado 09:30 · Kfar Saba",
+    "pt-BR": "Sábado 09:30 · Kfar Saba",
+    "ar": "السبت 09:30 · كفار سابا"
+  },
+  "פenthouse ת״א": {
+    "en": "Penthouse, Tel Aviv",
+    "es": "Ático, Tel Aviv",
+    "pt-BR": "Cobertura, Tel Aviv",
+    "ar": "بنتهاوس، تل أبيب"
+  },
+  "דירת 4 ת״א": {
+    "en": "4-room apartment, Tel Aviv",
+    "es": "Piso de 4, Tel Aviv",
+    "pt-BR": "Apartamento de 4, Tel Aviv",
+    "ar": "شقة 4 غرف، تل أبيب"
+  },
+  "סtudio, מרכז, השקעה.": {
+    "en": "Studio, center, investment.",
+    "es": "Studio, centro, inversión.",
+    "pt-BR": "Studio, centro, investimento.",
+    "ar": "استوديو، مركز، استثمار."
+  },
+  "מרפסת עוטפת, חדר כושר ונוף פanorami.": {
+    "en": "Wraparound balcony, gym, and panoramic view.",
+    "es": "Terraza envolvente, gimnasio y vista panorámica.",
+    "pt-BR": "Varanda envolvente, academia e vista panorâmica.",
+    "ar": "شرفة محيطة وصالة رياضة وإطلالة بانورامية."
+  },
+  "סalון": {
+    "en": "Living room",
+    "es": "Salón",
+    "pt-BR": "Sala",
+    "ar": "صالة"
+  },
+  "דירה נווה צדק": {
+    "en": "Apartment, Neve Tzedek",
+    "es": "Piso, Neve Tzedek",
+    "pt-BR": "Apartamento, Neve Tzedek",
+    "ar": "شقة، نيفيه تسيدك"
+  },
+  "נווה צדק · 4 חד׳": {
+    "en": "Neve Tzedek · 4 rooms",
+    "es": "Neve Tzedek · 4 hab.",
+    "pt-BR": "Neve Tzedek · 4 quartos",
+    "ar": "نيفيه تسيدك · 4 غرف"
+  },
+  "פlorian · 3 חד׳": {
+    "en": "Florian · 3 rooms",
+    "es": "Florian · 3 hab.",
+    "pt-BR": "Florian · 3 quartos",
+    "ar": "Florian · 3 غرف"
+  },
+  "רamat aviv · 5 חד׳": {
+    "en": "Ramat Aviv · 5 rooms",
+    "es": "Ramat Aviv · 5 hab.",
+    "pt-BR": "Ramat Aviv · 5 quartos",
+    "ar": "رمات أبيب · 5 غرف"
+  },
+  "יפו · 4 חד׳": {
+    "en": "Jaffa · 4 rooms",
+    "es": "Jaffa · 4 hab.",
+    "pt-BR": "Jaffa · 4 quartos",
+    "ar": "يافا · 4 غرف"
+  },
+  "הצעד_הבא": {
+    "en": "NEXT_STEP",
+    "es": "SIGUIENTE_PASO",
+    "pt-BR": "PROXIMO_PASSO",
+    "ar": "الخطوة_التالية"
+  },
+  "צור_קשר": {
+    "en": "CONTACT",
+    "es": "CONTACTO",
+    "pt-BR": "CONTATO",
+    "ar": "تواصل"
+  },
+  "אות": {
+    "en": "Mark",
+    "es": "Marca",
+    "pt-BR": "Marca",
+    "ar": "علامة"
+  },
+  "חברה": {
+    "en": "Company",
+    "es": "Empresa",
+    "pt-BR": "Empresa",
+    "ar": "شركة"
+  },
+  "נוף": {
+    "en": "View",
+    "es": "Vista",
+    "pt-BR": "Vista",
+    "ar": "إطلالة"
+  },
+  "איך מתחילים?": {
+    "en": "How do we start?",
+    "es": "¿Cómo se empieza?",
+    "pt-BR": "Como começamos?",
+    "ar": "كيف نبدأ؟"
+  },
+  "מה העמלה?": {
+    "en": "What is the fee?",
+    "es": "¿Cuál es la comisión?",
+    "pt-BR": "Qual é a comissão?",
+    "ar": "ما العمولة؟"
+  }
+}

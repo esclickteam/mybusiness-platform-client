@@ -4,7 +4,7 @@ export const azurelineDefaultData = {
   brandName: "Azureline",
   logoText: "A",
   navHome: "בית",
-  navFleet: "צי",
+  navFleet: "צי יאכטות",
   navRoutes: "מסלולים",
   navAbout: "אודות",
   navContact: "הזמנה",

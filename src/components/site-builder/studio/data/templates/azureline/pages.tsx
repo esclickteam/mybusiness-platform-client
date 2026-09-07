@@ -7,7 +7,7 @@ import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const azurelinePages = [
   { id: "home", label: "בית", slug: "/" },
-  { id: "fleet", label: "צי", slug: "/fleet" },
+  { id: "fleet", label: "צי יאכטות", slug: "/fleet" },
   { id: "routes", label: "מסלולים", slug: "/routes" },
   { id: "about", label: "אודות", slug: "/about" },
   { id: "contact", label: "הזמנה", slug: "/contact" },

@@ -132,7 +132,7 @@ function DuneStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l]) => (
           <div key={l} className="tpl-climb">
             <div className="tpl-display text-4xl font-bold md:text-5xl" style={{ color: "#c9956a" }}>{n}</div>
-            <p className="mt-2 text-sm" style={{ color: "#8a7358" }}>{l}</p>
+            <p className="mt-2 text-sm" style={{ color: "#8a7358" }}>{tx(l)}</p>
           </div>
         ))}
       </div>

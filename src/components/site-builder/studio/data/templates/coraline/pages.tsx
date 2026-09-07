@@ -129,7 +129,7 @@ function DepthTimeline({ data }: { data: Record<string, any> }) {
           {steps.map(([depth, label], i) => (
             <div key={depth} className="tpl-climb border-t pt-4" style={{ borderColor: "#3dffd4", animationDelay: `${i * 0.12}s` }}>
               <div className="text-2xl font-bold" style={{ color: "#3dffd4" }}>{depth}</div>
-              <p className="mt-1 text-sm" style={{ color: "#7eb8d4" }}>{label}</p>
+              <p className="mt-1 text-sm" style={{ color: "#7eb8d4" }}>{tx(label)}</p>
             </div>
           ))}
         </div>

@@ -295,7 +295,7 @@ function InquiryModal({
             <input
               key={placeholder}
               className="h-14 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-              placeholder={placeholder}
+              placeholder={tx(placeholder)}
             />
           ))}
           <textarea
@@ -376,7 +376,7 @@ function HeroSection({
                 style={{ clipPath: index === 1 ? "polygon(0 0, 100% 0, 100% 100%, 8% 100%)" : undefined }}
               >
                 <TemplateText as="div" className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00ff88]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="div" className="mt-2 text-sm font-bold uppercase text-[#f5f5f5]">
                   {value}
@@ -740,7 +740,7 @@ function ContactSection({
             <input
               key={placeholder}
               className="h-16 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-              placeholder={placeholder}
+              placeholder={tx(placeholder)}
             />
           ))}
           <textarea

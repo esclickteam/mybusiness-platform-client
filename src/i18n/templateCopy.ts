@@ -70,6 +70,10 @@ import unique55ExactLexicon from "./templateExactLexicon.unique55.json";
 import unique56ExactLexicon from "./templateExactLexicon.unique56.json";
 import unique57ExactLexicon from "./templateExactLexicon.unique57.json";
 import unique58ExactLexicon from "./templateExactLexicon.unique58.json";
+import unique59ExactLexicon from "./templateExactLexicon.unique59.json";
+import unique60ExactLexicon from "./templateExactLexicon.unique60.json";
+import unique61ExactLexicon from "./templateExactLexicon.unique61.json";
+import unique62ExactLexicon from "./templateExactLexicon.unique62.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -152,6 +156,10 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique56ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique57ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique58ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique59ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique60ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique61ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique62ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -324,6 +332,20 @@ const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   "שם חבילה": { en: "Package name", es: "Nombre del paquete", "pt-BR": "Nome do pacote", ar: "اسم الباقة" },
   "תג תובנה": { en: "Insight tag", es: "Etiqueta de insight", "pt-BR": "Tag de insight", ar: "وسم رؤية" },
   "תיאור שלב": { en: "Step description", es: "Descripción del paso", "pt-BR": "Descrição da etapa", ar: "وصف الخطوة" },
+  "כותרת עליונה הירו": { en: "Hero top title", es: "Título superior del hero", "pt-BR": "Título superior do hero", ar: "عنوان أعلى الهيرو" },
+  "אייברו הירו": { en: "Hero eyebrow", es: "Cejilla del hero", "pt-BR": "Olho do hero", ar: "عنوان فرعي للهيرو" },
+  "שם המשרד": { en: "Firm name", es: "Nombre del despacho", "pt-BR": "Nome do escritório", ar: "اسم المكتب" },
+  "שם המרפאה": { en: "Clinic name", es: "Nombre de la clínica", "pt-BR": "Nome da clínica", ar: "اسم العيادة" },
+  "כותרת תחומי עיסוק": { en: "Practice areas title", es: "Título de áreas de práctica", "pt-BR": "Título das áreas de atuação", ar: "عنوان مجالات العمل" },
+  "כותרת הצלחות": { en: "Wins title", es: "Título de éxitos", "pt-BR": "Título das vitórias", ar: "عنوان النجاحات" },
+  "כותרת טיפולים": { en: "Treatments title", es: "Título de tratamientos", "pt-BR": "Título dos tratamentos", ar: "عنوان العلاجات" },
+  "טקסט קביעת תור": { en: "Booking text", es: "Texto de cita", "pt-BR": "Texto de agendamento", ar: "نص حجز الموعد" },
+  "סוג פروיקט": { en: "Project type", es: "Tipo de proyecto", "pt-BR": "Tipo de projeto", ar: "نوع المشروع" },
+  "שדה סוג פרויקט": { en: "Project type field", es: "Campo de tipo de proyecto", "pt-BR": "Campo de tipo de projeto", ar: "حقل نوع المشروع" },
+  "תחום ייעוץ": { en: "Advisory field", es: "Área de consultoría", "pt-BR": "Área de consultoria", ar: "مجال الاستشارة" },
+  "שדה תחום ייעוץ": { en: "Advisory field input", es: "Campo de área de consultoría", "pt-BR": "Campo de área de consultoria", ar: "حقل مجال الاستشارة" },
+  "כפתור פרויקטים בפוטר": { en: "Footer projects button", es: "Botón de proyectos del pie", "pt-BR": "Botão de projetos do rodapé", ar: "زر المشاريع في التذييل" },
+  "כפתור שירותים בפוטר": { en: "Footer services button", es: "Botón de servicios del pie", "pt-BR": "Botão de serviços do rodapé", ar: "زر الخدمات في التذييل" },
   "מחיר מוצר": { en: "Product price", es: "Precio del producto", "pt-BR": "Preço do produto", ar: "سعر المنتج" },
   "תג פרויקט": { en: "Project tag", es: "Etiqueta de proyecto", "pt-BR": "Tag de projeto", ar: "وسم المشروع" },
   "חבילת מחיר": { en: "Price package", es: "Paquete de precio", "pt-BR": "Pacote de preço", ar: "باقة سعر" },
@@ -384,6 +406,10 @@ const NUMBERED_DASH_LEFT: Record<string, PhraseTranslation> = {
   יכולת: { en: "Capability", es: "Capacidad", "pt-BR": "Capacidade", ar: "قدرة" },
   פס: { en: "Band", es: "Franja", "pt-BR": "Faixa", ar: "شريط" },
   חבילה: { en: "Package", es: "Paquete", "pt-BR": "Pacote", ar: "باقة" },
+  תחום: { en: "Practice", es: "Área", "pt-BR": "Área", ar: "مجال" },
+  הצלחה: { en: "Win", es: "Éxito", "pt-BR": "Vitória", ar: "نجاح" },
+  "איש צוות": { en: "Team member", es: "Miembro del equipo", "pt-BR": "Membro da equipe", ar: "عضو الفريق" },
+  רופא: { en: "Doctor", es: "Médico", "pt-BR": "Médico", ar: "طبيب" },
 };
 
 const NUMBERED_DASH_RIGHT: Record<string, PhraseTranslation> = {
@@ -391,6 +417,8 @@ const NUMBERED_DASH_RIGHT: Record<string, PhraseTranslation> = {
   טקסט: { en: "text", es: "texto", "pt-BR": "texto", ar: "نص" },
   שם: { en: "name", es: "nombre", "pt-BR": "nome", ar: "اسم" },
   מחיר: { en: "price", es: "precio", "pt-BR": "preço", ar: "سعر" },
+  תפקיד: { en: "role", es: "cargo", "pt-BR": "cargo", ar: "دور" },
+  תמונה: { en: "image", es: "imagen", "pt-BR": "imagem", ar: "صورة" },
 };
 
 const HEBREW_MONTHS: Record<string, PhraseTranslation> = {
