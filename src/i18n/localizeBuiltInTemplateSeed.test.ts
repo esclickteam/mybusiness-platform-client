@@ -962,6 +962,26 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique58 leftover Lotera through Vespera chrome", () => {
+    expect(localizeBuiltInText("שלחו בקשת סיור", "en")).toMatch(/tour|request/i);
+    expect(localizeBuiltInText("שלחו בקשת סיור", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("טלפון פרטי", "es")).toMatch(/teléfono|privad/i);
+    expect(localizeBuiltInText("כמה חדרים?", "pt-BR")).toMatch(/quarto/i);
+    expect(localizeBuiltInText("בקשת כרטיסים", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קלייה קטנה. טעם גדול.", "en")).toMatch(/roast|taste/i);
+  });
+
+  it("localizes unique57 leftover Vowline through Florique chrome", () => {
+    expect(localizeBuiltInText("חבילות תכנון", "en")).toMatch(/plan/i);
+    expect(localizeBuiltInText("חבילות תכנון", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מספרים עם הד.", "es")).toMatch(/eco|número/i);
+    expect(localizeBuiltInText("שם החיה", "pt-BR")).toMatch(/pet|nome/i);
+    expect(localizeBuiltInText("דגם הרכב", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("גיטרה / בס", "en")).toMatch(/guitar|bass/i);
+    expect(localizeBuiltInText("זרים", "es")).toMatch(/ramo/i);
+    expect(localizeBuiltInText("ברכה, כתובת ושעה רצויה", "pt-BR")).toMatch(/endereço/i);
+  });
+
   it("localizes unique56 leftover Markora through Formara chrome", () => {
     expect(localizeBuiltInText("מה אתם רוצים לשווק?", "en")).toMatch(/market/i);
     expect(localizeBuiltInText("מה אתם רוצים לשווק?", "en")).not.toMatch(/[\u0590-\u05FF]/);

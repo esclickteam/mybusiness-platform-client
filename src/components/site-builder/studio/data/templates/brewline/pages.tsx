@@ -183,7 +183,7 @@ function Origins({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="h-full w-full object-cover opacity-78 transition duration-700 group-hover:scale-110 group-hover:opacity-100" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410] via-[#1A1410]/24 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6">
-                  <span className="text-xs font-black uppercase tracking-[0.28em] text-[var(--clay)]">{tx(`מקור 0${index + 1}`)}</span>
+                  <span className="text-xs font-black uppercase tracking-[0.28em] text-[var(--clay)]">{`${tx("מקור")} 0${index + 1}`}</span>
                   <h3 className="t-serif mt-2 text-2xl md:text-5xl leading-none text-[var(--cream)]">{title}</h3>
                   <p className="mt-4 text-sm font-medium leading-6 text-white/72">{tx(text)}</p>
                 </div>

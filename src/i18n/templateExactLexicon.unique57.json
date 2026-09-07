@@ -1,0 +1,644 @@
+{
+  "סיפורים": {
+    "en": "Stories",
+    "es": "Historias",
+    "pt-BR": "Histórias",
+    "ar": "قصص"
+  },
+  "חבילות תכנון": {
+    "en": "Planning packages",
+    "es": "Packs de planificación",
+    "pt-BR": "Pacotes de planejamento",
+    "ar": "باقات تخطيط"
+  },
+  "בחרו את רמת הליווי": {
+    "en": "Choose the guidance level",
+    "es": "Elegid el nivel de acompañamiento",
+    "pt-BR": "Escolham o nível de acompanhamento",
+    "ar": "اختاروا مستوى المرافقة"
+  },
+  "ניהול ביום": {
+    "en": "Day-of management",
+    "es": "Gestión el día",
+    "pt-BR": "Gestão no dia",
+    "ar": "إدارة في اليوم"
+  },
+  "ספקים ושותפים": {
+    "en": "Vendors and partners",
+    "es": "Proveedores y socios",
+    "pt-BR": "Fornecedores e parceiros",
+    "ar": "موردون وشركاء"
+  },
+  "חתונת שישי בשרון": {
+    "en": "A Friday wedding in the Sharon",
+    "es": "Boda de viernes en el Sharon",
+    "pt-BR": "Casamento de sexta no Sharon",
+    "ar": "زفاف جمعة في الشارون"
+  },
+  "חתונת ערב ביפו": {
+    "en": "An evening wedding in Jaffa",
+    "es": "Boda de noche en Jaffa",
+    "pt-BR": "Casamento à noite em Jaffa",
+    "ar": "زفاف مسائي في يافا"
+  },
+  "שאלות רכות": {
+    "en": "Soft questions",
+    "es": "Preguntas suaves",
+    "pt-BR": "Perguntas suaves",
+    "ar": "أسئلة لطيفة"
+  },
+  "מתי כדאי להתחיל לתכנן?": {
+    "en": "When should you start planning?",
+    "es": "¿Cuándo conviene empezar a planificar?",
+    "pt-BR": "Quando vale começar a planejar?",
+    "ar": "متى يستحسن بدء التخطيط؟"
+  },
+  "האם אתם עובדים עם ספקים קבועים?": {
+    "en": "Do you work with regular vendors?",
+    "es": "¿Trabajáis con proveedores fijos?",
+    "pt-BR": "Vocês trabalham com fornecedores fixos?",
+    "ar": "هل تعملون مع موردين ثابتين؟"
+  },
+  "אפשר לקבל רק ליווי ביום האירוע?": {
+    "en": "Can we get day-of guidance only?",
+    "es": "¿Se puede recibir solo acompañamiento el día del evento?",
+    "pt-BR": "Dá para ter só acompanhamento no dia do evento?",
+    "ar": "هل يمكن الحصول على مرافقة يوم المناسبة فقط؟"
+  },
+  "ספרו לנו על היום שלכם": {
+    "en": "Tell us about your day",
+    "es": "Contadnos sobre vuestro día",
+    "pt-BR": "Contem sobre o dia de vocês",
+    "ar": "أخبرونا عن يومكم"
+  },
+  "תל אביב · חתונות בכל הארץ": {
+    "en": "Tel Aviv · weddings nationwide",
+    "es": "Tel Aviv · bodas en todo el país",
+    "pt-BR": "Tel Aviv · casamentos em todo o país",
+    "ar": "تل أبيب · أعراس في كل البلاد"
+  },
+  "מגדלי בוטיק": {
+    "en": "Boutique towers",
+    "es": "Torres boutique",
+    "pt-BR": "Torres boutique",
+    "ar": "أبراج بوتيك"
+  },
+  "בית קנטילבר / הרצליה": {
+    "en": "Cantilever house / Herzliya",
+    "es": "Casa voladiza / Herzliya",
+    "pt-BR": "Casa em balanço / Herzliya",
+    "ar": "بيت كابولي / هرتسليا"
+  },
+  "מטה פיננסי / תל אביב": {
+    "en": "Finance HQ / Tel Aviv",
+    "es": "Sede financiera / Tel Aviv",
+    "pt-BR": "Sede financeira / Tel Aviv",
+    "ar": "مقر مالي / تل أبيب"
+  },
+  "גלריית מגורים / יפו": {
+    "en": "Residential gallery / Jaffa",
+    "es": "Galería residencial / Jaffa",
+    "pt-BR": "Galeria residencial / Jaffa",
+    "ar": "معرض سكني / يافا"
+  },
+  "01 / קריאת אתר": {
+    "en": "01 / Reading the site",
+    "es": "01 / Lectura del solar",
+    "pt-BR": "01 / Leitura do terreno",
+    "ar": "01 / قراءة الموقع"
+  },
+  "03 / מערכת פרטים": {
+    "en": "03 / Detail system",
+    "es": "03 / Sistema de detalles",
+    "pt-BR": "03 / Sistema de detalhes",
+    "ar": "03 / نظام تفاصيل"
+  },
+  "מספרים עם הד.": {
+    "en": "Numbers with echo.",
+    "es": "Números con eco.",
+    "pt-BR": "Números com eco.",
+    "ar": "أرقام بصدى."
+  },
+  "סוג הנכס / מיקום": {
+    "en": "Property type / location",
+    "es": "Tipo de inmueble / ubicación",
+    "pt-BR": "Tipo de imóvel / local",
+    "ar": "نوع العقار / موقع"
+  },
+  "ספרו לנו מה חייב לקרות בחלל": {
+    "en": "Tell us what must happen in the space",
+    "es": "Contadnos qué tiene que ocurrir en el espacio",
+    "pt-BR": "Contem o que precisa acontecer no espaço",
+    "ar": "أخبرونا ماذا يجب أن يحدث في الفراغ"
+  },
+  "חוויה": {
+    "en": "Experience",
+    "es": "Experiencia",
+    "pt-BR": "Experiência",
+    "ar": "تجربة"
+  },
+  "שעות למענה תורים": {
+    "en": "Hours for appointment replies",
+    "es": "Horario de respuesta a citas",
+    "pt-BR": "Horário de resposta a horários",
+    "ar": "ساعات للرد على المواعيد"
+  },
+  "החל מ-₪3,400 לשן": {
+    "en": "From ₪3,400 per tooth",
+    "es": "Desde ₪3,400 por diente",
+    "pt-BR": "A partir de ₪3.400 por dente",
+    "ar": "بدءاً من ₪3,400 للسن"
+  },
+  "חדר טיפול שקט": {
+    "en": "A quiet treatment room",
+    "es": "Sala de tratamiento silenciosa",
+    "pt-BR": "Sala de tratamento silenciosa",
+    "ar": "غرفة علاج هادئة"
+  },
+  "טיפול שמעניין אתכם": {
+    "en": "A treatment that interests you",
+    "es": "Un tratamiento que os interesa",
+    "pt-BR": "Um tratamento que interessa vocês",
+    "ar": "علاج يهمكم"
+  },
+  "מה חשוב לנו לדעת לפני השיחה?": {
+    "en": "What should we know before the call?",
+    "es": "¿Qué necesitamos saber antes de la llamada?",
+    "pt-BR": "O que precisamos saber antes da chamada?",
+    "ar": "ماذا يجب أن نعرف قبل المكالمة؟"
+  },
+  "שיעורים רכים ומדויקים": {
+    "en": "Soft, precise classes",
+    "es": "Clases suaves y precisas",
+    "pt-BR": "Aulas suaves e precisas",
+    "ar": "حصص لطيفة ودقيقة"
+  },
+  "בוקר / 60 דק׳": {
+    "en": "Morning / 60 min",
+    "es": "Mañana / 60 min",
+    "pt-BR": "Manhã / 60 min",
+    "ar": "صباح / 60 د"
+  },
+  "ערב / 75 דק׳": {
+    "en": "Evening / 75 min",
+    "es": "Noche / 75 min",
+    "pt-BR": "Noite / 75 min",
+    "ar": "مساء / 75 د"
+  },
+  "צהריים / 60 דק׳": {
+    "en": "Noon / 60 min",
+    "es": "Mediodía / 60 min",
+    "pt-BR": "Meio-dia / 60 min",
+    "ar": "ظهر / 60 د"
+  },
+  "אישי / 50 דק׳": {
+    "en": "Private / 50 min",
+    "es": "Personal / 50 min",
+    "pt-BR": "Particular / 50 min",
+    "ar": "خاص / 50 د"
+  },
+  "שינה רגועה יותר": {
+    "en": "Calmer sleep",
+    "es": "Un sueño más calmo",
+    "pt-BR": "Sono mais calmo",
+    "ar": "نوم أهدأ"
+  },
+  "Slow Flow לפני העבודה": {
+    "en": "Slow Flow before work",
+    "es": "Slow Flow antes del trabajo",
+    "pt-BR": "Slow Flow antes do trabalho",
+    "ar": "Slow Flow قبل العمل"
+  },
+  "צוות Aura": {
+    "en": "Aura team",
+    "es": "Equipo Aura",
+    "pt-BR": "Equipe Aura",
+    "ar": "فريق Aura"
+  },
+  "קולות מהסטודיו": {
+    "en": "Voices from the studio",
+    "es": "Voces del estudio",
+    "pt-BR": "Vozes do estúdio",
+    "ar": "أصوات من الاستوديو"
+  },
+  "נשימה אחת מספיקה כדי להתחיל.": {
+    "en": "One breath is enough to start.",
+    "es": "Una respiración basta para empezar.",
+    "pt-BR": "Uma respiração basta para começar.",
+    "ar": "نفس واحد يكفي للبدء."
+  },
+  "מה תרצו לתרגל": {
+    "en": "What would you like to practice",
+    "es": "Qué os gustaría practicar",
+    "pt-BR": "O que vocês querem praticar",
+    "ar": "ماذا تريدون التمرّن عليه"
+  },
+  "מה תרצו לתרגל?": {
+    "en": "What would you like to practice?",
+    "es": "¿Qué os gustaría practicar?",
+    "pt-BR": "O que vocês querem praticar?",
+    "ar": "ماذا تريدون التمرّن عليه؟"
+  },
+  "כלים ושירותים": {
+    "en": "Instruments and services",
+    "es": "Instrumentos y servicios",
+    "pt-BR": "Instrumentos e serviços",
+    "ar": "آلات وخدمات"
+  },
+  "קול / במה": {
+    "en": "Voice / stage",
+    "es": "Voz / escenario",
+    "pt-BR": "Voz / palco",
+    "ar": "صوت / خشبة"
+  },
+  "מסלול": {
+    "en": "Track",
+    "es": "Itinerario",
+    "pt-BR": "Percurso",
+    "ar": "مسار"
+  },
+  "גיטרה / בס": {
+    "en": "Guitar / bass",
+    "es": "Guitarra / bajo",
+    "pt-BR": "Guitarra / baixo",
+    "ar": "غيتار / باص"
+  },
+  "פסנתר / קלידים": {
+    "en": "Piano / keys",
+    "es": "Piano / teclados",
+    "pt-BR": "Piano / teclados",
+    "ar": "بيانو / مفاتيح"
+  },
+  "הפקה אלקטרונית": {
+    "en": "Electronic production",
+    "es": "Producción electrónica",
+    "pt-BR": "Produção eletrônica",
+    "ar": "إنتاج إلكتروني"
+  },
+  "פתוח 7 ימים בשבוע": {
+    "en": "Open 7 days a week",
+    "es": "Abierto 7 días a la semana",
+    "pt-BR": "Aberto 7 dias por semana",
+    "ar": "مفتوح 7 أيام في الأسبوع"
+  },
+  "כולל מצלמות": {
+    "en": "Includes cameras",
+    "es": "Incluye cámaras",
+    "pt-BR": "Inclui câmeras",
+    "ar": "يشمل كاميرات"
+  },
+  "לפי גודל": {
+    "en": "By size",
+    "es": "Según tamaño",
+    "pt-BR": "Por tamanho",
+    "ar": "حسب الحجم"
+  },
+  "מספרים שמרגיעים": {
+    "en": "Numbers that calm",
+    "es": "Números que calman",
+    "pt-BR": "Números que acalmam",
+    "ar": "أرقام تهدّئ"
+  },
+  "תיאום ביקור": {
+    "en": "Book a visit",
+    "es": "Coordinar una visita",
+    "pt-BR": "Agendar uma visita",
+    "ar": "تنسيق زيارة"
+  },
+  "מקום חם מתחיל בהיכרות קטנה.": {
+    "en": "A warm place starts with a small hello.",
+    "es": "Un lugar cálido empieza con un saludo pequeño.",
+    "pt-BR": "Um lugar quente começa com um olá pequeno.",
+    "ar": "مكان دافئ يبدأ بتعارف صغير."
+  },
+  "שם החיה": {
+    "en": "Pet name",
+    "es": "Nombre de la mascota",
+    "pt-BR": "Nome do pet",
+    "ar": "اسم الحيوان"
+  },
+  "סוג וגיל": {
+    "en": "Type and age",
+    "es": "Tipo y edad",
+    "pt-BR": "Tipo e idade",
+    "ar": "نوع وعمر"
+  },
+  "כלב / חתול וגיל": {
+    "en": "Dog / cat and age",
+    "es": "Perro / gato y edad",
+    "pt-BR": "Cão / gato e idade",
+    "ar": "كلب / قط وعمر"
+  },
+  "מה חשוב לדעת": {
+    "en": "What we should know",
+    "es": "Qué es importante saber",
+    "pt-BR": "O que é importante saber",
+    "ar": "ما المهم معرفته"
+  },
+  "מה חשוב לנו לדעת לפני ההגעה?": {
+    "en": "What should we know before you arrive?",
+    "es": "¿Qué necesitamos saber antes de la llegada?",
+    "pt-BR": "O que precisamos saber antes da chegada?",
+    "ar": "ماذا يجب أن نعرف قبل الوصول؟"
+  },
+  "סטורי": {
+    "en": "Story",
+    "es": "Story",
+    "pt-BR": "Story",
+    "ar": "ستوري"
+  },
+  "מידות": {
+    "en": "Sizes",
+    "es": "Tallas",
+    "pt-BR": "Tamanhos",
+    "ar": "مقاسات"
+  },
+  "45 דקות של בניית לוקים למדידה": {
+    "en": "45 minutes of look-building for a fitting",
+    "es": "45 minutos de construcción de looks para prueba",
+    "pt-BR": "45 minutos de montagem de looks para prova",
+    "ar": "45 دقيقة لبناء إطلالات للتجربة"
+  },
+  "שמירה": {
+    "en": "Hold",
+    "es": "Reserva",
+    "pt-BR": "Reserva",
+    "ar": "حفظ"
+  },
+  "מה כתבו על Atelier X": {
+    "en": "What they wrote about Atelier X",
+    "es": "Qué escribieron sobre Atelier X",
+    "pt-BR": "O que escreveram sobre Atelier X",
+    "ar": "ماذا كتبوا عن Atelier X"
+  },
+  "מה מחפשים": {
+    "en": "What you are looking for",
+    "es": "Qué buscáis",
+    "pt-BR": "O que vocês procuram",
+    "ar": "ماذا تبحثون"
+  },
+  "אתיופיה": {
+    "en": "Ethiopia",
+    "es": "Etiopía",
+    "pt-BR": "Etiópia",
+    "ar": "إثيوبيا"
+  },
+  "קולומביה": {
+    "en": "Colombia",
+    "es": "Colombia",
+    "pt-BR": "Colômbia",
+    "ar": "كولومبيا"
+  },
+  "ברזיל": {
+    "en": "Brazil",
+    "es": "Brasil",
+    "pt-BR": "Brasil",
+    "ar": "البرازيل"
+  },
+  "טחינה": {
+    "en": "Tahini",
+    "es": "Tahini",
+    "pt-BR": "Tahine",
+    "ar": "طحينة"
+  },
+  "כיול יומי לפי לחות, קלייה וקצב הזמנות.": {
+    "en": "Daily calibration by humidity, roast, and order pace.",
+    "es": "Calibración diaria según humedad, tueste y ritmo de pedidos.",
+    "pt-BR": "Calibração diária conforme umidade, torra e ritmo de pedidos.",
+    "ar": "معايرة يومية حسب الرطوبة والتحميص وإيقاع الطلبات."
+  },
+  "חליטה": {
+    "en": "Brew",
+    "es": "Infusión",
+    "pt-BR": "Infusão",
+    "ar": "نقع"
+  },
+  "מרקם": {
+    "en": "Texture",
+    "es": "Textura",
+    "pt-BR": "Textura",
+    "ar": "قوام"
+  },
+  "בר ערב": {
+    "en": "Evening bar",
+    "es": "Bar de noche",
+    "pt-BR": "Bar noturno",
+    "ar": "بار مسائي"
+  },
+  "שליחה ובניית תפריט": {
+    "en": "Send and build a menu",
+    "es": "Enviar y construir un menú",
+    "pt-BR": "Enviar e montar um cardápio",
+    "ar": "إرسال وبناء قائمة"
+  },
+  "מקור": {
+    "en": "Origin",
+    "es": "Origen",
+    "pt-BR": "Origem",
+    "ar": "مصدر"
+  },
+  "אירוע / כמות אורחים": {
+    "en": "Event / guest count",
+    "es": "Evento / cantidad de invitados",
+    "pt-BR": "Evento / quantidade de convidados",
+    "ar": "مناسبة / عدد الضيوف"
+  },
+  "ספרו לנו על הקייטרינג או הביקור שתרצו": {
+    "en": "Tell us about the catering or the visit you want",
+    "es": "Contadnos sobre el catering o la visita que queréis",
+    "pt-BR": "Contem sobre o catering ou a visita que vocês querem",
+    "ar": "أخبرونا عن الضيافة أو الزيارة التي تريدونها"
+  },
+  "שירותים חדים": {
+    "en": "Sharp services",
+    "es": "Servicios nítidos",
+    "pt-BR": "Serviços nítidos",
+    "ar": "خدمات حادة"
+  },
+  "פנים עמוק": {
+    "en": "Deep interior",
+    "es": "Interior profundo",
+    "pt-BR": "Interior profundo",
+    "ar": "داخل عميق"
+  },
+  "ניקוי": {
+    "en": "Cleaning",
+    "es": "Limpieza",
+    "pt-BR": "Limpeza",
+    "ar": "تنظيف"
+  },
+  "לפני / אחרי": {
+    "en": "Before / after",
+    "es": "Antes / después",
+    "pt-BR": "Antes / depois",
+    "ar": "قبل / بعد"
+  },
+  "שתי חבילות גדולות": {
+    "en": "Two large packages",
+    "es": "Dos packs grandes",
+    "pt-BR": "Dois pacotes grandes",
+    "ar": "باقتان كبيرتان"
+  },
+  "יום עבודה אחד": {
+    "en": "One work day",
+    "es": "Un día de trabajo",
+    "pt-BR": "Um dia de trabalho",
+    "ar": "يوم عمل واحد"
+  },
+  "72 שעות סטודיו": {
+    "en": "72 studio hours",
+    "es": "72 horas de estudio",
+    "pt-BR": "72 horas de estúdio",
+    "ar": "72 ساعة استوديو"
+  },
+  "תור בסטודיו": {
+    "en": "Studio appointment",
+    "es": "Cita en el estudio",
+    "pt-BR": "Horário no estúdio",
+    "ar": "موعد في الاستوديو"
+  },
+  "שליחה לאבחון": {
+    "en": "Send for diagnosis",
+    "es": "Enviar a diagnóstico",
+    "pt-BR": "Enviar para diagnóstico",
+    "ar": "إرسال للتشخيص"
+  },
+  "דגם הרכב": {
+    "en": "Car model",
+    "es": "Modelo del coche",
+    "pt-BR": "Modelo do carro",
+    "ar": "طراز السيارة"
+  },
+  "מה מצב הצבע ומה חשוב לכם?": {
+    "en": "What is the paint condition, and what matters to you?",
+    "es": "¿Cómo está la pintura y qué os importa?",
+    "pt-BR": "Como está a pintura e o que importa para vocês?",
+    "ar": "ما حالة الطلاء وما الذي يهمكم؟"
+  },
+  "דמו": {
+    "en": "Demo",
+    "es": "Demo",
+    "pt-BR": "Demo",
+    "ar": "عرض"
+  },
+  "זמינות מערכת": {
+    "en": "System availability",
+    "es": "Disponibilidad del sistema",
+    "pt-BR": "Disponibilidade do sistema",
+    "ar": "توافر النظام"
+  },
+  "מחירים מרובעים לצמיחה מהירה.": {
+    "en": "Square prices for fast growth.",
+    "es": "Precios cuadrados para un crecimiento rápido.",
+    "pt-BR": "Preços quadrados para crescimento rápido.",
+    "ar": "أسعار مربعة لنمو سريع."
+  },
+  "מותאם": {
+    "en": "Tailored",
+    "es": "Adaptado",
+    "pt-BR": "Sob medida",
+    "ar": "مخصّص"
+  },
+  "דמו מותאם": {
+    "en": "A tailored demo",
+    "es": "Una demo adaptada",
+    "pt-BR": "Um demo sob medida",
+    "ar": "عرض مخصّص"
+  },
+  "שליחת בקשה לדמו": {
+    "en": "Send a demo request",
+    "es": "Enviar una petición de demo",
+    "pt-BR": "Enviar um pedido de demo",
+    "ar": "إرسال طلب عرض"
+  },
+  "הסוכן איתר חריגה, יצר הסבר והכין פעולה לאישור.": {
+    "en": "The agent found an anomaly, wrote an explanation, and prepared an action for approval.",
+    "es": "El agente detectó una anomalía, redactó una explicación y preparó una acción para aprobar.",
+    "pt-BR": "O agente achou uma anomalia, escreveu uma explicação e preparou uma ação para aprovar.",
+    "ar": "رصد الوكيل انحرافاً، كتب شرحاً وأعدّ إجراءً للموافقة."
+  },
+  "חברה ותפקיד": {
+    "en": "Company and role",
+    "es": "Empresa y cargo",
+    "pt-BR": "Empresa e cargo",
+    "ar": "شركة ومنصب"
+  },
+  "איזה תהליך הייתם רוצים להפוך לחכם?": {
+    "en": "Which process would you like to make smarter?",
+    "es": "¿Qué proceso os gustaría volver más inteligente?",
+    "pt-BR": "Qual processo vocês querem tornar mais inteligente?",
+    "ar": "أي عملية تريدون جعلها أذكى؟"
+  },
+  "זרים": {
+    "en": "Bouquets",
+    "es": "Ramos",
+    "pt-BR": "Buquês",
+    "ar": "باقات"
+  },
+  "לכל רגע": {
+    "en": "For every moment",
+    "es": "Para cada momento",
+    "pt-BR": "Para cada momento",
+    "ar": "لكل لحظة"
+  },
+  "תהליך עדין, מסודר ויפה בכל שלב.": {
+    "en": "A gentle process, ordered and beautiful at every stage.",
+    "es": "Un proceso suave, ordenado y bello en cada etapa.",
+    "pt-BR": "Um processo suave, ordenado e bonito em cada etapa.",
+    "ar": "عملية لطيفة، مرتبة وجميلة في كل مرحلة."
+  },
+  "סקיצה": {
+    "en": "Sketch",
+    "es": "Boceto",
+    "pt-BR": "Esboço",
+    "ar": "مسودة"
+  },
+  "ליקוט": {
+    "en": "Gathering",
+    "es": "Recolección",
+    "pt-BR": "Colheita",
+    "ar": "قطف"
+  },
+  "הפרחים נבחרים בבוקר לפי טריות ועונה.": {
+    "en": "Flowers are chosen in the morning by freshness and season.",
+    "es": "Las flores se eligen por la mañana según frescura y temporada.",
+    "pt-BR": "As flores são escolhidas de manhã por frescor e estação.",
+    "ar": "تُختار الأزهار صباحاً حسب الطزاجة والموسم."
+  },
+  "קשירה": {
+    "en": "Tying",
+    "es": "Atado",
+    "pt-BR": "Amarração",
+    "ar": "ربط"
+  },
+  "פרחים קבועים": {
+    "en": "Standing flowers",
+    "es": "Flores fijas",
+    "pt-BR": "Flores fixas",
+    "ar": "ورود ثابتة"
+  },
+  "חתונת אביב": {
+    "en": "A spring wedding",
+    "es": "Una boda de primavera",
+    "pt-BR": "Um casamento de primavera",
+    "ar": "زفاف ربيع"
+  },
+  "שליחת הזמנה": {
+    "en": "Send an order",
+    "es": "Enviar un pedido",
+    "pt-BR": "Enviar um pedido",
+    "ar": "إرسال طلب"
+  },
+  "תקציב וגוונים מועדפים": {
+    "en": "Budget and preferred tones",
+    "es": "Presupuesto y tonos preferidos",
+    "pt-BR": "Orçamento e tons preferidos",
+    "ar": "ميزانية ودرجات مفضلة"
+  },
+  "ברכה, כתובת ושעה רצויה": {
+    "en": "A note, address, and preferred time",
+    "es": "Dedicatoria, dirección y hora deseada",
+    "pt-BR": "Mensagem, endereço e horário desejado",
+    "ar": "بطاقة وعنوان ووقت مرغوب"
+  }
+}
