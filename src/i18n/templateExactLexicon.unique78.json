@@ -1,0 +1,542 @@
+{
+  "הציגו מוצר מוביל כבר בפתיחת האתר": {
+    "en": "Show a featured product already at the site opening",
+    "es": "Mostrad un producto destacado ya en la apertura del sitio",
+    "pt-BR": "Mostre um produto em destaque já na abertura do site",
+    "ar": "اعرضوا منتجاً بارزاً منذ افتتاح الموقع"
+  },
+  "הציגו מסר ברור לצד תמונה מקצועית": {
+    "en": "Show a clear message next to a professional photo",
+    "es": "Mostrad un mensaje claro junto a una foto profesional",
+    "pt-BR": "Mostre uma mensagem clara ao lado de uma foto profissional",
+    "ar": "اعرضوا رسالة واضحة بجانب صورة مهنية"
+  },
+  "השאירו פרטים ונחזור אליכם בהקדם.": {
+    "en": "Leave details and we will get back to you soon.",
+    "es": "Dejad datos y os responderemos pronto.",
+    "pt-BR": "Deixe dados e voltaremos em breve.",
+    "ar": "اتركوا بيانات وسنعود إليكم قريباً."
+  },
+  "חבילה משתלמת שמעלה את ערך ההזמנה": {
+    "en": "A worthwhile package that raises the order value",
+    "es": "Un paquete que conviene y sube el valor del pedido",
+    "pt-BR": "Um pacote vantajoso que sobe o valor do pedido",
+    "ar": "باقة مجدية ترفع قيمة الطلب"
+  },
+  "לקוחות יכולים להתחיל שיחה בלחיצה": {
+    "en": "Customers can start a chat with one tap",
+    "es": "Los clientes pueden empezar una conversación con un toque",
+    "pt-BR": "Os clientes podem começar uma conversa com um toque",
+    "ar": "يمكن للزبائن بدء حوار بضغطة"
+  },
+  "לקוחות, מותגים ועסקים שכבר איתנו": {
+    "en": "Customers, brands, and businesses already with us",
+    "es": "Clientes, marcas y negocios que ya están con nosotros",
+    "pt-BR": "Clientes, marcas e negócios que já estão conosco",
+    "ar": "زبائن وعلامات وأعمال معنا مسبقاً"
+  },
+  "מאות לקוחות כבר התחילו בשיחה אחת": {
+    "en": "Hundreds of customers already started with one chat",
+    "es": "Cientos de clientes ya empezaron con una conversación",
+    "pt-BR": "Centenas de clientes já começaram com uma conversa",
+    "ar": "مئات الزبائن بدأوا مسبقاً بحوار واحد"
+  },
+  "מבינים את הצורך, המטרה והציפיות.": {
+    "en": "We understand the need, the goal, and the expectations.",
+    "es": "Entendemos la necesidad, el objetivo y las expectativas.",
+    "pt-BR": "Entendemos a necessidade, o objetivo e as expectativas.",
+    "ar": "نفهم الحاجة والهدف والتوقعات."
+  },
+  "מבנה הפוך שמתאים לעמודים מגוונים": {
+    "en": "A reversed layout that fits varied pages",
+    "es": "Una estructura invertida que encaja en páginas variadas",
+    "pt-BR": "Uma estrutura invertida que combina com páginas variadas",
+    "ar": "بنية معكوسة تناسب صفحات متنوعة"
+  },
+  "מבצע פרימיום שנראה כמו מותג גדול": {
+    "en": "A premium promo that looks like a big brand",
+    "es": "Una oferta premium que parece una marca grande",
+    "pt-BR": "Uma oferta premium que parece uma marca grande",
+    "ar": "عرض فاخر يبدو كعلامة كبيرة"
+  },
+  "מותגים ועסקים שבוחרים ברמה גבוהה": {
+    "en": "Brands and businesses that choose a high standard",
+    "es": "Marcas y negocios que eligen un nivel alto",
+    "pt-BR": "Marcas e negócios que escolhem um nível alto",
+    "ar": "علامات وأعمال تختار مستوى عالياً"
+  },
+  "מעולה! שולחים לך את ההטבה עכשיו.": {
+    "en": "Great! Sending you the offer now.",
+    "es": "¡Genial! Os enviamos la oferta ahora.",
+    "pt-BR": "Ótimo! Enviando a oferta agora.",
+    "ar": "ممتاز! نرسل لكم العرض الآن."
+  },
+  "מקבלים הטבה בלעדית בהזמנה הקרובה": {
+    "en": "Get an exclusive offer on the next order",
+    "es": "Recibís una oferta exclusiva en el próximo pedido",
+    "pt-BR": "Você recebe uma oferta exclusiva no próximo pedido",
+    "ar": "تحصلون على عرض حصري في الطلب القادم"
+  },
+  "צוות מקצועי שמוביל את העסק קדימה": {
+    "en": "A professional team that moves the business forward",
+    "es": "Un equipo profesional que lleva el negocio adelante",
+    "pt-BR": "Uma equipe profissional que leva o negócio adiante",
+    "ar": "فريق مهني يدفع العمل إلى الأمام"
+  },
+  "צוות שנותן לכם מענה מקצועי ומהיר": {
+    "en": "A team that gives you a professional, fast reply",
+    "es": "Un equipo que os da una respuesta profesional y rápida",
+    "pt-BR": "Uma equipe que dá a você uma resposta profissional e rápida",
+    "ar": "فريق يعطيكم رداً مهنياً وسريعاً"
+  },
+  "קבלו עדכונים גם ברשתות וגם במייל": {
+    "en": "Get updates on social and by email",
+    "es": "Recibid novedades en las redes y también por correo",
+    "pt-BR": "Receba novidades nas redes e também por e-mail",
+    "ar": "احصلوا على تحديثات على الشبكات وفي البريد"
+  },
+  "קבלו קופונים וקולקציות לפני כולם": {
+    "en": "Get coupons and collections before everyone else",
+    "es": "Recibid cupones y colecciones antes que nadie",
+    "pt-BR": "Receba cupons e coleções antes de todo mundo",
+    "ar": "احصلوا على كوبونات ومجموعات قبل الجميع"
+  },
+  "קבלו קופונים, עדכונים ותוכן חדש.": {
+    "en": "Get coupons, updates, and new content.",
+    "es": "Recibid cupones, novedades y contenido nuevo.",
+    "pt-BR": "Receba cupons, novidades e conteúdo novo.",
+    "ar": "احصلوا على كوبونات وتحديثات ومحتوى جديد."
+  },
+  "שירות אחד שמוביל את הלקוח לפעולה": {
+    "en": "One service that leads the customer to action",
+    "es": "Un servicio que lleva al cliente a la acción",
+    "pt-BR": "Um serviço que leva o cliente à ação",
+    "ar": "خدمة واحدة تقود الزبون إلى إجراء"
+  },
+  "שלום, אשמח לקבל פרטים על השירות.": {
+    "en": "Hello, I would like details about the service.",
+    "es": "Hola, me gustaría recibir datos sobre el servicio.",
+    "pt-BR": "Olá, eu gostaria de detalhes sobre o serviço.",
+    "ar": "مرحباً، أود تفاصيل عن الخدمة."
+  },
+  "שלום! אפשר לעזור לך לבחור שירות?": {
+    "en": "Hello! Can I help you choose a service?",
+    "es": "¡Hola! ¿Os puedo ayudar a elegir un servicio?",
+    "pt-BR": "Olá! Posso ajudar você a escolher um serviço?",
+    "ar": "مرحباً! يمكن المساعدة في اختيار خدمة؟"
+  },
+  "תיאום תור שנראה מצוין גם במובייל": {
+    "en": "Booking that looks great on mobile too",
+    "es": "Una cita que se ve excelente también en móvil",
+    "pt-BR": "Um agendamento que fica ótimo também no celular",
+    "ar": "تنسيق موعد يبدو ممتازاً أيضاً على الجوّال"
+  },
+  "תנו ללקוחות לראות את העסק בפעולה": {
+    "en": "Let customers see the business in action",
+    "es": "Dejad que los clientes vean el negocio en acción",
+    "pt-BR": "Deixe os clientes ver o negócio em ação",
+    "ar": "دعوا الزبائن يرون العمل أثناء العمل"
+  },
+  "יומן תורים כחלק ממערכת עסקית מלאה": {
+    "en": "A booking journal as part of a full business system",
+    "es": "Una agenda de citas como parte de un sistema de negocio completo",
+    "pt-BR": "Uma agenda de horários como parte de um sistema de negócio completo",
+    "ar": "يوميات مواعيد كجزء من منظومة عمل كاملة"
+  },
+  "כותרת ראשית נקייה, ברורה ומקצועית": {
+    "en": "A clean, clear, and professional main headline",
+    "es": "Un titular principal limpio, claro y profesional",
+    "pt-BR": "Um título principal limpo, claro e profissional",
+    "ar": "عنوان رئيسي نظيف وواضح ومهني"
+  },
+  "מאות לקוחות כבר קבעו תור דרך האתר": {
+    "en": "Hundreds of customers already booked through the site",
+    "es": "Cientos de clientes ya reservaron cita por el sitio",
+    "pt-BR": "Centenas de clientes já agendaram pelo site",
+    "ar": "مئات الزبائن حجزوا موعداً عبر الموقع مسبقاً"
+  },
+  "מבנה שמוכן לתמונה, וידאו או גלריה": {
+    "en": "A layout ready for a photo, video, or gallery",
+    "es": "Una estructura lista para foto, vídeo o galería",
+    "pt-BR": "Uma estrutura pronta para foto, vídeo ou galeria",
+    "ar": "بنية جاهزة لصورة أو فيديو أو معرض"
+  },
+  "מוצר חדש הגיע — וההטבה לזמן מוגבל": {
+    "en": "A new product arrived — and the offer is limited-time",
+    "es": "Llegó un producto nuevo — y la oferta es por tiempo limitado",
+    "pt-BR": "Chegou um produto novo — e a oferta é por tempo limitado",
+    "ar": "وصل منتج جديد — والعرض لوقت محدود"
+  },
+  "מוצרים, קולקציות ועדכונים מהרשתות": {
+    "en": "Products, collections, and updates from social",
+    "es": "Productos, colecciones y novedades de las redes",
+    "pt-BR": "Produtos, coleções e novidades das redes",
+    "ar": "منتجات ومجموعات وتحديثات من الشبكات"
+  },
+  "מלאו פרטים ונחזור אליכם עם אישור.": {
+    "en": "Fill in details and we will get back with a confirmation.",
+    "es": "Rellenad datos y os responderemos con una confirmación.",
+    "pt-BR": "Preencha os dados e voltaremos com uma confirmação.",
+    "ar": "املأوا البيانات وسنعود إليكم بتأكيد."
+  },
+  "מלאו פרטים ונחזור אליכם עם ההטבה.": {
+    "en": "Fill in details and we will get back with the offer.",
+    "es": "Rellenad datos y os responderemos con la oferta.",
+    "pt-BR": "Preencha os dados e voltaremos com a oferta.",
+    "ar": "املأوا البيانات وسنعود إليكم بالعرض."
+  },
+  "ניצור איתכם קשר ונבנה את הצעד הבא": {
+    "en": "We will get in touch and build the next step",
+    "es": "Os contactaremos y construiremos el siguiente paso",
+    "pt-BR": "Entraremos em contato e construiremos o próximo passo",
+    "ar": "سنتواصل معكم ونبني الخطوة التالية"
+  },
+  "עקבו, שלחו הודעה והישארו מעודכנים": {
+    "en": "Follow, send a message, and stay updated",
+    "es": "Seguid, enviad un mensaje y quedaos al día",
+    "pt-BR": "Siga, envie uma mensagem e fique atualizado",
+    "ar": "تابعوا، أرسلوا رسالة وابقوا محدَّثين"
+  },
+  "צוות שמחבר מוצר, שירות וטכנולוגיה": {
+    "en": "A team that connects product, service, and technology",
+    "es": "Un equipo que une producto, servicio y tecnología",
+    "pt-BR": "Uma equipe que une produto, serviço e tecnologia",
+    "ar": "فريق يربط المنتج والخدمة والتقنية"
+  },
+  "צפו בסרטון קצר וקבלו את כל הפרטים": {
+    "en": "Watch a short video and get all the details",
+    "es": "Ved un vídeo corto y recibid todos los datos",
+    "pt-BR": "Assista a um vídeo curto e receba todos os detalhes",
+    "ar": "شاهدوا فيديو قصيراً واحصلوا على كل التفاصيل"
+  },
+  "תמונות שמציגות חוויה, אווירה ורגש": {
+    "en": "Photos that show experience, atmosphere, and feeling",
+    "es": "Fotos que muestran experiencia, atmósfera y emoción",
+    "pt-BR": "Fotos que mostram experiência, atmosfera e emoção",
+    "ar": "صور تعرض تجربة وأجواء وشعوراً"
+  },
+  "תציגו את העסק בצורה אישית ואמיתית": {
+    "en": "Present the business in a personal, real way",
+    "es": "Presentad el negocio de forma personal y real",
+    "pt-BR": "Apresente o negócio de forma pessoal e real",
+    "ar": "اعرضوا العمل بشكل شخصي وحقيقي"
+  },
+  "בוט חכם שמנהל שיחות עם לקוחות באתר": {
+    "en": "A smart bot that chats with customers on the site",
+    "es": "Un bot inteligente que gestiona conversaciones con clientes en el sitio",
+    "pt-BR": "Um bot inteligente que gerencia conversas com clientes no site",
+    "ar": "بوت ذكي يدير حوارات مع زبائن في الموقع"
+  },
+  "בחרו זמן שנוח לכם ואנחנו נדאג לשאר": {
+    "en": "Choose a time that works for you and we will handle the rest",
+    "es": "Elegid un momento que os venga bien y nos encargamos del resto",
+    "pt-BR": "Escolha um horário cômodo e nós cuidamos do resto",
+    "ar": "اختاروا وقتاً يناسبكم ونحن نتكفّل بالباقي"
+  },
+  "הצטרפו למועדון וקבלו הטבות מיוחדות": {
+    "en": "Join the club and get special offers",
+    "es": "Uníos al club y recibid ofertas especiales",
+    "pt-BR": "Entre no clube e receba ofertas especiais",
+    "ar": "انضموا للنادي واحصلوا على عروض خاصة"
+  },
+  "כותרת חזקה שמובילה את הלקוח לפעולה": {
+    "en": "A strong title that leads the customer to action",
+    "es": "Un título fuerte que lleva al cliente a la acción",
+    "pt-BR": "Um título forte que leva o cliente à ação",
+    "ar": "عنوان قوي يقود الزبون إلى إجراء"
+  },
+  "כל שירות מוצג בצורה שמובילה לפנייה": {
+    "en": "Every service is shown in a way that leads to an inquiry",
+    "es": "Cada servicio se muestra de un modo que lleva a una consulta",
+    "pt-BR": "Cada serviço é mostrado de um jeito que leva a um contato",
+    "ar": "كل خدمة تُعرض بطريقة تقود إلى تواصل"
+  },
+  "לקוחות רואים את השירות ומיד קובעים": {
+    "en": "Customers see the service and book at once",
+    "es": "Los clientes ven el servicio y reservan al momento",
+    "pt-BR": "Os clientes veem o serviço e agendam na hora",
+    "ar": "الزبائن يرون الخدمة ويحجزون فوراً"
+  },
+  "לקוחות שמדברים על חוויה ברמה גבוהה": {
+    "en": "Customers who talk about a high-level experience",
+    "es": "Clientes que hablan de una experiencia de alto nivel",
+    "pt-BR": "Clientes que falam de uma experiência de alto nível",
+    "ar": "زبائن يتحدثون عن تجربة بمستوى عالٍ"
+  },
+  "לקוחות, עוקבים ותוכן שמחבר את כולם": {
+    "en": "Customers, followers, and content that connects everyone",
+    "es": "Clientes, seguidores y contenido que une a todos",
+    "pt-BR": "Clientes, seguidores e conteúdo que conecta todo mundo",
+    "ar": "زبائن ومتابعون ومحتوى يربط الجميع"
+  },
+  "מעולה. יש זמינות ביום שני ב־10:30.": {
+    "en": "Great. There is availability on Monday at 10:30.",
+    "es": "Genial. Hay disponibilidad el lunes a las 10:30.",
+    "pt-BR": "Ótimo. Há disponibilidade na segunda às 10:30.",
+    "ar": "ممتاز. هناك توفر يوم الاثنين الساعة 10:30."
+  },
+  "עוזר חכם שמרגיש כמו עובד נוסף בעסק": {
+    "en": "A smart assistant that feels like another employee",
+    "es": "Un asistente inteligente que se siente como un empleado más",
+    "pt-BR": "Um assistente inteligente que parece mais um funcionário",
+    "ar": "مساعد ذكي يشعر كموظف إضافي في العمل"
+  },
+  "עסק שנבנה על מקצועיות, אמון ותוצאה": {
+    "en": "A business built on professionalism, trust, and result",
+    "es": "Un negocio construido sobre profesionalidad, confianza y resultado",
+    "pt-BR": "Um negócio construído sobre profissionalismo, confiança e resultado",
+    "ar": "عمل مبني على المهنية والثقة والنتيجة"
+  },
+  "שירות מרכזי שמוביל את הלקוח לפעולה": {
+    "en": "A central service that leads the customer to action",
+    "es": "Un servicio central que lleva al cliente a la acción",
+    "pt-BR": "Um serviço central que leva o cliente à ação",
+    "ar": "خدمة مركزية تقود الزبون إلى إجراء"
+  },
+  "תיאום תורים שנראה כמו מערכת אמיתית": {
+    "en": "Booking that looks like a real system",
+    "es": "Una coordinación de citas que parece un sistema real",
+    "pt-BR": "Um agendamento que parece um sistema de verdade",
+    "ar": "تنسيق مواعيد يبدو كمنظومة حقيقية"
+  },
+  "תנו לתמונות לספר את הסיפור של העסק": {
+    "en": "Let the photos tell the business story",
+    "es": "Dejad que las fotos cuenten la historia del negocio",
+    "pt-BR": "Deixe as fotos contar a história do negócio",
+    "ar": "دعوا الصور تروي قصة العمل"
+  },
+  "אירוע דיגיטלי עם הרשמה פשוטה וברורה": {
+    "en": "A digital event with simple, clear signup",
+    "es": "Un evento digital con registro simple y claro",
+    "pt-BR": "Um evento digital com inscrição simples e clara",
+    "ar": "فعالية رقمية بتسجيل بسيط وواضح"
+  },
+  "הבוט עוזר ללקוח לבחור מוצר או שירות": {
+    "en": "The bot helps the customer choose a product or service",
+    "es": "El bot ayuda al cliente a elegir un producto o un servicio",
+    "pt-BR": "O bot ajuda o cliente a escolher um produto ou um serviço",
+    "ar": "البوت يساعد الزبون على اختيار منتج أو خدمة"
+  },
+  "הוסיפו תמונה אמיתית שתמכור את ההטבה": {
+    "en": "Add a real photo that will sell the offer",
+    "es": "Añadid una foto real que venda la oferta",
+    "pt-BR": "Adicione uma foto real que venda a oferta",
+    "ar": "أضيفوا صورة حقيقية تبيع العرض"
+  },
+  "הוסיפו תמונה, סרטון או קובץ ויזואלי": {
+    "en": "Add a photo, video, or visual file",
+    "es": "Añadid una foto, un vídeo o un archivo visual",
+    "pt-BR": "Adicione uma foto, um vídeo ou um arquivo visual",
+    "ar": "أضيفوا صورة أو فيديو أو ملفاً بصرياً"
+  },
+  "החוויה, היחס והתוצאה — הכל בביקורות": {
+    "en": "The experience, the care, and the result — all in the reviews",
+    "es": "La experiencia, el trato y el resultado — todo en las reseñas",
+    "pt-BR": "A experiência, o atendimento e o resultado — tudo nas avaliações",
+    "ar": "التجربة والتعامل والنتيجة — كلها في التقييمات"
+  },
+  "העסק שלך מוצג בצורה מקצועית ומרשימה": {
+    "en": "Your business is shown in a professional, impressive way",
+    "es": "Vuestro negocio se muestra de forma profesional e impresionante",
+    "pt-BR": "O seu negócio é mostrado de forma profissional e impressionante",
+    "ar": "عملكم يُعرض بشكل مهني ومبهر"
+  },
+  "הצטרפו במייל או שלחו הודעה בוואטסאפ": {
+    "en": "Join by email or send a WhatsApp message",
+    "es": "Uníos por correo o enviad un mensaje por WhatsApp",
+    "pt-BR": "Entre por e-mail ou envie uma mensagem no WhatsApp",
+    "ar": "انضموا بالبريد أو أرسلوا رسالة واتساب"
+  },
+  "הציגו את האירוע דרך וידאו קצר ומרגש": {
+    "en": "Present the event through a short, moving video",
+    "es": "Presentad el evento con un vídeo corto y emotivo",
+    "pt-BR": "Apresente o evento com um vídeo curto e emocionante",
+    "ar": "اعرضوا الفعالية عبر فيديو قصير ومؤثر"
+  },
+  "טופס קצר וברור שמוביל לפנייה מהירה.": {
+    "en": "A short, clear form that leads to a fast inquiry.",
+    "es": "Un formulario corto y claro que lleva a una consulta rápida.",
+    "pt-BR": "Um formulário curto e claro que leva a um contato rápido.",
+    "ar": "نموذج قصير وواضح يقود إلى تواصل سريع."
+  },
+  "כותרת חזקה שמעבירה מסר ברור ומקצועי": {
+    "en": "A strong title that carries a clear, professional message",
+    "es": "Un título fuerte que transmite un mensaje claro y profesional",
+    "pt-BR": "Um título forte que transmite uma mensagem clara e profissional",
+    "ar": "عنوان قوي ينقل رسالة واضحة ومهنية"
+  },
+  "כותרת מאמר מקצועית שמסבירה את הנושא": {
+    "en": "A professional article title that explains the topic",
+    "es": "Un título de artículo profesional que explica el tema",
+    "pt-BR": "Um título de artigo profissional que explica o tema",
+    "ar": "عنوان مقال مهني يشرح الموضوع"
+  },
+  "כל מה שהלקוח צריך לדעת — פשוט וברור": {
+    "en": "Everything the customer needs to know — simple and clear",
+    "es": "Todo lo que el cliente necesita saber — simple y claro",
+    "pt-BR": "Tudo o que o cliente precisa saber — simples e claro",
+    "ar": "كل ما يحتاج الزبون معرفته — بسيط وواضح"
+  },
+  "לא רק מוצר — חוויה שהלקוח רוצה לקבל": {
+    "en": "Not only a product — an experience the customer wants",
+    "es": "No solo un producto — una experiencia que el cliente quiere recibir",
+    "pt-BR": "Não só um produto — uma experiência que o cliente quer receber",
+    "ar": "ليس منتجاً فقط — تجربة يريد الزبون الحصول عليها"
+  },
+  "ללא ספאם. רק הטבות ועדכונים חשובים.": {
+    "en": "No spam. Only important offers and updates.",
+    "es": "Sin spam. Solo ofertas y novedades importantes.",
+    "pt-BR": "Sem spam. Só ofertas e novidades importantes.",
+    "ar": "بلا رسائل مزعجة. فقط عروض وتحديثات مهمة."
+  },
+  "ללא ספאם. רק עדכונים והטבות חשובות.": {
+    "en": "No spam. Only important updates and offers.",
+    "es": "Sin spam. Solo novedades y ofertas importantes.",
+    "pt-BR": "Sem spam. Só novidades e ofertas importantes.",
+    "ar": "بلا رسائل مزعجة. فقط تحديثات وعروض مهمة."
+  },
+  "לקוח רואה מוצר ושולח הזמנה בוואטסאפ": {
+    "en": "A customer sees a product and sends an order on WhatsApp",
+    "es": "Un cliente ve un producto y envía un pedido por WhatsApp",
+    "pt-BR": "Um cliente vê um produto e envia um pedido no WhatsApp",
+    "ar": "زبون يرى منتجاً ويرسل طلباً على واتساب"
+  },
+  "לקוחות שאוהבים את המותג וחוזרים שוב": {
+    "en": "Customers who love the brand and come back",
+    "es": "Clientes que aman la marca y vuelven otra vez",
+    "pt-BR": "Clientes que amam a marca e voltam de novo",
+    "ar": "زبائن يحبون العلامة ويعودون مجدداً"
+  },
+  "לקוחות שקנו מספרים איך הייתה החוויה": {
+    "en": "Customers who bought tell how the experience was",
+    "es": "Clientes que compraron cuentan cómo fue la experiencia",
+    "pt-BR": "Clientes que compraram contam como foi a experiência",
+    "ar": "زبائن اشتروا يروون كيف كانت التجربة"
+  },
+  "מוציאים לפועל בצורה מקצועית וברורה.": {
+    "en": "We carry it out in a professional, clear way.",
+    "es": "Lo ejecutamos de forma profesional y clara.",
+    "pt-BR": "Executamos de forma profissional e clara.",
+    "ar": "ننفّذ بشكل مهني وواضح."
+  },
+  "ניסיון, תוצאות ושירות שמייצרים אמון": {
+    "en": "Experience, results, and service that build trust",
+    "es": "Experiencia, resultados y servicio que generan confianza",
+    "pt-BR": "Experiência, resultados e serviço que geram confiança",
+    "ar": "خبرة ونتائج وخدمة تصنع ثقة"
+  },
+  "נשמח לראות אתכם גם ברשתות החברתיות.": {
+    "en": "We would be glad to see you on social too.",
+    "es": "Nos alegrará veros también en las redes sociales.",
+    "pt-BR": "Teremos prazer em ver você também nas redes sociais.",
+    "ar": "يسعدنا رؤيتكم أيضاً على الشبكات الاجتماعية."
+  },
+  "עסקים ולקוחות שכבר בחרו לעבוד איתנו": {
+    "en": "Businesses and customers who already chose to work with us",
+    "es": "Negocios y clientes que ya eligieron trabajar con nosotros",
+    "pt-BR": "Negócios e clientes que já escolheram trabalhar conosco",
+    "ar": "أعمال وزبائن اختاروا العمل معنا مسبقاً"
+  },
+  "עסקים שמנהלים יותר טוב בזכות המערכת": {
+    "en": "Businesses that manage better thanks to the system",
+    "es": "Negocios que gestionan mejor gracias al sistema",
+    "pt-BR": "Negócios que gerenciam melhor graças ao sistema",
+    "ar": "أعمال تدير بشكل أفضل بفضل المنظومة"
+  },
+  "עקבו אחרינו או התחילו שיחה בוואטסאפ": {
+    "en": "Follow us or start a WhatsApp chat",
+    "es": "Seguidnos o empezad una conversación por WhatsApp",
+    "pt-BR": "Siga-nos ou comece uma conversa no WhatsApp",
+    "ar": "تابعونا أو ابدأوا حوار واتساب"
+  },
+  "קראו מה לקוחות אומרים והשאירו פרטים": {
+    "en": "Read what customers say and leave details",
+    "es": "Leed lo que dicen los clientes y dejad datos",
+    "pt-BR": "Leia o que os clientes dizem e deixe dados",
+    "ar": "اقرأوا ماذا يقول الزبائن واتركوا بيانات"
+  },
+  "רוצים לראות איך המערכת תעבוד אצלכם?": {
+    "en": "Want to see how the system will work for you?",
+    "es": "¿Queréis ver cómo os funcionará el sistema?",
+    "pt-BR": "Quer ver como o sistema vai funcionar para você?",
+    "ar": "تريدون رؤية كيف ستعمل المنظومة لديكم؟"
+  },
+  "רשימה שמובילה את הלקוח להשאיר פרטים": {
+    "en": "A list that leads the customer to leave details",
+    "es": "Una lista que lleva al cliente a dejar datos",
+    "pt-BR": "Uma lista que leva o cliente a deixar dados",
+    "ar": "قائمة تقود الزبون لترك بياناته"
+  },
+  "שלום, אני רוצה להזמין את המוצר הזה.": {
+    "en": "Hello, I want to order this product.",
+    "es": "Hola, quiero pedir este producto.",
+    "pt-BR": "Olá, quero pedir este produto.",
+    "ar": "مرحباً، أريد طلب هذا المنتج."
+  },
+  "שלום, אני רוצה לקבוע תור לשבוע הבא.": {
+    "en": "Hello, I want to book an appointment for next week.",
+    "es": "Hola, quiero reservar una cita para la semana que viene.",
+    "pt-BR": "Olá, quero agendar um horário para a semana que vem.",
+    "ar": "مرحباً، أريد حجز موعد للأسبوع القادم."
+  },
+  "תציגו את העסק עם סרטון פתיחה מקצועי": {
+    "en": "Present the business with a professional opening video",
+    "es": "Presentad el negocio con un vídeo de apertura profesional",
+    "pt-BR": "Apresente o negócio com um vídeo de abertura profissional",
+    "ar": "اعرضوا العمل بفيديو افتتاح مهني"
+  },
+  "אירוע יוקרתי עם חוויית הרשמה מקצועית": {
+    "en": "A luxury event with a professional signup experience",
+    "es": "Un evento de lujo con una experiencia de registro profesional",
+    "pt-BR": "Um evento de luxo com uma experiência de inscrição profissional",
+    "ar": "فعالية فاخرة بتجربة تسجيل مهنية"
+  },
+  "בעל העסק יכול להוסיף תמונות וסרטונים": {
+    "en": "The business owner can add photos and videos",
+    "es": "El dueño del negocio puede añadir fotos y vídeos",
+    "pt-BR": "O dono do negócio pode adicionar fotos e vídeos",
+    "ar": "يمكن لصاحب العمل إضافة صور وفيديوهات"
+  },
+  "גם אתם יכולים להצטרף ללקוחות המרוצים": {
+    "en": "You can join the happy customers too",
+    "es": "También vosotros podéis uniros a los clientes satisfechos",
+    "pt-BR": "Você também pode se juntar aos clientes satisfeitos",
+    "ar": "يمكنكم أيضاً الانضمام إلى الزبائن الراضين"
+  },
+  "הבוט לא רק עונה — הוא הופך שיחה לליד": {
+    "en": "The bot does not only reply — it turns a chat into a lead",
+    "es": "El bot no solo responde — convierte una conversación en un lead",
+    "pt-BR": "O bot não só responde — transforma uma conversa em um lead",
+    "ar": "البوت لا يرد فقط — يحوّل الحوار إلى عميل محتمل"
+  },
+  "החוויה, היחס והתוצאה — הכל במקום אחד": {
+    "en": "The experience, the care, and the result — all in one place",
+    "es": "La experiencia, el trato y el resultado — todo en un solo lugar",
+    "pt-BR": "A experiência, o atendimento e o resultado — tudo em um só lugar",
+    "ar": "التجربة والتعامل والنتيجة — كلها في مكان واحد"
+  },
+  "הסבירו נקודות חשובות דרך טקסט וסרטון": {
+    "en": "Explain important points through text and video",
+    "es": "Explicad puntos importantes con texto y vídeo",
+    "pt-BR": "Explique pontos importantes com texto e vídeo",
+    "ar": "اشرحوا نقاطاً مهمة عبر نص وفيديو"
+  },
+  "העסק שלכם מוצג בצורה יוקרתית ומרשימה": {
+    "en": "Your business is shown in a luxury, impressive way",
+    "es": "Vuestro negocio se muestra de forma lujosa e impresionante",
+    "pt-BR": "O seu negócio é mostrado de forma luxuosa e impressionante",
+    "ar": "عملكم يُعرض بشكل فاخر ومبهر"
+  },
+  "הציגו שירות אחד בצורה שמובילה לפנייה": {
+    "en": "Show one service in a way that leads to an inquiry",
+    "es": "Mostrad un servicio de un modo que lleve a una consulta",
+    "pt-BR": "Mostre um serviço de um jeito que leve a um contato",
+    "ar": "اعرضوا خدمة واحدة بطريقة تقود إلى تواصل"
+  },
+  "וידאו שמוכר את המוצר טוב יותר מתמונה": {
+    "en": "A video that sells the product better than a photo",
+    "es": "Un vídeo que vende el producto mejor que una foto",
+    "pt-BR": "Um vídeo que vende o produto melhor do que uma foto",
+    "ar": "فيديو يبيع المنتج أفضل من صورة"
+  }
+}
