@@ -314,7 +314,7 @@ function SectionTitle({
             : "border border-[#2b1b1d]/12 bg-white/70 text-[#b45c3a]",
         )}
       >
-        {eyebrow}
+        {tx(eyebrow)}
       </p>
 
       <h2
@@ -1119,7 +1119,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-sm font-semibold !text-white">
                     {index + 1}
                   </span>
-                  <p className="font-semibold leading-7 text-[#5d5048]">{point}</p>
+                  <p className="font-semibold leading-7 text-[#5d5048]">{tx(point)}</p>
                 </div>
               ))}
             </div>
@@ -1373,7 +1373,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <h3 className="text-2xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
-                    “{title}”
+                    “{tx(title)}”
                   </h3>
                   <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{tx(text)}"</p>
                 </div>

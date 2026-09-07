@@ -965,12 +965,12 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
               </div>
 
               <h3 className="text-3xl md:text-6xl font-black uppercase leading-none tracking-[-0.09em]">
-                {plan.name}
+                {tx(plan.name)}
               </h3>
               <div className="mt-5 text-3xl font-black tracking-[-0.06em]">
-                {plan.price}
+                {tx(plan.price)}
               </div>
-              <p className="mt-5 max-w-xl leading-8 opacity-70">{plan.text}</p>
+              <p className="mt-5 max-w-xl leading-8 opacity-70">{tx(plan.text)}</p>
 
               <button
                 type="button"
@@ -990,7 +990,7 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
                     key={feature}
                     className="flex items-center justify-between border-t border-current/10 pt-4"
                   >
-                    <span className="font-semibold">{feature}</span>
+                    <span className="font-semibold">{tx(feature)}</span>
                     <span>+</span>
                   </div>
                 ))}
@@ -1046,11 +1046,11 @@ function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-black tracking-[-0.04em]">
                 <span>
-                  {index + 1}. {item.q}
+                  {index + 1}. {tx(item.q)}
                 </span>
                 <span className="transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-5 max-w-3xl leading-8 text-white/58">{item.a}</p>
+              <p className="mt-5 max-w-3xl leading-8 text-white/58">{tx(item.a)}</p>
             </details>
           ))}
         </div>

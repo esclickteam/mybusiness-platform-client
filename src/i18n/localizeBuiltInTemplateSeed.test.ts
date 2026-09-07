@@ -906,6 +906,17 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תיקים שטופלו", "en")).toMatch(/case/i);
   });
 
+  it("localizes unique49 leftover Adion pricing, Serenova services, and Justora body", () => {
+    expect(localizeBuiltInText("₪8,900 לפרויקט", "en")).toMatch(/project/i);
+    expect(localizeBuiltInText("₪8,900 לפרויקט", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עריכה קולנועית", "es")).toMatch(/cinemat/i);
+    expect(localizeBuiltInText("מבנה שמוביל את הלקוח בלי עומס", "pt-BR")).toMatch(
+      /estrutura|sobrecarga/i,
+    );
+    expect(localizeBuiltInText("הצוות המשפטי", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בדיקת סיכונים", "en")).toMatch(/risk/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
