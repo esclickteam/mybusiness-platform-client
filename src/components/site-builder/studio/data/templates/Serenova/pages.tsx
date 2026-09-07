@@ -857,7 +857,7 @@ function ServicesSection({
               {getValue(data, "servicesTitle")}
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">{tx("שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\n              CTA עדין והיררכיה שמרגישה פרימיום.")}</p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">{tx("שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.")}</p>
           </div>
 
           <div className="rounded-[34px] border border-[#244236]/10 bg-white/60 p-5 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl">
@@ -873,9 +873,9 @@ function ServicesSection({
                 ["מענה", "ברור, אישי ומהיר"],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-[#f3ecdf] px-4 py-3">
-                  <div className="text-xs font-semibold text-[#6b756f]">{label}</div>
+                  <div className="text-xs font-semibold text-[#6b756f]">{tx(label)}</div>
                   <div className="mt-1 text-lg font-semibold text-[#20342a]">
-                    {value}
+                    {tx(value)}
                   </div>
                 </div>
               ))}
@@ -1171,8 +1171,8 @@ function GallerySection({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#17251e]/58 via-transparent to-transparent opacity-80" />
 
                 <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#244236]/72 px-4 py-4 text-[#fbf6ec] backdrop-blur-md transition duration-500 group-hover:translate-y-[-4px]">
-                  <div className="text-sm opacity-70">{item.text}</div>
-                  <div className="text-xl font-semibold tracking-[-0.04em]">{item.title}</div>
+                  <div className="text-sm opacity-70">{tx(item.text)}</div>
+                  <div className="text-xl font-semibold tracking-[-0.04em]">{tx(item.title)}</div>
                 </div>
               </div>
             </div>
@@ -1211,7 +1211,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
             >
               <div className="mb-7 flex items-center justify-between">
                 <p className="text-sm font-semibold text-[#b99067]">
-                  מאמר 0{index + 1}
+                  {tx("מאמר")} 0{index + 1}
                 </p>
 
                 <span className="rounded-full border border-[#244236]/10 bg-white/55 px-3 py-1 text-xs font-semibold text-[#66736a]">

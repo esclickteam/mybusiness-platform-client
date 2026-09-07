@@ -888,7 +888,7 @@ function ProductPage({
               {product.price || "₪0"}
             </p>
 
-            <p className="mt-5 max-w-xl text-base leading-8 text-zinc-600">{tx("פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או\n              סטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית\n              מוצר מלאה לפני הוספה לסל.")}</p>
+            <p className="mt-5 max-w-xl text-base leading-8 text-zinc-600">{tx("פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או\nסטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית\nמוצר מלאה לפני הוספה לסל.")}</p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
               {["משלוח מהיר", "החזרה קלה", "תשלום מאובטח"].map((item) => (
@@ -1139,7 +1139,7 @@ function CartPage({
 
                 <div className="flex justify-between border-b border-zinc-200 pb-3">
                   <span className="text-zinc-500">{tx("משלוח")}</span>
-                  <span>{shipping === 0 ? "חינם" : formatPrice(shipping)}</span>
+                  <span>{shipping === 0 ? tx("חינם") : formatPrice(shipping)}</span>
                 </div>
 
                 <div className="flex justify-between pt-2 text-xl font-black">
@@ -1153,7 +1153,7 @@ function CartPage({
                 className="mt-7 min-h-[56px] w-full rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
               >{tx("מעבר לתשלום")}</button>
 
-              <p className="mt-4 text-center text-xs leading-6 text-zinc-500">{tx("זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר\n                בהמשך לפי המערכת שלך.")}</p>
+              <p className="mt-4 text-center text-xs leading-6 text-zinc-500">{tx("זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר\nבהמשך לפי המערכת שלך.")}</p>
             </aside>
           </div>
         )}

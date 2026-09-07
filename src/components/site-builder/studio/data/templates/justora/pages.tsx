@@ -997,7 +997,7 @@ function PracticeAreasSection({
             <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] !text-[#2b1b1d] md:text-7xl">{tx("מגוון רחב של תחומי התמחות משפטיים")}</h2>
           </div>
 
-          <p className="max-w-xl text-lg leading-8 text-[#6d5f55] lg:mr-auto">{tx("כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר\n            האם המשרד מתאים למקרה שלו וימשיך לפעולה.")}</p>
+          <p className="max-w-xl text-lg leading-8 text-[#6d5f55] lg:mr-auto">{tx("כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר\nהאם המשרד מתאים למקרה שלו וימשיך לפעולה.")}</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -1272,7 +1272,7 @@ function CaseDetailPage({
           <div className="grid gap-8 lg:grid-cols-[1fr_0.72fr]">
             <div className="rounded-[46px] border border-[#2b1b1d]/10 bg-white/74 p-8 shadow-2xl shadow-[#2b1b1d]/10 lg:p-12">
               <p className="mb-5 inline-flex rounded-full bg-[#b45c3a]/12 px-4 py-2 text-sm font-semibold text-[#b45c3a]">
-                {item.tag} · תיק {item.number}
+                {item.tag} · {tx(`תיק ${item.number}`)}
               </p>
 
               <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] !text-[#2b1b1d] md:text-7xl">
@@ -1294,7 +1294,7 @@ function CaseDetailPage({
                     className="rounded-[30px] border border-[#2b1b1d]/10 bg-[#fbf3e8] p-6"
                   >
                     <h3 className="text-xl font-semibold !text-[#2b1b1d]">
-                      {title}
+                      {tx(title)}
                     </h3>
                     <p className="mt-4 leading-8 text-[#6d5f55]">{tx(text)}</p>
                   </article>
@@ -1311,7 +1311,7 @@ function CaseDetailPage({
                     {item.amount}
                   </div>
 
-                  <p className="mt-5 text-lg leading-8 !text-[#f4e6d8]">{tx("פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה\n                    המשפטית והערך שהמשרד יודע לייצר.")}</p>
+                  <p className="mt-5 text-lg leading-8 !text-[#f4e6d8]">{tx("פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה\nהמשפטית והערך שהמשרד יודע לייצר.")}</p>
                 </div>
 
                 <button

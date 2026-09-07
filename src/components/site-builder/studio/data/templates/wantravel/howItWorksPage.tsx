@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { WantravelSeed } from "./wantravelData";
 import {
   BookingSection,
@@ -18,11 +19,10 @@ export default function WantravelHowItWorksPage({
         <div className="wan-container wan-page-hero-grid">
           <Reveal>
             <div>
-              <div className="wan-eyebrow-dark">איך זה עובד</div>
-              <h1>תהליך פשוט, ברור ויוקרתי מהשיחה הראשונה עד החופשה</h1>
+              <div className="wan-eyebrow-dark">{tx("איך זה עובד")}</div>
+              <h1>{tx("תהליך פשוט, ברור ויוקרתי מהשיחה הראשונה עד החופשה")}</h1>
               <p>
-                העמוד הזה מציג ללקוח איך השירות עובד, מוריד התנגדויות ומסביר
-                למה כדאי להשאיר פרטים.
+                {tx("העמוד הזה מציג ללקוח איך השירות עובד, מוריד התנגדויות ומסביר\nלמה כדאי להשאיר פרטים.")}
               </p>
             </div>
           </Reveal>
@@ -30,7 +30,7 @@ export default function WantravelHowItWorksPage({
           <Reveal className="wan-page-hero-image" delay={160}>
             <SafeImage
               src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1100&q=90"
-              alt="איך זה עובד"
+              alt={tx("איך זה עובד")}
               editId="howItWorks.hero.image"
             />
           </Reveal>
@@ -42,11 +42,10 @@ export default function WantravelHowItWorksPage({
       <section className="wan-editorial-section">
         <div className="wan-container wan-editorial-grid">
           <Reveal className="wan-editorial-copy">
-            <span>שירות אישי</span>
-            <h2>כל לקוח מקבל מסלול שנבנה לפי הסגנון שלו.</h2>
+            <span>{tx("שירות אישי")}</span>
+            <h2>{tx("כל לקוח מקבל מסלול שנבנה לפי הסגנון שלו.")}</h2>
             <p>
-              לא בוחרים תבנית מוכנה. בונים חוויה לפי תקציב, יעד, אופי הטיול
-              ורמת הליווי שהלקוח צריך.
+              {tx("לא בוחרים תבנית מוכנה. בונים חוויה לפי תקציב, יעד, אופי הטיול\nורמת הליווי שהלקוח צריך.")}
             </p>
           </Reveal>
 
@@ -54,7 +53,7 @@ export default function WantravelHowItWorksPage({
             <Reveal className="wan-editorial-image wan-editorial-image-one">
               <SafeImage
                 src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=900&q=90"
-                alt="תכנון חופשה"
+                alt={tx("תכנון חופשה")}
                 editId="howItWorks.editorial.image.1"
               />
             </Reveal>

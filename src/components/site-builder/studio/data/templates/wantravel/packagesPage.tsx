@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { WantravelSeed } from "./wantravelData";
 import { BookingSection, PackagesGrid, Reveal, SafeImage } from "./shared";
 
@@ -13,11 +14,10 @@ export default function WantravelPackagesPage({
         <div className="wan-container wan-page-hero-grid">
           <Reveal>
             <div>
-              <div className="wan-eyebrow-dark">חבילות נסיעה</div>
-              <h1>חבילות מדויקות לכל סוג של חופשה</h1>
+              <div className="wan-eyebrow-dark">{tx("חבילות נסיעה")}</div>
+              <h1>{tx("חבילות מדויקות לכל סוג של חופשה")}</h1>
               <p>
-                חבילות זוגיות, משפחתיות ואקזוטיות עם תכנון מלא, נראות יוקרתית
-                וחוויית לקוח שמובילה להשארת פרטים.
+                {tx("חבילות זוגיות, משפחתיות ואקזוטיות עם תכנון מלא, נראות יוקרתית\nוחוויית לקוח שמובילה להשארת פרטים.")}
               </p>
             </div>
           </Reveal>
@@ -25,7 +25,7 @@ export default function WantravelPackagesPage({
           <Reveal className="wan-page-hero-image" delay={160}>
             <SafeImage
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=90"
-              alt="חבילות נסיעה"
+              alt={tx("חבילות נסיעה")}
               editId="packagesPage.hero.image"
             />
           </Reveal>

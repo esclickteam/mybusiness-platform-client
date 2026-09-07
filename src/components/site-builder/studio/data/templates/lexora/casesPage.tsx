@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { LexoraSeed } from "./lexoraData";
 import {
   CasesList,
@@ -19,10 +20,10 @@ export default function LexoraCasesPage({
       <section className="lex-page-hero">
         <div className="lex-container">
           <Reveal>
-            <div className="lex-page-kicker">תיקים נבחרים</div>
-            <h1>תיקים שטופלו מתוך חשיבה משפטית ואסטרטגית</h1>
+            <div className="lex-page-kicker">{tx("תיקים נבחרים")}</div>
+            <h1>{tx("תיקים שטופלו מתוך חשיבה משפטית ואסטרטגית")}</h1>
             <p>
-              תצוגה יוקרתית של עבודות, הישגים וסוגי תיקים שהמשרד יודע להוביל.
+              {tx("תצוגה יוקרתית של עבודות, הישגים וסוגי תיקים שהמשרד יודע להוביל.")}
             </p>
           </Reveal>
         </div>

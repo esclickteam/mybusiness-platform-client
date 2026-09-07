@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { LexoraSeed } from "./lexoraData";
 import {
   CasesList,
@@ -64,7 +65,7 @@ export default function LexoraHomePage({
 
             <div className="lex-hero-image-overlay">
               <span>{data.brand.badge}</span>
-              <strong>ייעוץ ברור. החלטות מדויקות.</strong>
+              <strong>{tx("ייעוץ ברור. החלטות מדויקות.")}</strong>
             </div>
           </Reveal>
 
@@ -93,7 +94,7 @@ export default function LexoraHomePage({
               <p>{data.intro.text}</p>
 
               <button type="button" onClick={() => onNavigate("about")}>
-                אודות המשרד
+                {tx("אודות המשרד")}
               </button>
             </div>
           </Reveal>
@@ -164,7 +165,7 @@ export default function LexoraHomePage({
             <p>{data.about.text}</p>
 
             <button type="button" onClick={() => onNavigate("about")}>
-              להכיר את הצוות
+              {tx("להכיר את הצוות")}
             </button>
           </Reveal>
         </div>

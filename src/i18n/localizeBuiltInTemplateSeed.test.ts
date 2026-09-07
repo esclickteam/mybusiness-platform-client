@@ -766,6 +766,30 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מעגל כוח", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique41 leftover gallery preview chrome after unique40", () => {
+    expect(
+      localizeBuiltInText(
+        "שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.",
+        "en",
+      ),
+    ).toMatch(/elegance|premium|CTA/i);
+    expect(
+      localizeBuiltInText(
+        "שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מרחב רגוע", "es")).toMatch(/espacio|sereno/i);
+    expect(localizeBuiltInText("תיקים", "en")).toBe("Cases");
+    expect(localizeBuiltInText("תיקים", "en")).not.toMatch(/bag/i);
+    expect(localizeBuiltInText("לפרטים נוספים ←", "pt-BR")).toMatch(/detalhes/i);
+    expect(localizeBuiltInText("ייעוץ ברור. החלטות מדויקות.", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("לאן תרצו לטוס?", "en")).toMatch(/fly|where/i);
+    expect(localizeBuiltInText("מענה", "en")).toBe("Response");
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

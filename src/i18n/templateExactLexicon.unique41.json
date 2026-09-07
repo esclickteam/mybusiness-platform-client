@@ -1,0 +1,494 @@
+{
+  "שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.": {
+    "en": "Services shown with elegance, clarity, and no clutter — with the right split,\na gentle CTA, and hierarchy that feels premium.",
+    "es": "Servicios mostrados con elegancia, claridad y sin saturación — con la división correcta,\nun CTA suave y una jerarquía que se siente premium.",
+    "pt-BR": "Serviços mostrados com elegância, clareza e sem excesso — com a divisão certa,\num CTA suave e uma hierarquia que parece premium.",
+    "ar": "خدمات تُعرض بأناقة ووضوح دون ازدحام — مع تقسيم صحيح،\nودعوة لطيفة للتواصل وتسلسل يبدو فاخراً."
+  },
+  "זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם\nאחריות מלאה.": {
+    "en": "Available for urgent calls, fault repair, installations, and electrical upgrades — with\nfull warranty.",
+    "es": "Disponibles para llamadas urgentes, reparación de fallos, instalaciones y mejoras eléctricas — con\ngarantía completa.",
+    "pt-BR": "Disponíveis para chamadas urgentes, reparo de falhas, instalações e upgrades elétricos — com\ngarantia completa.",
+    "ar": "متاحون للمكالمات العاجلة وإصلاح الأعطال والتركيب وترقية الكهرباء — مع\nضمان كامل."
+  },
+  "חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע\nנקי ואחריות בסיום העבודה.": {
+    "en": "Licensed electricians with a clear process: diagnosis, an organized quote, clean\nexecution, and a warranty when the work is done.",
+    "es": "Electricistas certificados con un proceso claro: diagnóstico, presupuesto ordenado, ejecución\nlimpia y garantía al terminar el trabajo.",
+    "pt-BR": "Eletricistas certificados com um processo claro: diagnóstico, orçamento organizado, execução\nlimpa e garantia ao terminar o trabalho.",
+    "ar": "كهربائيون معتمدون بعملية واضحة: تشخيص، عرض سعر مرتّب، تنفيذ\nنظيف وضمان عند انتهاء العمل."
+  },
+  "כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר\nהאם המשרד מתאים למקרה שלו וימשיך לפעולה.": {
+    "en": "Every practice area is shown clearly, in order, and accessibly — so the client quickly sees\nwhether the firm fits their case and continues to action.",
+    "es": "Cada área se muestra de forma clara, ordenada y accesible — para que el cliente entienda rápido\nsi el despacho encaja en su caso y siga a la acción.",
+    "pt-BR": "Cada área é mostrada de forma clara, organizada e acessível — para que o cliente entenda rápido\nse o escritório serve ao caso dele e siga para a ação.",
+    "ar": "كل مجال يُعرض بوضوح وترتيب وسهولة وصول — حتى يفهم الزبون بسرعة\nما إذا كان المكتب يناسب قضيته ويكمل إلى الفعل."
+  },
+  "פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה\nהמשפטית והערך שהמשרד יודע לייצר.": {
+    "en": "A sample case write-up that shows the client the working method, the legal\nthinking, and the value the firm knows how to create.",
+    "es": "Un detalle de caso de ejemplo que muestra al cliente la forma de trabajo, el pensamiento\njurídico y el valor que el despacho sabe generar.",
+    "pt-BR": "Um detalhe de caso de exemplo que mostra ao cliente o jeito de trabalhar, o pensamento\njurídico e o valor que o escritório sabe gerar.",
+    "ar": "تفصيل قضية نموذجية يعرض للزبون طريقة العمل والتفكير\nالقانوني والقيمة التي يعرف المكتب كيف يصنعها."
+  },
+  "פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או\nסטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית\nמוצר מלאה לפני הוספה לסל.": {
+    "en": "A premium piece from the new collection. Fits an everyday look, evening, or\nmodern styling. The design is clean, the image is large, and the customer gets a full\nproduct experience before adding to cart.",
+    "es": "Una pieza premium de la nueva colección. Encaja en un look diario, de noche o\nestilo moderno. El diseño es limpio, la imagen es grande, y la clienta recibe una experiencia\nde producto completa antes de añadir al carrito.",
+    "pt-BR": "Uma peça premium da nova coleção. Serve para um look do dia a dia, à noite ou\nestilo moderno. O design é limpo, a imagem é grande, e a cliente recebe uma experiência\nde produto completa antes de adicionar ao carrinho.",
+    "ar": "قطعة فاخرة من المجموعة الجديدة. تناسب إطلالة يومية أو سهرة أو\nتنسيقاً حديثاً. التصميم نظيف والصورة كبيرة، وتحصل الزبونة على تجربة\nمنتج كاملة قبل الإضافة إلى السلة."
+  },
+  "זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר\nבהמשך לפי המערכת שלך.": {
+    "en": "This is a shopping-cart demo for the template. You can connect checkout and the server\nlater according to your system.",
+    "es": "Esto es un demo de carrito para la plantilla. La conexión al cobro y al servidor se puede conectar\nmás adelante según tu sistema.",
+    "pt-BR": "Isto é um demo de carrinho para o modelo. A ligação à cobrança e ao servidor pode ser conectada\ndepois conforme o seu sistema.",
+    "ar": "هذا عرض تجريبي لسلة التسوق للقالب. يمكن ربط الدفع والخادم\nلاحقاً حسب نظامك."
+  },
+  "מענה": {
+    "en": "Response",
+    "es": "Respuesta",
+    "pt-BR": "Resposta",
+    "ar": "استجابة"
+  },
+  "התאמה אישית": {
+    "en": "Personal fit",
+    "es": "Ajuste personal",
+    "pt-BR": "Ajuste pessoal",
+    "ar": "ملاءمة شخصية"
+  },
+  "לכל לקוח יש מסלול נכון עבורו": {
+    "en": "Every client has the right path for them",
+    "es": "Cada cliente tiene el recorrido correcto",
+    "pt-BR": "Cada cliente tem o percurso certo",
+    "ar": "لكل زبون مسار مناسب له"
+  },
+  "פורמט גמיש": {
+    "en": "Flexible format",
+    "es": "Formato flexible",
+    "pt-BR": "Formato flexível",
+    "ar": "صيغة مرنة"
+  },
+  "קליניקה פרטית / אונליין": {
+    "en": "Private clinic / online",
+    "es": "Clínica privada / online",
+    "pt-BR": "Clínica particular / online",
+    "ar": "عيادة خاصة / أونلاين"
+  },
+  "ברור, אישי ומהיר": {
+    "en": "Clear, personal, and fast",
+    "es": "Claro, personal y rápido",
+    "pt-BR": "Claro, pessoal e rápido",
+    "ar": "واضح وشخصي وسريع"
+  },
+  "מרחב רגוע": {
+    "en": "Calm space",
+    "es": "Espacio sereno",
+    "pt-BR": "Espaço sereno",
+    "ar": "فضاء هادئ"
+  },
+  "תמונה גדולה שמייצרת אווירה": {
+    "en": "A large image that sets the mood",
+    "es": "Una imagen grande que crea ambiente",
+    "pt-BR": "Uma imagem grande que cria atmosfera",
+    "ar": "صورة كبيرة تصنع أجواء"
+  },
+  "פגישה אישית": {
+    "en": "Personal session",
+    "es": "Sesión personal",
+    "pt-BR": "Sessão pessoal",
+    "ar": "جلسة شخصية"
+  },
+  "תחושה אנושית ומזמינה": {
+    "en": "A human, welcoming feel",
+    "es": "Una sensación humana y acogedora",
+    "pt-BR": "Uma sensação humana e acolhedora",
+    "ar": "شعور إنساني ومرحّب"
+  },
+  "שקט ובהירות": {
+    "en": "Quiet and clarity",
+    "es": "Calma y claridad",
+    "pt-BR": "Calma e clareza",
+    "ar": "هدوء ووضوح"
+  },
+  "קומפוזיציה נקייה": {
+    "en": "Clean composition",
+    "es": "Composición limpia",
+    "pt-BR": "Composição limpa",
+    "ar": "تكوين نظيف"
+  },
+  "פרימיום רגוע": {
+    "en": "Calm premium",
+    "es": "Premium sereno",
+    "pt-BR": "Premium sereno",
+    "ar": "فخامة هادئة"
+  },
+  "אזור ויזואלי יותר מיוחד": {
+    "en": "A more distinctive visual area",
+    "es": "Un área visual más especial",
+    "pt-BR": "Uma área visual mais especial",
+    "ar": "منطقة بصرية أكثر تميزاً"
+  },
+  "מאמר": {
+    "en": "Article",
+    "es": "Artículo",
+    "pt-BR": "Artigo",
+    "ar": "مقال"
+  },
+  "האתגר": {
+    "en": "The challenge",
+    "es": "El reto",
+    "pt-BR": "O desafio",
+    "ar": "التحدي"
+  },
+  "הפתרון": {
+    "en": "The solution",
+    "es": "La solución",
+    "pt-BR": "A solução",
+    "ar": "الحل"
+  },
+  "התוצאה": {
+    "en": "The result",
+    "es": "El resultado",
+    "pt-BR": "O resultado",
+    "ar": "النتيجة"
+  },
+  "תיקים": {
+    "en": "Cases",
+    "es": "Casos",
+    "pt-BR": "Casos",
+    "ar": "قضايا"
+  },
+  "יעדים": {
+    "en": "Destinations",
+    "es": "Destinos",
+    "pt-BR": "Destinos",
+    "ar": "وجهات"
+  },
+  "תכנון חופשה": {
+    "en": "Plan a trip",
+    "es": "Planificar viaje",
+    "pt-BR": "Planejar viagem",
+    "ar": "تخطيط إجازة"
+  },
+  "לפרטים נוספים ←": {
+    "en": "More details ←",
+    "es": "Más detalles ←",
+    "pt-BR": "Mais detalhes ←",
+    "ar": "المزيد من التفاصيل ←"
+  },
+  "מענה אישי": {
+    "en": "Personal reply",
+    "es": "Respuesta personal",
+    "pt-BR": "Resposta pessoal",
+    "ar": "رد شخصي"
+  },
+  "התאמה מלאה": {
+    "en": "Full match",
+    "es": "Ajuste completo",
+    "pt-BR": "Ajuste completo",
+    "ar": "ملاءمة كاملة"
+  },
+  "יעד מבוקש": {
+    "en": "Desired destination",
+    "es": "Destino deseado",
+    "pt-BR": "Destino desejado",
+    "ar": "الوجهة المطلوبة"
+  },
+  "למשל: יוון / איטליה / באלי": {
+    "en": "e.g. Greece / Italy / Bali",
+    "es": "p. ej. Grecia / Italia / Bali",
+    "pt-BR": "p. ex. Grécia / Itália / Bali",
+    "ar": "مثلاً: اليونان / إيطاليا / بالي"
+  },
+  "ספרו בקצרה מה אתם מחפשים": {
+    "en": "Briefly tell us what you are looking for",
+    "es": "Cuéntanos en breve qué buscas",
+    "pt-BR": "Contem em breve o que vocês procuram",
+    "ar": "أخبرونا باختصار عما تبحثون عنه"
+  },
+  "חבילות נסיעה": {
+    "en": "Travel packages",
+    "es": "Paquetes de viaje",
+    "pt-BR": "Pacotes de viagem",
+    "ar": "باقات سفر"
+  },
+  "חבילות מדויקות לכל סוג של חופשה": {
+    "en": "Precise packages for every kind of trip",
+    "es": "Paquetes precisos para cada tipo de viaje",
+    "pt-BR": "Pacotes precisos para cada tipo de viagem",
+    "ar": "باقات دقيقة لكل نوع إجازة"
+  },
+  "חבילות זוגיות, משפחתיות ואקזוטיות עם תכנון מלא, נראות יוקרתית\nוחוויית לקוח שמובילה להשארת פרטים.": {
+    "en": "Couples, family, and exotic packages with full planning, a luxury look,\nand a customer experience that leads to leaving details.",
+    "es": "Paquetes para parejas, familias y destinos exóticos con planificación completa, una imagen de lujo\ny una experiencia de cliente que lleva a dejar datos.",
+    "pt-BR": "Pacotes para casais, famílias e destinos exóticos com planejamento completo, visual de luxo\ne uma experiência de cliente que leva a deixar dados.",
+    "ar": "باقات للأزواج والعائلات والوجهات الاستوائية مع تخطيط كامل ومظهر فاخر\nوتجربة زبائن تؤدي إلى ترك التفاصيل."
+  },
+  "לקוחות מרגישים את ההבדל כשהכול מתוכנן נכון": {
+    "en": "Clients feel the difference when everything is planned right",
+    "es": "Los clientes sienten la diferencia cuando todo está bien planificado",
+    "pt-BR": "Os clientes sentem a diferença quando tudo está bem planejado",
+    "ar": "الزبائن يشعرون بالفرق عندما يُخطَّط كل شيء بشكل صحيح"
+  },
+  "עמוד המלצות יוקרתי שמחזק אמון, מציג חוויות אמיתיות ומעודד\nלקוחות חדשים להתחיל תכנון.": {
+    "en": "A luxury testimonials page that builds trust, shows real experiences, and encourages\nnew clients to start planning.",
+    "es": "Una página de testimonios de lujo que refuerza la confianza, muestra experiencias reales y anima\na nuevos clientes a empezar a planificar.",
+    "pt-BR": "Uma página de depoimentos de luxo que reforça confiança, mostra experiências reais e incentiva\nnovos clientes a começar o planejamento.",
+    "ar": "صفحة شهادات فاخرة تعزّز الثقة وتعرض تجارب حقيقية وتشجّع\nزبائن جدداً على بدء التخطيط."
+  },
+  "לקוחות ממליצים": {
+    "en": "Clients recommend",
+    "es": "Clientes recomiendan",
+    "pt-BR": "Clientes recomendam",
+    "ar": "زبائن يوصون"
+  },
+  "תהליך פשוט, ברור ויוקרתי מהשיחה הראשונה עד החופשה": {
+    "en": "A simple, clear, luxury process from the first call to the trip",
+    "es": "Un proceso simple, claro y de lujo desde la primera llamada hasta el viaje",
+    "pt-BR": "Um processo simples, claro e de luxo da primeira chamada até a viagem",
+    "ar": "عملية بسيطة وواضحة وفاخرة من المكالمة الأولى حتى الإجازة"
+  },
+  "העמוד הזה מציג ללקוח איך השירות עובד, מוריד התנגדויות ומסביר\nלמה כדאי להשאיר פרטים.": {
+    "en": "This page shows the client how the service works, lowers objections, and explains\nwhy it is worth leaving details.",
+    "es": "Esta página muestra al cliente cómo funciona el servicio, baja objeciones y explica\npor qué conviene dejar datos.",
+    "pt-BR": "Esta página mostra ao cliente como o serviço funciona, reduz objeções e explica\npor que vale deixar dados.",
+    "ar": "هذه الصفحة تعرض للزبون كيف تعمل الخدمة، تخفّض الاعتراضات وتشرح\nلماذا يستحق ترك التفاصيل."
+  },
+  "שירות אישי": {
+    "en": "Personal service",
+    "es": "Servicio personal",
+    "pt-BR": "Serviço pessoal",
+    "ar": "خدمة شخصية"
+  },
+  "כל לקוח מקבל מסלול שנבנה לפי הסגנון שלו.": {
+    "en": "Every client gets an itinerary built around their style.",
+    "es": "Cada cliente recibe un itinerario construido según su estilo.",
+    "pt-BR": "Cada cliente recebe um roteiro feito conforme o estilo dele.",
+    "ar": "كل زبون يحصل على مسار يُبنى حسب أسلوبه."
+  },
+  "לא בוחרים תבנית מוכנה. בונים חוויה לפי תקציב, יעד, אופי הטיול\nורמת הליווי שהלקוח צריך.": {
+    "en": "We do not pick a ready-made template. We build an experience around budget, destination, trip style,\nand the level of support the client needs.",
+    "es": "No elegimos una plantilla lista. Construimos una experiencia según presupuesto, destino, tipo de viaje\ny el nivel de acompañamiento que el cliente necesita.",
+    "pt-BR": "Não escolhemos um modelo pronto. Construímos uma experiência conforme orçamento, destino, tipo de viagem\ne o nível de acompanhamento que o cliente precisa.",
+    "ar": "لا نختار قالباً جاهزاً. نبني تجربة حسب الميزانية والوجهة وطبيعة الرحلة\nومستوى المرافقة الذي يحتاجه الزبون."
+  },
+  "חופשה": {
+    "en": "Vacation",
+    "es": "Viaje",
+    "pt-BR": "Viagem",
+    "ar": "إجازة"
+  },
+  "תפורה אישית": {
+    "en": "tailored for you",
+    "es": "a tu medida",
+    "pt-BR": "sob medida",
+    "ar": "مفصّلة لكم"
+  },
+  "חופשת בוטיק": {
+    "en": "Boutique trip",
+    "es": "Viaje boutique",
+    "pt-BR": "Viagem boutique",
+    "ar": "رحلة بوتيك"
+  },
+  "יעד נבחר": {
+    "en": "Featured destination",
+    "es": "Destino destacado",
+    "pt-BR": "Destino em destaque",
+    "ar": "وجهة مختارة"
+  },
+  "יעדים בהתאמה": {
+    "en": "Matched destinations",
+    "es": "Destinos a medida",
+    "pt-BR": "Destinos sob medida",
+    "ar": "وجهات ملائمة"
+  },
+  "יעד": {
+    "en": "Destination",
+    "es": "Destino",
+    "pt-BR": "Destino",
+    "ar": "وجهة"
+  },
+  "לאן תרצו לטוס?": {
+    "en": "Where do you want to fly?",
+    "es": "¿A dónde quieren volar?",
+    "pt-BR": "Para onde vocês querem voar?",
+    "ar": "إلى أين تريدون السفر؟"
+  },
+  "סגנון": {
+    "en": "Style",
+    "es": "Estilo",
+    "pt-BR": "Estilo",
+    "ar": "أسلوب"
+  },
+  "יוקרה / משפחתי / זוגי": {
+    "en": "Luxury / family / couples",
+    "es": "Lujo / familiar / en pareja",
+    "pt-BR": "Luxo / familiar / casal",
+    "ar": "فخامة / عائلي / للأزواج"
+  },
+  "תקציב": {
+    "en": "Budget",
+    "es": "Presupuesto",
+    "pt-BR": "Orçamento",
+    "ar": "ميزانية"
+  },
+  "התחילו תכנון": {
+    "en": "Start planning",
+    "es": "Empezar a planificar",
+    "pt-BR": "Começar o planejamento",
+    "ar": "ابدأوا التخطيط"
+  },
+  "חוויה מלאה": {
+    "en": "Full experience",
+    "es": "Experiencia completa",
+    "pt-BR": "Experiência completa",
+    "ar": "تجربة كاملة"
+  },
+  "לא עוד אתר רגיל. נראות של מותג נסיעות פרימיום.": {
+    "en": "Not just another site. The look of a premium travel brand.",
+    "es": "Ya no un sitio cualquiera. La imagen de una marca de viajes premium.",
+    "pt-BR": "Não mais um site qualquer. A cara de uma marca de viagens premium.",
+    "ar": "ليس مجرد موقع عادي. مظهر علامة سفر فاخرة."
+  },
+  "עמוד בית שמרגיש כמו מגזין תיירות יוקרתי: תמונות גדולות, תנועה\nחלקה, שכבות, עומק, כרטיסים צפים וקריאה ברורה להשארת פרטים.": {
+    "en": "A home page that feels like a luxury travel magazine: large images, smooth motion,\nlayers, depth, floating cards, and a clear call to leave details.",
+    "es": "Una home que se siente como una revista de turismo de lujo: imágenes grandes, movimiento suave,\ncapas, profundidad, tarjetas flotantes y una llamada clara a dejar datos.",
+    "pt-BR": "Uma home que parece uma revista de turismo de luxo: imagens grandes, movimento suave,\ncamadas, profundidade, cartões flutuantes e um chamado claro para deixar dados.",
+    "ar": "صفحة رئيسية تشبه مجلة سياحة فاخرة: صور كبيرة وحركة سلسة\nوطبقات وعمق وبطاقات عائمة ودعوة واضحة لترك التفاصيل."
+  },
+  "נוף הררי": {
+    "en": "Mountain view",
+    "es": "Vista de montaña",
+    "pt-BR": "Vista de montanha",
+    "ar": "منظر جبلي"
+  },
+  "חופשה טרופית": {
+    "en": "Tropical vacation",
+    "es": "Viaje tropical",
+    "pt-BR": "Viagem tropical",
+    "ar": "إجازة استوائية"
+  },
+  "לייעוץ": {
+    "en": "For advice",
+    "es": "Consultar",
+    "pt-BR": "Consultar",
+    "ar": "للاستشارة"
+  },
+  "משך טיפול": {
+    "en": "Case duration",
+    "es": "Duración del caso",
+    "pt-BR": "Duração do caso",
+    "ar": "مدة المعالجة"
+  },
+  "סטטוס": {
+    "en": "Status",
+    "es": "Estado",
+    "pt-BR": "Status",
+    "ar": "الحالة"
+  },
+  "ייעוץ דומה": {
+    "en": "Similar advice",
+    "es": "Asesoría similar",
+    "pt-BR": "Consultoria semelhante",
+    "ar": "استشارة مشابهة"
+  },
+  "מה חשוב לדעת לפני שמתחילים?": {
+    "en": "What should you know before you start?",
+    "es": "¿Qué es importante saber antes de empezar?",
+    "pt-BR": "O que é importante saber antes de começar?",
+    "ar": "ما المهم معرفته قبل البدء؟"
+  },
+  "סיבת הפנייה": {
+    "en": "Reason for inquiry",
+    "es": "Motivo de la consulta",
+    "pt-BR": "Motivo da consulta",
+    "ar": "سبب التواصل"
+  },
+  "ספרו בקצרה במה צריך עזרה": {
+    "en": "Briefly tell us what you need help with",
+    "es": "Cuéntanos en breve en qué necesitas ayuda",
+    "pt-BR": "Contem em breve em que precisam de ajuda",
+    "ar": "أخبرونا باختصار بما تحتاجون مساعدة فيه"
+  },
+  "שירותים משפטיים": {
+    "en": "Legal services",
+    "es": "Servicios jurídicos",
+    "pt-BR": "Serviços jurídicos",
+    "ar": "خدمات قانونية"
+  },
+  "תחומי התמחות שמייצרים בהירות וביטחון": {
+    "en": "Practice areas that create clarity and confidence",
+    "es": "Áreas de especialización que generan claridad y confianza",
+    "pt-BR": "Áreas de especialização que geram clareza e confiança",
+    "ar": "مجالات اختصاص تصنع وضوحاً وثقة"
+  },
+  "שירותים משפטיים לעסקים, יזמים ולקוחות פרטיים שצריכים ליווי\nמקצועי, מדויק וזמין.": {
+    "en": "Legal services for businesses, founders, and private clients who need professional,\nprecise, and available support.",
+    "es": "Servicios jurídicos para negocios, emprendedores y clientes particulares que necesitan acompañamiento\nprofesional, preciso y disponible.",
+    "pt-BR": "Serviços jurídicos para negócios, empreendedores e clientes particulares que precisam de acompanhamento\nprofissional, preciso e disponível.",
+    "ar": "خدمات قانونية للأعمال وروّاد الأعمال والزبائن الخاصين الذين يحتاجون مرافقة\nمهنية ودقيقة ومتاحة."
+  },
+  "תיקים נבחרים": {
+    "en": "Selected cases",
+    "es": "Casos seleccionados",
+    "pt-BR": "Casos selecionados",
+    "ar": "قضايا مختارة"
+  },
+  "תיקים שטופלו מתוך חשיבה משפטית ואסטרטגית": {
+    "en": "Cases handled with legal and strategic thinking",
+    "es": "Casos tratados con pensamiento jurídico y estratégico",
+    "pt-BR": "Casos tratados com pensamento jurídico e estratégico",
+    "ar": "قضايا عولجت بتفكير قانوني واستراتيجي"
+  },
+  "תצוגה יוקרתית של עבודות, הישגים וסוגי תיקים שהמשרד יודע להוביל.": {
+    "en": "A luxury display of work, results, and case types the firm knows how to lead.",
+    "es": "Una muestra de lujo de trabajos, logros y tipos de casos que el despacho sabe liderar.",
+    "pt-BR": "Uma vitrine de luxo de trabalhos, resultados e tipos de casos que o escritório sabe liderar.",
+    "ar": "عرض فاخر للأعمال والإنجازات وأنواع القضايا التي يعرف المكتب كيف يقودها."
+  },
+  "תהליך העבודה": {
+    "en": "Work process",
+    "es": "Proceso de trabajo",
+    "pt-BR": "Processo de trabalho",
+    "ar": "عملية العمل"
+  },
+  "כל תיק מתחיל באבחון ברור וממשיך בדרך פעולה מדויקת": {
+    "en": "Every case starts with a clear diagnosis and continues with a precise course of action",
+    "es": "Cada caso empieza con un diagnóstico claro y sigue con una vía de acción precisa",
+    "pt-BR": "Cada caso começa com um diagnóstico claro e segue com um caminho de ação preciso",
+    "ar": "كل قضية تبدأ بتشخيص واضح وتستمر بمسار عمل دقيق"
+  },
+  "תהליך עבודה מסודר שמסביר ללקוח מה קורה בכל שלב ומחזק אמון.": {
+    "en": "An organized work process that explains what happens at each step and builds trust.",
+    "es": "Un proceso de trabajo ordenado que explica al cliente qué ocurre en cada etapa y refuerza la confianza.",
+    "pt-BR": "Um processo de trabalho organizado que explica ao cliente o que acontece em cada etapa e reforça a confiança.",
+    "ar": "عملية عمل مرتّبة تشرح للزبون ما يحدث في كل مرحلة وتعزّز الثقة."
+  },
+  "קובעים ייעוץ ומקבלים תמונת מצב משפטית ברורה": {
+    "en": "Book a consultation and get a clear legal picture",
+    "es": "Reservan una consulta y reciben una imagen jurídica clara",
+    "pt-BR": "Marcam uma consulta e recebem um panorama jurídico claro",
+    "ar": "تحددون استشارة وتحصلون على صورة قانونية واضحة"
+  },
+  "השאירו פרטים ונחזור אליכם לתיאום שיחה ראשונית עם עורך דין מתאים.": {
+    "en": "Leave your details and we will get back to you to schedule an intro call with the right attorney.",
+    "es": "Deja tus datos y te responderemos para coordinar una llamada inicial con un abogado adecuado.",
+    "pt-BR": "Deixe seus dados e voltaremos para agendar uma conversa inicial com um advogado adequado.",
+    "ar": "اتركوا التفاصيل وسنعود إليكم لتنسيق مكالمة أولى مع محامٍ مناسب."
+  },
+  "ייעוץ ברור. החלטות מדויקות.": {
+    "en": "Clear advice. Precise decisions.",
+    "es": "Asesoría clara. Decisiones precisas.",
+    "pt-BR": "Consultoria clara. Decisões precisas.",
+    "ar": "استشارة واضحة. قرارات دقيقة."
+  },
+  "אודות המשרד": {
+    "en": "About the firm",
+    "es": "Sobre el despacho",
+    "pt-BR": "Sobre o escritório",
+    "ar": "عن المكتب"
+  },
+  "להכיר את הצוות": {
+    "en": "Meet the team",
+    "es": "Conocer al equipo",
+    "pt-BR": "Conhecer a equipe",
+    "ar": "التعرّف على الفريق"
+  }
+}

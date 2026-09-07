@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import type { RefObject } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { WantravelSeed } from "./wantravelData";
 
 export type WantravelPageKey = "home" | "packages" | "process" | "reviews";
@@ -65,7 +66,7 @@ export function SafeImage({
     "data-visual-media-type": "image",
     "data-resource-type": "image",
     "data-visual-current-src": src,
-    "data-visual-edit-label": alt || "תמונה",
+    "data-visual-edit-label": alt || tx("תמונה"),
     ...(id
       ? {
           "data-visual-edit-id": id,
@@ -210,13 +211,13 @@ export function WantravelHeader({
           <span className="wan-brand-mark">{data.brand.logoText}</span>
         </a>
 
-        <nav className="wan-nav" aria-label="ניווט ראשי">
+        <nav className="wan-nav" aria-label={tx("ניווט ראשי")}>
           <a
             href={getWantravelHref("packages")}
             data-wan-page="packages"
             data-active={activePage === "packages"}
           >
-            חבילות
+            {tx("חבילות")}
           </a>
 
           <a
@@ -224,7 +225,7 @@ export function WantravelHeader({
             data-wan-page="process"
             data-active={activePage === "process"}
           >
-            איך זה עובד
+            {tx("איך זה עובד")}
           </a>
 
           <a
@@ -232,7 +233,7 @@ export function WantravelHeader({
             data-wan-page="reviews"
             data-active={activePage === "reviews"}
           >
-            המלצות
+            {tx("המלצות")}
           </a>
 
           <a
@@ -240,7 +241,7 @@ export function WantravelHeader({
             data-wan-page="home"
             data-wan-hash="destinations"
           >
-            יעדים
+            {tx("יעדים")}
           </a>
         </nav>
 
@@ -250,7 +251,7 @@ export function WantravelHeader({
           data-wan-page="home"
           data-wan-hash="booking"
         >
-          תכנון חופשה
+          {tx("תכנון חופשה")}
         </a>
       </div>
     </header>
@@ -294,7 +295,7 @@ export function PackagesGrid({ data }: { data: WantravelSeed }) {
               data-wan-page="home"
               data-wan-hash="booking"
             >
-              לפרטים נוספים ←
+              {tx("לפרטים נוספים ←")}
             </a>
           </div>
         </Reveal>
@@ -378,11 +379,11 @@ export function BookingSection({ data }: { data: WantravelSeed }) {
 
               <div className="wan-booking-notes">
                 <div>
-                  <span>מענה אישי</span>
+                  <span>{tx("מענה אישי")}</span>
                   <strong>{data.booking.noteOne}</strong>
                 </div>
                 <div>
-                  <span>התאמה מלאה</span>
+                  <span>{tx("התאמה מלאה")}</span>
                   <strong>{data.booking.noteTwo}</strong>
                 </div>
               </div>
@@ -394,26 +395,26 @@ export function BookingSection({ data }: { data: WantravelSeed }) {
               data-bizuply-crm-lead="true"
               data-bizuply-form-builder="true" data-bizuply-form-skin="template"
               data-bizuply-form-id="wantravel-contact"
-              data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+              data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
             >
               <label>
-                <span>שם מלא</span>
-                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder="השם שלך" />
+                <span>{tx("שם מלא")}</span>
+                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder={tx("השם שלך")} />
               </label>
 
               <label>
-                <span>טלפון</span>
+                <span>{tx("טלפון")}</span>
                 <input type="tel" name="phone" data-bizuply-form-field-id="phone" autoComplete="tel" placeholder="050-0000000" />
               </label>
 
               <label>
-                <span>יעד מבוקש</span>
-                <input type="text" name="destination" data-bizuply-form-field-id="destination" placeholder="למשל: יוון / איטליה / באלי" />
+                <span>{tx("יעד מבוקש")}</span>
+                <input type="text" name="destination" data-bizuply-form-field-id="destination" placeholder={tx("למשל: יוון / איטליה / באלי")} />
               </label>
 
               <label>
-                <span>הודעה</span>
-                <textarea name="message" data-bizuply-form-field-id="message" placeholder="ספרו בקצרה מה אתם מחפשים" />
+                <span>{tx("הודעה")}</span>
+                <textarea name="message" data-bizuply-form-field-id="message" placeholder={tx("ספרו בקצרה מה אתם מחפשים")} />
               </label>
 
               <button type="submit">{data.booking.button}</button>
@@ -446,7 +447,7 @@ export function WantravelFooter({
             data-wan-page="home"
             data-active={activePage === "home"}
           >
-            בית
+            {tx("בית")}
           </a>
 
           <a
@@ -454,7 +455,7 @@ export function WantravelFooter({
             data-wan-page="packages"
             data-active={activePage === "packages"}
           >
-            חבילות
+            {tx("חבילות")}
           </a>
 
           <a
@@ -462,7 +463,7 @@ export function WantravelFooter({
             data-wan-page="process"
             data-active={activePage === "process"}
           >
-            איך זה עובד
+            {tx("איך זה עובד")}
           </a>
 
           <a
@@ -470,7 +471,7 @@ export function WantravelFooter({
             data-wan-page="reviews"
             data-active={activePage === "reviews"}
           >
-            המלצות
+            {tx("המלצות")}
           </a>
         </nav>
       </div>

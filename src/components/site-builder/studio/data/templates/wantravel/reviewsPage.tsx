@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { WantravelSeed } from "./wantravelData";
 import { BookingSection, Reveal, ReviewsSection, SafeImage } from "./shared";
 
@@ -13,11 +14,10 @@ export default function WantravelReviewsPage({
         <div className="wan-container wan-page-hero-grid">
           <Reveal>
             <div>
-              <div className="wan-eyebrow-dark">המלצות</div>
-              <h1>לקוחות מרגישים את ההבדל כשהכול מתוכנן נכון</h1>
+              <div className="wan-eyebrow-dark">{tx("המלצות")}</div>
+              <h1>{tx("לקוחות מרגישים את ההבדל כשהכול מתוכנן נכון")}</h1>
               <p>
-                עמוד המלצות יוקרתי שמחזק אמון, מציג חוויות אמיתיות ומעודד
-                לקוחות חדשים להתחיל תכנון.
+                {tx("עמוד המלצות יוקרתי שמחזק אמון, מציג חוויות אמיתיות ומעודד\nלקוחות חדשים להתחיל תכנון.")}
               </p>
             </div>
           </Reveal>
@@ -25,7 +25,7 @@ export default function WantravelReviewsPage({
           <Reveal className="wan-page-hero-image" delay={160}>
             <SafeImage
               src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1100&q=90"
-              alt="לקוחות ממליצים"
+              alt={tx("לקוחות ממליצים")}
               editId="reviewsPage.hero.image"
             />
           </Reveal>
