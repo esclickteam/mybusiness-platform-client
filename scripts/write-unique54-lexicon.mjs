@@ -18,6 +18,8 @@ const rows = {
     "صالون تجميل • عناية شخصية • تجربة فاخرة",
   ),
   "לקביעת ייעוץ": r("Book a consultation", "Reservad una consulta", "Marquem uma consulta", "احجزوا استشارة"),
+  השראה: r("Inspiration", "Inspiración", "Inspiração", "إلهام"),
+  "עוזר AI מובנה": r("Built-in AI assistant", "Asistente de IA integrado", "Assistente de IA embutido", "مساعد ذكاء اصطناعي مدمج"),
   "לראות שירותים": r("See services", "Ver servicios", "Ver serviços", "رؤية الخدمات"),
   "לפרטי טיפול ←": r("Treatment details ←", "Detalles del tratamiento ←", "Detalhes do tratamento ←", "تفاصيل العلاج ←"),
   "לקריאה ←": r("Read more ←", "Leer más ←", "Ler mais ←", "للقراءة ←"),

@@ -969,6 +969,9 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("עד 3 משתמשים", "pt-BR")).toMatch(/usuários|3/i);
     expect(localizeBuiltInText("תיאום דמו", "ar")).not.toMatch(/[\u0590-\u05FF]/);
     expect(localizeBuiltInText("בואו נראה לכם את Nexora בפעולה.", "en")).toMatch(/nexora|action/i);
+    expect(localizeBuiltInText("השראה", "en")).toMatch(/inspir/i);
+    expect(localizeBuiltInText("עוזר AI מובנה", "en")).toMatch(/assistant|AI/i);
+    expect(localizeBuiltInText("עוזר AI מובנה", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("localizes unique38 leftover built-in preview headlines", () => {
