@@ -537,7 +537,7 @@ function AboutSection({ data }: { data: TemplateData }) {
                   {formatBracketLabel(`0${index + 1}`)}
                 </span>
                 <div className="text-sm leading-7" style={{ color: citadelTheme.muted }}>
-                  {line}
+                  {tx(line)}
                 </div>
               </div>
             ))}

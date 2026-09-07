@@ -108,6 +108,30 @@ const rows = {
   "כרטיס הוכחת מקצועיות": r("Proof card", "Tarjeta de prueba profesional", "Cartão de prova profissional", "بطاقة إثبات مهني"),
   "כותרת הכרטיס": r("Card title", "Título de la tarjeta", "Título do cartão", "عنوان البطاقة"),
   "תיאור הכרטיס": r("Card description", "Descripción de la tarjeta", "Descrição do cartão", "وصف البطاقة"),
+  "שכבות גישה מבוססות זהות לעובדים, ספקים והנהלה.": r(
+    "Identity-based access layers for employees, vendors, and leadership.",
+    "Capas de acceso basadas en identidad para empleados, proveedores y dirección.",
+    "Camadas de acesso baseadas em identidade para funcionários, fornecedores e liderança.",
+    "طبقات وصول مبنية على الهوية للموظفين والمورّدين والإدارة.",
+  ),
+  "דיווח מצב מוכן לדירקטוריון שמתרגם סיכון לפעולה.": r(
+    "Board-ready status reporting that turns risk into action.",
+    "Informes de estado listos para el consejo que traducen el riesgo en acción.",
+    "Relatórios de status prontos para a diretoria que traduzem risco em ação.",
+    "تقارير حالة جاهزة لمجلس الإدارة تحوّل المخاطر إلى إجراء.",
+  ),
+  "ארכיטקטורת אבטחה שנועדת להתרחב עם התפעול והרגולציה.": r(
+    "A security architecture built to scale with operations and regulation.",
+    "Una arquitectura de seguridad pensada para crecer con la operación y la regulación.",
+    "Uma arquitetura de segurança feita para crescer com a operação e a regulação.",
+    "بنية أمنية مصممة لتتوسع مع التشغيل والتنظيم.",
+  ),
+  "תבנית Studiora · Bizuply Studio": r(
+    "Studiora template · Bizuply Studio",
+    "Plantilla Studiora · Bizuply Studio",
+    "Modelo Studiora · Bizuply Studio",
+    "قالب Studiora · Bizuply Studio",
+  ),
 };
 
 const out = join(

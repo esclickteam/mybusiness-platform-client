@@ -412,5 +412,29 @@
     "es": "Descripción de la tarjeta",
     "pt-BR": "Descrição do cartão",
     "ar": "وصف البطاقة"
+  },
+  "שכבות גישה מבוססות זהות לעובדים, ספקים והנהלה.": {
+    "en": "Identity-based access layers for employees, vendors, and leadership.",
+    "es": "Capas de acceso basadas en identidad para empleados, proveedores y dirección.",
+    "pt-BR": "Camadas de acesso baseadas em identidade para funcionários, fornecedores e liderança.",
+    "ar": "طبقات وصول مبنية على الهوية للموظفين والمورّدين والإدارة."
+  },
+  "דיווח מצב מוכן לדירקטוריון שמתרגם סיכון לפעולה.": {
+    "en": "Board-ready status reporting that turns risk into action.",
+    "es": "Informes de estado listos para el consejo que traducen el riesgo en acción.",
+    "pt-BR": "Relatórios de status prontos para a diretoria que traduzem risco em ação.",
+    "ar": "تقارير حالة جاهزة لمجلس الإدارة تحوّل المخاطر إلى إجراء."
+  },
+  "ארכיטקטורת אבטחה שנועדת להתרחב עם התפעול והרגולציה.": {
+    "en": "A security architecture built to scale with operations and regulation.",
+    "es": "Una arquitectura de seguridad pensada para crecer con la operación y la regulación.",
+    "pt-BR": "Uma arquitetura de segurança feita para crescer com a operação e a regulação.",
+    "ar": "بنية أمنية مصممة لتتوسع مع التشغيل والتنظيم."
+  },
+  "תבנית Studiora · Bizuply Studio": {
+    "en": "Studiora template · Bizuply Studio",
+    "es": "Plantilla Studiora · Bizuply Studio",
+    "pt-BR": "Modelo Studiora · Bizuply Studio",
+    "ar": "قالب Studiora · Bizuply Studio"
   }
 }

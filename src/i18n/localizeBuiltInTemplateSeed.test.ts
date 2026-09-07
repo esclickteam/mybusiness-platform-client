@@ -1004,6 +1004,11 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("פס קידום", "es")).toMatch(/promo/i);
     expect(localizeBuiltInText("ערכים", "pt-BR")).toMatch(/valor/i);
     expect(localizeBuiltInText("מדד 1", "en")).toMatch(/metric/i);
+    expect(
+      localizeBuiltInText("שכבות גישה מבוססות זהות לעובדים, ספקים והנהלה.", "en"),
+    ).toMatch(/identity|access/i);
+    expect(localizeBuiltInText("תבנית Studiora · Bizuply Studio", "es")).toMatch(/Studiora/i);
+    expect(localizeBuiltInText("תבנית Studiora · Bizuply Studio", "es")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("localizes unique69 leftover gallery catalog chrome", () => {
