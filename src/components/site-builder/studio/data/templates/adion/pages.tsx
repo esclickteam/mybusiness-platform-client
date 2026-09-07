@@ -710,7 +710,7 @@ function Services() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="שירותים"
+          eyebrow={tx("שירותים")}
           title={
             <>{tx("מהרעיון")}<br />{tx("ועד הפריים הסופי.")}</>
           }
@@ -780,7 +780,7 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto max-w-[1500px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="עבודות נבחרות"
+            eyebrow={tx("עבודות נבחרות")}
             title={
               <>{tx("פרויקטים")}<br />{tx("עם אימפקט ויזואלי.")}</>
             }
@@ -860,7 +860,7 @@ function Reviews() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="ביקורות"
+          eyebrow={tx("ביקורות")}
           title={
             <>{tx("מה הלקוחות")}<br />{tx("אומרים.")}</>
           }
@@ -930,7 +930,7 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="מחירים"
+          eyebrow={tx("מחירים")}
           title={
             <>{tx("חבילות ברורות.")}<br />{tx("תוצאה פרימיום.")}</>
           }
@@ -1028,7 +1028,7 @@ function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
         <div>
           <SectionTitle
-            eyebrow="שאלות נפוצות"
+            eyebrow={tx("שאלות נפוצות")}
             title={
               <>{tx("עדיין יש")}<br />{tx("שאלות?")}</>
             }
@@ -1145,7 +1145,7 @@ function CasesPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="עבודות"
+            eyebrow={tx("עבודות")}
             title={
               <>{tx("עבודות")}<br />{tx("עם נוכחות.")}</>
             }
@@ -1168,7 +1168,7 @@ function PricingPage({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="מחירים"
+            eyebrow={tx("מחירים")}
             title={
               <>{tx("בחרו את")}<br />{tx("ההפקה שלכם.")}</>
             }
@@ -1205,7 +1205,7 @@ function BlogPage() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="בלוג"
+          eyebrow={tx("בלוג")}
           title={
             <>{tx("הערות")}<br />{tx("מהסטודיו.")}</>
           }

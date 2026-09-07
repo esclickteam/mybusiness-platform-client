@@ -480,7 +480,7 @@ function DistrictTable() {
     <section className="border-y border-[#1c1c1c]/10 bg-[#fffdf9] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionTitle
-          eyebrow="סריקת שוק"
+          eyebrow={tx("סריקת שוק")}
           title={tx("שכונות, מגמות והזדמנויות בזמן אמת.")}
           text={tx("מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה.")}
         />

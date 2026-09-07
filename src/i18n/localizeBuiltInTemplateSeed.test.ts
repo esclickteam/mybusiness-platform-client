@@ -1096,6 +1096,21 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("החשבון שלי", "en")).toMatch(/my account/i);
   });
 
+  it("localizes unique72 ready-template picker chips", () => {
+    expect(localizeBuiltInText("פתיח מגזיני", "en")).toMatch(/magazine/i);
+    expect(localizeBuiltInText("פתיח כהה", "en")).toMatch(/dark opening/i);
+    expect(localizeBuiltInText("פתיח כהה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("אודות הסטודיו", "es")).toMatch(/estudio/i);
+    expect(localizeBuiltInText("טופס ליד", "pt-BR")).toMatch(/formulário|lead/i);
+    expect(localizeBuiltInText("גלריית אוכל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("דף נחיתה חד לעסק, מבצע, הוכחות וטופס ליד.", "en"),
+    ).toMatch(/landing/i);
+    expect(localizeBuiltInText("שוברי מתנה", "es")).toMatch(/vale|regalo/i);
+    expect(localizeBuiltInText("מדורים", "en")).toMatch(/section/i);
+    expect(localizeBuiltInText("מדורים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);

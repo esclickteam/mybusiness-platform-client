@@ -1174,7 +1174,7 @@ function ServicesSection({
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="השירותים שלנו"
+          eyebrow={tx("השירותים שלנו")}
           title={tx("כל שירותי החשמל במקום אחד")}
           text={tx("כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.")}
         />
@@ -1394,7 +1394,7 @@ function ProcessSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="איך זה עובד"
+          eyebrow={tx("איך זה עובד")}
           title={tx("תהליך קצר וברור שמוביל לתיקון בטוח")}
         />
 
@@ -1468,7 +1468,7 @@ function TestimonialsSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="לקוחות מספרים"
+          eyebrow={tx("לקוחות מספרים")}
           title={tx("מה אומרים עלינו")}
         />
 
@@ -1584,7 +1584,7 @@ function PricingSection({
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="מחירים הוגנים"
+          eyebrow={tx("מחירים הוגנים")}
           title={tx("חבילות מומלצות")}
           text={tx("מחירים התחלתיים וברורים לפני שמשאירים פרטים.")}
         />
@@ -1694,7 +1694,7 @@ function FaqSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="שאלות נפוצות"
+          eyebrow={tx("שאלות נפוצות")}
           title={tx("כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.")}
         />
 
@@ -1861,7 +1861,7 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="services.pageHero"
-        eyebrow="שירותי חשמל"
+        eyebrow={tx("שירותי חשמל")}
         title={tx("כל שירותי החשמל במקום אחד")}
         text={tx("תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ.")}
       />
@@ -1888,7 +1888,7 @@ function PricingPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="pricing.pageHero"
-        eyebrow="מחירים"
+        eyebrow={tx("מחירים")}
         title={tx("חבילות ומחירים ברורים")}
         text={tx("מחירון נקי ומקצועי שמוביל לפנייה.")}
       />
@@ -1909,7 +1909,7 @@ function GalleryPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="gallery.pageHero"
-        eyebrow="עבודות"
+        eyebrow={tx("עבודות")}
         title={tx("עבודות חשמל מסודרות ומקצועיות")}
         text={tx("אזור פרויקטים, תהליך והוכחות חברתיות.")}
       />

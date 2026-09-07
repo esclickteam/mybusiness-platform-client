@@ -485,7 +485,7 @@ function ScheduleBoard() {
     <section className="bg-black px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <KineticSectionTitle
-          eyebrow="מערכת שעות"
+          eyebrow={tx("מערכת שעות")}
           title={tx("עמודים בנויים להנעה מהירה לפעולה.")}
           text={tx("הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג.")}
           light

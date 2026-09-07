@@ -2514,7 +2514,7 @@ export default function RichStoreSiteRuntime({
           <ProductRail id="journal-rich-editor-picks" label={tx("בחירות מערכת")} title={g("productsTitle")} productsToShow={showcase.slice(0, 4)} className={skin.alt} />
           <section {...sectionProps("journal-rich-categories", "categories", "מדורי תוכן")} className="px-5 py-20 lg:px-8">
             <div className="mx-auto max-w-7xl">
-              <SectionHeading eyebrow="מדורים" title={tx("נושאים לקריאה")} skin={skin} />
+              <SectionHeading eyebrow={tx("מדורים")} title={tx("נושאים לקריאה")} skin={skin} />
               <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
                 {categoryTiles.slice(0, 4).map((cat, index) => (
                   <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />

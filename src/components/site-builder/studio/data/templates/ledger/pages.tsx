@@ -412,7 +412,7 @@ function RegisterTable() {
     <section className="border-y border-[#102018]/10 bg-[#fffdf8] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <LedgerSectionTitle
-          eyebrow="תצוגת Ledger"
+          eyebrow={tx("תצוגת Ledger")}
           title={tx("מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק.")}
           text={tx("הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה.")}
         />

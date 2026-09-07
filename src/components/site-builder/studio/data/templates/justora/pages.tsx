@@ -1105,7 +1105,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <SectionTitle
-              eyebrow="הצוות המשפטי"
+              eyebrow={tx("הצוות המשפטי")}
               title={tx("עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר.")}
               text={tx("שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין.")}
             />
@@ -1179,7 +1179,7 @@ function CasesSection({
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="תיקים והצלחות"
+            eyebrow={tx("תיקים והצלחות")}
             title={tx("סיפורי הצלחה משפטיים")}
             text={tx("כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס.")}
           />
@@ -1358,7 +1358,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-[1380px] gap-12 lg:grid-cols-[0.86fr_1.14fr]">
         <div className="h-fit lg:sticky lg:top-28">
           <SectionTitle
-            eyebrow="לקוחות מספרים"
+            eyebrow={tx("לקוחות מספרים")}
             title={tx("מה לקוחות אומרים?")}
             text={tx("המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה.")}
           />
@@ -1461,7 +1461,7 @@ function BlogSection({
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="מאמרים"
+            eyebrow={tx("מאמרים")}
             title={tx("ידע משפטי שמחזק אמון לפני שיחת הייעוץ.")}
             text={tx("שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור.")}
           />
@@ -1542,7 +1542,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-[1380px]">
         <SectionTitle
           center
-          eyebrow="גלריית משרד"
+          eyebrow={tx("גלריית משרד")}
           title={tx("תמונות שמייצרות אמון ותחושת משרד פעיל.")}
           text={tx("אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית.")}
         />
@@ -1590,7 +1590,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
     >
       <div className="mx-auto grid max-w-[1380px] gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <SectionTitle
-          eyebrow="שאלות נפוצות"
+          eyebrow={tx("שאלות נפוצות")}
           title={getHebrewValue(data, "faqTitle", "לפני שקובעים ייעוץ — כל מה שחשוב לדעת.")}
           text={tx("שאלות נפוצות לפני שיחת ייעוץ ראשונית.")}
         />
