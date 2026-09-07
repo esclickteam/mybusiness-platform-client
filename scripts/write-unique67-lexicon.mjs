@@ -16,6 +16,8 @@ const rows = {
     "Crítica entre pares",
     "نقد الزملاء",
   ),
+  חודש: r("month", "mes", "mês", "شهر"),
+  קוד: r("Code", "Código", "Código", "كود"),
 };
 
 const out = join(

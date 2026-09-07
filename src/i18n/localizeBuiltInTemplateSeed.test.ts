@@ -969,6 +969,10 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שבוע 1-2", "en")).toMatch(/weeks 1/i);
     expect(localizeBuiltInText("שבוע 11-12", "pt-BR")).toMatch(/semanas/i);
     expect(localizeBuiltInText("שבוע 3-6", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חודש", "en")).toMatch(/month/i);
+    expect(localizeBuiltInText("חודש", "pt-BR")).toMatch(/mês/i);
+    expect(localizeBuiltInText("קוד", "en")).toBe("Code");
+    expect(localizeBuiltInText("שפה 01", "en")).toMatch(/language 01/i);
   });
 
   it("localizes unique66 leftover Emberplate through Tacoflare food chrome", () => {

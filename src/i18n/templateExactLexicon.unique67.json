@@ -4,5 +4,17 @@
     "es": "Crítica entre compañeros",
     "pt-BR": "Crítica entre pares",
     "ar": "نقد الزملاء"
+  },
+  "חודש": {
+    "en": "month",
+    "es": "mes",
+    "pt-BR": "mês",
+    "ar": "شهر"
+  },
+  "קוד": {
+    "en": "Code",
+    "es": "Código",
+    "pt-BR": "Código",
+    "ar": "كود"
   }
 }

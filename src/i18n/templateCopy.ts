@@ -330,6 +330,7 @@ const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
 const INDEXED_LABELS: Record<string, PhraseTranslation> = {
   "כותרת שירות": { en: "Service title", es: "Título del servicio", "pt-BR": "Título do serviço", ar: "عنوان الخدمة" },
   שאלה: { en: "Question", es: "Pregunta", "pt-BR": "Pergunta", ar: "سؤال" },
+  שפה: { en: "Language", es: "Idioma", "pt-BR": "Idioma", ar: "لغة" },
   מוצר: { en: "Product", es: "Producto", "pt-BR": "Produto", ar: "منتج" },
   המלצה: { en: "Testimonial", es: "Testimonio", "pt-BR": "Depoimento", ar: "شهادة" },
   "שם מוצר": { en: "Product name", es: "Nombre del producto", "pt-BR": "Nome do produto", ar: "اسم المنتج" },
