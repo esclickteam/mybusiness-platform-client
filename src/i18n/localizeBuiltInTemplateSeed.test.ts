@@ -1157,6 +1157,16 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מדיניות פרטיות", "en")).toMatch(/privacy/i);
   });
 
+  it("localizes unique74 section-variant insert chrome", () => {
+    expect(localizeBuiltInText("רוצים להצטרף?", "en")).toMatch(/join/i);
+    expect(localizeBuiltInText("רוצים להצטרף?", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("השאירו אימייל וקבלו עדכונים והטבות.", "es")).toMatch(/Dejad/i);
+    expect(localizeBuiltInText("פנייה בוואטסאפ", "pt-BR")).toMatch(/WhatsApp/i);
+    expect(
+      localizeBuiltInText("הכל היה ברור, מהיר ומקצועי.", "ar"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);

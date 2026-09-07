@@ -1,0 +1,392 @@
+{
+  "לקוח שני": {
+    "en": "Second customer",
+    "es": "Segundo cliente",
+    "pt-BR": "Segundo cliente",
+    "ar": "زبون ثانٍ"
+  },
+  "לקוח חוזר": {
+    "en": "Returning customer",
+    "es": "Cliente habitual",
+    "pt-BR": "Cliente recorrente",
+    "ar": "زبون عائد"
+  },
+  "לקוח עסקי": {
+    "en": "Business customer",
+    "es": "Cliente de empresa",
+    "pt-BR": "Cliente empresarial",
+    "ar": "زبون أعمال"
+  },
+  "מנהלת עסק": {
+    "en": "Business director",
+    "es": "Directora del negocio",
+    "pt-BR": "Diretora do negócio",
+    "ar": "مديرة العمل"
+  },
+  "טיפול יופי": {
+    "en": "Beauty treatment",
+    "es": "Tratamiento de belleza",
+    "pt-BR": "Tratamento de beleza",
+    "ar": "علاج جمال"
+  },
+  "לקוח מרוצה": {
+    "en": "Happy customer",
+    "es": "Cliente satisfecho",
+    "pt-BR": "Cliente satisfeito",
+    "ar": "زبون راضٍ"
+  },
+  "לקוח ראשון": {
+    "en": "First customer",
+    "es": "Primer cliente",
+    "pt-BR": "Primeiro cliente",
+    "ar": "زبون أول"
+  },
+  "לקוח שלישי": {
+    "en": "Third customer",
+    "es": "Tercer cliente",
+    "pt-BR": "Terceiro cliente",
+    "ar": "زبون ثالث"
+  },
+  "רכישה באתר": {
+    "en": "Purchase on the site",
+    "es": "Compra en el sitio",
+    "pt-BR": "Compra no site",
+    "ar": "شراء في الموقع"
+  },
+  "וידאו המלצה": {
+    "en": "Testimonial video",
+    "es": "Vídeo de testimonio",
+    "pt-BR": "Vídeo de depoimento",
+    "ar": "فيديو شهادة"
+  },
+  "פנייה מהאתר": {
+    "en": "Inquiry from the site",
+    "es": "Consulta desde el sitio",
+    "pt-BR": "Contato pelo site",
+    "ar": "تواصل من الموقع"
+  },
+  "תוצאה מעולה": {
+    "en": "Excellent result",
+    "es": "Resultado excelente",
+    "pt-BR": "Resultado excelente",
+    "ar": "نتيجة ممتازة"
+  },
+  "CRM + תורים": {
+    "en": "CRM + bookings",
+    "es": "CRM + citas",
+    "pt-BR": "CRM + horários",
+    "ar": "CRM + مواعيد"
+  },
+  "וידאו ביקורת": {
+    "en": "Review video",
+    "es": "Vídeo de reseña",
+    "pt-BR": "Vídeo de avaliação",
+    "ar": "فيديو تقييم"
+  },
+  "תוצאה אמיתית": {
+    "en": "A real result",
+    "es": "Un resultado real",
+    "pt-BR": "Um resultado real",
+    "ar": "نتيجة حقيقية"
+  },
+  "ביקורת מאומתת": {
+    "en": "Verified review",
+    "es": "Reseña verificada",
+    "pt-BR": "Avaliação verificada",
+    "ar": "تقييم موثّق"
+  },
+  "הרשמה באימייל": {
+    "en": "Email signup",
+    "es": "Alta por correo",
+    "pt-BR": "Inscrição por e-mail",
+    "ar": "تسجيل بالبريد"
+  },
+  "רוצים להצטרף?": {
+    "en": "Want to join?",
+    "es": "¿Queréis uniros?",
+    "pt-BR": "Quer se juntar?",
+    "ar": "تريدون الانضمام؟"
+  },
+  "הצטרפות לרשימה": {
+    "en": "Join the list",
+    "es": "Uníos a la lista",
+    "pt-BR": "Entre na lista",
+    "ar": "الانضمام للقائمة"
+  },
+  "פנייה בוואטסאפ": {
+    "en": "WhatsApp inquiry",
+    "es": "Consulta por WhatsApp",
+    "pt-BR": "Contato pelo WhatsApp",
+    "ar": "تواصل واتساب"
+  },
+  "הצטרפות לעדכונים": {
+    "en": "Join the updates",
+    "es": "Uníos a las novedades",
+    "pt-BR": "Entre nas novidades",
+    "ar": "الانضمام للتحديثات"
+  },
+  "קבלו את ההטבה למייל": {
+    "en": "Get the offer in your inbox",
+    "es": "Recibid la oferta en el correo",
+    "pt-BR": "Receba a oferta no e-mail",
+    "ar": "احصلوا على العرض في البريد"
+  },
+  "הצטרפות לעדכוני החנות": {
+    "en": "Join store updates",
+    "es": "Uníos a las novedades de la tienda",
+    "pt-BR": "Entre nas novidades da loja",
+    "ar": "الانضمام لتحديثات المتجر"
+  },
+  "שירות מדהים, ברור ומקצועי.": {
+    "en": "Amazing, clear, and professional service.",
+    "es": "Servicio increíble, claro y profesional.",
+    "pt-BR": "Serviço incrível, claro e profissional.",
+    "ar": "خدمة مذهلة وواضحة ومهنية."
+  },
+  "החוויה הייתה נעימה ומדויקת.": {
+    "en": "The experience was pleasant and precise.",
+    "es": "La experiencia fue agradable y precisa.",
+    "pt-BR": "A experiência foi agradável e precisa.",
+    "ar": "كانت التجربة لطيفة ودقيقة."
+  },
+  "הכל היה ברור, מהיר ומקצועי.": {
+    "en": "Everything was clear, fast, and professional.",
+    "es": "Todo fue claro, rápido y profesional.",
+    "pt-BR": "Tudo foi claro, rápido e profissional.",
+    "ar": "كان كل شيء واضحاً وسريعاً ومهنياً."
+  },
+  "קיבלתי מענה מהיר ותוצאה מעולה.": {
+    "en": "I got a fast reply and an excellent result.",
+    "es": "Recibí una respuesta rápida y un resultado excelente.",
+    "pt-BR": "Recebi uma resposta rápida e um resultado excelente.",
+    "ar": "حصلت على رد سريع ونتيجة ممتازة."
+  },
+  "קיבלתי שירות מעולה ותוצאה מדויקת.": {
+    "en": "I got excellent service and a precise result.",
+    "es": "Recibí un servicio excelente y un resultado preciso.",
+    "pt-BR": "Recebi um serviço excelente e um resultado preciso.",
+    "ar": "حصلت على خدمة ممتازة ونتيجة دقيقة."
+  },
+  "השאירו אימייל וקבלו עדכונים והטבות.": {
+    "en": "Leave an email and get updates and offers.",
+    "es": "Dejad un correo y recibid novedades y ofertas.",
+    "pt-BR": "Deixe um e-mail e receba novidades e ofertas.",
+    "ar": "اتركوا بريداً واحصلوا على تحديثات وعروض."
+  },
+  "החוויה הייתה מקצועית וברורה מההתחלה.": {
+    "en": "The experience was professional and clear from the start.",
+    "es": "La experiencia fue profesional y clara desde el principio.",
+    "pt-BR": "A experiência foi profissional e clara desde o início.",
+    "ar": "كانت التجربة مهنية وواضحة من البداية."
+  },
+  "השאירו אימייל ונשלח לכם תוכן והטבות.": {
+    "en": "Leave an email and we will send you content and offers.",
+    "es": "Dejad un correo y os enviaremos contenido y ofertas.",
+    "pt-BR": "Deixe um e-mail e enviaremos conteúdo e ofertas.",
+    "ar": "اتركوا بريداً وسنرسل لكم محتوى وعروضاً."
+  },
+  "החוויה הייתה מקצועית והתוצאה יצאה מעולה.": {
+    "en": "The experience was professional and the result came out excellent.",
+    "es": "La experiencia fue profesional y el resultado salió excelente.",
+    "pt-BR": "A experiência foi profissional e o resultado saiu excelente.",
+    "ar": "كانت التجربة مهنية والنتيجة خرجت ممتازة."
+  },
+  "היחס היה אישי והתוצאה יצאה טבעית ומדויקת.": {
+    "en": "The care was personal and the result came out natural and precise.",
+    "es": "El trato fue personal y el resultado salió natural y preciso.",
+    "pt-BR": "O atendimento foi pessoal e o resultado saiu natural e preciso.",
+    "ar": "كان التعامل شخصياً والنتيجة خرجت طبيعية ودقيقة."
+  },
+  "המוצר הגיע מהר, איכות מעולה ושירות מצוין.": {
+    "en": "The product arrived fast, with excellent quality and great service.",
+    "es": "El producto llegó rápido, con calidad excelente y un servicio genial.",
+    "pt-BR": "O produto chegou rápido, com qualidade excelente e um ótimo serviço.",
+    "ar": "وصل المنتج بسرعة بجودة ممتازة وخدمة رائعة."
+  },
+  "השאירו אימייל וקבלו עדכונים ישירות למייל.": {
+    "en": "Leave an email and get updates straight to your inbox.",
+    "es": "Dejad un correo y recibid novedades directamente en el buzón.",
+    "pt-BR": "Deixe um e-mail e receba novidades direto na caixa.",
+    "ar": "اتركوا بريداً واحصلوا على تحديثات مباشرة إلى الصندوق."
+  },
+  "השאירו אימייל וקבלו קופון לקנייה הראשונה.": {
+    "en": "Leave an email and get a coupon for the first purchase.",
+    "es": "Dejad un correo y recibid un cupón para la primera compra.",
+    "pt-BR": "Deixe um e-mail e ganhe um cupom na primeira compra.",
+    "ar": "اتركوا بريداً واحصلوا على كوبون للشراء الأول."
+  },
+  "הכל היה מסודר, ברור ונוח. בהחלט אזמין שוב.": {
+    "en": "Everything was organized, clear, and easy. I will definitely order again.",
+    "es": "Todo estuvo ordenado, claro y cómodo. Sin duda volveré a pedir.",
+    "pt-BR": "Tudo esteve organizado, claro e cômodo. Com certeza peço de novo.",
+    "ar": "كان كل شيء مرتباً وواضحاً ومريحاً. سأطلب مرة أخرى بالتأكيد."
+  },
+  "הרגשתי שיש כאן עסק רציני שאפשר לסמוך עליו.": {
+    "en": "I felt this is a serious business you can trust.",
+    "es": "Sentí que aquí hay un negocio serio en el que se puede confiar.",
+    "pt-BR": "Senti que aqui há um negócio sério em que se pode confiar.",
+    "ar": "شعرت أن هنا عملاً جدياً يمكن الوثوق به."
+  },
+  "קיבלתי מענה מדויק והרגשתי שליוו אותי באמת.": {
+    "en": "I got a precise reply and felt they really walked with me.",
+    "es": "Recibí una respuesta precisa y sentí que me acompañaron de verdad.",
+    "pt-BR": "Recebi uma resposta precisa e senti que me acompanharam de verdade.",
+    "ar": "حصلت على رد دقيق وشعرت أنهم رافقوني حقاً."
+  },
+  "העבודה הייתה מדויקת, מהירה ועם שירות מצוין.": {
+    "en": "The work was precise, fast, and with excellent service.",
+    "es": "El trabajo fue preciso, rápido y con un servicio excelente.",
+    "pt-BR": "O trabalho foi preciso, rápido e com um serviço excelente.",
+    "ar": "كان العمل دقيقاً وسريعاً مع خدمة ممتازة."
+  },
+  "השאירו אימייל ונעדכן אתכם ברגע שההשקה עולה.": {
+    "en": "Leave an email and we will update you as soon as the launch goes live.",
+    "es": "Dejad un correo y os avisaremos en cuanto suba el lanzamiento.",
+    "pt-BR": "Deixe um e-mail e avisaremos assim que o lançamento for ao ar.",
+    "ar": "اتركوا بريداً وسنحدّثكم فور صعود الإطلاق."
+  },
+  "השאירו כתובת ונעדכן אתכם במבצעים ותוכן חדש.": {
+    "en": "Leave an address and we will update you on promos and new content.",
+    "es": "Dejad una dirección y os actualizaremos con ofertas y contenido nuevo.",
+    "pt-BR": "Deixe um endereço e atualizaremos você com ofertas e conteúdo novo.",
+    "ar": "اتركوا عنواناً وسنحدّثكم بالعروض والمحتوى الجديد."
+  },
+  "השירות בוואטסאפ היה מהיר ועזר לי לבחור נכון.": {
+    "en": "WhatsApp service was fast and helped me choose well.",
+    "es": "El servicio por WhatsApp fue rápido y me ayudó a elegir bien.",
+    "pt-BR": "O serviço no WhatsApp foi rápido e me ajudou a escolher certo.",
+    "ar": "كانت خدمة واتساب سريعة وساعدتني على الاختيار الصحيح."
+  },
+  "תיאור קצר של תהליך העבודה והערך שהלקוח קיבל.": {
+    "en": "A short description of the process and the value the customer received.",
+    "es": "Una descripción breve del proceso y del valor que recibió el cliente.",
+    "pt-BR": "Uma descrição curta do processo e do valor que o cliente recebeu.",
+    "ar": "وصف قصير لمسار العمل والقيمة التي حصل عليها الزبون."
+  },
+  "אחד השירותים הכי טובים שקיבלתי. הכל היה ברור.": {
+    "en": "One of the best services I have received. Everything was clear.",
+    "es": "Uno de los mejores servicios que he recibido. Todo estuvo claro.",
+    "pt-BR": "Um dos melhores serviços que já recebi. Tudo esteve claro.",
+    "ar": "من أفضل الخدمات التي حصلت عليها. كان كل شيء واضحاً."
+  },
+  "הרגשתי בטוחה לאורך כל התהליך. הכל היה מקצועי.": {
+    "en": "I felt safe throughout the process. Everything was professional.",
+    "es": "Me sentí segura durante todo el proceso. Todo fue profesional.",
+    "pt-BR": "Senti-me segura ao longo de todo o processo. Tudo foi profissional.",
+    "ar": "شعرت بالأمان طوال المسار. كان كل شيء مهنياً."
+  },
+  "השאירו אימייל ונשלח לכם קופון או עדכון מיוחד.": {
+    "en": "Leave an email and we will send you a coupon or a special update.",
+    "es": "Dejad un correo y os enviaremos un cupón o una novedad especial.",
+    "pt-BR": "Deixe um e-mail e enviaremos um cupom ou uma novidade especial.",
+    "ar": "اتركوا بريداً وسنرسل لكم كوبوناً أو تحديثاً خاصاً."
+  },
+  "שירות יוקרתי, מקצועי ומדויק. כל שלב היה ברור.": {
+    "en": "Luxury, professional, and precise service. Every step was clear.",
+    "es": "Servicio de lujo, profesional y preciso. Cada paso estuvo claro.",
+    "pt-BR": "Serviço de luxo, profissional e preciso. Cada etapa esteve clara.",
+    "ar": "خدمة فاخرة ومهنية ودقيقة. كانت كل خطوة واضحة."
+  },
+  "תיאור קצר של ההצלחה, השיפור או התוצאה העסקית.": {
+    "en": "A short description of the win, the improvement, or the business result.",
+    "es": "Una descripción breve del éxito, la mejora o el resultado de negocio.",
+    "pt-BR": "Uma descrição curta do sucesso, da melhoria ou do resultado de negócio.",
+    "ar": "وصف قصير للنجاح أو التحسّن أو نتيجة العمل."
+  },
+  "שירות מדהים, מקצועי ומהיר. הכל היה ברור ונעים.": {
+    "en": "Amazing, professional, and fast service. Everything was clear and pleasant.",
+    "es": "Servicio increíble, profesional y rápido. Todo fue claro y agradable.",
+    "pt-BR": "Serviço incrível, profissional e rápido. Tudo foi claro e agradável.",
+    "ar": "خدمة مذهلة ومهنية وسريعة. كان كل شيء واضحاً ولطيفاً."
+  },
+  "התהליך היה ברור והתוצאה הייתה בדיוק מה שחיפשתי.": {
+    "en": "The process was clear and the result was exactly what I was looking for.",
+    "es": "El proceso fue claro y el resultado fue exactamente lo que buscaba.",
+    "pt-BR": "O processo foi claro e o resultado foi exatamente o que eu procurava.",
+    "ar": "كان المسار واضحاً والنتيجة كانت تماماً ما كنت أبحث عنه."
+  },
+  "קיבלתי שירות מדויק, סבלני ומקצועי. ממליצה בחום.": {
+    "en": "I got precise, patient, and professional service. I warmly recommend it.",
+    "es": "Recibí un servicio preciso, paciente y profesional. Lo recomiendo con ganas.",
+    "pt-BR": "Recebi um serviço preciso, paciente e profissional. Recomendo de coração.",
+    "ar": "حصلت على خدمة دقيقة وصابرة ومهنية. أوصي بها بحرارة."
+  },
+  "שירות מצוין, מקצועי ומהיר. הרגשתי בידיים טובות.": {
+    "en": "Excellent, professional, and fast service. I felt in good hands.",
+    "es": "Servicio excelente, profesional y rápido. Me sentí en buenas manos.",
+    "pt-BR": "Serviço excelente, profissional e rápido. Senti-me em boas mãos.",
+    "ar": "خدمة ممتازة ومهنية وسريعة. شعرت أنني في أيادٍ أمينة."
+  },
+  "תיאור קצר של האתגר, השירות שניתן והתוצאה שהתקבלה.": {
+    "en": "A short description of the challenge, the service given, and the result.",
+    "es": "Una descripción breve del reto, el servicio dado y el resultado obtenido.",
+    "pt-BR": "Uma descrição curta do desafio, do serviço prestado e do resultado.",
+    "ar": "وصف قصير للتحدي والخدمة المقدَّمة والنتيجة التي تحققت."
+  },
+  "חוויה ברמה גבוהה מאוד. קיבלתי מענה מהיר ותוצאה מצוינת.": {
+    "en": "A very high-level experience. I got a fast reply and an excellent result.",
+    "es": "Una experiencia de nivel muy alto. Recibí una respuesta rápida y un resultado excelente.",
+    "pt-BR": "Uma experiência de nível muito alto. Recebi uma resposta rápida e um resultado excelente.",
+    "ar": "تجربة بمستوى عالٍ جداً. حصلت على رد سريع ونتيجة ممتازة."
+  },
+  "שלחתי הודעה וקיבלתי מענה תוך דקות. השירות היה מקצועי ומהיר.": {
+    "en": "I sent a message and got a reply within minutes. The service was professional and fast.",
+    "es": "Envié un mensaje y recibí respuesta en minutos. El servicio fue profesional y rápido.",
+    "pt-BR": "Enviei uma mensagem e recebi resposta em minutos. O serviço foi profissional e rápido.",
+    "ar": "أرسلت رسالة وحصلت على رد خلال دقائق. كانت الخدمة مهنية وسريعة."
+  },
+  "חסכנו זמן, קיבלנו יותר פניות והלקוחות מבינים בדיוק מה לעשות.": {
+    "en": "We saved time, got more inquiries, and customers understand exactly what to do.",
+    "es": "Ahorramos tiempo, recibimos más consultas y los clientes entienden exactamente qué hacer.",
+    "pt-BR": "Economizamos tempo, recebemos mais contatos e os clientes entendem exatamente o que fazer.",
+    "ar": "وفّرنا وقتاً وحصلنا على تواصل أكثر والزبائن يفهمون تماماً ماذا يفعلون."
+  },
+  "המערכת עשתה לנו סדר בלידים, תורים והלקוחות. הכל הפך פשוט יותר.": {
+    "en": "The system put order in our leads, bookings, and customers. Everything became simpler.",
+    "es": "El sistema nos ordenó los leads, las citas y los clientes. Todo se volvió más simple.",
+    "pt-BR": "O sistema organizou nossos leads, horários e clientes. Tudo ficou mais simples.",
+    "ar": "رتّبت المنظومة لنا العملاء المحتملين والمواعيد والزبائن. صار كل شيء أبسط."
+  },
+  "המערכת עשתה לנו סדר בלידים, תורים והלקוחות. הכל הרבה יותר נוח.": {
+    "en": "The system put order in our leads, bookings, and customers. Everything is much more comfortable.",
+    "es": "El sistema nos ordenó los leads, las citas y los clientes. Todo es mucho más cómodo.",
+    "pt-BR": "O sistema organizou nossos leads, horários e clientes. Tudo está bem mais cômodo.",
+    "ar": "رتّبت المنظومة لنا العملاء المحتملين والمواعيد والزبائن. كل شيء أريح بكثير."
+  },
+  "חוויה מעולה מההתחלה ועד הסוף. האתר נתן לי ביטחון לפנות ולקבוע.": {
+    "en": "An excellent experience from start to finish. The site gave me the confidence to reach out and book.",
+    "es": "Una experiencia excelente de principio a fin. El sitio me dio confianza para consultar y reservar.",
+    "pt-BR": "Uma experiência excelente do início ao fim. O site me deu confiança para entrar em contato e agendar.",
+    "ar": "تجربة ممتازة من البداية حتى النهاية. أعطاني الموقع ثقة للتواصل والحجز."
+  },
+  "שירות מקצועי, נעים וברור. קיבלתי מענה מדויק והרגשתי שיש על מי לסמוך.": {
+    "en": "Professional, pleasant, and clear service. I got a precise reply and felt there was someone to trust.",
+    "es": "Servicio profesional, agradable y claro. Recibí una respuesta precisa y sentí que había en quién confiar.",
+    "pt-BR": "Serviço profissional, agradável e claro. Recebi uma resposta precisa e senti que havia em quem confiar.",
+    "ar": "خدمة مهنية ولطيفة وواضحة. حصلت على رد دقيق وشعرت أن هناك من أثق به."
+  },
+  "הכל היה מסודר, מהיר וברמה גבוהה. ממליצה בחום לכל מי שמחפש שירות אמין.": {
+    "en": "Everything was organized, fast, and high-level. I warmly recommend it to anyone looking for reliable service.",
+    "es": "Todo estuvo ordenado, rápido y de alto nivel. Lo recomiendo con ganas a quien busque un servicio fiable.",
+    "pt-BR": "Tudo esteve organizado, rápido e de alto nível. Recomendo de coração a quem busca um serviço confiável.",
+    "ar": "كان كل شيء مرتباً وسريعاً وبمستوى عالٍ. أوصي بحرارة لكل من يبحث عن خدمة موثوقة."
+  },
+  "לא האמנתי כמה שינוי אפשר לראות. השירות היה מדויק והתוצאה יצאה מושלמת.": {
+    "en": "I could not believe how much change you can see. The service was precise and the result came out perfect.",
+    "es": "No creía cuánto cambio se puede ver. El servicio fue preciso y el resultado salió perfecto.",
+    "pt-BR": "Não acreditava em quanta mudança dá para ver. O serviço foi preciso e o resultado saiu perfeito.",
+    "ar": "لم أصدق كم التغيير الذي يمكن رؤيته. كانت الخدمة دقيقة والنتيجة خرجت مثالية."
+  },
+  "הסרטון הזה מסביר בדיוק למה בחרתי בעסק הזה — מקצועיות, יחס אישי ותוצאה.": {
+    "en": "This video explains exactly why I chose this business — professionalism, personal care, and a result.",
+    "es": "Este vídeo explica exactamente por qué elegí este negocio — profesionalidad, trato personal y resultado.",
+    "pt-BR": "Este vídeo explica exatamente por que escolhi este negócio — profissionalismo, atendimento pessoal e resultado.",
+    "ar": "هذا الفيديو يشرح تماماً لماذا اخترت هذا العمل — مهنية وتعامل شخصي ونتيجة."
+  },
+  "כבר מהרגע הראשון הרגשתי שהגעתי למקום מקצועי. השירות היה סבלני, ברור ומדויק, והתוצאה הייתה בדיוק מה שרציתי.": {
+    "en": "From the first moment I felt I had arrived at a professional place. The service was patient, clear, and precise, and the result was exactly what I wanted.",
+    "es": "Desde el primer momento sentí que había llegado a un lugar profesional. El servicio fue paciente, claro y preciso, y el resultado fue exactamente lo que quería.",
+    "pt-BR": "Desde o primeiro momento senti que tinha chegado a um lugar profissional. O serviço foi paciente, claro e preciso, e o resultado foi exatamente o que eu queria.",
+    "ar": "من اللحظة الأولى شعرت أنني وصلت إلى مكان مهني. كانت الخدمة صابرة وواضحة ودقيقة، والنتيجة كانت تماماً ما أردت."
+  }
+}
