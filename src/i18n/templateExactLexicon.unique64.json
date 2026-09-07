@@ -1,0 +1,170 @@
+{
+  "מעבדה": {
+    "en": "Lab",
+    "es": "Laboratorio",
+    "pt-BR": "Laboratório",
+    "ar": "مختبر"
+  },
+  "סטודיו לומן": {
+    "en": "Lumen studio",
+    "es": "Estudio Lumen",
+    "pt-BR": "Estúdio Lumen",
+    "ar": "استوديو لومن"
+  },
+  "רמקול Orbit": {
+    "en": "Orbit speaker",
+    "es": "Altavoz Orbit",
+    "pt-BR": "Caixa Orbit",
+    "ar": "سماعة Orbit"
+  },
+  "נורה חכמה Halo": {
+    "en": "Halo smart bulb",
+    "es": "Bombilla inteligente Halo",
+    "pt-BR": "Lâmpada inteligente Halo",
+    "ar": "لمبة Halo الذكية"
+  },
+  "לפטופ Nova 14": {
+    "en": "Nova 14 laptop",
+    "es": "Portátil Nova 14",
+    "pt-BR": "Notebook Nova 14",
+    "ar": "لابتوب Nova 14"
+  },
+  "מטען Turbo 65W": {
+    "en": "Turbo 65W charger",
+    "es": "Cargador Turbo 65W",
+    "pt-BR": "Carregador Turbo 65W",
+    "ar": "شاحن Turbo 65W"
+  },
+  "עכבר Flux": {
+    "en": "Flux mouse",
+    "es": "Ratón Flux",
+    "pt-BR": "Mouse Flux",
+    "ar": "فأرة Flux"
+  },
+  "מקלדת Mech Pro": {
+    "en": "Mech Pro keyboard",
+    "es": "Teclado Mech Pro",
+    "pt-BR": "Teclado Mech Pro",
+    "ar": "لوحة Mech Pro"
+  },
+  "בננות Fair": {
+    "en": "Fair bananas",
+    "es": "Plátanos Fair",
+    "pt-BR": "Bananas Fair",
+    "ar": "موز Fair"
+  },
+  "דבש בר": {
+    "en": "Wild honey",
+    "es": "Miel silvestre",
+    "pt-BR": "Mel silvestre",
+    "ar": "عسل بري"
+  },
+  "נעלי ריצה Volt": {
+    "en": "Volt running shoes",
+    "es": "Zapatillas Volt",
+    "pt-BR": "Tênis Volt",
+    "ar": "حذاء جري Volt"
+  },
+  "טייץ Performance": {
+    "en": "Performance tights",
+    "es": "Mallas Performance",
+    "pt-BR": "Legging Performance",
+    "ar": "ليقنز Performance"
+  },
+  "חולצת Dry-Fit": {
+    "en": "Dry-Fit shirt",
+    "es": "Camiseta Dry-Fit",
+    "pt-BR": "Camiseta Dry-Fit",
+    "ar": "قميص Dry-Fit"
+  },
+  "בקבוק Thermo": {
+    "en": "Thermo bottle",
+    "es": "Botella Thermo",
+    "pt-BR": "Garrafa Thermo",
+    "ar": "زجاجة Thermo"
+  },
+  "מזרן יוגה Pro": {
+    "en": "Pro yoga mat",
+    "es": "Esterilla Pro",
+    "pt-BR": "Tapete Pro",
+    "ar": "حصيرة يوغا Pro"
+  },
+  "ערכות": {
+    "en": "Kits",
+    "es": "Kits",
+    "pt-BR": "Kits",
+    "ar": "أطقم"
+  },
+  "רעשן עץ": {
+    "en": "A wooden rattle",
+    "es": "Un sonajero de madera",
+    "pt-BR": "Um chocalho de madeira",
+    "ar": "خشخيشة خشب"
+  },
+  "ספה Nova": {
+    "en": "Nova sofa",
+    "es": "Sofá Nova",
+    "pt-BR": "Sofá Nova",
+    "ar": "أريكة Nova"
+  },
+  "שולחן צד Oak": {
+    "en": "Oak side table",
+    "es": "Mesa auxiliar Oak",
+    "pt-BR": "Mesa lateral Oak",
+    "ar": "طاولة جانبية Oak"
+  },
+  "להקות": {
+    "en": "Bands",
+    "es": "Bandas",
+    "pt-BR": "Bandas",
+    "ar": "أربطة"
+  },
+  "מדפים": {
+    "en": "Shelves",
+    "es": "Estantes",
+    "pt-BR": "Prateleiras",
+    "ar": "رفوف"
+  },
+  "עט נובע": {
+    "en": "A fountain pen",
+    "es": "Una pluma estilográfica",
+    "pt-BR": "Uma caneta-tinteiro",
+    "ar": "قلم حبر"
+  },
+  "גלוס": {
+    "en": "Gloss",
+    "es": "Brillo",
+    "pt-BR": "Gloss",
+    "ar": "ملمّع"
+  },
+  "שפתון Soft Matte": {
+    "en": "Soft Matte lipstick",
+    "es": "Labial Soft Matte",
+    "pt-BR": "Batom Soft Matte",
+    "ar": "أحمر شفاه Soft Matte"
+  },
+  "מברשת איפור": {
+    "en": "A makeup brush",
+    "es": "Una brocha de maquillaje",
+    "pt-BR": "Um pincel de maquiagem",
+    "ar": "فرشاة مكياج"
+  },
+  "מקדחה Brushless": {
+    "en": "Brushless drill",
+    "es": "Taladro Brushless",
+    "pt-BR": "Furadeira Brushless",
+    "ar": "مثقاب Brushless"
+  },
+  "טבעת Aura": {
+    "en": "Aura ring",
+    "es": "Anillo Aura",
+    "pt-BR": "Anel Aura",
+    "ar": "خاتم Aura"
+  },
+  "שרשרת Pearl": {
+    "en": "Pearl necklace",
+    "es": "Collar Pearl",
+    "pt-BR": "Colar Pearl",
+    "ar": "عقد Pearl"
+  }
+}

@@ -962,6 +962,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique64 leftover Lumenware through Jewelis product chrome", () => {
+    expect(localizeBuiltInText("רמקול Orbit", "en")).toMatch(/orbit|speaker/i);
+    expect(localizeBuiltInText("רמקול Orbit", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מברשת איפור", "es")).toMatch(/brocha|maquillaje/i);
+    expect(localizeBuiltInText("עט נובע", "pt-BR")).toMatch(/caneta|tinteiro/i);
+    expect(localizeBuiltInText("דבש בר", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique63 Dunewave seed lines without phrasebook smash", () => {
     expect(localizeBuiltInText("מרפסת פרטית עם נוף לים פתוח.", "en")).toMatch(/private balcony|sea view/i);
     expect(localizeBuiltInText("מרפסת פרטית עם נוף לים פתוח.", "en")).not.toMatch(/balcony private/i);
