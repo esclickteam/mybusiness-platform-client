@@ -1,0 +1,284 @@
+{
+  "ריב איי": {
+    "en": "Ribeye",
+    "es": "Ribeye",
+    "pt-BR": "Ribeye",
+    "ar": "ريب آي"
+  },
+  "ציר הבשר": {
+    "en": "The meat axis",
+    "es": "El eje de la carne",
+    "pt-BR": "O eixo da carne",
+    "ar": "محور اللحم"
+  },
+  "א׳–ה׳": {
+    "en": "Sun–Thu",
+    "es": "Dom–jue",
+    "pt-BR": "Dom–qui",
+    "ar": "الأحد–الخميس"
+  },
+  "טון קוטסו": {
+    "en": "Tonkotsu",
+    "es": "Tonkotsu",
+    "pt-BR": "Tonkotsu",
+    "ar": "تونكوتسو"
+  },
+  "קערות היום": {
+    "en": "Today's bowls",
+    "es": "Cuencos de hoy",
+    "pt-BR": "Tigelas de hoje",
+    "ar": "أوعية اليوم"
+  },
+  "ציר איטי": {
+    "en": "A slow broth",
+    "es": "Un caldo lento",
+    "pt-BR": "Um caldo lento",
+    "ar": "مرق بطيء"
+  },
+  "אטריות טריות": {
+    "en": "Fresh noodles",
+    "es": "Fideos frescos",
+    "pt-BR": "Macarrão fresco",
+    "ar": "نودلز طازجة"
+  },
+  "הרכבה חמה": {
+    "en": "A hot assembly",
+    "es": "Un montaje caliente",
+    "pt-BR": "Uma montagem quente",
+    "ar": "تركيب ساخن"
+  },
+  "דיאבלה": {
+    "en": "Diavola",
+    "es": "Diavola",
+    "pt-BR": "Diavola",
+    "ar": "ديافولا"
+  },
+  "מגש משותף": {
+    "en": "A shared platter",
+    "es": "Una bandeja compartida",
+    "pt-BR": "Uma bandeja compartilhada",
+    "ar": "صينية مشتركة"
+  },
+  "״שולחן מלא צבעים — ככה נראית אהבה ים-תיכונית.״": {
+    "en": "“A table full of color — that is how Mediterranean love looks.”",
+    "es": "“Una mesa llena de color — así se ve el amor mediterráneo.”",
+    "pt-BR": "“Uma mesa cheia de cor — assim parece o amor mediterrâneo.”",
+    "ar": "«طاولة مليئة بالألوان — هكذا يبدو حب متوسطي.»"
+  },
+  "מהגינה": {
+    "en": "From the garden",
+    "es": "Del huerto",
+    "pt-BR": "Da horta",
+    "ar": "من الحديقة"
+  },
+  "עשבי תיבול טריים כל בוקר": {
+    "en": "Fresh herbs every morning",
+    "es": "Hierbas frescas cada mañana",
+    "pt-BR": "Ervas frescas toda manhã",
+    "ar": "أعشاب طازجة كل صباح"
+  },
+  "שולחן גן": {
+    "en": "A garden table",
+    "es": "Una mesa de jardín",
+    "pt-BR": "Uma mesa de jardim",
+    "ar": "طاولة حديقة"
+  },
+  "מזטה · שמן זית · שולחן משותף": {
+    "en": "Mezze · olive oil · a shared table",
+    "es": "Mezze · aceite de oliva · mesa compartida",
+    "pt-BR": "Mezze · azeite · mesa compartilhada",
+    "ar": "مزة · زيت زيتون · طاولة مشتركة"
+  },
+  "סשימי מורי": {
+    "en": "Mori sashimi",
+    "es": "Sashimi mori",
+    "pt-BR": "Sashimi mori",
+    "ar": "ساشيمي موري"
+  },
+  "מסילת ניגירי": {
+    "en": "A nigiri rail",
+    "es": "Un raíl de nigiri",
+    "pt-BR": "Um trilho de nigiri",
+    "ar": "سكة نيجيري"
+  },
+  "מושבים": {
+    "en": "Seats",
+    "es": "Asientos",
+    "pt-BR": "Assentos",
+    "ar": "مقاعد"
+  },
+  "דג טרי": {
+    "en": "Fresh fish",
+    "es": "Pescado fresco",
+    "pt-BR": "Peixe fresco",
+    "ar": "سمك طازج"
+  },
+  "מנות יום": {
+    "en": "Daily dishes",
+    "es": "Platos del día",
+    "pt-BR": "Pratos do dia",
+    "ar": "أطباق اليوم"
+  },
+  "רגעי בראנץ׳": {
+    "en": "Brunch moments",
+    "es": "Momentos de brunch",
+    "pt-BR": "Momentos de brunch",
+    "ar": "لحظات برانش"
+  },
+  "פתק מהשף": {
+    "en": "A note from the chef",
+    "es": "Una nota del chef",
+    "pt-BR": "Um recado do chef",
+    "ar": "ورقة من الشيف"
+  },
+  "הודעה קצרה": {
+    "en": "A short message",
+    "es": "Un mensaje breve",
+    "pt-BR": "Uma mensagem curta",
+    "ar": "رسالة قصيرة"
+  },
+  "בנטו לילה": {
+    "en": "Night bento",
+    "es": "Bento de noche",
+    "pt-BR": "Bento noturno",
+    "ar": "بنتو ليلي"
+  },
+  "רוזה": {
+    "en": "Rosé",
+    "es": "Rosado",
+    "pt-BR": "Rosé",
+    "ar": "روزيه"
+  },
+  "גלגל התבלינים": {
+    "en": "The spice wheel",
+    "es": "La rueda de especias",
+    "pt-BR": "A roda de temperos",
+    "ar": "عجلة التوابل"
+  },
+  "לטגן בצל": {
+    "en": "Fry the onion",
+    "es": "Freír cebolla",
+    "pt-BR": "Fritar cebola",
+    "ar": "قلي البصل"
+  },
+  "להוסיף מסאלה": {
+    "en": "Add masala",
+    "es": "Añadir masala",
+    "pt-BR": "Adicionar masala",
+    "ar": "إضافة ماسالا"
+  },
+  "לבשל לאט": {
+    "en": "Cook slowly",
+    "es": "Cocinar despacio",
+    "pt-BR": "Cozinhar devagar",
+    "ar": "طبخ ببطء"
+  },
+  "להגיש חם": {
+    "en": "Serve hot",
+    "es": "Servir caliente",
+    "pt-BR": "Servir quente",
+    "ar": "تقديم ساخناً"
+  },
+  "ערימת לילה": {
+    "en": "A night stack",
+    "es": "Una pila nocturna",
+    "pt-BR": "Uma pilha noturna",
+    "ar": "كومة ليل"
+  },
+  "עכשיו": {
+    "en": "Now",
+    "es": "Ahora",
+    "pt-BR": "Agora",
+    "ar": "الآن"
+  },
+  "מחר": {
+    "en": "Tomorrow",
+    "es": "Mañana",
+    "pt-BR": "Amanhã",
+    "ar": "غداً"
+  },
+  "הקלידו הודעה...": {
+    "en": "Type a message...",
+    "es": "Escribid un mensaje...",
+    "pt-BR": "Digitem uma mensagem...",
+    "ar": "اكتبوا رسالة..."
+  },
+  "לחמים": {
+    "en": "Breads",
+    "es": "Panes",
+    "pt-BR": "Pães",
+    "ar": "خبز"
+  },
+  "עוגות": {
+    "en": "Cakes",
+    "es": "Pasteles",
+    "pt-BR": "Bolos",
+    "ar": "كعك"
+  },
+  "קמח T55": {
+    "en": "T55 flour",
+    "es": "Harina T55",
+    "pt-BR": "Farinha T55",
+    "ar": "طحين T55"
+  },
+  "סיפור התנור": {
+    "en": "The oven story",
+    "es": "La historia del horno",
+    "pt-BR": "A história do forno",
+    "ar": "قصة الفرن"
+  },
+  "סלסה": {
+    "en": "Salsa",
+    "es": "Salsa",
+    "pt-BR": "Salsa",
+    "ar": "صلصة"
+  },
+  "חובב טאקוס": {
+    "en": "A taco fan",
+    "es": "Un fan de tacos",
+    "pt-BR": "Um fã de tacos",
+    "ar": "محب تاكو"
+  },
+  "בלוגר": {
+    "en": "Blogger",
+    "es": "Blogger",
+    "pt-BR": "Blogueiro",
+    "ar": "مدوّن"
+  },
+  "אורחת": {
+    "en": "Guest",
+    "es": "Invitada",
+    "pt-BR": "Convidada",
+    "ar": "ضيفة"
+  },
+  "ירק": {
+    "en": "Greens",
+    "es": "Verdura",
+    "pt-BR": "Verdura",
+    "ar": "خضار"
+  },
+  "הרכבה": {
+    "en": "Assembly",
+    "es": "Montaje",
+    "pt-BR": "Montagem",
+    "ar": "تركيب"
+  },
+  "Tacoflare נפתח.": {
+    "en": "Tacoflare opened.",
+    "es": "Tacoflare abrió.",
+    "pt-BR": "Tacoflare abriu.",
+    "ar": "Tacoflare افتتح."
+  },
+  "קרנה אסאדה": {
+    "en": "Carne asada",
+    "es": "Carne asada",
+    "pt-BR": "Carne asada",
+    "ar": "كارنه أسادا"
+  },
+  "קאמיטאס": {
+    "en": "Carnitas",
+    "es": "Carnitas",
+    "pt-BR": "Carnitas",
+    "ar": "كارنيتاس"
+  }
+}

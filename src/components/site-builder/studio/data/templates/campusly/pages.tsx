@@ -159,7 +159,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
           {["אבחון","סמסטר א׳","סמסטר ב׳","בחינה"].map((s,i) => (
             <Reveal key={s} delayMs={i*90} className="text-center">
               <div className="t-pulse mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full border-4 border-[var(--p)] bg-white text-sm font-bold text-[var(--p)]">{i+1}</div>
-              <p className="text-sm font-bold text-[var(--dark)]">{s}</p>
+              <p className="text-sm font-bold text-[var(--dark)]">{tx(s)}</p>
             </Reveal>
           ))}
         </div>

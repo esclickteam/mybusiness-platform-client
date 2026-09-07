@@ -119,7 +119,7 @@ function WeekendCalendar({ data }: { data: Record<string, any> }) {
         {days.map(([d, h], i) => (
           <Reveal key={tx(d)} delayMs={i * 70} variant="up">
             <div className="border p-4 text-center" style={{ borderColor: "rgba(58,42,30,0.12)", background: "#fff8f0" }}>
-              <div className="tpl-display text-2xl font-bold" style={{ color: "#f4a261" }}>{tx(d)}</div>
+              <div className="tpl-display text-2xl font-bold" style={{ color: "#f4a261" }}>{tx(d === "ו׳" ? "שישי" : d === "ש׳" ? "שבת" : d === "א׳" ? "ראשון" : d)}</div>
               <p className="mt-1 text-sm" style={{ color: "#9a7b62" }}>{h}</p>
             </div>
           </Reveal>

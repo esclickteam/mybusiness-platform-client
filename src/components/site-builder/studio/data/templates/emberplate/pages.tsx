@@ -128,7 +128,7 @@ function GlowHourChips({ data }: { data: Record<string, any> }) {
         {chips.map(([d, h], i) => (
           <Reveal key={tx(d)} delayMs={i * 80} variant="scale">
             <div className="tpl-glow-chip border px-6 py-4 text-center" style={{ borderColor: "#e85d04", background: "#1f1410", animationDelay: `${i * 0.3}s` }}>
-              <div className="text-xs font-bold tracking-wider" style={{ color: "#e85d04" }}>{tx(d)}</div>
+              <div className="text-xs font-bold tracking-wider" style={{ color: "#e85d04" }}>{tx(d === "ו׳" ? "שישי" : d)}</div>
               <div className="mt-1 text-sm font-semibold">{h}</div>
             </div>
           </Reveal>

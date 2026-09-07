@@ -1,0 +1,416 @@
+{
+  "פרימיירה": {
+    "en": "Premiere",
+    "es": "Estreno",
+    "pt-BR": "Estreia",
+    "ar": "عرض أول"
+  },
+  "· קורס חי": {
+    "en": "· live course",
+    "es": "· curso en vivo",
+    "pt-BR": "· curso ao vivo",
+    "ar": "· دورة مباشرة"
+  },
+  "פתיחה וקונספט": {
+    "en": "Opening and concept",
+    "es": "Apertura y concepto",
+    "pt-BR": "Abertura e conceito",
+    "ar": "افتتاح ومفهوم"
+  },
+  "תרגול מודרך": {
+    "en": "Guided practice",
+    "es": "Práctica guiada",
+    "pt-BR": "Prática guiada",
+    "ar": "تمرين موجَّه"
+  },
+  "פרויקט גמר": {
+    "en": "Final project",
+    "es": "Proyecto final",
+    "pt-BR": "Projeto final",
+    "ar": "مشروع تخرج"
+  },
+  "משוב ומנטורינג": {
+    "en": "Feedback and mentoring",
+    "es": "Feedback y mentoría",
+    "pt-BR": "Feedback e mentoria",
+    "ar": "ملاحظات وإرشاد"
+  },
+  "שיעורים מוקלטים + מפגש חי שבועי עם המנחה.": {
+    "en": "Recorded lessons + a weekly live session with the instructor.",
+    "es": "Clases grabadas + un encuentro en vivo semanal con el/la mentor/a.",
+    "pt-BR": "Aulas gravadas + um encontro ao vivo semanal com o/a mentor/a.",
+    "ar": "دروس مسجّلة + لقاء مباشر أسبوعي مع المرشد."
+  },
+  "הטמעה": {
+    "en": "Implementation",
+    "es": "Implantación",
+    "pt-BR": "Implantação",
+    "ar": "تثبيت"
+  },
+  "ליווי שמשנה מסלול.": {
+    "en": "Guidance that changes the path.",
+    "es": "Acompañamiento que cambia el recorrido.",
+    "pt-BR": "Acompanhamento que muda o percurso.",
+    "ar": "مرافقة تغيّر المسار."
+  },
+  "מיפוי": {
+    "en": "Mapping",
+    "es": "Mapeo",
+    "pt-BR": "Mapeamento",
+    "ar": "تعيين"
+  },
+  "12 מנטורים פעילים · התאמה אישית": {
+    "en": "12 active mentors · personal matching",
+    "es": "12 mentores activos · encaje personal",
+    "pt-BR": "12 mentores ativos · combinação pessoal",
+    "ar": "12 مرشداً نشطاً · ملاءمة شخصية"
+  },
+  "הרשמה ←": {
+    "en": "Enroll ←",
+    "es": "Inscripción ←",
+    "pt-BR": "Inscrição ←",
+    "ar": "تسجيل ←"
+  },
+  "מילים ראשונות וביטחון": {
+    "en": "First words and confidence",
+    "es": "Primeras palabras y confianza",
+    "pt-BR": "Primeiras palavras e confiança",
+    "ar": "كلمات أولى وثقة"
+  },
+  "תרגול": {
+    "en": "Practice",
+    "es": "Práctica",
+    "pt-BR": "Prática",
+    "ar": "تمرين"
+  },
+  "שיחה חיה פעמיים בשבוע": {
+    "en": "A live conversation twice a week",
+    "es": "Una conversación en vivo dos veces por semana",
+    "pt-BR": "Uma conversa ao vivo duas vezes por semana",
+    "ar": "محادثة مباشرة مرتين في الأسبوع"
+  },
+  "שטף": {
+    "en": "Fluency",
+    "es": "Fluidez",
+    "pt-BR": "Fluência",
+    "ar": "طلاقة"
+  },
+  "פרויקט דיבור אישי": {
+    "en": "A personal speaking project",
+    "es": "Un proyecto de habla personal",
+    "pt-BR": "Um projeto de fala pessoal",
+    "ar": "مشروع كلام شخصي"
+  },
+  "ציטוט": {
+    "en": "Quote",
+    "es": "Cita",
+    "pt-BR": "Citação",
+    "ar": "اقتباس"
+  },
+  "לוז": {
+    "en": "Schedule",
+    "es": "Horario",
+    "pt-BR": "Horário",
+    "ar": "جدول"
+  },
+  "שפות": {
+    "en": "Languages",
+    "es": "Idiomas",
+    "pt-BR": "Idiomas",
+    "ar": "لغات"
+  },
+  "ערבית": {
+    "en": "Arabic",
+    "es": "Árabe",
+    "pt-BR": "Árabe",
+    "ar": "العربية"
+  },
+  "סטטיסטיקות ASCII": {
+    "en": "ASCII stats",
+    "es": "Estadísticas ASCII",
+    "pt-BR": "Estatísticas ASCII",
+    "ar": "إحصائيات ASCII"
+  },
+  "FAQ בקונסול": {
+    "en": "FAQ in the console",
+    "es": "FAQ en consola",
+    "pt-BR": "FAQ no console",
+    "ar": "أسئلة في الكونسول"
+  },
+  "README שמגייס": {
+    "en": "A README that recruits",
+    "es": "Un README que recluta",
+    "pt-BR": "Um README que recruta",
+    "ar": "README يوظّف"
+  },
+  "אימפרוביזציה": {
+    "en": "Improvisation",
+    "es": "Improvisación",
+    "pt-BR": "Improvisação",
+    "ar": "ارتجال"
+  },
+  "מוזיקלי": {
+    "en": "Musical",
+    "es": "Musical",
+    "pt-BR": "Musical",
+    "ar": "موسيقي"
+  },
+  "כלי / תחום": {
+    "en": "Instrument / field",
+    "es": "Instrumento / área",
+    "pt-BR": "Instrumento / área",
+    "ar": "آلة / مجال"
+  },
+  "מדע קטן": {
+    "en": "Little science",
+    "es": "Ciencia pequeña",
+    "pt-BR": "Ciência pequena",
+    "ar": "علم صغير"
+  },
+  "מדעים": {
+    "en": "Sciences",
+    "es": "Ciencias",
+    "pt-BR": "Ciências",
+    "ar": "علوم"
+  },
+  "סקרנות": {
+    "en": "Curiosity",
+    "es": "Curiosidad",
+    "pt-BR": "Curiosidade",
+    "ar": "فضول"
+  },
+  "ידיים": {
+    "en": "Hands",
+    "es": "Manos",
+    "pt-BR": "Mãos",
+    "ar": "يدان"
+  },
+  "גאווה": {
+    "en": "Pride",
+    "es": "Orgullo",
+    "pt-BR": "Orgulho",
+    "ar": "فخر"
+  },
+  "מגלים": {
+    "en": "Discover",
+    "es": "Descubren",
+    "pt-BR": "Descobrem",
+    "ar": "يكتشفون"
+  },
+  "מנסים": {
+    "en": "Try",
+    "es": "Prueban",
+    "pt-BR": "Tentam",
+    "ar": "يجرّبون"
+  },
+  "יוצרים": {
+    "en": "Create",
+    "es": "Crean",
+    "pt-BR": "Criam",
+    "ar": "يبتكرون"
+  },
+  "משתפים": {
+    "en": "Share",
+    "es": "Comparten",
+    "pt-BR": "Compartilham",
+    "ar": "يشاركون"
+  },
+  "מורה חברותי/ת": {
+    "en": "A friendly teacher",
+    "es": "Un/a docente cercano/a",
+    "pt-BR": "Um/a professor/a amigável",
+    "ar": "معلم/ة ودود/ة"
+  },
+  "הורה": {
+    "en": "Parent",
+    "es": "Madre/padre",
+    "pt-BR": "Pai/mãe",
+    "ar": "ولي أمر"
+  },
+  "להורים — נחזור אליכם במהירות": {
+    "en": "For parents — we'll get back to you quickly",
+    "es": "Para madres y padres — os responderemos rápido",
+    "pt-BR": "Para pais — voltamos rápido",
+    "ar": "للأهل — نعود إليكم بسرعة"
+  },
+  "שם ההורה": {
+    "en": "Parent name",
+    "es": "Nombre del padre/madre",
+    "pt-BR": "Nome do pai/mãe",
+    "ar": "اسم ولي الأمر"
+  },
+  "גיל הילד/ה": {
+    "en": "Child's age",
+    "es": "Edad del niño/a",
+    "pt-BR": "Idade da criança",
+    "ar": "عمر الطفل/ة"
+  },
+  "תוצר שנשאר": {
+    "en": "Work that stays",
+    "es": "Una pieza que queda",
+    "pt-BR": "Um trabalho que fica",
+    "ar": "نتاج يبقى"
+  },
+  "גימור": {
+    "en": "Finish",
+    "es": "Acabado",
+    "pt-BR": "Acabamento",
+    "ar": "تشطيب"
+  },
+  "חומר גלם": {
+    "en": "Raw material",
+    "es": "Materia prima",
+    "pt-BR": "Matéria-prima",
+    "ar": "مادة خام"
+  },
+  "תרגול באטלייה": {
+    "en": "Studio practice",
+    "es": "Práctica en el atelier",
+    "pt-BR": "Prática no ateliê",
+    "ar": "تمرين في الأتيليه"
+  },
+  "תערוכה קטנה": {
+    "en": "A small exhibition",
+    "es": "Una exposición pequeña",
+    "pt-BR": "Uma exposição pequena",
+    "ar": "معرض صغير"
+  },
+  "אטלייה": {
+    "en": "Atelier",
+    "es": "Atelier",
+    "pt-BR": "Ateliê",
+    "ar": "أتيليه"
+  },
+  "ו׳ · 09:00–13:00": {
+    "en": "Fri · 09:00–13:00",
+    "es": "Vie · 09:00–13:00",
+    "pt-BR": "Sex · 09:00–13:00",
+    "ar": "الجمعة · 09:00–13:00"
+  },
+  "FAQ עם מסמרות": {
+    "en": "FAQ with rivets",
+    "es": "FAQ con remaches",
+    "pt-BR": "FAQ com rebites",
+    "ar": "أسئلة بمسامير"
+  },
+  "חימום": {
+    "en": "Warm-up",
+    "es": "Calentamiento",
+    "pt-BR": "Aquecimento",
+    "ar": "إحماء"
+  },
+  "קירור": {
+    "en": "Cool-down",
+    "es": "Enfriamiento",
+    "pt-BR": "Resfriamento",
+    "ar": "تبريد"
+  },
+  "אבחון חום": {
+    "en": "Heat diagnosis",
+    "es": "Diagnóstico de calor",
+    "pt-BR": "Diagnóstico de calor",
+    "ar": "تشخيص حرارة"
+  },
+  "חישול ליבה": {
+    "en": "Core forging",
+    "es": "Forja del núcleo",
+    "pt-BR": "Forja do núcleo",
+    "ar": "طرق النواة"
+  },
+  "צינון תרגול": {
+    "en": "Practice cool-down",
+    "es": "Enfriamiento de práctica",
+    "pt-BR": "Resfriamento de prática",
+    "ar": "تبريد تمرين"
+  },
+  "הקשחה בשטח": {
+    "en": "Field hardening",
+    "es": "Temple en campo",
+    "pt-BR": "Têmpera em campo",
+    "ar": "تقسية في الميدان"
+  },
+  "מיומנויות": {
+    "en": "Skills",
+    "es": "Habilidades",
+    "pt-BR": "Habilidades",
+    "ar": "مهارات"
+  },
+  "מקצוע": {
+    "en": "Subject",
+    "es": "Materia",
+    "pt-BR": "Matéria",
+    "ar": "مادة"
+  },
+  "רמה": {
+    "en": "Level",
+    "es": "Nivel",
+    "pt-BR": "Nível",
+    "ar": "مستوى"
+  },
+  "ש״ס": {
+    "en": "Weekly hours",
+    "es": "Horas semanales",
+    "pt-BR": "Horas semanais",
+    "ar": "ساعات أسبوعية"
+  },
+  "5 יח׳": {
+    "en": "5 units",
+    "es": "5 uds.",
+    "pt-BR": "5 unid.",
+    "ar": "5 وحدات"
+  },
+  "סמסטר א׳": {
+    "en": "Semester A",
+    "es": "Semestre A",
+    "pt-BR": "Semestre A",
+    "ar": "فصل أ"
+  },
+  "סמסטר ב׳": {
+    "en": "Semester B",
+    "es": "Semestre B",
+    "pt-BR": "Semestre B",
+    "ar": "فصل ب"
+  },
+  "קבלה": {
+    "en": "Admissions",
+    "es": "Admisión",
+    "pt-BR": "Admissão",
+    "ar": "قبول"
+  },
+  "בחרו מקצוע": {
+    "en": "Choose a subject",
+    "es": "Elegid una materia",
+    "pt-BR": "Escolham uma matéria",
+    "ar": "اختاروا مادة"
+  },
+  "פתיחה והקשר": {
+    "en": "Opening and context",
+    "es": "Apertura y contexto",
+    "pt-BR": "Abertura e contexto",
+    "ar": "افتتاح وسياق"
+  },
+  "עומק ותרגול": {
+    "en": "Depth and practice",
+    "es": "Profundidad y práctica",
+    "pt-BR": "Profundidade e prática",
+    "ar": "عمق وتمرين"
+  },
+  "שיא ובמה": {
+    "en": "Peak and stage",
+    "es": "Cima y escenario",
+    "pt-BR": "Pico e palco",
+    "ar": "ذروة ومنصة"
+  },
+  "שורש וגוון": {
+    "en": "Root and tone",
+    "es": "Raíz y tono",
+    "pt-BR": "Raiz e tom",
+    "ar": "جذر ودرجة"
+  },
+  "מלוות": {
+    "en": "Companions",
+    "es": "Acompañantes",
+    "pt-BR": "Acompanhantes",
+    "ar": "مرافقات"
+  }
+}

@@ -224,7 +224,7 @@ function Faq({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-3xl">
         <Reveal><h2 className="t-display mb-6 text-center text-2xl sm:text-4xl font-bold text-[var(--dark)]">{getValue(data,"sectionSevenTitle")}</h2></Reveal>
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {["הרשמה","לוז","מחיר"].map((t) => <span key={t} className="rounded-full border border-[var(--p)] px-4 py-1 text-xs font-bold text-[var(--p)]">{t}</span>)}
+          {["הרשמה","לוז","מחיר"].map((t) => <span key={t} className="rounded-full border border-[var(--p)] px-4 py-1 text-xs font-bold text-[var(--p)]">{tx(t)}</span>)}
         </div>
         {[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q,a],i) => (
           <Reveal key={q} delayMs={i*60} className="mb-3 rounded-2xl border border-[var(--p)]/20 p-5">

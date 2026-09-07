@@ -962,6 +962,22 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique66 leftover Emberplate through Tacoflare food chrome", () => {
+    expect(localizeBuiltInText("ציר הבשר", "en")).toMatch(/meat|axis/i);
+    expect(localizeBuiltInText("ציר הבשר", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("גלגל התבלינים", "es")).toMatch(/especia|rueda/i);
+    expect(localizeBuiltInText("הקלידו הודעה...", "pt-BR")).toMatch(/mensagem/i);
+    expect(localizeBuiltInText("ערימת לילה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique65 leftover Lectora through Masterly education chrome", () => {
+    expect(localizeBuiltInText("· קורס חי", "en")).toMatch(/live|course/i);
+    expect(localizeBuiltInText("· קורס חי", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הרשמה ←", "es")).toMatch(/inscrip/i);
+    expect(localizeBuiltInText("שם ההורה", "pt-BR")).toMatch(/pai|mãe|nome/i);
+    expect(localizeBuiltInText("בחרו מקצוע", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique64 leftover Lumenware through Jewelis product chrome", () => {
     expect(localizeBuiltInText("רמקול Orbit", "en")).toMatch(/orbit|speaker/i);
     expect(localizeBuiltInText("רמקול Orbit", "en")).not.toMatch(/[\u0590-\u05FF]/);

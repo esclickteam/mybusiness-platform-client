@@ -156,7 +156,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         {[["מגלים","סקרנות"],["מנסים","ידיים"],["יוצרים","גאווה"],["משתפים","חברים"]].map(([t,d],i) => (
           <Reveal key={t} delayMs={i*80} variant="up" className="t-hover rounded-3xl border-4 border-dashed p-6 text-center">
             <div className="t-float mx-auto h-3 w-3 rounded-full" style={{background:["#10B981","#FBBF24","#34D399","#F59E0B"][i]}} />
-            <h3 className="mt-3 text-lg font-bold text-[var(--dark)]">{t}</h3>
+            <h3 className="mt-3 text-lg font-bold text-[var(--dark)]">{tx(t)}</h3>
             <p className="text-sm text-[var(--muted)]">{tx(d)}</p>
           </Reveal>
         ))}

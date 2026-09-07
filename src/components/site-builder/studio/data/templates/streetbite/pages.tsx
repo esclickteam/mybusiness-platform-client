@@ -125,7 +125,7 @@ function BouncePins({ data }: { data: Record<string, any> }) {
             <div className="text-center">
               <div className="tpl-pin mx-auto h-4 w-4 rounded-full" style={{ background: "#39d353", animationDelay: `${i * 0.2}s` }} />
               <p className="mt-2 text-sm font-black">{place}</p>
-              <p className="text-xs" style={{ color: "#8b949e" }}>{when}</p>
+              <p className="text-xs" style={{ color: "#8b949e" }}>{tx(when)}</p>
             </div>
           </Reveal>
         ))}
