@@ -46,7 +46,11 @@ import {
 } from "./utils/customDomainPublishUi";
 import { getPublicSiteDomain } from "../../../utils/publicSiteHost";
 
-import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
+import {
+  getStudioTemplateRenderer,
+  hasStudioTemplateLoader,
+} from "./data/templates/loadStudioTemplate";
+import { useStudioTemplateRenderer } from "./data/templates/useStudioTemplateRenderer";
 import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
@@ -989,18 +993,18 @@ function buildRendererSeedFromKey(
   const key = normalizeStudioTemplateKey(templateKey);
   if (!key) return null;
   const resolved = renderer || getStudioTemplateRenderer(key);
-  if (!resolved?.Component) return null;
+  if (!resolved?.Component && !hasStudioTemplateLoader(key)) return null;
 
   return {
     id: key,
     key,
-    rendererKey: normalizeStudioTemplateKey(resolved.key) || key,
+    rendererKey: normalizeStudioTemplateKey(resolved?.key) || key,
     renderMode: "registry",
     editorMode: "renderer",
-    name: resolved.name || key,
+    name: resolved?.name || key,
     category: "business",
     description: "",
-    heroTitle: resolved.name || key,
+    heroTitle: resolved?.name || key,
     heroSubtitle: "",
     palette: {},
     colors: {},
@@ -1137,38 +1141,14 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       כדי שהתבנית תיכנס ל-React renderer ולא ל-GrapesJS סטטי.
     */
     const renderer = getStudioTemplateRenderer(templateFromUrl);
+    const fallbackSeed = buildRendererSeedFromKey(templateFromUrl, renderer);
 
-    if (renderer?.Component) {
-      const fallbackSeed = {
-        id: templateFromUrl,
-        key: templateFromUrl,
-        rendererKey: templateFromUrl,
-        renderMode: "registry",
-        editorMode: "renderer",
-        name: renderer.name || templateFromUrl,
-        category: "business",
-        description: "",
-        heroTitle: renderer.name || templateFromUrl,
-        heroSubtitle: "",
-        palette: {},
-        colors: {},
-        fonts: {},
-        layoutSettings: {},
-        blocks: [],
-        pages: [],
-        editor: {
-          slug: templateFromUrl,
-          activePageId: "home",
-          pages: [],
-        },
-      } as unknown as ReadyWebsiteTemplateSeed;
-
+    if (fallbackSeed) {
       studioDebug("readTemplateSeedFromStorage:success-from-url-renderer", {
         templateFromUrl,
-        rendererKey: renderer.key,
-        rendererName: renderer.name,
+        rendererKey: fallbackSeed.rendererKey || templateFromUrl,
+        rendererName: fallbackSeed.name,
       });
-
       return fallbackSeed;
     }
 
@@ -4778,12 +4758,13 @@ export default function WebsiteStudioPage({
   const selectedTemplateSeed = resolvedTemplateSeed;
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
-
-  const selectedTemplateRenderer = useMemo(() => {
-    if (!selectedTemplateSeed) return null;
-
-    return getTemplateRendererBySeed(selectedTemplateSeed);
-  }, [selectedTemplateSeed]);
+  const selectedRendererKey = selectedTemplateSeed
+    ? getSeedRendererKey(selectedTemplateSeed) ||
+      normalizeStudioTemplateKey((selectedTemplateSeed as any).key) ||
+      normalizeStudioTemplateKey(selectedTemplateSeed.id)
+    : "";
+  const { renderer: selectedTemplateRenderer, loading: loadingTemplateRenderer } =
+    useStudioTemplateRenderer(selectedRendererKey);
 
   const isVisualReactTemplate = Boolean(
     selectedTemplateRenderer?.Component &&
@@ -8683,6 +8664,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       : "";
 
   if (!studioModeResolved) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label={t("studio.loadingSavedSite")}
+      />
+    );
+  }
+
+  if (
+    selectedTemplateSeed &&
+    shouldUseTemplateRenderer(selectedTemplateSeed) &&
+    !selectedTemplateRenderer &&
+    (loadingTemplateRenderer || hasStudioTemplateLoader(selectedRendererKey))
+  ) {
     return (
       <BizuplyLoader
         fullScreen

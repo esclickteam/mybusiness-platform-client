@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { useStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/useStudioTemplateRenderer";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../i18n/localeUtils";
 import { setTemplateLanguageOverride } from "../i18n/templateDir";
@@ -21,10 +21,7 @@ export default function EmbedTemplatePreviewPage() {
   const language = searchParams.get("lang") || i18n.language;
   setTemplateLanguageOverride(searchParams.get("lang"));
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateKey),
-    [templateKey],
-  );
+  const { renderer } = useStudioTemplateRenderer(templateKey);
 
   if (!renderer?.Component) {
     return <div style={{ minHeight: "100vh", background: "#fff" }} />;

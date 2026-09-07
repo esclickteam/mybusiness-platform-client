@@ -10,8 +10,8 @@ import { useTranslation } from "react-i18next";
 import API from "../api";
 import { createMySite } from "../api/mySitesApi";
 import {
-  getStudioTemplateSeedById,
-} from "../components/site-builder/studio/data/templates";
+  loadStudioTemplateSeedById,
+} from "../components/site-builder/studio/data/templates/loadStudioTemplate";
 import {
   buildClientAiSitePlan,
   materializeAiSitePlan,
@@ -217,7 +217,7 @@ export default function AiSiteWizardPage() {
       });
 
       const hostKey = built.hostTemplateKey;
-      const localSeed = getStudioTemplateSeedById(hostKey) as any;
+      const localSeed = (await loadStudioTemplateSeedById(hostKey)) as any;
 
       const templateForEditor = {
         ...(localSeed || {}),

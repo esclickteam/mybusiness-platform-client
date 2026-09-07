@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { Helmet } from "react-helmet-async";
 
-import { getStudioTemplateRenderer } from "../studio/data/templates/templateRendererRegistry";
+import { useStudioTemplateRenderer } from "../studio/data/templates/useStudioTemplateRenderer";
 import { resolvePageSeoMeta } from "../studio/utils/pageSeoUtils";
 import { VisualLibraryPageProvider } from "../runtime/visualLibraryPage";
 
@@ -2566,10 +2566,7 @@ export default function PublicVisualSiteRenderer({
     [site, activePage],
   );
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateKey),
-    [templateKey],
-  );
+  const { renderer } = useStudioTemplateRenderer(templateKey);
 
   const visualData = useMemo(() => {
     const raw = readTemplateData(site, activePage, templateData);

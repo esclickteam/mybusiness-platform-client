@@ -1,14 +1,13 @@
 import React, {
   Component,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { localizeBuiltInTemplateSeed } from "../../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
+import { useStudioTemplateRenderer } from "../site-builder/studio/data/templates/useStudioTemplateRenderer";
 
 const DESIGN_WIDTH = 1440;
 /** Tall enough to show header + full hero, not a mid-cut crop */
@@ -55,10 +54,7 @@ export default function LiveTemplateMockup({
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(640);
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateId),
-    [templateId],
-  );
+  const { renderer } = useStudioTemplateRenderer(templateId);
 
   useEffect(() => {
     const el = frameRef.current;
