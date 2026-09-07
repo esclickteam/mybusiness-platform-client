@@ -1167,6 +1167,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique75 leftover section-variant HTML chrome", () => {
+    expect(localizeBuiltInText("הסל שלך", "en")).toMatch(/cart/i);
+    expect(localizeBuiltInText("הסל שלך", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("בחרו שירות", "es")).toMatch(/Elegid/i);
+    expect(localizeBuiltInText("עקבו אחרינו", "pt-BR")).toMatch(/Siga/i);
+    expect(localizeBuiltInText("משלוח חינם מעל ₪300", "en")).toMatch(/₪300/);
+    expect(localizeBuiltInText("רוצים לדעת עוד?", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
