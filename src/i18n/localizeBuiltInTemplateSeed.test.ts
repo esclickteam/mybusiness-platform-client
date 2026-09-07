@@ -1200,6 +1200,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מעולה. יש זמינות ביום שני ב־10:30.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique79 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("מצאתם זמן שמתאים לכם? קבעו תור עכשיו", "en")).toMatch(/book/i);
+    expect(localizeBuiltInText("מצאתם זמן שמתאים לכם? קבעו תור עכשיו", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קראו ביקורות והשאירו גם אתם חוות דעת", "es")).toMatch(/Leed|dejad/i);
+    expect(localizeBuiltInText("10% הנחה ללקוחות חדשים או לחברי מועדון.", "pt-BR")).toMatch(/10%/);
+    expect(localizeBuiltInText("יום חמישי · 24.06.2026 · 20:30 · שם האולם", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
