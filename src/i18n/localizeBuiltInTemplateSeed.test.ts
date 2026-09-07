@@ -1184,6 +1184,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שאלה? בקשה? אנחנו כאן.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique77 leftover section-variant sentences", () => {
+    expect(localizeBuiltInText("מלאו פרטים ונחזור אליכם בהקדם.", "en")).toMatch(/details/i);
+    expect(localizeBuiltInText("מלאו פרטים ונחזור אליכם בהקדם.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("ספרו לנו איך הייתה החוויה שלכם.", "es")).toMatch(/Contadnos/i);
+    expect(localizeBuiltInText("קבלו מדריך חינמי ישירות למייל", "pt-BR")).toMatch(/e-mail|guia/i);
+    expect(localizeBuiltInText("תהליך פשוט וברור בשלושה שלבים", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
