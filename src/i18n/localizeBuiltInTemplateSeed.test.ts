@@ -1264,6 +1264,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תמונת רקע מלאה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique87 leftover section-picker descriptions", () => {
+    expect(localizeBuiltInText("טקסט הסבר לצד וידאו.", "en")).toMatch(/video/i);
+    expect(localizeBuiltInText("טקסט הסבר לצד וידאו.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("קביעת תור או פתיחת שיחה בוואטסאפ.", "es")).toMatch(/Reservad|WhatsApp/i);
+    expect(localizeBuiltInText("קבלת מדריך/קובץ/הטבה בתמורה להרשמה.", "pt-BR")).toMatch(/Receba|inscrição/i);
+    expect(localizeBuiltInText("סקשן קריאה לפעולה קצר, צבעוני וממיר.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
