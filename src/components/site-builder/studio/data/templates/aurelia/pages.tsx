@@ -397,7 +397,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 key={title}
                 className="rounded-3xl border border-[#c9a24b]/15 bg-[#1a1510]/70 p-5 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
               >
-                <p className="font-serif text-lg font-semibold text-[#c9a24b]">{title}</p>
+                <p className="font-serif text-lg font-semibold text-[#c9a24b]">{tx(title)}</p>
                 <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
               </div>
             ))}
@@ -622,7 +622,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[24px] border border-[#c9a24b]/12 bg-[#14100d]/60 px-4 py-4 transition duration-300 hover:border-[#c9a24b]/35"
                 >
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]">{label}</div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold text-[#f5eee1]">{value}</div>
                 </div>
               ))}

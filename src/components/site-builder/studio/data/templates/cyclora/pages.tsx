@@ -103,10 +103,10 @@ const AVATAR_ORBIT_LAYOUTS = [
 ];
 
 const SOCIAL_LINKS = [
-  { short: "אי", label: "אינסטגרם" },
-  { short: "לין", label: "לינקדאין" },
-  { short: "אקס", label: "אקס" },
-  { short: "פי", label: "פייסבוק" },
+  { short: "IG", label: "אינסטגרם" },
+  { short: "in", label: "לינקדאין" },
+  { short: "X", label: "אקס" },
+  { short: "Fb", label: "פייסבוק" },
 ] as const;
 
 const CTA_ORBIT_LAYOUTS = [
@@ -815,10 +815,10 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                   <a
                     key={link.label}
                     href="#contact"
-                    aria-label={link.label}
+                    aria-label={tx(link.label)}
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[10px] font-black text-white transition-colors duration-300 hover:bg-white hover:text-black"
                   >
-                    {link.short}
+                    {tx(link.short)}
                   </a>
                 ))}
               </div>

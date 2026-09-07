@@ -925,6 +925,15 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("סדנה / הרצאה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique51 leftover Cyclora, Chanel, and Aurelia chrome", () => {
+    expect(localizeBuiltInText("חוויית שיווק מבוססת נתונים", "en")).toMatch(/data|marketing/i);
+    expect(localizeBuiltInText("חוויית שיווק מבוססת נתונים", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("לקולקציה החדשה", "es")).toMatch(/colecci/i);
+    expect(localizeBuiltInText("תיקי עור", "pt-BR")).toMatch(/couro|bolsa/i);
+    expect(localizeBuiltInText("מטבח פתוח", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מוכנים לערב?", "en")).toMatch(/evening|ready/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
