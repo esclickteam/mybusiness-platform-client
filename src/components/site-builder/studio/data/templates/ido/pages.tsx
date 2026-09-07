@@ -451,7 +451,7 @@ function Hero({
                 editLabel={`תווית ${label}`}
                 className="mt-1 text-xs text-white/60"
               >
-                {label}
+                {tx(label)}
               </TemplateText>
             </div>
           ))}
@@ -509,7 +509,7 @@ function Services({
             editId="services.body"
             editLabel="תיאור שירותים"
             className="mt-7 whitespace-pre-wrap text-lg leading-8 text-[#111827]/75"
-          >{tx("אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\n            מהיכרות ראשונה ועד פנייה אמיתית.")}</TemplateText>
+          >{tx("אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\nמהיכרות ראשונה ועד פנייה אמיתית.")}</TemplateText>
 
           <button
             type="button"
@@ -585,7 +585,7 @@ function Services({
             editId="services.sideCopy"
             editLabel="טקסט צד שירותים"
             className="whitespace-pre-wrap text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80"
-          >{tx("ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח\n            ושיפור מתמיד של הביצועים — במקום אחד.")}</TemplateText>
+          >{tx("ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח\nושיפור מתמיד של הביצועים — במקום אחד.")}</TemplateText>
 
           <TemplateText
             as="div"
@@ -688,7 +688,7 @@ function About({
                 : "translate-y-8 opacity-0 blur-md",
             ].join(" ")}
             style={{ transitionDelay: "1500ms" }}
-          >{tx("הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית\n            למערכת שמייצרת אמון, תנועה, לידים ומכירות.")}</TemplateText>
+          >{tx("הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית\nלמערכת שמייצרת אמון, תנועה, לידים ומכירות.")}</TemplateText>
         </div>
 
         <div
@@ -744,7 +744,7 @@ function About({
                   editLabel={`כותרת כרטיס ${index + 1}`}
                   className="whitespace-pre-wrap text-3xl font-semibold tracking-[-0.045em]"
                 >
-                  {item.title}
+                  {tx(item.title)}
                 </TemplateText>
                 <TemplateText
                   as="p"
@@ -752,7 +752,7 @@ function About({
                   editLabel={`תיאור כרטיס ${index + 1}`}
                   className="mt-4 whitespace-pre-wrap leading-7 text-white/58"
                 >
-                  {item.text}
+                  {tx(item.text)}
                 </TemplateText>
               </div>
             </article>
@@ -940,7 +940,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
             editLabel="כותרת גלריה"
             className="whitespace-pre-wrap text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl"
           >
-            {"מחברים בין קהל, תוכן, דאטה\nוקמפיינים\nלמערכת צמיחה אחת ברורה."}
+            {tx("מחברים בין קהל, תוכן, דאטה\nוקמפיינים\nלמערכת צמיחה אחת ברורה.")}
           </TemplateText>
 
           <TemplateText
@@ -948,7 +948,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
             editId="gallery.subtitle"
             editLabel="תיאור גלריה"
             className="mx-auto mt-7 max-w-2xl whitespace-pre-wrap text-base leading-8 text-white/64 md:text-lg"
-          >{tx("המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,\n            מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.")}</TemplateText>
+          >{tx("המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,\nמכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.")}</TemplateText>
         </div>
 
         {orbitImages.map((image) => (
@@ -1029,7 +1029,7 @@ function Booking({
             editLabel="כותרת ייעוץ"
             className="whitespace-pre-wrap text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
           >
-            {"בואו נבנה\nתוכנית צמיחה\nלעסק שלך."}
+            {tx("בואו נבנה\nתוכנית צמיחה\nלעסק שלך.")}
           </TemplateText>
 
           <TemplateText
@@ -1037,7 +1037,7 @@ function Booking({
             editId="booking.subtitle"
             editLabel="תיאור ייעוץ"
             className="mt-7 max-w-xl whitespace-pre-wrap text-lg leading-8 text-[#07100e]/65"
-          >{tx("אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף\n            בהמשך.")}</TemplateText>
+          >{tx("אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף\nבהמשך.")}</TemplateText>
         </div>
 
         <form
@@ -1187,7 +1187,7 @@ function Faq({
                 editLabel={`שאלת FAQ ${index + 1}`}
                 className="whitespace-pre-wrap text-xl font-semibold"
               >
-                {item.q}
+                {tx(item.q)}
               </TemplateText>
 
               <TemplateText
@@ -1196,7 +1196,7 @@ function Faq({
                 editLabel={`תשובת FAQ ${index + 1}`}
                 className="mt-3 whitespace-pre-wrap leading-7 text-white/62"
               >
-                {item.a}
+                {tx(item.a)}
               </TemplateText>
             </div>
           ))}

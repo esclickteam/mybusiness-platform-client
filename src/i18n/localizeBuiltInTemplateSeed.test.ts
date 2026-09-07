@@ -718,6 +718,35 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("טופס בקשת שירות", "pt-BR")).toMatch(/formul[aá]rio|servi[cç]o/i);
   });
 
+  it("localizes unique39 leftover IDO preview body, FAQ, and form chrome", () => {
+    expect(
+      localizeBuiltInText(
+        "אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\nמהיכרות ראשונה ועד פנייה אמיתית.",
+        "en",
+      ),
+    ).toMatch(/clear language|inquiry/i);
+    expect(
+      localizeBuiltInText(
+        "אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\nמהיכרות ראשונה ועד פנייה אמיתית.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("לא רק תוכן — מערכת צמיחה", "es")).toMatch(/contenido|crecimiento/i);
+    expect(localizeBuiltInText("תוכן שמייצר אמון", "pt-BR")).toMatch(/confiança/i);
+    expect(localizeBuiltInText("דאטה שמוביל החלטות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "מחברים בין קהל, תוכן, דאטה\nוקמפיינים\nלמערכת צמיחה אחת ברורה.",
+        "en",
+      ),
+    ).toMatch(/growth system|campaign/i);
+    expect(localizeBuiltInText("בואו נבנה\nתוכנית צמיחה\nלעסק שלך.", "pt-BR")).toMatch(/negócio|crescimento/i);
+    expect(localizeBuiltInText("זה מותאם לנייד?", "en")).toMatch(/mobile/i);
+    expect(localizeBuiltInText("שליחת בקשה לשיחה", "es")).toMatch(/llamada|solicitud/i);
+    expect(localizeBuiltInText("חשיפות", "en")).toBe("Impressions");
+    expect(localizeBuiltInText("ניהול סושיאל", "pt-BR")).toMatch(/social/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
