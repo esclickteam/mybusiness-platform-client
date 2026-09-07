@@ -962,6 +962,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הצטרפו לעולם שאנל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique63 Dunewave seed lines without phrasebook smash", () => {
+    expect(localizeBuiltInText("מרפסת פרטית עם נוף לים פתוח.", "en")).toMatch(/private balcony|sea view/i);
+    expect(localizeBuiltInText("מרפסת פרטית עם נוף לים פתוח.", "en")).not.toMatch(/balcony private/i);
+    expect(localizeBuiltInText("מרפסת פרטית עם נוף לים פתוח.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מתי אתם מגיעים?", "pt-BR")).toMatch(/chegam/i);
+  });
+
   it("localizes unique62 leftover Growthly through Franchora chrome", () => {
     expect(localizeBuiltInText("קולנוע של עבודה שמתקדמת", "en")).toMatch(/cinema|work/i);
     expect(localizeBuiltInText("קולנוע של עבודה שמתקדמת", "en")).not.toMatch(/[\u0590-\u05FF]/);
