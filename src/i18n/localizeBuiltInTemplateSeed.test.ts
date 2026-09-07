@@ -1280,6 +1280,22 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("סקשן שירותים שמוביל ישירות לשיחת וואטסאפ.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique89 leftover section-picker descriptions", () => {
+    expect(localizeBuiltInText("שורת מוצרים נגללת לרוחב כמו חנות מודרנית.", "en")).toMatch(/store|product/i);
+    expect(localizeBuiltInText("שורת מוצרים נגללת לרוחב כמו חנות מודרנית.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("באנר קצר, צבעוני וחזק שאפשר לשלב בכל עמוד.", "es")).toMatch(/podéis|banner/i);
+    expect(localizeBuiltInText("מוקאפ מובייל שמראה איך הלקוח קובע תור בטלפון.", "pt-BR")).toMatch(/telefone|agenda/i);
+    expect(localizeBuiltInText("סקשן קצר, צבעוני וממיר שמוביל לרשתות החברתיות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique90 leftover section-picker descriptions", () => {
+    expect(localizeBuiltInText("חנות שמתאימה לעסקים שרוצים לקבל הזמנות דרך וואטסאפ.", "en")).toMatch(/WhatsApp/i);
+    expect(localizeBuiltInText("חנות שמתאימה לעסקים שרוצים לקבל הזמנות דרך וואטסאפ.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("סקשן המלצות שמתאים לקליניקה, איפור, יופי וטיפולים.", "es")).toMatch(/maquillaje|clínica/i);
+    expect(localizeBuiltInText("ביקורות שמתאימות לקליניקות, יופי, טיפולים ואיפור.", "pt-BR")).toMatch(/maquiagem|clínica/i);
+    expect(localizeBuiltInText("גריד מוצרים מקצועי בסגנון Shopify עם כרטיסים נקיים, Hover וכפתור רכישה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
