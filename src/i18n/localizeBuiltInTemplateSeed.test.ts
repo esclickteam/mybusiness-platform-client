@@ -790,6 +790,22 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מענה", "en")).toBe("Response");
   });
 
+  it("localizes unique42 leftover Wantravel and Lexora built-in seed copy", () => {
+    expect(localizeBuiltInText("חופשות בוטיק בהתאמה אישית", "en")).toMatch(
+      /boutique/i,
+    );
+    expect(localizeBuiltInText("חופשות בוטיק בהתאמה אישית", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("בואו נבנה מסלול", "es")).toMatch(/itinerario/i);
+    expect(localizeBuiltInText("תכנון מלא", "pt-BR")).toMatch(/planejamento completo/i);
+    expect(localizeBuiltInText("ייעוץ משפטי אסטרטגי", "en")).toMatch(/legal/i);
+    expect(localizeBuiltInText("סטנדרט גבוה יותר לליווי משפטי", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("קביעת ייעוץ", "en")).toMatch(/consult/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
