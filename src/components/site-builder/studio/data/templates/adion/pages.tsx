@@ -726,7 +726,7 @@ function Services() {
               <div className="relative h-[360px] overflow-hidden">
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={tx(item.title)}
                   className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-110 group-hover:grayscale-0"
                 />
                 <div className="absolute left-5 top-5 rounded-full bg-[#f6efe3] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]">
@@ -735,9 +735,9 @@ function Services() {
               </div>
               <div className="p-6 sm:p-8">
                 <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-[-0.07em]">
-                  {item.title}
+                  {tx(item.title)}
                 </h3>
-                <p className="mt-4 leading-7 text-white/56">{item.text}</p>
+                <p className="mt-4 leading-7 text-white/56">{tx(item.text)}</p>
               </div>
             </article>
           ))}
@@ -808,7 +808,7 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#10100e] via-transparent to-transparent" />
                 <div className="absolute left-6 right-6 top-6 flex items-center justify-between">
                   <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]">
-                    {item.tag}
+                    {tx(item.tag)}
                   </span>
                   <span className="rounded-full border border-white/20 bg-black/25 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur">
                     {item.year}
@@ -879,13 +879,13 @@ function Reviews() {
                 </span>
                 <span className="text-2xl md:text-5xl leading-none">{tx("״")}</span>
               </div>
-              <p className="text-xl font-semibold leading-9">{item.quote}</p>
+              <p className="text-xl font-semibold leading-9">{tx(item.quote)}</p>
               <div className="mt-10 border-t border-black/10 pt-5">
                 <div className="font-black uppercase tracking-[-0.03em]">
                   {item.name}
                 </div>
                 <div className="mt-1 text-sm font-semibold text-black/55">
-                  {item.role}
+                  {tx(item.role)}
                 </div>
               </div>
             </article>

@@ -140,7 +140,7 @@ function getHebrewValue(data: Record<string, any>, key: string, fallback: string
   const value = String(getValue(data, key) || "").trim();
 
   if (!value || hasEnglish(value)) {
-    return fallback;
+    return tx(fallback);
   }
 
   return value;
@@ -829,7 +829,7 @@ function Hero({
                 {num}
               </div>
               <div className="mt-3 text-sm font-semibold tracking-[0.08em] !text-[#fff6e9]">
-                {label}
+                {tx(label)}
               </div>
             </div>
           ))}
@@ -907,8 +907,8 @@ function PracticeAreasSection({
       ),
     },
     {
-      title: "דיני עבודה",
-      text: "ייעוץ וליווי בסכסוכי עבודה, חוזים, פיטורין, זכויות עובדים ומעסיקים.",
+      title: tx("דיני עבודה"),
+      text: tx("ייעוץ וליווי בסכסוכי עבודה, חוזים, פיטורין, זכויות עובדים ומעסיקים."),
       tag: "עבודה",
       icon: (
         <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
@@ -919,8 +919,8 @@ function PracticeAreasSection({
       ),
     },
     {
-      title: "נזקי גוף",
-      text: "ייצוג וליווי בתביעות נזיקין, תאונות, רשלנות ופגיעות משמעותיות.",
+      title: tx("נזקי גוף"),
+      text: tx("ייצוג וליווי בתביעות נזיקין, תאונות, רשלנות ופגיעות משמעותיות."),
       tag: "נזיקין",
       icon: (
         <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
@@ -963,7 +963,7 @@ function PracticeAreasSection({
           <div>
             <div className="mb-3 flex items-center justify-between gap-4">
               <span className="text-sm font-semibold text-[#b45c3a]">
-                {item.tag}
+                {tx(item.tag)}
               </span>
 
               <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2b1b1d] text-xs font-semibold !text-white">
@@ -1208,7 +1208,7 @@ function CasesSection({
                   <div className="relative z-10 flex h-full flex-col justify-between">
                     <div>
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                        {item.tag}
+                        {tx(item.tag)}
                       </span>
                       <div className="mt-10 text-3xl md:text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                         {item.amount}
@@ -1272,7 +1272,7 @@ function CaseDetailPage({
           <div className="grid gap-8 lg:grid-cols-[1fr_0.72fr]">
             <div className="rounded-[46px] border border-[#2b1b1d]/10 bg-white/74 p-8 shadow-2xl shadow-[#2b1b1d]/10 lg:p-12">
               <p className="mb-5 inline-flex rounded-full bg-[#b45c3a]/12 px-4 py-2 text-sm font-semibold text-[#b45c3a]">
-                {item.tag} · {tx(`תיק ${item.number}`)}
+                {tx(item.tag)} · {tx(`תיק ${item.number}`)}
               </p>
 
               <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] !text-[#2b1b1d] md:text-7xl">
@@ -1485,9 +1485,9 @@ function BlogSection({
             >
               <div className="mb-10 flex items-center justify-between">
                 <span className="rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white">
-                  {tag}
+                  {tx(tag)}
                 </span>
-                <span className="text-sm font-semibold text-[#b45c3a]">{date}</span>
+                <span className="text-sm font-semibold text-[#b45c3a]">{tx(date)}</span>
               </div>
 
               <h3 className="max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] !text-[#2b1b1d]">

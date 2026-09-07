@@ -714,7 +714,7 @@ function ExperienceStrip({
                 </span>
                 <span className="h-2 w-2 rounded-full bg-[#b8cfae] transition duration-500 group-hover:scale-[2]" />
               </div>
-              <h3 className="text-xl font-semibold tracking-[-0.04em]">{title}</h3>
+              <h3 className="text-xl font-semibold tracking-[-0.04em]">{tx(title)}</h3>
               <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{tx(text)}</p>
             </div>
           ))}

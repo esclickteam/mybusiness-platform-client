@@ -882,6 +882,30 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("חבילות ברורות.", "en")).toMatch(/package|clear/i);
   });
 
+  it("localizes unique48 leftover Adion, Serenova, and Justora body chrome", () => {
+    expect(localizeBuiltInText("הפקה", "en")).toMatch(/production/i);
+    expect(localizeBuiltInText("סרט מותג", "en")).toMatch(/brand|film/i);
+    expect(localizeBuiltInText("סרט מותג", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "משלב הרעיון ועד יום הצילום — אנחנו מנהלים את התהליך עם כיוון ויזואלי ברור ותקשורת מקצועית.",
+        "en",
+      ),
+    ).toMatch(/shoot|visual/i);
+    expect(localizeBuiltInText("היכרות", "es")).toMatch(/present|introduc/i);
+    expect(localizeBuiltInText("מורידים חשש ומסבירים איך זה עובד.", "pt-BR")).toMatch(
+      /preocup|explica/i,
+    );
+    expect(
+      localizeBuiltInText(
+        "משרד עורכי דין שמעניק ייעוץ, אסטרטגיה וייצוג מקצועי לכל צורך משפטי — בדיסקרטיות, בהירות וזמינות.",
+        "ar",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("נזקי גוף", "en")).toMatch(/injury|personal/i);
+    expect(localizeBuiltInText("תיקים שטופלו", "en")).toMatch(/case/i);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);
