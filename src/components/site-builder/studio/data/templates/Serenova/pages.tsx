@@ -152,7 +152,7 @@ function renderSerenovaField(
 ) {
   const baseClass = fieldClassByTone[tone];
   const name = field.id;
-  const placeholder = field.placeholder || field.label;
+  const placeholder = tx(field.placeholder || field.label);
   const className =
     field.type === "textarea" ? cx(baseClass, textareaClassName) : baseClass;
 
@@ -173,7 +173,7 @@ function renderSerenovaField(
   if (field.type === "select") {
     const options = field.options?.length
       ? field.options
-      : [placeholder || "בחרו אפשרות"];
+      : [placeholder || tx("בחרו אפשרות")];
     return (
       <select
         key={name}
@@ -186,7 +186,7 @@ function renderSerenovaField(
       >
         {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {tx(option)}
           </option>
         ))}
       </select>
@@ -1355,7 +1355,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold text-[#fbf6ec]/60">{label}</div>
+                  <div className="text-xs font-semibold text-[#fbf6ec]/60">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold text-[#fbf6ec]">
                     {value}
                   </div>

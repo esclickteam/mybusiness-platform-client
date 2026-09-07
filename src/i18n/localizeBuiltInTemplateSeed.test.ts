@@ -917,6 +917,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("בדיקת סיכונים", "en")).toMatch(/risk/i);
   });
 
+  it("localizes unique50 leftover contact labels and form chrome", () => {
+    expect(localizeBuiltInText("כתובת המשרד", "en")).toMatch(/address|office/i);
+    expect(localizeBuiltInText("כתובת המשרד", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מה תרצו לשאול?", "es")).toMatch(/pregunt/i);
+    expect(localizeBuiltInText("בחרו אפשרות", "pt-BR")).toMatch(/opç/i);
+    expect(localizeBuiltInText("סדנה / הרצאה", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique38 leftover built-in preview headlines", () => {
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).toMatch(/social expert/i);
     expect(localizeBuiltInText("מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך", "en")).not.toMatch(/[\u0590-\u05FF]/);

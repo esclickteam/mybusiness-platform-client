@@ -769,7 +769,7 @@ function Hero({
       <div className="absolute right-[18%] top-[12%] h-80 w-80 rounded-full bg-[#8b744f]/18 blur-3xl" />
 
       <div className="relative mx-auto grid min-h-[760px] max-w-[1380px] items-end gap-8 px-5 pt-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pt-20 lg:[direction:ltr]">
-        <div className="relative z-30 pb-48 text-start lg:pb-64 lg:[direction:rtl]">
+        <div className="relative z-30 pb-48 text-start lg:pb-64" style={{ direction: templateDir() }}>
           <p className="mb-7 text-xs font-semibold tracking-[0.18em] text-[#d8b88f]">{tx("המשרד המשפטי שלך")}</p>
 
           <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] !text-white md:text-7xl lg:text-[78px]">
@@ -1677,7 +1677,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold !text-[#ead9c5]">{label}</div>
+                  <div className="text-xs font-semibold !text-[#ead9c5]">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold !text-white">
                     {value}
                   </div>
