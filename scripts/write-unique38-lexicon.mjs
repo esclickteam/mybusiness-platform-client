@@ -57,6 +57,30 @@ const rows = {
     "Geramos consultas.",
     "نولّد الاستفسارات.",
   ),
+  "אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית": r(
+    "Strategy · content · campaigns · digital growth",
+    "Estrategia · contenido · campañas · crecimiento digital",
+    "Estratégia · conteúdo · campanhas · crescimento digital",
+    "استراتيجية · محتوى · حملات · نمو رقمي",
+  ),
+  "בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\nלקוחות ותוצאות מדידות.": r(
+    "Building a digital brand, trust-making content, and campaigns that bring leads,\ncustomers, and measurable results.",
+    "Construimos una marca digital, contenido que genera confianza y campañas que traen leads,\nclientes y resultados medibles.",
+    "Construímos uma marca digital, conteúdo que gera confiança e campanhas que trazem leads,\nclientes e resultados mensuráveis.",
+    "نبني علامة رقمية ومحتوى يبني الثقة وحملات تجلب العملاء المحتملين،\nوالعملاء والنتائج القابلة للقياس.",
+  ),
+  "בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\n          לקוחות ותוצאות מדידות.": r(
+    "Building a digital brand, trust-making content, and campaigns that bring leads,\ncustomers, and measurable results.",
+    "Construimos una marca digital, contenido que genera confianza y campañas que traen leads,\nclientes y resultados medibles.",
+    "Construímos uma marca digital, conteúdo que gera confiança e campanhas que trazem leads,\nclientes e resultados mensuráveis.",
+    "نبني علامة رقمية ومحتوى يبني الثقة وحملات تجلب العملاء المحتملين،\nوالعملاء والنتائج القابلة للقياس.",
+  ),
+  "לקוחות ותוצאות מדידות.": r(
+    "customers and measurable results.",
+    "clientes y resultados medibles.",
+    "clientes e resultados mensuráveis.",
+    "عملاء ونتائج قابلة للقياس.",
+  ),
 };
 
 const out = join(

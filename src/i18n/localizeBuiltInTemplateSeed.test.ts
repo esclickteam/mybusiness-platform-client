@@ -725,6 +725,18 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("לא מעלים פוסטים.", "pt-BR")).toMatch(/postamos|publicamos/i);
     expect(localizeBuiltInText("מייצרים פניות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
     expect(localizeBuiltInText("בונים ביקוש.", "en")).toMatch(/demand/i);
+    expect(
+      localizeBuiltInText("אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית", "en"),
+    ).toMatch(/strategy|campaign/i);
+    expect(
+      localizeBuiltInText("אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\nלקוחות ותוצאות מדידות.",
+        "pt-BR",
+      ),
+    ).toMatch(/marca digital|confiança|leads/i);
   });
 
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {

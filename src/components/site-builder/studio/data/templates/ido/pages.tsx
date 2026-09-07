@@ -388,7 +388,7 @@ function Hero({
               : "translate-y-7 opacity-0 blur-md",
           ].join(" ")}
           style={{ transitionDelay: "2350ms" }}
-        >{tx("בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\n          לקוחות ותוצאות מדידות.")}</TemplateText>
+        >{tx("בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\nלקוחות ותוצאות מדידות.")}</TemplateText>
 
         <div
           className={[
