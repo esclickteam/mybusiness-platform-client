@@ -1,0 +1,38 @@
+{
+  "הפוך": {
+    "en": "Reversed",
+    "es": "Invertido",
+    "pt-BR": "Invertido",
+    "ar": "معكوس"
+  },
+  "חזון": {
+    "en": "Vision",
+    "es": "Visión",
+    "pt-BR": "Visão",
+    "ar": "رؤية"
+  },
+  "לוגואים": {
+    "en": "Logos",
+    "es": "Logos",
+    "pt-BR": "Logos",
+    "ar": "شعارات"
+  },
+  "מחלקות": {
+    "en": "Departments",
+    "es": "Departamentos",
+    "pt-BR": "Departamentos",
+    "ar": "أقسام"
+  },
+  "קלאסי": {
+    "en": "Classic",
+    "es": "Clásico",
+    "pt-BR": "Clássico",
+    "ar": "كلاسيكي"
+  },
+  "קצר": {
+    "en": "Short",
+    "es": "Corto",
+    "pt-BR": "Curto",
+    "ar": "قصير"
+  }
+}

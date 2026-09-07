@@ -1296,6 +1296,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("גריד מוצרים מקצועי בסגנון Shopify עם כרטיסים נקיים, Hover וכפתור רכישה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique91 leftover section-picker badges", () => {
+    expect(localizeBuiltInText("קלאסי", "en")).toBe("Classic");
+    expect(localizeBuiltInText("קלאסי", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הפוך", "es")).toMatch(/Invertido/i);
+    expect(localizeBuiltInText("לוגואים", "pt-BR")).toBe("Logos");
+    expect(localizeBuiltInText("מחלקות", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);
