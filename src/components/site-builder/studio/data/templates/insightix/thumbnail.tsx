@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function InsightixThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Suez One, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Suez One, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#0F766E", color: "#fff" }}>סוכנות מחקר שוק</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#0F766E", color: "#fff" }}>{tx("סוכנות מחקר שוק")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Insightix</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">charts insight cards</p>
       </div>

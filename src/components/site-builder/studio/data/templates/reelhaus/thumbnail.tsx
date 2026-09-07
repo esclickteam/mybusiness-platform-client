@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function ReelhausThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#0C0A09", color: "#FFF7ED", fontFamily: "David Libre, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#0C0A09", color: "#FFF7ED", fontFamily: "David Libre, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#D4AF37", color: "#fff" }}>סוכנות וידאו</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#D4AF37", color: "#fff" }}>{tx("סוכנות וידאו")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Reelhaus</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">filmstrip cinema</p>
       </div>

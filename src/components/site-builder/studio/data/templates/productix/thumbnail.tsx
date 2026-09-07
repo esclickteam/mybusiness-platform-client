@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function ProductixThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Noto Sans Hebrew, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Noto Sans Hebrew, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#2563EB", color: "#fff" }}>סוכנות שיווק מוצר</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#2563EB", color: "#fff" }}>{tx("סוכנות שיווק מוצר")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Productix</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">roadmap product ui</p>
       </div>

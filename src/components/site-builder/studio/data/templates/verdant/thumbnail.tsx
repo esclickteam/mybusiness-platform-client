@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function VerdantThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden bg-[#0e1210] p-5 text-[#f2efe8]"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(122,154,120,0.22),transparent_45%)]" />
@@ -14,12 +18,11 @@ export default function VerdantThumbnail() {
           </div>
           <span className="font-serif text-lg font-semibold">Verdant</span>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.22em] text-[#7a9a78]">נדל״ן יוקרה</span>
+        <span className="text-[10px] uppercase tracking-[0.22em] text-[#7a9a78]">{tx("נדל״ן יוקרה")}</span>
       </div>
       <div className="relative z-10 mt-10">
         <h3 className="max-w-[220px] font-serif text-3xl font-semibold leading-[1.05]">
-          בתים שנבחרו בדיוק כמוכם.
-        </h3>
+          {tx("בתים שנבחרו בדיוק כמוכם.")}</h3>
         <div className="mt-5 h-px w-16 bg-[#7a9a78]" />
         <div className="mt-6 grid grid-cols-3 gap-3 text-center">
           {["₪2.4B", "340+", "15"].map((stat) => (

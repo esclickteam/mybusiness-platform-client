@@ -1,6 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function AdionThumbnail() {
+  const { i18n } = useTranslation();
   const images = [
     "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=700&q=80",
     "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=80",
@@ -12,7 +16,7 @@ export default function AdionThumbnail() {
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-[1.4rem] bg-[#10100e] text-[#f6efe3]"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(247,200,115,.14),transparent_34%),radial-gradient(circle_at_85%_80%,rgba(255,255,255,.12),transparent_36%)]" />
@@ -23,8 +27,7 @@ export default function AdionThumbnail() {
 
       <div className="absolute left-0 right-0 top-[34%] z-10 text-center">
         <p className="text-[11px] font-medium text-white/60">
-          הפקת וידאו וצילום למותגים מודרניים
-        </p>
+          {tx("הפקת וידאו וצילום למותגים מודרניים")}</p>
       </div>
 
       <div className="absolute inset-x-[-12%] bottom-[-6%] top-[42%]">
@@ -60,8 +63,7 @@ export default function AdionThumbnail() {
 
       <div className="absolute bottom-5 right-5 z-20">
         <div className="rounded-full bg-[#f6efe3] px-4 py-2 text-[10px] font-black tracking-[.18em] text-[#10100e]">
-          תיק עבודות
-        </div>
+          {tx("תיק עבודות")}</div>
       </div>
 
       <div className="absolute bottom-5 left-5 z-20 flex gap-2">

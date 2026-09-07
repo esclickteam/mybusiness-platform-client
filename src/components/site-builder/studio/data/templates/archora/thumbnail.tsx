@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 export default function ArchoraThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden p-5"
       style={{
         background: "#111111",
@@ -25,8 +29,7 @@ export default function ArchoraThumbnail() {
             AR
           </span>
           <span className="text-[10px] font-bold uppercase tracking-[0.28em]" style={{ color: "#D4FF00" }}>
-            אדריכלות
-          </span>
+            {tx("אדריכלות")}</span>
         </div>
         <div>
           <div className="mb-3 h-16 w-3 rotate-12" style={{ background: "#D4FF00" }} />

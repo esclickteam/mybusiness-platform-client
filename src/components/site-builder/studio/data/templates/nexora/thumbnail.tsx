@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function NexoraThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl bg-[#0b1020] p-5 text-white"
     >
       <div className="absolute left-1/2 top-0 h-40 w-52 -translate-x-1/2 rounded-full bg-indigo-600/30 blur-3xl" />
@@ -23,11 +27,9 @@ export default function NexoraThumbnail() {
 
       <div className="relative z-10 mt-9 text-center">
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-300">
-          פלטפורמת SaaS
-        </p>
+          {tx("פלטפורמת SaaS")}</p>
         <h3 className="mx-auto max-w-[220px] text-2xl font-bold leading-[1.1]">
-          התוכנה שמריצה את העסק קדימה.
-        </h3>
+          {tx("התוכנה שמריצה את העסק קדימה.")}</h3>
 
         <div className="mt-6 grid grid-cols-3 gap-2">
           {["12K+", "99.9%", "4.9"].map((stat) => (

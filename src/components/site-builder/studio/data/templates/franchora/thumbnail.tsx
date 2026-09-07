@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function FranchoraThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#FFFBEB", color: "#2B1704", fontFamily: "Bellefair, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#FFFBEB", color: "#2B1704", fontFamily: "Bellefair, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#92400E", color: "#fff" }}>סוכנות פיתוח זכיינות</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#92400E", color: "#fff" }}>{tx("סוכנות פיתוח זכיינות")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Franchora</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">system map multi-location</p>
       </div>

@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function BladehausThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-4" style={{ background: "#111111", color: "#F2F2F2" }}>
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden p-4" style={{ background: "#111111", color: "#F2F2F2" }}>
       <div className="absolute inset-0 opacity-50" style={{ background: "linear-gradient(90deg,#C0A06022 1px,transparent 1px) 0 0 / 38px 38px" }} />
       <div className="relative z-10 flex items-center justify-between border-b-2 pb-3" style={{ borderColor: "#C0A060" }}>
         <div className="grid h-9 w-9 place-items-center text-lg font-black" style={{ border: "2px solid #C0A060", color: "#C0A060", borderRadius: 0 }}>B</div>
@@ -16,8 +20,8 @@ export default function BladehausThumbnail() {
           No Mercy.
         </h3>
         <div className="mt-4 flex gap-2">
-          <div className="flex-1 bg-white px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ borderRadius: 0 }}>קביעת תור</div>
-          <div className="flex-1 px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ background: "#C0A060", borderRadius: 0 }}>מחירון</div>
+          <div className="flex-1 bg-white px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ borderRadius: 0 }}>{tx("קביעת תור")}</div>
+          <div className="flex-1 px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ background: "#C0A060", borderRadius: 0 }}>{tx("מחירון")}</div>
         </div>
       </div>
       <div className="relative z-10 mt-5 grid grid-cols-[1.2fr_0.8fr] gap-3">

@@ -1322,6 +1322,39 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם אחריות מלאה.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique94 leftover email preview and thumbnail chrome", () => {
+    expect(localizeBuiltInText("העסק שלי", "en")).toBe("My business");
+    expect(localizeBuiltInText("העסק שלי", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חולצה", "es")).toMatch(/Camisa/i);
+    expect(localizeBuiltInText("המייל נשלח מ-{{store.name}} באמצעות BizUply.", "pt-BR")).toMatch(/\{\{store\.name\}\}/);
+    expect(localizeBuiltInText("עיצוב · מיתוג · דיגיטל", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique95 leftover thumbnail blurbs", () => {
+    expect(
+      localizeBuiltInText(
+        "תבנית יוקרתית לסוכנות נסיעות עם הירו גדול, יעדים, חבילות וטופס לידים.",
+        "en",
+      ),
+    ).toMatch(/travel|hero|lead/i);
+    expect(
+      localizeBuiltInText(
+        "תבנית יוקרתית לסוכנות נסיעות עם הירו גדול, יעדים, חבילות וטופס לידים.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("ארבורה מתכננת חצרות, גגות ומרחבים ציבוריים — עם …", "es"),
+    ).toMatch(/Arbora|patios|espacios/i);
+    expect(
+      localizeBuiltInText(
+        "איפור ושיער לכלות ולמלוות — ניסיון מקדים, לוק שנשאר בתמונות, וליווי רגוע…",
+        "pt-BR",
+      ),
+    ).toMatch(/maquiagem|noivas/i);
+    expect(localizeBuiltInText("תבנית כושר PulseCore", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("localizes unique69 leftover gallery catalog chrome", () => {
     expect(localizeBuiltInText("פיטנס", "en")).toMatch(/fitness/i);
     expect(localizeBuiltInText("פיטנס", "en")).not.toMatch(/[\u0590-\u05FF]/);

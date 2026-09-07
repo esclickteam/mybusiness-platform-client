@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
+import { localizeBuiltInTemplateSeed } from "../../../../i18n/localizeBuiltInTemplateSeed";
 import type { TFunction } from "i18next";
 import {
   emailVariablesForTrigger,
@@ -105,7 +106,10 @@ export function EmailActionTemplateFields({
   const htmlRef = useRef<HTMLTextAreaElement | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
   const variables = emailVariablesForTrigger(triggerKey);
-  const previewContext = buildEmailPreviewContext(triggerKey, { businessName });
+  const previewContext = localizeBuiltInTemplateSeed(
+    buildEmailPreviewContext(triggerKey, { businessName }),
+    i18n.language,
+  );
   const previewSubject = interpolateEmailTemplate(subject, previewContext);
   const previewHtml = interpolateEmailTemplate(html, previewContext);
   const previewText = interpolateEmailTemplate(text, previewContext);

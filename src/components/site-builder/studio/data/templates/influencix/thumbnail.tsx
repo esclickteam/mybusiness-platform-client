@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function InfluencixThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#14070C", color: "#FFF5F7", fontFamily: "Alef, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#14070C", color: "#FFF5F7", fontFamily: "Alef, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#FF4D6D", color: "#fff" }}>סוכנות משפיענים</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#FF4D6D", color: "#fff" }}>{tx("סוכנות משפיענים")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Influencix</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">creator spotlight</p>
       </div>

@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function ContentraThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#FFF7ED", color: "#2B1608", fontFamily: "Noto Serif Hebrew, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#FFF7ED", color: "#2B1608", fontFamily: "Noto Serif Hebrew, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#7C2D12", color: "#fff" }}>סוכנות תוכן</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#7C2D12", color: "#fff" }}>{tx("סוכנות תוכן")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Contentra</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">editorial magazine</p>
       </div>

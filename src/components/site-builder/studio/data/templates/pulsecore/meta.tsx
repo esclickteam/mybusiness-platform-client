@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 import type { StudioTemplateDefinition } from "../types";
 
@@ -6,6 +9,7 @@ import { pulsecoreSeed } from "./pulsecoreData";
 import PulsecorePreview from "./preview";
 
 function PulsecoreThumbnail() {
+  const { i18n } = useTranslation();
   const thumbnailImage =
     String(
       (pulsecoreSeed as unknown as { image?: string; thumbnail?: string })
@@ -17,13 +21,13 @@ function PulsecoreThumbnail() {
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[220px] overflow-hidden rounded-[26px] bg-[#080808] p-5 text-white"
     >
       {thumbnailImage ? (
         <img
           src={thumbnailImage}
-          alt="תבנית כושר PulseCore"
+          alt={tx("תבנית כושר PulseCore")}
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
       ) : null}
@@ -45,17 +49,13 @@ function PulsecoreThumbnail() {
 
         <div>
           <h3 className="text-4xl font-black leading-[0.9] tracking-[-0.08em]">
-            אימון חזק.
+            {tx("אימון חזק.")}<br />
+            <span className="text-[#D7FF36]">{tx("אנרגיה גבוהה.")}</span>
             <br />
-            <span className="text-[#D7FF36]">אנרגיה גבוהה.</span>
-            <br />
-            תוצאה ברורה.
-          </h3>
+            {tx("תוצאה ברורה.")}</h3>
 
           <p className="mt-4 max-w-[260px] text-xs font-semibold leading-5 text-white/60">
-            תבנית פיטנס למאמנים, סטודיו כושר וחדרי כושר עם Hero חזק ותצוגה
-            מלאה.
-          </p>
+            {tx("תבנית פיטנס למאמנים, סטודיו כושר וחדרי כושר עם Hero חזק ותצוגה מלאה.")}</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2">

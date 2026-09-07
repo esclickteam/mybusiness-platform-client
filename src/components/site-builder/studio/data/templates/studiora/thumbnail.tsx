@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function StudioraThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl bg-[#0a0a0a] p-5 text-white"
     >
       <div className="absolute right-4 top-6 h-28 w-28 rounded-full bg-[#c3ff00]/15 blur-2xl" />
@@ -22,11 +26,9 @@ export default function StudioraThumbnail() {
 
       <div className="relative z-10 mt-9">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c3ff00]">
-          עיצוב · מיתוג · דיגיטל
-        </p>
+          {tx("עיצוב · מיתוג · דיגיטל")}</p>
         <h3 className="max-w-[230px] text-4xl font-black uppercase leading-[0.9]">
-          מותגים בלתי נשכחים.
-        </h3>
+          {tx("מותגים בלתי נשכחים.")}</h3>
 
         <div className="mt-6 flex gap-2">
           <div className="h-14 flex-1 rounded-xl bg-white/8" />

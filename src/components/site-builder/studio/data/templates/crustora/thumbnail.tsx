@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 export default function CrustoraThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden">
       <div className="grid h-full min-h-[260px] grid-cols-2">
         <div className="flex flex-col justify-center p-4" style={{ background: "#faf4eb", color: "#2a1810" }}>
-          <p className="text-[10px]" style={{ color: "#c1121f" }}>פיצה · תנור עצים</p>
+          <p className="text-[10px]" style={{ color: "#c1121f" }}>{tx("פיצה · תנור עצים")}</p>
           <h3 className="text-3xl font-black leading-none" style={{ fontFamily: '"Archivo Black", "Heebo"' }}>Crustora</h3>
           <div className="mt-2 h-1 w-16" style={{ background: "#c1121f" }} />
         </div>

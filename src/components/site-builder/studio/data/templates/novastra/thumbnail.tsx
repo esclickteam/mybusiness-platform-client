@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function NovastraThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="relative h-full min-h-[260px] w-full overflow-hidden rounded-[1.75rem] bg-zinc-950 text-white">
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden rounded-[1.75rem] bg-zinc-950 text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.24),transparent_34%),linear-gradient(135deg,#09090b,#18181b_48%,#f5f0e8_49%,#ffffff)]" />
 
       <div className="absolute left-5 top-5 flex items-center gap-2">
@@ -38,8 +42,7 @@ export default function NovastraThumbnail() {
         </div>
 
         <p className="max-w-[300px] text-4xl font-black uppercase leading-[0.82] tracking-[-0.09em]">
-          אופנה שנעה כמו חצות
-        </p>
+          {tx("אופנה שנעה כמו חצות")}</p>
       </div>
     </div>
   );

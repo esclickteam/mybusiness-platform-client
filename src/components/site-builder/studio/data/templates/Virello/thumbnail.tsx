@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function AdionThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[1.6rem] bg-[#fff8f0] p-4 text-[#301b12]">
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[1.6rem] bg-[#fff8f0] p-4 text-[#301b12]">
       <style>
         {`
           @keyframes adionThumbFloatA {
@@ -66,8 +70,7 @@ export default function AdionThumbnail() {
       <div className="relative z-10 mt-6">
         <div className="mb-2 flex flex-wrap gap-1.5">
           <p className="inline-flex rounded-full bg-[#ffe3a8] px-3 py-1 text-[10px] font-black">
-            מיתוג
-          </p>
+            {tx("מיתוג")}</p>
 
           <p className="inline-flex rounded-full bg-[#eadcff] px-3 py-1 text-[10px] font-black">
             Motion
@@ -120,18 +123,18 @@ export default function AdionThumbnail() {
         <div className="flex w-max animate-[adionThumbMarquee_16s_linear_infinite] gap-5 text-[11px] font-black uppercase tracking-[-0.02em] text-[#301b12]/35">
           {[
             "UI/UX",
-            "עיצוב אתרים",
-            "מיתוג",
-            "תנועה",
-            "פיתוח",
-            "שיווק",
+            tx("עיצוב אתרים"),
+            tx("מיתוג"),
+            tx("תנועה"),
+            tx("פיתוח"),
+            tx("שיווק"),
             "Virello",
             "UI/UX",
-            "עיצוב אתרים",
-            "מיתוג",
-            "תנועה",
-            "פיתוח",
-            "שיווק",
+            tx("עיצוב אתרים"),
+            tx("מיתוג"),
+            tx("תנועה"),
+            tx("פיתוח"),
+            tx("שיווק"),
             "Virello",
           ].map((item, index) => (
             <span key={`${item}-${index}`}>{item}</span>

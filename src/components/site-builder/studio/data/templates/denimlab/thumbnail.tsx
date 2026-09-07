@@ -1,16 +1,20 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function DenimlabThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="relative flex h-full min-h-[260px] w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Heebo, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="relative flex h-full min-h-[260px] w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#F8FAFC", color: "#0F172A", fontFamily: "Heebo, sans-serif" }}>
       <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: `radial-gradient(circle at 80% 20%, #1E3A8A66, transparent 45%)` }} />
       <div className="relative">
-        <div className="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-[0.2em]" style={{ background: "#1E3A8A", color: "#EFF6FF" }}>ג׳ינס וסטרית</div>
+        <div className="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-[0.2em]" style={{ background: "#1E3A8A", color: "#EFF6FF" }}>{tx("ג׳ינס וסטרית")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none" style={{ fontFamily: "Oswald, serif" }}>Denimlab</h3>
-        <p className="mt-2 text-xs font-semibold opacity-70">אינדיגו אמיתי. חיתוך מדויק.</p>
+        <p className="mt-2 text-xs font-semibold opacity-70">{tx("אינדיגו אמיתי. חיתוך מדויק.")}</p>
       </div>
       <div className="relative grid grid-cols-4 gap-2">
-        {["חנות", "גלריה", "אודות", "FAQ"].map((label) => (
+        {[tx("חנות"), tx("גלריה"), tx("אודות"), "FAQ"].map((label) => (
           <div key={label} className="border px-2 py-3 text-center text-[10px] font-bold" style={{ borderColor: "#1E3A8A55", background: "#FFFFFF" }}>{label}</div>
         ))}
       </div>

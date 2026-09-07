@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function AdspireThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between p-5 text-right" style={{ background: "#09020F", color: "#FAF5FF", fontFamily: "Heebo, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between p-5 text-right" style={{ background: "#09020F", color: "#FAF5FF", fontFamily: "Heebo, sans-serif" }}>
       <div>
-        <div className="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ background: "#A855F7" }}>סוכנות פרסום</div>
+        <div className="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ background: "#A855F7" }}>{tx("סוכנות פרסום")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Adspire</h3>
         <p className="mt-2 text-xs font-semibold opacity-70">Ideas That Interrupt</p>
       </div>
