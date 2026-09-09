@@ -9,6 +9,7 @@ import {
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { localizePartnerDemoName } from "../../i18n/partnerDemoCopy";
 
 export default function PublicPartnerShell({
   branding,
@@ -26,7 +27,7 @@ export default function PublicPartnerShell({
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
   const logoUrl = partnerFacingLogo(branding, host);
-  const brandName = partnerFacingName(branding, host);
+  const brandName = localizePartnerDemoName(t, partnerFacingName(branding, host));
 
   useEffect(() => {
     applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");

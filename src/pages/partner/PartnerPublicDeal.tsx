@@ -12,6 +12,7 @@ import {
 } from "../../lib/partnerBranding";
 import { formatPartnerDate } from "../../lib/partnerWork";
 import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
+import { localizePartnerDemoName } from "../../i18n/partnerDemoCopy";
 
 type PublicProduct = {
   name?: string;
@@ -75,7 +76,11 @@ export default function PartnerPublicDeal() {
   }, [dealId, t]);
 
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const brandName = partnerFacingName(summary?.branding, host) || summary?.partner?.name || "";
+  const brandName =
+    localizePartnerDemoName(
+      t,
+      partnerFacingName(summary?.branding, host) || summary?.partner?.name || "",
+    ) || "";
   const brandLogo = partnerFacingLogo(summary?.branding, host) || summary?.partner?.logo || "";
 
   useEffect(() => {

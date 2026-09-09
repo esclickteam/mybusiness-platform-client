@@ -56,6 +56,21 @@ describe("partnerDemoCopy", () => {
     expect(partnerDemoTaskTitle(t, { title: "שיחת הדרכה" })).toBe("שיחת הדרכה");
   });
 
+  it("localizes showcase free partner name for all locales", async () => {
+    const expected: Record<string, string> = {
+      he: "פרטנר דמו חינמי",
+      en: "Free Demo Partner",
+      ar: "شريك تجريبي مجاني",
+      es: "Socio demo gratuito",
+      "pt-BR": "Parceiro demo gratuito",
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await i18n.changeLanguage(lang);
+      const t = i18n.t.bind(i18n);
+      expect(localizePartnerDemoName(t, "פרטנר דמו חינמי")).toBe(label);
+    }
+  });
+
   it("localizes demo content for ar and pt-BR without Hebrew mix", async () => {
     for (const lang of ["ar", "pt-BR"] as const) {
       await i18n.changeLanguage(lang);
