@@ -12,7 +12,7 @@ import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
-import { persistBillingCountry, readStoredBillingCountry } from "../billing/billingMarkets";
+import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
@@ -69,7 +69,7 @@ function parsePlan(value: string | null): PricingPlan | null {
 
 export default function Register() {
   const { t, i18n } = useTranslation();
-  useBillingMarket();
+  const billingMarket = useBillingMarket();
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
@@ -222,7 +222,7 @@ export default function Register() {
             businessName: businessName.trim(),
             plan: selectedPlan,
             includeWebsiteAddon,
-            billingCountry: persistBillingCountry(readStoredBillingCountry()),
+            billingCountry: persistBillingCountry(billingMarket.billingCountry),
             language: getManualLanguageChoice() || i18n.language,
             referralCode:
               referralCode ||

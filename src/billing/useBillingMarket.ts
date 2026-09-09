@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
-  persistBillingCountry,
-  readStoredBillingCountry,
+  resolveBillingCountry,
   resolveBillingMarket,
   type BillingMarket,
 } from "./billingMarkets";
@@ -17,7 +17,25 @@ function readCookie(name: string): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-export function useBillingMarket(): BillingMarket {
+function readStoredBillingCountrySafe(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem("bizuply_billing_country");
+    const code = String(raw || "")
+      .trim()
+      .toUpperCase();
+    return /^[A-Z]{2}$/.test(code) ? code : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolves the billing market for Pricing display + checkout.
+ * Account billingCountry wins; otherwise stored country, then UI locale default, then geo.
+ */
+export function useBillingMarket(): BillingMarket & { billingCountry: string | null } {
+  const { i18n } = useTranslation();
   const { user } = useAuth() as { user?: Record<string, unknown> };
   const [geoCountry, setGeoCountry] = useState<string | null>(() =>
     readCookie(GEO_COUNTRY_COOKIE)
@@ -25,35 +43,30 @@ export function useBillingMarket(): BillingMarket {
 
   useEffect(() => {
     let cancelled = false;
-    const existing = readStoredBillingCountry() || readCookie(GEO_COUNTRY_COOKIE);
-    if (existing) {
-      persistBillingCountry(existing);
-      return;
-    }
+    if (geoCountry) return;
     fetch("/api/geo", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;
         const country = String(data?.country || "").trim();
-        if (country) {
-          setGeoCountry(country);
-          persistBillingCountry(country);
-        }
+        if (country) setGeoCountry(country);
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [geoCountry]);
 
-  return useMemo(
-    () =>
-      resolveBillingMarket({
-        savedBillingCountry:
-          user?.billingCountry || user?.accountCountry || readStoredBillingCountry(),
-        businessCountry: user?.businessCountry || user?.country,
-        geoCountry,
-      }),
-    [geoCountry, user]
-  );
+  return useMemo(() => {
+    const sources = {
+      savedBillingCountry:
+        user?.billingCountry || user?.accountCountry || readStoredBillingCountrySafe(),
+      businessCountry: user?.businessCountry || user?.country,
+      language: i18n.language,
+      geoCountry,
+    };
+    const billingCountry = resolveBillingCountry(sources);
+    const market = resolveBillingMarket(sources);
+    return { ...market, billingCountry };
+  }, [geoCountry, i18n.language, user]);
 }
