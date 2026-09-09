@@ -1579,6 +1579,20 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("\u05e0\u05e7\u05d9", "en")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique103 leftover section-variant chrome", () => {
+    expect(localizeBuiltInText("\u05de\u05d9\u05dd \u00b7 \u05d0\u05d5\u05e8 \u00b7 \u05e9\u05e7\u05d8", "en")).toBe(
+      "Water · light · calm",
+    );
+    expect(localizeBuiltInText("\u05de\u05e0\u05d4 1 - \u05e9\u05dd", "es")).toBe("Plato 1 - nombre");
+    expect(localizeBuiltInText("\u05d2\u05dc\u05e8\u05d9\u05d4 \u05ea\u05de\u05d5\u05e0\u05d4 1", "pt-BR")).toBe(
+      "Imagem da galeria 1",
+    );
+    expect(localizeBuiltInText("\u05e1\u05d8\u05d8\u05d9\u05e1\u05d8\u05d9\u05e7\u05d5\u05ea", "ar")).toBe("إحصاءات");
+    expect(localizeBuiltInText("\u05e1\u05d8\u05d8\u05d9\u05e1\u05d8\u05d9\u05e7\u05d5\u05ea", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },

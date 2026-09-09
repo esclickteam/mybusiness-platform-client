@@ -1,0 +1,650 @@
+{
+  "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות": {
+    "en": "Demo mode — add products in the store panel in the editor to replace the samples",
+    "es": "Modo demo — añadid productos en el panel de tienda del editor para sustituir las muestras",
+    "pt-BR": "Modo demo — adicionem produtos no painel da loja no editor para substituir os exemplos",
+    "ar": "وضع تجريبي — أضيفوا منتجات في لوحة المتجر بالمحرر لاستبدال العينات"
+  },
+  "לוגו וכפתורים בשורה ראשונה, ניווט בשורה שנייה.": {
+    "en": "Logo and buttons on the first row, navigation on the second.",
+    "es": "Logo y botones en la primera fila, navegación en la segunda.",
+    "pt-BR": "Logo e botões na primeira linha, navegação na segunda.",
+    "ar": "الشعار والأزرار في الصف الأول، والتنقل في الصف الثاني."
+  },
+  "לוגו במרכז ושורת ניווט מתחת.": {
+    "en": "Logo centered with a navigation row beneath.",
+    "es": "Logo centrado y una fila de navegación debajo.",
+    "pt-BR": "Logo centralizado com uma linha de navegação abaixo.",
+    "ar": "شعار في الوسط وصف تنقل أسفله."
+  },
+  "כפתור בצד, לוגו במרכז וניווט בצד.": {
+    "en": "Button on one side, logo in the center, navigation on the other.",
+    "es": "Botón a un lado, logo en el centro y navegación al otro.",
+    "pt-BR": "Botão de um lado, logo no centro e navegação do outro.",
+    "ar": "زر في جانب، شعار في الوسط وتنقل في الجانب الآخر."
+  },
+  "תיאור קצר של הפוסט, עדכון, מוצר או תוכן מהרשת החברתית.": {
+    "en": "A short description of the post, update, product, or social content.",
+    "es": "Una descripción breve de la publicación, actualización, producto o contenido social.",
+    "pt-BR": "Uma descrição curta da postagem, atualização, produto ou conteúdo social.",
+    "ar": "وصف قصير للمنشور أو التحديث أو المنتج أو محتوى التواصل."
+  },
+  "מים · אור · שקט": {
+    "en": "Water · light · calm",
+    "es": "Agua · luz · calma",
+    "pt-BR": "Água · luz · calma",
+    "ar": "ماء · ضوء · هدوء"
+  },
+  "אישור מיידי בטלפון": {
+    "en": "Instant phone confirmation",
+    "es": "Confirmación inmediata por teléfono",
+    "pt-BR": "Confirmação imediata por telefone",
+    "ar": "تأكيد فوري عبر الهاتف"
+  },
+  "התאמת יינות לפי המנות": {
+    "en": "Wine pairing by dish",
+    "es": "Maridaje de vinos según los platos",
+    "pt-BR": "Harmonização de vinhos conforme os pratos",
+    "ar": "مواءمة النبيذ حسب الأطباق"
+  },
+  "אפשרות לערב שף פרטי": {
+    "en": "Option for a private chef evening",
+    "es": "Opción de una noche con chef privado",
+    "pt-BR": "Opção de uma noite com chef particular",
+    "ar": "خيار لأمسية شيف خاص"
+  },
+  "טעם שמספר סיפור.": {
+    "en": "A taste that tells a story.",
+    "es": "Un sabor que cuenta una historia.",
+    "pt-BR": "Um sabor que conta uma história.",
+    "ar": "طعم يحكي قصة."
+  },
+  "מנה 1 - שם": {
+    "en": "Dish 1 - name",
+    "es": "Plato 1 - nombre",
+    "pt-BR": "Prato 1 - nome",
+    "ar": "الطبق 1 - الاسم"
+  },
+  "מנה 1 - מחיר": {
+    "en": "Dish 1 - price",
+    "es": "Plato 1 - precio",
+    "pt-BR": "Prato 1 - preço",
+    "ar": "الطبق 1 - السعر"
+  },
+  "מנה 1 - תיאור": {
+    "en": "Dish 1 - description",
+    "es": "Plato 1 - descripción",
+    "pt-BR": "Prato 1 - descrição",
+    "ar": "الطبق 1 - الوصف"
+  },
+  "מנה 2 - שם": {
+    "en": "Dish 2 - name",
+    "es": "Plato 2 - nombre",
+    "pt-BR": "Prato 2 - nome",
+    "ar": "الطبق 2 - الاسم"
+  },
+  "מנה 2 - מחיר": {
+    "en": "Dish 2 - price",
+    "es": "Plato 2 - precio",
+    "pt-BR": "Prato 2 - preço",
+    "ar": "الطبق 2 - السعر"
+  },
+  "מנה 2 - תיאור": {
+    "en": "Dish 2 - description",
+    "es": "Plato 2 - descripción",
+    "pt-BR": "Prato 2 - descrição",
+    "ar": "الطبق 2 - الوصف"
+  },
+  "מנה 3 - שם": {
+    "en": "Dish 3 - name",
+    "es": "Plato 3 - nombre",
+    "pt-BR": "Prato 3 - nome",
+    "ar": "الطبق 3 - الاسم"
+  },
+  "מנה 3 - מחיר": {
+    "en": "Dish 3 - price",
+    "es": "Plato 3 - precio",
+    "pt-BR": "Prato 3 - preço",
+    "ar": "الطبق 3 - السعر"
+  },
+  "מנה 3 - תיאור": {
+    "en": "Dish 3 - description",
+    "es": "Plato 3 - descripción",
+    "pt-BR": "Prato 3 - descrição",
+    "ar": "الطبق 3 - الوصف"
+  },
+  "מנה 4 - שם": {
+    "en": "Dish 4 - name",
+    "es": "Plato 4 - nombre",
+    "pt-BR": "Prato 4 - nome",
+    "ar": "الطبق 4 - الاسم"
+  },
+  "מנה 4 - מחיר": {
+    "en": "Dish 4 - price",
+    "es": "Plato 4 - precio",
+    "pt-BR": "Prato 4 - preço",
+    "ar": "الطبق 4 - السعر"
+  },
+  "מנה 4 - תיאור": {
+    "en": "Dish 4 - description",
+    "es": "Plato 4 - descripción",
+    "pt-BR": "Prato 4 - descrição",
+    "ar": "الطبق 4 - الوصف"
+  },
+  "מנה 5 - שם": {
+    "en": "Dish 5 - name",
+    "es": "Plato 5 - nombre",
+    "pt-BR": "Prato 5 - nome",
+    "ar": "الطبق 5 - الاسم"
+  },
+  "מנה 5 - מחיר": {
+    "en": "Dish 5 - price",
+    "es": "Plato 5 - precio",
+    "pt-BR": "Prato 5 - preço",
+    "ar": "الطبق 5 - السعر"
+  },
+  "מנה 5 - תיאור": {
+    "en": "Dish 5 - description",
+    "es": "Plato 5 - descripción",
+    "pt-BR": "Prato 5 - descrição",
+    "ar": "الطبق 5 - الوصف"
+  },
+  "מנה 6 - שם": {
+    "en": "Dish 6 - name",
+    "es": "Plato 6 - nombre",
+    "pt-BR": "Prato 6 - nome",
+    "ar": "الطبق 6 - الاسم"
+  },
+  "מנה 6 - מחיר": {
+    "en": "Dish 6 - price",
+    "es": "Plato 6 - precio",
+    "pt-BR": "Prato 6 - preço",
+    "ar": "الطبق 6 - السعر"
+  },
+  "מנה 6 - תיאור": {
+    "en": "Dish 6 - description",
+    "es": "Plato 6 - descripción",
+    "pt-BR": "Prato 6 - descrição",
+    "ar": "الطبق 6 - الوصف"
+  },
+  "גלריה תמונה 1": {
+    "en": "Gallery image 1",
+    "es": "Imagen de galería 1",
+    "pt-BR": "Imagem da galeria 1",
+    "ar": "صورة المعرض 1"
+  },
+  "גלריה תמונה 2": {
+    "en": "Gallery image 2",
+    "es": "Imagen de galería 2",
+    "pt-BR": "Imagem da galeria 2",
+    "ar": "صورة المعرض 2"
+  },
+  "גלריה תמונה 3": {
+    "en": "Gallery image 3",
+    "es": "Imagen de galería 3",
+    "pt-BR": "Imagem da galeria 3",
+    "ar": "صورة المعرض 3"
+  },
+  "גלריה תמונה 4": {
+    "en": "Gallery image 4",
+    "es": "Imagen de galería 4",
+    "pt-BR": "Imagem da galeria 4",
+    "ar": "صورة المعرض 4"
+  },
+  "אפשרות לפגישה אונליין": {
+    "en": "Option for an online meeting",
+    "es": "Opción de reunión online",
+    "pt-BR": "Opção de reunião online",
+    "ar": "خيار لاجتماع عبر الإنترنت"
+  },
+  "התאמה אישית לפי סוג השירות": {
+    "en": "Personalization by service type",
+    "es": "Personalización según el tipo de servicio",
+    "pt-BR": "Personalização conforme o tipo de serviço",
+    "ar": "تخصيص حسب نوع الخدمة"
+  },
+  "שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.": {
+    "en": "Services shown elegantly, clearly, and without clutter — with the right layout, a soft CTA, and a premium hierarchy.",
+    "es": "Servicios presentados con elegancia, claridad y sin saturación — con la división correcta, un CTA suave y una jerarquía premium.",
+    "pt-BR": "Serviços apresentados com elegância, clareza e sem excesso — com a divisão certa, um CTA suave e uma hierarquia premium.",
+    "ar": "خدمات تُعرض بأناقة ووضوح دون ازدحام — مع تقسيم صحيح ودعوة لطيفة وتسلسل هرمي فاخر."
+  },
+  "קליניקה • ייעוץ • טיפול": {
+    "en": "Clinic • consulting • treatment",
+    "es": "Clínica • consulta • tratamiento",
+    "pt-BR": "Clínica • consultoria • tratamento",
+    "ar": "عيادة • استشارة • علاج"
+  },
+  "מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך": {
+    "en": "A social expert\nwho builds presence\nthat sells for you",
+    "es": "Un experto en social\nque construye presencia\nque vende por vosotros",
+    "pt-BR": "Um especialista em social\nque constrói presença\nque vende por vocês",
+    "ar": "خبير سوشيال\nيبني حضوراً\nيبيع لصالحكم"
+  },
+  "בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\nלקוחות ותוצאות מדידות.": {
+    "en": "Building a digital brand, trust-building content, and campaigns that bring leads, clients, and measurable results.",
+    "es": "Construcción de marca digital, contenido que genera confianza y campañas que traen leads, clientes y resultados medibles.",
+    "pt-BR": "Construção de marca digital, conteúdo que gera confiança e campanhas que trazem leads, clientes e resultados mensuráveis.",
+    "ar": "بناء علامة رقمية ومحتوى يولّد ثقة وحملات تجلب عملاء محتملين وعملاء ونتائج قابلة للقياس."
+  },
+  "אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\nמהיכרות ראשונה ועד פנייה אמיתית.": {
+    "en": "We build a clear voice for the business, sharp messages, and content that leads the audience from first impression to a real inquiry.",
+    "es": "Construimos para el negocio un lenguaje claro, mensajes nítidos y contenido que lleva a la audiencia desde el primer contacto hasta una consulta real.",
+    "pt-BR": "Construímos para o negócio uma linguagem clara, mensagens nítidas e conteúdo que leva o público da primeira impressão até um contato real.",
+    "ar": "نبني للعمل لغة واضحة ورسائل حادة ومحتوى يقود الجمهور من أول تعارف إلى تواصل حقيقي."
+  },
+  "ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח\nושיפור מתמיד של הביצועים — במקום אחד.": {
+    "en": "Social management, creative, campaigns, content, reports, customer journeys, and continuous performance improvement — in one place.",
+    "es": "Gestión de social, creatividad, campañas, contenido, informes, journeys de cliente y mejora continua del rendimiento — en un solo lugar.",
+    "pt-BR": "Gestão de social, criativo, campanhas, conteúdo, relatórios, jornadas do cliente e melhoria contínua de desempenho — em um só lugar.",
+    "ar": "إدارة السوشيال والإبداع والحملات والمحتوى والتقارير ورحلات العملاء وتحسين الأداء المستمر — في مكان واحد."
+  },
+  "לא מעלים פוסטים.\nבונים ביקוש.\nמייצרים פניות.": {
+    "en": "We don't just post.\nWe build demand.\nWe generate inquiries.",
+    "es": "No solo publicamos.\nConstruimos demanda.\nGeneramos consultas.",
+    "pt-BR": "Não apenas postamos.\nConstruímos demanda.\nGeramos contatos.",
+    "ar": "لا نرفع منشورات فحسب.\nنبني طلباً.\nنولّد استفسارات."
+  },
+  "מחברים בין קהל, תוכן, דאטה\nוקמפיינים\nלמערכת צמיחה אחת ברורה.": {
+    "en": "We connect audience, content, data\nand campaigns\ninto one clear growth system.",
+    "es": "Conectamos audiencia, contenido, datos\ny campañas\nen un único sistema de crecimiento claro.",
+    "pt-BR": "Conectamos público, conteúdo, dados\ne campanhas\nem um único sistema de crescimento claro.",
+    "ar": "نربط الجمهور والمحتوى والبيانات\nوالحملات\nفي منظومة نمو واحدة واضحة."
+  },
+  "בואו נבנה\nתוכנית צמיחה\nלעסק שלך.": {
+    "en": "Let's build\na growth plan\nfor your business.",
+    "es": "Construyamos\nun plan de crecimiento\npara vuestro negocio.",
+    "pt-BR": "Vamos construir\num plano de crescimento\npara o seu negócio.",
+    "ar": "دعونا نبني\nخطة نمو\nلعملكم."
+  },
+  "קליניקת יופי · תיאום תורים · חוויית פרימיום": {
+    "en": "Beauty clinic · appointment booking · premium experience",
+    "es": "Clínica de belleza · reserva de citas · experiencia premium",
+    "pt-BR": "Clínica de beleza · agendamento · experiência premium",
+    "ar": "عيادة تجميل · تنسيق مواعيد · تجربة فاخرة"
+  },
+  "טיפולים שמוצגים כמו מותג פרימיום, לא כמו רשימת מחירים.": {
+    "en": "Treatments presented like a premium brand, not a price list.",
+    "es": "Tratamientos presentados como una marca premium, no como una lista de precios.",
+    "pt-BR": "Tratamentos apresentados como uma marca premium, não como uma lista de preços.",
+    "ar": "علاجات تُعرض كعلامة فاخرة لا كقائمة أسعار."
+  },
+  "טיפול ראשון - שם": {
+    "en": "First treatment - name",
+    "es": "Primer tratamiento - nombre",
+    "pt-BR": "Primeiro tratamento - nome",
+    "ar": "العلاج الأول - الاسم"
+  },
+  "טיפול ראשון - תיאור": {
+    "en": "First treatment - description",
+    "es": "Primer tratamiento - descripción",
+    "pt-BR": "Primeiro tratamento - descrição",
+    "ar": "العلاج الأول - الوصف"
+  },
+  "טיפול ראשון - מחיר": {
+    "en": "First treatment - price",
+    "es": "Primer tratamiento - precio",
+    "pt-BR": "Primeiro tratamento - preço",
+    "ar": "العلاج الأول - السعر"
+  },
+  "טיפול שני - שם": {
+    "en": "Second treatment - name",
+    "es": "Segundo tratamiento - nombre",
+    "pt-BR": "Segundo tratamento - nome",
+    "ar": "العلاج الثاني - الاسم"
+  },
+  "עיצוב גבות פרימיום": {
+    "en": "Premium brow shaping",
+    "es": "Diseño de cejas premium",
+    "pt-BR": "Design de sobrancelhas premium",
+    "ar": "تصميم حواجب فاخر"
+  },
+  "טיפול שני - תיאור": {
+    "en": "Second treatment - description",
+    "es": "Segundo tratamiento - descripción",
+    "pt-BR": "Segundo tratamento - descrição",
+    "ar": "العلاج الثاني - الوصف"
+  },
+  "טיפול שני - מחיר": {
+    "en": "Second treatment - price",
+    "es": "Segundo tratamiento - precio",
+    "pt-BR": "Segundo tratamento - preço",
+    "ar": "العلاج الثاني - السعر"
+  },
+  "טיפול שלישי - שם": {
+    "en": "Third treatment - name",
+    "es": "Tercer tratamiento - nombre",
+    "pt-BR": "Terceiro tratamento - nome",
+    "ar": "العلاج الثالث - الاسم"
+  },
+  "טיפול Glow Renewal": {
+    "en": "Glow Renewal treatment",
+    "es": "Tratamiento Glow Renewal",
+    "pt-BR": "Tratamento Glow Renewal",
+    "ar": "علاج Glow Renewal"
+  },
+  "טיפול שלישי - תיאור": {
+    "en": "Third treatment - description",
+    "es": "Tercer tratamiento - descripción",
+    "pt-BR": "Terceiro tratamento - descrição",
+    "ar": "العلاج الثالث - الوصف"
+  },
+  "טיפול מתקדם למראה עור אחיד, מתוח ורענן יותר.": {
+    "en": "An advanced treatment for a more even, firm, and refreshed look.",
+    "es": "Un tratamiento avanzado para un aspecto más uniforme, firme y fresco.",
+    "pt-BR": "Um tratamento avançado para uma aparência mais uniforme, firme e fresca.",
+    "ar": "علاج متقدم لمظهر بشرة أكثر تناسقاً وشدّاً وانتعاشاً."
+  },
+  "טיפול שלישי - מחיר": {
+    "en": "Third treatment - price",
+    "es": "Tercer tratamiento - precio",
+    "pt-BR": "Terceiro tratamento - preço",
+    "ar": "العلاج الثالث - السعر"
+  },
+  "סטודיו ששם את התחושה של הלקוחה לפני הכול.": {
+    "en": "A studio that puts the client's feeling first.",
+    "es": "Un estudio que pone la sensación de la clienta por delante de todo.",
+    "pt-BR": "Um estúdio que coloca a sensação da cliente em primeiro lugar.",
+    "ar": "استوديو يضع شعور العميلة قبل كل شيء."
+  },
+  "שאלות שהלקוחה רוצה לדעת לפני שהיא קובעת.": {
+    "en": "Questions the client wants answered before she books.",
+    "es": "Preguntas que la clienta quiere saber antes de reservar.",
+    "pt-BR": "Perguntas que a cliente quer saber antes de agendar.",
+    "ar": "أسئلة تريد العميلة معرفتها قبل الحجز."
+  },
+  "עיסוי פנים, ניקוז לימפטי וגוואשה בטקס שקט שמחזיר רכות, זרימה וזוהר טבעי.…": {
+    "en": "Facial massage, lymphatic drainage, and gua sha in a quiet ritual that restores softness, flow, and natural glow.…",
+    "es": "Masaje facial, drenaje linfático y gua sha en un ritual silencioso que devuelve suavidad, flujo y brillo natural.…",
+    "pt-BR": "Massagem facial, drenagem linfática e gua sha em um ritual silencioso que devolve maciez, fluxo e brilho natural.…",
+    "ar": "تدليك للوجه وتصريف لمفاوي وgua sha في طقس هادئ يعيد النعومة والتدفق والإشراق الطبيعي…"
+  },
+  "כפתור לכל המוצרים": {
+    "en": "Button for all products",
+    "es": "Botón para todos los productos",
+    "pt-BR": "Botão para todos os produtos",
+    "ar": "زر لكل المنتجات"
+  },
+  "אקססוריז יוקרה בעיצוב נצחי": {
+    "en": "Luxury accessories with timeless design",
+    "es": "Accesorios de lujo con diseño atemporal",
+    "pt-BR": "Acessórios de luxo com design atemporal",
+    "ar": "إكسسوارات فاخرة بتصميم خالد"
+  },
+  "פוסט": {
+    "en": "Post",
+    "es": "Publicación",
+    "pt-BR": "Postagem",
+    "ar": "منشور"
+  },
+  "שירותים משפטיים לעסקים, יזמים ולקוחות פרטיים שצריכים ליווי\nמקצועי, מדויק וזמין.": {
+    "en": "Legal services for businesses, entrepreneurs, and private clients who need professional, precise, and available guidance.",
+    "es": "Servicios legales para negocios, emprendedores y clientes particulares que necesitan acompañamiento profesional, preciso y disponible.",
+    "pt-BR": "Serviços jurídicos para negócios, empreendedores e clientes particulares que precisam de acompanhamento profissional, preciso e disponível.",
+    "ar": "خدمات قانونية للأعمال وروّاد الأعمال والعملاء الخاصين الذين يحتاجون مرافقة مهنية دقيقة ومتاحة."
+  },
+  "אנחנו בונים. המותגים שלכם עפים.": {
+    "en": "We build. Your brands take off.",
+    "es": "Nosotros construimos. Vuestras marcas despegan.",
+    "pt-BR": "Nós construímos. Suas marcas decolam.",
+    "ar": "نحن نبني. علاماتكم تحلّق."
+  },
+  "שירותי אסטרטגיה, עיצוב, פיתוח ושיווק שמתחברים למותג אחד ברור, מהיר ומרשים.": {
+    "en": "Strategy, design, development, and marketing services that connect into one clear, fast, impressive brand.",
+    "es": "Servicios de estrategia, diseño, desarrollo y marketing que se conectan en una marca clara, rápida e impresionante.",
+    "pt-BR": "Serviços de estratégia, design, desenvolvimento e marketing que se conectam em uma marca clara, rápida e impressionante.",
+    "ar": "خدمات استراتيجية وتصميم وتطوير وتسويق تتصل في علامة واحدة واضحة وسريعة ومبهرة."
+  },
+  "אנחנו בונים\nמוצרים דיגיטליים מעולים": {
+    "en": "We build\nexcellent digital products",
+    "es": "Construimos\nproductos digitales excelentes",
+    "pt-BR": "Construímos\nprodutos digitais excelentes",
+    "ar": "نبني\nمنتجات رقمية ممتازة"
+  },
+  "אל תסתמכו רק\nעל המילה שלנו": {
+    "en": "Don't just take\nour word for it",
+    "es": "No os fiéis solo\nde nuestra palabra",
+    "pt-BR": "Não confiem só\nna nossa palavra",
+    "ar": "لا تعتمدوا فقط\nعلى كلامنا"
+  },
+  "צוות קטן,\nאימפקט גדול": {
+    "en": "A small team,\na big impact",
+    "es": "Un equipo pequeño,\nun gran impacto",
+    "pt-BR": "Uma equipe pequena,\num grande impacto",
+    "ar": "فريق صغير،\nتأثير كبير"
+  },
+  "חיסכון של כ־20% בתשלום שנתי": {
+    "en": "About 20% savings on annual payment",
+    "es": "Ahorro de unos 20% en el pago anual",
+    "pt-BR": "Economia de cerca de 20% no pagamento anual",
+    "ar": "توفير بنحو 20٪ في الدفع السنوي"
+  },
+  "כך אנחנו הופכים רעיון למוצר דיגיטלי": {
+    "en": "This is how we turn an idea into a digital product",
+    "es": "Así convertimos una idea en un producto digital",
+    "pt-BR": "Assim transformamos uma ideia em um produto digital",
+    "ar": "هكذا نحوّل فكرة إلى منتج رقمي"
+  },
+  "שאלו אותנו,\nאנחנו כאן לעזור": {
+    "en": "Ask us,\nwe're here to help",
+    "es": "Preguntadnos,\nestamos aquí para ayudar",
+    "pt-BR": "Perguntem-nos,\nestamos aqui para ajudar",
+    "ar": "اسألونا،\nنحن هنا للمساعدة"
+  },
+  "טיפים מודרניים\nלצמיחה דיגיטלית": {
+    "en": "Modern tips\nfor digital growth",
+    "es": "Consejos modernos\npara el crecimiento digital",
+    "pt-BR": "Dicas modernas\npara crescimento digital",
+    "ar": "نصائح عصرية\nللنمو الرقمي"
+  },
+  "אודות Virello": {
+    "en": "About Virello",
+    "es": "Sobre Virello",
+    "pt-BR": "Sobre a Virello",
+    "ar": "حول Virello"
+  },
+  "סטודיו דיגיטלי עם אסטרטגיה חדה וכיוון קריאייטיבי ברור": {
+    "en": "A digital studio with sharp strategy and a clear creative direction",
+    "es": "Un estudio digital con estrategia nítida y dirección creativa clara",
+    "pt-BR": "Um estúdio digital com estratégia afiada e direção criativa clara",
+    "ar": "استوديو رقمي باستراتيجية حادة واتجاه إبداعي واضح"
+  },
+  "עבודות נבחרות למותגים שרוצים לגדול": {
+    "en": "Selected work for brands that want to grow",
+    "es": "Trabajos seleccionados para marcas que quieren crecer",
+    "pt-BR": "Trabalhos selecionados para marcas que querem crescer",
+    "ar": "أعمال مختارة لعلامات تريد النمو"
+  },
+  "רעיונות, טרנדים ואסטרטגיה למותגים דיגיטליים": {
+    "en": "Ideas, trends, and strategy for digital brands",
+    "es": "Ideas, tendencias y estrategia para marcas digitales",
+    "pt-BR": "Ideias, tendências e estratégia para marcas digitais",
+    "ar": "أفكار واتجاهات واستراتيجية للعلامات الرقمية"
+  },
+  "אנחנו עוזרים לבנות, לנהל ולצמוח עם העסק": {
+    "en": "We help build, manage, and grow with the business",
+    "es": "Ayudamos a construir, gestionar y crecer con el negocio",
+    "pt-BR": "Ajudamos a construir, gerenciar e crescer com o negócio",
+    "ar": "نساعد على البناء والإدارة والنمو مع العمل"
+  },
+  "נבנה על ידינו, מוטס על ידם.": {
+    "en": "Built by us, flown by them.",
+    "es": "Construido por nosotros, impulsado por ellos.",
+    "pt-BR": "Construído por nós, impulsionado por eles.",
+    "ar": "بُني بأيدينا، ويحلّق بأيديهم."
+  },
+  "רצועות שירות חלקות, כרטיסי אייקונים ושורה נעה כפולה שיוצרים את אותה תחושת תבנית פרימיום בתנועה.": {
+    "en": "Smooth service strips, icon cards, and a double moving row that create the same premium template feel in motion.",
+    "es": "Franjas de servicio fluidas, tarjetas de iconos y una doble fila móvil que crean la misma sensación de plantilla premium en movimiento.",
+    "pt-BR": "Faixas de serviço suaves, cartões de ícones e uma fileira móvel dupla que criam a mesma sensação de modelo premium em movimento.",
+    "ar": "شرائط خدمات سلسة وبطاقات أيقونات وصف متحرك مزدوج يخلق الإحساس نفسه بقالب فاخر في الحركة."
+  },
+  "מספר שנות ניסיון": {
+    "en": "Years of experience count",
+    "es": "Número de años de experiencia",
+    "pt-BR": "Número de anos de experiência",
+    "ar": "عدد سنوات الخبرة"
+  },
+  "אנחנו בונים מוצרים מעולים": {
+    "en": "We build excellent products",
+    "es": "Construimos productos excelentes",
+    "pt-BR": "Construímos produtos excelentes",
+    "ar": "نبني منتجات ممتازة"
+  },
+  "אל תסתמכו רק על המילה שלנו": {
+    "en": "Don't just take our word for it",
+    "es": "No os fiéis solo de nuestra palabra",
+    "pt-BR": "Não confiem só na nossa palavra",
+    "ar": "لا تعتمدوا فقط على كلامنا"
+  },
+  "צוות קטן, השפעה גדולה": {
+    "en": "A small team, a big impact",
+    "es": "Un equipo pequeño, un gran impacto",
+    "pt-BR": "Uma equipe pequena, um grande impacto",
+    "ar": "فريق صغير، تأثير كبير"
+  },
+  "מצאו את האפשרות הנכונה ובחרו": {
+    "en": "Find the right option and choose",
+    "es": "Encontrad la opción correcta y elegid",
+    "pt-BR": "Encontrem a opção certa e escolham",
+    "ar": "اعثروا على الخيار المناسب واختاروا"
+  },
+  "הציצו לתהליך העבודה שלנו": {
+    "en": "Peek into our work process",
+    "es": "Echad un vistazo a nuestro proceso de trabajo",
+    "pt-BR": "Dêem uma olhada no nosso processo de trabalho",
+    "ar": "اطّلعوا على عملية عملنا"
+  },
+  "תגית FAQ": {
+    "en": "FAQ tag",
+    "es": "Etiqueta FAQ",
+    "pt-BR": "Tag FAQ",
+    "ar": "وسم الأسئلة الشائعة"
+  },
+  "שאלו בחופשיות — אנחנו כאן לעזור": {
+    "en": "Ask freely — we're here to help",
+    "es": "Preguntad con libertad — estamos aquí para ayudar",
+    "pt-BR": "Perguntem à vontade — estamos aqui para ajudar",
+    "ar": "اسألوا بحرية — نحن هنا للمساعدة"
+  },
+  "טיפים מודרניים לצמיחה דיגיטלית": {
+    "en": "Modern tips for digital growth",
+    "es": "Consejos modernos para el crecimiento digital",
+    "pt-BR": "Dicas modernas para crescimento digital",
+    "ar": "نصائح عصرية للنمو الرقمي"
+  },
+  "השאירו פרטים ונחזור אליכם לשיחת אסטרטגיה.": {
+    "en": "Leave your details and we'll get back to you for a strategy call.",
+    "es": "Dejad vuestros datos y os contactaremos para una llamada de estrategia.",
+    "pt-BR": "Deixem seus dados e retornaremos para uma conversa de estratégia.",
+    "ar": "اتركوا بياناتكم وسنعود إليكم لمكالمة استراتيجية."
+  },
+  "בואו נעבוד יחד או נדבר — נשמח לעזור!": {
+    "en": "Let's work together or talk — we'd love to help!",
+    "es": "Trabajemos juntos o hablemos — ¡nos encantará ayudar!",
+    "pt-BR": "Vamos trabalhar juntos ou conversar — vamos adorar ajudar!",
+    "ar": "دعونا نعمل معاً أو نتحدث — يسعدنا المساعدة!"
+  },
+  "תיאור CTA": {
+    "en": "CTA description",
+    "es": "Descripción del CTA",
+    "pt-BR": "Descrição do CTA",
+    "ar": "وصف الدعوة إلى الإجراء"
+  },
+  "שליחת הודעה >": {
+    "en": "Send a message >",
+    "es": "Enviar mensaje >",
+    "pt-BR": "Enviar mensagem >",
+    "ar": "إرسال رسالة >"
+  },
+  "סטטיסטיקות": {
+    "en": "Statistics",
+    "es": "Estadísticas",
+    "pt-BR": "Estatísticas",
+    "ar": "إحصاءات"
+  },
+  "שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\\nCTA עדין והיררכיה שמרגישה פרימיום.": {
+    "en": "Services shown elegantly, clearly, and without clutter — with the right layout, a soft CTA, and a premium hierarchy.",
+    "es": "Servicios presentados con elegancia, claridad y sin saturación — con la división correcta, un CTA suave y una jerarquía premium.",
+    "pt-BR": "Serviços apresentados com elegância, clareza e sem excesso — com a divisão certa, um CTA suave e uma hierarquia premium.",
+    "ar": "خدمات تُعرض بأناقة ووضوح دون ازدحام — مع تقسيم صحيح ودعوة لطيفة وتسلسل هرمي فاخر."
+  },
+  "מומחה סושיאל\\nשבונה נוכחות\\nשמוכרת בשבילך": {
+    "en": "A social expert\nwho builds presence\nthat sells for you",
+    "es": "Un experto en social\nque construye presencia\nque vende por vosotros",
+    "pt-BR": "Um especialista em social\nque constrói presença\nque vende por vocês",
+    "ar": "خبير سوشيال\nيبني حضوراً\nيبيع لصالحكم"
+  },
+  "בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\\nלקוחות ותוצאות מדידות.": {
+    "en": "Building a digital brand, trust-building content, and campaigns that bring leads, clients, and measurable results.",
+    "es": "Construcción de marca digital, contenido que genera confianza y campañas que traen leads, clientes y resultados medibles.",
+    "pt-BR": "Construção de marca digital, conteúdo que gera confiança e campanhas que trazem leads, clientes e resultados mensuráveis.",
+    "ar": "بناء علامة رقمية ومحتوى يولّد ثقة وحملات تجلب عملاء محتملين وعملاء ونتائج قابلة للقياس."
+  },
+  "אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\\nמהיכרות ראשונה ועד פנייה אמיתית.": {
+    "en": "We build a clear voice for the business, sharp messages, and content that leads the audience from first impression to a real inquiry.",
+    "es": "Construimos para el negocio un lenguaje claro, mensajes nítidos y contenido que lleva a la audiencia desde el primer contacto hasta una consulta real.",
+    "pt-BR": "Construímos para o negócio uma linguagem clara, mensagens nítidas e conteúdo que leva o público da primeira impressão até um contato real.",
+    "ar": "نبني للعمل لغة واضحة ورسائل حادة ومحتوى يقود الجمهور من أول تعارف إلى تواصل حقيقي."
+  },
+  "ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח\\nושיפור מתמיד של הביצועים — במקום אחד.": {
+    "en": "Social management, creative, campaigns, content, reports, customer journeys, and continuous performance improvement — in one place.",
+    "es": "Gestión de social, creatividad, campañas, contenido, informes, journeys de cliente y mejora continua del rendimiento — en un solo lugar.",
+    "pt-BR": "Gestão de social, criativo, campanhas, conteúdo, relatórios, jornadas do cliente e melhoria contínua de desempenho — em um só lugar.",
+    "ar": "إدارة السوشيال والإبداع والحملات والمحتوى والتقارير ورحلات العملاء وتحسين الأداء المستمر — في مكان واحد."
+  },
+  "לא מעלים פוסטים.\\nבונים ביקוש.\\nמייצרים פניות.": {
+    "en": "We don't just post.\nWe build demand.\nWe generate inquiries.",
+    "es": "No solo publicamos.\nConstruimos demanda.\nGeneramos consultas.",
+    "pt-BR": "Não apenas postamos.\nConstruímos demanda.\nGeramos contatos.",
+    "ar": "لا نرفع منشورات فحسب.\nنبني طلباً.\nنولّد استفسارات."
+  },
+  "מחברים בין קהל, תוכן, דאטה\\nוקמפיינים\\nלמערכת צמיחה אחת ברורה.": {
+    "en": "We connect audience, content, data\nand campaigns\ninto one clear growth system.",
+    "es": "Conectamos audiencia, contenido, datos\ny campañas\nen un único sistema de crecimiento claro.",
+    "pt-BR": "Conectamos público, conteúdo, dados\ne campanhas\nem um único sistema de crescimento claro.",
+    "ar": "نربط الجمهور والمحتوى والبيانات\nوالحملات\nفي منظومة نمو واحدة واضحة."
+  },
+  "בואו נבנה\\nתוכנית צמיחה\\nלעסק שלך.": {
+    "en": "Let's build\na growth plan\nfor your business.",
+    "es": "Construyamos\nun plan de crecimiento\npara vuestro negocio.",
+    "pt-BR": "Vamos construir\num plano de crescimento\npara o seu negócio.",
+    "ar": "دعونا نبني\nخطة نمو\nلعملكم."
+  },
+  "שירותים משפטיים לעסקים, יזמים ולקוחות פרטיים שצריכים ליווי\\nמקצועי, מדויק וזמין.": {
+    "en": "Legal services for businesses, entrepreneurs, and private clients who need professional, precise, and available guidance.",
+    "es": "Servicios legales para negocios, emprendedores y clientes particulares que necesitan acompañamiento profesional, preciso y disponible.",
+    "pt-BR": "Serviços jurídicos para negócios, empreendedores e clientes particulares que precisam de acompanhamento profissional, preciso e disponível.",
+    "ar": "خدمات قانونية للأعمال وروّاد الأعمال والعملاء الخاصين الذين يحتاجون مرافقة مهنية دقيقة ومتاحة."
+  },
+  "אנחנו בונים\\nמוצרים דיגיטליים מעולים": {
+    "en": "We build\nexcellent digital products",
+    "es": "Construimos\nproductos digitales excelentes",
+    "pt-BR": "Construímos\nprodutos digitais excelentes",
+    "ar": "نبني\nمنتجات رقمية ممتازة"
+  },
+  "אל תסתמכו רק\\nעל המילה שלנו": {
+    "en": "Don't just take\nour word for it",
+    "es": "No os fiéis solo\nde nuestra palabra",
+    "pt-BR": "Não confiem só\nna nossa palavra",
+    "ar": "لا تعتمدوا فقط\nعلى كلامنا"
+  },
+  "צוות קטן,\\nאימפקט גדול": {
+    "en": "A small team,\na big impact",
+    "es": "Un equipo pequeño,\nun gran impacto",
+    "pt-BR": "Uma equipe pequena,\num grande impacto",
+    "ar": "فريق صغير،\nتأثير كبير"
+  },
+  "שאלו אותנו,\\nאנחנו כאן לעזור": {
+    "en": "Ask us,\nwe're here to help",
+    "es": "Preguntadnos,\nestamos aquí para ayudar",
+    "pt-BR": "Perguntem-nos,\nestamos aqui para ajudar",
+    "ar": "اسألونا،\nنحن هنا للمساعدة"
+  },
+  "טיפים מודרניים\\nלצמיחה דיגיטלית": {
+    "en": "Modern tips\nfor digital growth",
+    "es": "Consejos modernos\npara el crecimiento digital",
+    "pt-BR": "Dicas modernas\npara crescimento digital",
+    "ar": "نصائح عصرية\nللنمو الرقمي"
+  }
+}
