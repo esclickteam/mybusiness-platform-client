@@ -6,6 +6,7 @@ import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { getIntlLocale } from "../../i18n/localeUtils";
 import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { localizePartnerDemoName, localizePartnerDemoText } from "../../i18n/partnerDemoCopy";
 
 function ils(value?: number, locale?: string) {
   return `₪${Number(value || 0).toLocaleString(locale || "en-US")}`;
@@ -51,16 +52,19 @@ export default function PartnerStorefront() {
   }
   if (!data) return null;
 
+  const storefrontName = localizePartnerDemoName(t, data.name);
+  const storefrontDescription = localizePartnerDemoText(t, data.description);
+
   return (
-    <PublicPartnerShell branding={data.branding} title={data.name || t("partner.public.catalog")}>
+    <PublicPartnerShell branding={data.branding} title={storefrontName || t("partner.public.catalog")}>
       <header className="rounded-[32px] bg-white px-6 py-10 shadow-sm">
         <div className="flex items-center gap-4">
           {data.logoUrl ? (
-            <img src={data.logoUrl} alt={data.name} className="h-16 w-16 rounded-2xl object-cover" />
+            <img src={data.logoUrl} alt={storefrontName} className="h-16 w-16 rounded-2xl object-cover" />
           ) : null}
           <div>
-            <h1 className="text-3xl font-black">{data.name}</h1>
-            <p className="mt-2 max-w-2xl text-sm font-bold text-slate-600">{data.description}</p>
+            <h1 className="text-3xl font-black">{storefrontName}</h1>
+            <p className="mt-2 max-w-2xl text-sm font-bold text-slate-600">{storefrontDescription}</p>
             <p className="mt-2 text-sm">
               {data.contact?.phone} {data.contact?.email} {data.contact?.whatsapp}
             </p>

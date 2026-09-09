@@ -12,6 +12,7 @@ import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
 import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { localizePartnerDemoName } from "../../i18n/partnerDemoCopy";
 import { getIntlLocale } from "../../i18n/localeUtils";
 
 function billingKey(billing?: string) {
@@ -100,7 +101,10 @@ export default function PartnerPublicPlans() {
   const selected = products.find((item: any) => item.sku === sku);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const plansFallback = t("partner.public.plans");
-  const heading = partnerFacingName(branding, host) || page?.partner?.name || plansFallback;
+  const rawHeading = partnerFacingName(branding, host) || page?.partner?.name || "";
+  const heading = rawHeading
+    ? localizePartnerDemoName(t, rawHeading)
+    : plansFallback;
 
   return (
     <PublicPartnerShell

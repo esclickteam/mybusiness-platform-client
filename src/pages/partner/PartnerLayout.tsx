@@ -12,6 +12,7 @@ import {
   getManagedBusinessId,
 } from "../../lib/partnerManagedContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import { localizePartnerDemoName } from "../../i18n/partnerDemoCopy";
 
 type NavItem = {
   to: string;
@@ -140,7 +141,10 @@ export default function PartnerLayout() {
     () => t(TITLES.find((item) => item.test(location.pathname))?.titleKey || "partnerNav.dashboard"),
     [location.pathname, t]
   );
-  const displayName = user?.name || user?.email || t("partnerNav.partnerFallback");
+  const rawDisplayName = user?.name || user?.email || t("partnerNav.partnerFallback");
+  const displayName = user?.name
+    ? localizePartnerDemoName(t, user.name)
+    : rawDisplayName;
   const initials = displayName
     .split(/\s+/)
     .slice(0, 2)
