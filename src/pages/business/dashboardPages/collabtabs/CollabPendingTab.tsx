@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Building2,
   CalendarClock,
@@ -36,6 +37,7 @@ type CollabPendingTabProps = {
 };
 
 export default function CollabPendingTab({ token }: CollabPendingTabProps) {
+  const { t } = useTranslation();
   const [pendingCollabs, setPendingCollabs] = useState<PendingCollab[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -52,7 +54,7 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
       setPendingCollabs(res.data.pendingCollaborations || []);
     } catch (err) {
       console.error("Error loading pending collaborations:", err);
-      setError("An error occurred while loading the data.");
+      setError(t("leftover.collab.pending.loadError"));
     } finally {
       setLoading(false);
     }
@@ -91,16 +93,15 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Clock3 className="h-4 w-4" />
-              Pending Collaborations
+              {t("leftover.collab.pending.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              Collaborations waiting for approval
+              {t("leftover.collab.pending.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Review collaboration contracts that are still pending, check the
-              partner details and track expiration dates.
+              {t("leftover.collab.pending.subtitle")}
             </p>
           </div>
 
@@ -110,37 +111,37 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
           >
             <RefreshCw className="h-5 w-5" />
-            Refresh
+            {t("leftover.collab.pending.refresh")}
           </button>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total Pending"
+          label={t("leftover.collab.pending.statTotal")}
           value={pendingCollabs.length}
-          helper="waiting collaborations"
+          helper={t("leftover.collab.pending.helperTotal")}
           icon={Handshake}
           tone="violet"
         />
         <StatCard
-          label="Active Pending"
+          label={t("leftover.collab.pending.statActivePending")}
           value={activePendingCount}
-          helper="still available"
+          helper={t("leftover.collab.pending.helperActivePending")}
           icon={ShieldCheck}
           tone="emerald"
         />
         <StatCard
-          label="Expired"
+          label={t("leftover.collab.pending.statExpired")}
           value={expiredCount}
-          helper="past expiration date"
+          helper={t("leftover.collab.pending.helperExpired")}
           icon={CalendarClock}
           tone="amber"
         />
         <StatCard
-          label="Status"
-          value="Pending"
-          helper="current workflow"
+          label={t("leftover.collab.pending.statStatus")}
+          value={t("leftover.collab.pending.statusPending")}
+          helper={t("leftover.collab.pending.helperStatus")}
           icon={Clock3}
           tone="sky"
         />
@@ -151,10 +152,12 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-800">
-                Pending Requests
+                {t("leftover.collab.pending.listTitle")}
               </h3>
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {pendingCollabs.length} collaborations shown
+                {t("leftover.collab.pending.shownCount", {
+                  count: pendingCollabs.length,
+                })}
               </p>
             </div>
           </div>
@@ -175,6 +178,7 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
 }
 
 function PendingCollabCard({ collab }: { collab: PendingCollab }) {
+  const { t } = useTranslation();
   const isExpired = collab.expiresAt
     ? new Date(collab.expiresAt).getTime() < Date.now()
     : false;
@@ -189,48 +193,58 @@ function PendingCollabCard({ collab }: { collab: PendingCollab }) {
 
           <div className="min-w-0">
             <h4 className="truncate text-lg font-black text-slate-800">
-              {collab.subject || "Pending collaboration"}
+              {collab.subject || t("leftover.collab.pending.fallbackTitle")}
             </h4>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              Created {formatDate(collab.createdAt)}
+              {t("leftover.collab.pending.createdOn", {
+                date: formatDate(collab.createdAt),
+              })}
             </p>
           </div>
         </div>
 
-        <StatusBadge status={collab.status || "Pending"} expired={isExpired} />
+        <StatusBadge status={collab.status || "pending"} expired={isExpired} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <InfoTile
           icon={Building2}
-          label="From"
+          label={t("leftover.collab.pending.from")}
           value={collab.fromBusinessId?.businessName || "—"}
         />
         <InfoTile
           icon={Building2}
-          label="To"
+          label={t("leftover.collab.pending.to")}
           value={collab.toBusinessId?.businessName || "—"}
         />
         <InfoTile
           icon={CalendarClock}
-          label="Expires On"
-          value={formatDate(collab.expiresAt) || "Unavailable"}
+          label={t("leftover.collab.pending.expiresOn")}
+          value={
+            formatDate(collab.expiresAt) === "—"
+              ? t("leftover.collab.pending.unavailable")
+              : formatDate(collab.expiresAt)
+          }
         />
         <InfoTile
           icon={CheckCircle2}
-          label="Status"
-          value={isExpired ? "Expired" : collab.status || "Pending"}
+          label={t("leftover.collab.pending.status")}
+          value={
+            isExpired
+              ? t("leftover.collab.pending.statusExpired")
+              : t("leftover.collab.pending.statusPending")
+          }
         />
       </div>
 
       <div className="mt-4 rounded-2xl bg-slate-50 p-4">
         <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-          Description
+          {t("leftover.collab.pending.description")}
         </p>
 
         <p className="text-sm font-semibold leading-7 text-slate-600">
-          {collab.description || "No description provided."}
+          {collab.description || t("leftover.collab.pending.noDescription")}
         </p>
       </div>
     </article>
@@ -250,6 +264,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -265,7 +280,9 @@ function StatCard({
           <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            {t("leftover.collab.pending.statusActiveLabel")}
+          </p>
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
@@ -309,6 +326,7 @@ function StatusBadge({
   status: string;
   expired: boolean;
 }) {
+  const { t } = useTranslation();
   const normalized = status.toLowerCase();
 
   const className = expired
@@ -317,17 +335,26 @@ function StatusBadge({
     ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
     : "bg-amber-50 text-amber-700 ring-amber-100";
 
+  const label = expired
+    ? t("leftover.collab.pending.statusExpired")
+    : normalized === "approved" || normalized === "accepted"
+    ? t("leftover.collab.activeTab.statusAccepted")
+    : t("leftover.collab.pending.statusPending");
+
   return (
     <span
-      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ring-1 ${className}`}
+      className={`rounded-full px-3 py-1.5 text-xs font-black ring-1 ${className}`}
     >
-      {expired ? "Expired" : status}
+      {label}
     </span>
   );
 }
 
 function LoadingState() {
-  return <BizuplyLoadingState label='Loading pending collaborations...' />;
+  const { t } = useTranslation();
+  return (
+    <BizuplyLoadingState label={t("leftover.collab.pending.loading")} />
+  );
 }
 
 function ErrorState({
@@ -337,6 +364,7 @@ function ErrorState({
   text: string;
   onRetry: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center">
       <XCircle className="mx-auto h-10 w-10 text-rose-600" />
@@ -344,7 +372,7 @@ function ErrorState({
       <p className="mt-4 text-lg font-black text-rose-700">{text}</p>
 
       <p className="mt-2 text-sm font-semibold text-rose-500">
-        Please refresh and try again.
+        {t("leftover.collab.pending.refreshHint")}
       </p>
 
       <button
@@ -353,13 +381,14 @@ function ErrorState({
         className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-100 px-5 text-sm font-black text-rose-700 transition hover:bg-rose-200"
       >
         <RefreshCw className="h-4 w-4" />
-        Try Again
+        {t("leftover.collab.pending.tryAgain")}
       </button>
     </div>
   );
 }
 
 function EmptyState() {
+  const { t } = useTranslation();
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
@@ -367,12 +396,11 @@ function EmptyState() {
       </div>
 
       <h4 className="mt-4 text-xl font-black text-slate-800">
-        No pending collaborations
+        {t("leftover.collab.pending.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        Pending collaboration contracts will appear here once businesses send
-        or receive requests that still need review.
+        {t("leftover.collab.pending.emptyHint")}
       </p>
     </div>
   );

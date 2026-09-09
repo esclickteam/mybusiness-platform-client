@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "./Insights.css";
 
 /* =========================
@@ -46,6 +47,7 @@ const CalendarIcon = () => (
 ========================= */
 
 const Insights = ({ stats }) => {
+  const { t } = useTranslation();
   if (!stats) return null;
 
   const viewsThisWeek = stats.views_count || 0;
@@ -64,11 +66,11 @@ const Insights = ({ stats }) => {
     diff === 0 ? "neutral" : diff > 0 ? "positive" : "negative";
 
   return (
-    <section className="insights-section" aria-label="Business insights">
+    <section className="insights-section" aria-label={t("dashboard.insights.ariaLabel")}>
       {/* ===== Profile Views Insight ===== */}
       <div className={`insight-card ${trend}`}>
         <div className="insight-header">
-          <span className="insight-title">Profile Views</span>
+          <span className="insight-title">{t("dashboard.insights.profileViews")}</span>
 
           {trend === "positive" && (
             <span className="insight-trend positive">
@@ -83,17 +85,19 @@ const Insights = ({ stats }) => {
           )}
 
           {trend === "neutral" && (
-            <span className="insight-trend neutral">No change</span>
+            <span className="insight-trend neutral">{t("dashboard.insights.noChange")}</span>
           )}
         </div>
 
         <p className="insight-text">
           {trend === "positive" &&
-            `Great! Your profile was viewed more this week (${viewsThisWeek}) compared to last week (${viewsLastWeek}).`}
-          {trend === "negative" &&
-            `Your profile views dropped compared to last week. Consider refreshing your profile or promoting availability.`}
+            t("dashboard.insights.viewsUp", {
+              thisWeek: viewsThisWeek,
+              lastWeek: viewsLastWeek,
+            })}
+          {trend === "negative" && t("dashboard.insights.viewsDown")}
           {trend === "neutral" &&
-            `Your profile views stayed the same this week (${viewsThisWeek}).`}
+            t("dashboard.insights.viewsSame", { thisWeek: viewsThisWeek })}
         </p>
       </div>
 
@@ -105,16 +109,14 @@ const Insights = ({ stats }) => {
       >
         <div className="insight-header">
           <span className="insight-title">
-            <CalendarIcon /> Appointments
+            <CalendarIcon /> {t("dashboard.insights.appointments")}
           </span>
         </div>
 
         <p className="insight-text">
           {upcoming > 0
-            ? `You have ${upcoming} scheduled appointment${
-                upcoming > 1 ? "s" : ""
-              } this week.`
-            : "No appointments scheduled this week. You may want to offer open slots or a limited promotion."}
+            ? t("dashboard.insights.appointmentsScheduled", { count: upcoming })
+            : t("dashboard.insights.appointmentsEmpty")}
         </p>
       </div>
     </section>

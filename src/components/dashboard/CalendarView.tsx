@@ -427,7 +427,7 @@ const CalendarView = React.memo(
                             transition hover:-translate-y-0.5 hover:shadow-md
                             ${colorClass}
                           `}
-                          title="Open appointment in CRM"
+                          title={t("dashboard.calendarView.openInCrm")}
                         >
                           {appointment.time && (
                             <p className="truncate text-[10px] font-black leading-4 opacity-85 sm:text-[11px]">

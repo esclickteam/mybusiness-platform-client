@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
+import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
 
@@ -66,6 +67,7 @@ export default function ClientChatTab({
   businessId,
   userId,
 }) {
+  const { t, i18n } = useTranslation();
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -190,7 +192,7 @@ export default function ClientChatTab({
           >
             <div className="text">{m.text}</div>
             <div className="meta">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+              {new Date(m.timestamp).toLocaleTimeString(i18n.language, {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
@@ -202,7 +204,7 @@ export default function ClientChatTab({
       <div className="inputBar">
         <textarea
           className="inputField"
-          placeholder="Type a message..."
+          placeholder={t("clientChat.placeholder")}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {

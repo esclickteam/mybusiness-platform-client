@@ -1,6 +1,13 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-const statuses = ["Awaiting Response", "In Progress", "Closed"];
+const STATUS_VALUES = ["Awaiting Response", "In Progress", "Closed"];
+
+const STATUS_I18N = {
+  "Awaiting Response": "awaitingResponse",
+  "In Progress": "inProgress",
+  Closed: "closed",
+};
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -16,6 +23,7 @@ const getStatusColor = (status) => {
 };
 
 const OpenLeadsTable = ({ leads = [] }) => {
+  const { t, i18n } = useTranslation();
   const today = new Date();
   // Initialize leadList once without useEffect
   const [leadList, setLeadList] = useState(
@@ -30,43 +38,48 @@ const OpenLeadsTable = ({ leads = [] }) => {
   const cycleStatus = (index) => {
     setLeadList((prev) => {
       const updated = Array.isArray(prev) ? [...prev] : [];
-      const currentIndex = statuses.indexOf(updated[index]?.status);
+      const currentIndex = STATUS_VALUES.indexOf(updated[index]?.status);
       updated[index] = {
         ...updated[index],
-        status: statuses[(currentIndex + 1) % statuses.length],
+        status: STATUS_VALUES[(currentIndex + 1) % STATUS_VALUES.length],
       };
       return updated;
     });
     // Future: persist status via API
   };
 
+  const statusLabel = (status) => {
+    const key = STATUS_I18N[status];
+    return key ? t(`dashboard.openLeads.${key}`) : status;
+  };
+
   // If no leads, show message
   if (!Array.isArray(leadList) || leadList.length === 0) {
     return (
       <div className="graph-box">
-        <h4>📥 Open Leads</h4>
-        <div>No open leads to display</div>
+        <h4>📥 {t("dashboard.openLeads.title")}</h4>
+        <div>{t("dashboard.openLeads.empty")}</div>
       </div>
     );
   }
 
   return (
     <div className="graph-box">
-      <h4>📥 Open Leads</h4>
+      <h4>📥 {t("dashboard.openLeads.title")}</h4>
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>{t("dashboard.openLeads.name")}</th>
+            <th>{t("dashboard.openLeads.date")}</th>
+            <th>{t("dashboard.openLeads.status")}</th>
+            <th>{t("dashboard.openLeads.action")}</th>
           </tr>
         </thead>
         <tbody>
           {leadList.map((lead, i) => (
             <tr key={lead.id || i}>
               <td>{lead.name}</td>
-              <td>{new Date(lead.date).toLocaleDateString("en-US")}</td>
+              <td>{new Date(lead.date).toLocaleDateString(i18n.language)}</td>
               <td
                 style={{
                   color: getStatusColor(lead.status),
@@ -74,17 +87,19 @@ const OpenLeadsTable = ({ leads = [] }) => {
                   cursor: "pointer",
                 }}
                 onClick={() => cycleStatus(i)}
-                title="Click to change status"
+                title={t("dashboard.openLeads.changeStatusTitle")}
               >
-                {lead.status}
+                {statusLabel(lead.status)}
               </td>
               <td>
-                <button style={{ fontSize: "12px" }}>Handle Now</button>
+                <button style={{ fontSize: "12px" }}>
+                  {t("dashboard.openLeads.handleNow")}
+                </button>
                 {daysSince(lead.date) > 2 && (
                   <span
                     style={{ color: "red", fontSize: "12px", marginLeft: "8px" }}
                   >
-                    ⏱️ Stale
+                    ⏱️ {t("dashboard.openLeads.stale")}
                   </span>
                 )}
               </td>

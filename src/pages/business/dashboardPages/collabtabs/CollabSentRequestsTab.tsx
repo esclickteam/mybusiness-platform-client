@@ -62,7 +62,7 @@ export default function CollabSentRequestsTab({
       setError(null);
     } catch (err) {
       console.error("Error loading sent proposals:", err);
-      setError("Error loading sent proposals");
+      setError(t("leftover.collab.sent.loadError"));
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function CollabSentRequestsTab({
   const handleCancelProposal = async (proposalId: string) => {
     if (!proposalId) return;
 
-    if (!window.confirm("Are you sure you want to cancel this proposal?")) {
+    if (!window.confirm(t("leftover.collab.sent.cancelConfirm"))) {
       return;
     }
 
@@ -98,18 +98,20 @@ export default function CollabSentRequestsTab({
         prev.filter((proposal) => getProposalId(proposal) !== proposalId)
       );
 
-      alert(t("leftover.collab.cancelOk"));
+      alert(t("leftover.collab.sent.cancelSuccess"));
     } catch (err) {
       console.error("Error cancelling proposal:", err);
-      alert(t("leftover.collab.cancelError"));
+      alert(t("leftover.collab.sent.cancelError"));
     }
   };
 
   const handleResendProposal = (proposal: SentProposal) => {
     alert(
-      `Resend proposal to ${
-        getBusinessName(proposal.toBusinessId) || "Public Market"
-      } (feature coming soon)`
+      t("leftover.collab.sent.resendSoon", {
+        name:
+          getBusinessName(proposal.toBusinessId) ||
+          t("leftover.collab.sent.publicMarket"),
+      })
     );
   };
 
@@ -131,16 +133,15 @@ export default function CollabSentRequestsTab({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Send className="h-4 w-4" />
-              Sent Proposals
+              {t("leftover.collab.sent.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              Track proposals you sent
+              {t("leftover.collab.sent.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Review outgoing collaboration proposals, track their status and
-              cancel requests that are no longer relevant.
+              {t("leftover.collab.sent.subtitle")}
             </p>
           </div>
 
@@ -150,37 +151,37 @@ export default function CollabSentRequestsTab({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
           >
             <RefreshCw className="h-5 w-5" />
-            Refresh
+            {t("leftover.collab.sent.refresh")}
           </button>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Sent"
+          label={t("leftover.collab.sent.sent")}
           value={sentRequests.length}
-          helper="outgoing proposals"
+          helper={t("leftover.collab.sent.helperSent")}
           icon={Send}
           tone="sky"
         />
         <StatCard
-          label="Pending"
+          label={t("leftover.collab.sent.pending")}
           value={pendingCount}
-          helper="waiting for answer"
+          helper={t("leftover.collab.sent.helperPending")}
           icon={FileSignature}
           tone="amber"
         />
         <StatCard
-          label="Accepted"
+          label={t("leftover.collab.sent.accepted")}
           value={acceptedCount}
-          helper="approved proposals"
+          helper={t("leftover.collab.sent.helperAccepted")}
           icon={CheckCircle2}
           tone="emerald"
         />
         <StatCard
-          label="Rejected"
+          label={t("leftover.collab.sent.rejected")}
           value={rejectedCount}
-          helper="declined proposals"
+          helper={t("leftover.collab.sent.helperRejected")}
           icon={XCircle}
           tone="rose"
         />
@@ -190,11 +191,13 @@ export default function CollabSentRequestsTab({
         <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
           <div>
             <h3 className="text-2xl font-black text-slate-800">
-              Outgoing Requests
+              {t("leftover.collab.sent.listTitle")}
             </h3>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              {sentRequests.length} sent proposals shown
+              {t("leftover.collab.sent.shownCount", {
+                count: sentRequests.length,
+              })}
             </p>
           </div>
         </div>
@@ -231,6 +234,7 @@ function SentRequestCard({
   onResend: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   const status = request.status || "pending";
 
   return (
@@ -243,11 +247,13 @@ function SentRequestCard({
 
           <div className="min-w-0">
             <h4 className="truncate text-lg font-black text-slate-800">
-              {cleanString(request.title) || "Sent proposal"}
+              {cleanString(request.title) || t("leftover.collab.sent.fallbackTitle")}
             </h4>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              Sent on {formatDate(request.createdAt)}
+              {t("leftover.collab.sent.sentOn", {
+                date: formatDate(request.createdAt),
+              })}
             </p>
           </div>
         </div>
@@ -258,7 +264,7 @@ function SentRequestCard({
       <div className="grid gap-3 sm:grid-cols-2">
         <InfoTile
           icon={Building2}
-          label="From"
+          label={t("leftover.collab.sent.from")}
           value={
             request.fromBusinessName ||
             getBusinessName(request.fromBusinessId) ||
@@ -268,55 +274,55 @@ function SentRequestCard({
 
         <InfoTile
           icon={Building2}
-          label="To"
+          label={t("leftover.collab.sent.to")}
           value={
             request.toBusinessName ||
             getBusinessName(request.toBusinessId) ||
-            "Public Market"
+            t("leftover.collab.sent.publicMarket")
           }
         />
 
         <InfoTile
           icon={DollarSign}
-          label="Amount"
+          label={t("leftover.collab.sent.amount")}
           value={formatMoney(request.amount)}
         />
 
         <InfoTile
           icon={CalendarClock}
-          label="Valid Until"
+          label={t("leftover.collab.sent.validUntil")}
           value={formatDate(request.validUntil)}
         />
       </div>
 
       <div className="mt-4 rounded-2xl bg-slate-50 p-4">
         <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-          Description
+          {t("leftover.collab.sent.description")}
         </p>
 
         <p className="text-sm font-semibold leading-7 text-slate-600">
-          {cleanString(request.description) || "No description provided."}
+          {cleanString(request.description) || t("leftover.collab.sent.noDescription")}
         </p>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         <ListBlock
-          title="What you provide"
+          title={t("leftover.collab.sent.provideTitle")}
           items={request.giving || []}
-          emptyText="No provided items"
+          emptyText={t("leftover.collab.sent.provideEmpty")}
         />
 
         <ListBlock
-          title="What you receive"
+          title={t("leftover.collab.sent.receiveTitle")}
           items={request.receiving || []}
-          emptyText="No requested items"
+          emptyText={t("leftover.collab.sent.receiveEmpty")}
         />
       </div>
 
       <div className="mt-4 rounded-2xl bg-slate-50 p-4">
         <p className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
           <Tags className="h-4 w-4 text-sky-700" />
-          Payment
+          {t("leftover.collab.sent.payment")}
         </p>
 
         <p className="text-sm font-black text-slate-800">
@@ -331,7 +337,7 @@ function SentRequestCard({
           className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
         >
           <Send className="h-4 w-4" />
-          Resend
+          {t("leftover.collab.sent.resend")}
         </button>
 
         {status === "pending" && (
@@ -341,7 +347,7 @@ function SentRequestCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
           >
             <Trash2 className="h-4 w-4" />
-            Cancel
+            {t("leftover.collab.sent.cancel")}
           </button>
         )}
       </div>
@@ -398,6 +404,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald" | "rose";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -414,7 +421,9 @@ function StatCard({
           <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            {t("leftover.collab.sent.statusActiveLabel")}
+          </p>
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
@@ -453,6 +462,7 @@ function InfoTile({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const normalized = status.toLowerCase();
 
   const statusClass =
@@ -462,17 +472,25 @@ function StatusBadge({ status }: { status: string }) {
       ? "bg-rose-50 text-rose-700 ring-rose-100"
       : "bg-amber-50 text-amber-700 ring-amber-100";
 
+  const label =
+    normalized === "accepted"
+      ? t("leftover.collab.sent.statusAccepted")
+      : normalized === "rejected"
+      ? t("leftover.collab.sent.statusRejected")
+      : t("leftover.collab.sent.statusPending");
+
   return (
     <span
-      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ring-1 ${statusClass}`}
+      className={`rounded-full px-3 py-1.5 text-xs font-black ring-1 ${statusClass}`}
     >
-      {status}
+      {label}
     </span>
   );
 }
 
 function LoadingState() {
-  return <BizuplyLoadingState label='Loading sent proposals...' />;
+  const { t } = useTranslation();
+  return <BizuplyLoadingState label={t("leftover.collab.sent.loading")} />;
 }
 
 function ErrorState({
@@ -482,6 +500,7 @@ function ErrorState({
   text: string;
   onRetry: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center">
       <XCircle className="mx-auto h-10 w-10 text-rose-600" />
@@ -489,7 +508,7 @@ function ErrorState({
       <p className="mt-4 text-lg font-black text-rose-700">{text}</p>
 
       <p className="mt-2 text-sm font-semibold text-rose-500">
-        Please refresh and try again.
+        {t("leftover.collab.sent.refreshHint")}
       </p>
 
       <button
@@ -498,13 +517,14 @@ function ErrorState({
         className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-100 px-5 text-sm font-black text-rose-700 transition hover:bg-rose-200"
       >
         <RefreshCw className="h-4 w-4" />
-        Try Again
+        {t("leftover.collab.sent.tryAgain")}
       </button>
     </div>
   );
 }
 
 function EmptyState() {
+  const { t } = useTranslation();
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
@@ -512,12 +532,11 @@ function EmptyState() {
       </div>
 
       <h4 className="mt-4 text-xl font-black text-slate-800">
-        No proposals sent yet
+        {t("leftover.collab.sent.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        Outgoing collaboration proposals will appear here once this business
-        sends requests to partners.
+        {t("leftover.collab.sent.emptyHint")}
       </p>
     </div>
   );

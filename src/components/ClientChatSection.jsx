@@ -100,13 +100,13 @@ export default function ClientChatSection() {
           });
         } else {
           console.error("❌ Failed to create conversation:", res?.error);
-          setError("Unable to open chat with this business.");
+          setError(t("clientChat.openFailed"));
         }
 
         setLoading(false);
       }
     );
-  }, [initialized, userId, businessId, conversationId]);
+  }, [initialized, userId, businessId, conversationId, t]);
 
   /* ===========================================================
      3) LOAD HISTORY + LISTEN FOR REAL-TIME MESSAGES
@@ -125,7 +125,7 @@ export default function ClientChatSection() {
       } else {
         console.error("❌ Error loading history:", res.error);
         setMessages([]);
-        setError("Error loading messages.");
+        setError(t("clientChat.loadError"));
       }
       setLoading(false);
     });
@@ -171,17 +171,17 @@ export default function ClientChatSection() {
       .then((res) => res.json())
       .then((data) => {
         const name =
-          data?.business?.businessName || data?.businessName || "Business";
+          data?.business?.businessName || data?.businessName || t("clientChat.businessFallback");
         setBusinessName(name);
       })
-      .catch(() => setBusinessName("Unknown"));
-  }, [businessId, businessName]);
+      .catch(() => setBusinessName(t("clientChat.unknown")));
+  }, [businessId, businessName, t]);
 
   /* ===========================================================
      5) UI STATES
   ============================================================ */
   if (loading)
-    return <BizuplyLoader fullScreen label="Loading the conversation..." />;
+    return <BizuplyLoader fullScreen label={t("clientChat.loading")} />;
 
   if (error)
     return (
@@ -191,7 +191,7 @@ export default function ClientChatSection() {
           onClick={() => window.location.reload()}
           className="bg-purple-600 text-white px-4 py-2 rounded-lg"
         >
-          Refresh
+          {t("clientChat.refresh")}
         </button>
       </div>
     );
@@ -203,9 +203,9 @@ export default function ClientChatSection() {
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
-          <h3 className={styles.sidebarTitle}>Chat with the business</h3>
+          <h3 className={styles.sidebarTitle}>{t("clientChat.sidebarTitle")}</h3>
           <div className={styles.convItemActive}>
-            {businessName || "Business"}
+            {businessName || t("clientChat.businessFallback")}
           </div>
         </aside>
 

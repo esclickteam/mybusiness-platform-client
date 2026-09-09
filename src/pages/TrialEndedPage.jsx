@@ -1,7 +1,7 @@
 // TrialEndedPage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import UpgradeOfferCard from "../components/UpgradeOfferCard/UpgradeOfferCard";
+import UpgradeOfferCard from "../components/UpgradeOfferCard";
 import "./TrialEndedPage.css";
 
 export default function TrialEndedPage() {
@@ -11,7 +11,7 @@ export default function TrialEndedPage() {
     <div className="trial-ended-wrapper">
       <UpgradeOfferCard
         onUpgrade={() => navigate("/pricing")}
-        onHome={() => navigate("/")}
+        onClose={() => navigate("/")}
       />
     </div>
   );

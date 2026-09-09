@@ -61,12 +61,12 @@ import {
   workingTemplateCopy,
   workingTemplateSearchHaystack,
 } from "../../../../i18n/workingTemplateCopy";
-import { localizeBuiltInText } from "../../../../i18n/localizeBuiltInTemplateSeed";
 import { translateReadinessBlocker } from "../../../../i18n/automationReadinessCopy";
 import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
+  isAiGalleryTemplate,
   getWaTemplateId,
   isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
@@ -948,9 +948,9 @@ export default function AutomationsTemplatesPage() {
 
                 <h3 className="ax-template-card__title">
                   {(() => {
-                    const catalog = getAiTemplateByKey(
-                      template.key || template.recipeKey
-                    );
+                    const catalog = isAiGalleryTemplate(template)
+                      ? getAiTemplateByKey(template.key || template.recipeKey)
+                      : undefined;
                     return catalog
                       ? aiTemplateTitle(t, catalog)
                       : workingTemplateCopy(t, template).name;
@@ -958,9 +958,9 @@ export default function AutomationsTemplatesPage() {
                 </h3>
                 <p className="ax-template-card__desc">
                   {(() => {
-                    const catalog = getAiTemplateByKey(
-                      template.key || template.recipeKey
-                    );
+                    const catalog = isAiGalleryTemplate(template)
+                      ? getAiTemplateByKey(template.key || template.recipeKey)
+                      : undefined;
                     return catalog
                       ? aiTemplateDescription(t, catalog)
                       : workingTemplateCopy(t, template).description;
@@ -970,7 +970,7 @@ export default function AutomationsTemplatesPage() {
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>{t("automations.templates.trigger")}</em>
-                    {localizeBuiltInText(workingTemplateCopy(t, template).triggerLabel)}
+                    {workingTemplateCopy(t, template).triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
@@ -978,7 +978,7 @@ export default function AutomationsTemplatesPage() {
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>{t("automations.templates.result")}</em>
                     {workingTemplateCopy(t, template)
-                      .resultLabels.map((label) => localizeBuiltInText(label))
+                      .resultLabels
                       .join(" · ")}
                   </span>
                 </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -11,6 +12,7 @@ import {
 } from "recharts";
 
 const LineChartComponent = ({ stats }) => {
+  const { t } = useTranslation();
   const isValidStats =
     stats &&
     Array.isArray(stats.weekly_labels) &&
@@ -22,8 +24,8 @@ const LineChartComponent = ({ stats }) => {
   if (!isValidStats) {
     return (
       <div style={{ textAlign: "center", marginTop: 30 }}>
-        <h3>📈 Activity in the Last Week</h3>
-        <p>No data to display</p>
+        <h3>📈 {t("dashboard.lineChart.title")}</h3>
+        <p>{t("dashboard.lineChart.empty")}</p>
       </div>
     );
   }
@@ -37,7 +39,7 @@ const LineChartComponent = ({ stats }) => {
 
   return (
     <div className="chart-container" style={{ marginTop: 30 }}>
-      <h3 style={{ textAlign: "center" }}>📈 Activity in the Last Week</h3>
+      <h3 style={{ textAlign: "center" }}>📈 {t("dashboard.lineChart.title")}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={data}
@@ -53,21 +55,21 @@ const LineChartComponent = ({ stats }) => {
             dataKey="views"
             stroke="#6a5acd"
             strokeWidth={2}
-            name="Views"
+            name={t("dashboard.lineChart.views")}
           />
           <Line
             type="monotone"
             dataKey="requests"
             stroke="#ffa07a"
             strokeWidth={2}
-            name="Inquiries"
+            name={t("dashboard.lineChart.requests")}
           />
           <Line
             type="monotone"
             dataKey="orders"
             stroke="#90ee90"
             strokeWidth={2}
-            name="Orders"
+            name={t("dashboard.lineChart.orders")}
           />
         </LineChart>
       </ResponsiveContainer>

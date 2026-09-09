@@ -83,7 +83,7 @@ export default function PartnerStorefrontSettings() {
       <PartnerInput
         value={form.slug}
         onChange={(e) => setForm({ ...form, slug: e.target.value })}
-        placeholder="slug"
+        placeholder={t("partner.storefront.slug")}
       />
       <PartnerInput
         value={form.logoUrl}
@@ -109,7 +109,7 @@ export default function PartnerStorefrontSettings() {
       <PartnerInput
         value={form.whatsapp}
         onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-        placeholder="WhatsApp"
+        placeholder={t("partner.storefront.whatsapp")}
       />
       <label className="block text-sm font-bold">
         <input

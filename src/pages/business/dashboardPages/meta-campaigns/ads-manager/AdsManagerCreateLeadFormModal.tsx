@@ -196,15 +196,15 @@ export default function AdsManagerCreateLeadFormModal({
       return;
     }
     if (!pageId) {
-      toast.error("Select a Facebook Page first");
+      toast.error(t("metaCampaigns.adsToasts.selectPageFirst"));
       return;
     }
     if (!name.trim()) {
-      toast.error("Form name is required");
+      toast.error(t("metaCampaigns.adsToasts.formNameRequired"));
       return;
     }
     if (!introTitle.trim()) {
-      toast.error("Intro headline is required");
+      toast.error(t("metaCampaigns.adsToasts.introRequired"));
       return;
     }
     const validationError = validateLeadFormBuilder({
@@ -212,17 +212,17 @@ export default function AdsManagerCreateLeadFormModal({
       customQuestions,
     });
     if (validationError) {
-      toast.error("Add at least one contact field or custom question");
+      toast.error(t("metaCampaigns.adsToasts.needQuestion"));
       setStep("questions");
       return;
     }
     if (!thankYouTitle.trim()) {
-      toast.error("Thank-you title is required");
+      toast.error(t("metaCampaigns.adsToasts.thankYouRequired"));
       setStep("ending");
       return;
     }
     if (additionalAction === "whatsapp" && !whatsappPhone.replace(/\D/g, "")) {
-      toast.error("Connect or enter a WhatsApp number");
+      toast.error(t("metaCampaigns.adsToasts.needWhatsapp"));
       setStep("ending");
       return;
     }
@@ -230,12 +230,12 @@ export default function AdsManagerCreateLeadFormModal({
       (additionalAction === "website" || additionalAction === "file") &&
       !thankYouLink.trim()
     ) {
-      toast.error("Add a link for the additional action");
+      toast.error(t("metaCampaigns.adsToasts.needActionLink"));
       setStep("ending");
       return;
     }
     if (additionalAction === "call" && !callPhone.replace(/\D/g, "")) {
-      toast.error("Add a phone number for Call business");
+      toast.error(t("metaCampaigns.adsToasts.needCallPhone"));
       setStep("ending");
       return;
     }
@@ -274,15 +274,15 @@ export default function AdsManagerCreateLeadFormModal({
       });
       const formId = result.form?.id;
       if (!formId) {
-        toast.error("Meta did not return a form ID");
+        toast.error(t("metaCampaigns.adsToasts.noFormId"));
         return;
       }
-      toast.success("Lead form created on Meta");
+      toast.success(t("metaCampaigns.adsToasts.leadFormCreated"));
       onCreated(formId);
       onClose();
     } catch (error: unknown) {
       const err = error as { response?: { data?: { error?: string } } };
-      toast.error(err.response?.data?.error || "Failed to create lead form");
+      toast.error(err.response?.data?.error || t("metaCampaigns.adsToasts.leadFormFailed"));
     } finally {
       setBusy(false);
     }
@@ -295,7 +295,7 @@ export default function AdsManagerCreateLeadFormModal({
         dir="ltr"
       >
         <header className="flex items-center justify-between border-b border-[#CED0D4] px-4 py-3">
-          <h2 className="text-[17px] font-bold text-[#050505]">{t("leftover.metaFormChrome.createForm")}</h2>
+          <h2 className="text-[17px] font-bold text-[#050505]">Create form</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -303,13 +303,13 @@ export default function AdsManagerCreateLeadFormModal({
               onClick={() => setSettingsOpen(true)}
             >
               <Settings className="h-4 w-4 text-[#65676B]" />
-              {t("common.settings")}
+              Settings
             </button>
             <button
               type="button"
               className="rounded-md p-1.5 text-[#65676B] hover:bg-[#F0F2F5]"
               onClick={onClose}
-              aria-label={t("leftover.metaFormChrome.closeAria")}
+              aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
@@ -320,7 +320,7 @@ export default function AdsManagerCreateLeadFormModal({
           {/* Left steps */}
           <nav className="border-r border-[#E4E6EB] bg-[#F7F8FA] px-3 py-4">
             <p className="mb-3 px-2 text-[12px] font-bold uppercase tracking-wide text-[#65676B]">
-              {t("leftover.metaFormChrome.createForm")}
+              Create form
             </p>
             <ol className="space-y-1">
               {STEPS.map((item, index) => {
@@ -701,7 +701,7 @@ export default function AdsManagerCreateLeadFormModal({
 
         <footer className="flex items-center justify-between gap-3 border-t border-[#CED0D4] px-4 py-3">
           <button type="button" className={metaBtnSecondary} onClick={onClose}>
-            {t("common.cancel")}
+            Cancel
           </button>
           <div className="flex gap-2">
             {stepIndex > 0 ? (
@@ -711,7 +711,7 @@ export default function AdsManagerCreateLeadFormModal({
                 onClick={goBack}
                 disabled={busy}
               >
-                {t("common.back")}
+                Back
               </button>
             ) : null}
             {stepIndex < STEPS.length - 1 ? (
@@ -721,7 +721,7 @@ export default function AdsManagerCreateLeadFormModal({
                 onClick={goNext}
                 disabled={busy}
               >
-                {t("common.next")}
+                Next
               </button>
             ) : (
               <button
@@ -731,7 +731,7 @@ export default function AdsManagerCreateLeadFormModal({
                 disabled={busy}
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {busy ? t("leftover.metaFormChrome.creating") : t("leftover.metaFormChrome.createForm")}
+                {busy ? "Creating…" : "Create form"}
               </button>
             )}
           </div>

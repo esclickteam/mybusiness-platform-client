@@ -83,7 +83,7 @@ export default function AdLevelEditor({
 
   const handleUpload = async (file: File | null) => {
     if (!file || !businessId) {
-      if (!businessId) toast.error("Connect Meta Ads first");
+      if (!businessId) toast.error(t("metaCampaigns.adsToasts.connectMetaFirst"));
       return;
     }
     const kind = ad.creativeFormat === "video" ? "video" : "image";
@@ -112,10 +112,10 @@ export default function AdLevelEditor({
           mediaLabel: file.name || "Image uploaded",
         });
       }
-      toast.success(isVideo ? "Video uploaded to Meta" : "Image uploaded to Meta");
+      toast.success(isVideo ? t("metaCampaigns.adsToasts.videoUploaded") : t("metaCampaigns.adsToasts.imageUploaded"));
     } catch (error: unknown) {
       const err = error as { response?: { data?: { error?: string } } };
-      toast.error(err.response?.data?.error || "Media upload failed");
+      toast.error(err.response?.data?.error || t("metaCampaigns.adsToasts.mediaUploadFailed"));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -216,7 +216,7 @@ export default function AdLevelEditor({
                 className={metaBtnPrimary}
                 onClick={() => {
                   if (!ad.facebookPageId) {
-                    toast.error("Select a Facebook Page first");
+                    toast.error(t("metaCampaigns.adsToasts.selectPageFirst"));
                     return;
                   }
                   setCreateFormOpen(true);

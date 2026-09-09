@@ -354,7 +354,7 @@ export default function DashboardOverview({
   }, [filters.performanceMetric, onFiltersChange, visiblePerformanceTabs]);
 
   if (loading && !data) {
-    return <BizuplyLoader fullScreen label="Loading dashboard..." />;
+    return <BizuplyLoader fullScreen label={t("overview.loadingDashboard")} />;
   }
 
   return (

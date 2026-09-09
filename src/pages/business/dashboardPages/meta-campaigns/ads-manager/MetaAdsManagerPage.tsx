@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
@@ -37,6 +38,7 @@ import {
 type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -96,7 +98,7 @@ export default function MetaAdsManagerPage() {
         error?.response?.data?.error ||
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to load Instant Forms from Meta";
+        t("metaCampaigns.adsToasts.instantFormsFailed");
       setFormsError(message);
       toast.error(message);
     } finally {
@@ -330,11 +332,11 @@ export default function MetaAdsManagerPage() {
   const handlePublish = async () => {
     if (!businessId) return;
     if (!connection?.connected && !connection?.isConnected) {
-      toast.error("Connect Meta Ads and select an Ad Account first");
+      toast.error(t("metaCampaigns.adsToasts.connectAndSelect"));
       return;
     }
     if (!connection.selectedAdAccount) {
-      toast.error("Select an Ad Account before publishing");
+      toast.error(t("metaCampaigns.adsToasts.selectAdAccount"));
       return;
     }
 
@@ -345,7 +347,7 @@ export default function MetaAdsManagerPage() {
       return;
     }
     if (!canPublish) {
-      toast.error("Resolve validation issues before publishing");
+      toast.error(t("metaCampaigns.adsToasts.resolveValidation"));
       return;
     }
 
@@ -364,12 +366,12 @@ export default function MetaAdsManagerPage() {
 
       const result = await publishMetaCampaign(businessId, payload);
       if (!result?.adId) {
-        toast.error("Meta did not return an Ad ID — publish not confirmed");
+        toast.error(t("metaCampaigns.adsToasts.noAdId"));
         return;
       }
       setPublishResult(result.publish);
       setModalOpen(true);
-      toast.success("Campaign submitted to Meta");
+      toast.success(t("metaCampaigns.adsToasts.campaignSubmitted"));
     } catch (error: unknown) {
       const err = error as {
         response?: {
@@ -422,7 +424,7 @@ export default function MetaAdsManagerPage() {
       const result = await retryMetaPublish(businessId, publishResult.id);
       setPublishResult(result.publish);
       if (result.adId) {
-        toast.success("Retry completed — Ad ID confirmed from Meta");
+        toast.success(t("metaCampaigns.adsToasts.retryCompleted"));
       }
     } catch (error: unknown) {
       const err = error as {

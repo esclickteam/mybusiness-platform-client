@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import "./TrialEnded.css";
 
 export default function TrialEnded() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="trial-ended-wrapper">
@@ -15,32 +17,24 @@ export default function TrialEnded() {
         transition={{ duration: 0.6 }}
       >
         <div className="emoji">⏰</div>
-        <h1>Your 14-Day Trial Has Ended</h1>
-        <p className="desc">
-          Your free trial period is over, but don’t worry — your clients, chats,
-          and business data are safely stored.  
-          Upgrade now to continue managing your business with BizUply’s full suite
-          of AI-powered tools.
-        </p>
+        <h1>{t("billing.trialEnded.title")}</h1>
+        <p className="desc">{t("billing.trialEnded.description")}</p>
 
         <button
           className="upgrade-btn"
           onClick={() => navigate("/pricing")}
         >
-          Upgrade Now
+          {t("billing.trialEnded.upgradeCta")}
         </button>
 
         <button
           className="contact-btn"
           onClick={() => navigate("/contact")}
         >
-          Contact Support
+          {t("billing.trialEnded.contactCta")}
         </button>
 
-        <p className="small-text">
-          You can reactivate your account anytime.  
-          Your data will remain secure for 30 days after the trial ends.
-        </p>
+        <p className="small-text">{t("billing.trialEnded.footer")}</p>
       </motion.div>
     </div>
   );

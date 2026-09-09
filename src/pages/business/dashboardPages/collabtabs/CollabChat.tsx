@@ -630,7 +630,7 @@ export default function CollabChat({
       });
 
       setConversations([]);
-      setError(t("business.collab.loadError"));
+      setError(t("business.collab.loadError", "שגיאה בטעינת השיחות"));
 
       if (conversationIdFromNav) {
         await openConversationById(conversationIdFromNav);
@@ -970,14 +970,14 @@ export default function CollabChat({
     }
 
     if (!socketRef.current.connected) {
-      alert(t("business.collab.notConnected"));
+      alert(t("business.collab.notConnected", "החיבור לצ׳אט לא פעיל כרגע. נסה לרענן את העמוד."));
       return;
     }
 
     const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
 
     if (!otherId) {
-      alert(t("business.collab.unknownPartner"));
+      alert(t("business.collab.unknownPartner", "לא ניתן לזהות את העסק השני בשיחה. נסה לרענן את הצ׳אט."));
       return;
     }
 
@@ -1039,7 +1039,7 @@ export default function CollabChat({
           },
         });
 
-        alert(t("business.collab.sendTimeout"));
+        alert(t("business.collab.sendTimeout", "שליחת ההודעה לוקחת יותר מדי זמן. נסה שוב."));
       }
     }, 15000);
 
@@ -1048,7 +1048,7 @@ export default function CollabChat({
       window.clearTimeout(timeoutId);
 
       if (!ack) {
-        alert(t("business.collab.noServerReply"));
+        alert(t("business.collab.noServerReply", "לא התקבלה תגובה מהשרת. נסה שוב."));
 
         dispatchMessages({
           type: "replace",
@@ -1064,8 +1064,8 @@ export default function CollabChat({
 
       if (!ack.ok) {
         alert(
-          t("business.collab.sendFailed", {
-            detail: ack.error || t("business.collab.unknownError"),
+          t("business.collab.sendFailed", "שליחת ההודעה נכשלה: {{detail}}", {
+            detail: ack.error || t("business.collab.unknownError", "שגיאה לא ידועה"),
           })
         );
         dispatchMessages({ type: "remove", payload: tempId });
@@ -1149,7 +1149,7 @@ export default function CollabChat({
       const partner = getConversationPartner(
         conversation,
         myBusinessId,
-        t("business.collab.businessFallback")
+        t("business.collab.businessFallback", "עסק")
       );
       const lastMessage =
         conversation.messages?.[conversation.messages.length - 1]?.text || "";
@@ -1168,7 +1168,7 @@ export default function CollabChat({
     ? getConversationPartner(
         selectedConversation,
         myBusinessId,
-        t("business.collab.businessFallback")
+        t("business.collab.businessFallback", "עסק")
       )
     : null;
 
@@ -1183,15 +1183,15 @@ export default function CollabChat({
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-black text-violet-700">
                 <Sparkles className="h-3.5 w-3.5" />
-                {t("business.collab.badge")}
+                {t("business.collab.badge", "צ׳אט שיתופי פעולה")}
               </div>
 
               <h2 className="mt-3 text-xl font-black text-slate-800">
-                {t("business.collab.title")}
+                {t("business.collab.title", "הודעות עסקיות")}
               </h2>
 
               <p className="mt-1 text-xs font-semibold text-slate-500">
-                {t("business.collab.chatsCount", {
+                {t("business.collab.chatsCount", "{{count}} שיחות", {
                   count: conversations.length,
                 })}
               </p>
@@ -1206,7 +1206,7 @@ export default function CollabChat({
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder={t("business.collab.searchPh")}
+              placeholder={t("business.collab.searchPh", "חיפוש שיחות...")}
               className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-11 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </div>
@@ -1215,7 +1215,7 @@ export default function CollabChat({
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {loadingConversations ? (
             <div className="flex min-h-[40vh] items-center justify-center py-8">
-              <BizuplyLoader size="lg" label="Loading conversations..." />
+              <BizuplyLoader size="lg" label={t("leftover.collab.chat.loadingConversations")} />
             </div>
           ) : filteredConversations.length === 0 ? (
             <EmptySidebar onRefresh={fetchConversations} />
@@ -1225,12 +1225,12 @@ export default function CollabChat({
                 const partner = getConversationPartner(
                   conversation,
                   myBusinessId,
-                  t("business.collab.businessFallback")
+                  t("business.collab.businessFallback", "עסק")
                 );
 
                 const lastMessage =
                   conversation.messages?.[conversation.messages.length - 1]
-                    ?.text || t("business.collab.noMessages");
+                    ?.text || t("business.collab.noMessages", "אין הודעות");
 
                 const isActive =
                   selectedConversation?._id?.toString() ===
@@ -1268,7 +1268,7 @@ export default function CollabChat({
 
                           {isActive && (
                             <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700">
-                              {t("business.collab.open")}
+                              {t("business.collab.open", "פתוח")}
                             </span>
                           )}
                         </div>
@@ -1296,22 +1296,22 @@ export default function CollabChat({
             <div className="min-w-0">
               <h3 className="truncate text-base font-black text-slate-800">
                 {selectedPartner
-                  ? t("business.collab.chatWith", {
+                  ? t("business.collab.chatWith", "שיחה עם {{name}}", {
                       name: selectedPartner.businessName,
                     })
-                  : t("business.collab.pickChat")}
+                  : t("business.collab.pickChat", "בחר שיחה עסקית")}
               </h3>
 
               <p className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
                 {connected ? (
                   <>
                     <Wifi className="h-3.5 w-3.5 text-emerald-600" />
-                    {t("business.collab.connected")}
+                    {t("business.collab.connected", "מחובר")}
                   </>
                 ) : (
                   <>
                     <WifiOff className="h-3.5 w-3.5 text-rose-600" />
-                    {t("business.collab.disconnected")}
+                    {t("business.collab.disconnected", "לא מחובר")}
                   </>
                 )}
               </p>
@@ -1323,7 +1323,7 @@ export default function CollabChat({
               type="button"
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-              aria-label={t("business.collab.closeAria")}
+              aria-label={t("business.collab.closeAria", "סגירת צ׳אט")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -1359,10 +1359,10 @@ export default function CollabChat({
                 <div ref={messagesEndRef} />
               </div>
             ) : (
-              <EmptyChat text={error || t("business.collab.emptyThread")} />
+              <EmptyChat text={error || t("business.collab.emptyThread", "אין הודעות בשיחה הזו")} />
             )
           ) : (
-            <EmptyChat text={t("business.collab.pickFromList")} />
+            <EmptyChat text={t("business.collab.pickFromList", "בחר שיחה עסקית מהרשימה")} />
           )}
         </div>
 
@@ -1376,7 +1376,7 @@ export default function CollabChat({
           >
             <div className="flex items-center gap-3">
               <input
-                placeholder={t("business.collab.typePh")}
+                placeholder={t("business.collab.typePh", "הקלד הודעה...")}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 autoComplete="off"
@@ -1389,7 +1389,7 @@ export default function CollabChat({
                 className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="h-5 w-5" />
-                <span className="hidden sm:inline">{t("common.send")}</span>
+                <span className="hidden sm:inline">{t("common.send", "שליחה")}</span>
               </button>
             </div>
           </form>
@@ -1457,7 +1457,7 @@ function MessageBubble({
         ].join(" ")}
       >
         <p className="whitespace-pre-wrap break-words text-sm font-semibold leading-6">
-          {message.text || t("business.collab.noText")}
+          {message.text || t("business.collab.noText", "[אין טקסט]")}
         </p>
 
         <div
@@ -1469,7 +1469,7 @@ function MessageBubble({
           <span>{formatMessageTime(message, getIntlLocale(i18n.language))}</span>
 
           {message.sending && <BizuplyLoader size="xs" compact />}
-          {message.failed && <span className="text-rose-500">{t("business.collab.failed")}</span>}
+          {message.failed && <span className="text-rose-500">{t("business.collab.failed", "נכשל")}</span>}
 
           {!message.sending && !message.failed && isMine && (
             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -1492,8 +1492,8 @@ function ConnectionBadge({ connected }: { connected: boolean }) {
       ].join(" ")}
       title={
         connected
-          ? t("business.collab.connected")
-          : t("business.collab.disconnected")
+          ? t("business.collab.connected", "מחובר")
+          : t("business.collab.disconnected", "לא מחובר")
       }
     >
       {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
@@ -1528,11 +1528,11 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
       <MessageCircle className="mx-auto h-8 w-8 text-sky-300" />
 
       <p className="mt-3 text-sm font-black text-slate-600">
-        {t("business.collab.noChats")}
+        {t("business.collab.noChats", "אין שיחות")}
       </p>
 
       <p className="mt-1 text-xs font-semibold text-slate-400">
-        {t("business.collab.noChatsHint")}
+        {t("business.collab.noChatsHint", "הודעות עסקיות חדשות יופיעו כאן.")}
       </p>
 
       <button
@@ -1540,7 +1540,7 @@ function EmptySidebar({ onRefresh }: { onRefresh: () => void }) {
         onClick={onRefresh}
         className="mt-4 rounded-xl bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition hover:bg-violet-100"
       >
-        {t("common.refresh")}
+        {t("common.refresh", "רענון")}
       </button>
     </div>
   );
@@ -1556,7 +1556,7 @@ function EmptyChat({ text }: { text: string }) {
         </div>
 
         <h3 className="mt-4 text-lg font-black text-slate-800">
-          {t("business.collab.noActive")}
+          {t("business.collab.noActive", "אין שיחה פעילה")}
         </h3>
 
         <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">

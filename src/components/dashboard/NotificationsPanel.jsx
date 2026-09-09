@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const NotificationsPanel = ({ stats }) => {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(true);
   const [messages, setMessages] = useState([]);
 
@@ -16,7 +18,9 @@ const NotificationsPanel = ({ stats }) => {
     });
 
     if (upcoming?.length) {
-      notifications.push(`📅 You have ${upcoming.length} upcoming appointment(s) in the next 24 hours`);
+      notifications.push(
+        `📅 ${t("notifications.upcomingAppointments", { count: upcoming.length })}`
+      );
     }
 
     // ⚠️ Stale leads
@@ -27,25 +31,27 @@ const NotificationsPanel = ({ stats }) => {
     });
 
     if (staleLeads.length > 0) {
-      notifications.push(`⚠️ There are ${staleLeads.length} lead(s) not handled for over 3 days`);
+      notifications.push(
+        `⚠️ ${t("notifications.staleLeads", { count: staleLeads.length })}`
+      );
     }
 
     // ⭐ No reviews
     if ((stats.reviews_count || 0) === 0) {
-      notifications.push("⭐ No new reviews for your business yet");
+      notifications.push(`⭐ ${t("notifications.noReviews")}`);
     }
 
     // 🛒 No active services (example check)
     if (!stats.services || Object.keys(stats.services).length === 0) {
-      notifications.push("🛒 No services configured — add some to attract customers");
+      notifications.push(`🛒 ${t("notifications.noServices")}`);
     }
 
     if (notifications.length === 0) {
-      notifications.push("✅ All good! No notifications right now");
+      notifications.push(`✅ ${t("notifications.allGood")}`);
     }
 
     setMessages(notifications);
-  }, [stats]);
+  }, [stats, t]);
 
   if (!visible || messages.length === 0) return null;
 
@@ -54,7 +60,7 @@ const NotificationsPanel = ({ stats }) => {
       <button
         onClick={() => setVisible(false)}
         style={{ float: "left", border: "none", background: "transparent", cursor: "pointer" }}
-        aria-label="Close notifications"
+        aria-label={t("notifications.closeAria")}
       >
         ❌
       </button>

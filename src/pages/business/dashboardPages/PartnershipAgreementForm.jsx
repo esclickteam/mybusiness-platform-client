@@ -78,15 +78,15 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
     e.preventDefault();
 
     if (isSender && !formData.senderSignature) {
-      alert(t("leftover.agreements.senderMustSign"));
+      alert(t("leftover.collab.agreementForm.senderMustSign"));
       return;
     }
     if (!isSender && !formData.receiverSignature) {
-      alert(t("leftover.agreements.receiverMustSign"));
+      alert(t("leftover.collab.agreementForm.receiverMustSign"));
       return;
     }
     if (!formData.toBusinessId) {
-      alert(t("leftover.agreements.selectPartner"));
+      alert(t("leftover.collab.agreementForm.needPartnerId"));
       return;
     }
 
@@ -105,10 +105,10 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           withCredentials: true,
         }
       );
-      alert(isSender ? t("leftover.agreementFormChrome.sentOk") : t("leftover.agreementFormChrome.completeOk"));
+      alert(isSender ? t("leftover.collab.agreementForm.sentForSignature") : t("leftover.collab.agreementForm.complete"));
       if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
     } catch (err) {
-      alert(t("leftover.agreements.sendError", { detail: err?.response?.data?.error || err.message }));
+      alert(t("leftover.collab.agreementForm.sendError", { message: err?.response?.data?.error || err.message }));
     } finally {
       setSending(false);
     }
@@ -127,68 +127,68 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         color: "#4a4a9e",
       }}
     >
-      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>{t("leftover.agreementFormChrome.title")} 🤝</h2>
+      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>{t("leftover.collab.agreementForm.title")} 🤝</h2>
 
       {/* Form fields */}
       <label>
-        {t("leftover.agreementFormChrome.partnerId")}
+        {t("leftover.collab.agreementForm.partnerId")}
         <input
           type="text"
           name="toBusinessId"
           value={formData.toBusinessId}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.partnerIdPh")}
+          placeholder={t("leftover.collab.agreementForm.partnerIdPh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.yourName")}
+        {t("leftover.collab.agreementForm.yourName")}
         <input
           type="text"
           name="yourBusinessName"
           value={formData.yourBusinessName}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.yourNamePh")}
+          placeholder={t("leftover.collab.agreementForm.yourNamePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.partnerName")}
+        {t("leftover.collab.agreementForm.partnerName")}
         <input
           type="text"
           name="partnerBusinessName"
           value={formData.partnerBusinessName}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.partnerNamePh")}
+          placeholder={t("leftover.collab.agreementForm.partnerNamePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.agreementTitle")}
+        {t("leftover.collab.agreementForm.agreementTitle")}
         <input
           type="text"
           name="agreementTitle"
           value={formData.agreementTitle}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.agreementTitlePh")}
+          placeholder={t("leftover.collab.agreementForm.agreementTitlePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.description")}
+        {t("leftover.collab.agreementForm.description")}
         <textarea
           name="partnershipDescription"
           value={formData.partnershipDescription}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.descriptionPh")}
+          placeholder={t("leftover.collab.agreementForm.descriptionPh")}
           style={textareaStyle}
           rows={4}
           required
@@ -196,31 +196,31 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.provide")}
+        {t("leftover.collab.agreementForm.provide")}
         <textarea
           name="agreementSupplies"
           value={formData.agreementSupplies}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.providePh")}
+          placeholder={t("leftover.collab.agreementForm.providePh")}
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.receive")}
+        {t("leftover.collab.agreementForm.receive")}
         <textarea
           name="agreementBenefits"
           value={formData.agreementBenefits}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.receivePh")}
+          placeholder={t("leftover.collab.agreementForm.receivePh")}
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.type")}
+        {t("leftover.collab.agreementForm.type")}
         <select
           name="partnershipType"
           value={formData.partnershipType}
@@ -228,28 +228,28 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           style={inputStyle}
           required
         >
-          <option value="">{t("leftover.agreementFormChrome.selectType")}</option>
-          <option value="jointCampaign">{t("leftover.agreementFormChrome.typeJoint")}</option>
-          <option value="referral">{t("leftover.agreementFormChrome.typeReferral")}</option>
-          <option value="resale">{t("leftover.agreementFormChrome.typeResale")}</option>
-          <option value="other">{t("leftover.agreementFormChrome.typeOther")}</option>
+          <option value="">{t("leftover.collab.agreementForm.typeSelect")}</option>
+          <option value="jointCampaign">{t("leftover.collab.agreementForm.typeJoint")}</option>
+          <option value="referral">{t("leftover.collab.agreementForm.typeReferral")}</option>
+          <option value="resale">{t("leftover.collab.agreementForm.typeResale")}</option>
+          <option value="other">{t("leftover.collab.agreementForm.typeOther")}</option>
         </select>
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.commission")}
+        {t("leftover.collab.agreementForm.commission")}
         <input
           type="text"
           name="commissionOrPayment"
           value={formData.commissionOrPayment}
           onChange={handleChange}
-          placeholder={t("leftover.agreementFormChrome.commissionPh")}
+          placeholder={t("leftover.collab.agreementForm.commissionPh")}
           style={inputStyle}
         />
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.startDate")}
+        {t("leftover.collab.agreementForm.startDate")}
         <input
           type="date"
           name="agreementStartDate"
@@ -261,7 +261,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        {t("leftover.agreementFormChrome.endDate")}
+        {t("leftover.collab.agreementForm.endDate")}
         <input
           type="date"
           name="agreementEndDate"
@@ -280,7 +280,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.cancellableAtAnyStage}
             onChange={handleChange}
           />
-          {t("leftover.agreementFormChrome.cancellable")}
+          {t("leftover.collab.agreementForm.cancelAnytime")}
         </label>
       </div>
 
@@ -292,19 +292,19 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.confidentialityClause}
             onChange={handleChange}
           />
-          {t("leftover.agreementFormChrome.confidentiality")}
+          {t("leftover.collab.agreementForm.confidentiality")}
         </label>
       </div>
 
       {/* Signatures */}
       <div style={{ marginTop: 20 }}>
-        <label>{t("leftover.agreementFormChrome.sigFirst")}</label>
+        <label>{t("leftover.collab.agreementForm.sigFirst")}</label>
         {isSender ? (
           <>
             {formData.senderSignature ? (
               <img
                 src={formData.senderSignature}
-                alt={t("leftover.agreementFormChrome.senderAlt")}
+                alt={t("leftover.collab.agreementForm.senderAlt")}
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -321,7 +321,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveSenderSignature}
                 />
                 <button type="button" onClick={clearSenderSignature} style={{ marginTop: 5 }}>
-                  {t("leftover.agreementFormChrome.clearSignature")}
+                  {t("leftover.collab.agreementForm.clearSig")}
                 </button>
               </>
             )}
@@ -329,22 +329,22 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.senderSignature ? (
           <img
             src={formData.senderSignature}
-            alt={t("leftover.agreementFormChrome.senderAlt")}
+            alt={t("leftover.collab.agreementForm.senderAlt")}
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>{t("leftover.agreementFormChrome.firstNotSigned")}</p>
+          <p>{t("leftover.collab.agreementForm.firstNotSigned")}</p>
         )}
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <label>{t("leftover.agreementFormChrome.sigSecond")}</label>
+        <label>{t("leftover.collab.agreementForm.sigSecond")}</label>
         {!isSender ? (
           <>
             {formData.receiverSignature ? (
               <img
                 src={formData.receiverSignature}
-                alt={t("leftover.agreementFormChrome.receiverAlt")}
+                alt={t("leftover.collab.agreementForm.receiverAlt")}
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -361,7 +361,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveReceiverSignature}
                 />
                 <button type="button" onClick={clearReceiverSignature} style={{ marginTop: 5 }}>
-                  {t("leftover.agreementFormChrome.clearSignature")}
+                  {t("leftover.collab.agreementForm.clearSig")}
                 </button>
               </>
             )}
@@ -369,11 +369,11 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.receiverSignature ? (
           <img
             src={formData.receiverSignature}
-            alt={t("leftover.agreementFormChrome.receiverAlt")}
+            alt={t("leftover.collab.agreementForm.receiverAlt")}
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>{t("leftover.agreementFormChrome.secondNotSigned")}</p>
+          <p>{t("leftover.collab.agreementForm.secondNotSigned")}</p>
         )}
       </div>
 
@@ -392,7 +392,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           opacity: sending ? 0.7 : 1,
         }}
       >
-        {sending ? t("leftover.agreementFormChrome.sending") : `${t("leftover.agreementFormChrome.submit")} 📩`}
+        {sending ? t("leftover.collab.agreementForm.sending") : `${t("leftover.collab.agreementForm.submit")} 📩`}
       </button>
     </form>
   );

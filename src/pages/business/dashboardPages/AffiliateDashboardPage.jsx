@@ -83,7 +83,7 @@ export default function AffiliateDashboardPage() {
       setCurrentBalance(data.balance || 0);
     } catch (err) {
       console.error(err);
-      setErrorStats(t("leftover.affiliateDash.loadError"));
+      setErrorStats(t("leftover.affiliate.loadError"));
     } finally {
       setLoadingStats(false);
     }
@@ -105,13 +105,13 @@ export default function AffiliateDashboardPage() {
         withCredentials: true,
       });
 
-      alert(response.data.message || "Bank details updated successfully");
+      alert(response.data.message || t("leftover.affiliate.bankUpdated"));
       setShowBankForm(false);
       await refreshStats();
     } catch (error) {
       console.error(error);
       alert(
-        error?.response?.data?.message || "Error updating bank details"
+        error?.response?.data?.message || t("leftover.affiliate.bankUpdateError")
       );
       throw error;
     }
@@ -125,17 +125,17 @@ export default function AffiliateDashboardPage() {
       const amount = Number(payoutAmount);
 
       if (!amount || amount <= 0) {
-        setPayoutError("Please enter a valid amount");
+        setPayoutError(t("leftover.affiliate.invalidAmount"));
         return;
       }
 
       if (amount < 50) {
-        setPayoutError("Minimum payout amount is $50");
+        setPayoutError(t("leftover.affiliate.minPayout"));
         return;
       }
 
       if (amount > currentBalance) {
-        setPayoutError("Amount exceeds available balance");
+        setPayoutError(t("leftover.affiliate.exceedsBalance"));
         return;
       }
 
@@ -147,14 +147,14 @@ export default function AffiliateDashboardPage() {
         { withCredentials: true }
       );
 
-      setPayoutMessage("Payout request sent successfully ✅");
+      setPayoutMessage(`${t("leftover.affiliate.payoutSent")} ✅`);
       setPayoutAmount("");
 
       await refreshStats();
     } catch (err) {
       console.error(err);
       setPayoutError(
-        err?.response?.data?.message || "Failed to send payout request"
+        err?.response?.data?.message || t("leftover.affiliate.payoutFailed")
       );
     } finally {
       setPayoutLoading(false);
@@ -163,71 +163,71 @@ export default function AffiliateDashboardPage() {
 
   return (
     <div className="affiliate-page">
-      <h1>{t("leftover.affiliateDash.title")}</h1>
+      <h1>Partner Dashboard</h1>
 
       {copyStatus && <p className="success">{copyStatus}</p>}
 
       {/* 🔥 SUMMARY */}
       <section className="affiliate-stats-summary">
         <div className="stat-card">
-          <h3>{t("leftover.affiliateDash.usersCreated")}</h3>
+          <h3>Users Created</h3>
           <p>{statsSummary.totalUsers}</p>
         </div>
 
         <div className="stat-card">
-          <h3>{t("leftover.affiliateDash.payingUsers")}</h3>
+          <h3>Paying Users</h3>
           <p>{statsSummary.payingUsers}</p>
         </div>
 
         <div className="stat-card">
-          <h3>{t("leftover.affiliateDash.monthEarnings")}</h3>
+          <h3>This Month Earnings</h3>
           <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
         </div>
 
         <div className="stat-card balance">
-          <h3>{t("leftover.affiliateDash.availableBalance")}</h3>
+          <h3>Available Balance</h3>
           <p>${Number(currentBalance || 0).toFixed(2)}</p>
         </div>
 
         <div className="stat-card">
-          <h3>{t("leftover.affiliateDash.paidOut")}</h3>
+          <h3>Paid Out</h3>
           <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
         </div>
       </section>
 
       {/* 🔗 INVITE */}
       <section className="affiliate-section">
-        <h2>{t("leftover.affiliateDash.inviteLink")}</h2>
+        <h2>Your Invite Link</h2>
 
         <input value={inviteLink} readOnly className="affiliate-link-input" />
 
         <button
           onClick={() =>
-            copyToClipboard(inviteLink, t("leftover.affiliateDash.inviteCopied"))
+            copyToClipboard(inviteLink, t("leftover.affiliate.inviteCopied"))
           }
           disabled={!inviteLink}
         >
-          {t("leftover.affiliateDash.copyInvite")}
+          Copy Invite Link
         </button>
       </section>
 
       {/* 👥 CLIENTS */}
       <section className="affiliate-clients">
-        <h2>{t("leftover.affiliateDash.yourClients")}</h2>
+        <h2>Your Clients</h2>
 
-        {clients.length === 0 && <p>{t("leftover.affiliateDash.noClients")}</p>}
+        {clients.length === 0 && <p>No clients yet</p>}
 
         {clients.length > 0 && (
           <table className="stats-table">
             <thead>
               <tr>
-                <th>{t("leftover.affiliateDash.business")}</th>
-                <th>{t("leftover.affiliateDash.email")}</th>
-                <th>{t("leftover.affiliateDash.plan")}</th>
-                <th>{t("leftover.affiliateDash.status")}</th>
-                <th>{t("leftover.affiliateDash.created")}</th>
-                <th>{t("leftover.affiliateDash.thisMonth")}</th>
-                <th>{t("leftover.affiliateDash.totalCommission")}</th>
+                <th>Business</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>This Month</th>
+                <th>Total Commission</th>
               </tr>
             </thead>
 
@@ -247,8 +247,8 @@ export default function AffiliateDashboardPage() {
                       }
                     >
                       {client.packageType === "yearly"
-                        ? t("leftover.affiliateDash.yearly")
-                        : t("leftover.affiliateDash.monthly")}
+                        ? "Yearly (One-time)"
+                        : "Monthly (Recurring)"}
                     </span>
                   </td>
 
@@ -275,15 +275,15 @@ export default function AffiliateDashboardPage() {
 
       {/* 📊 MONTHS */}
       <section className="affiliate-stats">
-        {loadingStats && <BizuplyLoader size="lg" label={t("leftover.affiliateDash.loading")} />}
+        {loadingStats && <BizuplyLoader size="lg" label={t("leftover.affiliate.loading")} />}
         {errorStats && <p>{errorStats}</p>}
 
         {allStats.length > 0 && (
           <table className="stats-table">
             <thead>
               <tr>
-                <th>{t("leftover.affiliateDash.month")}</th>
-                <th>{t("leftover.affiliateDash.commission")}</th>
+                <th>Month</th>
+                <th>Commission</th>
               </tr>
             </thead>
 
@@ -301,23 +301,23 @@ export default function AffiliateDashboardPage() {
 
       {/* 💸 PAYOUT */}
       <section className="affiliate-bank-section">
-        <h2>{t("leftover.affiliateDash.payments")}</h2>
+        <h2>Payments</h2>
 
         <p>
-          {t("leftover.affiliateDash.balanceLine")}{" "}
+          Available balance:{" "}
           <strong>${Number(currentBalance || 0).toFixed(2)}</strong>
         </p>
 
         <div className="payout-box">
           <input
             type="number"
-            placeholder={t("leftover.affiliateDash.amountPh")}
+            placeholder={t("leftover.affiliate.amountPh")}
             value={payoutAmount}
             onChange={(e) => setPayoutAmount(e.target.value)}
           />
 
           <button onClick={handleRequestPayout} disabled={payoutLoading}>
-            {payoutLoading ? t("leftover.affiliateDash.sending") : t("leftover.affiliateDash.requestPayout")}
+            {payoutLoading ? t("leftover.affiliate.sending") : t("leftover.affiliate.requestPayout")}
           </button>
 
           {payoutMessage && <p className="success">{payoutMessage}</p>}
@@ -328,7 +328,7 @@ export default function AffiliateDashboardPage() {
           className="payment-button"
           onClick={() => setShowBankForm((prev) => !prev)}
         >
-          {t("leftover.affiliateDash.manageBank")}
+          Manage Bank Details
         </button>
 
         {showBankForm && (

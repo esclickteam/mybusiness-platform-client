@@ -47,7 +47,7 @@ const BankDetailsForm = () => {
 
     try {
       if (!user) {
-        throw new Error("Business details are unavailable. Please sign in again.");
+        throw new Error(t("dashboard.bankDetails.unavailable"));
       }
 
       const formData = new FormData();
@@ -60,10 +60,10 @@ const BankDetailsForm = () => {
       const response = await API.put("/business/my/bank-details", formData);
 
       if (response.status !== 200) {
-        throw new Error("Error saving details");
+        throw new Error(t("dashboard.bankDetails.saveError"));
       }
 
-      alert(t("leftover.affiliate.bankSaved"));
+      alert(t("dashboard.bankDetails.saved"));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -73,24 +73,22 @@ const BankDetailsForm = () => {
 
   return (
     <section className="bank-details-form">
-      <h2>🏦 {t("leftover.bankForm.title")}</h2>
-      <p className="disclaimer">
-        {t("leftover.bankForm.disclaimer")}
-      </p>
+      <h2>🏦 {t("dashboard.bankDetails.title")}</h2>
+      <p className="disclaimer">{t("dashboard.bankDetails.disclaimer")}</p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label htmlFor="bankName">{t("leftover.bankForm.bankName")}</label>
+        <label htmlFor="bankName">{t("dashboard.bankDetails.bankName")}</label>
         <input
           type="text"
           id="bankName"
           name="bankName"
-          placeholder={t("leftover.bankForm.bankPh")}
+          placeholder={t("dashboard.bankDetails.placeholderBank")}
           required
           value={form.bankName}
           onChange={handleChange}
         />
 
-        <label htmlFor="branchNumber">{t("leftover.bankForm.branchNumber")}</label>
+        <label htmlFor="branchNumber">{t("dashboard.bankDetails.branchNumber")}</label>
         <input
           type="text"
           id="branchNumber"
@@ -101,7 +99,7 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="accountNumber">{t("leftover.bankForm.accountNumber")}</label>
+        <label htmlFor="accountNumber">{t("dashboard.bankDetails.accountNumber")}</label>
         <input
           type="text"
           id="accountNumber"
@@ -112,18 +110,18 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="fullName">{t("leftover.bankForm.fullName")}</label>
+        <label htmlFor="fullName">{t("dashboard.bankDetails.fullName")}</label>
         <input
           type="text"
           id="fullName"
           name="fullName"
-          placeholder={t("leftover.bankForm.fullNamePh")}
+          placeholder={t("dashboard.bankDetails.placeholderName")}
           required
           value={form.fullName}
           onChange={handleChange}
         />
 
-        <label htmlFor="idNumber">{t("leftover.bankForm.idNumber")}</label>
+        <label htmlFor="idNumber">{t("dashboard.bankDetails.idNumber")}</label>
         <input
           type="text"
           id="idNumber"
@@ -135,7 +133,9 @@ const BankDetailsForm = () => {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? t("leftover.bankForm.saving") : `💾 ${t("leftover.bankForm.save")}`}
+          {loading
+            ? t("dashboard.bankDetails.saving")
+            : `💾 ${t("dashboard.bankDetails.save")}`}
         </button>
       </form>
 

@@ -28,7 +28,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch {
-        setError(t("leftover.signAgreementChrome.loadError"));
+        setError(t("leftover.collab.signPage.loadError"));
       } finally {
         setLoading(false);
       }
@@ -44,7 +44,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
   const saveSignature = async () => {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      alert(t("leftover.agreements.signFirst"));
+      alert(t("leftover.collab.signPage.signFirst"));
       return;
     }
     setSaving(true);
@@ -53,7 +53,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     try {
       await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl, side });
 
-      alert(t("leftover.agreements.agreementSignedOk"));
+      alert(t("leftover.collab.signPage.signedSuccess"));
       setAgreement(prev => ({
         ...prev,
         signatures: {
@@ -72,22 +72,22 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       clearSignature();
       if (typeof onSigned === "function") onSigned();
     } catch {
-      alert(t("leftover.agreements.saveSignatureError"));
+      alert(t("leftover.collab.signPage.saveError"));
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <BizuplyLoader fullScreen label={t("leftover.signAgreementChrome.loading")} />;
+  if (loading) return <BizuplyLoader fullScreen label={t("leftover.collab.signPage.loading")} />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!agreement) return <p>{t("leftover.signAgreementChrome.notFound")}</p>;
-  if (!side) return <p>{t("leftover.signAgreementChrome.noPermission")}</p>;
+  if (!agreement) return <p>{t("leftover.collab.signPage.notFound")}</p>;
+  if (!side) return <p>{t("leftover.collab.signPage.noPermission")}</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>{agreement.title}</h2>
-      <p><strong>{t("leftover.signAgreementChrome.description")}</strong> {agreement.description || "-"}</p>
-      <p><strong>{t("leftover.signAgreementChrome.terms")}</strong></p>
+      <p><strong>{t("leftover.collab.signPage.description")}</strong> {agreement.description || "-"}</p>
+      <p><strong>{t("leftover.collab.signPage.terms")}</strong></p>
       <pre
         style={{
           whiteSpace: "pre-wrap",
@@ -99,19 +99,19 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       >
         {agreement.terms || "-"}
       </pre>
-      <p><strong>{t("leftover.signAgreementChrome.payment")}</strong> {agreement.paymentDetails || "-"}</p>
-      <p><strong>{t("leftover.signAgreementChrome.status")}</strong> {agreement.status}</p>
+      <p><strong>{t("leftover.collab.signPage.payment")}</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>{t("leftover.collab.signPage.status")}</strong> {agreement.status}</p>
 
       <hr />
 
-      <h3>{t("leftover.signAgreementChrome.yourSignature", { role: side === "createdBy" ? t("leftover.signAgreementChrome.roleCreator") : t("leftover.signAgreementChrome.roleInvited") })}</h3>
+      <h3>{side === "createdBy" ? t("leftover.collab.signPage.yourSigCreator") : t("leftover.collab.signPage.yourSigInvited")}</h3>
 
       {hasSigned ? (
         <div>
-          <p>{t("leftover.signAgreementChrome.alreadySignedOn", { date: new Date(agreement.signatures[side].signedAt).toLocaleDateString() })}</p>
+          <p>{t("leftover.collab.signPage.alreadySignedOn", { date: new Date(agreement.signatures[side].signedAt).toLocaleDateString() })}</p>
           <img
             src={agreement.signatures[side].signatureDataUrl}
-            alt={t("leftover.signAgreementChrome.signatureAlt")}
+            alt={t("leftover.collab.signPage.signatureAlt")}
             style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
           />
         </div>
@@ -124,10 +124,10 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
           />
           <div style={{ marginTop: 10 }}>
             <button onClick={clearSignature} disabled={saving} style={{ marginRight: 10 }}>
-              {t("leftover.signAgreementChrome.clearSignature")}
+              {t("leftover.collab.signPage.clearSig")}
             </button>
             <button onClick={saveSignature} disabled={saving}>
-              {saving ? t("leftover.signAgreementChrome.saving") : t("leftover.signAgreementChrome.signSubmit")}
+              {saving ? t("leftover.collab.signPage.saving") : t("leftover.collab.signPage.signSubmit")}
             </button>
           </div>
         </>
@@ -135,24 +135,28 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
       <hr />
 
-      <h3>{t("leftover.signAgreementChrome.otherSignature")}</h3>
+      <h3>{t("leftover.collab.signPage.otherSig")}</h3>
       {(() => {
         const otherSide = side === "createdBy" ? "invitedBusiness" : "createdBy";
         if (agreement.signatures?.[otherSide]?.signed) {
           return (
             <div>
               <p>
-                {t("leftover.signAgreementChrome.otherSignedOn", { date: new Date(agreement.signatures[otherSide].signedAt).toLocaleDateString() })}
+                {t("leftover.collab.signPage.otherSignedOn", {
+                  date: new Date(
+                    agreement.signatures[otherSide].signedAt
+                  ).toLocaleDateString(),
+                })}
               </p>
               <img
                 src={agreement.signatures[otherSide].signatureDataUrl}
-                alt={t("leftover.signAgreementChrome.otherAlt")}
+                alt={t("leftover.collab.signPage.otherAlt")}
                 style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
               />
             </div>
           );
         }
-        return <p>{t("leftover.signAgreementChrome.otherNotSigned")}</p>;
+        return <p>{t("leftover.collab.signPage.otherNotSigned")}</p>;
       })()}
     </div>
   );

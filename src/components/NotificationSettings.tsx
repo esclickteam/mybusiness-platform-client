@@ -1044,7 +1044,7 @@ export function NotificationSettingsPanel({
                         📱 {t("notificationSettings.iphone")}
                       </p>
                       <ol className="list-inside list-decimal space-y-0.5">
-                        <li>Safari → bizuply.com</li>
+                        <li>{t("notificationSettings.iphoneSafariStep")}</li>
                         <li>
                           {t("notificationSettings.iphoneShare")}
                         </li>

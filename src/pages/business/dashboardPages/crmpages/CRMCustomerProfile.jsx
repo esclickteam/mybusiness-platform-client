@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,51 +25,84 @@ import {
 } from "lucide-react";
 
 const CUSTOM_FIELDS_STORAGE_KEY = "bizuply_custom_client_fields";
+const DEFAULT_CUSTOM_FIELD_IDS = new Set(["weight", "summary", "clientStatus"]);
 
-const defaultCustomFields = [
-  {
-    id: "weight",
-    key: "weight",
-    label: "Weight",
-    type: "number",
-    description: "Client weight / numeric value",
-    required: false,
-    showInClientProfile: true,
-    showInClientPortal: false,
-    clientCanEdit: false,
-    options: [],
-    active: true,
-    order: 1,
-  },
-  {
-    id: "summary",
-    key: "summary",
-    label: "Client Summary",
-    type: "textarea",
-    description: "Internal or client-facing summary",
-    required: false,
-    showInClientProfile: true,
-    showInClientPortal: false,
-    clientCanEdit: false,
-    options: [],
-    active: true,
-    order: 2,
-  },
-  {
-    id: "clientStatus",
-    key: "clientStatus",
-    label: "Client Status",
-    type: "status",
-    description: "Current client status",
-    required: false,
-    showInClientProfile: true,
-    showInClientPortal: false,
-    clientCanEdit: false,
-    options: ["New", "In progress", "Waiting", "Completed", "Cancelled"],
-    active: true,
-    order: 3,
-  },
-];
+function buildDefaultCustomFields(t) {
+  return [
+    {
+      id: "weight",
+      key: "weight",
+      label: t("crm.customerProfile.defaultFields.weightLabel"),
+      type: "number",
+      description: t("crm.customerProfile.defaultFields.weightDescription"),
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: false,
+      clientCanEdit: false,
+      options: [],
+      active: true,
+      order: 1,
+    },
+    {
+      id: "summary",
+      key: "summary",
+      label: t("crm.customerProfile.defaultFields.summaryLabel"),
+      type: "textarea",
+      description: t("crm.customerProfile.defaultFields.summaryDescription"),
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: false,
+      clientCanEdit: false,
+      options: [],
+      active: true,
+      order: 2,
+    },
+    {
+      id: "clientStatus",
+      key: "clientStatus",
+      label: t("crm.customerProfile.defaultFields.statusLabel"),
+      type: "status",
+      description: t("crm.customerProfile.defaultFields.statusDescription"),
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: false,
+      clientCanEdit: false,
+      options: [
+        t("crm.customerProfile.defaultFields.statusNew"),
+        t("crm.customerProfile.defaultFields.statusInProgress"),
+        t("crm.customerProfile.defaultFields.statusWaiting"),
+        t("crm.customerProfile.defaultFields.statusCompleted"),
+        t("crm.customerProfile.defaultFields.statusCancelled"),
+      ],
+      active: true,
+      order: 3,
+    },
+  ];
+}
+
+function localizeKnownDefaultFields(fields, t) {
+  const defaultsById = Object.fromEntries(
+    buildDefaultCustomFields(t).map((field) => [field.id, field])
+  );
+
+  return fields.map((field) => {
+    const id = String(field?.id || field?.key || "");
+    if (!DEFAULT_CUSTOM_FIELD_IDS.has(id)) return field;
+
+    const defaults = defaultsById[id];
+    if (!defaults) return field;
+
+    return {
+      ...field,
+      label: defaults.label,
+      description: defaults.description,
+      options:
+        id === "clientStatus" || field.type === "status"
+          ? defaults.options
+          : field.options,
+    };
+  });
+}
 
 const inputClass =
   "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50";
@@ -112,9 +146,11 @@ function normalizeCustomField(field, index) {
   };
 }
 
-function getStoredCustomFields() {
+function getStoredCustomFields(t) {
+  const defaults = buildDefaultCustomFields(t);
+
   if (typeof window === "undefined") {
-    return defaultCustomFields;
+    return defaults;
   }
 
   const raw = window.localStorage.getItem(CUSTOM_FIELDS_STORAGE_KEY);
@@ -127,13 +163,13 @@ function getStoredCustomFields() {
   if (!normalized.length) {
     window.localStorage.setItem(
       CUSTOM_FIELDS_STORAGE_KEY,
-      JSON.stringify(defaultCustomFields)
+      JSON.stringify(defaults)
     );
 
-    return defaultCustomFields;
+    return defaults;
   }
 
-  return normalized;
+  return localizeKnownDefaultFields(normalized, t);
 }
 
 function getClientCustomValues(clientId) {
@@ -175,6 +211,7 @@ function getFieldIcon(type) {
 }
 
 export default function CRMCustomerFile({ client, businessId }) {
+  const { t, i18n } = useTranslation();
   const [events, setEvents] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
 
@@ -196,12 +233,12 @@ export default function CRMCustomerFile({ client, businessId }) {
   const [savingCustomFields, setSavingCustomFields] = useState(false);
 
   useEffect(() => {
-    const fields = getStoredCustomFields()
+    const fields = getStoredCustomFields(t)
       .filter((field) => field.active && field.showInClientProfile)
       .sort((a, b) => a.order - b.order);
 
     setCustomFields(fields);
-  }, []);
+  }, [t, i18n.language]);
 
   useEffect(() => {
     if (!client?._id) return;
@@ -226,7 +263,7 @@ export default function CRMCustomerFile({ client, businessId }) {
         const appointments = apptRes.data.map((appt) => ({
           id: appt._id,
           type: "meeting",
-          title: appt.serviceName || "Meeting",
+          title: appt.serviceName || t("crm.customerProfile.meeting"),
           date: `${appt.date} ${appt.time}`,
           notes: appt.note || "",
           readonly: true,
@@ -249,12 +286,12 @@ export default function CRMCustomerFile({ client, businessId }) {
         );
       } catch (err) {
         console.error(err);
-        toast.error("❌ Failed to load customer data");
+        toast.error(t("crm.customerProfile.loadFailed"));
       }
     };
 
     if (client?._id) fetchData();
-  }, [client?._id, businessId]);
+  }, [client?._id, businessId, t]);
 
   const filledCustomFieldsCount = useMemo(() => {
     return customFields.filter((field) => {
@@ -268,7 +305,7 @@ export default function CRMCustomerFile({ client, businessId }) {
 
   const addEvent = async () => {
     if (!newEvent.title) {
-      toast.error("Title is required");
+      toast.error(t("crm.customerProfile.titleRequired"));
       return;
     }
 
@@ -293,9 +330,9 @@ export default function CRMCustomerFile({ client, businessId }) {
 
       setNewEvent({ type: "call", title: "", date: "", notes: "" });
       setShowAdd(false);
-      toast.success("✅ Event added");
+      toast.success(t("crm.customerProfile.eventAdded"));
     } catch {
-      toast.error("❌ Failed to add event");
+      toast.error(t("crm.customerProfile.eventAddFailed"));
     }
   };
 
@@ -309,9 +346,9 @@ export default function CRMCustomerFile({ client, businessId }) {
       const res = await API.put(`/crm-events/${id}`, editDraft);
       setEvents(events.map((e) => (e.id === id ? { ...e, ...res.data } : e)));
       setEditingId(null);
-      toast.success("✏️ Event updated");
+      toast.success(t("crm.customerProfile.eventUpdated"));
     } catch {
-      toast.error("❌ Failed to update");
+      toast.error(t("crm.customerProfile.eventUpdateFailed"));
     }
   };
 
@@ -321,14 +358,14 @@ export default function CRMCustomerFile({ client, businessId }) {
   };
 
   const deleteEvent = async (id) => {
-    if (!window.confirm("Delete this event?")) return;
+    if (!window.confirm(t("crm.customerProfile.deleteConfirm"))) return;
 
     try {
       await API.delete(`/crm-events/${id}`);
       setEvents(events.filter((e) => e.id !== id));
-      toast.success("🗑️ Event deleted");
+      toast.success(t("crm.customerProfile.eventDeleted"));
     } catch {
-      toast.error("❌ Failed to delete");
+      toast.error(t("crm.customerProfile.eventDeleteFailed"));
     }
   };
 
@@ -359,21 +396,21 @@ export default function CRMCustomerFile({ client, businessId }) {
         );
       }
 
-      toast.success("✅ Client fields saved");
+      toast.success(t("crm.customerProfile.fieldsSaved"));
     } catch (error) {
       console.error(error);
-      toast.error("❌ Failed to save client fields");
+      toast.error(t("crm.customerProfile.fieldsSaveFailed"));
     } finally {
       setSavingCustomFields(false);
     }
   };
 
   const typeLabels = {
-    call: "📞 Call",
-    message: "💬 Message",
-    meeting: "📅 Meeting",
-    task: "✅ Task",
-    file: "📄 File",
+    call: `📞 ${t("crm.customerProfile.types.call")}`,
+    message: `💬 ${t("crm.customerProfile.types.message")}`,
+    meeting: `📅 ${t("crm.customerProfile.types.meeting")}`,
+    task: `✅ ${t("crm.customerProfile.types.task")}`,
+    file: `📄 ${t("crm.customerProfile.types.file")}`,
   };
 
   return (
@@ -392,16 +429,15 @@ export default function CRMCustomerFile({ client, businessId }) {
 
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
-                  Client File
+                  {t("crm.customerProfile.badge")}
                 </div>
 
                 <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                  {client?.fullName || "Client profile"}
+                  {client?.fullName || t("crm.customerProfile.fallbackName")}
                 </h2>
 
                 <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                  Manage client details, custom data fields, appointments and
-                  CRM activity timeline from one clean customer file.
+                  {t("crm.customerProfile.subtitle")}
                 </p>
               </div>
             </div>
@@ -412,7 +448,7 @@ export default function CRMCustomerFile({ client, businessId }) {
               className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
             >
               <Plus className="h-5 w-5" />
-              Add Event
+              {t("crm.customerProfile.addEvent")}
             </button>
           </div>
         </section>
@@ -420,30 +456,30 @@ export default function CRMCustomerFile({ client, businessId }) {
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <MiniMetric
             icon={Phone}
-            label="Phone"
+            label={t("crm.customerProfile.phone")}
             value={client?.phone || "-"}
-            helper="client contact"
+            helper={t("crm.customerProfile.phoneHelper")}
           />
 
           <MiniMetric
             icon={Mail}
-            label="Email"
+            label={t("crm.customerProfile.email")}
             value={client?.email || "-"}
-            helper="client email"
+            helper={t("crm.customerProfile.emailHelper")}
           />
 
           <MiniMetric
             icon={Sparkles}
-            label="Custom fields"
+            label={t("crm.customerProfile.customFields")}
             value={`${filledCustomFieldsCount}/${customFields.length}`}
-            helper="filled values"
+            helper={t("crm.customerProfile.customFieldsHelper")}
           />
 
           <MiniMetric
             icon={Clock3}
-            label="Activity"
+            label={t("crm.customerProfile.activity")}
             value={events.length}
-            helper="timeline records"
+            helper={t("crm.customerProfile.activityHelper")}
           />
         </section>
 
@@ -462,11 +498,11 @@ export default function CRMCustomerFile({ client, businessId }) {
                 <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5">
                   <div>
                     <h3 className="text-2xl font-black text-slate-800">
-                      Add CRM event
+                      {t("crm.customerProfile.addEventTitle")}
                     </h3>
 
                     <p className="mt-1 text-sm font-semibold text-slate-500">
-                      Add a call, message, task, file note or activity record.
+                      {t("crm.customerProfile.addEventSubtitle")}
                     </p>
                   </div>
 
@@ -480,7 +516,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                 </div>
 
                 <div className="grid gap-4 p-5 lg:grid-cols-2">
-                  <FormSmall label="Event type">
+                  <FormSmall label={t("crm.customerProfile.eventType")}>
                     <select
                       value={newEvent.type}
                       onChange={(e) =>
@@ -488,17 +524,17 @@ export default function CRMCustomerFile({ client, businessId }) {
                       }
                       className={inputClass}
                     >
-                      <option value="call">Call</option>
-                      <option value="message">Message</option>
-                      <option value="meeting">Meeting</option>
-                      <option value="task">Task</option>
-                      <option value="file">File</option>
+                      <option value="call">{t("crm.customerProfile.types.call")}</option>
+                      <option value="message">{t("crm.customerProfile.types.message")}</option>
+                      <option value="meeting">{t("crm.customerProfile.types.meeting")}</option>
+                      <option value="task">{t("crm.customerProfile.types.task")}</option>
+                      <option value="file">{t("crm.customerProfile.types.file")}</option>
                     </select>
                   </FormSmall>
 
-                  <FormSmall label="Title *">
+                  <FormSmall label={t("crm.customerProfile.title")}>
                     <input
-                      placeholder="Title *"
+                      placeholder={t("crm.customerProfile.titlePlaceholder")}
                       value={newEvent.title}
                       onChange={(e) =>
                         setNewEvent({ ...newEvent, title: e.target.value })
@@ -507,7 +543,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                     />
                   </FormSmall>
 
-                  <FormSmall label="Date">
+                  <FormSmall label={t("crm.customerProfile.date")}>
                     <input
                       type="date"
                       value={newEvent.date}
@@ -519,9 +555,9 @@ export default function CRMCustomerFile({ client, businessId }) {
                   </FormSmall>
 
                   <div className="lg:col-span-2">
-                    <FormSmall label="Notes">
+                    <FormSmall label={t("crm.customerProfile.notes")}>
                       <textarea
-                        placeholder="Notes"
+                        placeholder={t("crm.customerProfile.notesPlaceholder")}
                         value={newEvent.notes}
                         onChange={(e) =>
                           setNewEvent({ ...newEvent, notes: e.target.value })
@@ -539,7 +575,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                     onClick={() => setShowAdd(false)}
                     className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
                   >
-                    Cancel
+                    {t("crm.customerProfile.cancel")}
                   </button>
 
                   <button
@@ -548,7 +584,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
                   >
                     <Save className="h-5 w-5" />
-                    Save
+                    {t("crm.customerProfile.save")}
                   </button>
                 </div>
               </section>
@@ -557,11 +593,11 @@ export default function CRMCustomerFile({ client, businessId }) {
             <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <div className="border-b border-slate-100 p-5">
                 <h3 className="text-2xl font-black text-slate-800">
-                  Activity Timeline
+                  {t("crm.customerProfile.activityTimeline")}
                 </h3>
 
                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                  Appointments and CRM events connected to this client.
+                  {t("crm.customerProfile.activitySubtitle")}
                 </p>
               </div>
 
@@ -570,10 +606,10 @@ export default function CRMCustomerFile({ client, businessId }) {
                   <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-12 text-center">
                     <Sparkles className="mx-auto h-8 w-8 text-sky-700" />
                     <h4 className="mt-4 text-xl font-black text-slate-800">
-                      No activity yet
+                      {t("crm.customerProfile.noActivityTitle")}
                     </h4>
                     <p className="mt-2 text-sm font-semibold text-slate-500">
-                      Add the first event or appointment activity.
+                      {t("crm.customerProfile.noActivityHint")}
                     </p>
                   </div>
                 ) : (
@@ -589,7 +625,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                           </div>
 
                           <p className="mt-2 text-xs font-bold text-slate-400">
-                            {e.date || "No date"}
+                            {e.date || t("crm.customerProfile.noDate")}
                           </p>
                         </div>
 
@@ -601,7 +637,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                               className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 text-xs font-black text-slate-700 transition hover:bg-slate-200"
                             >
                               <Edit3 className="h-4 w-4" />
-                              Edit
+                              {t("crm.customerProfile.edit")}
                             </button>
 
                             <button
@@ -610,7 +646,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                               className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-50 px-3 text-xs font-black text-rose-700 transition hover:bg-rose-100"
                             >
                               <Trash2 className="h-4 w-4" />
-                              Delete
+                              {t("crm.customerProfile.delete")}
                             </button>
                           </div>
                         )}
@@ -647,7 +683,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                               onClick={cancelEdit}
                               className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
                             >
-                              Cancel
+                              {t("crm.customerProfile.cancel")}
                             </button>
 
                             <button
@@ -655,7 +691,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                               onClick={() => saveEdit(e.id)}
                               className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-sky-950"
                             >
-                              Save
+                              {t("crm.customerProfile.save")}
                             </button>
                           </div>
                         </div>
@@ -688,23 +724,23 @@ export default function CRMCustomerFile({ client, businessId }) {
 
                 <div>
                   <h3 className="text-base font-black text-slate-800">
-                    Client overview
+                    {t("crm.customerProfile.overviewTitle")}
                   </h3>
                   <p className="text-xs font-semibold text-slate-500">
-                    Basic customer details
+                    {t("crm.customerProfile.overviewSubtitle")}
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-3">
-                <OverviewRow label="Name" value={client?.fullName || "-"} />
-                <OverviewRow label="Phone" value={client?.phone || "-"} />
-                <OverviewRow label="Email" value={client?.email || "-"} />
+                <OverviewRow label={t("crm.customerProfile.name")} value={client?.fullName || "-"} />
+                <OverviewRow label={t("crm.customerProfile.phone")} value={client?.phone || "-"} />
+                <OverviewRow label={t("crm.customerProfile.email")} value={client?.email || "-"} />
                 <OverviewRow
-                  label="Custom fields"
+                  label={t("crm.customerProfile.customFields")}
                   value={`${filledCustomFieldsCount}/${customFields.length}`}
                 />
-                <OverviewRow label="Activities" value={events.length} />
+                <OverviewRow label={t("crm.customerProfile.activities")} value={events.length} />
               </div>
             </section>
           </aside>
@@ -723,22 +759,22 @@ function CustomClientFieldsPanel({
   onChange,
   onSave,
 }) {
+  const { t } = useTranslation();
   return (
     <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="flex flex-col gap-4 border-b border-slate-100 p-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-sky-700">
             <Sparkles className="h-4 w-4" />
-            Custom Client Fields
+            {t("crm.customerProfile.customFieldsBadge")}
           </div>
 
           <h3 className="mt-3 text-2xl font-black text-slate-800">
-            Client data fields
+            {t("crm.customerProfile.clientDataFields")}
           </h3>
 
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-            Fields created in Mini SaaS appear here automatically for every
-            client.
+            {t("crm.customerProfile.customFieldsHint")}
           </p>
         </div>
 
@@ -749,7 +785,7 @@ function CustomClientFieldsPanel({
           className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Save className="h-5 w-5" />
-          {saving ? "Saving..." : "Save Client Data"}
+          {saving ? t("crm.customerProfile.saving") : t("crm.customerProfile.saveClientData")}
         </button>
       </div>
 
@@ -758,11 +794,10 @@ function CustomClientFieldsPanel({
           <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-12 text-center">
             <Sparkles className="mx-auto h-8 w-8 text-sky-700" />
             <h4 className="mt-4 text-xl font-black text-slate-800">
-              No custom fields yet
+              {t("crm.customerProfile.noCustomFields")}
             </h4>
             <p className="mt-2 text-sm font-semibold text-slate-500">
-              Create fields from Mini SaaS, then they will appear here
-              automatically.
+              {t("crm.customerProfile.noCustomFieldsHint")}
             </p>
           </div>
         ) : (
@@ -953,6 +988,7 @@ function FormSmall({ label, children }) {
 }
 
 function OverviewRow({ label, value }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3">
       <span className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
@@ -960,7 +996,7 @@ function OverviewRow({ label, value }) {
       </span>
 
       <span className="max-w-[190px] truncate text-sm font-black text-slate-800">
-        {value || "Missing"}
+        {value || t("crm.customerProfile.missing")}
       </span>
     </div>
   );

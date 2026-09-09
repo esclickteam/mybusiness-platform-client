@@ -12,7 +12,7 @@ export default function ClientMessagesPage() {
 
   return (
     <div style={{ margin: "32px auto", maxWidth: 1020 }}>
-      <h2 style={{ textAlign: "right", color: "#5a4be7", marginBottom: 24 }}>{t("leftover.profile.myMessages")}</h2>
+      <h2 style={{ textAlign: "start", color: "#5a4be7", marginBottom: 24 }}>{t("leftover.profile.myMessages")}</h2>
       <ClientChatSection userId={user.id} />
     </div>
   );
