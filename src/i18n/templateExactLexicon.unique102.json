@@ -1,0 +1,686 @@
+{
+  "יומן פגישות מה-CRM": {
+    "en": "CRM appointment calendar",
+    "es": "Calendario de citas del CRM",
+    "pt-BR": "Calendário de horários do CRM",
+    "ar": "تقويم مواعيد من نظام CRM"
+  },
+  "תמונת נכס שני": {
+    "en": "Second property image",
+    "es": "Imagen de la segunda propiedad",
+    "pt-BR": "Imagem do segundo imóvel",
+    "ar": "صورة العقار الثاني"
+  },
+  "תמונת נכס שלישי": {
+    "en": "Third property image",
+    "es": "Imagen de la tercera propiedad",
+    "pt-BR": "Imagem do terceiro imóvel",
+    "ar": "صورة العقار الثالث"
+  },
+  "סלוגן": {
+    "en": "Slogan",
+    "es": "Eslogan",
+    "pt-BR": "Slogan",
+    "ar": "شعار"
+  },
+  "טקסט קביעת תור": {
+    "en": "Appointment booking text",
+    "es": "Texto de reserva de cita",
+    "pt-BR": "Texto de agendamento",
+    "ar": "نص حجز الموعد"
+  },
+  "מדד 1": {
+    "en": "Metric 1",
+    "es": "Métrica 1",
+    "pt-BR": "Métrica 1",
+    "ar": "المؤشر 1"
+  },
+  "תווית מדד 1": {
+    "en": "Metric 1 label",
+    "es": "Etiqueta de métrica 1",
+    "pt-BR": "Rótulo da métrica 1",
+    "ar": "تسمية المؤشر 1"
+  },
+  "מדד 2": {
+    "en": "Metric 2",
+    "es": "Métrica 2",
+    "pt-BR": "Métrica 2",
+    "ar": "المؤشر 2"
+  },
+  "תווית מדד 2": {
+    "en": "Metric 2 label",
+    "es": "Etiqueta de métrica 2",
+    "pt-BR": "Rótulo da métrica 2",
+    "ar": "تسمية المؤشر 2"
+  },
+  "מציג את המוצרים מניהול החנות שלך": {
+    "en": "Shows products from your store management",
+    "es": "Muestra productos de la gestión de tu tienda",
+    "pt-BR": "Mostra produtos da gestão da sua loja",
+    "ar": "يعرض المنتجات من إدارة متجرك"
+  },
+  "קשר": {
+    "en": "Contact",
+    "es": "Contacto",
+    "pt-BR": "Contato",
+    "ar": "تواصل"
+  },
+  "יכולת 1 - כותרת": {
+    "en": "Capability 1 - title",
+    "es": "Capacidad 1 - título",
+    "pt-BR": "Capacidade 1 - título",
+    "ar": "القدرة 1 - العنوان"
+  },
+  "יכולת 1 - טקסט": {
+    "en": "Capability 1 - text",
+    "es": "Capacidad 1 - texto",
+    "pt-BR": "Capacidade 1 - texto",
+    "ar": "القدرة 1 - النص"
+  },
+  "יכולת 2 - כותרת": {
+    "en": "Capability 2 - title",
+    "es": "Capacidad 2 - título",
+    "pt-BR": "Capacidade 2 - título",
+    "ar": "القدرة 2 - العنوان"
+  },
+  "יכולת 2 - טקסט": {
+    "en": "Capability 2 - text",
+    "es": "Capacidad 2 - texto",
+    "pt-BR": "Capacidade 2 - texto",
+    "ar": "القدرة 2 - النص"
+  },
+  "יכולת 3 - כותרת": {
+    "en": "Capability 3 - title",
+    "es": "Capacidad 3 - título",
+    "pt-BR": "Capacidade 3 - título",
+    "ar": "القدرة 3 - العنوان"
+  },
+  "יכולת 3 - טקסט": {
+    "en": "Capability 3 - text",
+    "es": "Capacidad 3 - texto",
+    "pt-BR": "Capacidade 3 - texto",
+    "ar": "القدرة 3 - النص"
+  },
+  "יכולת 4 - כותרת": {
+    "en": "Capability 4 - title",
+    "es": "Capacidad 4 - título",
+    "pt-BR": "Capacidade 4 - título",
+    "ar": "القدرة 4 - العنوان"
+  },
+  "יכולת 4 - טקסט": {
+    "en": "Capability 4 - text",
+    "es": "Capacidad 4 - texto",
+    "pt-BR": "Capacidade 4 - texto",
+    "ar": "القدرة 4 - النص"
+  },
+  "יכולת 5 - כותרת": {
+    "en": "Capability 5 - title",
+    "es": "Capacidad 5 - título",
+    "pt-BR": "Capacidade 5 - título",
+    "ar": "القدرة 5 - العنوان"
+  },
+  "יכולת 5 - טקסט": {
+    "en": "Capability 5 - text",
+    "es": "Capacidad 5 - texto",
+    "pt-BR": "Capacidade 5 - texto",
+    "ar": "القدرة 5 - النص"
+  },
+  "יכולת 6 - כותרת": {
+    "en": "Capability 6 - title",
+    "es": "Capacidad 6 - título",
+    "pt-BR": "Capacidade 6 - título",
+    "ar": "القدرة 6 - العنوان"
+  },
+  "יכולת 6 - טקסט": {
+    "en": "Capability 6 - text",
+    "es": "Capacidad 6 - texto",
+    "pt-BR": "Capacidade 6 - texto",
+    "ar": "القدرة 6 - النص"
+  },
+  "חבילה 1 - שם": {
+    "en": "Package 1 - name",
+    "es": "Paquete 1 - nombre",
+    "pt-BR": "Pacote 1 - nome",
+    "ar": "الباقة 1 - الاسم"
+  },
+  "חבילה 1 - מחיר": {
+    "en": "Package 1 - price",
+    "es": "Paquete 1 - precio",
+    "pt-BR": "Pacote 1 - preço",
+    "ar": "الباقة 1 - السعر"
+  },
+  "חבילה 2 - שם": {
+    "en": "Package 2 - name",
+    "es": "Paquete 2 - nombre",
+    "pt-BR": "Pacote 2 - nome",
+    "ar": "الباقة 2 - الاسم"
+  },
+  "חבילה 2 - מחיר": {
+    "en": "Package 2 - price",
+    "es": "Paquete 2 - precio",
+    "pt-BR": "Pacote 2 - preço",
+    "ar": "الباقة 2 - السعر"
+  },
+  "חבילה 3 - שם": {
+    "en": "Package 3 - name",
+    "es": "Paquete 3 - nombre",
+    "pt-BR": "Pacote 3 - nome",
+    "ar": "الباقة 3 - الاسم"
+  },
+  "חבילה 3 - מחיר": {
+    "en": "Package 3 - price",
+    "es": "Paquete 3 - precio",
+    "pt-BR": "Pacote 3 - preço",
+    "ar": "الباقة 3 - السعر"
+  },
+  "תחום 1 - כותרת": {
+    "en": "Area 1 - title",
+    "es": "Área 1 - título",
+    "pt-BR": "Área 1 - título",
+    "ar": "المجال 1 - العنوان"
+  },
+  "תחום 1 - טקסט": {
+    "en": "Area 1 - text",
+    "es": "Área 1 - texto",
+    "pt-BR": "Área 1 - texto",
+    "ar": "المجال 1 - النص"
+  },
+  "תחום 2 - כותרת": {
+    "en": "Area 2 - title",
+    "es": "Área 2 - título",
+    "pt-BR": "Área 2 - título",
+    "ar": "المجال 2 - العنوان"
+  },
+  "תחום 2 - טקסט": {
+    "en": "Area 2 - text",
+    "es": "Área 2 - texto",
+    "pt-BR": "Área 2 - texto",
+    "ar": "المجال 2 - النص"
+  },
+  "תחום 3 - כותרת": {
+    "en": "Area 3 - title",
+    "es": "Área 3 - título",
+    "pt-BR": "Área 3 - título",
+    "ar": "المجال 3 - العنوان"
+  },
+  "תחום 3 - טקסט": {
+    "en": "Area 3 - text",
+    "es": "Área 3 - texto",
+    "pt-BR": "Área 3 - texto",
+    "ar": "المجال 3 - النص"
+  },
+  "תחום 4 - כותרת": {
+    "en": "Area 4 - title",
+    "es": "Área 4 - título",
+    "pt-BR": "Área 4 - título",
+    "ar": "المجال 4 - العنوان"
+  },
+  "תחום 4 - טקסט": {
+    "en": "Area 4 - text",
+    "es": "Área 4 - texto",
+    "pt-BR": "Área 4 - texto",
+    "ar": "المجال 4 - النص"
+  },
+  "LTR נקי": {
+    "en": "Clean LTR",
+    "es": "LTR limpio",
+    "pt-BR": "LTR limpo",
+    "ar": "LTR نظيف"
+  },
+  "זכוכית / Glass": {
+    "en": "Glass",
+    "es": "Cristal / Glass",
+    "pt-BR": "Vidro / Glass",
+    "ar": "زجاج / Glass"
+  },
+  "Gradient רך": {
+    "en": "Soft gradient",
+    "es": "Degradado suave",
+    "pt-BR": "Gradiente suave",
+    "ar": "تدرج ناعم"
+  },
+  "LTR כהה SaaS": {
+    "en": "Dark LTR SaaS",
+    "es": "LTR oscuro SaaS",
+    "pt-BR": "LTR escuro SaaS",
+    "ar": "LTR داكن SaaS"
+  },
+  "הידר צף, מעוגל, עם לוגו, עמודים, התחברות וכפתור פעולה.": {
+    "en": "Floating rounded header with logo, pages, login, and action button.",
+    "es": "Encabezado flotante redondeado con logo, páginas, acceso y botón de acción.",
+    "pt-BR": "Cabeçalho flutuante arredondado com logo, páginas, login e botão de ação.",
+    "ar": "ترويسة عائمة مستديرة مع شعار وصفحات وتسجيل دخول وزر إجراء."
+  },
+  "הידר עליון מלבני, נקי וברור לכל סוג עסק.": {
+    "en": "Clean rectangular top header for any business type.",
+    "es": "Encabezado superior rectangular, limpio y claro para cualquier negocio.",
+    "pt-BR": "Cabeçalho superior retangular, limpo e claro para qualquer negócio.",
+    "ar": "ترويسة علوية مستطيلة نظيفة وواضحة لأي نوع عمل."
+  },
+  "הידר כהה עם ניגוד גבוה וכפתורי התחברות.": {
+    "en": "Dark high-contrast header with login buttons.",
+    "es": "Encabezado oscuro de alto contraste con botones de acceso.",
+    "pt-BR": "Cabeçalho escuro de alto contraste com botões de login.",
+    "ar": "ترويسة داكنة بتباين عالٍ وأزرار تسجيل دخول."
+  },
+  "מבנה משמאל לימין לעסקים באנגלית או SaaS.": {
+    "en": "Left-to-right layout for English or SaaS businesses.",
+    "es": "Estructura de izquierda a derecha para negocios en inglés o SaaS.",
+    "pt-BR": "Estrutura da esquerda para a direita para negócios em inglês ou SaaS.",
+    "ar": "بنية من اليسار لليمين لأعمال إنجليزية أو SaaS."
+  },
+  "הידר שקוף מעל Hero או תמונת רקע.": {
+    "en": "Transparent header over a hero or background image.",
+    "es": "Encabezado transparente sobre un hero o imagen de fondo.",
+    "pt-BR": "Cabeçalho transparente sobre um hero ou imagem de fundo.",
+    "ar": "ترويسة شفافة فوق قسم بطولي أو صورة خلفية."
+  },
+  "הידר עם טלפון, חיפוש ואזור פעולות.": {
+    "en": "Header with phone, search, and actions area.",
+    "es": "Encabezado con teléfono, búsqueda y zona de acciones.",
+    "pt-BR": "Cabeçalho com telefone, busca e área de ações.",
+    "ar": "ترويسة مع هاتف وبحث ومنطقة إجراءات."
+  },
+  "הידר זכוכית שקוף עם רקע מטושטש.": {
+    "en": "Transparent glass header with blurred background.",
+    "es": "Encabezado de cristal transparente con fondo difuminado.",
+    "pt-BR": "Cabeçalho de vidro transparente com fundo desfocado.",
+    "ar": "ترويسة زجاج شفافة مع خلفية ضبابية."
+  },
+  "פס הודעה עליון + הידר מלא.": {
+    "en": "Top notice bar + full header.",
+    "es": "Barra de aviso superior + encabezado completo.",
+    "pt-BR": "Barra de aviso superior + cabeçalho completo.",
+    "ar": "شريط إشعار علوي + ترويسة كاملة."
+  },
+  "הידר נקי שמתאים קודם כל למובייל.": {
+    "en": "Clean header that prioritizes mobile.",
+    "es": "Encabezado limpio pensado primero para móvil.",
+    "pt-BR": "Cabeçalho limpo pensado primeiro para celular.",
+    "ar": "ترويسة نظيفة تلائم الموبايل أولاً."
+  },
+  "הידר עסקי עם CTA חזק וטלפון.": {
+    "en": "Business header with a strong CTA and phone.",
+    "es": "Encabezado empresarial con CTA fuerte y teléfono.",
+    "pt-BR": "Cabeçalho empresarial com CTA forte e telefone.",
+    "ar": "ترويسة أعمال مع دعوة قوية وهاتف."
+  },
+  "הידר עם גרדיאנט רך לפי צבעי המותג.": {
+    "en": "Header with a soft brand-color gradient.",
+    "es": "Encabezado con degradado suave según los colores de marca.",
+    "pt-BR": "Cabeçalho com gradiente suave nas cores da marca.",
+    "ar": "ترويسة مع تدرج ناعم بألوان العلامة."
+  },
+  "הידר LTR כהה שמתאים למיני SaaS.": {
+    "en": "Dark LTR header suited to mini SaaS.",
+    "es": "Encabezado LTR oscuro adecuado para mini SaaS.",
+    "pt-BR": "Cabeçalho LTR escuro adequado para mini SaaS.",
+    "ar": "ترويسة LTR داكنة تناسب SaaS مصغّر."
+  },
+  "נקי": {
+    "en": "Clean",
+    "es": "Limpio",
+    "pt-BR": "Limpo",
+    "ar": "نظيف"
+  },
+  "מובייל": {
+    "en": "Mobile",
+    "es": "Móvil",
+    "pt-BR": "Celular",
+    "ar": "موبايل"
+  },
+  "כותרת נכסי מים": {
+    "en": "Waterfront properties title",
+    "es": "Título de propiedades junto al agua",
+    "pt-BR": "Título de imóveis à beira d'água",
+    "ar": "عنوان عقارات الواجهة المائية"
+  },
+  "כפתור קביעת שיחה": {
+    "en": "Schedule a call button",
+    "es": "Botón para concertar una llamada",
+    "pt-BR": "Botão para agendar uma chamada",
+    "ar": "زر تحديد مكالمة"
+  },
+  "טקסט צד שירותים": {
+    "en": "Services side text",
+    "es": "Texto lateral de servicios",
+    "pt-BR": "Texto lateral de serviços",
+    "ar": "نص جانبي للخدمات"
+  },
+  "טקסט כפתור שליחה": {
+    "en": "Submit button text",
+    "es": "Texto del botón de envío",
+    "pt-BR": "Texto do botão de envio",
+    "ar": "نص زر الإرسال"
+  },
+  "טקסט קטן מעל הכותרת": {
+    "en": "Small text above the heading",
+    "es": "Texto pequeño encima del título",
+    "pt-BR": "Texto pequeno acima do título",
+    "ar": "نص صغير فوق العنوان"
+  },
+  "טקסט כפתור משני": {
+    "en": "Secondary button text",
+    "es": "Texto del botón secundario",
+    "pt-BR": "Texto do botão secundário",
+    "ar": "نص الزر الثانوي"
+  },
+  "כותרת נתון ראשון": {
+    "en": "First stat title",
+    "es": "Título del primer dato",
+    "pt-BR": "Título do primeiro dado",
+    "ar": "عنوان الرقم الأول"
+  },
+  "כותרת נתון שני": {
+    "en": "Second stat title",
+    "es": "Título del segundo dato",
+    "pt-BR": "Título do segundo dado",
+    "ar": "عنوان الرقم الثاني"
+  },
+  "כותרת נתון שלישי": {
+    "en": "Third stat title",
+    "es": "Título del tercer dato",
+    "pt-BR": "Título do terceiro dado",
+    "ar": "عنوان الرقم الثالث"
+  },
+  "כותרת קטנה לטיפולים": {
+    "en": "Small treatments heading",
+    "es": "Título pequeño de tratamientos",
+    "pt-BR": "Título pequeno de tratamentos",
+    "ar": "عنوان صغير للعلاجات"
+  },
+  "טיפול עומק לעור נקי, חיוני וזוהר עם התאמה אישית לפי מצב העור.": {
+    "en": "Deep treatment for clean, vital, glowing skin tailored to your skin condition.",
+    "es": "Tratamiento profundo para una piel limpia, vital y luminosa, adaptado al estado de la piel.",
+    "pt-BR": "Tratamento profundo para pele limpa, vital e radiante, adaptado ao estado da pele.",
+    "ar": "علاج عميق لبشرة نظيفة وحيوية ومشرقة مع ملاءمة لحالة البشرة."
+  },
+  "עיצוב מדויק לפי מבנה הפנים, עם גימור טבעי ונקי.": {
+    "en": "Precise design by facial structure, with a natural clean finish.",
+    "es": "Diseño preciso según la estructura facial, con acabado natural y limpio.",
+    "pt-BR": "Design preciso conforme a estrutura do rosto, com acabamento natural e limpo.",
+    "ar": "تصميم دقيق حسب بنية الوجه مع لمسة نهائية طبيعية ونظيفة."
+  },
+  "IDO נבנתה לקליניקות שרוצות להיראות מדויק, נקי ויוקרתי. כל אזור בתבנית מיועד להוביל את הלקוחה לקביעת תור בצורה טבעית.": {
+    "en": "IDO was built for clinics that want to look precise, clean, and premium. Every area in the template is designed to guide the client to book naturally.",
+    "es": "IDO se creó para clínicas que quieren verse precisas, limpias y premium. Cada zona de la plantilla guía a la clienta a reservar de forma natural.",
+    "pt-BR": "IDO foi feita para clínicas que querem parecer precisas, limpas e premium. Cada área do modelo guia a cliente a agendar de forma natural.",
+    "ar": "بُنيت IDO للعيادات التي تريد مظهراً دقيقاً ونظيفاً وفاخراً. كل منطقة في القالب مخصصة لقيادة العميلة لحجز موعد بشكل طبيعي."
+  },
+  "כותרת קטנה גלריה": {
+    "en": "Small gallery heading",
+    "es": "Título pequeño de galería",
+    "pt-BR": "Título pequeno da galeria",
+    "ar": "عنوان صغير للمعرض"
+  },
+  "גלריה גדולה, דרמטית ונקייה — בדיוק לעסקי יופי.": {
+    "en": "A large, dramatic, clean gallery — perfect for beauty businesses.",
+    "es": "Una galería grande, dramática y limpia — perfecta para negocios de belleza.",
+    "pt-BR": "Uma galeria grande, dramática e limpa — perfeita para negócios de beleza.",
+    "ar": "معرض كبير درامي ونظيف — مثالي لأعمال التجميل."
+  },
+  "כותרת קטנה תור": {
+    "en": "Small booking heading",
+    "es": "Título pequeño de cita",
+    "pt-BR": "Título pequeno de agendamento",
+    "ar": "عنوان صغير للموعد"
+  },
+  "קביעת תור בלי עומס. בלי בלאגן.": {
+    "en": "Book without overload. Without the mess.",
+    "es": "Reserva sin sobrecarga. Sin líos.",
+    "pt-BR": "Agende sem sobrecarga. Sem bagunça.",
+    "ar": "احجزوا موعداً بلا ضغط. بلا فوضى."
+  },
+  "אזור שמוכן לחיבור ליומן, CRM, WhatsApp או כל מערכת תיאום תורים שתוסיף בהמשך.": {
+    "en": "An area ready to connect to a calendar, CRM, WhatsApp, or any booking system you add later.",
+    "es": "Zona lista para conectar a agenda, CRM, WhatsApp o cualquier sistema de citas que añadas después.",
+    "pt-BR": "Área pronta para conectar a agenda, CRM, WhatsApp ou qualquer sistema de agendamento que você adicionar depois.",
+    "ar": "منطقة جاهزة للربط بتقويم أو CRM أو واتساب أو أي نظام مواعيد تضيفه لاحقاً."
+  },
+  "טקסט כפתור בטופס": {
+    "en": "Form button text",
+    "es": "Texto del botón del formulario",
+    "pt-BR": "Texto do botão do formulário",
+    "ar": "نص زر النموذج"
+  },
+  "איורים קטנים, טקסטורות, כרום וקולקציות השראה שמתרגמות מצב רוח לסט מושלם.…": {
+    "en": "Small illustrations, textures, chrome, and inspiration collections that turn a mood into a perfect set.…",
+    "es": "Ilustraciones pequeñas, texturas, cromo y colecciones de inspiración que traducen un estado de ánimo en un set perfecto.…",
+    "pt-BR": "Ilustrações pequenas, texturas, cromo e coleções de inspiração que traduzem um humor em um set perfeito.…",
+    "ar": "رسوم صغيرة وقوامات وكروم ومجموعات إلهام تحوّل المزاج إلى طقم مثالي…"
+  },
+  "בנייה בג׳ל, מילוי ותיקוני שברים עם דגש על אנטומיה, איזון וקו נקי.…": {
+    "en": "Gel builds, fills, and break repairs with focus on anatomy, balance, and a clean line.…",
+    "es": "Construcción en gel, rellenos y reparaciones de roturas con énfasis en anatomía, equilibrio y línea limpia.…",
+    "pt-BR": "Construção em gel, preenchimentos e reparos de quebras com foco em anatomia, equilíbrio e linha limpa.…",
+    "ar": "بناء بالجل وتعبئة وإصلاح كسور مع التركيز على التشريح والتوازن والخط النظيف…"
+  },
+  "טקסט עיגול בפרונט": {
+    "en": "Front circle text",
+    "es": "Texto del círculo frontal",
+    "pt-BR": "Texto do círculo frontal",
+    "ar": "نص الدائرة في الواجهة"
+  },
+  "טקסט שנות ניסיון": {
+    "en": "Years of experience text",
+    "es": "Texto de años de experiencia",
+    "pt-BR": "Texto de anos de experiência",
+    "ar": "نص سنوات الخبرة"
+  },
+  "תגית יצירת קשר": {
+    "en": "Contact tag",
+    "es": "Etiqueta de contacto",
+    "pt-BR": "Tag de contato",
+    "ar": "وسم التواصل"
+  },
+  "תיאור יצירת קשר": {
+    "en": "Contact description",
+    "es": "Descripción de contacto",
+    "pt-BR": "Descrição de contato",
+    "ar": "وصف التواصل"
+  },
+  "כותרת משנה עליונה": {
+    "en": "Upper subtitle",
+    "es": "Subtítulo superior",
+    "pt-BR": "Subtítulo superior",
+    "ar": "عنوان فرعي علوي"
+  },
+  "שירות 1 - כותרת": {
+    "en": "Service 1 - title",
+    "es": "Servicio 1 - título",
+    "pt-BR": "Serviço 1 - título",
+    "ar": "الخدمة 1 - العنوان"
+  },
+  "שירות 1 - טקסט": {
+    "en": "Service 1 - text",
+    "es": "Servicio 1 - texto",
+    "pt-BR": "Serviço 1 - texto",
+    "ar": "الخدمة 1 - النص"
+  },
+  "שירות 2 - כותרת": {
+    "en": "Service 2 - title",
+    "es": "Servicio 2 - título",
+    "pt-BR": "Serviço 2 - título",
+    "ar": "الخدمة 2 - العنوان"
+  },
+  "שירות 2 - טקסט": {
+    "en": "Service 2 - text",
+    "es": "Servicio 2 - texto",
+    "pt-BR": "Serviço 2 - texto",
+    "ar": "الخدمة 2 - النص"
+  },
+  "שירות 3 - כותרת": {
+    "en": "Service 3 - title",
+    "es": "Servicio 3 - título",
+    "pt-BR": "Serviço 3 - título",
+    "ar": "الخدمة 3 - العنوان"
+  },
+  "שירות 3 - טקסט": {
+    "en": "Service 3 - text",
+    "es": "Servicio 3 - texto",
+    "pt-BR": "Serviço 3 - texto",
+    "ar": "الخدمة 3 - النص"
+  },
+  "שירות 4 - כותרת": {
+    "en": "Service 4 - title",
+    "es": "Servicio 4 - título",
+    "pt-BR": "Serviço 4 - título",
+    "ar": "الخدمة 4 - العنوان"
+  },
+  "שירות 4 - טקסט": {
+    "en": "Service 4 - text",
+    "es": "Servicio 4 - texto",
+    "pt-BR": "Serviço 4 - texto",
+    "ar": "الخدمة 4 - النص"
+  },
+  "עבודה 1 - כותרת": {
+    "en": "Work 1 - title",
+    "es": "Trabajo 1 - título",
+    "pt-BR": "Trabalho 1 - título",
+    "ar": "العمل 1 - العنوان"
+  },
+  "עבודה 2 - כותרת": {
+    "en": "Work 2 - title",
+    "es": "Trabajo 2 - título",
+    "pt-BR": "Trabalho 2 - título",
+    "ar": "العمل 2 - العنوان"
+  },
+  "עבודה 3 - כותרת": {
+    "en": "Work 3 - title",
+    "es": "Trabajo 3 - título",
+    "pt-BR": "Trabalho 3 - título",
+    "ar": "العمل 3 - العنوان"
+  },
+  "עבודה 4 - כותרת": {
+    "en": "Work 4 - title",
+    "es": "Trabajo 4 - título",
+    "pt-BR": "Trabalho 4 - título",
+    "ar": "العمل 4 - العنوان"
+  },
+  "תמונת הירו 21:9": {
+    "en": "Hero image 21:9",
+    "es": "Imagen hero 21:9",
+    "pt-BR": "Imagem hero 21:9",
+    "ar": "صورة البطل 21:9"
+  },
+  "תמונת וילה מרכזית": {
+    "en": "Central villa image",
+    "es": "Imagen central de villa",
+    "pt-BR": "Imagem central da villa",
+    "ar": "صورة الفيلا المركزية"
+  },
+  "תמונת מגרש בהירו": {
+    "en": "Lot image in hero",
+    "es": "Imagen de parcela en el hero",
+    "pt-BR": "Imagem de lote no hero",
+    "ar": "صورة قطعة في القسم البطولي"
+  },
+  "כותרת מפרטי מגרשים": {
+    "en": "Lot details title",
+    "es": "Título de detalles de parcelas",
+    "pt-BR": "Título de detalhes dos lotes",
+    "ar": "عنوان تفاصيل القطع"
+  },
+  "כותרת בקשת סקר": {
+    "en": "Survey request title",
+    "es": "Título de solicitud de encuesta",
+    "pt-BR": "Título de pedido de pesquisa",
+    "ar": "عنوان طلب استبيان"
+  },
+  "שדה תחום ייעוץ": {
+    "en": "Consulting field",
+    "es": "Campo de área de consultoría",
+    "pt-BR": "Campo de área de consultoria",
+    "ar": "حقل مجال الاستشارة"
+  },
+  "כותרת עליונה לפרויקט": {
+    "en": "Project top title",
+    "es": "Título superior del proyecto",
+    "pt-BR": "Título superior do projeto",
+    "ar": "عنوان علوي للمشروع"
+  },
+  "כותרת משנה לקריאה לפעולה": {
+    "en": "CTA subtitle",
+    "es": "Subtítulo de llamada a la acción",
+    "pt-BR": "Subtítulo de chamada para ação",
+    "ar": "عنوان فرعي للدعوة إلى الإجراء"
+  },
+  "כותרת פרטי קשר": {
+    "en": "Contact details title",
+    "es": "Título de datos de contacto",
+    "pt-BR": "Título dos dados de contato",
+    "ar": "عنوان تفاصيل التواصل"
+  },
+  "ברקמן — פתרונות חשמל שקטים, אמינים ונקיים.": {
+    "en": "Barkman — quiet, reliable, clean electrical solutions.",
+    "es": "Barkman — soluciones eléctricas silenciosas, fiables y limpias.",
+    "pt-BR": "Barkman — soluções elétricas silenciosas, confiáveis e limpas.",
+    "ar": "Barkman — حلول كهرباء هادئة وموثوقة ونظيفة."
+  },
+  "תיאור פרטי קשר": {
+    "en": "Contact details description",
+    "es": "Descripción de datos de contacto",
+    "pt-BR": "Descrição dos dados de contato",
+    "ar": "وصف تفاصيل التواصل"
+  },
+  "כרטיס טופס יצירת קשר": {
+    "en": "Contact form card",
+    "es": "Tarjeta del formulario de contacto",
+    "pt-BR": "Cartão do formulário de contato",
+    "ar": "بطاقة نموذج التواصل"
+  },
+  "פרטי קשר בפוטר": {
+    "en": "Footer contact details",
+    "es": "Datos de contacto en el pie",
+    "pt-BR": "Dados de contato no rodapé",
+    "ar": "تفاصيل التواصل في التذييل"
+  },
+  "הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית\nלמערכת שמייצרת אמון, תנועה, לידים ומכירות.": {
+    "en": "This block shows how a professional marketer turns digital visibility into a system that builds trust, traffic, leads, and sales.",
+    "es": "Este bloque muestra cómo un marketer profesional convierte la visibilidad digital en un sistema que genera confianza, tráfico, leads y ventas.",
+    "pt-BR": "Este bloco mostra como um marketeiro profissional transforma visibilidade digital em um sistema que gera confiança, tráfego, leads e vendas.",
+    "ar": "تعرض هذه الكتلة كيف يحوّل مسوّق محترف الظهور الرقمي إلى نظام يولّد ثقة وحركة وعملاء محتملين ومبيعات."
+  },
+  "אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף\nבהמשך.": {
+    "en": "An area ready to connect to CRM, WhatsApp, a calendar, or any lead system you add later.",
+    "es": "Zona lista para conectar a CRM, WhatsApp, agenda o cualquier sistema de leads que añadas después.",
+    "pt-BR": "Área pronta para conectar a CRM, WhatsApp, agenda ou qualquer sistema de leads que você adicionar depois.",
+    "ar": "منطقة جاهزة للربط بنظام CRM أو واتساب أو تقويم أو أي نظام عملاء محتملين تضيفه لاحقاً."
+  },
+  "אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס\nלמערכת הלידים.": {
+    "en": "You can replace the text, phone, address, and hours here and connect the form to your lead system.",
+    "es": "Puedes sustituir aquí el texto, teléfono, dirección y horario y conectar el formulario al sistema de leads.",
+    "pt-BR": "Você pode trocar aqui o texto, telefone, endereço e horário e conectar o formulário ao sistema de leads.",
+    "ar": "يمكنكم استبدال النص والهاتف والعنوان وساعات العمل هنا وربط النموذج بنظام العملاء المحتملين."
+  },
+  "חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע\nנקי ואחריות בסיום העבודה.": {
+    "en": "Licensed electricians with a clear process: diagnosis, organized quote, clean execution, and warranty at the end.",
+    "es": "Electricistas certificados con proceso claro: diagnóstico, presupuesto ordenado, ejecución limpia y garantía al finalizar.",
+    "pt-BR": "Eletricistas credenciados com processo claro: diagnóstico, orçamento organizado, execução limpa e garantia ao final.",
+    "ar": "كهربائيون مرخّصون بعملية واضحة: تشخيص وعرض سعر منظّم وتنفيذ نظيف وضمان عند انتهاء العمل."
+  },
+  "הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית\\nלמערכת שמייצרת אמון, תנועה, לידים ומכירות.": {
+    "en": "This block shows how a professional marketer turns digital visibility into a system that builds trust, traffic, leads, and sales.",
+    "es": "Este bloque muestra cómo un marketer profesional convierte la visibilidad digital en un sistema que genera confianza, tráfico, leads y ventas.",
+    "pt-BR": "Este bloco mostra como um marketeiro profissional transforma visibilidade digital em um sistema que gera confiança, tráfego, leads e vendas.",
+    "ar": "تعرض هذه الكتلة كيف يحوّل مسوّق محترف الظهور الرقمي إلى نظام يولّد ثقة وحركة وعملاء محتملين ومبيعات."
+  },
+  "אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף\\nבהמשך.": {
+    "en": "An area ready to connect to CRM, WhatsApp, a calendar, or any lead system you add later.",
+    "es": "Zona lista para conectar a CRM, WhatsApp, agenda o cualquier sistema de leads que añadas después.",
+    "pt-BR": "Área pronta para conectar a CRM, WhatsApp, agenda ou qualquer sistema de leads que você adicionar depois.",
+    "ar": "منطقة جاهزة للربط بنظام CRM أو واتساب أو تقويم أو أي نظام عملاء محتملين تضيفه لاحقاً."
+  },
+  "אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס\\nלמערכת הלידים.": {
+    "en": "You can replace the text, phone, address, and hours here and connect the form to your lead system.",
+    "es": "Puedes sustituir aquí el texto, teléfono, dirección y horario y conectar el formulario al sistema de leads.",
+    "pt-BR": "Você pode trocar aqui o texto, telefone, endereço e horário e conectar o formulário ao sistema de leads.",
+    "ar": "يمكنكم استبدال النص والهاتف والعنوان وساعات العمل هنا وربط النموذج بنظام العملاء المحتملين."
+  },
+  "חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע\\nנקי ואחריות בסיום העבודה.": {
+    "en": "Licensed electricians with a clear process: diagnosis, organized quote, clean execution, and warranty at the end.",
+    "es": "Electricistas certificados con proceso claro: diagnóstico, presupuesto ordenado, ejecución limpia y garantía al finalizar.",
+    "pt-BR": "Eletricistas credenciados com processo claro: diagnóstico, orçamento organizado, execução limpa e garantia ao final.",
+    "ar": "كهربائيون مرخّصون بعملية واضحة: تشخيص وعرض سعر منظّم وتنفيذ نظيف وضمان عند انتهاء العمل."
+  }
+}
