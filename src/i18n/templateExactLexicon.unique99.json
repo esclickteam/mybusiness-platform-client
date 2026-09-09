@@ -1,0 +1,722 @@
+{
+  "חץ": {
+    "en": "Arrow",
+    "es": "Flecha",
+    "pt-BR": "Seta",
+    "ar": "سهم"
+  },
+  "צף": {
+    "en": "Float",
+    "es": "Flotante",
+    "pt-BR": "Flutuante",
+    "ar": "عائم"
+  },
+  "ריק": {
+    "en": "Empty",
+    "es": "Vacío",
+    "pt-BR": "Vazio",
+    "ar": "فارغ"
+  },
+  "יער": {
+    "en": "Forest",
+    "es": "Bosque",
+    "pt-BR": "Floresta",
+    "ar": "غابة"
+  },
+  "זום": {
+    "en": "Zoom",
+    "es": "Zoom",
+    "pt-BR": "Zoom",
+    "ar": "تكبير"
+  },
+  "י״א": {
+    "en": "11th grade",
+    "es": "2.º bachillerato",
+    "pt-BR": "2º ano EM",
+    "ar": "الصف الحادي عشر"
+  },
+  "י״ב": {
+    "en": "12th grade",
+    "es": "Bachillerato",
+    "pt-BR": "3º ano EM",
+    "ar": "الصف الثاني عشر"
+  },
+  "שותפות": {
+    "en": "Partnership",
+    "es": "Asociación",
+    "pt-BR": "Parceria",
+    "ar": "شراكة"
+  },
+  "להרשמה": {
+    "en": "To register",
+    "es": "Para registrarse",
+    "pt-BR": "Para se cadastrar",
+    "ar": "للتسجيل"
+  },
+  "קוראים": {
+    "en": "Readers",
+    "es": "Lectores",
+    "pt-BR": "Leitores",
+    "ar": "قرّاء"
+  },
+  "חוזרים": {
+    "en": "Returning",
+    "es": "Recurrentes",
+    "pt-BR": "Recorrentes",
+    "ar": "عائدون"
+  },
+  "הודעה.": {
+    "en": "Message.",
+    "es": "Mensaje.",
+    "pt-BR": "Mensagem.",
+    "ar": "رسالة."
+  },
+  "סיכום.": {
+    "en": "Summary.",
+    "es": "Resumen.",
+    "pt-BR": "Resumo.",
+    "ar": "ملخص."
+  },
+  "ביקורת": {
+    "en": "Review",
+    "es": "Reseña",
+    "pt-BR": "Avaliação",
+    "ar": "مراجعة"
+  },
+  "תשובות": {
+    "en": "Answers",
+    "es": "Respuestas",
+    "pt-BR": "Respostas",
+    "ar": "إجابات"
+  },
+  "תכונות": {
+    "en": "Features",
+    "es": "Funciones",
+    "pt-BR": "Recursos",
+    "ar": "ميزات"
+  },
+  "פרטיות": {
+    "en": "Privacy",
+    "es": "Privacidad",
+    "pt-BR": "Privacidade",
+    "ar": "خصوصية"
+  },
+  "מקבלים": {
+    "en": "Receiving",
+    "es": "Recibiendo",
+    "pt-BR": "Recebendo",
+    "ar": "يستلمون"
+  },
+  "צומחים": {
+    "en": "Growing",
+    "es": "Creciendo",
+    "pt-BR": "Crescendo",
+    "ar": "ينمون"
+  },
+  "סנכרון": {
+    "en": "Sync",
+    "es": "Sincronización",
+    "pt-BR": "Sincronização",
+    "ar": "مزامنة"
+  },
+  "גלובלי": {
+    "en": "Global",
+    "es": "Global",
+    "pt-BR": "Global",
+    "ar": "عالمي"
+  },
+  "צבעוני": {
+    "en": "Colorful",
+    "es": "Colorido",
+    "pt-BR": "Colorido",
+    "ar": "ملون"
+  },
+  "מסעדות": {
+    "en": "Restaurants",
+    "es": "Restaurantes",
+    "pt-BR": "Restaurantes",
+    "ar": "مطاعم"
+  },
+  "תעודות": {
+    "en": "Certificates",
+    "es": "Certificados",
+    "pt-BR": "Certificados",
+    "ar": "شهادات"
+  },
+  "מסלול.": {
+    "en": "Track.",
+    "es": "Ruta.",
+    "pt-BR": "Trilha.",
+    "ar": "مسار."
+  },
+  "ניהול.": {
+    "en": "Management.",
+    "es": "Gestión.",
+    "pt-BR": "Gestão.",
+    "ar": "إدارة."
+  },
+  "להזמנה": {
+    "en": "To order",
+    "es": "Para pedir",
+    "pt-BR": "Para pedir",
+    "ar": "للطلب"
+  },
+  "45 דק׳": {
+    "en": "45 min",
+    "es": "45 min",
+    "pt-BR": "45 min",
+    "ar": "45 د"
+  },
+  "תחזוקה": {
+    "en": "Maintenance",
+    "es": "Mantenimiento",
+    "pt-BR": "Manutenção",
+    "ar": "صيانة"
+  },
+  "התקשרו": {
+    "en": "Call us",
+    "es": "Llamad",
+    "pt-BR": "Liguem",
+    "ar": "اتصلوا"
+  },
+  "הובלה.": {
+    "en": "Delivery.",
+    "es": "Transporte.",
+    "pt-BR": "Transporte.",
+    "ar": "نقل."
+  },
+  "המייסדת": {
+    "en": "The founder",
+    "es": "La fundadora",
+    "pt-BR": "A fundadora",
+    "ar": "المؤسِّسة"
+  },
+  "תיק עור": {
+    "en": "Leather bag",
+    "es": "Bolso de cuero",
+    "pt-BR": "Bolsa de couro",
+    "ar": "حقيبة جلد"
+  },
+  "הזדמנות": {
+    "en": "Opportunity",
+    "es": "Oportunidad",
+    "pt-BR": "Oportunidade",
+    "ar": "فرصة"
+  },
+  "האירוע.": {
+    "en": "The event.",
+    "es": "El evento.",
+    "pt-BR": "O evento.",
+    "ar": "الفعالية."
+  },
+  "דוגמאות": {
+    "en": "Examples",
+    "es": "Ejemplos",
+    "pt-BR": "Exemplos",
+    "ar": "أمثلة"
+  },
+  "למד עוד": {
+    "en": "Learn more",
+    "es": "Saber más",
+    "pt-BR": "Saiba mais",
+    "ar": "اعرف المزيد"
+  },
+  "עובדים.": {
+    "en": "Working.",
+    "es": "Trabajando.",
+    "pt-BR": "Trabalhando.",
+    "ar": "يعملون."
+  },
+  "מודדים.": {
+    "en": "Measuring.",
+    "es": "Midiendo.",
+    "pt-BR": "Medindo.",
+    "ar": "يقيسون."
+  },
+  "חיפושים": {
+    "en": "Searches",
+    "es": "Búsquedas",
+    "pt-BR": "Pesquisas",
+    "ar": "عمليات بحث"
+  },
+  "אבסטרקט": {
+    "en": "Abstract",
+    "es": "Abstracto",
+    "pt-BR": "Abstrato",
+    "ar": "تجريدي"
+  },
+  "אינדיגו": {
+    "en": "Indigo",
+    "es": "Índigo",
+    "pt-BR": "Índigo",
+    "ar": "نيلي"
+  },
+  "לימודים": {
+    "en": "Studies",
+    "es": "Estudios",
+    "pt-BR": "Estudos",
+    "ar": "دراسات"
+  },
+  "דיגיטלי": {
+    "en": "Digital",
+    "es": "Digital",
+    "pt-BR": "Digital",
+    "ar": "رقمي"
+  },
+  "14 יום.": {
+    "en": "14 days.",
+    "es": "14 días.",
+    "pt-BR": "14 dias.",
+    "ar": "14 يوماً."
+  },
+  "מיידית.": {
+    "en": "Immediate.",
+    "es": "Inmediata.",
+    "pt-BR": "Imediata.",
+    "ar": "فورية."
+  },
+  "אתר מלא": {
+    "en": "Full site",
+    "es": "Sitio completo",
+    "pt-BR": "Site completo",
+    "ar": "موقع كامل"
+  },
+  "מאובטח.": {
+    "en": "Secure.",
+    "es": "Seguro.",
+    "pt-BR": "Seguro.",
+    "ar": "آمن."
+  },
+  "תוצאות.": {
+    "en": "Results.",
+    "es": "Resultados.",
+    "pt-BR": "Resultados.",
+    "ar": "نتائج."
+  },
+  "אסתטיקה": {
+    "en": "Aesthetics",
+    "es": "Estética",
+    "pt-BR": "Estética",
+    "ar": "جماليات"
+  },
+  "רקע CTA": {
+    "en": "CTA background",
+    "es": "Fondo CTA",
+    "pt-BR": "Fundo CTA",
+    "ar": "خلفية CTA"
+  },
+  "מצטרפים": {
+    "en": "Joining",
+    "es": "Uniéndose",
+    "pt-BR": "Entrando",
+    "ar": "ينضمون"
+  },
+  "דוח מלא": {
+    "en": "Full report",
+    "es": "Informe completo",
+    "pt-BR": "Relatório completo",
+    "ar": "تقرير كامل"
+  },
+  "120 דקות": {
+    "en": "120 minutes",
+    "es": "120 minutos",
+    "pt-BR": "120 minutos",
+    "ar": "120 دقيقة"
+  },
+  "ניהול קל": {
+    "en": "Easy management",
+    "es": "Gestión fácil",
+    "pt-BR": "Gestão fácil",
+    "ar": "إدارة سهلة"
+  },
+  "בחרו זמן": {
+    "en": "Choose a time",
+    "es": "Elegid una hora",
+    "pt-BR": "Escolham um horário",
+    "ar": "اختاروا وقتاً"
+  },
+  "שם מומחה": {
+    "en": "Expert name",
+    "es": "Nombre del experto",
+    "pt-BR": "Nome do especialista",
+    "ar": "اسم الخبير"
+  },
+  "שעת הגעה": {
+    "en": "Arrival time",
+    "es": "Hora de llegada",
+    "pt-BR": "Horário de chegada",
+    "ar": "وقت الوصول"
+  },
+  "יום ושעה": {
+    "en": "Day and time",
+    "es": "Día y hora",
+    "pt-BR": "Dia e hora",
+    "ar": "يوم ووقت"
+  },
+  "אפשרות 1": {
+    "en": "Option 1",
+    "es": "Opción 1",
+    "pt-BR": "Opção 1",
+    "ar": "خيار 1"
+  },
+  "אפשרות 2": {
+    "en": "Option 2",
+    "es": "Opción 2",
+    "pt-BR": "Opção 2",
+    "ar": "خيار 2"
+  },
+  "אפשרות 3": {
+    "en": "Option 3",
+    "es": "Opción 3",
+    "pt-BR": "Opção 3",
+    "ar": "خيار 3"
+  },
+  "מה כלול?": {
+    "en": "What's included?",
+    "es": "¿Qué incluye?",
+    "pt-BR": "O que está incluído?",
+    "ar": "ماذا يشمل؟"
+  },
+  "20% הנחה": {
+    "en": "20% off",
+    "es": "20% de descuento",
+    "pt-BR": "20% de desconto",
+    "ar": "خصم 20٪"
+  },
+  "הטבת VIP": {
+    "en": "VIP perk",
+    "es": "Beneficio VIP",
+    "pt-BR": "Benefício VIP",
+    "ar": "ميزة VIP"
+  },
+  "4 כוכבים": {
+    "en": "4 stars",
+    "es": "4 estrellas",
+    "pt-BR": "4 estrelas",
+    "ar": "4 نجوم"
+  },
+  "3 כוכבים": {
+    "en": "3 stars",
+    "es": "3 estrellas",
+    "pt-BR": "3 estrelas",
+    "ar": "3 نجوم"
+  },
+  "נראה נקי": {
+    "en": "Looks clean",
+    "es": "Se ve limpio",
+    "pt-BR": "Parece limpo",
+    "ar": "يبدو نظيفاً"
+  },
+  "תוכן שני": {
+    "en": "Second content",
+    "es": "Segundo contenido",
+    "pt-BR": "Segundo conteúdo",
+    "ar": "محتوى ثانٍ"
+  },
+  "Look שני": {
+    "en": "Second look",
+    "es": "Segundo look",
+    "pt-BR": "Segundo look",
+    "ar": "إطلالة ثانية"
+  },
+  "מנכ״ל/ית": {
+    "en": "CEO",
+    "es": "CEO",
+    "pt-BR": "CEO",
+    "ar": "الرئيس/ة التنفيذي/ة"
+  },
+  "מסר ברור": {
+    "en": "Clear message",
+    "es": "Mensaje claro",
+    "pt-BR": "Mensagem clara",
+    "ar": "رسالة واضحة"
+  },
+  "תוכן קצר": {
+    "en": "Short content",
+    "es": "Contenido corto",
+    "pt-BR": "Conteúdo curto",
+    "ar": "محتوى قصير"
+  },
+  "כרטיס צל": {
+    "en": "Shadow card",
+    "es": "Tarjeta con sombra",
+    "pt-BR": "Cartão com sombra",
+    "ar": "بطاقة بظل"
+  },
+  "לקטגוריה": {
+    "en": "To category",
+    "es": "A la categoría",
+    "pt-BR": "Para a categoria",
+    "ar": "إلى الفئة"
+  },
+  "הצעד הבא": {
+    "en": "Next step",
+    "es": "Siguiente paso",
+    "pt-BR": "Próximo passo",
+    "ar": "الخطوة التالية"
+  },
+  "הורידו ←": {
+    "en": "Download ←",
+    "es": "Descargad ←",
+    "pt-BR": "Baixem ←",
+    "ar": "حمّلوا ←"
+  },
+  "למדו עוד": {
+    "en": "Learn more",
+    "es": "Aprended más",
+    "pt-BR": "Aprendam mais",
+    "ar": "تعلّموا المزيد"
+  },
+  "רקע תגית": {
+    "en": "Tag background",
+    "es": "Fondo de etiqueta",
+    "pt-BR": "Fundo da tag",
+    "ar": "خلفية الوسم"
+  },
+  "סימון וי": {
+    "en": "Check mark",
+    "es": "Marca de verificación",
+    "pt-BR": "Marca de seleção",
+    "ar": "علامة صح"
+  },
+  "אייקונים": {
+    "en": "Icons",
+    "es": "Iconos",
+    "pt-BR": "Ícones",
+    "ar": "أيقونات"
+  },
+  "באנר CTA": {
+    "en": "CTA banner",
+    "es": "Banner CTA",
+    "pt-BR": "Banner CTA",
+    "ar": "بانر CTA"
+  },
+  "יצירתיות": {
+    "en": "Creativity",
+    "es": "Creatividad",
+    "pt-BR": "Criatividade",
+    "ar": "إبداع"
+  },
+  "אוקיינוס": {
+    "en": "Ocean",
+    "es": "Océano",
+    "pt-BR": "Oceano",
+    "ar": "محيط"
+  },
+  "רצף ימים": {
+    "en": "Day sequence",
+    "es": "Secuencia de días",
+    "pt-BR": "Sequência de dias",
+    "ar": "تسلسل أيام"
+  },
+  "תיק לקוח": {
+    "en": "Client file",
+    "es": "Ficha de cliente",
+    "pt-BR": "Ficha do cliente",
+    "ar": "ملف عميل"
+  },
+  "מוסיפים.": {
+    "en": "Adding.",
+    "es": "Añadiendo.",
+    "pt-BR": "Adicionando.",
+    "ar": "يضيفون."
+  },
+  "המייסד/ת": {
+    "en": "Founder",
+    "es": "Fundador/a",
+    "pt-BR": "Fundador/a",
+    "ar": "المؤسِّس/ة"
+  },
+  "הקמת אתר": {
+    "en": "Site setup",
+    "es": "Creación del sitio",
+    "pt-BR": "Criação do site",
+    "ar": "إنشاء موقع"
+  },
+  "סט בסיסי": {
+    "en": "Basic set",
+    "es": "Set básico",
+    "pt-BR": "Conjunto básico",
+    "ar": "طقم أساسي"
+  },
+  "ניהול חכם": {
+    "en": "Smart management",
+    "es": "Gestión inteligente",
+    "pt-BR": "Gestão inteligente",
+    "ar": "إدارة ذكية"
+  },
+  "יתרון שני": {
+    "en": "Second benefit",
+    "es": "Segunda ventaja",
+    "pt-BR": "Segunda vantagem",
+    "ar": "ميزة ثانية"
+  },
+  "שינוי תור": {
+    "en": "Reschedule",
+    "es": "Cambiar cita",
+    "pt-BR": "Reagendar",
+    "ar": "تغيير موعد"
+  },
+  "בחירת שעה": {
+    "en": "Choose hour",
+    "es": "Elegir hora",
+    "pt-BR": "Escolher hora",
+    "ar": "اختيار ساعة"
+  },
+  "בחירת זמן": {
+    "en": "Choose time",
+    "es": "Elegir hora",
+    "pt-BR": "Escolher horário",
+    "ar": "اختيار وقت"
+  },
+  "שם וטלפון": {
+    "en": "Name and phone",
+    "es": "Nombre y teléfono",
+    "pt-BR": "Nome e telefone",
+    "ar": "الاسم والهاتف"
+  },
+  "שליחת ליד": {
+    "en": "Send lead",
+    "es": "Enviar lead",
+    "pt-BR": "Enviar lead",
+    "ar": "إرسال عميل محتمل"
+  },
+  "הפעלת בוט": {
+    "en": "Activate bot",
+    "es": "Activar bot",
+    "pt-BR": "Ativar bot",
+    "ar": "تفعيل البوت"
+  },
+  "כנס מיוחד": {
+    "en": "Special conference",
+    "es": "Congreso especial",
+    "pt-BR": "Congresso especial",
+    "ar": "مؤتمر خاص"
+  },
+  "החל מ־₪99": {
+    "en": "From ₪99",
+    "es": "Desde ₪99",
+    "pt-BR": "A partir de ₪99",
+    "ar": "بدءاً من ₪99"
+  },
+  "פרטי לקוח": {
+    "en": "Customer details",
+    "es": "Datos del cliente",
+    "pt-BR": "Dados do cliente",
+    "ar": "بيانات العميل"
+  },
+  "טופס פעיל": {
+    "en": "Active form",
+    "es": "Formulario activo",
+    "pt-BR": "Formulário ativo",
+    "ar": "نموذج نشط"
+  },
+  "שלב רביעי": {
+    "en": "Fourth step",
+    "es": "Cuarto paso",
+    "pt-BR": "Quarto passo",
+    "ar": "الخطوة الرابعة"
+  },
+  "עמוד עסקי": {
+    "en": "Business page",
+    "es": "Página de negocio",
+    "pt-BR": "Página de negócio",
+    "ar": "صفحة عمل"
+  },
+  "זמן מוגבל": {
+    "en": "Limited time",
+    "es": "Tiempo limitado",
+    "pt-BR": "Tempo limitado",
+    "ar": "وقت محدود"
+  },
+  "הפעלת דמו": {
+    "en": "Start demo",
+    "es": "Activar demo",
+    "pt-BR": "Ativar demo",
+    "ar": "تشغيل العرض"
+  },
+  "צילום מסך": {
+    "en": "Screenshot",
+    "es": "Captura de pantalla",
+    "pt-BR": "Captura de tela",
+    "ar": "لقطة شاشة"
+  },
+  "מותג עסקי": {
+    "en": "Business brand",
+    "es": "Marca de negocio",
+    "pt-BR": "Marca do negócio",
+    "ar": "علامة عمل"
+  },
+  "ברור ונקי": {
+    "en": "Clear and clean",
+    "es": "Claro y limpio",
+    "pt-BR": "Claro e limpo",
+    "ar": "واضح ونظيف"
+  },
+  "תוכן שישי": {
+    "en": "Sixth content",
+    "es": "Sexto contenido",
+    "pt-BR": "Sexto conteúdo",
+    "ar": "محتوى سادس"
+  },
+  "48K צפיות": {
+    "en": "48K views",
+    "es": "48K vistas",
+    "pt-BR": "48K visualizações",
+    "ar": "48 ألف مشاهدة"
+  },
+  "מוצר שישי": {
+    "en": "Sixth product",
+    "es": "Sexto producto",
+    "pt-BR": "Sexto produto",
+    "ar": "المنتج السادس"
+  },
+  "24 מוצרים": {
+    "en": "24 products",
+    "es": "24 productos",
+    "pt-BR": "24 produtos",
+    "ar": "24 منتجاً"
+  },
+  "18 מוצרים": {
+    "en": "18 products",
+    "es": "18 productos",
+    "pt-BR": "18 produtos",
+    "ar": "18 منتجاً"
+  },
+  "12 מוצרים": {
+    "en": "12 products",
+    "es": "12 productos",
+    "pt-BR": "12 produtos",
+    "ar": "12 منتجاً"
+  },
+  "מוצר אהוב": {
+    "en": "Favorite product",
+    "es": "Producto favorito",
+    "pt-BR": "Produto favorito",
+    "ar": "منتج مفضل"
+  },
+  "מותג שותף": {
+    "en": "Partner brand",
+    "es": "Marca partner",
+    "pt-BR": "Marca parceira",
+    "ar": "علامة شريكة"
+  },
+  "זמן קריאה": {
+    "en": "Reading time",
+    "es": "Tiempo de lectura",
+    "pt-BR": "Tempo de leitura",
+    "ar": "وقت القراءة"
+  },
+  "מסר ראשון": {
+    "en": "First message",
+    "es": "Primer mensaje",
+    "pt-BR": "Primeira mensagem",
+    "ar": "الرسالة الأولى"
+  },
+  "מסר שלישי": {
+    "en": "Third message",
+    "es": "Tercer mensaje",
+    "pt-BR": "Terceira mensagem",
+    "ar": "الرسالة الثالثة"
+  }
+}

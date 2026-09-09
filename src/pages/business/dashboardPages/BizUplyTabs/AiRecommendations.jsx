@@ -79,7 +79,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       if (err.message.includes("401") && typeof onTokenExpired === "function") {
         onTokenExpired();
       } else {
-        setError("Connection error to server, please try again later.");
+        setError(t("leftover.aiRecsChrome.connectionError"));
       }
     });
 
@@ -140,7 +140,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   // Approve recommendation
   const approveRecommendation = async (id) => {
     if (!canApprove) {
-      setError("You have reached the monthly approval limit. Cannot approve more recommendations.");
+      setError(t("leftover.aiRecsChrome.monthlyLimit"));
       return;
     }
     setLoadingIds((ids) => new Set(ids).add(id));
@@ -267,7 +267,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   // Save and approve combined
   const saveAndApprove = async (id) => {
     if (!canApprove) {
-      setError("You have reached the monthly approval limit. Cannot approve more recommendations.");
+      setError(t("leftover.aiRecsChrome.monthlyLimit"));
       return;
     }
     setLoadingIds((ids) => new Set(ids).add(id));
@@ -317,17 +317,17 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">AI Recommendations Awaiting Approval</h3>
+      <h3 className="text-xl font-semibold">{t("leftover.aiRecsChrome.title")}</h3>
       {error && <p className="text-red-600">{error}</p>}
 
       {!canApprove && (
         <p className="text-red-600 font-bold">
-          Approval limit reached! You can view only, not approve further recommendations.
+          {t("leftover.aiRecsChrome.limitReached")}
         </p>
       )}
 
       {pending.length === 0 ? (
-        <p>No new recommendations.</p>
+        <p>{t("leftover.aiRecsChrome.noneNew")}</p>
       ) : (
         <ul className="space-y-4">
           {pending.map((r) => {
@@ -354,30 +354,30 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                         disabled={isLoading || !canApprove}
                         className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
                       >
-                        Save Draft
+                        {t("leftover.aiRecsChrome.saveDraft")}
                       </button>
                       <button
                         onClick={() => saveAndApprove(recId)}
                         disabled={isLoading || !canApprove}
                         className="px-4 py-1 rounded shadow bg-purple-600 text-white disabled:opacity-50"
                       >
-                        Save & Approve
+                        {t("leftover.aiRecsChrome.saveApprove")}
                       </button>
                       <button
                         onClick={cancelEditing}
                         disabled={isLoading}
                         className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
                       >
-                        Cancel
+                        {t("leftover.aiRecsChrome.cancel")}
                       </button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p><strong>Question:</strong> {cleanText(r.text)}</p>
+                    <p><strong>{t("leftover.aiRecsChrome.question")}</strong> {cleanText(r.text)}</p>
                     {r.commandText && (
                       <p className="italic text-gray-600">
-                        <strong>Answer:</strong> {cleanText(r.commandText)}
+                        <strong>{t("leftover.aiRecsChrome.answer")}</strong> {cleanText(r.commandText)}
                       </p>
                     )}
                     <div className="mt-2 flex gap-2">
@@ -386,21 +386,21 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                         disabled={!canApprove}
                         className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
                       >
-                        Edit
+                        {t("leftover.aiRecsChrome.edit")}
                       </button>
                       <button
                         onClick={() => approveRecommendation(recId)}
                         disabled={isLoading || !canApprove}
                         className="px-4 py-1 rounded shadow bg-purple-600 text-white disabled:opacity-50"
                       >
-                        {isLoading ? "…" : "Approve & Send"}
+                        {isLoading ? "…" : t("leftover.aiRecsChrome.approveSend")}
                       </button>
                       <button
                         onClick={() => rejectRecommendation(recId)}
                         disabled={isLoading}
                         className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
                       >
-                        {isLoading ? "…" : "Reject"}
+                        {isLoading ? "…" : t("leftover.aiRecsChrome.reject")}
                       </button>
                     </div>
                   </>
@@ -408,7 +408,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
                 {!canApprove && !isEditing && (
                   <p className="text-red-500 mt-2 text-sm">
-                    Approval limit reached. You can continue receiving recommendations but not approve them.
+                    {t("leftover.aiRecsChrome.limitReachedItem")}
                   </p>
                 )}
               </li>
@@ -423,27 +423,27 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         onClick={() => setShowHistory((s) => !s)}
         className="px-6 py-2 bg-purple-600 text-white rounded-2xl shadow"
       >
-        {showHistory ? "Hide Recommendation History" : "View Recommendation History"}
+        {showHistory ? t("leftover.aiRecsChrome.hideHistory") : t("leftover.aiRecsChrome.showHistory")}
       </button>
 
       {showHistory && (
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold">Recommendation History</h3>
+          <h3 className="text-xl font-semibold">{t("leftover.aiRecsChrome.historyTitle")}</h3>
           {history.length === 0 ? (
-            <p>No past recommendations.</p>
+            <p>{t("leftover.aiRecsChrome.nonePast")}</p>
           ) : (
             <ul className="space-y-2">
               {history.map((r) => {
                 const recId = r._id || r.id;
                 return (
                   <li key={recId} className="border p-3 rounded opacity-70">
-                    <p><strong>Question:</strong> {cleanText(r.text)}</p>
+                    <p><strong>{t("leftover.aiRecsChrome.question")}</strong> {cleanText(r.text)}</p>
                     {r.commandText && (
                       <p className="italic text-gray-600">
-                        <strong>Answer:</strong> {cleanText(r.commandText)}
+                        <strong>{t("leftover.aiRecsChrome.answer")}</strong> {cleanText(r.commandText)}
                       </p>
                     )}
-                    <p>Status: {r.status === "approved" ? "Approved" : "Rejected"}</p>
+                    <p>{t("leftover.aiRecsChrome.status")} {r.status === "approved" ? t("leftover.aiRecsChrome.approved") : t("leftover.aiRecsChrome.rejected")}</p>
                   </li>
                 );
               })}

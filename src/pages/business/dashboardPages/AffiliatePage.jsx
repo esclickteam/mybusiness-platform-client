@@ -43,7 +43,7 @@ const AffiliatePage = () => {
         setAffiliateId(business._id);
         setReferralCode(business.referralCode || null);
       } catch {
-        setErrorStats("Failed to retrieve business details");
+        setErrorStats(t("leftover.affiliateChrome.loadBusinessError"));
       }
     })();
   }, []);
@@ -68,7 +68,7 @@ const AffiliatePage = () => {
         setErrorStats(null);
 
       } catch {
-        setErrorStats("Error loading data");
+        setErrorStats(t("leftover.affiliateChrome.loadDataError"));
       } finally {
         setLoadingStats(false);
       }
@@ -97,7 +97,7 @@ const AffiliatePage = () => {
       });
 
       setPaymentLink(data.paymentLink);
-      setClientStatus("Client created successfully. Invite email sent.");
+      setClientStatus(t("leftover.affiliateChrome.clientCreated"));
 
       // reset form
       setClientBusinessName("");
@@ -106,7 +106,7 @@ const AffiliatePage = () => {
       setClientPhone("");
 
     } catch (err) {
-      alert(err.response?.data?.message || "Error creating client");
+      alert(err.response?.data?.message || t("leftover.affiliateChrome.createError"));
     }
   };
 
@@ -133,10 +133,10 @@ const AffiliatePage = () => {
         amount
       });
 
-      setWithdrawStatus(data.message || "Withdrawal request received.");
+      setWithdrawStatus(data.message || t("leftover.affiliateChrome.withdrawOk"));
 
     } catch (err) {
-      alert(err.response?.data?.message || "Error submitting withdrawal request");
+      alert(err.response?.data?.message || t("leftover.affiliateChrome.withdrawError"));
     }
   };
 
@@ -155,7 +155,7 @@ const AffiliatePage = () => {
   return (
     <div className="affiliate-page">
 
-      <h1>Affiliate Program</h1>
+      <h1>{t("leftover.affiliateChrome.title")}</h1>
 
       {/* -------------------------------------------------- */}
       {/* PERSONAL LINK */}
@@ -163,7 +163,7 @@ const AffiliatePage = () => {
 
       <section className="affiliate-section">
 
-        <h2>🎯 Your Personal Affiliate Link</h2>
+        <h2>🎯 {t("leftover.affiliateChrome.personalLink")}</h2>
 
         <input
           type="text"
@@ -253,10 +253,10 @@ const AffiliatePage = () => {
 
             <thead>
               <tr>
-                <th>Month</th>
-                <th>Purchases</th>
-                <th>Paid</th>
-                <th>Unpaid</th>
+                <th>{t("leftover.affiliateChrome.month")}</th>
+                <th>{t("leftover.affiliateChrome.purchases")}</th>
+                <th>{t("leftover.affiliateChrome.paid")}</th>
+                <th>{t("leftover.affiliateChrome.unpaid")}</th>
               </tr>
             </thead>
 
@@ -292,21 +292,21 @@ const AffiliatePage = () => {
 
       <section className="affiliate-bank-section">
 
-        <h2>Withdraw Balance</h2>
+        <h2>{t("leftover.affiliateChrome.withdrawTitle")}</h2>
 
         <p>
-          Available balance: <b>${currentBalance.toFixed(2)}</b>
+          {t("leftover.affiliateChrome.availableBalance")} <b>${currentBalance.toFixed(2)}</b>
         </p>
 
         <input
           type="number"
           value={withdrawAmount}
           onChange={(e) => setWithdrawAmount(e.target.value)}
-          placeholder="Minimum $200"
+          placeholder={t("leftover.affiliateChrome.minAmountPh")}
         />
 
         <button onClick={handleWithdrawRequest}>
-          Request Withdrawal
+          {t("leftover.affiliateChrome.requestWithdraw")}
         </button>
 
         {withdrawStatus && <p>{withdrawStatus}</p>}
@@ -315,7 +315,7 @@ const AffiliatePage = () => {
           className="payment-button"
           onClick={() => setShowBankForm(!showBankForm)}
         >
-          Manage Bank Details
+          {t("leftover.affiliateChrome.manageBank")}
         </button>
 
         {showBankForm && (
