@@ -15,15 +15,15 @@ const BusinessXrayWrapper = () => {
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  const handleSubmitAnswers = async (answers, businessType) => {
+  const handleSubmitAnswers = async (payload) => {
     setLoading(true);
     try {
       const response = await fetch(`${apiBaseUrl}/business-xray`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ answers, businessType })
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -52,8 +52,8 @@ const BusinessXrayWrapper = () => {
             businessType={reportData.businessType}
           />
           <div className="xray-reset-row">
-            <button onClick={handleReset} className="xray-reset-btn">
-              🔁 Restart
+            <button type="button" onClick={handleReset} className="xray-reset-btn">
+              {t("leftover.xrayChrome.restart")}
             </button>
           </div>
         </>

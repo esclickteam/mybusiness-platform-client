@@ -12,6 +12,7 @@ import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
 import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 function billingKey(billing?: string) {
   if (billing === "recurring_month") return "partner.billing.monthly";
@@ -20,7 +21,8 @@ function billingKey(billing?: string) {
 }
 
 export default function PartnerPublicPlans() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const { slug: slugParam } = useParams();
   const [params] = useSearchParams();
   const [slug, setSlug] = useState(slugParam || "");
@@ -138,7 +140,7 @@ export default function PartnerPublicPlans() {
                 ) : null}
               </div>
               <p className="text-2xl font-black">
-                {formatPublicCustomerPrice(product)}
+                {formatPublicCustomerPrice(product, t, locale)}
               </p>
             </div>
             <button
@@ -161,7 +163,7 @@ export default function PartnerPublicPlans() {
             {t("partner.public.customerDetails", { name: catalogProductName(t, selected) })}
           </h3>
           <p className="text-sm font-bold text-slate-500">
-            {t("partner.public.toPay", { amount: formatPublicCustomerPrice(selected) })}
+            {t("partner.public.toPay", { amount: formatPublicCustomerPrice(selected, t, locale) })}
           </p>
           <input
             required

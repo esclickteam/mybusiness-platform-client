@@ -52,6 +52,10 @@ export default function AdLevelEditor({
   onFormsRefresh,
 }: Props) {
   const { t } = useTranslation();
+  const c = (key: string, opts?: Record<string, unknown>) =>
+    t(`metaCampaigns.adsManager.chrome.${key}`, opts);
+  const tabLabel = (tab: "active" | "archived") =>
+    tab === "active" ? c("formTabActive") : c("formTabArchived");
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -101,7 +105,7 @@ export default function AdLevelEditor({
           videoId: result.videoId || "",
           imageHash: "",
           imagePreviewUrl: "",
-          mediaLabel: file.name || "Video uploaded",
+          mediaLabel: file.name || c("videoUploadedFallback"),
         });
       } else {
         onChange({
@@ -109,7 +113,7 @@ export default function AdLevelEditor({
           imageHash: result.imageHash || "",
           imagePreviewUrl: result.url || "",
           videoId: "",
-          mediaLabel: file.name || "Image uploaded",
+          mediaLabel: file.name || c("imageUploadedFallback"),
         });
       }
       toast.success(isVideo ? t("metaCampaigns.adsToasts.videoUploaded") : t("metaCampaigns.adsToasts.imageUploaded"));
@@ -125,14 +129,14 @@ export default function AdLevelEditor({
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
       <MetaSection
-        title="Ad name"
+        title={c("adName")}
         action={
           <button type="button" className={metaBtnSecondary}>
-            Create template
+            {c("createTemplate")}
           </button>
         }
       >
-        <MetaField label="Ad name">
+        <MetaField label={c("adName")}>
           <input
             className={metaInputClass}
             value={ad.name}
@@ -141,17 +145,17 @@ export default function AdLevelEditor({
         </MetaField>
       </MetaSection>
 
-      <MetaSection title="Partnership ad">
+      <MetaSection title={c("partnershipAd")}>
         <MetaToggle
           checked={ad.partnershipAd}
           onChange={(partnershipAd) => onChange({ partnershipAd })}
-          label="Partnership ad"
-          description="Run ads from a partner’s identity with your account."
+          label={c("partnershipAd")}
+          description={c("partnershipAdDesc")}
         />
       </MetaSection>
 
-      <MetaSection title="Identity">
-        <MetaField label="Facebook Page">
+      <MetaSection title={c("identity")}>
+        <MetaField label={c("facebookPage")}>
           <select
             className={metaSelectClass}
             value={ad.facebookPageId}
@@ -164,7 +168,7 @@ export default function AdLevelEditor({
               });
             }}
           >
-            <option value="">Select a Facebook Page</option>
+            <option value="">{c("selectFacebookPage")}</option>
             {pages.map((page) => (
               <option key={page.id} value={page.id}>
                 {page.name}
@@ -173,19 +177,21 @@ export default function AdLevelEditor({
           </select>
         </MetaField>
         <MetaNotice tone="success">
-          You’ve accepted Meta’s Lead Ads Terms for this Page.
+          {c("leadAdsTermsAccepted")}
         </MetaNotice>
       </MetaSection>
 
       <MetaSection
-        title="Destination"
+        title={c("destination")}
         status={ad.instantFormId ? "ok" : "warn"}
       >
         <div className="space-y-5">
           <div>
-            <h3 className="text-[15px] font-bold text-[#050505]">Website</h3>
+            <h3 className="text-[15px] font-bold text-[#050505]">
+              {c("website")}
+            </h3>
             <div className="mt-3 space-y-3">
-              <MetaField label="Website URL">
+              <MetaField label={c("websiteUrl")}>
                 <input
                   className={metaInputClass}
                   value={ad.websiteUrl}
@@ -194,8 +200,8 @@ export default function AdLevelEditor({
                 />
               </MetaField>
               <MetaField
-                label="Display link"
-                hint="Shown on your ad instead of the full website URL."
+                label={c("displayLink")}
+                hint={c("displayLinkHint")}
               >
                 <input
                   className={metaInputClass}
@@ -209,7 +215,7 @@ export default function AdLevelEditor({
           <div className="border-t border-[#E4E6EB] pt-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-[15px] font-bold text-[#050505]">
-                Instant form
+                {c("instantForm")}
               </h3>
               <button
                 type="button"
@@ -222,7 +228,7 @@ export default function AdLevelEditor({
                   setCreateFormOpen(true);
                 }}
               >
-                Create form
+                {c("createForm")}
               </button>
             </div>
 
@@ -230,7 +236,7 @@ export default function AdLevelEditor({
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
               <input
                 className={`${metaInputClass} pl-9`}
-                placeholder="Search your forms"
+                placeholder={c("searchForms")}
                 value={formSearch}
                 onChange={(e) => setFormSearch(e.target.value)}
               />
@@ -243,13 +249,13 @@ export default function AdLevelEditor({
                   type="button"
                   onClick={() => onChange({ formTab: tab })}
                   className={[
-                    "px-3 py-2 text-[13px] font-bold capitalize",
+                    "px-3 py-2 text-[13px] font-bold",
                     ad.formTab === tab
                       ? "border-b-2 border-[#1877F2] text-[#1877F2]"
                       : "text-[#65676B]",
                   ].join(" ")}
                 >
-                  {tab}
+                  {tabLabel(tab)}
                 </button>
               ))}
             </div>
@@ -258,7 +264,7 @@ export default function AdLevelEditor({
               {formsLoading ? (
                 <p className="inline-flex w-full items-center justify-center gap-2 px-2 py-6 text-[13px] font-semibold text-[#65676B]">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading Instant Forms from Meta…
+                  {c("loadingInstantFormsFromMeta")}
                 </p>
               ) : formsError ? (
                 <div className="space-y-2 px-2 py-4 text-center">
@@ -266,8 +272,7 @@ export default function AdLevelEditor({
                     {formsError}
                   </p>
                   <p className="text-[12px] text-[#65676B]">
-                    Select the same Facebook Page as in Meta Ads Manager, then
-                    refresh.
+                    {c("formsErrorHint")}
                   </p>
                   {onFormsRefresh ? (
                     <button
@@ -275,15 +280,15 @@ export default function AdLevelEditor({
                       className={metaBtnSecondary}
                       onClick={() => onFormsRefresh()}
                     >
-                      Refresh forms
+                      {c("refreshForms")}
                     </button>
                   ) : null}
                 </div>
               ) : filteredForms.length === 0 ? (
                 <p className="px-2 py-6 text-center text-[13px] text-[#65676B]">
                   {!ad.facebookPageId
-                    ? "Select a Facebook Page in the Ad set to load Instant Forms from Meta."
-                    : `No ${ad.formTab} Instant Forms on this Page in Meta. Create one or check the Archived tab.`}
+                    ? c("selectPageForForms")
+                    : c("noFormsOnPage", { tab: tabLabel(ad.formTab) })}
                 </p>
               ) : (
                 filteredForms.map((form) => {
@@ -305,9 +310,11 @@ export default function AdLevelEditor({
                           {form.name}
                         </span>
                         <span className="block text-[12px] text-[#65676B]">
-                          Created on {form.updatedAt || "—"}
+                          {c("createdOn", { date: form.updatedAt || "—" })}
                           {form.customQuestions
-                            ? ` · ${form.customQuestions} custom questions`
+                            ? ` · ${c("customQuestionsCount", {
+                                count: form.customQuestions,
+                              })}`
                             : ""}
                         </span>
                       </span>
@@ -330,7 +337,7 @@ export default function AdLevelEditor({
             {!ad.instantFormId ? (
               <div className="mt-3">
                 <MetaNotice tone="warning">
-                  Create or select an instant form to publish this campaign.
+                  {c("instantFormNotice")}
                 </MetaNotice>
               </div>
             ) : null}
@@ -338,14 +345,14 @@ export default function AdLevelEditor({
         </div>
       </MetaSection>
 
-      <MetaSection title="Ad creative">
+      <MetaSection title={c("adCreative")}>
         <p className="text-[13px] text-[#65676B]">
-          Select and optimize your ad text, media and enhancements.
+          {c("adCreativeSubtitle")}
         </p>
 
         <div className="relative">
           <p className="mb-1.5 text-[13px] font-semibold text-[#65676B]">
-            Set up creative
+            {c("setUpCreative")}
           </p>
           <button
             type="button"
@@ -353,7 +360,7 @@ export default function AdLevelEditor({
             onClick={() => setMediaMenuOpen((v) => !v)}
           >
             <span className="font-semibold">
-              {ad.creativeFormat === "video" ? "Video ad" : "Image ad"}
+              {ad.creativeFormat === "video" ? c("videoAd") : c("imageAd")}
             </span>
             <Upload className="h-4 w-4 text-[#65676B]" />
           </button>
@@ -366,9 +373,11 @@ export default function AdLevelEditor({
               >
                 <ImageIcon className="h-5 w-5 text-[#65676B]" />
                 <span>
-                  <span className="block text-[14px] font-semibold">Image ad</span>
+                  <span className="block text-[14px] font-semibold">
+                    {c("imageAd")}
+                  </span>
                   <span className="block text-[12px] text-[#65676B]">
-                    Upload a still image from your computer
+                    {c("imageAdUploadDesc")}
                   </span>
                 </span>
               </button>
@@ -379,9 +388,11 @@ export default function AdLevelEditor({
               >
                 <Video className="h-5 w-5 text-[#65676B]" />
                 <span>
-                  <span className="block text-[14px] font-semibold">Video ad</span>
+                  <span className="block text-[14px] font-semibold">
+                    {c("videoAd")}
+                  </span>
                   <span className="block text-[12px] text-[#65676B]">
-                    Upload a video from your computer
+                    {c("videoAdUploadDesc")}
                   </span>
                 </span>
               </button>
@@ -400,18 +411,18 @@ export default function AdLevelEditor({
           />
         </div>
 
-        <MetaField label="Media">
+        <MetaField label={c("media")}>
           <div className="overflow-hidden rounded-lg border border-dashed border-[#CED0D4] bg-[#F7F8FA]">
             {ad.imagePreviewUrl ? (
               <img
                 src={ad.imagePreviewUrl}
-                alt="Ad creative"
+                alt={c("adCreativeAlt")}
                 className="max-h-56 w-full object-contain"
               />
             ) : ad.videoId ? (
               <div className="flex h-40 flex-col items-center justify-center gap-2 text-[13px] font-semibold text-[#050505]">
                 <Video className="h-8 w-8 text-[#1877F2]" />
-                Video uploaded · ID {ad.videoId}
+                {c("videoUploadedId", { id: ad.videoId })}
               </div>
             ) : (
               <button
@@ -426,19 +437,19 @@ export default function AdLevelEditor({
                   <Upload className="h-6 w-6" />
                 )}
                 {uploading
-                  ? "Uploading to Meta…"
-                  : ad.mediaLabel || "Choose the media to run with this ad."}
+                  ? c("uploadingToMeta")
+                  : ad.mediaLabel || c("chooseMedia")}
               </button>
             )}
           </div>
           {(ad.imagePreviewUrl || ad.videoId) && (
             <MetaLinkButton onClick={() => setMediaMenuOpen(true)}>
-              Replace media
+              {c("replaceMedia")}
             </MetaLinkButton>
           )}
         </MetaField>
 
-        <MetaField label="Primary text">
+        <MetaField label={c("primaryText")}>
           <textarea
             className={`${metaInputClass} h-24 resize-y py-2`}
             value={ad.primaryText}
@@ -446,14 +457,14 @@ export default function AdLevelEditor({
           />
         </MetaField>
         <div className="grid gap-3 sm:grid-cols-2">
-          <MetaField label="Headline">
+          <MetaField label={c("headline")}>
             <input
               className={metaInputClass}
               value={ad.headline}
               onChange={(e) => onChange({ headline: e.target.value })}
             />
           </MetaField>
-          <MetaField label="Description">
+          <MetaField label={c("description")}>
             <input
               className={metaInputClass}
               value={ad.description}

@@ -127,7 +127,14 @@ export default function PartnerTeam() {
         {(data?.members || []).map((member: any) => (
           <article key={member._id} className="rounded-[16px] border border-slate-100 bg-white p-4 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
             <p className="font-black">
-              {member.user?.name || t("partner.team.user")} · {member.role} · {member.status}
+              {member.user?.name || t("partner.team.user")} ·{" "}
+              {t(`partner.team.role.${member.role}`, {
+                defaultValue: member.role,
+              })}{" "}
+              ·{" "}
+              {t(`partner.team.memberStatus.${member.status}`, {
+                defaultValue: member.status,
+              })}
             </p>
             <p className="text-sm text-slate-500">{member.user?.email}</p>
             {member.role === "owner" ? (

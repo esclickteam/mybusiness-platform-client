@@ -451,7 +451,9 @@ export default function MetaCampaignsSettingsTab() {
                 </option>
                 {(status?.adAccounts || []).map((account) => (
                   <option key={account.id} value={account.id}>
-                    {formatAdAccountLabel(account)}
+                    {formatAdAccountLabel(account, {
+                      fallbackName: t("metaCampaigns.overview.account"),
+                    })}
                   </option>
                 ))}
               </select>

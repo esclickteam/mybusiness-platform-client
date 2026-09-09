@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Facebook, X } from "lucide-react";
 import type {
   MetaLeadForm,
@@ -36,7 +37,10 @@ function optionValue(opt: string | { key?: string; value: string }) {
   return String(opt?.value || opt?.key || "").trim();
 }
 
-function buildScreens(form: MetaLeadForm | null): FlowScreen[] {
+function buildScreens(
+  form: MetaLeadForm | null,
+  cc: (key: string) => string
+): FlowScreen[] {
   if (!form) return [];
 
   const questions = Array.isArray(form.questions) ? form.questions : [];
@@ -51,31 +55,32 @@ function buildScreens(form: MetaLeadForm | null): FlowScreen[] {
     form.contextCard?.title?.trim() || form.contextCard?.content?.trim()
   );
   const screens: FlowScreen[] = [];
+  const customLabel = cc("customQuestions");
 
   if (hasIntro) {
     screens.push({
       kind: "intro",
-      label: custom[0] ? "Custom Questions" : "Intro",
+      label: custom[0] ? customLabel : cc("stepIntro"),
       question: custom[0],
     });
     for (const question of custom.slice(1)) {
-      screens.push({ kind: "custom", label: "Custom Questions", question });
+      screens.push({ kind: "custom", label: customLabel, question });
     }
   } else {
     for (const question of custom) {
-      screens.push({ kind: "custom", label: "Custom Questions", question });
+      screens.push({ kind: "custom", label: customLabel, question });
     }
   }
 
   if (contact.length) {
     screens.push({
       kind: "contact",
-      label: "Contact information",
+      label: cc("contactInformation"),
       fields: contact,
     });
   }
-  screens.push({ kind: "privacy", label: "Privacy" });
-  screens.push({ kind: "thanks", label: "Ending" });
+  screens.push({ kind: "privacy", label: cc("privacy") });
+  screens.push({ kind: "thanks", label: cc("ending") });
   return screens;
 }
 
@@ -85,7 +90,13 @@ export default function InstantFormFlowPreview({
   fallbackHeadline = "",
   className = "",
 }: Props) {
-  const screens = useMemo(() => buildScreens(form), [form]);
+  const { t } = useTranslation();
+  const cc = React.useCallback(
+    (key: string, opts?: Record<string, unknown>) =>
+      t(`metaCampaigns.adsManager.chrome.${key}`, opts as never),
+    [t]
+  );
+  const screens = useMemo(() => buildScreens(form, cc), [form, cc]);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -105,7 +116,7 @@ export default function InstantFormFlowPreview({
     form?.contextCard?.title?.trim() ||
     fallbackHeadline.trim() ||
     form?.name ||
-    "Lead form";
+    cc("leadFormFallback");
   const introBody = form?.contextCard?.content?.trim() || "";
 
   const continueLabel = tf("continue", "Continue");
@@ -120,7 +131,7 @@ export default function InstantFormFlowPreview({
           className,
         ].join(" ")}
       >
-        Select or create an instant form to preview it here.
+        {cc("previewPlaceholder")}
       </div>
     );
   }
@@ -129,7 +140,7 @@ export default function InstantFormFlowPreview({
     <div className={["space-y-2", className].join(" ")}>
       <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#65676B]">
         <Facebook className="h-3.5 w-3.5 text-[#1877F2]" />
-        Facebook Form
+        {cc("facebookForm")}
       </div>
 
       <div className="overflow-hidden rounded-xl border border-[#CED0D4] bg-[#E4E6EB] shadow-sm">
@@ -151,7 +162,7 @@ export default function InstantFormFlowPreview({
                       {(pageName || "P").trim().slice(0, 1).toUpperCase()}
                     </div>
                     <p className="text-[12px] font-semibold text-[#65676B]">
-                      {pageName || "Your Page"}
+                      {pageName || cc("yourPage")}
                     </p>
                   </div>
                   <h3 className="text-center text-[18px] font-black leading-snug text-[#050505]">
@@ -166,6 +177,7 @@ export default function InstantFormFlowPreview({
                     <CustomQuestionBlock
                       question={screen.question}
                       answerPlaceholder={answerPlaceholder}
+                      fallbackLabel={cc("question")}
                     />
                   ) : null}
                 </div>
@@ -175,6 +187,7 @@ export default function InstantFormFlowPreview({
                 <CustomQuestionBlock
                   question={screen.question}
                   answerPlaceholder={answerPlaceholder}
+                  fallbackLabel={cc("question")}
                 />
               ) : null}
 
@@ -258,18 +271,21 @@ export default function InstantFormFlowPreview({
 
         <div className="flex items-center justify-between border-t border-[#CED0D4] bg-white px-2 py-2">
           <span className="min-w-0 truncate px-1 text-[11px] font-bold text-[#65676B]">
-            {screen?.label || "Form"}
+            {screen?.label || cc("formFallback")}
           </span>
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-semibold text-[#65676B]">
-              {Math.min(index + 1, total)} of {total}
+              {cc("screenCounter", {
+                current: Math.min(index + 1, total),
+                total,
+              })}
             </span>
             <button
               type="button"
               className="rounded border border-[#CED0D4] p-1 text-[#050505] disabled:opacity-40"
               disabled={index <= 0}
               onClick={() => setIndex((v) => Math.max(0, v - 1))}
-              aria-label="Previous form screen"
+              aria-label={cc("previousFormScreen")}
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
@@ -278,7 +294,7 @@ export default function InstantFormFlowPreview({
               className="rounded border border-[#CED0D4] p-1 text-[#050505] disabled:opacity-40"
               disabled={index >= total - 1}
               onClick={() => setIndex((v) => Math.min(total - 1, v + 1))}
-              aria-label="Next form screen"
+              aria-label={cc("nextFormScreen")}
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
@@ -292,16 +308,18 @@ export default function InstantFormFlowPreview({
 function CustomQuestionBlock({
   question,
   answerPlaceholder,
+  fallbackLabel,
 }: {
   question: MetaLeadFormQuestion;
   answerPlaceholder: string;
+  fallbackLabel: string;
 }) {
   const options = (question.options || []).map(optionValue).filter(Boolean);
 
   return (
     <div className="space-y-2.5">
       <p className="text-[15px] font-black leading-snug text-[#050505]">
-        {question.label?.trim() || "Question"}
+        {question.label?.trim() || fallbackLabel}
       </p>
       {options.length ? (
         <div className="space-y-2">

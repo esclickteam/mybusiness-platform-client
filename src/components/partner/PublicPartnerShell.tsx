@@ -21,7 +21,7 @@ export default function PublicPartnerShell({
   noIndex?: boolean;
   children: ReactNode;
 }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const pageDir = getTextDirection(i18n.language);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
@@ -62,7 +62,9 @@ export default function PublicPartnerShell({
       </header>
       <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
       {!whiteLabel ? (
-        <footer className="py-6 text-center text-xs font-bold text-slate-400">Powered by Bizuply</footer>
+        <footer className="py-6 text-center text-xs font-bold text-slate-400">
+          {t("partner.poweredBy")}
+        </footer>
       ) : null}
     </div>
   );

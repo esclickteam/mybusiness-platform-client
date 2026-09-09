@@ -6,6 +6,7 @@ import {
   MoreHorizontal,
   RectangleHorizontal,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { AdsManagerLevel, AdsManagerTreeNode } from "./adsManagerTypes";
 
 const levelIcon: Record<AdsManagerLevel, React.ElementType> = {
@@ -25,7 +26,15 @@ export default function MetaAdsManagerTree({
   selectedId,
   onSelect,
 }: Props) {
+  const { t } = useTranslation();
+  const c = (key: string) => t(`metaCampaigns.adsManager.chrome.${key}`);
   const [menuId, setMenuId] = useState<string | null>(null);
+
+  const menuItems: Array<{ key: string; label: string }> = [
+    { key: "rename", label: c("treeRename") },
+    { key: "duplicate", label: c("treeDuplicate") },
+    { key: "delete", label: c("treeDelete") },
+  ];
 
   const campaign = nodes.find((n) => n.level === "campaign");
   const adSets = nodes.filter((n) => n.level === "adset");
@@ -87,14 +96,14 @@ export default function MetaAdsManagerTree({
         </button>
         {menuId === node.id ? (
           <div className="absolute right-1 top-8 z-20 min-w-[150px] rounded-md border border-[#CED0D4] bg-white py-1 shadow-lg">
-            {["Rename", "Duplicate", "Delete"].map((item) => (
+            {menuItems.map((item) => (
               <button
-                key={item}
+                key={item.key}
                 type="button"
                 className="block w-full px-3 py-1.5 text-left text-[13px] text-[#050505] hover:bg-[#F0F2F5]"
                 onClick={() => setMenuId(null)}
               >
-                {item}
+                {item.label}
               </button>
             ))}
           </div>
@@ -105,12 +114,12 @@ export default function MetaAdsManagerTree({
 
   return (
     <nav
-      aria-label="Campaign structure"
+      aria-label={c("treeTitle")}
       className="flex h-full flex-col border-r border-[#CED0D4] bg-[#F7F8FA]"
     >
       <div className="border-b border-[#E4E6EB] px-3 py-2.5">
         <p className="text-[12px] font-bold uppercase tracking-wide text-[#65676B]">
-          Campaign structure
+          {c("treeTitle")}
         </p>
       </div>
       <div className="flex-1 space-y-0.5 overflow-y-auto px-1.5 py-2">

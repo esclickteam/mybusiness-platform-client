@@ -56,7 +56,7 @@ export function nextTaskDue(client: Pick<PartnerClient, "tasks">): string | null
   return open[0]?.dueAt || null;
 }
 
-export function formatPartnerDate(value?: string | null, locale = "he-IL"): string {
+export function formatPartnerDate(value?: string | null, locale = "en-US"): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -67,7 +67,7 @@ export function formatPartnerDate(value?: string | null, locale = "he-IL"): stri
   });
 }
 
-export function formatPartnerDateTime(value?: string | null, locale = "he-IL"): string {
+export function formatPartnerDateTime(value?: string | null, locale = "en-US"): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";

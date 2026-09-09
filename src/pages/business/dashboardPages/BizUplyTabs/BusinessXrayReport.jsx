@@ -3,6 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import "./BusinessXrayReport.css";
 
+const BUSINESS_TYPE_LABEL_KEYS = {
+  services: "leftover.xrayChrome.typeServices",
+  commerce: "leftover.xrayChrome.typeCommerce",
+  restaurant: "leftover.xrayChrome.typeRestaurant",
+  studio: "leftover.xrayChrome.typeStudio",
+};
+
 const BusinessXrayReport = ({ data, insights, businessType }) => {
   const { t } = useTranslation();
   if (!data || !insights) return <p>{t("leftover.xrayChrome.noData")}</p>;
@@ -14,10 +21,14 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
     fullMark: 5
   }));
 
+  const businessTypeLabel = BUSINESS_TYPE_LABEL_KEYS[businessType]
+    ? t(BUSINESS_TYPE_LABEL_KEYS[businessType])
+    : businessType;
+
   return (
     <div className="report-container">
-      <h2>📊 {t("leftover.xrayChrome.reportTitle")}</h2>
-      <p>{t("leftover.xrayChrome.businessTypeLabel")} <strong>{businessType}</strong></p>
+      <h2>{t("leftover.xrayChrome.reportTitle")}</h2>
+      <p>{t("leftover.xrayChrome.businessTypeLabel")} <strong>{businessTypeLabel}</strong></p>
 
       <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height={300}>
@@ -31,7 +42,7 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
       </div>
 
       <div className="insights-box">
-        <h3>🧠 {t("leftover.xrayChrome.insightsTitle")}</h3>
+        <h3>{t("leftover.xrayChrome.insightsTitle")}</h3>
         <pre>{insights}</pre>
       </div>
     </div>

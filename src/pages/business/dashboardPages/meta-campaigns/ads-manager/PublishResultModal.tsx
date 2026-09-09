@@ -1,18 +1,8 @@
 import React from "react";
 import { CheckCircle2, ExternalLink, Loader2, RefreshCw, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { MetaCampaignPublishRecord } from "../../../../../api/metaCampaignsApi";
 import { metaBtnPrimary, metaBtnSecondary } from "./metaAdsUi";
-
-const STATUS_LABELS: Record<string, string> = {
-  SUBMITTED: "Submitted to Meta",
-  PENDING_REVIEW: "Pending review",
-  IN_PROCESS: "Processing",
-  ACTIVE: "Active",
-  PAUSED: "Paused",
-  REJECTED: "Rejected",
-  ERROR: "Error",
-  UNKNOWN: "Unknown",
-};
 
 type Props = {
   open: boolean;
@@ -31,7 +21,22 @@ export default function PublishResultModal({
   onSync,
   onRetry,
 }: Props) {
+  const { t } = useTranslation();
+
   if (!open || !publish) return null;
+
+  const c = (key: string) => t(`metaCampaigns.adsManager.chrome.${key}`);
+
+  const STATUS_LABELS: Record<string, string> = {
+    SUBMITTED: c("statusSubmitted"),
+    PENDING_REVIEW: c("statusPendingReview"),
+    IN_PROCESS: c("statusProcessing"),
+    ACTIVE: c("statusActive"),
+    PAUSED: c("statusPaused"),
+    REJECTED: c("statusRejected"),
+    ERROR: c("statusFailed"),
+    UNKNOWN: c("statusUnknown"),
+  };
 
   const ok = Boolean(publish.metaAdId) && publish.publishStatus === "submitted";
   const statusLabel =
@@ -55,15 +60,12 @@ export default function PublishResultModal({
             )}
             <div>
               <h2 className="text-[17px] font-bold text-[#050505]">
-                {ok
-                  ? "Campaign submitted to Meta"
-                  : "Publish incomplete"}
+                {ok ? c("campaignSubmittedTitle") : c("publishIncompleteTitle")}
               </h2>
               <p className="mt-0.5 text-[13px] text-[#65676B]">
                 {ok
-                  ? "Meta returned a real Ad ID. Status below is from Meta, not a local mock."
-                  : publish.lastError ||
-                    "One or more Meta create steps failed. You can retry from the failed stage."}
+                  ? c("publishOkSubtitle")
+                  : publish.lastError || c("publishFailSubtitle")}
               </p>
             </div>
           </div>
@@ -77,17 +79,17 @@ export default function PublishResultModal({
         </div>
 
         <div className="space-y-2 px-4 py-4 text-[13px]">
-          <Row label="Meta Campaign ID" value={publish.metaCampaignId || "—"} />
-          <Row label="Meta Ad Set ID" value={publish.metaAdSetId || "—"} />
-          <Row label="Meta Creative ID" value={publish.metaCreativeId || "—"} />
-          <Row label="Meta Ad ID" value={publish.metaAdId || "—"} mono />
-          <Row label="Current Meta status" value={statusLabel} />
+          <Row label={c("metaCampaignId")} value={publish.metaCampaignId || "—"} />
+          <Row label={c("metaAdSetId")} value={publish.metaAdSetId || "—"} />
+          <Row label={c("metaCreativeId")} value={publish.metaCreativeId || "—"} />
+          <Row label={c("metaAdId")} value={publish.metaAdId || "—"} mono />
+          <Row label={c("currentMetaStatus")} value={statusLabel} />
           <Row
-            label="effective_status"
+            label={c("effectiveStatusLabel")}
             value={publish.metaEffectiveStatus || "—"}
           />
           <Row
-            label="Submitted time"
+            label={c("submittedTime")}
             value={
               publish.publishedAt
                 ? new Date(publish.publishedAt).toLocaleString()
@@ -95,11 +97,11 @@ export default function PublishResultModal({
             }
           />
           {publish.failedStage ? (
-            <Row label="Failed stage" value={publish.failedStage} />
+            <Row label={c("failedStage")} value={publish.failedStage} />
           ) : null}
           {publish.lastMetaErrorCode ? (
             <Row
-              label="Meta error"
+              label={c("metaError")}
               value={`${publish.lastMetaErrorCode}: ${publish.lastMetaErrorMessage || ""}`}
             />
           ) : null}
@@ -117,11 +119,11 @@ export default function PublishResultModal({
             ) : (
               <RefreshCw className="h-3.5 w-3.5" />
             )}
-            Sync status from Meta
+            {c("syncStatusFromMeta")}
           </button>
           {!ok && onRetry ? (
             <button type="button" className={metaBtnSecondary} onClick={onRetry}>
-              Retry failed stage
+              {c("retryFailedStage")}
             </button>
           ) : null}
           {publish.adsManagerUrl ? (
@@ -132,7 +134,7 @@ export default function PublishResultModal({
               className={metaBtnPrimary}
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              Open in Meta Ads Manager
+              {c("openInAdsManager")}
             </a>
           ) : null}
         </div>

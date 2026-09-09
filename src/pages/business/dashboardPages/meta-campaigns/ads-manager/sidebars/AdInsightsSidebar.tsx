@@ -26,6 +26,8 @@ export default function AdInsightsSidebar({
   score,
 }: Props) {
   const { t } = useTranslation();
+  const cc = (key: string, opts?: Record<string, unknown>) =>
+    t(`metaCampaigns.adsManager.chrome.${key}`, opts as never);
   const [previewOn, setPreviewOn] = useState(true);
   const [tab, setTab] = useState<"ad" | "destination">("ad");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
@@ -43,17 +45,18 @@ export default function AdInsightsSidebar({
   const ctaLabel = metaCtaLabel(ad.callToAction, t) || t("metaCampaigns.cta.SIGN_UP");
   const issues = useMemo(() => {
     const list: string[] = [];
-    if (!ad.imagePreviewUrl && !ad.videoId) list.push("Add image or video");
-    if (!ad.instantFormId) list.push("Select or create an instant form");
+    if (!ad.imagePreviewUrl && !ad.videoId) list.push(cc("issueMedia"));
+    if (!ad.instantFormId) list.push(cc("selectOrCreateForm"));
     if (!ad.primaryText.trim() || !ad.headline.trim()) {
-      list.push("Add primary text and headline");
+      list.push(cc("issueText"));
     }
     return list;
-  }, [ad]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ad, t]);
 
   return (
     <div className="space-y-3 pb-6">
-      <MetaSidebarCard title="Campaign score">
+      <MetaSidebarCard title={cc("campaignScore")}>
         <div className="flex items-center gap-3">
           <div className="relative flex h-16 w-16 items-center justify-center">
             <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
@@ -81,14 +84,12 @@ export default function AdInsightsSidebar({
             </span>
           </div>
           <p className="text-[13px] font-semibold text-[#050505]">
-            {score >= 90
-              ? "You're using our recommended setup."
-              : "Complete media, form and text to improve score."}
+            {score >= 90 ? cc("recommendedSetup") : cc("finishRequired")}
           </p>
         </div>
       </MetaSidebarCard>
 
-      <MetaSidebarCard title="Verifying your changes">
+      <MetaSidebarCard title={cc("verifyingChanges")}>
         {issues.length ? (
           <div className="space-y-2">
             {issues.map((issue) => (
@@ -103,13 +104,13 @@ export default function AdInsightsSidebar({
           </div>
         ) : (
           <p className="text-[13px] text-[#31A24C]">
-            Required ad settings look complete.
+            {cc("adSettingsComplete")}
           </p>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button type="button" className={metaBtnSecondary}>
             <Eye className="h-3.5 w-3.5" />
-            Advanced preview
+            {cc("advancedPreview")}
           </button>
           {issues.length ? (
             <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#F7B928]">
@@ -120,17 +121,17 @@ export default function AdInsightsSidebar({
         </div>
       </MetaSidebarCard>
 
-      <MetaSidebarCard title="Ad preview">
+      <MetaSidebarCard title={cc("adPreview")}>
         <div className="mb-3 flex items-center justify-between gap-2">
           <MetaToggle
             checked={previewOn}
             onChange={setPreviewOn}
-            label="Ad preview"
+            label={cc("adPreview")}
           />
           <div className="flex gap-1">
             <button
               type="button"
-              title="Mobile"
+              title={cc("mobile")}
               onClick={() => setDevice("mobile")}
               className={[
                 "rounded-md p-1.5",
@@ -143,7 +144,7 @@ export default function AdInsightsSidebar({
             </button>
             <button
               type="button"
-              title="Desktop / mobile"
+              title={cc("desktopMobile")}
               onClick={() => setDevice("desktop")}
               className={[
                 "rounded-md p-1.5",
@@ -172,7 +173,7 @@ export default function AdInsightsSidebar({
                       : "text-[#65676B]",
                   ].join(" ")}
                 >
-                  {key === "ad" ? "Ad" : "Destination"}
+                  {key === "ad" ? cc("tabAd") : cc("tabDestination")}
                 </button>
               ))}
             </div>
@@ -186,11 +187,11 @@ export default function AdInsightsSidebar({
               >
                 <div>
                   <p className="mb-2 text-[12px] font-bold text-[#65676B]">
-                    Facebook Feed
+                    {cc("facebookFeed")}
                   </p>
                   <AdPlacementPreview
                     adFormat="DESKTOP_FEED_STANDARD"
-                    pageName={ad.facebookPageName || "Your Page"}
+                    pageName={ad.facebookPageName || cc("yourPage")}
                     primaryText={ad.primaryText}
                     headline={ad.headline}
                     description={ad.description}
@@ -207,7 +208,7 @@ export default function AdInsightsSidebar({
                 {/* Meta-style Instant Form preview under ad image + text */}
                 <InstantFormFlowPreview
                   form={formForPreview}
-                  pageName={ad.facebookPageName || "Your Page"}
+                  pageName={ad.facebookPageName || cc("yourPage")}
                   fallbackHeadline={ad.headline}
                 />
               </div>
@@ -217,14 +218,14 @@ export default function AdInsightsSidebar({
               >
                 <InstantFormFlowPreview
                   form={formForPreview}
-                  pageName={ad.facebookPageName || "Your Page"}
+                  pageName={ad.facebookPageName || cc("yourPage")}
                   fallbackHeadline={ad.headline}
                 />
               </div>
             )}
           </>
         ) : (
-          <p className="text-[13px] text-[#65676B]">Preview is turned off.</p>
+          <p className="text-[13px] text-[#65676B]">{cc("previewTurnedOff")}</p>
         )}
       </MetaSidebarCard>
     </div>

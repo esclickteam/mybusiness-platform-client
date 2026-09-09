@@ -99,9 +99,11 @@ export default function PartnerWithdrawals() {
           {t("partner.withdrawals.completeKyc")}
         </p>
       ) : null}
-      {cycle?.copy ? (
+      {cycle ? (
         <p className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-800">
-          {cycle.copy}
+          {cycle.afterCutoff
+            ? t("partner.withdrawals.cycleAfterCutoff")
+            : t("partner.withdrawals.policy")}
         </p>
       ) : null}
       <section className="grid gap-3 sm:grid-cols-3">
@@ -112,10 +114,10 @@ export default function PartnerWithdrawals() {
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi label={t("partner.withdrawals.available")} value={formatIls(balances?.eligible)} />
-        <Kpi label={t("partner.withdrawals.pending")} value={formatIls(balances?.pending)} />
-        <Kpi label={t("partner.withdrawals.inRequests")} value={formatIls(balances?.requested)} />
-        <Kpi label={t("partner.withdrawals.status.paid")} value={formatIls(balances?.paid)} />
+        <Kpi label={t("partner.withdrawals.available")} value={formatIls(balances?.eligible, locale)} />
+        <Kpi label={t("partner.withdrawals.pending")} value={formatIls(balances?.pending, locale)} />
+        <Kpi label={t("partner.withdrawals.inRequests")} value={formatIls(balances?.requested, locale)} />
+        <Kpi label={t("partner.withdrawals.status.paid")} value={formatIls(balances?.paid, locale)} />
       </section>
 
       <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
@@ -188,7 +190,7 @@ export default function PartnerWithdrawals() {
               <tr key={row._id} className="border-t">
                 <td className="px-3 py-3 font-black">{row.requestNumber}</td>
                 <td className="px-3 py-3">{formatPartnerDate(row.submittedAt, locale)}</td>
-                <td className="px-3 py-3">{formatIls(row.amount)}</td>
+                <td className="px-3 py-3">{formatIls(row.amount, locale)}</td>
                 <td className="px-3 py-3">{row.receiptNumber}</td>
                 <td className="px-3 py-3">{formatPartnerDate(row.expectedPaymentBy, locale)}</td>
                 <td className="px-3 py-3">{statusLabel(row.status)}</td>

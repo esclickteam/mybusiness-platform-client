@@ -75,7 +75,7 @@ export default function AdPlacementPreview({
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-black text-white drop-shadow">
-                {pageName || "Page"}
+                {pageName || t("metaCampaigns.adsManager.chrome.pageFallback")}
               </p>
               <p className="text-[10px] font-semibold text-white/80">{sponsored}</p>
             </div>
@@ -108,7 +108,7 @@ export default function AdPlacementPreview({
                 type="button"
                 className="mt-3 w-full rounded-xl bg-white px-3 py-2.5 text-sm font-black text-slate-900"
               >
-                {ctaLabel || "Learn more"}
+                {ctaLabel || t("metaCampaigns.cta.learnMore")}
               </button>
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function AdPlacementPreview({
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-black text-slate-900">
-              {pageName || "Page"}
+              {pageName || t("metaCampaigns.adsManager.chrome.pageFallback")}
             </p>
             <p className="text-[11px] font-semibold text-slate-400">{sponsored}</p>
           </div>
@@ -195,7 +195,7 @@ export default function AdPlacementPreview({
             ) : null}
           </div>
           <span className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-black text-slate-800">
-            {ctaLabel || "Learn more"}
+            {ctaLabel || t("metaCampaigns.cta.learnMore")}
           </span>
         </div>
       </div>

@@ -1,4 +1,8 @@
+import i18n from "../../../../../i18n/i18n";
 import type { AdsManagerState } from "./adsManagerTypes";
+
+const tChrome = (key: string) =>
+  i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
 
 function gendersForMeta(gender: AdsManagerState["adSets"][0]["gender"]) {
   if (gender === "male") return [1];
@@ -15,7 +19,7 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
   const adSet = state.adSets[0];
   const ad = state.ads[0];
   if (!campaign || !adSet || !ad) {
-    throw new Error("Campaign structure is incomplete");
+    throw new Error(tChrome("validationStructure"));
   }
 
   const isLeads = campaign.objective === "OUTCOME_LEADS";
@@ -139,34 +143,34 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
     .toLowerCase()
     .includes("instant");
 
-  if (!campaign?.name.trim()) errors.push("Campaign name is required");
-  if (!campaign?.objective) errors.push("Campaign objective is required");
-  if (!campaign?.budgetAmount) errors.push("Budget is required");
-  if (!adSet?.name.trim()) errors.push("Ad set name is required");
+  if (!campaign?.name.trim()) errors.push(tChrome("validationCampaignName"));
+  if (!campaign?.objective) errors.push(tChrome("validationObjective"));
+  if (!campaign?.budgetAmount) errors.push(tChrome("validationBudget"));
+  if (!adSet?.name.trim()) errors.push(tChrome("validationAdSetName"));
   if (!(adSet?.locations?.length || adSet?.locationsSummary?.trim())) {
-    errors.push("Locations are required");
+    errors.push(tChrome("validationLocations"));
   }
-  if (!adSet?.startDate) errors.push("Schedule start date is required");
-  if (!ad?.name.trim()) errors.push("Ad name is required");
+  if (!adSet?.startDate) errors.push(tChrome("validationStartDate"));
+  if (!ad?.name.trim()) errors.push(tChrome("validationAdName"));
   const pageId = ad?.facebookPageId || adSet?.facebookPageId;
   if (!pageId || pageId === "page_1" || pageId === "page_2") {
-    errors.push("Facebook Page is required");
+    errors.push(tChrome("validationPage"));
   }
   if (usesInstantForms && !adSet?.facebookPageId && !ad?.facebookPageId) {
-    errors.push("Select a Facebook Page for Instant forms");
+    errors.push(tChrome("validationPageForForms"));
   }
   if (!ad?.primaryText.trim() || !ad?.headline.trim()) {
-    errors.push("Creative primary text and headline are required");
+    errors.push(tChrome("validationCreativeText"));
   }
   if (
     campaign?.objective === "OUTCOME_LEADS" &&
     usesInstantForms &&
     !ad?.instantFormId
   ) {
-    errors.push("Instant Form is required for Lead Ads");
+    errors.push(tChrome("validationInstantForm"));
   }
   if (!ad?.instantFormId && !ad?.websiteUrl.trim()) {
-    errors.push("Destination website URL or Instant Form is required");
+    errors.push(tChrome("validationDestination"));
   }
   return errors;
 }
