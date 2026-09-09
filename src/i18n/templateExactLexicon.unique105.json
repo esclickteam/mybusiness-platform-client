@@ -1,0 +1,284 @@
+{
+  "חדש": {
+    "en": "New",
+    "es": "Nuevo",
+    "pt-BR": "Novo",
+    "ar": "جديد"
+  },
+  "גלריה": {
+    "en": "Gallery",
+    "es": "Galería",
+    "pt-BR": "Galeria",
+    "ar": "معرض"
+  },
+  "יצירת קשר": {
+    "en": "Contact",
+    "es": "Contacto",
+    "pt-BR": "Contato",
+    "ar": "تواصل"
+  },
+  "כלול": {
+    "en": "Included",
+    "es": "Incluido",
+    "pt-BR": "Incluído",
+    "ar": "مشمول"
+  },
+  "שאלות": {
+    "en": "Questions",
+    "es": "Preguntas",
+    "pt-BR": "Perguntas",
+    "ar": "أسئلة"
+  },
+  "קולקציות": {
+    "en": "Collections",
+    "es": "Colecciones",
+    "pt-BR": "Coleções",
+    "ar": "مجموعات"
+  },
+  "מוצר": {
+    "en": "Product",
+    "es": "Producto",
+    "pt-BR": "Produto",
+    "ar": "منتج"
+  },
+  "משלוחים": {
+    "en": "Shipping",
+    "es": "Envíos",
+    "pt-BR": "Envios",
+    "ar": "الشحن"
+  },
+  "דברו איתנו": {
+    "en": "Talk to us",
+    "es": "Hablad con nosotros",
+    "pt-BR": "Falem conosco",
+    "ar": "تحدثوا معنا"
+  },
+  "המלצות": {
+    "en": "Testimonials",
+    "es": "Recomendaciones",
+    "pt-BR": "Depoimentos",
+    "ar": "توصيات"
+  },
+  "למה אצלנו": {
+    "en": "Why us",
+    "es": "Por qué nosotros",
+    "pt-BR": "Por que nós",
+    "ar": "لماذا نحن"
+  },
+  "קצב מטבח פתוח": {
+    "en": "Open-kitchen pace",
+    "es": "Ritmo de cocina abierta",
+    "pt-BR": "Ritmo de cozinha aberta",
+    "ar": "إيقاع مطبخ مفتوح"
+  },
+  "אירוח עם קשב": {
+    "en": "Attentive hospitality",
+    "es": "Hospitalidad con atención",
+    "pt-BR": "Hospitalidade com atenção",
+    "ar": "ضيافة بانتباه"
+  },
+  "שפית ראשית": {
+    "en": "Head chef",
+    "es": "Chef ejecutiva",
+    "pt-BR": "Chef executiva",
+    "ar": "الشيف الرئيسية"
+  },
+  "פוטר": {
+    "en": "Footer",
+    "es": "Pie de página",
+    "pt-BR": "Rodapé",
+    "ar": "تذييل"
+  },
+  "ביקורות": {
+    "en": "Reviews",
+    "es": "Reseñas",
+    "pt-BR": "Avaliações",
+    "ar": "مراجعات"
+  },
+  "מוצרים": {
+    "en": "Products",
+    "es": "Productos",
+    "pt-BR": "Produtos",
+    "ar": "منتجات"
+  },
+  "כתובת אימייל": {
+    "en": "Email address",
+    "es": "Dirección de email",
+    "pt-BR": "Endereço de e-mail",
+    "ar": "عنوان البريد"
+  },
+  "התנור": {
+    "en": "The oven",
+    "es": "El horno",
+    "pt-BR": "O forno",
+    "ar": "الفرن"
+  },
+  "שירותי בית": {
+    "en": "Home services",
+    "es": "Servicios del hogar",
+    "pt-BR": "Serviços domésticos",
+    "ar": "خدمات منزلية"
+  },
+  "מוצרי בית": {
+    "en": "Home products",
+    "es": "Productos para el hogar",
+    "pt-BR": "Produtos para casa",
+    "ar": "منتجات منزلية"
+  },
+  "תנועה": {
+    "en": "Motion",
+    "es": "Movimiento",
+    "pt-BR": "Movimento",
+    "ar": "حركة"
+  },
+  "חומרים": {
+    "en": "Materials",
+    "es": "Materiales",
+    "pt-BR": "Materiais",
+    "ar": "مواد"
+  },
+  "השירותים שלנו": {
+    "en": "Our services",
+    "es": "Nuestros servicios",
+    "pt-BR": "Nossos serviços",
+    "ar": "خدماتنا"
+  },
+  "סוכנות תוכן": {
+    "en": "Content agency",
+    "es": "Agencia de contenido",
+    "pt-BR": "Agência de conteúdo",
+    "ar": "وكالة محتوى"
+  },
+  "סוכנות SEO": {
+    "en": "SEO agency",
+    "es": "Agencia SEO",
+    "pt-BR": "Agência de SEO",
+    "ar": "وكالة SEO"
+  },
+  "פיצה · תנור עצים": {
+    "en": "pizza · wood oven",
+    "es": "Pizza · horno de leña",
+    "pt-BR": "Pizza · forno a lenha",
+    "ar": "بيتزا · فرن حطب"
+  },
+  "מומחים": {
+    "en": "Experts",
+    "es": "Expertos",
+    "pt-BR": "Especialistas",
+    "ar": "خبراء"
+  },
+  "תבנית פרימיום לעסקי שירות, אוטומציות, CRM, מכירות וחוויית לקוח דיגיטלית.": {
+    "en": "A premium template for service businesses, automations, CRM, sales, and digital customer experience.",
+    "es": "Plantilla premium para negocios de servicios, automatizaciones, CRM, ventas y experiencia digital del cliente.",
+    "pt-BR": "Modelo premium para negócios de serviços, automações, CRM, vendas e experiência digital do cliente.",
+    "ar": "قالب فاخر لأعمال الخدمات والأتمتة وCRM والمبيعات وتجربة العملاء الرقمية."
+  },
+  "דף נחיתה אלגנטי לסלון יופי בוטיק: טיפולים, לפני/אחרי, מוצרי פרימיום, צוות, חבילות, FAQ וטופס תור בשפה editorial נקייה.": {
+    "en": "An elegant landing page for a boutique beauty salon: treatments, before/after, premium products, team, packages, FAQ, and a booking form in clean editorial language.",
+    "es": "Landing elegante para un salón de belleza boutique: tratamientos, antes/después, productos premium, equipo, paquetes, FAQ y formulario de cita en lenguaje editorial limpio.",
+    "pt-BR": "Landing elegante para um salão de beleza boutique: tratamentos, antes/depois, produtos premium, equipe, pacotes, FAQ e formulário de agendamento em linguagem editorial limpa.",
+    "ar": "صفحة هبوط أنيقة لصالون تجميل بوتيك: علاجات وقبل/بعد ومنتجات فاخرة وفريق وباقات وأسئلة شائعة ونموذج موعد بلغة تحريرية نظيفة."
+  },
+  "דף נחיתה לסטודיו צילום: הירו ויזואלי, גלריות, חבילות צילום וטופס הזמנה.": {
+    "en": "A landing page for a photography studio: visual hero, galleries, shoot packages, and a booking form.",
+    "es": "Landing para un estudio de fotografía: hero visual, galerías, paquetes de sesión y formulario de reserva.",
+    "pt-BR": "Landing para um estúdio de fotografia: hero visual, galerias, pacotes de sessão e formulário de agendamento.",
+    "ar": "صفحة هبوط لاستوديو تصوير: قسم بطولي بصري ومعارض وباقات تصوير ونموذج حجز."
+  },
+  "דף נחיתה מקצועי לתחום אדריכלות עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for architecture with motion, effects, and distinctive design.",
+    "es": "Landing profesional para arquitectura con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para arquitetura com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال الهندسة المعمارية مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום רפואת שיניים עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for dentistry with motion, effects, and distinctive design.",
+    "es": "Landing profesional para odontología con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para odontologia com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال طب الأسنان مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום בית ספר למוזיקה עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for a music school with motion, effects, and distinctive design.",
+    "es": "Landing profesional para una escuela de música con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para uma escola de música com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال مدرسة موسيقى مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום טיפול בחיות עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for pet care with motion, effects, and distinctive design.",
+    "es": "Landing profesional para cuidado de mascotas con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para cuidado de animais com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال رعاية الحيوانات مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום בוטיק אופנה עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for a fashion boutique with motion, effects, and distinctive design.",
+    "es": "Landing profesional para un boutique de moda con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para um boutique de moda com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال بوتيك أزياء مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום בית קפה עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for a café with motion, effects, and distinctive design.",
+    "es": "Landing profesional para un café con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para um café com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال مقهى مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום AI וטכנולוגיה עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for AI and technology with motion, effects, and distinctive design.",
+    "es": "Landing profesional para IA y tecnología con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para IA e tecnologia com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال الذكاء والتقنية مع حركة وتأثيرات وتصميم مميز."
+  },
+  "דף נחיתה מקצועי לתחום עיצוב פרחים עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional landing page for floral design with motion, effects, and distinctive design.",
+    "es": "Landing profesional para diseño floral con movimiento, efectos y diseño distintivo.",
+    "pt-BR": "Landing profissional para design floral com movimento, efeitos e design distintivo.",
+    "ar": "صفحة هبوط احترافية لمجال تصميم الزهور مع حركة وتأثيرات وتصميم مميز."
+  },
+  "חנות outdoor מלאה: ציוד שטח, אוהלים ותרמילים — 11 עמודים עם 10 סקשנים בכל אחד.": {
+    "en": "A full outdoor shop: field gear, tents, and backpacks — 11 pages with 10 sections each.",
+    "es": "Tienda outdoor completa: equipo de campo, tiendas y mochilas — 11 páginas con 10 secciones cada una.",
+    "pt-BR": "Loja outdoor completa: equipamentos de campo, barracas e mochilas — 11 páginas com 10 seções cada.",
+    "ar": "متجر خارجي كامل: معدات ميدان وخيام وحقائب ظهر — 11 صفحة مع 10 أقسام في كل منها."
+  },
+  "חנות אודיו קולנועית: אוזניות, רמקולים ומערכות — 11 עמודים עשירים.": {
+    "en": "A cinematic audio shop: headphones, speakers, and systems — 11 rich pages.",
+    "es": "Tienda de audio cinematográfica: auriculares, altavoces y sistemas — 11 páginas ricas.",
+    "pt-BR": "Loja de áudio cinematográfica: fones, alto-falantes e sistemas — 11 páginas ricas.",
+    "ar": "متجر صوت سينمائي: سماعات ومكبرات وأنظمة — 11 صفحة غنية."
+  },
+  "חנות נרות וריחות יוקרתית: נרות, דיפיוזרים ומארזים — 11 עמודים רכים ועשירים.": {
+    "en": "A luxury candle and scent shop: candles, diffusers, and gift sets — 11 soft, rich pages.",
+    "es": "Tienda de lujo de velas y aromas: velas, difusores y packs — 11 páginas suaves y ricas.",
+    "pt-BR": "Loja de luxo de velas e aromas: velas, difusores e kits — 11 páginas suaves e ricas.",
+    "ar": "متجر شموع وعطور فاخر: شموع وموزعات وعلب هدايا — 11 صفحة ناعمة وغنية."
+  },
+  "חנות נעליים מלאה: 11 עמודים, קטגוריות, סינון וחיבור לתוסף החנות.": {
+    "en": "A full shoe shop: 11 pages, categories, filters, and store-plugin connection.",
+    "es": "Tienda de zapatos completa: 11 páginas, categorías, filtros y conexión al plugin de tienda.",
+    "pt-BR": "Loja de sapatos completa: 11 páginas, categorias, filtros e conexão ao plugin da loja.",
+    "ar": "متجر أحذية كامل: 11 صفحة وفئات وتصفية وربط بإضافة المتجر."
+  },
+  "חנות סניקרס ותרבות רחוב: 11 עמודים עשירים עם מוצרים מתוסף החנות.": {
+    "en": "A sneakers and street-culture shop: 11 rich pages with products from the store plugin.",
+    "es": "Tienda de sneakers y cultura urbana: 11 páginas ricas con productos del plugin de tienda.",
+    "pt-BR": "Loja de sneakers e cultura de rua: 11 páginas ricas com produtos do plugin da loja.",
+    "ar": "متجر سنيكرز وثقافة شارع: 11 صفحة غنية بمنتجات من إضافة المتجر."
+  },
+  "חנות מוצרי בית: ארגון, דקור וכלים — 11 עמודים עם 10 סקשנים בכל אחד.": {
+    "en": "A home-products shop: organization, décor, and tools — 11 pages with 10 sections each.",
+    "es": "Tienda de productos del hogar: organización, decoración y herramientas — 11 páginas con 10 secciones cada una.",
+    "pt-BR": "Loja de produtos para casa: organização, décor e ferramentas — 11 páginas com 10 seções cada.",
+    "ar": "متجر منتجات منزلية: تنظيم وديكور وأدوات — 11 صفحة مع 10 أقسام في كل منها."
+  },
+  "חנות טקסטיל לבית: מצעים, מגבות ווילונות — 11 עמודים עשירים.": {
+    "en": "A home-textile shop: bedding, towels, and curtains — 11 rich pages.",
+    "es": "Tienda de textiles para el hogar: ropa de cama, toallas y cortinas — 11 páginas ricas.",
+    "pt-BR": "Loja de têxteis para casa: roupa de cama, toalhas e cortinas — 11 páginas ricas.",
+    "ar": "متجر منسوجات منزلية: أغطية ومناشف وستائر — 11 صفحة غنية."
+  },
+  "אתר מלא לסוכנות שיווק עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.": {
+    "en": "A full marketing-agency site with 8 pages, motion, and effects — distinctive design.",
+    "es": "Sitio completo para agencia de marketing con 8 páginas, movimiento y efectos — diseño distintivo.",
+    "pt-BR": "Site completo para agência de marketing com 8 páginas, movimento e efeitos — design distintivo.",
+    "ar": "موقع كامل لوكالة تسويق مع 8 صفحات وحركة وتأثيرات — تصميم مميز."
+  }
+}

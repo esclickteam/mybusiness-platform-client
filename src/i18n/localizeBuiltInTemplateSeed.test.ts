@@ -512,6 +512,8 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("תוצאה 1", "en")).toBe("Result 1");
   });
 
+
+
   it("localizes unique17 rich-store demo copy and AI inspector phrases", () => {
     expect(localizeBuiltInText("סטודיו מסחר עשיר", "en")).toBe("Rich commerce studio");
     expect(localizeBuiltInText("בחירות החנות", "es")).toBe("Selección de la tienda");
@@ -1567,9 +1569,49 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("\u05d4\u05de\u05e7\u05d5\u05dd \u05e0\u05d5\u05dc\u05d3 \u05de\u05ea\u05d5\u05da \u05d0\u05d4\u05d1\u05d4 \u05dc\u05e4\u05e8\u05d8\u05d9\u05dd \u05d4\u05e7\u05d8\u05e0\u05d9\u05dd \u2014 \u05d4\u05d0\u05d5\u05e8 \u05d4\u05e0\u05db\u05d5\u05df, \u05d4\u05e9\u05d5\u05dc\u05d7\u05df \u05d4\u05de\u05d5\u05db\u05df, \u05d4\u05ea\u05d7\u05d5\u05e9\u05d4 \u05e9\u05de\u05e7\u05d1\u05dc\u05d9\u05dd \u05db\u05e9\u05e0\u05db\u05e0\u05e1\u05d9\u05dd. \u05d0\u05e0\u05d7\u05e0\u05d5 \u05de\u05e1\u05e4\u05e8\u05d9\u05dd \u05d0\u05ea \u05d4\u05e1\u05d9\u05e4\u05d5\u05e8 \u05d3\u05e8\u05da \u05ea\u05de\u05d5\u05e0\u05d5\u05ea, \u05d7\u05d5\u05de\u05e8\u05d9\u05dd \u05d5\u05e8\u05d2\u05e2\u05d9\u05dd \u05d0\u05de\u05d9\u05ea\u05d9\u05d9\u05dd, \u05dc\u05d0 \u05d3\u05e8\u05da \u05e1\u05d9\u05e1\u05de\u05d0\u05d5\u05ea. \u05db\u05dc \u05d1\u05d7\u05d9\u05e8\u05d4 \u05db\u05d0\u05df \u05e0\u05d5\u05e2\u05d3\u05d4 \u05dc\u05d9\u05e6\u05d5\u05e8 \u05d0\u05d5\u05d5\u05d9\u05e8\u05d4 \u05e9\u05e7\u05d8\u05d4, \u05de\u05d6\u05de\u05d9\u05e0\u05d4 \u05d5\u05de\u05d3\u05d5\u05d9\u05e7\u05ea.", "pt-BR")).toMatch(/[A-Za-zÀ-ÿ]/);
   });
 
+  it("localizes unique102 leftover section-variant chrome", () => {
+    expect(localizeBuiltInText("\u05d9\u05d5\u05de\u05df \u05e4\u05d2\u05d9\u05e9\u05d5\u05ea \u05de\u05d4-CRM", "en")).toBe(
+      "CRM appointment calendar",
+    );
+    expect(localizeBuiltInText("\u05e1\u05dc\u05d5\u05d2\u05df", "es")).toBe("Eslogan");
+    expect(localizeBuiltInText("\u05d9\u05db\u05d5\u05dc\u05ea 1 - \u05db\u05d5\u05ea\u05e8\u05ea", "pt-BR")).toBe(
+      "Capacidade 1 - título",
+    );
+    expect(localizeBuiltInText("\u05e0\u05e7\u05d9", "ar")).toBe("نظيف");
+    expect(localizeBuiltInText("\u05e0\u05e7\u05d9", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
 
+  it("localizes unique103 leftover section-variant chrome", () => {
+    expect(localizeBuiltInText("\u05de\u05d9\u05dd \u00b7 \u05d0\u05d5\u05e8 \u00b7 \u05e9\u05e7\u05d8", "en")).toBe(
+      "Water · light · calm",
+    );
+    expect(localizeBuiltInText("\u05de\u05e0\u05d4 1 - \u05e9\u05dd", "es")).toBe("Plato 1 - nombre");
+    expect(localizeBuiltInText("\u05d2\u05dc\u05e8\u05d9\u05d4 \u05ea\u05de\u05d5\u05e0\u05d4 1", "pt-BR")).toBe(
+      "Imagem da galeria 1",
+    );
+    expect(localizeBuiltInText("\u05e1\u05d8\u05d8\u05d9\u05e1\u05d8\u05d9\u05e7\u05d5\u05ea", "ar")).toBe("إحصاءات");
+    expect(localizeBuiltInText("\u05e1\u05d8\u05d8\u05d9\u05e1\u05d8\u05d9\u05e7\u05d5\u05ea", "en")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+  });
 
-  it("keeps a saved rich-store headline over localized unique17 defaults", () => {
+    it("localizes unique104 leftover section-variant chrome", () => {
+    expect(localizeBuiltInText("טיפול 1 - כותרת", "en")).toBe("Treatment 1 - title");
+    expect(localizeBuiltInText("רופא 1 - שם", "es")).toBe("Médico 1 - nombre");
+    expect(localizeBuiltInText("עבודה 1 - תגית", "pt-BR")).toBe("Trabalho 1 - tag");
+    expect(localizeBuiltInText("ויטרינה", "ar")).toBe("واجهة عرض");
+    expect(localizeBuiltInText("ויטרינה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("localizes unique105 leftover section-variant chrome", () => {
+    expect(localizeBuiltInText("\u05ea\u05d1\u05e0\u05d9\u05ea \u05e4\u05e8\u05d9\u05de\u05d9\u05d5\u05dd \u05dc\u05e2\u05e1\u05e7\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea, \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d5\u05ea, CRM, \u05de\u05db\u05d9\u05e8\u05d5\u05ea \u05d5\u05d7\u05d5\u05d5\u05d9\u05d9\u05ea \u05dc\u05e7\u05d5\u05d7 \u05d3\u05d9\u05d2\u05d9\u05d8\u05dc\u05d9\u05ea.", "en")).toBe("A premium template for service businesses, automations, CRM, sales, and digital customer experience.");
+    expect(localizeBuiltInText("\u05d3\u05e3 \u05e0\u05d7\u05d9\u05ea\u05d4 \u05dc\u05e1\u05d8\u05d5\u05d3\u05d9\u05d5 \u05e6\u05d9\u05dc\u05d5\u05dd: \u05d4\u05d9\u05e8\u05d5 \u05d5\u05d9\u05d6\u05d5\u05d0\u05dc\u05d9, \u05d2\u05dc\u05e8\u05d9\u05d5\u05ea, \u05d7\u05d1\u05d9\u05dc\u05d5\u05ea \u05e6\u05d9\u05dc\u05d5\u05dd \u05d5\u05d8\u05d5\u05e4\u05e1 \u05d4\u05d6\u05de\u05e0\u05d4.", "es")).toBe("Landing para un estudio de fotograf\u00eda: hero visual, galer\u00edas, paquetes de sesi\u00f3n y formulario de reserva.");
+    expect(localizeBuiltInText("\u05d3\u05e3 \u05e0\u05d7\u05d9\u05ea\u05d4 \u05de\u05e7\u05e6\u05d5\u05e2\u05d9 \u05dc\u05ea\u05d7\u05d5\u05dd \u05d0\u05d3\u05e8\u05d9\u05db\u05dc\u05d5\u05ea \u05e2\u05dd \u05ea\u05e0\u05d5\u05e2\u05d4, \u05d0\u05e4\u05e7\u05d8\u05d9\u05dd \u05d5\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d9\u05d9\u05d7\u05d5\u05d3\u05d9.", "pt-BR")).toBe("Landing profissional para arquitetura com movimento, efeitos e design distintivo.");
+    expect(localizeBuiltInText("\u05d3\u05e3 \u05e0\u05d7\u05d9\u05ea\u05d4 \u05de\u05e7\u05e6\u05d5\u05e2\u05d9 \u05dc\u05ea\u05d7\u05d5\u05dd \u05e8\u05e4\u05d5\u05d0\u05ea \u05e9\u05d9\u05e0\u05d9\u05d9\u05dd \u05e2\u05dd \u05ea\u05e0\u05d5\u05e2\u05d4, \u05d0\u05e4\u05e7\u05d8\u05d9\u05dd \u05d5\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d9\u05d9\u05d7\u05d5\u05d3\u05d9.", "ar")).toBe("\u0635\u0641\u062d\u0629 \u0647\u0628\u0648\u0637 \u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629 \u0644\u0645\u062c\u0627\u0644 \u0637\u0628 \u0627\u0644\u0623\u0633\u0646\u0627\u0646 \u0645\u0639 \u062d\u0631\u0643\u0629 \u0648\u062a\u0623\u062b\u064a\u0631\u0627\u062a \u0648\u062a\u0635\u0645\u064a\u0645 \u0645\u0645\u064a\u0632.");
+    expect(localizeBuiltInText("\u05ea\u05d1\u05e0\u05d9\u05ea \u05e4\u05e8\u05d9\u05de\u05d9\u05d5\u05dd \u05dc\u05e2\u05e1\u05e7\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea, \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d5\u05ea, CRM, \u05de\u05db\u05d9\u05e8\u05d5\u05ea \u05d5\u05d7\u05d5\u05d5\u05d9\u05d9\u05ea \u05dc\u05e7\u05d5\u05d7 \u05d3\u05d9\u05d2\u05d9\u05d8\u05dc\u05d9\u05ea.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
       "en",
@@ -1582,4 +1624,5 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(merged.brandName).toBe("Our boutique name");
     expect(merged.productsEyebrow).toBe("Store picks");
   });
+
 });

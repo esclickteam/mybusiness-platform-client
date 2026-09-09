@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ChevronDown,
   ChevronUp,
@@ -35,13 +36,13 @@ const AGE_MAX_OPTIONS = [...AGE_MIN_OPTIONS, 65];
 const PERFORMANCE_GOALS = [
   {
     id: "Maximize number of leads",
-    description:
-      "We'll try to show your ads to the people most likely to share their contact information with you.",
+    labelKey: "leftover.metaAdSetChrome.maximizeLeads",
+    descKey: "leftover.metaAdSetChrome.maximizeLeadsDesc",
   },
   {
     id: "Maximize number of qualified leads",
-    description:
-      "We'll try to show your ads to the people most likely to convert after sharing their contact information with you.",
+    labelKey: "leftover.metaAdSetChrome.maximizeQualifiedLeads",
+    descKey: "leftover.metaAdSetChrome.maximizeQualifiedLeadsDesc",
   },
 ];
 
@@ -52,6 +53,7 @@ export default function AdSetLevelEditor({
   pages,
   selectedPageId,
 }: Props) {
+  const { t } = useTranslation();
   const [pageQuery, setPageQuery] = useState("");
   const [pageMenuOpen, setPageMenuOpen] = useState(false);
   const [perfOpen, setPerfOpen] = useState(false);
@@ -71,7 +73,7 @@ export default function AdSetLevelEditor({
     );
   }, [pages, pageQuery]);
 
-  // Prefill Facebook Page from connected account when Instant forms is selected.
+  // Prefill {t("leftover.metaAdSetChrome.facebookPage")} from connected account when Instant forms is selected.
   useEffect(() => {
     if (!usesInstantForms) return;
     if (adSet.facebookPageId) return;
@@ -104,14 +106,14 @@ export default function AdSetLevelEditor({
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
       <MetaSection
-        title="Ad set name"
+        title={t("leftover.metaAdSetChrome.adSetName")}
         action={
           <button type="button" className={metaBtnSecondary}>
-            Create template
+            {t("leftover.metaAdSetChrome.createTemplate")}
           </button>
         }
       >
-        <MetaField label="Ad set name">
+        <MetaField label={t("leftover.metaAdSetChrome.adSetName")}>
           <input
             className={metaInputClass}
             value={adSet.name}
@@ -120,20 +122,20 @@ export default function AdSetLevelEditor({
         </MetaField>
       </MetaSection>
 
-      <MetaSection title="Conversion" status="ok">
+      <MetaSection title={t("leftover.metaAdSetChrome.conversion")} status="ok">
         <div>
           <p className="text-[15px] font-bold text-[#050505]">
-            Conversion location
+            {t("leftover.metaAdSetChrome.conversionLocation")}
           </p>
           <p className="mt-1 text-[13px] text-[#65676B]">
-            Choose where you want to generate leads.{" "}
+            {t("leftover.metaAdSetChrome.chooseLeadsWhere")}{" "}
             <a
               href="https://www.facebook.com/business/help"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-[#1877F2] hover:underline"
             >
-              About conversion locations
+              {t("leftover.metaAdSetChrome.aboutConversionLocations")}
             </a>
           </p>
           <select
@@ -141,21 +143,21 @@ export default function AdSetLevelEditor({
             value={adSet.conversionLocation}
             onChange={(e) => onChange({ conversionLocation: e.target.value })}
           >
-            <option>Instant forms</option>
-            <option>Website</option>
-            <option>Website and instant forms</option>
-            <option>Messenger</option>
+            <option value="Instant forms">{t("leftover.metaAdSetChrome.instantForms")}</option>
+            <option value="Website">{t("leftover.metaAdSetChrome.website")}</option>
+            <option value="Website and instant forms">{t("leftover.metaAdSetChrome.websiteAndInstantForms")}</option>
+            <option value="Messenger">{t("leftover.metaAdSetChrome.messenger")}</option>
           </select>
         </div>
 
         {usesInstantForms ? (
           <div ref={pageMenuRef} className="relative">
             <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
-              Facebook Page
+              {t("leftover.metaAdSetChrome.facebookPage")}
               <Info className="h-3.5 w-3.5 text-[#8A8D91]" />
             </p>
             <p className="mt-1 text-[13px] text-[#65676B]">
-              Choose the Page you want to promote.
+              {t("leftover.metaAdSetChrome.choosePagePromote")}
             </p>
             <button
               type="button"
@@ -169,8 +171,8 @@ export default function AdSetLevelEditor({
                 <span className="truncate font-semibold">
                   {selectedPage?.name ||
                     (pages.length
-                      ? "Select a Facebook Page"
-                      : "No Pages connected — open Meta connection")}
+                      ? t("leftover.metaAdSetChrome.selectFacebookPage")
+                      : t("leftover.metaAdSetChrome.noPagesConnected"))}
                 </span>
               </span>
               <ChevronDown className="h-4 w-4 shrink-0 text-[#65676B]" />
@@ -182,21 +184,20 @@ export default function AdSetLevelEditor({
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
                   <input
                     className={`${metaInputClass} border-0 bg-[#F0F2F5] pl-9 shadow-none focus:shadow-none`}
-                    placeholder="Search by Page name or ID"
+                    placeholder={t("leftover.metaAdSetChrome.searchPageNameOrId")}
                     value={pageQuery}
                     onChange={(e) => setPageQuery(e.target.value)}
                     autoFocus
                   />
                 </div>
                 <div className="flex items-center justify-between px-3 py-2 text-[12px] font-bold text-[#65676B]">
-                  <span>Personal</span>
-                  <span>{filteredPages.length} Pages</span>
+                  <span>{t("leftover.metaAdSetChrome.personal")}</span>
+                  <span>{t("leftover.metaAdSetChrome.pagesCount", { count: filteredPages.length })}</span>
                 </div>
                 <div className="max-h-52 overflow-y-auto">
                   {filteredPages.length === 0 ? (
                     <p className="px-3 py-4 text-[13px] text-[#65676B]">
-                      No Pages found. Connect Meta and grant Page access in
-                      Settings.
+                      {t("leftover.metaAdSetChrome.noPagesFound")}
                     </p>
                   ) : (
                     filteredPages.map((page) => (
@@ -248,17 +249,17 @@ export default function AdSetLevelEditor({
 
         <div className="relative">
           <p className="text-[15px] font-bold text-[#050505]">
-            Performance goal
+            {t("leftover.metaAdSetChrome.performanceGoal")}
           </p>
           <p className="mt-1 text-[13px] text-[#65676B]">
-            How you measure success for your ads.{" "}
+            {t("leftover.metaAdSetChrome.performanceGoalHint")}{" "}
             <a
               href="https://www.facebook.com/business/help"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-[#1877F2] hover:underline"
             >
-              About performance goals
+              {t("leftover.metaAdSetChrome.aboutPerformanceGoals")}
             </a>
           </p>
           <button
@@ -266,7 +267,11 @@ export default function AdSetLevelEditor({
             className={`${metaInputClass} mt-2 flex items-center justify-between text-left`}
             onClick={() => setPerfOpen((v) => !v)}
           >
-            <span className="font-semibold">{adSet.performanceGoal}</span>
+            <span className="font-semibold">
+              {PERFORMANCE_GOALS.find((g) => g.id === adSet.performanceGoal)
+                ? t(PERFORMANCE_GOALS.find((g) => g.id === adSet.performanceGoal)!.labelKey)
+                : adSet.performanceGoal}
+            </span>
             <ChevronDown className="h-4 w-4 text-[#65676B]" />
           </button>
           {perfOpen ? (
@@ -298,10 +303,10 @@ export default function AdSetLevelEditor({
                     </span>
                     <span>
                       <span className="block text-[14px] font-semibold text-[#050505]">
-                        {goal.id}
+                        {t(goal.labelKey)}
                       </span>
                       <span className="mt-0.5 block text-[12px] leading-snug text-[#65676B]">
-                        {goal.description}
+                        {t(goal.descKey)}
                       </span>
                     </span>
                   </button>
@@ -313,43 +318,42 @@ export default function AdSetLevelEditor({
 
         <div>
           <p className="text-[15px] font-bold text-[#050505]">
-            Cost per result goal
+            {t("leftover.metaAdSetChrome.costPerResultGoal")}
           </p>
           <p className="mt-1 text-[14px] font-semibold text-[#050505]">
-            {adSet.costPerResultGoal || "None"}
+            {adSet.costPerResultGoal || t("leftover.metaAdSetChrome.none")}
           </p>
         </div>
 
         <div className="flex items-start gap-2 rounded-lg border border-[#A6D9B3] bg-[#E7F6EC] px-3 py-2.5 text-[13px] text-[#050505]">
           <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[#31A24C]" />
           <span>
-            You could get more conversions from preferred audiences when age,
-            gender and locations are set clearly.
+{t("leftover.metaAdSetChrome.preferredAudienceTip")}
           </span>
         </div>
 
         {!usesInstantForms ? (
           <div className="grid gap-4 sm:grid-cols-2">
-            <MetaField label="Dataset">
+            <MetaField label={t("leftover.metaAdSetChrome.dataset")}>
               <select
                 className={metaSelectClass}
                 value={adSet.dataset}
                 onChange={(e) => onChange({ dataset: e.target.value })}
               >
-                <option>BizUply Pixel</option>
-                <option>No dataset</option>
+                <option value="BizUply Pixel">{t("leftover.metaAdSetChrome.bizuplyPixel")}</option>
+                <option value="No dataset">{t("leftover.metaAdSetChrome.noDataset")}</option>
               </select>
             </MetaField>
-            <MetaField label="Conversion event">
+            <MetaField label={t("leftover.metaAdSetChrome.conversionEvent")}>
               <select
                 className={metaSelectClass}
                 value={adSet.conversionEvent}
                 onChange={(e) => onChange({ conversionEvent: e.target.value })}
               >
-                <option value="">Select event</option>
+                <option value="">{t("leftover.metaAdSetChrome.selectEvent")}</option>
                 <option value="Lead">Lead</option>
-                <option value="CompleteRegistration">Complete registration</option>
-                <option value="Contact">Contact</option>
+                <option value="CompleteRegistration">{t("leftover.metaAdSetChrome.completeRegistration")}</option>
+                <option value="Contact">{t("leftover.metaAdSetChrome.contact")}</option>
               </select>
             </MetaField>
           </div>
@@ -360,26 +364,26 @@ export default function AdSetLevelEditor({
             onChange({ showMoreConversion: !adSet.showMoreConversion })
           }
         >
-          {adSet.showMoreConversion ? "Hide options" : "Show more options"}
+          {adSet.showMoreConversion ? t("leftover.metaAdSetChrome.hideOptions") : t("leftover.metaAdSetChrome.showMoreOptions")}
         </MetaLinkButton>
       </MetaSection>
 
-      <MetaSection title="Dynamic creative">
+      <MetaSection title={t("leftover.metaAdSetChrome.dynamicCreative")}>
         <MetaToggle
           checked={adSet.dynamicCreative}
           onChange={(dynamicCreative) => onChange({ dynamicCreative })}
-          label="Dynamic creative"
-          description="Automatically deliver the best combinations of your creative assets."
+          label={t("leftover.metaAdSetChrome.dynamicCreative")}
+          description={t("leftover.metaAdSetChrome.dynamicCreativeDesc")}
         />
       </MetaSection>
 
-      <MetaSection title="Budget & schedule">
+      <MetaSection title={t("leftover.metaAdSetChrome.budgetSchedule")}>
         <MetaNotice tone="info">
           Budget strategy: Controlled at campaign level. This ad set will use
           the shared campaign budget.
         </MetaNotice>
         <div className="grid gap-3 sm:grid-cols-2">
-          <MetaField label="Start date">
+          <MetaField label={t("leftover.metaAdSetChrome.startDate")}>
             <input
               type="date"
               className={metaInputClass}
@@ -387,7 +391,7 @@ export default function AdSetLevelEditor({
               onChange={(e) => onChange({ startDate: e.target.value })}
             />
           </MetaField>
-          <MetaField label="Start time">
+          <MetaField label={t("leftover.metaAdSetChrome.startTime")}>
             <input
               type="time"
               className={metaInputClass}
@@ -407,7 +411,7 @@ export default function AdSetLevelEditor({
         </label>
         {adSet.endDateEnabled ? (
           <div className="grid gap-3 sm:grid-cols-2">
-            <MetaField label="End date">
+            <MetaField label={t("leftover.metaAdSetChrome.endDate")}>
               <input
                 type="date"
                 className={metaInputClass}
@@ -415,7 +419,7 @@ export default function AdSetLevelEditor({
                 onChange={(e) => onChange({ endDate: e.target.value })}
               />
             </MetaField>
-            <MetaField label="End time">
+            <MetaField label={t("leftover.metaAdSetChrome.endTime")}>
               <input
                 type="time"
                 className={metaInputClass}
@@ -427,10 +431,9 @@ export default function AdSetLevelEditor({
         ) : null}
       </MetaSection>
 
-      <MetaSection title="Audience" action={<MetaTag>Advantage+ on</MetaTag>}>
+      <MetaSection title={t("leftover.metaAdSetChrome.audience")} action={<MetaTag>{t("leftover.metaAdSetChrome.advantageOn")}</MetaTag>}>
         <p className="text-[13px] text-[#65676B]">
-          We won&apos;t reach people beyond these settings, even with Advantage+
-          on.
+          {t("leftover.metaAdSetChrome.advantageReachLimit")}
         </p>
 
         <AdsManagerLocationsSection
@@ -474,7 +477,7 @@ export default function AdSetLevelEditor({
               onChange({ suggestAudience: !adSet.suggestAudience })
             }
           >
-            {adSet.suggestAudience ? "Hide suggestions" : "Show suggestions"}
+            {adSet.suggestAudience ? t("leftover.metaAdSetChrome.hideSuggestions") : t("leftover.metaAdSetChrome.showSuggestions")}
           </MetaLinkButton>
 
           {adSet.suggestAudience ? (
@@ -511,7 +514,7 @@ export default function AdSetLevelEditor({
                     <select
                       className={metaSelectClass}
                       value={adSet.ageMin}
-                      aria-label="Minimum age"
+                      aria-label={t("leftover.metaAdSetChrome.minAge")}
                       onChange={(e) => {
                         const ageMin = Number(e.target.value);
                         onChange({
@@ -529,7 +532,7 @@ export default function AdSetLevelEditor({
                     <select
                       className={metaSelectClass}
                       value={adSet.ageMax}
-                      aria-label="Maximum age"
+                      aria-label={t("leftover.metaAdSetChrome.maxAge")}
                       onChange={(e) => {
                         const ageMax = Number(e.target.value);
                         onChange({
@@ -555,13 +558,13 @@ export default function AdSetLevelEditor({
 
               {/* Gender */}
               <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-                <p className="text-[15px] font-bold text-[#050505]">Gender</p>
+                <p className="text-[15px] font-bold text-[#050505]">{t("leftover.metaAdSetChrome.gender")}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {(
                     [
-                      ["all", "All genders"],
-                      ["male", "Men"],
-                      ["female", "Women"],
+                      ["all", t("leftover.metaAdSetChrome.allGenders")],
+                      ["male", t("leftover.metaAdSetChrome.men")],
+                      ["female", t("leftover.metaAdSetChrome.women")],
                     ] as const
                   ).map(([value, label]) => (
                     <button
@@ -605,7 +608,7 @@ export default function AdSetLevelEditor({
                   : adSet.advantageAudience,
               })
             }
-            label="Further limit the reach of your ads"
+            label={t("leftover.metaAdSetChrome.furtherLimitReach")}
           />
           <button type="button" className={metaBtnSecondary}>
             Save audience
@@ -613,15 +616,15 @@ export default function AdSetLevelEditor({
         </div>
       </MetaSection>
 
-      <MetaSection title="Ad transparency">
-        <MetaField label="Advertiser">
+      <MetaSection title={t("leftover.metaAdSetChrome.adTransparency")}>
+        <MetaField label={t("leftover.metaAdSetChrome.advertiser")}>
           <select
             className={metaSelectClass}
             value={adSet.advertiserId}
             onChange={(e) => onChange({ advertiserId: e.target.value })}
           >
-            <option value="biz_main">Your business</option>
-            <option value="biz_agency">Agency account</option>
+            <option value="biz_main">{t("leftover.metaAdSetChrome.yourBusiness")}</option>
+            <option value="biz_agency">{t("leftover.metaAdSetChrome.agencyAccount")}</option>
           </select>
         </MetaField>
         <MetaToggle
@@ -629,11 +632,11 @@ export default function AdSetLevelEditor({
           onChange={(advertiserDifferentFromPayer) =>
             onChange({ advertiserDifferentFromPayer })
           }
-          label="The advertiser and payer are different"
+          label={t("leftover.metaAdSetChrome.advertiserPayerDifferent")}
         />
       </MetaSection>
 
-      <MetaSection title="Placements" action={<MetaTag>Advantage+ on</MetaTag>}>
+      <MetaSection title={t("leftover.metaAdSetChrome.placements")} action={<MetaTag>{t("leftover.metaAdSetChrome.advantageOn")}</MetaTag>}>
         <p className="text-[13px] leading-snug text-[#65676B]">
           Your ads will show in the places most likely to get you results across
           Facebook, Instagram, Audience Network and Messenger.
@@ -641,8 +644,8 @@ export default function AdSetLevelEditor({
         <MetaToggle
           checked={adSet.advantagePlacements}
           onChange={(advantagePlacements) => onChange({ advantagePlacements })}
-          label="Advantage+ placements"
-          description="Let Meta choose the best placements for your ads."
+          label={t("leftover.metaAdSetChrome.advantagePlacements")}
+          description={t("leftover.metaAdSetChrome.advantagePlacementsDesc")}
         />
       </MetaSection>
     </div>

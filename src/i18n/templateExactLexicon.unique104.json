@@ -1,0 +1,470 @@
+{
+  "עבודה 1 - תגית": {
+    "en": "Work 1 - tag",
+    "es": "Trabajo 1 - etiqueta",
+    "pt-BR": "Trabalho 1 - tag",
+    "ar": "العمل 1 - وسم"
+  },
+  "עבודה 1 - תמונה": {
+    "en": "Work 1 - image",
+    "es": "Trabajo 1 - imagen",
+    "pt-BR": "Trabalho 1 - imagem",
+    "ar": "العمل 1 - صورة"
+  },
+  "כרטיס פיד 1": {
+    "en": "Feed card 1",
+    "es": "Tarjeta de feed 1",
+    "pt-BR": "Cartão de feed 1",
+    "ar": "بطاقة الخلاصة 1"
+  },
+  "עבודה 2 - תגית": {
+    "en": "Work 2 - tag",
+    "es": "Trabajo 2 - etiqueta",
+    "pt-BR": "Trabalho 2 - tag",
+    "ar": "العمل 2 - وسم"
+  },
+  "עבודה 2 - תמונה": {
+    "en": "Work 2 - image",
+    "es": "Trabajo 2 - imagen",
+    "pt-BR": "Trabalho 2 - imagem",
+    "ar": "العمل 2 - صورة"
+  },
+  "כרטיס פיד 2": {
+    "en": "Feed card 2",
+    "es": "Tarjeta de feed 2",
+    "pt-BR": "Cartão de feed 2",
+    "ar": "بطاقة الخلاصة 2"
+  },
+  "עבודה 3 - תגית": {
+    "en": "Work 3 - tag",
+    "es": "Trabajo 3 - etiqueta",
+    "pt-BR": "Trabalho 3 - tag",
+    "ar": "العمل 3 - وسم"
+  },
+  "עבודה 3 - תמונה": {
+    "en": "Work 3 - image",
+    "es": "Trabajo 3 - imagen",
+    "pt-BR": "Trabalho 3 - imagem",
+    "ar": "العمل 3 - صورة"
+  },
+  "כרטיס פיד 3": {
+    "en": "Feed card 3",
+    "es": "Tarjeta de feed 3",
+    "pt-BR": "Cartão de feed 3",
+    "ar": "بطاقة الخلاصة 3"
+  },
+  "עבודה 4 - תגית": {
+    "en": "Work 4 - tag",
+    "es": "Trabajo 4 - etiqueta",
+    "pt-BR": "Trabalho 4 - tag",
+    "ar": "العمل 4 - وسم"
+  },
+  "עבודה 4 - תמונה": {
+    "en": "Work 4 - image",
+    "es": "Trabajo 4 - imagen",
+    "pt-BR": "Trabalho 4 - imagem",
+    "ar": "العمل 4 - صورة"
+  },
+  "כרטיס פיד 4": {
+    "en": "Feed card 4",
+    "es": "Tarjeta de feed 4",
+    "pt-BR": "Cartão de feed 4",
+    "ar": "بطاقة الخلاصة 4"
+  },
+  "חבילה 1 - תיאור": {
+    "en": "Package 1 - description",
+    "es": "Paquete 1 - descripción",
+    "pt-BR": "Pacote 1 - descrição",
+    "ar": "الباقة 1 - الوصف"
+  },
+  "רופא 1 - שם": {
+    "en": "Doctor 1 - name",
+    "es": "Médico 1 - nombre",
+    "pt-BR": "Médico 1 - nome",
+    "ar": "الطبيب 1 - الاسم"
+  },
+  "רופא 1 - תפקיד": {
+    "en": "Doctor 1 - role",
+    "es": "Médico 1 - rol",
+    "pt-BR": "Médico 1 - função",
+    "ar": "الطبيب 1 - الدور"
+  },
+  "רופא 1 - תמונה": {
+    "en": "Doctor 1 - image",
+    "es": "Médico 1 - imagen",
+    "pt-BR": "Médico 1 - imagem",
+    "ar": "الطبيب 1 - صورة"
+  },
+  "חבילה 2 - תיאור": {
+    "en": "Package 2 - description",
+    "es": "Paquete 2 - descripción",
+    "pt-BR": "Pacote 2 - descrição",
+    "ar": "الباقة 2 - الوصف"
+  },
+  "רופא 2 - שם": {
+    "en": "Doctor 2 - name",
+    "es": "Médico 2 - nombre",
+    "pt-BR": "Médico 2 - nome",
+    "ar": "الطبيب 2 - الاسم"
+  },
+  "רופא 2 - תפקיד": {
+    "en": "Doctor 2 - role",
+    "es": "Médico 2 - rol",
+    "pt-BR": "Médico 2 - função",
+    "ar": "الطبيب 2 - الدور"
+  },
+  "רופא 2 - תמונה": {
+    "en": "Doctor 2 - image",
+    "es": "Médico 2 - imagen",
+    "pt-BR": "Médico 2 - imagem",
+    "ar": "الطبيب 2 - صورة"
+  },
+  "חבילה 3 - תיאור": {
+    "en": "Package 3 - description",
+    "es": "Paquete 3 - descripción",
+    "pt-BR": "Pacote 3 - descrição",
+    "ar": "الباقة 3 - الوصف"
+  },
+  "רופא 3 - שם": {
+    "en": "Doctor 3 - name",
+    "es": "Médico 3 - nombre",
+    "pt-BR": "Médico 3 - nome",
+    "ar": "الطبيب 3 - الاسم"
+  },
+  "רופא 3 - תפקיד": {
+    "en": "Doctor 3 - role",
+    "es": "Médico 3 - rol",
+    "pt-BR": "Médico 3 - função",
+    "ar": "الطبيب 3 - الدور"
+  },
+  "רופא 3 - תמונה": {
+    "en": "Doctor 3 - image",
+    "es": "Médico 3 - imagen",
+    "pt-BR": "Médico 3 - imagem",
+    "ar": "الطبيب 3 - صورة"
+  },
+  "טיפול 1 - כותרת": {
+    "en": "Treatment 1 - title",
+    "es": "Tratamiento 1 - título",
+    "pt-BR": "Tratamento 1 - título",
+    "ar": "العلاج 1 - العنوان"
+  },
+  "טיפול 1 - טקסט": {
+    "en": "Treatment 1 - text",
+    "es": "Tratamiento 1 - texto",
+    "pt-BR": "Tratamento 1 - texto",
+    "ar": "العلاج 1 - النص"
+  },
+  "טיפול 2 - כותרת": {
+    "en": "Treatment 2 - title",
+    "es": "Tratamiento 2 - título",
+    "pt-BR": "Tratamento 2 - título",
+    "ar": "العلاج 2 - العنوان"
+  },
+  "טיפול 2 - טקסט": {
+    "en": "Treatment 2 - text",
+    "es": "Tratamiento 2 - texto",
+    "pt-BR": "Tratamento 2 - texto",
+    "ar": "العلاج 2 - النص"
+  },
+  "טיפול 3 - כותרת": {
+    "en": "Treatment 3 - title",
+    "es": "Tratamiento 3 - título",
+    "pt-BR": "Tratamento 3 - título",
+    "ar": "العلاج 3 - العنوان"
+  },
+  "טיפול 3 - טקסט": {
+    "en": "Treatment 3 - text",
+    "es": "Tratamiento 3 - texto",
+    "pt-BR": "Tratamento 3 - texto",
+    "ar": "العلاج 3 - النص"
+  },
+  "טיפול 4 - כותרת": {
+    "en": "Treatment 4 - title",
+    "es": "Tratamiento 4 - título",
+    "pt-BR": "Tratamento 4 - título",
+    "ar": "العلاج 4 - العنوان"
+  },
+  "טיפול 4 - טקסט": {
+    "en": "Treatment 4 - text",
+    "es": "Tratamiento 4 - texto",
+    "pt-BR": "Tratamento 4 - texto",
+    "ar": "العلاج 4 - النص"
+  },
+  "טיפול 5 - כותרת": {
+    "en": "Treatment 5 - title",
+    "es": "Tratamiento 5 - título",
+    "pt-BR": "Tratamento 5 - título",
+    "ar": "العلاج 5 - العنوان"
+  },
+  "טיפול 5 - טקסט": {
+    "en": "Treatment 5 - text",
+    "es": "Tratamiento 5 - texto",
+    "pt-BR": "Tratamento 5 - texto",
+    "ar": "العلاج 5 - النص"
+  },
+  "טיפול 6 - כותרת": {
+    "en": "Treatment 6 - title",
+    "es": "Tratamiento 6 - título",
+    "pt-BR": "Tratamento 6 - título",
+    "ar": "العلاج 6 - العنوان"
+  },
+  "טיפול 6 - טקסט": {
+    "en": "Treatment 6 - text",
+    "es": "Tratamiento 6 - texto",
+    "pt-BR": "Tratamento 6 - texto",
+    "ar": "العلاج 6 - النص"
+  },
+  "תג FAQ": {
+    "en": "FAQ badge",
+    "es": "Insignia FAQ",
+    "pt-BR": "Selo FAQ",
+    "ar": "شارة الأسئلة الشائعة"
+  },
+  "מרכיבים": {
+    "en": "Ingredients",
+    "es": "Ingredientes",
+    "pt-BR": "Ingredientes",
+    "ar": "مكونات"
+  },
+  "בר קלייה חם": {
+    "en": "Warm roast bar",
+    "es": "Barra de tueste cálida",
+    "pt-BR": "Barra de torra quente",
+    "ar": "بار تحميص دافئ"
+  },
+  "שער ספר מתכונים": {
+    "en": "Recipe book cover",
+    "es": "Portada del libro de recetas",
+    "pt-BR": "Capa do livro de receitas",
+    "ar": "غلاف كتاب الوصفات"
+  },
+  "שחרורים": {
+    "en": "Releases",
+    "es": "Lanzamientos",
+    "pt-BR": "Lançamentos",
+    "ar": "إصدارات"
+  },
+  "ויטרינה": {
+    "en": "Showcase",
+    "es": "Vitrina",
+    "pt-BR": "Vitrine",
+    "ar": "واجهة عرض"
+  },
+  "מעברים": {
+    "en": "Transitions",
+    "es": "Transiciones",
+    "pt-BR": "Transições",
+    "ar": "انتقالات"
+  },
+  "ויטרינות": {
+    "en": "Showcases",
+    "es": "Vitrinas",
+    "pt-BR": "Vitrines",
+    "ar": "واجهات عرض"
+  },
+  "מנטורשיפ אחד־על־אחד לקריירה, עסק וצמיחה אישית — עם מפת דרכים ברורה.…": {
+    "en": "One-on-one mentorship for career, business, and personal growth — with a clear roadmap.…",
+    "es": "Mentoría uno a uno para carrera, negocio y crecimiento personal — con un mapa claro.…",
+    "pt-BR": "Mentoria individual para carreira, negócio e crescimento pessoal — com um roteiro claro.…",
+    "ar": "إرشاد فردي للمسيرة والعمل والنمو الشخصي — مع خارطة طريق واضحة…"
+  },
+  "לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.": {
+    "en": "Schedules hold only when every decision meets a data point.",
+    "es": "Los horarios se mantienen solo cuando cada decisión encuentra un dato.",
+    "pt-BR": "Os cronogramas se mantêm só quando cada decisão encontra um dado.",
+    "ar": "الجداول تُحفظ فقط عندما يلتقي كل قرار ببيان."
+  },
+  "טיפול שיער בסלון": {
+    "en": "Salon hair treatment",
+    "es": "Tratamiento capilar en salón",
+    "pt-BR": "Tratamento capilar no salão",
+    "ar": "علاج شعر في الصالون"
+  },
+  "טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור.": {
+    "en": "Tips, guides, and ideas for skincare, hair, and makeup.",
+    "es": "Consejos, guías e ideas para cuidado, cabello y maquillaje.",
+    "pt-BR": "Dicas, guias e ideias para cuidados, cabelo e maquiagem.",
+    "ar": "نصائح وأدلة وأفكار للعناية والشعر والمكياج."
+  },
+  "AI · מאמר חדש": {
+    "en": "AI · new article",
+    "es": "IA · artículo nuevo",
+    "pt-BR": "IA · artigo novo",
+    "ar": "AI · مقال جديد"
+  },
+  "Frontend · מדריך": {
+    "en": "Frontend · guide",
+    "es": "Frontend · guía",
+    "pt-BR": "Frontend · guia",
+    "ar": "Frontend · دليل"
+  },
+  "DevOps · סיכום": {
+    "en": "DevOps · summary",
+    "es": "DevOps · resumen",
+    "pt-BR": "DevOps · resumo",
+    "ar": "DevOps · ملخص"
+  },
+  "שם הוילה המרכזית": {
+    "en": "Central villa name",
+    "es": "Nombre de la villa central",
+    "pt-BR": "Nome da villa central",
+    "ar": "اسم الفيلا المركزية"
+  },
+  "תבנית רגועה עם קלפים מרובעים ותנועה רכה": {
+    "en": "A calm template with square cards and soft motion",
+    "es": "Plantilla calmada con tarjetas cuadradas y movimiento suave",
+    "pt-BR": "Modelo calmo com cartões quadrados e movimento suave",
+    "ar": "قالب هادئ ببطاقات مربعة وحركة ناعمة"
+  },
+  "מספר גדול בהירו": {
+    "en": "Large number in the hero",
+    "es": "Número grande en el hero",
+    "pt-BR": "Número grande no hero",
+    "ar": "رقم كبير في القسم البطولي"
+  },
+  "מיפוי גבות לפי מבנה הפנים, ניקוי מדויק וצבע עדין שמחזיק בלי להכביד.…": {
+    "en": "Brow mapping by facial structure, precise cleanup, and a soft tint that lasts without weighing down.…",
+    "es": "Mapeo de cejas según la estructura facial, limpieza precisa y un tinte suave que dura sin cargar.…",
+    "pt-BR": "Mapeamento de sobrancelhas conforme a estrutura do rosto, limpeza precisa e um tom suave que dura sem pesar.…",
+    "ar": "تخطيط حواجب حسب بنية الوجه وتنظيف دقيق ولون خفيف يثبت دون إثقال…"
+  },
+  "חללים שקטים, חומרים עם עומק.": {
+    "en": "Quiet spaces, materials with depth.",
+    "es": "Espacios silenciosos, materiales con profundidad.",
+    "pt-BR": "Espaços silenciosos, materiais com profundidade.",
+    "ar": "فضاءات هادئة ومواد ذات عمق."
+  },
+  "טרטר דג ים": {
+    "en": "Sea fish tartare",
+    "es": "Tártaro de pescado de mar",
+    "pt-BR": "Tártaro de peixe do mar",
+    "ar": "تارتار سمك بحري"
+  },
+  "בר ים על גחלים": {
+    "en": "Seaside grill bar",
+    "es": "Barra de mar a la parrilla",
+    "pt-BR": "Barra do mar na brasa",
+    "ar": "بار بحري على الجمر"
+  },
+  "כפתור שירותים בפוטר": {
+    "en": "Footer services button",
+    "es": "Botón de servicios en el pie",
+    "pt-BR": "Botão de serviços no rodapé",
+    "ar": "زر الخدمات في التذييل"
+  },
+  "מאמרים, דוחות ועדכונים שמחזיקים את הקהל קרוב.": {
+    "en": "Articles, reports, and updates that keep the audience close.",
+    "es": "Artículos, informes y actualizaciones que mantienen cerca a la audiencia.",
+    "pt-BR": "Artigos, relatórios e atualizações que mantêm o público perto.",
+    "ar": "مقالات وتقارير وتحديثات تبقي الجمهور قريباً."
+  },
+  "כפתור תיאום ייעוץ": {
+    "en": "Book a consultation button",
+    "es": "Botón para concertar una consulta",
+    "pt-BR": "Botão para agendar consultoria",
+    "ar": "زر تنسيق استشارة"
+  },
+  "כפתור צפייה במחירים": {
+    "en": "View prices button",
+    "es": "Botón para ver precios",
+    "pt-BR": "Botão para ver preços",
+    "ar": "زر عرض الأسعار"
+  },
+  "תג על התמונה": {
+    "en": "Tag on the image",
+    "es": "Etiqueta sobre la imagen",
+    "pt-BR": "Tag na imagem",
+    "ar": "وسم على الصورة"
+  },
+  "שם ממליץ ראשי": {
+    "en": "Primary recommender name",
+    "es": "Nombre del recomendador principal",
+    "pt-BR": "Nome do recomendador principal",
+    "ar": "اسم المُوصي الرئيسي"
+  },
+  "כפתור פרטים נוספים": {
+    "en": "More details button",
+    "es": "Botón de más detalles",
+    "pt-BR": "Botão de mais detalhes",
+    "ar": "زر تفاصيل إضافية"
+  },
+  "אודות העסק בפוטר": {
+    "en": "About the business in the footer",
+    "es": "Sobre el negocio en el pie",
+    "pt-BR": "Sobre o negócio no rodapé",
+    "ar": "حول العمل في التذييل"
+  },
+  "שם העסק בפוטר": {
+    "en": "Business name in the footer",
+    "es": "Nombre del negocio en el pie",
+    "pt-BR": "Nome do negócio no rodapé",
+    "ar": "اسم العمل في التذييل"
+  },
+  "תיאור העסק בפוטר": {
+    "en": "Business description in the footer",
+    "es": "Descripción del negocio en el pie",
+    "pt-BR": "Descrição do negócio no rodapé",
+    "ar": "وصف العمل في التذييل"
+  },
+  "תמונת הירו קולנועית": {
+    "en": "Cinematic hero image",
+    "es": "Imagen hero cinematográfica",
+    "pt-BR": "Imagem hero cinematográfica",
+    "ar": "صورة بطل سينمائية"
+  },
+  "תמונת נכס 1": {
+    "en": "Property image 1",
+    "es": "Imagen de propiedad 1",
+    "pt-BR": "Imagem do imóvel 1",
+    "ar": "صورة العقار 1"
+  },
+  "תמונת סיפור מים": {
+    "en": "Water story image",
+    "es": "Imagen de historia de agua",
+    "pt-BR": "Imagem da história da água",
+    "ar": "صورة قصة الماء"
+  },
+  "חדות, קצב ותנועה אגרסיבית.": {
+    "en": "Sharpness, pace, and aggressive motion.",
+    "es": "Nitidez, ritmo y movimiento agresivo.",
+    "pt-BR": "Nitidez, ritmo e movimento agressivo.",
+    "ar": "حدة وإيقاع وحركة قوية."
+  },
+  "45 מ״ר · אור": {
+    "en": "45 sqm · light",
+    "es": "45 m² · luz",
+    "pt-BR": "45 m² · luz",
+    "ar": "45 م² · ضوء"
+  },
+  "תבנית סוכנות דיגיטלית נועזת עם כרטיסים צפים, רצועות נעות, סקשנים יצירתיים, טיפוגרפיה חזקה ותנועה ויזואלית פרימיום.": {
+    "en": "A bold digital agency template with floating cards, moving strips, creative sections, strong typography, and premium visual motion.",
+    "es": "Una plantilla audaz de agencia digital con tarjetas flotantes, franjas móviles, secciones creativas, tipografía fuerte y movimiento visual premium.",
+    "pt-BR": "Um modelo ousado de agência digital com cartões flutuantes, faixas móveis, seções criativas, tipografia forte e movimento visual premium.",
+    "ar": "قالب وكالة رقمية جريء ببطاقات عائمة وشرائط متحركة وأقسام إبداعية وخط قوي وحركة بصرية فاخرة."
+  },
+  "אנחנו משלבים אסטרטגיה, עיצוב, פיתוח ותנועה כדי ליצור חוויות דיגיטליות יוקרתיות, זכירות ומכוונות תוצאה עסקית.": {
+    "en": "We combine strategy, design, development, and motion to create premium, memorable digital experiences aimed at business results.",
+    "es": "Combinamos estrategia, diseño, desarrollo y movimiento para crear experiencias digitales premium, memorables y orientadas a resultados de negocio.",
+    "pt-BR": "Combinamos estratégia, design, desenvolvimento e movimento para criar experiências digitais premium, memoráveis e voltadas a resultados de negócio.",
+    "ar": "نجمع الاستراتيجية والتصميم والتطوير والحركة لصنع تجارب رقمية فاخرة لا تُنسى وموجّهة لنتائج الأعمال."
+  },
+  "מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות\\nוטופס ליד שמוביל לפעולה.": {
+    "en": "A structure suited to service businesses — with clear services, trust, testimonials, and a lead form that drives action.",
+    "es": "Una estructura pensada para negocios de servicios — con servicios claros, confianza, recomendaciones y un formulario de leads que lleva a la acción.",
+    "pt-BR": "Uma estrutura adequada a negócios de serviços — com serviços claros, confiança, depoimentos e um formulário de leads que leva à ação.",
+    "ar": "بنية تلائم أعمال الخدمات — مع خدمات واضحة وثقة وتوصيات ونموذج عملاء محتملين يقود إلى إجراء."
+  },
+  "זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם\\nאחריות מלאה.": {
+    "en": "Available for urgent calls, fault repair, installations, and electrical upgrades — with full warranty.",
+    "es": "Disponibles para llamadas urgentes, reparación de fallos, instalaciones y mejoras eléctricas — con garantía completa.",
+    "pt-BR": "Disponíveis para chamadas urgentes, reparo de falhas, instalações e upgrades elétricos — com garantia total.",
+    "ar": "متاحون للمكالمات العاجلة وإصلاح الأعطال والتركيبات وترقية الكهرباء — مع ضمان كامل."
+  },
+  "המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,\\nמכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.": {
+    "en": "The circles represent the marketing system: exposure, message, audience, lead, sale, and continuous improvement — each layer expands and strengthens the next.",
+    "es": "Los círculos representan el sistema de marketing: exposición, mensaje, audiencia, lead, venta y mejora continua — cada capa se amplía y refuerza la siguiente.",
+    "pt-BR": "Os círculos representam o sistema de marketing: exposição, mensagem, público, lead, venda e melhoria contínua — cada camada se amplia e reforça a seguinte.",
+    "ar": "تمثّل الدوائر منظومة التسويق: ظهور ورسالة وجمهور وعميل محتمل وبيع وتحسين مستمر — كل طبقة تتسع وتعزّز التالية."
+  }
+}
