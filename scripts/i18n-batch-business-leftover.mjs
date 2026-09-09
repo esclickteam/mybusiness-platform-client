@@ -1136,6 +1136,32 @@ const BIZ_CHAT_CHROME = {
   loadingChat: row("Loading chat...", "טוען צ׳אט...", "Cargando chat...", "Carregando chat...", "جارٍ تحميل المحادثة..."),
   loadingMessages: row("Loading messages...", "טוען הודעות...", "Cargando mensajes...", "Carregando mensagens...", "جارٍ تحميل الرسائل..."),
   loadingChatData: row("Loading chat data...", "טוען נתוני צ׳אט...", "Cargando datos del chat...", "Carregando dados do chat...", "جارٍ تحميل بيانات المحادثة..."),
+  manageTitle: row("Manage Your Messages", "ניהול ההודעות שלכם", "Gestionad vuestros mensajes", "Gerenciem suas mensagens", "إدارة رسائلكم"),
+  manageBody1: row(
+    "All messages received from clients on your business page are centralized for you in the \"Customer Messages\" page.",
+    "כל ההודעות שמגיעות מלקוחות בדף העסק מרוכזות עבורכם בדף \"הודעות לקוחות\".",
+    "Todos los mensajes de clientes en vuestra página de negocio están centralizados en la página \"Mensajes de clientes\".",
+    "Todas as mensagens de clientes na página do negócio ficam centralizadas na página \"Mensagens de clientes\".",
+    "كل الرسائل الواردة من العملاء في صفحة عملكم مجمّعة لكم في صفحة \"رسائل العملاء\".",
+  ),
+  manageBody2: row(
+    "From there, you can read, reply, and manage conversations efficiently and neatly.",
+    "משם אפשר לקרוא, להשיב ולנהל שיחות ביעילות ובסדר.",
+    "Desde allí podéis leer, responder y gestionar conversaciones de forma eficiente y ordenada.",
+    "De lá vocês podem ler, responder e gerenciar conversas de forma eficiente e organizada.",
+    "من هناك يمكنكم القراءة والرد وإدارة المحادثات بكفاءة وترتيب.",
+  ),
+  goToMessages: row("Go to Messages Page", "מעבר לדף ההודעות", "Ir a la página de mensajes", "Ir à página de mensagens", "الانتقال إلى صفحة الرسائل"),
+  yourNamePh: row("Your Name", "שמכם", "Vuestro nombre", "Seu nome", "اسمكم"),
+  writeMessagePh: row("Write a message...", "כתבו הודעה...", "Escribid un mensaje...", "Escrevam uma mensagem...", "اكتبوا رسالة..."),
+  stop: row("Stop", "עצירה", "Detener", "Parar", "إيقاف"),
+  record: row("Record", "הקלטה", "Grabar", "Gravar", "تسجيل"),
+  send: row("Send", "שליחה", "Enviar", "Enviar", "إرسال"),
+  file: row("File", "קובץ", "Archivo", "Arquivo", "ملف"),
+  audioUnsupported: row("Your browser does not support audio playback.", "הדפדפן אינו תומך בהשמעת אודיו.", "Vuestro navegador no admite reproducción de audio.", "Seu navegador não oferece suporte à reprodução de áudio.", "متصفحكم لا يدعم تشغيل الصوت."),
+  youCustomer: row("You (Customer)", "אתם (לקוח)", "Vosotros (cliente)", "Vocês (cliente)", "أنتم (عميل)"),
+  business: row("Business", "עסק", "Negocio", "Negócio", "العمل"),
+  system: row("System", "מערכת", "Sistema", "Sistema", "النظام"),
 };
 
 const LOADING_CHROME = {
@@ -1151,6 +1177,38 @@ const SHOP_CHROME = {
   phoneOnly: row("Phone Payment Only", "תשלום טלפוני בלבד", "Solo pago por teléfono", "Somente pagamento por telefone", "الدفع عبر الهاتف فقط"),
   both: row("Both", "שניהם", "Ambos", "Ambos", "كلاهما"),
   keyFor: row("Key for {{provider}}", "מפתח עבור {{provider}}", "Clave para {{provider}}", "Chave para {{provider}}", "مفتاح لـ {{provider}}"),
+  manageTitle: row("Manage Your Store", "ניהול החנות שלכם", "Gestionad vuestra tienda", "Gerenciem sua loja", "إدارة متجركم"),
+  categories: row("Categories", "קטגוריות", "Categorías", "Categorias", "الفئات"),
+  newCategoryPh: row("New category name", "שם קטגוריה חדשה", "Nombre de nueva categoría", "Nome da nova categoria", "اسم فئة جديدة"),
+  add: row("Add", "הוספה", "Añadir", "Adicionar", "إضافة"),
+  productNamePh: row("Product name", "שם מוצר", "Nombre del producto", "Nome do produto", "اسم المنتج"),
+  descriptionPh: row("Description...", "תיאור...", "Descripción...", "Descrição...", "الوصف..."),
+  pricePh: row("Price $", "מחיר $", "Precio $", "Preço $", "السعر $"),
+  productPreviewAlt: row("Product preview", "תצוגה מקדימה של מוצר", "Vista previa del producto", "Prévia do produto", "معاينة المنتج"),
+  save: row("Save", "שמירה", "Guardar", "Salvar", "حفظ"),
+  existingProducts: row("Existing Products", "מוצרים קיימים", "Productos existentes", "Produtos existentes", "المنتجات الحالية"),
+  paymentSetup: row("Payment Setup for Business", "הגדרת תשלום לעסק", "Configuración de pago del negocio", "Configuração de pagamento do negócio", "إعداد الدفع للعمل"),
+  shippingOptions: row("Shipping Options", "אפשרויות משלוח", "Opciones de envío", "Opções de frete", "خيارات الشحن"),
+  shippingNote: row("Shipping cost will be added to the final order price.", "עלות המשלוח תתווסף למחיר הסופי של ההזמנה.", "El coste de envío se añadirá al precio final del pedido.", "O custo do frete será adicionado ao preço final do pedido.", "ستُضاف تكلفة الشحن إلى السعر النهائي للطلب."),
+  amountPh: row("Amount $", "סכום $", "Importe $", "Valor $", "المبلغ $"),
+  deleteProductConfirm: row("Delete this product?", "למחוק את המוצר?", "¿Eliminar este producto?", "Excluir este produto?", "حذف هذا المنتج؟"),
+  deleteCouponConfirm: row("Delete this coupon?", "למחוק את הקופון?", "¿Eliminar este cupón?", "Excluir este cupom?", "حذف هذه القسيمة؟"),
+  generalCategory: row("General", "כללי", "General", "Geral", "عام"),
+  yourStore: row("Your Store", "החנות שלכם", "Vuestra tienda", "Sua loja", "متجركم"),
+  backToStore: row("Back to Store", "חזרה לחנות", "Volver a la tienda", "Voltar à loja", "العودة إلى المتجر"),
+  viewCart: row("View Cart ({{count}})", "צפייה בעגלה ({{count}})", "Ver carrito ({{count}})", "Ver carrinho ({{count}})", "عرض السلة ({{count}})"),
+  shoppingCart: row("Your Shopping Cart", "עגלת הקניות שלכם", "Vuestro carrito", "Seu carrinho de compras", "سلة تسوقكم"),
+  emptyCart: row("Your cart is currently empty", "העגלה ריקה כרגע", "Vuestro carrito está vacío", "Seu carrinho está vazio", "سلتكم فارغة حالياً"),
+  quantity: row("Quantity: {{count}}", "כמות: {{count}}", "Cantidad: {{count}}", "Quantidade: {{count}}", "الكمية: {{count}}"),
+  lineTotal: row("Total: $ {{amount}}", "סה״כ: $ {{amount}}", "Total: $ {{amount}}", "Total: $ {{amount}}", "الإجمالي: $ {{amount}}"),
+  couponPh: row("Enter coupon code (e.g., SUMMER10)", "הזינו קוד קופון (לדוגמה SUMMER10)", "Introducid el código del cupón (p. ej., SUMMER10)", "Digitem o código do cupom (ex.: SUMMER10)", "أدخلوا رمز القسيمة (مثال SUMMER10)"),
+  beforeDiscount: row("Before Discount: $ {{amount}}", "לפני הנחה: $ {{amount}}", "Antes del descuento: $ {{amount}}", "Antes do desconto: $ {{amount}}", "قبل الخصم: $ {{amount}}"),
+  discountLine: row("Discount: $ {{amount}}", "הנחה: $ {{amount}}", "Descuento: $ {{amount}}", "Desconto: $ {{amount}}", "الخصم: $ {{amount}}"),
+  shippingLine: row("Shipping: $ {{amount}}", "משלוח: $ {{amount}}", "Envío: $ {{amount}}", "Frete: $ {{amount}}", "الشحن: $ {{amount}}"),
+  totalToPay: row("Total to Pay: $ {{amount}}", "סה״כ לתשלום: $ {{amount}}", "Total a pagar: $ {{amount}}", "Total a pagar: $ {{amount}}", "الإجمالي للدفع: $ {{amount}}"),
+  proceedPayment: row("Proceed to Payment", "המשך לתשלום", "Continuar al pago", "Prosseguir para o pagamento", "المتابعة إلى الدفع"),
+  allCategories: row("All", "הכל", "Todo", "Tudo", "الكل"),
+  addToCart: row("Add to Cart", "הוספה לעגלה", "Añadir al carrito", "Adicionar ao carrinho", "إضافة إلى السلة"),
 };
 
 
@@ -1465,6 +1523,8 @@ const GALLERY_CHROME = {
   save: row("Save", "שמירה", "Guardar", "Salvar", "حفظ"),
   preview: row("Preview", "תצוגה מקדימה", "Vista previa", "Prévia", "معاينة"),
   imageAlt: row("Image", "תמונה", "Imagen", "Imagem", "صورة"),
+  editMedia: row("Edit Media", "עריכת מדיה", "Editar medios", "Editar mídia", "تعديل الوسائط"),
+  deleteMedia: row("Delete Media", "מחיקת מדיה", "Eliminar medios", "Excluir mídia", "حذف الوسائط"),
 };
 
 const AGREEMENT_LIST_CHROME = {
@@ -1585,6 +1645,76 @@ const DASH_APPOINT_CHROME = {
 };
 
 
+
+const PAYMENT_FORM_CHROME = {
+  fullName: row("Full Name", "שם מלא", "Nombre completo", "Nome completo", "الاسم الكامل"),
+  phone: row("Phone", "טלפון", "Teléfono", "Telefone", "الهاتف"),
+  email: row("Email", "אימייל", "Email", "E-mail", "البريد"),
+  shippingAddress: row("Shipping Address", "כתובת למשלוח", "Dirección de envío", "Endereço de entrega", "عنوان الشحن"),
+  cardNumber: row("Card Number", "מספר כרטיס", "Número de tarjeta", "Número do cartão", "رقم البطاقة"),
+  expiryDate: row("Expiry Date", "תוקף", "Fecha de caducidad", "Validade", "تاريخ الانتهاء"),
+  cvv: row("CVV", "CVV", "CVV", "CVV", "CVV"),
+  onlinePayment: row("Online Payment", "תשלום אונליין", "Pago online", "Pagamento online", "دفع عبر الإنترنت"),
+  payNow: row("Pay Now", "תשלום עכשיו", "Pagar ahora", "Pagar agora", "ادفعوا الآن"),
+  makePayment: row("Make Payment", "ביצוע תשלום", "Realizar pago", "Fazer pagamento", "إجراء الدفع"),
+  back: row("Back", "חזרה", "Volver", "Voltar", "رجوع"),
+  thankYou: row("Thank you, {{name}}!", "תודה, {{name}}!", "¡Gracias, {{name}}!", "Obrigado, {{name}}!", "شكراً، {{name}}!"),
+  business: row("Business:", "עסק:", "Negocio:", "Negócio:", "العمل:"),
+  yourBusiness: row("Your Business", "העסק שלכם", "Vuestro negocio", "Seu negócio", "عملكم"),
+  confirmationSent: row("Confirmation sent to:", "אישור נשלח אל:", "Confirmación enviada a:", "Confirmação enviada para:", "أُرسل التأكيد إلى:"),
+  address: row("Address:", "כתובת:", "Dirección:", "Endereço:", "العنوان:"),
+  totalAmount: row("Total Amount:", "סכום כולל:", "Importe total:", "Valor total:", "المبلغ الإجمالي:"),
+  phonePayTitle: row("Fill in your details and we will call you", "מלאו פרטים ונחזור אליכם בטלפון", "Completad vuestros datos y os llamaremos", "Preencham os dados e ligaremos para vocês", "املأوا بياناتكم وسنتصل بكم"),
+  showDescription: row("Show Description", "הצגת תיאור", "Mostrar descripción", "Mostrar descrição", "عرض الوصف"),
+  selectPaymentProvider: row("Select Payment Provider", "בחירת ספק תשלום", "Elegir proveedor de pago", "Selecionar provedor de pagamento", "اختيار مزوّد دفع"),
+  freeShipping: row("Free Shipping", "משלוח חינם", "Envío gratis", "Frete grátis", "شحن مجاني"),
+  paidShipping: row("Paid Shipping", "משלוח בתשלום", "Envío de pago", "Frete pago", "شحن مدفوع"),
+  paymentTitle: row("Payment", "תשלום", "Pago", "Pagamento", "الدفع"),
+  selectMethod: row("Select your preferred payment method:", "בחרו את אמצעי התשלום המועדף:", "Elegid vuestro método de pago preferido:", "Selecione o método de pagamento preferido:", "اختاروا طريقة الدفع المفضلة:"),
+  creditCardPayment: row("Credit Card Payment", "תשלום בכרטיס אשראי", "Pago con tarjeta", "Pagamento com cartão", "الدفع ببطاقة ائتمان"),
+  phonePayment: row("Phone Payment", "תשלום טלפוני", "Pago por teléfono", "Pagamento por telefone", "دفع عبر الهاتف"),
+  sendAndCall: row("Send and We Will Call You", "שליחה וניצור קשר", "Enviar y os llamaremos", "Enviar e ligaremos para vocês", "أرسلوا وسنتصل بكم"),
+  phoneContactNote: row("We will contact you to complete your payment by phone.", "ניצור קשר להשלמת התשלום בטלפון.", "Os contactaremos para completar el pago por teléfono.", "Entraremos em contato para concluir o pagamento por telefone.", "سنتصل بكم لإتمام الدفع عبر الهاتف."),
+  paymentReceivedNote: row("Your payment has been received, and we are processing your order.", "התשלום התקבל ואנחנו מעבדים את ההזמנה.", "Se ha recibido el pago y estamos procesando el pedido.", "Seu pagamento foi recebido e estamos processando o pedido.", "تم استلام الدفع ونعالج طلبكم."),
+  notProvided: row("Not provided", "לא צוין", "No facilitado", "Não informado", "غير مذكور"),
+  consultationService: row("Consultation Service", "שירות ייעוץ", "Servicio de consulta", "Serviço de consultoria", "خدمة استشارة"),
+  phoneTimeLabel: row("Phone", "טלפון", "Teléfono", "Telefone", "الهاتف"),
+};
+
+const RATING_CHROME = {
+  title: row("Rate the Service", "דירוג השירות", "Valorar el servicio", "Avaliar o serviço", "تقييم الخدمة"),
+  service: row("Service", "שירות", "Servicio", "Serviço", "الخدمة"),
+  professionalism: row("Professionalism", "מקצועיות", "Profesionalidad", "Profissionalismo", "الاحترافية"),
+  punctuality: row("Punctuality", "עמידה בזמנים", "Puntualidad", "Pontualidade", "الالتزام بالمواعيد"),
+  availability: row("Availability", "זמינות", "Disponibilidad", "Disponibilidade", "التوافر"),
+  value: row("Value for Money", "תמורה למחיר", "Relación calidad-precio", "Custo-benefício", "القيمة مقابل السعر"),
+  goal: row("Goal Achievement", "השגת מטרה", "Logro del objetivo", "Alcance do objetivo", "تحقيق الهدف"),
+  experience: row("Overall Experience", "חוויה כללית", "Experiencia general", "Experiência geral", "التجربة العامة"),
+  commentPh: row("Add details / review", "הוסיפו פרטים / ביקורת", "Añadid detalles / reseña", "Adicionem detalhes / avaliação", "أضيفوا تفاصيل / مراجعة"),
+  submit: row("Submit Review", "שליחת ביקורת", "Enviar reseña", "Enviar avaliação", "إرسال المراجعة"),
+  latestReviews: row("Latest Reviews", "ביקורות אחרונות", "Últimas reseñas", "Avaliações recentes", "أحدث المراجعات"),
+  customer: row("Customer", "לקוח", "Cliente", "Cliente", "عميل"),
+};
+
+const APPOINT_HISTORY_CHROME = {
+  title: row("Appointment History", "היסטוריית תורים", "Historial de citas", "Histórico de horários", "سجل المواعيد"),
+  loadError: row("Error loading appointment history", "שגיאה בטעינת היסטוריית התורים", "Error al cargar el historial de citas", "Erro ao carregar o histórico de horários", "خطأ في تحميل سجل المواعيد"),
+  empty: row("No appointments to display", "אין תורים להצגה", "No hay citas para mostrar", "Não há horários para exibir", "لا توجد مواعيد للعرض"),
+  date: row("Date", "תאריך", "Fecha", "Data", "التاريخ"),
+  time: row("Time", "שעה", "Hora", "Hora", "الوقت"),
+  service: row("Service", "שירות", "Servicio", "Serviço", "الخدمة"),
+  status: row("Status", "סטטוס", "Estado", "Status", "الحالة"),
+  notes: row("Notes", "הערות", "Notas", "Notas", "ملاحظات"),
+  closeAria: row("Close appointments history", "סגירת היסטוריית תורים", "Cerrar historial de citas", "Fechar histórico de horários", "إغلاق سجل المواعيد"),
+  image: row("Image", "תמונה", "Imagen", "Imagem", "صورة"),
+  video: row("Video", "וידאו", "Vídeo", "Vídeo", "فيديو"),
+  selectTime: row("Select a time", "בחירת שעה", "Elegir una hora", "Selecionar um horário", "اختيار وقت"),
+  select: row("Select", "בחירה", "Elegir", "Selecionar", "اختيار"),
+  message: row("Message", "הודעה", "Mensaje", "Mensagem", "رسالة"),
+  meeting: row("Meeting", "פגישה", "Reunión", "Reunião", "اجتماع"),
+};
+
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -1652,6 +1782,9 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       signAgreementChrome: pickLocaleMap(SIGN_AGREEMENT_CHROME, locale),
       agreementFormChrome: pickLocaleMap(AGREEMENT_FORM_CHROME, locale),
       dashAppointChrome: pickLocaleMap(DASH_APPOINT_CHROME, locale),
+      paymentFormChrome: pickLocaleMap(PAYMENT_FORM_CHROME, locale),
+      ratingChrome: pickLocaleMap(RATING_CHROME, locale),
+      appointHistoryChrome: pickLocaleMap(APPOINT_HISTORY_CHROME, locale),
     },
     chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };

@@ -1,13 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 
-const PARAMETERS = [
-  { key: 'service', label: 'Service' },
-  { key: 'professional', label: 'Professionalism' },
-  { key: 'timing', label: 'Punctuality' },
-  { key: 'availability', label: 'Availability' },
-  { key: 'value', label: 'Value for Money' },
-  { key: 'goal', label: 'Goal Achievement' },
-  { key: 'experience', label: 'Overall Experience' },
+const PARAMETER_KEYS = [
+  { key: 'service', labelKey: 'service' },
+  { key: 'professional', labelKey: 'professionalism' },
+  { key: 'timing', labelKey: 'punctuality' },
+  { key: 'availability', labelKey: 'availability' },
+  { key: 'value', labelKey: 'value' },
+  { key: 'goal', labelKey: 'goal' },
+  { key: 'experience', labelKey: 'experience' },
 ];
 
 const StarRating = ({ value, onChange }) => {
@@ -29,8 +30,9 @@ const StarRating = ({ value, onChange }) => {
 };
 
 const MultiParamRating = ({ onSubmit }) => {
+  const { t } = useTranslation();
   const [ratings, setRatings] = useState(() =>
-    PARAMETERS.reduce((acc, p) => ({ ...acc, [p.key]: 0 }), {})
+    PARAMETER_KEYS.reduce((acc, p) => ({ ...acc, [p.key]: 0 }), {})
   );
   const [comment, setComment] = useState('');
 
@@ -40,7 +42,7 @@ const MultiParamRating = ({ onSubmit }) => {
 
   const handleSubmit = () => {
     const average =
-      Object.values(ratings).reduce((sum, v) => sum + v, 0) / PARAMETERS.length;
+      Object.values(ratings).reduce((sum, v) => sum + v, 0) / PARAMETER_KEYS.length;
 
     const review = {
       ...ratings,
@@ -55,16 +57,16 @@ const MultiParamRating = ({ onSubmit }) => {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <h2>Rate the Service</h2>
-      {PARAMETERS.map((param) => (
+      <h2>{t("leftover.ratingChrome.title")}</h2>
+      {PARAMETER_KEYS.map((param) => (
         <div key={param.key} style={{ marginBottom: '1rem' }}>
-          <label>{param.label}</label>
+          <label>{t(`leftover.ratingChrome.${param.labelKey}`)}</label>
           <StarRating value={ratings[param.key]} onChange={(v) => handleChange(param.key, v)} />
         </div>
       ))}
       <textarea
         rows="4"
-        placeholder="Add details / review"
+        placeholder={t("leftover.ratingChrome.commentPh")}
         style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
@@ -82,7 +84,7 @@ const MultiParamRating = ({ onSubmit }) => {
           cursor: 'pointer',
         }}
       >
-        Submit Review
+        {t("leftover.ratingChrome.submit")}
       </button>
     </div>
   );

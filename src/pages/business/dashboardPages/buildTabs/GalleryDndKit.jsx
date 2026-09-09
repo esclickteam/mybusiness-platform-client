@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useRef, useEffect } from "react";
 import {
   DndContext,
@@ -28,6 +29,7 @@ const SortableItem = ({
   popupRefs,
   fit,
 }) => {
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -89,7 +91,7 @@ const SortableItem = ({
               e.stopPropagation();
               onEdit(index);
             }}
-            title="Edit Media"
+            title={t("leftover.galleryChrome.editMedia")}
           >
             <FaEdit size={16} />
           </button>
@@ -101,7 +103,7 @@ const SortableItem = ({
               e.stopPropagation();
               onDelete(index);
             }}
-            title="Delete Media"
+            title={t("leftover.galleryChrome.deleteMedia")}
           >
             <FaTrashAlt size={16} />
           </button>

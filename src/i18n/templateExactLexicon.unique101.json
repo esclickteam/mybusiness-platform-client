@@ -1,0 +1,572 @@
+{
+  "פגישות": {
+    "en": "Meetings",
+    "es": "Reuniones",
+    "pt-BR": "Reuniões",
+    "ar": "اجتماعات"
+  },
+  "מפגשים": {
+    "en": "Sessions",
+    "es": "Encuentros",
+    "pt-BR": "Encontros",
+    "ar": "لقاءات"
+  },
+  "הושלמה": {
+    "en": "Completed",
+    "es": "Completada",
+    "pt-BR": "Concluída",
+    "ar": "مكتملة"
+  },
+  "מעודכן": {
+    "en": "Updated",
+    "es": "Actualizado",
+    "pt-BR": "Atualizado",
+    "ar": "محدَّث"
+  },
+  "חיסכון": {
+    "en": "Savings",
+    "es": "Ahorro",
+    "pt-BR": "Economia",
+    "ar": "توفير"
+  },
+  "עיגול": {
+    "en": "Circle",
+    "es": "Círculo",
+    "pt-BR": "Círculo",
+    "ar": "دائرة"
+  },
+  "דיוקן": {
+    "en": "Portrait",
+    "es": "Retrato",
+    "pt-BR": "Retrato",
+    "ar": "صورة شخصية"
+  },
+  "הדרכה": {
+    "en": "Guidance",
+    "es": "Orientación",
+    "pt-BR": "Orientação",
+    "ar": "إرشاد"
+  },
+  "הכותרת שלך": {
+    "en": "Your headline",
+    "es": "Tu titular",
+    "pt-BR": "Seu título",
+    "ar": "عنوانكم"
+  },
+  "המקום נולד מתוך אהבה לפרטים הקטנים — האור הנכון, השולחן המוכן, התחושה שמקבלים כשנכנסים. אנחנו מספרים את הסיפור דרך תמונות, חומרים ורגעים אמיתיים, לא דרך סיסמאות. כל בחירה כאן נועדה ליצור אווירה שקטה, מזמינה ומדויקת.": {
+    "en": "The place was born from a love of small details — the right light, the set table, the feeling you get when you walk in. We tell the story through photos, materials, and authentic moments.",
+    "es": "El lugar nació del amor por los pequeños detalles — la luz correcta, la mesa lista, la sensación al entrar. Contamos la historia con fotos, materiales y momentos auténticos.",
+    "pt-BR": "O lugar nasceu do amor pelos pequenos detalhes — a luz certa, a mesa pronta, a sensação ao entrar. Contamos a história com fotos, materiais e momentos autênticos.",
+    "ar": "وُلد المكان من حب التفاصيل الصغيرة — الضوء المناسب والطاولة الجاهزة والشعور عند الدخول. نروي القصة عبر الصور والمواد واللحظات الأصيلة."
+  },
+  "התחלנו מרצון פשוט: לבנות מקום שמרגיש אמיתי. לא תבנית גנרית, אלא סיפור עם קצב, חום ובהירות. לאורך השנים צמחנו יחד עם הלקוחות שלנו — מפרויקט לפרויקט, מרעיון לתוצאה — תוך שמירה על אותה הקשבה ואותה תשומת לב לפרטים.": {
+    "en": "We started from a simple wish: to build a place that feels real. Not a generic template, but a story with rhythm, warmth, and clarity. Over the years we grew with our clients — from project to project.",
+    "es": "Empezamos con un deseo simple: construir un lugar que se sienta real. No una plantilla genérica, sino una historia con ritmo, calidez y claridad. Con los años crecimos con nuestros clientes — de proyecto en proyecto.",
+    "pt-BR": "Começamos com um desejo simples: construir um lugar que pareça real. Não um modelo genérico, mas uma história com ritmo, calor e clareza. Ao longo dos anos crescemos com nossos clientes — de projeto em projeto.",
+    "ar": "بدأنا برغبة بسيطة: بناء مكان يبدو حقيقياً. ليس قالباً عاماً، بل قصة بإيقاع ودفء ووضوح. على مر السنين نمونا مع عملائنا — من مشروع إلى مشروع."
+  },
+  "אנחנו מאמינים שמותג טוב לא צועק — הוא מרגיש נכון. החזון שלנו הוא לעזור לעסקים לבנות נוכחות שקטה וחזקה: עיצוב מדויק, מסר ברור וחוויה שמכבדת את הלקוח. כשהכול מיושר, הצמיחה מגיעה באופן טבעי.": {
+    "en": "We believe a good brand doesn’t shout — it feels right. Our vision is to help businesses build a quiet, strong presence: precise design, a clear message, and an experience that respects the customer.",
+    "es": "Creemos que una buena marca no grita — se siente bien. Nuestra visión es ayudar a los negocios a construir una presencia quieta y fuerte: diseño preciso, mensaje claro y una experiencia que respeta al cliente.",
+    "pt-BR": "Acreditamos que uma boa marca não grita — ela parece certa. Nossa visão é ajudar negócios a construir uma presença quieta e forte: design preciso, mensagem clara e uma experiência que respeita o cliente.",
+    "ar": "نؤمن أن العلامة الجيدة لا تصرخ — بل تبدو صحيحة. رؤيتنا مساعدة الأعمال على بناء حضور هادئ وقوي: تصميم دقيق ورسالة واضحة وتجربة تحترم العميل."
+  },
+  "עם יותר מעשור של ניסיון באסטרטגיה, עיצוב ותקשורת, אני מלווה עסקים בבניית נוכחות ברורה ואמינה. העבודה מתחילה בהקשבה — להבין מי אתם, למי אתם פונים, ומה באמת חשוב להעביר.": {
+    "en": "With more than a decade of experience in strategy, design, and communication, I guide businesses in building a clear, trustworthy presence. The work starts with listening — understanding who you are, who you speak to, and what truly matters to convey.",
+    "es": "Con más de una década de experiencia en estrategia, diseño y comunicación, acompaño a negocios a construir una presencia clara y fiable. El trabajo empieza escuchando — entender quiénes sois, a quién os dirigís y qué es realmente importante transmitir.",
+    "pt-BR": "Com mais de uma década de experiência em estratégia, design e comunicação, acompanho negócios na construção de uma presença clara e confiável. O trabalho começa ouvindo — entender quem vocês são, a quem se dirigem e o que realmente importa transmitir.",
+    "ar": "مع أكثر من عقد من الخبرة في الاستراتيجية والتصميم والتواصل، أرافق الأعمال في بناء حضور واضح وموثوق. يبدأ العمل بالاستماع — لفهم من أنتم، ولمن تتحدثون، وما المهم حقاً إيصاله."
+  },
+  "אנחנו סטודיו עצמאי שפועל מתל אביב ומשלב אסטרטגיה, עיצוב וטכנולוגיה תחת קורת גג אחת. כל פרויקט נבנה סביב האנשים שמאחורי המותג — לא רק סביב הטרנד של הרגע.": {
+    "en": "We are an independent studio based in Tel Aviv that combines strategy, design, and technology under one roof. Every project is built around the people behind the brand — not just the trend of the moment.",
+    "es": "Somos un estudio independiente en Tel Aviv que combina estrategia, diseño y tecnología bajo un mismo techo. Cada proyecto se construye alrededor de las personas detrás de la marca — no solo de la tendencia del momento.",
+    "pt-BR": "Somos um estúdio independente em Tel Aviv que combina estratégia, design e tecnologia sob o mesmo teto. Cada projeto é construído em torno das pessoas por trás da marca — não apenas da tendência do momento.",
+    "ar": "نحن استوديو مستقل في تل أبيب يجمع الاستراتيجية والتصميم والتقنية تحت سقف واحد. يُبنى كل مشروع حول الأشخاص خلف العلامة — لا حول موضة اللحظة فقط."
+  },
+  "הגישה שלי משלבת חשיבה שיווקית עם דיוק ויזואלי: מסר אחד חזק, מבנה נקי, ותמונות שעובדות בשביל המותג. המטרה היא תוצאה שנראית מקצועית ומרגישה אנושית.": {
+    "en": "My approach combines marketing thinking with visual precision: one strong message, a clean structure, and images that work for the brand. The goal is a result that looks professional and feels human.",
+    "es": "Mi enfoque combina pensamiento de marketing con precisión visual: un mensaje fuerte, una estructura limpia e imágenes que trabajan para la marca. El objetivo es un resultado que se ve profesional y se siente humano.",
+    "pt-BR": "Minha abordagem combina pensamento de marketing com precisão visual: uma mensagem forte, uma estrutura limpa e imagens que trabalham pela marca. O objetivo é um resultado que parece profissional e parece humano.",
+    "ar": "منهجي يمزج التفكير التسويقي بالدقة البصرية: رسالة واحدة قوية وبنية نظيفة وصور تعمل لصالح العلامة. الهدف نتيجة تبدو مهنية وتشعر إنسانية."
+  },
+  "אנחנו סטודיו עצמאי שמחבר בין חשיבה אסטרטגית, עיצוב מדויק ויחסים ארוכי טווח. כל פרויקט מתחיל בהקשבה ומסתיים במשהו שאפשר להיות גאים בו.": {
+    "en": "We are an independent studio that connects strategic thinking, precise design, and long-term relationships. Every project starts with listening and ends with something you can be proud of.",
+    "es": "Somos un estudio independiente que conecta pensamiento estratégico, diseño preciso y relaciones a largo plazo. Cada proyecto empieza escuchando y termina en algo de lo que se puede estar orgulloso.",
+    "pt-BR": "Somos um estúdio independente que conecta pensamento estratégico, design preciso e relações de longo prazo. Cada projeto começa ouvindo e termina em algo de que se pode orgulhar.",
+    "ar": "نحن استوديو مستقل يربط التفكير الاستراتيجي بالتصميم الدقيق والعلاقات طويلة الأمد. يبدأ كل مشروع بالاستماع وينتهي بشيء يمكن الاعتزاز به."
+  },
+  "הצוות שלנו מורכב ממעצבים, כותבים ומפתחים שעובדים יחד מהיום הראשון. כך נוצרות חוויות עקביות — מהלוגו ועד האתר, מהמסר ועד המוצר.": {
+    "en": "Our team is made of designers, writers, and developers who work together from day one. That’s how consistent experiences are created — from logo to website, from message to product.",
+    "es": "Nuestro equipo está formado por diseñadores, redactores y desarrolladores que trabajan juntos desde el primer día. Así se crean experiencias coherentes — del logo al sitio, del mensaje al producto.",
+    "pt-BR": "Nossa equipe é formada por designers, redatores e desenvolvedores que trabalham juntos desde o primeiro dia. Assim nascem experiências consistentes — do logo ao site, da mensagem ao produto.",
+    "ar": "يتكوّن فريقنا من مصممين وكُتّاب ومطوّرين يعملون معاً منذ اليوم الأول. هكذا تُصنع تجارب متسقة — من الشعار إلى الموقع، ومن الرسالة إلى المنتج."
+  },
+  "בעידן של אלגוריתמים, המילים שאתם כותבים הן הנכס הכי יקר שלכם. מאמר שמלמד, מרגש או פותר בעיה — בונה אמון שלא ניתן לקנות.": {
+    "en": "In an age of algorithms, the words you write are your most valuable asset. An article that teaches, moves, or solves a problem — builds trust you can’t buy.",
+    "es": "En la era de los algoritmos, las palabras que escribís son vuestro activo más valioso. Un artículo que enseña, emociona o resuelve un problema — construye una confianza que no se puede comprar.",
+    "pt-BR": "Na era dos algoritmos, as palavras que vocês escrevem são o ativo mais valioso. Um artigo que ensina, emociona ou resolve um problema — constrói uma confiança que não se pode comprar.",
+    "ar": "في عصر الخوارزميات، الكلمات التي تكتبونها هي أغلى أصولكم. مقال يعلّم أو يحرّك أو يحل مشكلة — يبني ثقة لا تُشترى."
+  },
+  "התחלנו משולחן אחד, מחברת והרבה סקרנות. היום אנחנו צוות רב־תחומי שעוזר לעסקים לגדול בלי לאבד את מה שהופך אותם למיוחדים.": {
+    "en": "We started from one desk, a notebook, and a lot of curiosity. Today we are a multidisciplinary team that helps businesses grow without losing what makes them special.",
+    "es": "Empezamos con un escritorio, un cuaderno y mucha curiosidad. Hoy somos un equipo multidisciplinar que ayuda a los negocios a crecer sin perder lo que los hace especiales.",
+    "pt-BR": "Começamos com uma mesa, um caderno e muita curiosidade. Hoje somos uma equipe multidisciplinar que ajuda negócios a crescer sem perder o que os torna especiais.",
+    "ar": "بدأنا من مكتب واحد ودفتر وكثير من الفضول. اليوم نحن فريق متعدد التخصصات يساعد الأعمال على النمو دون فقدان ما يجعلها مميزة."
+  },
+  "אנחנו מאמינים שעבודה מצוינת מתחילה באחריות. לכן אנחנו מלווים כל פרויקט מקרוב, עומדים במילה שלנו ולא מתפשרים על איכות.": {
+    "en": "We believe excellent work starts with responsibility. That’s why we stay close to every project, keep our word, and don’t compromise on quality.",
+    "es": "Creemos que el trabajo excelente empieza con responsabilidad. Por eso acompañamos de cerca cada proyecto, cumplimos nuestra palabra y no comprometemos la calidad.",
+    "pt-BR": "Acreditamos que o trabalho excelente começa com responsabilidade. Por isso acompanhamos de perto cada projeto, cumprimos a palavra e não abrimos mão da qualidade.",
+    "ar": "نؤمن أن العمل الممتاز يبدأ بالمسؤولية. لذلك نرافق كل مشروع عن قرب، ونفي بكلمتنا، ولا نساوم على الجودة."
+  },
+  "15 שנות ניסיון בבניית מותגים, קמפיינים וחוויות דיגיטליות. עובדת עם סטארטאפים וארגונים גדולים — מאסטרטגיה ועד ביצוע.": {
+    "en": "15 years of experience building brands, campaigns, and digital experiences. Working with startups and large organizations — from strategy to execution.",
+    "es": "15 años de experiencia construyendo marcas, campañas y experiencias digitales. Trabajo con startups y grandes organizaciones — de la estrategia a la ejecución.",
+    "pt-BR": "15 anos de experiência construindo marcas, campanhas e experiências digitais. Trabalho com startups e grandes organizações — da estratégia à execução.",
+    "ar": "15 عاماً من الخبرة في بناء العلامات والحملات والتجارب الرقمية. أعمل مع شركات ناشئة ومؤسسات كبيرة — من الاستراتيجية إلى التنفيذ."
+  },
+  "מעצבת מוצר עם תשוקה לחוויות דיגיטליות שמרגישות טבעיות. מובילה פרויקטים מקצה לקצה — מאסטרטגיה ועד ממשק מדויק.": {
+    "en": "Product designer with a passion for digital experiences that feel natural. Leading projects end to end — from strategy to a precise interface.",
+    "es": "Diseñadora de producto con pasión por experiencias digitales que se sienten naturales. Lidera proyectos de extremo a extremo — de la estrategia a una interfaz precisa.",
+    "pt-BR": "Designer de produto com paixão por experiências digitais que parecem naturais. Lidera projetos de ponta a ponta — da estratégia a uma interface precisa.",
+    "ar": "مصممة منتجات بشغف لتجارب رقمية تبدو طبيعية. تقود مشاريع من البداية للنهاية — من الاستراتيجية إلى واجهة دقيقة."
+  },
+  "מרחב מעוצב בקפידה, עם אור טבעי, חומרים חמים ואווירה שמזמינה להישאר. כאן נפגשים אנשים, רעיונות ורגעים.": {
+    "en": "A carefully designed space, with natural light, warm materials, and an atmosphere that invites you to stay. Here people, ideas, and moments meet.",
+    "es": "Un espacio diseñado con cuidado, con luz natural, materiales cálidos y una atmósfera que invita a quedarse. Aquí se encuentran personas, ideas y momentos.",
+    "pt-BR": "Um espaço desenhado com cuidado, com luz natural, materiais quentes e uma atmosfera que convida a ficar. Aqui se encontram pessoas, ideias e momentos.",
+    "ar": "مساحة مصمّمة بعناية، بضوء طبيعي ومواد دافئة وأجواء تدعو للبقاء. هنا يلتقي الناس والأفكار واللحظات."
+  },
+  "כאן אפשר להציג עדכון חשוב, תנאי שירות, מבצע, הבהרה, מידע לפני רכישה או כל הודעה שהלקוח חייב לראות.": {
+    "en": "Here you can show an important update, service terms, a promo, a clarification, pre-purchase info, or any message the customer must see.",
+    "es": "Aquí podéis mostrar una actualización importante, condiciones, una promo, una aclaración, info previa a la compra o cualquier mensaje que el cliente deba ver.",
+    "pt-BR": "Aqui vocês podem mostrar uma atualização importante, condições, uma promoção, um esclarecimento, info pré-compra ou qualquer mensagem que o cliente precise ver.",
+    "ar": "هنا يمكن عرض تحديث مهم أو شروط خدمة أو عرض أو توضيح أو معلومات قبل الشراء أو أي رسالة يجب أن يراها العميل."
+  },
+  "מחפשים אנשים סקרנים, מדויקים ובעלי יוזמה. עבודה היברידית, צוות קטן, והשפעה אמיתית על כל פרויקט.": {
+    "en": "Looking for curious, precise, proactive people. Hybrid work, a small team, and real impact on every project.",
+    "es": "Buscamos personas curiosas, precisas e con iniciativa. Trabajo híbrido, equipo pequeño e impacto real en cada proyecto.",
+    "pt-BR": "Buscamos pessoas curiosas, precisas e com iniciativa. Trabalho híbrido, equipe pequena e impacto real em cada projeto.",
+    "ar": "نبحث عن أشخاص فضوليين ودقيقين وذوي مبادرة. عمل هجين، فريق صغير، وتأثير حقيقي على كل مشروع."
+  },
+  "8 שנות ניסיון באימון אישי, קבוצתי ותזונה ספורטיבית. עזרתי ל-200+ לקוחות להגיע ליעדים שלהם.": {
+    "en": "8 years of experience in personal training, group coaching, and sports nutrition. I’ve helped 200+ clients reach their goals.",
+    "es": "8 años de experiencia en entrenamiento personal, grupal y nutrición deportiva. He ayudado a más de 200 clientes a alcanzar sus metas.",
+    "pt-BR": "8 anos de experiência em treino pessoal, em grupo e nutrição esportiva. Ajudei mais de 200 clientes a alcançar seus objetivos.",
+    "ar": "8 سنوات من الخبرة في التدريب الشخصي والجماعي والتغذية الرياضية. ساعدت أكثر من 200 عميل على بلوغ أهدافهم."
+  },
+  "אנחנו צוות שמתמקד בבהירות, איכות ואמון — ובונה חוויות שמכבדות את העסק ואת האנשים מאחוריו.": {
+    "en": "We are a team focused on clarity, quality, and trust — building experiences that respect the business and the people behind it.",
+    "es": "Somos un equipo centrado en claridad, calidad y confianza — construyendo experiencias que respetan el negocio y a las personas detrás.",
+    "pt-BR": "Somos uma equipe focada em clareza, qualidade e confiança — construindo experiências que respeitam o negócio e as pessoas por trás.",
+    "ar": "نحن فريق يركز على الوضوح والجودة والثقة — ويبني تجارب تحترم العمل والأشخاص خلفه."
+  },
+  "ליצור נוכחות דיגיטלית מדויקת, חמה ומקצועית — שעוזרת לעסקים לגדול בלי לאבד את הזהות שלהם.": {
+    "en": "To create a precise, warm, professional digital presence — that helps businesses grow without losing their identity.",
+    "es": "Crear una presencia digital precisa, cálida y profesional — que ayude a los negocios a crecer sin perder su identidad.",
+    "pt-BR": "Criar uma presença digital precisa, acolhedora e profissional — que ajude negócios a crescer sem perder a identidade.",
+    "ar": "خلق حضور رقمي دقيق ودافئ ومهني — يساعد الأعمال على النمو دون فقدان هويتها."
+  },
+  "טיפ: לחצו על «לתשלום בסליקה» בעורך והדביקו את קישור התשלום של העסק (Cardcom / ספק אחר).": {
+    "en": "Tip: click “Pay via clearing” in the editor and paste your business payment link (Cardcom / another provider).",
+    "es": "Consejo: clicad en «Pagar en pasarela» en el editor y pegad el enlace de pago del negocio (Cardcom / otro proveedor).",
+    "pt-BR": "Dica: cliquem em «Pagar na adquirente» no editor e colem o link de pagamento do negócio (Cardcom / outro provedor).",
+    "ar": "نصيحة: انقروا على «الدفع عبر بوابة التحصيل» في المحرر والصقوا رابط دفع العمل (Cardcom / مزوّد آخر)."
+  },
+  "איך הפכנו מתחם מגורים חדש למותג שמרגיש שקט, מדויק ובטוח — מהאסטרטגיה ועד חוויית המכירה.": {
+    "en": "How we turned a new residential complex into a brand that feels calm, precise, and safe — from strategy to the sales experience.",
+    "es": "Cómo convertimos un nuevo complejo residencial en una marca que se siente calmada, precisa y segura — de la estrategia a la experiencia de venta.",
+    "pt-BR": "Como transformamos um novo complexo residencial em uma marca que parece calma, precisa e segura — da estratégia à experiência de venda.",
+    "ar": "كيف حوّلنا مجمعاً سكنياً جديداً إلى علامة تبدو هادئة ودقيقة وآمنة — من الاستراتيجية إلى تجربة البيع."
+  },
+  "תשעה אנשים — מעצבים, אסטרטגים ומפתחים — שעובדים יחד כדי להפוך רעיונות לחוויות מדויקות.": {
+    "en": "Nine people — designers, strategists, and developers — working together to turn ideas into precise experiences.",
+    "es": "Nueve personas — diseñadores, estrategas y desarrolladores — que trabajan juntos para convertir ideas en experiencias precisas.",
+    "pt-BR": "Nove pessoas — designers, estrategistas e desenvolvedores — que trabalham juntos para transformar ideias em experiências precisas.",
+    "ar": "تسعة أشخاص — مصممون واستراتيجيون ومطوّرون — يعملون معاً لتحويل الأفكار إلى تجارب دقيقة."
+  },
+  "ארבעה עקרונות פשוטים שעוזרים לנו לקבל החלטות טובות ולעשות עבודה שאנחנו מאמינים בה.": {
+    "en": "Four simple principles that help us make good decisions and do work we believe in.",
+    "es": "Cuatro principios simples que nos ayudan a tomar buenas decisiones y hacer trabajo en el que creemos.",
+    "pt-BR": "Quatro princípios simples que nos ajudam a tomar boas decisões e fazer trabalho em que acreditamos.",
+    "ar": "أربعة مبادئ بسيطة تساعدنا على اتخاذ قرارات جيدة والقيام بعمل نؤمن به."
+  },
+  "אנחנו משלבים ניסיון, חשיבה יצירתית ושירות אישי כדי לבנות פתרונות שעובדים באמת.": {
+    "en": "We combine experience, creative thinking, and personal service to build solutions that really work.",
+    "es": "Combinamos experiencia, pensamiento creativo y servicio personal para construir soluciones que de verdad funcionan.",
+    "pt-BR": "Combinamos experiência, pensamento criativo e atendimento pessoal para construir soluções que realmente funcionam.",
+    "ar": "نجمع الخبرة والتفكير الإبداعي والخدمة الشخصية لبناء حلول تعمل فعلاً."
+  },
+  "מהיום הראשון בנינו עסק ששם את הלקוח במרכז – עם שקיפות, דיוק ותשומת לב לפרטים.": {
+    "en": "From day one we built a business that puts the customer at the center – with transparency, precision, and attention to detail.",
+    "es": "Desde el primer día construimos un negocio que pone al cliente en el centro – con transparencia, precisión y atención al detalle.",
+    "pt-BR": "Desde o primeiro dia construímos um negócio que coloca o cliente no centro – com transparência, precisão e atenção aos detalhes.",
+    "ar": "منذ اليوم الأول بنينا عملاً يضع العميل في المركز – بشفافية ودقة واهتمام بالتفاصيل."
+  },
+  "הציגו את שלבי האירוע בצורה ברורה: קבלת פנים, הרצאות, פעילות, הופעה או סיום.": {
+    "en": "Show the event stages clearly: reception, talks, activity, performance, or closing.",
+    "es": "Mostrad las etapas del evento con claridad: recepción, charlas, actividad, actuación o cierre.",
+    "pt-BR": "Mostrem as etapas do evento com clareza: recepção, palestras, atividade, apresentação ou encerramento.",
+    "ar": "اعرضوا مراحل الفعالية بوضوح: استقبال، محاضرات، نشاط، عرض أو ختام."
+  },
+  "השירות היה מקצועי, מהיר וברור. קיבלתי מענה מדויק והרגשתי שיש על מי לסמוך.": {
+    "en": "The service was professional, fast, and clear. I got a precise response and felt there was someone to rely on.",
+    "es": "El servicio fue profesional, rápido y claro. Recibí una respuesta precisa y sentí que había en quién confiar.",
+    "pt-BR": "O serviço foi profissional, rápido e claro. Recebi uma resposta precisa e senti que havia em quem confiar.",
+    "ar": "كانت الخدمة مهنية وسريعة وواضحة. حصلت على رد دقيق وشعرت أن هناك من يمكن الاعتماد عليه."
+  },
+  "הציגו מוצרים בצורה מקצועית, נקייה וממירה — בדיוק כמו חנות אונליין רצינית.": {
+    "en": "Show products in a professional, clean, converting way — just like a serious online store.",
+    "es": "Mostrad productos de forma profesional, limpia y que convierte — como una tienda online seria.",
+    "pt-BR": "Mostrem produtos de forma profissional, limpa e que converte — como uma loja online séria.",
+    "ar": "اعرضوا المنتجات بطريقة مهنية ونظيفة ومُحوّلة — تماماً مثل متجر إلكتروني جاد."
+  },
+  "בנו נוכחות דיגיטלית מקצועית, הציגו את השירותים שלכם והפכו מבקרים ללקוחות.": {
+    "en": "Build a professional digital presence, showcase your services, and turn visitors into customers.",
+    "es": "Construid una presencia digital profesional, mostrad vuestros servicios y convertid visitantes en clientes.",
+    "pt-BR": "Construam uma presença digital profissional, mostrem seus serviços e transformem visitantes em clientes.",
+    "ar": "ابنوا حضوراً رقمياً مهنياً، واعرضوا خدماتكم، وحوّلوا الزوار إلى عملاء."
+  },
+  "פלטפורמה ישראלית לבניית אתרים מקצועיים — מהר, יפה, ובלי להתפשר על איכות.": {
+    "en": "An Israeli platform for building professional websites — fast, beautiful, without compromising quality.",
+    "es": "Una plataforma israelí para construir sitios profesionales — rápida, bonita, sin comprometer la calidad.",
+    "pt-BR": "Uma plataforma israelense para construir sites profissionais — rápida, bonita, sem abrir mão da qualidade.",
+    "ar": "منصة إسرائيلية لبناء مواقع مهنية — سريعة وجميلة دون المساومة على الجودة."
+  },
+  "טלפון, וואטסאפ, אימייל או הגעה למקום — כל האפשרויות מוצגות בצורה ברורה.": {
+    "en": "Phone, WhatsApp, email, or arriving on site — all options are shown clearly.",
+    "es": "Teléfono, WhatsApp, email o llegar al lugar — todas las opciones se muestran con claridad.",
+    "pt-BR": "Telefone, WhatsApp, e-mail ou chegar ao local — todas as opções são mostradas com clareza.",
+    "ar": "هاتف أو واتساب أو بريد أو الحضور إلى المكان — كل الخيارات تُعرض بوضوح."
+  },
+  "הצוות היה מקצועי, סבלני וזמין. הרגשתי שיש לי על מי לסמוך לאורך כל הדרך.": {
+    "en": "The team was professional, patient, and available. I felt I had someone to rely on all the way.",
+    "es": "El equipo fue profesional, paciente y disponible. Sentí que tenía en quién confiar durante todo el proceso.",
+    "pt-BR": "A equipe foi profissional, paciente e disponível. Senti que tinha em quem confiar ao longo de todo o caminho.",
+    "ar": "كان الفريق مهنياً وصبوراً ومتاحاً. شعرت أن لدي من يمكن الاعتماد عليه طوال الطريق."
+  },
+  "יום מלא של הרצאות, נטוורקינג וכלים פרקטיים — עם המומחים המובילים בתחום.": {
+    "en": "A full day of talks, networking, and practical tools — with leading experts in the field.",
+    "es": "Un día completo de charlas, networking y herramientas prácticas — con los expertos líderes del sector.",
+    "pt-BR": "Um dia inteiro de palestras, networking e ferramentas práticas — com os especialistas líderes da área.",
+    "ar": "يوم كامل من المحاضرات والتواصل والأدوات العملية — مع كبار الخبراء في المجال."
+  },
+  "הטקסט באתר היה ברור, השירות היה מקצועי והתהליך כולו הרגיש מסודר ונעים.": {
+    "en": "The website text was clear, the service was professional, and the whole process felt organized and pleasant.",
+    "es": "El texto del sitio era claro, el servicio fue profesional y todo el proceso se sintió ordenado y agradable.",
+    "pt-BR": "O texto do site era claro, o serviço foi profissional e todo o processo pareceu organizado e agradável.",
+    "ar": "كان نص الموقع واضحاً، والخدمة مهنية، والعملية كلها شعرت منظّمة وممتعة."
+  },
+  "קיבלתי שירות מקצועי, ברור ומהיר. ההטבה הייתה משתלמת והתהליך היה פשוט.": {
+    "en": "I received professional, clear, and fast service. The benefit was worthwhile and the process was simple.",
+    "es": "Recibí un servicio profesional, claro y rápido. La ventaja valía la pena y el proceso fue simple.",
+    "pt-BR": "Recebi um serviço profissional, claro e rápido. O benefício valeu a pena e o processo foi simples.",
+    "ar": "حصلت على خدمة مهنية وواضحة وسريعة. كانت الميزة مجدية والعملية بسيطة."
+  },
+  "העדכונים היו מדויקים, שימושיים ונתנו לי ערך אמיתי. ההטבות לגמרי שוות.": {
+    "en": "The updates were precise, useful, and gave me real value. The benefits are totally worth it.",
+    "es": "Las actualizaciones fueron precisas, útiles y me dieron valor real. Las ventajas valen totalmente la pena.",
+    "pt-BR": "As atualizações foram precisas, úteis e me deram valor real. Os benefícios valem totalmente a pena.",
+    "ar": "كانت التحديثات دقيقة ومفيدة ومنحتني قيمة حقيقية. الميزات تستحق تماماً."
+  },
+  "״התוצאה עלתה על הציפיות. הצוות היה זמין, ברור ומקצועי לאורך כל הדרך.״": {
+    "en": "“The result exceeded expectations. The team was available, clear, and professional all the way.”",
+    "es": "“El resultado superó las expectativas. El equipo estuvo disponible, claro y profesional en todo momento.”",
+    "pt-BR": "“O resultado superou as expectativas. A equipe esteve disponível, clara e profissional o tempo todo.”",
+    "ar": "«فاقت النتيجة التوقعات. كان الفريق متاحاً وواضحاً ومهنياً طوال الطريق.»"
+  },
+  "״אחרי שנים של חיפושים — סוף סוף מצאנו שותף שמבין עסק, אנשים ותוצאות.״": {
+    "en": "“After years of searching — we finally found a partner who understands business, people, and results.”",
+    "es": "“Tras años de búsqueda — por fin encontramos un socio que entiende de negocio, personas y resultados.”",
+    "pt-BR": "“Depois de anos de busca — finalmente encontramos um parceiro que entende de negócio, pessoas e resultados.”",
+    "ar": "«بعد سنوات من البحث — وجدنا أخيراً شريكاً يفهم العمل والناس والنتائج.»"
+  },
+  "הציגו לוגואים של לקוחות, עסקים, מותגים או שיתופי פעולה שמחזקים אמון.": {
+    "en": "Show logos of clients, businesses, brands, or collaborations that build trust.",
+    "es": "Mostrad logos de clientes, negocios, marcas o colaboraciones que refuerzan la confianza.",
+    "pt-BR": "Mostrem logos de clientes, negócios, marcas ou colaborações que reforçam a confiança.",
+    "ar": "اعرضوا شعارات عملاء أو أعمال أو علامات أو تعاونات تعزّز الثقة."
+  },
+  "הציגו אירועים, כנסים, סדנאות, הופעות או הזמנות בצורה מקצועית וממירה.": {
+    "en": "Show events, conferences, workshops, performances, or invitations in a professional, converting way.",
+    "es": "Mostrad eventos, congresos, talleres, actuaciones o invitaciones de forma profesional y que convierte.",
+    "pt-BR": "Mostrem eventos, conferências, workshops, apresentações ou convites de forma profissional e que converte.",
+    "ar": "اعرضوا فعاليات أو مؤتمرات أو ورش أو عروضاً أو دعوات بطريقة مهنية ومُحوّلة."
+  },
+  "בחרו שירות, קראו פרטים וקבעו תור או השאירו פנייה בצורה פשוטה וברורה.": {
+    "en": "Choose a service, read the details, and book an appointment or leave an inquiry simply and clearly.",
+    "es": "Elegid un servicio, leed los detalles y reservad cita o dejad una consulta de forma simple y clara.",
+    "pt-BR": "Escolham um serviço, leiam os detalhes e agendem ou deixem um pedido de forma simples e clara.",
+    "ar": "اختاروا خدمة، واقرأوا التفاصيل، واحجزوا موعداً أو اتركوا طلباً بطريقة بسيطة وواضحة."
+  },
+  "כל פרויקט מתחיל בשיחה. ספרו לנו על החזון — ונחזור אליכם תוך 24 שעות.": {
+    "en": "Every project starts with a conversation. Tell us about the vision — and we’ll get back to you within 24 hours.",
+    "es": "Cada proyecto empieza con una conversación. Contadnos la visión — y os responderemos en 24 horas.",
+    "pt-BR": "Cada projeto começa com uma conversa. Contem-nos a visão — e retornaremos em 24 horas.",
+    "ar": "يبدأ كل مشروع بمحادثة. أخبرونا عن الرؤية — وسنعود إليكم خلال 24 ساعة."
+  },
+  "חוויה מקצועית, נעימה וברורה. כבר מהאתר הבנתי שזה העסק הנכון עבורי.": {
+    "en": "A professional, pleasant, and clear experience. From the website I already knew this was the right business for me.",
+    "es": "Una experiencia profesional, agradable y clara. Desde el sitio ya supe que este era el negocio correcto para mí.",
+    "pt-BR": "Uma experiência profissional, agradável e clara. Já pelo site entendi que este era o negócio certo para mim.",
+    "ar": "تجربة مهنية وممتعة وواضحة. من الموقع عرفت أن هذا هو العمل المناسب لي."
+  },
+  "השירות היה מקצועי, מהיר וברור. קיבלנו בדיוק את מה שהיינו צריכים.": {
+    "en": "The service was professional, fast, and clear. We got exactly what we needed.",
+    "es": "El servicio fue profesional, rápido y claro. Recibimos exactamente lo que necesitábamos.",
+    "pt-BR": "O serviço foi profissional, rápido e claro. Recebemos exatamente o que precisávamos.",
+    "ar": "كانت الخدمة مهنية وسريعة وواضحة. حصلنا على ما احتجناه تماماً."
+  },
+  "התוצאה יצאה מדויקת ומקצועית. השירות היה נעים, סבלני וברמה גבוהה.": {
+    "en": "The result came out precise and professional. The service was pleasant, patient, and high quality.",
+    "es": "El resultado salió preciso y profesional. El servicio fue agradable, paciente y de alto nivel.",
+    "pt-BR": "O resultado saiu preciso e profissional. O serviço foi agradável, paciente e de alto nível.",
+    "ar": "خرجت النتيجة دقيقة ومهنية. كانت الخدمة ممتعة وصبورة وبمستوى عالٍ."
+  },
+  "קביעת התור הייתה פשוטה, מהירה וברורה. קיבלתי אישור בלי להסתבך.": {
+    "en": "Booking the appointment was simple, fast, and clear. I got confirmation without any hassle.",
+    "es": "Reservar la cita fue simple, rápido y claro. Recibí confirmación sin complicaciones.",
+    "pt-BR": "Agendar foi simples, rápido e claro. Recebi confirmação sem complicação.",
+    "ar": "كان حجز الموعد بسيطاً وسريعاً وواضحاً. حصلت على تأكيد دون تعقيد."
+  },
+  "צילום אופנה, עריכה ויזואלית ופרויקטים אישיים. עבדתי עם Vogue IL, Terminal X ומותגים עצמאיים.": {
+    "en": "Fashion photography, visual editing, and personal projects. I’ve worked with Vogue IL, Terminal X, and independent brands.",
+    "es": "Fotografía de moda, edición visual y proyectos personales. He trabajado con Vogue IL, Terminal X y marcas independientes.",
+    "pt-BR": "Fotografia de moda, edição visual e projetos pessoais. Trabalhei com Vogue IL, Terminal X e marcas independentes.",
+    "ar": "تصوير أزياء وتحرير بصري ومشاريع شخصية. عملت مع Vogue IL وTerminal X وعلامات مستقلة."
+  },
+  "התמחות בעיצוב דיגיטלי, טיפוגרפיה ומערכות זהות. פרויקט גמר: פלטפורמת תוכן לעסקים קטנים.": {
+    "en": "Specialization in digital design, typography, and identity systems. Final project: a content platform for small businesses.",
+    "es": "Especialización en diseño digital, tipografía y sistemas de identidad. Proyecto final: plataforma de contenido para pequeños negocios.",
+    "pt-BR": "Especialização em design digital, tipografia e sistemas de identidade. Projeto final: plataforma de conteúdo para pequenos negócios.",
+    "ar": "تخصص في التصميم الرقمي والتيبوغرافيا وأنظمة الهوية. مشروع التخرج: منصة محتوى للأعمال الصغيرة."
+  },
+  "ווידג׳ט חי לחבילות. הגדירו קישור סליקה במאפיין העיצוב — והכפתור מוביל ישירות לתשלום.": {
+    "en": "Live packages widget. Set a clearing link in the design property — and the button goes straight to payment.",
+    "es": "Widget vivo de paquetes. Definid un enlace de pasarela en la propiedad de diseño — y el botón lleva directo al pago.",
+    "pt-BR": "Widget ao vivo de pacotes. Definam um link de adquirente na propriedade de design — e o botão vai direto ao pagamento.",
+    "ar": "ودجت حي للباقات. عيّنوا رابط تحصيل في خاصية التصميم — والزر ينقل مباشرة إلى الدفع."
+  },
+  "עיצוב מוצרי SaaS מורכבים, מחקר משתמשים ושיתוף פעולה הדוק עם צוותי מוצר ופיתוח.": {
+    "en": "Designing complex SaaS products, user research, and close collaboration with product and engineering teams.",
+    "es": "Diseño de productos SaaS complejos, investigación de usuarios y colaboración estrecha con equipos de producto y desarrollo.",
+    "pt-BR": "Design de produtos SaaS complexos, pesquisa com usuários e colaboração estreita com equipes de produto e engenharia.",
+    "ar": "تصميم منتجات SaaS معقّدة وبحث مستخدمين وتعاون وثيق مع فرق المنتج والتطوير."
+  },
+  "הובלת צוות עיצוב ואסטרטגיה, בניית מערכות מותג וליווי לקוחות מפתח מקצה לקצה.": {
+    "en": "Leading a design and strategy team, building brand systems, and guiding key clients end to end.",
+    "es": "Liderazgo de un equipo de diseño y estrategia, construcción de sistemas de marca y acompañamiento de clientes clave de extremo a extremo.",
+    "pt-BR": "Liderança de uma equipe de design e estratégia, construção de sistemas de marca e acompanhamento de clientes-chave de ponta a ponta.",
+    "ar": "قيادة فريق تصميم واستراتيجية، وبناء أنظمة علامة، ومرافقة عملاء رئيسيين من البداية للنهاية."
+  },
+  "לאחר התשלום בסליקה שלכם — עדכנו את הלקוח ל־paid והעמודים המוגנים ייפתחו.": {
+    "en": "After payment via your clearing — update the customer to paid and the protected pages will open.",
+    "es": "Tras el pago en vuestra pasarela — actualizad el cliente a paid y se abrirán las páginas protegidas.",
+    "pt-BR": "Após o pagamento na sua adquirente — atualizem o cliente para paid e as páginas protegidas serão abertas.",
+    "ar": "بعد الدفع عبر بوابة التحصيل لديكم — حدّثوا العميل إلى paid وستُفتح الصفحات المحمية."
+  },
+  "הציגו נכסים, פרויקטים, עיצוב פנים, חללים או עבודות בנייה בצורה מקצועית.": {
+    "en": "Show properties, projects, interior design, spaces, or construction work professionally.",
+    "es": "Mostrad propiedades, proyectos, diseño de interiores, espacios u obras de forma profesional.",
+    "pt-BR": "Mostrem imóveis, projetos, design de interiores, espaços ou obras de forma profissional.",
+    "ar": "اعرضوا عقارات أو مشاريع أو تصميم داخلي أو مساحات أو أعمال بناء بشكل مهني."
+  },
+  "אנשים מקצועיים, שירותיים ומנוסים שמלווים את הלקוחות בצורה אישית וברורה.": {
+    "en": "Professional, service-minded, experienced people who guide customers personally and clearly.",
+    "es": "Personas profesionales, serviciales y experimentadas que acompañan a los clientes de forma personal y clara.",
+    "pt-BR": "Pessoas profissionais, prestativas e experientes que acompanham os clientes de forma pessoal e clara.",
+    "ar": "أشخاص مهنيون وخدومون ومتمرّسون يرافقون العملاء بشكل شخصي وواضح."
+  },
+  "בעל העסק יכול להעלות תמונות, סרטונים, תוצאות, עבודות או גלריית אווירה.": {
+    "en": "The business owner can upload photos, videos, results, work samples, or an atmosphere gallery.",
+    "es": "El dueño del negocio puede subir fotos, vídeos, resultados, trabajos o una galería de ambiente.",
+    "pt-BR": "O dono do negócio pode enviar fotos, vídeos, resultados, trabalhos ou uma galeria de atmosfera.",
+    "ar": "يمكن لصاحب العمل رفع صور أو فيديوهات أو نتائج أو أعمال أو معرض أجواء."
+  },
+  "עיצוב חוויות מסחר ופלטפורמה גלובלית, עם דגש על בהירות, נגישות ומהירות.": {
+    "en": "Designing commerce experiences and a global platform, with emphasis on clarity, accessibility, and speed.",
+    "es": "Diseño de experiencias de comercio y una plataforma global, con énfasis en claridad, accesibilidad y velocidad.",
+    "pt-BR": "Design de experiências de comércio e uma plataforma global, com ênfase em clareza, acessibilidade e velocidade.",
+    "ar": "تصميم تجارب تجارة ومنصة عالمية، مع التركيز على الوضوح وإمكانية الوصول والسرعة."
+  },
+  "אזור הכנה והגשה מאובזר, המתאים לקייטרינג ולחוויות קולינריות אינטימיות.": {
+    "en": "A fully equipped prep and serving area, suited for catering and intimate culinary experiences.",
+    "es": "Una zona de preparación y servicio equipada, apta para catering y experiencias culinarias íntimas.",
+    "pt-BR": "Uma área de preparo e serviço equipada, adequada para catering e experiências culinárias íntimas.",
+    "ar": "منطقة تحضير وتقديم مجهّزة، تناسب التموين والتجارب الطهوية الحميمة."
+  },
+  "עיצוב חוויות דיגיטליות מקצה לקצה — ממחקר משתמשים ועד מערכת עיצוב חיה.": {
+    "en": "Designing digital experiences end to end — from user research to a living design system.",
+    "es": "Diseño de experiencias digitales de extremo a extremo — de la investigación de usuarios a un sistema de diseño vivo.",
+    "pt-BR": "Design de experiências digitais de ponta a ponta — da pesquisa com usuários a um sistema de design vivo.",
+    "ar": "تصميم تجارب رقمية من البداية للنهاية — من بحث المستخدمين إلى نظام تصميم حي."
+  },
+  "חלל מרווח לאירועים, מפגשים ואירוח — עם תאורה מתכווננת ואקוסטיקה נוחה.": {
+    "en": "A spacious venue for events, meetings, and hosting — with adjustable lighting and comfortable acoustics.",
+    "es": "Un espacio amplio para eventos, reuniones y recepción — con iluminación ajustable y acústica cómoda.",
+    "pt-BR": "Um espaço amplo para eventos, reuniões e recepção — com iluminação ajustável e acústica confortável.",
+    "ar": "مساحة واسعة للفعاليات واللقاءات والاستضافة — بإضاءة قابلة للضبط وصوتيات مريحة."
+  },
+  "להפוך ידע, יצירתיות וטכנולוגיה לפתרונות שמשפרים את היום־יום של אנשים.": {
+    "en": "Turning knowledge, creativity, and technology into solutions that improve people’s everyday life.",
+    "es": "Convertir conocimiento, creatividad y tecnología en soluciones que mejoran el día a día de las personas.",
+    "pt-BR": "Transformar conhecimento, criatividade e tecnologia em soluções que melhoram o dia a dia das pessoas.",
+    "ar": "تحويل المعرفة والإبداع والتقنية إلى حلول تحسّن يوم الناس."
+  },
+  "תיאור קצר על ניסיון, התמחות, יחס אישי והערך שאיש הצוות נותן ללקוחות.": {
+    "en": "A short description of experience, specialty, personal care, and the value the team member gives customers.",
+    "es": "Una breve descripción de experiencia, especialidad, trato personal y el valor que la persona del equipo da a los clientes.",
+    "pt-BR": "Uma breve descrição de experiência, especialidade, atendimento pessoal e o valor que o membro da equipe dá aos clientes.",
+    "ar": "وصف قصير عن الخبرة والتخصص والعناية الشخصية والقيمة التي يقدّمها عضو الفريق للعملاء."
+  },
+  "כל טקסט בעמוד אפשר לקשר לנתון מה-CRM — בכרטיס, למעלה, למטה או בטבלה.": {
+    "en": "Any text on the page can be linked to a CRM field — on a card, above, below, or in a table.",
+    "es": "Cualquier texto de la página se puede vincular a un dato del CRM — en una tarjeta, arriba, abajo o en una tabla.",
+    "pt-BR": "Qualquer texto da página pode ser ligado a um dado do CRM — em um cartão, acima, abaixo ou em uma tabela.",
+    "ar": "أي نص في الصفحة يمكن ربطه بحقل من الـ CRM — في بطاقة أو أعلى أو أسفل أو في جدول."
+  },
+  "מתאים לעסקים שמוכרים חבילות, מנויים, שירותים מדורגים או הצעות מחיר.": {
+    "en": "Suited for businesses that sell packages, subscriptions, tiered services, or price quotes.",
+    "es": "Apto para negocios que venden paquetes, suscripciones, servicios escalonados o presupuestos.",
+    "pt-BR": "Adequado para negócios que vendem pacotes, assinaturas, serviços em níveis ou orçamentos.",
+    "ar": "يناسب الأعمال التي تبيع باقات أو اشتراكات أو خدمات متدرجة أو عروض أسعار."
+  },
+  "הזדמנות ללמוד מעבודה אמיתית על פרויקטים חיים, עם ליווי צמוד מהצוות.": {
+    "en": "A chance to learn from real work on live projects, with close guidance from the team.",
+    "es": "Una oportunidad de aprender de trabajo real en proyectos vivos, con acompañamiento cercano del equipo.",
+    "pt-BR": "Uma chance de aprender com trabalho real em projetos vivos, com acompanhamento próximo da equipe.",
+    "ar": "فرصة للتعلّم من عمل حقيقي على مشاريع حيّة، مع مرافقة قريبة من الفريق."
+  },
+  "שירותים בצד אחד ויומן בצד השני — מחובר ל-CRM, עם עריכת צבעים ועיצוב": {
+    "en": "Services on one side and a calendar on the other — connected to the CRM, with color and design editing.",
+    "es": "Servicios a un lado y agenda al otro — conectado al CRM, con edición de colores y diseño.",
+    "pt-BR": "Serviços de um lado e agenda do outro — ligado ao CRM, com edição de cores e design.",
+    "ar": "خدمات في جانب ويوميات في الجانب الآخر — متصل بالـ CRM، مع تحرير ألوان وتصميم."
+  },
+  "ליווי מלא של מותג טכנולוגיה מהשקה ראשונה ועד נוכחות בשווקים חדשים.": {
+    "en": "Full guidance of a tech brand from first launch to presence in new markets.",
+    "es": "Acompañamiento completo de una marca tecnológica desde el primer lanzamiento hasta presencia en nuevos mercados.",
+    "pt-BR": "Acompanhamento completo de uma marca de tecnologia do primeiro lançamento à presença em novos mercados.",
+    "ar": "مرافقة كاملة لعلامة تقنية من الإطلاق الأول إلى الحضور في أسواق جديدة."
+  },
+  "בניית ממשקים מהירים ונגישים ב־React, עם תשומת לב לפרטים ולביצועים.": {
+    "en": "Building fast, accessible React interfaces, with attention to detail and performance.",
+    "es": "Construcción de interfaces React rápidas y accesibles, con atención al detalle y al rendimiento.",
+    "pt-BR": "Construção de interfaces React rápidas e acessíveis, com atenção a detalhes e desempenho.",
+    "ar": "بناء واجهات React سريعة وسهلة الوصول، مع اهتمام بالتفاصيل والأداء."
+  },
+  "השירותים בצד ימין, היומן והשעות בצד שמאל — נמשכים אוטומטית מה-CRM.": {
+    "en": "Services on the right, calendar and hours on the left — pulled automatically from the CRM.",
+    "es": "Servicios a la derecha, agenda y horas a la izquierda — se toman automáticamente del CRM.",
+    "pt-BR": "Serviços à direita, agenda e horários à esquerda — puxados automaticamente do CRM.",
+    "ar": "الخدمات على اليمين، واليوميات والساعات على اليسار — تُسحب تلقائياً من الـ CRM."
+  },
+  "כתבו כאן טקסט שמציג את העסק, השירות או המוצר בצורה ברורה ומקצועית.": {
+    "en": "Write text here that presents the business, service, or product clearly and professionally.",
+    "es": "Escribid aquí un texto que presente el negocio, servicio o producto de forma clara y profesional.",
+    "pt-BR": "Escrevam aqui um texto que apresente o negócio, serviço ou produto de forma clara e profissional.",
+    "ar": "اكتبوا هنا نصاً يعرض العمل أو الخدمة أو المنتج بوضوح ومهنية."
+  },
+  "מתאים כשאין כמה מסלולים — רק דף תשלום ברור לפני פתיחת האזור האישי.": {
+    "en": "Suited when there aren’t multiple plans — just a clear payment page before opening the personal area.",
+    "es": "Apto cuando no hay varios planes — solo una página de pago clara antes de abrir el área personal.",
+    "pt-BR": "Adequado quando não há vários planos — só uma página de pagamento clara antes de abrir a área pessoal.",
+    "ar": "يناسب عندما لا توجد عدة مسارات — فقط صفحة دفع واضحة قبل فتح المنطقة الشخصية."
+  },
+  "״סוף סוף מישהו שהבין בדיוק מה אנחנו צריכים — בלי סיבוכים מיותרים.״": {
+    "en": "“Finally someone who understood exactly what we needed — without unnecessary complications.”",
+    "es": "“Por fin alguien que entendió exactamente lo que necesitábamos — sin complicaciones innecesarias.”",
+    "pt-BR": "“Finalmente alguém que entendeu exatamente o que precisávamos — sem complicações desnecessárias.”",
+    "ar": "«أخيراً شخص فهم بالضبط ما نحتاجه — بلا تعقيدات غير ضرورية.»"
+  },
+  "הבוט עוזר ללקוח להבין מחירים, שירותים, שעות פעילות, מיקום ותהליך.": {
+    "en": "The bot helps the customer understand prices, services, hours, location, and process.",
+    "es": "El bot ayuda al cliente a entender precios, servicios, horario, ubicación y proceso.",
+    "pt-BR": "O bot ajuda o cliente a entender preços, serviços, horários, local e processo.",
+    "ar": "يساعد الروبوت العميل على فهم الأسعار والخدمات والساعات والموقع والعملية."
+  },
+  "שעה אחת של תובנות מעשיות — עם שאלות ותשובות חיות. מקומות מוגבלים.": {
+    "en": "One hour of practical insights — with a live Q&A. Limited seats.",
+    "es": "Una hora de ideas prácticas — con preguntas y respuestas en vivo. Plazas limitadas.",
+    "pt-BR": "Uma hora de insights práticos — com perguntas e respostas ao vivo. Vagas limitadas.",
+    "ar": "ساعة واحدة من رؤى عملية — مع أسئلة وأجوبة مباشرة. الأماكن محدودة."
+  },
+  "קומפוזיציית תמונות נועזת עם מסר נקי וכרטיס שמרגיש כמו שכבת מגזין.": {
+    "en": "A bold photo composition with a clean message and a card that feels like a magazine layer.",
+    "es": "Una composición fotográfica audaz con un mensaje limpio y una tarjeta que se siente como una capa de revista.",
+    "pt-BR": "Uma composição fotográfica ousada com mensagem limpa e um cartão que parece uma camada de revista.",
+    "ar": "تكوين صور جريء برسالة نظيفة وبطاقة تبدو كطبقة مجلة."
+  },
+  "מתאים לעסק עם כמה עובדים, מומחים, מטפלים, יועצים או נותני שירות.": {
+    "en": "Suited for a business with several employees, specialists, therapists, consultants, or service providers.",
+    "es": "Apto para un negocio con varios empleados, especialistas, terapeutas, consultores o prestadores de servicio.",
+    "pt-BR": "Adequado para um negócio com vários funcionários, especialistas, terapeutas, consultores ou prestadores de serviço.",
+    "ar": "يناسب عملاً بعدة موظفين أو متخصصين أو معالجين أو مستشارين أو مقدّمي خدمة."
+  },
+  "הציגו מוצרים, קולקציות, פריטים או קטלוג בצורה ויזואלית ומקצועית.": {
+    "en": "Show products, collections, items, or a catalog in a visual, professional way.",
+    "es": "Mostrad productos, colecciones, artículos o un catálogo de forma visual y profesional.",
+    "pt-BR": "Mostrem produtos, coleções, itens ou um catálogo de forma visual e profissional.",
+    "ar": "اعرضوا منتجات أو مجموعات أو عناصر أو كتالوج بطريقة بصرية ومهنية."
+  },
+  "מבנה שמתאים לעסק עם צוותים, תחומי פעילות או כמה מחלקות מקצועיות.": {
+    "en": "A structure suited for a business with teams, activity areas, or several professional departments.",
+    "es": "Una estructura apta para un negocio con equipos, áreas de actividad o varias departamentos profesionales.",
+    "pt-BR": "Uma estrutura adequada para um negócio com equipes, áreas de atuação ou vários departamentos profissionais.",
+    "ar": "بنية تناسب عملاً بفرق أو مجالات نشاط أو عدة أقسام مهنية."
+  },
+  "עיצוב מחדש של אתר ומשפך תוכן שהכפיל את הפניות האיכותיות תוך שנה.": {
+    "en": "A website and content-funnel redesign that doubled quality leads within a year.",
+    "es": "Un rediseño de sitio y embudo de contenido que duplicó los leads de calidad en un año.",
+    "pt-BR": "Uma reformulação de site e funil de conteúdo que dobrou os leads de qualidade em um ano.",
+    "ar": "إعادة تصميم موقع وقمع محتوى ضاعف العملاء المحتملين الجيدين خلال سنة."
+  },
+  "טיפים, מדריכים ועדכונים בלעדיים — ישר לתיבת המייל. בלי דואר זבל.": {
+    "en": "Tips, guides, and exclusive updates — straight to your inbox. No spam.",
+    "es": "Consejos, guías y actualizaciones exclusivas — directo a tu bandeja. Sin spam.",
+    "pt-BR": "Dicas, guias e atualizações exclusivas — direto na sua caixa. Sem spam.",
+    "ar": "نصائح وأدلة وتحديثات حصرية — مباشرة إلى صندوقكم. بلا رسائل مزعجة."
+  },
+  "מעמוד ראשון ועד יצירת קשר – איך בונים מבנה שממיר מבקרים ללקוחות.": {
+    "en": "From the first page to contact – how to build a structure that turns visitors into customers.",
+    "es": "De la primera página al contacto – cómo construir una estructura que convierte visitantes en clientes.",
+    "pt-BR": "Da primeira página ao contato – como construir uma estrutura que transforma visitantes em clientes.",
+    "ar": "من الصفحة الأولى إلى التواصل – كيف تبنون بنية تحوّل الزوار إلى عملاء."
+  },
+  "מעצבים, מפתחים, אסטרטגים ויועצים — כולם עובדים יחד בשקיפות מלאה.": {
+    "en": "Designers, developers, strategists, and consultants — all working together with full transparency.",
+    "es": "Diseñadores, desarrolladores, estrategas y consultores — todos trabajan juntos con transparencia total.",
+    "pt-BR": "Designers, desenvolvedores, estrategistas e consultores — todos trabalham juntos com transparência total.",
+    "ar": "مصممون ومطوّرون واستراتيجيون ومستشارون — يعملون معاً بشفافية كاملة."
+  },
+  "״ראיתי תוצאות כבר מהשבוע הראשון — לא האמנתי שזה יקרה כל כך מהר.״": {
+    "en": "“I saw results from the first week — I couldn’t believe it would happen so fast.”",
+    "es": "“Vi resultados ya desde la primera semana — no creía que pasaría tan rápido.”",
+    "pt-BR": "“Vi resultados já na primeira semana — não acreditei que aconteceria tão rápido.”",
+    "ar": "«رأيت نتائج منذ الأسبوع الأول — لم أصدّق أن ذلك سيحدث بهذه السرعة.»"
+  },
+  "אנחנו יוצרים מותגים ואתרים שנשארים בראש גם אחרי שסוגרים את המסך.": {
+    "en": "We create brands and websites that stay in mind even after the screen is closed.",
+    "es": "Creamos marcas y sitios que se quedan en la mente incluso después de cerrar la pantalla.",
+    "pt-BR": "Criamos marcas e sites que ficam na mente mesmo depois de fechar a tela.",
+    "ar": "نصنع علامات ومواقع تبقى في الذهن حتى بعد إغلاق الشاشة."
+  },
+  "הלקוח מתחיל מבחירת השירות, רואה מחיר ומשך, ואז בוחר תאריך ושעה.": {
+    "en": "The customer starts by choosing a service, sees price and duration, then picks a date and time.",
+    "es": "El cliente empieza eligiendo un servicio, ve precio y duración, y luego elige fecha y hora.",
+    "pt-BR": "O cliente começa escolhendo um serviço, vê preço e duração, e então escolhe data e hora.",
+    "ar": "يبدأ العميل باختيار الخدمة، ويرى السعر والمدة، ثم يختار التاريخ والساعة."
+  },
+  "הציגו תמונות של עבודות, מוצרים, תוצאות, מקום, אירועים או השראה.": {
+    "en": "Show photos of work, products, results, place, events, or inspiration.",
+    "es": "Mostrad fotos de trabajos, productos, resultados, lugar, eventos o inspiración.",
+    "pt-BR": "Mostrem fotos de trabalhos, produtos, resultados, local, eventos ou inspiração.",
+    "ar": "اعرضوا صور أعمال أو منتجات أو نتائج أو مكان أو فعاليات أو إلهام."
+  },
+  "הציגו ביקורות אמיתיות שמחזקות אמון ועוזרות ללקוחות חדשים לפנות.": {
+    "en": "Show real reviews that build trust and help new customers reach out.",
+    "es": "Mostrad reseñas reales que refuerzan la confianza y ayudan a nuevos clientes a contactar.",
+    "pt-BR": "Mostrem avaliações reais que reforçam a confiança e ajudam novos clientes a entrar em contato.",
+    "ar": "اعرضوا مراجعات حقيقية تعزّز الثقة وتساعد العملاء الجدد على التواصل."
+  }
+}

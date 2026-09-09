@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import './ShopPreview.css';
 import PaymentSection from './PaymentSection';
 
 const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState(null);
   const [showCart, setShowCart] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -41,7 +43,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
   return (
     <div className="shop-preview">
       <div className="shop-header-row">
-        <h3 className="shop-section-title">🏍️ Your Store</h3>
+        <h3 className="shop-section-title">🏍️ {t("leftover.shopChrome.yourStore")}</h3>
         <button
           className="cart-toggle-btn"
           onClick={() => {
@@ -49,7 +51,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
             setShowPayment(false);
           }}
         >
-          {showCart ? '↩ Back to Store' : `View Cart (${cart.length}) 🛒`}
+          {showCart ? `↩ ${t("leftover.shopChrome.backToStore")}` : `${t("leftover.shopChrome.viewCart", { count: cart.length })} 🛒`}
         </button>
       </div>
 
@@ -62,10 +64,10 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
         />
       ) : showCart ? (
         <div className="cart-view-section">
-          <h3>🛒 Your Shopping Cart</h3>
+          <h3>🛒 {t("leftover.shopChrome.shoppingCart")}</h3>
 
           {cart.length === 0 ? (
-            <p className="empty-cart">Your cart is currently empty</p>
+            <p className="empty-cart">{t("leftover.shopChrome.emptyCart")}</p>
           ) : (
             <div className="cart-list">
               {cart.map((item, i) => (
@@ -73,8 +75,8 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                   <img src={item.image} alt={item.name} className="cart-thumb" />
                   <div className="item-details">
                     <h4>{item.name}</h4>
-                    <p>Quantity: {item.quantity}</p>
-                    <p>Total: $ {item.price * item.quantity}</p>
+                    <p>{t("leftover.shopChrome.quantity", { count: item.quantity })}</p>
+                    <p>{t("leftover.shopChrome.lineTotal", { amount: item.price * item.quantity })}</p>
                   </div>
                   <button className="remove-btn" onClick={() => handleRemoveFromCart(i)}>🗑️</button>
                 </div>
@@ -85,20 +87,20 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
           <div className="coupon-box">
             <input
               className="coupon-input"
-              placeholder="Enter coupon code (e.g., SUMMER10)"
+              placeholder={t("leftover.shopChrome.couponPh")}
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
             />
           </div>
 
           <div className="summary">
-            <p>📟 Before Discount: $ {base.toFixed(2)}</p>
-            {discount > 0 && <p className="discount">💸 Discount: $ {discount.toFixed(2)}</p>}
-            {shippingCost > 0 && <p>🚚 Shipping: $ {shippingCost.toFixed(2)}</p>}
-            <h3>💰 Total to Pay: $ {final.toFixed(2)}</h3>
+            <p>📟 {t("leftover.shopChrome.beforeDiscount", { amount: base.toFixed(2) })}</p>
+            {discount > 0 && <p className="discount">💸 {t("leftover.shopChrome.discountLine", { amount: discount.toFixed(2) })}</p>}
+            {shippingCost > 0 && <p>🚚 {t("leftover.shopChrome.shippingLine", { amount: shippingCost.toFixed(2) })}</p>}
+            <h3>💰 {t("leftover.shopChrome.totalToPay", { amount: final.toFixed(2) })}</h3>
           </div>
 
-          <button className="pay-btn" onClick={() => setShowPayment(true)}>Proceed to Payment 💳</button>
+          <button className="pay-btn" onClick={() => setShowPayment(true)}>{t("leftover.shopChrome.proceedPayment")} 💳</button>
         </div>
       ) : (
         <>
@@ -108,7 +110,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                 className={!activeCategory ? 'active' : ''}
                 onClick={() => setActiveCategory(null)}
               >
-                All
+                {t("leftover.shopChrome.allCategories")}
               </button>
               {allCategories.map((cat, i) => (
                 <button
@@ -133,7 +135,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                   <p>{p.price} $</p>
                   {p.description && (
                     <details className="product-description">
-                      <summary>Show Description</summary>
+                      <summary>{t("leftover.paymentFormChrome.showDescription")}</summary>
                       <p>{p.description}</p>
                     </details>
                   )}
@@ -155,7 +157,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                         handleAddToCart(p, qty);
                       }}
                     >
-                      Add to Cart
+                      {t("leftover.shopChrome.addToCart")}
                     </button>
                   </div>
                 </div>

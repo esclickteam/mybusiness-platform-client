@@ -15,11 +15,11 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
 
   return (
     <div className="appointment-payment">
-      <h4>Payment 💳</h4>
+      <h4>{t("leftover.paymentFormChrome.paymentTitle")} 💳</h4>
 
       {!showCreditForm && !showPhoneForm && (
         <div className="payment-methods">
-          <p>Select your preferred payment method:</p>
+          <p>{t("leftover.paymentFormChrome.selectMethod")}</p>
 
           <button
             className={`base-button ${method === "card" ? "selected" : ""}`}
@@ -28,7 +28,7 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
               setShowCreditForm(true);
             }}
           >
-            Credit Card Payment 💳
+            {t("leftover.paymentFormChrome.creditCardPayment")} 💳
           </button>
 
           <button
@@ -38,64 +38,64 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
               setShowPhoneForm(true);
             }}
           >
-            Phone Payment 📞
+            {t("leftover.paymentFormChrome.phonePayment")} 📞
           </button>
 
           <div className="action-buttons">
-            <button onClick={onBack}>⬅ Back</button>
+            <button onClick={onBack}>⬅ {t("leftover.paymentFormChrome.back")}</button>
           </div>
         </div>
       )}
 
       {method === "card" && showCreditForm && (
         <div className="credit-card-form">
-          <h5>Online Payment 🔒</h5>
+          <h5>{t("leftover.paymentFormChrome.onlinePayment")} 🔒</h5>
 
-          <label>Full Name</label>
+          <label>{t("leftover.paymentFormChrome.fullName")}</label>
           <input type="text" />
 
-          <label>Phone</label>
+          <label>{t("leftover.paymentFormChrome.phone")}</label>
           <input type="tel" />
 
-          <label>Email</label>
+          <label>{t("leftover.paymentFormChrome.email")}</label>
           <input type="email" />
 
-          <label>Card Number</label>
+          <label>{t("leftover.paymentFormChrome.cardNumber")}</label>
           <input type="text" placeholder="1234 5678 9012 3456" />
 
-          <label>Expiry Date</label>
+          <label>{t("leftover.paymentFormChrome.expiryDate")}</label>
           <input type="text" placeholder="MM/YY" />
 
-          <label>CVV</label>
+          <label>{t("leftover.paymentFormChrome.cvv")}</label>
           <input type="text" placeholder="123" />
 
-          <button className="pay-btn">💳 Make Payment</button>
+          <button className="pay-btn">💳 {t("leftover.paymentFormChrome.makePayment")}</button>
 
           <div className="action-buttons">
-            <button onClick={() => setShowCreditForm(false)}>⬅ Back</button>
+            <button onClick={() => setShowCreditForm(false)}>⬅ {t("leftover.paymentFormChrome.back")}</button>
           </div>
         </div>
       )}
 
       {method === "phone" && showPhoneForm && (
         <div className="credit-card-form">
-          <h5>📞 Fill in your details and we will call you</h5>
+          <h5>📞 {t("leftover.paymentFormChrome.phonePayTitle")}</h5>
 
-          <label>Full Name</label>
+          <label>{t("leftover.paymentFormChrome.fullName")}</label>
           <input
             type="text"
             value={phoneName}
             onChange={(e) => setPhoneName(e.target.value)}
           />
 
-          <label>Phone</label>
+          <label>{t("leftover.paymentFormChrome.phone")}</label>
           <input
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
 
-          <label>Email</label>
+          <label>{t("leftover.paymentFormChrome.email")}</label>
           <input
             type="email"
             value={phoneEmail}
@@ -110,8 +110,8 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                 phone: phoneNumber,
                 email: phoneEmail,
                 date: new Date().toLocaleDateString("en-CA"),
-                time: "Phone",
-                service: "Consultation Service",
+                time: t("leftover.paymentFormChrome.phoneTimeLabel"),
+                service: t("leftover.paymentFormChrome.consultationService"),
                 duration: 30,
                 total: "$200",
                 status: "New",
@@ -158,11 +158,11 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                 });
             }}
           >
-            Send and We Will Call You
+            {t("leftover.paymentFormChrome.sendAndCall")}
           </button>
 
           <div className="action-buttons">
-            <button onClick={() => setShowPhoneForm(false)}>⬅ Back</button>
+            <button onClick={() => setShowPhoneForm(false)}>⬅ {t("leftover.paymentFormChrome.back")}</button>
           </div>
         </div>
       )}

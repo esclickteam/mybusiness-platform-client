@@ -53,11 +53,11 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
       total: `${total.toFixed(2)} $`,
       date: new Date().toLocaleString('en-IL'),
       payment_note: selectedMethod === 'phone'
-        ? "We will contact you to complete your payment by phone."
-        : "Your payment has been received, and we are processing your order.",
+        ? t("leftover.paymentFormChrome.phoneContactNote")
+        : t("leftover.paymentFormChrome.paymentReceivedNote"),
       order_items: generateOrderItemsHtml(),
-      business_name: business?.name || "Your Business",
-      address: customer.address || "Not provided"
+      business_name: business?.name || t("leftover.paymentFormChrome.yourBusiness"),
+      address: customer.address || t("leftover.paymentFormChrome.notProvided")
     };
 
     try {
@@ -78,7 +78,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
   const sharedFields = (
     <>
       <div className="form-row">
-        <label>Full Name</label>
+        <label>{t("leftover.paymentFormChrome.fullName")}</label>
         <input
           type="text"
           className="form-input"
@@ -87,7 +87,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
         />
       </div>
       <div className="form-row">
-        <label>Phone</label>
+        <label>{t("leftover.paymentFormChrome.phone")}</label>
         <input
           type="tel"
           className="form-input"
@@ -96,7 +96,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
         />
       </div>
       <div className="form-row">
-        <label>Email</label>
+        <label>{t("leftover.paymentFormChrome.email")}</label>
         <input
           type="email"
           className="form-input"
@@ -105,7 +105,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
         />
       </div>
       <div className="form-row">
-        <label>Shipping Address</label>
+        <label>{t("leftover.paymentFormChrome.shippingAddress")}</label>
         <input
           type="text"
           className="form-input"
@@ -120,12 +120,12 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
     if (submitted) {
       return (
         <div className="payment-box">
-          <h3>✅ Thank you, {customer.name}!</h3>
-          <p>Business: <strong>{business?.name || 'Your Business'}</strong></p>
-          <p>Confirmation sent to: <strong>{customer.email}</strong></p>
-          <p>Phone: <strong>{customer.phone}</strong></p>
-          <p>Address: <strong>{customer.address}</strong></p>
-          <p>Total Amount: <strong>{calculateTotal().toFixed(2)} $</strong></p>
+          <h3>✅ {t("leftover.paymentFormChrome.thankYou", { name: customer.name })}</h3>
+          <p>{t("leftover.paymentFormChrome.business")} <strong>{business?.name || t("leftover.paymentFormChrome.yourBusiness")}</strong></p>
+          <p>{t("leftover.paymentFormChrome.confirmationSent")} <strong>{customer.email}</strong></p>
+          <p>{t("leftover.paymentFormChrome.phone")}: <strong>{customer.phone}</strong></p>
+          <p>{t("leftover.paymentFormChrome.address")} <strong>{customer.address}</strong></p>
+          <p>{t("leftover.paymentFormChrome.totalAmount")} <strong>{calculateTotal().toFixed(2)} $</strong></p>
         </div>
       );
     }
@@ -133,10 +133,10 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
     if (selectedMethod === 'online') {
       return (
         <div className="payment-box">
-          <p>🔐 Online Payment</p>
+          <p>🔐 {t("leftover.paymentFormChrome.onlinePayment")}</p>
           {sharedFields}
           <div className="form-row">
-            <label>Card Number</label>
+            <label>{t("leftover.paymentFormChrome.cardNumber")}</label>
             <input
               type="text"
               className="form-input"
@@ -146,7 +146,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
             />
           </div>
           <div className="form-row">
-            <label>Expiry Date</label>
+            <label>{t("leftover.paymentFormChrome.expiryDate")}</label>
             <input
               type="text"
               className="form-input"
@@ -156,7 +156,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
             />
           </div>
           <div className="form-row">
-            <label>CVV</label>
+            <label>{t("leftover.paymentFormChrome.cvv")}</label>
             <input
               type="text"
               className="form-input"
@@ -165,7 +165,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
               placeholder="123"
             />
           </div>
-          <button className="pay-btn" onClick={handleSendEmail}>Pay Now 💳</button>
+          <button className="pay-btn" onClick={handleSendEmail}>{t("leftover.paymentFormChrome.payNow")} 💳</button>
         </div>
       );
     }

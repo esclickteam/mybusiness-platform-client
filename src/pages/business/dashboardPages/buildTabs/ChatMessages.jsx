@@ -5,7 +5,7 @@ import './ChatMessages.css';
 import VoiceBubble from './VoiceBubble'; // Audio player
 
 const ChatMessages = ({ messages, currentClientId }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const endRef = useRef(null);
 
   // Auto-scroll to bottom when messages update
@@ -33,10 +33,10 @@ const ChatMessages = ({ messages, currentClientId }) => {
             <div className="chat-bubble">
               <span className="sender-label">
                 {fromClass === 'from-customer'
-                  ? 'You (Customer)'
+                  ? t('leftover.bizChatChrome.youCustomer')
                   : fromClass === 'from-business'
-                  ? 'Business'
-                  : 'System'}
+                  ? t('leftover.bizChatChrome.business')
+                  : t('leftover.bizChatChrome.system')}
               </span>
 
               {/* Text */}

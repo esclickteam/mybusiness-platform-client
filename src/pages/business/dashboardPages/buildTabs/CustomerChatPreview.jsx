@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ChatMessages from './ChatMessages';
 import './CustomerChatPreview.css';
 
 const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
+  const { t } = useTranslation();
   const chatSettings = businessDetails?.chatSettings ?? {};
   const [name, setName] = useState('');
   const [clientId, setClientId] = useState('');
@@ -148,7 +150,7 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
               ) : filePreview.type.startsWith('audio') ? (
                 <audio controls style={{ marginTop: '6px', width: '100%' }}>
                   <source src={filePreview.url} type={filePreview.type} />
-                  Your browser does not support audio playback.
+                  {t("leftover.bizChatChrome.audioUnsupported")}
                 </audio>
               ) : (
                 <p>{`📎 ${filePreview.name}`}</p>
@@ -163,13 +165,13 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
       <div className="chat-input-area">
         <input
           type="text"
-          placeholder="Your Name"
+          placeholder={t("leftover.bizChatChrome.yourNamePh")}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
         <textarea
-          placeholder="Write a message..."
+          placeholder={t("leftover.bizChatChrome.writeMessagePh")}
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={2}
@@ -178,16 +180,16 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
         <div className="chat-input-buttons">
           <button onClick={() => setShowAttach(!showAttach)}>📎</button>
           <button onClick={handleVoiceRecording}>
-            {isRecording ? '⏹️ Stop' : '🎙️ Record'}
+            {isRecording ? `⏹️ ${t("leftover.bizChatChrome.stop")}` : `🎙️ ${t("leftover.bizChatChrome.record")}`}
           </button>
-          <button onClick={handleSend}>Send</button>
+          <button onClick={handleSend}>{t("leftover.bizChatChrome.send")}</button>
         </div>
 
         {showAttach && (
           <div className="attachment-popup">
-            <button onClick={() => document.getElementById('fileInputImage').click()}>Image</button>
-            <button onClick={() => document.getElementById('fileInputVideo').click()}>Video</button>
-            <button onClick={() => document.getElementById('fileInputFile').click()}>File</button>
+            <button onClick={() => document.getElementById('fileInputImage').click()}>{t("leftover.appointHistoryChrome.image")}</button>
+            <button onClick={() => document.getElementById('fileInputVideo').click()}>{t("leftover.appointHistoryChrome.video")}</button>
+            <button onClick={() => document.getElementById('fileInputFile').click()}>{t("leftover.bizChatChrome.file")}</button>
           </div>
         )}
 
