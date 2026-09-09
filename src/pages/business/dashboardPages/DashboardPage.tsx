@@ -679,6 +679,7 @@ function AppointmentOverview({
 }: {
   appointments: Appointment[];
 }) {
+  const { t } = useTranslation();
   const thisWeek = useMemo(
     () => getWeeklyAppointmentCounts(appointments, 0),
     [appointments]
@@ -701,21 +702,21 @@ function AppointmentOverview({
 
   const statusRows = [
     {
-      label: "Upcoming",
+      label: t("leftover.dashAppointChrome.upcoming"),
       value: status.upcoming,
       percent: Math.round((status.upcoming / safeTotal) * 100),
       icon: <Clock size={14} />,
       bar: "bg-violet-500",
     },
     {
-      label: "Completed",
+      label: t("leftover.dashAppointChrome.completed"),
       value: status.completed,
       percent: Math.round((status.completed / safeTotal) * 100),
       icon: <CheckCircle2 size={14} />,
       bar: "bg-emerald-500",
     },
     {
-      label: "Canceled",
+      label: t("leftover.dashAppointChrome.canceled"),
       value: status.canceled,
       percent: Math.round((status.canceled / safeTotal) * 100),
       icon: <XCircle size={14} />,
@@ -732,50 +733,50 @@ function AppointmentOverview({
     <GlassPanel className="h-full p-5">
       <SectionHeader
         icon={<Activity size={18} />}
-        title="Appointment Overview"
-        subtitle="Synced with real-time appointments"
+        title={t("leftover.dashAppointChrome.overviewTitle")}
+        subtitle={t("leftover.dashAppointChrome.overviewSubtitle")}
         action={
           <button
             type="button"
             className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:bg-slate-50"
           >
-            This week
+            {t("leftover.dashAppointChrome.thisWeekBtn")}
           </button>
         }
       />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-[24px] border border-violet-100 bg-violet-50/70 p-4">
-          <p className="text-xs font-black text-slate-500">Total appointments</p>
+          <p className="text-xs font-black text-slate-500">{t("leftover.dashAppointChrome.totalAppointments")}</p>
           <p className="mt-3 text-3xl font-black text-slate-800">{total}</p>
           <p className="mt-1 text-xs font-black text-emerald-600">
-            From all system appointments
+            {t("leftover.dashAppointChrome.totalFromSystem")}
           </p>
         </div>
 
         <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-          <p className="text-xs font-black text-slate-500">Average appointments per day</p>
+          <p className="text-xs font-black text-slate-500">{t("leftover.dashAppointChrome.averagePerDay")}</p>
           <p className="mt-3 text-3xl font-black text-slate-800">
             {averagePerDay}
           </p>
           <p className="mt-1 text-xs font-black text-emerald-600">
-            Based on the current week
+            {t("leftover.dashAppointChrome.basedCurrentWeek")}
           </p>
         </div>
       </div>
 
       <div className="mt-5 rounded-[26px] border border-slate-100 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-black text-slate-800">Appointment trend</h3>
+          <h3 className="text-sm font-black text-slate-800">{t("leftover.dashAppointChrome.appointmentTrend")}</h3>
 
           <div className="flex items-center gap-4 text-[11px] font-black">
             <span className="flex items-center gap-1.5 text-violet-600">
               <span className="h-2 w-2 rounded-full bg-violet-500" />
-              This week
+              {t("leftover.dashAppointChrome.thisWeek")}
             </span>
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="h-2 w-2 rounded-full bg-slate-300" />
-              Last week
+              {t("leftover.dashAppointChrome.lastWeekLabel")}
             </span>
           </div>
         </div>
@@ -792,7 +793,7 @@ function AppointmentOverview({
                     <div
                       className="w-full rounded-t-full bg-slate-200 transition-all"
                       style={{ height: `${lastWeekHeight}%` }}
-                      title={`Last week: ${lastWeek[index]}`}
+                      title={t("leftover.dashAppointChrome.lastWeekTitle", { count: lastWeek[index] })}
                     />
                   </div>
 
@@ -800,7 +801,7 @@ function AppointmentOverview({
                     <div
                       className="w-full rounded-t-full bg-gradient-to-t from-violet-300 via-sky-200 to-cyan-100 shadow-[0_8px_18px_rgba(124,58,237,0.25)] transition-all"
                       style={{ height: `${thisWeekHeight}%` }}
-                      title={`This week: ${thisWeek[index]}`}
+                      title={t("leftover.dashAppointChrome.thisWeekTitle", { count: thisWeek[index] })}
                     />
                   </div>
                 </div>
@@ -837,9 +838,9 @@ function AppointmentOverview({
           ))}
 
           <div className="flex items-center justify-between rounded-[18px] bg-violet-50 px-3 py-2 text-xs">
-            <span className="font-black text-violet-700">Peak day: {peakDay}</span>
+            <span className="font-black text-violet-700">{t("leftover.dashAppointChrome.peakDay", { day: peakDay })}</span>
             <span className="font-black text-violet-500">
-              {peakAppointments} appointments
+              {t("leftover.dashAppointChrome.peakAppointments", { count: peakAppointments })}
             </span>
           </div>
         </div>
@@ -994,17 +995,18 @@ function AiRecommendationPanel({
   recommendations: RecommendationItem[];
   onApprove: (recommendationId: string) => void;
 }) {
+  const { t } = useTranslation();
   if (recommendations.length === 0) return null;
 
   return (
     <GlassPanel className="p-5">
       <SectionHeader
         icon={<Sparkles size={18} />}
-        title="AI Recommendations"
-        subtitle="Approve smart actions before sending"
+        title={t("leftover.dashAppointChrome.aiRecsTitle")}
+        subtitle={t("leftover.dashAppointChrome.aiRecsSubtitle")}
         action={
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
-            {recommendations.length} pending
+            {t("leftover.dashAppointChrome.pendingCount", { count: recommendations.length })}
           </span>
         }
       />
@@ -1017,10 +1019,10 @@ function AiRecommendationPanel({
           >
             <div className="space-y-2">
               <p className="text-sm leading-6 text-slate-700">
-                <span className="font-black text-slate-800">Client:</span> {message}
+                <span className="font-black text-slate-800">{t("leftover.dashAppointChrome.clientColon")}</span> {message}
               </p>
               <p className="text-sm leading-6 text-amber-800">
-                <span className="font-black text-slate-800">AI suggestion:</span>{" "}
+                <span className="font-black text-slate-800">{t("leftover.dashAppointChrome.aiSuggestionColon")}</span>{" "}
                 {recommendation}
               </p>
             </div>
@@ -1030,7 +1032,7 @@ function AiRecommendationPanel({
               onClick={() => onApprove(recommendationId)}
               className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-black shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
-              Approve and send
+              {t("leftover.dashAppointChrome.approveAndSend")}
             </button>
           </div>
         ))}
@@ -1046,7 +1048,8 @@ function Header({
   user: AuthUser | null;
   locale: string;
 }) {
-  const displayName = user?.name || user?.businessName || "Demo";
+  const { t } = useTranslation();
+  const displayName = user?.name || user?.businessName || t("leftover.dashAppointChrome.greetingFallback");
 
   return (
     <header className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -1057,11 +1060,11 @@ function Header({
         </div>
 
         <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
-          {getGreeting()}, {displayName}! <span className="inline-block">👋</span>
+          {t(new Date().getHours() < 12 ? "leftover.dashAppointChrome.goodMorning" : new Date().getHours() < 18 ? "leftover.dashAppointChrome.goodAfternoon" : "leftover.dashAppointChrome.goodEvening")}, {displayName}! <span className="inline-block">👋</span>
         </h1>
 
         <p className="mt-1 text-sm font-semibold text-slate-500">
-          Here is what is happening in your business today.
+          {t("leftover.dashAppointChrome.greetingSubtitleAlt")}
         </p>
       </div>
 
@@ -1092,7 +1095,7 @@ function Header({
 
           <div className="hidden text-left sm:block">
             <p className="text-sm font-black text-slate-800">{displayName}</p>
-            <p className="text-[11px] font-bold text-slate-400">Business owner</p>
+            <p className="text-[11px] font-bold text-slate-400">{t("leftover.dashAppointChrome.businessOwner")}</p>
           </div>
 
           <ChevronDown size={16} className="text-slate-400" />

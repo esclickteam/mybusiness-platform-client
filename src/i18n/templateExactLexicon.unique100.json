@@ -1,0 +1,926 @@
+{
+  "מפגש": {
+    "en": "Meeting",
+    "es": "Encuentro",
+    "pt-BR": "Encontro",
+    "ar": "لقاء"
+  },
+  "נשמח לשמוע מכם": {
+    "en": "We’d love to hear from you",
+    "es": "Nos encantará saber de vosotros",
+    "pt-BR": "Adoraríamos ouvir de vocês",
+    "ar": "يسعدنا سماعكم"
+  },
+  "פרויקטים.": {
+    "en": "Projects.",
+    "es": "Proyectos.",
+    "pt-BR": "Projetos.",
+    "ar": "مشاريع."
+  },
+  "במה חיה.": {
+    "en": "A live stage.",
+    "es": "Un escenario en vivo.",
+    "pt-BR": "Um palco ao vivo.",
+    "ar": "منصة حيّة."
+  },
+  "מה חדש.": {
+    "en": "What’s new.",
+    "es": "Qué hay de nuevo.",
+    "pt-BR": "O que há de novo.",
+    "ar": "ما الجديد."
+  },
+  "אווירה.": {
+    "en": "Atmosphere.",
+    "es": "Ambiente.",
+    "pt-BR": "Atmosfera.",
+    "ar": "أجواء."
+  },
+  "להתחלה.": {
+    "en": "To get started.",
+    "es": "Para empezar.",
+    "pt-BR": "Para começar.",
+    "ar": "للبدء."
+  },
+  "לצמיחה.": {
+    "en": "For growth.",
+    "es": "Para crecer.",
+    "pt-BR": "Para crescer.",
+    "ar": "للنمو."
+  },
+  "לעסקים.": {
+    "en": "For businesses.",
+    "es": "Para negocios.",
+    "pt-BR": "Para negócios.",
+    "ar": "للأعمال."
+  },
+  "חיסכון.": {
+    "en": "Savings.",
+    "es": "Ahorro.",
+    "pt-BR": "Economia.",
+    "ar": "توفير."
+  },
+  "סגירות.": {
+    "en": "Closings.",
+    "es": "Cierres.",
+    "pt-BR": "Fechamentos.",
+    "ar": "إغلاقات."
+  },
+  "״מומלץ״": {
+    "en": "“Recommended”",
+    "es": "“Recomendado”",
+    "pt-BR": "“Recomendado”",
+    "ar": "«موصى به»"
+  },
+  "מהשטח.": {
+    "en": "From the field.",
+    "es": "Desde el terreno.",
+    "pt-BR": "Do campo.",
+    "ar": "من الميدان."
+  },
+  "צמיחה.": {
+    "en": "Growth.",
+    "es": "Crecimiento.",
+    "pt-BR": "Crescimento.",
+    "ar": "نمو."
+  },
+  "ניווט": {
+    "en": "Navigation",
+    "es": "Navegación",
+    "pt-BR": "Navegação",
+    "ar": "تنقّل"
+  },
+  "ניתוח": {
+    "en": "Analysis",
+    "es": "Análisis",
+    "pt-BR": "Análise",
+    "ar": "تحليل"
+  },
+  "הופעה": {
+    "en": "Performance",
+    "es": "Actuación",
+    "pt-BR": "Apresentação",
+    "ar": "أداء"
+  },
+  "בונוס": {
+    "en": "Bonus",
+    "es": "Bonus",
+    "pt-BR": "Bônus",
+    "ar": "مكافأة"
+  },
+  "גמיש.": {
+    "en": "Flexible.",
+    "es": "Flexible.",
+    "pt-BR": "Flexível.",
+    "ar": "مرن."
+  },
+  "חזון.": {
+    "en": "Vision.",
+    "es": "Visión.",
+    "pt-BR": "Visão.",
+    "ar": "رؤية."
+  },
+  "הטבה": {
+    "en": "Benefit",
+    "es": "Beneficio",
+    "pt-BR": "Benefício",
+    "ar": "ميزة"
+  },
+  "פשוט": {
+    "en": "Simple",
+    "es": "Simple",
+    "pt-BR": "Simples",
+    "ar": "بسيط"
+  },
+  "לחודש": {
+    "en": "Per month",
+    "es": "Al mes",
+    "pt-BR": "Por mês",
+    "ar": "شهرياً"
+  },
+  "מייסדת ומנהלת קריאייטיב": {
+    "en": "Founder & creative director",
+    "es": "Fundadora y directora creativa",
+    "pt-BR": "Fundadora e diretora criativa",
+    "ar": "مؤسِّسة ومديرة إبداعية"
+  },
+  "אסטרטג ומנהל לקוחות": {
+    "en": "Strategist & account manager",
+    "es": "Estratega y gestor de cuentas",
+    "pt-BR": "Estrategista e gerente de contas",
+    "ar": "استراتيجي ومدير حسابات"
+  },
+  "מעצבת מוצר בכירה": {
+    "en": "Senior product designer",
+    "es": "Diseñadora de producto sénior",
+    "pt-BR": "Designer de produto sênior",
+    "ar": "مصممة منتجات أولى"
+  },
+  "מה כולל המחיר?": {
+    "en": "What’s included in the price?",
+    "es": "¿Qué incluye el precio?",
+    "pt-BR": "O que o preço inclui?",
+    "ar": "ماذا يشمل السعر؟"
+  },
+  "ניסיון מקצועי": {
+    "en": "Professional experience",
+    "es": "Experiencia profesional",
+    "pt-BR": "Experiência profissional",
+    "ar": "خبرة مهنية"
+  },
+  "איפוס סיסמה": {
+    "en": "Reset password",
+    "es": "Restablecer contraseña",
+    "pt-BR": "Redefinir senha",
+    "ar": "إعادة تعيين كلمة المرور"
+  },
+  "שלחו הודעה": {
+    "en": "Send a message",
+    "es": "Enviad un mensaje",
+    "pt-BR": "Enviem uma mensagem",
+    "ar": "أرسلوا رسالة"
+  },
+  "כתבו לנו": {
+    "en": "Write to us",
+    "es": "Escribidnos",
+    "pt-BR": "Escrevam para nós",
+    "ar": "اكتبوا لنا"
+  },
+  "טקסטורה": {
+    "en": "Texture",
+    "es": "Textura",
+    "pt-BR": "Textura",
+    "ar": "ملمس"
+  },
+  "סלקציה.": {
+    "en": "Selection.",
+    "es": "Selección.",
+    "pt-BR": "Seleção.",
+    "ar": "تشكيلة."
+  },
+  "01 נבחר": {
+    "en": "01 Featured",
+    "es": "01 Destacado",
+    "pt-BR": "01 Destaque",
+    "ar": "01 مختار"
+  },
+  "03 אהוב": {
+    "en": "03 Favorite",
+    "es": "03 Favorito",
+    "pt-BR": "03 Favorito",
+    "ar": "03 مفضّل"
+  },
+  "אווירה": {
+    "en": "Atmosphere",
+    "es": "Ambiente",
+    "pt-BR": "Atmosfera",
+    "ar": "أجواء"
+  },
+  "02 חדש": {
+    "en": "02 New",
+    "es": "02 Nuevo",
+    "pt-BR": "02 Novo",
+    "ar": "02 جديد"
+  },
+  "שותפים": {
+    "en": "Partners",
+    "es": "Socios",
+    "pt-BR": "Parceiros",
+    "ar": "شركاء"
+  },
+  "כיתוב": {
+    "en": "Caption",
+    "es": "Leyenda",
+    "pt-BR": "Legenda",
+    "ar": "تعليق"
+  },
+  "פריים": {
+    "en": "Frame",
+    "es": "Fotograma",
+    "pt-BR": "Frame",
+    "ar": "إطار"
+  },
+  "בחרו את החבילה שמתאימה לקצב שלכם": {
+    "en": "Choose the plan that matches your pace",
+    "es": "Elegid el plan que encaje con vuestro ritmo",
+    "pt-BR": "Escolham o plano que combina com o ritmo de vocês",
+    "ar": "اختاروا الباقة التي تناسب وتيرتكم"
+  },
+  "ידע שהופך החלטות לטובות יותר": {
+    "en": "Knowledge that improves decisions",
+    "es": "Conocimiento que mejora las decisiones",
+    "pt-BR": "Conhecimento que melhora decisões",
+    "ar": "معرفة تحسّن القرارات"
+  },
+  "כל אחד עם סיפור ותוצאה משלו": {
+    "en": "Each with their own story and result",
+    "es": "Cada uno con su historia y resultado",
+    "pt-BR": "Cada um com sua história e resultado",
+    "ar": "لكلٍّ قصته ونتيجته"
+  },
+  "מומחים שעובדים יחד, בלי אגו": {
+    "en": "Experts who work together, without ego",
+    "es": "Expertos que trabajan juntos, sin ego",
+    "pt-BR": "Especialistas que trabalham juntos, sem ego",
+    "ar": "خبراء يعملون معاً بلا أنانية"
+  },
+  "שותפויות שנבנות לטווח ארוך": {
+    "en": "Partnerships built for the long term",
+    "es": "Alianzas pensadas a largo plazo",
+    "pt-BR": "Parcerias construídas para o longo prazo",
+    "ar": "شراكات تُبنى للمدى الطويل"
+  },
+  "המספרים מספרים את הסיפור": {
+    "en": "The numbers tell the story",
+    "es": "Los números cuentan la historia",
+    "pt-BR": "Os números contam a história",
+    "ar": "الأرقام تروي القصة"
+  },
+  "לוגו, פלטה ושפה ויזואלית": {
+    "en": "Logo, palette, and visual language",
+    "es": "Logo, paleta e idioma visual",
+    "pt-BR": "Logo, paleta e linguagem visual",
+    "ar": "شعار ولوحة ألوان ولغة بصرية"
+  },
+  "האנשים שמאחורי העבודה": {
+    "en": "The people behind the work",
+    "es": "Las personas detrás del trabajo",
+    "pt-BR": "As pessoas por trás do trabalho",
+    "ar": "الأشخاص خلف العمل"
+  },
+  "ספרו לנו על היעד שלכם": {
+    "en": "Tell us about your goal",
+    "es": "Contadnos vuestro objetivo",
+    "pt-BR": "Contem-nos o objetivo de vocês",
+    "ar": "أخبرونا عن هدفكم"
+  },
+  "כל מה שרציתם לדעת": {
+    "en": "Everything you wanted to know",
+    "es": "Todo lo que queríais saber",
+    "pt-BR": "Tudo o que vocês queriam saber",
+    "ar": "كل ما أردتم معرفته"
+  },
+  "היסטוריית רכישות": {
+    "en": "Purchase history",
+    "es": "Historial de compras",
+    "pt-BR": "Histórico de compras",
+    "ar": "سجل المشتريات"
+  },
+  "קראו עוד ביקורות": {
+    "en": "Read more reviews",
+    "es": "Leed más reseñas",
+    "pt-BR": "Leiam mais avaliações",
+    "ar": "اقرأوا المزيد من المراجعات"
+  },
+  "איך נוכל לעזור?": {
+    "en": "How can we help?",
+    "es": "¿Cómo podemos ayudar?",
+    "pt-BR": "Como podemos ajudar?",
+    "ar": "كيف يمكننا المساعدة؟"
+  },
+  "יתרונות מרכזיים": {
+    "en": "Key benefits",
+    "es": "Ventajas clave",
+    "pt-BR": "Benefícios principais",
+    "ar": "مزايا أساسية"
+  },
+  "עקבו באינסטגרם": {
+    "en": "Follow on Instagram",
+    "es": "Seguid en Instagram",
+    "pt-BR": "Sigam no Instagram",
+    "ar": "تابعوا على إنستغرام"
+  },
+  "דברו עם הצוות": {
+    "en": "Talk to the team",
+    "es": "Hablad con el equipo",
+    "pt-BR": "Falem com a equipe",
+    "ar": "تحدثوا مع الفريق"
+  },
+  "לקוחות פעילים": {
+    "en": "Active customers",
+    "es": "Clientes activos",
+    "pt-BR": "Clientes ativos",
+    "ar": "عملاء نشطون"
+  },
+  "מסחר אלקטרוני": {
+    "en": "E-commerce",
+    "es": "Comercio electrónico",
+    "pt-BR": "Comércio eletrônico",
+    "ar": "تجارة إلكترونية"
+  },
+  "לפרטים נוספים": {
+    "en": "More details",
+    "es": "Más detalles",
+    "pt-BR": "Mais detalhes",
+    "ar": "لمزيد من التفاصيل"
+  },
+  "ערב נטוורקינג": {
+    "en": "Networking evening",
+    "es": "Noche de networking",
+    "pt-BR": "Noite de networking",
+    "ar": "أمسية تواصل"
+  },
+  "כמה זמן לוקח?": {
+    "en": "How long does it take?",
+    "es": "¿Cuánto tarda?",
+    "pt-BR": "Quanto tempo leva?",
+    "ar": "كم يستغرق؟"
+  },
+  "לתשלום בסליקה": {
+    "en": "Pay at checkout",
+    "es": "Pagar en el checkout",
+    "pt-BR": "Pagar no checkout",
+    "ar": "للدفع عند التحصيل"
+  },
+  "לקוחות משלמים": {
+    "en": "Paying customers",
+    "es": "Clientes de pago",
+    "pt-BR": "Clientes pagantes",
+    "ar": "عملاء يدفعون"
+  },
+  "לכל הפרויקטים": {
+    "en": "All projects",
+    "es": "Todos los proyectos",
+    "pt-BR": "Todos os projetos",
+    "ar": "لكل المشاريع"
+  },
+  "הצטרפו לקהילה": {
+    "en": "Join the community",
+    "es": "Uníos a la comunidad",
+    "pt-BR": "Entrem na comunidade",
+    "ar": "انضموا إلى المجتمع"
+  },
+  "פיתוח דיגיטלי": {
+    "en": "Digital development",
+    "es": "Desarrollo digital",
+    "pt-BR": "Desenvolvimento digital",
+    "ar": "تطوير رقمي"
+  },
+  "שירות מקצועי": {
+    "en": "Professional service",
+    "es": "Servicio profesional",
+    "pt-BR": "Serviço profissional",
+    "ar": "خدمة مهنية"
+  },
+  "המוצרים שלנו": {
+    "en": "Our products",
+    "es": "Nuestros productos",
+    "pt-BR": "Nossos produtos",
+    "ar": "منتجاتنا"
+  },
+  "ראו פרויקטים": {
+    "en": "See projects",
+    "es": "Ved proyectos",
+    "pt-BR": "Veja projetos",
+    "ar": "شاهدوا المشاريع"
+  },
+  "וובינר חינמי": {
+    "en": "Free webinar",
+    "es": "Webinar gratis",
+    "pt-BR": "Webinar gratuito",
+    "ar": "ندوة مجانية"
+  },
+  "האם יש חניה?": {
+    "en": "Is there parking?",
+    "es": "¿Hay aparcamiento?",
+    "pt-BR": "Há estacionamento?",
+    "ar": "هل تتوفر مواقف؟"
+  },
+  "ברוכים השבים": {
+    "en": "Welcome back",
+    "es": "Bienvenidos de nuevo",
+    "pt-BR": "Bem-vindos de volta",
+    "ar": "مرحباً بعودتكم"
+  },
+  "חוויית אירוח": {
+    "en": "Hospitality experience",
+    "es": "Experiencia de hospitalidad",
+    "pt-BR": "Experiência de hospitalidade",
+    "ar": "تجربة ضيافة"
+  },
+  "תמיכה בדוא״ל": {
+    "en": "Email support",
+    "es": "Soporte por email",
+    "pt-BR": "Suporte por e-mail",
+    "ar": "دعم عبر البريد"
+  },
+  "הוספת פנייה": {
+    "en": "Add an inquiry",
+    "es": "Añadir una consulta",
+    "pt-BR": "Adicionar uma solicitação",
+    "ar": "إضافة استفسار"
+  },
+  "גם אני רוצה": {
+    "en": "I want that too",
+    "es": "Yo también quiero",
+    "pt-BR": "Eu também quero",
+    "ar": "أريد ذلك أيضاً"
+  },
+  "מימוש ההטבה": {
+    "en": "Redeem the benefit",
+    "es": "Canjear el beneficio",
+    "pt-BR": "Resgatar o benefício",
+    "ar": "استرداد الميزة"
+  },
+  "סביבת עבודה": {
+    "en": "Workspace",
+    "es": "Entorno de trabajo",
+    "pt-BR": "Ambiente de trabalho",
+    "ar": "بيئة عمل"
+  },
+  "יצירת חשבון": {
+    "en": "Create an account",
+    "es": "Crear una cuenta",
+    "pt-BR": "Criar uma conta",
+    "ar": "إنشاء حساب"
+  },
+  "ההזמנות שלי": {
+    "en": "My orders",
+    "es": "Mis pedidos",
+    "pt-BR": "Meus pedidos",
+    "ar": "طلباتي"
+  },
+  "צוות ייעודי": {
+    "en": "Dedicated team",
+    "es": "Equipo dedicado",
+    "pt-BR": "Equipe dedicada",
+    "ar": "فريق مخصّص"
+  },
+  "צפייה בעוד": {
+    "en": "View more",
+    "es": "Ver más",
+    "pt-BR": "Ver mais",
+    "ar": "عرض المزيد"
+  },
+  "קבלת ההטבה": {
+    "en": "Get the benefit",
+    "es": "Obtener el beneficio",
+    "pt-BR": "Receber o benefício",
+    "ar": "الحصول على الميزة"
+  },
+  "פאנל חשבון": {
+    "en": "Account panel",
+    "es": "Panel de cuenta",
+    "pt-BR": "Painel da conta",
+    "ar": "لوحة الحساب"
+  },
+  "עמוד נחיתה": {
+    "en": "Landing page",
+    "es": "Página de aterrizaje",
+    "pt-BR": "Página de destino",
+    "ar": "صفحة هبوط"
+  },
+  "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.": {
+    "en": "Behind every number is a story of customers, trust, and measurable results.",
+    "es": "Detrás de cada número hay una historia de clientes, confianza y resultados medibles.",
+    "pt-BR": "Por trás de cada número há uma história de clientes, confiança e resultados mensuráveis.",
+    "ar": "خلف كل رقم قصة عملاء وثقة ونتائج قابلة للقياس."
+  },
+  "יומן פגישות — שירותים ויומן": {
+    "en": "Appointment calendar — services & schedule",
+    "es": "Agenda de citas — servicios y calendario",
+    "pt-BR": "Agenda de reuniões — serviços e calendário",
+    "ar": "جدول مواعيد — خدمات ويوميات"
+  },
+  "אודות – סיפור ויזואלי": {
+    "en": "About – visual story",
+    "es": "Sobre nosotros – historia visual",
+    "pt-BR": "Sobre – história visual",
+    "ar": "نبذة – قصة بصرية"
+  },
+  "אודות – פרופיל מקצועי": {
+    "en": "About – professional profile",
+    "es": "Sobre nosotros – perfil profesional",
+    "pt-BR": "Sobre – perfil profissional",
+    "ar": "نبذة – ملف مهني"
+  },
+  "אודות – משרות פתוחות": {
+    "en": "About – open roles",
+    "es": "Sobre nosotros – vacantes",
+    "pt-BR": "Sobre – vagas abertas",
+    "ar": "نبذة – وظائف مفتوحة"
+  },
+  "אודות – משימה וערכים": {
+    "en": "About – mission & values",
+    "es": "Sobre nosotros – misión y valores",
+    "pt-BR": "Sobre – missão e valores",
+    "ar": "نبذة – مهمة وقيم"
+  },
+  "אודות – קורות חיים": {
+    "en": "About – resume",
+    "es": "Sobre nosotros – currículum",
+    "pt-BR": "Sobre – currículo",
+    "ar": "نبذة – سيرة ذاتية"
+  },
+  "אודות – חברי צוות": {
+    "en": "About – team members",
+    "es": "Sobre nosotros – equipo",
+    "pt-BR": "Sobre – membros da equipe",
+    "ar": "نبذة – أعضاء الفريق"
+  },
+  "אודות – נרטיב מלא": {
+    "en": "About – full narrative",
+    "es": "Sobre nosotros – narrativa completa",
+    "pt-BR": "Sobre – narrativa completa",
+    "ar": "نبذة – سرد كامل"
+  },
+  "אודות – הסטודיו": {
+    "en": "About – the studio",
+    "es": "Sobre nosotros – el estudio",
+    "pt-BR": "Sobre – o estúdio",
+    "ar": "نبذة – الاستوديو"
+  },
+  "2026 · ביצועים": {
+    "en": "2026 · Performance",
+    "es": "2026 · Rendimiento",
+    "pt-BR": "2026 · Desempenho",
+    "ar": "2026 · أداء"
+  },
+  "אודות – המקום": {
+    "en": "About – the place",
+    "es": "Sobre nosotros – el lugar",
+    "pt-BR": "Sobre – o lugar",
+    "ar": "نبذة – المكان"
+  },
+  "2020–היום": {
+    "en": "2020–present",
+    "es": "2020–hoy",
+    "pt-BR": "2020–hoje",
+    "ar": "2020–اليوم"
+  },
+  "אתר + חנות": {
+    "en": "Website + store",
+    "es": "Sitio + tienda",
+    "pt-BR": "Site + loja",
+    "ar": "موقع + متجر"
+  },
+  "הוסיפו לסל": {
+    "en": "Add to cart",
+    "es": "Añadir al carrito",
+    "pt-BR": "Adicionar ao carrinho",
+    "ar": "أضيفوا إلى السلة"
+  },
+  "קצת עלינו": {
+    "en": "A bit about us",
+    "es": "Un poco sobre nosotros",
+    "pt-BR": "Um pouco sobre nós",
+    "ar": "قليل عنّا"
+  },
+  "בחרו נושא": {
+    "en": "Choose a topic",
+    "es": "Elegid un tema",
+    "pt-BR": "Escolham um tema",
+    "ar": "اختاروا موضوعاً"
+  },
+  "לפרופילים": {
+    "en": "To profiles",
+    "es": "A los perfiles",
+    "pt-BR": "Para os perfis",
+    "ar": "إلى الملفات"
+  },
+  "קנו עכשיו": {
+    "en": "Buy now",
+    "es": "Comprad ahora",
+    "pt-BR": "Comprem agora",
+    "ar": "اشتروا الآن"
+  },
+  "מוצר הדגל": {
+    "en": "Flagship product",
+    "es": "Producto estrella",
+    "pt-BR": "Produto destaque",
+    "ar": "المنتج الرائد"
+  },
+  "אתר תדמית": {
+    "en": "Brand website",
+    "es": "Sitio de marca",
+    "pt-BR": "Site institucional",
+    "ar": "موقع تعريفي"
+  },
+  "שלחו קו״ח": {
+    "en": "Send a resume",
+    "es": "Enviad un CV",
+    "pt-BR": "Enviem um currículo",
+    "ar": "أرسلوا سيرة ذاتية"
+  },
+  "רקע טופס": {
+    "en": "Form background",
+    "es": "Fondo del formulario",
+    "pt-BR": "Fundo do formulário",
+    "ar": "خلفية النموذج"
+  },
+  "למתחילים": {
+    "en": "For beginners",
+    "es": "Para principiantes",
+    "pt-BR": "Para iniciantes",
+    "ar": "للمبتدئين"
+  },
+  "קראו עוד": {
+    "en": "Read more",
+    "es": "Leed más",
+    "pt-BR": "Leiam mais",
+    "ar": "اقرأوا المزيد"
+  },
+  "במספרים": {
+    "en": "In numbers",
+    "es": "En números",
+    "pt-BR": "Em números",
+    "ar": "بالأرقام"
+  },
+  "התקדמות": {
+    "en": "Progress",
+    "es": "Progreso",
+    "pt-BR": "Progresso",
+    "ar": "تقدّم"
+  },
+  "מנכ״לית": {
+    "en": "CEO",
+    "es": "CEO",
+    "pt-BR": "CEO",
+    "ar": "الرئيسة التنفيذية"
+  },
+  "למה לבחור בנו?": {
+    "en": "Why choose us?",
+    "es": "¿Por qué elegirnos?",
+    "pt-BR": "Por que nos escolher?",
+    "ar": "لماذا تختاروننا؟"
+  },
+  "הציגו שלושה יתרונות מרכזיים בצורה נקייה, קצרה וברורה.": {
+    "en": "Show three key benefits in a clean, short, and clear way.",
+    "es": "Mostrad tres ventajas clave de forma limpia, breve y clara.",
+    "pt-BR": "Mostrem três benefícios principais de forma limpa, curta e clara.",
+    "ar": "اعرضوا ثلاث مزايا أساسية بطريقة نظيفة وقصيرة وواضحة."
+  },
+  "יתרון ראשון": {
+    "en": "First benefit",
+    "es": "Primera ventaja",
+    "pt-BR": "Primeiro benefício",
+    "ar": "الميزة الأولى"
+  },
+  "הסבר קצר על היתרון המרכזי שהעסק נותן ללקוחות.": {
+    "en": "A short explanation of the main benefit the business gives customers.",
+    "es": "Una breve explicación de la ventaja principal que el negocio da a los clientes.",
+    "pt-BR": "Uma breve explicação do principal benefício que o negócio dá aos clientes.",
+    "ar": "شرح قصير عن الميزة الرئيسية التي يقدّمها العمل للعملاء."
+  },
+  "הסבר קצר על הערך, השירות או התוצאה שהלקוח מקבל.": {
+    "en": "A short explanation of the value, service, or result the customer gets.",
+    "es": "Una breve explicación del valor, servicio o resultado que recibe el cliente.",
+    "pt-BR": "Uma breve explicação do valor, serviço ou resultado que o cliente recebe.",
+    "ar": "شرح قصير عن القيمة أو الخدمة أو النتيجة التي يحصل عليها العميل."
+  },
+  "יתרון שלישי": {
+    "en": "Third benefit",
+    "es": "Tercera ventaja",
+    "pt-BR": "Terceiro benefício",
+    "ar": "الميزة الثالثة"
+  },
+  "הסבר קצר שמחזק אמון ומוביל לפעולה.": {
+    "en": "A short explanation that builds trust and leads to action.",
+    "es": "Una breve explicación que refuerza la confianza y lleva a la acción.",
+    "pt-BR": "Uma breve explicação que reforça a confiança e leva à ação.",
+    "ar": "شرح قصير يعزّز الثقة ويدفع إلى التصرّف."
+  },
+  "יתרון ראשון שאפשר לערוך": {
+    "en": "First editable benefit",
+    "es": "Primera ventaja editable",
+    "pt-BR": "Primeiro benefício editável",
+    "ar": "ميزة أولى قابلة للتعديل"
+  },
+  "יתרון שני שאפשר לערוך": {
+    "en": "Second editable benefit",
+    "es": "Segunda ventaja editable",
+    "pt-BR": "Segundo benefício editável",
+    "ar": "ميزة ثانية قابلة للتعديل"
+  },
+  "יתרון רביעי שאפשר לערוך": {
+    "en": "Fourth editable benefit",
+    "es": "Cuarta ventaja editable",
+    "pt-BR": "Quarto benefício editável",
+    "ar": "ميزة رابعة قابلة للتعديل"
+  },
+  "יתרון חמישי שאפשר לערוך": {
+    "en": "Fifth editable benefit",
+    "es": "Quinta ventaja editable",
+    "pt-BR": "Quinto benefício editável",
+    "ar": "ميزة خامسة قابلة للتعديل"
+  },
+  "מספרים שמחזקים אמון": {
+    "en": "Numbers that build trust",
+    "es": "Números que refuerzan la confianza",
+    "pt-BR": "Números que reforçam a confiança",
+    "ar": "أرقام تعزّز الثقة"
+  },
+  "הציגו ניסיון, לקוחות, תוצאות או פעילות עסקית בצורה ברורה.": {
+    "en": "Show experience, customers, results, or business activity clearly.",
+    "es": "Mostrad experiencia, clientes, resultados o actividad de forma clara.",
+    "pt-BR": "Mostrem experiência, clientes, resultados ou atividade com clareza.",
+    "ar": "اعرضوا الخبرة والعملاء والنتائج أو النشاط بوضوح."
+  },
+  "הלקוח מבצע פעולה ראשונה או משאיר פרטים.": {
+    "en": "The customer takes a first action or leaves their details.",
+    "es": "El cliente da un primer paso o deja sus datos.",
+    "pt-BR": "O cliente faz uma primeira ação ou deixa os dados.",
+    "ar": "يتّخذ العميل إجراءً أولاً أو يترك بياناته."
+  },
+  "העסק חוזר ללקוח, מאשר פרטים או נותן מענה.": {
+    "en": "The business follows up, confirms details, or responds.",
+    "es": "El negocio vuelve al cliente, confirma datos o responde.",
+    "pt-BR": "O negócio retorna ao cliente, confirma dados ou responde.",
+    "ar": "يعود العمل للعميل ويؤكّد التفاصيل أو يردّ."
+  },
+  "הלקוח מתקדם לשירות, רכישה, תור או תוצאה.": {
+    "en": "The customer moves on to a service, purchase, appointment, or result.",
+    "es": "El cliente avanza a un servicio, compra, cita o resultado.",
+    "pt-BR": "O cliente avança para um serviço, compra, horário ou resultado.",
+    "ar": "يتقدّم العميل إلى خدمة أو شراء أو موعد أو نتيجة."
+  },
+  "הודעה חשובה או קריאה לפעולה": {
+    "en": "Important notice or call to action",
+    "es": "Aviso importante o llamada a la acción",
+    "pt-BR": "Aviso importante ou chamada à ação",
+    "ar": "إشعار مهم أو دعوة لاتّخاذ إجراء"
+  },
+  "כאן אפשר להציג מבצע, עדכון, הודעה, קישור חשוב או מסר קצר בין סקשנים.": {
+    "en": "Here you can show a promo, update, notice, important link, or short message between sections.",
+    "es": "Aquí podéis mostrar una promo, actualización, aviso, enlace importante o mensaje breve entre secciones.",
+    "pt-BR": "Aqui vocês podem mostrar uma promoção, atualização, aviso, link importante ou mensagem curta entre seções.",
+    "ar": "هنا يمكن عرض عرض ترويجي أو تحديث أو إشعار أو رابط مهم أو رسالة قصيرة بين الأقسام."
+  },
+  "תמונות נבחרות": {
+    "en": "Selected photos",
+    "es": "Fotos seleccionadas",
+    "pt-BR": "Fotos selecionadas",
+    "ar": "صور مختارة"
+  },
+  "הציגו תמונות, עבודות, מוצרים, מקום או אווירה.": {
+    "en": "Show photos, work, products, a place, or atmosphere.",
+    "es": "Mostrad fotos, trabajos, productos, un lugar o ambiente.",
+    "pt-BR": "Mostrem fotos, trabalhos, produtos, um lugar ou atmosfera.",
+    "ar": "اعرضوا صوراً أو أعمالاً أو منتجات أو مكاناً أو أجواء."
+  },
+  "שירות מקצועי, ברור ונעים. קיבלתי בדיוק את מה שהייתי צריך/ה.": {
+    "en": "Professional, clear, and pleasant service. I got exactly what I needed.",
+    "es": "Servicio profesional, claro y agradable. Recibí exactamente lo que necesitaba.",
+    "pt-BR": "Serviço profissional, claro e agradável. Recebi exatamente o que precisava.",
+    "ar": "خدمة مهنية وواضحة ولطيفة. حصلتُ على ما احتجتُه تماماً."
+  },
+  "הוספה": {
+    "en": "Add",
+    "es": "Añadir",
+    "pt-BR": "Adicionar",
+    "ar": "إضافة"
+  },
+  "לצפייה בעבודות": {
+    "en": "View work",
+    "es": "Ver trabajos",
+    "pt-BR": "Ver trabalhos",
+    "ar": "لعرض الأعمال"
+  },
+  "הערכים שמובילים אותנו": {
+    "en": "The values that guide us",
+    "es": "Los valores que nos guían",
+    "pt-BR": "Os valores que nos guiam",
+    "ar": "القيم التي تقودنا"
+  },
+  "כאן אפשר להציג את מה שהעסק מאמין בו — מקצועיות, יחס אישי, שקיפות ותוצאה.": {
+    "en": "Here you can show what the business believes in — professionalism, personal care, transparency, and results.",
+    "es": "Aquí podéis mostrar en qué cree el negocio — profesionalidad, trato personal, transparencia y resultado.",
+    "pt-BR": "Aqui vocês podem mostrar no que o negócio acredita — profissionalismo, atendimento pessoal, transparência e resultado.",
+    "ar": "هنا يمكن عرض ما يؤمن به العمل — الاحترافية والعناية الشخصية والشفافية والنتيجة."
+  },
+  "עבודה מדויקת, מסודרת וברמה גבוהה.": {
+    "en": "Precise, organized, high-quality work.",
+    "es": "Trabajo preciso, ordenado y de alto nivel.",
+    "pt-BR": "Trabalho preciso, organizado e de alto nível.",
+    "ar": "عمل دقيق ومنظّم وبمستوى عالٍ."
+  },
+  "כל לקוח מקבל ליווי, הקשבה והתאמה אישית.": {
+    "en": "Every customer gets guidance, listening, and personal fit.",
+    "es": "Cada cliente recibe acompañamiento, escucha y adaptación personal.",
+    "pt-BR": "Cada cliente recebe acompanhamento, escuta e adaptação pessoal.",
+    "ar": "كل عميل يحصل على مرافقة وإصغاء وتخصيص شخصي."
+  },
+  "שקיפות מלאה, זמינות ותיאום ציפיות ברור.": {
+    "en": "Full transparency, availability, and clear expectation setting.",
+    "es": "Transparencia total, disponibilidad y expectativas claras.",
+    "pt-BR": "Transparência total, disponibilidade e alinhamento claro de expectativas.",
+    "ar": "شفافية كاملة وتوافر وتنسيق توقّعات واضح."
+  },
+  "שנים של עבודה עם לקוחות.": {
+    "en": "Years of working with customers.",
+    "es": "Años de trabajo con clientes.",
+    "pt-BR": "Anos de trabalho com clientes.",
+    "ar": "سنوات من العمل مع العملاء."
+  },
+  "שירות לפי צורך אמיתי.": {
+    "en": "Service based on real needs.",
+    "es": "Servicio según una necesidad real.",
+    "pt-BR": "Serviço conforme uma necessidade real.",
+    "ar": "خدمة وفق احتياج حقيقي."
+  },
+  "חזון, משימה ודרך עבודה": {
+    "en": "Vision, mission, and way of working",
+    "es": "Visión, misión y forma de trabajar",
+    "pt-BR": "Visão, missão e forma de trabalhar",
+    "ar": "رؤية ومهمة وطريقة عمل"
+  },
+  "מבנה שמתאים לעסקים שרוצים להציג עומק, ערכים ומסר ברור.": {
+    "en": "A layout for businesses that want to show depth, values, and a clear message.",
+    "es": "Una estructura para negocios que quieren mostrar profundidad, valores y un mensaje claro.",
+    "pt-BR": "Uma estrutura para negócios que querem mostrar profundidade, valores e uma mensagem clara.",
+    "ar": "بنية تناسب الأعمال التي تريد عرض العمق والقيم ورسالة واضحة."
+  },
+  "צפייה במערכת": {
+    "en": "View the system",
+    "es": "Ver el sistema",
+    "pt-BR": "Ver o sistema",
+    "ar": "عرض النظام"
+  },
+  "כלים שמרכזים את העסק במקום אחד.": {
+    "en": "Tools that centralize the business in one place.",
+    "es": "Herramientas que centralizan el negocio en un solo lugar.",
+    "pt-BR": "Ferramentas que centralizam o negócio em um só lugar.",
+    "ar": "أدوات تجمع العمل في مكان واحد."
+  },
+  "אזור אישי, CRM ולידים.": {
+    "en": "Personal area, CRM, and leads.",
+    "es": "Área personal, CRM y leads.",
+    "pt-BR": "Área pessoal, CRM e leads.",
+    "ar": "منطقة شخصية وCRM وعملاء محتملون."
+  },
+  "תזכורות, הודעות ותהליכים.": {
+    "en": "Reminders, messages, and workflows.",
+    "es": "Recordatorios, mensajes y procesos.",
+    "pt-BR": "Lembretes, mensagens e processos.",
+    "ar": "تذكيرات ورسائل وسير عمل."
+  },
+  "הוספת תמונה / וידאו לאודות": {
+    "en": "Add an image / video to About",
+    "es": "Añadir imagen / vídeo a Sobre nosotros",
+    "pt-BR": "Adicionar imagem / vídeo ao Sobre",
+    "ar": "إضافة صورة / فيديو للنبذة"
+  },
+  "כבר מהרגע הראשון הרגשתי שיש כאן עסק מקצועי, אמין ומדויק. השירות היה מעל הציפיות.": {
+    "en": "From the first moment I felt this was a professional, reliable, and precise business. The service exceeded expectations.",
+    "es": "Desde el primer momento sentí que aquí hay un negocio profesional, fiable y preciso. El servicio superó las expectativas.",
+    "pt-BR": "Desde o primeiro momento senti que aqui há um negócio profissional, confiável e preciso. O serviço superou as expectativas.",
+    "ar": "منذ اللحظة الأولى شعرت أن هنا عملاً مهنياً وموثوقاً ودقيقاً. فاقت الخدمة التوقعات."
+  },
+  "בלוג – מומלץ": {
+    "en": "“Recommended”",
+    "es": "“Recomendado”",
+    "pt-BR": "“Recomendado”",
+    "ar": "«موصى به»"
+  },
+  "מוצר מומלץ": {
+    "en": "“Recommended”",
+    "es": "“Recomendado”",
+    "pt-BR": "“Recomendado”",
+    "ar": "«موصى به»"
+  },
+  "תוכן מומלץ": {
+    "en": "“Recommended”",
+    "es": "“Recomendado”",
+    "pt-BR": "“Recomendado”",
+    "ar": "«موصى به»"
+  }
+}

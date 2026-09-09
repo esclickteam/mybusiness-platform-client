@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState, useRef, useEffect } from "react";
 import GalleryDndKit from "./GalleryDndKit";
 import "./GalleryTab.css";
@@ -12,6 +13,7 @@ const GalleryEditorWithPreview = ({
   handleFitChange,
   handleConfirmEdit,
 }) => {
+  const { t } = useTranslation();
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const [modalIndex, setModalIndex] = useState(null);
   const popupRefs = useRef({});
@@ -70,9 +72,9 @@ const GalleryEditorWithPreview = ({
   return (
     <div className="preview-gallery-wrapper" style={{ display: "flex", gap: "32px" }}>
       <div className="gallery-form-side" style={{ flex: 1 }}>
-        <h2>🎨 Gallery Design</h2>
-        <h4>Upload Media</h4>
-        <p className="info-note">You can upload images or videos</p>
+        <h2>🎨 {t("leftover.galleryChrome.title")}</h2>
+        <h4>{t("leftover.galleryChrome.uploadMedia")}</h4>
+        <p className="info-note">{t("leftover.galleryChrome.uploadHint")}</p>
         <input
           type="file"
           multiple
@@ -84,9 +86,9 @@ const GalleryEditorWithPreview = ({
           onClick={() => galleryTabInputRef.current.click()}
           className="upload-btn"
         >
-          ➕ Add Media
+          ➕ {t("leftover.galleryChrome.addMedia")}
         </button>
-        <p className="info-note">You can drag and reorder the items</p>
+        <p className="info-note">{t("leftover.galleryChrome.dragReorderItems")}</p>
 
         <GalleryDndKit
           images={galleryTabImages}
@@ -106,12 +108,12 @@ const GalleryEditorWithPreview = ({
         />
 
         <button className="save-btn" onClick={handleConfirmEdit}>
-          Save
+          {t("leftover.galleryChrome.save")}
         </button>
       </div>
 
       <div className="gallery-preview-side gallery-preview-wrapper" style={{ flex: 1 }}>
-        <h3>Preview</h3>
+        <h3>{t("leftover.galleryChrome.preview")}</h3>
         <div className="gallery-instagram-grid">
           {galleryTabImages.map((item, index) => (
             <div

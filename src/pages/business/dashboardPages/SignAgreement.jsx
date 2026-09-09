@@ -28,7 +28,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch {
-        setError("Error loading agreement");
+        setError(t("leftover.signAgreementChrome.loadError"));
       } finally {
         setLoading(false);
       }
@@ -78,16 +78,16 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     }
   };
 
-  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
+  if (loading) return <BizuplyLoader fullScreen label={t("leftover.signAgreementChrome.loading")} />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!agreement) return <p>Agreement not found.</p>;
-  if (!side) return <p>You do not have permission to view or sign this agreement.</p>;
+  if (!agreement) return <p>{t("leftover.signAgreementChrome.notFound")}</p>;
+  if (!side) return <p>{t("leftover.signAgreementChrome.noPermission")}</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>{agreement.title}</h2>
-      <p><strong>Description:</strong> {agreement.description || "-"}</p>
-      <p><strong>Agreement Terms:</strong></p>
+      <p><strong>{t("leftover.signAgreementChrome.description")}</strong> {agreement.description || "-"}</p>
+      <p><strong>{t("leftover.signAgreementChrome.terms")}</strong></p>
       <pre
         style={{
           whiteSpace: "pre-wrap",
@@ -99,19 +99,19 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       >
         {agreement.terms || "-"}
       </pre>
-      <p><strong>Payment Details:</strong> {agreement.paymentDetails || "-"}</p>
-      <p><strong>Agreement Status:</strong> {agreement.status}</p>
+      <p><strong>{t("leftover.signAgreementChrome.payment")}</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>{t("leftover.signAgreementChrome.status")}</strong> {agreement.status}</p>
 
       <hr />
 
-      <h3>Your Signature ({side === "createdBy" ? "Agreement Creator" : "Invited Business"})</h3>
+      <h3>{t("leftover.signAgreementChrome.yourSignature", { role: side === "createdBy" ? t("leftover.signAgreementChrome.roleCreator") : t("leftover.signAgreementChrome.roleInvited") })}</h3>
 
       {hasSigned ? (
         <div>
-          <p>Already signed on {new Date(agreement.signatures[side].signedAt).toLocaleDateString()}</p>
+          <p>{t("leftover.signAgreementChrome.alreadySignedOn", { date: new Date(agreement.signatures[side].signedAt).toLocaleDateString() })}</p>
           <img
             src={agreement.signatures[side].signatureDataUrl}
-            alt="Signature"
+            alt={t("leftover.signAgreementChrome.signatureAlt")}
             style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
           />
         </div>
@@ -124,10 +124,10 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
           />
           <div style={{ marginTop: 10 }}>
             <button onClick={clearSignature} disabled={saving} style={{ marginRight: 10 }}>
-              Clear Signature
+              {t("leftover.signAgreementChrome.clearSignature")}
             </button>
             <button onClick={saveSignature} disabled={saving}>
-              {saving ? "Saving..." : "Sign and Submit"}
+              {saving ? t("leftover.signAgreementChrome.saving") : t("leftover.signAgreementChrome.signSubmit")}
             </button>
           </div>
         </>
@@ -135,25 +135,24 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
       <hr />
 
-      <h3>Other Party's Signature</h3>
+      <h3>{t("leftover.signAgreementChrome.otherSignature")}</h3>
       {(() => {
         const otherSide = side === "createdBy" ? "invitedBusiness" : "createdBy";
         if (agreement.signatures?.[otherSide]?.signed) {
           return (
             <div>
               <p>
-                Other party signed on{" "}
-                {new Date(agreement.signatures[otherSide].signedAt).toLocaleDateString()}
+                {t("leftover.signAgreementChrome.otherSignedOn", { date: new Date(agreement.signatures[otherSide].signedAt).toLocaleDateString() })}
               </p>
               <img
                 src={agreement.signatures[otherSide].signatureDataUrl}
-                alt="Other Party's Signature"
+                alt={t("leftover.signAgreementChrome.otherAlt")}
                 style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
               />
             </div>
           );
         }
-        return <p>The other party has not signed yet.</p>;
+        return <p>{t("leftover.signAgreementChrome.otherNotSigned")}</p>;
       })()}
     </div>
   );
