@@ -73,24 +73,24 @@ const BankDetailsForm = () => {
 
   return (
     <section className="bank-details-form">
-      <h2>🏦 Bank Account Details for Payment</h2>
+      <h2>🏦 {t("leftover.bankForm.title")}</h2>
       <p className="disclaimer">
-        You are responsible for updating these details if anything changes.
+        {t("leftover.bankForm.disclaimer")}
       </p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label htmlFor="bankName">Bank Name:</label>
+        <label htmlFor="bankName">{t("leftover.bankForm.bankName")}</label>
         <input
           type="text"
           id="bankName"
           name="bankName"
-          placeholder="Bank Hapoalim"
+          placeholder={t("leftover.bankForm.bankPh")}
           required
           value={form.bankName}
           onChange={handleChange}
         />
 
-        <label htmlFor="branchNumber">Branch Number:</label>
+        <label htmlFor="branchNumber">{t("leftover.bankForm.branchNumber")}</label>
         <input
           type="text"
           id="branchNumber"
@@ -101,7 +101,7 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="accountNumber">Account Number:</label>
+        <label htmlFor="accountNumber">{t("leftover.bankForm.accountNumber")}</label>
         <input
           type="text"
           id="accountNumber"
@@ -112,18 +112,18 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="fullName">Full Name:</label>
+        <label htmlFor="fullName">{t("leftover.bankForm.fullName")}</label>
         <input
           type="text"
           id="fullName"
           name="fullName"
-          placeholder="The name as it appears at the bank"
+          placeholder={t("leftover.bankForm.fullNamePh")}
           required
           value={form.fullName}
           onChange={handleChange}
         />
 
-        <label htmlFor="idNumber">ID / Company Number:</label>
+        <label htmlFor="idNumber">{t("leftover.bankForm.idNumber")}</label>
         <input
           type="text"
           id="idNumber"
@@ -135,7 +135,7 @@ const BankDetailsForm = () => {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "💾 Save Details"}
+          {loading ? t("leftover.bankForm.saving") : `💾 ${t("leftover.bankForm.save")}`}
         </button>
       </form>
 

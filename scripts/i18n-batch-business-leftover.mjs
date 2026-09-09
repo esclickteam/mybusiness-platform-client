@@ -1321,6 +1321,71 @@ const META_FORM_CHROME = {
   closeAria: row("Close", "סגירה", "Cerrar", "Fechar", "إغلاق"),
 };
 
+const AFFILIATE_DASH_CHROME = {
+  title: row("Partner Dashboard", "לוח שותפים", "Panel de partners", "Painel de parceiros", "لوحة الشركاء"),
+  usersCreated: row("Users Created", "משתמשים שנוצרו", "Usuarios creados", "Usuários criados", "مستخدمون أُنشئوا"),
+  payingUsers: row("Paying Users", "משתמשים משלמים", "Usuarios de pago", "Usuários pagantes", "مستخدمون دافعون"),
+  monthEarnings: row("This Month Earnings", "הכנסות החודש", "Ganancias de este mes", "Ganhos deste mês", "أرباح هذا الشهر"),
+  availableBalance: row("Available Balance", "יתרה זמינה", "Saldo disponible", "Saldo disponível", "الرصيد المتاح"),
+  paidOut: row("Paid Out", "שולם", "Pagado", "Pago", "مدفوع"),
+  inviteLink: row("Your Invite Link", "קישור ההזמנה שלכם", "Vuestro enlace de invitación", "Seu link de convite", "رابط دعوتكم"),
+  copyInvite: row("Copy Invite Link", "העתקת קישור הזמנה", "Copiar enlace de invitación", "Copiar link de convite", "نسخ رابط الدعوة"),
+  inviteCopied: row("Invite link copied successfully", "קישור ההזמנה הועתק בהצלחה", "Enlace de invitación copiado", "Link de convite copiado", "تم نسخ رابط الدعوة"),
+  yourClients: row("Your Clients", "הלקוחות שלכם", "Vuestros clientes", "Seus clientes", "عملاؤكم"),
+  noClients: row("No clients yet", "עדיין אין לקוחות", "Aún no hay clientes", "Ainda não há clientes", "لا يوجد عملاء بعد"),
+  business: row("Business", "עסק", "Negocio", "Negócio", "عمل"),
+  email: row("Email", "אימייל", "Email", "E-mail", "البريد"),
+  plan: row("Plan", "חבילה", "Plan", "Plano", "الخطة"),
+  status: row("Status", "סטטוס", "Estado", "Status", "الحالة"),
+  created: row("Created", "נוצר", "Creado", "Criado", "أُنشئ"),
+  thisMonth: row("This Month", "החודש", "Este mes", "Este mês", "هذا الشهر"),
+  totalCommission: row("Total Commission", "עמלה כוללת", "Comisión total", "Comissão total", "إجمالي العمولة"),
+  yearly: row("Yearly (One-time)", "שנתי (חד־פעמי)", "Anual (único)", "Anual (único)", "سنوي (مرة واحدة)"),
+  monthly: row("Monthly (Recurring)", "חודשי (מתחדש)", "Mensual (recurrente)", "Mensal (recorrente)", "شهري (متكرر)"),
+  month: row("Month", "חודש", "Mes", "Mês", "شهر"),
+  commission: row("Commission", "עמלה", "Comisión", "Comissão", "عمولة"),
+  payments: row("Payments", "תשלומים", "Pagos", "Pagamentos", "مدفوعات"),
+  balanceLine: row("Available balance:", "יתרה זמינה:", "Saldo disponible:", "Saldo disponível:", "الرصيد المتاح:"),
+  amountPh: row("Enter amount (min $50)", "הזינו סכום (מינ׳ $50)", "Introducid importe (mín. $50)", "Digite o valor (mín. $50)", "أدخلوا المبلغ (حد أدنى 50$)"),
+  sending: row("Sending...", "שולחים...", "Enviando...", "Enviando...", "جارٍ الإرسال..."),
+  requestPayout: row("Request Payout", "בקשת משיכה", "Solicitar pago", "Solicitar saque", "طلب سحب"),
+  manageBank: row("Manage Bank Details", "ניהול פרטי בנק", "Gestionar datos bancarios", "Gerenciar dados bancários", "إدارة بيانات البنك"),
+  loading: row("Loading data...", "טוענים נתונים...", "Cargando datos...", "Carregando dados...", "جارٍ تحميل البيانات..."),
+  loadError: row("Error loading data", "שגיאה בטעינת הנתונים", "Error al cargar los datos", "Erro ao carregar os dados", "خطأ في تحميل البيانات"),
+};
+
+const BANK_FORM_CHROME = {
+  title: row("Bank Account Details for Payment", "פרטי חשבון בנק לתשלום", "Datos de cuenta bancaria para el pago", "Dados da conta bancária para pagamento", "بيانات الحساب البنكي للدفع"),
+  disclaimer: row(
+    "You are responsible for updating these details if anything changes.",
+    "אתם אחראים לעדכן את הפרטים האלה אם משהו משתנה.",
+    "Sois responsables de actualizar estos datos si algo cambia.",
+    "Vocês são responsáveis por atualizar esses dados se algo mudar.",
+    "أنتم مسؤولون عن تحديث هذه البيانات إذا تغيّر شيء.",
+  ),
+  bankName: row("Bank Name:", "שם הבנק:", "Nombre del banco:", "Nome do banco:", "اسم البنك:"),
+  bankPh: row("Bank Hapoalim", "בנק הפועלים", "Bank Hapoalim", "Bank Hapoalim", "بنك هبوعليم"),
+  branchNumber: row("Branch Number:", "מספר סניף:", "Número de sucursal:", "Número da agência:", "رقم الفرع:"),
+  accountNumber: row("Account Number:", "מספר חשבון:", "Número de cuenta:", "Número da conta:", "رقم الحساب:"),
+  fullName: row("Full Name:", "שם מלא:", "Nombre completo:", "Nome completo:", "الاسم الكامل:"),
+  fullNamePh: row("The name as it appears at the bank", "השם כפי שמופיע בבנק", "El nombre tal como aparece en el banco", "O nome como aparece no banco", "الاسم كما يظهر في البنك"),
+  idNumber: row("ID / Company Number:", "ת.ז. / ח.פ.:", "ID / N.º de empresa:", "CPF / CNPJ:", "رقم الهوية / الشركة:"),
+  save: row("Save Details", "שמירת פרטים", "Guardar datos", "Salvar dados", "حفظ التفاصيل"),
+  saving: row("Saving...", "שומרים...", "Guardando...", "Salvando...", "جارٍ الحفظ..."),
+};
+
+const AI_PARTNER_CHROME = {
+  title: row("AI Partner – Request an Action or Answer", "שותף AI – בקשת פעולה או תשובה", "Partner IA – Pedir una acción o respuesta", "Parceiro IA – Pedir uma ação ou resposta", "شريك الذكاء – طلب إجراء أو إجابة"),
+  placeholder: row("Write your request for the AI partner here...", "כתבו כאן את הבקשה לשותף ה־AI...", "Escribid aquí la petición para el partner de IA...", "Escreva aqui o pedido para o parceiro de IA...", "اكتبوا هنا طلبكم لشريك الذكاء..."),
+  ariaRequest: row("AI Partner Request", "בקשה לשותף AI", "Petición al partner de IA", "Pedido ao parceiro de IA", "طلب لشريك الذكاء"),
+  send: row("Send", "שליחה", "Enviar", "Enviar", "إرسال"),
+  sending: row("Sending...", "שולחים...", "Enviando...", "Enviando...", "جارٍ الإرسال..."),
+  errorPrefix: row("Error: {{detail}}", "שגיאה: {{detail}}", "Error: {{detail}}", "Erro: {{detail}}", "خطأ: {{detail}}"),
+  response: row("AI Response:", "תשובת AI:", "Respuesta de IA:", "Resposta da IA:", "رد الذكاء:"),
+  recommendedAction: row("Recommended Action:", "פעולה מומלצת:", "Acción recomendada:", "Ação recomendada:", "الإجراء الموصى به:"),
+  sendFailed: row("Error sending the command", "שגיאה בשליחת הפקודה", "Error al enviar el comando", "Erro ao enviar o comando", "خطأ في إرسال الأمر"),
+};
+
 
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
@@ -1379,6 +1444,9 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       goalsChrome: pickLocaleMap(GOALS_CHROME, locale),
       contractChrome: pickLocaleMap(CONTRACT_CHROME, locale),
       metaFormChrome: pickLocaleMap(META_FORM_CHROME, locale),
+      affiliateDash: pickLocaleMap(AFFILIATE_DASH_CHROME, locale),
+      bankForm: pickLocaleMap(BANK_FORM_CHROME, locale),
+      aiPartnerChrome: pickLocaleMap(AI_PARTNER_CHROME, locale),
     },
     chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };
