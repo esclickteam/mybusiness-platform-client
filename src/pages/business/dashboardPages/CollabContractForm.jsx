@@ -116,16 +116,16 @@ const CollabContractForm = ({
 
   return (
     <div className="contract-form-container">
-      <h2 className="contract-title">🤝 Collaboration Agreement</h2>
+      <h2 className="contract-title">🤝 {t("leftover.contractChrome.formTitle")}</h2>
 
       <form className="contract-form" onSubmit={(e) => e.preventDefault()}>
         <div>
-          <label>Your Business Name:</label>
+          <label>{t("leftover.contractChrome.yourBusiness")}</label>
           <div className="static-field">{currentUser.businessName}</div>
         </div>
 
         <div>
-          <label>Partner Business Name:</label>
+          <label>{t("leftover.contractChrome.partnerBusiness")}</label>
           <input
             type="text"
             name="partnerName"
@@ -136,27 +136,27 @@ const CollabContractForm = ({
                 receiver: { businessName: e.target.value },
               }))
             }
-            placeholder="Enter the partner business name"
+            placeholder={t("leftover.contractChrome.partnerPh")}
             required
             disabled={!isSender || isReadOnly}
           />
         </div>
 
         <div>
-          <label>Agreement Title:</label>
+          <label>{t("leftover.contractChrome.agreementTitle")}</label>
           <input
             type="text"
             name="title"
             value={form.title}
             onChange={handleChange}
-            placeholder="Agreement title (e.g., Summer Campaign)"
+            placeholder={t("leftover.contractChrome.agreementTitlePh")}
             required
             disabled={isReadOnly}
           />
         </div>
 
         <div>
-          <label>Collaboration Description:</label>
+          <label>{t("leftover.contractChrome.description")}</label>
           <textarea
             name="description"
             value={form.description}
@@ -168,7 +168,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>What you will provide under the agreement:</label>
+          <label>{t("leftover.contractChrome.giving")}</label>
           <textarea
             name="giving"
             value={form.giving}
@@ -180,7 +180,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>What you will receive under the agreement:</label>
+          <label>{t("leftover.contractChrome.receiving")}</label>
           <textarea
             name="receiving"
             value={form.receiving}
@@ -192,7 +192,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>Collaboration Type:</label>
+          <label>{t("leftover.contractChrome.type")}</label>
           <select
             name="type"
             value={form.type}
@@ -200,15 +200,15 @@ const CollabContractForm = ({
             required
             disabled={isReadOnly}
           >
-            <option value="">Select type</option>
-            <option value="חד צדדי">One-sided</option>
-            <option value="דו צדדי">Two-sided</option>
-            <option value="עם עמלות">With commissions</option>
+            <option value="">{t("leftover.contractChrome.selectType")}</option>
+            <option value="חד צדדי">{t("leftover.contractChrome.typeOneSided")}</option>
+            <option value="דו צדדי">{t("leftover.contractChrome.typeTwoSided")}</option>
+            <option value="עם עמלות">{t("leftover.contractChrome.typeCommissions")}</option>
           </select>
         </div>
 
         <div>
-          <label>Commission / Payment (if any):</label>
+          <label>{t("leftover.contractChrome.payment")}</label>
           <input
             type="text"
             name="payment"
@@ -218,7 +218,7 @@ const CollabContractForm = ({
           />
         </div>
 
-        <label>Agreement Validity:</label>
+        <label>{t("leftover.contractChrome.validity")}</label>
         <div className="flex">
           <input
             type="date"
@@ -247,7 +247,7 @@ const CollabContractForm = ({
               onChange={handleChange}
               disabled={isReadOnly}
             />
-            The agreement can be canceled at any time
+            {t("leftover.contractChrome.cancelAnytime")}
           </label>
 
           <label>
@@ -258,18 +258,18 @@ const CollabContractForm = ({
               onChange={handleChange}
               disabled={isReadOnly}
             />
-            Confidentiality clause
+            {t("leftover.contractChrome.confidentiality")}
           </label>
         </div>
 
         {/* Sender signature */}
         <div>
-          <label>Signature of {currentUser.businessName}:</label>
+          <label>{t("leftover.contractChrome.signatureOf", { name: currentUser.businessName })}</label>
           {form.senderSignature ? (
             <div>
               <img
                 src={form.senderSignature}
-                alt="Signature"
+                alt={t("leftover.contractChrome.signatureAlt")}
                 className="form-signature-image"
               />
               {!isReadOnly && isSender && (
@@ -284,7 +284,7 @@ const CollabContractForm = ({
                     }))
                   }
                 >
-                  🗑️ Re-sign
+                  🗑️ {t("leftover.contractChrome.resign")}
                 </button>
               )}
             </div>
@@ -305,7 +305,7 @@ const CollabContractForm = ({
                   className="collab-form-button mt-2"
                   onClick={saveSenderSignature}
                 >
-                  ✍️ Save signature
+                  ✍️ {t("leftover.contractChrome.saveSignature")}
                 </button>
               </>
             )
@@ -314,12 +314,12 @@ const CollabContractForm = ({
 
         {/* Receiver signature */}
         <div>
-          <label>Signature of {form.receiver?.businessName || partnerBusiness.name}:</label>
+          <label>{t("leftover.contractChrome.signatureOf", { name: form.receiver?.businessName || partnerBusiness.name })}</label>
           {form.receiverSignature ? (
             <div>
               <img
                 src={form.receiverSignature}
-                alt="Signature"
+                alt={t("leftover.contractChrome.signatureAlt")}
                 className="form-signature-image"
               />
               {!isReadOnly && isReceiver && (
@@ -334,7 +334,7 @@ const CollabContractForm = ({
                     }))
                   }
                 >
-                  🗑️ Re-sign
+                  🗑️ {t("leftover.contractChrome.resign")}
                 </button>
               )}
             </div>
@@ -355,7 +355,7 @@ const CollabContractForm = ({
                   className="collab-form-button mt-2"
                   onClick={saveReceiverSignature}
                 >
-                  ✍️ Save signature
+                  ✍️ {t("leftover.contractChrome.saveSignature")}
                 </button>
               </>
             )
@@ -364,7 +364,7 @@ const CollabContractForm = ({
 
         {(isSender || isReceiver) && !isReadOnly && (
           <button type="button" className="collab-form-button" onClick={handleSend}>
-            📩 Send Agreement
+            📩 {t("leftover.contractChrome.send")}
           </button>
         )}
       </form>

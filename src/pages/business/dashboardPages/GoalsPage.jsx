@@ -5,13 +5,13 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./GoalsPage.css";
 
 const GoalsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState({
     title: "",
     type: "clients",
     target: 0,
-    deadline: ""
+    deadline: "",
   });
   const [data, setData] = useState({});
   const [selectedGoal, setSelectedGoal] = useState(null);
@@ -25,7 +25,7 @@ const GoalsPage = () => {
         const response = await API.get(`/business/${business._id}/stats`);
         setData(response.data);
       } catch (error) {
-        console.error("❌ Error loading statistics:", error.response?.data || error.message);
+        console.error("Error loading statistics:", error.response?.data || error.message);
       }
     };
     fetchStats();
@@ -33,15 +33,22 @@ const GoalsPage = () => {
 
   const calculateProgress = (goal) => {
     if (!goal || !data || goal.target <= 0) return 0;
-    const safeValue = (value) => typeof value === "number" && !isNaN(value) ? value : 0;
+    const safeValue = (value) => (typeof value === "number" && !isNaN(value) ? value : 0);
     switch (goal.type) {
-      case "clients": return Math.min((safeValue(data.newClients) / goal.target) * 100, 100);
-      case "revenue": return Math.min((safeValue(data.totalRevenue) / goal.target) * 100, 100);
-      case "orders": return Math.min((safeValue(data.totalOrders) / goal.target) * 100, 100);
-      case "messages": return Math.min((safeValue(data.totalMessages) / goal.target) * 100, 100);
-      case "returningClients": return Math.min((safeValue(data.returningClients) / goal.target) * 100, 100);
-      case "reviews": return Math.min((safeValue(data.reviews) / goal.target) * 100, 100);
-      default: return 0;
+      case "clients":
+        return Math.min((safeValue(data.newClients) / goal.target) * 100, 100);
+      case "revenue":
+        return Math.min((safeValue(data.totalRevenue) / goal.target) * 100, 100);
+      case "orders":
+        return Math.min((safeValue(data.totalOrders) / goal.target) * 100, 100);
+      case "messages":
+        return Math.min((safeValue(data.totalMessages) / goal.target) * 100, 100);
+      case "returningClients":
+        return Math.min((safeValue(data.returningClients) / goal.target) * 100, 100);
+      case "reviews":
+        return Math.min((safeValue(data.reviews) / goal.target) * 100, 100);
+      default:
+        return 0;
     }
   };
 
@@ -58,93 +65,107 @@ const GoalsPage = () => {
       orders: "🛒",
       messages: "💬",
       returningClients: "🔁",
-      reviews: "⭐"
+      reviews: "⭐",
     };
     return icons[type] || "🎯";
   };
 
   const getMotivation = (progress) => {
     const level = Math.floor(progress / 10) * 10;
-    const messages = {
-      0: "Every journey starts with a single step — go for it!",
-      10: "You’re moving — keep it up!",
-      20: "Nice! You’re 20% of the way there.",
-      30: "Great progress — maintain the momentum!",
-      40: "Almost halfway — you’ve got this!",
-      50: "Halfway there — awesome!",
-      60: "Strong pace! Don’t stop now.",
-      70: "It’s getting close — final push!",
-      80: "Almost there! Just a little more.",
-      90: "Inches from the goal — finish strong.",
-      100: "Goal achieved! Amazing consistency 🎉"
-    };
-    return messages[level] || "You’re on the right track — keep going!";
+    const key = {
+      0: "mot0",
+      10: "mot10",
+      20: "mot20",
+      30: "mot30",
+      40: "mot40",
+      50: "mot50",
+      60: "mot60",
+      70: "mot70",
+      80: "mot80",
+      90: "mot90",
+      100: "mot100",
+    }[level];
+    return t(`leftover.goalsChrome.${key || "motDefault"}`);
   };
 
   const getActionTip = (type) => {
-    const tips = {
-      clients: "✉️ Send last week’s leads a special offer or coupon.",
-      revenue: "📊 Create a hot promo for a high-value service/product bundle.",
-      orders: "🔔 Remind customers who didn’t complete checkout — don’t give up on them.",
-      messages: "💬 Personally follow up with people who inquired but haven’t purchased yet.",
-      returningClients: "👋 Send a thank-you with a discount code for returning clients.",
-      reviews: "🌟 Send a short review request with a handy link."
+    const map = {
+      clients: "tipClients",
+      revenue: "tipRevenue",
+      orders: "tipOrders",
+      messages: "tipMessages",
+      returningClients: "tipReturning",
+      reviews: "tipReviews",
     };
-    return tips[type] || "🎯 Do one small action today that moves you closer to your goal.";
+    return t(`leftover.goalsChrome.${map[type] || "tipDefault"}`);
+  };
+
+  const formatDate = (value) => {
+    if (!value) return "";
+    try {
+      return new Date(value).toLocaleDateString(i18n.language || undefined);
+    } catch {
+      return String(value);
+    }
   };
 
   const getLastAchievement = () => {
-    const completed = goals.filter(goal => calculateProgress(goal) === 100);
+    const completed = goals.filter((goal) => calculateProgress(goal) === 100);
     if (completed.length === 0) return null;
     const last = completed[completed.length - 1];
-    return `🏆 Achieved goal: "${last.title}" on ${new Date(last.deadline).toLocaleDateString("en-US")}`;
+    return t("leftover.goalsChrome.achieved", {
+      title: last.title,
+      date: formatDate(last.deadline),
+    });
   };
 
-  const completedGoalsList = goals.filter(goal => calculateProgress(goal) === 100);
+  const completedGoalsList = goals.filter((goal) => calculateProgress(goal) === 100);
 
   return (
     <div className="goals-container">
       <div className="goals-header">
-        <h1>🎯 My Goals</h1>
+        <h1>🎯 {t("leftover.goalsChrome.title")}</h1>
         <div>
-          <button className="add-goal-btn" onClick={handleAddGoal}>➕ Add Goal</button>
+          <button className="add-goal-btn" onClick={handleAddGoal}>
+            ➕ {t("leftover.goalsChrome.addGoal")}
+          </button>
           <button
             className="add-goal-btn"
-            style={{ marginRight: '10px', backgroundColor: '#555' }}
+            style={{ marginRight: "10px", backgroundColor: "#555" }}
             onClick={() => setShowHistory(!showHistory)}
           >
-            🕘 Goal History
+            🕘 {t("leftover.goalsChrome.history")}
           </button>
         </div>
       </div>
 
       <div className="new-goal-form">
-        <label>Goal Name</label>
+        <label>{t("leftover.goalsChrome.nameLabel")}</label>
         <input
-          placeholder="e.g., Get 10 clients"
+          placeholder={t("leftover.goalsChrome.namePh")}
           value={newGoal.title}
           onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
         />
-        <label>Goal Type</label>
+        <label>{t("leftover.goalsChrome.typeLabel")}</label>
         <select
           value={newGoal.type}
           onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value })}
         >
-          <option value="clients">New Clients</option>
-          <option value="revenue">Revenue</option>
-          <option value="orders">Orders / Appointments</option>
-          <option value="messages">Website Inquiries</option>
-          <option value="returningClients">Returning Clients</option>
-          <option value="reviews">Reviews / Ratings</option>
+          <option value="clients">{t("leftover.goalsChrome.typeClients")}</option>
+          <option value="revenue">{t("leftover.goalsChrome.typeRevenue")}</option>
+          <option value="orders">{t("leftover.goalsChrome.typeOrders")}</option>
+          <option value="messages">{t("leftover.goalsChrome.typeMessages")}</option>
+          <option value="returningClients">{t("leftover.goalsChrome.typeReturning")}</option>
+          <option value="reviews">{t("leftover.goalsChrome.typeReviews")}</option>
         </select>
-        <label>Numeric Target</label>
+        <label>{t("leftover.goalsChrome.targetLabel")}</label>
         <input
           type="number"
-          placeholder="How many / how much?"
+          placeholder={t("leftover.goalsChrome.targetPh")}
           value={newGoal.target}
-          onChange={(e) => setNewGoal({ ...newGoal, target: parseInt(e.target.value) })}
+          onChange={(e) => setNewGoal({ ...newGoal, target: parseInt(e.target.value, 10) || 0 })}
         />
-        <label>Deadline</label>
+        <label>{t("leftover.goalsChrome.deadlineLabel")}</label>
         <input
           type="date"
           value={newGoal.deadline}
@@ -154,11 +175,13 @@ const GoalsPage = () => {
 
       {showHistory && (
         <div className="history-list">
-          <h3>✅ Completed Goals</h3>
-          {completedGoalsList.map(goal => (
+          <h3>✅ {t("leftover.goalsChrome.completedTitle")}</h3>
+          {completedGoalsList.map((goal) => (
             <div key={goal.id} className="goal-card">
-              <strong>{renderIcon(goal.type)} {goal.title}</strong>
-              <p>Completed on: {new Date(goal.deadline).toLocaleDateString("en-US")}</p>
+              <strong>
+                {renderIcon(goal.type)} {goal.title}
+              </strong>
+              <p>{t("leftover.goalsChrome.completedOn", { date: formatDate(goal.deadline) })}</p>
             </div>
           ))}
         </div>
@@ -170,13 +193,22 @@ const GoalsPage = () => {
           return (
             <CSSTransition key={goal.id} timeout={400} classNames="fade" appear>
               <div className="goal-card">
-                <h3>{renderIcon(goal.type)} {goal.title}</h3>
-                <p className="goal-sub">Target: {goal.target} | Date: {goal.deadline}</p>
+                <h3>
+                  {renderIcon(goal.type)} {goal.title}
+                </h3>
+                <p className="goal-sub">
+                  {t("leftover.goalsChrome.targetLine", {
+                    target: goal.target,
+                    date: goal.deadline,
+                  })}
+                </p>
                 <div className="progress-bar">
-                  <div className="progress" style={{ width: `${progress}%` }}></div>
+                  <div className="progress" style={{ width: `${progress}%` }} />
                 </div>
                 <span className="progress-label">{Math.round(progress)}%</span>
-                <button className="summary-btn" onClick={() => setSelectedGoal(goal)}>📋 Summary & Inspiration</button>
+                <button className="summary-btn" onClick={() => setSelectedGoal(goal)}>
+                  📋 {t("leftover.goalsChrome.summaryBtn")}
+                </button>
               </div>
             </CSSTransition>
           );
@@ -186,11 +218,23 @@ const GoalsPage = () => {
       {selectedGoal && (
         <div className="summary-modal">
           <div className="summary-box">
-            <h2>✨ Summary for Goal: {selectedGoal.title}</h2>
-            <p><strong>Progress:</strong> {Math.round(calculateProgress(selectedGoal))}%</p>
-            <p><strong>Motivation:</strong> {getMotivation(calculateProgress(selectedGoal))}</p>
-            <p><strong>Tip:</strong> {getActionTip(selectedGoal.type)}</p>
-            {getLastAchievement() && <p><strong>{getLastAchievement()}</strong></p>}
+            <h2>✨ {t("leftover.goalsChrome.summaryTitle", { title: selectedGoal.title })}</h2>
+            <p>
+              <strong>{t("leftover.goalsChrome.progress")}</strong>{" "}
+              {Math.round(calculateProgress(selectedGoal))}%
+            </p>
+            <p>
+              <strong>{t("leftover.goalsChrome.motivation")}</strong>{" "}
+              {getMotivation(calculateProgress(selectedGoal))}
+            </p>
+            <p>
+              <strong>{t("leftover.goalsChrome.tip")}</strong> {getActionTip(selectedGoal.type)}
+            </p>
+            {getLastAchievement() && (
+              <p>
+                <strong>{getLastAchievement()}</strong>
+              </p>
+            )}
             <button onClick={() => setSelectedGoal(null)}>{t("leftover.goalsChrome.close")}</button>
           </div>
         </div>

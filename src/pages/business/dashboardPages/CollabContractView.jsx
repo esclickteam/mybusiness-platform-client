@@ -5,7 +5,7 @@ import API from "../../../api"; // Make sure this is the correct path based on f
 import "./CollabContractView.css";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Hooks must run unconditionally on every render, so they are declared
   // before the "no contract" early return below.
   const receiverSigRef = useRef();
@@ -21,7 +21,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     }
   }, [contract?.receiverSignature]);
 
-  if (!contract) return <p>No contract to display</p>;
+  if (!contract) return <p>{t("leftover.contractChrome.noContract")}</p>;
 
   const {
     title,
@@ -106,39 +106,39 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 
   return (
     <div className="contract-view-container">
-      <h2 className="contract-title">📄 Collaboration Agreement</h2>
+      <h2 className="contract-title">📄 {t("leftover.contractChrome.viewTitle")}</h2>
 
-      <div className="static-field"><strong>Sender Business Name:</strong> {sender?.businessName}</div>
-      <div className="static-field"><strong>Receiver Business Name:</strong> {receiver?.businessName}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.senderBusiness")}</strong> {sender?.businessName}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.receiverBusiness")}</strong> {receiver?.businessName}</div>
 
-      <div className="static-field"><strong>Title:</strong> {title}</div>
-      <div className="static-field"><strong>Description:</strong> {description}</div>
-      <div className="static-field"><strong>What the sender provides:</strong> {giving}</div>
-      <div className="static-field"><strong>What is expected in return:</strong> {receiving}</div>
-      <div className="static-field"><strong>Collaboration Type:</strong> {type}</div>
-      <div className="static-field"><strong>Commission / Payment:</strong> {payment || "None"}</div>
-      <div className="static-field"><strong>Validity:</strong> {startDate || "Not set"} to {endDate || "Not set"}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.titleLabel")}</strong> {title}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.descriptionLabel")}</strong> {description}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.senderProvides")}</strong> {giving}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.expectedReturn")}</strong> {receiving}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.collabType")}</strong> {type}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.commissionPayment")}</strong> {payment || t("leftover.contractChrome.none")}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.validityLabel")}</strong> {startDate || t("leftover.contractChrome.notSet")} {t("leftover.contractChrome.to")} {endDate || t("leftover.contractChrome.notSet")}</div>
       <div className="static-field">
-        <strong>Terms:</strong> {cancelAnytime ? "❎ Cancel anytime" : ""} {confidentiality ? "| 🔒 Confidentiality" : ""}
+        <strong>{t("leftover.contractChrome.terms")}</strong> {cancelAnytime ? "❎ {t("leftover.contractChrome.cancelAnytimeShort")}" : ""} {confidentiality ? "| 🔒 {t("leftover.contractChrome.confidentialityShort")}" : ""}
       </div>
-      <div className="static-field"><strong>Created at:</strong> {new Date(createdAt).toLocaleDateString("en-US")}</div>
-      <div className="static-field"><strong>Status:</strong> {status}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.createdAt")}</strong> {new Date(createdAt).toLocaleDateString(i18n.language || undefined)}</div>
+      <div className="static-field"><strong>{t("leftover.contractChrome.status")}</strong> {status}</div>
 
       {/* Sender signature */}
       <div>
-        <strong>✍️ Signature of {sender?.businessName}:</strong>
+        <strong>✍️ {t("leftover.contractChrome.signatureOf", { name: sender?.businessName })}</strong>
         {senderSignature ? (
-          <img src={senderSignature} alt="Sender signature" className="view-signature-image" />
+          <img src={senderSignature} alt={t("leftover.contractChrome.senderSigAlt")} className="view-signature-image" />
         ) : (
-          <span>Not signed yet</span>
+          <span>{t("leftover.contractChrome.notSignedYet")}</span>
         )}
       </div>
 
       {/* Receiver signature */}
       <div className="mt-4">
-        <strong>✍️ Signature of {receiver?.businessName}:</strong>
+        <strong>✍️ {t("leftover.contractChrome.signatureOf", { name: receiver?.businessName })}</strong>
         {localReceiverSig ? (
-          <img src={localReceiverSig} alt="Receiver signature" className="view-signature-image" />
+          <img src={localReceiverSig} alt={t("leftover.contractChrome.receiverSigAlt")} className="view-signature-image" />
         ) : isReceiver && status !== "approved" ? (
           <>
             <SignatureCanvas
@@ -156,7 +156,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
                 onClick={handleReceiverSign}
                 disabled={isApproving}
               >
-                ✍️ Save signature
+                ✍️ {t("leftover.contractChrome.saveSignature")}
               </button>
               {hasSigned && (
                 <button
