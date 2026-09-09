@@ -50,7 +50,6 @@ import {
   formatMarketMoney,
   persistBillingCountry,
   planAmount,
-  readStoredBillingCountry,
 } from "../../billing/billingMarkets";
 import { billingCheckoutErrorMessage } from "../../components/billing/billingCopy";
 import "../../components/product-marketing/marketingKit.css";
@@ -269,7 +268,7 @@ export default function Plans() {
         includeWebsiteAddon: wantsWebsiteAddon,
         language: i18n.language,
         billingCountry: persistBillingCountry(
-          user?.billingCountry || readStoredBillingCountry()
+          user?.billingCountry || billingMarket.billingCountry
         ),
       });
 

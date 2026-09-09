@@ -15917,7 +15917,7 @@
         },
         "crm_only_monthly": {
           "name": "CRM only",
-          "description": "₪89 per month — renewing monthly billing · CRM only"
+          "description": "CRM only — renewing monthly billing"
         },
         "earlybird": {
           "name": "Early Bird monthly (inactive)",

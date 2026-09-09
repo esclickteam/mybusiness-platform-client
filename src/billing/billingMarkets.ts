@@ -1,6 +1,6 @@
 /**
- * Billing market is independent of UI language.
- * Language never selects currency or regional price tier.
+ * Fixed regional price catalogs (not FX conversion).
+ * billingCountry wins when present; UI locale may seed a public default market.
  */
 
 export type BillingCurrency = "ILS" | "USD" | "EUR" | "BRL" | "AED";
@@ -130,7 +130,7 @@ export const BILLING_MARKETS: Record<BillingMarketId, BillingMarket> = {
     stripeCurrency: "aed",
     labelKey: "billing.markets.uae",
     prices: {
-      websiteAnnual: 399,
+      websiteAnnual: 499,
       crmMonthly: 149,
       businessMonthly: 349,
       websiteStaffBuild: 2490,
@@ -164,11 +164,26 @@ export const BILLING_MARKETS: Record<BillingMarketId, BillingMarket> = {
 
 export const BILLING_COUNTRY_STORAGE_KEY = "bizuply_billing_country";
 
+/** Public pricing default when no billingCountry is known yet. */
+export function defaultBillingCountryFromLocale(language: unknown): string | null {
+  const raw = String(language || "")
+    .trim()
+    .replace(/_/g, "-")
+    .toLowerCase();
+  if (!raw) return null;
+  if (raw === "he" || raw.startsWith("he-")) return "IL";
+  if (raw === "ar" || raw.startsWith("ar-")) return "AE";
+  if (raw === "es" || raw.startsWith("es-")) return "ES";
+  if (raw === "pt-br" || raw === "pt" || raw.startsWith("pt-")) return "BR";
+  if (raw === "en" || raw.startsWith("en-")) return "US";
+  return null;
+}
+
 export function normalizeCountryCode(value: unknown): string | null {
   const code = String(value || "")
     .trim()
     .toUpperCase();
-  if (!code || code === "XX" || code === "T1") return null;
+  if (!code || code === "XX" || code === "T1" || code === "EU") return null;
   if (!/^[A-Z]{2}$/.test(code)) return null;
   return code;
 }
@@ -189,12 +204,16 @@ export function resolveBillingCountry(sources: {
   savedBillingCountry?: unknown;
   businessCountry?: unknown;
   checkoutCountry?: unknown;
+  localeCountry?: unknown;
+  language?: unknown;
   geoCountry?: unknown;
 }): string | null {
   return (
     normalizeCountryCode(sources.savedBillingCountry) ||
     normalizeCountryCode(sources.businessCountry) ||
     normalizeCountryCode(sources.checkoutCountry) ||
+    normalizeCountryCode(sources.localeCountry) ||
+    defaultBillingCountryFromLocale(sources.language) ||
     normalizeCountryCode(sources.geoCountry)
   );
 }
@@ -203,6 +222,8 @@ export function resolveBillingMarket(sources: {
   savedBillingCountry?: unknown;
   businessCountry?: unknown;
   checkoutCountry?: unknown;
+  localeCountry?: unknown;
+  language?: unknown;
   geoCountry?: unknown;
 }): BillingMarket {
   return billingMarketFromCountry(resolveBillingCountry(sources));

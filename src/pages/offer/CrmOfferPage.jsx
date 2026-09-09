@@ -13,7 +13,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../api";
-import { getTextDirection } from "../../i18n/localeUtils";
+import { getIntlLocale, getTextDirection } from "../../i18n/localeUtils";
+import { useBillingMarket } from "../../billing/useBillingMarket";
+import {
+  formatMarketMoney,
+  persistBillingCountry,
+} from "../../billing/billingMarkets";
+import { billingCheckoutErrorMessage } from "../../components/billing/billingCopy";
 
 const CRM_FEATURES = [
   { icon: ClipboardList, labelKey: "leftover.offerCrm.featureLeads", fallback: "Full lead and pipeline management" },
@@ -25,7 +31,7 @@ const CRM_FEATURES = [
 ];
 
 /**
- * Hidden private offer page for the CRM-only plan (89 ILS/mo).
+ * Hidden private offer page for the CRM-only plan.
  * Direct URL only. Marked noindex,nofollow (Helmet + X-Robots-Tag + DOM meta).
  */
 export default function CrmOfferPage() {
@@ -33,10 +39,16 @@ export default function CrmOfferPage() {
   const pageDir = getTextDirection(i18n.language);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const billingMarket = useBillingMarket();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const userId = user?._id || user?.userId || user?.id;
+  const crmPriceLabel = formatMarketMoney(
+    billingMarket.prices.crmMonthly,
+    billingMarket.currency,
+    getIntlLocale(i18n.language)
+  );
 
   useEffect(() => {
     const ensure = (name, content) => {
@@ -62,7 +74,15 @@ export default function CrmOfferPage() {
     try {
       const { data } = await API.post("/stripe/create-checkout-session", {
         plan: "crm_only",
+        language: i18n.language,
+        billingCountry: persistBillingCountry(
+          user?.billingCountry || billingMarket.billingCountry
+        ),
       });
+      if (data?.code === "REGIONAL_PRICE_UNAVAILABLE") {
+        setError(billingCheckoutErrorMessage(t, data.code));
+        return;
+      }
       if (data?.url) {
         window.location.assign(data.url);
         return;
@@ -77,6 +97,8 @@ export default function CrmOfferPage() {
             "An active subscription already exists on your account. Manage or change it in billing."
           )
         );
+      } else if (code === "REGIONAL_PRICE_UNAVAILABLE") {
+        setError(billingCheckoutErrorMessage(t, code));
       } else {
         setError(
           err?.response?.data?.error ||
@@ -113,7 +135,7 @@ export default function CrmOfferPage() {
           </p>
 
           <div className="mt-6 flex items-end justify-center gap-2">
-            <span className="text-5xl font-black text-slate-900">89 ₪</span>
+            <span className="text-5xl font-black text-slate-900">{crmPriceLabel}</span>
             <span className="mb-2 text-lg font-semibold text-slate-500">
               {t("leftover.offerCrm.perMonth", "/ month")}
             </span>
