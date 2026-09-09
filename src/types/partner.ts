@@ -243,12 +243,14 @@ export type PartnerClientContact = {
 export type PartnerNote = {
   _id?: string;
   text: string;
+  textKey?: string;
   createdAt?: string;
 };
 
 export type PartnerTask = {
   _id?: string;
   title: string;
+  titleKey?: string;
   dueAt?: string | null;
   done?: boolean;
   createdAt?: string;
@@ -267,6 +269,7 @@ export type PartnerClient = {
   paymentStatus?: string;
   notes?: PartnerNote[];
   tasks?: PartnerTask[];
+  personaKey?: string;
   createdAt?: string;
   updatedAt?: string;
   source?: string;

@@ -36,6 +36,11 @@ import {
   upcomingReminders,
 } from "../../lib/partnerWork";
 import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
+import {
+  localizePartnerDemoName,
+  localizePartnerDemoText,
+  partnerDemoTaskTitle,
+} from "../../i18n/partnerDemoCopy";
 
 const PRESETS = [
   { id: "today" },
@@ -355,10 +360,18 @@ export default function PartnerDashboard() {
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-3">
                               <span className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-xs font-black text-violet-800">
-                                {(row.contact?.businessName || "?").slice(0, 1)}
+                                {(
+                                  localizePartnerDemoName(t, row.contact?.businessName, {
+                                    personaKey: row.personaKey,
+                                    field: "businessName",
+                                  }) || "?"
+                                ).slice(0, 1)}
                               </span>
                               <p className="font-black text-slate-900">
-                                {row.contact?.businessName || "—"}
+                                {localizePartnerDemoName(t, row.contact?.businessName, {
+                                  personaKey: row.personaKey,
+                                  field: "businessName",
+                                }) || "—"}
                               </p>
                             </div>
                           </td>
@@ -372,7 +385,10 @@ export default function PartnerDashboard() {
                             </span>
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-700">
-                            {row.contact?.contactName || "—"}
+                            {localizePartnerDemoName(t, row.contact?.contactName, {
+                              personaKey: row.personaKey,
+                              field: "contactName",
+                            }) || "—"}
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-600" dir="ltr">
                             {row.contact?.phone || "—"}
@@ -458,9 +474,15 @@ export default function PartnerDashboard() {
                       to={`/partner/dashboard/crm/${item.clientId}`}
                       className="block rounded-2xl bg-slate-50 px-3 py-3 hover:bg-violet-50"
                     >
-                      <p className="text-sm font-black text-slate-900">{item.title}</p>
+                      <p className="text-sm font-black text-slate-900">
+                        {partnerDemoTaskTitle(t, item)}
+                      </p>
                       <p className="text-[11px] font-bold text-slate-500">
-                        {item.clientName} · {formatPartnerDateTime(item.dueAt, locale)}
+                        {localizePartnerDemoName(t, item.clientName, {
+                          personaKey: item.personaKey,
+                          field: "businessName",
+                        })}{" "}
+                        · {formatPartnerDateTime(item.dueAt, locale)}
                       </p>
                     </Link>
                   ))}
@@ -573,8 +595,12 @@ function MyPartnerSubscriptionCard({
   locale: string;
 }) {
   const planName =
-    partnerPlanDisplayName(t, partner?.plan) ||
-    subscription?.planName ||
+    partnerPlanDisplayName(t, {
+      planKey: partner?.planKey || subscription?.planKey || partner?.plan?.planKey,
+      nameHe: partner?.plan?.nameHe,
+      nameEn: partner?.plan?.nameEn,
+    }) ||
+    localizePartnerDemoText(t, subscription?.planName) ||
     partner?.planKey ||
     t("partner.dashboard.partnerPlan");
   const monthly = subscription?.monthlyFeeIls ?? partner?.plan?.monthlyIls ?? null;

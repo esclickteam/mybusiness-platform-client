@@ -16529,6 +16529,111 @@
     "poweredBy": "مدعوم من Bizuply",
     "money": {
       "oneTimePlusRecurring": "{{oneTime}} + {{recurring}}"
+    },
+    "demo": {
+      "prefix": {
+        "demo": "[تجريبي]",
+        "stagingDemo": "[تجريبي Staging]"
+      },
+      "persona": {
+        "studio-noa": {
+          "businessName": "استوديو نوعا",
+          "contactName": "نوعا ليفي",
+          "contactNotes": "استوديو تصوير. الشريك يدير الحساب ويحصل على 15٪ من كل عملية بيع.",
+          "contactNotesAlt": "استوديو تصوير وتصميم. الشريك يدير حساب Bizuply بالكامل."
+        },
+        "cohen-solutions": {
+          "businessName": "كوهين لحلول الأعمال",
+          "contactName": "يوسي كوهين",
+          "contactNotes": "مكتب استشارات. إدارة مشتركة — عمولة بنسبة مئوية على كل تجديد.",
+          "contactNotesAlt": "مكتب استشارات. إدارة مشتركة — الشريك يتولى الإعداد والعميل يتولى اليومي."
+        },
+        "bloom-beauty": {
+          "businessName": "Bloom Beauty",
+          "contactName": "ميخال بيراح",
+          "contactNotes": "مركز تجميل. العميلة تدير وحدها بعد الإعداد.",
+          "contactNotesAlt": "مركز تجميل. العميلة تدير العمل بنفسها بعد الإعداد."
+        },
+        "alon-digital": {
+          "businessName": "ألون ديجيتال",
+          "contactName": "ألون مزراحي",
+          "contactNotes": "حساب نشط — دخول لإدارة كاملة مع CRM والعملاء المحتملين والحملات.",
+          "contactNotesAlt": "بانتظار دفع العميل قبل التفعيل."
+        },
+        "maya-events": {
+          "businessName": "Maya Events",
+          "contactName": "مايا شارون",
+          "contactNotes": "حساب نشط لإدارة كاملة — CRM وعملاء محتملون وتقويم وحملات.",
+          "contactNotesAlt": "عميل محتمل جديد من فعالية تواصل. بلا منتجات بعد."
+        },
+        "green-office": {
+          "businessName": "Green Office",
+          "contactName": "داني غرين",
+          "contactNotes": "فشل الدفع. تبقى الصلاحيات معطّلة حتى التسوية."
+        },
+        "urban-studio": {
+          "businessName": "Urban Studio",
+          "contactName": "روي أوربان",
+          "contactNotes": "تم الإيقاف بعد تأخير طويل في الدفع."
+        },
+        "premium-client": {
+          "businessName": "ديمو بريميوم ميديا",
+          "contactName": "شيرا غولان",
+          "contactNotes": "عميل بسلة واسعة: اشتراك وموقع وإعداد أتمتة ومسار Growth."
+        }
+      },
+      "task": {
+        "onboardingCall": "مكالمة تأهيل",
+        "followUpClient": "متابعة العميل",
+        "followUpClientF": "متابعة العميلة",
+        "renewalCheck": "فحص تجديد الاشتراك",
+        "satisfactionCall": "مكالمة رضا",
+        "productTour": "جولة في المنتجات",
+        "sendQuote": "إرسال عرض سعر",
+        "paymentIssue": "معالجة مشكلة الدفع",
+        "uploadWebsiteContent": "رفع محتوى للموقع",
+        "clientFollowUp": "متابعة العميل"
+      },
+      "note": {
+        "quoteSent": "تم إرسال عرض السعر",
+        "monthlyApprovedF": "وافقت العميلة على باقة شهرية",
+        "onboardingScheduled": "تم تحديد مكالمة التأهيل",
+        "websiteAddonAdded": "أضفنا إضافة الموقع",
+        "commissionVisible": "يرى العميل العمولة المتوقعة في لوحة التحكم",
+        "setupComplete": "اكتمل الإعداد",
+        "paidAndActivated": "دفع العميل وتم تفعيل الحساب",
+        "activatedForDemo": "تم تفعيل الحساب لعرض الإدارة الكاملة",
+        "requestedWebsite": "طلب العميل إضافة موقع",
+        "websiteAddonOnPlan": "أضفنا إضافة الموقع إلى الاشتراك الحالي",
+        "finalPriceApproved": "وافق العميل على السعر النهائي",
+        "setupDoneSolo": "اكتمل الإعداد. العميلة تتابع وحدها",
+        "websiteQuoteSent": "تم إرسال عرض سعر للموقع",
+        "introCall": "مكالمة تعارف أولى",
+        "paymentFailed": "فشل الدفع",
+        "collectionReminder": "تم إرسال تذكير بالتحصيل",
+        "accountSuspended": "تم إيقاف الحساب",
+        "keepInTouch": "الحفاظ على التواصل في حال عودتهم",
+        "premiumBasketApproved": "تمت الموافقة على سلة بريميوم",
+        "automationsOnboarding": "تم تحديد مكالمة تأهيل للأتمتة"
+      },
+      "product": {
+        "monthlyBizuply": "اشتراك Bizuply الشهري",
+        "websiteAddon": "إضافة الموقع",
+        "websiteOnly": "موقع فقط",
+        "systemLicense": "رخصة استخدام النظام",
+        "percentOnly": "نسبة مئوية فقط",
+        "websitePlusPlan": "موقع + اشتراك",
+        "automationsGrowth": "أتمتة Growth"
+      },
+      "agency": {
+        "percentOnlyName": "وكالة تجريبية — نسبة مئوية فقط",
+        "freePartnerName": "شريك تجريبي مجاني",
+        "teamLia": "ليا كوهين",
+        "referralDana": "دانا شيمش",
+        "referralBusiness": "شيمش ديجيتال",
+        "customerStudio": "استوديو تجريبي للعملاء",
+        "freeCustomer": "عميل تجريبي مجاني"
+      }
     }
   },
   "storeManager": {

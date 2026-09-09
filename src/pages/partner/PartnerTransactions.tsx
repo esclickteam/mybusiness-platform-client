@@ -9,6 +9,10 @@ import { PartnerCard } from "../../components/partner/partnerUi";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 import { formatPartnerDate } from "../../lib/partnerWork";
 import { getIntlLocale } from "../../i18n/localeUtils";
+import {
+  localizePartnerDemoName,
+  partnerDemoProductLabel,
+} from "../../i18n/partnerDemoCopy";
 
 const PAYMENT_STATUSES = ["", "paid", "unpaid", "refunded", "chargeback"];
 const COMMISSION_STATUSES = [
@@ -176,7 +180,9 @@ export default function PartnerTransactions() {
             {rows.map((row) => (
               <tr key={row._id} className="border-t border-slate-100">
                 <td className="px-3 py-3">{formatPartnerDate(row.transactionDate, locale)}</td>
-                <td className="px-3 py-3 font-bold">{row.clientName || "—"}</td>
+                <td className="px-3 py-3 font-bold">
+                  {localizePartnerDemoName(t, row.clientName) || "—"}
+                </td>
                 <td className="px-3 py-3">
                   {row.dealId ? (
                     <Link
@@ -189,7 +195,9 @@ export default function PartnerTransactions() {
                     row.dealNumber || "—"
                   )}
                 </td>
-                <td className="px-3 py-3">{row.product || "—"}</td>
+                <td className="px-3 py-3">
+                  {partnerDemoProductLabel(t, row.product, row.sku) || "—"}
+                </td>
                 <td className="px-3 py-3">{ils(row.customerFinalPrice)}</td>
                 <td className="px-3 py-3 font-black">{ils(row.partnerCommissionAmount)}</td>
                 <td className="px-3 py-3">{ils(row.bizuplyGrossAmount || row.bizuplyMarkupShare)}</td>

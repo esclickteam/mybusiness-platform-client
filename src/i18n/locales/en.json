@@ -16529,6 +16529,111 @@
     "poweredBy": "Powered by Bizuply",
     "money": {
       "oneTimePlusRecurring": "{{oneTime}} + {{recurring}}"
+    },
+    "demo": {
+      "prefix": {
+        "demo": "[Demo]",
+        "stagingDemo": "[Staging Demo]"
+      },
+      "persona": {
+        "studio-noa": {
+          "businessName": "Noa Studio",
+          "contactName": "Noa Levi",
+          "contactNotes": "Photography studio. The partner manages the account and earns 15% on every sale.",
+          "contactNotesAlt": "Photography and design studio. The partner fully manages the Bizuply account."
+        },
+        "cohen-solutions": {
+          "businessName": "Cohen Business Solutions",
+          "contactName": "Yossi Cohen",
+          "contactNotes": "Consulting firm. Shared management — percent commission on every renewal.",
+          "contactNotesAlt": "Consulting firm. Shared management — partner handles setup, customer handles day-to-day."
+        },
+        "bloom-beauty": {
+          "businessName": "Bloom Beauty",
+          "contactName": "Michal Perach",
+          "contactNotes": "Beauty studio. The customer manages alone after setup.",
+          "contactNotesAlt": "Beauty studio. The customer runs the business herself after setup."
+        },
+        "alon-digital": {
+          "businessName": "Alon Digital",
+          "contactName": "Alon Mizrahi",
+          "contactNotes": "Active account — full management access with CRM, leads, and campaigns.",
+          "contactNotesAlt": "Waiting for customer payment before activation."
+        },
+        "maya-events": {
+          "businessName": "Maya Events",
+          "contactName": "Maya Sharon",
+          "contactNotes": "Active account for full management — CRM, leads, calendar, and campaigns.",
+          "contactNotesAlt": "New lead from a networking event. No products yet."
+        },
+        "green-office": {
+          "businessName": "Green Office",
+          "contactName": "Dani Green",
+          "contactNotes": "Payment failed. Permissions stay off until resolved."
+        },
+        "urban-studio": {
+          "businessName": "Urban Studio",
+          "contactName": "Roi Urban",
+          "contactNotes": "Suspended after prolonged overdue payment."
+        },
+        "premium-client": {
+          "businessName": "Demo Premium Media",
+          "contactName": "Shira Golan",
+          "contactNotes": "Customer with a wide basket: plan, website, automations setup, and Growth automations."
+        }
+      },
+      "task": {
+        "onboardingCall": "Onboarding call",
+        "followUpClient": "Follow up with the client",
+        "followUpClientF": "Follow up with the customer",
+        "renewalCheck": "Check subscription renewal",
+        "satisfactionCall": "Satisfaction call",
+        "productTour": "Product tour",
+        "sendQuote": "Send a quote",
+        "paymentIssue": "Resolve payment issue",
+        "uploadWebsiteContent": "Upload website content",
+        "clientFollowUp": "Follow up with the client"
+      },
+      "note": {
+        "quoteSent": "Quote sent",
+        "monthlyApprovedF": "The customer approved a monthly package",
+        "onboardingScheduled": "Onboarding call scheduled",
+        "websiteAddonAdded": "Added website add-on",
+        "commissionVisible": "The customer sees expected commission on the dashboard",
+        "setupComplete": "Setup completed",
+        "paidAndActivated": "Customer paid and the account was activated",
+        "activatedForDemo": "Account activated to showcase full management",
+        "requestedWebsite": "Customer asked to add a website",
+        "websiteAddonOnPlan": "Added website add-on to the existing plan",
+        "finalPriceApproved": "Customer approved the final price",
+        "setupDoneSolo": "Setup completed. The customer continues alone",
+        "websiteQuoteSent": "Website quote sent",
+        "introCall": "Initial intro call",
+        "paymentFailed": "Payment failed",
+        "collectionReminder": "Collection reminder sent",
+        "accountSuspended": "Account suspended",
+        "keepInTouch": "Stay in touch in case they return",
+        "premiumBasketApproved": "Premium basket approved",
+        "automationsOnboarding": "Automations onboarding call scheduled"
+      },
+      "product": {
+        "monthlyBizuply": "Bizuply monthly plan",
+        "websiteAddon": "Website add-on",
+        "websiteOnly": "Website only",
+        "systemLicense": "System usage license",
+        "percentOnly": "Percent only",
+        "websitePlusPlan": "Website + subscription",
+        "automationsGrowth": "Automations Growth"
+      },
+      "agency": {
+        "percentOnlyName": "Demo agency — percent only",
+        "freePartnerName": "Free demo partner",
+        "teamLia": "Lia Cohen",
+        "referralDana": "Dana Shemesh",
+        "referralBusiness": "Shemesh Digital",
+        "customerStudio": "Demo customer studio",
+        "freeCustomer": "Free demo customer"
+      }
     }
   },
   "storeManager": {

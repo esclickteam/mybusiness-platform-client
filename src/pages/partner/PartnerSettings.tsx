@@ -170,7 +170,12 @@ export default function PartnerSettings() {
           </PartnerBadge>
           <p className="text-sm font-bold text-slate-500">
             {t("partner.settings.planLabel", {
-              name: partnerPlanDisplayName(t, partner?.plan) || partner?.planKey,
+              name:
+                partnerPlanDisplayName(t, {
+                  planKey: partner?.planKey || partner?.plan?.planKey,
+                  nameHe: partner?.plan?.nameHe,
+                  nameEn: partner?.plan?.nameEn,
+                }) || partner?.planKey,
             })}
           </p>
         </div>

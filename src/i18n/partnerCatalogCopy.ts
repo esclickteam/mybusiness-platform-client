@@ -15,7 +15,9 @@ export type CatalogCopyItem = {
   descriptionEn?: string;
   displayNameHe?: string;
   taglineHe?: string;
+  taglineEn?: string;
   includedHe?: string[];
+  includedEn?: string[];
 };
 
 function langOf(language?: string) {
@@ -74,27 +76,54 @@ export function catalogProductTagline(
   language?: string,
 ) {
   const sku = String(item?.sku || "").trim();
-  const fallback = String(item?.taglineHe || "").trim();
+  const fallback = pickFallback(item?.taglineHe, item?.taglineEn, language);
   if (!sku) return fallback;
   const translated = t(`partner.catalog.products.${sku}.tagline`, {
-    defaultValue: fallback,
+    defaultValue: fallback || "",
   });
-  return translated || fallback || catalogProductDescription(t, item, language);
+  return (
+    translated ||
+    fallback ||
+    catalogProductDescription(t, item, language)
+  );
 }
 
 export function catalogProductIncluded(
   t: TranslateFn,
   item?: CatalogCopyItem | null,
+  language?: string,
 ) {
   const sku = String(item?.sku || "").trim();
-  const rows = Array.isArray(item?.includedHe) ? item!.includedHe! : [];
-  return rows.map((row, index) =>
-    sku
-      ? t(`partner.catalog.products.${sku}.included.${index}`, {
-          defaultValue: row,
-        })
-      : row,
-  );
+  const heRows = Array.isArray(item?.includedHe) ? item!.includedHe! : [];
+  const enRows = Array.isArray(item?.includedEn) ? item!.includedEn! : [];
+  const lang = langOf(language);
+  const hebrew = isHebrewLanguage(lang);
+  const rowCount = Math.max(heRows.length, enRows.length);
+
+  if (!sku) {
+    if (hebrew) return heRows.length ? heRows : enRows;
+    return enRows.length ? enRows : [];
+  }
+
+  const out: string[] = [];
+  for (let index = 0; index < rowCount; index += 1) {
+    const he = String(heRows[index] || "").trim();
+    const en = String(enRows[index] || "").trim();
+    const translated = t(`partner.catalog.products.${sku}.included.${index}`, {
+      defaultValue: "",
+    });
+    if (translated) {
+      out.push(translated);
+      continue;
+    }
+    if (hebrew) {
+      if (he || en) out.push(he || en);
+      continue;
+    }
+    // Non-Hebrew: prefer EN twin; never dump Hebrew-only rows blindly
+    if (en) out.push(en);
+  }
+  return out;
 }
 
 export function catalogCategoryLabel(

@@ -31,6 +31,11 @@ import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 import { getIntlLocale } from "../../i18n/localeUtils";
 import { catalogProductName } from "../../i18n/partnerCatalogCopy";
+import {
+  localizePartnerDemoName,
+  localizePartnerDemoText,
+  partnerDemoTaskTitle,
+} from "../../i18n/partnerDemoCopy";
 import { formatPartnerDate, formatPartnerDateTime } from "../../lib/partnerWork";
 
 const MODE_TITLE_KEY: Record<string, string> = {
@@ -174,8 +179,14 @@ export default function PartnerClientDossier() {
 
       <PartnerPageHeader
         eyebrow={t("partner.dossier.fullFile")}
-        title={client.contact.businessName}
-        subtitle={`${client.contact.contactName} · ${client.contact.email}`}
+        title={localizePartnerDemoName(t, client.contact.businessName, {
+          personaKey: client.personaKey,
+          field: "businessName",
+        })}
+        subtitle={`${localizePartnerDemoName(t, client.contact.contactName, {
+          personaKey: client.personaKey,
+          field: "contactName",
+        })} · ${client.contact.email}`}
         actions={
           <>
             {deals.some(
@@ -345,7 +356,10 @@ export default function PartnerClientDossier() {
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
           <h3 className="mb-2 font-black">{t("partner.dossier.commercialBackground")}</h3>
           <p className="whitespace-pre-wrap text-sm font-bold leading-6 text-slate-600">
-            {client.contact.notes}
+            {localizePartnerDemoName(t, client.contact.notes, {
+              personaKey: client.personaKey,
+              field: "contactNotes",
+            })}
           </p>
         </section>
       ) : null}
@@ -498,7 +512,12 @@ export default function PartnerClientDossier() {
           <div className="space-y-2">
             {(client.notes || []).map((item) => (
               <div key={item._id} className="rounded-2xl bg-slate-50 px-3 py-3">
-                <p className="text-sm font-bold text-slate-800">{item.text}</p>
+                <p className="text-sm font-bold text-slate-800">
+                  {localizePartnerDemoText(t, {
+                    titleKey: item.textKey,
+                    text: item.text,
+                  })}
+                </p>
                 <p className="mt-1 text-[11px] font-bold text-slate-400">
                   {formatPartnerDateTime(item.createdAt, locale)}
                 </p>
@@ -547,7 +566,7 @@ export default function PartnerClientDossier() {
                   className="mt-1 accent-violet-700"
                 />
                 <span className={item.done ? "font-bold text-slate-400 line-through" : "font-bold"}>
-                  {item.title}
+                  {partnerDemoTaskTitle(t, item)}
                   <span className="mt-1 block text-[11px] font-bold text-slate-400">
                     {formatPartnerDateTime(item.createdAt, locale)}
                     {item.dueAt ? ` · ${t("partner.dossier.duePrefix", { when: formatPartnerDateTime(item.dueAt, locale) })}` : ""}

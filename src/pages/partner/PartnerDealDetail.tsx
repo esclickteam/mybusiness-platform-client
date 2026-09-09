@@ -19,6 +19,7 @@ import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
 import { catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { localizePartnerDemoName, localizePartnerDemoText } from "../../i18n/partnerDemoCopy";
 import { getIntlLocale } from "../../i18n/localeUtils";
 
 export default function PartnerDealDetail() {
@@ -68,17 +69,19 @@ export default function PartnerDealDetail() {
       setBillingSafety(data.billingSafety || null);
       if (hydrateForm) {
         setEmail(data.client?.contact?.email || "");
-        setPackageDisplayName(publicPackageLabel(data.deal.packageDisplayName, undefined, t));
+        setPackageDisplayName(
+          publicPackageLabel(
+            localizePartnerDemoText(t, data.deal.packageDisplayName),
+            undefined,
+            t
+          )
+        );
         setPackageDescription(data.deal.packageDescription || "");
         const names: Record<string, string> = {};
         for (const line of data.deal.lines || []) {
           if (isCommissionSku(line.sku)) continue;
           const localized = catalogProductName(t, line);
-          names[line.sku] = publicPackageLabel(
-            String(line.displayNameHe || "").trim() || localized,
-            localized || line.sku,
-            t
-          );
+          names[line.sku] = publicPackageLabel(localized, localized || line.sku, t);
         }
         setLineNames(names);
       }
@@ -170,7 +173,12 @@ export default function PartnerDealDetail() {
     <div className="space-y-5">
       <PartnerPageHeader
         eyebrow={t("partner.deal.eyebrow", { number: deal.dealNumber })}
-        title={client?.contact?.businessName || t("partner.deal.title")}
+        title={
+          localizePartnerDemoName(t, client?.contact?.businessName, {
+            personaKey: client?.personaKey,
+            field: "businessName",
+          }) || t("partner.deal.title")
+        }
         subtitle={t("partner.deal.subtitle")}
       />
       {confirmingPayment && !isPaid ? (
