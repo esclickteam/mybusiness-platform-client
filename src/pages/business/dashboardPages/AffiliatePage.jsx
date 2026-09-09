@@ -175,7 +175,7 @@ const AffiliatePage = () => {
         <button
           onClick={() => navigator.clipboard.writeText(affiliateLink)}
         >
-          Copy Link
+          {t('leftover.affiliateChrome.copyLink')}
         </button>
 
       </section>
@@ -186,38 +186,38 @@ const AffiliatePage = () => {
 
       <section className="create-client-section">
 
-        <h2>Create New Client</h2>
+        <h2>{t('leftover.affiliateChrome.createClient')}</h2>
 
         <input
           type="text"
-          placeholder="Business Name"
+          placeholder={t('leftover.affiliateChrome.businessNamePh')}
           value={clientBusinessName}
           onChange={(e) => setClientBusinessName(e.target.value)}
         />
 
         <input
           type="text"
-          placeholder="Contact Name"
+          placeholder={t('leftover.affiliateChrome.contactNamePh')}
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
         />
 
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t('leftover.affiliateChrome.emailPh')}
           value={clientEmail}
           onChange={(e) => setClientEmail(e.target.value)}
         />
 
         <input
           type="text"
-          placeholder="Phone"
+          placeholder={t('leftover.affiliateChrome.phonePh')}
           value={clientPhone}
           onChange={(e) => setClientPhone(e.target.value)}
         />
 
         <button onClick={handleCreateClient}>
-          Create Client & Payment Link
+          {t('leftover.affiliateChrome.createAndPay')}
         </button>
 
         {clientStatus && (
@@ -226,10 +226,10 @@ const AffiliatePage = () => {
 
         {paymentLink && (
           <div className="payment-link-box">
-            <p>Payment link:</p>
+            <p>{t('leftover.affiliateChrome.paymentLink')}</p>
             <input value={paymentLink} readOnly />
             <button onClick={() => navigator.clipboard.writeText(paymentLink)}>
-              Copy Link
+              {t('leftover.affiliateChrome.copyLink')}
             </button>
           </div>
         )}
@@ -242,9 +242,9 @@ const AffiliatePage = () => {
 
       <section className="affiliate-stats">
 
-        <h2>Statistics</h2>
+        <h2>{t('leftover.affiliateChrome.stats')}</h2>
 
-        {loadingStats && <BizuplyLoader size="lg" label="Loading..." />}
+        {loadingStats && <BizuplyLoader size="lg" label={t('leftover.affiliateChrome.loading')} />}
         {errorStats && <p>{errorStats}</p>}
 
         {!loadingStats && allStats.length > 0 && (

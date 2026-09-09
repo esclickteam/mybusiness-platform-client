@@ -19725,6 +19725,65 @@
       "phoneOnly": "Solo pago por teléfono",
       "both": "Ambos",
       "keyFor": "Clave para {{provider}}"
+    },
+    "servicesChrome": {
+      "addService": "Añadir un servicio",
+      "serviceType": "Tipo de servicio:",
+      "atBusiness": "Cita en el negocio",
+      "onSite": "Servicio a domicilio",
+      "serviceName": "Nombre del servicio:",
+      "serviceNamePh": "p. ej., Tratamiento facial",
+      "duration": "Duración del servicio:",
+      "hours": "horas",
+      "minutes": "minutos",
+      "price": "Precio del servicio:",
+      "pricePh": "p. ej., 250",
+      "description": "Descripción del servicio (opcional):",
+      "descriptionPh": "Detalles del servicio...",
+      "uploadImage": "Subir imagen del servicio (opcional):",
+      "previewAlt": "Vista previa",
+      "saveService": "Guardar servicio",
+      "yourServices": "Tus servicios",
+      "delete": "Eliminar",
+      "noServices": "Aún no hay servicios",
+      "saving": "Guardando...",
+      "addServiceBtn": "Añadir servicio",
+      "definedServices": "Servicios definidos:",
+      "typeLabel": "Tipo:"
+    },
+    "couponChrome": {
+      "createTitle": "Crear cupón de descuento",
+      "codePh": "Código del cupón (SUMMER10)",
+      "discountPh": "Porcentaje de descuento (10)",
+      "code": "Código",
+      "discount": "Descuento",
+      "from": "Desde",
+      "until": "Hasta",
+      "delete": "Eliminar",
+      "addCoupon": "Añadir cupón",
+      "existingCoupons": "Cupones existentes"
+    },
+    "affiliateChrome": {
+      "createClient": "Crear nuevo cliente",
+      "businessNamePh": "Nombre del negocio",
+      "contactNamePh": "Nombre de contacto",
+      "emailPh": "Email",
+      "phonePh": "Teléfono",
+      "createAndPay": "Crear cliente y enlace de pago",
+      "paymentLink": "Enlace de pago:",
+      "copyLink": "Copiar enlace",
+      "stats": "Estadísticas",
+      "loading": "Cargando..."
+    },
+    "marketerBank": {
+      "title": "Actualizar datos bancarios - Marketer",
+      "bankName": "Nombre del banco",
+      "branchNumber": "Número de sucursal",
+      "accountNumber": "Número de cuenta",
+      "fullName": "Nombre completo",
+      "idNumber": "Número de ID",
+      "save": "Guardar datos",
+      "saving": "Guardando..."
     }
   }
 }

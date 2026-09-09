@@ -276,20 +276,20 @@ const ShopTab = () => {
 
       {/* Coupons */}
       <form className="coupon-section" onSubmit={handleAddCoupon}>
-        <h4>🎟️ Create Discount Coupon</h4>
-        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder="Coupon Code (SUMMER10)" required />
-        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder="Discount Percentage (10)" required />
+        <h4>🎟️ {t('leftover.couponChrome.createTitle')}</h4>
+        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder={t('leftover.couponChrome.codePh')} required />
+        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder={t('leftover.couponChrome.discountPh')} required />
         <input type="date" value={coupon.start} onChange={e => setCoupon(prev => ({ ...prev, start: e.target.value }))} />
         <input type="date" value={coupon.expiry} onChange={e => setCoupon(prev => ({ ...prev, expiry: e.target.value }))} />
-        <button type="submit">➕ Add Coupon</button>
+        <button type="submit">➕ {t('leftover.couponChrome.addCoupon')}</button>
       </form>
 
       {coupons.length > 0 && (
         <div className="coupons-table">
-          <h4>🧾 Existing Coupons</h4>
+          <h4>🧾 {t('leftover.couponChrome.existingCoupons')}</h4>
           <table>
             <thead>
-              <tr><th>Code</th><th>Discount</th><th>From</th><th>Until</th><th>Delete</th></tr>
+              <tr><th>{t('leftover.couponChrome.code')}</th><th>{t('leftover.couponChrome.discount')}</th><th>{t('leftover.couponChrome.from')}</th><th>{t('leftover.couponChrome.until')}</th><th>{t('leftover.couponChrome.delete')}</th></tr>
             </thead>
             <tbody>
               {coupons.map((c, i) => (

@@ -19725,6 +19725,65 @@
       "phoneOnly": "Phone Payment Only",
       "both": "Both",
       "keyFor": "Key for {{provider}}"
+    },
+    "servicesChrome": {
+      "addService": "Add a Service",
+      "serviceType": "Service Type:",
+      "atBusiness": "Appointment at Business",
+      "onSite": "On-Site Service",
+      "serviceName": "Service Name:",
+      "serviceNamePh": "e.g., Facial Treatment",
+      "duration": "Service Duration:",
+      "hours": "hours",
+      "minutes": "minutes",
+      "price": "Service Price:",
+      "pricePh": "e.g., 250",
+      "description": "Service Description (optional):",
+      "descriptionPh": "Details about the service...",
+      "uploadImage": "Upload Service Image (optional):",
+      "previewAlt": "Preview",
+      "saveService": "Save Service",
+      "yourServices": "Your Services",
+      "delete": "Delete",
+      "noServices": "No services yet",
+      "saving": "Saving...",
+      "addServiceBtn": "Add Service",
+      "definedServices": "Defined Services:",
+      "typeLabel": "Type:"
+    },
+    "couponChrome": {
+      "createTitle": "Create Discount Coupon",
+      "codePh": "Coupon Code (SUMMER10)",
+      "discountPh": "Discount Percentage (10)",
+      "code": "Code",
+      "discount": "Discount",
+      "from": "From",
+      "until": "Until",
+      "delete": "Delete",
+      "addCoupon": "Add Coupon",
+      "existingCoupons": "Existing Coupons"
+    },
+    "affiliateChrome": {
+      "createClient": "Create New Client",
+      "businessNamePh": "Business Name",
+      "contactNamePh": "Contact Name",
+      "emailPh": "Email",
+      "phonePh": "Phone",
+      "createAndPay": "Create Client & Payment Link",
+      "paymentLink": "Payment link:",
+      "copyLink": "Copy Link",
+      "stats": "Statistics",
+      "loading": "Loading..."
+    },
+    "marketerBank": {
+      "title": "Update Bank Account Details - Marketer",
+      "bankName": "Bank Name",
+      "branchNumber": "Branch Number",
+      "accountNumber": "Account Number",
+      "fullName": "Full Name",
+      "idNumber": "ID Number",
+      "save": "Save Details",
+      "saving": "Saving..."
     }
   }
 }

@@ -92,13 +92,13 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
 
   return (
     <section className="marketer-bank-details-form">
-      <h2>Update Bank Account Details - Marketer</h2>
+      <h2>{t('leftover.marketerBank.title')}</h2>
 
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="bankName"
-          placeholder="Bank Name"
+          placeholder={t('leftover.marketerBank.bankName')}
           value={form.bankName}
           onChange={handleChange}
           required
@@ -107,7 +107,7 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
         <input
           type="text"
           name="branchNumber"
-          placeholder="Branch Number"
+          placeholder={t('leftover.marketerBank.branchNumber')}
           value={form.branchNumber}
           onChange={handleChange}
           required
@@ -116,7 +116,7 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
         <input
           type="text"
           name="accountNumber"
-          placeholder="Account Number"
+          placeholder={t('leftover.marketerBank.accountNumber')}
           value={form.accountNumber}
           onChange={handleChange}
           required
@@ -125,7 +125,7 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
         <input
           type="text"
           name="fullName"
-          placeholder="Full Name"
+          placeholder={t('leftover.marketerBank.fullName')}
           value={form.fullName}
           onChange={handleChange}
           required
@@ -134,14 +134,14 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
         <input
           type="text"
           name="idNumber"
-          placeholder="ID Number"
+          placeholder={t('leftover.marketerBank.idNumber')}
           value={form.idNumber}
           onChange={handleChange}
           required
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save Details"}
+          {loading ? t('leftover.marketerBank.saving') : t('leftover.marketerBank.save')}
         </button>
       </form>
 

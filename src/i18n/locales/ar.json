@@ -19725,6 +19725,65 @@
       "phoneOnly": "الدفع عبر الهاتف فقط",
       "both": "كلاهما",
       "keyFor": "مفتاح لـ {{provider}}"
+    },
+    "servicesChrome": {
+      "addService": "إضافة خدمة",
+      "serviceType": "نوع الخدمة:",
+      "atBusiness": "موعد في مقر العمل",
+      "onSite": "خدمة في موقع العميل",
+      "serviceName": "اسم الخدمة:",
+      "serviceNamePh": "مثال: علاج للبشرة",
+      "duration": "مدة الخدمة:",
+      "hours": "ساعات",
+      "minutes": "دقائق",
+      "price": "سعر الخدمة:",
+      "pricePh": "مثال: 250",
+      "description": "وصف الخدمة (اختياري):",
+      "descriptionPh": "تفاصيل عن الخدمة...",
+      "uploadImage": "رفع صورة الخدمة (اختياري):",
+      "previewAlt": "معاينة",
+      "saveService": "حفظ الخدمة",
+      "yourServices": "خدماتكم",
+      "delete": "حذف",
+      "noServices": "لا توجد خدمات بعد",
+      "saving": "جارٍ الحفظ...",
+      "addServiceBtn": "إضافة خدمة",
+      "definedServices": "الخدمات المعرّفة:",
+      "typeLabel": "النوع:"
+    },
+    "couponChrome": {
+      "createTitle": "إنشاء قسيمة خصم",
+      "codePh": "رمز القسيمة (SUMMER10)",
+      "discountPh": "نسبة الخصم (10)",
+      "code": "الرمز",
+      "discount": "الخصم",
+      "from": "من",
+      "until": "حتى",
+      "delete": "حذف",
+      "addCoupon": "إضافة قسيمة",
+      "existingCoupons": "القسائم الحالية"
+    },
+    "affiliateChrome": {
+      "createClient": "إنشاء عميل جديد",
+      "businessNamePh": "اسم العمل",
+      "contactNamePh": "اسم جهة الاتصال",
+      "emailPh": "البريد",
+      "phonePh": "الهاتف",
+      "createAndPay": "إنشاء عميل ورابط دفع",
+      "paymentLink": "رابط الدفع:",
+      "copyLink": "نسخ الرابط",
+      "stats": "الإحصاءات",
+      "loading": "جارٍ التحميل..."
+    },
+    "marketerBank": {
+      "title": "تحديث بيانات الحساب البنكي - المسوّق",
+      "bankName": "اسم البنك",
+      "branchNumber": "رقم الفرع",
+      "accountNumber": "رقم الحساب",
+      "fullName": "الاسم الكامل",
+      "idNumber": "رقم الهوية",
+      "save": "حفظ التفاصيل",
+      "saving": "جارٍ الحفظ..."
     }
   }
 }

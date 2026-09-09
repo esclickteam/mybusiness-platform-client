@@ -19714,6 +19714,65 @@
       "phoneOnly": "תשלום טלפוני בלבד",
       "both": "שניהם",
       "keyFor": "מפתח עבור {{provider}}"
+    },
+    "servicesChrome": {
+      "addService": "הוספת שירות",
+      "serviceType": "סוג שירות:",
+      "atBusiness": "תור בעסק",
+      "onSite": "שירות בבית הלקוח",
+      "serviceName": "שם השירות:",
+      "serviceNamePh": "לדוגמה: טיפול פנים",
+      "duration": "משך השירות:",
+      "hours": "שעות",
+      "minutes": "דקות",
+      "price": "מחיר השירות:",
+      "pricePh": "לדוגמה: 250",
+      "description": "תיאור השירות (אופציונלי):",
+      "descriptionPh": "פרטים על השירות...",
+      "uploadImage": "העלאת תמונת שירות (אופציונלי):",
+      "previewAlt": "תצוגה מקדימה",
+      "saveService": "שמירת שירות",
+      "yourServices": "השירותים שלך",
+      "delete": "מחיקה",
+      "noServices": "אין עדיין שירותים",
+      "saving": "שומר...",
+      "addServiceBtn": "הוספת שירות",
+      "definedServices": "שירותים מוגדרים:",
+      "typeLabel": "סוג:"
+    },
+    "couponChrome": {
+      "createTitle": "יצירת קופון הנחה",
+      "codePh": "קוד קופון (SUMMER10)",
+      "discountPh": "אחוז הנחה (10)",
+      "code": "קוד",
+      "discount": "הנחה",
+      "from": "מ-",
+      "until": "עד",
+      "delete": "מחיקה",
+      "addCoupon": "הוספת קופון",
+      "existingCoupons": "קופונים קיימים"
+    },
+    "affiliateChrome": {
+      "createClient": "יצירת לקוח חדש",
+      "businessNamePh": "שם העסק",
+      "contactNamePh": "שם איש קשר",
+      "emailPh": "אימייל",
+      "phonePh": "טלפון",
+      "createAndPay": "יצירת לקוח וקישור תשלום",
+      "paymentLink": "קישור תשלום:",
+      "copyLink": "העתקת קישור",
+      "stats": "סטטיסטיקה",
+      "loading": "טוען..."
+    },
+    "marketerBank": {
+      "title": "עדכון פרטי חשבון בנק - משווק",
+      "bankName": "שם הבנק",
+      "branchNumber": "מספר סניף",
+      "accountNumber": "מספר חשבון",
+      "fullName": "שם מלא",
+      "idNumber": "מספר זהות",
+      "save": "שמירת פרטים",
+      "saving": "שומר..."
     }
   }
 }

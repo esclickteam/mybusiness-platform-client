@@ -97,11 +97,11 @@ function getReviewAverage(review: Review) {
 }
 
 function getRatingLabel(rating: number, t: (key: string, fallback: string) => string) {
-  if (!rating) return t("business.profileBuild.noRating", "אין דירוג");
-  if (rating >= 4.5) return t("business.profileBuild.excellent", "מעולה");
-  if (rating >= 4) return t("business.profileBuild.veryGood", "טוב מאוד");
-  if (rating >= 3) return t("business.profileBuild.good", "טוב");
-  return t("business.profileBuild.needsWork", "דורש שיפור");
+  if (!rating) return t("business.profileBuild.noRating");
+  if (rating >= 4.5) return t("business.profileBuild.excellent");
+  if (rating >= 4) return t("business.profileBuild.veryGood");
+  if (rating >= 3) return t("business.profileBuild.good");
+  return t("business.profileBuild.needsWork");
 }
 
 export default function ReviewsSection({
@@ -154,32 +154,29 @@ export default function ReviewsSection({
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  {t("buildPage.reviews.title", "ביקורות לקוחות")}
+                  {t("buildPage.reviews.title")}
                 </div>
 
                 <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm backdrop-blur">
-                  {t("buildPage.header.badgeLive", "תצוגה חיה בזמן אמת")}
+                  {t("buildPage.header.badgeLive")}
                 </div>
               </div>
 
               <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                    {t("business.profileBuild.manageReviews", "ניהול ביקורות")}
+                    {t("business.profileBuild.manageReviews")}
                   </h1>
 
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    {t(
-                      "business.profileBuild.reviewsIntro",
-                      "נהל את כל ביקורות הלקוחות, עקוב אחרי הדירוג הממוצע ושמור על פרופיל עסקי אמין, פעיל ומקצועי."
-                    )}
+                    {t("business.profileBuild.reviewsIntro")}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
                   <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-lg backdrop-blur">
                     <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                      {t("business.profileBuild.reviews", "ביקורות")}
+                      {t("business.profileBuild.reviews")}
                     </p>
 
                     <p className="mt-1 text-3xl font-black text-slate-800">
@@ -189,7 +186,7 @@ export default function ReviewsSection({
 
                   <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-lg backdrop-blur">
                     <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                      {t("business.profileBuild.averageRating", "דירוג ממוצע")}
+                      {t("business.profileBuild.averageRating")}
                     </p>
 
                     <div className="mt-1 flex items-center gap-2">
@@ -215,7 +212,7 @@ export default function ReviewsSection({
                 </div>
 
                 <p className="mt-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                  {t("business.profileBuild.totalReviews", "סה״כ ביקורות")}
+                  {t("business.profileBuild.totalReviews")}
                 </p>
 
                 <p className="mt-1 text-2xl font-black text-slate-800">
@@ -229,7 +226,7 @@ export default function ReviewsSection({
                 </div>
 
                 <p className="mt-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                  {t("business.profileBuild.averageRating", "דירוג ממוצע")}
+                  {t("business.profileBuild.averageRating")}
                 </p>
 
                 <p className="mt-1 text-2xl font-black text-slate-800">
@@ -243,11 +240,11 @@ export default function ReviewsSection({
                 </div>
 
                 <p className="mt-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                  {t("common.status", "סטטוס")}
+                  {t("common.status")}
                 </p>
 
                 <p className="mt-1 text-2xl font-black text-slate-800">
-                  {hasReviews ? ratingLabel : t("business.profileBuild.empty", "ריק")}
+                  {hasReviews ? ratingLabel : t("business.profileBuild.empty")}
                 </p>
               </div>
             </div>
@@ -256,19 +253,16 @@ export default function ReviewsSection({
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-lg font-black text-slate-800">
-                    {t("business.profileBuild.allReviews", "כל הביקורות")}
+                    {t("business.profileBuild.allReviews")}
                   </h2>
 
                   <p className="mt-1 text-sm leading-6 text-slate-500">
-                    {t(
-                      "business.profileBuild.allReviewsHint",
-                      "כאן אפשר לראות את כל ביקורות הלקוחות שמופיעות בפרופיל העסקי."
-                    )}
+                    {t("business.profileBuild.allReviewsHint")}
                   </p>
                 </div>
 
                 <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                  {t("buildPage.reviews.countLabel", "{{count}} ביקורות", { count: totalReviews })}
+                  {t("buildPage.reviews.countLabel", { count: totalReviews })}
                 </span>
               </div>
 
@@ -301,11 +295,11 @@ export default function ReviewsSection({
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-black text-violet-700">
-                      {t("business.profileBuild.publicPreview", "תצוגה מקדימה של הפרופיל הציבורי")}
+                      {t("business.profileBuild.publicPreview")}
                     </p>
 
                     <h2 className="mt-1 text-xl font-black text-slate-800">
-                      {t("buildPage.reviews.title", "ביקורות לקוחות")}
+                      {t("buildPage.reviews.title")}
                     </h2>
                   </div>
 
@@ -321,21 +315,21 @@ export default function ReviewsSection({
 
                     <div className="relative">
                       <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-3 py-1 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                        {t("business.profileBuild.livePreview", "תצוגה מקדימה חיה")}
+                        {t("business.profileBuild.livePreview")}
                       </div>
 
                       <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-800">
-                        {t("business.profileBuild.latestReviews", "הביקורות האחרונות")}
+                        {t("business.profileBuild.latestReviews")}
                       </h3>
 
                       <p className="mt-2 text-sm leading-6 text-slate-600">
-                        {t("business.profileBuild.latestReviewsHint", "שתי הביקורות החדשות ביותר יוצגו בפרופיל העסקי הציבורי.")}
+                        {t("business.profileBuild.latestReviewsHint")}
                       </p>
 
                       <div className="mt-6 grid grid-cols-2 gap-3">
                         <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm backdrop-blur">
                           <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                            {t("business.profileBuild.total", "סה״כ")}
+                            {t("business.profileBuild.total")}
                           </p>
 
                           <p className="mt-1 text-2xl font-black text-slate-800">
@@ -345,7 +339,7 @@ export default function ReviewsSection({
 
                         <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm backdrop-blur">
                           <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                            {t("business.profileBuild.average", "ממוצע")}
+                            {t("business.profileBuild.average")}
                           </p>
 
                           <div className="mt-1 flex items-center gap-2">
@@ -368,11 +362,11 @@ export default function ReviewsSection({
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div>
                         <h3 className="text-2xl font-black text-slate-800">
-                          {t("business.profileBuild.whatCustomersSay", "מה לקוחות אומרים")}
+                          {t("business.profileBuild.whatCustomersSay")}
                         </h3>
 
                         <p className="mt-1 text-sm leading-6 text-slate-500">
-                          {t("business.profileBuild.howReviewsAppear", "כך הביקורות יופיעו בעמוד הציבורי של העסק.")}
+                          {t("business.profileBuild.howReviewsAppear")}
                         </p>
                       </div>
 
@@ -385,8 +379,8 @@ export default function ReviewsSection({
                         ].join(" ")}
                       >
                         {hasReviews
-                          ? t("business.profileBuild.active", "פעיל")
-                          : t("business.profileBuild.empty", "ריק")}
+                          ? t("business.profileBuild.active")
+                          : t("business.profileBuild.empty")}
                       </span>
                     </div>
 
@@ -406,14 +400,11 @@ export default function ReviewsSection({
                           </div>
 
                           <h4 className="mt-4 text-lg font-black text-slate-800">
-                            {t("business.profileBuild.noReviewsYet", "עדיין אין ביקורות")}
+                            {t("business.profileBuild.noReviewsYet")}
                           </h4>
 
                           <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                            {t(
-                              "business.profileBuild.noReviewsHint",
-                              "אחרי שלקוחות ישאירו ביקורות, שתי הביקורות האחרונות יופיעו כאן."
-                            )}
+                            {t("business.profileBuild.noReviewsHint")}
                           </p>
                         </div>
                       )}
@@ -422,7 +413,7 @@ export default function ReviewsSection({
                     <div className="mt-5 grid grid-cols-2 gap-3">
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          {t("business.profileBuild.reviews", "ביקורות")}
+                          {t("business.profileBuild.reviews")}
                         </p>
 
                         <p className="mt-1 text-2xl font-black text-slate-800">
@@ -432,7 +423,7 @@ export default function ReviewsSection({
 
                       <div className="rounded-2xl bg-slate-50 p-4">
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                          {t("business.profileBuild.rating", "דירוג")}
+                          {t("business.profileBuild.rating")}
                         </p>
 
                         <p className="mt-1 text-2xl font-black text-slate-800">

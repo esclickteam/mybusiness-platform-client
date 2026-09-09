@@ -1154,6 +1154,71 @@ const SHOP_CHROME = {
 };
 
 
+
+const SERVICES_CHROME = {
+  addService: row("Add a Service", "הוספת שירות", "Añadir un servicio", "Adicionar um serviço", "إضافة خدمة"),
+  serviceType: row("Service Type:", "סוג שירות:", "Tipo de servicio:", "Tipo de serviço:", "نوع الخدمة:"),
+  atBusiness: row("Appointment at Business", "תור בעסק", "Cita en el negocio", "Atendimento no estabelecimento", "موعد في مقر العمل"),
+  onSite: row("On-Site Service", "שירות בבית הלקוח", "Servicio a domicilio", "Serviço no local", "خدمة في موقع العميل"),
+  serviceName: row("Service Name:", "שם השירות:", "Nombre del servicio:", "Nome do serviço:", "اسم الخدمة:"),
+  serviceNamePh: row("e.g., Facial Treatment", "לדוגמה: טיפול פנים", "p. ej., Tratamiento facial", "ex.: Tratamento facial", "مثال: علاج للبشرة"),
+  duration: row("Service Duration:", "משך השירות:", "Duración del servicio:", "Duração do serviço:", "مدة الخدمة:"),
+  hours: row("hours", "שעות", "horas", "horas", "ساعات"),
+  minutes: row("minutes", "דקות", "minutos", "minutos", "دقائق"),
+  price: row("Service Price:", "מחיר השירות:", "Precio del servicio:", "Preço do serviço:", "سعر الخدمة:"),
+  pricePh: row("e.g., 250", "לדוגמה: 250", "p. ej., 250", "ex.: 250", "مثال: 250"),
+  description: row("Service Description (optional):", "תיאור השירות (אופציונלי):", "Descripción del servicio (opcional):", "Descrição do serviço (opcional):", "وصف الخدمة (اختياري):"),
+  descriptionPh: row("Details about the service...", "פרטים על השירות...", "Detalles del servicio...", "Detalhes do serviço...", "تفاصيل عن الخدمة..."),
+  uploadImage: row("Upload Service Image (optional):", "העלאת תמונת שירות (אופציונלי):", "Subir imagen del servicio (opcional):", "Enviar imagem do serviço (opcional):", "رفع صورة الخدمة (اختياري):"),
+  previewAlt: row("Preview", "תצוגה מקדימה", "Vista previa", "Prévia", "معاينة"),
+  saveService: row("Save Service", "שמירת שירות", "Guardar servicio", "Salvar serviço", "حفظ الخدمة"),
+  yourServices: row("Your Services", "השירותים שלך", "Tus servicios", "Seus serviços", "خدماتكم"),
+  delete: row("Delete", "מחיקה", "Eliminar", "Excluir", "حذف"),
+  noServices: row("No services yet", "אין עדיין שירותים", "Aún no hay servicios", "Ainda não há serviços", "لا توجد خدمات بعد"),
+  saving: row("Saving...", "שומר...", "Guardando...", "Salvando...", "جارٍ الحفظ..."),
+  addServiceBtn: row("Add Service", "הוספת שירות", "Añadir servicio", "Adicionar serviço", "إضافة خدمة"),
+  definedServices: row("Defined Services:", "שירותים מוגדרים:", "Servicios definidos:", "Serviços definidos:", "الخدمات المعرّفة:"),
+  typeLabel: row("Type:", "סוג:", "Tipo:", "Tipo:", "النوع:"),
+};
+
+const COUPON_CHROME = {
+  createTitle: row("Create Discount Coupon", "יצירת קופון הנחה", "Crear cupón de descuento", "Criar cupom de desconto", "إنشاء قسيمة خصم"),
+  codePh: row("Coupon Code (SUMMER10)", "קוד קופון (SUMMER10)", "Código del cupón (SUMMER10)", "Código do cupom (SUMMER10)", "رمز القسيمة (SUMMER10)"),
+  discountPh: row("Discount Percentage (10)", "אחוז הנחה (10)", "Porcentaje de descuento (10)", "Percentual de desconto (10)", "نسبة الخصم (10)"),
+  code: row("Code", "קוד", "Código", "Código", "الرمز"),
+  discount: row("Discount", "הנחה", "Descuento", "Desconto", "الخصم"),
+  from: row("From", "מ-", "Desde", "De", "من"),
+  until: row("Until", "עד", "Hasta", "Até", "حتى"),
+  delete: row("Delete", "מחיקה", "Eliminar", "Excluir", "حذف"),
+  addCoupon: row("Add Coupon", "הוספת קופון", "Añadir cupón", "Adicionar cupom", "إضافة قسيمة"),
+  existingCoupons: row("Existing Coupons", "קופונים קיימים", "Cupones existentes", "Cupons existentes", "القسائم الحالية"),
+};
+
+const AFFILIATE_CHROME = {
+  createClient: row("Create New Client", "יצירת לקוח חדש", "Crear nuevo cliente", "Criar novo cliente", "إنشاء عميل جديد"),
+  businessNamePh: row("Business Name", "שם העסק", "Nombre del negocio", "Nome do negócio", "اسم العمل"),
+  contactNamePh: row("Contact Name", "שם איש קשר", "Nombre de contacto", "Nome do contato", "اسم جهة الاتصال"),
+  emailPh: row("Email", "אימייל", "Email", "E-mail", "البريد"),
+  phonePh: row("Phone", "טלפון", "Teléfono", "Telefone", "الهاتف"),
+  createAndPay: row("Create Client & Payment Link", "יצירת לקוח וקישור תשלום", "Crear cliente y enlace de pago", "Criar cliente e link de pagamento", "إنشاء عميل ورابط دفع"),
+  paymentLink: row("Payment link:", "קישור תשלום:", "Enlace de pago:", "Link de pagamento:", "رابط الدفع:"),
+  copyLink: row("Copy Link", "העתקת קישור", "Copiar enlace", "Copiar link", "نسخ الرابط"),
+  stats: row("Statistics", "סטטיסטיקה", "Estadísticas", "Estatísticas", "الإحصاءات"),
+  loading: row("Loading...", "טוען...", "Cargando...", "Carregando...", "جارٍ التحميل..."),
+};
+
+const MARKETER_BANK = {
+  title: row("Update Bank Account Details - Marketer", "עדכון פרטי חשבון בנק - משווק", "Actualizar datos bancarios - Marketer", "Atualizar dados bancários - Marketer", "تحديث بيانات الحساب البنكي - المسوّق"),
+  bankName: row("Bank Name", "שם הבנק", "Nombre del banco", "Nome do banco", "اسم البنك"),
+  branchNumber: row("Branch Number", "מספר סניף", "Número de sucursal", "Número da agência", "رقم الفرع"),
+  accountNumber: row("Account Number", "מספר חשבון", "Número de cuenta", "Número da conta", "رقم الحساب"),
+  fullName: row("Full Name", "שם מלא", "Nombre completo", "Nome completo", "الاسم الكامل"),
+  idNumber: row("ID Number", "מספר זהות", "Número de ID", "Número de identidade", "رقم الهوية"),
+  save: row("Save Details", "שמירת פרטים", "Guardar datos", "Salvar dados", "حفظ التفاصيل"),
+  saving: row("Saving...", "שומר...", "Guardando...", "Salvando...", "جارٍ الحفظ..."),
+};
+
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -1204,6 +1269,10 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       bizChatChrome: pickLocaleMap(BIZ_CHAT_CHROME, locale),
       loading: pickLocaleMap(LOADING_CHROME, locale),
       shopChrome: pickLocaleMap(SHOP_CHROME, locale),
+      servicesChrome: pickLocaleMap(SERVICES_CHROME, locale),
+      couponChrome: pickLocaleMap(COUPON_CHROME, locale),
+      affiliateChrome: pickLocaleMap(AFFILIATE_CHROME, locale),
+      marketerBank: pickLocaleMap(MARKETER_BANK, locale),
     },
     chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };

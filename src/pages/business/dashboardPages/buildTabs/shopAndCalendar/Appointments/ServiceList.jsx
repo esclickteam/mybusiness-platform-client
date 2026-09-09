@@ -107,34 +107,34 @@ const ServiceList = ({
 
   return (
     <div className="service-list">
-      <h3 className="section-title">Add a Service</h3>
+      <h3 className="section-title">{t('leftover.servicesChrome.addService')}</h3>
 
-      <label>Service Type:</label>
+      <label>{t('leftover.servicesChrome.serviceType')}</label>
       <div className="appointment-type-selector">
         <button
           type="button"
           className={newService.appointmentType === 'at_business' ? 'active' : ''}
           onClick={() => setNewService({ ...newService, appointmentType: 'at_business' })}
         >
-          🏢 Appointment at Business
+          🏢 {t('leftover.servicesChrome.atBusiness')}
         </button>
         <button
           type="button"
           className={newService.appointmentType === 'on_site' ? 'active' : ''}
           onClick={() => setNewService({ ...newService, appointmentType: 'on_site' })}
         >
-          🚗 On-Site Service
+          🚗 {t('leftover.servicesChrome.onSite')}
         </button>
       </div>
 
-      <label>Service Name:</label>
+      <label>{t('leftover.servicesChrome.serviceName')}</label>
       <input
-        placeholder="e.g., Facial Treatment"
+        placeholder={t('leftover.servicesChrome.serviceNamePh')}
         value={newService.name}
         onChange={e => setNewService({ ...newService, name: e.target.value })}
       />
 
-      <label>Service Duration:</label>
+      <label>{t('leftover.servicesChrome.duration')}</label>
       <div className="time-row">
         <select
           value={newService.hours}
@@ -144,7 +144,7 @@ const ServiceList = ({
             <option key={h} value={h}>{h}</option>
           ))}
         </select>
-        <span>hours</span>
+        <span>{t('leftover.servicesChrome.hours')}</span>
         <select
           value={newService.minutes}
           onChange={e => setNewService({ ...newService, minutes: e.target.value })}
@@ -153,28 +153,28 @@ const ServiceList = ({
             <option key={m} value={m}>{m}</option>
           ))}
         </select>
-        <span>minutes</span>
+        <span>{t('leftover.servicesChrome.minutes')}</span>
       </div>
 
-      <label>Service Price:</label>
+      <label>{t('leftover.servicesChrome.price')}</label>
       <input
         type="number"
-        placeholder="e.g., 250"
+        placeholder={t('leftover.servicesChrome.pricePh')}
         value={newService.price}
         onChange={e => setNewService({ ...newService, price: e.target.value })}
       />
 
-      <label>Service Description (optional):</label>
+      <label>{t('leftover.servicesChrome.description')}</label>
       <textarea
-        placeholder="Details about the service..."
+        placeholder={t('leftover.servicesChrome.descriptionPh')}
         value={newService.description}
         onChange={e => setNewService({ ...newService, description: e.target.value })}
       />
 
-      <label>Upload Service Image (optional):</label>
+      <label>{t('leftover.servicesChrome.uploadImage')}</label>
       <input type="file" onChange={handleImageChange} />
       {newService.imagePreview && (
-        <img src={newService.imagePreview} alt="Preview" className="preview-img" />
+        <img src={newService.imagePreview} alt={t('leftover.servicesChrome.previewAlt')} className="preview-img" />
       )}
 
       <button
@@ -182,12 +182,12 @@ const ServiceList = ({
         onClick={handleAddService}
         disabled={loading}
       >
-        {loading ? 'Saving...' : '➕ Add Service'}
+        {loading ? t('leftover.servicesChrome.saving') : `➕ ${t('leftover.servicesChrome.addServiceBtn')}`}
       </button>
 
       <hr />
 
-      <h3>Defined Services:</h3>
+      <h3>{t('leftover.servicesChrome.definedServices')}</h3>
       <div className="services-grid">
         {services.map((srv, i) => (
           <div key={srv._id || i} className="service-card">
@@ -200,7 +200,7 @@ const ServiceList = ({
               {srv.price && <p className="price">{srv.price} $</p>}
               <span>{formatDuration(srv.duration)}</span>
               <p style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
-                Type: {srv.appointmentType === 'on_site' ? 'On-Site Service' : 'In-Business Appointment'}
+                {t('leftover.servicesChrome.typeLabel')} {srv.appointmentType === 'on_site' ? t('leftover.servicesChrome.onSite') : t('leftover.servicesChrome.atBusiness')}
               </p>
             </div>
             <button
