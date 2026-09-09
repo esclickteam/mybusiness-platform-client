@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "../../../api";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./GoalsPage.css";
 
 const GoalsPage = () => {
+  const { t } = useTranslation();
   const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState({
     title: "",
@@ -189,7 +191,7 @@ const GoalsPage = () => {
             <p><strong>Motivation:</strong> {getMotivation(calculateProgress(selectedGoal))}</p>
             <p><strong>Tip:</strong> {getActionTip(selectedGoal.type)}</p>
             {getLastAchievement() && <p><strong>{getLastAchievement()}</strong></p>}
-            <button onClick={() => setSelectedGoal(null)}>Close</button>
+            <button onClick={() => setSelectedGoal(null)}>{t("leftover.goalsChrome.close")}</button>
           </div>
         </div>
       )}

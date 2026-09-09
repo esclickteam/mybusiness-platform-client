@@ -19784,6 +19784,14 @@
       "idNumber": "Número de identidade",
       "save": "Salvar dados",
       "saving": "Salvando..."
+    },
+    "goalsChrome": {
+      "close": "Fechar"
+    },
+    "metaFormChrome": {
+      "createForm": "Criar formulário",
+      "creating": "Criando…",
+      "closeAria": "Fechar"
     }
   }
 }

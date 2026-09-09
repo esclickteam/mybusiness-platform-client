@@ -160,7 +160,7 @@ function StarRating({
             onFocus={() => setHover(rating)}
             onBlur={() => setHover(0)}
             onClick={() => onChange(rating)}
-            aria-label={t("business.reviews.starsAria", "{{rating}} כוכבים", { rating })}
+            aria-label={t("business.reviews.starsAria", { rating })}
             className={[
               "flex h-10 w-10 items-center justify-center rounded-2xl text-lg transition-all",
               "focus:outline-none focus:ring-4 focus:ring-amber-100",
@@ -210,7 +210,7 @@ function RatingRow({
               {field.required && <span className="text-violet-600"> *</span>}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-slate-400">
-              {t("business.reviews.clickStars", "לחצו על הכוכבים לדירוג")}
+              {t("business.reviews.clickStars")}
             </p>
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function ReviewForm({
     event.preventDefault();
 
     if (!canSubmit) {
-      setError(t("business.reviews.needNameRatings", "יש למלא שם ואת כל הדירוגים הנדרשים."));
+      setError(t("business.reviews.needNameRatings"));
       return;
     }
 
@@ -331,7 +331,7 @@ export default function ReviewForm({
         err?.response?.data?.message ||
           err?.response?.data?.error ||
           err?.message ||
-          t("business.reviews.sendFailed", "לא ניתן לשלוח את הביקורת. נסו שוב.")
+          t("business.reviews.sendFailed")
       );
     } finally {
       setIsSubmitting(false);
@@ -355,21 +355,18 @@ export default function ReviewForm({
       <div className="relative shrink-0 border-b border-slate-100 p-6 sm:p-7">
         <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
           <Icon name="rating" size={15} />
-          {t("business.reviews.customerReview", "ביקורת לקוח")}
+          {t("business.reviews.customerReview")}
         </div>
 
         <h3
           id="review-form-title"
           className="mt-4 text-3xl font-black tracking-tight text-slate-800"
         >
-          {t("business.reviews.writeReview", "כתיבת ביקורת")}
+          {t("business.reviews.writeReview")}
         </h3>
 
         <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-          {t(
-            "business.reviews.writeHint",
-            "דרגו את החוויה ושתפו מה בולט. הביקורת שלכם עוזרת ללקוחות אחרים לבחור בביטחון."
-          )}
+          {t("business.reviews.writeHint")}
         </p>
       </div>
 
@@ -382,21 +379,21 @@ export default function ReviewForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              {t("business.reviews.yourName", "השם שלכם *")}
+              {t("business.reviews.yourName")}
             </span>
             <input
               value={form.name}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, name: event.target.value }))
               }
-              placeholder={t("business.reviews.yourNamePh", "השם שלכם")}
+              placeholder={t("business.reviews.yourNamePh")}
               className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
             />
           </label>
 
           <label className="block">
             <span className="mb-2 block text-sm font-black text-slate-800">
-              {t("common.email", "אימייל")}
+              {t("common.email")}
             </span>
             <input
               type="email"
@@ -429,8 +426,8 @@ export default function ReviewForm({
         >
           <span>
             {showMore
-              ? t("business.reviews.hideMore", "הסתרת פרטים נוספים")
-              : t("business.reviews.showMore", "הוספת פרטים נוספים (אופציונלי)")}
+              ? t("business.reviews.hideMore")
+              : t("business.reviews.showMore")}
           </span>
           <span className={showMore ? "rotate-180 transition" : "transition"}>
             ⌄
@@ -452,8 +449,8 @@ export default function ReviewForm({
 
         <label className="block">
           <span className="mb-2 block text-sm font-black text-slate-800">
-            {t("business.reviews.whatStoodOut", "מה בולט במיוחד?")}
-            <span className="font-bold text-slate-400"> {t("common.optional", "אופציונלי")}</span>
+            {t("business.reviews.whatStoodOut")}
+            <span className="font-bold text-slate-400"> {t("common.optional")}</span>
           </span>
 
           <textarea
@@ -464,7 +461,7 @@ export default function ReviewForm({
                 comment: event.target.value.slice(0, 300),
               }))
             }
-            placeholder={t("business.reviews.commentPh", "שירות, יחס, תוצאות...")}
+            placeholder={t("business.reviews.commentPh")}
             rows={5}
             maxLength={300}
             className="w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
@@ -482,10 +479,10 @@ export default function ReviewForm({
 
           <div>
             <p className="text-sm font-black text-slate-800">
-              {t("business.reviews.liveAverage", "ממוצע דירוג חי")}
+              {t("business.reviews.liveAverage")}
             </p>
             <p className="mt-1 text-xs font-bold text-slate-500">
-              {t("business.reviews.liveAverageHint", "מחושב לפי הדירוגים שבחרתם")}
+              {t("business.reviews.liveAverageHint")}
             </p>
           </div>
 
@@ -513,7 +510,7 @@ export default function ReviewForm({
         ].join(" ")}
       >
         <p className="text-xs font-bold leading-5 text-slate-500">
-          {t("business.reviews.requiredHint", "חובה: שם + חוויה כללית + שירות + מקצועיות.")}
+          {t("business.reviews.requiredHint")}
         </p>
 
         <button
@@ -522,8 +519,8 @@ export default function ReviewForm({
           className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-7 py-3 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
           {isSubmitting
-            ? t("business.reviews.sending", "שולח...")
-            : t("business.reviews.submitReview", "שליחת ביקורת")}
+            ? t("business.reviews.sending")
+            : t("business.reviews.submitReview")}
         </button>
       </div>
     </form>

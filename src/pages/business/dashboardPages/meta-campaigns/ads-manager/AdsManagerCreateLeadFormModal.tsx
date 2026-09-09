@@ -295,7 +295,7 @@ export default function AdsManagerCreateLeadFormModal({
         dir="ltr"
       >
         <header className="flex items-center justify-between border-b border-[#CED0D4] px-4 py-3">
-          <h2 className="text-[17px] font-bold text-[#050505]">Create form</h2>
+          <h2 className="text-[17px] font-bold text-[#050505]">{t("leftover.metaFormChrome.createForm")}</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -303,13 +303,13 @@ export default function AdsManagerCreateLeadFormModal({
               onClick={() => setSettingsOpen(true)}
             >
               <Settings className="h-4 w-4 text-[#65676B]" />
-              Settings
+              {t("common.settings")}
             </button>
             <button
               type="button"
               className="rounded-md p-1.5 text-[#65676B] hover:bg-[#F0F2F5]"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t("leftover.metaFormChrome.closeAria")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -320,7 +320,7 @@ export default function AdsManagerCreateLeadFormModal({
           {/* Left steps */}
           <nav className="border-r border-[#E4E6EB] bg-[#F7F8FA] px-3 py-4">
             <p className="mb-3 px-2 text-[12px] font-bold uppercase tracking-wide text-[#65676B]">
-              Create form
+              {t("leftover.metaFormChrome.createForm")}
             </p>
             <ol className="space-y-1">
               {STEPS.map((item, index) => {
@@ -701,7 +701,7 @@ export default function AdsManagerCreateLeadFormModal({
 
         <footer className="flex items-center justify-between gap-3 border-t border-[#CED0D4] px-4 py-3">
           <button type="button" className={metaBtnSecondary} onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </button>
           <div className="flex gap-2">
             {stepIndex > 0 ? (
@@ -711,7 +711,7 @@ export default function AdsManagerCreateLeadFormModal({
                 onClick={goBack}
                 disabled={busy}
               >
-                Back
+                {t("common.back")}
               </button>
             ) : null}
             {stepIndex < STEPS.length - 1 ? (
@@ -721,7 +721,7 @@ export default function AdsManagerCreateLeadFormModal({
                 onClick={goNext}
                 disabled={busy}
               >
-                Next
+                {t("common.next")}
               </button>
             ) : (
               <button
@@ -731,7 +731,7 @@ export default function AdsManagerCreateLeadFormModal({
                 disabled={busy}
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {busy ? "Creating…" : "Create form"}
+                {busy ? t("leftover.metaFormChrome.creating") : t("leftover.metaFormChrome.createForm")}
               </button>
             )}
           </div>

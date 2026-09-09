@@ -19773,6 +19773,14 @@
       "idNumber": "מספר זהות",
       "save": "שמירת פרטים",
       "saving": "שומר..."
+    },
+    "goalsChrome": {
+      "close": "סגירה"
+    },
+    "metaFormChrome": {
+      "createForm": "יצירת טופס",
+      "creating": "יוצרים…",
+      "closeAria": "סגירה"
     }
   }
 }

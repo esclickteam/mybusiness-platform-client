@@ -19784,6 +19784,14 @@
       "idNumber": "رقم الهوية",
       "save": "حفظ التفاصيل",
       "saving": "جارٍ الحفظ..."
+    },
+    "goalsChrome": {
+      "close": "إغلاق"
+    },
+    "metaFormChrome": {
+      "createForm": "إنشاء نموذج",
+      "creating": "جارٍ الإنشاء…",
+      "closeAria": "إغلاق"
     }
   }
 }

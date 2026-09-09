@@ -1219,6 +1219,18 @@ const MARKETER_BANK = {
 };
 
 
+
+const GOALS_CHROME = {
+  close: row("Close", "סגירה", "Cerrar", "Fechar", "إغلاق"),
+};
+
+const META_FORM_CHROME = {
+  createForm: row("Create form", "יצירת טופס", "Crear formulario", "Criar formulário", "إنشاء نموذج"),
+  creating: row("Creating…", "יוצרים…", "Creando…", "Criando…", "جارٍ الإنشاء…"),
+  closeAria: row("Close", "סגירה", "Cerrar", "Fechar", "إغلاق"),
+};
+
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -1273,6 +1285,8 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       couponChrome: pickLocaleMap(COUPON_CHROME, locale),
       affiliateChrome: pickLocaleMap(AFFILIATE_CHROME, locale),
       marketerBank: pickLocaleMap(MARKETER_BANK, locale),
+      goalsChrome: pickLocaleMap(GOALS_CHROME, locale),
+      metaFormChrome: pickLocaleMap(META_FORM_CHROME, locale),
     },
     chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };
