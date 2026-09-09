@@ -331,10 +331,7 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">{t("partner.wizard.pricingTitle")}</h3>
           <p className="text-sm font-bold text-slate-500">
-            {t("partner.wizard.pricingHint", {
-              defaultValue:
-                "המחיר נבנה רק מהמוצרים שנבחרו: מחיר Bizuply + העמלה החד-פעמית והחודשית שהוגדרו לכל מוצר במחירון. Bizuply מקבלת {{bizuply}} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {{partner}}.",
-              bizuply: formatPct(bizuplyShareRate),
+            {t("partner.wizard.pricingHint", { bizuply: formatPct(bizuplyShareRate),
               partner: formatPct(partnerShareRate),
             })}
           </p>

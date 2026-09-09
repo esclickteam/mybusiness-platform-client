@@ -5549,7 +5549,19 @@
       "whatsapp_usage": "فوترة استخدام واتساب"
     },
     "earlyBird": {
-      "redirecting": "عرضكم الحصري جاهز — ننقلكم إلى الدفع…"
+      "redirecting": "عرضكم الحصري جاهز — ننقلكم إلى الدفع…",
+      "badge": "عرض لوقت محدود",
+      "titleLead": "الشهر الأول فقط",
+      "save": "وفّروا ₪30 في الشهر الأول",
+      "endsIn": "ينتهي العرض خلال {{time}}",
+      "timeLeft": "{{hours}} س {{minutes}} د",
+      "body": "فعّلوا الأتمتة وCRM والرسائل وأدوات الذكاء في BizUply. سعر وصول مبكر خاص — بلا التزام.",
+      "thenMonthly": "بعدها ₪149 شهرياً. يمكن الإلغاء في أي وقت.",
+      "cta": "الترقية مقابل ₪119",
+      "checkoutBusy": "ننقلكم إلى الدفع...",
+      "closeAria": "إغلاق العرض",
+      "checkoutFailed": "تعذّر فتح الدفع الآن. حاولوا مرة أخرى.",
+      "finePrint": "الفترة التجريبية تبقى فعّالة • بلا التزام"
     }
   },
   "collab": {
@@ -19318,7 +19330,58 @@
     },
     "calendar": {
       "noBusiness": "تعذّر التعرف على العمل. حدّث الصفحة.",
-      "noBusinessRetry": "تعذّر التعرف على العمل. حدّث الصفحة وحاول مرة أخرى."
+      "noBusinessRetry": "تعذّر التعرف على العمل. حدّث الصفحة وحاول مرة أخرى.",
+      "enterFullName": "يرجى إدخال الاسم الكامل.",
+      "enterPhone": "يرجى إدخال رقم الهاتف.",
+      "enterAddress": "يرجى إدخال العنوان.",
+      "noSlot": "لم يُختر وقت.",
+      "missingService": "الخدمة ناقصة. اختاروا خدمة مرة أخرى.",
+      "submitError": "خطأ في إرسال الحجز: {{detail}}",
+      "unknownError": "خطأ غير معروف",
+      "loadFailed": "تعذّر تحميل التوفر. حاولوا مرة أخرى.",
+      "bookingEyebrow": "حجز موعد",
+      "chooseDateTitle": "اختاروا تاريخاً لعرض الأوقات المتاحة",
+      "chooseDateHint": "اختاروا تاريخ الخدمة ثم اختاروا أحد أوقات الموعد المتاحة.",
+      "prevMonth": "← الشهر السابق",
+      "nextMonth": "الشهر التالي →",
+      "selectedDate": "التاريخ المحدد",
+      "checkingTitle": "جارٍ التحقق من التوفر…",
+      "checkingText": "يرجى الانتظار أثناء تحميل الأوقات المتاحة.",
+      "loadTitle": "تعذّر تحميل التوفر",
+      "loadText": "حاولوا مرة أخرى بعد لحظات.",
+      "closedTitle": "هذا العمل مغلق في هذا اليوم",
+      "closedText": "يرجى اختيار تاريخ آخر.",
+      "workingHours": "ساعات العمل",
+      "breaks": "استراحات",
+      "availableSlots": "أوقات متاحة",
+      "fullTitle": "جميع الأوقات لهذا اليوم محجوزة",
+      "fullText": "جرّبوا تاريخاً آخر.",
+      "summaryEyebrow": "ملخص الحجز",
+      "confirmTitle": "تأكيد موعدكم",
+      "labelService": "الخدمة",
+      "labelDate": "التاريخ",
+      "labelTime": "الوقت",
+      "labelDuration": "المدة",
+      "labelPrice": "السعر",
+      "durationValue": "{{hours}} س {{minutes}} د",
+      "yourDetails": "بياناتكم",
+      "contactTitle": "أدخلوا معلومات الاتصال",
+      "contactHint": "لا يلزم حساب لحجز هذا الموعد.",
+      "fullName": "الاسم الكامل",
+      "fullNamePh": "أدخلوا الاسم الكامل",
+      "phone": "الهاتف",
+      "address": "العنوان",
+      "addressPh": "أدخلوا العنوان",
+      "note": "ملاحظة",
+      "notePh": "ملاحظة إضافية",
+      "submitting": "جارٍ الإرسال…",
+      "confirmBooking": "تأكيد الحجز",
+      "backToSlots": "العودة إلى الأوقات",
+      "successTitle": "تم إرسال الحجز بنجاح!",
+      "successEmail": "أُرسل بريد تأكيد إلى عنوان بريدكم.",
+      "successPlain": "تم تأكيد حجزكم.",
+      "backToList": "العودة إلى القائمة",
+      "selectedService": "الخدمة المحددة"
     },
     "metaMap": {
       "realRadius": "<br/>نطاق حقيقي: {{km}} كم حول المدينة",
@@ -19470,7 +19533,19 @@
     "hours": {
       "loading": "جارٍ التحميل...",
       "noneSet": "لم تُحدَّد ساعات — أضيفوها لتنسيق الاجتماعات",
-      "openDays": "{{count}} أيام عمل"
+      "openDays": "{{count}} أيام عمل",
+      "saved": "تم حفظ ساعات العمل بنجاح",
+      "saveError": "خطأ في حفظ ساعات العمل",
+      "setupTitle": "تعيين ساعات العمل الأسبوعية (بما في ذلك السبت)",
+      "colDay": "اليوم",
+      "colStart": "البداية",
+      "colEnd": "النهاية",
+      "colClosed": "مغلق",
+      "closedAria": "مغلق {{day}}",
+      "saveWeekly": "حفظ الساعات الأسبوعية",
+      "summary": "ملخص ساعات العمل:",
+      "closed": "مغلق",
+      "notSet": "غير محدد"
     },
     "timePicker": {
       "start": "وقت البداية:",
@@ -19510,6 +19585,29 @@
     "upgradeBanner": {
       "text": "هذه الميزة مشمولة فقط في الباقات المتقدمة.",
       "cta": "ترقوا الآن"
+    },
+    "crmFile": {
+      "namePhoneRequired": "الاسم الكامل ورقم الهاتف مطلوبان",
+      "saved": "تم حفظ العميل بنجاح",
+      "saveFailed": "فشل حفظ العميل"
+    },
+    "bizChat": {
+      "micDenied": "تعذّر الوصول إلى الميكروفون",
+      "agreementSoon": "فتح نموذج اتفاقية التعاون — قريباً",
+      "withPartner": "محادثة مع {{name}}",
+      "placeholder": "اكتبوا رسالة...",
+      "send": "إرسال",
+      "startRec": "بدء التسجيل",
+      "stopRec": "إيقاف التسجيل",
+      "sendAgreement": "إرسال الاتفاقية"
+    },
+    "appointmentsMain": {
+      "title": "حجز موعد",
+      "selectService": "اختيار الخدمة",
+      "selectDate": "اختيار التاريخ",
+      "availableTimes": "أوقات متاحة",
+      "bookFor": "حجز موعد في {{date}} الساعة {{time}}",
+      "setCalendar": "ضبط التقويم"
     }
   }
 }

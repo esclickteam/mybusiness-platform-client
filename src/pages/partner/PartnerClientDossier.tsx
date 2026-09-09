@@ -189,7 +189,7 @@ export default function PartnerClientDossier() {
                 onClick={activateClient}
                 className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
               >
-                {activating ? t("partner.dossier.activating") : t("partner.dossier.activateAfterPayment", { defaultValue: "הפעלת חשבון אחרי תשלום" })}
+                {activating ? t("partner.dossier.activating") : t("partner.dossier.activateAfterPayment")}
               </button>
             ) : null}
             {client.canEnterClient ? (

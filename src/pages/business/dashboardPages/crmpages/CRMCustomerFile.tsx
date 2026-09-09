@@ -154,12 +154,12 @@ export default function CRMCustomerFile({
 
   const handleSave = async () => {
     if (!newClient.fullName.trim() || !newClient.phone.trim()) {
-      alert("Full name and phone number are required");
+      alert(t("leftover.crmFile.namePhoneRequired"));
       return;
     }
 
     if (!businessId) {
-      alert(t("business.profileBuild.missingBusiness", "לא הצלחנו לזהות את העסק. רעננו את העמוד."));
+      alert(t("leftover.calendar.noBusiness"));
       return;
     }
 
@@ -179,11 +179,11 @@ export default function CRMCustomerFile({
         queryKey: ["clients", businessId],
       });
 
-      alert("Client saved successfully");
+      alert(t("leftover.crmFile.saved"));
       onClose();
     } catch (err) {
       console.error("Error saving client:", err);
-      alert("Failed to save client");
+      alert(t("leftover.crmFile.saveFailed"));
     } finally {
       setSavingClient(false);
     }

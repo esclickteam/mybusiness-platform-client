@@ -699,6 +699,325 @@ const ADDON_OPS = {
   faqDesc: row("A reusable FAQ set, category, search, and schema.", "סט FAQ לשימוש חוזר, קטגוריה, חיפוש ו-schema.", "Un set de FAQ reutilizable, categoría, búsqueda y schema.", "Um conjunto de FAQ reutilizável, categoria, pesquisa e schema.", "مجموعة أسئلة شائعة قابلة لإعادة الاستخدام مع فئة وبحث وschema."),
 };
 
+const CALENDAR_ALERTS = {
+  noBusiness: row(
+    "We could not identify the business. Refresh the page.",
+    "לא הצלחנו לזהות את העסק. רעננו את העמוד.",
+    "No pudimos identificar el negocio. Actualiza la página.",
+    "Não foi possível identificar o negócio. Atualize a página.",
+    "تعذّر التعرف على العمل. حدّثوا الصفحة."
+  ),
+  noBusinessRetry: row(
+    "We could not identify the business. Refresh the page and try again.",
+    "לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב.",
+    "No pudimos identificar el negocio. Actualiza la página e inténtalo de nuevo.",
+    "Não foi possível identificar o negócio. Atualize a página e tente de novo.",
+    "تعذّر التعرف على العمل. حدّثوا الصفحة وحاولوا مرة أخرى."
+  ),
+  enterFullName: row(
+    "Please enter your full name.",
+    "נא להזין שם מלא.",
+    "Introduce tu nombre completo.",
+    "Informe seu nome completo.",
+    "يرجى إدخال الاسم الكامل."
+  ),
+  enterPhone: row(
+    "Please enter your phone number.",
+    "נא להזין מספר טלפון.",
+    "Introduce tu número de teléfono.",
+    "Informe seu telefone.",
+    "يرجى إدخال رقم الهاتف."
+  ),
+  enterAddress: row(
+    "Please enter your address.",
+    "נא להזין כתובת.",
+    "Introduce tu dirección.",
+    "Informe seu endereço.",
+    "يرجى إدخال العنوان."
+  ),
+  noSlot: row(
+    "No time slot selected.",
+    "לא נבחרה שעה.",
+    "No se eligió un horario.",
+    "Nenhum horário selecionado.",
+    "لم يُختر وقت."
+  ),
+  missingService: row(
+    "Missing service. Please choose a service again.",
+    "חסר שירות. בחרו שירות מחדש.",
+    "Falta el servicio. Elige un servicio otra vez.",
+    "Falta o serviço. Escolha um serviço de novo.",
+    "الخدمة ناقصة. اختاروا خدمة مرة أخرى."
+  ),
+  submitError: row(
+    "Error submitting booking: {{detail}}",
+    "שגיאה בשליחת ההזמנה: {{detail}}",
+    "Error al enviar la reserva: {{detail}}",
+    "Erro ao enviar o agendamento: {{detail}}",
+    "خطأ في إرسال الحجز: {{detail}}"
+  ),
+  unknownError: row("Unknown error", "שגיאה לא ידועה", "Error desconocido", "Erro desconhecido", "خطأ غير معروف"),
+  loadFailed: row(
+    "Unable to load availability. Please try again.",
+    "לא ניתן לטעון זמינות. נסו שוב.",
+    "No se pudo cargar la disponibilidad. Inténtalo de nuevo.",
+    "Não foi possível carregar a disponibilidade. Tente de novo.",
+    "تعذّر تحميل التوفر. حاولوا مرة أخرى."
+  ),
+  bookingEyebrow: row(
+    "Appointment booking",
+    "קביעת תור",
+    "Reserva de cita",
+    "Agendamento",
+    "حجز موعد"
+  ),
+  chooseDateTitle: row(
+    "Choose a date to see available times",
+    "בחרו תאריך כדי לראות שעות פנויות",
+    "Elige una fecha para ver horarios disponibles",
+    "Escolha uma data para ver horários disponíveis",
+    "اختاروا تاريخاً لعرض الأوقات المتاحة"
+  ),
+  chooseDateHint: row(
+    "Select a service date and choose one of the available appointment slots.",
+    "בחרו תאריך לשירות ובחרו אחת משעות התור הפנויות.",
+    "Selecciona una fecha del servicio y elige uno de los horarios disponibles.",
+    "Selecione uma data do serviço e escolha um dos horários disponíveis.",
+    "اختاروا تاريخ الخدمة ثم اختاروا أحد أوقات الموعد المتاحة."
+  ),
+  prevMonth: row("← Previous Month", "← חודש קודם", "← Mes anterior", "← Mês anterior", "← الشهر السابق"),
+  nextMonth: row("Next Month →", "חודש הבא →", "Mes siguiente →", "Próximo mês →", "الشهر التالي →"),
+  selectedDate: row("Selected date", "תאריך נבחר", "Fecha seleccionada", "Data selecionada", "التاريخ المحدد"),
+  checkingTitle: row(
+    "Checking availability…",
+    "בודקים זמינות…",
+    "Comprobando disponibilidad…",
+    "Verificando disponibilidade…",
+    "جارٍ التحقق من التوفر…"
+  ),
+  checkingText: row(
+    "Please wait while we load available time slots.",
+    "נא להמתין בזמן טעינת השעות הפנויות.",
+    "Espera mientras cargamos los horarios disponibles.",
+    "Aguarde enquanto carregamos os horários disponíveis.",
+    "يرجى الانتظار أثناء تحميل الأوقات المتاحة."
+  ),
+  loadTitle: row(
+    "Unable to load availability",
+    "לא ניתן לטעון זמינות",
+    "No se pudo cargar la disponibilidad",
+    "Não foi possível carregar a disponibilidade",
+    "تعذّر تحميل التوفر"
+  ),
+  loadText: row(
+    "Please try again in a few moments.",
+    "נסו שוב בעוד כמה רגעים.",
+    "Inténtalo de nuevo en unos momentos.",
+    "Tente de novo em alguns instantes.",
+    "حاولوا مرة أخرى بعد لحظات."
+  ),
+  closedTitle: row(
+    "This business is closed on this day",
+    "העסק סגור ביום זה",
+    "Este negocio está cerrado este día",
+    "Este negócio está fechado neste dia",
+    "هذا العمل مغلق في هذا اليوم"
+  ),
+  closedText: row(
+    "Please choose another date.",
+    "נא לבחור תאריך אחר.",
+    "Elige otra fecha.",
+    "Escolha outra data.",
+    "يرجى اختيار تاريخ آخر."
+  ),
+  workingHours: row("Working hours", "שעות פעילות", "Horario", "Horário", "ساعات العمل"),
+  breaks: row("Breaks", "הפסקות", "Descansos", "Intervalos", "استراحات"),
+  availableSlots: row("Available Slots", "שעות פנויות", "Horarios disponibles", "Horários disponíveis", "أوقات متاحة"),
+  fullTitle: row(
+    "All slots are booked for this day",
+    "כל השעות לתאריך זה תפוסות",
+    "Todos los horarios de este día están reservados",
+    "Todos os horários deste dia estão reservados",
+    "جميع الأوقات لهذا اليوم محجوزة"
+  ),
+  fullText: row("Try another date.", "נסו תאריך אחר.", "Prueba otra fecha.", "Tente outra data.", "جرّبوا تاريخاً آخر."),
+  summaryEyebrow: row("Booking Summary", "סיכום הזמנה", "Resumen de reserva", "Resumo do agendamento", "ملخص الحجز"),
+  confirmTitle: row(
+    "Confirm your appointment",
+    "אישור התור",
+    "Confirma tu cita",
+    "Confirme seu horário",
+    "تأكيد موعدكم"
+  ),
+  labelService: row("Service", "שירות", "Servicio", "Serviço", "الخدمة"),
+  labelDate: row("Date", "תאריך", "Fecha", "Data", "التاريخ"),
+  labelTime: row("Time", "שעה", "Hora", "Horário", "الوقت"),
+  labelDuration: row("Duration", "משך", "Duración", "Duração", "المدة"),
+  labelPrice: row("Price", "מחיר", "Precio", "Preço", "السعر"),
+  durationValue: row(
+    "{{hours}}h {{minutes}}m",
+    "{{hours}} ש׳ {{minutes}} ד׳",
+    "{{hours}} h {{minutes}} min",
+    "{{hours}} h {{minutes}} min",
+    "{{hours}} س {{minutes}} د"
+  ),
+  yourDetails: row("Your details", "הפרטים שלכם", "Tus datos", "Seus dados", "بياناتكم"),
+  contactTitle: row(
+    "Fill in your contact information",
+    "מלאו את פרטי הקשר",
+    "Completa tu información de contacto",
+    "Preencha suas informações de contato",
+    "أدخلوا معلومات الاتصال"
+  ),
+  contactHint: row(
+    "No account is required to book this appointment.",
+    "אין צורך בחשבון כדי לקבוע את התור.",
+    "No se necesita una cuenta para reservar esta cita.",
+    "Não é necessária uma conta para agendar este horário.",
+    "لا يلزم حساب لحجز هذا الموعد."
+  ),
+  fullName: row("Full Name", "שם מלא", "Nombre completo", "Nome completo", "الاسم الكامل"),
+  fullNamePh: row("Enter full name", "הזינו שם מלא", "Introduce el nombre completo", "Informe o nome completo", "أدخلوا الاسم الكامل"),
+  phone: row("Phone", "טלפון", "Teléfono", "Telefone", "الهاتف"),
+  address: row("Address", "כתובת", "Dirección", "Endereço", "العنوان"),
+  addressPh: row("Enter address", "הזינו כתובת", "Introduce la dirección", "Informe o endereço", "أدخلوا العنوان"),
+  note: row("Note", "הערה", "Nota", "Observação", "ملاحظة"),
+  notePh: row("Additional note", "הערה נוספת", "Nota adicional", "Observação adicional", "ملاحظة إضافية"),
+  submitting: row("Submitting…", "שולחים…", "Enviando…", "Enviando…", "جارٍ الإرسال…"),
+  confirmBooking: row("Confirm Booking", "אישור הזמנה", "Confirmar reserva", "Confirmar agendamento", "تأكيد الحجز"),
+  backToSlots: row("Back to Time Slots", "חזרה לשעות", "Volver a los horarios", "Voltar aos horários", "العودة إلى الأوقات"),
+  successTitle: row(
+    "Booking Submitted Successfully!",
+    "ההזמנה נשלחה בהצלחה!",
+    "¡Reserva enviada correctamente!",
+    "Agendamento enviado com sucesso!",
+    "تم إرسال الحجز بنجاح!"
+  ),
+  successEmail: row(
+    "A confirmation email has been sent to your email address.",
+    "נשלח מייל אישור לכתובת המייל שלכם.",
+    "Se ha enviado un correo de confirmación a tu dirección de email.",
+    "Um e-mail de confirmação foi enviado para o seu endereço.",
+    "أُرسل بريد تأكيد إلى عنوان بريدكم."
+  ),
+  successPlain: row(
+    "Your booking is confirmed.",
+    "ההזמנה שלכם אושרה.",
+    "Tu reserva está confirmada.",
+    "Seu agendamento está confirmado.",
+    "تم تأكيد حجزكم."
+  ),
+  backToList: row("Back to List", "חזרה לרשימה", "Volver a la lista", "Voltar à lista", "العودة إلى القائمة"),
+  selectedService: row("Selected service", "שירות נבחר", "Servicio seleccionado", "Serviço selecionado", "الخدمة المحددة"),
+};
+
+const HOURS_ALERTS = {
+  saved: row(
+    "Working hours saved successfully",
+    "שעות הפעילות נשמרו בהצלחה",
+    "Horario guardado correctamente",
+    "Horário salvo com sucesso",
+    "تم حفظ ساعات العمل بنجاح"
+  ),
+  saveError: row(
+    "Error saving working hours",
+    "שגיאה בשמירת שעות הפעילות",
+    "Error al guardar el horario",
+    "Erro ao salvar o horário",
+    "خطأ في حفظ ساعات العمل"
+  ),
+  setupTitle: row(
+    "Set weekly working hours (including Saturday)",
+    "הגדרת שעות פעילות שבועיות (כולל שבת)",
+    "Define el horario semanal (incluido sábado)",
+    "Defina o horário semanal (incluindo sábado)",
+    "تعيين ساعات العمل الأسبوعية (بما في ذلك السبت)"
+  ),
+  colDay: row("Day", "יום", "Día", "Dia", "اليوم"),
+  colStart: row("Start", "התחלה", "Inicio", "Início", "البداية"),
+  colEnd: row("End", "סיום", "Fin", "Fim", "النهاية"),
+  colClosed: row("Closed", "סגור", "Cerrado", "Fechado", "مغلق"),
+  closedAria: row("Closed {{day}}", "סגור ב{{day}}", "Cerrado {{day}}", "Fechado {{day}}", "مغلق {{day}}"),
+  saveWeekly: row("Save weekly hours", "שמירת שעות שבועיות", "Guardar horario semanal", "Salvar horário semanal", "حفظ الساعات الأسبوعية"),
+  summary: row("Summary of working hours:", "סיכום שעות הפעילות:", "Resumen del horario:", "Resumo do horário:", "ملخص ساعات العمل:"),
+  closed: row("Closed", "סגור", "Cerrado", "Fechado", "مغلق"),
+  notSet: row("Not set", "לא הוגדר", "No definido", "Não definido", "غير محدد"),
+};
+
+const CRM_FILE_ALERTS = {
+  namePhoneRequired: row(
+    "Full name and phone number are required",
+    "שם מלא ומספר טלפון הם שדות חובה",
+    "El nombre completo y el teléfono son obligatorios",
+    "Nome completo e telefone são obrigatórios",
+    "الاسم الكامل ورقم الهاتف مطلوبان"
+  ),
+  saved: row(
+    "Client saved successfully",
+    "הלקוח נשמר בהצלחה",
+    "Cliente guardado correctamente",
+    "Cliente salvo com sucesso",
+    "تم حفظ العميل بنجاح"
+  ),
+  saveFailed: row(
+    "Failed to save client",
+    "שמירת הלקוח נכשלה",
+    "No se pudo guardar el cliente",
+    "Falha ao salvar o cliente",
+    "فشل حفظ العميل"
+  ),
+};
+
+const BIZ_CHAT_ALERTS = {
+  micDenied: row(
+    "Cannot access the microphone",
+    "אין גישה למיקרופון",
+    "No se puede acceder al micrófono",
+    "Não foi possível acessar o microfone",
+    "تعذّر الوصول إلى الميكروفون"
+  ),
+  agreementSoon: row(
+    "Opening collaboration agreement form — coming soon",
+    "פתיחת טופס הסכם שיתוף — בקרוב",
+    "Abriendo el formulario de acuerdo — próximamente",
+    "Abrindo o formulário de acordo — em breve",
+    "فتح نموذج اتفاقية التعاون — قريباً"
+  ),
+  withPartner: row(
+    "Chat with {{name}}",
+    "צ׳אט עם {{name}}",
+    "Chat con {{name}}",
+    "Chat com {{name}}",
+    "محادثة مع {{name}}"
+  ),
+  placeholder: row(
+    "Type a message...",
+    "כתבו הודעה...",
+    "Escribe un mensaje...",
+    "Digite uma mensagem...",
+    "اكتبوا رسالة..."
+  ),
+  send: row("Send", "שליחה", "Enviar", "Enviar", "إرسال"),
+  startRec: row("Start recording", "התחלת הקלטה", "Empezar grabación", "Iniciar gravação", "بدء التسجيل"),
+  stopRec: row("Stop recording", "עצירת הקלטה", "Detener grabación", "Parar gravação", "إيقاف التسجيل"),
+  sendAgreement: row("Send agreement", "שליחת הסכם", "Enviar acuerdo", "Enviar acordo", "إرسال الاتفاقية"),
+};
+
+const APPOINTMENTS_MAIN = {
+  title: row("Schedule appointment", "קביעת תור", "Reservar cita", "Agendar horário", "حجز موعد"),
+  selectService: row("Select service", "בחירת שירות", "Elegir servicio", "Selecionar serviço", "اختيار الخدمة"),
+  selectDate: row("Select date", "בחירת תאריך", "Elegir fecha", "Selecionar data", "اختيار التاريخ"),
+  availableTimes: row("Available times", "שעות פנויות", "Horarios disponibles", "Horários disponíveis", "أوقات متاحة"),
+  bookFor: row(
+    "Book appointment for {{date}} at {{time}}",
+    "קביעת תור ל־{{date}} בשעה {{time}}",
+    "Reservar cita el {{date}} a las {{time}}",
+    "Agendar para {{date}} às {{time}}",
+    "حجز موعد في {{date}} الساعة {{time}}"
+  ),
+  setCalendar: row("Set calendar", "הגדרת יומן", "Configurar calendario", "Definir agenda", "ضبط التقويم"),
+};
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -731,6 +1050,11 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       pluginSearch: pickLocaleMap(PLUGIN_SEARCH, locale),
       addonOps: pickLocaleMap(ADDON_OPS, locale),
       store: pickLocaleMap(STORE_LEFT, locale),
+      calendar: pickLocaleMap(CALENDAR_ALERTS, locale),
+      hours: pickLocaleMap(HOURS_ALERTS, locale),
+      crmFile: pickLocaleMap(CRM_FILE_ALERTS, locale),
+      bizChat: pickLocaleMap(BIZ_CHAT_ALERTS, locale),
+      appointmentsMain: pickLocaleMap(APPOINTMENTS_MAIN, locale),
     },
   };
 }

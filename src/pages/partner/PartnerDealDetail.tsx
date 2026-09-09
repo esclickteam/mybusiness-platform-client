@@ -161,13 +161,13 @@ export default function PartnerDealDetail() {
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow={t("partner.deal.eyebrow", { defaultValue: "Deal #{{number}}", number: deal.dealNumber })}
+        eyebrow={t("partner.deal.eyebrow", { number: deal.dealNumber })}
         title={client?.contact?.businessName || t("partner.deal.title")}
         subtitle={t("partner.deal.subtitle")}
       />
       {confirmingPayment && !isPaid ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          {t("partner.deal.confirmingStripe", { defaultValue: "מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל." })}
+          {t("partner.deal.confirmingStripe")}
         </p>
       ) : null}
       {isPaid ? (
@@ -177,7 +177,7 @@ export default function PartnerDealDetail() {
             <p>{t("partner.deal.activatedEligible")}</p>
           ) : (
             <p>
-              {t("partner.deal.pendingUntilActive", { defaultValue: "העמלה ממתינה עד שהעסק יופעל והמוצרים הדיגיטליים יופעלו. תשלום שולם אינו זמין למשיכה אוטומטית." })}
+              {t("partner.deal.pendingUntilActive")}
             </p>
           )}
           {deal.clientProvisioning?.status === "created" ? (

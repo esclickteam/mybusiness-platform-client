@@ -153,7 +153,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     if (subdomainCheck.available) {
       return {
         tone: "emerald",
-        text: subdomainCheck.message || t("partner.branding.available", { defaultValue: "הכתובת פנויה" }),
+        text: subdomainCheck.message || t("partner.branding.available"),
       };
     }
     return {
@@ -229,7 +229,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     <PartnerCard className="space-y-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-black">{t("partner.branding.title", { defaultValue: "מיתוג וכתובת אישית" })}</h2>
+          <h2 className="text-lg font-black">{t("partner.branding.title")}</h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
             {t("partner.branding.intro")}
           </p>
@@ -263,21 +263,21 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
       ) : null}
 
       <ul className="grid gap-2 rounded-2xl bg-slate-50 p-4 sm:grid-cols-3">
-        <ChecklistItem done={hasBrandName} label={t("partner.branding.brandName", { defaultValue: "שם מותג" })} />
+        <ChecklistItem done={hasBrandName} label={t("partner.branding.brandName")} />
         <ChecklistItem done={hasLogo} label={t("partner.branding.logo")} />
         <ChecklistItem done={subdomainReady} label={t("partner.branding.availableSubdomain")} />
       </ul>
 
       {showPersonalLink && personalUrl ? (
         <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
-          <p className="text-sm font-black">{t("partner.branding.personalLink", { defaultValue: "הקישור האישי שלי" })}</p>
+          <p className="text-sm font-black">{t("partner.branding.personalLink")}</p>
           <p className="mt-1 break-all text-sm font-bold text-violet-700" dir="ltr">
             {personalUrl}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <PartnerPrimaryButton type="button" onClick={() => copy(personalUrl, "home")}>
               <Copy className="h-4 w-4" />
-              {copied === "home" ? t("partner.copied") : t("partner.copy", { defaultValue: "העתקה" })}
+              {copied === "home" ? t("partner.copied") : t("partner.copy")}
             </PartnerPrimaryButton>
             <a
               href={personalUrl}
@@ -286,7 +286,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm"
             >
               <ExternalLink className="h-4 w-4" />
-              {t("partner.branding.preview", { defaultValue: "תצוגה מקדימה" })}
+              {t("partner.branding.preview")}
             </a>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    {logoUrl ? t("partner.branding.replaceLogo") : t("partner.branding.uploadLogo", { defaultValue: "העלאת לוגו" })}
+                    {logoUrl ? t("partner.branding.replaceLogo") : t("partner.branding.uploadLogo")}
                   </>
                 )}
               </PartnerFileButton>
@@ -354,7 +354,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
       </section>
 
       <label className="block text-sm font-black text-slate-800">
-        {t("partner.branding.brandName", { defaultValue: "שם מותג" })}
+        {t("partner.branding.brandName")}
         <PartnerInput
           value={brandName}
           onChange={(e) => setBrandName(e.target.value)}
@@ -365,7 +365,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
 
       <section className="space-y-2">
         <label className="block text-sm font-black text-slate-800">
-          {t("partner.branding.subdomain", { defaultValue: "כתובת משנה" })}
+          {t("partner.branding.subdomain")}
           <div className="mt-1 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2" dir="ltr">
             <span className="text-sm font-bold text-slate-400">https://</span>
             <input

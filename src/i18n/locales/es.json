@@ -5549,7 +5549,19 @@
       "whatsapp_usage": "Facturación de uso de WhatsApp"
     },
     "earlyBird": {
-      "redirecting": "Tu oferta exclusiva está lista — te llevamos al pago…"
+      "redirecting": "Tu oferta exclusiva está lista — te llevamos al pago…",
+      "badge": "Oferta por tiempo limitado",
+      "titleLead": "Solo el primer mes",
+      "save": "Ahorra ₪30 en tu primer mes",
+      "endsIn": "La oferta termina en {{time}}",
+      "timeLeft": "{{hours}} h {{minutes}} min",
+      "body": "Activa automatizaciones, CRM, mensajería y herramientas de IA de BizUply. Precio especial de acceso anticipado — sin compromiso.",
+      "thenMonthly": "Después ₪149/mes. Cancela cuando quieras.",
+      "cta": "Mejora por ₪119",
+      "checkoutBusy": "Redirigiendo al pago...",
+      "closeAria": "Cerrar oferta",
+      "checkoutFailed": "No se pudo abrir el pago ahora. Inténtalo de nuevo.",
+      "finePrint": "Tu prueba sigue activa • Sin obligación"
     }
   },
   "collab": {
@@ -19318,7 +19330,58 @@
     },
     "calendar": {
       "noBusiness": "No identificamos el negocio. Recarga la página.",
-      "noBusinessRetry": "No identificamos el negocio. Recarga e inténtalo de nuevo."
+      "noBusinessRetry": "No identificamos el negocio. Recarga e inténtalo de nuevo.",
+      "enterFullName": "Introduce tu nombre completo.",
+      "enterPhone": "Introduce tu número de teléfono.",
+      "enterAddress": "Introduce tu dirección.",
+      "noSlot": "No se eligió un horario.",
+      "missingService": "Falta el servicio. Elige un servicio otra vez.",
+      "submitError": "Error al enviar la reserva: {{detail}}",
+      "unknownError": "Error desconocido",
+      "loadFailed": "No se pudo cargar la disponibilidad. Inténtalo de nuevo.",
+      "bookingEyebrow": "Reserva de cita",
+      "chooseDateTitle": "Elige una fecha para ver horarios disponibles",
+      "chooseDateHint": "Selecciona una fecha del servicio y elige uno de los horarios disponibles.",
+      "prevMonth": "← Mes anterior",
+      "nextMonth": "Mes siguiente →",
+      "selectedDate": "Fecha seleccionada",
+      "checkingTitle": "Comprobando disponibilidad…",
+      "checkingText": "Espera mientras cargamos los horarios disponibles.",
+      "loadTitle": "No se pudo cargar la disponibilidad",
+      "loadText": "Inténtalo de nuevo en unos momentos.",
+      "closedTitle": "Este negocio está cerrado este día",
+      "closedText": "Elige otra fecha.",
+      "workingHours": "Horario",
+      "breaks": "Descansos",
+      "availableSlots": "Horarios disponibles",
+      "fullTitle": "Todos los horarios de este día están reservados",
+      "fullText": "Prueba otra fecha.",
+      "summaryEyebrow": "Resumen de reserva",
+      "confirmTitle": "Confirma tu cita",
+      "labelService": "Servicio",
+      "labelDate": "Fecha",
+      "labelTime": "Hora",
+      "labelDuration": "Duración",
+      "labelPrice": "Precio",
+      "durationValue": "{{hours}} h {{minutes}} min",
+      "yourDetails": "Tus datos",
+      "contactTitle": "Completa tu información de contacto",
+      "contactHint": "No se necesita una cuenta para reservar esta cita.",
+      "fullName": "Nombre completo",
+      "fullNamePh": "Introduce el nombre completo",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "addressPh": "Introduce la dirección",
+      "note": "Nota",
+      "notePh": "Nota adicional",
+      "submitting": "Enviando…",
+      "confirmBooking": "Confirmar reserva",
+      "backToSlots": "Volver a los horarios",
+      "successTitle": "¡Reserva enviada correctamente!",
+      "successEmail": "Se ha enviado un correo de confirmación a tu dirección de email.",
+      "successPlain": "Tu reserva está confirmada.",
+      "backToList": "Volver a la lista",
+      "selectedService": "Servicio seleccionado"
     },
     "metaMap": {
       "realRadius": "<br/>Radio real: {{km}} km alrededor de la ciudad",
@@ -19470,7 +19533,19 @@
     "hours": {
       "loading": "Cargando...",
       "noneSet": "No hay horario — defínelo para concertar citas",
-      "openDays": "{{count}} días laborables"
+      "openDays": "{{count}} días laborables",
+      "saved": "Horario guardado correctamente",
+      "saveError": "Error al guardar el horario",
+      "setupTitle": "Define el horario semanal (incluido sábado)",
+      "colDay": "Día",
+      "colStart": "Inicio",
+      "colEnd": "Fin",
+      "colClosed": "Cerrado",
+      "closedAria": "Cerrado {{day}}",
+      "saveWeekly": "Guardar horario semanal",
+      "summary": "Resumen del horario:",
+      "closed": "Cerrado",
+      "notSet": "No definido"
     },
     "timePicker": {
       "start": "Hora de inicio:",
@@ -19510,6 +19585,29 @@
     "upgradeBanner": {
       "text": "Esta función solo está incluida en planes avanzados.",
       "cta": "Mejorar ahora"
+    },
+    "crmFile": {
+      "namePhoneRequired": "El nombre completo y el teléfono son obligatorios",
+      "saved": "Cliente guardado correctamente",
+      "saveFailed": "No se pudo guardar el cliente"
+    },
+    "bizChat": {
+      "micDenied": "No se puede acceder al micrófono",
+      "agreementSoon": "Abriendo el formulario de acuerdo — próximamente",
+      "withPartner": "Chat con {{name}}",
+      "placeholder": "Escribe un mensaje...",
+      "send": "Enviar",
+      "startRec": "Empezar grabación",
+      "stopRec": "Detener grabación",
+      "sendAgreement": "Enviar acuerdo"
+    },
+    "appointmentsMain": {
+      "title": "Reservar cita",
+      "selectService": "Elegir servicio",
+      "selectDate": "Elegir fecha",
+      "availableTimes": "Horarios disponibles",
+      "bookFor": "Reservar cita el {{date}} a las {{time}}",
+      "setCalendar": "Configurar calendario"
     }
   }
 }

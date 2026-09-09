@@ -5538,7 +5538,19 @@
       "whatsapp_usage": "חיוב שימוש WhatsApp"
     },
     "earlyBird": {
-      "redirecting": "ההצעה הבלעדית מוכנה — מעבירים אתכם לתשלום…"
+      "redirecting": "ההצעה הבלעדית מוכנה — מעבירים אתכם לתשלום…",
+      "badge": "הצעה לזמן מוגבל",
+      "titleLead": "חודש ראשון בלבד",
+      "save": "חוסכים ₪30 בחודש הראשון",
+      "endsIn": "ההצעה מסתיימת בעוד {{time}}",
+      "timeLeft": "{{hours}} ש׳ {{minutes}} ד׳",
+      "body": "פותחים אוטומציות, CRM, הודעות וכלי AI של BizUply. מחיר גישה מוקדמת מיוחד — בלי התחייבות.",
+      "thenMonthly": "ואחר כך ₪149 לחודש. אפשר לבטל בכל עת.",
+      "cta": "שדרוג ב־₪119",
+      "checkoutBusy": "מעבירים לתשלום...",
+      "closeAria": "סגירת ההצעה",
+      "checkoutFailed": "לא הצלחנו לפתוח את התשלום כרגע. נסו שוב.",
+      "finePrint": "תקופת הניסיון נשארת פעילה • בלי התחייבות"
     }
   },
   "collab": {
@@ -14923,7 +14935,7 @@
       "contactName": "שם איש קשר"
     },
     "deal": {
-      "eyebrow": "Deal #{{number}}",
+      "eyebrow": "עסקה #{{number}}",
       "userCreated": "נפתח משתמש ללקוח",
       "userCreateFailed": "פתיחת המשתמש נכשלה",
       "billingDisabled": "תשלום ל-Bizuply כבוי בסביבה זו",
@@ -19307,7 +19319,58 @@
     },
     "calendar": {
       "noBusiness": "לא הצלחנו לזהות את העסק. רעננו את העמוד.",
-      "noBusinessRetry": "לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב."
+      "noBusinessRetry": "לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב.",
+      "enterFullName": "נא להזין שם מלא.",
+      "enterPhone": "נא להזין מספר טלפון.",
+      "enterAddress": "נא להזין כתובת.",
+      "noSlot": "לא נבחרה שעה.",
+      "missingService": "חסר שירות. בחרו שירות מחדש.",
+      "submitError": "שגיאה בשליחת ההזמנה: {{detail}}",
+      "unknownError": "שגיאה לא ידועה",
+      "loadFailed": "לא ניתן לטעון זמינות. נסו שוב.",
+      "bookingEyebrow": "קביעת תור",
+      "chooseDateTitle": "בחרו תאריך כדי לראות שעות פנויות",
+      "chooseDateHint": "בחרו תאריך לשירות ובחרו אחת משעות התור הפנויות.",
+      "prevMonth": "← חודש קודם",
+      "nextMonth": "חודש הבא →",
+      "selectedDate": "תאריך נבחר",
+      "checkingTitle": "בודקים זמינות…",
+      "checkingText": "נא להמתין בזמן טעינת השעות הפנויות.",
+      "loadTitle": "לא ניתן לטעון זמינות",
+      "loadText": "נסו שוב בעוד כמה רגעים.",
+      "closedTitle": "העסק סגור ביום זה",
+      "closedText": "נא לבחור תאריך אחר.",
+      "workingHours": "שעות פעילות",
+      "breaks": "הפסקות",
+      "availableSlots": "שעות פנויות",
+      "fullTitle": "כל השעות לתאריך זה תפוסות",
+      "fullText": "נסו תאריך אחר.",
+      "summaryEyebrow": "סיכום הזמנה",
+      "confirmTitle": "אישור התור",
+      "labelService": "שירות",
+      "labelDate": "תאריך",
+      "labelTime": "שעה",
+      "labelDuration": "משך",
+      "labelPrice": "מחיר",
+      "durationValue": "{{hours}} ש׳ {{minutes}} ד׳",
+      "yourDetails": "הפרטים שלכם",
+      "contactTitle": "מלאו את פרטי הקשר",
+      "contactHint": "אין צורך בחשבון כדי לקבוע את התור.",
+      "fullName": "שם מלא",
+      "fullNamePh": "הזינו שם מלא",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "addressPh": "הזינו כתובת",
+      "note": "הערה",
+      "notePh": "הערה נוספת",
+      "submitting": "שולחים…",
+      "confirmBooking": "אישור הזמנה",
+      "backToSlots": "חזרה לשעות",
+      "successTitle": "ההזמנה נשלחה בהצלחה!",
+      "successEmail": "נשלח מייל אישור לכתובת המייל שלכם.",
+      "successPlain": "ההזמנה שלכם אושרה.",
+      "backToList": "חזרה לרשימה",
+      "selectedService": "שירות נבחר"
     },
     "metaMap": {
       "realRadius": "<br/>רדיוס אמיתי: {{km}} ק״מ סביב העיר",
@@ -19459,7 +19522,19 @@
     "hours": {
       "loading": "טוען...",
       "noneSet": "לא הוגדרו שעות — הגדר כדי לתאם פגישות",
-      "openDays": "{{count}} ימי פעילות"
+      "openDays": "{{count}} ימי פעילות",
+      "saved": "שעות הפעילות נשמרו בהצלחה",
+      "saveError": "שגיאה בשמירת שעות הפעילות",
+      "setupTitle": "הגדרת שעות פעילות שבועיות (כולל שבת)",
+      "colDay": "יום",
+      "colStart": "התחלה",
+      "colEnd": "סיום",
+      "colClosed": "סגור",
+      "closedAria": "סגור ב{{day}}",
+      "saveWeekly": "שמירת שעות שבועיות",
+      "summary": "סיכום שעות הפעילות:",
+      "closed": "סגור",
+      "notSet": "לא הוגדר"
     },
     "timePicker": {
       "start": "שעת התחלה:",
@@ -19499,6 +19574,29 @@
     "upgradeBanner": {
       "text": "הפיצ׳ר הזה כלול רק בחבילות מתקדמות.",
       "cta": "שדרגו עכשיו"
+    },
+    "crmFile": {
+      "namePhoneRequired": "שם מלא ומספר טלפון הם שדות חובה",
+      "saved": "הלקוח נשמר בהצלחה",
+      "saveFailed": "שמירת הלקוח נכשלה"
+    },
+    "bizChat": {
+      "micDenied": "אין גישה למיקרופון",
+      "agreementSoon": "פתיחת טופס הסכם שיתוף — בקרוב",
+      "withPartner": "צ׳אט עם {{name}}",
+      "placeholder": "כתבו הודעה...",
+      "send": "שליחה",
+      "startRec": "התחלת הקלטה",
+      "stopRec": "עצירת הקלטה",
+      "sendAgreement": "שליחת הסכם"
+    },
+    "appointmentsMain": {
+      "title": "קביעת תור",
+      "selectService": "בחירת שירות",
+      "selectDate": "בחירת תאריך",
+      "availableTimes": "שעות פנויות",
+      "bookFor": "קביעת תור ל־{{date}} בשעה {{time}}",
+      "setCalendar": "הגדרת יומן"
     }
   }
 }

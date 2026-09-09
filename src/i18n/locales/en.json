@@ -5549,7 +5549,19 @@
       "whatsapp_usage": "WhatsApp usage billing"
     },
     "earlyBird": {
-      "redirecting": "Your exclusive offer is ready — taking you to payment…"
+      "redirecting": "Your exclusive offer is ready — taking you to payment…",
+      "badge": "Limited-time offer",
+      "titleLead": "First month only",
+      "save": "Save ₪30 on your first month",
+      "endsIn": "Offer ends in {{time}}",
+      "timeLeft": "{{hours}}h {{minutes}}m",
+      "body": "Unlock BizUply automations, CRM, messaging and AI tools. Special early access pricing — no commitment.",
+      "thenMonthly": "Then ₪149/month. Cancel anytime.",
+      "cta": "Upgrade for ₪119",
+      "checkoutBusy": "Redirecting to checkout...",
+      "closeAria": "Close offer",
+      "checkoutFailed": "Could not open checkout right now. Please try again.",
+      "finePrint": "Your trial stays active • No obligation"
     }
   },
   "collab": {
@@ -19318,7 +19330,58 @@
     },
     "calendar": {
       "noBusiness": "We could not identify the business. Refresh the page.",
-      "noBusinessRetry": "We could not identify the business. Refresh the page and try again."
+      "noBusinessRetry": "We could not identify the business. Refresh the page and try again.",
+      "enterFullName": "Please enter your full name.",
+      "enterPhone": "Please enter your phone number.",
+      "enterAddress": "Please enter your address.",
+      "noSlot": "No time slot selected.",
+      "missingService": "Missing service. Please choose a service again.",
+      "submitError": "Error submitting booking: {{detail}}",
+      "unknownError": "Unknown error",
+      "loadFailed": "Unable to load availability. Please try again.",
+      "bookingEyebrow": "Appointment booking",
+      "chooseDateTitle": "Choose a date to see available times",
+      "chooseDateHint": "Select a service date and choose one of the available appointment slots.",
+      "prevMonth": "← Previous Month",
+      "nextMonth": "Next Month →",
+      "selectedDate": "Selected date",
+      "checkingTitle": "Checking availability…",
+      "checkingText": "Please wait while we load available time slots.",
+      "loadTitle": "Unable to load availability",
+      "loadText": "Please try again in a few moments.",
+      "closedTitle": "This business is closed on this day",
+      "closedText": "Please choose another date.",
+      "workingHours": "Working hours",
+      "breaks": "Breaks",
+      "availableSlots": "Available Slots",
+      "fullTitle": "All slots are booked for this day",
+      "fullText": "Try another date.",
+      "summaryEyebrow": "Booking Summary",
+      "confirmTitle": "Confirm your appointment",
+      "labelService": "Service",
+      "labelDate": "Date",
+      "labelTime": "Time",
+      "labelDuration": "Duration",
+      "labelPrice": "Price",
+      "durationValue": "{{hours}}h {{minutes}}m",
+      "yourDetails": "Your details",
+      "contactTitle": "Fill in your contact information",
+      "contactHint": "No account is required to book this appointment.",
+      "fullName": "Full Name",
+      "fullNamePh": "Enter full name",
+      "phone": "Phone",
+      "address": "Address",
+      "addressPh": "Enter address",
+      "note": "Note",
+      "notePh": "Additional note",
+      "submitting": "Submitting…",
+      "confirmBooking": "Confirm Booking",
+      "backToSlots": "Back to Time Slots",
+      "successTitle": "Booking Submitted Successfully!",
+      "successEmail": "A confirmation email has been sent to your email address.",
+      "successPlain": "Your booking is confirmed.",
+      "backToList": "Back to List",
+      "selectedService": "Selected service"
     },
     "metaMap": {
       "realRadius": "<br/>Real radius: {{km}} km around the city",
@@ -19470,7 +19533,19 @@
     "hours": {
       "loading": "Loading...",
       "noneSet": "Hours are not set — add them to book meetings",
-      "openDays": "{{count}} working days"
+      "openDays": "{{count}} working days",
+      "saved": "Working hours saved successfully",
+      "saveError": "Error saving working hours",
+      "setupTitle": "Set weekly working hours (including Saturday)",
+      "colDay": "Day",
+      "colStart": "Start",
+      "colEnd": "End",
+      "colClosed": "Closed",
+      "closedAria": "Closed {{day}}",
+      "saveWeekly": "Save weekly hours",
+      "summary": "Summary of working hours:",
+      "closed": "Closed",
+      "notSet": "Not set"
     },
     "timePicker": {
       "start": "Start time:",
@@ -19510,6 +19585,29 @@
     "upgradeBanner": {
       "text": "This feature is included only in advanced plans.",
       "cta": "Upgrade now"
+    },
+    "crmFile": {
+      "namePhoneRequired": "Full name and phone number are required",
+      "saved": "Client saved successfully",
+      "saveFailed": "Failed to save client"
+    },
+    "bizChat": {
+      "micDenied": "Cannot access the microphone",
+      "agreementSoon": "Opening collaboration agreement form — coming soon",
+      "withPartner": "Chat with {{name}}",
+      "placeholder": "Type a message...",
+      "send": "Send",
+      "startRec": "Start recording",
+      "stopRec": "Stop recording",
+      "sendAgreement": "Send agreement"
+    },
+    "appointmentsMain": {
+      "title": "Schedule appointment",
+      "selectService": "Select service",
+      "selectDate": "Select date",
+      "availableTimes": "Available times",
+      "bookFor": "Book appointment for {{date}} at {{time}}",
+      "setCalendar": "Set calendar"
     }
   }
 }

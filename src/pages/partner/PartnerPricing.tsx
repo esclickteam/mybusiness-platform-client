@@ -129,8 +129,8 @@ function PriceRow({
         : t("partner.billing.oneTime");
   const recurringToggleLabel =
     item.billing === "recurring_year"
-      ? t("partner.pricing.addYearly", { defaultValue: "הוסף עמלה שנתית מתחדשת" })
-      : t("partner.pricing.addMonthly", { defaultValue: "הוסף עמלה חודשית מתחדשת" });
+      ? t("partner.pricing.addYearly")
+      : t("partner.pricing.addMonthly");
   const recurringAmountLabel =
     item.billing === "recurring_year" ? t("partner.pricing.yearlyPrefix") : t("partner.pricing.monthlyPrefix");
 
@@ -162,9 +162,7 @@ function PriceRow({
       </div>
 
       <p className="mt-4 text-sm font-black text-slate-800">
-        {t("partner.pricing.bizuplyPriceLine", {
-          defaultValue: "מחיר Bizuply: {{amount}} {{billing}}",
-          amount: formatIls(bizuplyAmount),
+        {t("partner.pricing.bizuplyPriceLine", { amount: formatIls(bizuplyAmount),
           billing: catalogBilling,
         })}
       </p>
@@ -178,7 +176,7 @@ function PriceRow({
               onChange={(e) => setOneTimeEnabled(e.target.checked)}
               className="accent-violet-700"
             />
-            {t("partner.pricing.addOneTime", { defaultValue: "הוסף עמלה חד-פעמית" })}
+            {t("partner.pricing.addOneTime")}
           </label>
           {oneTimeEnabled ? (
             <label className="mt-3 block text-sm font-black text-violet-900">
@@ -194,7 +192,7 @@ function PriceRow({
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
-              <dt>{t("partner.pricing.basePrice", { defaultValue: "מחיר בסיס" })}</dt>
+              <dt>{t("partner.pricing.basePrice")}</dt>
               <dd>{formatIls(quoted.oneTimeBase)}</dd>
             </div>
             <div className="flex justify-between gap-3">

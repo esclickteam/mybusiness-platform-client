@@ -198,6 +198,90 @@ const EARLY_BIRD = {
     "Sua oferta exclusiva está pronta — levando você ao pagamento…",
     "عرضكم الحصري جاهز — ننقلكم إلى الدفع…"
   ),
+  badge: row(
+    "Limited-time offer",
+    "הצעה לזמן מוגבל",
+    "Oferta por tiempo limitado",
+    "Oferta por tempo limitado",
+    "عرض لوقت محدود"
+  ),
+  titleLead: row(
+    "First month only",
+    "חודש ראשון בלבד",
+    "Solo el primer mes",
+    "Só o primeiro mês",
+    "الشهر الأول فقط"
+  ),
+  save: row(
+    "Save ₪30 on your first month",
+    "חוסכים ₪30 בחודש הראשון",
+    "Ahorra ₪30 en tu primer mes",
+    "Economize ₪30 no primeiro mês",
+    "وفّروا ₪30 في الشهر الأول"
+  ),
+  endsIn: row(
+    "Offer ends in {{time}}",
+    "ההצעה מסתיימת בעוד {{time}}",
+    "La oferta termina en {{time}}",
+    "A oferta termina em {{time}}",
+    "ينتهي العرض خلال {{time}}"
+  ),
+  timeLeft: row(
+    "{{hours}}h {{minutes}}m",
+    "{{hours}} ש׳ {{minutes}} ד׳",
+    "{{hours}} h {{minutes}} min",
+    "{{hours}} h {{minutes}} min",
+    "{{hours}} س {{minutes}} د"
+  ),
+  body: row(
+    "Unlock BizUply automations, CRM, messaging and AI tools. Special early access pricing — no commitment.",
+    "פותחים אוטומציות, CRM, הודעות וכלי AI של BizUply. מחיר גישה מוקדמת מיוחד — בלי התחייבות.",
+    "Activa automatizaciones, CRM, mensajería y herramientas de IA de BizUply. Precio especial de acceso anticipado — sin compromiso.",
+    "Liberar automações, CRM, mensagens e ferramentas de IA da BizUply. Preço especial de acesso antecipado — sem compromisso.",
+    "فعّلوا الأتمتة وCRM والرسائل وأدوات الذكاء في BizUply. سعر وصول مبكر خاص — بلا التزام."
+  ),
+  thenMonthly: row(
+    "Then ₪149/month. Cancel anytime.",
+    "ואחר כך ₪149 לחודש. אפשר לבטל בכל עת.",
+    "Después ₪149/mes. Cancela cuando quieras.",
+    "Depois ₪149/mês. Cancele quando quiser.",
+    "بعدها ₪149 شهرياً. يمكن الإلغاء في أي وقت."
+  ),
+  cta: row(
+    "Upgrade for ₪119",
+    "שדרוג ב־₪119",
+    "Mejora por ₪119",
+    "Upgrade por ₪119",
+    "الترقية مقابل ₪119"
+  ),
+  checkoutBusy: row(
+    "Redirecting to checkout...",
+    "מעבירים לתשלום...",
+    "Redirigiendo al pago...",
+    "Redirecionando para o pagamento...",
+    "ننقلكم إلى الدفع..."
+  ),
+  closeAria: row(
+    "Close offer",
+    "סגירת ההצעה",
+    "Cerrar oferta",
+    "Fechar oferta",
+    "إغلاق العرض"
+  ),
+  checkoutFailed: row(
+    "Could not open checkout right now. Please try again.",
+    "לא הצלחנו לפתוח את התשלום כרגע. נסו שוב.",
+    "No se pudo abrir el pago ahora. Inténtalo de nuevo.",
+    "Não foi possível abrir o pagamento agora. Tente de novo.",
+    "تعذّر فتح الدفع الآن. حاولوا مرة أخرى."
+  ),
+  finePrint: row(
+    "Your trial stays active • No obligation",
+    "תקופת הניסיון נשארת פעילה • בלי התחייבות",
+    "Tu prueba sigue activa • Sin obligación",
+    "Seu teste permanece ativo • Sem obrigação",
+    "الفترة التجريبية تبقى فعّالة • بلا التزام"
+  ),
 };
 
 export function extraPricingMarketsLocaleObject(locale) {
