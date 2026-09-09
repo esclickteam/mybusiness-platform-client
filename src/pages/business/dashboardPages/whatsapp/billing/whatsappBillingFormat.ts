@@ -1,44 +1,46 @@
-const heNumber = new Intl.NumberFormat("he-IL");
+import i18n from "../../../../../i18n/i18n";
+import { getIntlLocale } from "../../../../../i18n/localeUtils";
 
-const heIls = new Intl.NumberFormat("he-IL", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const heDate = new Intl.DateTimeFormat("he-IL", {
-  day: "numeric",
-  month: "long",
-});
-
-const heDateTime = new Intl.DateTimeFormat("he-IL", {
-  day: "numeric",
-  month: "long",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+function resolveLocale(locale?: string) {
+  return locale || getIntlLocale(i18n.language);
+}
 
 export const WHATSAPP_DEFAULT_UNIT_PRICE_ILS = 0.2;
 
-export function formatHeNumber(value: number) {
-  return heNumber.format(Number.isFinite(value) ? value : 0);
+export function formatHeNumber(value: number, locale?: string) {
+  return new Intl.NumberFormat(resolveLocale(locale)).format(
+    Number.isFinite(value) ? value : 0
+  );
 }
 
-export function formatHeIls(value: number) {
-  return `${heIls.format(Number.isFinite(value) ? value : 0)} ₪`;
+export function formatHeIls(value: number, locale?: string) {
+  const amount = new Intl.NumberFormat(resolveLocale(locale), {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number.isFinite(value) ? value : 0);
+  return `${amount} ₪`;
 }
 
-export function formatHeDate(iso: string | null | undefined) {
+export function formatHeDate(iso: string | null | undefined, locale?: string) {
   if (!iso) return null;
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return null;
-  return heDate.format(date);
+  return new Intl.DateTimeFormat(resolveLocale(locale), {
+    day: "numeric",
+    month: "long",
+  }).format(date);
 }
 
-export function formatHeDateTime(iso: string | null | undefined) {
+export function formatHeDateTime(iso: string | null | undefined, locale?: string) {
   if (!iso) return null;
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return null;
-  return heDateTime.format(date);
+  return new Intl.DateTimeFormat(resolveLocale(locale), {
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 export function resolveWhatsAppUnitPriceIls(unitPriceIls?: number | null) {

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import { Loader2, Plus, Trash2, UserPlus } from "lucide-react";
 import {
@@ -23,7 +24,7 @@ import {
 type OutletCtx = { businessId: string | null };
 
 export default function WhatsAppListsTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState<WhatsAppMailingList[]>([]);
@@ -149,7 +150,7 @@ export default function WhatsAppListsTab() {
   }
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[0.9fr_1.2fr]" dir="rtl">
+    <div className="grid gap-4 xl:grid-cols-[0.9fr_1.2fr]" dir={getTextDirection(i18n.language)}>
       <section className={`${cardBase} p-4 sm:p-5`}>
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.lists.title")}

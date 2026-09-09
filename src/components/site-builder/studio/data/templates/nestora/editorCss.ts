@@ -2,7 +2,7 @@ export const nestoraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="nestora"], [data-template-id="nestora"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #eef1f5; --tpl-surface: #e2e7ee; --tpl-text: #1e2836;
   --tpl-muted: #6a7585; --tpl-primary: #3d5a80; --tpl-primary-text: #eef1f5;

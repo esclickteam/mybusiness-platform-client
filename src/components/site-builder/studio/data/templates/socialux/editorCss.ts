@@ -11,7 +11,7 @@ export const socialuxEditorCss = `
   font-family: "Rubik", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="socialux"] .text-center,
 [data-template-id="socialux"] .text-center { text-align: center; }

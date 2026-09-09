@@ -2,7 +2,7 @@ export const propnexEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="propnex"], [data-template-id="propnex"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f4f6f9; --tpl-surface: #ffffff; --tpl-text: #111827;
   --tpl-muted: #6b7280; --tpl-primary: #2563eb; --tpl-primary-text: #ffffff;

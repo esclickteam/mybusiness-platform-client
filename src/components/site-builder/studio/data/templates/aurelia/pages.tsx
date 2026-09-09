@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aureliaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -56,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c9a24b]/30 bg-[#c9a24b]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#c9a24b]">
         {eyebrow}
       </p>
@@ -64,7 +66,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -107,7 +109,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full border border-[#c9a24b]/40 bg-[#1d1712] font-serif text-lg font-semibold text-[#c9a24b] transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -163,7 +165,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id
                     ? "bg-[#c9a24b] text-[#14100d]"
                     : "text-[#cdbfa6] hover:bg-[#221a12]",
@@ -221,12 +223,8 @@ function BookingModal({
                 ")",
             }}
           >
-            <p className="inline-flex rounded-full bg-[#c9a24b]/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">
-              הזמנת שולחן
-            </p>
-            <h3 className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl">
-              נשמור לכם ערב מושלם.
-            </h3>
+            <p className="inline-flex rounded-full bg-[#c9a24b]/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">{tx("הזמנת שולחן")}</p>
+            <h3 className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl">{tx("נשמור לכם ערב מושלם.")}</h3>
             <p className="mt-5 text-base leading-7 text-[#e6dcc8]">
               {getValue(data, "hours")}
             </p>
@@ -234,46 +232,46 @@ function BookingModal({
               {["אישור מיידי בטלפון", "התאמת יינות לפי המנות", "אפשרות לערב שף פרטי"].map(
                 (item) => (
                   <div
-                    key={item}
+                    key={tx(item)}
                     className="rounded-2xl border border-[#c9a24b]/15 bg-black/20 px-4 py-3 text-sm font-semibold text-[#e6dcc8]"
                   >
-                    ✦ {item}
+                    ✦ {tx(item)}
                   </div>
                 ),
               )}
             </div>
           </div>
 
-          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4">
               <input
-                className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="שם מלא"
+                className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+                placeholder={tx("שם מלא")}
                name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
-                className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="טלפון"
+                className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+                placeholder={tx("טלפון")}
                name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
-                  className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="תאריך"
+                  className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+                  placeholder={tx("תאריך")}
                  name="date" data-bizuply-form-field-id="date" />
                 <input
-                  className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="שעה"
+                  className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+                  placeholder={tx("שעה")}
                  name="other" data-bizuply-form-field-id="other" />
               </div>
-              <select className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition focus:border-[#c9a24b]">
-                <option>מספר סועדים</option>
-                <option>2 סועדים</option>
-                <option>3-4 סועדים</option>
-                <option>5-6 סועדים</option>
-                <option>7+ / אירוע</option>
+              <select className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition focus:border-[#c9a24b]">
+                <option>{tx("מספר סועדים")}</option>
+                <option>{tx("2 סועדים")}</option>
+                <option>{tx("3-4 סועדים")}</option>
+                <option>{tx("5-6 סועדים")}</option>
+                <option>{tx("7+ / אירוע")}</option>
               </select>
               <textarea
-                className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="בקשות מיוחדות"
+                className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+                placeholder={tx("בקשות מיוחדות")}
                name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               <button
                 type="submit"
@@ -399,8 +397,8 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 key={title}
                 className="rounded-3xl border border-[#c9a24b]/15 bg-[#1a1510]/70 p-5 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
               >
-                <p className="font-serif text-lg font-semibold text-[#c9a24b]">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{text}</p>
+                <p className="font-serif text-lg font-semibold text-[#c9a24b]">{tx(title)}</p>
+                <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
               </div>
             ))}
           </div>
@@ -462,7 +460,7 @@ function MenuSection({
                   {price}
                 </span>
               </div>
-              <p className="text-sm leading-6 text-[#cdbfa6]">{text}</p>
+              <p className="text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -506,7 +504,7 @@ function ExperienceSection({ data }: { data: Record<string, any> }) {
                 {num}
               </span>
               <h3 className="mt-5 font-serif text-2xl font-semibold text-[#f5eee1]">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[#cdbfa6]">{text}</p>
+              <p className="mt-3 text-sm leading-6 text-[#cdbfa6]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -577,7 +575,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[34px] border border-[#c9a24b]/15 bg-[#1a1510]/70 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
             >
               <div className="mb-5 text-[#c9a24b]">★★★★★</div>
-              <p className="text-lg leading-8 text-[#e6dcc8]">“{text}”</p>
+              <p className="text-lg leading-8 text-[#e6dcc8]">“{tx(text)}”</p>
               <div className="mt-7 border-t border-[#c9a24b]/12 pt-5">
                 <p className="font-serif text-lg font-semibold text-[#f5eee1]">{name}</p>
                 <p className="mt-1 text-sm text-[#a2957c]">{role}</p>
@@ -624,7 +622,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[24px] border border-[#c9a24b]/12 bg-[#14100d]/60 px-4 py-4 transition duration-300 hover:border-[#c9a24b]/35"
                 >
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]">{label}</div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold text-[#f5eee1]">{value}</div>
                 </div>
               ))}
@@ -640,23 +638,23 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="שם מלא"
+              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="טלפון"
+              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="מספר סועדים"
+              className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+              placeholder={tx("מספר סועדים")}
              name="guests" data-bizuply-form-field-id="guests" />
             <textarea
-              className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="בקשות מיוחדות"
+              className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-start text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
+              placeholder={tx("בקשות מיוחדות")}
              name="other" data-bizuply-form-field-id="other"></textarea>
             <button
               type="submit"
@@ -697,12 +695,8 @@ function CtaFooter({
           </div>
 
           <div className="rounded-[36px] border border-[#c9a24b]/20 bg-[#14100d] p-6">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a2957c]">
-              מוכנים לערב?
-            </div>
-            <div className="mt-3 font-serif text-2xl font-semibold text-[#f5eee1]">
-              שולחן מחכה לכם.
-            </div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a2957c]">{tx("מוכנים לערב?")}</div>
+            <div className="mt-3 font-serif text-2xl font-semibold text-[#f5eee1]">{tx("שולחן מחכה לכם.")}</div>
             <div className="mt-6 grid gap-3">
               <button
                 type="button"
@@ -727,7 +721,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Aurelia · Bizuply Studio</p>
+        <p>{tx("תבנית Aurelia · Bizuply Studio")}</p>
       </div>
     </footer>
   );
@@ -847,7 +841,7 @@ export default function AureliaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="aurelia"
       className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_14%_6%,rgba(201,162,75,0.14),transparent_30%),radial-gradient(circle_at_86%_22%,rgba(122,59,29,0.16),transparent_32%),linear-gradient(180deg,#14100d_0%,#181310_50%,#12100c_100%)] font-sans text-[#f5eee1]"
       style={{ fontFamily: '"Cormorant Garamond", "Playfair Display", Georgia, serif' }}

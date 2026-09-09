@@ -17,7 +17,7 @@ export const breworaEditorCss = `
     radial-gradient(1100px 520px at 100% -10%, #8B451322, transparent 55%),
     radial-gradient(900px 480px at 0% 100%, #D9770618, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="brewora"] .store-display,
 [data-template-id="brewora"] .store-display {

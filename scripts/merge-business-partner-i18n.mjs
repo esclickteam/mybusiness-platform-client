@@ -22,6 +22,16 @@ import { extraFinalChromeLocaleObject } from "./i18n-batch-final-chrome.mjs";
 import { extraStudioLeftoverLocaleObject } from "./i18n-batch-studio-leftover.mjs";
 import { extraETailLocaleObject } from "./i18n-batch-e-tail.mjs";
 import { extraEChromeRestLocaleObject } from "./i18n-batch-e-chrome-rest.mjs";
+import { extraPricingMarketsLocaleObject } from "./i18n-batch-pricing-markets.mjs";
+import { extraPricingFeaturesLocaleObject } from "./i18n-batch-pricing-features.mjs";
+import { extraWorkingTemplatesLocaleObject } from "./i18n-batch-working-templates.mjs";
+import { extraAiConfigLocaleObject } from "./i18n-batch-ai-config.mjs";
+import { extraLocalTemplatesLocaleObject } from "./i18n-batch-local-templates.mjs";
+import { extraMetaCampaignsRestLocaleObject } from "./i18n-batch-meta-campaigns-rest.mjs";
+import { extraPartnerCatalogProductsLocaleObject } from "./i18n-batch-partner-catalog-products.mjs";
+import { extraPricingAddonsLocaleObject } from "./i18n-batch-pricing-addons.mjs";
+import { extraWhatsappMappingLocaleObject } from "./i18n-batch-whatsapp-mapping.mjs";
+import { extraAutomationsReadinessLocaleObject } from "./i18n-batch-automations-readiness.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -229,7 +239,7 @@ const PRICING_SHARED = {
     support: row("Monthly support", "תמיכה חודשית", "Soporte mensual", "Suporte mensal", "دعم شهري"),
   },
   websiteAddon: {
-    label: row("₪550 one-time — self-serve website as a business-plan add-on", "550₪ חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית", "₪550 único — sitio de autoservicio como extra del plan", "₪550 único — site self-serve como extra do plano", "₪550 لمرة واحدة — موقع ذاتي كإضافة للخطة"),
+    label: row("{{price}} one-time — self-serve website as a business-plan add-on", "{{price}} חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית", "{{price}} único — sitio de autoservicio como extra del plan", "{{price}} único — site self-serve como extra do plano", "{{price}} لمرة واحدة — موقع ذاتي كإضافة للخطة"),
     hint: row("One-time payment, no auto-renewal · templates and visual editor, linked to CRM — includes free domain for 1 year", "תשלום חד־פעמי, ללא חידוש אוטומטי · תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה", "Pago único, sin renovación automática · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año", "Pagamento único, sem renovação automática · modelos e editor visual, ligado ao CRM — domínio grátis por 1 ano", "دفعة واحدة دون تجديد تلقائي · قوالب ومحرر مرئي مرتبط بـ CRM — نطاق مجاني لسنة"),
   },
 };
@@ -374,6 +384,16 @@ for (const locale of LOCALES) {
     extraStudioLeftoverLocaleObject(locale),
     extraETailLocaleObject(locale),
     extraEChromeRestLocaleObject(locale),
+    extraPricingMarketsLocaleObject(locale),
+    extraPricingFeaturesLocaleObject(locale),
+    extraWorkingTemplatesLocaleObject(locale),
+    extraAiConfigLocaleObject(locale),
+    extraLocalTemplatesLocaleObject(locale),
+    extraMetaCampaignsRestLocaleObject(locale),
+    extraPartnerCatalogProductsLocaleObject(locale),
+    extraPricingAddonsLocaleObject(locale),
+    extraWhatsappMappingLocaleObject(locale),
+    extraAutomationsReadinessLocaleObject(locale),
   ].reduce((acc, patch) => deepMerge(acc, patch), current);
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {

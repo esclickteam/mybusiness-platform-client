@@ -11,7 +11,7 @@ export const insightixEditorCss = `
   font-family: "Suez One", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="insightix"] .text-center,
 [data-template-id="insightix"] .text-center { text-align: center; }

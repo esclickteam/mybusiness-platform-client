@@ -7,8 +7,9 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { VisualPageStackKeepAliveProvider } from "../site-builder/runtime/VisualPageStack";
-import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
+import { useStudioTemplateRenderer } from "../site-builder/studio/data/templates/useStudioTemplateRenderer";
 import {
   reportPreviewVisibility,
   subscribePreviewMount,
@@ -103,10 +104,7 @@ export default function AutoScrollTemplatePreview({
   const scrollingRef = useRef(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateId),
-    [templateId],
-  );
+  const { renderer } = useStudioTemplateRenderer(templateId);
 
   const pages = useMemo(() => {
     const all = renderer?.pages || [];
@@ -372,7 +370,7 @@ export default function AutoScrollTemplatePreview({
                   key={`${templateId}:${activePage.id}`}
                   data-wb-tour={templateId}
                   data-template-id={templateId}
-                  dir={i18n.language === "he" ? "rtl" : "ltr"}
+                  dir={getTextDirection(i18n.language)}
                   style={{
                     width: DESIGN_WIDTH,
                     minHeight: DESIGN_MIN_HEIGHT,

@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { verdantDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -120,7 +122,7 @@ function Properties({ data }: { data: Record<string, any> }) {
               <div className="mt-5 border-t border-white/10 pt-5">
                 <p className="text-xs font-semibold tracking-[0.2em] text-[var(--v-moss)]">{meta}</p>
                 <h3 className="v-display mt-2 text-2xl font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{text}</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -140,7 +142,7 @@ function Stats({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="stats" className="border-y border-white/10 bg-[var(--v-surface)] px-5 py-16 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
         {stats.map(([num, label]) => (
-          <div key={label} className="text-center md:text-right">
+          <div key={label} className="text-center md:text-start">
             <div className="v-display text-5xl font-semibold text-[var(--v-moss)] md:text-6xl">{num}</div>
             <div className="mt-2 text-sm tracking-[0.12em] text-[var(--v-muted)]">{label}</div>
           </div>
@@ -176,7 +178,7 @@ function Agents({ data }: { data: Record<string, any> }) {
                 }}
               />
               <h3 className="v-display text-2xl font-semibold">{name}</h3>
-              <p className="mt-2 text-sm text-[var(--v-muted)]">{role}</p>
+              <p className="mt-2 text-sm text-[var(--v-muted)]">{tx(role)}</p>
             </div>
           ))}
         </div>
@@ -196,9 +198,7 @@ function VirtualTour({ data }: { data: Record<string, any> }) {
           <button
             type="button"
             className="mt-8 border border-[var(--v-moss)] px-6 py-3 text-sm font-semibold text-[var(--v-moss)] transition hover:bg-[var(--v-moss)] hover:text-[#0e1210]"
-          >
-            התחלת סיור
-          </button>
+          >{tx("התחלת סיור")}</button>
         </div>
         <div className="relative min-h-[320px]">
           <img
@@ -226,7 +226,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-8 lg:grid-cols-3">
           {reviews.map(([text, name, role]) => (
             <blockquote key={name} className="border-t border-[var(--v-moss)]/40 pt-8">
-              <p className="v-display text-xl leading-9 text-[var(--v-stone)]">“{text}”</p>
+              <p className="v-display text-xl leading-9 text-[var(--v-stone)]">“{tx(text)}”</p>
               <footer className="mt-6">
                 <p className="font-semibold">{name}</p>
                 <p className="text-sm text-[var(--v-muted)]">{role}</p>
@@ -253,8 +253,8 @@ function Process({ data }: { data: Record<string, any> }) {
           {steps.map(([num, title, text]) => (
             <div key={num}>
               <div className="v-display text-2xl md:text-5xl text-[var(--v-moss)]">{num}</div>
-              <h3 className="mt-4 text-xl font-semibold">{title}</h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{text}</p>
+              <h3 className="mt-4 text-xl font-semibold">{tx(title)}</h3>
+              <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -271,15 +271,15 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <h2 className="v-display text-4xl font-semibold md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-4 max-w-md text-[var(--v-muted)]">{getValue(data, "contactText")}</p>
           <div className="mt-8 space-y-3 text-sm">
-            <p><span className="text-[var(--v-moss)]">טלפון</span> · {getValue(data, "phone")}</p>
-            <p><span className="text-[var(--v-moss)]">אימייל</span> · {getValue(data, "email")}</p>
-            <p><span className="text-[var(--v-moss)]">כתובת</span> · {getValue(data, "address")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="תקציב משוער"  name="other" data-bizuply-form-field-id="other" />
+        <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--v-moss)]" placeholder={tx("תקציב משוער")}  name="other" data-bizuply-form-field-id="other" />
           <button type="submit" onClick={openModal} className="bg-[var(--v-moss)] px-7 py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>
@@ -313,9 +313,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md bg-[var(--v-surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
         <h3 className="v-display text-3xl font-semibold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--v-moss)] py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>
@@ -364,7 +364,7 @@ export default function VerdantPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="verdant"
       className="min-h-screen w-full overflow-x-hidden"
     >

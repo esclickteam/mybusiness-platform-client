@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function AgreementsList() {
+  const { t } = useTranslation();
   const [agreements, setAgreements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -34,7 +36,7 @@ export default function AgreementsList() {
       setSelectedAgreement(res.data);
       setModalOpen(true);
     } catch {
-      alert("You are not authorized to view this agreement or it was not found");
+      alert(t("leftover.agreements.unauthorized"));
     }
   };
 

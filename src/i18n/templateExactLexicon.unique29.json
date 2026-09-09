@@ -1,0 +1,1520 @@
+{
+  "בניינים מכוסים": {
+    "en": "Covered buildings",
+    "es": "Edificios cubiertos",
+    "pt-BR": "Prédios cobertos",
+    "ar": "مبانٍ مغطاة"
+  },
+  "שיפוצים מלווים": {
+    "en": "Supported renovations",
+    "es": "Reformas acompañadas",
+    "pt-BR": "Reformas acompanhadas",
+    "ar": "تجديدات مرافَقة"
+  },
+  "שקף לפני עיצוב": {
+    "en": "A slide before design",
+    "es": "Una diapositiva antes del diseño",
+    "pt-BR": "Um slide antes do design",
+    "ar": "شريحة قبل التصميم"
+  },
+  "ביטחון מייסדים": {
+    "en": "Founder confidence",
+    "es": "Confianza de fundadores",
+    "pt-BR": "Confiança de fundadores",
+    "ar": "ثقة مؤسِّسين"
+  },
+  "תגובות הן מדיה": {
+    "en": "Comments are media",
+    "es": "Los comentarios son media",
+    "pt-BR": "Comentários são mídia",
+    "ar": "التعليقات وسائط"
+  },
+  "צפיות אורגניות": {
+    "en": "Organic views",
+    "es": "Vistas orgánicas",
+    "pt-BR": "Visualizações orgânicas",
+    "ar": "مشاهدات عضوية"
+  },
+  "מעורבות ממוצעת": {
+    "en": "Average engagement",
+    "es": "Interacción media",
+    "pt-BR": "Engajamento médio",
+    "ar": "تفاعل متوسط"
+  },
+  "זכויות מסודרות": {
+    "en": "Rights in order",
+    "es": "Derechos en orden",
+    "pt-BR": "Direitos em ordem",
+    "ar": "حقوق مرتّبة"
+  },
+  "כוונה לפני נפח": {
+    "en": "Intent before volume",
+    "es": "Intención antes que volumen",
+    "pt-BR": "Intenção antes do volume",
+    "ar": "نية قبل الحجم"
+  },
+  "טכני ותוכן יחד": {
+    "en": "Tech and content together",
+    "es": "Técnico y contenido juntos",
+    "pt-BR": "Técnico e conteúdo juntos",
+    "ar": "تقني ومحتوى معًا"
+  },
+  "עדכון תוכן חכם": {
+    "en": "A smart content update",
+    "es": "Una actualización de contenido inteligente",
+    "pt-BR": "Uma atualização de conteúdo inteligente",
+    "ar": "تحديث محتوى ذكي"
+  },
+  "נרשמים מוקדמים": {
+    "en": "Early registrants",
+    "es": "Inscritos tempranos",
+    "pt-BR": "Inscritos antecipados",
+    "ar": "مسجّلون مبكرون"
+  },
+  "בדיקה עם אנשים": {
+    "en": "A check with people",
+    "es": "Una prueba con personas",
+    "pt-BR": "Um teste com pessoas",
+    "ar": "فحص مع الناس"
+  },
+  "יום צילום יעיל": {
+    "en": "An efficient shoot day",
+    "es": "Un día de foto eficiente",
+    "pt-BR": "Um dia de foto eficiente",
+    "ar": "يوم تصوير فعّال"
+  },
+  "הפצה רב ערוצית": {
+    "en": "Multi-channel distribution",
+    "es": "Distribución multicanal",
+    "pt-BR": "Distribuição multicanal",
+    "ar": "توزيع متعدد القنوات"
+  },
+  "פתיח שלא מבריח": {
+    "en": "An intro that does not scare people off",
+    "es": "Una intro que no espanta",
+    "pt-BR": "Uma intro que não afasta",
+    "ar": "مقدمة لا تُنفّر"
+  },
+  "מסמך עמדה יעיל": {
+    "en": "An effective position paper",
+    "es": "Un documento de posición eficaz",
+    "pt-BR": "Um documento de posição eficaz",
+    "ar": "وثيقة موقف فعّالة"
+  },
+  "מהלך ממשל מלא.": {
+    "en": "A full governance move.",
+    "es": "Un movimiento de gobernanza completo.",
+    "pt-BR": "Um movimento de governança completo.",
+    "ar": "خطوة حوكمة كاملة."
+  },
+  "פגישות מוסדיות": {
+    "en": "Institutional meetings",
+    "es": "Reuniones institucionales",
+    "pt-BR": "Reuniões institucionais",
+    "ar": "اجتماعات مؤسسية"
+  },
+  "מפרט לפני אפקט": {
+    "en": "A spec before the effect",
+    "es": "Un pliego antes del efecto",
+    "pt-BR": "Um spec antes do efeito",
+    "ar": "مواصفة قبل التأثير"
+  },
+  "רצועות התנגדות": {
+    "en": "Resistance bands",
+    "es": "Bandas de resistencia",
+    "pt-BR": "Faixas de resistência",
+    "ar": "أشرطة مقاومة"
+  },
+  "חדרים ואווירות": {
+    "en": "Rooms and atmospheres",
+    "es": "Habitaciones y ambientes",
+    "pt-BR": "Quartos e atmosferas",
+    "ar": "غرف وأجواء"
+  },
+  "דקור שלא מעמיס": {
+    "en": "Decor that does not overload",
+    "es": "Decoración que no satura",
+    "pt-BR": "Decoração que não sobrecarrega",
+    "ar": "ديكور لا يثقل"
+  },
+  "מקדחה לפי חומר": {
+    "en": "A drill by material",
+    "es": "Un taladro según el material",
+    "pt-BR": "Uma furadeira conforme o material",
+    "ar": "مثقاب حسب المادة"
+  },
+  "ארגז שלא מתפזר": {
+    "en": "A crate that does not spill",
+    "es": "Un cajón que no se desparrama",
+    "pt-BR": "Uma caixa que não se espalha",
+    "ar": "صندوق لا يتناثر"
+  },
+  "קונסיירז׳ אישי": {
+    "en": "A personal concierge",
+    "es": "Un conserje personal",
+    "pt-BR": "Um concierge pessoal",
+    "ar": "كونسيرج شخصي"
+  },
+  "משוב בלי הגנות": {
+    "en": "Feedback without defenses",
+    "es": "Feedback sin defensas",
+    "pt-BR": "Feedback sem defesas",
+    "ar": "ملاحظات بلا دفاعات"
+  },
+  "תלמידים מספרים": {
+    "en": "Students tell it",
+    "es": "Alumnos lo cuentan",
+    "pt-BR": "Alunos contam",
+    "ar": "طلاب يروون"
+  },
+  "שפה פותחת עולם": {
+    "en": "A language that opens a world",
+    "es": "Un idioma que abre un mundo",
+    "pt-BR": "Um idioma que abre um mundo",
+    "ar": "لغة تفتح عالمًا"
+  },
+  "שפה לפני נסיעה": {
+    "en": "Language before travel",
+    "es": "Idioma antes del viaje",
+    "pt-BR": "Idioma antes da viagem",
+    "ar": "لغة قبل السفر"
+  },
+  "בדיקת רמה קצרה": {
+    "en": "A short level check",
+    "es": "Una prueba de nivel corta",
+    "pt-BR": "Um teste de nível curto",
+    "ar": "فحص مستوى قصير"
+  },
+  "שוליים מהמחברת": {
+    "en": "Margins from the notebook",
+    "es": "Márgenes del cuaderno",
+    "pt-BR": "Margens do caderno",
+    "ar": "هوامش من الدفتر"
+  },
+  "יצירה בלי בלגן": {
+    "en": "Making without the mess",
+    "es": "Crear sin lío",
+    "pt-BR": "Criar sem bagunça",
+    "ar": "صنع بلا فوضى"
+  },
+  "שאלות ממוספרות": {
+    "en": "Numbered questions",
+    "es": "Preguntas numeradas",
+    "pt-BR": "Perguntas numeradas",
+    "ar": "أسئلة مرقّمة"
+  },
+  "במספרים עדינים": {
+    "en": "In gentle numbers",
+    "es": "En números suaves",
+    "pt-BR": "Em números suaves",
+    "ar": "بأرقام لطيفة"
+  },
+  "לחם מחמצת בצד.": {
+    "en": "Sourdough bread on the side.",
+    "es": "Pan de masa madre al lado.",
+    "pt-BR": "Pão de fermento natural ao lado.",
+    "ar": "خبز خميرة على الجانب."
+  },
+  "מהמטבח של אמא.": {
+    "en": "From mom's kitchen.",
+    "es": "Desde la cocina de mamá.",
+    "pt-BR": "Da cozinha da mãe.",
+    "ar": "من مطبخ الأم."
+  },
+  "קולסלאו וליים.": {
+    "en": "Coleslaw and lime.",
+    "es": "Coleslaw y lima.",
+    "pt-BR": "Coleslaw e limão.",
+    "ar": "كولسلو وليم."
+  },
+  "התאוששות ספורט": {
+    "en": "Sports recovery",
+    "es": "Recuperación deportiva",
+    "pt-BR": "Recuperação esportiva",
+    "ar": "استشفاء رياضي"
+  },
+  "מארגנת אירועים": {
+    "en": "An event planner",
+    "es": "Organizadora de eventos",
+    "pt-BR": "Organizadora de eventos",
+    "ar": "منظّمة مناسبات"
+  },
+  "בלוק קר במרכז.": {
+    "en": "A cold block in the center.",
+    "es": "Un bloque frío en el centro.",
+    "pt-BR": "Um bloco frio no centro.",
+    "ar": "كتلة باردة في الوسط."
+  },
+  "האופה / המארחת": {
+    "en": "The baker / the host",
+    "es": "La panadera / la anfitriona",
+    "pt-BR": "A padeira / a anfitriã",
+    "ar": "الخبّازة / المضيفة"
+  },
+  "טארט פירות יער": {
+    "en": "A berry tart",
+    "es": "Una tarta de frutos del bosque",
+    "pt-BR": "Uma torta de frutas vermelhas",
+    "ar": "تارت توت"
+  },
+  "זיווגים חריפים": {
+    "en": "Spicy pairings",
+    "es": "Maridajes picantes",
+    "pt-BR": "Harmonizações picantes",
+    "ar": "تزاوجات حارّة"
+  },
+  "חום גבוה יציב.": {
+    "en": "High, steady heat.",
+    "es": "Calor alto y estable.",
+    "pt-BR": "Calor alto e estável.",
+    "ar": "حرارة عالية ثابتة."
+  },
+  "צ׳ילי גוואחילו": {
+    "en": "Guajillo chili",
+    "es": "Chile guajillo",
+    "pt-BR": "Pimenta guajillo",
+    "ar": "فلفل غواخيو"
+  },
+  "ליל טאקוס פתוח": {
+    "en": "An open taco night",
+    "es": "Una noche de tacos abierta",
+    "pt-BR": "Uma noite de tacos aberta",
+    "ar": "ليلة تاكو مفتوحة"
+  },
+  "נטחנת כל בוקר.": {
+    "en": "Ground every morning.",
+    "es": "Molida cada mañana.",
+    "pt-BR": "Moída toda manhã.",
+    "ar": "تُطحن كل صباح."
+  },
+  "צ׳וריסו וביצה.": {
+    "en": "Chorizo and egg.",
+    "es": "Chorizo y huevo.",
+    "pt-BR": "Chorizo e ovo.",
+    "ar": "تشوريزو وبيضة."
+  },
+  "עבודה מדהימה!": {
+    "en": "Amazing work!",
+    "es": "¡Trabajo increíble!",
+    "pt-BR": "Trabalho incrível!",
+    "ar": "عمل مذهل!"
+  },
+  "פנטהאוז מעוצב": {
+    "en": "A designed penthouse",
+    "es": "Un ático diseñado",
+    "pt-BR": "Uma cobertura desenhada",
+    "ar": "بنتهاوس مصمّم"
+  },
+  "קרוב לבתי ספר": {
+    "en": "Close to schools",
+    "es": "Cerca de colegios",
+    "pt-BR": "Perto de escolas",
+    "ar": "قريب من مدارس"
+  },
+  "פתחו את הדרופ": {
+    "en": "Open the drop",
+    "es": "Abran el drop",
+    "pt-BR": "Abram o drop",
+    "ar": "افتحوا الدروب"
+  },
+  "בעלים של חברה": {
+    "en": "A company owner",
+    "es": "Dueña de una empresa",
+    "pt-BR": "Dona de uma empresa",
+    "ar": "مالكة شركة"
+  },
+  "תספורת ועיצוב": {
+    "en": "Haircut and styling",
+    "es": "Corte y peinado",
+    "pt-BR": "Corte e penteado",
+    "ar": "قصة وتصفيف"
+  },
+  "לקוחות מרוצות": {
+    "en": "Satisfied clients",
+    "es": "Clientas satisfechas",
+    "pt-BR": "Clientes satisfeitas",
+    "ar": "عميلات راضيات"
+  },
+  "קרם לחות עשיר": {
+    "en": "A rich moisturizer",
+    "es": "Una crema hidratante rica",
+    "pt-BR": "Um hidratante rico",
+    "ar": "كريم ترطيب غني"
+  },
+  "סיכומי מומחים": {
+    "en": "Expert summaries",
+    "es": "Resúmenes de expertos",
+    "pt-BR": "Resumos de especialistas",
+    "ar": "ملخصات خبراء"
+  },
+  "מניקור טיפולי": {
+    "en": "A treatment manicure",
+    "es": "Una manicura terapéutica",
+    "pt-BR": "Uma manicure terapêutica",
+    "ar": "مانيكير علاجي"
+  },
+  "לקוחות אומרים": {
+    "en": "Clients say",
+    "es": "Los clientes dicen",
+    "pt-BR": "Os clientes dizem",
+    "ar": "العملاء يقولون"
+  },
+  "שלחו בריף קצר": {
+    "en": "Send a short brief",
+    "es": "Envíen un brief corto",
+    "pt-BR": "Enviem um brief curto",
+    "ar": "أرسلوا موجزًا قصيرًا"
+  },
+  "חשבונית ירוקה": {
+    "en": "A green invoice",
+    "es": "Una factura verde",
+    "pt-BR": "Uma nota fiscal verde",
+    "ar": "فاتورة خضراء"
+  },
+  "חללים מסחריים": {
+    "en": "Commercial spaces",
+    "es": "Espacios comerciales",
+    "pt-BR": "Espaços comerciais",
+    "ar": "فراغات تجارية"
+  },
+  "קליניקה פרטית": {
+    "en": "A private clinic",
+    "es": "Una clínica privada",
+    "pt-BR": "Uma clínica particular",
+    "ar": "عيادة خاصة"
+  },
+  "מורות הסטודיו": {
+    "en": "The studio teachers",
+    "es": "Las maestras del estudio",
+    "pt-BR": "As professoras do estúdio",
+    "ar": "معلمات الاستوديو"
+  },
+  "גרומרית בכירה": {
+    "en": "A senior groomer",
+    "es": "Una groomer sénior",
+    "pt-BR": "Uma groomer sênior",
+    "ar": "مصففة حيوانات أولى"
+  },
+  "מעון יום קבוע": {
+    "en": "A regular daycare",
+    "es": "Una guardería fija",
+    "pt-BR": "Uma creche fixa",
+    "ar": "حضانة ثابتة"
+  },
+  "ימי קלייה ובר": {
+    "en": "Roast days and a bar",
+    "es": "Días de tueste y barra",
+    "pt-BR": "Dias de torra e bar",
+    "ar": "أيام تحميص وبار"
+  },
+  "פוליש חד שלבי": {
+    "en": "A one-step polish",
+    "es": "Un polish de un paso",
+    "pt-BR": "Um polish de um passo",
+    "ar": "تلميع بخطوة واحدة"
+  },
+  "דקות עד תובנה": {
+    "en": "Minutes to insight",
+    "es": "Minutos hasta un insight",
+    "pt-BR": "Minutos até um insight",
+    "ar": "دقائق حتى رؤية"
+  },
+  "משגרים סוכנים": {
+    "en": "Launching agents",
+    "es": "Lanzan agentes",
+    "pt-BR": "Lançam agentes",
+    "ar": "يطلقون وكلاء"
+  },
+  "אבטחה ותאימות": {
+    "en": "Security and compliance",
+    "es": "Seguridad y cumplimiento",
+    "pt-BR": "Segurança e conformidade",
+    "ar": "أمن وامتثال"
+  },
+  "ייעוד וזכויות": {
+    "en": "Zoning and rights",
+    "es": "Uso y derechos",
+    "pt-BR": "Zoneamento e direitos",
+    "ar": "تخصيص وحقوق"
+  },
+  "תנועה ותשתיות": {
+    "en": "Traffic and infrastructure",
+    "es": "Tráfico e infraestructuras",
+    "pt-BR": "Tráfego e infraestrutura",
+    "ar": "حركة وبنى تحتية"
+  },
+  "בקשת סקר קרקע": {
+    "en": "A land-survey request",
+    "es": "Una solicitud de estudio de suelo",
+    "pt-BR": "Um pedido de levantamento de solo",
+    "ar": "طلب مسح أرض"
+  },
+  "טרקלין דיירים": {
+    "en": "A residents' lounge",
+    "es": "Un salón de residentes",
+    "pt-BR": "Um lounge de moradores",
+    "ar": "صالة سكان"
+  },
+  "בקרוב על הבמה": {
+    "en": "Coming soon on stage",
+    "es": "Pronto en el escenario",
+    "pt-BR": "Em breve no palco",
+    "ar": "قريبًا على المنصة"
+  },
+  "אלקטרו אקוסטי": {
+    "en": "Electro-acoustic",
+    "es": "Electroacústico",
+    "pt-BR": "Eletroacústico",
+    "ar": "كهرصوتي"
+  },
+  "יישוב סכסוכים": {
+    "en": "Dispute resolution",
+    "es": "Resolución de conflictos",
+    "pt-BR": "Resolução de conflitos",
+    "ar": "تسوية نزاعات"
+  },
+  "טיפול ללא כאב": {
+    "en": "Pain-free treatment",
+    "es": "Tratamiento sin dolor",
+    "pt-BR": "Tratamento sem dor",
+    "ar": "علاج بلا ألم"
+  },
+  "מחירים שקופים": {
+    "en": "Transparent prices",
+    "es": "Precios transparentes",
+    "pt-BR": "Preços transparentes",
+    "ar": "أسعار شفافة"
+  },
+  "לוגיקת חזיתות": {
+    "en": "Facade logic",
+    "es": "Lógica de fachadas",
+    "pt-BR": "Lógica de fachadas",
+    "ar": "منطق واجهات"
+  },
+  "תוכניות נבדקו": {
+    "en": "Plans reviewed",
+    "es": "Planos revisados",
+    "pt-BR": "Plantas revisadas",
+    "ar": "خطط رُوجعت"
+  },
+  "נכסים באינדקס": {
+    "en": "Indexed assets",
+    "es": "Activos en el índice",
+    "pt-BR": "Ativos no índice",
+    "ar": "أصول في الفهرس"
+  },
+  "מוכנים לחתום?": {
+    "en": "Ready to sign?",
+    "es": "¿Listos para firmar?",
+    "pt-BR": "Prontos para assinar?",
+    "ar": "مستعدون للتوقيع؟"
+  },
+  "עסקאות חתומות": {
+    "en": "Signed deals",
+    "es": "Operaciones firmadas",
+    "pt-BR": "Negócios assinados",
+    "ar": "صفقات موقّعة"
+  },
+  "זווית ייחודית": {
+    "en": "A unique angle",
+    "es": "Un ángulo único",
+    "pt-BR": "Um ângulo único",
+    "ar": "زاوية فريدة"
+  },
+  "משפחה ובריאות": {
+    "en": "Family and health",
+    "es": "Familia y salud",
+    "pt-BR": "Família e saúde",
+    "ar": "أسرة وصحة"
+  },
+  "פיץ' קצר יותר": {
+    "en": "A shorter pitch",
+    "es": "Un pitch más corto",
+    "pt-BR": "Um pitch mais curto",
+    "ar": "عرض أقصر"
+  },
+  "חומרים עקביים": {
+    "en": "Consistent materials",
+    "es": "Materiales coherentes",
+    "pt-BR": "Materiais consistentes",
+    "ar": "مواد متسقة"
+  },
+  "עד גרסה מוכנה": {
+    "en": "Until a ready version",
+    "es": "Hasta una versión lista",
+    "pt-BR": "Até uma versão pronta",
+    "ar": "حتى نسخة جاهزة"
+  },
+  "זיהוי פורמטים": {
+    "en": "Identifying formats",
+    "es": "Identificar formatos",
+    "pt-BR": "Identificar formatos",
+    "ar": "تحديد صيغ"
+  },
+  "קהילות פעילות": {
+    "en": "Active communities",
+    "es": "Comunidades activas",
+    "pt-BR": "Comunidades ativas",
+    "ar": "مجتمعات نشطة"
+  },
+  "בריף שלא חונק": {
+    "en": "A brief that does not choke",
+    "es": "Un brief que no ahoga",
+    "pt-BR": "Um brief que não sufoca",
+    "ar": "موجز لا يخنق"
+  },
+  "יוצרים ממופים": {
+    "en": "Mapped creators",
+    "es": "Creadores mapeados",
+    "pt-BR": "Criadores mapeados",
+    "ar": "صنّاع مرسومون"
+  },
+  "הכנסה משותפים": {
+    "en": "Partner income",
+    "es": "Ingresos de socios",
+    "pt-BR": "Receita de parceiros",
+    "ar": "دخل شركاء"
+  },
+  "ויירפריים טוב": {
+    "en": "A good wireframe",
+    "es": "Un wireframe bueno",
+    "pt-BR": "Um wireframe bom",
+    "ar": "إطار سلكي جيد"
+  },
+  "בדיקות שמישות": {
+    "en": "Usability tests",
+    "es": "Pruebas de usabilidad",
+    "pt-BR": "Testes de usabilidade",
+    "ar": "اختبارات قابلية استخدام"
+  },
+  "סרט מותג מלא.": {
+    "en": "A full brand film.",
+    "es": "Un filme de marca completo.",
+    "pt-BR": "Um filme de marca completo.",
+    "ar": "فيلم علامة كامل."
+  },
+  "מומחיות נשמעת": {
+    "en": "Expertise you can hear",
+    "es": "Experiencia que se oye",
+    "pt-BR": "Perícia que se ouve",
+    "ar": "خبرة تُسمع"
+  },
+  "נכסים מתמשכים": {
+    "en": "Ongoing assets",
+    "es": "Activos continuos",
+    "pt-BR": "Ativos contínuos",
+    "ar": "أصول مستمرة"
+  },
+  "תקשורת פנימית": {
+    "en": "Internal communications",
+    "es": "Comunicación interna",
+    "pt-BR": "Comunicação interna",
+    "ar": "تواصل داخلي"
+  },
+  "קואליציה רחבה": {
+    "en": "A broad coalition",
+    "es": "Una coalición amplia",
+    "pt-BR": "Uma coalizão ampla",
+    "ar": "تحالف واسع"
+  },
+  "מהלכי מדיניות": {
+    "en": "Policy moves",
+    "es": "Movimientos de política",
+    "pt-BR": "Movimentos de política",
+    "ar": "خطوات سياسة"
+  },
+  "תחומי רגולציה": {
+    "en": "Regulation domains",
+    "es": "Ámbitos de regulación",
+    "pt-BR": "Áreas de regulação",
+    "ar": "مجالات تنظيم"
+  },
+  "סניפים תוכננו": {
+    "en": "Branches were planned",
+    "es": "Sucursales planificadas",
+    "pt-BR": "Filiais planejadas",
+    "ar": "فروع خُطّطت"
+  },
+  "עד סניף ראשון": {
+    "en": "Until the first branch",
+    "es": "Hasta la primera sucursal",
+    "pt-BR": "Até a primeira filial",
+    "ar": "حتى الفرع الأول"
+  },
+  "שיחה עם הירקן": {
+    "en": "A talk with the greengrocer",
+    "es": "Una charla con el verdulero",
+    "pt-BR": "Uma conversa com o verdureiro",
+    "ar": "حديث مع بائع الخضار"
+  },
+  "סלט עלים מיקס": {
+    "en": "A mixed greens salad",
+    "es": "Una ensalada de hojas mixtas",
+    "pt-BR": "Uma salada de folhas mistas",
+    "ar": "سلطة أوراق مشكلة"
+  },
+  "תמיכה של מאמן": {
+    "en": "A coach's support",
+    "es": "Apoyo de un entrenador",
+    "pt-BR": "Apoio de um treinador",
+    "ar": "دعم مدرّب"
+  },
+  "הורים עם מענה": {
+    "en": "Parents with an answer",
+    "es": "Padres con respuesta",
+    "pt-BR": "Pais com resposta",
+    "ar": "أهل مع رد"
+  },
+  "חנות כמו כתבה": {
+    "en": "A store like an article",
+    "es": "Una tienda como un artículo",
+    "pt-BR": "Uma loja como uma matéria",
+    "ar": "متجر مثل مقال"
+  },
+  "סל בלי נביחות": {
+    "en": "A cart without barking",
+    "es": "Un carrito sin ladridos",
+    "pt-BR": "Um carrinho sem latidos",
+    "ar": "سلة بلا نباح"
+  },
+  "אנשים של חיות": {
+    "en": "People of animals",
+    "es": "Gente de animales",
+    "pt-BR": "Gente de animais",
+    "ar": "ناس الحيوانات"
+  },
+  "סילבוס ממוספר": {
+    "en": "A numbered syllabus",
+    "es": "Un temario numerado",
+    "pt-BR": "Um currículo numerado",
+    "ar": "منهج مرقّم"
+  },
+  "המנחים על הסט": {
+    "en": "The hosts on set",
+    "es": "Los presentadores en el set",
+    "pt-BR": "Os apresentadores no set",
+    "ar": "المقدّمون على الست"
+  },
+  "בימוי דיגיטלי": {
+    "en": "Digital direction",
+    "es": "Dirección digital",
+    "pt-BR": "Direção digital",
+    "ar": "إخراج رقمي"
+  },
+  "המנטורים שלנו": {
+    "en": "Our mentors",
+    "es": "Nuestros mentores",
+    "pt-BR": "Nossos mentores",
+    "ar": "مرشدونا"
+  },
+  "לקביעת אודישן": {
+    "en": "To book an audition",
+    "es": "Para concertar un casting",
+    "pt-BR": "Para marcar um teste",
+    "ar": "لحجز تجربة أداء"
+  },
+  "רגעים שמקפצים": {
+    "en": "Moments that bounce",
+    "es": "Momentos que saltan",
+    "pt-BR": "Momentos que pulam",
+    "ar": "لحظات تقفز"
+  },
+  "פתקים מהשולחן": {
+    "en": "Notes from the table",
+    "es": "Notas de la mesa",
+    "pt-BR": "Bilhetes da mesa",
+    "ar": "قصاصات من الطاولة"
+  },
+  "לוחות כישורים": {
+    "en": "Skill boards",
+    "es": "Tableros de habilidades",
+    "pt-BR": "Quadros de habilidades",
+    "ar": "لوحات مهارات"
+  },
+  "דאטה להחלטות.": {
+    "en": "Data for decisions.",
+    "es": "Datos para decisiones.",
+    "pt-BR": "Dados para decisões.",
+    "ar": "بيانات للقرارات."
+  },
+  "תוצאות מהסדנה": {
+    "en": "Results from the workshop",
+    "es": "Resultados del taller",
+    "pt-BR": "Resultados da oficina",
+    "ar": "نتائج من الورشة"
+  },
+  "ציטוטים מגזין": {
+    "en": "Magazine quotes",
+    "es": "Citas de revista",
+    "pt-BR": "Citações de revista",
+    "ar": "اقتباسات مجلة"
+  },
+  "אנגלית אקדמית": {
+    "en": "Academic English",
+    "es": "Inglés académico",
+    "pt-BR": "Inglês acadêmico",
+    "ar": "إنجليزية أكاديمية"
+  },
+  "ספריית הקמפוס": {
+    "en": "The campus library",
+    "es": "La biblioteca del campus",
+    "pt-BR": "A biblioteca do campus",
+    "ar": "مكتبة الحرم"
+  },
+  "קבוצה מצומצמת": {
+    "en": "A small group",
+    "es": "Un grupo reducido",
+    "pt-BR": "Um grupo reduzido",
+    "ar": "مجموعة محدودة"
+  },
+  "נולדנו מהפחם.": {
+    "en": "We were born from coal.",
+    "es": "Nacimos del carbón.",
+    "pt-BR": "Nascemos do carvão.",
+    "ar": "وُلدنا من الفحم."
+  },
+  "כנפיים חריפות": {
+    "en": "Spicy wings",
+    "es": "Alitas picantes",
+    "pt-BR": "Asinhas picantes",
+    "ar": "أجنحة حارّة"
+  },
+  "ספייסי טאנטאן": {
+    "en": "Spicy tantan",
+    "es": "Tantan picante",
+    "pt-BR": "Tantan picante",
+    "ar": "تانتان حار"
+  },
+  "בואו נשב יחד?": {
+    "en": "Shall we sit together?",
+    "es": "¿Nos sentamos juntos?",
+    "pt-BR": "Vamos sentar juntos?",
+    "ar": "هل نجلس معًا؟"
+  },
+  "לביבות זוקיני": {
+    "en": "Zucchini fritters",
+    "es": "Buñuelos de calabacín",
+    "pt-BR": "Bolinhos de abobrinha",
+    "ar": "عجين كوسا"
+  },
+  "מושב בבר השף?": {
+    "en": "A seat at the chef's bar?",
+    "es": "¿Un asiento en la barra del chef?",
+    "pt-BR": "Um lugar no bar do chef?",
+    "ar": "مقعد في بار الشيف؟"
+  },
+  "הבר שלא נגמר.": {
+    "en": "The bar that does not end.",
+    "es": "La barra que no termina.",
+    "pt-BR": "O bar que não acaba.",
+    "ar": "البار الذي لا ينتهي."
+  },
+  "למינציית גבות": {
+    "en": "Brow lamination",
+    "es": "Laminado de cejas",
+    "pt-BR": "Laminação de sobrancelhas",
+    "ar": "تصفيح حواجب"
+  },
+  "אייליינר עדין": {
+    "en": "A soft eyeliner",
+    "es": "Un eyeliner suave",
+    "pt-BR": "Um delineador suave",
+    "ar": "آيلاينر لطيف"
+  },
+  "שמרים וטארטים": {
+    "en": "Yeast and tarts",
+    "es": "Levadura y tartas",
+    "pt-BR": "Fermento e tortas",
+    "ar": "خميرة وتارت"
+  },
+  "שלושה טורנים.": {
+    "en": "Three tournedos.",
+    "es": "Tres tornedós.",
+    "pt-BR": "Três tournedos.",
+    "ar": "ثلاثة تورنيدو."
+  },
+  "גמישות לשכבות": {
+    "en": "Flexibility for layers",
+    "es": "Flexibilidad para capas",
+    "pt-BR": "Flexibilidade para camadas",
+    "ar": "مرونة للطبقات"
+  },
+  "הדלקת הפלנצ׳ה": {
+    "en": "Lighting the plancha",
+    "es": "Encender la plancha",
+    "pt-BR": "Acender a plancha",
+    "ar": "إشعال البلانشا"
+  },
+  "חימום טורטייה": {
+    "en": "Warming a tortilla",
+    "es": "Calentar una tortilla",
+    "pt-BR": "Aquecer uma tortilha",
+    "ar": "تسخين تورتيلا"
+  },
+  "ירוק כלורופיל": {
+    "en": "Chlorophyll green",
+    "es": "Verde clorofila",
+    "pt-BR": "Verde clorofila",
+    "ar": "أخضر كلوروفيل"
+  },
+  "לימונדה ורודה": {
+    "en": "Pink lemonade",
+    "es": "Limonada rosa",
+    "pt-BR": "Limonada rosa",
+    "ar": "ليموناضة وردية"
+  },
+  "וילה אורבנית": {
+    "en": "An urban villa",
+    "es": "Una villa urbana",
+    "pt-BR": "Uma villa urbana",
+    "ar": "فيلا حضرية"
+  },
+  "ייצוג וליווי": {
+    "en": "Representation and support",
+    "es": "Representación y acompañamiento",
+    "pt-BR": "Representação e acompanhamento",
+    "ar": "تمثيل ومرافقة"
+  },
+  "מומחיות יופי": {
+    "en": "Beauty expertise",
+    "es": "Pericia de belleza",
+    "pt-BR": "Perícia de beleza",
+    "ar": "خبرة جمال"
+  },
+  "זמן ספא רגוע": {
+    "en": "A calm spa hour",
+    "es": "Un tiempo de spa tranquilo",
+    "pt-BR": "Um tempo de spa calmo",
+    "ar": "وقت سبا هادئ"
+  },
+  "בורקטה תאנים": {
+    "en": "Fig bruschetta",
+    "es": "Bruschetta de higos",
+    "pt-BR": "Bruschetta de figos",
+    "ar": "بروسكيتا تين"
+  },
+  "לתיאום הדגמה": {
+    "en": "To schedule a demo",
+    "es": "Para coordinar una demo",
+    "pt-BR": "Para agendar uma demo",
+    "ar": "لتنسيق عرض"
+  },
+  "מודל רווחיות": {
+    "en": "A profitability model",
+    "es": "Un modelo de rentabilidad",
+    "pt-BR": "Um modelo de rentabilidade",
+    "ar": "نموذج ربحية"
+  },
+  "אבחון מנהלים": {
+    "en": "An executive diagnosis",
+    "es": "Un diagnóstico de directivos",
+    "pt-BR": "Um diagnóstico de gestores",
+    "ar": "تشخيص مديرين"
+  },
+  "בחירת מנופים": {
+    "en": "Choosing levers",
+    "es": "Elegir palancas",
+    "pt-BR": "Escolher alavancas",
+    "ar": "اختيار روافع"
+  },
+  "ספרינט ביצוע": {
+    "en": "An execution sprint",
+    "es": "Un sprint de ejecución",
+    "pt-BR": "Um sprint de execução",
+    "ar": "سبرنت تنفيذ"
+  },
+  "הטמעה בהנהלה": {
+    "en": "Embedding in leadership",
+    "es": "Implantar en la dirección",
+    "pt-BR": "Implantar na direção",
+    "ar": "تثبيت في الإدارة"
+  },
+  "מנהלת מכירות": {
+    "en": "A sales manager",
+    "es": "Una jefa de ventas",
+    "pt-BR": "Uma gestora de vendas",
+    "ar": "مديرة مبيعات"
+  },
+  "מייסון גלריה": {
+    "en": "A gallery maison",
+    "es": "Una maison galería",
+    "pt-BR": "Uma maison galeria",
+    "ar": "ميزون غاليري"
+  },
+  "שירותים רצים": {
+    "en": "Services that run",
+    "es": "Servicios que corren",
+    "pt-BR": "Serviços que rodam",
+    "ar": "خدمات تعمل"
+  },
+  "כוח + אירובי": {
+    "en": "Strength + cardio",
+    "es": "Fuerza + cardio",
+    "pt-BR": "Força + cardio",
+    "ar": "قوة + هوائي"
+  },
+  "לא ויתרו לי.": {
+    "en": "They did not give up on me.",
+    "es": "No se rindieron conmigo.",
+    "pt-BR": "Não desistiram de mim.",
+    "ar": "لم يتخلّوا عني."
+  },
+  "הלבשה ומסירה": {
+    "en": "Dressing and handover",
+    "es": "Vestimenta y entrega",
+    "pt-BR": "Vestuário e entrega",
+    "ar": "كسوة وتسليم"
+  },
+  "פגישה ראשונה": {
+    "en": "A first meeting",
+    "es": "Una primera reunión",
+    "pt-BR": "Uma primeira reunião",
+    "ar": "اجتماع أول"
+  },
+  "ספקים נכונים": {
+    "en": "The right vendors",
+    "es": "Proveedores correctos",
+    "pt-BR": "Fornecedores certos",
+    "ar": "مورّدون مناسبون"
+  },
+  "זוגות מספרים": {
+    "en": "Couples tell it",
+    "es": "Las parejas lo cuentan",
+    "pt-BR": "Casais contam",
+    "ar": "أزواج يروون"
+  },
+  "1:1 / הרכבים": {
+    "en": "1:1 / ensembles",
+    "es": "1:1 / formaciones",
+    "pt-BR": "1:1 / formações",
+    "ar": "1:1 / تشكيلات"
+  },
+  "אולפן בפעולה": {
+    "en": "A studio in action",
+    "es": "Un estudio en acción",
+    "pt-BR": "Um estúdio em ação",
+    "ar": "استوديو يعمل"
+  },
+  "1:1 או קבוצה": {
+    "en": "1:1 or a group",
+    "es": "1:1 o grupo",
+    "pt-BR": "1:1 ou grupo",
+    "ar": "1:1 أو مجموعة"
+  },
+  "בית חצר נסתר": {
+    "en": "A hidden courtyard house",
+    "es": "Una casa patio oculta",
+    "pt-BR": "Uma casa pátio escondida",
+    "ar": "بيت فناء مخفي"
+  },
+  "גלו את המלון": {
+    "en": "Discover the hotel",
+    "es": "Descubran el hotel",
+    "pt-BR": "Descubram o hotel",
+    "ar": "اكتشفوا الفندق"
+  },
+  "רביעיית לילה": {
+    "en": "A night quartet",
+    "es": "Un cuarteto nocturno",
+    "pt-BR": "Um quarteto noturno",
+    "ar": "رباعية ليل"
+  },
+  "שינוי ארגוני": {
+    "en": "Organizational change",
+    "es": "Cambio organizativo",
+    "pt-BR": "Mudança organizacional",
+    "ar": "تغيير تنظيمي"
+  },
+  "בונגלו שקיעה": {
+    "en": "A sunset bungalow",
+    "es": "Un bungaló de atardecer",
+    "pt-BR": "Um bangalô de pôr do sol",
+    "ar": "بنغل غروب"
+  },
+  "ערב על החול?": {
+    "en": "An evening on the sand?",
+    "es": "¿Una noche sobre la arena?",
+    "pt-BR": "Uma noite na areia?",
+    "ar": "مساء على الرمل؟"
+  },
+  "לשניים · יין": {
+    "en": "For two · wine",
+    "es": "Para dos · vino",
+    "pt-BR": "Para dois · vinho",
+    "ar": "لاثنين · نبيذ"
+  },
+  "מוכנים לצלם?": {
+    "en": "Ready to shoot?",
+    "es": "¿Listos para fotografiar?",
+    "pt-BR": "Prontos para fotografar?",
+    "ar": "مستعدون للتصوير؟"
+  },
+  "דירת 3 פתוחה": {
+    "en": "An open 3-room apartment",
+    "es": "Un piso de 3 abierto",
+    "pt-BR": "Um apto de 3 aberto",
+    "ar": "شقة 3 غرف مفتوحة"
+  },
+  "נקודת המפגש.": {
+    "en": "The meeting point.",
+    "es": "El punto de encuentro.",
+    "pt-BR": "O ponto de encontro.",
+    "ar": "نقطة اللقاء."
+  },
+  "עלייה בלידים": {
+    "en": "A rise in leads",
+    "es": "Subida de leads",
+    "pt-BR": "Alta em leads",
+    "ar": "ارتفاع في العملاء المحتملين"
+  },
+  "ניהול תביעות": {
+    "en": "Claims management",
+    "es": "Gestión de reclamaciones",
+    "pt-BR": "Gestão de sinistros",
+    "ar": "إدارة مطالبات"
+  },
+  "יועצת משפחות": {
+    "en": "A family advisor",
+    "es": "Asesora de familias",
+    "pt-BR": "Consultora de famílias",
+    "ar": "مستشارة عائلات"
+  },
+  "משפחות מלוות": {
+    "en": "Families we support",
+    "es": "Familias acompañadas",
+    "pt-BR": "Famílias acompanhadas",
+    "ar": "عائلات مرافَقة"
+  },
+  "חברות פעילות": {
+    "en": "Active companies",
+    "es": "Empresas activas",
+    "pt-BR": "Empresas ativas",
+    "ar": "شركات نشطة"
+  },
+  "חיסכון ממוצע": {
+    "en": "Average savings",
+    "es": "Ahorro medio",
+    "pt-BR": "Economia média",
+    "ar": "توفير متوسط"
+  },
+  "צמצום עלויות": {
+    "en": "Cost reduction",
+    "es": "Reducción de costes",
+    "pt-BR": "Redução de custos",
+    "ar": "خفض تكاليف"
+  },
+  "נוכחות עקבית": {
+    "en": "Consistent presence",
+    "es": "Presencia constante",
+    "pt-BR": "Presença consistente",
+    "ar": "حضور ثابت"
+  },
+  "לא רק עוקבים": {
+    "en": "Not only followers",
+    "es": "No solo seguidores",
+    "pt-BR": "Não só seguidores",
+    "ar": "ليس المتابعين فقط"
+  },
+  "מדידה מסחרית": {
+    "en": "Commercial measurement",
+    "es": "Medición comercial",
+    "pt-BR": "Medição comercial",
+    "ar": "قياس تجاري"
+  },
+  "זכויות שימוש": {
+    "en": "Usage rights",
+    "es": "Derechos de uso",
+    "pt-BR": "Direitos de uso",
+    "ar": "حقوق استخدام"
+  },
+  "למה נפח מטעה": {
+    "en": "Why volume misleads",
+    "es": "Por qué el volumen engaña",
+    "pt-BR": "Por que o volume engana",
+    "ar": "لماذا الحجم يضلل"
+  },
+  "אשכולות תוכן": {
+    "en": "Content clusters",
+    "es": "Clústeres de contenido",
+    "pt-BR": "Clusters de conteúdo",
+    "ar": "عناقيد محتوى"
+  },
+  "עריכה אמיתית": {
+    "en": "Real editing",
+    "es": "Edición de verdad",
+    "pt-BR": "Edição de verdade",
+    "ar": "تحرير حقيقي"
+  },
+  "השקה מתוזמנת": {
+    "en": "A timed launch",
+    "es": "Un lanzamiento programado",
+    "pt-BR": "Um lançamento programado",
+    "ar": "إطلاق موقوت"
+  },
+  "שקיפות הנחות": {
+    "en": "Discount transparency",
+    "es": "Transparencia de descuentos",
+    "pt-BR": "Transparência de descontos",
+    "ar": "شفافية خصومات"
+  },
+  "מסכים שעוצבו": {
+    "en": "Screens that were designed",
+    "es": "Pantallas diseñadas",
+    "pt-BR": "Telas desenhadas",
+    "ar": "شاشات صُمّمت"
+  },
+  "ירידה בנטישה": {
+    "en": "A drop in churn",
+    "es": "Bajada de abandono",
+    "pt-BR": "Queda no churn",
+    "ar": "انخفاض في التخلّي"
+  },
+  "קהילה מקשיבה": {
+    "en": "A listening community",
+    "es": "Una comunidad que escucha",
+    "pt-BR": "Uma comunidade que escuta",
+    "ar": "مجتمع يستمع"
+  },
+  "דובר תחת לחץ": {
+    "en": "A speaker under pressure",
+    "es": "Un portavoz bajo presión",
+    "pt-BR": "Um porta-voz sob pressão",
+    "ar": "متحدث تحت ضغط"
+  },
+  "משברים נוהלו": {
+    "en": "Crises were managed",
+    "es": "Crisis gestionadas",
+    "pt-BR": "Crises geridas",
+    "ar": "أزمات أُديرت"
+  },
+  "דוברים אומנו": {
+    "en": "Spokespeople were trained",
+    "es": "Portavoces formados",
+    "pt-BR": "Porta-vozes treinados",
+    "ar": "متحدثون دُرّبوا"
+  },
+  "השפעה אחראית": {
+    "en": "Responsible influence",
+    "es": "Influencia responsable",
+    "pt-BR": "Influência responsável",
+    "ar": "تأثير مسؤول"
+  },
+  "בדיקת תאימות": {
+    "en": "A compliance check",
+    "es": "Una revisión de cumplimiento",
+    "pt-BR": "Uma verificação de conformidade",
+    "ar": "فحص امتثال"
+  },
+  "טחינה גולמית": {
+    "en": "Raw tahini",
+    "es": "Tahini cruda",
+    "pt-BR": "Tahine crua",
+    "ar": "طحينة نيئة"
+  },
+  "משקולות 2×10": {
+    "en": "2×10 weights",
+    "es": "Pesas 2×10",
+    "pt-BR": "Pesos 2×10",
+    "ar": "أوزان 2×10"
+  },
+  "אוברול כותנה": {
+    "en": "A cotton overall",
+    "es": "Un overol de algodón",
+    "pt-BR": "Um macacão de algodão",
+    "ar": "أفرول قطن"
+  },
+  "להקות מוצרים": {
+    "en": "Product bands",
+    "es": "Bandas de productos",
+    "pt-BR": "Faixas de produtos",
+    "ar": "أشرطة منتجات"
+  },
+  "קערת נירוסטה": {
+    "en": "A stainless bowl",
+    "es": "Un bol de acero",
+    "pt-BR": "Uma tigela de inox",
+    "ar": "وعاء ستانلس"
+  },
+  "אוצרות קריאה": {
+    "en": "Reading treasures",
+    "es": "Tesoros de lectura",
+    "pt-BR": "Tesouros de leitura",
+    "ar": "كنوز قراءة"
+  },
+  "תהליך ממוספר": {
+    "en": "A numbered process",
+    "es": "Un proceso numerado",
+    "pt-BR": "Um processo numerado",
+    "ar": "مسار مرقّم"
+  },
+  "פטיש טיטניום": {
+    "en": "A titanium hammer",
+    "es": "Un martillo de titanio",
+    "pt-BR": "Um martelo de titânio",
+    "ar": "مطرقة تيتانيوم"
+  },
+  "שמירה על ברק": {
+    "en": "Keeping the shine",
+    "es": "Mantener el brillo",
+    "pt-BR": "Manter o brilho",
+    "ar": "الحفاظ على اللمعان"
+  },
+  "מסחר אונליין": {
+    "en": "Online commerce",
+    "es": "Comercio online",
+    "pt-BR": "Comércio online",
+    "ar": "تجارة عبر الإنترنت"
+  },
+  "מנטורים חיים": {
+    "en": "Live mentors",
+    "es": "Mentores en vivo",
+    "pt-BR": "Mentores ao vivo",
+    "ar": "مرشدون أحياء"
+  },
+  "מנטים מספרים": {
+    "en": "Mentees tell it",
+    "es": "Mentees lo cuentan",
+    "pt-BR": "Mentorados contam",
+    "ar": "متدرّبون يروون"
+  },
+  "ספרדית לטיול": {
+    "en": "Spanish for travel",
+    "es": "Español para viajar",
+    "pt-BR": "Espanhol para viagem",
+    "ar": "إسبانية للسفر"
+  },
+  "פורטפוליו חי": {
+    "en": "A living portfolio",
+    "es": "Un portafolio vivo",
+    "pt-BR": "Um portfólio vivo",
+    "ar": "محفظة حيّة"
+  },
+  "תווים ומסלול": {
+    "en": "Notes and a track",
+    "es": "Notas y un itinerario",
+    "pt-BR": "Notas e um percurso",
+    "ar": "نغمات ومسار"
+  },
+  "שאלות בתווים": {
+    "en": "Questions in notes",
+    "es": "Preguntas en notas",
+    "pt-BR": "Perguntas em notas",
+    "ar": "أسئلة بالنغمات"
+  },
+  "גיטרה חשמלית": {
+    "en": "An electric guitar",
+    "es": "Una guitarra eléctrica",
+    "pt-BR": "Uma guitarra elétrica",
+    "ar": "غيتار كهربائي"
+  },
+  "שיעור שמוקלט": {
+    "en": "A recorded lesson",
+    "es": "Una clase grabada",
+    "pt-BR": "Uma aula gravada",
+    "ar": "درس مسجّل"
+  },
+  "הרכבים קטנים": {
+    "en": "Small ensembles",
+    "es": "Formaciones pequeñas",
+    "pt-BR": "Formações pequenas",
+    "ar": "تشكيلات صغيرة"
+  },
+  "הורים מספרים": {
+    "en": "Parents tell it",
+    "es": "Los padres lo cuentan",
+    "pt-BR": "Os pais contam",
+    "ar": "الأهل يروون"
+  },
+  "עדכון להורים": {
+    "en": "An update for parents",
+    "es": "Una actualización para padres",
+    "pt-BR": "Uma atualização para os pais",
+    "ar": "تحديث للأهل"
+  },
+  "פתקים להורים": {
+    "en": "Notes for parents",
+    "es": "Notas para padres",
+    "pt-BR": "Bilhetes para os pais",
+    "ar": "قصاصات للأهل"
+  },
+  "שלבי האטלייה": {
+    "en": "Atelier stages",
+    "es": "Etapas del atelier",
+    "pt-BR": "Etapas do ateliê",
+    "ar": "مراحل المشغل"
+  },
+  "מחשלת יכולות": {
+    "en": "A forge of skills",
+    "es": "Una forja de capacidades",
+    "pt-BR": "Uma forja de habilidades",
+    "ar": "مَصهر قدرات"
+  },
+  "מאמנים מהשטח": {
+    "en": "Coaches from the field",
+    "es": "Entrenadores del terreno",
+    "pt-BR": "Treinadores do campo",
+    "ar": "مدربون من الميدان"
+  },
+  "טבלת מקצועות": {
+    "en": "A professions table",
+    "es": "Una tabla de oficios",
+    "pt-BR": "Uma tabela de ofícios",
+    "ar": "جدول مهن"
+  },
+  "שאלות הקמפוס": {
+    "en": "Campus questions",
+    "es": "Preguntas del campus",
+    "pt-BR": "Perguntas do campus",
+    "ar": "أسئلة الحرم"
+  },
+  "מרצים מנוסים": {
+    "en": "Experienced lecturers",
+    "es": "Profesores experimentados",
+    "pt-BR": "Professores experientes",
+    "ar": "محاضرون ذوو خبرة"
+  },
+  "פרוסות היום.": {
+    "en": "Today's slices.",
+    "es": "Las rebanadas de hoy.",
+    "pt-BR": "As fatias de hoje.",
+    "ar": "شرائح اليوم."
+  },
+  "שקשוקה ביתית": {
+    "en": "Homemade shakshuka",
+    "es": "Shakshuka casera",
+    "pt-BR": "Shakshuka caseira",
+    "ar": "شكشوكة بيتية"
+  },
+  "פטטס בראוואס": {
+    "en": "Patatas bravas",
+    "es": "Patatas bravas",
+    "pt-BR": "Patatas bravas",
+    "ar": "بطاطا برافا"
+  },
+  "גמבס אל אחיו": {
+    "en": "Gambas al ajillo",
+    "es": "Gambas al ajillo",
+    "pt-BR": "Gambas al ajillo",
+    "ar": "جمبري بالثوم"
+  },
+  "טקס פנים זהב": {
+    "en": "A gold facial ritual",
+    "es": "Un ritual facial de oro",
+    "pt-BR": "Um ritual facial de ouro",
+    "ar": "طقس وجه ذهب"
+  },
+  "טיפול חומצות": {
+    "en": "An acids treatment",
+    "es": "Un tratamiento de ácidos",
+    "pt-BR": "Um tratamento de ácidos",
+    "ar": "علاج أحماض"
+  },
+  "מילוי אנטומי": {
+    "en": "Anatomical filling",
+    "es": "Relleno anatómico",
+    "pt-BR": "Preenchimento anatômico",
+    "ar": "حشو تشريحي"
+  },
+  "שפתיים פודרה": {
+    "en": "Powder lips",
+    "es": "Labios powder",
+    "pt-BR": "Lábios powder",
+    "ar": "شفاه بودرة"
+  },
+  "רענון פיגמנט": {
+    "en": "A pigment refresh",
+    "es": "Un refresco de pigmento",
+    "pt-BR": "Um retoque de pigmento",
+    "ar": "تجديد صبغة"
+  },
+  "תחזוקה מהירה": {
+    "en": "Quick maintenance",
+    "es": "Mantenimiento rápido",
+    "pt-BR": "Manutenção rápida",
+    "ar": "صيانة سريعة"
+  },
+  "ביקורת החלמה": {
+    "en": "A healing review",
+    "es": "Una revisión de cicatrización",
+    "pt-BR": "Uma revisão de cicatrização",
+    "ar": "مراجعة شفاء"
+  },
+  "איור מינימלי": {
+    "en": "Minimal illustration",
+    "es": "Ilustración mínima",
+    "pt-BR": "Ilustração mínima",
+    "ar": "رسم بسيط"
+  },
+  "כרום וזכוכית": {
+    "en": "Chrome and glass",
+    "es": "Cromo y vidrio",
+    "pt-BR": "Cromo e vidro",
+    "ar": "كروم وزجاج"
+  },
+  "ערכת תיקונים": {
+    "en": "A repair kit",
+    "es": "Un kit de reparaciones",
+    "pt-BR": "Um kit de reparos",
+    "ar": "طقم إصلاحات"
+  },
+  "גוואשה ג׳ייד": {
+    "en": "Jade gua sha",
+    "es": "Gua sha de jade",
+    "pt-BR": "Gua sha de jade",
+    "ar": "غواشا يشب"
+  },
+  "קרואסון חמאה": {
+    "en": "A butter croissant",
+    "es": "Un cruasán de mantequilla",
+    "pt-BR": "Um croissant de manteiga",
+    "ar": "كرواسون زبدة"
+  },
+  "לחמניית שאור": {
+    "en": "A sourdough bun",
+    "es": "Un bollo de masa madre",
+    "pt-BR": "Um pãozinho de fermento natural",
+    "ar": "خبزة خميرة"
+  },
+  "אסאדה ופסטור": {
+    "en": "Asada and pastor",
+    "es": "Asada y pastor",
+    "pt-BR": "Asada e pastor",
+    "ar": "أسادا وباستور"
+  },
+  "נאצ׳וס ואלות": {
+    "en": "Nachos and wings",
+    "es": "Nachos y alitas",
+    "pt-BR": "Nachos e asinhas",
+    "ar": "ناتشوز وأجنحة"
+  },
+  "סולם הפלנצ׳ה": {
+    "en": "The plancha ladder",
+    "es": "La escala de la plancha",
+    "pt-BR": "A escala da plancha",
+    "ar": "سلّم البلانشا"
+  },
+  "בלי מיקרוגל.": {
+    "en": "No microwave.",
+    "es": "Sin microondas.",
+    "pt-BR": "Sem micro-ondas.",
+    "ar": "بلا ميكروويف."
+  },
+  "ווג׳י פלנצ׳ה": {
+    "en": "Veggie plancha",
+    "es": "Plancha veggie",
+    "pt-BR": "Plancha veggie",
+    "ar": "بلانشا خضار"
+  },
+  "אלות צ׳וריסו": {
+    "en": "Chorizo wings",
+    "es": "Alitas de chorizo",
+    "pt-BR": "Asinhas de chorizo",
+    "ar": "أجنحة تشوريزو"
+  },
+  "85 מ״ר · ישן": {
+    "en": "85 m² · old",
+    "es": "85 m² · antiguo",
+    "pt-BR": "85 m² · antigo",
+    "ar": "85 م² · قديم"
+  }
+}

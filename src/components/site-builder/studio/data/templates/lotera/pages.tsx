@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { loteraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,12 +28,12 @@ function v(data: Record<string, any>, key: string) {
 
 function LoteraSeaHeader({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = loteraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = loteraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 -mb-[74px] border-b"
       style={{ background: "rgba(7,19,31,0.34)", borderColor: "rgba(238,245,251,0.18)", backdropFilter: "blur(14px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="h-9 w-px" style={{ background: "#5eb4ff" }} />
           <span className="tpl-display text-2xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -54,7 +56,7 @@ function LoteraSeaHeader({ data, currentPage, goTo, onCta }: { data: Record<stri
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(238,245,251,0.18)", background: "#07131f" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -82,11 +84,11 @@ function LoteraCinematicHero({ data, goTo, onCta }: { data: Record<string, any>;
       <div className="absolute inset-x-5 bottom-6 z-20 mx-auto max-w-7xl lg:inset-x-8">
         <div className="grid border backdrop-blur-xl md:grid-cols-3" style={{ borderColor: "rgba(238,245,251,0.22)", background: "rgba(7,19,31,0.62)" }}>
           {teasers.map(([title, text, meta], index) => (
-            <button key={title} type="button" onClick={() => goTo("listings")} className="group border-b p-5 text-right md:border-b-0 md:border-l last:border-l-0"
+            <button key={title} type="button" onClick={() => goTo("listings")} className="group border-b p-5 text-start md:border-b-0 md:border-l last:border-l-0"
               style={{ borderColor: "rgba(238,245,251,0.16)" }}>
               <span className="text-xs font-bold tracking-[0.24em]" style={{ color: "#5eb4ff" }}>0{index + 1} / {meta}</span>
               <strong className="tpl-display mt-3 block text-2xl font-bold">{title}</strong>
-              <span className="mt-2 block text-sm leading-6" style={{ color: "#adc4d8" }}>{text}</span>
+              <span className="mt-2 block text-sm leading-6" style={{ color: "#adc4d8" }}>{tx(text)}</span>
             </button>
           ))}
         </div>
@@ -106,10 +108,10 @@ function LoteraTideRail({ data }: { data: Record<string, any> }) {
     <section className="overflow-hidden border-t py-16 lg:py-24" style={{ borderColor: "rgba(238,245,251,0.16)", background: "#07131f" }}>
       <div className="mx-auto flex max-w-7xl items-end justify-between gap-8 px-5 lg:px-8">
         <div>
-          <p className="text-xs font-semibold tracking-[0.3em]" style={{ color: "#5eb4ff" }}>קו מים נבחר</p>
-          <h2 className="tpl-display mt-4 max-w-2xl text-5xl font-bold leading-none md:text-7xl">נכסים שנראים כמו אופק פתוח.</h2>
+          <p className="text-xs font-semibold tracking-[0.3em]" style={{ color: "#5eb4ff" }}>{tx("קו מים נבחר")}</p>
+          <h2 className="tpl-display mt-4 max-w-2xl text-5xl font-bold leading-none md:text-7xl">{tx("נכסים שנראים כמו אופק פתוח.")}</h2>
         </div>
-        <p className="hidden max-w-xs text-sm leading-7 lg:block" style={{ color: "#8fa8bd" }}>מסילה אופקית עם עומק, מחיר ותחושת מקום - לא רשימת כרטיסים רגילה.</p>
+        <p className="hidden max-w-xs text-sm leading-7 lg:block" style={{ color: "#8fa8bd" }}>{tx("מסילה אופקית עם עומק, מחיר ותחושת מקום - לא רשימת כרטיסים רגילה.")}</p>
       </div>
       <div className="mt-12 overflow-x-auto px-5 pb-4 lg:px-8">
         <div className="flex min-w-max gap-6">
@@ -143,7 +145,7 @@ function LoteraWaterStory({ data }: { data: Record<string, any> }) {
         </div>
         <div className="relative border p-8 lg:-mr-20 lg:p-12" style={{ borderColor: "rgba(238,245,251,0.18)", background: "rgba(7,19,31,0.92)" }}>
           <div className="tpl-draw mb-8 h-px w-28" style={{ background: "#5eb4ff" }} />
-          <p className="text-xs font-bold tracking-[0.28em]" style={{ color: "#5eb4ff" }}>הסיפור שלנו</p>
+          <p className="text-xs font-bold tracking-[0.28em]" style={{ color: "#5eb4ff" }}>{tx("הסיפור שלנו")}</p>
           <h2 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-6xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 text-lg leading-9" style={{ color: "#a9c0d4" }}>{v(data, "aboutText")}</p>
           <blockquote className="mt-8 border-r-2 pr-5 text-2xl leading-10" style={{ borderColor: "#5eb4ff", color: "#eef5fb" }}>{v(data, "quote")}</blockquote>
@@ -154,12 +156,12 @@ function LoteraWaterStory({ data }: { data: Record<string, any> }) {
 }
 
 function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "border-0 border-b bg-transparent px-0 py-4 text-right outline-none";
+  const field = "border-0 border-b bg-transparent px-0 py-4 text-start outline-none";
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(238,245,251,0.16)", background: "#030910" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
         <div>
-          <p className="text-xs font-semibold tracking-[0.3em]" style={{ color: "#5eb4ff" }}>עוגנים שיחה</p>
+          <p className="text-xs font-semibold tracking-[0.3em]" style={{ color: "#5eb4ff" }}>{tx("עוגנים שיחה")}</p>
           <h2 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#9db5c9" }}>{v(data, "contactText")}</p>
           <div className="mt-10 grid gap-3 text-sm" style={{ color: "#c2d6e8" }}>
@@ -168,12 +170,12 @@ function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta
             <span>{v(data, "address")}</span>
           </div>
         </div>
-        <form className="grid gap-5 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lotera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="אזור מבוקש" name="other" data-bizuply-form-field-id="other" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="תקציב" name="other_2" data-bizuply-form-field-id="other_2" />
-          <textarea className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="מה חשוב לכם לראות מהחלון?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+        <form className="grid gap-5 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lotera-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder={tx("אזור מבוקש")} name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder={tx("תקציב")} name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder={tx("מה חשוב לכם לראות מהחלון?")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
           <button type="submit" className="tpl-sweep px-7 py-4 text-sm font-bold md:col-span-2" style={{ background: "#5eb4ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -242,7 +244,7 @@ export default function LoteraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="lotera" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="lotera" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#07131f", color: "#eef5fb" }}>
       <LoteraSeaHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

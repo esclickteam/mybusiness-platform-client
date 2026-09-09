@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   AlignCenter,
   AlignLeft,
@@ -264,7 +265,7 @@ function ColorSwatch({
 export default function VisualTextSettingsPanel({
   editor,
 }: VisualTextSettingsPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const element = editor?.selectedElement;
   const elementId = getElementId(element);
   const node = getElementNode(element);
@@ -546,7 +547,7 @@ export default function VisualTextSettingsPanel({
   return (
     <aside
       ref={panelRef}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-visual-text-settings-panel="true"
       data-testid="visual-text-settings-panel"
       data-floating-panel="true"
@@ -557,7 +558,7 @@ export default function VisualTextSettingsPanel({
         snapshotTextRange(node, elementId);
       }}
       onClick={(event) => event.stopPropagation()}
-      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-112px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
+      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-112px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-start shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
       style={{ top: position.top, left: position.left }}
     >
       <header

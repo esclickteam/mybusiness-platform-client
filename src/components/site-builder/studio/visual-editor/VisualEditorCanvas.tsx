@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../i18n/i18n";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 import { VisualLibraryPageProvider } from "../../runtime/visualLibraryPage";
 
@@ -2776,7 +2777,7 @@ export default function VisualEditorCanvas({
                 ? "cursor-default select-none"
                 : "cursor-auto select-auto",
             ].join(" ")}
-            dir="rtl"
+            dir={getTextDirection(i18n.language)}
           >
             {bodyStartHtml ? (
               <div

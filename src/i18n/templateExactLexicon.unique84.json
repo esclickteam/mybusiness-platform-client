@@ -1,0 +1,662 @@
+{
+  "AI Hero וואו": {
+    "en": "AI Hero Wow",
+    "es": "AI Hero Wow",
+    "pt-BR": "AI Hero Wow",
+    "ar": "AI Hero Wow"
+  },
+  "Booking Hero וואו": {
+    "en": "Booking Hero Wow",
+    "es": "Booking Hero Wow",
+    "pt-BR": "Booking Hero Wow",
+    "ar": "Booking Hero Wow"
+  },
+  "Booking כהה פרימיום": {
+    "en": "Booking dark premium",
+    "es": "Booking oscuro premium",
+    "pt-BR": "Booking escuro premium",
+    "ar": "Booking داكن فاخر"
+  },
+  "Bundle / חבילה": {
+    "en": "Bundle / package",
+    "es": "Bundle / paquete",
+    "pt-BR": "Bundle / pacote",
+    "ar": "Bundle / باقة"
+  },
+  "CTA אירוע וואו": {
+    "en": "Event CTA Wow",
+    "es": "CTA de evento Wow",
+    "pt-BR": "CTA de evento Wow",
+    "ar": "CTA فعالية Wow"
+  },
+  "CTA בוט וואו": {
+    "en": "Bot CTA Wow",
+    "es": "CTA de bot Wow",
+    "pt-BR": "CTA de bot Wow",
+    "ar": "CTA بوت Wow"
+  },
+  "CTA ביקורות וואו": {
+    "en": "Reviews CTA Wow",
+    "es": "CTA de reseñas Wow",
+    "pt-BR": "CTA de avaliações Wow",
+    "ar": "CTA تقييمات Wow"
+  },
+  "CTA המלצות וואו": {
+    "en": "Testimonials CTA Wow",
+    "es": "CTA de recomendaciones Wow",
+    "pt-BR": "CTA de depoimentos Wow",
+    "ar": "CTA توصيات Wow"
+  },
+  "CTA הרשמה וואו": {
+    "en": "Signup CTA Wow",
+    "es": "CTA de registro Wow",
+    "pt-BR": "CTA de inscrição Wow",
+    "ar": "CTA تسجيل Wow"
+  },
+  "CTA וואו": {
+    "en": "CTA Wow",
+    "es": "CTA Wow",
+    "pt-BR": "CTA Wow",
+    "ar": "CTA Wow"
+  },
+  "CTA חנות וואו": {
+    "en": "Store CTA Wow",
+    "es": "CTA de tienda Wow",
+    "pt-BR": "CTA de loja Wow",
+    "ar": "CTA متجر Wow"
+  },
+  "CTA טופס וואו": {
+    "en": "Form CTA Wow",
+    "es": "CTA de formulario Wow",
+    "pt-BR": "CTA de formulário Wow",
+    "ar": "CTA نموذج Wow"
+  },
+  "CTA טקסט וואו": {
+    "en": "Text CTA Wow",
+    "es": "CTA de texto Wow",
+    "pt-BR": "CTA de texto Wow",
+    "ar": "CTA نص Wow"
+  },
+  "CTA מבצע וואו": {
+    "en": "Promo CTA Wow",
+    "es": "CTA de oferta Wow",
+    "pt-BR": "CTA de oferta Wow",
+    "ar": "CTA عرض Wow"
+  },
+  "CTA סושיאל וואו": {
+    "en": "Social CTA Wow",
+    "es": "CTA social Wow",
+    "pt-BR": "CTA social Wow",
+    "ar": "CTA اجتماعي Wow"
+  },
+  "CTA קשר קצר": {
+    "en": "Short contact CTA",
+    "es": "CTA de contacto corto",
+    "pt-BR": "CTA de contato curto",
+    "ar": "CTA تواصل قصير"
+  },
+  "CTA רשימה וואו": {
+    "en": "List CTA Wow",
+    "es": "CTA de lista Wow",
+    "pt-BR": "CTA de lista Wow",
+    "ar": "CTA قائمة Wow"
+  },
+  "CTA תור וואו": {
+    "en": "Booking CTA Wow",
+    "es": "CTA de cita Wow",
+    "pt-BR": "CTA de agendamento Wow",
+    "ar": "CTA موعد Wow"
+  },
+  "Hero אירוע וואו": {
+    "en": "Event Hero Wow",
+    "es": "Hero de evento Wow",
+    "pt-BR": "Hero de evento Wow",
+    "ar": "Hero فعالية Wow"
+  },
+  "Hero גלריית תמונות": {
+    "en": "Photo gallery Hero",
+    "es": "Hero de galería de fotos",
+    "pt-BR": "Hero de galeria de fotos",
+    "ar": "Hero معرض صور"
+  },
+  "Hero וידאו": {
+    "en": "Video Hero",
+    "es": "Hero de vídeo",
+    "pt-BR": "Hero de vídeo",
+    "ar": "Hero فيديو"
+  },
+  "Hero כהה פרימיום": {
+    "en": "Dark premium Hero",
+    "es": "Hero oscuro premium",
+    "pt-BR": "Hero escuro premium",
+    "ar": "Hero داكن فاخر"
+  },
+  "Hero כרטיס צד": {
+    "en": "Side-card Hero",
+    "es": "Hero de tarjeta lateral",
+    "pt-BR": "Hero de cartão lateral",
+    "ar": "Hero بطاقة جانبية"
+  },
+  "Hero ממורכז נקי": {
+    "en": "Clean centered Hero",
+    "es": "Hero centrado limpio",
+    "pt-BR": "Hero centralizado limpo",
+    "ar": "Hero مركزي نظيف"
+  },
+  "Hero עם אזור מדיה": {
+    "en": "Hero with a media area",
+    "es": "Hero con zona de media",
+    "pt-BR": "Hero com área de mídia",
+    "ar": "Hero مع منطقة وسائط"
+  },
+  "Hero קולקציה וואו": {
+    "en": "Collection Hero Wow",
+    "es": "Hero de colección Wow",
+    "pt-BR": "Hero de coleção Wow",
+    "ar": "Hero مجموعة Wow"
+  },
+  "Hero רקע מלא": {
+    "en": "Full-background Hero",
+    "es": "Hero de fondo completo",
+    "pt-BR": "Hero de fundo completo",
+    "ar": "Hero خلفية كاملة"
+  },
+  "Hero שירות מוביל": {
+    "en": "Lead-service Hero",
+    "es": "Hero de servicio destacado",
+    "pt-BR": "Hero de serviço em destaque",
+    "ar": "Hero خدمة بارزة"
+  },
+  "Hero תמונה וטקסט": {
+    "en": "Photo and text Hero",
+    "es": "Hero de foto y texto",
+    "pt-BR": "Hero de foto e texto",
+    "ar": "Hero صورة ونص"
+  },
+  "Hero תמונה משמאל": {
+    "en": "Photo-on-left Hero",
+    "es": "Hero con foto a la izquierda",
+    "pt-BR": "Hero com foto à esquerda",
+    "ar": "Hero صورة على اليسار"
+  },
+  "SaaS מקצועי": {
+    "en": "Professional SaaS",
+    "es": "SaaS profesional",
+    "pt-BR": "SaaS profissional",
+    "ar": "SaaS مهني"
+  },
+  "Social Hero וואו": {
+    "en": "Social Hero Wow",
+    "es": "Social Hero Wow",
+    "pt-BR": "Social Hero Wow",
+    "ar": "Social Hero Wow"
+  },
+  "אודות SaaS": {
+    "en": "SaaS about",
+    "es": "Sobre SaaS",
+    "pt-BR": "Sobre SaaS",
+    "ar": "نبذة SaaS"
+  },
+  "אודות כהה יוקרתי": {
+    "en": "Dark luxurious about",
+    "es": "Sobre oscuro de lujo",
+    "pt-BR": "Sobre escuro luxuoso",
+    "ar": "نبذة داكنة فاخرة"
+  },
+  "אודות ממורכז": {
+    "en": "Centered about",
+    "es": "Sobre centrado",
+    "pt-BR": "Sobre centralizado",
+    "ar": "نبذة مركزية"
+  },
+  "אודות על תמונת רקע": {
+    "en": "About on a background photo",
+    "es": "Sobre sobre foto de fondo",
+    "pt-BR": "Sobre sobre foto de fundo",
+    "ar": "نبذة على صورة خلفية"
+  },
+  "אודות עם גלריה": {
+    "en": "About with a gallery",
+    "es": "Sobre con galería",
+    "pt-BR": "Sobre com galeria",
+    "ar": "نبذة مع معرض"
+  },
+  "אודות עם המלצה": {
+    "en": "About with a testimonial",
+    "es": "Sobre con recomendación",
+    "pt-BR": "Sobre com depoimento",
+    "ar": "نبذة مع توصية"
+  },
+  "אודות עם וידאו": {
+    "en": "About with video",
+    "es": "Sobre con vídeo",
+    "pt-BR": "Sobre com vídeo",
+    "ar": "نبذة مع فيديو"
+  },
+  "אודות עם מדיה להוספה": {
+    "en": "About with media to add",
+    "es": "Sobre con media para añadir",
+    "pt-BR": "Sobre com mídia para adicionar",
+    "ar": "نبذة مع وسائط للإضافة"
+  },
+  "אודות עם נתונים": {
+    "en": "About with numbers",
+    "es": "Sobre con datos",
+    "pt-BR": "Sobre com dados",
+    "ar": "نبذة مع بيانات"
+  },
+  "אודות קצר": {
+    "en": "Short about",
+    "es": "Sobre corto",
+    "pt-BR": "Sobre curto",
+    "ar": "نبذة قصيرة"
+  },
+  "אייקונים בלבד": {
+    "en": "Icons only",
+    "es": "Solo iconos",
+    "pt-BR": "Só ícones",
+    "ar": "أيقونات فقط"
+  },
+  "אירוע + RSVP": {
+    "en": "Event + RSVP",
+    "es": "Evento + RSVP",
+    "pt-BR": "Evento + RSVP",
+    "ar": "فعالية + RSVP"
+  },
+  "אירוע WhatsApp": {
+    "en": "WhatsApp event",
+    "es": "Evento WhatsApp",
+    "pt-BR": "Evento WhatsApp",
+    "ar": "فعالية واتساب"
+  },
+  "אירוע כהה פרימיום": {
+    "en": "Dark premium event",
+    "es": "Evento oscuro premium",
+    "pt-BR": "Evento escuro premium",
+    "ar": "فعالية داكنة فاخرة"
+  },
+  "אירוע מינימליסטי": {
+    "en": "Minimal event",
+    "es": "Evento minimalista",
+    "pt-BR": "Evento minimalista",
+    "ar": "فعالية بسيطة"
+  },
+  "אירוע עם גלריה": {
+    "en": "Event with a gallery",
+    "es": "Evento con galería",
+    "pt-BR": "Evento com galeria",
+    "ar": "فعالية مع معرض"
+  },
+  "אירוע עם וידאו": {
+    "en": "Event with video",
+    "es": "Evento con vídeo",
+    "pt-BR": "Evento com vídeo",
+    "ar": "فعالية مع فيديو"
+  },
+  "אירוע עם טופס ליד": {
+    "en": "Event with a lead form",
+    "es": "Evento con formulario de lead",
+    "pt-BR": "Evento com formulário de lead",
+    "ar": "فعالية مع نموذج عميل محتمل"
+  },
+  "אירוע עם מדיה להוספה": {
+    "en": "Event with media to add",
+    "es": "Evento con media para añadir",
+    "pt-BR": "Evento com mídia para adicionar",
+    "ar": "فعالية مع وسائط للإضافة"
+  },
+  "אירוע עם מיקום": {
+    "en": "Event with location",
+    "es": "Evento con ubicación",
+    "pt-BR": "Evento com local",
+    "ar": "فعالية مع موقع"
+  },
+  "אירועים בכרטיסים": {
+    "en": "Events in cards",
+    "es": "Eventos en tarjetas",
+    "pt-BR": "Eventos em cartões",
+    "ar": "فعاليات في بطاقات"
+  },
+  "אמון ומספרים": {
+    "en": "Trust and numbers",
+    "es": "Confianza y números",
+    "pt-BR": "Confiança e números",
+    "ar": "ثقة وأرقام"
+  },
+  "באנר מבצע רחב": {
+    "en": "Wide promo banner",
+    "es": "Banner de oferta ancho",
+    "pt-BR": "Banner de oferta largo",
+    "ar": "بانر عرض عريض"
+  },
+  "בוט + טופס": {
+    "en": "Bot + form",
+    "es": "Bot + formulario",
+    "pt-BR": "Bot + formulário",
+    "ar": "بوت + نموذج"
+  },
+  "בוט + ניוזלטר": {
+    "en": "Bot + newsletter",
+    "es": "Bot + newsletter",
+    "pt-BR": "Bot + newsletter",
+    "ar": "بوت + نشرة"
+  },
+  "בוט + נתונים": {
+    "en": "Bot + numbers",
+    "es": "Bot + datos",
+    "pt-BR": "Bot + dados",
+    "ar": "بوت + بيانات"
+  },
+  "בוט FAQ": {
+    "en": "FAQ bot",
+    "es": "Bot FAQ",
+    "pt-BR": "Bot FAQ",
+    "ar": "بوت FAQ"
+  },
+  "בוט SaaS": {
+    "en": "SaaS bot",
+    "es": "Bot SaaS",
+    "pt-BR": "Bot SaaS",
+    "ar": "بوت SaaS"
+  },
+  "בוט WhatsApp": {
+    "en": "WhatsApp bot",
+    "es": "Bot WhatsApp",
+    "pt-BR": "Bot WhatsApp",
+    "ar": "بوت واتساب"
+  },
+  "בוט כהה פרימיום": {
+    "en": "Dark premium bot",
+    "es": "Bot oscuro premium",
+    "pt-BR": "Bot escuro premium",
+    "ar": "بوت داكن فاخر"
+  },
+  "בוט על תמונת רקע": {
+    "en": "Bot on a background photo",
+    "es": "Bot sobre foto de fondo",
+    "pt-BR": "Bot sobre foto de fundo",
+    "ar": "بوت على صورة خلفية"
+  },
+  "בוט עם וידאו": {
+    "en": "Bot with video",
+    "es": "Bot con vídeo",
+    "pt-BR": "Bot com vídeo",
+    "ar": "بوت مع فيديو"
+  },
+  "בוט עם תמונה": {
+    "en": "Bot with a photo",
+    "es": "Bot con foto",
+    "pt-BR": "Bot com foto",
+    "ar": "بوت مع صورة"
+  },
+  "בוט צ׳אט מקצועי": {
+    "en": "Professional chat bot",
+    "es": "Bot de chat profesional",
+    "pt-BR": "Bot de chat profissional",
+    "ar": "بوت دردشة مهني"
+  },
+  "בוט שירות לקוחות": {
+    "en": "Customer-service bot",
+    "es": "Bot de atención al cliente",
+    "pt-BR": "Bot de atendimento",
+    "ar": "بوت خدمة زبائن"
+  },
+  "בוט תיאום תורים": {
+    "en": "Booking bot",
+    "es": "Bot de citas",
+    "pt-BR": "Bot de agendamento",
+    "ar": "بوت تنسيق مواعيد"
+  },
+  "בחירת שירות תחילה": {
+    "en": "Choose a service first",
+    "es": "Elegid servicio primero",
+    "pt-BR": "Escolha o serviço primeiro",
+    "ar": "اختيار الخدمة أولاً"
+  },
+  "ביקורות + טופס": {
+    "en": "Reviews + form",
+    "es": "Reseñas + formulario",
+    "pt-BR": "Avaliações + formulário",
+    "ar": "تقييمات + نموذج"
+  },
+  "ביקורות + ליד": {
+    "en": "Reviews + lead",
+    "es": "Reseñas + lead",
+    "pt-BR": "Avaliações + lead",
+    "ar": "تقييمات + عميل محتمل"
+  },
+  "ביקורות + נתונים": {
+    "en": "Reviews + numbers",
+    "es": "Reseñas + datos",
+    "pt-BR": "Avaliações + dados",
+    "ar": "تقييمات + بيانات"
+  },
+  "ביקורות + תמונה": {
+    "en": "Reviews + photo",
+    "es": "Reseñas + foto",
+    "pt-BR": "Avaliações + foto",
+    "ar": "تقييمات + صورة"
+  },
+  "ביקורות Beauty": {
+    "en": "Beauty reviews",
+    "es": "Reseñas Beauty",
+    "pt-BR": "Avaliações Beauty",
+    "ar": "تقييمات Beauty"
+  },
+  "ביקורות SaaS": {
+    "en": "SaaS reviews",
+    "es": "Reseñas SaaS",
+    "pt-BR": "Avaliações SaaS",
+    "ar": "تقييمات SaaS"
+  },
+  "ביקורות בכרטיסים": {
+    "en": "Reviews in cards",
+    "es": "Reseñas en tarjetas",
+    "pt-BR": "Avaliações em cartões",
+    "ar": "تقييمات في بطاقات"
+  },
+  "ביקורות כהה פרימיום": {
+    "en": "Dark premium reviews",
+    "es": "Reseñas oscuras premium",
+    "pt-BR": "Avaliações escuras premium",
+    "ar": "تقييمات داكنة فاخرة"
+  },
+  "ביקורות לפי פלטפורמות": {
+    "en": "Reviews by platform",
+    "es": "Reseñas por plataformas",
+    "pt-BR": "Avaliações por plataformas",
+    "ar": "تقييمات حسب المنصات"
+  },
+  "ביקורות מינימליסטי": {
+    "en": "Minimal reviews",
+    "es": "Reseñas minimalistas",
+    "pt-BR": "Avaliações minimalistas",
+    "ar": "تقييمات بسيطة"
+  },
+  "ביקורות על תמונת רקע": {
+    "en": "Reviews on a background photo",
+    "es": "Reseñas sobre foto de fondo",
+    "pt-BR": "Avaliações sobre foto de fundo",
+    "ar": "تقييمات على صورة خلفية"
+  },
+  "ביקורות עם וידאו": {
+    "en": "Reviews with video",
+    "es": "Reseñas con vídeo",
+    "pt-BR": "Avaliações com vídeo",
+    "ar": "تقييمات مع فيديو"
+  },
+  "ביקורות שירות": {
+    "en": "Service reviews",
+    "es": "Reseñas de servicio",
+    "pt-BR": "Avaliações de serviço",
+    "ar": "تقييمات خدمة"
+  },
+  "בעל/ת העסק": {
+    "en": "Business owner",
+    "es": "Dueño/a del negocio",
+    "pt-BR": "Dono/a do negócio",
+    "ar": "صاحب/ة العمل"
+  },
+  "בעלת העסק": {
+    "en": "Business owner",
+    "es": "Dueña del negocio",
+    "pt-BR": "Dona do negócio",
+    "ar": "صاحبة العمل"
+  },
+  "גלריה כהה יוקרתית": {
+    "en": "Dark luxurious gallery",
+    "es": "Galería oscura de lujo",
+    "pt-BR": "Galeria escura luxuosa",
+    "ar": "معرض داكن فاخر"
+  },
+  "גלריה על תמונת רקע": {
+    "en": "Gallery on a background photo",
+    "es": "Galería sobre foto de fondo",
+    "pt-BR": "Galeria sobre foto de fundo",
+    "ar": "معرض على صورة خلفية"
+  },
+  "גלריה עם אמון": {
+    "en": "Gallery with trust",
+    "es": "Galería con confianza",
+    "pt-BR": "Galeria com confiança",
+    "ar": "معرض مع ثقة"
+  },
+  "גלריה עם המלצה": {
+    "en": "Gallery with a testimonial",
+    "es": "Galería con recomendación",
+    "pt-BR": "Galeria com depoimento",
+    "ar": "معرض مع توصية"
+  },
+  "גלריה עם טקסט בצד": {
+    "en": "Gallery with side text",
+    "es": "Galería con texto al lado",
+    "pt-BR": "Galeria com texto ao lado",
+    "ar": "معرض مع نص جانبي"
+  },
+  "גלריה עם כותרות": {
+    "en": "Gallery with titles",
+    "es": "Galería con títulos",
+    "pt-BR": "Galeria com títulos",
+    "ar": "معرض مع عناوين"
+  },
+  "גלריה עם מדיה להוספה": {
+    "en": "Gallery with media to add",
+    "es": "Galería con media para añadir",
+    "pt-BR": "Galeria com mídia para adicionar",
+    "ar": "معرض مع وسائط للإضافة"
+  },
+  "גלריה קצרה עם CTA": {
+    "en": "Short gallery with CTA",
+    "es": "Galería corta con CTA",
+    "pt-BR": "Galeria curta com CTA",
+    "ar": "معرض قصير مع CTA"
+  },
+  "גלריית Masonry": {
+    "en": "Masonry gallery",
+    "es": "Galería Masonry",
+    "pt-BR": "Galeria Masonry",
+    "ar": "معرض Masonry"
+  },
+  "גלריית אירועים": {
+    "en": "Events gallery",
+    "es": "Galería de eventos",
+    "pt-BR": "Galeria de eventos",
+    "ar": "معرض فعاليات"
+  },
+  "גלריית ביוטי": {
+    "en": "Beauty gallery",
+    "es": "Galería de belleza",
+    "pt-BR": "Galeria de beleza",
+    "ar": "معرض تجميل"
+  },
+  "גלריית גריד": {
+    "en": "Grid gallery",
+    "es": "Galería de rejilla",
+    "pt-BR": "Galeria em grade",
+    "ar": "معرض شبكة"
+  },
+  "גלריית וידאו": {
+    "en": "Video gallery",
+    "es": "Galería de vídeo",
+    "pt-BR": "Galeria de vídeo",
+    "ar": "معرض فيديو"
+  },
+  "גלריית מוצרים": {
+    "en": "Products gallery",
+    "es": "Galería de productos",
+    "pt-BR": "Galeria de produtos",
+    "ar": "معرض منتجات"
+  },
+  "גלריית נדל״ן": {
+    "en": "Real-estate gallery",
+    "es": "Galería inmobiliaria",
+    "pt-BR": "Galeria de imóveis",
+    "ar": "معرض عقارات"
+  },
+  "גריד לוגואים גדול": {
+    "en": "Large logo grid",
+    "es": "Rejilla grande de logos",
+    "pt-BR": "Grade grande de logos",
+    "ar": "شبكة شعارات كبيرة"
+  },
+  "גריד תמונות בסיסי": {
+    "en": "Basic photo grid",
+    "es": "Rejilla básica de fotos",
+    "pt-BR": "Grade básica de fotos",
+    "ar": "شبكة صور أساسية"
+  },
+  "הדגשת הודעה": {
+    "en": "Message highlight",
+    "es": "Énfasis de aviso",
+    "pt-BR": "Destaque de aviso",
+    "ar": "إبراز إشعار"
+  },
+  "הודעה / Banner": {
+    "en": "Notice / banner",
+    "es": "Aviso / banner",
+    "pt-BR": "Aviso / banner",
+    "ar": "إشعار / بانر"
+  },
+  "הזמנה בוואטסאפ": {
+    "en": "WhatsApp invitation",
+    "es": "Invitación por WhatsApp",
+    "pt-BR": "Convite pelo WhatsApp",
+    "ar": "دعوة عبر واتساب"
+  },
+  "המלצה בסיסית": {
+    "en": "Basic testimonial",
+    "es": "Recomendación básica",
+    "pt-BR": "Depoimento básico",
+    "ar": "توصية أساسية"
+  },
+  "המלצה מרכזית גדולה": {
+    "en": "Large central testimonial",
+    "es": "Recomendación central grande",
+    "pt-BR": "Depoimento central grande",
+    "ar": "توصية مركزية كبيرة"
+  },
+  "המלצות + וואטסאפ": {
+    "en": "Testimonials + WhatsApp",
+    "es": "Recomendaciones + WhatsApp",
+    "pt-BR": "Depoimentos + WhatsApp",
+    "ar": "توصيات + واتساب"
+  },
+  "המלצות + מספרים": {
+    "en": "Testimonials + numbers",
+    "es": "Recomendaciones + números",
+    "pt-BR": "Depoimentos + números",
+    "ar": "توصيات + أرقام"
+  },
+  "המלצות Beauty": {
+    "en": "Beauty testimonials",
+    "es": "Recomendaciones Beauty",
+    "pt-BR": "Depoimentos Beauty",
+    "ar": "توصيات Beauty"
+  },
+  "המלצות SaaS": {
+    "en": "SaaS testimonials",
+    "es": "Recomendaciones SaaS",
+    "pt-BR": "Depoimentos SaaS",
+    "ar": "توصيات SaaS"
+  }
+}

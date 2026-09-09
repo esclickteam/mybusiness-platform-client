@@ -2,7 +2,7 @@ export const dunewaveEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="dunewave"], [data-template-id="dunewave"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f4ead8; --tpl-surface: #fff8ee; --tpl-text: #3d2f1f;
   --tpl-muted: #8a7358; --tpl-primary: #c9956a; --tpl-primary-text: #2a1c10;

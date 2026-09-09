@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalcareDefaultData } from "./defaultData";
 import { vitalcareEditorCss } from "./editorCss";
@@ -112,7 +114,7 @@ function SectionIntro({ eyebrow, title, text }: { eyebrow: string; title: string
       <h2 className="vc-display vc-anim vc-anim-d1 mt-4 text-4xl font-semibold leading-tight text-[var(--vc-text)] md:text-5xl">
         {title}
       </h2>
-      {text ? <p className="vc-anim vc-anim-d2 mt-5 text-base leading-8 text-[var(--vc-muted)]">{text}</p> : null}
+      {text ? <p className="vc-anim vc-anim-d2 mt-5 text-base leading-8 text-[var(--vc-muted)]">{tx(text)}</p> : null}
     </div>
   );
 }
@@ -145,7 +147,7 @@ function Specialties({ data }: { data: Record<string, any> }) {
                 {String(index + 1).padStart(2, "0")}
               </div>
               <h3 className="mt-7 text-xl font-semibold text-[var(--vc-text)]">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -233,7 +235,7 @@ function Doctors({ data }: { data: Record<string, any> }) {
               <div className="p-7">
                 <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{name}</h3>
                 <p className="mt-2 text-sm font-semibold text-[var(--vc-primary)]">{role}</p>
-                <p className="mt-4 text-sm leading-7 text-[var(--vc-muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--vc-muted)]">{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -294,7 +296,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
               className="vc-card-hover rounded-3xl border border-[var(--vc-line)] bg-[var(--vc-surface)] p-8"
             >
               <div className="h-px w-16 bg-[var(--vc-accent)]" />
-              <p className="mt-7 text-lg leading-9 text-[var(--vc-text)]">״{text}״</p>
+              <p className="mt-7 text-lg leading-9 text-[var(--vc-text)]">״{tx(text)}״</p>
               <footer className="mt-8 border-t border-[var(--vc-line)] pt-5">
                 <p className="font-semibold text-[var(--vc-text)]">{name}</p>
                 <p className="mt-1 text-sm text-[var(--vc-muted)]">{role}</p>
@@ -333,7 +335,7 @@ function MedicalFaq({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 onClick={() => setOpen(open === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-5 px-6 py-5 text-right"
+                className="flex w-full items-center justify-between gap-5 px-6 py-5 text-start"
               >
                 <span className="text-base font-semibold text-[var(--vc-text)]">{question}</span>
                 <span className="text-2xl leading-none text-[var(--vc-primary)]">{open === index ? "-" : "+"}</span>
@@ -363,30 +365,30 @@ function AppointmentForm({ data, openModal }: { data: Record<string, any>; openM
           <p className="mt-6 max-w-md leading-8 text-white/75">{getValue(data, "contactText")}</p>
           <div className="mt-10 space-y-4 text-sm text-white/75">
             <p>
-              <span className="font-semibold text-white">טלפון</span> · {getValue(data, "phone")}
+              <span className="font-semibold text-white">{tx("טלפון")}</span> · {getValue(data, "phone")}
             </p>
             <p>
-              <span className="font-semibold text-white">אימייל</span> · {getValue(data, "email")}
+              <span className="font-semibold text-white">{tx("אימייל")}</span> · {getValue(data, "email")}
             </p>
             <p>
-              <span className="font-semibold text-white">כתובת</span> · {getValue(data, "address")}
+              <span className="font-semibold text-white">{tx("כתובת")}</span> · {getValue(data, "address")}
             </p>
             <p>
-              <span className="font-semibold text-white">שעות פעילות</span> · {getValue(data, "hours")}
+              <span className="font-semibold text-white">{tx("שעות פעילות")}</span> · {getValue(data, "hours")}
             </p>
           </div>
         </div>
-        <form className="grid content-center gap-4 p-8 md:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid content-center gap-4 p-8 md:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="טלפון לחזרה"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-          <select className="vc-input rounded-xl px-5 py-4 text-right text-[var(--vc-muted)] outline-none">
-            <option>תחום רפואי מבוקש</option>
-            <option>רפואת משפחה ופנימית</option>
-            <option>קרדיולוגיה מניעתית</option>
-            <option>אורתופדיה וכאב</option>
-            <option>רפואת ילדים</option>
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("טלפון לחזרה")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+          <select className="vc-input rounded-xl px-5 py-4 text-start text-[var(--vc-muted)] outline-none">
+            <option>{tx("תחום רפואי מבוקש")}</option>
+            <option>{tx("רפואת משפחה ופנימית")}</option>
+            <option>{tx("קרדיולוגיה מניעתית")}</option>
+            <option>{tx("אורתופדיה וכאב")}</option>
+            <option>{tx("רפואת ילדים")}</option>
           </select>
           <button
             type="submit"
@@ -438,15 +440,15 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           type="button"
           onClick={onClose}
           className="absolute left-5 top-5 text-2xl leading-none text-[var(--vc-muted)]"
-          aria-label="סגירה"
+          aria-label={tx("סגירה")}
         >
           ×
         </button>
         <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button
             type="submit"
             className="rounded-xl bg-[var(--vc-primary)] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[var(--vc-secondary)]"
@@ -498,7 +500,7 @@ export default function VitalcarePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vitalcare"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--vc-background)] text-[var(--vc-text)]"
     >

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import { CalendarClock, Loader2, Plus, Trash2 } from "lucide-react";
 import {
@@ -90,7 +91,7 @@ const DEFAULTS: Record<
 export default function WhatsAppAutomationsTab({
   businessIdOverride = null,
 }: WhatsAppAutomationsTabProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth() as {
     user?: { businessId?: string | null } | null;
@@ -283,7 +284,7 @@ export default function WhatsAppAutomationsTab({
   }
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)}>
       <section className={`${cardBase} p-4 sm:p-5`}>
         <div className="flex items-start gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-700">

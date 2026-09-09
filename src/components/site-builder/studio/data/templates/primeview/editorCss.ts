@@ -2,7 +2,7 @@ export const primeviewEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="primeview"], [data-template-id="primeview"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f8fafc; --tpl-surface: #ffffff; --tpl-text: #0f172a;
   --tpl-muted: #64748b; --tpl-primary: #059669; --tpl-primary-text: #ffffff;

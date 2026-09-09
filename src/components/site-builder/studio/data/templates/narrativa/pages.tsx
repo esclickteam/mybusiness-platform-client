@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" className={`sticky top-0 z-50 border-b border-black/10 bg-[var(--surface)]/90 text-[var(--text)] backdrop-blur-xl`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="text-right">
+        <button type="button" onClick={() => goTo("home")} className="text-start">
           <div className="flex items-center gap-3">
             <span className="ag-pulse grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-black text-white">{getValue(data, "logoText")}</span>
             <div>
@@ -75,7 +77,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className={`border-t border-black/10 px-5 py-4 lg:hidden`}>
           <div className="grid gap-2">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-right text-sm font-bold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-start text-sm font-bold">{label}</button>
             ))}
           </div>
         </div>
@@ -95,15 +97,15 @@ function About({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{getValue(data, "aboutEyebrow")}</p>
         </div>
         <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_0.78fr] lg:items-start">
-          <Reveal variant="right" className="text-right">
+          <Reveal variant="right" className="text-start">
             <h2 className="ag-display text-4xl font-bold leading-tight md:text-6xl">{getValue(data, "aboutTitle")}</h2>
             <p className="mt-8 text-lg leading-9 text-[var(--muted)]">
               <span className="ag-display ml-3 inline-block align-top text-3xl md:text-7xl font-bold leading-none text-[var(--p)]">{firstLetter}</span>
               {restText}
             </p>
             <div className="mt-8 grid gap-4 border-y border-black/10 py-5 sm:grid-cols-2">
-              <p className="text-sm leading-7 text-[var(--muted)]">מערכת מסרים, דוברות ויחסי עיתונות שנבנים סביב קו editorial אחד.</p>
-              <p className="text-sm leading-7 text-[var(--muted)]">כל לקוח מקבל זווית, לוח פרסום וקצב עבודה ברור מול המדיה.</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">{tx("מערכת מסרים, דוברות ויחסי עיתונות שנבנים סביב קו editorial אחד.")}</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">{tx("כל לקוח מקבל זווית, לוח פרסום וקצב עבודה ברור מול המדיה.")}</p>
             </div>
           </Reveal>
           <Reveal variant="scale">
@@ -138,10 +140,10 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
         <div className="mt-12 grid gap-0 border border-black/10 md:grid-cols-2">
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*70}>
-              <article className={`border-b border-black/10 p-7 text-right md:border-l ${i<2?"md:border-b":"md:border-b-0"}`}>
+              <article className={`border-b border-black/10 p-7 text-start md:border-l ${i<2?"md:border-b":"md:border-b-0"}`}>
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-[var(--p)]">Column 0{i+1}</p>
                 <h3 className="ag-display mt-3 text-3xl font-bold">{title}</h3>
-                <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -167,7 +169,7 @@ function Cases({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {items.map(([title, text, image], i) => (
             <Reveal key={title} delayMs={i * 90} variant="up">
-              <article className="ag-card min-h-full border border-black/10 bg-[var(--surface)] p-5 text-right">
+              <article className="ag-card min-h-full border border-black/10 bg-[var(--surface)] p-5 text-start">
                 <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-4">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">Press</p>
@@ -175,7 +177,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   </div>
                   <img src={image} alt="" className="h-24 w-24 shrink-0 border border-black/10 object-cover" />
                 </div>
-                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{tx(text)}</p>
                 <div className="mt-8 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
                   <span>Clipping 0{i + 1}</span>
                   <span>{getValue(data, "brandName")}</span>
@@ -205,7 +207,7 @@ function Team({ data }: { data: Record<string, any> }) {
         <div className="mt-12 border-y border-black/10">
           {items.map(([name, role, image], i) => (
             <Reveal key={name} delayMs={i * 90} variant="right">
-              <article className="flex flex-col gap-4 border-b border-black/10 py-5 text-right last:border-b-0 sm:flex-row sm:items-center sm:justify-between">
+              <article className="flex flex-col gap-4 border-b border-black/10 py-5 text-start last:border-b-0 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                   <img src={image} alt="" className="h-16 w-16 rounded-full border border-black/10 object-cover" />
                   <div>
@@ -277,14 +279,14 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
         <div className="mt-10 space-y-8">
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
-              <article className="border-b border-black/10 pb-8 text-right">
+              <article className="border-b border-black/10 pb-8 text-start">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">Column 0{i + 1}</p>
                 <h3 className="ag-display mt-3 text-3xl font-bold">{title}</h3>
-                <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                 <blockquote className="mt-6 border-r-4 border-[var(--p)] bg-[var(--surface)] p-5 text-xl font-bold leading-9">
                   "{i === 0 ? "כותרת טובה מתחילה בזווית, לא ברשימת מסרים." : i === 1 ? "מדיה אוהבת קצב עקבי יותר מהבטחה גדולה." : "משבר נמדד בדקות הראשונות ובשקט שאחריו."}"
                 </blockquote>
-                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">שלחו נושא לכתבה</button>
+                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">{tx("שלחו נושא לכתבה")}</button>
               </article>
             </Reveal>
           ))}
@@ -311,10 +313,10 @@ function Process({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid border border-black/10 md:grid-cols-4">
           {steps.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 80} variant="up">
-              <article className="min-h-full border-b border-black/10 p-6 text-right md:border-b-0 md:border-l md:last:border-l-0">
+              <article className="min-h-full border-b border-black/10 p-6 text-start md:border-b-0 md:border-l md:last:border-l-0">
                 <p className="ag-display text-3xl font-bold text-[var(--p)]">Week {i + 1}</p>
                 <h3 className="mt-5 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -327,7 +329,7 @@ function Process({ data }: { data: Record<string, any> }) {
 function Contact({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <Reveal className="mx-auto max-w-4xl border border-black/10 bg-[var(--surface)] p-6 text-right md:p-10">
+      <Reveal className="mx-auto max-w-4xl border border-black/10 bg-[var(--surface)] p-6 text-start md:p-10">
         <div className="border-y border-black/10 py-5 text-center">
           <p className="ag-display text-2xl sm:text-4xl font-bold">{getValue(data, "brandName")}</p>
           <p className="mt-2 text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">{getValue(data, "contactEyebrow")}</p>
@@ -341,11 +343,11 @@ function Contact({ data }: { data: Record<string, any> }) {
             <p>{getValue(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="narrativa-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="נושא / ארגון"  name="other" data-bizuply-form-field-id="other" />
-          <textarea className="min-h-36 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="מה הסיפור שצריך להגיע לעיתונות?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="narrativa-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("נושא / ארגון")}  name="other" data-bizuply-form-field-id="other" />
+          <textarea className="min-h-36 border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("מה הסיפור שצריך להגיע לעיתונות?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
           <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
         </form>
       </Reveal>
@@ -366,7 +368,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>
@@ -410,7 +412,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
           <h1 className="ag-display mt-8 max-w-4xl text-5xl font-bold leading-[1.05] md:text-7xl">{getValue(data, "heroTitle")}</h1>
           <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <img src={getValue(data, "heroImage")} alt="" className="aspect-[16/10] w-full object-cover border border-black/10" />
-            <div className="flex flex-col justify-between border border-black/10 bg-[var(--surface)] p-7 text-right">
+            <div className="flex flex-col justify-between border border-black/10 bg-[var(--surface)] p-7 text-start">
               <p className="text-lg leading-9 text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
               <div className="mt-8 space-y-3">
                 {stats.slice(0,3).map(([v,l])=>(
@@ -493,7 +495,7 @@ export default function NarrativaPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="narrativa" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="narrativa" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: narrativaEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

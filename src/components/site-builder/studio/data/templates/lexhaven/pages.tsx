@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lexhavenDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -96,7 +98,7 @@ function PracticeAreas({ data }: { data: Record<string, any> }) {
               <article className="lexhaven-practice-row grid gap-5 py-8 md:grid-cols-[120px_0.8fr_1.2fr] md:items-center">
                 <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">{String(index + 1).padStart(2, "0")}</span>
                 <h3 className="text-2xl font-bold text-[var(--text)]">{title}</h3>
-                <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -191,7 +193,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="relative z-10 bg-[var(--bg)] pl-8 md:pl-10">
                 <span className="grid h-16 w-16 place-items-center border-2 border-[var(--p)] bg-[var(--bg)] text-lg font-bold text-[var(--p)]">{num}</span>
                 <h3 className="mt-6 text-xl font-bold">{title}</h3>
-                <p className="mt-3 max-w-xs text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-xs text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -239,7 +241,7 @@ function Faq({ data }: { data: Record<string, any> }) {
           {faqs.map(([q, a], i) => (
             <Reveal key={q} delayMs={i * 80} variant="left">
               <div className="border border-[var(--p)]/25 bg-[var(--surface)]">
-                <button type="button" onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-6 text-right">
+                <button type="button" onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-6 text-start">
                   <span className="text-lg font-bold">{q}</span>
                   <span className="grid h-9 w-9 place-items-center bg-[var(--p)] text-white">{open === i ? "−" : "+"}</span>
                 </button>
@@ -268,19 +270,19 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
               <h2 className="t-display mt-4 text-4xl font-bold md:text-6xl">{getValue(data, "contactTitle")}</h2>
               <p className="mt-5 text-lg leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
               <div className="mt-8 space-y-3 text-sm font-semibold text-[var(--text)]">
-                <p><span className="text-[var(--p)]">טלפון</span> / {getValue(data, "phone")}</p>
-                <p><span className="text-[var(--p)]">אימייל</span> / {getValue(data, "email")}</p>
-                <p><span className="text-[var(--p)]">כתובת</span> / {getValue(data, "address")}</p>
+                <p><span className="text-[var(--p)]">{tx("טלפון")}</span> / {getValue(data, "phone")}</p>
+                <p><span className="text-[var(--p)]">{tx("אימייל")}</span> / {getValue(data, "email")}</p>
+                <p><span className="text-[var(--p)]">{tx("כתובת")}</span> / {getValue(data, "address")}</p>
               </div>
             </Reveal>
             <Reveal variant="left" delayMs={120}>
-              <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+              <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                  <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
                 </div>
-                <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-                <textarea className="min-h-32 border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="ספרו לנו בקצרה על הסוגיה"  name="message" data-bizuply-form-field-id="message"></textarea>
+                <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+                <textarea className="min-h-32 border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("ספרו לנו בקצרה על הסוגיה")}  name="message" data-bizuply-form-field-id="message"></textarea>
                 <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
               </form>
             </Reveal>
@@ -319,9 +321,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--bg)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lexhaven-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/25 bg-white px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -355,7 +357,7 @@ export default function LexhavenPages(props: LexhavenPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="lexhaven" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="lexhaven" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: lexhavenEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

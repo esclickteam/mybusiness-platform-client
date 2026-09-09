@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { LexoraSeed } from "./lexoraData";
 import { ConsultationSection, FaqSection, Reveal, SafeImage } from "./shared";
 
@@ -28,7 +29,7 @@ export default function LexoraAboutPage({ data }: { data: LexoraSeed }) {
                 <div>
                   <h3>{member.name}</h3>
                   <p>{member.role}</p>
-                  <span>אודות</span>
+                  <span>{tx("אודות")}</span>
                 </div>
               </Reveal>
             ))}

@@ -4,6 +4,12 @@ import { useTranslation } from "react-i18next";
 import { formatIls } from "../../lib/partnerMoney";
 import { billingLabel, computeDealPreview, isMainPackageSku } from "../../lib/partnerDealMath";
 import type { PartnerPriceLine, PartnerWizardCatalog } from "../../types/partner";
+import {
+  catalogCategoryLabel,
+  catalogProductIncluded,
+  catalogProductName,
+  catalogProductTagline,
+} from "../../i18n/partnerCatalogCopy";
 
 const BILLING_FILTERS = [
   { id: "all", labelKey: "partner.catalog.all" },
@@ -86,12 +92,12 @@ export default function PartnerCatalogPicker({
         items: category.items.filter((item) => {
           if (billingFilter !== "all" && item.billing !== billingFilter) return false;
           if (!q) return true;
-          const hay = `${item.displayNameHe || ""} ${item.nameHe || ""} ${item.taglineHe || ""}`.toLowerCase();
+          const hay = `${catalogProductName(t, item)} ${item.displayNameHe || ""} ${item.nameHe || ""} ${item.taglineHe || ""} ${catalogProductTagline(t, item)}`.toLowerCase();
           return hay.includes(q);
         }),
       }))
       .filter((category) => category.items.length);
-  }, [wizard.categories, query, billingFilter]);
+  }, [wizard.categories, query, billingFilter, t]);
 
   const summary = (
     <DealStickySummary
@@ -183,7 +189,7 @@ export default function PartnerCatalogPicker({
           {filteredCategories.map((category) => (
             <div key={category.id} className="space-y-3">
               <h4 className="text-sm font-black uppercase tracking-[0.14em] text-violet-700">
-                {category.labelHe}
+                {catalogCategoryLabel(t, category.id, category.labelHe)}
               </h4>
               <div className="grid gap-3 sm:grid-cols-2">
                 {category.items.map((item) => {
@@ -203,10 +209,10 @@ export default function PartnerCatalogPicker({
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <h5 className="font-black text-slate-900">
-                            {item.displayNameHe || item.nameHe}
+                            {catalogProductName(t, item)}
                           </h5>
                           <p className="mt-1 text-sm font-bold leading-5 text-slate-500">
-                            {item.taglineHe || item.descriptionHe || billingLabel(item.billing, t)}
+                            {catalogProductTagline(t, item) || billingLabel(item.billing, t)}
                           </p>
                         </div>
                         <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-black text-slate-600">
@@ -343,8 +349,8 @@ function PackageCard({
           </span>
         )}
       </div>
-      <h4 className="text-2xl font-black">{current.displayNameHe || current.nameHe}</h4>
-      <p className="mt-2 text-sm font-bold leading-6 text-slate-500">{current.taglineHe}</p>
+      <h4 className="text-2xl font-black">{catalogProductName(t, current)}</h4>
+      <p className="mt-2 text-sm font-bold leading-6 text-slate-500">{catalogProductTagline(t, current)}</p>
       {items.length > 1 ? (
         <div className="mt-4 grid grid-cols-2 gap-2">
           {items.map((item) => (
@@ -370,7 +376,7 @@ function PackageCard({
         <p className="mt-4 text-sm font-black text-slate-500">{billingLabel(current.billing, t)}</p>
       )}
       <ul className="mt-4 space-y-1.5 text-sm font-bold text-slate-600">
-        {(current.includedHe || []).map((row) => (
+        {catalogProductIncluded(t, current).map((row) => (
           <li key={row} className="flex items-center gap-2">
             <Check className="h-4 w-4 text-emerald-600" />
             {row}
@@ -419,13 +425,13 @@ function DealStickySummary({
     <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
       <h4 className="text-lg font-black">{t("partner.catalog.dealSummary")}</h4>
       <p className="mt-3 text-sm font-bold text-slate-500">{t("partner.catalog.package")}</p>
-      <p className="font-black">{pkg?.displayNameHe || pkg?.nameHe || t("partner.catalog.notSelected")}</p>
+      <p className="font-black">{pkg ? catalogProductName(t, pkg) : t("partner.catalog.notSelected")}</p>
       {addons.length ? (
         <>
           <p className="mt-3 text-sm font-bold text-slate-500">{t("partner.catalog.extras")}</p>
           <ul className="space-y-1 text-sm font-black text-slate-800">
             {addons.map((item) => (
-              <li key={item.sku}>{item.displayNameHe || item.nameHe}</li>
+              <li key={item.sku}>{catalogProductName(t, item)}</li>
             ))}
           </ul>
         </>

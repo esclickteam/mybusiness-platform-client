@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const UploadBusinessImage = ({ businessId }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
@@ -13,7 +15,7 @@ const UploadBusinessImage = ({ businessId }) => {
   // Function for uploading a file to Cloudinary
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select a file to upload");
+      alert(t("leftover.upload.selectFile"));
       return;
     }
 
@@ -32,16 +34,16 @@ const UploadBusinessImage = ({ businessId }) => {
       const data = await res.json();
       if (data.secure_url) {
         setImageUrl(data.secure_url); // Update image URL
-        alert("Image uploaded successfully!");
+        alert(t("leftover.upload.imageOk"));
 
         // Send update to database
         await updateLogo(data.secure_url); // Update logo in backend
       } else {
-        alert("Error: No image URL received");
+        alert(t("leftover.upload.noImageUrl"));
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("There was an error uploading the file");
+      alert(t("leftover.upload.fileUploadError"));
     } finally {
       setLoading(false);
     }
@@ -60,13 +62,13 @@ const UploadBusinessImage = ({ businessId }) => {
 
       const data = await res.json();
       if (data.logo) {
-        alert("Logo updated successfully!");
+        alert(t("leftover.upload.logoOk"));
       } else {
-        alert("Error updating logo");
+        alert(t("leftover.upload.logoUpdateError"));
       }
     } catch (error) {
       console.error("Error updating logo:", error);
-      alert("There was an error updating the logo");
+      alert(t("leftover.upload.logoUpdateErrorGeneric"));
     }
   };
 

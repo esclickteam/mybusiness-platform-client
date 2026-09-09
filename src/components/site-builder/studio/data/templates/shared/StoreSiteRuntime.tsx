@@ -1,4 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import i18n from "../../../../../../i18n/i18n";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { Reveal } from "./Reveal";
@@ -79,7 +82,7 @@ function sectionProps(id: string, kind: string, label: string) {
     "data-template-section-id": id,
     "data-template-section-type": kind,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
     "data-bizuply-block": kind === "products" || kind === "store" ? "products" : "section",
     "data-bizuply-block-products": kind === "products" || kind === "store" ? "true" : undefined,
     "data-visual-edit-id": id,
@@ -211,7 +214,7 @@ function ProductCard({
             </span>
           ) : null}
         </button>
-        <div className="flex flex-1 flex-col gap-3 p-4 text-right">
+        <div className="flex flex-1 flex-col gap-3 p-4 text-start">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">
             {product.category}
           </p>
@@ -233,9 +236,7 @@ function ProductCard({
               type="button"
               onClick={onAdd}
               className="bg-[var(--dark)] px-3 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-[var(--p)] hover:text-[var(--on-p)]"
-            >
-              הוסף
-            </button>
+            >{tx("הוסף")}</button>
           </div>
         </div>
       </article>
@@ -259,21 +260,21 @@ function SectionHeading({
   giant?: boolean;
 }) {
   return (
-    <Reveal className={cx(align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl text-right", className)}>
+    <Reveal className={cx(align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl text-start", className)}>
       {eyebrow ? (
         <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{eyebrow}</p>
       ) : null}
       <h2 className={cx("store-display mt-3 font-black leading-tight", giant ? "text-5xl md:text-7xl" : "text-4xl md:text-5xl")}>
         {title}
       </h2>
-      {text ? <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p> : null}
+      {text ? <p className="mt-4 text-base leading-8 text-[var(--muted)]">{tx(text)}</p> : null}
     </Reveal>
   );
 }
 
 function StatPill({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
-    <div className={cx("border border-[var(--line)] bg-[var(--surface)]/70 p-5 text-right", className)}>
+    <div className={cx("border border-[var(--line)] bg-[var(--surface)]/70 p-5 text-start", className)}>
       <p className="store-display text-3xl font-black text-[var(--p)]">{value}</p>
       <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[var(--muted)]">{label}</p>
     </div>
@@ -481,7 +482,7 @@ export default function StoreSiteRuntime({
       data-visual-flow-lock="true"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goToPage("home")} className="text-right">
+        <button type="button" onClick={() => goToPage("home")} className="text-start">
           <div className="flex items-center gap-3">
             <span className="store-logo grid h-11 w-11 place-items-center bg-[var(--p)] text-sm font-black text-[var(--on-p)]">
               {g("logoText")}
@@ -504,7 +505,7 @@ export default function StoreSiteRuntime({
                 currentPage === item.id ? "text-[var(--p)]" : "opacity-70 hover:opacity-100"
               }`}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -531,7 +532,7 @@ export default function StoreSiteRuntime({
           <button
             type="button"
             aria-expanded={navOpen}
-            aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"}
+            aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")}
             onClick={() => setNavOpen((open) => !open)}
             className="inline-flex h-10 w-10 items-center justify-center border border-[var(--line)] xl:hidden"
           >
@@ -552,13 +553,13 @@ export default function StoreSiteRuntime({
                 type="button"
                 onClick={() => goToPage(item.id)}
                 className={cx(
-                  "rounded-lg px-4 py-3 text-right text-sm font-black transition",
+                  "rounded-lg px-4 py-3 text-start text-sm font-black transition",
                   currentPage === item.id
                     ? "bg-[var(--p)] text-[var(--on-p)]"
                     : "bg-[var(--bg-soft)] text-[var(--text)]",
                 )}
               >
-                {item.label}
+                {tx(item.label)}
               </button>
             ))}
           </div>
@@ -570,27 +571,27 @@ export default function StoreSiteRuntime({
   const Footer = (
     <footer {...sectionProps("footer", "footer", "פוטר")} className="border-t border-[var(--line)] bg-[var(--dark)] px-5 py-14 text-white lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
-        <div className="text-right md:col-span-2">
+        <div className="text-start md:col-span-2">
           <p className="store-display text-3xl font-black">{g("brandName")}</p>
           <p className="mt-4 max-w-md text-sm leading-7 text-white/70">{g("footerText")}</p>
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
             {fromPlugin
-              ? "מציג את המוצרים מניהול החנות שלך"
-              : "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות"}
+              ? tx("מציג את המוצרים מניהול החנות שלך")
+              : tx("מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות")}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">ניווט</p>
+        <div className="text-start">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">{tx("ניווט")}</p>
           <div className="mt-4 grid gap-2">
             {pages.map((item) => (
               <button key={item.id} type="button" onClick={() => goToPage(item.id)} className="text-sm opacity-80 hover:opacity-100">
-                {item.label}
+                {tx(item.label)}
               </button>
             ))}
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">יצירת קשר</p>
+        <div className="text-start">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">{tx("יצירת קשר")}</p>
           <p className="mt-4 text-sm">{g("phone")}</p>
           <p className="mt-2 text-sm">{g("email")}</p>
           <p className="mt-2 text-sm text-white/70">{g("address")}</p>
@@ -616,7 +617,7 @@ export default function StoreSiteRuntime({
       <button
         type="button"
         onClick={() => navigateCategory(cat)}
-        className={cx("store-card group relative w-full overflow-hidden border border-[var(--line)] text-right", className)}
+        className={cx("store-card group relative w-full overflow-hidden border border-[var(--line)] text-start", className)}
       >
         <StoreImage
           src={cat.image || fallbackCategoryImages[index % fallbackCategoryImages.length] || g("heroImage") || SAFE_IMAGE_FALLBACK}
@@ -627,7 +628,7 @@ export default function StoreSiteRuntime({
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
         <div className={cx("absolute inset-x-0 bottom-0 p-5 text-white", labelClassName)}>
           <p className="store-display text-2xl font-black">{cat.name}</p>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">לצפייה בקטגוריה</p>
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">{tx("לצפייה בקטגוריה")}</p>
         </div>
       </button>
     </Reveal>
@@ -653,13 +654,11 @@ export default function StoreSiteRuntime({
     <section {...sectionProps(id, "products", label)} className={cx("px-5 py-20 lg:px-8", className)} data-bizuply-widget="products">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <SectionHeading eyebrow={g("productsEyebrow")} title={title} text={text} />
-          <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em]">
-            לכל המוצרים
-          </button>
+          <SectionHeading eyebrow={g("productsEyebrow")} title={title} text={tx(text)} />
+          <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em]">{tx("לכל המוצרים")}</button>
         </div>
         {loading ? (
-          <p className="mt-10 text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+          <p className="mt-10 text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
         ) : (
           <div className={cx("mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4", railClassName)}>
             {productsToShow.map((product, index) => (
@@ -688,10 +687,10 @@ export default function StoreSiteRuntime({
           [g("valueThreeTitle"), g("valueThreeText")],
         ].map(([title, text], index) => (
           <Reveal key={title} delayMs={index * 100} variant="up">
-            <article className={cx("store-card h-full border border-[var(--line)] bg-[var(--surface)] p-7 text-right", cardClassName)}>
+            <article className={cx("store-card h-full border border-[var(--line)] bg-[var(--surface)] p-7 text-start", cardClassName)}>
               <p className="text-sm font-black text-[var(--p)]">0{index + 1}</p>
               <h3 className="store-display mt-4 text-2xl font-black">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </article>
           </Reveal>
         ))}
@@ -747,9 +746,9 @@ export default function StoreSiteRuntime({
                       className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
                     />
                   </div>
-                  <div className={cx("flex flex-col justify-center text-right", featured ? "p-6 sm:p-8 lg:p-10" : "p-5 sm:p-6")}>
+                  <div className={cx("flex flex-col justify-center text-start", featured ? "p-6 sm:p-8 lg:p-10" : "p-5 sm:p-6")}>
                     <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--p)]">
-                      {post.tag}
+                      {tx(post.tag)}
                     </p>
                     <h3 className={cx("store-display mt-3 font-black leading-tight", featured ? "text-2xl sm:text-3xl md:text-4xl" : "text-xl sm:text-2xl")}>
                       {post.title}
@@ -761,9 +760,7 @@ export default function StoreSiteRuntime({
                       type="button"
                       onClick={() => goToPage("journal")}
                       className="mt-5 inline-flex w-fit items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--p)] transition group-hover:gap-3"
-                    >
-                      להמשך קריאה
-                      <span aria-hidden="true">←</span>
+                    >{tx("להמשך קריאה")}<span aria-hidden="true">←</span>
                     </button>
                   </div>
                 </article>
@@ -779,13 +776,13 @@ export default function StoreSiteRuntime({
     <section {...sectionProps("newsletter", "newsletter", "ניוזלטר")} className={cx("px-5 pb-20 lg:px-8 lg:pb-28", className)}>
       <Reveal>
         <div className="mx-auto grid max-w-7xl items-center gap-8 overflow-hidden border border-[var(--line)] bg-[var(--bg-soft)] p-8 md:grid-cols-2 lg:p-12">
-          <div className="text-right">
+          <div className="text-start">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{g("newsletterEyebrow")}</p>
             <h2 className="store-display mt-3 text-3xl font-black md:text-4xl">{g("newsletterTitle")}</h2>
             <p className="mt-3 text-[var(--muted)]">{g("newsletterText")}</p>
           </div>
           <form className="flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="האימייל שלך" className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
+            <input type="email" placeholder={tx("האימייל שלך")} className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-[var(--on-p)]">
               {g("newsletterButton")}
             </button>
@@ -806,8 +803,8 @@ export default function StoreSiteRuntime({
             [g("reviewThreeName"), g("reviewThreeText")],
           ].map(([name, text], index) => (
             <Reveal key={name} delayMs={index * 110} variant="scale">
-              <blockquote className="h-full border border-white/15 bg-white/5 p-7 text-right backdrop-blur">
-                <p className="text-sm leading-7 text-white/80">"{text}"</p>
+              <blockquote className="h-full border border-white/15 bg-white/5 p-7 text-start backdrop-blur">
+                <p className="text-sm leading-7 text-white/80">"{tx(text)}"</p>
                 <footer className="mt-6 text-sm font-black text-[var(--accent)]">{name}</footer>
               </blockquote>
             </Reveal>
@@ -821,8 +818,8 @@ export default function StoreSiteRuntime({
     <section {...sectionProps("shipping-teaser", "shipping", "משלוחים")} className={cx("px-5 py-16 lg:px-8", className)}>
       <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
         {[g("shipBenefit"), g("returnBenefit"), g("supportBenefit"), g("secureBenefit")].map((text, i) => (
-          <Reveal key={text} delayMs={i * 80}>
-            <div className="border border-[var(--line)] bg-[var(--surface)] p-5 text-center text-sm font-bold">{text}</div>
+          <Reveal key={tx(text)} delayMs={i * 80}>
+            <div className="border border-[var(--line)] bg-[var(--surface)] p-5 text-center text-sm font-bold">{tx(text)}</div>
           </Reveal>
         ))}
       </div>
@@ -845,13 +842,13 @@ export default function StoreSiteRuntime({
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.25),rgba(0,0,0,0.92))]" />
             <div className="absolute inset-x-0 top-1/2 h-px bg-cyan-300/70 shadow-[0_0_40px_#38bdf8]" />
             <div className="relative mx-auto grid min-h-[94vh] max-w-7xl items-end gap-10 px-5 py-24 lg:grid-cols-[1fr_360px] lg:px-8">
-              <Reveal variant="left" className="max-w-3xl text-right text-white">
+              <Reveal variant="left" className="max-w-3xl text-start text-white">
                 <p className="inline-flex border border-cyan-300/50 bg-cyan-300/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.32em] text-cyan-100">{g("heroEyebrow")}</p>
                 <h1 className="store-display mt-6 text-6xl font-black leading-[0.95] md:text-8xl">{g("heroTitle")}</h1>
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">{g("heroSubtitle")}</p>
                 <div className="mt-9 flex flex-wrap gap-3">
                   <button type="button" onClick={() => goToPage("shop")} className="bg-[var(--p)] px-7 py-4 text-sm font-black text-[var(--on-p)]">{g("heroPrimaryButton")}</button>
-                  <button type="button" onClick={() => goToPage("collections")} className="border border-white/40 px-7 py-4 text-sm font-black text-white">{g("navCollections") || "קולקציות"}</button>
+                  <button type="button" onClick={() => goToPage("collections")} className="border border-white/40 px-7 py-4 text-sm font-black text-white">{g("navCollections") || tx("קולקציות")}</button>
                 </div>
               </Reveal>
               {hero ? (
@@ -861,10 +858,10 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("neon-rails", "features", "מסילות ניאון")} className="bg-black px-5 py-10 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
-              {["SYNC", "4K READY", "FAST CHARGE", "SMART HOME"].map((value, i) => <StatPill key={value} value={value} label={`מפרט 0${i + 1}`} className="bg-cyan-300/5" />)}
+              {["SYNC", "4K READY", "FAST CHARGE", "SMART HOME"].map((value, i) => <StatPill key={value} value={value} label={tx(`מפרט 0${i + 1}`)} className="bg-cyan-300/5" />)}
             </div>
           </section>
-          <ProductRail id="cinema-scroll" label="סקרולר מוצרים" title={g("productsTitle")} text={g("productsText")} className="bg-[#03080d] text-white" railClassName="flex snap-x overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[280px]" />
+          <ProductRail id="cinema-scroll" label={tx("סקרולר מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[#03080d] text-white" railClassName="flex snap-x overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[280px]" />
           <section {...sectionProps("cinema-categories", "categories", "קטגוריות")} className="bg-black px-5 py-20 lg:px-8">
             <div className="mx-auto max-w-7xl">
               <SectionHeading eyebrow={g("categoriesEyebrow")} title={g("categoriesTitle")} text={g("categoriesText")} />
@@ -875,7 +872,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("cinema-spec-strip", "features", "פס מפרטים")} className="border-y border-cyan-300/20 bg-cyan-300/10 px-5 py-12 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-              {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <Reveal key={text} delayMs={i * 80}><p className="text-right text-sm leading-7 text-cyan-50">{text}</p></Reveal>)}
+              {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <Reveal key={tx(text)} delayMs={i * 80}><p className="text-start text-sm leading-7 text-cyan-50">{tx(text)}</p></Reveal>)}
             </div>
           </section>
           <ValuesStrip className="bg-black text-white" cardClassName="bg-white/5" />
@@ -902,7 +899,7 @@ export default function StoreSiteRuntime({
           {Header}
           <section {...sectionProps("market-hero", "hero", "בנטו שוק")} className="px-5 py-16 lg:px-8 lg:py-24">
             <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-12">
-              <Reveal className="rounded-[2rem] bg-[var(--dark)] p-8 text-right text-white md:col-span-5 lg:p-12">
+              <Reveal className="rounded-[2rem] bg-[var(--dark)] p-8 text-start text-white md:col-span-5 lg:p-12">
                 <p className="text-xs font-black uppercase tracking-[0.3em] text-[var(--accent)]">{g("heroEyebrow")}</p>
                 <h1 className="store-display mt-5 text-5xl font-black md:text-6xl">{g("heroTitle")}</h1>
                 <p className="mt-5 leading-8 text-white/70">{g("heroSubtitle")}</p>
@@ -924,7 +921,7 @@ export default function StoreSiteRuntime({
               <p className="store-display text-4xl font-black">{g("promoText")}</p>
             </div>
           </section>
-          <ProductRail id="market-products" label="דוכני מוצרים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ProductRail id="market-products" label={tx("דוכני מוצרים")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <section {...sectionProps("harvest-story", "about", "סיפור הקטיף")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-2">
               <StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[5/4] rounded-[2rem] object-cover" />
@@ -933,10 +930,10 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("market-stats", "features", "מדדי טריות")} className="px-5 py-16 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
-              <StatPill value="06:00" label="קטיף בוקר" className="rounded-[2rem]" />
-              <StatPill value="4" label="משקי מקור" className="rounded-[2rem]" />
-              <StatPill value="24h" label="עד הסל" className="rounded-[2rem]" />
-              <StatPill value="0" label="אריזות מיותרות" className="rounded-[2rem]" />
+              <StatPill value="06:00" label={tx("קטיף בוקר")} className="rounded-[2rem]" />
+              <StatPill value="4" label={tx("משקי מקור")} className="rounded-[2rem]" />
+              <StatPill value="24h" label={tx("עד הסל")} className="rounded-[2rem]" />
+              <StatPill value="0" label={tx("אריזות מיותרות")} className="rounded-[2rem]" />
             </div>
           </section>
           <ValuesStrip cardClassName="rounded-[2rem]" />
@@ -972,22 +969,22 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("athletic-stats", "features", "סטטיסטיקות")} className="px-5 py-12 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
-              <StatPill value="+42%" label="קצב אימון" />
-              <StatPill value="8" label="קטגוריות כוח" />
-              <StatPill value="24/7" label="מוכנות" />
-              <StatPill value="0" label="פשרות" />
+              <StatPill value="+42%" label={tx("קצב אימון")} />
+              <StatPill value="8" label={tx("קטגוריות כוח")} />
+              <StatPill value="24/7" label={tx("מוכנות")} />
+              <StatPill value="0" label={tx("פשרות")} />
             </div>
           </section>
           {spotlights.map((product, index) => (
             <section key={product.id} {...sectionProps(`athletic-spot-${index + 1}`, "product", "ספוטלייט מוצר")} className="px-5 py-12 lg:px-8">
               <div className={cx("mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2", index % 2 ? "lg:[&>div:first-child]:order-2" : "")}>
                 <StoreImage src={product.image} alt={product.name} fallbackLabel={product.name} className="aspect-[16/10] w-full object-cover" />
-                <Reveal className="text-right">
+                <Reveal className="text-start">
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{product.category}</p>
                   <h2 className="store-display mt-4 text-5xl font-black">{product.name}</h2>
                   <p className="mt-4 text-2xl font-black text-[var(--p)]">{formatStorePrice(product.price, currency)}</p>
                   <p className="mt-4 text-[var(--muted)]">{product.shortDescription}</p>
-                  <button type="button" onClick={() => openProduct(product)} className="mt-7 bg-[var(--dark)] px-7 py-4 text-sm font-black text-white">בדיקת ציוד</button>
+                  <button type="button" onClick={() => openProduct(product)} className="mt-7 bg-[var(--dark)] px-7 py-4 text-sm font-black text-white">{tx("בדיקת ציוד")}</button>
                 </Reveal>
               </div>
             </section>
@@ -995,7 +992,7 @@ export default function StoreSiteRuntime({
           <section {...sectionProps("athletic-cats", "categories", "מחלקות אימון")} className="bg-[var(--dark)] px-5 py-20 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/3]" />)}</div>
           </section>
-          <ProductRail id="athletic-grid" label="גריד ציוד" title={g("productsTitle")} text={g("productsText")} />
+          <ProductRail id="athletic-grid" label={tx("גריד ציוד")} title={g("productsTitle")} text={g("productsText")} />
           <ValuesStrip className="bg-[var(--bg-soft)]" />
           <Testimonials />
           <JournalCards />
@@ -1013,7 +1010,7 @@ export default function StoreSiteRuntime({
             <div className="absolute end-[-8rem] top-10 h-80 w-80 rounded-full bg-[var(--accent)]/50 blur-3xl" />
             <div className="absolute start-[-6rem] bottom-0 h-96 w-96 rounded-full bg-[var(--p)]/20 blur-3xl" />
             <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-              <Reveal className="text-right">
+              <Reveal className="text-start">
                 <p className="rounded-full bg-white px-5 py-2 text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">{g("heroEyebrow")}</p>
                 <h1 className="store-display mt-6 text-5xl font-black leading-tight md:text-7xl">{g("heroTitle")}</h1>
                 <p className="mt-5 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p>
@@ -1024,10 +1021,10 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("pastel-path", "features", "שביל פסטל")} className="px-5 py-12 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">
-              {["להרגיע", "לעטוף", "לשחק", "לגדול"].map((step, index) => <StatPill key={step} value={`0${index + 1}`} label={step} className="rounded-[2rem]" />)}
+              {["להרגיע", "לעטוף", "לשחק", "לגדול"].map((step, index) => <StatPill key={step} value={`0${index + 1}`} label={tx(step)} className="rounded-[2rem]" />)}
             </div>
           </section>
-          <ProductRail id="gentle-carousel" label="קרוסלת מוצרים עדינה" title={g("productsTitle")} text={g("productsText")} railClassName="flex overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[260px]" />
+          <ProductRail id="gentle-carousel" label={tx("קרוסלת מוצרים עדינה")} title={g("productsTitle")} text={g("productsText")} railClassName="flex overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[260px]" />
           <section {...sectionProps("nursery-categories", "categories", "חדרי תינוקות")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
               {categoryTiles.slice(0, 6).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[40%_60%_50%_50%]" />)}
@@ -1059,7 +1056,7 @@ export default function StoreSiteRuntime({
           {Header}
           <section {...sectionProps("editorial-cover", "hero", "שער מגזין")} className="px-5 py-16 lg:px-8 lg:py-24">
             <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <Reveal className="text-right">
+              <Reveal className="text-start">
                 <p className="text-xs font-black uppercase tracking-[0.35em] text-[var(--p)]">{g("heroEyebrow")}</p>
                 <h1 className="store-display mt-4 text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1>
                 <p className="mt-6 border-y border-[var(--line)] py-6 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p>
@@ -1073,7 +1070,7 @@ export default function StoreSiteRuntime({
               <StoreImage src={g("lookThree")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[4/5] w-full object-cover md:col-span-5" />
             </div>
           </section>
-          <ProductRail id="editor-picks" label="בחירות מערכת" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" railClassName="lg:grid-cols-3" />
+          <ProductRail id="editor-picks" label={tx("בחירות מערכת")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" railClassName="lg:grid-cols-3" />
           <section {...sectionProps("editorial-categories", "categories", "מדורי הבית")} className="px-5 py-20 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4]" />)}</div>
           </section>
@@ -1105,7 +1102,7 @@ export default function StoreSiteRuntime({
           <section {...sectionProps("pet-hero", "hero", "משחקים באלכסון")} className="relative overflow-hidden px-5 py-20 lg:px-8">
             <div className="absolute inset-0 store-paw-pattern opacity-20" />
             <div className="relative mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2">
-              <Reveal className="text-right">
+              <Reveal className="text-start">
                 <p className="inline-flex rounded-full bg-[var(--accent)] px-5 py-2 text-xs font-black uppercase tracking-[0.24em]">{g("heroEyebrow")}</p>
                 <h1 className="store-display mt-5 text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1>
                 <p className="mt-5 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p>
@@ -1114,9 +1111,9 @@ export default function StoreSiteRuntime({
               <StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="store-wiggle aspect-[5/4] w-full rounded-[2rem] object-cover" />
             </div>
           </section>
-          <section {...sectionProps("paw-stats", "features", "טביעות כף")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["כיף", "נשנוש", "טיול", "שינה"].map((x, i) => <StatPill key={x} value="PAW" label={`${x} 0${i + 1}`} className="rounded-[2rem]" />)}</div></section>
+          <section {...sectionProps("paw-stats", "features", "טביעות כף")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["כיף", "נשנוש", "טיול", "שינה"].map((x, i) => <StatPill key={x} value="PAW" label={tx(`${x} 0${i + 1}`)} className="rounded-[2rem]" />)}</div></section>
           <section {...sectionProps("pet-rounded-tiles", "categories", "אריחי חיות")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[2.5rem]" />)}</div></section>
-          <ProductRail id="pet-toy-products" label="צעצועים ומוצרים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
+          <ProductRail id="pet-toy-products" label={tx("צעצועים ומוצרים")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
           <section {...sectionProps("pet-story", "about", "סיפור להקה")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 rounded-[3rem] bg-[var(--accent)]/30 p-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-square rounded-[2rem] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <ValuesStrip cardClassName="rounded-[2rem]" />
           <Testimonials />
@@ -1134,15 +1131,15 @@ export default function StoreSiteRuntime({
           {Header}
           <section {...sectionProps("chapter-hero", "hero", "פרק ראשון")} className="px-5 py-20 lg:px-8 lg:py-28">
             <div className="mx-auto max-w-5xl border-x border-[var(--line)] px-8 text-center">
-              <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">פרק 01 / {g("heroEyebrow")}</p>
+              <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{tx("פרק")} 01 / {g("heroEyebrow")}</p>
               <h1 className="store-display mt-6 text-6xl font-black leading-tight md:text-8xl">{g("heroTitle")}</h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p>
             </div>
           </section>
           <section {...sectionProps("quote-interlude", "quote", "ציטוט")} className="bg-[var(--dark)] px-5 py-16 text-white lg:px-8"><blockquote className="mx-auto max-w-4xl text-center store-display text-4xl leading-tight">"{g("tagline")}"</blockquote></section>
           <section {...sectionProps("shelf-categories", "categories", "מדפי קטגוריות")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[16/4]" />)}</div></section>
-          <ProductRail id="book-shelves" label="שורות מדף" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
-          <section {...sectionProps("reading-path", "features", "מסלול קריאה")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-0 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((x, i) => <div key={x} className="border border-[var(--line)] bg-[var(--surface)] p-8 text-right"><p className="store-display text-5xl text-[var(--p)]">{i + 1}</p><h3 className="mt-4 font-black">{x}</h3></div>)}</div></section>
+          <ProductRail id="book-shelves" label={tx("שורות מדף")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
+          <section {...sectionProps("reading-path", "features", "מסלול קריאה")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-0 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((x, i) => <div key={x} className="border border-[var(--line)] bg-[var(--surface)] p-8 text-start"><p className="store-display text-5xl text-[var(--p)]">{i + 1}</p><h3 className="mt-4 font-black">{x}</h3></div>)}</div></section>
           <section {...sectionProps("author-story", "about", "הערת העורך")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.7fr_1.3fr]"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[3/4] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <section {...sectionProps("book-lookbook", "gallery", "עמודי השראה")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">{[g("lookOne"), g("lookTwo"), g("lookThree")].map((image) => <StoreImage key={image} src={image} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] object-cover" />)}</div></section>
           <Testimonials />
@@ -1161,12 +1158,12 @@ export default function StoreSiteRuntime({
           <section {...sectionProps("gloss-hero", "hero", "יופי מבריק")} className="relative overflow-hidden bg-[var(--dark)] px-5 py-20 text-white lg:px-8 lg:py-28">
             <div className="absolute inset-x-0 top-1/3 h-28 store-shimmer-strip bg-white/10" />
             <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-              <Reveal className="text-right"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--accent)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-6xl font-black md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 text-lg leading-8 text-white/70">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className="mt-8 rounded-full bg-white px-8 py-4 text-sm font-black text-[var(--dark)]">{g("heroPrimaryButton")}</button></Reveal>
+              <Reveal className="text-start"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--accent)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-6xl font-black md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 text-lg leading-8 text-white/70">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className="mt-8 rounded-full bg-white px-8 py-4 text-sm font-black text-[var(--dark)]">{g("heroPrimaryButton")}</button></Reveal>
               <StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[4/5] rounded-[2rem] object-cover" />
             </div>
           </section>
-          <section {...sectionProps("ritual-split", "features", "טקסים מפוצלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((title, i) => <Reveal key={title} delayMs={i * 90}><div className="rounded-[2rem] bg-[var(--bg-soft)] p-8 text-right"><p className="text-[var(--p)]">RITUAL 0{i + 1}</p><h3 className="store-display mt-3 text-3xl font-black">{title}</h3></div></Reveal>)}</div></section>
-          <ProductRail id="gloss-portraits" label="פורטרטים מוצר" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <section {...sectionProps("ritual-split", "features", "טקסים מפוצלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">{[g("valueOneTitle"), g("valueTwoTitle"), g("valueThreeTitle")].map((title, i) => <Reveal key={title} delayMs={i * 90}><div className="rounded-[2rem] bg-[var(--bg-soft)] p-8 text-start"><p className="text-[var(--p)]">RITUAL 0{i + 1}</p><h3 className="store-display mt-3 text-3xl font-black">{title}</h3></div></Reveal>)}</div></section>
+          <ProductRail id="gloss-portraits" label={tx("פורטרטים מוצר")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <section {...sectionProps("beauty-categories", "categories", "טקסי יופי")} className="bg-[var(--dark)] px-5 py-20 text-white lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[2rem]" />)}</div></section>
           <section {...sectionProps("ingredient-glow", "features", "מרכיבים")} className="px-5 py-20 lg:px-8"><div className="mx-auto max-w-4xl text-center"><p className="store-display text-5xl font-black">{g("productDetailOne")}</p><p className="mt-5 text-[var(--muted)]">{g("productDetailTwo")}</p></div></section>
           <section {...sectionProps("gloss-gallery", "gallery", "גלוס")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-12"><StoreImage src={g("lookOne")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[16/9] object-cover md:col-span-8" /><StoreImage src={g("lookTwo")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-square object-cover md:col-span-4" /></div></section>
@@ -1185,14 +1182,14 @@ export default function StoreSiteRuntime({
           {Header}
           <section {...sectionProps("blueprint-hero", "hero", "גריד בלופרינט")} className="store-blueprint-grid bg-slate-950 px-5 py-20 text-white lg:px-8 lg:py-28">
             <div className="mx-auto grid max-w-7xl items-end gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-              <Reveal className="text-right"><p className="text-xs font-black uppercase tracking-[0.32em] text-yellow-300">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-6xl font-black uppercase leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">{g("heroSubtitle")}</p></Reveal>
+              <Reveal className="text-start"><p className="text-xs font-black uppercase tracking-[0.32em] text-yellow-300">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-6xl font-black uppercase leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">{g("heroSubtitle")}</p></Reveal>
               <StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-square object-cover" />
             </div>
           </section>
-          <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={x} />)}</div></section>
-          <ProductRail id="tool-benches" label="ספסלי מוצרים" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
+          <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={tx(x)} />)}</div></section>
+          <ProductRail id="tool-benches" label={tx("ספסלי מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
           <section {...sectionProps("yard-categories", "categories", "קירות כלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
-          <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={text} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{text}</p></div>)}</div></section>
+          <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={tx(text)} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{tx(text)}</p></div>)}</div></section>
           <section {...sectionProps("project-story", "about", "סיפור פרויקט")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[16/10] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
           <ValuesStrip className="bg-[var(--bg-soft)]" />
           <Testimonials />
@@ -1221,7 +1218,7 @@ export default function StoreSiteRuntime({
             <section key={item.id} {...sectionProps(`jewel-stage-${index + 1}`, "product", "במת מוצר")} className="px-5 py-20 lg:px-8">
               <div className="mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-2">
                 <StoreImage src={item.image} alt={item.name} fallbackLabel={item.name} className="aspect-[4/5] w-full object-cover" />
-                <Reveal className="text-right"><p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">{item.category}</p><h2 className="store-display mt-6 text-6xl font-light">{item.name}</h2><p className="mt-5 text-2xl text-[var(--p)]">{formatStorePrice(item.price, currency)}</p><button type="button" onClick={() => openProduct(item)} className="mt-8 border border-[var(--line)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em]">התבוננות</button></Reveal>
+                <Reveal className="text-start"><p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">{item.category}</p><h2 className="store-display mt-6 text-6xl font-light">{item.name}</h2><p className="mt-5 text-2xl text-[var(--p)]">{formatStorePrice(item.price, currency)}</p><button type="button" onClick={() => openProduct(item)} className="mt-8 border border-[var(--line)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em]">{tx("התבוננות")}</button></Reveal>
               </div>
             </section>
           );
@@ -1243,7 +1240,7 @@ export default function StoreSiteRuntime({
     <div>
       {Header}
       <section {...sectionProps("shop-hero", "hero", "חנות")} className="border-b border-[var(--line)] px-5 py-16 lg:px-8">
-        <div className="mx-auto max-w-7xl text-right">
+        <div className="mx-auto max-w-7xl text-start">
           <Reveal>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{g("shopEyebrow")}</p>
             <h1 className="store-display mt-4 text-5xl font-black md:text-6xl">{g("shopTitle")}</h1>
@@ -1261,9 +1258,7 @@ export default function StoreSiteRuntime({
               className={`px-4 py-2 text-xs font-black uppercase tracking-[0.14em] ${
                 activeCategory === "all" ? "bg-[var(--p)] text-[var(--on-p)]" : "border border-[var(--line)] bg-[var(--surface)]"
               }`}
-            >
-              הכל
-            </button>
+            >{tx("הכל")}</button>
             {categoryTiles.map((cat) => (
               <button
                 key={cat.id}
@@ -1281,7 +1276,7 @@ export default function StoreSiteRuntime({
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="חיפוש מוצר..."
+              placeholder={tx("חיפוש מוצר...")}
               className="min-w-[200px] flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm outline-none focus:border-[var(--p)]"
             />
             <select
@@ -1289,10 +1284,10 @@ export default function StoreSiteRuntime({
               onChange={(e) => setSort(e.target.value as typeof sort)}
               className="border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm"
             >
-              <option value="featured">נבחרים</option>
-              <option value="price-asc">מחיר: נמוך לגבוה</option>
-              <option value="price-desc">מחיר: גבוה לנמוך</option>
-              <option value="name">שם א-ת</option>
+              <option value="featured">{tx("נבחרים")}</option>
+              <option value="price-asc">{tx("מחיר: נמוך לגבוה")}</option>
+              <option value="price-desc">{tx("מחיר: גבוה לנמוך")}</option>
+              <option value="name">{tx("שם א-ת")}</option>
             </select>
           </div>
         </div>
@@ -1301,14 +1296,14 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("shop-grid", "products", "רשת מוצרים")} className="px-5 py-16 lg:px-8 lg:py-20" data-bizuply-widget="products">
         <div className="mx-auto max-w-7xl">
           {loading ? (
-            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+            <p className="text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
           ) : (
             <>
               <p className="mb-8 text-sm text-[var(--muted)]">
-                {filteredProducts.length} מוצרים
+                {i18n.t("publicWidgets.store.productCount", { count: filteredProducts.length })}
                 {fromPlugin
-                  ? " · המוצרים מהחנות שלך"
-                  : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
+                  ? i18n.t("publicWidgets.store.fromYourStore")
+                  : i18n.t("publicWidgets.store.demoTemporary")}
               </p>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product, index) => (
@@ -1324,9 +1319,7 @@ export default function StoreSiteRuntime({
                 ))}
               </div>
               {!filteredProducts.length ? (
-                <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
-                  לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.
-                </div>
+                <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">{tx("לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.")}</div>
               ) : null}
             </>
           )}
@@ -1353,7 +1346,7 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("collection-rows", "products", "שורות קולקציה")} className="bg-[var(--bg-soft)] px-5 py-16 lg:px-8" data-bizuply-widget="products">
         <div className="mx-auto grid max-w-7xl gap-10">
           {loading ? (
-            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+            <p className="text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
           ) : (
             categoryTiles.slice(0, 4).map((cat) => {
               const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4);
@@ -1362,7 +1355,7 @@ export default function StoreSiteRuntime({
                 <div key={cat.id}>
                   <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
                     <h2 className="store-display text-3xl font-black">{cat.name}</h2>
-                    <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button>
+                    <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">{tx("לצפייה")}</button>
                   </div>
                   <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {displayItems.map((product, index) => (
@@ -1390,7 +1383,7 @@ export default function StoreSiteRuntime({
                 <StoreImage src={selectedProduct.image} alt={selectedProduct.name} fallbackLabel={selectedProduct.name} className="aspect-square w-full object-cover" />
               </div>
             </Reveal>
-            <Reveal variant="left" className="text-right">
+            <Reveal variant="left" className="text-start">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">{selectedProduct.category}</p>
               <h1 className="store-display mt-4 text-4xl font-black md:text-5xl">{selectedProduct.name}</h1>
               <p className="mt-4 text-2xl font-black text-[var(--p)]">
@@ -1412,25 +1405,21 @@ export default function StoreSiteRuntime({
                     goToPage("cart");
                   }}
                   className="bg-[var(--p)] px-7 py-3.5 text-sm font-black text-[var(--on-p)]"
-                >
-                  הוספה לסל
-                </button>
-                <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-7 py-3.5 text-sm font-black">
-                  חזרה לחנות
-                </button>
+                >{tx("הוספה לסל")}</button>
+                <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-7 py-3.5 text-sm font-black">{tx("חזרה לחנות")}</button>
               </div>
             </Reveal>
           </div>
         ) : (
-          <p className="mx-auto max-w-7xl text-[var(--muted)]">אין מוצרים להצגה. הגדירו מוצרים בתוסף החנות.</p>
+          <p className="mx-auto max-w-7xl text-[var(--muted)]">{tx("אין מוצרים להצגה. הגדירו מוצרים בתוסף החנות.")}</p>
         )}
       </section>
 
       <section {...sectionProps("product-details", "features", "פרטים")} className="bg-[var(--bg-soft)] px-5 py-16 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
           {[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => (
-            <Reveal key={text} delayMs={i * 80}>
-              <div className="border border-[var(--line)] bg-[var(--surface)] p-6 text-right text-sm leading-7">{text}</div>
+            <Reveal key={tx(text)} delayMs={i * 80}>
+              <div className="border border-[var(--line)] bg-[var(--surface)] p-6 text-start text-sm leading-7">{tx(text)}</div>
             </Reveal>
           ))}
         </div>
@@ -1438,7 +1427,7 @@ export default function StoreSiteRuntime({
 
       <section {...sectionProps("product-related", "products", "מוצרים דומים")} className="px-5 py-16 lg:px-8" data-bizuply-widget="products">
         <div className="mx-auto max-w-7xl">
-          <h2 className="store-display text-3xl font-black">אולי גם יעניין אתכם</h2>
+          <h2 className="store-display text-3xl font-black">{tx("אולי גם יעניין אתכם")}</h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {products
               .filter((p) => p.id !== selectedProduct?.id)
@@ -1471,17 +1460,15 @@ export default function StoreSiteRuntime({
           <div className="mt-10 space-y-4">
             {cart.length === 0 ? (
               <div className="border border-dashed border-[var(--line)] p-10 text-center">
-                <p className="text-[var(--muted)]">הסל ריק כרגע.</p>
-                <button type="button" onClick={() => goToPage("shop")} className="mt-6 bg-[var(--p)] px-6 py-3 text-sm font-black text-[var(--on-p)]">
-                  לעמוד החנות
-                </button>
+                <p className="text-[var(--muted)]">{tx("הסל ריק כרגע.")}</p>
+                <button type="button" onClick={() => goToPage("shop")} className="mt-6 bg-[var(--p)] px-6 py-3 text-sm font-black text-[var(--on-p)]">{tx("לעמוד החנות")}</button>
               </div>
             ) : (
               cart.map((item) => (
                 <div key={item.id} className="flex flex-wrap items-center justify-between gap-4 border border-[var(--line)] bg-[var(--surface)] p-4">
                   <div className="flex items-center gap-4">
                     <StoreImage src={item.image} alt="" fallbackLabel={item.name} className="h-20 w-16 object-cover" />
-                    <div className="text-right">
+                    <div className="text-start">
                       <p className="font-black">{item.name}</p>
                       <p className="text-sm text-[var(--muted)]">{formatStorePrice(item.price, currency)} x {item.qty}</p>
                     </div>
@@ -1492,9 +1479,7 @@ export default function StoreSiteRuntime({
                       type="button"
                       className="text-xs font-bold text-red-600"
                       onClick={() => setCart((prev) => prev.filter((x) => x.id !== item.id))}
-                    >
-                      הסר
-                    </button>
+                    >{tx("הסר")}</button>
                   </div>
                 </div>
               ))
@@ -1502,14 +1487,12 @@ export default function StoreSiteRuntime({
           </div>
           {cart.length > 0 ? (
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
-              <p className="text-xl font-black">סה"כ: {formatStorePrice(cartTotal, currency)}</p>
+              <p className="text-xl font-black">{tx('סה"כ')}: {formatStorePrice(cartTotal, currency)}</p>
               <button
                 type="button"
                 onClick={openCheckout}
                 className="bg-[var(--dark)] px-7 py-3.5 text-sm font-black text-white"
-              >
-                המשך לתשלום
-              </button>
+              >{tx("המשך לתשלום")}</button>
             </div>
           ) : null}
         </div>
@@ -1533,7 +1516,7 @@ export default function StoreSiteRuntime({
           </div>
         </div>
       </section>
-      <ProductRail id="lookbook-products" label="מוצרים מתוך הלוקבוק" title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" />
+      <ProductRail id="lookbook-products" label={tx("מוצרים מתוך הלוקבוק")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--bg-soft)]" />
       {Footer}
     </div>
   );
@@ -1544,7 +1527,7 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("about-hero", "hero", "אודות")} className="px-5 py-16 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
           <Reveal variant="right"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-[5/4] w-full object-cover" /></Reveal>
-          <Reveal variant="left" className="text-right">
+          <Reveal variant="left" className="text-start">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{g("aboutEyebrow")}</p>
             <h1 className="store-display mt-4 text-5xl font-black">{g("aboutTitle")}</h1>
             <p className="mt-6 text-base leading-8 text-[var(--muted)]">{g("aboutText")}</p>
@@ -1584,7 +1567,7 @@ export default function StoreSiteRuntime({
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/25" />
-        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-start text-white lg:px-8 lg:py-24">
           <p className="text-xs font-black uppercase tracking-[0.3em] text-white/75">
             {g("journalEyebrow")}
           </p>
@@ -1608,8 +1591,8 @@ export default function StoreSiteRuntime({
               />
             </div>
           </Reveal>
-          <Reveal variant="left" className="text-right">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">כתבה ראשית</p>
+          <Reveal variant="left" className="text-start">
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{tx("כתבה ראשית")}</p>
             <h2 className="store-display mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               {g("journalOneTitle")}
             </h2>
@@ -1643,22 +1626,22 @@ export default function StoreSiteRuntime({
       {Header}
       <section {...sectionProps("contact-main", "contact", "צור קשר")} className="px-5 py-16 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
-          <Reveal variant="right" className="text-right">
+          <Reveal variant="right" className="text-start">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{g("contactEyebrow")}</p>
             <h1 className="store-display mt-4 text-5xl font-black">{g("contactTitle")}</h1>
             <p className="mt-4 text-[var(--muted)]">{g("contactText")}</p>
             <div className="mt-8 space-y-3 text-sm">
-              <p><strong>טלפון:</strong> {g("phone")}</p>
-              <p><strong>אימייל:</strong> {g("email")}</p>
-              <p><strong>כתובת:</strong> {g("address")}</p>
+              <p><strong>{tx("טלפון:")}</strong> {g("phone")}</p>
+              <p><strong>{tx("אימייל:")}</strong> {g("email")}</p>
+              <p><strong>{tx("כתובת:")}</strong> {g("address")}</p>
             </div>
           </Reveal>
           <Reveal variant="left">
-            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="store-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-              <textarea className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder="הודעה"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="store-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <textarea className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("הודעה")}  name="message" data-bizuply-form-field-id="message"></textarea>
               <button type="submit" className="bg-[var(--p)] px-5 py-3.5 text-sm font-black text-[var(--on-p)]">{g("contactButton")}</button>
             </form>
           </Reveal>
@@ -1672,7 +1655,7 @@ export default function StoreSiteRuntime({
     <div>
       {Header}
       <section {...sectionProps("faq-main", "faq", "שאלות נפוצות")} className="px-5 py-16 lg:px-8 lg:py-24">
-        <div className="mx-auto max-w-4xl text-right">
+        <div className="mx-auto max-w-4xl text-start">
           <h1 className="store-display text-5xl font-black">{g("faqTitle")}</h1>
           <p className="mt-4 text-[var(--muted)]">{g("faqText")}</p>
           <div className="mt-10 space-y-4">
@@ -1701,7 +1684,7 @@ export default function StoreSiteRuntime({
     <div>
       {Header}
       <section {...sectionProps("shipping-main", "shipping", "משלוחים")} className="px-5 py-16 lg:px-8 lg:py-24">
-        <div className="mx-auto max-w-4xl text-right">
+        <div className="mx-auto max-w-4xl text-start">
           <h1 className="store-display text-5xl font-black">{g("shippingTitle")}</h1>
           <p className="mt-4 text-[var(--muted)]">{g("shippingText")}</p>
           <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -1714,7 +1697,7 @@ export default function StoreSiteRuntime({
               <Reveal key={title} delayMs={i * 70}>
                 <article className="border border-[var(--line)] bg-[var(--surface)] p-6">
                   <h3 className="font-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </article>
               </Reveal>
             ))}
@@ -1754,7 +1737,7 @@ export default function StoreSiteRuntime({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id={templateId}
       data-store-layout={layoutId}
       data-bizuply-site="true"

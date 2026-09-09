@@ -3,6 +3,7 @@ import "grapesjs/dist/css/grapes.min.css";
 
 import i18n from "../../../../i18n/i18n";
 import { coerceSupportedLanguage, isRtlLanguage } from "../../../../i18n/languages";
+import { localizeBuiltInText } from "../../../../i18n/localizeBuiltInTemplateSeed";
 import { studioElements } from "../data/elementLibrary";
 import {
   getSectionLayoutVariants,
@@ -20,6 +21,14 @@ function grapesEditorLocale() {
 
 function grapesEditorDir() {
   return isRtlLanguage(i18n.language) ? "rtl" : "ltr";
+}
+
+function localizeVariantHtml(html: string) {
+  return localizeBuiltInText(html, grapesEditorLocale());
+}
+
+function localizeVariantChrome(text: string) {
+  return localizeBuiltInText(text, grapesEditorLocale());
 }
 
 function kindLabel(kind: string) {
@@ -397,15 +406,15 @@ function registerSectionVariantBlocks(editor: Editor) {
       editor.BlockManager.add(blockId, {
         label: `
           <div style="direction:${dir};text-align:${align};font-family:Assistant,Heebo,Arial,sans-serif;">
-            <div style="font-size:12px;font-weight:1000;color:#0f172a;line-height:1.4;">${variant.title}</div>
+            <div style="font-size:12px;font-weight:1000;color:#0f172a;line-height:1.4;">${localizeVariantChrome(variant.title)}</div>
             <div style="margin-top:4px;font-size:10px;font-weight:800;color:#94a3b8;">${sectionOption.label} · ${index + 1}/${variants.length}</div>
           </div>
         `,
         media: `<span style="display:grid;place-items:center;width:34px;height:34px;border-radius:14px;background:#f3e8ff;color:#7c3aed;font-size:12px;font-weight:1000;">${sectionOption.icon}</span>`,
         category: t("studio.grapes.sectionsCategory", { label: sectionOption.label }),
-        content: variant.html,
+        content: localizeVariantHtml(variant.html),
         attributes: {
-          title: `${sectionOption.label} — ${variant.title}`,
+          title: `${sectionOption.label} — ${localizeVariantChrome(variant.title)}`,
         },
       });
     });
@@ -605,10 +614,10 @@ export function initBizuplyEditor({
 
     studioElements.forEach((element) => {
       editor.BlockManager.add(element.id, {
-        label: element.label,
+        label: localizeVariantChrome(element.label),
         media: element.icon,
         category: element.category,
-        content: element.html,
+        content: localizeVariantHtml(element.html),
       });
     });
 
@@ -810,7 +819,7 @@ function injectCanvasRuntimeAssets(editor: Editor) {
         width: 100%;
         min-width: 100%;
         min-height: 100%;
-        direction: rtl;
+        direction: ${grapesEditorDir()};
         font-family: Assistant, Heebo, Arial, sans-serif;
         background: #ffffff;
         color: var(--biz-text, #171321);
@@ -2090,7 +2099,7 @@ function applyLayoutVariantToSection(
 
   const parent = section.parent?.();
   const marker = `layout-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const markedHtml = withTemporarySectionMarker(variant.html, marker);
+  const markedHtml = withTemporarySectionMarker(localizeVariantHtml(variant.html), marker);
 
   let insertedSection: any = null;
 
@@ -2566,9 +2575,11 @@ function openLayoutVariantsModal(
       .replace(/"/g, "&quot;");
 
   const getVariantMeta = (variant: SectionLayoutVariant) => {
-    const title = escapeHtml(variant.title);
-    const description = escapeHtml(variant.description);
-    const badge = escapeHtml(variant.badge || t("studio.grapes.layoutBadge"));
+    const title = escapeHtml(localizeVariantChrome(variant.title));
+    const description = escapeHtml(localizeVariantChrome(variant.description));
+    const badge = escapeHtml(
+      localizeVariantChrome(variant.badge || "") || t("studio.grapes.layoutBadge"),
+    );
 
     const isHeader = variant.kind === "header";
     const features = isHeader
@@ -3311,7 +3322,7 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
             overflow:hidden;
           "
         >
-          ${variant.html}
+          ${localizeVariantHtml(variant.html)}
         </div>
       </div>
     `;
@@ -3337,7 +3348,7 @@ function renderVariantRealPreview(variant: SectionLayoutVariant) {
           transform-origin:top right;
         "
       >
-        ${variant.html}
+        ${localizeVariantHtml(variant.html)}
       </div>
     </div>
   `;

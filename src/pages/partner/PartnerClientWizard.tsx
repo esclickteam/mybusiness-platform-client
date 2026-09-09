@@ -21,7 +21,8 @@ import {
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
-import { computeDealPreview, isCommissionSku, publicPackageLabel, billingLabel } from "../../lib/partnerDealMath";
+import { computeDealPreview, isCommissionSku, billingLabel } from "../../lib/partnerDealMath";
+import { catalogProductName } from "../../i18n/partnerCatalogCopy";
 import { formatIls, formatPct } from "../../lib/partnerMoney";
 import { absoluteCustomerUrl } from "../../lib/partnerBranding";
 import type {
@@ -130,11 +131,7 @@ export default function PartnerClientWizard() {
     [items, selectedSkus, partnerShareRate]
   );
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
-  const defaultPackageName = publicPackageLabel(
-    preview.primary?.displayNameHe || preview.primary?.nameHe || "",
-    undefined,
-    t
-  );
+  const defaultPackageName = catalogProductName(t, preview.primary);
 
   useEffect(() => {
     setLineNames((prev) => {
@@ -143,11 +140,7 @@ export default function PartnerClientWizard() {
       for (const sku of selectedSkus) {
         if (next[sku]) continue;
         const item = items.find((row) => row.sku === sku);
-        next[sku] = publicPackageLabel(
-          item?.displayNameHe || item?.nameHe,
-          item?.nameHe || sku,
-          t
-        );
+        next[sku] = catalogProductName(t, item);
         changed = true;
       }
       return changed ? next : prev;
@@ -338,10 +331,7 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">{t("partner.wizard.pricingTitle")}</h3>
           <p className="text-sm font-bold text-slate-500">
-            {t("partner.wizard.pricingHint", {
-              defaultValue:
-                "המחיר נבנה רק מהמוצרים שנבחרו: מחיר Bizuply + העמלה החד-פעמית והחודשית שהוגדרו לכל מוצר במחירון. Bizuply מקבלת {{bizuply}} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {{partner}}.",
-              bizuply: formatPct(bizuplyShareRate),
+            {t("partner.wizard.pricingHint", { bizuply: formatPct(bizuplyShareRate),
               partner: formatPct(partnerShareRate),
             })}
           </p>
@@ -359,7 +349,7 @@ export default function PartnerClientWizard() {
             <div className="mt-3 space-y-2 text-sm font-bold text-slate-600">
               {preview.lines.map((line) => (
                 <div key={line.sku} className="flex justify-between gap-3">
-                  <span>{line.displayNameHe || line.nameHe}</span>
+                  <span>{catalogProductName(t, line)}</span>
                   <span>
                     {isCommissionSku(line.sku)
                       ? formatIls(line.customerFinalPrice)
@@ -429,7 +419,7 @@ export default function PartnerClientWizard() {
             <div className="mt-2 space-y-2">
               {preview.lines.filter((line) => !isCommissionSku(line.sku)).map((line) => (
                 <div key={line.sku} className="rounded-2xl border border-slate-100 bg-white px-3 py-2">
-                  <p className="font-black">{lineNames[line.sku] || publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe, t)}</p>
+                  <p className="font-black">{lineNames[line.sku] || catalogProductName(t, line)}</p>
                   <p className="text-xs font-bold text-slate-400">{billingLabel(line.billing, t)}</p>
                 </div>
               ))}

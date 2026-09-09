@@ -3,8 +3,8 @@ export const solenneEditorCss = `
 
 [data-template-id="solenne"],
 [data-template-id="solenne"] {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
 }
 

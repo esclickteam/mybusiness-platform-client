@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, CalendarClock, Facebook, ShieldCheck, Zap } from "lucide-react";
 import { StatStrip, WordReveal } from "../product-marketing";
@@ -17,7 +18,7 @@ export default function CrmProductHero() {
     <section
       className="crm-hero"
       aria-label={t("crmPage.hero.ariaLabel")}
-      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      dir={getTextDirection(i18n.language)}
     >
       <div className="crm-hero__atmosphere" aria-hidden="true">
         <span className="crm-hero__orb crm-hero__orb--a" />

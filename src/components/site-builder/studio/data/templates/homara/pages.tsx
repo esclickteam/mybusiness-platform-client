@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { homaraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,11 +28,11 @@ function v(data: Record<string, any>, key: string) {
 
 function HomaraSoftHeader({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = homaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = homaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "rgba(243,240,232,0.94)", borderColor: "rgba(36,48,40,0.14)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="h-8 w-8 border" style={{ borderColor: "#3f6f5a", background: "#ebe6da" }} />
           <span className="tpl-display text-2xl font-bold">{v(data, "brandName")}</span>
         </button>
@@ -48,7 +50,7 @@ function HomaraSoftHeader({ data, currentPage, goTo, onCta }: { data: Record<str
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-bold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-bold">{label}</button>
             ))}
           </div>
         </div>
@@ -89,7 +91,7 @@ function HomaraZigZagHomes({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <div className="px-5 py-12 lg:px-8">
           <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#3f6f5a" }}>HOMES</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold md:text-6xl">בתים עם מקום לשגרה טובה.</h2>
+          <h2 className="tpl-display mt-3 text-4xl font-bold md:text-6xl">{tx("בתים עם מקום לשגרה טובה.")}</h2>
         </div>
         {homes.map((home, index) => (
           <article key={home.title} className="grid border-t lg:grid-cols-2" style={{ borderColor: "rgba(36,48,40,0.14)" }}>
@@ -116,7 +118,7 @@ function HomaraNeighborhoodNames({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[0.35fr_0.65fr]">
           <div>
-            <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#3f6f5a" }}>שכונות</p>
+            <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#3f6f5a" }}>{tx("שכונות")}</p>
             <p className="mt-5 text-lg leading-8" style={{ color: "#6d7568" }}>{v(data, "neighborhoodText")}</p>
           </div>
           <div className="border-t" style={{ borderColor: "rgba(36,48,40,0.14)" }}>
@@ -148,20 +150,20 @@ function HomaraFamilyPromise({ data }: { data: Record<string, any> }) {
 }
 
 function HomaraPhoneContact({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "border bg-transparent px-4 py-4 text-right outline-none";
+  const field = "border bg-transparent px-4 py-4 text-start outline-none";
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#ebe6da" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
         <div>
-          <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#3f6f5a" }}>דברו איתנו</p>
+          <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#3f6f5a" }}>{tx("דברו איתנו")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-6xl">{v(data, "contactTitle")}</h2>
           <a href={`tel:${v(data, "phone")}`} className="tpl-display mt-8 block text-6xl font-bold leading-none md:text-8xl" style={{ color: "#3f6f5a" }}>{v(data, "phone")}</a>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6d7568" }}>{v(data, "contactText")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="homara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="אזור ושכונה" name="other" data-bizuply-form-field-id="other" />
-          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="כמה חדרים?" name="other_2" data-bizuply-form-field-id="other_2" />
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="homara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder={tx("אזור ושכונה")} name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder={tx("כמה חדרים?")} name="other_2" data-bizuply-form-field-id="other_2" />
           <button type="submit" className="tpl-sweep px-7 py-4 text-sm font-bold" style={{ background: "#3f6f5a", color: "#f3f0e8" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -231,7 +233,7 @@ export default function HomaraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="homara" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="homara" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f3f0e8", color: "#243028" }}>
       <HomaraSoftHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

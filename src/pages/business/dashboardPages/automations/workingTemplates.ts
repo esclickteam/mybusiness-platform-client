@@ -33,6 +33,8 @@ import {
   LEAD_OPENING_EMAIL_DEFAULTS,
   LEAD_WELCOME_EMAIL_DEFAULTS,
 } from "./leadWelcomeEmail";
+import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -140,6 +142,29 @@ type GraphAction = {
   defaults?: Record<string, unknown>;
 };
 
+function localizeGraphCopy(graph: {
+  nodes: AutomationFlowNode[];
+  edges: AutomationFlowEdge[];
+}): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
+  return {
+    nodes: graph.nodes.map((node) => {
+      const data = { ...(node.data || {}) } as Record<string, unknown>;
+      if (typeof data.label === "string") {
+        data.label = localizeBuiltInText(data.label);
+      }
+      if (typeof data.title === "string") {
+        data.title = localizeBuiltInText(data.title);
+      }
+      return { ...node, data };
+    }),
+    edges: graph.edges.map((edge) =>
+      typeof edge.label === "string"
+        ? { ...edge, label: localizeBuiltInText(edge.label) }
+        : edge
+    ),
+  };
+}
+
 function resultGraph(opts: {
   triggerKey: string;
   triggerLabel: string;
@@ -189,7 +214,7 @@ function resultGraph(opts: {
       label: "תוצאה",
     });
   });
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 function waEdgeGraph(opts: {
@@ -230,7 +255,7 @@ function buildAppointmentDuoGraph(opts: {
     language: "he",
     blueprintKey: "wf_appointment_duo",
   };
-  return {
+  const graph = {
     nodes: [
       {
         id: "trigger_1",
@@ -313,6 +338,7 @@ function buildAppointmentDuoGraph(opts: {
       { id: "e_delay_remind", source: "d_remind", target: "a_remind" },
     ],
   };
+  return localizeGraphCopy(graph);
 }
 
 /**
@@ -439,7 +465,7 @@ export function buildLeadReplySequenceGraph(opts: {
       label: "כן — לא ענה",
     },
   ];
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 /** Map legacy WhatsAppAutomation trigger → publishable workflow trigger keys. */
@@ -570,7 +596,7 @@ export function buildWhatsAppSimpleGraph(
     label: "תוצאה",
   });
 
-  return { nodes, edges };
+  return localizeGraphCopy({ nodes, edges });
 }
 
 /**
@@ -831,7 +857,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -865,7 +891,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "create_task", label: "משימת מעקב לנציג", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
@@ -896,7 +922,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              ...LEAD_WELCOME_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "create_task", label: "משימת מעקב", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
@@ -926,7 +952,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל פתיחה",
             defaults: {
-              ...LEAD_OPENING_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(LEAD_OPENING_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -959,7 +985,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "send_email",
             label: "אימייל אישור הזמנה",
             defaults: {
-              ...STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS),
               actionKey: "send_email",
             },
           },
@@ -1102,7 +1128,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
         ],
@@ -1130,7 +1156,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           { actionKey: "notify", label: "התראה על פגישה חדשה" },
@@ -1189,7 +1215,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           {
@@ -1225,7 +1251,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור",
             defaults: {
-              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+              ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
             },
           },
           {

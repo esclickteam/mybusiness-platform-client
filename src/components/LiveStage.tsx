@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
+import { normalizeLiveSource, type LiveDemoSource } from "../i18n/liveDemo";
 import { Bell, MessageCircle, Phone } from "lucide-react";
 
-type Source = "meta" | "site" | "google" | "whatsapp";
+type Source = LiveDemoSource;
 type Status = "new" | "contacted" | "interested" | "won";
 
 type Lead = {
@@ -55,16 +57,19 @@ const MAX = 14;
  * still screenshot after a couple of seconds.
  */
 export default function LiveStage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const people = useMemo(
-    () =>
+  const people = useMemo(() => {
+    const raw =
       (t("live.people", { returnObjects: true }) as unknown as
-        | { name: string; initials: string; service: string; source: Source }[]
-        | undefined) || [],
-    [t],
-  );
+        | { name: string; initials: string; service: string; source: string }[]
+        | undefined) || [];
+    return raw.map((person) => ({
+      ...person,
+      source: normalizeLiveSource(person.source),
+    }));
+  }, [t]);
 
   const [rows, setRows] = useState<Lead[]>([]);
   const [counts, setCounts] = useState({
@@ -175,7 +180,7 @@ export default function LiveStage() {
   ];
 
   return (
-    <div className="relative flex h-full w-full flex-col" dir="rtl">
+    <div className="relative flex h-full w-full flex-col" dir={getTextDirection(i18n.language)}>
       {/* Atmosphere — clipped so it never expands the page */}
       <div
         className="pointer-events-none absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-400/25 via-violet-300/20 to-cyan-300/25 blur-3xl"

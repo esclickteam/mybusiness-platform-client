@@ -1,0 +1,854 @@
+{
+  "מנויים ותשלומים.": {
+    "en": "Subscriptions and payments.",
+    "es": "Suscripciones y pagos.",
+    "pt-BR": "Assinaturas e pagamentos.",
+    "ar": "اشتراكات ومدفوعات."
+  },
+  "יצירת קשר – מפוצל": {
+    "en": "Contact – split",
+    "es": "Contacto – dividido",
+    "pt-BR": "Contato – dividido",
+    "ar": "تواصل – مقسوم"
+  },
+  "ביקורות – דירוגים": {
+    "en": "Reviews – ratings",
+    "es": "Reseñas – valoraciones",
+    "pt-BR": "Avaliações – notas",
+    "ar": "مراجعات – تقييمات"
+  },
+  "קורות חיים – גיוס": {
+    "en": "Resume – hiring",
+    "es": "Currículum – contratación",
+    "pt-BR": "Currículo – contratação",
+    "ar": "سيرة – توظيف"
+  },
+  "אוטומציות ותובנות.": {
+    "en": "Automations and insights.",
+    "es": "Automatizaciones e insights.",
+    "pt-BR": "Automações e insights.",
+    "ar": "أتمتة ورؤى."
+  },
+  "יצירת קשר – ערוצים": {
+    "en": "Contact – channels",
+    "es": "Contacto – canales",
+    "pt-BR": "Contato – canais",
+    "ar": "تواصل – قنوات"
+  },
+  "קורות חיים – מפוצל": {
+    "en": "Resume – split",
+    "es": "Currículum – dividido",
+    "pt-BR": "Currículo – dividido",
+    "ar": "سيرة – مقسوم"
+  },
+  "תוצאות שאפשר לספור": {
+    "en": "Results you can count",
+    "es": "Resultados que se pueden contar",
+    "pt-BR": "Resultados que se podem contar",
+    "ar": "نتائج يمكن عدّها"
+  },
+  "שיחה מהירה עם העסק.": {
+    "en": "A quick chat with the business.",
+    "es": "Una conversación rápida con el negocio.",
+    "pt-BR": "Uma conversa rápida com o negócio.",
+    "ar": "محادثة سريعة مع العمل."
+  },
+  "אודות – פרופיל עסקי": {
+    "en": "About – business profile",
+    "es": "Nosotros – perfil de negocio",
+    "pt-BR": "Sobre – perfil do negócio",
+    "ar": "من نحن – ملف عمل"
+  },
+  "דף הבית – לייפסטייל": {
+    "en": "Home – lifestyle",
+    "es": "Inicio – lifestyle",
+    "pt-BR": "Início – lifestyle",
+    "ar": "الرئيسية – أسلوب حياة"
+  },
+  "קורות חיים – הישגים": {
+    "en": "Resume – achievements",
+    "es": "Currículum – logros",
+    "pt-BR": "Currículo – conquistas",
+    "ar": "سيرة – إنجازات"
+  },
+  "בוגרת תקשורת חזותית": {
+    "en": "Graduate in visual communication",
+    "es": "Graduada en comunicación visual",
+    "pt-BR": "Formada em comunicação visual",
+    "ar": "خريجة اتصال بصري"
+  },
+  "תיאור קצר של השירות.": {
+    "en": "A short description of the service.",
+    "es": "Una descripción breve del servicio.",
+    "pt-BR": "Uma descrição curta do serviço.",
+    "ar": "وصف قصير للخدمة."
+  },
+  "שאלות נפוצות – שלבים": {
+    "en": "FAQ – steps",
+    "es": "Preguntas frecuentes – pasos",
+    "pt-BR": "Perguntas frequentes – passos",
+    "ar": "أسئلة شائعة – خطوات"
+  },
+  "האם יש תמיכה בעברית?": {
+    "en": "Is Hebrew support available?",
+    "es": "¿Hay soporte en hebreo?",
+    "pt-BR": "Há suporte em hebraico?",
+    "ar": "هل يوجد دعم بالعبرية؟"
+  },
+  "שאלות נפוצות – נושאים": {
+    "en": "FAQ – topics",
+    "es": "Preguntas frecuentes – temas",
+    "pt-BR": "Perguntas frequentes – tópicos",
+    "ar": "أسئلة شائعة – مواضيع"
+  },
+  "חבילות, מנויים וסליקה.": {
+    "en": "Packages, subscriptions, and payments.",
+    "es": "Paquetes, suscripciones y cobros.",
+    "pt-BR": "Pacotes, assinaturas e cobrança.",
+    "ar": "باقات واشتراكات وتحصيل."
+  },
+  "לקוחות, לידים ומשימות.": {
+    "en": "Customers, leads, and tasks.",
+    "es": "Clientes, leads y tareas.",
+    "pt-BR": "Clientes, leads e tarefas.",
+    "ar": "عملاء وعملاء محتملون ومهام."
+  },
+  "ומה אפשר לתקן תוך שעה.": {
+    "en": "And what can be fixed within an hour.",
+    "es": "Y qué se puede corregir en una hora.",
+    "pt-BR": "E o que se pode corrigir em uma hora.",
+    "ar": "وما يمكن إصلاحه خلال ساعة."
+  },
+  "כמה זמן לוקח להקים אתר?": {
+    "en": "How long does it take to build a site?",
+    "es": "¿Cuánto tarda crear un sitio?",
+    "pt-BR": "Quanto tempo leva para criar um site?",
+    "ar": "كم يستغرق إنشاء موقع؟"
+  },
+  "נקודה רביעית שאפשר לערוך": {
+    "en": "Fourth editable point",
+    "es": "Cuarto punto editable",
+    "pt-BR": "Quarto ponto editável",
+    "ar": "نقطة رابعة قابلة للتعديل"
+  },
+  "יתרון שלישי שמוביל לפנייה": {
+    "en": "A third benefit that leads to an inquiry",
+    "es": "Una tercera ventaja que lleva a una consulta",
+    "pt-BR": "Uma terceira vantagem que leva a um contato",
+    "ar": "ميزة ثالثة تقود إلى تواصل"
+  },
+  "אפשר להחליף סקשנים בהמשך?": {
+    "en": "Can sections be swapped later?",
+    "es": "¿Se pueden cambiar secciones después?",
+    "pt-BR": "Dá para trocar seções depois?",
+    "ar": "هل يمكن استبدال الأقسام لاحقاً؟"
+  },
+  "עיצוב בעברית: מה חשוב לדעת": {
+    "en": "Design in Hebrew: what matters",
+    "es": "Diseño en hebreo: lo importante",
+    "pt-BR": "Design em hebraico: o que importa",
+    "ar": "التصميم بالعبرية: ما المهم معرفته"
+  },
+  "RTL, קריאות וחוויית משתמש.": {
+    "en": "RTL, readability, and user experience.",
+    "es": "RTL, legibilidad y experiencia de usuario.",
+    "pt-BR": "RTL, legibilidade e experiência do usuário.",
+    "ar": "RTL وقابلية القراءة وتجربة المستخدم."
+  },
+  "איך לבחור מסר מנצח לדף הבית": {
+    "en": "How to choose a winning homepage message",
+    "es": "Cómo elegir un mensaje ganador para el inicio",
+    "pt-BR": "Como escolher uma mensagem vencedora para a home",
+    "ar": "كيف تختارون رسالة ناجحة للصفحة الرئيسية"
+  },
+  "5 טעויות נפוצות באתרי עסקים": {
+    "en": "5 common mistakes on business sites",
+    "es": "5 errores comunes en sitios de negocios",
+    "pt-BR": "5 erros comuns em sites de negócios",
+    "ar": "5 أخطاء شائعة في مواقع الأعمال"
+  },
+  "תיאור קצר של השירות והתוצאה.": {
+    "en": "A short description of the service and the outcome.",
+    "es": "Una descripción breve del servicio y el resultado.",
+    "pt-BR": "Uma descrição curta do serviço e do resultado.",
+    "ar": "وصف قصير للخدمة والنتيجة."
+  },
+  "הסבר קצר על השלב השני בתהליך.": {
+    "en": "A short explanation of the second step in the process.",
+    "es": "Una breve explicación del segundo paso del proceso.",
+    "pt-BR": "Uma breve explicação do segundo passo do processo.",
+    "ar": "شرح قصير للخطوة الثانية في المسار."
+  },
+  "הסבר קצר על השלב הראשון בתהליך.": {
+    "en": "A short explanation of the first step in the process.",
+    "es": "Una breve explicación del primer paso del proceso.",
+    "pt-BR": "Uma breve explicação do primeiro passo do processo.",
+    "ar": "شرح قصير للخطوة الأولى في المسار."
+  },
+  "הסבר קצר על השלב השלישי בתהליך.": {
+    "en": "A short explanation of the third step in the process.",
+    "es": "Una breve explicación del tercer paso del proceso.",
+    "pt-BR": "Uma breve explicação do terceiro passo do processo.",
+    "ar": "شرح قصير للخطوة الثالثة في المسار."
+  },
+  "הכל היה מסודר וברמה גבוהה מאוד.": {
+    "en": "Everything was organized and at a very high level.",
+    "es": "Todo estaba ordenado y a un nivel muy alto.",
+    "pt-BR": "Tudo estava organizado e em um nível muito alto.",
+    "ar": "كان كل شيء منظماً وبمستوى عالٍ جداً."
+  },
+  "קיבלתי מענה מדויק ומהיר לכל שאלה.": {
+    "en": "I got a precise, fast answer to every question.",
+    "es": "Recibí una respuesta precisa y rápida a cada pregunta.",
+    "pt-BR": "Recebi uma resposta precisa e rápida a cada pergunta.",
+    "ar": "حصلت على رد دقيق وسريع لكل سؤال."
+  },
+  "תיאור קצר של חבילה או שירות מתקדם.": {
+    "en": "A short description of an advanced package or service.",
+    "es": "Una descripción breve de un paquete o servicio avanzado.",
+    "pt-BR": "Uma descrição curta de um pacote ou serviço avançado.",
+    "ar": "وصف قصير لباقة أو خدمة متقدمة."
+  },
+  "טיפים פרקטיים לכותרת שמביאה פעולה.": {
+    "en": "Practical tips for a headline that drives action.",
+    "es": "Consejos prácticos para un titular que genera acción.",
+    "pt-BR": "Dicas práticas para um título que gera ação.",
+    "ar": "نصائح عملية لعنوان يدفع إلى إجراء."
+  },
+  "אפשר לערוך לבד אחרי העלייה לאוויר?": {
+    "en": "Can you edit it yourself after launch?",
+    "es": "¿Se puede editar solo después del lanzamiento?",
+    "pt-BR": "Dá para editar sozinho após o lançamento?",
+    "ar": "هل يمكن التعديل ذاتياً بعد الإطلاق؟"
+  },
+  "תהליך חלק, תקשורת מעולה ותוצאה מרשימה.": {
+    "en": "A smooth process, great communication, and an impressive result.",
+    "es": "Un proceso fluido, gran comunicación y un resultado impresionante.",
+    "pt-BR": "Um processo fluido, ótima comunicação e um resultado impressionante.",
+    "ar": "مسار سلس وتواصل ممتاز ونتيجة مبهرة."
+  },
+  "כן – כולל ממשק RTL ותוכן בעברית מהיסוד.": {
+    "en": "Yes – including an RTL interface and Hebrew content from the ground up.",
+    "es": "Sí – incluye interfaz RTL y contenido en hebreo desde la base.",
+    "pt-BR": "Sim – inclui interface RTL e conteúdo em hebraico desde a base.",
+    "ar": "نعم – بما في ذلك واجهة RTL ومحتوى بالعبرية من الأساس."
+  },
+  "האתר יצא בדיוק כמו שחלמנו – ואפילו יותר.": {
+    "en": "The site turned out exactly as we dreamed – and even more.",
+    "es": "El sitio salió exactamente como soñamos – e incluso más.",
+    "pt-BR": "O site ficou exatamente como sonhamos – e ainda mais.",
+    "ar": "خرج الموقع تماماً كما حلمنا – وأكثر."
+  },
+  "בדרך כלל בין כמה ימים לשבועיים, תלוי בהיקף התוכן.": {
+    "en": "Usually between a few days and two weeks, depending on content scope.",
+    "es": "Normalmente entre unos días y dos semanas, según el alcance del contenido.",
+    "pt-BR": "Normalmente entre alguns dias e duas semanas, conforme o escopo do conteúdo.",
+    "ar": "عادة بين بضعة أيام وأسبوعين، حسب نطاق المحتوى."
+  },
+  "ענו מראש על שאלות נפוצות כדי לחסוך זמן ולחזק אמון.": {
+    "en": "Answer common questions in advance to save time and build trust.",
+    "es": "Responded de antemano a preguntas frecuentes para ahorrar tiempo y reforzar la confianza.",
+    "pt-BR": "Respondam antecipadamente a perguntas frequentes para poupar tempo e reforçar a confiança.",
+    "ar": "أجيبوا مسبقاً على الأسئلة الشائعة لتوفير الوقت وتعزيز الثقة."
+  },
+  "שירות מקצועי, זמין ומדויק. הרגשנו שיש על מי לסמוך.": {
+    "en": "Professional, available, and precise service. We felt we had someone to rely on.",
+    "es": "Servicio profesional, disponible y preciso. Sentimos que había en quién confiar.",
+    "pt-BR": "Serviço profissional, disponível e preciso. Sentimos que havia em quem confiar.",
+    "ar": "خدمة مهنية ومتاحة ودقيقة. شعرنا أن هناك من يمكن الاعتماد عليه."
+  },
+  "כן. אפשר להוסיף מהספרייה או לבקש מה־AI וריאציה חדשה.": {
+    "en": "Yes. You can add from the library or ask the AI for a new variation.",
+    "es": "Sí. Podéis añadir desde la biblioteca o pedir al AI una nueva variación.",
+    "pt-BR": "Sim. Dá para adicionar da biblioteca ou pedir ao AI uma nova variação.",
+    "ar": "نعم. يمكن الإضافة من المكتبة أو طلب تنويعة جديدة من الذكاء الاصطناعي."
+  },
+  "בוודאי. העורך מאפשר שינוי טקסטים, תמונות וסקשנים בקלות.": {
+    "en": "Of course. The editor makes it easy to change texts, images, and sections.",
+    "es": "Por supuesto. El editor permite cambiar textos, imágenes y secciones fácilmente.",
+    "pt-BR": "Claro. O editor permite mudar textos, imagens e seções com facilidade.",
+    "ar": "بالتأكيد. يتيح المحرر تغيير النصوص والصور والأقسام بسهولة."
+  },
+  "ענן": {
+    "en": "Cloud",
+    "es": "Nube",
+    "pt-BR": "Nuvem",
+    "ar": "سحابة"
+  },
+  "צ׳אט": {
+    "en": "Chat",
+    "es": "Chat",
+    "pt-BR": "Chat",
+    "ar": "دردشة"
+  },
+  "עלות": {
+    "en": "Cost",
+    "es": "Coste",
+    "pt-BR": "Custo",
+    "ar": "تكلفة"
+  },
+  "עמוד": {
+    "en": "Page",
+    "es": "Página",
+    "pt-BR": "Página",
+    "ar": "صفحة"
+  },
+  "כלים": {
+    "en": "Tools",
+    "es": "Herramientas",
+    "pt-BR": "Ferramentas",
+    "ar": "أدوات"
+  },
+  "קראו": {
+    "en": "Read",
+    "es": "Leed",
+    "pt-BR": "Leiam",
+    "ar": "اقرأوا"
+  },
+  "אנכי": {
+    "en": "Vertical",
+    "es": "Vertical",
+    "pt-BR": "Vertical",
+    "ar": "عمودي"
+  },
+  "רוחב": {
+    "en": "Width",
+    "es": "Ancho",
+    "pt-BR": "Largura",
+    "ar": "عرض"
+  },
+  "שלום": {
+    "en": "Hello",
+    "es": "Hola",
+    "pt-BR": "Olá",
+    "ar": "مرحبا"
+  },
+  "ברכה": {
+    "en": "Greeting",
+    "es": "Saludo",
+    "pt-BR": "Saudação",
+    "ar": "تحية"
+  },
+  "לקוח": {
+    "en": "Customer",
+    "es": "Cliente",
+    "pt-BR": "Cliente",
+    "ar": "عميل"
+  },
+  "נתון": {
+    "en": "Stat",
+    "es": "Dato",
+    "pt-BR": "Dado",
+    "ar": "بيان"
+  },
+  "מיקס": {
+    "en": "Mix",
+    "es": "Mix",
+    "pt-BR": "Mix",
+    "ar": "مزيج"
+  },
+  "משנה": {
+    "en": "Subtitle",
+    "es": "Subtítulo",
+    "pt-BR": "Subtítulo",
+    "ar": "عنوان فرعي"
+  },
+  "שקוף": {
+    "en": "Transparent",
+    "es": "Transparente",
+    "pt-BR": "Transparente",
+    "ar": "شفاف"
+  },
+  "שורה": {
+    "en": "Row",
+    "es": "Fila",
+    "pt-BR": "Linha",
+    "ar": "صف"
+  },
+  "הגעה": {
+    "en": "Arrival",
+    "es": "Llegada",
+    "pt-BR": "Chegada",
+    "ar": "وصول"
+  },
+  "מספר": {
+    "en": "Number",
+    "es": "Número",
+    "pt-BR": "Número",
+    "ar": "رقم"
+  },
+  "הבנה": {
+    "en": "Understanding",
+    "es": "Comprensión",
+    "pt-BR": "Compreensão",
+    "ar": "فهم"
+  },
+  "מותג": {
+    "en": "Brand",
+    "es": "Marca",
+    "pt-BR": "Marca",
+    "ar": "علامة"
+  },
+  "שלחו": {
+    "en": "Send",
+    "es": "Enviad",
+    "pt-BR": "Enviem",
+    "ar": "أرسلوا"
+  },
+  "לחצו": {
+    "en": "Click",
+    "es": "Pulsad",
+    "pt-BR": "Cliquem",
+    "ar": "انقروا"
+  },
+  "השקה": {
+    "en": "Launch",
+    "es": "Lanzamiento",
+    "pt-BR": "Lançamento",
+    "ar": "إطلاق"
+  },
+  "הנחה": {
+    "en": "Discount",
+    "es": "Descuento",
+    "pt-BR": "Desconto",
+    "ar": "خصم"
+  },
+  "עולם": {
+    "en": "World",
+    "es": "Mundo",
+    "pt-BR": "Mundo",
+    "ar": "عالم"
+  },
+  "משרד": {
+    "en": "Office",
+    "es": "Oficina",
+    "pt-BR": "Escritório",
+    "ar": "مكتب"
+  },
+  "נדלן": {
+    "en": "Real estate",
+    "es": "Inmobiliaria",
+    "pt-BR": "Imobiliário",
+    "ar": "عقارات"
+  },
+  "קבלן": {
+    "en": "Contractor",
+    "es": "Contratista",
+    "pt-BR": "Empreiteiro",
+    "ar": "مقاول"
+  },
+  "נעול": {
+    "en": "Locked",
+    "es": "Bloqueado",
+    "pt-BR": "Bloqueado",
+    "ar": "مقفل"
+  },
+  "מנוי": {
+    "en": "Subscription",
+    "es": "Suscripción",
+    "pt-BR": "Assinatura",
+    "ar": "اشتراك"
+  },
+  "בסיס": {
+    "en": "Basic",
+    "es": "Básico",
+    "pt-BR": "Básico",
+    "ar": "أساسي"
+  },
+  "מרכז": {
+    "en": "Center",
+    "es": "Centro",
+    "pt-BR": "Centro",
+    "ar": "مركز"
+  },
+  "בהיר": {
+    "en": "Light",
+    "es": "Claro",
+    "pt-BR": "Claro",
+    "ar": "فاتح"
+  },
+  "הקלטה": {
+    "en": "Recording",
+    "es": "Grabación",
+    "pt-BR": "Gravação",
+    "ar": "تسجيل"
+  },
+  "פניות": {
+    "en": "Inquiries",
+    "es": "Consultas",
+    "pt-BR": "Consultas",
+    "ar": "استفسارات"
+  },
+  "שניות": {
+    "en": "Seconds",
+    "es": "Segundos",
+    "pt-BR": "Segundos",
+    "ar": "ثوانٍ"
+  },
+  "מימוש": {
+    "en": "Redemption",
+    "es": "Canje",
+    "pt-BR": "Resgate",
+    "ar": "استرداد"
+  },
+  "צפיות": {
+    "en": "Views",
+    "es": "Vistas",
+    "pt-BR": "Visualizações",
+    "ar": "مشاهدات"
+  },
+  "חדשים": {
+    "en": "New",
+    "es": "Nuevos",
+    "pt-BR": "Novos",
+    "ar": "جديد"
+  },
+  "ניהול": {
+    "en": "Management",
+    "es": "Gestión",
+    "pt-BR": "Gestão",
+    "ar": "إدارة"
+  },
+  "עודכן": {
+    "en": "Updated",
+    "es": "Actualizado",
+    "pt-BR": "Atualizado",
+    "ar": "مُحدَّث"
+  },
+  "כתבות": {
+    "en": "Articles",
+    "es": "Artículos",
+    "pt-BR": "Artigos",
+    "ar": "مقالات"
+  },
+  "אנושי": {
+    "en": "Human",
+    "es": "Humano",
+    "pt-BR": "Humano",
+    "ar": "إنساني"
+  },
+  "דינמי": {
+    "en": "Dynamic",
+    "es": "Dinámico",
+    "pt-BR": "Dinâmico",
+    "ar": "ديناميكي"
+  },
+  "משתנה": {
+    "en": "Variable",
+    "es": "Variable",
+    "pt-BR": "Variável",
+    "ar": "متغير"
+  },
+  "תווית": {
+    "en": "Label",
+    "es": "Etiqueta",
+    "pt-BR": "Rótulo",
+    "ar": "تسمية"
+  },
+  "פתרון": {
+    "en": "Solution",
+    "es": "Solución",
+    "pt-BR": "Solução",
+    "ar": "حل"
+  },
+  "משפטי": {
+    "en": "Legal",
+    "es": "Legal",
+    "pt-BR": "Jurídico",
+    "ar": "قانوني"
+  },
+  "תנאים": {
+    "en": "Terms",
+    "es": "Términos",
+    "pt-BR": "Termos",
+    "ar": "شروط"
+  },
+  "סרטון": {
+    "en": "Video",
+    "es": "Vídeo",
+    "pt-BR": "Vídeo",
+    "ar": "فيديو"
+  },
+  "הצלחה": {
+    "en": "Success",
+    "es": "Éxito",
+    "pt-BR": "Sucesso",
+    "ar": "نجاح"
+  },
+  "קניות": {
+    "en": "Shopping",
+    "es": "Compras",
+    "pt-BR": "Compras",
+    "ar": "تسوق"
+  },
+  "חגיגה": {
+    "en": "Celebration",
+    "es": "Celebración",
+    "pt-BR": "Celebração",
+    "ar": "احتفال"
+  },
+  "פעמון": {
+    "en": "Bell",
+    "es": "Campana",
+    "pt-BR": "Sino",
+    "ar": "جرس"
+  },
+  "הפתעה": {
+    "en": "Surprise",
+    "es": "Sorpresa",
+    "pt-BR": "Surpresa",
+    "ar": "مفاجأة"
+  },
+  "הידר": {
+    "en": "Header",
+    "es": "Encabezado",
+    "pt-BR": "Cabeçalho",
+    "ar": "ترويسة"
+  },
+  "סאונד": {
+    "en": "Sound",
+    "es": "Sonido",
+    "pt-BR": "Som",
+    "ar": "صوت"
+  },
+  "מנעול": {
+    "en": "Lock",
+    "es": "Candado",
+    "pt-BR": "Cadeado",
+    "ar": "قفل"
+  },
+  "תוכנה": {
+    "en": "Software",
+    "es": "Software",
+    "pt-BR": "Software",
+    "ar": "برمجيات"
+  },
+  "וולנס": {
+    "en": "Wellness",
+    "es": "Bienestar",
+    "pt-BR": "Bem-estar",
+    "ar": "عافية"
+  },
+  "משרות": {
+    "en": "Jobs",
+    "es": "Empleos",
+    "pt-BR": "Vagas",
+    "ar": "وظائف"
+  },
+  "מומחה": {
+    "en": "Expert",
+    "es": "Experto",
+    "pt-BR": "Especialista",
+    "ar": "خبير"
+  },
+  "אופנה": {
+    "en": "Fashion",
+    "es": "Moda",
+    "pt-BR": "Moda",
+    "ar": "أزياء"
+  },
+  "סלייט": {
+    "en": "Slate",
+    "es": "Pizarra",
+    "pt-BR": "Ardósia",
+    "ar": "أردواز"
+  },
+  "נייבי": {
+    "en": "Navy",
+    "es": "Azul marino",
+    "pt-BR": "Marinho",
+    "ar": "كحلي"
+  },
+  "גרפיט": {
+    "en": "Graphite",
+    "es": "Grafito",
+    "pt-BR": "Grafite",
+    "ar": "غرافيت"
+  },
+  "איפוס": {
+    "en": "Reset",
+    "es": "Restablecer",
+    "pt-BR": "Redefinir",
+    "ar": "إعادة ضبط"
+  },
+  "חשבון": {
+    "en": "Account",
+    "es": "Cuenta",
+    "pt-BR": "Conta",
+    "ar": "حساب"
+  },
+  "סליקה": {
+    "en": "Checkout",
+    "es": "Cobro",
+    "pt-BR": "Cobrança",
+    "ar": "تحصيل"
+  },
+  "שימוש": {
+    "en": "Usage",
+    "es": "Uso",
+    "pt-BR": "Uso",
+    "ar": "استخدام"
+  },
+  "שדרוג": {
+    "en": "Upgrade",
+    "es": "Mejora",
+    "pt-BR": "Upgrade",
+    "ar": "ترقية"
+  },
+  "קידום": {
+    "en": "Promotion",
+    "es": "Promoción",
+    "pt-BR": "Promoção",
+    "ar": "ترويج"
+  },
+  "השפעה": {
+    "en": "Impact",
+    "es": "Impacto",
+    "pt-BR": "Impacto",
+    "ar": "تأثير"
+  },
+  "שורות": {
+    "en": "Rows",
+    "es": "Filas",
+    "pt-BR": "Linhas",
+    "ar": "صفوف"
+  },
+  "עלינו": {
+    "en": "About us",
+    "es": "Sobre nosotros",
+    "pt-BR": "Sobre nós",
+    "ar": "من نحن"
+  },
+  "למבצע": {
+    "en": "To the deal",
+    "es": "A la oferta",
+    "pt-BR": "Para a oferta",
+    "ar": "إلى العرض"
+  },
+  "מעצבת": {
+    "en": "Designer",
+    "es": "Diseñadora",
+    "pt-BR": "Designer",
+    "ar": "مصممة"
+  },
+  "הבטחה": {
+    "en": "Promise",
+    "es": "Promesa",
+    "pt-BR": "Promessa",
+    "ar": "وعد"
+  },
+  "הצעות": {
+    "en": "Offers",
+    "es": "Ofertas",
+    "pt-BR": "Ofertas",
+    "ar": "عروض"
+  },
+  "חניכה": {
+    "en": "Mentorship",
+    "es": "Mentoría",
+    "pt-BR": "Mentoria",
+    "ar": "إرشاد"
+  },
+  "עשייה": {
+    "en": "Action",
+    "es": "Acción",
+    "pt-BR": "Ação",
+    "ar": "عمل"
+  },
+  "במהלך": {
+    "en": "During",
+    "es": "Durante",
+    "pt-BR": "Durante",
+    "ar": "خلال"
+  },
+  "אמינות": {
+    "en": "Reliability",
+    "es": "Fiabilidad",
+    "pt-BR": "Confiabilidade",
+    "ar": "موثوقية"
+  },
+  "מאשרים": {
+    "en": "Approve",
+    "es": "Aprueban",
+    "pt-BR": "Aprovam",
+    "ar": "يؤكدون"
+  },
+  "מקומות": {
+    "en": "Places",
+    "es": "Lugares",
+    "pt-BR": "Lugares",
+    "ar": "أماكن"
+  },
+  "עוקבים": {
+    "en": "Followers",
+    "es": "Seguidores",
+    "pt-BR": "Seguidores",
+    "ar": "متابعون"
+  },
+  "4 דקות": {
+    "en": "4 minutes",
+    "es": "4 minutos",
+    "pt-BR": "4 minutos",
+    "ar": "4 دقائق"
+  },
+  "שם מרצה": {
+    "en": "Speaker name",
+    "es": "Nombre del ponente",
+    "pt-BR": "Nome do palestrante",
+    "ar": "اسم المحاضر"
+  },
+  "שם אורח": {
+    "en": "Guest name",
+    "es": "Nombre del invitado",
+    "pt-BR": "Nome do convidado",
+    "ar": "اسم الضيف"
+  },
+  "מגיע/ה?": {
+    "en": "Coming?",
+    "es": "¿Viene?",
+    "pt-BR": "Vem?",
+    "ar": "قادم/ة؟"
+  },
+  "עבודה 1": {
+    "en": "Work 1",
+    "es": "Trabajo 1",
+    "pt-BR": "Trabalho 1",
+    "ar": "عمل 1"
+  },
+  "עבודה 2": {
+    "en": "Work 2",
+    "es": "Trabajo 2",
+    "pt-BR": "Trabalho 2",
+    "ar": "عمل 2"
+  },
+  "עבודה 3": {
+    "en": "Work 3",
+    "es": "Trabajo 3",
+    "pt-BR": "Trabalho 3",
+    "ar": "عمل 3"
+  },
+  "עבודה 4": {
+    "en": "Work 4",
+    "es": "Trabajo 4",
+    "pt-BR": "Trabalho 4",
+    "ar": "عمل 4"
+  },
+  "עבודה 5": {
+    "en": "Work 5",
+    "es": "Trabajo 5",
+    "pt-BR": "Trabalho 5",
+    "ar": "عمل 5"
+  },
+  "בוט חכם": {
+    "en": "Smart bot",
+    "es": "Bot inteligente",
+    "pt-BR": "Bot inteligente",
+    "ar": "بوت ذكي"
+  },
+  "מסר שני": {
+    "en": "Second message",
+    "es": "Segundo mensaje",
+    "pt-BR": "Segunda mensagem",
+    "ar": "رسالة ثانية"
+  }
+}

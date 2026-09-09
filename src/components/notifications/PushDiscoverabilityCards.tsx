@@ -19,13 +19,10 @@ export function PushEmptyStateUpsell({
       data-testid="push-empty-upsell"
     >
       <p className="text-sm font-black text-slate-800">
-        {t("push.discover.emptyTitle", "קבלו התראות גם כש-Bizuply סגורה")}
+        {t("push.discover.emptyTitle")}
       </p>
       <p className="mt-1.5 text-xs font-semibold leading-5 text-slate-500">
-        {t(
-          "push.discover.emptyHint",
-          "לידים חדשים, פגישות ועדכונים חשובים — ישירות למכשיר."
-        )}
+        {t("push.discover.emptyHint")}
       </p>
 
       {trialEligible ? (
@@ -33,14 +30,14 @@ export function PushEmptyStateUpsell({
           className="mt-3 text-[11px] font-bold text-sky-700"
           data-testid="push-upsell-trial-badge"
         >
-          {t("push.discover.trialThenMonthly", "7 ימים חינם • לאחר מכן 29 ₪ לחודש")}
+          {t("push.discover.trialThenMonthly")}
         </p>
       ) : (
         <p
           className="mt-3 text-[11px] font-bold text-sky-700"
           data-testid="push-upsell-paid-price"
         >
-          {t("push.discover.monthly", "29 ₪ לחודש")}
+          {t("push.discover.monthly")}
         </p>
       )}
 
@@ -52,14 +49,14 @@ export function PushEmptyStateUpsell({
       >
         <Smartphone className="h-4 w-4" aria-hidden />
         {trialEligible
-          ? t("push.discover.tryPush", "נסו התראות Push")
-          : t("push.discover.enablePush", "הפעלת התראות Push")}
+          ? t("push.discover.tryPush")
+          : t("push.discover.enablePush")}
       </button>
 
       <p className="mt-2 text-[10px] font-semibold text-slate-400">
         {trialEligible
-          ? t("push.discover.yearlyTrial", "או 228 ₪ לשנה (19 ₪ לחודש)")
-          : t("push.discover.yearly", "או 228 ₪ לשנה")}
+          ? t("push.discover.yearlyTrial")
+          : t("push.discover.yearly")}
       </p>
     </div>
   );
@@ -82,28 +79,25 @@ export function PushCompactUpsellCard({
       <div className="min-w-0 flex-1 text-start">
         <div className="flex flex-wrap items-center gap-1.5">
           <p className="text-xs font-black text-slate-800">
-            {t("push.discover.compactTitle", "קבלו התראות בזמן אמת למכשיר")}
+            {t("push.discover.compactTitle")}
           </p>
           {trialEligible ? (
             <span
               className="inline-flex rounded-full bg-sky-100 px-2 py-0.5 text-[9px] font-black text-sky-700 ring-1 ring-sky-200"
               data-testid="push-upsell-trial-badge"
             >
-              {t("push.discover.free7", "7 ימים חינם")}
+              {t("push.discover.free7")}
             </span>
           ) : null}
         </div>
         <p className="mt-0.5 text-[11px] font-semibold text-slate-500">
           {trialEligible
-            ? t("push.discover.whenClosed", "גם כש-Bizuply לא פתוחה")
-            : t(
-                "push.discover.whenClosedPaid",
-                "גם כש-Bizuply לא פתוחה · 29 ₪ לחודש"
-              )}
+            ? t("push.discover.whenClosed")
+            : t("push.discover.whenClosedPaid")}
         </p>
         {!trialEligible ? (
           <p className="mt-0.5 text-[10px] font-semibold text-slate-400">
-            {t("push.discover.yearly", "או 228 ₪ לשנה")}
+            {t("push.discover.yearly")}
           </p>
         ) : null}
       </div>
@@ -115,8 +109,8 @@ export function PushCompactUpsellCard({
         data-testid="push-compact-upsell-cta"
       >
         {trialEligible
-          ? t("push.discover.enablePushShort", "הפעלת Push")
-          : t("push.discover.enablePush", "הפעלת התראות Push")}
+          ? t("push.discover.enablePushShort")
+          : t("push.discover.enablePush")}
       </button>
     </div>
   );
@@ -128,11 +122,8 @@ export function PushBellDiscoverChip({
 }: CommonProps) {
   const { t, i18n } = useTranslation();
   const chipDir = getTextDirection(i18n.language);
-  const trialLabel = t(
-    "push.discover.free7Push",
-    "7 ימים של התראות Push חינם"
-  );
-  const enableLabel = t("push.discover.enablePush", "הפעלת התראות Push");
+  const trialLabel = t("push.discover.free7Push");
+  const enableLabel = t("push.discover.enablePush");
   const label = trialEligible ? trialLabel : enableLabel;
   return (
     <button

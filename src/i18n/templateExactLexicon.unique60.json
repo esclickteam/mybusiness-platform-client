@@ -1,0 +1,794 @@
+{
+  "תוכנית עבודה": {
+    "en": "A work plan",
+    "es": "Un plan de trabajo",
+    "pt-BR": "Um plano de trabalho",
+    "ar": "خطة عمل"
+  },
+  "תכנון אירוח": {
+    "en": "Hospitality planning",
+    "es": "Planificación de hospitalidad",
+    "pt-BR": "Planejamento de hospitalidade",
+    "ar": "تخطيط ضيافة"
+  },
+  "מקומות עבודה": {
+    "en": "Workplaces",
+    "es": "Lugares de trabajo",
+    "pt-BR": "Locais de trabalho",
+    "ar": "أماكن عمل"
+  },
+  "מחקר": {
+    "en": "Research",
+    "es": "Investigación",
+    "pt-BR": "Pesquisa",
+    "ar": "بحث"
+  },
+  "שיטה": {
+    "en": "Method",
+    "es": "Método",
+    "pt-BR": "Método",
+    "ar": "طريقة"
+  },
+  "מערכות קו, חומר ואור": {
+    "en": "Systems of line, material, and light",
+    "es": "Sistemas de línea, material y luz",
+    "pt-BR": "Sistemas de linha, material e luz",
+    "ar": "أنظمة خط ومادة وضوء"
+  },
+  "שולחן הנהלה": {
+    "en": "The leadership table",
+    "es": "La mesa de dirección",
+    "pt-BR": "A mesa da direção",
+    "ar": "طاولة الإدارة"
+  },
+  "ממשל צמיחה": {
+    "en": "Growth governance",
+    "es": "Gobernanza de crecimiento",
+    "pt-BR": "Governança de crescimento",
+    "ar": "حوكمة نمو"
+  },
+  "תקשורת הנהלה": {
+    "en": "Leadership communication",
+    "es": "Comunicación de dirección",
+    "pt-BR": "Comunicação da direção",
+    "ar": "تواصل إدارة"
+  },
+  "מדריך פעולה": {
+    "en": "Action guide",
+    "es": "Guía de acción",
+    "pt-BR": "Guia de ação",
+    "ar": "دليل عمل"
+  },
+  "א׳-ה׳ 08:30-19:00": {
+    "en": "Sun–Thu 08:30-19:00",
+    "es": "Dom–jue 08:30-19:00",
+    "pt-BR": "Dom–qui 08:30-19:00",
+    "ar": "الأحد–الخميس 08:30-19:00"
+  },
+  "שם מלא / חברה": {
+    "en": "Full name / company",
+    "es": "Nombre completo / empresa",
+    "pt-BR": "Nome completo / empresa",
+    "ar": "الاسم الكامل / الشركة"
+  },
+  "יעד הפרויקט": {
+    "en": "Project goal",
+    "es": "Objetivo del proyecto",
+    "pt-BR": "Objetivo do projeto",
+    "ar": "هدف المشروع"
+  },
+  "לוח זמנים רצוי": {
+    "en": "Desired schedule",
+    "es": "Calendario deseado",
+    "pt-BR": "Cronograma desejado",
+    "ar": "جدول مرغوب"
+  },
+  "תיאור קצר של האתגר": {
+    "en": "A short description of the challenge",
+    "es": "Una descripción breve del reto",
+    "pt-BR": "Uma descrição curta do desafio",
+    "ar": "وصف قصير للتحدي"
+  },
+  "מטרת הפרויקט": {
+    "en": "Project purpose",
+    "es": "Finalidad del proyecto",
+    "pt-BR": "Finalidade do projeto",
+    "ar": "غاية المشروع"
+  },
+  "ספרו לנו מה צריך להיבנות, להשתפר או להשתלב.": {
+    "en": "Tell us what needs to be built, improved, or integrated.",
+    "es": "Contadnos qué hay que construir, mejorar o integrar.",
+    "pt-BR": "Contem o que precisa ser construído, melhorado ou integrado.",
+    "ar": "أخبرونا ماذا يجب بناؤه أو تحسينه أو دمجه."
+  },
+  "סוג צילום / קמפיין": {
+    "en": "Photography type / campaign",
+    "es": "Tipo de foto / campaña",
+    "pt-BR": "Tipo de foto / campanha",
+    "ar": "نوع تصوير / حملة"
+  },
+  "ספרו לנו איזה עולם אתם רוצים לבנות בפריים.": {
+    "en": "Tell us which world you want to build in the frame.",
+    "es": "Contadnos qué mundo queréis construir en el encuadre.",
+    "pt-BR": "Contem que mundo vocês querem construir no quadro.",
+    "ar": "أخبرونا أي عالم تريدون بناءه في الإطار."
+  },
+  "מותג / לקוח": {
+    "en": "Brand / client",
+    "es": "Marca / cliente",
+    "pt-BR": "Marca / cliente",
+    "ar": "علامة / عميل"
+  },
+  "מה אתם רוצים שנראה, נצלם ונגרום לו להרגיש?": {
+    "en": "What do you want us to see, shoot, and make it feel?",
+    "es": "¿Qué queréis que veamos, fotografiemos y hagamos sentir?",
+    "pt-BR": "O que vocês querem que a gente veja, fotografe e faça sentir?",
+    "ar": "ماذا تريدون أن نرى ونصوّر ونجعله يُشعر؟"
+  },
+  "ייצור": {
+    "en": "Production",
+    "es": "Producción",
+    "pt-BR": "Produção",
+    "ar": "إنتاج"
+  },
+  "לוגיסטיקה": {
+    "en": "Logistics",
+    "es": "Logística",
+    "pt-BR": "Logística",
+    "ar": "لوجستيات"
+  },
+  "קו ייצור מתוזמן, תיאום שטח קפדני ומדידה שוטפת של כל שלב בפרויקט.": {
+    "en": "A timed production line, strict site coordination, and ongoing measurement of every project stage.",
+    "es": "Una línea de producción cronometrada, coordinación de terreno estricta y medición continua de cada etapa.",
+    "pt-BR": "Uma linha de produção cronometrada, coordenação de campo rígida e medição contínua de cada etapa.",
+    "ar": "خط إنتاج موقوت، تنسيق موقع صارم وقياس مستمر لكل مرحلة في المشروع."
+  },
+  "קו תכנון, ייצור והקמה תחת אחריות אחת.": {
+    "en": "A planning, production, and install line under one responsibility.",
+    "es": "Una línea de planificación, producción e instalación bajo una responsabilidad.",
+    "pt-BR": "Uma linha de planejamento, produção e instalação sob uma responsabilidade.",
+    "ar": "خط تخطيط وإنتاج وتركيب تحت مسؤولية واحدة."
+  },
+  "דיווח קבוע למנהלי פרויקט, רכש ותפעול.": {
+    "en": "Regular reporting to project, procurement, and operations managers.",
+    "es": "Informes regulares a responsables de proyecto, compras y operaciones.",
+    "pt-BR": "Relatórios regulares para gestores de projeto, compras e operação.",
+    "ar": "تقرير ثابت لمديري مشروع ومشتريات وتشغيل."
+  },
+  "בקרת איכות כתובה בכל מעבר בין צוותים.": {
+    "en": "Written quality control at every handoff between teams.",
+    "es": "Control de calidad escrito en cada paso entre equipos.",
+    "pt-BR": "Controle de qualidade escrito em cada passagem entre equipes.",
+    "ar": "رقابة جودة مكتوبة عند كل انتقال بين فرق."
+  },
+  "מפעל / 01": {
+    "en": "Plant / 01",
+    "es": "Planta / 01",
+    "pt-BR": "Fábrica / 01",
+    "ar": "مصنع / 01"
+  },
+  "לוגיסטיקה / 02": {
+    "en": "Logistics / 02",
+    "es": "Logística / 02",
+    "pt-BR": "Logística / 02",
+    "ar": "لوجستيات / 02"
+  },
+  "מערכות / 03": {
+    "en": "Systems / 03",
+    "es": "Sistemas / 03",
+    "pt-BR": "Sistemas / 03",
+    "ar": "أنظمة / 03"
+  },
+  "דוח שטח 01": {
+    "en": "Field report 01",
+    "es": "Informe de campo 01",
+    "pt-BR": "Relatório de campo 01",
+    "ar": "تقرير ميدان 01"
+  },
+  "דוח שטח 02": {
+    "en": "Field report 02",
+    "es": "Informe de campo 02",
+    "pt-BR": "Relatório de campo 02",
+    "ar": "تقرير ميدان 02"
+  },
+  "הערת תפעול": {
+    "en": "Operations note",
+    "es": "Nota de operaciones",
+    "pt-BR": "Nota de operação",
+    "ar": "ملاحظة تشغيل"
+  },
+  "תכנון מוקדם, סנכרון ממשקים ובקרת מסירה מצמצמים עיכובים ומגבירים ודאות בשטח.": {
+    "en": "Early planning, interface sync, and handover control cut delays and raise certainty on site.",
+    "es": "Planificación temprana, sincronía de interfaces y control de entrega recortan retrasos y suben la certeza en terreno.",
+    "pt-BR": "Planejamento cedo, sincronia de interfaces e controle de entrega cortam atrasos e sobem a certeza no campo.",
+    "ar": "تخطيط مبكر ومزامنة واجهات ورقابة تسليم تقلّل التأخير وترفع اليقين في الميدان."
+  },
+  "באוהאוס": {
+    "en": "Bauhaus",
+    "es": "Bauhaus",
+    "pt-BR": "Bauhaus",
+    "ar": "باوهاوس"
+  },
+  "צורה": {
+    "en": "Form",
+    "es": "Forma",
+    "pt-BR": "Forma",
+    "ar": "شكل"
+  },
+  "צבע": {
+    "en": "Color",
+    "es": "Color",
+    "pt-BR": "Cor",
+    "ar": "لون"
+  },
+  "מסר": {
+    "en": "Message",
+    "es": "Mensaje",
+    "pt-BR": "Mensagem",
+    "ar": "رسالة"
+  },
+  "מערכת מותגית חדה, ריווח מדויק ושפה טיפוגרפית שמובילה את כל החוויה.": {
+    "en": "A sharp brand system, precise spacing, and a typographic language that leads the whole experience.",
+    "es": "Un sistema de marca nítido, un espaciado preciso y un lenguaje tipográfico que guía toda la experiencia.",
+    "pt-BR": "Um sistema de marca nítido, espaçamento preciso e uma linguagem tipográfica que conduz a experiência toda.",
+    "ar": "نظام علامة حاد، تباعد دقيق ولغة طباعية تقود التجربة كلها."
+  },
+  "מותג נבנה דרך חוקים ברורים, לא דרך קישוטים מקריים.": {
+    "en": "A brand is built through clear rules, not accidental ornaments.",
+    "es": "Una marca se construye con reglas claras, no con adornos accidentales.",
+    "pt-BR": "Uma marca se constrói com regras claras, não com enfeites acidentais.",
+    "ar": "تُبنى العلامة بقواعد واضحة، لا بزخارف صدفة."
+  },
+  "אנחנו מחברים קונספט, אתר ומסרים למערכת אחת עקבית.": {
+    "en": "We connect concept, site, and messages into one consistent system.",
+    "es": "Conectamos concepto, web y mensajes en un sistema consistente.",
+    "pt-BR": "Ligamos conceito, site e mensagens num sistema consistente.",
+    "ar": "نربط المفهوم والموقع والرسائل في نظام واحد متسق."
+  },
+  "כל עמוד מדבר בשפה גרפית אחת עם היררכיה חדה.": {
+    "en": "Every page speaks one graphic language with a sharp hierarchy.",
+    "es": "Cada página habla un lenguaje gráfico con una jerarquía nítida.",
+    "pt-BR": "Cada página fala uma linguagem gráfica com hierarquia nítida.",
+    "ar": "كل صفحة تتكلم لغة بصرية واحدة بتسلسل حاد."
+  },
+  "הערה 01": {
+    "en": "Note 01",
+    "es": "Nota 01",
+    "pt-BR": "Nota 01",
+    "ar": "ملاحظة 01"
+  },
+  "הערה 02": {
+    "en": "Note 02",
+    "es": "Nota 02",
+    "pt-BR": "Nota 02",
+    "ar": "ملاحظة 02"
+  },
+  "מסר ברור נבנה דרך ניגוד, קצב וחזרתיות.": {
+    "en": "A clear message is built through contrast, rhythm, and repetition.",
+    "es": "Un mensaje claro se construye con contraste, ritmo y repetición.",
+    "pt-BR": "Uma mensagem clara se constrói com contraste, ritmo e repetição.",
+    "ar": "تُبنى رسالة واضحة بالتباين والإيقاع والتكرار."
+  },
+  "ספרו על המותג או הפרויקט": {
+    "en": "Tell us about the brand or the project",
+    "es": "Contadnos sobre la marca o el proyecto",
+    "pt-BR": "Contem sobre a marca ou o projeto",
+    "ar": "أخبرونا عن العلامة أو المشروع"
+  },
+  "חזית ים": {
+    "en": "Sea front",
+    "es": "Frente mar",
+    "pt-BR": "Frente mar",
+    "ar": "واجهة بحر"
+  },
+  "340 מ\"ר": {
+    "en": "340 sqm",
+    "es": "340 m²",
+    "pt-BR": "340 m²",
+    "ar": "340 م²"
+  },
+  "במכירה פרטית": {
+    "en": "In a private sale",
+    "es": "En venta privada",
+    "pt-BR": "Em venda privada",
+    "ar": "في بيع خاص"
+  },
+  "480 מ\"ר": {
+    "en": "480 sqm",
+    "es": "480 m²",
+    "pt-BR": "480 m²",
+    "ar": "480 م²"
+  },
+  "השכרה מנוהלת": {
+    "en": "Managed rental",
+    "es": "Alquiler gestionado",
+    "pt-BR": "Aluguel gerido",
+    "ar": "إيجار مُدار"
+  },
+  "610 מ\"ר": {
+    "en": "610 sqm",
+    "es": "610 m²",
+    "pt-BR": "610 m²",
+    "ar": "610 م²"
+  },
+  "מגרש לבנייה": {
+    "en": "A building plot",
+    "es": "Un solar para construir",
+    "pt-BR": "Um lote para construir",
+    "ar": "قطعة للبناء"
+  },
+  "ליווי רכישה והשקעה": {
+    "en": "Purchase and investment guidance",
+    "es": "Acompañamiento de compra e inversión",
+    "pt-BR": "Acompanhamento de compra e investimento",
+    "ar": "مرافقة شراء واستثمار"
+  },
+  "מכירה והשבחת נכסים": {
+    "en": "Sale and asset improvement",
+    "es": "Venta y mejora de inmuebles",
+    "pt-BR": "Venda e valorização de imóveis",
+    "ar": "بيع وتحسين عقارات"
+  },
+  "ניהול משא ומתן ומכרזים": {
+    "en": "Negotiation and tender management",
+    "es": "Gestión de negociación y concursos",
+    "pt-BR": "Gestão de negociação e licitações",
+    "ar": "إدارة تفاوض ومناقصات"
+  },
+  "תמחור, מחקר ושיווק": {
+    "en": "Pricing, research, and marketing",
+    "es": "Precio, investigación y marketing",
+    "pt-BR": "Precificação, pesquisa e marketing",
+    "ar": "تسعير وبحث وتسويق"
+  },
+  "קו ראשון לים": {
+    "en": "First line to the sea",
+    "es": "Primera línea de mar",
+    "pt-BR": "Primeira linha do mar",
+    "ar": "خط أول للبحر"
+  },
+  "פרמיית ביקוש גבוהה": {
+    "en": "A high demand premium",
+    "es": "Una prima de demanda alta",
+    "pt-BR": "Um prêmio de demanda alta",
+    "ar": "علاوة طلب عالية"
+  },
+  "38 עסקאות ברבעון": {
+    "en": "38 deals a quarter",
+    "es": "38 operaciones al trimestre",
+    "pt-BR": "38 negócios por trimestre",
+    "ar": "38 صفقة في الربع"
+  },
+  "יציבות שכירות": {
+    "en": "Rental stability",
+    "es": "Estabilidad de alquiler",
+    "pt-BR": "Estabilidade de aluguel",
+    "ar": "ثبات إيجار"
+  },
+  "תפוסה ממוצעת 94%": {
+    "en": "Average occupancy 94%",
+    "es": "Ocupación media 94%",
+    "pt-BR": "Ocupação média 94%",
+    "ar": "إشغال متوسط 94%"
+  },
+  "שכונות מתחדשות": {
+    "en": "Renewing neighborhoods",
+    "es": "Barrios en renovación",
+    "pt-BR": "Bairros em renovação",
+    "ar": "أحياء تتجدد"
+  },
+  "פוטנציאל השבחה": {
+    "en": "Improvement potential",
+    "es": "Potencial de mejora",
+    "pt-BR": "Potencial de valorização",
+    "ar": "إمكانية تحسين"
+  },
+  "כניסת הון מוסדי": {
+    "en": "Institutional capital entering",
+    "es": "Entrada de capital institucional",
+    "pt-BR": "Entrada de capital institucional",
+    "ar": "دخول رأس مال مؤسسي"
+  },
+  "ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.": {
+    "en": "Full management of luxury assets, land improvement, and a marketing wrap that starts in research and ends at signing.",
+    "es": "Gestión completa de activos de lujo, mejora de suelo y una envoltura de marketing que empieza en investigación y termina en la firma.",
+    "pt-BR": "Gestão completa de ativos de luxo, valorização de terreno e uma envoltória de marketing que começa na pesquisa e termina na assinatura.",
+    "ar": "إدارة كاملة لأصول فاخرة وتحسين أراضٍ وغلاف تسويقي يبدأ بالبحث وينتهي بالتوقيع."
+  },
+  "צנרת עסקאות": {
+    "en": "Deal pipeline",
+    "es": "Embudo de operaciones",
+    "pt-BR": "Funil de negócios",
+    "ar": "خط صفقات"
+  },
+  "שנים": {
+    "en": "Years",
+    "es": "Años",
+    "pt-BR": "Anos",
+    "ar": "سنوات"
+  },
+  "שימור": {
+    "en": "Retention",
+    "es": "Retención",
+    "pt-BR": "Retenção",
+    "ar": "حفظ"
+  },
+  "דסק": {
+    "en": "Desk",
+    "es": "Mesa",
+    "pt-BR": "Mesa",
+    "ar": "مكتب"
+  },
+  "הערכת שווי עם הקשר תכנוני ושיווקי.": {
+    "en": "A valuation with planning and marketing context.",
+    "es": "Una tasación con contexto urbanístico y de marketing.",
+    "pt-BR": "Uma avaliação com contexto urbanístico e de marketing.",
+    "ar": "تقييم قيمة بسياق تخطيطي وتسويقي."
+  },
+  "ליווי קונים, יזמים ומשקיעים באותה שפה.": {
+    "en": "Guidance for buyers, developers, and investors in the same language.",
+    "es": "Acompañamiento a compradores, promotores e inversores en el mismo idioma.",
+    "pt-BR": "Acompanhamento a compradores, incorporadores e investidores na mesma língua.",
+    "ar": "مرافقة مشترين ومطوّرين ومستثمرين بنفس اللغة."
+  },
+  "ניהול תהליך דיסקרטי משלב המחקר עד המסירה.": {
+    "en": "Discreet process management from research through handover.",
+    "es": "Gestión discreta del proceso desde la investigación hasta la entrega.",
+    "pt-BR": "Gestão discreta do processo da pesquisa até a entrega.",
+    "ar": "إدارة عملية سرية من البحث حتى التسليم."
+  },
+  "סריקת שוק": {
+    "en": "Market scan",
+    "es": "Barrido de mercado",
+    "pt-BR": "Varredura de mercado",
+    "ar": "مسح سوق"
+  },
+  "שכונות, מגמות והזדמנויות בזמן אמת.": {
+    "en": "Neighborhoods, trends, and opportunities in real time.",
+    "es": "Barrios, tendencias y oportunidades en tiempo real.",
+    "pt-BR": "Bairros, tendências e oportunidades em tempo real.",
+    "ar": "أحياء واتجاهات وفرص في الوقت الفعلي."
+  },
+  "דוח רבעוני": {
+    "en": "Quarterly report",
+    "es": "Informe trimestral",
+    "pt-BR": "Relatório trimestral",
+    "ar": "تقرير ربع سنوي"
+  },
+  "תזכיר ייעוץ": {
+    "en": "Advisory memo",
+    "es": "Memorando de asesoría",
+    "pt-BR": "Memorando de consultoria",
+    "ar": "مذكرة استشارة"
+  },
+  "דסק ייעוץ": {
+    "en": "Advisory desk",
+    "es": "Mesa de asesoría",
+    "pt-BR": "Mesa de consultoria",
+    "ar": "مكتب استشارة"
+  },
+  "מפת ערך": {
+    "en": "Value map",
+    "es": "Mapa de valor",
+    "pt-BR": "Mapa de valor",
+    "ar": "خارطة قيمة"
+  },
+  "ניתוח שכונות, מחירי יעד ומסלולי השבחה.": {
+    "en": "Neighborhood analysis, target prices, and improvement paths.",
+    "es": "Análisis de barrios, precios objetivo y rutas de mejora.",
+    "pt-BR": "Análise de bairros, preços-alvo e rotas de valorização.",
+    "ar": "تحليل أحياء وأسعار هدف ومسارات تحسين."
+  },
+  "מסע רוכש": {
+    "en": "Buyer journey",
+    "es": "Viaje del comprador",
+    "pt-BR": "Jornada do comprador",
+    "ar": "رحلة مشترٍ"
+  },
+  "עמודי תהליך, תשובות לשאלות ומסמכי הכנה לפגישה.": {
+    "en": "Process pages, answers to questions, and prep documents for a meeting.",
+    "es": "Páginas de proceso, respuestas y documentos de preparación para una reunión.",
+    "pt-BR": "Páginas de processo, respostas e documentos de preparação para uma reunião.",
+    "ar": "صفحات عملية وإجابات ووثائق تحضير لاجتماع."
+  },
+  "תוכן צנרת": {
+    "en": "Pipeline content",
+    "es": "Contenido de embudo",
+    "pt-BR": "Conteúdo de funil",
+    "ar": "محتوى خط"
+  },
+  "ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים.": {
+    "en": "Tell us about the property, the purchase, or the improvement you are planning.",
+    "es": "Contadnos sobre el inmueble, la compra o la mejora que planeáis.",
+    "pt-BR": "Contem sobre o imóvel, a compra ou a valorização que vocês planejam.",
+    "ar": "أخبرونا عن العقار أو الشراء أو التحسين الذي تخططون له."
+  },
+  "תכנון תזרים ותרחישים": {
+    "en": "Cash-flow planning and scenarios",
+    "es": "Planificación de tesorería y escenarios",
+    "pt-BR": "Planejamento de caixa e cenários",
+    "ar": "تخطيط تدفق نقدي وسيناريوهات"
+  },
+  "דוחות הנהלה וליווי תקציבי": {
+    "en": "Management reports and budget guidance",
+    "es": "Informes de dirección y acompañamiento presupuestario",
+    "pt-BR": "Relatórios de direção e acompanhamento orçamentário",
+    "ar": "تقارير إدارة ومرافقة ميزانية"
+  },
+  "בקרות, מעקב וסטנדרטיזציה": {
+    "en": "Controls, tracking, and standardization",
+    "es": "Controles, seguimiento y estandarización",
+    "pt-BR": "Controles, acompanhamento e padronização",
+    "ar": "رقابة ومتابعة وتوحيد"
+  },
+  "קבלת החלטות עם הקשר עסקי": {
+    "en": "Decision-making with business context",
+    "es": "Toma de decisiones con contexto de negocio",
+    "pt-BR": "Tomada de decisão com contexto de negócio",
+    "ar": "اتخاذ قرارات بسياق أعمال"
+  },
+  "קצב דירקטוריון": {
+    "en": "Board cadence",
+    "es": "Ritmo de consejo",
+    "pt-BR": "Ritmo de conselho",
+    "ar": "إيقاع مجلس"
+  },
+  "מעקב סיכונים": {
+    "en": "Risk tracking",
+    "es": "Seguimiento de riesgos",
+    "pt-BR": "Acompanhamento de riscos",
+    "ar": "متابعة مخاطر"
+  },
+  "זיהוי חריגות, תרחישים והשפעה ישירה על המזומן.": {
+    "en": "Spotting exceptions, scenarios, and a direct effect on cash.",
+    "es": "Detectar desviaciones, escenarios y un efecto directo en caja.",
+    "pt-BR": "Detectar desvios, cenários e um efeito direto no caixa.",
+    "ar": "رصد انحرافات وسيناريوهات وأثر مباشر على النقد."
+  },
+  "שכבת החלטות": {
+    "en": "A decision layer",
+    "es": "Una capa de decisiones",
+    "pt-BR": "Uma camada de decisões",
+    "ar": "طبقة قرارات"
+  },
+  "מתרגמים נתונים לשאלות הנהלה, לא רק לאקסל.": {
+    "en": "We translate data into leadership questions, not only into a spreadsheet.",
+    "es": "Traducimos datos a preguntas de dirección, no solo a una hoja.",
+    "pt-BR": "Traduzimos dados em perguntas de direção, não só numa planilha.",
+    "ar": "نترجم البيانات إلى أسئلة إدارة، لا إلى جدول فقط."
+  },
+  "מיפוי KPI, תקציב, בקרה": {
+    "en": "KPI mapping, budget, control",
+    "es": "Mapeo de KPI, presupuesto, control",
+    "pt-BR": "Mapeamento de KPI, orçamento, controle",
+    "ar": "رسم KPI وميزانية ورقابة"
+  },
+  "ייעול תמחור, רכש, גבייה": {
+    "en": "Pricing, procurement, and collections efficiency",
+    "es": "Eficiencia en precio, compras y cobro",
+    "pt-BR": "Eficiência em preço, compras e cobrança",
+    "ar": "تحسين تسعير ومشتريات وتحصيل"
+  },
+  "דיווח הנהלה, דשבורדים, תחזיות": {
+    "en": "Leadership reporting, dashboards, forecasts",
+    "es": "Informes de dirección, paneles, previsiones",
+    "pt-BR": "Relatórios de direção, painéis, previsões",
+    "ar": "تقارير إدارة ولوحات وتوقعات"
+  },
+  "אופטימיזציה, צמיחה, היערכות": {
+    "en": "Optimization, growth, readiness",
+    "es": "Optimización, crecimiento, preparación",
+    "pt-BR": "Otimização, crescimento, preparação",
+    "ar": "تحسين ونمو وتأهّب"
+  },
+  "תצוגת Ledger": {
+    "en": "Ledger view",
+    "es": "Vista Ledger",
+    "pt-BR": "Vista Ledger",
+    "ar": "عرض Ledger"
+  },
+  "אימוני כוח מדורגים עם עומסים ברורים.": {
+    "en": "Graded strength sessions with clear loads.",
+    "es": "Entrenamientos de fuerza graduados con cargas claras.",
+    "pt-BR": "Treinos de força graduados com cargas claras.",
+    "ar": "تمارين قوة متدرجة بأحمال واضحة."
+  },
+  "מנוע": {
+    "en": "Engine",
+    "es": "Motor",
+    "pt-BR": "Motor",
+    "ar": "محرك"
+  },
+  "בניית סיבולת וקצב עבודה יציב.": {
+    "en": "Building endurance and a stable work pace.",
+    "es": "Construir resistencia y un ritmo de trabajo estable.",
+    "pt-BR": "Construir resistência e um ritmo de trabalho estável.",
+    "ar": "بناء تحمّل وإيقاع عمل ثابت."
+  },
+  "מהירות": {
+    "en": "Speed",
+    "es": "Velocidad",
+    "pt-BR": "Velocidade",
+    "ar": "سرعة"
+  },
+  "התאוששות": {
+    "en": "Recovery",
+    "es": "Recuperación",
+    "pt-BR": "Recuperação",
+    "ar": "تعافٍ"
+  },
+  "ניהול עומס, טכניקה והחזרה ליום הבא.": {
+    "en": "Load management, technique, and returning to the next day.",
+    "es": "Gestión de carga, técnica y vuelta al día siguiente.",
+    "pt-BR": "Gestão de carga, técnica e volta ao dia seguinte.",
+    "ar": "إدارة حمل وتقنية والعودة لليوم التالي."
+  },
+  "התחלה חזקה": {
+    "en": "A strong start",
+    "es": "Un arranque fuerte",
+    "pt-BR": "Um começo forte",
+    "ar": "بداية قوية"
+  },
+  "קבוצה למתאמנים שרוצים פתיחת יום מהירה.": {
+    "en": "A group for athletes who want a fast morning open.",
+    "es": "Un grupo para quienes quieren un arranque de día rápido.",
+    "pt-BR": "Um grupo para quem quer uma abertura de dia rápida.",
+    "ar": "مجموعة لمن يريدون فتح يوم سريع."
+  },
+  "איפוס צהריים": {
+    "en": "A noon reset",
+    "es": "Un reset de mediodía",
+    "pt-BR": "Um reset ao meio-dia",
+    "ar": "إعادة ضبط ظهر"
+  },
+  "פורמט קצר עם דגש על איכות וטכניקה.": {
+    "en": "A short format with a focus on quality and technique.",
+    "es": "Un formato corto con énfasis en calidad y técnica.",
+    "pt-BR": "Um formato curto com ênfase em qualidade e técnica.",
+    "ar": "صيغة قصيرة بتركيز على الجودة والتقنية."
+  },
+  "שעת שיא": {
+    "en": "Peak hour",
+    "es": "Hora punta",
+    "pt-BR": "Horário de pico",
+    "ar": "ساعة ذروة"
+  },
+  "אימון ערב עצים עם מסלול התקדמות קבוע.": {
+    "en": "A dense evening session with a fixed progress path.",
+    "es": "Un entrenamiento de noche denso con un recorrido de progreso fijo.",
+    "pt-BR": "Um treino noturno denso com um percurso de progresso fixo.",
+    "ar": "تمرين مساء كثيف بمسار تقدّم ثابت."
+  },
+  "אבחון קצר ומיפוי מטרה.": {
+    "en": "A short assessment and a goal map.",
+    "es": "Un diagnóstico breve y un mapa de objetivo.",
+    "pt-BR": "Um diagnóstico curto e um mapa de meta.",
+    "ar": "تشخيص قصير ورسم هدف."
+  },
+  "בחירת מסלול אימון ורמת עומס.": {
+    "en": "Choosing a training path and a load level.",
+    "es": "Elegir un recorrido de entrenamiento y un nivel de carga.",
+    "pt-BR": "Escolher um percurso de treino e um nível de carga.",
+    "ar": "اختيار مسار تمرين ومستوى حمل."
+  },
+  "שיעור ניסיון ומעקב תוצאה.": {
+    "en": "A trial class and result tracking.",
+    "es": "Una clase de prueba y seguimiento de resultado.",
+    "pt-BR": "Uma aula experimental e acompanhamento de resultado.",
+    "ar": "حصة تجريبية ومتابعة نتيجة."
+  },
+  "מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?": {
+    "en": "What is your goal: strength, lower body fat, returning to a path, or building a routine?",
+    "es": "¿Cuál es vuestro objetivo: fuerza, bajar grasa, volver a un recorrido o construir una rutina?",
+    "pt-BR": "Qual é a meta de vocês: força, reduzir gordura, voltar a um percurso ou construir uma rotina?",
+    "ar": "ما هدفكم: قوة، خفض دهون، عودة لمسار أو بناء روتين؟"
+  },
+  "תגובה": {
+    "en": "Response",
+    "es": "Respuesta",
+    "pt-BR": "Resposta",
+    "ar": "استجابة"
+  },
+  "חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות.": {
+    "en": "Strengthening traffic, identity, and data layers with policy-based controls.",
+    "es": "Reforzar capas de tráfico, identidad y datos con controles basados en política.",
+    "pt-BR": "Fortalecer camadas de tráfego, identidade e dados com controles baseados em política.",
+    "ar": "تعزيز طبقات مرور وهوية وبيانات بضوابط مبنية على سياسة."
+  },
+  "טלמטריה רציפה, זיהוי חריגות ומיפוי חשיפות.": {
+    "en": "Continuous telemetry, spotting exceptions, and mapping exposures.",
+    "es": "Telemetría continua, detección de desviaciones y mapeo de exposiciones.",
+    "pt-BR": "Telemetria contínua, detecção de desvios e mapeamento de exposições.",
+    "ar": "قياس عن بعد مستمر ورصد انحرافات ورسم تعرضات."
+  },
+  "פלייבוקים לאירועים, ניתוב הכלה ודיווח ברמת דירקטוריון.": {
+    "en": "Incident playbooks, containment routing, and board-level reporting.",
+    "es": "Playbooks de incidentes, enrutado de contención e informes a nivel de consejo.",
+    "pt-BR": "Playbooks de incidentes, roteamento de contenção e relatórios em nível de conselho.",
+    "ar": "أدلة حوادث وتوجيه احتواء وتقارير على مستوى مجلس."
+  },
+  "ציד איומים": {
+    "en": "Threat hunting",
+    "es": "Caza de amenazas",
+    "pt-BR": "Caça a ameaças",
+    "ar": "صيد تهديدات"
+  },
+  "שכבות גישה מבוססות זהות לעובדים, ספקים והנהלה.": {
+    "en": "Identity-based access layers for employees, vendors, and leadership.",
+    "es": "Capas de acceso basadas en identidad para empleados, proveedores y dirección.",
+    "pt-BR": "Camadas de acesso baseadas em identidade para funcionários, fornecedores e direção.",
+    "ar": "طبقات وصول مبنية على الهوية للموظفين والموردين والإدارة."
+  },
+  "דיווח מצב מוכן לדירקטוריון שמתרגם סיכון לפעולה.": {
+    "en": "Board-ready status reporting that turns risk into action.",
+    "es": "Informes de estado listos para el consejo que traducen riesgo a acción.",
+    "pt-BR": "Relatórios de estado prontos para o conselho que traduzem risco em ação.",
+    "ar": "تقارير وضع جاهزة للمجلس تحوّل الخطر إلى فعل."
+  },
+  "ארכיטקטורת אבטחה שנועדת להתרחב עם התפעול והרגולציה.": {
+    "en": "A security architecture meant to scale with operations and regulation.",
+    "es": "Una arquitectura de seguridad pensada para crecer con operación y regulación.",
+    "pt-BR": "Uma arquitetura de segurança pensada para crescer com operação e regulação.",
+    "ar": "هندسة أمن معدّة للتوسّع مع التشغيل والتنظيم."
+  },
+  "זיהוי": {
+    "en": "Detection",
+    "es": "Detección",
+    "pt-BR": "Detecção",
+    "ar": "كشف"
+  },
+  "הכלה": {
+    "en": "Containment",
+    "es": "Contención",
+    "pt-BR": "Contenção",
+    "ar": "احتواء"
+  },
+  "תוכניות ייעוץ, יישום ותגובה בשכבות — שנועדו להקטין חשיפה בלי להאט את המסירה.": {
+    "en": "Layered consulting, implementation, and response plans — meant to shrink exposure without slowing delivery.",
+    "es": "Planes de asesoría, implantación y respuesta en capas — para reducir exposición sin frenar la entrega.",
+    "pt-BR": "Planos de consultoria, implementação e resposta em camadas — para reduzir exposição sem atrasar a entrega.",
+    "ar": "خطط استشارة وتنفيذ واستجابة بطبقات — لتقليل التعرض دون إبطاء التسليم."
+  },
+  "היקף": {
+    "en": "Scope",
+    "es": "Alcance",
+    "pt-BR": "Escopo",
+    "ar": "نطاق"
+  },
+  "אירוע": {
+    "en": "Incident",
+    "es": "Incidente",
+    "pt-BR": "Incidente",
+    "ar": "حادث"
+  },
+  "גילוי": {
+    "en": "Discovery",
+    "es": "Descubrimiento",
+    "pt-BR": "Descoberta",
+    "ar": "اكتشاف"
+  },
+  "מידול": {
+    "en": "Modeling",
+    "es": "Modelado",
+    "pt-BR": "Modelagem",
+    "ar": "نمذجة"
+  },
+  "מודיעין": {
+    "en": "Intelligence",
+    "es": "Inteligencia",
+    "pt-BR": "Inteligência",
+    "ar": "استخبارات"
+  },
+  "נושא הפנייה": {
+    "en": "Inquiry topic",
+    "es": "Tema de la consulta",
+    "pt-BR": "Tema do contato",
+    "ar": "موضوع الطلب"
+  },
+  "ספרו לנו על האתגר, הסביבה והדחיפות.": {
+    "en": "Tell us about the challenge, the environment, and the urgency.",
+    "es": "Contadnos sobre el reto, el entorno y la urgencia.",
+    "pt-BR": "Contem sobre o desafio, o ambiente e a urgência.",
+    "ar": "أخبرونا عن التحدي والبيئة والإلحاح."
+  }
+}

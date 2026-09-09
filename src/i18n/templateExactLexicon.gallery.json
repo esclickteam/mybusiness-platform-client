@@ -1,0 +1,710 @@
+{
+  "בר צבע לשיער: בליאז׳, גוונים, תיקוני צבע וברק.": {
+    "en": "Hair color bar: balayage, tones, color corrections, and shine.",
+    "es": "Barra de color: balayage, tonos, correcciones y brillo.",
+    "pt-BR": "Barra de cor: balayage, tons, correções e brilho.",
+    "ar": "بار تلوين شعر: بالياج ودرجات وتصحيح لون ولمعان."
+  },
+  "אטלייה לריסים: קלאסיק, ווליום, מילוי ומיפוי עין.": {
+    "en": "Lash atelier: classic, volume, refill, and eye mapping.",
+    "es": "Atelier de pestañas: clásico, volumen, relleno y mapeo.",
+    "pt-BR": "Ateliê de cílios: clássico, volume, preenchimento e mapeamento.",
+    "ar": "أتيليه رموش: كلاسيك وفوليوم وتعبئة ورسم العين."
+  },
+  "ספא ועיסוי פנים: ניקוז, גוואשה, הרגעה וטקסי זוהר.": {
+    "en": "Facial spa and massage: drainage, gua sha, calm, and glow rituals.",
+    "es": "Spa facial: drenaje, gua sha, calma y rituales de glow.",
+    "pt-BR": "Spa facial: drenagem, gua sha, calma e rituais de glow.",
+    "ar": "سبا وتدليك وجه: تصريف وغواشا وتهدئة وطقوس توهج."
+  },
+  "קליניקה לאקנה וקוסמטיקה רפואית: אבחון, סדרות ומעקב.": {
+    "en": "Acne and medical cosmetics clinic: diagnosis, series, and follow-up.",
+    "es": "Clínica de acné y cosmética médica: diagnóstico, series y seguimiento.",
+    "pt-BR": "Clínica de acne e cosmética médica: diagnóstico, séries e acompanhamento.",
+    "ar": "عيادة حب شباب وتجميل طبي: تشخيص وسلاسل ومتابعة."
+  },
+  "עיצוב גבות: מיפוי, פינצטה, צבע ולמינציה למראה מסודר.": {
+    "en": "Brow design: mapping, tweezers, tint, and lamination for a clean look.",
+    "es": "Diseño de cejas: mapeo, pinza, color y laminado para un look ordenado.",
+    "pt-BR": "Design de sobrancelhas: mapeamento, pinça, cor e laminação para um look limpo.",
+    "ar": "تصميم حواجب: رسم وملقط ولون وتصفیح لمظهر مرتب."
+  },
+  "סטודיו PMU: שפתיים, אייליינר, גבות ותהליך החלמה ברור.": {
+    "en": "PMU studio: lips, eyeliner, brows, and a clear healing process.",
+    "es": "Estudio PMU: labios, eyeliner, cejas y un proceso de cicatrización claro.",
+    "pt-BR": "Estúdio PMU: lábios, delineador, sobrancelhas e um processo de cicatrização claro.",
+    "ar": "استوديو PMU: شفاه وآيلاينر وحواجب وعملية شفاء واضحة."
+  },
+  "טיפוח גברים: עור, זקן, גבות ושגרת טיפול קצרה ומדויקת.": {
+    "en": "Men's grooming: skin, beard, brows, and a short precise routine.",
+    "es": "Cuidado masculino: piel, barba, cejas y una rutina corta y precisa.",
+    "pt-BR": "Cuidados masculinos: pele, barba, sobrancelhas e uma rotina curta e precisa.",
+    "ar": "عناية رجال: بشرة ولحية وحواجب وروتين قصير ودقيق."
+  },
+  "טיפולי פנים ופילינג: חידוש מרקם, פיגמנטציה וזוהר מדורג.": {
+    "en": "Facials and peels: texture renewal, pigmentation, and graded glow.",
+    "es": "Faciales y peelings: renovar textura, pigmentación y glow gradual.",
+    "pt-BR": "Faciais e peelings: renovar textura, pigmentação e glow gradual.",
+    "ar": "علاجات وجه وتقشير: تجديد ملمس وتصبغ وتوهج متدرج."
+  },
+  "קוסמטיקאית בוטיק: אבחון עור, ניקוי עמוק, לחות ושגרת בית.": {
+    "en": "Boutique aesthetician: skin diagnosis, deep cleanse, moisture, and a home routine.",
+    "es": "Esteticista boutique: diagnóstico, limpieza profunda, hidratación y rutina en casa.",
+    "pt-BR": "Esteticista boutique: diagnóstico, limpeza profunda, hidratação e rotina em casa.",
+    "ar": "خبيرة تجميل بوتيك: تشخيص بشرة وتنظيف عميق وترطيب وروتين منزلي."
+  },
+  "יופי לכלות: ניסיונות, לוקים, צוות כלה ויומן חזרות ותורים.": {
+    "en": "Bridal beauty: trials, looks, a bridal team, and a rehearsal-and-booking diary.",
+    "es": "Belleza nupcial: pruebas, looks, equipo de novia y agenda de ensayos y citas.",
+    "pt-BR": "Beleza nupcial: provas, looks, equipe da noiva e agenda de ensaios e horários.",
+    "ar": "جمال للعرائس: تجارب وإطلالات وفريق عروس ويوميات بروفات ومواعيد."
+  },
+  "נייל ארט יצירתי: איורים, כרום, תלת־ממד וקולקציות עונתיות.": {
+    "en": "Creative nail art: illustrations, chrome, 3D, and seasonal collections.",
+    "es": "Nail art creativo: ilustraciones, cromo, 3D y colecciones de temporada.",
+    "pt-BR": "Nail art criativo: ilustrações, cromo, 3D e coleções da estação.",
+    "ar": "فن أظافر إبداعي: رسوم وكروم وثلاثي أبعاد ومجموعات موسمية."
+  },
+  "איפור כלות יוקרתי: ניסיון, יום אירוע, מלוות ותיק טאצ׳־אפ.": {
+    "en": "Luxury bridal makeup: a trial, event day, companions, and a touch-up kit.",
+    "es": "Maquillaje nupcial de lujo: prueba, día del evento, acompañantes y kit de retoque.",
+    "pt-BR": "Maquiagem nupcial de luxo: prova, dia do evento, acompanhantes e kit de retoque.",
+    "ar": "مكياج عرائس فاخر: تجربة ويوم الحدث ومرافقات وحقيبة لمسات."
+  },
+  "הסרת שיער בסוכר ושעווה: טכניקה עדינה, סטריליות וקצב מהיר.": {
+    "en": "Sugar and wax hair removal: a gentle technique, sterility, and a fast pace.",
+    "es": "Depilación con azúcar y cera: técnica suave, esterilidad y ritmo rápido.",
+    "pt-BR": "Depilação com açúcar e cera: técnica suave, esterilidade e ritmo rápido.",
+    "ar": "إزالة شعر بالسكر والشمع: تقنية لطيفة وتعقيم ووتيرة سريعة."
+  },
+  "מיקרובליידינג טבעי: שערה-שערה, התאמת פיגמנט וביקורת החלמה.": {
+    "en": "Natural microblading: hair by hair, pigment matching, and a healing check.",
+    "es": "Microblading natural: pelo a pelo, ajuste de pigmento y revisión de cicatrización.",
+    "pt-BR": "Microblading natural: fio a fio, ajuste de pigmento e revisão da cicatrização.",
+    "ar": "مايكروبليدنغ طبيعي: شعرة بشعرة وملاءمة صباغ ومراجعة شفاء."
+  },
+  "ניווט עליון": {
+    "en": "Top navigation",
+    "es": "Navegación superior",
+    "pt-BR": "Navegação superior",
+    "ar": "تنقل علوي"
+  },
+  "פתיחה ראשית": {
+    "en": "Main opening",
+    "es": "Apertura principal",
+    "pt-BR": "Abertura principal",
+    "ar": "افتتاح رئيسي"
+  },
+  "סטודיו דיגיטלי לבניית מותגים, אתרים וחוויות שמוכרות": {
+    "en": "A digital studio for brands, sites, and experiences that sell",
+    "es": "Estudio digital para marcas, webs y experiencias que venden",
+    "pt-BR": "Estúdio digital para marcas, sites e experiências que vendem",
+    "ar": "استوديو رقمي لبناء علامات ومواقع وتجارب تبيع"
+  },
+  "חנות דנים וסטרית: 11 עמודים עשירים עם קטלוג חי מתוסף החנות.": {
+    "en": "Denim and street store: 11 rich pages with a live catalog from the store add-on.",
+    "es": "Tienda denim y street: 11 páginas ricas con catálogo vivo del extra de tienda.",
+    "pt-BR": "Loja jeans e street: 11 páginas ricas com catálogo ao vivo do extra da loja.",
+    "ar": "متجر دينم وستريت: 11 صفحة غنية مع كتالوج حي من إضافة المتجر."
+  },
+  "בית ספר לשפות: הירו ממורכז, מארקי שפות, מסלול זיגזג ומורים.": {
+    "en": "Language school: a centered hero, language marquee, zigzag path, and teachers.",
+    "es": "Escuela de idiomas: hero centrado, marquee de idiomas, recorrido en zigzag y profesores.",
+    "pt-BR": "Escola de idiomas: hero central, marquee de idiomas, percurso em zigue-zague e professores.",
+    "ar": "مدرسة لغات: بطل متمركز وشريط لغات ومسار متعرج ومعلمون."
+  },
+  "חנות ויטמינים ותוספי תזונה: 11 עמודים עם גריד נקי וקטלוג חי.": {
+    "en": "Vitamins and supplements store: 11 pages with a clean grid and a live catalog.",
+    "es": "Tienda de vitaminas: 11 páginas con una grid limpia y catálogo vivo.",
+    "pt-BR": "Loja de vitaminas: 11 páginas com uma grade limpa e catálogo ao vivo.",
+    "ar": "متجر فيتامينات ومكملات: 11 صفحة مع شبكة نظيفة وكتالوج حي."
+  },
+  "מספרת בוטיק: חיתוכים עיתונאיים, צבע, צוות ספרים ויומן תורים.": {
+    "en": "Boutique salon: editorial cuts, color, a barber team, and a booking diary.",
+    "es": "Salón boutique: cortes editoriales, color, equipo y agenda.",
+    "pt-BR": "Salão boutique: cortes editoriais, cor, equipe e agenda.",
+    "ar": "صالون بوتيك: قصات تحريرية ولون وفريق ويوميات مواعيد."
+  },
+  "סטודיו ריסים וגבות: הארכות, למינציה, מיפוי גבות ויומן תורים.": {
+    "en": "Lash and brow studio: extensions, lamination, brow mapping, and a booking diary.",
+    "es": "Estudio de pestañas y cejas: extensiones, laminado, mapeo y agenda.",
+    "pt-BR": "Estúdio de cílios e sobrancelhas: extensões, laminação, mapeamento e agenda.",
+    "ar": "استوديو رموش وحواجب: تطويل وتصفيح ورسم حواجب ويوميات مواعيد."
+  },
+  "שיעורים פרטיים אקדמיים: הירו ספרייה, טבלת מקצועות ולוח סמסטר.": {
+    "en": "Academic tutoring: a library hero, subjects table, and semester board.",
+    "es": "Clases particulares: hero biblioteca, tabla de materias y tablero de semestre.",
+    "pt-BR": "Aulas particulares: hero biblioteca, tabela de matérias e quadro do semestre.",
+    "ar": "دروس خصوصية أكاديمية: بطل مكتبة وجدول مواد ولوح فصل."
+  },
+  "חנות תכשיטים יוקרתית: 11 עמודים, ויטרינות, וקטלוג מתוסף החנות.": {
+    "en": "Luxury jewelry store: 11 pages, vitrines, and a catalog from the store add-on.",
+    "es": "Joyería de lujo: 11 páginas, vitrinas y catálogo del extra de tienda.",
+    "pt-BR": "Joalheria de luxo: 11 páginas, vitrines e catálogo do extra da loja.",
+    "ar": "متجر مجوهرات فاخر: 11 صفحة وواجهات وكتالوج من إضافة المتجر."
+  },
+  "חנות הלבשת בית ולאונג׳: 11 עמודים רגועים עם קטלוג מתוסף החנות.": {
+    "en": "Homewear and lounge store: 11 calm pages with a catalog from the store add-on.",
+    "es": "Tienda homewear y lounge: 11 páginas calmadas con catálogo del extra de tienda.",
+    "pt-BR": "Loja homewear e lounge: 11 páginas calmas com catálogo do extra da loja.",
+    "ar": "متجر ملابس منزلية ولاونج: 11 صفحة هادئة مع كتالوج من إضافة المتجر."
+  },
+  "משתלה דיגיטלית: צמחי בית, עציצים וכלי גינון — 11 עמודים עשירים.": {
+    "en": "Digital nursery: houseplants, pots, and garden tools — 11 rich pages.",
+    "es": "Vivero digital: plantas de interior, macetas y herramientas — 11 páginas ricas.",
+    "pt-BR": "Viveiro digital: plantas de interior, vasos e ferramentas — 11 páginas ricas.",
+    "ar": "مشتل رقمي: نباتات منزل وأصص وأدوات حديقة — 11 صفحة غنية."
+  },
+  "ספא לילות קטיפה: הירו דרמטי, טקסי טיפול, גלריה וחבילות פרימיום.": {
+    "en": "Velvet-night spa: a dramatic hero, treatment rituals, gallery, and premium packages.",
+    "es": "Spa de noches de terciopelo: hero dramático, rituales, galería y packs premium.",
+    "pt-BR": "Spa de noites de veludo: hero dramático, rituais, galeria e pacotes premium.",
+    "ar": "سبا ليالي مخمل: بطل درامي وطقوس علاج ومعرض وباقات فاخرة."
+  },
+  "דף נחיתה מקצועי לתחום יוגה וולנס עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional yoga and wellness landing page with motion, effects, and a distinct design.",
+    "es": "Landing de yoga y wellness con movimiento, efectos y diseño propio.",
+    "pt-BR": "Landing de yoga e wellness com movimento, efeitos e design próprio.",
+    "ar": "صفحة هبوط لليوغا والعافية مع حركة وتأثيرات وتصميم مميز."
+  },
+  "חנות שעונים: קלאסיקה, ספורט וסמארט — 11 עמודים עם ויטרינה עשירה.": {
+    "en": "Watch store: classic, sport, and smart — 11 pages with a rich vitrine.",
+    "es": "Tienda de relojes: clásico, sport y smart — 11 páginas con vitrina rica.",
+    "pt-BR": "Loja de relógios: clássico, sport e smart — 11 páginas com vitrine rica.",
+    "ar": "متجر ساعات: كلاسيك ورياضة وذكي — 11 صفحة مع واجهة غنية."
+  },
+  "סטודיו שעווה נקי וידידותי: מחירון ברור, מדריך משך, ומערכת תורים.": {
+    "en": "A clean, friendly wax studio: a clear price list, duration guide, and booking system.",
+    "es": "Estudio de cera limpio: tarifas claras, guía de duración y sistema de citas.",
+    "pt-BR": "Estúdio de cera limpo: preços claros, guia de duração e sistema de horários.",
+    "ar": "استوديو شمع نظيف وودود: قائمة أسعار واضحة ودليل مدة ونظام مواعيد."
+  },
+  "סטודיו לק ג׳ל מדויק: צבעים עונתיים, תיקונים מהירים ותורים נוחים.": {
+    "en": "A precise gel-nail studio: seasonal colors, fast fixes, and easy bookings.",
+    "es": "Estudio de gel preciso: colores de temporada, arreglos rápidos y citas fáciles.",
+    "pt-BR": "Estúdio de gel preciso: cores da estação, reparos rápidos e horários fáceis.",
+    "ar": "استوديو جل دقيق: ألوان موسمية وتصليحات سريعة ومواعيد مريحة."
+  },
+  "חנות פארם וטיפוח: ויטמינים, טיפוח ועזרה ראשונה — 11 עמודים מלאים.": {
+    "en": "Pharmacy and care store: vitamins, skincare, and first aid — 11 full pages.",
+    "es": "Tienda de farmacia y cuidado: vitaminas, cuidado y primeros auxilios — 11 páginas.",
+    "pt-BR": "Loja de farmácia e cuidado: vitaminas, cuidado e primeiros socorros — 11 páginas.",
+    "ar": "متجر صيدلية وعناية: فيتامينات وعناية وإسعاف أولي — 11 صفحة كاملة."
+  },
+  "סדנאות אמנות: הירו קולאז׳ עיתונאי, רשימת סדנאות אסימטרית ואטלייה.": {
+    "en": "Art workshops: an editorial collage hero, an asymmetric workshop list, and an atelier.",
+    "es": "Talleres de arte: hero collage editorial, lista asimétrica y atelier.",
+    "pt-BR": "Oficinas de arte: hero colagem editorial, lista assimétrica e ateliê.",
+    "ar": "ورش فن: بطل كولاج تحريري وقائمة غير متماثلة وأتيليه."
+  },
+  "סטודיו איפור מודרני: לוקים, צוות מאפרות, חבילות כלה ותיאום תורים.": {
+    "en": "Modern makeup studio: looks, makeup artists, bridal packages, and booking.",
+    "es": "Estudio de maquillaje moderno: looks, equipo, packs nupciales y citas.",
+    "pt-BR": "Estúdio de maquiagem moderno: looks, equipe, pacotes nupciais e horários.",
+    "ar": "استوديو مكياج حديث: إطلالات وفريق وباقات عروس وتنسيق مواعيد."
+  },
+  "סטודיו טיפולי גוף: עיצוב, ניקוז, חבילות מסלול ויומן תורים מקצועי.": {
+    "en": "Body-treatment studio: contouring, drainage, path packages, and a professional diary.",
+    "es": "Estudio corporal: modelado, drenaje, packs de itinerario y agenda profesional.",
+    "pt-BR": "Estúdio corporal: modelagem, drenagem, pacotes de percurso e agenda profissional.",
+    "ar": "استوديو علاجات جسم: نحت وتصريف وباقات مسار ويوميات مهنية."
+  },
+  "אתר מנטורשיפ: הירו מפוצל דביק, מסלולי ליווי, תהליך מעגלי ומנטורים.": {
+    "en": "Mentorship site: a sticky split hero, coaching tracks, a circular process, and mentors.",
+    "es": "Web de mentoría: hero partido fijo, itinerarios, proceso circular y mentores.",
+    "pt-BR": "Site de mentoria: hero partido fixo, percursos, processo circular e mentores.",
+    "ar": "موقع إرشاد: بطل مقسوم لاصق ومسارات مرافقة وعملية دائرية وموجهون."
+  },
+  "טרקלין יופי אורבני: חבילות זוהר, צוות רב־תחומי וחוויית תורים סלון.": {
+    "en": "Urban beauty lounge: glow packages, a multi-skill team, and a salon booking experience.",
+    "es": "Salón urbano: packs glow, equipo multidisciplinar y experiencia de citas.",
+    "pt-BR": "Salão urbano: pacotes glow, equipe multidisciplinar e experiência de horários.",
+    "ar": "صالون جمال حضري: باقات توهج وفريق متعدد التخصصات وتجربة مواعيد صالون."
+  },
+  "דף נחיתה מקצועי לתחום דיטיילינג רכב עם תנועה, אפקטים ועיצוב ייחודי.": {
+    "en": "A professional car-detailing landing page with motion, effects, and a distinct design.",
+    "es": "Landing de detailing de coche con movimiento, efectos y diseño propio.",
+    "pt-BR": "Landing de detailing automotivo com movimento, efeitos e design próprio.",
+    "ar": "صفحة هبوط لتلميع السيارات مع حركة وتأثيرات وتصميم مميز."
+  },
+  "חנות בגדים עשירה: 11 עמודים, 10 סקשנים בכל עמוד, קטלוג מתוסף החנות.": {
+    "en": "A rich clothing store: 11 pages, 10 sections per page, catalog from the store add-on.",
+    "es": "Tienda de ropa rica: 11 páginas, 10 secciones por página, catálogo del extra.",
+    "pt-BR": "Loja de roupa rica: 11 páginas, 10 seções por página, catálogo do extra.",
+    "ar": "متجر ملابس غني: 11 صفحة و10 أقسام في كل صفحة وكتالوج من إضافة المتجر."
+  },
+  "חנות תיקים ואקססוריז: 11 עמודים, סטודיו רצועות, וקטלוג מתוסף החנות.": {
+    "en": "Bags and accessories store: 11 pages, a strap studio, and a catalog from the store add-on.",
+    "es": "Tienda de bolsos: 11 páginas, estudio de correas y catálogo del extra.",
+    "pt-BR": "Loja de bolsas: 11 páginas, estúdio de alças e catálogo do extra.",
+    "ar": "متجر حقائب وإكسسوارات: 11 صفحة واستوديو أشرطة وكتالوج من إضافة المتجر."
+  },
+  "בית ספר למוזיקה: הירו עם גלי קול, טרקליסט קורסים וקו מנחים על הבמה.": {
+    "en": "Music school: a hero with sound waves, a course tracklist, and guides on stage.",
+    "es": "Escuela de música: hero con ondas, tracklist de cursos y guías en el escenario.",
+    "pt-BR": "Escola de música: hero com ondas, tracklist de cursos e guias no palco.",
+    "ar": "مدرسة موسيقى: بطل بموجات صوت وقائمة كورسات وخط مرشدين على المسرح."
+  },
+  "בונת ציפורניים מקצועית: מבנה אנטומי, מילוי, תיקונים וגלריית עבודות.": {
+    "en": "Professional nail builder: anatomic structure, refill, repairs, and a work gallery.",
+    "es": "Uñas profesionales: estructura anatómica, relleno, arreglos y galería.",
+    "pt-BR": "Unhas profissionais: estrutura anatômica, preenchimento, reparos e galeria.",
+    "ar": "بناء أظافر مهني: بنية تشريحية وتعبئة وتصليحات ومعرض أعمال."
+  },
+  "חנות אופניים מלאה: כביש, שטח ואביזרי רכיבה — 11 עמודים עם תוכן עשיר.": {
+    "en": "Full bike store: road, trail, and riding gear — 11 pages with rich content.",
+    "es": "Tienda de bicis completa: carretera, montaña y accesorios — 11 páginas.",
+    "pt-BR": "Loja de bikes completa: estrada, trilha e acessórios — 11 páginas.",
+    "ar": "متجر دراجات كامل: طريق وتراب وإكسسوارات ركوب — 11 صفحة بمحتوى غني."
+  },
+  "חינוך לילדים: הירו שובב עם צורות רכות, מסלול צבעוני ומורים חברותיים.": {
+    "en": "Kids' education: a playful hero with soft shapes, a colorful path, and friendly teachers.",
+    "es": "Educación infantil: hero juguetón, formas suaves, recorrido de color y profesores cercanos.",
+    "pt-BR": "Educação infantil: hero brincalhão, formas suaves, percurso colorido e professores próximos.",
+    "ar": "تعليم أطفال: بطل مرح بأشكال ناعمة ومسار ملون ومعلمين ودودين."
+  },
+  "דף נחיתה למספרה: הירו חד, מחירון שירותים, צוות ספרים, שעות וטופס תור.": {
+    "en": "Salon landing page: a sharp hero, service prices, barber team, hours, and a booking form.",
+    "es": "Landing de peluquería: hero nítido, tarifas, equipo, horario y formulario.",
+    "pt-BR": "Landing de salão: hero nítido, preços, equipe, horário e formulário.",
+    "ar": "صفحة هبوط لمصفف شعر: بطل حاد وأسعار وفريق وساعات ونموذج موعد."
+  },
+  "תבנית נדל״ן פנורמית: פאנלים אופקיים רחבים, חול-פחם, 6 עמודים מורכבים.": {
+    "en": "Panoramic real-estate template: wide horizontal panels, sand-charcoal, 6 complex pages.",
+    "es": "Plantilla inmobiliaria panorámica: paneles horizontales, arena-carbón, 6 páginas complejas.",
+    "pt-BR": "Modelo imobiliário panorâmico: painéis horizontais, areia-carvão, 6 páginas complexas.",
+    "ar": "قالب عقارات بانورامي: ألواح أفقية واسعة ورمل-فحم و6 صفحات مركّبة."
+  },
+  "קליניקת עור נקייה: אבחונים, פרוטוקולים, צוות קוסמטיקאיות ויומן תורים.": {
+    "en": "A clean skin clinic: diagnoses, protocols, aestheticians, and a booking diary.",
+    "es": "Clínica de piel limpia: diagnósticos, protocolos, equipo y agenda.",
+    "pt-BR": "Clínica de pele limpa: diagnósticos, protocolos, equipe e agenda.",
+    "ar": "عيادة بشرة نظيفة: تشخيصات وبروتوكولات وفريق ويوميات مواعيد."
+  },
+  "תבנית ברביקיו: עמודות עשן, בשר מעושן וטופס הזמנה כהה — בור כפרי לוהט.": {
+    "en": "Barbecue template: smoke columns, smoked meat, and a dark order form — a hot rustic pit.",
+    "es": "Plantilla barbecue: columnas de humo, carne ahumada y formulario oscuro.",
+    "pt-BR": "Modelo barbecue: colunas de fumaça, carne defumada e formulário escuro.",
+    "ar": "قالب باربكيو: أعمدة دخان ولحم مدخن ونموذج طلب داكن — حفرة ريفية حارة."
+  },
+  "תבנית פיננסית: גריד טבלאי, ירוק-קרם, 5 עמודים עם סקשנים מובנים וברורים.": {
+    "en": "Finance template: a tabular grid, green-cream, 5 pages with clear built-in sections.",
+    "es": "Plantilla financiera: grid tabular, verde-crema, 5 páginas con secciones claras.",
+    "pt-BR": "Modelo financeiro: grade tabular, verde-creme, 5 páginas com seções claras.",
+    "ar": "قالب مالي: شبكة جدولية وأخضر-كريمي و5 صفحات بأقسام واضحة."
+  },
+  "חנות יינות ומרתף: 11 עמודים עשירים, קולקציות יקבים ומוצרים מתוסף החנות.": {
+    "en": "Wine and cellar store: 11 rich pages, winery collections, and products from the store add-on.",
+    "es": "Tienda de vinos y bodega: 11 páginas ricas, colecciones y productos del extra.",
+    "pt-BR": "Loja de vinhos e adega: 11 páginas ricas, coleções e produtos do extra.",
+    "ar": "متجر نبيذ وقبو: 11 صفحة غنية ومجموعات كروم ومنتجات من إضافة المتجر."
+  },
+  "בוטקמפ תכנות בסגנון טרמינל: הירו עם שורות מוקלדות, קורסי קוד וטיימליין.": {
+    "en": "A terminal-style coding bootcamp: a hero with typed lines, code courses, and a timeline.",
+    "es": "Bootcamp de código estilo terminal: hero con líneas tecleadas, cursos y timeline.",
+    "pt-BR": "Bootcamp de código estilo terminal: hero com linhas digitadas, cursos e timeline.",
+    "ar": "بوتكامب برمجة بطابع ترمينال: بطل بأسطر مكتوبة وكورسات كود وخط زمني."
+  },
+  "כישורי קריירה בסגנון תעשייתי: טיפוגרפיה נועזת, לוחות מתכת ותהליך חישול.": {
+    "en": "Industrial career skills: bold type, metal boards, and a forging process.",
+    "es": "Habilidades de carrera industriales: tipografía audaz, paneles de metal y forja.",
+    "pt-BR": "Habilidades de carreira industriais: tipografia ousada, painéis de metal e forja.",
+    "ar": "مهارات مهنية بطابع صناعي: طباعة جريئة وألواح معدن وعملية طرق."
+  },
+  "דף נחיתה למשרד עו״ד: הירו רציני, תחומי התמחות, צוות, אמינות וטופס ייעוץ.": {
+    "en": "Law-firm landing page: a serious hero, practice areas, team, trust, and a consult form.",
+    "es": "Landing de despacho: hero serio, especialidades, equipo, confianza y formulario.",
+    "pt-BR": "Landing de escritório: hero sério, especialidades, equipe, confiança e formulário.",
+    "ar": "صفحة هبوط لمكتب محاماة: بطل جاد وتخصصات وفريق وثقة ونموذج استشارة."
+  },
+  "מאסטרקלאס יוקרתי: הירו מותג־דומיננטי, כיתות מודגשות ומאסטרים באור זרקור.": {
+    "en": "Luxury masterclass: a brand-dominant hero, highlighted classes, and masters in spotlight.",
+    "es": "Masterclass de lujo: hero de marca, clases destacadas y maestros en foco.",
+    "pt-BR": "Masterclass de luxo: hero de marca, aulas destacadas e mestres no holofote.",
+    "ar": "ماستر كلاس فاخر: بطل يسيطر عليه الاسم ودروس بارزة وأساتذة تحت الضوء."
+  },
+  "סלון ציפורניים צבעוני: גריד טיפוליים, לפני/אחרי ויומן תורים אינטראקטיבי.": {
+    "en": "Colorful nail salon: a treatment grid, before/after, and an interactive booking diary.",
+    "es": "Salón de uñas colorido: grid de tratamientos, antes/después y agenda.",
+    "pt-BR": "Salão de unhas colorido: grade de tratamentos, antes/depois e agenda.",
+    "ar": "صالون أظافر ملون: شبكة علاجات وقبل/بعد ويوميات مواعيد تفاعلية."
+  },
+  "תבנית פירות ים: גלי קצף, צדפות וטופס הזמנה ימי — רעננות חוף כחולה-ירוקה.": {
+    "en": "Seafood template: foam waves, shells, and a marine order form — blue-green beach freshness.",
+    "es": "Plantilla de marisco: olas de espuma, conchas y formulario marino.",
+    "pt-BR": "Modelo de frutos do mar: ondas de espuma, conchas e formulário marinho.",
+    "ar": "قالب مأكولات بحرية: موج رغوة وأصداف ونموذج طلب بحري — انتعاش شاطئ أزرق-أخضر."
+  },
+  "דף נחיתה למאפרת: הירו זוהר, שירותי איפור, גלריה, חבילות כלות וטופס הזמנה.": {
+    "en": "Makeup-artist landing page: a glowing hero, makeup services, gallery, bridal packages, and a booking form.",
+    "es": "Landing de maquilladora: hero luminoso, servicios, galería, packs nupciales y formulario.",
+    "pt-BR": "Landing de maquiadora: hero luminoso, serviços, galeria, pacotes nupciais e formulário.",
+    "ar": "صفحة هبوط لمكياج: بطل متوهج وخدمات ومعرض وباقات عروس ونموذج حجز."
+  },
+  "תבנית תעשייתית: פסים אופקיים, כתום-פלדה, 6 עמודים עם מקטעי תנועה וכניסות.": {
+    "en": "Industrial template: horizontal stripes, orange-steel, 6 pages with motion blocks and entrances.",
+    "es": "Plantilla industrial: franjas horizontales, naranja-acero, 6 páginas con movimiento.",
+    "pt-BR": "Modelo industrial: faixas horizontais, laranja-aço, 6 páginas com movimento.",
+    "ar": "قالب صناعي: أشرطة أفقية وبرتقالي-فولاذ و6 صفحات مع حركة ومداخل."
+  },
+  "תבנית טבעונית: שורשים צומחים, ירק חי וטופס הזמנה ירוק — מטבח צמחי אלגנטי.": {
+    "en": "Vegan template: growing roots, living greens, and a green order form — an elegant plant kitchen.",
+    "es": "Plantilla vegana: raíces, verde vivo y formulario verde — cocina vegetal.",
+    "pt-BR": "Modelo vegano: raízes, verde vivo e formulário verde — cozinha vegetal.",
+    "ar": "قالب نباتي: جذور تنمو وخضار حي ونموذج طلب أخضر — مطبخ نباتي أنيق."
+  },
+  "חנות קפה ספיישלטי עשירה: 11 עמודים, 10 סקשנים בכל עמוד, קטלוג מתוסף החנות.": {
+    "en": "A rich specialty-coffee store: 11 pages, 10 sections per page, catalog from the store add-on.",
+    "es": "Tienda de café de especialidad: 11 páginas, 10 secciones, catálogo del extra.",
+    "pt-BR": "Loja de café especial: 11 páginas, 10 seções, catálogo do extra.",
+    "ar": "متجر قهوة مختصة غني: 11 صفحة و10 أقسام في كل صفحة وكتالوج من إضافة المتجر."
+  },
+  "חנות צעצועים ארקיידית: משחקים, דמויות ויצירה — 11 עמודים צבעוניים ועשירים.": {
+    "en": "Arcade toy store: games, figures, and crafts — 11 colorful rich pages.",
+    "es": "Tienda de juguetes arcade: juegos, figuras y creación — 11 páginas.",
+    "pt-BR": "Loja de brinquedos arcade: jogos, figuras e criação — 11 páginas.",
+    "ar": "متجر ألعاب آركيد: ألعاب وشخصيات وإبداع — 11 صفحة ملونة وغنية."
+  },
+  "חנות סניקרס וסטריט: דרופים, קולקציות ואביזרים — 11 עמודים עם אנרגיית רחוב.": {
+    "en": "Sneaker and street store: drops, collections, and accessories — 11 pages with street energy.",
+    "es": "Tienda sneakers y street: drops, colecciones y accesorios — 11 páginas.",
+    "pt-BR": "Loja de tênis e street: drops, coleções e acessórios — 11 páginas.",
+    "ar": "متجر سنيكرز وستريت: إصدارات ومجموعات وإكسسوارات — 11 صفحة بطاقة شارع."
+  },
+  "תבנית פסטה: מערבולות נודלס, רטבים עשירים וטופס הזמנה איטלקי — טרטוריה חמה.": {
+    "en": "Pasta template: noodle swirls, rich sauces, and an Italian order form — a warm trattoria.",
+    "es": "Plantilla de pasta: remolinos, salsas y formulario italiano — trattoria cálida.",
+    "pt-BR": "Modelo de massa: redemoinhos, molhos e formulário italiano — trattoria quente.",
+    "ar": "قالب باستا: دوامات نودلز وصلصات غنية ونموذج طلب إيطالي — تراتوريا دافئة."
+  },
+  "תבנית carousel 3D: הירו עם פאנלים מסתובבים, לוח open house וגלריית masonry.": {
+    "en": "3D carousel template: a hero with rotating panels, an open-house board, and a masonry gallery.",
+    "es": "Plantilla carousel 3D: hero con paneles, tablero open house y galería masonry.",
+    "pt-BR": "Modelo carousel 3D: hero com painéis, quadro open house e galeria masonry.",
+    "ar": "قالب carousel ثلاثي الأبعاد: بطل بألواح دوارة ولوح open house ومعرض masonry."
+  },
+  "תבנית מיצים: פרצי הדרים, בקבוקים זוהרים וטופס הזמנה רענן — בר מיצים אנרגטי.": {
+    "en": "Juice template: citrus bursts, glowing bottles, and a fresh order form — an energetic juice bar.",
+    "es": "Plantilla de zumos: cítricos, botellas y formulario fresco — bar energético.",
+    "pt-BR": "Modelo de sucos: cítricos, garrafas e formulário fresco — bar energético.",
+    "ar": "قالب عصائر: انفجارات حمضيات وزجاجات متوهجة ونموذج طلب منعش — بار عصير نشيط."
+  },
+  "דף נחיתה לסוכנות שיווק: הירו נועז, שירותי מדיה, קמפיינים, תוצאות וטופס בריף.": {
+    "en": "Marketing-agency landing page: a bold hero, media services, campaigns, results, and a brief form.",
+    "es": "Landing de agencia: hero audaz, medios, campañas, resultados y brief.",
+    "pt-BR": "Landing de agência: hero ousado, mídia, campanhas, resultados e brief.",
+    "ar": "صفحة هبوط لوكالة تسويق: بطل جريء وخدمات ميديا وحملات ونتائج ونموذج بريف."
+  },
+  "דף נחיתה למאמן כושר: הירו אנרגטי, תוכניות אימון, תוצאות, מחירון וטופס התחלה.": {
+    "en": "Trainer landing page: an energetic hero, training plans, results, pricing, and a start form.",
+    "es": "Landing de entrenador: hero energético, planes, resultados, precios y formulario.",
+    "pt-BR": "Landing de treinador: hero energético, planos, resultados, preços e formulário.",
+    "ar": "صفحة هبوط لمدرب لياقة: بطل نشيط وبرامج ونتائج وأسعار ونموذج بدء."
+  },
+  "חנות כלי מטבח בסגנון ספר מתכונים: סירים, סכינים ואביזרים — 11 עמודים עשירים.": {
+    "en": "Cookbook-style kitchen store: pots, knives, and tools — 11 rich pages.",
+    "es": "Tienda de cocina estilo recetario: ollas, cuchillos y accesorios — 11 páginas.",
+    "pt-BR": "Loja de cozinha estilo livro de receitas: panelas, facas e acessórios — 11 páginas.",
+    "ar": "متجر أدوات مطبخ بطابع كتاب وصفات: قدور وسكاكين وإكسسوارات — 11 صفحة غنية."
+  },
+  "פלטפורמת קורסים קולנועית: הירו מלא, מארקי של קורסים, סילבוס ממוספר ומנטורים.": {
+    "en": "Cinematic course platform: a full hero, course marquee, numbered syllabus, and mentors.",
+    "es": "Plataforma de cursos cinematográfica: hero completo, marquee, temario y mentores.",
+    "pt-BR": "Plataforma de cursos cinematográfica: hero completo, marquee, ementa e mentores.",
+    "ar": "منصة كورسات سينمائية: بطل كامل وشريط كورسات ومنهج مرقم وموجهون."
+  },
+  "דף נחיתה לסטודיו עיצוב פנים: הירו אדריכלי, פרויקטים, תהליך עיצוב וטופס ייעוץ.": {
+    "en": "Interior-studio landing page: an architectural hero, projects, design process, and a consult form.",
+    "es": "Landing de interiorismo: hero arquitectónico, proyectos, proceso y formulario.",
+    "pt-BR": "Landing de interiores: hero arquitetônico, projetos, processo e formulário.",
+    "ar": "صفحة هبوط لاستوديو تصميم داخلي: بطل معماري ومشاريع وعملية تصميم ونموذج استشارة."
+  },
+  "דף נחיתה לתכנון חתונות: הירו רומנטי-מודרני, חבילות, תהליך, גלריה וטופס ייעוץ.": {
+    "en": "Wedding-planning landing page: a modern-romantic hero, packages, process, gallery, and a consult form.",
+    "es": "Landing de bodas: hero romántico-moderno, packs, proceso, galería y formulario.",
+    "pt-BR": "Landing de casamentos: hero romântico-moderno, pacotes, processo, galeria e formulário.",
+    "ar": "صفحة هبوط لتخطيط أعراس: بطل رومانسي حديث وباقات وعملية ومعرض ونموذج استشارة."
+  },
+  "תבנית ג׳לאטו: טפטופי המסה, כדורים צפים וטופס הזמנה מתוק — קרירות איטלקית רכה.": {
+    "en": "Gelato template: melt drips, floating scoops, and a sweet order form — soft Italian cool.",
+    "es": "Plantilla gelato: goteos, bolas flotantes y formulario dulce.",
+    "pt-BR": "Modelo gelato: pingos, bolas flutuantes e formulário doce.",
+    "ar": "قالب جيلاتو: تقطير ذوبان وكرات عائمة ونموذج طلب حلو — برودة إيطالية ناعمة."
+  },
+  "תבנית שווארמה: שיפוד מסתובב, פיתות חמות וטופס הזמנה מהיר — רחוב מזרחי עם קצב.": {
+    "en": "Shawarma template: a turning spit, hot pitas, and a fast order form — Eastern street with pace.",
+    "es": "Plantilla shawarma: asador, panes calientes y formulario rápido.",
+    "pt-BR": "Modelo shawarma: espeto, pães quentes e formulário rápido.",
+    "ar": "قالب شاورما: سيخ دوار وخبز ساخن ونموذج طلب سريع — شارع شرقي بإيقاع."
+  },
+  "דף נחיתה להנהלת חשבונות: הירו נקי, שירותי כספים, שקיפות, חבילות וטופס הצטרפות.": {
+    "en": "Bookkeeping landing page: a clean hero, finance services, transparency, packages, and a join form.",
+    "es": "Landing de contabilidad: hero limpio, finanzas, transparencia, packs y alta.",
+    "pt-BR": "Landing de contabilidade: hero limpo, finanças, transparência, pacotes e cadastro.",
+    "ar": "صفحة هبوط لمحاسبة: بطل نظيف وخدمات مالية وشفافية وباقات ونموذج انضمام."
+  },
+  "תבנית counters: הירo עם סטטיסטיקות מונפשות, כרטיסי נכס עם badges ו-FAQ ויזואלי.": {
+    "en": "Counters template: a hero with animated stats, property cards with badges, and a visual FAQ.",
+    "es": "Plantilla counters: hero con estadísticas, fichas con badges y FAQ visual.",
+    "pt-BR": "Modelo counters: hero com estatísticas, fichas com badges e FAQ visual.",
+    "ar": "قالب counters: بطل بإحصاءات متحركة وبطاقات عقار مع badges وأسئلة شائعة بصرية."
+  },
+  "תבנית סוכנות עיצוב בauhaus: בלוקי צבע מלבניים, 6 עמודים, טיפוגרפיה נועזת ותנועה.": {
+    "en": "Bauhaus design-agency template: rectangular color blocks, 6 pages, bold type, and motion.",
+    "es": "Plantilla Bauhaus: bloques de color, 6 páginas, tipografía audaz y movimiento.",
+    "pt-BR": "Modelo Bauhaus: blocos de cor, 6 páginas, tipografia ousada e movimento.",
+    "ar": "قالب وكالة تصميم باوهاوس: كتل لون مستطيلة و6 صفحات وطباعة جريئة وحركة."
+  },
+  "תבנית כושר Kinetic: פסים אדומים-שחורים, תנועה אגרסיבית, 5 עמודים עם סקשנים רבים.": {
+    "en": "Kinetic fitness template: red-black stripes, aggressive motion, 5 pages with many sections.",
+    "es": "Plantilla Kinetic: franjas rojo-negro, movimiento agresivo, 5 páginas.",
+    "pt-BR": "Modelo Kinetic: faixas vermelho-preto, movimento agressivo, 5 páginas.",
+    "ar": "قالب لياقة Kinetic: أشرطة أحمر-أسود وحركة عنيفة و5 صفحات بأقسام كثيرة."
+  },
+  "תבנית יוקרה כהה: הירו עם זהב, אנימציית curtain wipe, כרטיסי כספת וקרוסלת המלצות.": {
+    "en": "Dark luxury template: a gold hero, curtain-wipe animation, vault cards, and a testimonial carousel.",
+    "es": "Plantilla de lujo oscuro: hero dorado, curtain wipe, fichas de caja fuerte y carrusel.",
+    "pt-BR": "Modelo de luxo escuro: hero dourado, curtain wipe, fichas de cofre e carrossel.",
+    "ar": "قالب فخامة داكنة: بطل ذهب وحركة curtain wipe وبطاقات خزنة وكاروسيل شهادات."
+  },
+  "תבנית stamp: הירo עם אנימציית חותמת, 4 שלבי תהליך עם stamp reveal ונכס spotlight.": {
+    "en": "Stamp template: a hero with stamp animation, 4 process steps with stamp reveal, and a spotlight property.",
+    "es": "Plantilla stamp: hero con sello, 4 pasos stamp reveal y propiedad spotlight.",
+    "pt-BR": "Modelo stamp: hero com carimbo, 4 passos stamp reveal e imóvel spotlight.",
+    "ar": "قالب stamp: بطل بحركة ختم و4 خطوات stamp reveal وعقار spotlight."
+  },
+  "תבנית פוקה: קערות במסלול עיגול, מרכיבים צבעוניים וטופס הזמנה קליל — רעננות פסיפית.": {
+    "en": "Poke template: bowls on a circular path, colorful ingredients, and a light order form — Pacific freshness.",
+    "es": "Plantilla poke: bowls en círculo, ingredientes y formulario ligero.",
+    "pt-BR": "Modelo poke: bowls em círculo, ingredientes e formulário leve.",
+    "ar": "قالب بوكيه: أوعية في مسار دائري ومكونات ملونة ونموذج طلب خفيف — انتعاش باسيفيكي."
+  },
+  "דף נחיתה לייעוץ עסקי: הירו סמכותי, שירותי ייעוץ, תהליך עבודה, מקרי בוחן וטופס שיחה.": {
+    "en": "Business-consulting landing page: an authoritative hero, advisory services, process, case studies, and a call form.",
+    "es": "Landing de consultoría: hero de autoridad, servicios, proceso, casos y formulario.",
+    "pt-BR": "Landing de consultoria: hero de autoridade, serviços, processo, casos e formulário.",
+    "ar": "صفحة هبوط لاستشارة أعمال: بطل موثوق وخدمات استشارة وعملية وحالات ونموذج مكالمة."
+  },
+  "תבנית סטודיו צילום: פריימים מלבניים א-symmetric, שחור-לבן, 5 עמודים עשירים בסקשנים.": {
+    "en": "Photography-studio template: asymmetric rectangular frames, black-and-white, 5 section-rich pages.",
+    "es": "Plantilla de estudio fotográfico: marcos asimétricos, blanco y negro, 5 páginas.",
+    "pt-BR": "Modelo de estúdio fotográfico: molduras assimétricas, preto e branco, 5 páginas.",
+    "ar": "قالب استوديو تصوير: إطارات مستطيلة غير متماثلة وأسود-أبيض و5 صفحات غنية بالأقسام."
+  },
+  "תבנית עיר: סילhouette עם נקודות map pin, כרטיסי מדריך אזורים ושורות נכסים עם תגי מיקום.": {
+    "en": "City template: a silhouette with map-pin points, district-guide cards, and property rows with location tags.",
+    "es": "Plantilla de ciudad: silueta con map pins, fichas de barrio y filas con etiquetas.",
+    "pt-BR": "Modelo de cidade: silhueta com map pins, fichas de bairro e linhas com etiquetas.",
+    "ar": "قالب مدينة: صورة ظلية مع نقاط map pin وبطاقات دليل أحياء وصفوف عقارات بوسوم موقع."
+  },
+  "תבנית טכנולוגיה גיאומטרית: קווים אלכסוניים, ניאון ירוק, 6 עמודים עם אנימציות כניסה חדות.": {
+    "en": "Geometric tech template: diagonal lines, green neon, 6 pages with sharp entrance animations.",
+    "es": "Plantilla tech geométrica: líneas diagonales, neón verde, 6 páginas con entradas nítidas.",
+    "pt-BR": "Modelo tech geométrico: linhas diagonais, néon verde, 6 páginas com entradas nítidas.",
+    "ar": "قالب تقنية هندسي: خطوط قطرية ونيون أخضر و6 صفحات بحركات دخول حادة."
+  },
+  "תבנית compare slider: הירo מפוצל עם ידית CSS, תצוגת before/after ופסי value proposition.": {
+    "en": "Compare-slider template: a split hero with a CSS handle, before/after view, and value-proposition bars.",
+    "es": "Plantilla compare slider: hero partido con asa CSS, before/after y barras de valor.",
+    "pt-BR": "Modelo compare slider: hero partido com alça CSS, before/after e barras de valor.",
+    "ar": "قالب compare slider: بطل مقسوم بمقبض CSS وعرض before/after وأشرطة قيمة."
+  },
+  "תבנית אדריכלות בראוטליסטית: רשת גריד גלויה, פינות ישרות, 6 עמודים וסקשנים עם כניסות תנועה.": {
+    "en": "Brutalist architecture template: a visible grid, square corners, 6 pages and sections with motion entrances.",
+    "es": "Plantilla brutalista: grid visible, esquinas rectas, 6 páginas con entradas de movimiento.",
+    "pt-BR": "Modelo brutalista: grade visível, cantos retos, 6 páginas com entradas de movimento.",
+    "ar": "قالب عمارة بروتالية: شبكة ظاهرة وزوايا مستقيمة و6 صفحات بأقسام ومداخل حركة."
+  },
+  "תבנית מגדל: הירו אנכי עם מעלית קומות מונפשת, כרטיסי penthouse מוערמים וסטטיסטיקות skyline.": {
+    "en": "Tower template: a vertical hero with an animated floor elevator, stacked penthouse cards, and skyline stats.",
+    "es": "Plantilla torre: hero vertical con ascensor, fichas penthouse y estadísticas skyline.",
+    "pt-BR": "Modelo torre: hero vertical com elevador, fichas penthouse e estatísticas skyline.",
+    "ar": "قالب برج: بطل عمودي مع مصعد طوابق متحرك وبطاقات penthouse وإحصاءات skyline."
+  },
+  "תבנית קorporativ מונולитית: עמודים אנכיים, זהב על נייבי, 6 עמודים מורכבים ללא כרטיסיות מעוגלות.": {
+    "en": "Monolithic corporate template: vertical columns, gold on navy, 6 complex pages without rounded cards.",
+    "es": "Plantilla corporativa monolítica: columnas, oro sobre navy, 6 páginas sin tarjetas redondas.",
+    "pt-BR": "Modelo corporativo monolítico: colunas, ouro sobre navy, 6 páginas sem cartões arredondados.",
+    "ar": "قالب شركات صلب: أعمدة عمودية وذهب على كحلي و6 صفحات مركّبة بلا بطاقات مستديرة."
+  },
+  "תבנית תוכנית קומה: הירו מפוצל עם SVG מונפש, כרטיסי חדרים, השוואת נכסים ומחשבון משכנתא דקורטיבי.": {
+    "en": "Floor-plan template: a split hero with animated SVG, room cards, property comparison, and a decorative mortgage calculator.",
+    "es": "Plantilla de plano: hero partido con SVG, fichas de habitación, comparativa e hipoteca.",
+    "pt-BR": "Modelo de planta: hero partido com SVG, fichas de cômodo, comparação e hipoteca.",
+    "ar": "قالب مخطط طابق: بطل مقسوم مع SVG متحرك وبطاقات غرف ومقارنة عقارات وحاسبة رهن ديكورية."
+  },
+  "תבנית בוטיק מלון בעברית: הירו צילום מלא, פסים אופקיים חדים, טיפוגרפיה סריף, בלי כרטיסיות מעוגלות.": {
+    "en": "Hebrew boutique-hotel template: a full-bleed photo hero, sharp horizontal stripes, serif type, no rounded cards.",
+    "es": "Plantilla de hotel boutique: hero de foto completa, franjas, serif, sin tarjetas redondas.",
+    "pt-BR": "Modelo de hotel boutique: hero de foto completa, faixas, serif, sem cartões arredondados.",
+    "ar": "قالب فندق بوتيك بالعبرية: بطل صورة كاملة وأشرطة أفقية حادة وطباعة serif بلا بطاقات مستديرة."
+  },
+  "תבנית בento אסימטרי: הירו מעורב תמונה/טקסט, תצוגת נכסים בento, מארקי שכונות ותהליך עם אנימציית קו.": {
+    "en": "Asymmetric bento template: a mixed image/text hero, bento property display, neighborhood marquee, and a line-animated process.",
+    "es": "Plantilla bento asimétrica: hero mixto, display bento, marquee de barrios y proceso con línea.",
+    "pt-BR": "Modelo bento assimétrico: hero misto, display bento, marquee de bairros e processo com linha.",
+    "ar": "قالب bento غير متماثل: بطل صورة/نص وعرض عقارات bento وشريط أحياء وعملية بحركة خط."
+  },
+  "דף נחיתה יוקרתי לנדל״ן: הירו קולנועי, נכסים נבחרים, סוכנים, סיורים וירטואליים ועיצוב קרם-זהב עריכתי.": {
+    "en": "Luxury real-estate landing page: a cinematic hero, featured homes, agents, virtual tours, and editorial cream-gold design.",
+    "es": "Landing inmobiliaria de lujo: hero cinematográfico, inmuebles, agentes, tours y crema-oro.",
+    "pt-BR": "Landing imobiliária de luxo: hero cinematográfico, imóveis, agentes, tours e creme-ouro.",
+    "ar": "صفحة هبوط عقارات فاخرة: بطل سينمائي وعقارات مختارة ووكلاء وجولات افتراضية وتصميم كريم-ذهب تحريري."
+  },
+  "תבנית אולם תרבות והופעות בעברית: קומפוזיציה פוסטרית, יין עמוק ועצם, פריסה אסימטרית חדה בלי כרטיסיות.": {
+    "en": "Hebrew culture-hall template: poster composition, deep wine and bone, a sharp asymmetric layout without cards.",
+    "es": "Plantilla de sala cultural: composición de póster, vino y hueso, layout asimétrico sin tarjetas.",
+    "pt-BR": "Modelo de sala cultural: composição de pôster, vinho e osso, layout assimétrico sem cartões.",
+    "ar": "قالب قاعة ثقافة وعروض بالعبرية: تكوين ملصق ونبيذ عميق وعظم وتخطيط غير متماثل حاد بلا بطاقات."
+  },
+  "תבנית חוף יוקרתית עם הירו קולנועי, דוק זכוכית, מסילת נכסים אופקית, סיפור מים חופף וטופס כהה מלא רוחב.": {
+    "en": "Luxury beach template with a cinematic hero, glass dock, horizontal property track, overlapping water story, and a full-width dark form.",
+    "es": "Plantilla de playa de lujo: hero cinematográfico, muelle de cristal, raíl de inmuebles y formulario oscuro.",
+    "pt-BR": "Modelo de praia de luxo: hero cinematográfico, cais de vidro, trilho de imóveis e formulário escuro.",
+    "ar": "قالب شاطئ فاخر مع بطل سينمائي ورصيف زجاج ومسار عقارات أفقي وقصة ماء متداخلة ونموذج داكن بعرض كامل."
+  },
+  "תבנית משפחתית חמה עם תמונת הירו עגולה יחידה, בתים בזיג-זג, רשימת שכונות טיפוגרפית, טלפון ענק ופוטר רך.": {
+    "en": "Warm family template with a single round hero photo, zigzag homes, a typographic neighborhood list, a giant phone, and a soft footer.",
+    "es": "Plantilla familiar cálida: foto redonda, casas en zigzag, barrios tipográficos, teléfono enorme y pie suave.",
+    "pt-BR": "Modelo familiar acolhedor: foto redonda, casas em zigue-zague, bairros tipográficos, telefone enorme e rodapé suave.",
+    "ar": "قالب عائلي دافئ مع صورة بطل دائرية واحدة وبيوت متعرجة وقائمة أحياء طباعية وهاتف ضخم وتذييل ناعم."
+  },
+  "תבנית חנות גלישה: הירו עם קו גאות נע, מסילת גלשנים אופקית, גרף גובה גלים ובר שעווה — תנועת board-tilt.": {
+    "en": "Surf shop template: a hero with a moving tide line, horizontal board track, wave-height chart, and a wax bar — board-tilt motion.",
+    "es": "Plantilla de surf: hero con línea de marea, raíl de tablas, gráfico de olas y barra de cera.",
+    "pt-BR": "Modelo de surf: hero com linha de maré, trilho de pranchas, gráfico de ondas e barra de cera.",
+    "ar": "قالب متجر ركوب أمواج: بطل بخط مد متحرك ومسار ألواح أفقي ورسم ارتفاع أمواج وبار شمع — حركة board-tilt."
+  },
+  "תבנית פרסטיז׳ שחורה-זהב עם כותרת מותג ממורכזת, כרזת הירו אסימטרית, שורות אחוזה מלאות מסך ומניפסט מוזהב.": {
+    "en": "Black-gold prestige template with a centered brand title, an asymmetric hero poster, full-screen estate rows, and a gilded manifesto.",
+    "es": "Plantilla prestige negro-oro: título centrado, póster asimétrico, filas a pantalla completa y manifiesto dorado.",
+    "pt-BR": "Modelo prestige preto-ouro: título central, pôster assimétrico, linhas em tela cheia e manifesto dourado.",
+    "ar": "قالب فخامة أسود-ذهب مع عنوان علامة متمركز وملصق بطل غير متماثل وصفوف عقارات ملء الشاشة وبيان مذهب."
+  },
+  "תבנית סpa טרופי: הירו עם עלי כותרת נופלים, קרוסלת טיפולים, גן סיפור וטופס הזמנה — petal-fall animation.": {
+    "en": "Tropical spa template: a hero with falling petals, a treatment carousel, a story garden, and a booking form — petal-fall animation.",
+    "es": "Plantilla spa tropical: hero con pétalos, carrusel, jardín y formulario — petal-fall.",
+    "pt-BR": "Modelo spa tropical: hero com pétalas, carrossel, jardim e formulário — petal-fall.",
+    "ar": "قالب سبا استوائي: بطل بأوراق تتساقط وكاروسيل علاجات وحديقة قصة ونموذج حجز — حركة petal-fall."
+  },
+  "תבנית הפקת חתונות ואירועים בעברית: שנהב ודיו, סריף אלגנטי, גלריה מלבנית חדה ופריסה אווירית בלי כרטיסיות.": {
+    "en": "Hebrew wedding-and-events template: ivory and ink, elegant serif, a sharp rectangular gallery, and an airy layout without cards.",
+    "es": "Plantilla de bodas: marfil y tinta, serif elegante, galería rectangular y layout aéreo sin tarjetas.",
+    "pt-BR": "Modelo de casamentos: marfim e tinta, serif elegante, galeria retangular e layout aéreo sem cartões.",
+    "ar": "قالب إنتاج أعراس وفعاليات بالعبرية: عاج وحبر وserif أنيق ومعرض مستطيل حاد وتخطيط هوائي بلا بطاقات."
+  },
+  "תבנית ריזורט מדבר-ים: הירו עם heat shimmer, כרטיסי oasis, פסי טמפרטורה וטופס mirage — אפקט wobble ייחודי.": {
+    "en": "Desert-sea resort template: a hero with heat shimmer, oasis cards, temperature bars, and a mirage form — a distinct wobble effect.",
+    "es": "Plantilla resort desierto-mar: heat shimmer, fichas oasis, barras de temperatura y formulario mirage.",
+    "pt-BR": "Modelo resort deserto-mar: heat shimmer, fichas oasis, barras de temperatura e formulário mirage.",
+    "ar": "قالب منتجع صحراء-بحر: بطل مع heat shimmer وبطاقات oasis وأشرطة حرارة ونموذج mirage — تأثير wobble مميز."
+  },
+  "תבנית טאקוס: נייר צלופן מרפרף, מדף טאקו אופקי, צבעי צ׳ילי וטופס הזמנה בסגנון פתק שוק — אנרגיה רחוב לוהטת.": {
+    "en": "Tacos template: fluttering cellophane, a horizontal taco shelf, chili colors, and a market-ticket order form — hot street energy.",
+    "es": "Plantilla de tacos: celofán, estante, colores chili y formulario de mercado.",
+    "pt-BR": "Modelo de tacos: celofane, prateleira, cores chili e formulário de mercado.",
+    "ar": "قالب تاكو: ورق سيلوفان يرفرف ورف تاكو أفقي وألوان تشيلي ونموذج طلب بطابع قصاصة سوق — طاقة شارع حارة."
+  },
+  "תבנית מועדון חוף: הירו split עם shimmer זהוב, מארקי DJ, כרטיסי קוקטיילים וטופס הזמנת שולחן — אנרגיה שקיעה.": {
+    "en": "Beach-club template: a split hero with gold shimmer, DJ marquee, cocktail cards, and a table-booking form — sunset energy.",
+    "es": "Plantilla de club de playa: hero split con shimmer, marquee DJ, cócteles y reserva.",
+    "pt-BR": "Modelo de clube de praia: hero split com shimmer, marquee DJ, coquetéis e reserva.",
+    "ar": "قالب نادي شاطئ: بطل split مع shimmer ذهبي وشريط DJ وبطاقات كوكتيل ونموذج حجز طاولة — طاقة غروب."
+  },
+  "תבנית עירונית ברוטליסטית עם פס ליים אנכי, טיפוגרפיה ענקית, מרקיז שכונות, מחירון טיפוגרפי, עמודות רובעים וטופס כהה.": {
+    "en": "Urban brutalist template with a vertical lime stripe, giant type, neighborhood marquee, typographic price list, district columns, and a dark form.",
+    "es": "Plantilla brutalista urbana: franja lima, tipografía enorme, marquee, tarifas, columnas y formulario oscuro.",
+    "pt-BR": "Modelo brutalista urbano: faixa lima, tipografia enorme, marquee, preços, colunas e formulário escuro.",
+    "ar": "قالب حضري بروتالي مع شريط ليمون عمودي وطباعة عملاقة وشريط أحياء وأسعار طباعية وأعمدة أحياء ونموذج داكن."
+  },
+  "תבנית סיורי צילום: הירo panorama carousel עם 3 פאנלים, גaleria zoom, חבילות טיול וטופס lens — pan-slide animation.": {
+    "en": "Photo-tour template: a 3-panel panorama carousel hero, zoom gallery, trip packages, and a lens form — pan-slide animation.",
+    "es": "Plantilla de tours foto: carousel panorama de 3 paneles, galería zoom, packs y formulario lens.",
+    "pt-BR": "Modelo de tours foto: carousel panorama de 3 painéis, galeria zoom, pacotes e formulário lens.",
+    "ar": "قالب جولات تصوير: بطل panorama carousel بثلاث ألواح ومعرض zoom وباقات رحلة ونموذج lens — حركة pan-slide."
+  },
+  "תבנית מסעדה על החול: הירו אורgani עם driftwood צף, תפריט scroll, סיפור שף חופף וטופס הזמנה — grain drift animation.": {
+    "en": "Beach restaurant template: an organic hero with floating driftwood, a scroll menu, overlapping chef story, and a booking form — grain drift animation.",
+    "es": "Plantilla de restaurante en la arena: hero orgánico, driftwood, menú scroll, historia y reserva.",
+    "pt-BR": "Modelo de restaurante na areia: hero orgânico, driftwood, cardápio scroll, história e reserva.",
+    "ar": "قالب مطعم على الرمل: بطل عضوي مع driftwood عائم وقائمة scroll وقصة شيف متداخلة ونموذج حجز — حركة grain drift."
+  },
+  "תבנית בר יין: הירו עם שכבות מרתף פרלקס, ציר טעימות אנכי, תגי פקק צפים וטופס הזמנה אלגנטי — תנועת עומק ופקקים מרחפים.": {
+    "en": "Wine-bar template: a hero with cellar parallax layers, a vertical tasting axis, floating cork tags, and an elegant booking form — depth motion and hovering corks.",
+    "es": "Plantilla de wine bar: hero con paralaje, eje de cata, corchos y formulario elegante.",
+    "pt-BR": "Modelo de wine bar: hero com paralaxe, eixo de degustação, rolhas e formulário elegante.",
+    "ar": "قالب بار نبيذ: بطل بطبقات قبو بارالاكس ومحور تذوق عمودي ووسوم فلين عائمة ونموذج حجز أنيق — حركة عمق وفلين عائم."
+  },
+  "דף נחיתה למסעדת שף יוקרתית: הירו צילומי, תפריט טיפוגרפי, סיפור השף, גלריה, ביקורות, אירועים והזמנות — עיצוב שחור-ענבר.": {
+    "en": "Luxury chef-restaurant landing page: a photographic hero, typographic menu, chef story, gallery, reviews, events, and bookings — black-amber design.",
+    "es": "Landing de restaurante de chef: hero fotográfico, menú, historia, galería, reseñas, eventos y reservas.",
+    "pt-BR": "Landing de restaurante de chef: hero fotográfico, cardápio, história, galeria, avaliações, eventos e reservas.",
+    "ar": "صفحة هبوط لمطعم شيف فاخر: بطل تصويري وقائمة طباعية وقصة الشيف ومعرض وتقييمات وفعاليات وحجوزات — تصميم أسود-كهرمان."
+  },
+  "תבנית בוטיק מלח ומלאכה: הירo gritty עם grain sweep, masonry מוצרים, שלבי craft וטופס wholesale — forge-spark animation.": {
+    "en": "Salt-and-craft boutique template: a gritty hero with grain sweep, product masonry, craft steps, and a wholesale form — forge-spark animation.",
+    "es": "Plantilla boutique de sal y oficio: hero gritty, masonry, pasos craft y formulario wholesale.",
+    "pt-BR": "Modelo boutique de sal e ofício: hero gritty, masonry, passos craft e formulário wholesale.",
+    "ar": "قالب بوتيك ملح وحرفة: بطل gritty مع grain sweep وmasonry منتجات وخطوات craft ونموذج wholesale — حركة forge-spark."
+  },
+  "תבנית ריזורט על דיונות: הירו פרallax עם גלי חול SVG, כרטיסי וילות אופקיים, סטטיסטיקות חול ושקיעה — תנועה איטית וקולנועית.": {
+    "en": "Dune resort template: a parallax hero with SVG sand waves, horizontal villa cards, sand stats, and sunset — slow cinematic motion.",
+    "es": "Plantilla resort sobre dunas: hero parallax, olas SVG, villas, estadísticas y atardecer.",
+    "pt-BR": "Modelo resort sobre dunas: hero parallax, ondas SVG, vilas, estatísticas e pôr do sol.",
+    "ar": "قالب منتجع على كثبان: بطل بارالاكس مع موج رمل SVG وبطاقات فيلات أفقية وإحصاءات رمل وغروب — حركة بطيئة سينمائية."
+  },
+  "תבנית ראמן ואסיה: הירו עם קיטור עולה סביב קערה, תפריט רדיאלי עגול, שלבי הכנה במקלות אכילה וטופס עגול — אפקטי steam וריחוף.": {
+    "en": "Ramen and Asia template: a hero with rising steam around a bowl, a circular radial menu, chopstick prep steps, and a round form — steam and float effects.",
+    "es": "Plantilla ramen: hero con vapor, menú radial, pasos con palillos y formulario redondo.",
+    "pt-BR": "Modelo ramen: hero com vapor, menu radial, passos com hashi e formulário redondo.",
+    "ar": "قالب رامن وآسيا: بطل مع بخار يصعد حول وعاء وقائمة دائرية نصف قطرية وخطوات تحضير بعصي ونموذج دائري — تأثيرات بخار وعوم."
+  },
+  "תבנית אוכל רחוב: הירו עם משאית נעה וניאון מהבהב, ערימת כרטיסי לילה, סיכות מפה קופצות וטופס בסגנון צ׳אט SMS — אנרגיה עירונית ותנועה.": {
+    "en": "Street-food template: a hero with a moving truck and blinking neon, a stack of night cards, popping map pins, and an SMS-chat form — urban energy and motion.",
+    "es": "Plantilla de street food: hero con camión y neón, cartas de noche, pines y chat SMS.",
+    "pt-BR": "Modelo de street food: hero com caminhão e néon, cartas de noite, pins e chat SMS.",
+    "ar": "قالب طعام شارع: بطل بشاحنة متحركة ونيون وامض وكومة بطاقات ليل ودبابيس خريطة تقفز ونموذج بطابع محادثة SMS — طاقة حضرية وحركة."
+  },
+  "דף נחיתה עברי לשירותי בית: אינסטלציה, חשמל ושיפוצים בעיצוב תעשייתי חד עם צילום מלא, גריד טיפוגרפי, מחירון, אזורי שירות וקריאה דחופה.": {
+    "en": "Hebrew home-services landing page: plumbing, electrical, and renovations in a sharp industrial design with full-bleed photography, a type grid, prices, service areas, and an urgent call.",
+    "es": "Landing de servicios del hogar: fontanería, electricidad y reformas, foto completa, grid, tarifas y urgencia.",
+    "pt-BR": "Landing de serviços domésticos: encanamento, elétrica e reformas, foto completa, grade, preços e urgência.",
+    "ar": "صفحة هبوط عبرية لخدمات المنزل: سباكة وكهرباء وترميم بتصميم صناعي حاد مع تصوير كامل وشبكة طباعية وأسعار ومناطق خدمة ونداء عاجل."
+  },
+  "תבנית סושי: הירו כמסוע נע עם ניגירי, מסילת מנות snap, מוני ספירה עם פעימת וואסבי וטופס לכה שחורה עם קו זהב — מינימליזם יפני עם תנועה.": {
+    "en": "Sushi template: a moving-conveyor hero with nigiri, a snap dish track, counters with a wasabi pulse, and a black-lacquer gold-line form — Japanese minimalism with motion.",
+    "es": "Plantilla sushi: hero cinta con nigiri, raíl snap, contadores wasabi y formulario laca negra.",
+    "pt-BR": "Modelo sushi: hero esteira com nigiri, trilho snap, contadores wasabi e formulário laca preta.",
+    "ar": "قالب سوشي: بطل كحزام متحرك مع نيغيري ومسار أطباق snap وعدادات بنبض واسابي ونموذج لاكيه أسود بخط ذهب — حد أدنى ياباني مع حركة."
+  },
+  "תבנית גריל וסטייקים: הירו עם ניצוצות אש עולים, תפריט כציר בשר אנכי, שבבי שעות זוהרים וטופס הזמנה עם פעימת גחלים — תנועה חמה וקולנועית.": {
+    "en": "Grill and steaks template: a hero with rising fire sparks, a vertical meat-axis menu, glowing hour chips, and a booking form with an ember pulse — hot cinematic motion.",
+    "es": "Plantilla de grill: hero con chispas, menú vertical, horas brillantes y formulario con brasas.",
+    "pt-BR": "Modelo de grill: hero com faíscas, cardápio vertical, horas brilhantes e formulário com brasas.",
+    "ar": "قالب شواية وستيك: بطل بشرر نار يصعد وقائمة كمحور لحم عمودي ورقائق ساعات متوهجة ونموذج حجز بنبض جمر — حركة حارة سينمائية."
+  },
+  "תבנית מזטה ים-תיכונית: הירו מוזאיקה של ארבעה צילומים עם זיתים צפים, מסילת מנות משותפות, פס ציטוט קלף וטופס שולחן גן — תנועה בוטנית רכה.": {
+    "en": "Mediterranean mezze template: a four-photo mosaic hero with floating olives, a shared-dish track, a parchment quote bar, and a garden-table form — soft botanical motion.",
+    "es": "Plantilla mezze: mosaico de 4 fotos, aceitunas, raíl de platos, cita y formulario de jardín.",
+    "pt-BR": "Modelo mezze: mosaico de 4 fotos, azeitonas, trilho de pratos, citação e formulário de jardim.",
+    "ar": "قالب مزة متوسطي: بطل فسيفساء من أربع صور مع زيتون عائم ومسار أطباق مشتركة وشريط اقتباس رق ونموذج طاولة حديقة — حركة نباتية ناعمة."
+  },
+  "תבנית מטבח הודי: הירו עם חלקיקי תבלין נופלים, גלגל תבלינים רדיאלי, שלבי מתכון בספירלה וטופס כצלחת תאלי — צבעוניות חמה ותנועת spice-fall.": {
+    "en": "Indian kitchen template: a hero with falling spice particles, a radial spice wheel, spiral recipe steps, and a thali-plate form — warm color and spice-fall motion.",
+    "es": "Plantilla de cocina india: especias, rueda radial, receta en espiral y formulario thali.",
+    "pt-BR": "Modelo de cozinha indiana: especiarias, roda radial, receita em espiral e formulário thali.",
+    "ar": "قالب مطبخ هندي: بطل بجزيئات بهار تتساقط وعجلة بهارات نصف قطرية وخطوات وصفة حلزونية ونموذج كطبق تالي — ألوان حارة وحركة spice-fall."
+  },
+  "דף נחיתה פרימיום למרפאה רב-תחומית: הירו צילום מלא, התמחויות, נתוני אמון, רופאים, ביטוחים, המלצות, FAQ וטופס תור בגווני טורקיז עמוק ומינט.": {
+    "en": "Premium multi-clinic landing page: a full-bleed photo hero, specialties, trust stats, doctors, insurance, testimonials, FAQ, and a booking form in deep turquoise and mint.",
+    "es": "Landing premium de clínica: hero de foto, especialidades, confianza, médicos, seguros, reseñas, FAQ y cita.",
+    "pt-BR": "Landing premium de clínica: hero de foto, especialidades, confiança, médicos, convênios, depoimentos, FAQ e horário.",
+    "ar": "صفحة هبوط فاخرة لعيادة متعددة التخصصات: بطل صورة كاملة وتخصصات وبيانات ثقة وأطباء وتأمينات وشهادات وأسئلة شائعة ونموذج موعد بدرجات تركواز عميق ونعناع."
+  },
+  "תבנית בר טאפס לילי: הירו עם צלחות קטנות עולות במפל, רשת בנטו, מארקי שוק לילה, בקבוקי יין עם אנימציית מזיגה וטופס כחשבון בר — ניאון וריצוד.": {
+    "en": "Night tapas-bar template: a hero with small plates rising in a cascade, a bento grid, night-market marquee, wine bottles with a pour animation, and a bar-check form — neon and flicker.",
+    "es": "Plantilla de tapas nocturna: platos en cascada, grid bento, marquee, botellas y cuenta de bar.",
+    "pt-BR": "Modelo de tapas noturno: pratos em cascata, grade bento, marquee, garrafas e conta de bar.",
+    "ar": "قالب بار تapas ليلي: بطل بصحون صغيرة تصعد كشلال وشبكة بنتو وشريط سوق ليل وزجاجات نبيذ بحركة صب ونموذج كفاتورة بار — نيون ووميض."
+  }
+}

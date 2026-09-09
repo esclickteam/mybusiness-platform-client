@@ -11,7 +11,7 @@ export const partnerlyEditorCss = `
   font-family: "Secular One", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="partnerly"] .text-center,
 [data-template-id="partnerly"] .text-center { text-align: center; }

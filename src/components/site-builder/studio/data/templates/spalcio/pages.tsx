@@ -1,4 +1,6 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -102,7 +104,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 
@@ -112,7 +114,7 @@ function sectionProps(id: string, label: string, kind?: string) {
     "data-visual-edit-type": "section",
     "data-visual-type": "section",
     "data-visual-editable": "true",
-    "data-visual-edit-label": label,
+    "data-visual-edit-label": tx(label),
     "data-template-section-id": id,
     "data-section-kind": kind || id,
     "data-section-title": label,
@@ -299,7 +301,7 @@ function Header({
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
       data-section-id="header"
-      data-section-title="כותרת עליונה"
+      data-section-title={tx("כותרת עליונה")}
       className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -308,7 +310,7 @@ function Header({
           data-visual-link-href={getPageHref("home")}
           data-link-url={getPageHref("home")}
           onClick={(event) => handlePageClick(event, "home")}
-          className="flex items-center gap-3 text-right"
+          className="flex items-center gap-3 text-start"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_14px_35px_rgba(37,99,235,0.28)]">
             <Building2 className="h-5 w-5" />
@@ -325,7 +327,7 @@ function Header({
               data-editable="true"
               className="spalcio-editable text-xs font-semibold text-slate-500"
             >
-              {spalcioData.brand.subtitle}
+              {tx(spalcioData.brand.subtitle)}
             </p>
           </div>
         </a>
@@ -347,7 +349,7 @@ function Header({
                   isActive ? "font-black text-blue-700" : "text-slate-600",
                 ].join(" ")}
               >
-                {item.label}
+                {tx(item.label)}
               </a>
             );
           })}
@@ -359,9 +361,7 @@ function Header({
           data-link-url={getPageHref("contact")}
           onClick={(event) => handlePageClick(event, "contact")}
           className="spalcio-primary-btn hidden rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 md:inline-flex"
-        >
-          התחלת פרויקט
-        </a>
+        >{tx("התחלת פרויקט")}</a>
       </div>
     </header>
   );
@@ -382,7 +382,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
       id="hero"
       {...sectionProps("hero", "אזור פתיחה")}
       data-section-id="hero"
-      data-section-title="אזור פתיחה"
+      data-section-title={tx("אזור פתיחה")}
       className="relative overflow-hidden bg-[#f6f3ee]"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -397,21 +397,21 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
             className="spalcio-editable mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"
           >
             <Sparkles className="h-4 w-4 text-blue-600" />
-            {spalcioData.hero.badge}
+            {tx(spalcioData.hero.badge)}
           </div>
 
           <h1
             data-editable="true"
             className="spalcio-editable max-w-3xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950 md:text-7xl"
           >
-            {spalcioData.hero.title}
+            {tx(spalcioData.hero.title)}
           </h1>
 
           <p
             data-editable="true"
             className="spalcio-editable mt-7 max-w-xl text-lg leading-8 text-slate-600"
           >
-            {spalcioData.hero.subtitle}
+            {tx(spalcioData.hero.subtitle)}
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -422,7 +422,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
               onClick={(event) => handlePageClick(event, "contact")}
               className="spalcio-primary-btn inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.28)] transition hover:bg-blue-700"
             >
-              {spalcioData.hero.primaryButton}
+              {tx(spalcioData.hero.primaryButton)}
               <ArrowLeft className="h-4 w-4" />
             </a>
 
@@ -433,7 +433,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
               onClick={(event) => handlePageClick(event, "projects")}
               className="spalcio-secondary-btn inline-flex items-center justify-center rounded-full border border-blue-100 bg-white px-8 py-4 text-sm font-black text-blue-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50"
             >
-              {spalcioData.hero.secondaryButton}
+              {tx(spalcioData.hero.secondaryButton)}
             </a>
           </div>
 
@@ -450,7 +450,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
                   data-editable="true"
                   className="spalcio-editable mt-1 text-sm font-semibold text-slate-500"
                 >
-                  {stat.label}
+                  {tx(stat.label)}
                 </p>
               </div>
             ))}
@@ -464,7 +464,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
           <div className="relative overflow-hidden rounded-[2.5rem] border border-white bg-white p-4 shadow-2xl">
             <img
               src={spalcioData.hero.image}
-              alt={spalcioData.hero.imageAlt}
+              alt={tx(spalcioData.hero.imageAlt)}
               {...mediaProps("hero.image", spalcioData.hero.imageAlt)}
               className="spalcio-hero-image h-[520px] w-full rounded-[2rem] object-cover"
             />
@@ -474,13 +474,13 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
                 data-editable="true"
                 className="spalcio-editable text-sm font-black text-slate-950"
               >
-                {spalcioData.hero.floatingTitle}
+                {tx(spalcioData.hero.floatingTitle)}
               </p>
               <p
                 data-editable="true"
                 className="spalcio-editable mt-2 text-sm leading-6 text-slate-600"
               >
-                {spalcioData.hero.floatingText}
+                {tx(spalcioData.hero.floatingText)}
               </p>
             </div>
           </div>
@@ -496,7 +496,7 @@ function Services() {
       id="services"
       {...sectionProps("services", "שירותים")}
       data-section-id="services"
-      data-section-title="שירותים"
+      data-section-title={tx("שירותים")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
@@ -506,13 +506,13 @@ function Services() {
               data-editable="true"
               className="spalcio-editable text-sm font-black uppercase tracking-[0.25em] text-blue-600"
             >
-              {spalcioData.services.eyebrow}
+              {tx(spalcioData.services.eyebrow)}
             </p>
             <h2
               data-editable="true"
               className="spalcio-editable mt-3 max-w-2xl text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
             >
-              {spalcioData.services.title}
+              {tx(spalcioData.services.title)}
             </h2>
           </div>
 
@@ -520,7 +520,7 @@ function Services() {
             data-editable="true"
             className="spalcio-editable max-w-md text-base leading-7 text-slate-500"
           >
-            {spalcioData.services.text}
+            {tx(spalcioData.services.text)}
           </p>
         </div>
 
@@ -538,19 +538,17 @@ function Services() {
                 data-editable="true"
                 className="spalcio-editable mt-8 text-2xl font-black tracking-[-0.03em] text-slate-950"
               >
-                {service.title}
+                {tx(service.title)}
               </h3>
 
               <p
                 data-editable="true"
                 className="spalcio-editable mt-4 leading-7 text-slate-600"
               >
-                {service.text}
+                {tx(service.text)}
               </p>
 
-              <div className="mt-7 inline-flex items-center gap-2 text-sm font-black text-blue-700">
-                לפרטים נוספים
-                <ArrowLeft className="h-4 w-4" />
+              <div className="mt-7 inline-flex items-center gap-2 text-sm font-black text-blue-700">{tx("לפרטים נוספים")}<ArrowLeft className="h-4 w-4" />
               </div>
             </article>
           ))}
@@ -566,7 +564,7 @@ function Projects() {
       id="projects"
       {...sectionProps("projects", "פרויקטים")}
       data-section-id="projects"
-      data-section-title="פרויקטים"
+      data-section-title={tx("פרויקטים")}
       className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
@@ -575,13 +573,13 @@ function Projects() {
             data-editable="true"
             className="spalcio-editable text-sm font-black uppercase tracking-[0.25em] text-blue-600"
           >
-            {spalcioData.projects.eyebrow}
+            {tx(spalcioData.projects.eyebrow)}
           </p>
           <h2
             data-editable="true"
             className="spalcio-editable mt-3 max-w-2xl text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
           >
-            {spalcioData.projects.title}
+            {tx(spalcioData.projects.title)}
           </h2>
         </div>
 
@@ -593,7 +591,7 @@ function Projects() {
             >
               <img
                 src={project.image}
-                alt={project.title}
+                alt={tx(project.title)}
                 {...mediaProps(`projects.${index}.image`, project.title)}
                 className="spalcio-project-image h-72 w-full object-cover"
               />
@@ -603,14 +601,14 @@ function Projects() {
                   data-editable="true"
                   className="spalcio-editable text-2xl font-black text-slate-950"
                 >
-                  {project.title}
+                  {tx(project.title)}
                 </h3>
 
                 <p
                   data-editable="true"
                   className="spalcio-editable mt-3 leading-7 text-slate-600"
                 >
-                  {project.text}
+                  {tx(project.text)}
                 </p>
               </div>
             </article>
@@ -627,14 +625,14 @@ function About() {
       id="about"
       {...sectionProps("about", "אודות")}
       data-section-id="about"
-      data-section-title="אודות"
+      data-section-title={tx("אודות")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div className="overflow-hidden rounded-[2.5rem]">
           <img
             src={spalcioData.about.image}
-            alt={spalcioData.about.imageAlt}
+            alt={tx(spalcioData.about.imageAlt)}
             {...mediaProps("about.image", spalcioData.about.imageAlt)}
             className="spalcio-about-image h-[520px] w-full object-cover"
           />
@@ -645,32 +643,32 @@ function About() {
             data-editable="true"
             className="spalcio-editable text-sm font-black uppercase tracking-[0.25em] text-blue-600"
           >
-            {spalcioData.about.eyebrow}
+            {tx(spalcioData.about.eyebrow)}
           </p>
 
           <h2
             data-editable="true"
             className="spalcio-editable mt-3 text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
           >
-            {spalcioData.about.title}
+            {tx(spalcioData.about.title)}
           </h2>
 
           <p
             data-editable="true"
             className="spalcio-editable mt-6 text-lg leading-8 text-slate-600"
           >
-            {spalcioData.about.text}
+            {tx(spalcioData.about.text)}
           </p>
 
           <div className="mt-8 grid gap-4">
             {spalcioData.about.bullets.map((item) => (
-              <div key={item} className="flex items-center gap-3">
+              <div key={tx(item)} className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-blue-600" />
                 <span
                   data-editable="true"
                   className="spalcio-editable font-semibold text-slate-700"
                 >
-                  {item}
+                  {tx(item)}
                 </span>
               </div>
             ))}
@@ -687,7 +685,7 @@ function Process() {
       id="process"
       {...sectionProps("process", "תהליך עבודה")}
       data-section-id="process"
-      data-section-title="תהליך עבודה"
+      data-section-title={tx("תהליך עבודה")}
       className="relative overflow-hidden bg-[#f6f3ee] px-6 py-12 md:py-24 text-slate-950"
     >
       <div className="pointer-events-none absolute inset-0">
@@ -702,20 +700,18 @@ function Process() {
               data-editable="true"
               className="spalcio-editable text-sm font-black uppercase tracking-[0.25em] text-blue-600"
             >
-              {spalcioData.process.eyebrow}
+              {tx(spalcioData.process.eyebrow)}
             </p>
 
             <h2
               data-editable="true"
               className="spalcio-editable mt-3 text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
             >
-              {spalcioData.process.title}
+              {tx(spalcioData.process.title)}
             </h2>
           </div>
 
-          <div className="rounded-full border border-blue-100 bg-white/80 px-5 py-3 text-sm font-black text-blue-700 shadow-sm">
-            תהליך מדויק שמוביל לפנייה
-          </div>
+          <div className="rounded-full border border-blue-100 bg-white/80 px-5 py-3 text-sm font-black text-blue-700 shadow-sm">{tx("תהליך מדויק שמוביל לפנייה")}</div>
         </div>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -741,14 +737,14 @@ function Process() {
                 data-editable="true"
                 className="spalcio-editable text-2xl font-black tracking-[-0.03em] text-slate-950"
               >
-                {step.title}
+                {tx(step.title)}
               </h3>
 
               <p
                 data-editable="true"
                 className="spalcio-editable mt-4 leading-7 text-slate-600"
               >
-                {step.text}
+                {tx(step.text)}
               </p>
             </article>
           ))}
@@ -764,7 +760,7 @@ function Testimonials() {
       id="testimonials"
       {...sectionProps("testimonials", "המלצות")}
       data-section-id="testimonials"
-      data-section-title="המלצות"
+      data-section-title={tx("המלצות")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-5xl text-center">
@@ -776,14 +772,14 @@ function Testimonials() {
           data-editable="true"
           className="spalcio-editable mt-8 text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
         >
-          “{spalcioData.testimonials.quote}”
+          “{tx(spalcioData.testimonials.quote)}”
         </h2>
 
         <p
           data-editable="true"
           className="spalcio-editable mt-6 text-lg font-semibold text-slate-600"
         >
-          {spalcioData.testimonials.name} · {spalcioData.testimonials.role}
+          {spalcioData.testimonials.name} · {tx(spalcioData.testimonials.role)}
         </p>
       </div>
     </section>
@@ -796,7 +792,7 @@ function Contact() {
       id="contact"
       {...sectionProps("contact", "יצירת קשר")}
       data-section-id="contact"
-      data-section-title="יצירת קשר"
+      data-section-title={tx("יצירת קשר")}
       className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
@@ -805,14 +801,14 @@ function Contact() {
             data-editable="true"
             className="spalcio-editable text-sm font-black uppercase tracking-[0.25em] text-blue-600"
           >
-            {spalcioData.contact.eyebrow}
+            {tx(spalcioData.contact.eyebrow)}
           </p>
 
           <h2
             data-editable="true"
             className="spalcio-editable mt-3 text-4xl font-black tracking-[-0.05em] text-slate-950 md:text-5xl"
           >
-            {spalcioData.contact.title}
+            {tx(spalcioData.contact.title)}
           </h2>
 
           <div className="mt-10 grid gap-4">
@@ -831,7 +827,7 @@ function Contact() {
                     data-editable="true"
                     className="spalcio-editable font-semibold text-slate-700"
                   >
-                    {item.text}
+                    {item.type === "location" ? item.text : tx(item.text)}
                   </span>
                 </div>
               );
@@ -839,25 +835,25 @@ function Contact() {
           </div>
         </div>
 
-        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
             <input
-              placeholder={spalcioData.contact.form.firstName}
+              placeholder={tx(spalcioData.contact.form.firstName)}
               className="h-14 rounded-2xl border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-blue-600"
             />
             <input
-              placeholder={spalcioData.contact.form.lastName}
+              placeholder={tx(spalcioData.contact.form.lastName)}
               className="h-14 rounded-2xl border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-blue-600"
             />
           </div>
 
           <input
-            placeholder={spalcioData.contact.form.email}
+            placeholder={tx(spalcioData.contact.form.email)}
             className="mt-4 h-14 w-full rounded-2xl border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-blue-600"
           />
 
           <textarea
-            placeholder={spalcioData.contact.form.message}
+            placeholder={tx(spalcioData.contact.form.message)}
             rows={6}
             className="mt-4 w-full resize-none rounded-2xl border border-slate-200 p-4 text-sm font-semibold outline-none focus:border-blue-600"
           />
@@ -866,7 +862,7 @@ function Contact() {
             type="submit"
             className="spalcio-primary-btn mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
           >
-            {spalcioData.contact.form.button}
+            {tx(spalcioData.contact.form.button)}
             <ArrowLeft className="h-4 w-4" />
           </button>
         </form>
@@ -879,7 +875,7 @@ function Footer() {
   return (
     <footer
       data-section-id="footer"
-      data-section-title="פוטר"
+      data-section-title={tx("פוטר")}
       className="bg-slate-950 px-6 py-10 text-white"
     >
       <div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-center">
@@ -894,13 +890,12 @@ function Footer() {
             data-editable="true"
             className="spalcio-editable mt-1 text-sm text-white/55"
           >
-            {spalcioData.brand.footerText}
+            {tx(spalcioData.brand.footerText)}
           </p>
         </div>
 
         <p className="text-sm text-white/45">
-          © {new Date().getFullYear()} {spalcioData.brand.name}. כל הזכויות
-          שמורות.
+          © {new Date().getFullYear()} {spalcioData.brand.name}. {tx("כל הזכויות שמורות.")}
         </p>
       </div>
     </footer>
@@ -999,7 +994,7 @@ export function SpalcioPages(props: SpalcioPagesProps) {
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="spalcio"
       data-template-page-id={publicPageId}
       data-active-page-id={publicPageId}
@@ -1009,7 +1004,7 @@ export function SpalcioPages(props: SpalcioPagesProps) {
           : activePage.slug
       }
       data-bizuply-library-page={isLibraryPage ? "true" : undefined}
-      className="min-h-screen bg-white text-right text-slate-950"
+      className="min-h-screen bg-white text-start text-slate-950"
     >
       <Header
         activePageId={headerActiveId}

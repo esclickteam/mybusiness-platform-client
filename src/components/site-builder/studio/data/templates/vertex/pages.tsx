@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -82,7 +84,7 @@ function SectionIntro({
   align?: "right" | "center";
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", align === "center" ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", align === "center" ? "text-center" : "text-start")}>
       <TemplateText
         as="p"
         className="mb-4 inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.34em] text-[#00ff88]"
@@ -98,7 +100,7 @@ function SectionIntro({
       </TemplateText>
       {text ? (
         <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#9a9a9a]">
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -170,14 +172,14 @@ function VertexHeader({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="flex items-center gap-3 text-right"
+          className="flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 border border-[#00ff88] bg-[#00ff88]/10 text-sm font-bold text-[#00ff88]">
             <TemplateText as="span" className="grid h-full w-full place-items-center">
               {getValue(data, "logoText")}
             </TemplateText>
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-bold uppercase tracking-[0.14em] text-[#f5f5f5]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -228,7 +230,7 @@ function VertexHeader({
                 type="button"
                 onClick={() => handleNavigate(pageId)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-bold uppercase tracking-[0.14em] transition rounded-none",
+                  "border px-4 py-3 text-start text-sm font-bold uppercase tracking-[0.14em] transition rounded-none",
                   currentPage === pageId
                     ? "border-[#00ff88] bg-[#00ff88] text-[#050505]"
                     : "border-[#00ff8833] text-[#f5f5f5]",
@@ -283,7 +285,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#9a9a9a]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border border-[#00ff8833]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-8 grid gap-0 border border-[#00ff8833]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             "שם מלא / חברה",
             "אימייל עבודה",
@@ -292,13 +294,13 @@ function InquiryModal({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-14 border-b border-[#00ff8833] bg-transparent px-5 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-              placeholder={placeholder}
+              className="h-14 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+              placeholder={tx(placeholder)}
             />
           ))}
           <textarea
-            className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-            placeholder="תיאור קצר של האתגר"
+            className="min-h-32 bg-transparent px-5 py-4 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+            placeholder={tx("תיאור קצר של האתגר")}
            name="other" data-bizuply-form-field-id="other"></textarea>
           <button
             type="submit"
@@ -374,7 +376,7 @@ function HeroSection({
                 style={{ clipPath: index === 1 ? "polygon(0 0, 100% 0, 100% 100%, 8% 100%)" : undefined }}
               >
                 <TemplateText as="div" className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00ff88]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="div" className="mt-2 text-sm font-bold uppercase text-[#f5f5f5]">
                   {value}
@@ -399,7 +401,7 @@ function HeroSection({
           </div>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([value, label]) => (
-              <div key={label} className="border border-[#00ff8833] bg-[#0d0d0d] px-4 py-4 text-right">
+              <div key={label} className="border border-[#00ff8833] bg-[#0d0d0d] px-4 py-4 text-start">
                 <TemplateText as="div" className="text-3xl font-black text-[#00ff88]">
                   {value}
                 </TemplateText>
@@ -458,7 +460,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                   0{index + 1} / {title}
                 </TemplateText>
                 <TemplateText as="p" className="text-sm leading-7 text-[#9a9a9a]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
@@ -530,12 +532,12 @@ function ServicesSection({
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 flex-1 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
               <button
                 type="button"
                 onClick={openInquiry}
-                className="mt-8 border border-[#00ff8833] px-4 py-3 text-right text-xs font-bold uppercase tracking-[0.26em] text-[#00ff88] transition hover:border-[#00ff88]"
+                className="mt-8 border border-[#00ff8833] px-4 py-3 text-start text-xs font-bold uppercase tracking-[0.26em] text-[#00ff88] transition hover:border-[#00ff88]"
               >
                 Brief / Start
               </button>
@@ -647,7 +649,7 @@ function InsightsSection({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -683,7 +685,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#9a9a9a]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -728,7 +730,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-[#0b0b0b]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-0 bg-[#0b0b0b]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             "שם מלא",
             "אימייל",
@@ -737,13 +739,13 @@ function ContactSection({
           ].map((placeholder) => (
             <input
               key={placeholder}
-              className="h-16 border-b border-[#00ff8833] bg-transparent px-5 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-              placeholder={placeholder}
+              className="h-16 border-b border-[#00ff8833] bg-transparent px-5 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+              placeholder={tx(placeholder)}
             />
           ))}
           <textarea
-            className="min-h-40 border-b border-[#00ff8833] bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
-            placeholder="ספרו לנו מה צריך להיבנות, להשתפר או להשתלב."
+            className="min-h-40 border-b border-[#00ff8833] bg-transparent px-5 py-4 text-start text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
+            placeholder={tx("ספרו לנו מה צריך להיבנות, להשתפר או להשתלב.")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <div className="p-5">
             <SquareButton onClick={openInquiry} className="w-full justify-center">
@@ -925,7 +927,7 @@ export default function VertexPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vertex"
       className="min-h-screen w-full overflow-x-hidden bg-[#050505] text-[#f5f5f5] rounded-none"
       style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}

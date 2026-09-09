@@ -2,7 +2,7 @@ export const dwellistEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="dwellist"], [data-template-id="dwellist"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #faf8f5; --tpl-surface: #ffffff; --tpl-text: #2c2419;
   --tpl-muted: #8a7d6e; --tpl-primary: #5c7c6a; --tpl-primary-text: #ffffff;

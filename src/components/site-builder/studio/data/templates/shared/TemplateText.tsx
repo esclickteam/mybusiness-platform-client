@@ -1,5 +1,6 @@
 import React from "react";
 
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
 import {
   resolveTemplateRichHtmlFromVisualData,
@@ -40,7 +41,7 @@ export function TemplateText({
       data-visual-edit-type="text"
       data-visual-editable="true"
       {...(editId ? { "data-visual-edit-id": editId } : {})}
-      {...(editLabel ? { "data-visual-edit-label": editLabel } : {})}
+      {...(editLabel ? { "data-visual-edit-label": tx(editLabel) } : {})}
       {...props}
       {...(safeHtml ? { dangerouslySetInnerHTML: { __html: safeHtml } } : {})}
     >

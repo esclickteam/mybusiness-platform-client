@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { seabloomDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -27,12 +29,12 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = seabloomPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = seabloomPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#f5faf5f2", borderColor: "rgba(26,61,46,0.12)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#2d8a6e", color: "#ffffff" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(26,61,46,0.12)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -62,13 +64,13 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="seabloom-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="seabloom-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#2d8a6e", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -101,7 +103,7 @@ function TreatmentCarousel({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(26,61,46,0.12)", background: "#ffffff" }}>
       <div className="mx-auto max-w-7xl">
-        <h2 className="tpl-display text-4xl font-bold md:text-5xl">טיפולים טרופיים</h2>
+        <h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("טיפולים טרופיים")}</h2>
         <div className="tpl-carousel-track mt-10 pb-2">
           {items.map(([title, meta, text, img]) => (
             <article key={title} className="min-w-[300px] flex-shrink-0 overflow-hidden rounded-2xl border" style={{ borderColor: "rgba(26,61,46,0.12)", background: "#f5faf5" }}>
@@ -109,7 +111,7 @@ function TreatmentCarousel({ data }: { data: Record<string, any> }) {
               <div className="p-5">
                 <p className="text-xs font-semibold" style={{ color: "#2d8a6e" }}>{meta}</p>
                 <h3 className="tpl-display mt-2 text-2xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#5a8a72" }}>{text}</p>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#5a8a72" }}>{tx(text)}</p>
               </div>
             </article>
           ))}
@@ -124,7 +126,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(26,61,46,0.12)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#2d8a6e" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#2d8a6e" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#5a8a72" }}>{v(data, "aboutText")}</p>
         </div>
@@ -139,7 +141,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(26,61,46,0.12)", background: "#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#2d8a6e" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#2d8a6e" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#5a8a72" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#5a8a72" }}>
@@ -216,7 +218,7 @@ export default function SeabloomPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="seabloom" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="seabloom" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f5faf5", color: "#1a3d2e" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

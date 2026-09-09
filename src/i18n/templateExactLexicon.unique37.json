@@ -1,0 +1,146 @@
+{
+  "חבילות ומחירים ברורים": {
+    "en": "Clear packages and prices",
+    "es": "Paquetes y precios claros",
+    "pt-BR": "Pacotes e preços claros",
+    "ar": "باقات وأسعار واضحة"
+  },
+  "האנשים מאחורי המותג": {
+    "en": "The people behind the brand",
+    "es": "Las personas detrás de la marca",
+    "pt-BR": "As pessoas por trás da marca",
+    "ar": "الأشخاص خلف العلامة"
+  },
+  "המספרים מספרים\nאת הסיפור": {
+    "en": "The numbers tell\nthe story",
+    "es": "Los números cuentan\nla historia",
+    "pt-BR": "Os números contam\na história",
+    "ar": "الأرقام تروي\nالقصة"
+  },
+  "המספרים מספרים": {
+    "en": "The numbers tell",
+    "es": "Los números cuentan",
+    "pt-BR": "Os números contam",
+    "ar": "الأرقام تروي"
+  },
+  "את הסיפור": {
+    "en": "the story",
+    "es": "la historia",
+    "pt-BR": "a história",
+    "ar": "القصة"
+  },
+  "נתונים וסטטיסטיקות": {
+    "en": "Data and statistics",
+    "es": "Datos y estadísticas",
+    "pt-BR": "Dados e estatísticas",
+    "ar": "بيانات وإحصاءات"
+  },
+  "שאלות שחשוב לשאול": {
+    "en": "Questions worth asking",
+    "es": "Preguntas que conviene hacer",
+    "pt-BR": "Perguntas que vale a pena fazer",
+    "ar": "أسئلة يستحق طرحها"
+  },
+  "מסמכים מקצועיים במהירות.": {
+    "en": "Professional documents, fast.",
+    "es": "Documentos profesionales, rápido.",
+    "pt-BR": "Documentos profissionais, rápido.",
+    "ar": "مستندات احترافية بسرعة."
+  },
+  "יומן אוטומטי בלי חיכוך.": {
+    "en": "An automatic calendar without friction.",
+    "es": "Un calendario automático sin fricción.",
+    "pt-BR": "Uma agenda automática sem atrito.",
+    "ar": "تقويم تلقائي بلا احتكاك."
+  },
+  "נוכחות שממירה מבקרים.": {
+    "en": "A presence that converts visitors.",
+    "es": "Una presencia que convierte visitantes.",
+    "pt-BR": "Uma presença que converte visitantes.",
+    "ar": "حضور يحوّل الزوّار."
+  },
+  "המלצות פעולה לעסק.": {
+    "en": "Action recommendations for the business.",
+    "es": "Recomendaciones de acción para el negocio.",
+    "pt-BR": "Recomendações de ação para o negócio.",
+    "ar": "توصيات إجراء للعمل."
+  },
+  "רשת שיתופי פעולה.": {
+    "en": "A collaboration network.",
+    "es": "Una red de colaboraciones.",
+    "pt-BR": "Uma rede de colaborações.",
+    "ar": "شبكة تعاون."
+  },
+  "תוכן המלצה ראשית": {
+    "en": "Main testimonial content",
+    "es": "Contenido del testimonio principal",
+    "pt-BR": "Conteúdo do depoimento principal",
+    "ar": "محتوى الشهادة الرئيسية"
+  },
+  "כותרת קטנה אודות": {
+    "en": "Small about heading",
+    "es": "Título pequeño de acerca de",
+    "pt-BR": "Título pequeno sobre",
+    "ar": "عنوان صغير عنّا"
+  },
+  "טופס בקשת שירות": {
+    "en": "Service request form",
+    "es": "Formulario de solicitud de servicio",
+    "pt-BR": "Formulário de pedido de serviço",
+    "ar": "نموذج طلب خدمة"
+  },
+  "טקסט כפתור ראשי": {
+    "en": "Primary button text",
+    "es": "Texto del botón principal",
+    "pt-BR": "Texto do botão principal",
+    "ar": "نص الزر الرئيسي"
+  },
+  "כותרת קביעת תור": {
+    "en": "Booking heading",
+    "es": "Título de reserva",
+    "pt-BR": "Título de agendamento",
+    "ar": "عنوان حجز الموعد"
+  },
+  "תמונת נכס ראשון": {
+    "en": "First property image",
+    "es": "Imagen de la primera propiedad",
+    "pt-BR": "Imagem do primeiro imóvel",
+    "ar": "صورة العقار الأول"
+  },
+  " · דמו זמני — הוסיפו מוצרים בפאנל חנות": {
+    "en": " · temporary demo — add products in the store panel",
+    "es": " · demo temporal — añadid productos en el panel de tienda",
+    "pt-BR": " · demo temporário — adicionem produtos no painel da loja",
+    "ar": " · عرض مؤقت — أضيفوا منتجات في لوحة المتجر"
+  },
+  " · המוצרים מהחנות שלך": {
+    "en": " · products from your store",
+    "es": " · productos de vuestra tienda",
+    "pt-BR": " · produtos da sua loja",
+    "ar": " · منتجات من متجركم"
+  },
+  "מחיר: נמוך לגבוה": {
+    "en": "Price: low to high",
+    "es": "Precio: de menor a mayor",
+    "pt-BR": "Preço: do menor ao maior",
+    "ar": "السعر: من الأقل إلى الأعلى"
+  },
+  "מחיר: גבוה לנמוך": {
+    "en": "Price: high to low",
+    "es": "Precio: de mayor a menor",
+    "pt-BR": "Preço: do maior ao menor",
+    "ar": "السعر: من الأعلى إلى الأقل"
+  },
+  "שם השירות": {
+    "en": "Service name",
+    "es": "Nombre del servicio",
+    "pt-BR": "Nome do serviço",
+    "ar": "اسم الخدمة"
+  },
+  "העסק שלך": {
+    "en": "Your business",
+    "es": "Vuestro negocio",
+    "pt-BR": "Seu negócio",
+    "ar": "نشاطكم"
+  }
+}

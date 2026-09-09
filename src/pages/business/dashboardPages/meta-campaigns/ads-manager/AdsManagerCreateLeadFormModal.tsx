@@ -196,15 +196,15 @@ export default function AdsManagerCreateLeadFormModal({
       return;
     }
     if (!pageId) {
-      toast.error("Select a Facebook Page first");
+      toast.error(t("metaCampaigns.adsToasts.selectPageFirst"));
       return;
     }
     if (!name.trim()) {
-      toast.error("Form name is required");
+      toast.error(t("metaCampaigns.adsToasts.formNameRequired"));
       return;
     }
     if (!introTitle.trim()) {
-      toast.error("Intro headline is required");
+      toast.error(t("metaCampaigns.adsToasts.introRequired"));
       return;
     }
     const validationError = validateLeadFormBuilder({
@@ -212,17 +212,17 @@ export default function AdsManagerCreateLeadFormModal({
       customQuestions,
     });
     if (validationError) {
-      toast.error("Add at least one contact field or custom question");
+      toast.error(t("metaCampaigns.adsToasts.needQuestion"));
       setStep("questions");
       return;
     }
     if (!thankYouTitle.trim()) {
-      toast.error("Thank-you title is required");
+      toast.error(t("metaCampaigns.adsToasts.thankYouRequired"));
       setStep("ending");
       return;
     }
     if (additionalAction === "whatsapp" && !whatsappPhone.replace(/\D/g, "")) {
-      toast.error("Connect or enter a WhatsApp number");
+      toast.error(t("metaCampaigns.adsToasts.needWhatsapp"));
       setStep("ending");
       return;
     }
@@ -230,12 +230,12 @@ export default function AdsManagerCreateLeadFormModal({
       (additionalAction === "website" || additionalAction === "file") &&
       !thankYouLink.trim()
     ) {
-      toast.error("Add a link for the additional action");
+      toast.error(t("metaCampaigns.adsToasts.needActionLink"));
       setStep("ending");
       return;
     }
     if (additionalAction === "call" && !callPhone.replace(/\D/g, "")) {
-      toast.error("Add a phone number for Call business");
+      toast.error(t("metaCampaigns.adsToasts.needCallPhone"));
       setStep("ending");
       return;
     }
@@ -274,15 +274,15 @@ export default function AdsManagerCreateLeadFormModal({
       });
       const formId = result.form?.id;
       if (!formId) {
-        toast.error("Meta did not return a form ID");
+        toast.error(t("metaCampaigns.adsToasts.noFormId"));
         return;
       }
-      toast.success("Lead form created on Meta");
+      toast.success(t("metaCampaigns.adsToasts.leadFormCreated"));
       onCreated(formId);
       onClose();
     } catch (error: unknown) {
       const err = error as { response?: { data?: { error?: string } } };
-      toast.error(err.response?.data?.error || "Failed to create lead form");
+      toast.error(err.response?.data?.error || t("metaCampaigns.adsToasts.leadFormFailed"));
     } finally {
       setBusy(false);
     }

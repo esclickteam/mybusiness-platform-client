@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { studioraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -56,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-[#c3ff00]">
         <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
         {eyebrow}
@@ -65,7 +67,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-white/55">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-white/55">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -108,7 +110,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#c3ff00] text-lg font-black text-[#0a0a0a] transition duration-300 group-hover:rotate-12">
             {getValue(data, "logoText")}
@@ -163,7 +165,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-bold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-bold transition",
                   currentPage === id ? "bg-[#c3ff00] text-[#0a0a0a]" : "text-white/70 hover:bg-white/5",
                 )}
               >
@@ -211,30 +213,28 @@ function BookingModal({
         </button>
         <div className="relative z-10">
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-[#c3ff00]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
-            בריף פרויקט
-          </p>
-          <h3 className="mt-5 text-3xl font-black uppercase text-white">בואו נבנה משהו גדול.</h3>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />{tx("בריף פרויקט")}</p>
+          <h3 className="mt-5 text-3xl font-black uppercase text-white">{tx("בואו נבנה משהו גדול.")}</h3>
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition focus:border-[#c3ff00]">
-              <option>סוג הפרויקט</option>
-              <option>מיתוג וזהות</option>
-              <option>עיצוב UI/UX</option>
-              <option>בניית אתר</option>
-              <option>קמפיין / מושן</option>
+            <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition focus:border-[#c3ff00]">
+              <option>{tx("סוג הפרויקט")}</option>
+              <option>{tx("מיתוג וזהות")}</option>
+              <option>{tx("עיצוב UI/UX")}</option>
+              <option>{tx("בניית אתר")}</option>
+              <option>{tx("קמפיין / מושן")}</option>
             </select>
             <textarea
-              className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הרעיון"
+              className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("ספרו לנו על הרעיון")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -327,7 +327,7 @@ function Marquee({ data }: { data: Record<string, any> }) {
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-center text-lg font-black uppercase tracking-tight text-[#0a0a0a]">
         {[0, 1, 2].map((i) => (
           <span key={i} className="flex items-center gap-6">
-            {text}
+            {tx(text)}
             <span className="text-2xl">✦</span>
           </span>
         ))}
@@ -367,7 +367,7 @@ function ServicesSection({
                 </span>
               </div>
               <h3 className="mt-6 text-3xl font-black uppercase text-white">{title}</h3>
-              <p className="mt-4 max-w-md text-base leading-7 text-white/55">{text}</p>
+              <p className="mt-4 max-w-md text-base leading-7 text-white/55">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -455,7 +455,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 0{index + 1}
               </span>
               <h3 className="mt-5 text-2xl font-black uppercase text-white">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-white/55">{text}</p>
+              <p className="mt-3 text-base leading-7 text-white/55">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -528,7 +528,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[28px] border border-white/8 bg-white/5 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c3ff00]/40"
             >
               <div className="mb-5 text-[#c3ff00]">★★★★★</div>
-              <p className="text-lg leading-8 text-white/80">“{text}”</p>
+              <p className="text-lg leading-8 text-white/80">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-white/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-[#c3ff00] text-sm font-black text-[#0a0a0a]">
                   {String(name).charAt(0)}
@@ -577,23 +577,23 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
-              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="תקציב משוער"
+              className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("תקציב משוער")}
              name="other" data-bizuply-form-field-id="other" />
             <textarea
-              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הפרויקט"
+              className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-start text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
+              placeholder={tx("ספרו לנו על הפרויקט")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -653,7 +653,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Studiora · Bizuply Studio</p>
+        <p>{tx("תבנית Studiora · Bizuply Studio")}</p>
       </div>
     </footer>
   );
@@ -782,7 +782,7 @@ export default function StudioraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="studiora"
       className="min-h-screen w-full overflow-x-hidden bg-[#0a0a0a] font-sans text-white"
     >

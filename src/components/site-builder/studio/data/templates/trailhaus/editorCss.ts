@@ -17,7 +17,7 @@ export const trailhausEditorCss = `
     radial-gradient(1100px 520px at 100% -10%, #16653422, transparent 55%),
     radial-gradient(900px 480px at 0% 100%, #F59E0B18, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="trailhaus"] .store-display,
 [data-template-id="trailhaus"] .store-display {

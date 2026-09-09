@@ -2,7 +2,7 @@ export const parcelEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;700&display=swap");
 
 [data-template-id="parcel"], [data-template-id="parcel"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "IBM Plex Sans Hebrew", Heebo, sans-serif;
   --tpl-bg: #efe9da; --tpl-surface: #e4dcc8; --tpl-text: #243018;
   --tpl-muted: #6e684f; --tpl-primary: #6b5a2e; --tpl-primary-text: #efe9da;

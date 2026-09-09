@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./XrayTab.css";
 
 const generalQuestions = [
@@ -29,6 +30,7 @@ const businessTypes = {
 };
 
 const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState({});
   const [businessType, setBusinessType] = useState("");
 
@@ -38,7 +40,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
 
   const handleSubmit = () => {
     if (!businessType || Object.keys(answers).length < 5) {
-      alert("Please fill in all questions and select a business type.");
+      alert(t("leftover.xray.fillAll"));
       return;
     }
     // Sends businessId and conversationId along with the answers
@@ -47,11 +49,8 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
 
   return (
     <div className="xray-tab-container">
-      <h2>Business X-Ray</h2>
-      <p>
-        Fill out a short questionnaire and we’ll help you understand your
-        business situation in terms of cash flow, sales, marketing, and management.
-      </p>
+      <h2>{t("leftover.xrayChrome.title")}</h2>
+      <p>{t("leftover.xrayChrome.intro")}</p>
 
       <form
         onSubmit={(e) => {
@@ -60,7 +59,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
         }}
         className="xray-form"
       >
-        <h3>General Questions:</h3>
+        <h3>{t("leftover.xrayChrome.generalQuestions")}</h3>
         {generalQuestions.map((q, idx) => (
           <div key={idx} className="form-group">
             <label>{q}</label>
@@ -70,7 +69,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
               required
             >
               <option value="" disabled>
-                Select Rating
+                {t("leftover.xrayChrome.selectRating")}
               </option>
               {[1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
@@ -81,7 +80,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
           </div>
         ))}
 
-        <h3>What is your business type?</h3>
+        <h3>{t("leftover.xrayChrome.businessTypeQ")}</h3>
         <div className="form-group">
           <select
             onChange={(e) => setBusinessType(e.target.value)}
@@ -89,11 +88,11 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
             required
           >
             <option value="" disabled>
-              Select Business Type
+              {t("leftover.xrayChrome.selectType")}
             </option>
             {Object.keys(businessTypes).map((type) => (
               <option key={type} value={type}>
-                {type}
+                {t(`leftover.xrayChrome.type${type === "Services" ? "Services" : type === "Commerce" ? "Commerce" : type === "Restaurant / Café" ? "Restaurant" : "Studio"}`)}
               </option>
             ))}
           </select>
@@ -101,7 +100,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
 
         {businessType && (
           <>
-            <h4>Open Questions by Business Type:</h4>
+            <h4>{t("leftover.xrayChrome.openByType")}</h4>
             {businessTypes[businessType].map((q, idx) => (
               <div key={idx} className="form-group">
                 <label>{q}</label>
@@ -115,7 +114,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
         )}
 
         <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? "Sending..." : "Submit"}
+          {loading ? t("leftover.xrayChrome.sending") : t("leftover.xrayChrome.submit")}
         </button>
       </form>
     </div>

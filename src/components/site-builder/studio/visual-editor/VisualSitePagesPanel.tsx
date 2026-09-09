@@ -50,6 +50,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import type { VisualSitePageItem } from "./SitePageCardPreview";
 import {
   applyDragToDisplayRows,
@@ -639,7 +640,7 @@ export default function VisualSitePagesPanel({
   onAddPage,
   onPageAction,
 }: VisualSitePagesPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [menuPageId, setMenuPageId] = useState("");
   const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
   const [parentPickerPageId, setParentPickerPageId] = useState("");
@@ -983,7 +984,7 @@ export default function VisualSitePagesPanel({
       ? createPortal(
           <div
             className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 p-4"
-            dir="rtl"
+            dir={getTextDirection(i18n.language)}
             onClick={() => setParentPickerPageId("")}
           >
             <div
@@ -1052,7 +1053,7 @@ export default function VisualSitePagesPanel({
       ? createPortal(
           <div
             ref={menuRef}
-            dir="rtl"
+            dir={getTextDirection(i18n.language)}
             className="fixed z-[2147483646] max-h-[min(70vh,480px)] w-[240px] overflow-y-auto rounded-xl border border-slate-200 bg-white py-1.5 shadow-[0_16px_48px_rgba(15,23,42,0.22)]"
             style={{
               top: menuPosition.top,
@@ -1110,7 +1111,7 @@ export default function VisualSitePagesPanel({
         data-visual-site-pages="true"
         data-testid="visual-pages-panel"
         className="absolute inset-y-0 right-0 z-[2147483000] flex w-[340px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-[#f4f6fb] shadow-[-22px_0_60px_rgba(15,23,42,0.14)]"
-        dir="rtl"
+        dir={getTextDirection(i18n.language)}
       >
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           <div className="mb-3 overflow-hidden rounded-[22px] border border-slate-200/80 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]">

@@ -35,6 +35,7 @@ import {
   openTaskCount,
   upcomingReminders,
 } from "../../lib/partnerWork";
+import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
 
 const PRESETS = [
   { id: "today" },
@@ -377,7 +378,7 @@ export default function PartnerDashboard() {
                             {row.contact?.phone || "—"}
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-600">
-                            {eventTypeLabel(row)}
+                            {eventTypeLabel(row, t)}
                           </td>
                           <td className="px-3 py-3.5 font-bold text-slate-600">
                             {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate, locale)}
@@ -571,7 +572,11 @@ function MyPartnerSubscriptionCard({
   t: TranslateFn;
   locale: string;
 }) {
-  const planName = subscription?.planName || partner?.plan?.nameHe || partner?.planKey || t("partner.dashboard.partnerPlan");
+  const planName =
+    partnerPlanDisplayName(t, partner?.plan) ||
+    subscription?.planName ||
+    partner?.planKey ||
+    t("partner.dashboard.partnerPlan");
   const monthly = subscription?.monthlyFeeIls ?? partner?.plan?.monthlyIls ?? null;
   const renewal = partner?.nextRenewalAt || partner?.currentPeriodEnd;
   return (

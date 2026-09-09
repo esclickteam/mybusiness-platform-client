@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -106,7 +108,7 @@ function BandHeading({
   invert?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <TemplateText
         as="p"
         editId={eyebrowKey}
@@ -179,7 +181,7 @@ function SteelHeader({
       className="sticky top-0 z-50 border-b border-white/10 bg-[#111111]/95 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-5 py-4 md:px-8">
-        <button type="button" onClick={() => navigate("home")} className="flex items-center gap-4 text-right">
+        <button type="button" onClick={() => navigate("home")} className="flex items-center gap-4 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#ff6b2c] bg-[#1a1a1a] text-sm font-black uppercase text-[#ff6b2c]">
             <TemplateText as="span" editId="logoText" editLabel="logoText">
               {getValue(data, "logoText")}
@@ -250,7 +252,7 @@ function SteelHeader({
                 type="button"
                 onClick={() => navigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-xs font-black uppercase tracking-[0.24em]",
+                  "border px-4 py-3 text-start text-xs font-black uppercase tracking-[0.24em]",
                   currentPage === id
                     ? "border-[#ff6b2c] bg-[#ff6b2c] text-[#111111]"
                     : "border-white/10 text-[#f3f0ea]",
@@ -378,7 +380,7 @@ function SteelMarquee({ data }: { data: Record<string, any> }) {
     getValue(data, "brandName"),
     getValue(data, "tagline"),
     getValue(data, "heroEyebrow"),
-    "דיוק",
+    tx("דיוק"),
     "ייצור",
     "לוגיסטיקה",
   ];
@@ -388,10 +390,10 @@ function SteelMarquee({ data }: { data: Record<string, any> }) {
       <div className="flex w-max items-center">
         {[...items, ...items].map((item, index) => (
           <span
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="steelworks-marquee-item shrink-0 border-l px-7 text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]"
           >
-            {item}
+            {tx(item)}
           </span>
         ))}
       </div>
@@ -434,9 +436,7 @@ function SteelMetricsBand({ data }: { data: Record<string, any> }) {
             >
               {getValue(data, labelKey)}
             </TemplateText>
-            <p className="mt-4 text-sm leading-7 text-[#b7b0a6]">
-              קו ייצור מתוזמן, תיאום שטח קפדני ומדידה שוטפת של כל שלב בפרויקט.
-            </p>
+            <p className="mt-4 text-sm leading-7 text-[#b7b0a6]">{tx("קו ייצור מתוזמן, תיאום שטח קפדני ומדידה שוטפת של כל שלב בפרויקט.")}</p>
           </div>
         ))}
       </div>
@@ -470,10 +470,10 @@ function SteelAboutBand({
           />
           <div className="mt-8 grid gap-3">
             {checkpoints.map((item) => (
-              <div key={item} className="grid grid-cols-[20px_1fr] items-start gap-4 border-t border-white/10 pt-4">
+              <div key={tx(item)} className="grid grid-cols-[20px_1fr] items-start gap-4 border-t border-white/10 pt-4">
                 <span className="mt-1 h-2 w-2 bg-[#ff6b2c]" />
                 <TemplateText as="p" className="text-sm leading-7 text-[#ddd4c7]">
-                  {item}
+                  {tx(item)}
                 </TemplateText>
               </div>
             ))}
@@ -541,9 +541,7 @@ function SteelServicesBand({
                 </TemplateText>
               </div>
               <div className="md:justify-self-end">
-                <SteelButton variant={index % 2 === 0 ? "accent" : "line"} onClick={() => goTo("contact")}>
-                  התחלת תהליך
-                </SteelButton>
+                <SteelButton variant={index % 2 === 0 ? "accent" : "line"} onClick={() => goTo("contact")}>{tx("התחלת תהליך")}</SteelButton>
               </div>
             </article>
           ))}
@@ -686,13 +684,9 @@ function SteelInsightsBand({
             </article>
           ))}
           <div className="border-t border-white/10 px-6 py-8 lg:border-r lg:border-t-0">
-            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">הערת תפעול</div>
-            <TemplateText as="p" className="mt-5 text-2xl font-black uppercase leading-tight text-[#f3f0ea]">
-              לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.
-            </TemplateText>
-            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#b7b0a6]">
-              תכנון מוקדם, סנכרון ממשקים ובקרת מסירה מצמצמים עיכובים ומגבירים ודאות בשטח.
-            </TemplateText>
+            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">{tx("הערת תפעול")}</div>
+            <TemplateText as="p" className="mt-5 text-2xl font-black uppercase leading-tight text-[#f3f0ea]">{tx("לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.")}</TemplateText>
+            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#b7b0a6]">{tx("תכנון מוקדם, סנכרון ממשקים ובקרת מסירה מצמצמים עיכובים ומגבירים ודאות בשטח.")}</TemplateText>
             <div className="mt-8">
               <SteelButton variant="accent" onClick={() => goTo("insights")}>
                 <TemplateText as="span" editId="navInsights" editLabel="navInsights">
@@ -746,22 +740,22 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="שם מלא"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="טלפון"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
-            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="אימייל"
+            className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            placeholder={tx("אימייל")}
            name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <textarea
-            className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="ספרו לנו על הפרויקט"
+            className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-start text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
+            placeholder={tx("ספרו לנו על הפרויקט")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <SteelButton className="w-full justify-center">
             <TemplateText as="span" editId="contactButton" editLabel="contactButton">
@@ -980,7 +974,7 @@ export default function SteelworksPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="steelworks"
       className="min-h-screen w-full overflow-x-hidden bg-[#1a1a1a] text-[#f3f0ea]"
       style={{ fontFamily: '"Inter", "Arial", sans-serif' }}

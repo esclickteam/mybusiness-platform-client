@@ -1,0 +1,1598 @@
+{
+  "צמיחה": {
+    "en": "Growth",
+    "es": "Crecimiento",
+    "pt-BR": "Crescimento",
+    "ar": "نمو"
+  },
+  "דירוג": {
+    "en": "Rating",
+    "es": "Valoración",
+    "pt-BR": "Avaliação",
+    "ar": "تقييم"
+  },
+  "ימים": {
+    "en": "Days",
+    "es": "Días",
+    "pt-BR": "Dias",
+    "ar": "أيام"
+  },
+  "רקע": {
+    "en": "Background",
+    "es": "Fondo",
+    "pt-BR": "Fundo",
+    "ar": "خلفية"
+  },
+  "צוות": {
+    "en": "Team",
+    "es": "Equipo",
+    "pt-BR": "Equipe",
+    "ar": "فريق"
+  },
+  "קורות חיים": {
+    "en": "Resume",
+    "es": "Currículum",
+    "pt-BR": "Currículo",
+    "ar": "سيرة ذاتية"
+  },
+  "נחיתה": {
+    "en": "Landing",
+    "es": "Aterrizaje",
+    "pt-BR": "Landing",
+    "ar": "هبوط"
+  },
+  "ראשי": {
+    "en": "Main",
+    "es": "Principal",
+    "pt-BR": "Principal",
+    "ar": "رئيسي"
+  },
+  "כרטיס": {
+    "en": "Card",
+    "es": "Tarjeta",
+    "pt-BR": "Cartão",
+    "ar": "بطاقة"
+  },
+  "עיצוב": {
+    "en": "Design",
+    "es": "Diseño",
+    "pt-BR": "Design",
+    "ar": "تصميم"
+  },
+  "בחירה": {
+    "en": "Choice",
+    "es": "Elección",
+    "pt-BR": "Escolha",
+    "ar": "اختيار"
+  },
+  "תמונה": {
+    "en": "Image",
+    "es": "Imagen",
+    "pt-BR": "Imagem",
+    "ar": "صورة"
+  },
+  "תמיכה": {
+    "en": "Support",
+    "es": "Soporte",
+    "pt-BR": "Suporte",
+    "ar": "دعم"
+  },
+  "אחרי התחברות": {
+    "en": "After login",
+    "es": "Después de iniciar sesión",
+    "pt-BR": "Após o login",
+    "ar": "بعد تسجيل الدخول"
+  },
+  "הרשמה": {
+    "en": "Sign up",
+    "es": "Registro",
+    "pt-BR": "Cadastro",
+    "ar": "تسجيل"
+  },
+  "טופס": {
+    "en": "Form",
+    "es": "Formulario",
+    "pt-BR": "Formulário",
+    "ar": "نموذج"
+  },
+  "פיתוח": {
+    "en": "Development",
+    "es": "Desarrollo",
+    "pt-BR": "Desenvolvimento",
+    "ar": "تطوير"
+  },
+  "© כל הזכויות שמורות": {
+    "en": "© All rights reserved",
+    "es": "© Todos los derechos reservados",
+    "pt-BR": "© Todos os direitos reservados",
+    "ar": "© كل الحقوق محفوظة"
+  },
+  "עגלת קניות": {
+    "en": "Shopping cart",
+    "es": "Carrito de compras",
+    "pt-BR": "Carrinho de compras",
+    "ar": "عربة التسوق"
+  },
+  "המותג שלי": {
+    "en": "My brand",
+    "es": "Mi marca",
+    "pt-BR": "Minha marca",
+    "ar": "علامتي"
+  },
+  "לפרטים": {
+    "en": "Details",
+    "es": "Detalles",
+    "pt-BR": "Detalhes",
+    "ar": "للتفاصيل"
+  },
+  "תכנית מעקב": {
+    "en": "Follow-up plan",
+    "es": "Plan de seguimiento",
+    "pt-BR": "Plano de acompanhamento",
+    "ar": "خطة متابعة"
+  },
+  "אתר": {
+    "en": "Website",
+    "es": "Sitio",
+    "pt-BR": "Site",
+    "ar": "موقع"
+  },
+  "חודשי": {
+    "en": "Monthly",
+    "es": "Mensual",
+    "pt-BR": "Mensal",
+    "ar": "شهري"
+  },
+  "תורים": {
+    "en": "Appointments",
+    "es": "Citas",
+    "pt-BR": "Horários",
+    "ar": "مواعيد"
+  },
+  "אזור אישי": {
+    "en": "Personal area",
+    "es": "Área personal",
+    "pt-BR": "Área pessoal",
+    "ar": "المنطقة الشخصية"
+  },
+  "טופס הרשמה": {
+    "en": "Sign-up form",
+    "es": "Formulario de registro",
+    "pt-BR": "Formulário de cadastro",
+    "ar": "نموذج تسجيل"
+  },
+  "טופס התחברות": {
+    "en": "Login form",
+    "es": "Formulario de acceso",
+    "pt-BR": "Formulário de login",
+    "ar": "نموذج الدخول"
+  },
+  "יומן אוטומטי בלי חיכוך.": {
+    "en": "An automatic calendar without friction.",
+    "es": "Una agenda automática sin fricción.",
+    "pt-BR": "Uma agenda automática sem atrito.",
+    "ar": "تقويم تلقائي بلا احتكاك."
+  },
+  "יותר לידים": {
+    "en": "More leads",
+    "es": "Más leads",
+    "pt-BR": "Mais leads",
+    "ar": "مزيد من العملاء المحتملين"
+  },
+  "ימים להשקה": {
+    "en": "Days to launch",
+    "es": "Días para el lanzamiento",
+    "pt-BR": "Dias para o lançamento",
+    "ar": "أيام حتى الإطلاق"
+  },
+  "כפתור": {
+    "en": "Button",
+    "es": "Botón",
+    "pt-BR": "Botão",
+    "ar": "زر"
+  },
+  "לידים ולקוחות במקום אחד.": {
+    "en": "Leads and customers in one place.",
+    "es": "Leads y clientes en un solo lugar.",
+    "pt-BR": "Leads e clientes num só lugar.",
+    "ar": "عملاء محتملون وزبائن في مكان واحد."
+  },
+  "ליווי צמוד.": {
+    "en": "Close support.",
+    "es": "Acompañamiento cercano.",
+    "pt-BR": "Acompanhamento próximo.",
+    "ar": "مرافقة لصيقة."
+  },
+  "לקוחות": {
+    "en": "Customers",
+    "es": "Clientes",
+    "pt-BR": "Clientes",
+    "ar": "عملاء"
+  },
+  "מהיר": {
+    "en": "Fast",
+    "es": "Rápido",
+    "pt-BR": "Rápido",
+    "ar": "سريع"
+  },
+  "מייל": {
+    "en": "Email",
+    "es": "Email",
+    "pt-BR": "E-mail",
+    "ar": "بريد"
+  },
+  "מיישמים.": {
+    "en": "We put it into practice.",
+    "es": "Lo aplicamos.",
+    "pt-BR": "Colocamos em prática.",
+    "ar": "نطبّق ذلك."
+  },
+  "משקל": {
+    "en": "Weight",
+    "es": "Peso",
+    "pt-BR": "Peso",
+    "ar": "وزن"
+  },
+  "נוכחות שממירה מבקרים.": {
+    "en": "A presence that converts visitors.",
+    "es": "Una presencia que convierte visitantes.",
+    "pt-BR": "Uma presença que converte visitantes.",
+    "ar": "حضور يحوّل الزوار."
+  },
+  "נרשמים": {
+    "en": "Sign-ups",
+    "es": "Inscritos",
+    "pt-BR": "Inscritos",
+    "ar": "مسجّلون"
+  },
+  "סיכום": {
+    "en": "Summary",
+    "es": "Resumen",
+    "pt-BR": "Resumo",
+    "ar": "ملخص"
+  },
+  "פרויקטים": {
+    "en": "Projects",
+    "es": "Proyectos",
+    "pt-BR": "Projetos",
+    "ar": "مشاريع"
+  },
+  "פרטים": {
+    "en": "Details",
+    "es": "Detalles",
+    "pt-BR": "Detalhes",
+    "ar": "تفاصيل"
+  },
+  "קידום.": {
+    "en": "Promotion.",
+    "es": "Promoción.",
+    "pt-BR": "Promoção.",
+    "ar": "ترويج."
+  },
+  "רשימת הזמנות": {
+    "en": "Order list",
+    "es": "Lista de pedidos",
+    "pt-BR": "Lista de pedidos",
+    "ar": "قائمة الطلبات"
+  },
+  "שכבה": {
+    "en": "Layer",
+    "es": "Capa",
+    "pt-BR": "Camada",
+    "ar": "طبقة"
+  },
+  "CRM חכם": {
+    "en": "Smart CRM",
+    "es": "CRM inteligente",
+    "pt-BR": "CRM inteligente",
+    "ar": "نظام إدارة ذكي"
+  },
+  "מוכנים להתחיל?": {
+    "en": "Ready to start?",
+    "es": "¿Listos para empezar?",
+    "pt-BR": "Prontos para começar?",
+    "ar": "جاهزون للبدء؟"
+  },
+  "עזרה": {
+    "en": "Help",
+    "es": "Ayuda",
+    "pt-BR": "Ajuda",
+    "ar": "مساعدة"
+  },
+  "תשלום": {
+    "en": "Payment",
+    "es": "Pago",
+    "pt-BR": "Pagamento",
+    "ar": "دفع"
+  },
+  "הזמנות": {
+    "en": "Orders",
+    "es": "Pedidos",
+    "pt-BR": "Pedidos",
+    "ar": "طلبات"
+  },
+  "היום": {
+    "en": "Today",
+    "es": "Hoy",
+    "pt-BR": "Hoje",
+    "ar": "اليوم"
+  },
+  "הנהלה": {
+    "en": "Management",
+    "es": "Dirección",
+    "pt-BR": "Gestão",
+    "ar": "إدارة"
+  },
+  "חבילות": {
+    "en": "Packages",
+    "es": "Paquetes",
+    "pt-BR": "Pacotes",
+    "ar": "باقات"
+  },
+  "חיפוש": {
+    "en": "Search",
+    "es": "Buscar",
+    "pt-BR": "Busca",
+    "ar": "بحث"
+  },
+  "יתרה": {
+    "en": "Balance",
+    "es": "Saldo",
+    "pt-BR": "Saldo",
+    "ar": "رصيد"
+  },
+  "מכירות": {
+    "en": "Sales",
+    "es": "Ventas",
+    "pt-BR": "Vendas",
+    "ar": "مبيعات"
+  },
+  "משלוח": {
+    "en": "Shipping",
+    "es": "Envío",
+    "pt-BR": "Entrega",
+    "ar": "شحن"
+  },
+  "ניסיון": {
+    "en": "Experience",
+    "es": "Experiencia",
+    "pt-BR": "Experiência",
+    "ar": "خبرة"
+  },
+  "סדנה": {
+    "en": "Workshop",
+    "es": "Taller",
+    "pt-BR": "Oficina",
+    "ar": "ورشة"
+  },
+  "פרופיל": {
+    "en": "Profile",
+    "es": "Perfil",
+    "pt-BR": "Perfil",
+    "ar": "ملف"
+  },
+  "פרימיום": {
+    "en": "Premium",
+    "es": "Premium",
+    "pt-BR": "Premium",
+    "ar": "مميز"
+  },
+  "צרו קשר": {
+    "en": "Contact us",
+    "es": "Contactadnos",
+    "pt-BR": "Fale conosco",
+    "ar": "تواصلوا معنا"
+  },
+  "שאלה": {
+    "en": "Question",
+    "es": "Pregunta",
+    "pt-BR": "Pergunta",
+    "ar": "سؤال"
+  },
+  "איך מתחילים?": {
+    "en": "How do we start?",
+    "es": "¿Cómo empezamos?",
+    "pt-BR": "Como começamos?",
+    "ar": "كيف نبدأ؟"
+  },
+  "המלצה": {
+    "en": "Recommendation",
+    "es": "Recomendación",
+    "pt-BR": "Recomendação",
+    "ar": "توصية"
+  },
+  "הסיפור שלנו": {
+    "en": "Our story",
+    "es": "Nuestra historia",
+    "pt-BR": "A nossa história",
+    "ar": "قصتنا"
+  },
+  "התחברות": {
+    "en": "Login",
+    "es": "Acceso",
+    "pt-BR": "Login",
+    "ar": "تسجيل الدخول"
+  },
+  "יתרונות": {
+    "en": "Benefits",
+    "es": "Ventajas",
+    "pt-BR": "Vantagens",
+    "ar": "مزايا"
+  },
+  "כנס": {
+    "en": "Conference",
+    "es": "Congreso",
+    "pt-BR": "Conferência",
+    "ar": "مؤتمر"
+  },
+  "כתיבה": {
+    "en": "Writing",
+    "es": "Escritura",
+    "pt-BR": "Escrita",
+    "ar": "كتابة"
+  },
+  "מדדים": {
+    "en": "Metrics",
+    "es": "Métricas",
+    "pt-BR": "Métricas",
+    "ar": "مؤشرات"
+  },
+  "מתנה": {
+    "en": "Gift",
+    "es": "Regalo",
+    "pt-BR": "Presente",
+    "ar": "هدية"
+  },
+  "ניוזלטר": {
+    "en": "Newsletter",
+    "es": "Boletín",
+    "pt-BR": "Newsletter",
+    "ar": "نشرة"
+  },
+  "עדכון": {
+    "en": "Update",
+    "es": "Actualización",
+    "pt-BR": "Atualização",
+    "ar": "تحديث"
+  },
+  "אחריות": {
+    "en": "Responsibility",
+    "es": "Responsabilidad",
+    "pt-BR": "Responsabilidade",
+    "ar": "مسؤولية"
+  },
+  "גלו עוד": {
+    "en": "Discover more",
+    "es": "Descubrid más",
+    "pt-BR": "Descubram mais",
+    "ar": "اكتشفوا المزيد"
+  },
+  "הובלה": {
+    "en": "Delivery",
+    "es": "Transporte",
+    "pt-BR": "Transporte",
+    "ar": "نقل"
+  },
+  "תיאור קצר": {
+    "en": "Short description",
+    "es": "Descripción breve",
+    "pt-BR": "Descrição curta",
+    "ar": "وصف قصير"
+  },
+  "תיאור קצר לאורך": {
+    "en": "A short description in a column",
+    "es": "Una descripción breve en columna",
+    "pt-BR": "Uma descrição curta em coluna",
+    "ar": "وصف قصير عمودي"
+  },
+  "תיאור לרוחב": {
+    "en": "A short description in a row",
+    "es": "Una descripción breve en fila",
+    "pt-BR": "Uma descrição curta em linha",
+    "ar": "وصف قصير أفقي"
+  },
+  "תיאור": {
+    "en": "Description",
+    "es": "Descripción",
+    "pt-BR": "Descrição",
+    "ar": "وصف"
+  },
+  "שאלה נפוצה?": {
+    "en": "A common question?",
+    "es": "¿Una pregunta frecuente?",
+    "pt-BR": "Uma pergunta frequente?",
+    "ar": "سؤال شائع؟"
+  },
+  "תשובה קצרה כאן": {
+    "en": "A short answer here",
+    "es": "Una respuesta breve aquí",
+    "pt-BR": "Uma resposta curta aqui",
+    "ar": "إجابة قصيرة هنا"
+  },
+  "פריט": {
+    "en": "Item",
+    "es": "Artículo",
+    "pt-BR": "Item",
+    "ar": "عنصر"
+  },
+  "עמודה": {
+    "en": "Column",
+    "es": "Columna",
+    "pt-BR": "Coluna",
+    "ar": "عمود"
+  },
+  "מחיר": {
+    "en": "Price",
+    "es": "Precio",
+    "pt-BR": "Preço",
+    "ar": "سعر"
+  },
+  "שירות א׳": {
+    "en": "Service A",
+    "es": "Servicio A",
+    "pt-BR": "Serviço A",
+    "ar": "الخدمة أ"
+  },
+  "שירות ב׳": {
+    "en": "Service B",
+    "es": "Servicio B",
+    "pt-BR": "Serviço B",
+    "ar": "الخدمة ب"
+  },
+  "שירות ג׳": {
+    "en": "Service C",
+    "es": "Servicio C",
+    "pt-BR": "Serviço C",
+    "ar": "الخدمة ج"
+  },
+  "תיאור קצר של השירות": {
+    "en": "A short description of the service",
+    "es": "Una descripción breve del servicio",
+    "pt-BR": "Uma descrição curta do serviço",
+    "ar": "وصف قصير للخدمة"
+  },
+  "טבלת מחירים": {
+    "en": "Price table",
+    "es": "Tabla de precios",
+    "pt-BR": "Tabela de preços",
+    "ar": "جدول أسعار"
+  },
+  "טבלה פשוטה": {
+    "en": "Simple table",
+    "es": "Tabla simple",
+    "pt-BR": "Tabela simples",
+    "ar": "جدول بسيط"
+  },
+  "טבלה": {
+    "en": "Table",
+    "es": "Tabla",
+    "pt-BR": "Tabela",
+    "ar": "جدول"
+  },
+  "טבלה ניתנת לעריכה עם כותרות ושורות": {
+    "en": "An editable table with headings and rows",
+    "es": "Una tabla editable con títulos y filas",
+    "pt-BR": "Uma tabela editável com títulos e linhas",
+    "ar": "جدول قابل للتحرير بعناوين وصفوف"
+  },
+  "טבלת נתונים נקייה עם 3 עמודות": {
+    "en": "A clean data table with 3 columns",
+    "es": "Una tabla limpia con 3 columnas",
+    "pt-BR": "Uma tabela limpa com 3 colunas",
+    "ar": "جدول بيانات نظيف بثلاثة أعمدة"
+  },
+  "פתרונות מדויקים שמקדמים את העסק": {
+    "en": "Precise solutions that move the business forward",
+    "es": "Soluciones precisas que impulsan el negocio",
+    "pt-BR": "Soluções precisas que avançam o negócio",
+    "ar": "حلول دقيقة تقدّم العمل"
+  },
+  "“שירות מעולה ומקצועי.”": {
+    "en": "“Excellent, professional service.”",
+    "es": "“Un servicio excelente y profesional.”",
+    "pt-BR": "“Serviço excelente e profissional.”",
+    "ar": "«خدمة ممتازة ومهنية.»"
+  },
+  "מסגרת": {
+    "en": "Frame",
+    "es": "Marco",
+    "pt-BR": "Moldura",
+    "ar": "إطار"
+  },
+  "איסוף עצמי": {
+    "en": "Pickup",
+    "es": "Recogida",
+    "pt-BR": "Retirada",
+    "ar": "استلام ذاتي"
+  },
+  "מוצרים מתוסף החנות": {
+    "en": "Products from the store add-on",
+    "es": "Productos del complemento de tienda",
+    "pt-BR": "Produtos do extra da loja",
+    "ar": "منتجات من إضافة المتجر"
+  },
+  "משלוח מהיר לכל הארץ": {
+    "en": "Fast shipping nationwide",
+    "es": "Envío rápido a todo el país",
+    "pt-BR": "Entrega rápida para todo o país",
+    "ar": "شحن سريع لكل البلاد"
+  },
+  "אפשרות למשלוח עד הבית.": {
+    "en": "Home delivery available.",
+    "es": "Envío a domicilio disponible.",
+    "pt-BR": "Entrega em casa disponível.",
+    "ar": "إمكانية التوصيل حتى البيت."
+  },
+  "תשלום נוח ובטוח.": {
+    "en": "Convenient and secure payment.",
+    "es": "Pago cómodo y seguro.",
+    "pt-BR": "Pagamento cómodo e seguro.",
+    "ar": "دفع مريح وآمن."
+  },
+  "מגיע עד הלקוח.": {
+    "en": "It reaches the customer.",
+    "es": "Llega hasta el cliente.",
+    "pt-BR": "Chega até o cliente.",
+    "ar": "يصل حتى الزبون."
+  },
+  "רכישה נוחה ובטוחה.": {
+    "en": "A convenient and secure purchase.",
+    "es": "Una compra cómoda y segura.",
+    "pt-BR": "Uma compra cómoda e segura.",
+    "ar": "شراء مريح وآمن."
+  },
+  "תשלום מאובטח": {
+    "en": "Secure payment",
+    "es": "Pago seguro",
+    "pt-BR": "Pagamento seguro",
+    "ar": "دفع آمن"
+  },
+  "הסל שלכם": {
+    "en": "Your cart",
+    "es": "Tu carrito",
+    "pt-BR": "Seu carrinho",
+    "ar": "سلتك"
+  },
+  "משלוח מהיר": {
+    "en": "Fast shipping",
+    "es": "Envío rápido",
+    "pt-BR": "Entrega rápida",
+    "ar": "شحن سريع"
+  },
+  "שכחתי סיסמה": {
+    "en": "Forgot password",
+    "es": "Olvidé la contraseña",
+    "pt-BR": "Esqueci a senha",
+    "ar": "نسيت كلمة المرور"
+  },
+  "סיסמה חדשה": {
+    "en": "New password",
+    "es": "Nueva contraseña",
+    "pt-BR": "Nova senha",
+    "ar": "كلمة مرور جديدة"
+  },
+  "נתונים אישיים": {
+    "en": "Personal details",
+    "es": "Datos personales",
+    "pt-BR": "Dados pessoais",
+    "ar": "بيانات شخصية"
+  },
+  "נתונים משתנים": {
+    "en": "Custom fields",
+    "es": "Datos variables",
+    "pt-BR": "Dados variáveis",
+    "ar": "بيانات متغيرة"
+  },
+  "תוכנית טיפול": {
+    "en": "Treatment plan",
+    "es": "Plan de tratamiento",
+    "pt-BR": "Plano de tratamento",
+    "ar": "خطة علاج"
+  },
+  "חבילות ותשלום": {
+    "en": "Packages and payment",
+    "es": "Paquetes y pago",
+    "pt-BR": "Pacotes e pagamento",
+    "ar": "باقات ودفع"
+  },
+  "הכול": {
+    "en": "All",
+    "es": "Todo",
+    "pt-BR": "Tudo",
+    "ar": "الكل"
+  },
+  "עגלה": {
+    "en": "Cart",
+    "es": "Carrito",
+    "pt-BR": "Carrinho",
+    "ar": "سلة"
+  },
+  "קורסים": {
+    "en": "Courses",
+    "es": "Cursos",
+    "pt-BR": "Cursos",
+    "ar": "دورات"
+  },
+  "דף הבית": {
+    "en": "Home page",
+    "es": "Página de inicio",
+    "pt-BR": "Página inicial",
+    "ar": "الصفحة الرئيسية"
+  },
+  "פתיחה מפוצלת": {
+    "en": "Split opening",
+    "es": "Apertura partida",
+    "pt-BR": "Abertura partida",
+    "ar": "افتتاح مقسوم"
+  },
+  "כרטיסי ערך": {
+    "en": "Value cards",
+    "es": "Tarjetas de valor",
+    "pt-BR": "Cartões de valor",
+    "ar": "بطاقات قيمة"
+  },
+  "תהליך": {
+    "en": "Process",
+    "es": "Proceso",
+    "pt-BR": "Processo",
+    "ar": "عملية"
+  },
+  "מספרים": {
+    "en": "Numbers",
+    "es": "Números",
+    "pt-BR": "Números",
+    "ar": "أرقام"
+  },
+  "כהה קולנועי": {
+    "en": "Cinematic dark",
+    "es": "Oscuro cinematográfico",
+    "pt-BR": "Escuro cinematográfico",
+    "ar": "داكن سينمائي"
+  },
+  "לייפסטייל": {
+    "en": "Lifestyle",
+    "es": "Estilo de vida",
+    "pt-BR": "Estilo de vida",
+    "ar": "أسلوب حياة"
+  },
+  "רשימה ומדיה": {
+    "en": "List and media",
+    "es": "Lista y medios",
+    "pt-BR": "Lista e média",
+    "ar": "قائمة ووسائط"
+  },
+  "המרה": {
+    "en": "Conversion",
+    "es": "Conversión",
+    "pt-BR": "Conversão",
+    "ar": "تحويل"
+  },
+  "פרופיל עסקי": {
+    "en": "Business profile",
+    "es": "Perfil de negocio",
+    "pt-BR": "Perfil de negócio",
+    "ar": "ملف أعمال"
+  },
+  "הסטודיו": {
+    "en": "The studio",
+    "es": "El estudio",
+    "pt-BR": "O estúdio",
+    "ar": "الاستوديو"
+  },
+  "חברי צוות": {
+    "en": "Team members",
+    "es": "Miembros del equipo",
+    "pt-BR": "Membros da equipe",
+    "ar": "أعضاء الفريق"
+  },
+  "משרות פתוחות": {
+    "en": "Open roles",
+    "es": "Vacantes",
+    "pt-BR": "Vagas abertas",
+    "ar": "وظائف مفتوحة"
+  },
+  "משימה וערכים": {
+    "en": "Mission and values",
+    "es": "Misión y valores",
+    "pt-BR": "Missão e valores",
+    "ar": "مهمة وقيم"
+  },
+  "סיפור ויזואלי": {
+    "en": "Visual story",
+    "es": "Historia visual",
+    "pt-BR": "História visual",
+    "ar": "قصة بصرية"
+  },
+  "פרופיל מקצועי": {
+    "en": "Professional profile",
+    "es": "Perfil profesional",
+    "pt-BR": "Perfil profissional",
+    "ar": "ملف مهني"
+  },
+  "המקום": {
+    "en": "The place",
+    "es": "El lugar",
+    "pt-BR": "O lugar",
+    "ar": "المكان"
+  },
+  "נרטיב מלא": {
+    "en": "Full narrative",
+    "es": "Narrativa completa",
+    "pt-BR": "Narrativa completa",
+    "ar": "سرد كامل"
+  },
+  "מפוצל": {
+    "en": "Split",
+    "es": "Partido",
+    "pt-BR": "Partido",
+    "ar": "مقسوم"
+  },
+  "מפוצלת": {
+    "en": "Split",
+    "es": "Partida",
+    "pt-BR": "Partida",
+    "ar": "مقسومة"
+  },
+  "מרכזי": {
+    "en": "Centered",
+    "es": "Centrado",
+    "pt-BR": "Centrado",
+    "ar": "وسطي"
+  },
+  "מרכזית": {
+    "en": "Centered",
+    "es": "Centrada",
+    "pt-BR": "Centrada",
+    "ar": "وسطية"
+  },
+  "כהה": {
+    "en": "Dark",
+    "es": "Oscuro",
+    "pt-BR": "Escuro",
+    "ar": "داكن"
+  },
+  "רך": {
+    "en": "Soft",
+    "es": "Suave",
+    "pt-BR": "Suave",
+    "ar": "ناعم"
+  },
+  "רכה": {
+    "en": "Soft",
+    "es": "Suave",
+    "pt-BR": "Suave",
+    "ar": "ناعمة"
+  },
+  "רשימה": {
+    "en": "List",
+    "es": "Lista",
+    "pt-BR": "Lista",
+    "ar": "قائمة"
+  },
+  "רשת": {
+    "en": "Grid",
+    "es": "Rejilla",
+    "pt-BR": "Grade",
+    "ar": "شبكة"
+  },
+  "פנייה": {
+    "en": "Inquiry",
+    "es": "Consulta",
+    "pt-BR": "Contacto",
+    "ar": "طلب"
+  },
+  "תוצאות": {
+    "en": "Results",
+    "es": "Resultados",
+    "pt-BR": "Resultados",
+    "ar": "نتائج"
+  },
+  "ערוצים": {
+    "en": "Channels",
+    "es": "Canales",
+    "pt-BR": "Canais",
+    "ar": "قنوات"
+  },
+  "אמון": {
+    "en": "Trust",
+    "es": "Confianza",
+    "pt-BR": "Confiança",
+    "ar": "ثقة"
+  },
+  "חם": {
+    "en": "Warm",
+    "es": "Cálido",
+    "pt-BR": "Quente",
+    "ar": "دافئ"
+  },
+  "מיקום": {
+    "en": "Location",
+    "es": "Ubicación",
+    "pt-BR": "Localização",
+    "ar": "موقع"
+  },
+  "מסע": {
+    "en": "Journey",
+    "es": "Viaje",
+    "pt-BR": "Percurso",
+    "ar": "رحلة"
+  },
+  "ביצועים": {
+    "en": "Performance",
+    "es": "Rendimiento",
+    "pt-BR": "Desempenho",
+    "ar": "أداء"
+  },
+  "הישגים": {
+    "en": "Achievements",
+    "es": "Logros",
+    "pt-BR": "Conquistas",
+    "ar": "إنجازات"
+  },
+  "קולאז׳": {
+    "en": "Collage",
+    "es": "Collage",
+    "pt-BR": "Colagem",
+    "ar": "كولاج"
+  },
+  "ציר": {
+    "en": "Timeline",
+    "es": "Eje",
+    "pt-BR": "Eixo",
+    "ar": "محور"
+  },
+  "הוכחות": {
+    "en": "Proof",
+    "es": "Pruebas",
+    "pt-BR": "Provas",
+    "ar": "إثباتات"
+  },
+  "שלבים": {
+    "en": "Steps",
+    "es": "Pasos",
+    "pt-BR": "Etapas",
+    "ar": "خطوات"
+  },
+  "תכולה": {
+    "en": "What's included",
+    "es": "Qué incluye",
+    "pt-BR": "O que inclui",
+    "ar": "المحتوى"
+  },
+  "הצעה": {
+    "en": "Offer",
+    "es": "Oferta",
+    "pt-BR": "Oferta",
+    "ar": "عرض"
+  },
+  "השוואה": {
+    "en": "Comparison",
+    "es": "Comparación",
+    "pt-BR": "Comparação",
+    "ar": "مقارنة"
+  },
+  "גיוס": {
+    "en": "Hiring",
+    "es": "Reclutamiento",
+    "pt-BR": "Recrutamento",
+    "ar": "توظيف"
+  },
+  "תפקידים": {
+    "en": "Roles",
+    "es": "Roles",
+    "pt-BR": "Funções",
+    "ar": "أدوار"
+  },
+  "תרבות": {
+    "en": "Culture",
+    "es": "Cultura",
+    "pt-BR": "Cultura",
+    "ar": "ثقافة"
+  },
+  "ארכיון": {
+    "en": "Archive",
+    "es": "Archivo",
+    "pt-BR": "Arquivo",
+    "ar": "أرشيف"
+  },
+  "טרנדים": {
+    "en": "Trends",
+    "es": "Tendencias",
+    "pt-BR": "Tendências",
+    "ar": "اتجاهات"
+  },
+  "סדרה": {
+    "en": "Series",
+    "es": "Serie",
+    "pt-BR": "Série",
+    "ar": "سلسلة"
+  },
+  "דירוגים": {
+    "en": "Ratings",
+    "es": "Puntuaciones",
+    "pt-BR": "Notas",
+    "ar": "تقييمات"
+  },
+  "קיר": {
+    "en": "Wall",
+    "es": "Muro",
+    "pt-BR": "Mural",
+    "ar": "جدار"
+  },
+  "לו״ז": {
+    "en": "Schedule",
+    "es": "Agenda",
+    "pt-BR": "Agenda",
+    "ar": "جدول"
+  },
+  "לוח": {
+    "en": "Board",
+    "es": "Tablero",
+    "pt-BR": "Quadro",
+    "ar": "لوحة"
+  },
+  "ליינאפ": {
+    "en": "Lineup",
+    "es": "Cartelera",
+    "pt-BR": "Programação",
+    "ar": "تشكيلة"
+  },
+  "קהילה": {
+    "en": "Community",
+    "es": "Comunidad",
+    "pt-BR": "Comunidade",
+    "ar": "مجتمع"
+  },
+  "נושאים": {
+    "en": "Topics",
+    "es": "Temas",
+    "pt-BR": "Temas",
+    "ar": "مواضيع"
+  },
+  "שם המותג": {
+    "en": "Brand name",
+    "es": "Nombre de marca",
+    "pt-BR": "Nome da marca",
+    "ar": "اسم العلامة"
+  },
+  "תמונת הירו": {
+    "en": "Hero image",
+    "es": "Imagen del hero",
+    "pt-BR": "Imagem do hero",
+    "ar": "صورة الواجهة"
+  },
+  "כותרת הירו": {
+    "en": "Hero title",
+    "es": "Título del hero",
+    "pt-BR": "Título do hero",
+    "ar": "عنوان الواجهة"
+  },
+  "כותרת יצירת קשר": {
+    "en": "Contact title",
+    "es": "Título de contacto",
+    "pt-BR": "Título de contato",
+    "ar": "عنوان التواصل"
+  },
+  "כותרת אודות": {
+    "en": "About title",
+    "es": "Título de nosotros",
+    "pt-BR": "Título sobre",
+    "ar": "عنوان من نحن"
+  },
+  "כפתור ראשי": {
+    "en": "Primary button",
+    "es": "Botón principal",
+    "pt-BR": "Botão principal",
+    "ar": "الزر الرئيسي"
+  },
+  "כותרת שירותים": {
+    "en": "Services title",
+    "es": "Título de servicios",
+    "pt-BR": "Título de serviços",
+    "ar": "عنوان الخدمات"
+  },
+  "טקסט הירו": {
+    "en": "Hero text",
+    "es": "Texto del hero",
+    "pt-BR": "Texto do hero",
+    "ar": "نص الواجهة"
+  },
+  "תת כותרת": {
+    "en": "Subtitle",
+    "es": "Subtítulo",
+    "pt-BR": "Subtítulo",
+    "ar": "عنوان فرعي"
+  },
+  "תת-כותרת": {
+    "en": "Subtitle",
+    "es": "Subtítulo",
+    "pt-BR": "Subtítulo",
+    "ar": "عنوان فرعي"
+  },
+  "כותרת CTA": {
+    "en": "CTA title",
+    "es": "Título CTA",
+    "pt-BR": "Título CTA",
+    "ar": "عنوان الدعوة"
+  },
+  "טקסט כפתור": {
+    "en": "Button text",
+    "es": "Texto del botón",
+    "pt-BR": "Texto do botão",
+    "ar": "نص الزر"
+  },
+  "כותרת גלריה": {
+    "en": "Gallery title",
+    "es": "Título de galería",
+    "pt-BR": "Título da galeria",
+    "ar": "عنوان المعرض"
+  },
+  "כותרת צוות": {
+    "en": "Team title",
+    "es": "Título del equipo",
+    "pt-BR": "Título da equipe",
+    "ar": "عنوان الفريق"
+  },
+  "כפתור משני": {
+    "en": "Secondary button",
+    "es": "Botón secundario",
+    "pt-BR": "Botão secundário",
+    "ar": "الزر الثانوي"
+  },
+  "תמונת אודות": {
+    "en": "About image",
+    "es": "Imagen de nosotros",
+    "pt-BR": "Imagem sobre",
+    "ar": "صورة من نحن"
+  },
+  "כותרת תהליך": {
+    "en": "Process title",
+    "es": "Título del proceso",
+    "pt-BR": "Título do processo",
+    "ar": "عنوان العملية"
+  },
+  "טקסט CTA": {
+    "en": "CTA text",
+    "es": "Texto CTA",
+    "pt-BR": "Texto CTA",
+    "ar": "نص الدعوة"
+  },
+  "כותרת חנות": {
+    "en": "Store title",
+    "es": "Título de tienda",
+    "pt-BR": "Título da loja",
+    "ar": "عنوان المتجر"
+  },
+  "טקסט אודות": {
+    "en": "About text",
+    "es": "Texto de nosotros",
+    "pt-BR": "Texto sobre",
+    "ar": "نص من نحن"
+  },
+  "טקסט טיפול 1": {
+    "en": "Treatment text 1",
+    "es": "Texto de tratamiento 1",
+    "pt-BR": "Texto do tratamento 1",
+    "ar": "نص العلاج 1"
+  },
+  "טקסט טיפול 2": {
+    "en": "Treatment text 2",
+    "es": "Texto de tratamiento 2",
+    "pt-BR": "Texto do tratamento 2",
+    "ar": "نص العلاج 2"
+  },
+  "טקסט טיפול 3": {
+    "en": "Treatment text 3",
+    "es": "Texto de tratamiento 3",
+    "pt-BR": "Texto do tratamento 3",
+    "ar": "نص العلاج 3"
+  },
+  "טקסט טיפול 4": {
+    "en": "Treatment text 4",
+    "es": "Texto de tratamiento 4",
+    "pt-BR": "Texto do tratamento 4",
+    "ar": "نص العلاج 4"
+  },
+  "כותרת בחירת טיפול": {
+    "en": "Choose treatment title",
+    "es": "Título de elegir tratamiento",
+    "pt-BR": "Título de escolher tratamento",
+    "ar": "عنوان اختيار العلاج"
+  },
+  "כותרת בחירת מומחית": {
+    "en": "Choose specialist title",
+    "es": "Título de elegir especialista",
+    "pt-BR": "Título de escolher especialista",
+    "ar": "عنوان اختيار الأخصائية"
+  },
+  "כותרת יומן": {
+    "en": "Journal title",
+    "es": "Título del diario",
+    "pt-BR": "Título do diário",
+    "ar": "عنوان اليوميات"
+  },
+  "כותרת עמוד שירותים": {
+    "en": "Services page title",
+    "es": "Título de la página de servicios",
+    "pt-BR": "Título da página de serviços",
+    "ar": "عنوان صفحة الخدمات"
+  },
+  "כותרת קטלוג": {
+    "en": "Catalog title",
+    "es": "Título del catálogo",
+    "pt-BR": "Título do catálogo",
+    "ar": "عنوان الكتالوج"
+  },
+  "כותרת תורים": {
+    "en": "Appointments title",
+    "es": "Título de citas",
+    "pt-BR": "Título de horários",
+    "ar": "عنوان المواعيد"
+  },
+  "שם טיפול 1": {
+    "en": "Treatment name 1",
+    "es": "Nombre de tratamiento 1",
+    "pt-BR": "Nome do tratamento 1",
+    "ar": "اسم العلاج 1"
+  },
+  "שם טיפול 2": {
+    "en": "Treatment name 2",
+    "es": "Nombre de tratamiento 2",
+    "pt-BR": "Nome do tratamento 2",
+    "ar": "اسم العلاج 2"
+  },
+  "שם טיפול 3": {
+    "en": "Treatment name 3",
+    "es": "Nombre de tratamiento 3",
+    "pt-BR": "Nome do tratamento 3",
+    "ar": "اسم العلاج 3"
+  },
+  "שם טיפול 4": {
+    "en": "Treatment name 4",
+    "es": "Nombre de tratamiento 4",
+    "pt-BR": "Nome do tratamento 4",
+    "ar": "اسم العلاج 4"
+  },
+  "שם צוות 1": {
+    "en": "Team name 1",
+    "es": "Nombre del equipo 1",
+    "pt-BR": "Nome da equipe 1",
+    "ar": "اسم الفريق 1"
+  },
+  "שם צוות 2": {
+    "en": "Team name 2",
+    "es": "Nombre del equipo 2",
+    "pt-BR": "Nome da equipe 2",
+    "ar": "اسم الفريق 2"
+  },
+  "שם צוות 3": {
+    "en": "Team name 3",
+    "es": "Nombre del equipo 3",
+    "pt-BR": "Nome da equipe 3",
+    "ar": "اسم الفريق 3"
+  },
+  "תגית הירו": {
+    "en": "Hero tag",
+    "es": "Etiqueta del hero",
+    "pt-BR": "Tag do hero",
+    "ar": "وسم الواجهة"
+  },
+  "תמונת גלריה 1": {
+    "en": "Gallery image 1",
+    "es": "Imagen de galería 1",
+    "pt-BR": "Imagem da galeria 1",
+    "ar": "صورة المعرض 1"
+  },
+  "תמונת גלריה 2": {
+    "en": "Gallery image 2",
+    "es": "Imagen de galería 2",
+    "pt-BR": "Imagem da galeria 2",
+    "ar": "صورة المعرض 2"
+  },
+  "תמונת גלריה 3": {
+    "en": "Gallery image 3",
+    "es": "Imagen de galería 3",
+    "pt-BR": "Imagem da galeria 3",
+    "ar": "صورة المعرض 3"
+  },
+  "תמונת גלריה 4": {
+    "en": "Gallery image 4",
+    "es": "Imagen de galería 4",
+    "pt-BR": "Imagem da galeria 4",
+    "ar": "صورة المعرض 4"
+  },
+  "תמונת טיפול 1": {
+    "en": "Treatment image 1",
+    "es": "Imagen de tratamiento 1",
+    "pt-BR": "Imagem do tratamento 1",
+    "ar": "صورة العلاج 1"
+  },
+  "תמונת טיפול 2": {
+    "en": "Treatment image 2",
+    "es": "Imagen de tratamiento 2",
+    "pt-BR": "Imagem do tratamento 2",
+    "ar": "صورة العلاج 2"
+  },
+  "תמונת טיפול 3": {
+    "en": "Treatment image 3",
+    "es": "Imagen de tratamiento 3",
+    "pt-BR": "Imagem do tratamento 3",
+    "ar": "صورة العلاج 3"
+  },
+  "תמונת טיפול 4": {
+    "en": "Treatment image 4",
+    "es": "Imagen de tratamiento 4",
+    "pt-BR": "Imagem do tratamento 4",
+    "ar": "صورة العلاج 4"
+  },
+  "תמונת לוגו": {
+    "en": "Logo image",
+    "es": "Imagen de logo",
+    "pt-BR": "Imagem do logo",
+    "ar": "صورة الشعار"
+  },
+  "תמונת מפה": {
+    "en": "Map image",
+    "es": "Imagen del mapa",
+    "pt-BR": "Imagem do mapa",
+    "ar": "صورة الخريطة"
+  },
+  "תמונת סקשן": {
+    "en": "Section image",
+    "es": "Imagen de sección",
+    "pt-BR": "Imagem da seção",
+    "ar": "صورة القسم"
+  },
+  "תמונת צוות 1": {
+    "en": "Team image 1",
+    "es": "Imagen del equipo 1",
+    "pt-BR": "Imagem da equipe 1",
+    "ar": "صورة الفريق 1"
+  },
+  "תמונת צוות 2": {
+    "en": "Team image 2",
+    "es": "Imagen del equipo 2",
+    "pt-BR": "Imagem da equipe 2",
+    "ar": "صورة الفريق 2"
+  },
+  "תמונת צוות 3": {
+    "en": "Team image 3",
+    "es": "Imagen del equipo 3",
+    "pt-BR": "Imagem da equipe 3",
+    "ar": "صورة الفريق 3"
+  },
+  "תפקיד צוות 1": {
+    "en": "Team role 1",
+    "es": "Rol del equipo 1",
+    "pt-BR": "Função da equipe 1",
+    "ar": "دور الفريق 1"
+  },
+  "תפקיד צוות 2": {
+    "en": "Team role 2",
+    "es": "Rol del equipo 2",
+    "pt-BR": "Função da equipe 2",
+    "ar": "دور الفريق 2"
+  },
+  "תפקיד צוות 3": {
+    "en": "Team role 3",
+    "es": "Rol del equipo 3",
+    "pt-BR": "Função da equipe 3",
+    "ar": "دور الفريق 3"
+  },
+  "כפתור ראשי בכותרת": {
+    "en": "Primary header button",
+    "es": "Botón principal del encabezado",
+    "pt-BR": "Botão principal do cabeçalho",
+    "ar": "الزر الرئيسي في الترويسة"
+  },
+  "כותרת פרויקטים": {
+    "en": "Projects title",
+    "es": "Título de proyectos",
+    "pt-BR": "Título de projetos",
+    "ar": "عنوان المشاريع"
+  },
+  "כותרת סקשן 2": {
+    "en": "Section 2 title",
+    "es": "Título de sección 2",
+    "pt-BR": "Título da seção 2",
+    "ar": "عنوان القسم 2"
+  },
+  "כותרת סקשן 3": {
+    "en": "Section 3 title",
+    "es": "Título de sección 3",
+    "pt-BR": "Título da seção 3",
+    "ar": "عنوان القسم 3"
+  },
+  "כפתור CTA": {
+    "en": "CTA button",
+    "es": "Botón CTA",
+    "pt-BR": "Botão CTA",
+    "ar": "زر الدعوة"
+  },
+  "ניווט ראשי": {
+    "en": "Main navigation",
+    "es": "Navegación principal",
+    "pt-BR": "Navegação principal",
+    "ar": "التنقل الرئيسي"
+  },
+  "טקסט לוגו": {
+    "en": "Logo text",
+    "es": "Texto del logo",
+    "pt-BR": "Texto do logo",
+    "ar": "نص الشعار"
+  },
+  "אזור פתיחה": {
+    "en": "Opening area",
+    "es": "Área de apertura",
+    "pt-BR": "Área de abertura",
+    "ar": "منطقة الافتتاح"
+  },
+  "טקסט עליון": {
+    "en": "Top text",
+    "es": "Texto superior",
+    "pt-BR": "Texto superior",
+    "ar": "النص العلوي"
+  },
+  "כותרת קורסים": {
+    "en": "Courses title",
+    "es": "Título de cursos",
+    "pt-BR": "Título de cursos",
+    "ar": "عنوان الدورات"
+  },
+  "טופס יצירת קשר": {
+    "en": "Contact form",
+    "es": "Formulario de contacto",
+    "pt-BR": "Formulário de contato",
+    "ar": "نموذج التواصل"
+  },
+  "טקסט יצירת קשר": {
+    "en": "Contact text",
+    "es": "Texto de contacto",
+    "pt-BR": "Texto de contato",
+    "ar": "نص التواصل"
+  },
+  "כותרת עליונה": {
+    "en": "Header title",
+    "es": "Título superior",
+    "pt-BR": "Título superior",
+    "ar": "العنوان العلوي"
+  },
+  "כותרת קטנה בהירו": {
+    "en": "Small hero title",
+    "es": "Título pequeño del hero",
+    "pt-BR": "Título pequeno do hero",
+    "ar": "عنوان صغير في الواجهة"
+  },
+  "תווית קטנה": {
+    "en": "Small label",
+    "es": "Etiqueta pequeña",
+    "pt-BR": "Rótulo pequeno",
+    "ar": "وسم صغير"
+  },
+  "כותרת ביקורות": {
+    "en": "Reviews title",
+    "es": "Título de reseñas",
+    "pt-BR": "Título de avaliações",
+    "ar": "عنوان التقييمات"
+  },
+  "כפתור יצירת קשר": {
+    "en": "Contact button",
+    "es": "Botón de contacto",
+    "pt-BR": "Botão de contato",
+    "ar": "زر التواصل"
+  },
+  "כפתור שליחה": {
+    "en": "Submit button",
+    "es": "Botón de envío",
+    "pt-BR": "Botão de envio",
+    "ar": "زر الإرسال"
+  },
+  "שדה טלפון": {
+    "en": "Phone field",
+    "es": "Campo de teléfono",
+    "pt-BR": "Campo de telefone",
+    "ar": "حقل الهاتف"
+  },
+  "שדה אימייל": {
+    "en": "Email field",
+    "es": "Campo de email",
+    "pt-BR": "Campo de e-mail",
+    "ar": "حقل البريد"
+  },
+  "שדה הודעה": {
+    "en": "Message field",
+    "es": "Campo de mensaje",
+    "pt-BR": "Campo de mensagem",
+    "ar": "حقل الرسالة"
+  },
+  "שדה שם": {
+    "en": "Name field",
+    "es": "Campo de nombre",
+    "pt-BR": "Campo de nome",
+    "ar": "حقل الاسم"
+  },
+  "טקסט פוטר": {
+    "en": "Footer text",
+    "es": "Texto del pie",
+    "pt-BR": "Texto do rodapé",
+    "ar": "نص التذييل"
+  },
+  "כותרת קריאה לפעולה": {
+    "en": "Call-to-action title",
+    "es": "Título de llamada a la acción",
+    "pt-BR": "Título de chamada para ação",
+    "ar": "عنوان الدعوة لاتخاذ إجراء"
+  },
+  "כותרת שאלות": {
+    "en": "Questions title",
+    "es": "Título de preguntas",
+    "pt-BR": "Título de perguntas",
+    "ar": "عنوان الأسئلة"
+  },
+  "כותרת FAQ": {
+    "en": "FAQ title",
+    "es": "Título de FAQ",
+    "pt-BR": "Título de FAQ",
+    "ar": "عنوان الأسئلة الشائعة"
+  },
+  "כפתור קריאה לפעולה": {
+    "en": "Call-to-action button",
+    "es": "Botón de llamada a la acción",
+    "pt-BR": "Botão de chamada para ação",
+    "ar": "زر الدعوة لاتخاذ إجراء"
+  },
+  "כפתור ראשי הירו": {
+    "en": "Primary hero button",
+    "es": "Botón principal del hero",
+    "pt-BR": "Botão principal do hero",
+    "ar": "زر الواجهة الرئيسي"
+  },
+  "תווית הירו": {
+    "en": "Hero label",
+    "es": "Etiqueta del hero",
+    "pt-BR": "Rótulo do hero",
+    "ar": "وسم الواجهة"
+  },
+  "תיאור הירו": {
+    "en": "Hero description",
+    "es": "Descripción del hero",
+    "pt-BR": "Descrição do hero",
+    "ar": "وصف الواجهة"
+  },
+  "תמונת רקע": {
+    "en": "Background image",
+    "es": "Imagen de fondo",
+    "pt-BR": "Imagem de fundo",
+    "ar": "صورة الخلفية"
+  },
+  "כותרת משנה": {
+    "en": "Subtitle",
+    "es": "Subtítulo",
+    "pt-BR": "Subtítulo",
+    "ar": "عنوان فرعي"
+  },
+  "טקסט שירותים": {
+    "en": "Services text",
+    "es": "Texto de servicios",
+    "pt-BR": "Texto de serviços",
+    "ar": "نص الخدمات"
+  },
+  "ניווט אודות": {
+    "en": "About navigation",
+    "es": "Navegación de nosotros",
+    "pt-BR": "Navegação sobre",
+    "ar": "تنقل من نحن"
+  },
+  "ניווט שירותים": {
+    "en": "Services navigation",
+    "es": "Navegación de servicios",
+    "pt-BR": "Navegação de serviços",
+    "ar": "تنقل الخدمات"
+  },
+  "תג הירו": {
+    "en": "Hero tag",
+    "es": "Etiqueta del hero",
+    "pt-BR": "Tag do hero",
+    "ar": "وسم الواجهة"
+  }
+}

@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from "react";
 import "../build/Build.css";
 import "./MainTab.css";
 import { dedupeByPreview } from "../../../../utils/dedupe";
 
 export default function MainTab({ businessDetails, socket }) {
+  const { t } = useTranslation();
   // guard against undefined
   const raw = businessDetails?.mainImages || [];
   const normalized = raw
@@ -75,11 +77,11 @@ export default function MainTab({ businessDetails, socket }) {
 
       {lastTwoReviews.length > 0 && (
         <div className="reviews-section">
-          <h3>Latest Reviews</h3>
+          <h3>{t("leftover.ratingChrome.latestReviews")}</h3>
           {lastTwoReviews.map((review, i) => (
             <div key={review._id || review.id || i} className="review-card">
               <div className="review-header">
-                <strong className="review-user">{review.authorName || review.userName || "Customer"}</strong>
+                <strong className="review-user">{review.authorName || review.userName || t("leftover.ratingChrome.customer")}</strong>
                 <span className="star-text">⭐ {review.rating || review.averageScore}</span>
               </div>
               <p className="review-text">{review.comment}</p>

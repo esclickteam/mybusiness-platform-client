@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" className={`sticky top-0 z-50 border-b border-white/15 bg-[var(--dark)]/85 text-white backdrop-blur-xl`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="text-right">
+        <button type="button" onClick={() => goTo("home")} className="text-start">
           <div className="flex items-center gap-3">
             <span className="ag-pulse grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-black text-white">{getValue(data, "logoText")}</span>
             <div>
@@ -75,7 +77,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className={`border-t border-white/15 px-5 py-4 lg:hidden`}>
           <div className="grid gap-2">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-right text-sm font-bold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-start text-sm font-bold">{label}</button>
             ))}
           </div>
         </div>
@@ -88,7 +90,7 @@ function About({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl overflow-hidden border border-white/15 bg-[var(--surface)]">
-        <Reveal className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 bg-[var(--dark)] px-5 py-4 text-right">
+        <Reveal className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 bg-[var(--dark)] px-5 py-4 text-start">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "aboutEyebrow")}</p>
             <h2 className="ag-display mt-2 text-3xl font-extrabold md:text-5xl">{getValue(data, "aboutTitle")}</h2>
@@ -100,7 +102,7 @@ function About({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
-          <Reveal variant="right" className="border-b border-white/15 p-6 text-right lg:border-b-0 lg:border-l md:p-8">
+          <Reveal variant="right" className="border-b border-white/15 p-6 text-start lg:border-b-0 lg:border-l md:p-8">
             <p className="text-base leading-8 text-[var(--muted)]">{getValue(data, "aboutText")}</p>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
@@ -148,13 +150,13 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*80}>
-              <article className="ag-card border border-white/15 bg-[var(--surface)] p-6 text-right">
+              <article className="ag-card border border-white/15 bg-[var(--surface)] p-6 text-start">
                 <div className="mb-4 flex items-center justify-between">
                   <span className="text-xs font-black text-[var(--accent)]">MODULE 0{i+1}</span>
                   <span className="h-2 w-2 rounded-full bg-[var(--p)]" />
                 </div>
                 <h3 className="text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -174,7 +176,7 @@ function Cases({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/15 pb-6 text-right">
+        <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/15 pb-6 text-start">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "casesEyebrow")}</p>
             <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "casesTitle")}</h2>
@@ -184,7 +186,7 @@ function Cases({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {items.map(([title, text, image], i) => (
             <Reveal key={title} delayMs={i * 90} variant="up">
-              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--surface)] text-right">
+              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--surface)] text-start">
                 <div className="flex items-center justify-between border-b border-white/15 bg-[var(--dark)] px-4 py-3">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">{channels[i]}</span>
                   <span className="text-[10px] font-black text-[var(--muted)]">FRAME 0{i + 1}</span>
@@ -196,7 +198,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   <h3 className="text-2xl font-bold">{title}</h3>
                   <div className="mt-5 border border-white/15 bg-[var(--bg)] p-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">KPI STRIP</p>
-                    <p className="ag-display mt-2 text-2xl font-extrabold text-[var(--accent)]">{text}</p>
+                    <p className="ag-display mt-2 text-2xl font-extrabold text-[var(--accent)]">{tx(text)}</p>
                   </div>
                 </div>
               </article>
@@ -217,14 +219,14 @@ function Team({ data }: { data: Record<string, any> }) {
   return (
     <section className="bg-[var(--surface)] px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="text-right">
+        <Reveal className="text-start">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "teamEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "teamTitle")}</h2>
         </Reveal>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {items.map(([name, role, image], i) => (
             <Reveal key={name} delayMs={i * 90} variant="scale">
-              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--bg)] text-right">
+              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--bg)] text-start">
                 <div className="flex items-center justify-between border-b border-white/15 px-4 py-3">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">CONTROL TILE 0{i + 1}</span>
                   <span className="flex items-center gap-2 text-[10px] font-black text-emerald-400"><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" /> ONLINE</span>
@@ -255,7 +257,7 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="mb-8 text-right">
+        <Reveal className="mb-8 text-start">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "galleryEyebrow")}</p>
           <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle")}</h2>
         </Reveal>
@@ -287,25 +289,25 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="text-right">
+        <Reveal className="text-start">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "insightsEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "insightsTitle")}</h2>
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
-              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--surface)] text-right">
+              <article className="ag-card overflow-hidden border border-white/15 bg-[var(--surface)] text-start">
                 <div className="flex items-center justify-between border-b border-white/15 bg-[var(--dark)] px-4 py-3">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">REPORT 0{i + 1}</span>
                   <span className="text-[10px] font-black text-[var(--muted)]">UPDATED NOW</span>
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   <div className="mt-6 h-2 bg-white/10">
                     <span className="block h-full bg-[var(--p)]" style={{ width: `${82 - i * 14}%` }} />
                   </div>
-                  <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--accent)]">פתחו דוח</button>
+                  <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--accent)]">{tx("פתחו דוח")}</button>
                 </div>
               </article>
             </Reveal>
@@ -326,21 +328,21 @@ function Process({ data }: { data: Record<string, any> }) {
   return (
     <section className="bg-[var(--surface)] px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="text-right">
+        <Reveal className="text-start">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "processEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "processTitle")}</h2>
         </Reveal>
         <div className="mt-12 grid gap-5 lg:grid-cols-4">
           {steps.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 80} variant="up">
-              <article className="ag-card relative border border-white/15 bg-[var(--bg)] p-6 text-right">
+              <article className="ag-card relative border border-white/15 bg-[var(--bg)] p-6 text-start">
                 {i < steps.length - 1 ? <span className="absolute left-[-22px] top-1/2 hidden h-px w-5 bg-white/25 lg:block" /> : null}
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">MODULE 0{i + 1}</p>
                   <span className="h-2 w-2 rounded-full bg-[var(--p)]" />
                 </div>
                 <h3 className="mt-8 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-1">
                   {Array.from({ length: 6 }).map((_, barIndex) => (
                     <span key={barIndex} className={`h-1.5 ${barIndex <= i + 1 ? "bg-[var(--accent)]" : "bg-white/10"}`} />
@@ -359,7 +361,7 @@ function Contact({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-7xl overflow-hidden border border-white/15 bg-[var(--surface)]">
-        <Reveal className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 bg-[var(--dark)] px-5 py-4 text-right">
+        <Reveal className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 bg-[var(--dark)] px-5 py-4 text-start">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[var(--accent)]">{getValue(data, "contactEyebrow")}</p>
             <h2 className="ag-display mt-2 text-3xl font-extrabold md:text-5xl">MEDIA-TICKET / {getValue(data, "contactTitle")}</h2>
@@ -367,7 +369,7 @@ function Contact({ data }: { data: Record<string, any> }) {
           <span className="border border-emerald-400/40 px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">QUEUE OPEN</span>
         </Reveal>
         <div className="grid lg:grid-cols-[0.72fr_1.28fr]">
-          <Reveal variant="right" className="border-b border-white/15 p-6 text-right lg:border-b-0 lg:border-l md:p-8">
+          <Reveal variant="right" className="border-b border-white/15 p-6 text-start lg:border-b-0 lg:border-l md:p-8">
             <p className="text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
             <div className="mt-8 grid gap-3 text-sm font-bold">
               <p className="border border-white/15 bg-[var(--bg)] p-3">TEL: {getValue(data, "phone")}</p>
@@ -376,22 +378,22 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mediavault-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mediavault-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Requester name
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-start text-sm text-white outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Callback
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-start text-sm text-white outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Channel / budget
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-start text-sm text-white outline-none" placeholder={tx("חברה / תחום")}  name="company" data-bizuply-form-field-id="company" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Ticket brief
-                <textarea className="min-h-32 bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+                <textarea className="min-h-32 bg-[var(--bg)] px-4 py-4 text-start text-sm text-white outline-none" placeholder={tx("במה נוכל לעזור?")}  name="message" data-bizuply-form-field-id="message"></textarea>
               </label>
               <button type="submit" className="bg-[var(--p)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
             </form>
@@ -415,7 +417,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>
@@ -427,7 +429,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
 function PageHero({ data, title }: { data: Record<string, any>; title: string }) {
   return (
     <section className="border-b border-white/15 px-5 py-14 lg:px-8 lg:py-20">
-      <Reveal className="mx-auto max-w-7xl overflow-hidden border border-white/15 bg-[var(--surface)] text-right">
+      <Reveal className="mx-auto max-w-7xl overflow-hidden border border-white/15 bg-[var(--surface)] text-start">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 bg-[var(--dark)] px-5 py-4">
           <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--accent)]">{getValue(data, "brandName")} / {getValue(data, "nicheLabel")}</p>
           <div className="flex gap-2">
@@ -469,7 +471,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
     <section data-template-section-type="hero" className="px-5 py-16 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div className="text-right">
+          <div className="text-start">
             <p className="text-xs font-black uppercase tracking-[0.3em] text-[var(--accent)]">{getValue(data, "heroEyebrow")}</p>
             <h1 className="ag-display mt-3 max-w-3xl text-4xl font-extrabold md:text-6xl">{getValue(data, "heroTitle")}</h1>
           </div>
@@ -484,7 +486,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
           </Reveal>
           <div className="grid gap-3 lg:col-span-4">
             {stats.map(([v,l],i)=>(
-              <Reveal key={l} delayMs={i*70} className="ag-card border border-white/15 bg-[var(--surface)] p-5 text-right">
+              <Reveal key={l} delayMs={i*70} className="ag-card border border-white/15 bg-[var(--surface)] p-5 text-start">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">{l}</p>
                 <p className="ag-display mt-2 text-2xl sm:text-4xl font-extrabold text-[var(--accent)]">{v}</p>
                 <div className="mt-3 h-1.5 w-full bg-white/10"><span className="block h-full bg-[var(--p)]" style={{width: `${70-i*8}%`}} /></div>
@@ -561,7 +563,7 @@ export default function MediavaultPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="mediavault" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="mediavault" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: mediavaultEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

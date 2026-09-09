@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import {
   CalendarDays,
   CheckCircle2,
@@ -23,8 +24,9 @@ function DemoShell({
   liveLabel: string;
   children: ReactNode;
 }) {
+  const { i18n } = useTranslation();
   return (
-    <div className="relative flex h-full w-full flex-col" dir="rtl">
+    <div className="relative flex h-full w-full flex-col" dir={getTextDirection(i18n.language)}>
       <div
         className="pointer-events-none absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-400/20 via-violet-300/15 to-cyan-300/20 blur-3xl"
         aria-hidden="true"

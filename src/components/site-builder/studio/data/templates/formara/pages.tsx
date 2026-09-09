@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { formaraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -48,7 +50,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         </div>
         <nav className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.22em] text-white/62 lg:flex">
           {navItems.map((item) => (
-            <span key={item}>{item}</span>
+            <span key={tx(item)}>{tx(item)}</span>
           ))}
         </nav>
         <button
@@ -121,7 +123,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 <div className="p-6">
                   <span className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-3 text-2xl font-semibold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -156,7 +158,7 @@ function Showcase({ data }: { data: Record<string, any> }) {
                 <div className="p-8 lg:p-12">
                   <span className="t-display text-3xl md:text-6xl text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-5 text-3xl font-semibold text-white lg:text-4xl">{title}</h3>
-                  <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                   <div className="mt-8 h-px w-28 bg-[var(--p)]" />
                 </div>
               </article>
@@ -206,7 +208,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="h-full border border-[var(--p)]/25 bg-[#1E1C1A] p-5">
                 <span className="grid h-20 w-20 place-items-center bg-[var(--p)] text-2xl font-bold text-white">0{index + 1}</span>
                 <h3 className="mt-8 text-2xl font-semibold text-white">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -272,7 +274,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 110}>
               <blockquote className="h-full border-b border-[var(--p)]/25 py-9 lg:border-b-0 lg:border-l lg:px-8">
-                <p className="text-lg leading-9 text-white">"{text}"</p>
+                <p className="text-lg leading-9 text-white">"{tx(text)}"</p>
                 <footer className="mt-8">
                   <p className="font-bold text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>
@@ -295,17 +297,17 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <h2 className="t-display mt-3 text-5xl leading-none text-white md:text-7xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
           <div className="mt-10 space-y-4 border-t border-[var(--p)]/25 pt-8 text-sm text-white/84">
-            <p><span className="text-[var(--p)]">טלפון</span> · {getValue(data, "phone")}</p>
-            <p><span className="text-[var(--p)]">אימייל</span> · {getValue(data, "email")}</p>
-            <p><span className="text-[var(--p)]">כתובת</span> · {getValue(data, "address")}</p>
+            <p><span className="text-[var(--p)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+            <p><span className="text-[var(--p)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+            <p><span className="text-[var(--p)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 bg-[#1E1C1A] p-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="מה תרצו לעצב?"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <form className="grid gap-4 bg-[#1E1C1A] p-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder={tx("מה תרצו לעצב?")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">
               {getValue(data, "contactButton")}
             </button>
@@ -341,9 +343,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
         <h3 className="t-display text-2xl sm:text-4xl text-white">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="formara-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -377,7 +379,7 @@ export default function FormaraPages(props: FormaraPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="formara" className="min-h-screen w-full overflow-x-hidden bg-[#1E1C1A]">
+    <div dir={templateDir()} data-template-id="formara" className="min-h-screen w-full overflow-x-hidden bg-[#1E1C1A]">
       <style dangerouslySetInnerHTML={{ __html: formaraEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

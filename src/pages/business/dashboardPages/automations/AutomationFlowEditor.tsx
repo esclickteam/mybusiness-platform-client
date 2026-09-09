@@ -3,6 +3,10 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import i18n from "../../../../i18n/i18n";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
+import {
+  aiConfigFieldDefault,
+  aiConfigFieldLabel,
+} from "../../../../i18n/aiAutomationLabels";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
   ReactFlow,
@@ -71,6 +75,7 @@ import {
 } from "./automationUiHelpers";
 import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
+import { getAutomationPlanDisplayName } from "./billing/automationPlanCatalog";
 import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
 import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
 import {
@@ -1950,7 +1955,7 @@ function EditorInner({
               null
             }
             planName={
-              billingUsage?.plan?.nameHe || billingUsage?.plan?.name || null
+              getAutomationPlanDisplayName(billingUsage?.plan?.key, t) || null
             }
             onOpenPlans={() => openBillingGateModal("manage")}
           />
@@ -2647,7 +2652,7 @@ function EditorInner({
                       .map((field) => {
                         const value =
                           selectedNode.data?.[field.key] ??
-                          field.defaultValue ??
+                          aiConfigFieldDefault(t, field) ??
                           (field.type === "boolean" ? false : "");
                         const update = (next: unknown) =>
                           updateSelectedData({ [field.key]: next });
@@ -2661,14 +2666,14 @@ function EditorInner({
                                 disabled={readOnly}
                                 onChange={(event) => update(event.target.checked)}
                               />{" "}
-                              {field.label}
+                              {aiConfigFieldLabel(t, field)}
                             </label>
                           );
                         }
                         if (field.type === "textarea") {
                           return (
                             <label key={field.key}>
-                              {field.label}
+                              {aiConfigFieldLabel(t, field)}
                               <textarea
                                 value={String(value)}
                                 disabled={readOnly}
@@ -2689,7 +2694,7 @@ function EditorInner({
                                 ];
                           return (
                             <label key={field.key}>
-                              {field.label}
+                              {aiConfigFieldLabel(t, field)}
                               <select
                                 value={String(value)}
                                 disabled={readOnly}
@@ -2707,7 +2712,7 @@ function EditorInner({
                         if (field.type === "multiselect") {
                           return (
                             <label key={field.key}>
-                              {field.label}
+                              {aiConfigFieldLabel(t, field)}
                               <input
                                 value={
                                   Array.isArray(value)
@@ -2729,7 +2734,7 @@ function EditorInner({
                         }
                         return (
                           <label key={field.key}>
-                            {field.label}
+                            {aiConfigFieldLabel(t, field)}
                             <input
                               type={field.type === "number" ? "number" : "text"}
                               value={String(value)}
@@ -2755,11 +2760,11 @@ function EditorInner({
                           .filter((field) => field.advanced)
                           .map((field) => (
                             <label key={field.key}>
-                              {field.label}
+                              {aiConfigFieldLabel(t, field)}
                               <textarea
                                 value={String(
                                   selectedNode.data?.[field.key] ??
-                                    field.defaultValue ??
+                                    aiConfigFieldDefault(t, field) ??
                                     ""
                                 )}
                                 disabled={readOnly}

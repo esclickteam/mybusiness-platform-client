@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function PodcastixThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#0F0A1F", color: "#F5F3FF", fontFamily: "Arimo, sans-serif" }}>
+    <div dir={getTextDirection(i18n.language)} className="flex h-full w-full flex-col justify-between overflow-hidden p-5 text-right" style={{ background: "#0F0A1F", color: "#F5F3FF", fontFamily: "Arimo, sans-serif" }}>
       <div>
-        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#8B5CF6", color: "#fff" }}>סוכנות פודקאסט ואודיו</div>
+        <div className="inline-flex rounded-full px-3 py-1 text-[10px] font-black" style={{ background: "#8B5CF6", color: "#fff" }}>{tx("סוכנות פודקאסט ואודיו")}</div>
         <h3 className="mt-4 text-3xl font-black leading-none">Podcastix</h3>
         <p className="mt-2 text-xs font-semibold opacity-75">waveform mic</p>
       </div>

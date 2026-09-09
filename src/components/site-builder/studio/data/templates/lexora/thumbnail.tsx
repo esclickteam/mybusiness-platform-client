@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function LexoraThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[240px] w-full overflow-hidden rounded-[24px] bg-[#18231f] text-white"
       style={{ fontFamily: "Assistant, Heebo, system-ui, sans-serif" }}
     >
@@ -29,9 +33,7 @@ export default function LexoraThumbnail() {
         <div>
           <h3 className="text-2xl font-black leading-tight">Lexora</h3>
           <p className="mt-2 max-w-[220px] text-xs font-semibold leading-5 text-white/85">
-            תבנית יוקרתית בעברית למשרד עורכי דין, שירותים, תיקים, תהליך וטופס
-            ייעוץ.
-          </p>
+            {tx("תבנית יוקרתית בעברית למשרד עורכי דין, שירותים, תיקים, תהליך וטופס ייעוץ.")}</p>
         </div>
       </div>
     </div>

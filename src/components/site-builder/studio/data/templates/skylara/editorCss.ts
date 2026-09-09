@@ -2,7 +2,7 @@ export const skylaraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="skylara"], [data-template-id="skylara"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #06101c; --tpl-surface: #0c1a2b; --tpl-text: #e8f1ff;
   --tpl-muted: #7f97b0; --tpl-primary: #39d0ff; --tpl-primary-text: #041018;

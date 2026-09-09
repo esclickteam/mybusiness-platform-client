@@ -811,46 +811,46 @@ function renderAiInsightsPanel(
   return (
     <div data-testid="crm-ai-insights" style={{ marginBottom: 16, padding: 12, border: "1px solid #e5e9f0", borderRadius: 12, background: "#f8fafc" }}>
       <div style={{ fontWeight: 700, marginBottom: 8 }}>
-        {t("business.profileBuild.crmAiResults", "תוצאות AI")}
+        {t("business.profileBuild.crmAiResults")}
       </div>
       {aiInsights?.score != null ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmLeadScore", "AI · דירוג ליד")}</strong>
-          <div>{t("business.profileBuild.crmScore", "ציון: {{score}}", { score: aiInsights.score })}</div>
+          <strong>{t("business.profileBuild.crmLeadScore")}</strong>
+          <div>{t("business.profileBuild.crmScore", { score: aiInsights.score })}</div>
           {aiInsights.scoreReasoning ? <div>"{aiInsights.scoreReasoning}"</div> : null}
         </div>
       ) : null}
       {aiInsights?.classification ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmClassification", "AI · סיווג ליד")}</strong>
-          <div>{t("business.profileBuild.crmCategory", "קטגוריה: {{value}}", { value: aiInsights.classification })}</div>
+          <strong>{t("business.profileBuild.crmClassification")}</strong>
+          <div>{t("business.profileBuild.crmCategory", { value: aiInsights.classification })}</div>
         </div>
       ) : null}
       {aiInsights?.isHot ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmHotLead", "AI · ליד חם")}</strong>
-          <div>{t("business.profileBuild.crmScore", "ציון: {{score}}", { score: aiInsights.hotScore ?? emDash })}</div>
+          <strong>{t("business.profileBuild.crmHotLead")}</strong>
+          <div>{t("business.profileBuild.crmScore", { score: aiInsights.hotScore ?? emDash })}</div>
         </div>
       ) : null}
       {aiInsights?.brief ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmCallBrief", "AI · סיכום לפני שיחה")}</strong>
+          <strong>{t("business.profileBuild.crmCallBrief")}</strong>
           <div style={{ whiteSpace: "pre-wrap" }}>{aiInsights.brief}</div>
         </div>
       ) : null}
       {draft ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmDraft", "AI · טיוטה")}</strong>
-          <div>{t("business.profileBuild.crmDraftPending", "טיוטת AI — ממתינה לאישור")}</div>
+          <strong>{t("business.profileBuild.crmDraft")}</strong>
+          <div>{t("business.profileBuild.crmDraftPending")}</div>
           {draft.subject ? (
-            <div>{t("business.profileBuild.crmSubject", "נושא: {{value}}", { value: draft.subject })}</div>
+            <div>{t("business.profileBuild.crmSubject", { value: draft.subject })}</div>
           ) : null}
           <div style={{ whiteSpace: "pre-wrap" }}>{draft.body}</div>
         </div>
       ) : null}
       {aiInsights?.nextAction?.title ? (
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("business.profileBuild.crmNextAction", "AI · הפעולה הבאה")}</strong>
+          <strong>{t("business.profileBuild.crmNextAction")}</strong>
           <div>{aiInsights.nextAction.title}</div>
         </div>
       ) : null}

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { Bookmark, Trash2, Upload } from "lucide-react";
 import { btnGhost, btnSecondary, inputBase } from "../../../../styles/bizuplyUi";
 import type {
@@ -54,7 +55,7 @@ export default function MetaSavedAudiences({
   current,
   onLoad,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [entries, setEntries] = useState<SavedAudienceEntry[]>([]);
   const [nameInput, setNameInput] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
@@ -105,7 +106,7 @@ export default function MetaSavedAudiences({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4" dir="rtl">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4" dir={getTextDirection(i18n.language)}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-black text-slate-900">

@@ -1,0 +1,1106 @@
+{
+  "דרופ חצות": {
+    "en": "Midnight drop",
+    "es": "Drop de medianoche",
+    "pt-BR": "Drop da meia-noite",
+    "ar": "إصدار منتصف الليل"
+  },
+  "שכבות מחויטות, צלליות מפוסלות ופריטים עונתיים במהדורה מוגבלת.": {
+    "en": "Tailored layers, sculpted silhouettes, and seasonal pieces in a limited edition.",
+    "es": "Capas sastre, siluetas esculpidas y piezas de temporada en edición limitada.",
+    "pt-BR": "Camadas sob medida, silhuetas esculpidas e peças sazonais em edição limitada.",
+    "ar": "طبقات مفصّلة وظلال منحوتة وقطع موسمية بإصدار محدود."
+  },
+  "חוויית אופנה נועזת למותגים מודרניים: ויזואלים גדולים, כרטיסי מוצר פרימיום, מקטעים עיתונאיים ותנועה חלקה שמרגישה כמו חנות Webflow יוקרתית.": {
+    "en": "A bold fashion experience for modern brands: large visuals, premium product cards, editorial sections, and smooth motion that feels like a luxury Webflow store.",
+    "es": "Una experiencia de moda audaz para marcas modernas: visuales grandes, fichas premium, bloques editoriales y un movimiento suave como una tienda Webflow de lujo.",
+    "pt-BR": "Uma experiência de moda ousada para marcas modernas: visuais grandes, cartões premium, blocos editoriais e um movimento suave como uma loja Webflow de luxo.",
+    "ar": "تجربة أزياء جريئة للعلامات الحديثة: صور كبيرة وبطاقات منتج فاخرة وقطاعات تحريرية وحركة سلسة تشبه متجراً فاخراً."
+  },
+  "דרופ מוגבל": {
+    "en": "Limited drop",
+    "es": "Drop limitado",
+    "pt-BR": "Drop limitado",
+    "ar": "إصدار محدود"
+  },
+  "מותאם לכל מצב רוח": {
+    "en": "Made for every mood",
+    "es": "Hecho para cada humor",
+    "pt-BR": "Feito para cada humor",
+    "ar": "ملائم لكل مزاج"
+  },
+  "תחושת חנות פרימיום בלי לגעת בלוגיקת בנייה ישנה. כל בלוק ויזואלי, ניתן לעריכה ורספונסיבי.": {
+    "en": "A premium store feel without touching old builder logic. Every block is visual, editable, and responsive.",
+    "es": "La sensación de una tienda premium sin tocar la lógica antigua. Cada bloque es visual, editable y responsive.",
+    "pt-BR": "A sensação de uma loja premium sem mexer na lógica antiga. Cada bloco é visual, editável e responsivo.",
+    "ar": "إحساس متجر فاخر دون لمس منطق البناء القديم. كل بلوك بصري وقابل للتحرير ومتجاوب."
+  },
+  "פריטים כהים ופרימיום, טקסטורות חדות וסטיילינג עיתונאי נקי.": {
+    "en": "Dark premium pieces, sharp textures, and clean editorial styling.",
+    "es": "Piezas oscuras y premium, texturas nítidas y styling editorial limpio.",
+    "pt-BR": "Peças escuras e premium, texturas nítidas e styling editorial limpo.",
+    "ar": "قطع داكنة وفاخرة وملمس حاد وتنسيق تحريري نظيف."
+  },
+  "פריטי יום רכים עם נוחות אוברסייז וגזרה מודרנית.": {
+    "en": "Soft day pieces with oversized comfort and a modern cut.",
+    "es": "Piezas de día suaves, cómodas oversized y con un corte moderno.",
+    "pt-BR": "Peças de dia suaves, conforto oversized e corte moderno.",
+    "ar": "قطع نهارية ناعمة براحة واسعة وقصّة حديثة."
+  },
+  "עריכות מוגבלות, צלליות נדירות ולוקים עונתיים לאספנים.": {
+    "en": "Limited edits, rare silhouettes, and seasonal looks for collectors.",
+    "es": "Ediciones limitadas, siluetas raras y looks de temporada para coleccionistas.",
+    "pt-BR": "Edições limitadas, silhuetas raras e looks sazonais para colecionadores.",
+    "ar": "تعديلات محدودة وظلال نادرة وإطلالات موسمية للجامعين."
+  },
+  "קולקציית העונה החדשה — עכשיו באוויר": {
+    "en": "The new season collection — now live",
+    "es": "La nueva colección de temporada — ya está en el aire",
+    "pt-BR": "A nova coleção da estação — já no ar",
+    "ar": "مجموعة الموسم الجديدة — أصبحت متاحة الآن"
+  },
+  "פריטים מוגבלים שנעשו בסדרות קטנות": {
+    "en": "Limited pieces made in small runs",
+    "es": "Piezas limitadas hechas en series pequeñas",
+    "pt-BR": "Peças limitadas feitas em séries pequenas",
+    "ar": "قطع محدودة صُنعت في دفعات صغيرة"
+  },
+  "אנרגיית סטריטוור עם גימור יוקרתי": {
+    "en": "Streetwear energy with a luxury finish",
+    "es": "Energía streetwear con un acabado de lujo",
+    "pt-BR": "Energia streetwear com um acabamento de luxo",
+    "ar": "طاقة ستريتوير بلمسة فاخرة"
+  },
+  "מאפים": {
+    "en": "Pastries",
+    "es": "Bollería",
+    "pt-BR": "Padaria",
+    "ar": "معجنات"
+  },
+  "מדף הבוקר": {
+    "en": "The morning shelf",
+    "es": "La estantería de la mañana",
+    "pt-BR": "A prateleira da manhã",
+    "ar": "رف الصباح"
+  },
+  "מהקמח עד הקרום": {
+    "en": "From flour to crust",
+    "es": "De la harina a la corteza",
+    "pt-BR": "Da farinha à crosta",
+    "ar": "من الطحين حتى القشرة"
+  },
+  "לישה איטית": {
+    "en": "Slow kneading",
+    "es": "Amasado lento",
+    "pt-BR": "Sova lenta",
+    "ar": "عجن بطيء"
+  },
+  "מים קרים וקמח חזק.": {
+    "en": "Cold water and strong flour.",
+    "es": "Agua fría y harina fuerte.",
+    "pt-BR": "Água fria e farinha forte.",
+    "ar": "ماء بارد وطحين قوي."
+  },
+  "שכבות חמאה": {
+    "en": "Butter layers",
+    "es": "Capas de mantequilla",
+    "pt-BR": "Camadas de manteiga",
+    "ar": "طبقات زبدة"
+  },
+  "קיפול מדויק כל שעתיים.": {
+    "en": "A precise fold every two hours.",
+    "es": "Un pliegue preciso cada dos horas.",
+    "pt-BR": "Uma dobra precisa a cada duas horas.",
+    "ar": "طيّ دقيق كل ساعتين."
+  },
+  "אפייה חמה": {
+    "en": "Hot bake",
+    "es": "Horneado caliente",
+    "pt-BR": "Fornada quente",
+    "ar": "خبز ساخن"
+  },
+  "תנור אבן ב־220°.": {
+    "en": "A stone oven at 220°.",
+    "es": "Horno de piedra a 220°.",
+    "pt-BR": "Forno de pedra a 220°.",
+    "ar": "فرن حجر على 220°."
+  },
+  "רגעי תנור": {
+    "en": "Oven moments",
+    "es": "Momentos de horno",
+    "pt-BR": "Momentos de forno",
+    "ar": "لحظات الفرن"
+  },
+  "הקרואסון הכי טוב בתל אביב. שכבות מושלמות.": {
+    "en": "The best croissant in Tel Aviv. Perfect layers.",
+    "es": "El mejor cruasán de Tel Aviv. Capas perfectas.",
+    "pt-BR": "O melhor croissant de Tel Aviv. Camadas perfeitas.",
+    "ar": "أفضل كرواسون في تل أبيب. طبقات مثالية."
+  },
+  "ריח של מאפייה אמיתית. הלחמים נגמרים עד הצהריים.": {
+    "en": "It smells like a real bakery. The loaves are gone by noon.",
+    "es": "Huele a panadería de verdad. Los panes se acaban al mediodía.",
+    "pt-BR": "Cheira a padaria de verdade. Os pães acabam até o meio-dia.",
+    "ar": "رائحة مخبز حقيقي. تنفد الأرغفة حتى الظهيرة."
+  },
+  "נולדנו מהקמח.": {
+    "en": "We were born from flour.",
+    "es": "Nacimos de la harina.",
+    "pt-BR": "Nascemos da farinha.",
+    "ar": "وُلدنا من الطحين."
+  },
+  "סלסות": {
+    "en": "Salsas",
+    "es": "Salsas",
+    "pt-BR": "Salsas",
+    "ar": "صلصات"
+  },
+  "מדף הטאקוס": {
+    "en": "The taco shelf",
+    "es": "La estantería de tacos",
+    "pt-BR": "A prateleira de tacos",
+    "ar": "رف التاكو"
+  },
+  "מהפלנצ׳ה לצלחת": {
+    "en": "From the plancha to the plate",
+    "es": "De la plancha al plato",
+    "pt-BR": "Da chapa ao prato",
+    "ar": "من الصاج إلى الطبق"
+  },
+  "טורטייה חמה": {
+    "en": "Hot tortilla",
+    "es": "Tortilla caliente",
+    "pt-BR": "Tortilha quente",
+    "ar": "تورتيلا ساخنة"
+  },
+  "מחממים על ברזל.": {
+    "en": "We heat it on iron.",
+    "es": "La calentamos sobre hierro.",
+    "pt-BR": "Aquecemos no ferro.",
+    "ar": "نسخّنها على الحديد."
+  },
+  "צריבה": {
+    "en": "Sear",
+    "es": "Sellado",
+    "pt-BR": "Selagem",
+    "ar": "تحمير"
+  },
+  "בשר על אש גבוהה.": {
+    "en": "Meat over high heat.",
+    "es": "Carne a fuego alto.",
+    "pt-BR": "Carne em fogo alto.",
+    "ar": "لحم على نار عالية."
+  },
+  "כף אחת שמשנה הכל.": {
+    "en": "One spoon that changes everything.",
+    "es": "Una cucharada que lo cambia todo.",
+    "pt-BR": "Uma colher que muda tudo.",
+    "ar": "ملعقة واحدة تغيّر كل شيء."
+  },
+  "רגעי פלנצ׳ה": {
+    "en": "Plancha moments",
+    "es": "Momentos de plancha",
+    "pt-BR": "Momentos de chapa",
+    "ar": "لحظات الصاج"
+  },
+  "האל פסטור מטורף. חום מדויק.": {
+    "en": "The al pastor is wild. Heat on point.",
+    "es": "El al pastor está increíble. El punto de calor es exacto.",
+    "pt-BR": "O al pastor está incrível. O ponto de calor é exato.",
+    "ar": "الأل باستور جنوني. الحرارة دقيقة."
+  },
+  "כמו מקסיקו סיטי בתל אביב.": {
+    "en": "Like Mexico City in Tel Aviv.",
+    "es": "Como Ciudad de México en Tel Aviv.",
+    "pt-BR": "Como a Cidade do México em Tel Aviv.",
+    "ar": "مثل مكسيكو سيتي في تل أبيب."
+  },
+  "נולדנו מהפלנצ׳ה.": {
+    "en": "We were born from the plancha.",
+    "es": "Nacimos de la plancha.",
+    "pt-BR": "Nascemos da chapa.",
+    "ar": "وُلدنا من الصاج."
+  },
+  "דמואים": {
+    "en": "Demos",
+    "es": "Demos",
+    "pt-BR": "Demos",
+    "ar": "عروض"
+  },
+  "זוהר • יופי • גלואו • סלון •": {
+    "en": "Glow • beauty • shine • salon •",
+    "es": "Brillo • belleza • glow • salón •",
+    "pt-BR": "Brilho • beleza • glow • salão •",
+    "ar": "توهج • جمال • لمعان • صالون •"
+  },
+  "טיפולים בהתאמה אישית": {
+    "en": "Treatments tailored to you",
+    "es": "Tratamientos a medida",
+    "pt-BR": "Tratamentos sob medida",
+    "ar": "علاجات مخصصة"
+  },
+  "טיפולי יופי שמתאימים לסגנון, להעדפות ולתחושה שאת רוצה לקחת איתך": {
+    "en": "Beauty treatments that match the style, the preferences, and the feeling you want to take with you",
+    "es": "Tratamientos de belleza que encajan con tu estilo, tus preferencias y la sensación que quieres llevarte",
+    "pt-BR": "Tratamentos de beleza que combinam com o estilo, as preferências e a sensação que você quer levar",
+    "ar": "علاجات تجميل تلائم الأسلوب والتفضيلات والإحساس الذي تريدين أخذه معك"
+  },
+  "מהרגע שנכנסים לסלון הכול מרגיש רגוע ומדויק: שיחה קצרה, התאמת טיפול, שימוש במוצרים איכותיים ותוצאה שנראית טבעית, יוקרתית ולא מתאמצת.": {
+    "en": "From the moment you walk in, everything feels calm and precise: a short conversation, a fitting treatment, quality products, and a result that looks natural, luxe, and effortless.",
+    "es": "Desde que entras, todo se siente calmado y preciso: una conversación breve, un tratamiento ajustado, productos de calidad y un resultado natural, lujoso y sin esfuerzo.",
+    "pt-BR": "Desde que você entra, tudo parece calmo e preciso: uma conversa curta, um tratamento ajustado, produtos de qualidade e um resultado natural, luxuoso e sem esforço.",
+    "ar": "من لحظة الدخول يبدو كل شيء هادئاً ودقيقاً: حديث قصير وعلاج ملائم ومنتجات جيدة ونتيجة طبيعية فاخرة بلا تكلّف."
+  },
+  "עוד על הסלון": {
+    "en": "More about the salon",
+    "es": "Más sobre el salón",
+    "pt-BR": "Mais sobre o salão",
+    "ar": "المزيد عن الصالون"
+  },
+  "השירותים המבוקשים ביותר": {
+    "en": "The most requested services",
+    "es": "Los servicios más pedidos",
+    "pt-BR": "Os serviços mais pedidos",
+    "ar": "الخدمات الأكثر طلباً"
+  },
+  "שירותים מוצגים בכרטיסים גדולים, עם מחיר התחלתי, תמונה, טקסט קצר וכפתור לפרטי הטיפול.": {
+    "en": "Services shown as large cards, with a starting price, a photo, short copy, and a button for treatment details.",
+    "es": "Servicios en tarjetas grandes, con precio de salida, foto, texto breve y un botón a los detalles.",
+    "pt-BR": "Serviços em cartões grandes, com preço inicial, foto, texto curto e um botão para os detalhes.",
+    "ar": "الخدمات تظهر في بطاقات كبيرة مع سعر ابتدائي وصورة ونص قصير وزر لتفاصيل العلاج."
+  },
+  "לכל השירותים": {
+    "en": "See all services",
+    "es": "Ver todos los servicios",
+    "pt-BR": "Ver todos os serviços",
+    "ar": "إلى كل الخدمات"
+  },
+  "קבלי ייעוץ חינמי": {
+    "en": "Get a free consultation",
+    "es": "Consigue una consulta gratis",
+    "pt-BR": "Receba uma consulta gratuita",
+    "ar": "احصلي على استشارة مجانية"
+  },
+  "השאירי פרטים ונחזור עם המלצה לטיפול שמתאים למה שאת רוצה להשיג — עור זוהר, שיער מדויק, ציפורניים, איפור או חבילת אירוע.": {
+    "en": "Leave your details and we will come back with a treatment that matches what you want — glowing skin, precise hair, nails, makeup, or an event package.",
+    "es": "Deja tus datos y te proponemos un tratamiento para lo que quieres: piel luminosa, cabello preciso, uñas, maquillaje o un pack de evento.",
+    "pt-BR": "Deixe os seus dados e voltamos com um tratamento para o que você quer — pele luminosa, cabelo preciso, unhas, maquiagem ou um pacote de evento.",
+    "ar": "اتركي بياناتك ونعود بتوصية علاج تناسب ما تريدين — بشرة متوهجة أو شعر دقيق أو أظافر أو مكياج أو باقة مناسبة."
+  },
+  "למה לקוחות בוחרות בנו": {
+    "en": "Why clients choose us",
+    "es": "Por qué nos eligen",
+    "pt-BR": "Por que nos escolhem",
+    "ar": "لماذا تختاراننا الزبونات"
+  },
+  "אנחנו בונים מותגים, אתרים וחוויות דיגיטליות שמזיזות עסקים קדימה": {
+    "en": "We build brands, websites, and digital experiences that move businesses forward",
+    "es": "Construimos marcas, sitios y experiencias digitales que hacen avanzar negocios",
+    "pt-BR": "Construímos marcas, sites e experiências digitais que avançam negócios",
+    "ar": "نبني علامات ومواقع وتجارب رقمية تدفع الأعمال إلى الأمام"
+  },
+  "1.2k פרויקטים": {
+    "en": "1.2k projects",
+    "es": "1.2k proyectos",
+    "pt-BR": "1.2k projetos",
+    "ar": "1.2 ألف مشروع"
+  },
+  "סטודיו דיגיטלי": {
+    "en": "Digital studio",
+    "es": "Estudio digital",
+    "pt-BR": "Estúdio digital",
+    "ar": "استوديو رقمي"
+  },
+  "חוויית משתמש": {
+    "en": "User experience",
+    "es": "Experiencia de usuario",
+    "pt-BR": "Experiência do utilizador",
+    "ar": "تجربة المستخدم"
+  },
+  "עיצוב אתרים": {
+    "en": "Website design",
+    "es": "Diseño web",
+    "pt-BR": "Design de sites",
+    "ar": "تصميم مواقع"
+  },
+  "קידום ושיווק": {
+    "en": "Growth and marketing",
+    "es": "Promoción y marketing",
+    "pt-BR": "Promoção e marketing",
+    "ar": "ترويج وتسويق"
+  },
+  "ב־Virello אנחנו מחדשים פתרונות דיגיטליים שמעצימים מותגים להתחבר, לצמוח ולהוביל": {
+    "en": "At Virello we refresh digital solutions that help brands connect, grow, and lead",
+    "es": "En Virello renovamos soluciones digitales que ayudan a las marcas a conectar, crecer y liderar",
+    "pt-BR": "Na Virello renovamos soluções digitais que ajudam marcas a conectar, crescer e liderar",
+    "ar": "في Virello نجدّد حلولاً رقمية تمكّن العلامات من التواصل والنمو والقيادة"
+  },
+  "עוד עלינו": {
+    "en": "More about us",
+    "es": "Más sobre nosotros",
+    "pt-BR": "Mais sobre nós",
+    "ar": "المزيد عنا"
+  },
+  "למה Virello נכון לעסק שלכם": {
+    "en": "Why Virello is right for your business",
+    "es": "Por qué Virello encaja en vuestro negocio",
+    "pt-BR": "Por que a Virello é certa para o vosso negócio",
+    "ar": "لماذا Virello مناسب لعملكم"
+  },
+  "אזורי שירות": {
+    "en": "Service areas",
+    "es": "Zonas de servicio",
+    "pt-BR": "Áreas de serviço",
+    "ar": "مناطق الخدمة"
+  },
+  "מטפלים בבית\nבלי רעש מיותר.": {
+    "en": "We take care of the house\nwithout extra noise.",
+    "es": "Cuidamos la casa\nsin ruido de más.",
+    "pt-BR": "Cuidamos da casa\nsem ruído a mais.",
+    "ar": "نعالج البيت\nبلا ضجيج زائد."
+  },
+  "בעל מקצוע עובד בסדנת שיפוצים עם כלי עבודה וחומרי בניה": {
+    "en": "A tradesperson working in a renovation workshop with tools and building materials",
+    "es": "Un profesional trabajando en un taller de reformas con herramientas y materiales",
+    "pt-BR": "Um profissional a trabalhar numa oficina de obras com ferramentas e materiais",
+    "ar": "صاحب مهنة يعمل في ورشة ترميم مع أدوات ومواد بناء"
+  },
+  "תחומי עבודה": {
+    "en": "What we work on",
+    "es": "Áreas de trabajo",
+    "pt-BR": "Áreas de trabalho",
+    "ar": "مجالات العمل"
+  },
+  "שירותי בית שמחזיקים לאורך זמן": {
+    "en": "Home services that last",
+    "es": "Servicios para el hogar que duran",
+    "pt-BR": "Serviços para casa que duram",
+    "ar": "خدمات بيت تصمد مع الوقت"
+  },
+  "אנחנו עובדים במודל צוותים: בעל מקצוע מוביל, עוזר שטח, מוקד תיאום וחלקי חילוף זמינים ברכב.": {
+    "en": "We work in crews: a lead tradesperson, a site helper, a dispatch desk, and spare parts ready in the van.",
+    "es": "Trabajamos en equipos: un profesional al frente, un ayudante, una centralita y recambios listos en el coche.",
+    "pt-BR": "Trabalhamos em equipas: um profissional à frente, um ajudante, um centro de coordenação e peças no carro.",
+    "ar": "نعمل بنموذج فرق: صاحب مهنة يقود ومساعد ميداني ومركز تنسيق وقطع غيار جاهزة في السيارة."
+  },
+  "אינסטלציה": {
+    "en": "Plumbing",
+    "es": "Fontanería",
+    "pt-BR": "Canalização",
+    "ar": "سباكة"
+  },
+  "איתור נזילות, פתיחת סתימות, החלפת צנרת, התקנת כלים סניטריים וטיפול בלחץ מים חלש.": {
+    "en": "Leak detection, unblocking drains, pipe replacement, sanitary fittings, and low water-pressure fixes.",
+    "es": "Detectar fugas, abrir atascos, cambiar tuberías, instalar sanitarios y tratar la baja presión.",
+    "pt-BR": "Deteção de fugas, desentupimentos, troca de tubagem, sanitários e pressão fraca de água.",
+    "ar": "كشف التسريبات وفتح الانسدادات وتبديل الأنابيب وتركيب الأدوات الصحية ومعالجة ضعف ضغط الماء."
+  },
+  "תיקון קצרים, לוחות חשמל, נקודות כוח, תאורה, הכנה למזגן ובדיקת עומסים לפני שיפוץ.": {
+    "en": "Short-circuit repairs, electrical boards, power points, lighting, A/C prep, and load checks before a renovation.",
+    "es": "Reparar cortocircuitos, cuadros, tomas, iluminación, preparación de aire y revisión de cargas.",
+    "pt-BR": "Reparar curtos, quadros, tomadas, iluminação, preparação de ar e verificação de cargas.",
+    "ar": "إصلاح دارات القصر ولوحات الكهرباء ونقاط القوة والإضاءة وتجهيز المكيّف وفحص الأحمال قبل الترميم."
+  },
+  "חדרי רחצה, מטבחים, גבס, צבע, ריצוף ותיקוני גמר מדויקים אחרי נזקי מים או בלאי.": {
+    "en": "Bathrooms, kitchens, drywall, paint, flooring, and precise finishing after water damage or wear.",
+    "es": "Baños, cocinas, pladur, pintura, suelos y acabados precisos tras daños de agua o desgaste.",
+    "pt-BR": "Casas de banho, cozinhas, gesso, tinta, piso e acabamentos precisos após danos de água ou desgaste.",
+    "ar": "حمامات ومطابخ وجبس ودهان وبلاط وتشطيب دقيق بعد أضرار الماء أو التآكل."
+  },
+  "תחזוקה שוטפת": {
+    "en": "Ongoing maintenance",
+    "es": "Mantenimiento continuo",
+    "pt-BR": "Manutenção contínua",
+    "ar": "صيانة جارية"
+  },
+  "ביקורי תחזוקה לבניינים, דירות להשכרה, משרדים קטנים ונכסים לפני מסירה.": {
+    "en": "Maintenance visits for buildings, rental flats, small offices, and properties before handover.",
+    "es": "Visitas de mantenimiento a edificios, pisos de alquiler, oficinas pequeñas y fincas antes de la entrega.",
+    "pt-BR": "Visitas de manutenção a prédios, apartamentos para alugar, escritórios pequenos e imóveis antes da entrega.",
+    "ar": "زيارات صيانة للمباني والشقق المؤجرة والمكاتب الصغيرة والعقارات قبل التسليم."
+  },
+  "טיפולים שנבנים סביב העור, השיער והקצב שלך": {
+    "en": "Treatments built around your skin, hair, and pace",
+    "es": "Tratamientos pensados para tu piel, tu cabello y tu ritmo",
+    "pt-BR": "Tratamentos pensados para a sua pele, o seu cabelo e o seu ritmo",
+    "ar": "علاجات تُبنى حول بشرتكِ وشعركِ وإيقاعكِ"
+  },
+  "כל טיפול מתחיל באבחון קצר וממשיך לפרוטוקול מותאם אישית: בלי עומס, בלי הבטחות ריקות, עם תשומת לב לפרטים הקטנים.": {
+    "en": "Every treatment starts with a short diagnosis and continues into a personal protocol: no overload, no empty promises, with attention to the small details.",
+    "es": "Cada tratamiento empieza con un diagnóstico breve y sigue un protocolo personal: sin sobrecarga, sin promesas vacías y con atención a los detalles.",
+    "pt-BR": "Cada tratamento começa com um diagnóstico curto e segue um protocolo pessoal: sem excesso, sem promessas vazias e com atenção aos detalhes.",
+    "ar": "كل علاج يبدأ بتشخيص قصير ويستمر ببروتوكول شخصي: بلا إثقال وبلا وعود فارغة مع انتباه للتفاصيل."
+  },
+  "לפני ואחרי: שינוי שמרגיש טבעי": {
+    "en": "Before and after: a change that still feels like you",
+    "es": "Antes y después: un cambio que se siente natural",
+    "pt-BR": "Antes e depois: uma mudança que parece natural",
+    "ar": "قبل وبعد: تغيير يبدو طبيعياً"
+  },
+  "אנחנו מחפשות תוצאה שנראית כמו את ביום הטוב ביותר שלך: מרקם אחיד יותר, ברק בריא וקווים רכים שמכבדים את תווי הפנים.": {
+    "en": "We look for a result that looks like you on your best day: a more even texture, a healthy glow, and soft lines that respect the face.",
+    "es": "Buscamos un resultado que se parezca a ti en tu mejor día: textura más uniforme, brillo sano y líneas suaves que respetan el rostro.",
+    "pt-BR": "Procuramos um resultado que pareça você no seu melhor dia: textura mais uniforme, brilho saudável e linhas suaves que respeitam o rosto.",
+    "ar": "نبحث عن نتيجة تشبهكِ في أفضل أيامك: ملمس أكثر انتظاماً ولمعان صحي وخطوط ناعمة تحترم ملامح الوجه."
+  },
+  "מוצרים שעובדים בשקט": {
+    "en": "Products that work quietly",
+    "es": "Productos que trabajan en silencio",
+    "pt-BR": "Produtos que trabalham em silêncio",
+    "ar": "منتجات تعمل بهدوء"
+  },
+  "המדף שלנו נבחר כמו מערכת טיפוח מקצועית: פורמולות נקיות, ריכוזים פעילים ומרקמים שממשיכים את העבודה גם בבית.": {
+    "en": "Our shelf is chosen like a professional care system: clean formulas, active concentrations, and textures that keep working at home.",
+    "es": "Elegimos el lineal como un sistema profesional: fórmulas limpias, concentraciones activas y texturas que siguen trabajando en casa.",
+    "pt-BR": "Escolhemos a prateleira como um sistema profissional: fórmulas limpas, concentrações ativas e texturas que continuam a trabalhar em casa.",
+    "ar": "رفّنا مختار كنظام عناية مهني: تركيبات نظيفة وتركيزات فعّالة وملامس تواصل العمل في البيت."
+  },
+  "צוות שמבין יופי לעומק": {
+    "en": "A team that understands beauty in depth",
+    "es": "Un equipo que entiende la belleza a fondo",
+    "pt-BR": "Uma equipe que entende beleza a fundo",
+    "ar": "فريق يفهم الجمال بعمق"
+  },
+  "מטפלות, מעצבות ואמניות גוון שעובדות בשפה אחת: אבחון מדויק, יד עדינה וסטנדרט אסתטי גבוה.": {
+    "en": "Therapists, stylists, and color artists who work in one language: a precise diagnosis, a gentle hand, and a high aesthetic standard.",
+    "es": "Terapeutas, estilistas y artistas de color que hablan el mismo idioma: diagnóstico preciso, mano suave y un listón estético alto.",
+    "pt-BR": "Terapeutas, estilistas e artistas de cor que falam a mesma língua: diagnóstico preciso, mão suave e um padrão estético alto.",
+    "ar": "معالجات ومصففات وفنانات لون يعملن بلغة واحدة: تشخيص دقيق ويد لطيفة ومعيار جمالي عالٍ."
+  },
+  "חבילות טיפוח": {
+    "en": "Care packages",
+    "es": "Packs de cuidado",
+    "pt-BR": "Pacotes de cuidado",
+    "ar": "باقات عناية"
+  },
+  "בחרי מסלול שמתאים למטרה שלך. ניתן להתאים כל חבילה לאחר שיחת ייעוץ קצרה בסטודיו.": {
+    "en": "Choose a path that matches your goal. Every package can be tailored after a short studio consult.",
+    "es": "Elige un recorrido que encaje con tu objetivo. Cada pack se puede ajustar tras una consulta breve.",
+    "pt-BR": "Escolha um percurso que combine com o seu objetivo. Cada pacote pode ser ajustado após uma consulta curta.",
+    "ar": "اختاري مساراً يناسب هدفك. يمكن ملاءمة كل باقة بعد استشارة قصيرة في الاستوديو."
+  },
+  "שאלות לפני שמתחילות": {
+    "en": "Questions before you start",
+    "es": "Preguntas antes de empezar",
+    "pt-BR": "Perguntas antes de começar",
+    "ar": "أسئلة قبل أن تبدأن"
+  },
+  "כמה תשובות שעוזרות להגיע רגועות ומוכנות לפגישה הראשונה.": {
+    "en": "A few answers that help you arrive calm and ready for the first visit.",
+    "es": "Unas respuestas que ayudan a llegar tranquilas y listas para la primera cita.",
+    "pt-BR": "Algumas respostas que ajudam a chegar calmas e prontas para a primeira visita.",
+    "ar": "بعض الإجابات التي تساعدكن على الوصول هادئات وجاهزات للزيارة الأولى."
+  },
+  "הפיד": {
+    "en": "The feed",
+    "es": "El feed",
+    "pt-BR": "O feed",
+    "ar": "الخلاصة"
+  },
+  "צוותי פיתוח מובילים כבר קוראים ב-Fluxora": {
+    "en": "Leading product teams already read on Fluxora",
+    "es": "Los equipos de producto líderes ya leen en Fluxora",
+    "pt-BR": "As equipes de produto líderes já leem na Fluxora",
+    "ar": "فرق التطوير الرائدة تقرأ بالفعل على Fluxora"
+  },
+  "הפיד החכם": {
+    "en": "The smart feed",
+    "es": "El feed inteligente",
+    "pt-BR": "O feed inteligente",
+    "ar": "الخلاصة الذكية"
+  },
+  "תוכן מקצועי שמותאם בדיוק לתחומי העניין שלכם.": {
+    "en": "Professional content matched to your interests.",
+    "es": "Contenido profesional ajustado a vuestros intereses.",
+    "pt-BR": "Conteúdo profissional ajustado aos vossos interesses.",
+    "ar": "محتوى مهني ملائم تماماً لاهتماماتكم."
+  },
+  "איך צוותים משלבים מודלים בשגרת הפיתוח": {
+    "en": "How teams fold models into the development routine",
+    "es": "Cómo los equipos meten modelos en la rutina de desarrollo",
+    "pt-BR": "Como as equipes integram modelos na rotina de desenvolvimento",
+    "ar": "كيف تدمج الفرق النماذج في روتين التطوير"
+  },
+  "דפוסי ביצועים ל-React ב-2026": {
+    "en": "React performance patterns in 2026",
+    "es": "Patrones de rendimiento de React en 2026",
+    "pt-BR": "Padrões de desempenho de React em 2026",
+    "ar": "أنماط أداء React في 2026"
+  },
+  "Pipeline יציב בלי תחזוקה אינסופית": {
+    "en": "A stable pipeline without endless upkeep",
+    "es": "Un pipeline estable sin mantenimiento infinito",
+    "pt-BR": "Um pipeline estável sem manutenção infinita",
+    "ar": "خط أنابيب ثابت بلا صيانة لا تنتهي"
+  },
+  "איך בונים תרבות למידה בצוות הנדסה": {
+    "en": "How to build a learning culture on an engineering team",
+    "es": "Cómo construir una cultura de aprendizaje en un equipo de ingeniería",
+    "pt-BR": "Como construir uma cultura de aprendizagem numa equipe de engenharia",
+    "ar": "كيف تبنون ثقافة تعلّم في فريق هندسة"
+  },
+  "יכולות": {
+    "en": "Capabilities",
+    "es": "Capacidades",
+    "pt-BR": "Capacidades",
+    "ar": "قدرات"
+  },
+  "כל מה שצריך כדי להישאר חדים — במקום אחד.": {
+    "en": "Everything you need to stay sharp — in one place.",
+    "es": "Todo lo que hace falta para seguir afilados, en un solo sitio.",
+    "pt-BR": "Tudo o que precisam para se manterem afiados — num só lugar.",
+    "ar": "كل ما تحتاجونه لتبقوا حادّين — في مكان واحد."
+  },
+  "פיד מותאם אישית": {
+    "en": "A personal feed",
+    "es": "Un feed personalizado",
+    "pt-BR": "Um feed personalizado",
+    "ar": "خلاصة مخصصة"
+  },
+  "אלגוריתם שלומד את תחומי העניין שלכם ומציף רק תוכן רלוונטי — בלי רעש.": {
+    "en": "An algorithm that learns your interests and surfaces only relevant content — without the noise.",
+    "es": "Un algoritmo que aprende vuestros intereses y muestra solo lo relevante, sin ruido.",
+    "pt-BR": "Um algoritmo que aprende os vossos interesses e mostra só o relevante — sem ruído.",
+    "ar": "خوارزمية تتعلم اهتماماتكم وتُظهر المحتوى المناسب فقط — بلا ضجيج."
+  },
+  "ביטוחים": {
+    "en": "Insurance",
+    "es": "Seguros",
+    "pt-BR": "Seguros",
+    "ar": "تأمينات"
+  },
+  "רפואה רגועה,\nמדויקת ואנושית.": {
+    "en": "Calm medicine,\nprecise and human.",
+    "es": "Medicina serena,\nprecisa y humana.",
+    "pt-BR": "Medicina calma,\nprecisa e humana.",
+    "ar": "طب هادئ،\nدقيق وإنساني."
+  },
+  "כל שירותי המרפאה תחת קורת גג אחת": {
+    "en": "Every clinic service under one roof",
+    "es": "Todos los servicios de la clínica bajo un mismo techo",
+    "pt-BR": "Todos os serviços da clínica sob o mesmo teto",
+    "ar": "كل خدمات العيادة تحت سقف واحد"
+  },
+  "מרפאה מתוכננת למסלול טיפול רציף: מהתייעצות ראשונית, דרך בדיקות ואבחון, ועד בניית תוכנית טיפול מותאמת עם רופא מומחה.": {
+    "en": "A clinic designed for a continuous path: from the first consult, through tests and diagnosis, to a tailored plan with a specialist.",
+    "es": "Una clínica pensada para un recorrido continuo: de la primera consulta a las pruebas y un plan con un especialista.",
+    "pt-BR": "Uma clínica pensada para um percurso contínuo: da primeira consulta aos exames e a um plano com um especialista.",
+    "ar": "عيادة مصممة لمسار علاج متصل: من الاستشارة الأولى عبر الفحوص والتشخيص حتى خطة مخصصة مع طبيب اختصاصي."
+  },
+  "רפואת משפחה ופנימית": {
+    "en": "Family and internal medicine",
+    "es": "Medicina de familia e interna",
+    "pt-BR": "Medicina de família e interna",
+    "ar": "طب أسرة وباطنة"
+  },
+  "מעקב רפואי שוטף, איזון מחלות כרוניות, בדיקות תקופתיות והפניות ממוקדות להמשך בירור.": {
+    "en": "Ongoing medical follow-up, chronic-care balance, periodic exams, and focused referrals.",
+    "es": "Seguimiento médico, equilibrio de crónicos, revisiones periódicas y derivaciones concretas.",
+    "pt-BR": "Acompanhamento médico, equilíbrio de crónicos, exames periódicos e encaminhamentos concretos.",
+    "ar": "متابعة طبية جارية وموازنة أمراض مزمنة وفحوص دورية وتحويلات مركّزة."
+  },
+  "קרדיולוגיה מניעתית": {
+    "en": "Preventive cardiology",
+    "es": "Cardiología preventiva",
+    "pt-BR": "Cardiologia preventiva",
+    "ar": "طب قلب وقائي"
+  },
+  "הערכות סיכון, אק״ג, אקו לב ותוכנית מניעה אישית למטופלים עם רקע משפחתי או תסמינים.": {
+    "en": "Risk assessments, ECG, echo, and a personal prevention plan for patients with family history or symptoms.",
+    "es": "Evaluaciones de riesgo, ECG, eco y un plan de prevención para pacientes con antecedentes o síntomas.",
+    "pt-BR": "Avaliações de risco, ECG, eco e um plano de prevenção para pacientes com antecedentes ou sintomas.",
+    "ar": "تقييمات خطر وتخطيط قلب وإيكو وخطة وقاية شخصية لمن لديهم تاريخ عائلي أو أعراض."
+  },
+  "רפואת נשים": {
+    "en": "Women's health",
+    "es": "Ginecología",
+    "pt-BR": "Saúde da mulher",
+    "ar": "طب نساء"
+  },
+  "בדיקות שגרה, ייעוץ הורמונלי, מעקב הריון ראשוני וליווי דיסקרטי בסביבה רגועה.": {
+    "en": "Routine exams, hormone advice, early pregnancy follow-up, and discreet care in a calm room.",
+    "es": "Revisiones, consejo hormonal, seguimiento de embarazo inicial y acompañamiento discreto.",
+    "pt-BR": "Exames de rotina, aconselhamento hormonal, acompanhamento inicial de gravidez e cuidado discreto.",
+    "ar": "فحوص روتينية واستشارة هرمونية ومتابعة حمل أولى ومرافقة هادئة في بيئة مطمئنة."
+  },
+  "אורתופדיה וכאב": {
+    "en": "Orthopedics and pain",
+    "es": "Ortopedia y dolor",
+    "pt-BR": "Ortopedia e dor",
+    "ar": "عظام وألم"
+  },
+  "אבחון פציעות, כאבי גב ומפרקים, תוכנית שיקום והפניה להדמיה או טיפול מתקדם לפי צורך.": {
+    "en": "Injury diagnosis, back and joint pain, a rehab plan, and imaging or advanced care when needed.",
+    "es": "Diagnóstico de lesiones, dolor de espalda y articulaciones, plan de rehabilitación e imagen si hace falta.",
+    "pt-BR": "Diagnóstico de lesões, dores nas costas e articulações, plano de reabilitação e imagem se for preciso.",
+    "ar": "تشخيص إصابات وآلام ظهر ومفاصل وخطة تأهيل وتحويل للتصوير أو علاج متقدم عند الحاجة."
+  },
+  "שולחן מסעדה אלגנטי עם מנות שף ונרות באווירה חמה": {
+    "en": "An elegant restaurant table with chef plates and candles in a warm room",
+    "es": "Una mesa elegante con platos de chef y velas en un ambiente cálido",
+    "pt-BR": "Uma mesa elegante com pratos de chef e velas num ambiente quente",
+    "ar": "طاولة مطعم أنيقة مع أطباق شيف وشموع في أجواء دافئة"
+  },
+  "תפריט הערב": {
+    "en": "Evening menu",
+    "es": "Menú de noche",
+    "pt-BR": "Cardápio da noite",
+    "ar": "قائمة المساء"
+  },
+  "מנות שנבנות מדי שבוע סביב ירקות שוק, דגים טריים, בשר מיושן וטכניקות ים-תיכוניות נקיות.": {
+    "en": "Dishes built each week around market vegetables, fresh fish, aged meat, and clean Mediterranean technique.",
+    "es": "Platos que se construyen cada semana con verdura de mercado, pescado fresco, carne madurada y técnica mediterránea.",
+    "pt-BR": "Pratos construídos cada semana com legumes de mercado, peixe fresco, carne maturada e técnica mediterrânica.",
+    "ar": "أطباق تُبنى كل أسبوع حول خضار السوق وسمك طازج ولحم معتّق وتقنية متوسطية نظيفة."
+  },
+  "טעימות נבחרות מהמטבח": {
+    "en": "Selected tastes from the kitchen",
+    "es": "Degustaciones de la cocina",
+    "pt-BR": "Provas escolhidas da cozinha",
+    "ar": "تذوقات مختارة من المطبخ"
+  },
+  "טרטר דג ים, הדרים ושמן עשבי בר": {
+    "en": "Sea-fish tartare, citrus, and wild-herb oil",
+    "es": "Tártaro de pescado, cítricos y aceite de hierbas silvestres",
+    "pt-BR": "Tártaro de peixe, cítricos e azeite de ervas silvestres",
+    "ar": "تارتار سمك بحر وحمضيات وزيت أعشاب برية"
+  },
+  "דג יומי קצוץ ידנית, איולי לימון כבוש, צלפים וקריספ שאלוט.": {
+    "en": "Daily fish chopped by hand, pickled-lemon aioli, capers, and crisp shallot.",
+    "es": "Pescado del día picado a mano, alioli de limón encurtido, alcaparras y chalota crujiente.",
+    "pt-BR": "Peixe do dia picado à mão, aioli de limão em conserva, alcaparras e chalota crocante.",
+    "ar": "سمك اليوم مفروم يدوياً وأيولي ليمون مخلل وكبر وشالوت مقرمش."
+  },
+  "סלקים צלויים, לאבנה כבשים ופיסטוק": {
+    "en": "Roasted beets, sheep labneh, and pistachio",
+    "es": "Remolachas asadas, labneh de oveja y pistacho",
+    "pt-BR": "Beterrabas assadas, labneh de ovelha e pistácio",
+    "ar": "شمندر مشوي ولبنة غنم وفستق"
+  },
+  "ירקות אדמה מהטאבון, ויניגרט רימונים ועלי זעתר צעיר.": {
+    "en": "Root vegetables from the tabun, pomegranate vinaigrette, and young za'atar leaves.",
+    "es": "Raíces del horno de leña, vinagreta de granada y hojas jóvenes de zaatar.",
+    "pt-BR": "Raízes do forno de lenha, vinagrete de romã e folhas jovens de zaatar.",
+    "ar": "خضار أرض من التنور وتتبيلة رمان وأوراق زعتر صغيرة."
+  },
+  "ניוקי תפוחי אדמה, חמאת מרווה ופרמזן": {
+    "en": "Potato gnocchi, sage butter, and parmesan",
+    "es": "Ñoquis de patata, mantequilla de salvia y parmesano",
+    "pt-BR": "Nhoque de batata, manteiga de sálvia e parmesão",
+    "ar": "نيوكي بطاطا وزبدة مريمية وبارميزان"
+  },
+  "ניוקי רך בעבודת יד, ציר ירקות עמוק, אגוזי לוז קלויים.": {
+    "en": "Hand-made soft gnocchi, a deep vegetable jus, and toasted hazelnuts.",
+    "es": "Ñoquis suaves hechos a mano, un jugo de verduras profundo y avellanas tostadas.",
+    "pt-BR": "Nhoque macio feito à mão, um fundo de legumes profundo e avelãs torradas.",
+    "ar": "نيوكي ناعم يدوياً ومرق خضار عميق وبندق محمص."
+  },
+  "בר ים על גחלים, קרם שומר ועגבניות חרוכות": {
+    "en": "Sea bass on coals, fennel cream, and blistered tomatoes",
+    "es": "Lubina a las brasas, crema de hinojo y tomates chamuscados",
+    "pt-BR": "Robalo nas brasas, creme de funcho e tomates queimados",
+    "ar": "قاروص على الجمر وكريمة شومر وطماطم محروقة"
+  },
+  "פילה דג צרוב בעדינות עם ירוקים מרירים וציר עצמות קל.": {
+    "en": "A gently seared fillet with bitter greens and a light bone jus.",
+    "es": "Un filete sellado con suavidad, verdes amargos y un jugo de huesos ligero.",
+    "pt-BR": "Um filé selado com suavidade, verdes amargos e um fundo de ossos leve.",
+    "ar": "فيليه سمك محمر بلطف مع خضار مرة ومرق عظام خفيف."
+  },
+  "יועץ נדל״ן אישי": {
+    "en": "A personal real-estate advisor",
+    "es": "Un asesor inmobiliario personal",
+    "pt-BR": "Um consultor imobiliário pessoal",
+    "ar": "مستشار عقاري شخصي"
+  },
+  "נדל״ן שמרגיש אישי": {
+    "en": "Real estate that feels personal",
+    "es": "Inmobiliaria que se siente personal",
+    "pt-BR": "Imobiliário que parece pessoal",
+    "ar": "عقار يشعر بالخصوصية"
+  },
+  "צפייה בנכסים": {
+    "en": "See the listings",
+    "es": "Ver inmuebles",
+    "pt-BR": "Ver imóveis",
+    "ar": "مشاهدة العقارات"
+  },
+  "ליווי נדל״ן פרטי": {
+    "en": "Private real-estate guidance",
+    "es": "Acompañamiento inmobiliario privado",
+    "pt-BR": "Acompanhamento imobiliário privado",
+    "ar": "مرافقة عقارية خاصة"
+  },
+  "רשת מקצועית": {
+    "en": "A professional network",
+    "es": "Una red profesional",
+    "pt-BR": "Uma rede profissional",
+    "ar": "شبكة مهنية"
+  },
+  "החלטות נדל״ן גדולות צריכות ליווי רגוע ומדויק.": {
+    "en": "Big real-estate decisions need calm, precise guidance.",
+    "es": "Las decisiones inmobiliarias grandes necesitan un acompañamiento sereno y preciso.",
+    "pt-BR": "Decisões imobiliárias grandes precisam de um acompanhamento calmo e preciso.",
+    "ar": "قرارات العقار الكبيرة تحتاج مرافقة هادئة ودقيقة."
+  },
+  "קצת עליי": {
+    "en": "A little about me",
+    "es": "Un poco sobre mí",
+    "pt-BR": "Um pouco sobre mim",
+    "ar": "قليل عني"
+  },
+  "ליווי שמסדר את כל התהליך.": {
+    "en": "Guidance that sorts the whole process.",
+    "es": "Un acompañamiento que ordena todo el proceso.",
+    "pt-BR": "Um acompanhamento que organiza o processo inteiro.",
+    "ar": "مرافقة ترتّب العملية كلها."
+  },
+  "מכירה, קנייה, שיווק נכס, סינון פניות ותיאום פגישות — בצורה ברורה, שקטה ומקצועית.": {
+    "en": "Selling, buying, marketing a property, filtering inquiries, and booking meetings — clearly, quietly, and professionally.",
+    "es": "Venta, compra, marketing, filtrar consultas y citar reuniones, de forma clara, serena y profesional.",
+    "pt-BR": "Venda, compra, marketing, filtrar contactos e marcar reuniões — de forma clara, calma e profissional.",
+    "ar": "بيع وشراء وتسويق عقار وفرز الطلبات وتنسيق اللقاءات — بوضوح وهدوء ومهنية."
+  },
+  "ליווי מוכרים": {
+    "en": "Seller guidance",
+    "es": "Acompañamiento a vendedores",
+    "pt-BR": "Acompanhamento a vendedores",
+    "ar": "مرافقة البائعين"
+  },
+  "בניית אסטרטגיית מכירה, הצגת הנכס בצורה נכונה, סינון קונים רציניים וניהול משא ומתן.": {
+    "en": "A sale strategy, presenting the property the right way, filtering serious buyers, and running the negotiation.",
+    "es": "Una estrategia de venta, presentar el inmueble bien, filtrar compradores serios y llevar la negociación.",
+    "pt-BR": "Uma estratégia de venda, apresentar o imóvel bem, filtrar compradores sérios e conduzir a negociação.",
+    "ar": "بناء استراتيجية بيع وعرض العقار بالطريقة الصحيحة وفرز مشترين جادين وإدارة التفاوض."
+  },
+  "מה חשוב לדעת לפני שמתחילים?": {
+    "en": "What should you know before you start?",
+    "es": "¿Qué hay que saber antes de empezar?",
+    "pt-BR": "O que é importante saber antes de começar?",
+    "ar": "ما المهم معرفته قبل أن تبدأوا؟"
+  },
+  "מנות — כל מה שצריך לדעת.": {
+    "en": "Dishes — everything you need to know.",
+    "es": "Platos: todo lo que hay que saber.",
+    "pt-BR": "Pratos — tudo o que precisam de saber.",
+    "ar": "أطباق — كل ما تحتاجون معرفته."
+  },
+  "בואו נמצא את הבית הבא": {
+    "en": "Let's find the next home",
+    "es": "Encontremos la siguiente casa",
+    "pt-BR": "Vamos encontrar a próxima casa",
+    "ar": "لنجد البيت التالي"
+  },
+  "פרויקטים נבחרים": {
+    "en": "Selected projects",
+    "es": "Proyectos seleccionados",
+    "pt-BR": "Projetos selecionados",
+    "ar": "مشاريع مختارة"
+  },
+  "נדל״ן ומקרקעין": {
+    "en": "Real estate and property",
+    "es": "Inmobiliario y bienes raíces",
+    "pt-BR": "Imobiliário e propriedade",
+    "ar": "عقار وأملاك"
+  },
+  "בניית אסטרטגיה": {
+    "en": "Building a strategy",
+    "es": "Construir una estrategia",
+    "pt-BR": "Construir uma estratégia",
+    "ar": "بناء استراتيجية"
+  },
+  "הרפתקת הלמידה": {
+    "en": "The learning adventure",
+    "es": "La aventura de aprender",
+    "pt-BR": "A aventura da aprendizagem",
+    "ar": "مغامرة التعلّم"
+  },
+  "מחברים מקורות": {
+    "en": "Connecting sources",
+    "es": "Conectar fuentes",
+    "pt-BR": "Ligar fontes",
+    "ar": "ربط المصادر"
+  },
+  "עיצוב וקונספט": {
+    "en": "Design and concept",
+    "es": "Diseño y concepto",
+    "pt-BR": "Design e conceito",
+    "ar": "تصميم ومفهوم"
+  },
+  "קבוצות קטנות": {
+    "en": "Small groups",
+    "es": "Grupos pequeños",
+    "pt-BR": "Grupos pequenos",
+    "ar": "مجموعات صغيرة"
+  },
+  "הזמנת אודישן": {
+    "en": "Book an audition",
+    "es": "Reservar un casting",
+    "pt-BR": "Marcar um teste",
+    "ar": "حجز تجربة أداء"
+  },
+  "הצוות הרפואי": {
+    "en": "The medical team",
+    "es": "El equipo médico",
+    "pt-BR": "A equipe médica",
+    "ar": "الفريق الطبي"
+  },
+  "טופס להורים": {
+    "en": "A form for parents",
+    "es": "Formulario para padres",
+    "pt-BR": "Formulário para pais",
+    "ar": "نموذج للأهل"
+  },
+  "הרשמה לקורס": {
+    "en": "Course signup",
+    "es": "Inscripción al curso",
+    "pt-BR": "Inscrição no curso",
+    "ar": "التسجيل في الدورة"
+  },
+  "טופס בלעדי": {
+    "en": "Exclusive form",
+    "es": "Formulario exclusivo",
+    "pt-BR": "Formulário exclusivo",
+    "ar": "نموذج حصري"
+  },
+  "בקשת ליווי": {
+    "en": "Request guidance",
+    "es": "Pedir acompañamiento",
+    "pt-BR": "Pedir acompanhamento",
+    "ar": "طلب مرافقة"
+  },
+  "מה אומרים": {
+    "en": "What people say",
+    "es": "Qué dicen",
+    "pt-BR": "O que dizem",
+    "ar": "ماذا يقولون"
+  },
+  "תיקון צבע": {
+    "en": "Paint repair",
+    "es": "Reparación de color",
+    "pt-BR": "Reparação de cor",
+    "ar": "إصلاح اللون"
+  },
+  "הזמנה רכה": {
+    "en": "A soft invitation",
+    "es": "Una invitación suave",
+    "pt-BR": "Um convite suave",
+    "ar": "دعوة لطيفة"
+  },
+  "הזמנת חדר": {
+    "en": "Book a room",
+    "es": "Reservar habitación",
+    "pt-BR": "Reservar quarto",
+    "ar": "حجز غرفة"
+  },
+  "יום ולילה": {
+    "en": "Day and night",
+    "es": "Día y noche",
+    "pt-BR": "Dia e noite",
+    "ar": "نهار وليل"
+  },
+  "טופס הגשה": {
+    "en": "Submission form",
+    "es": "Formulario de envío",
+    "pt-BR": "Formulário de envio",
+    "ar": "نموذج تقديم"
+  },
+  "הרשמה לקורס שפה": {
+    "en": "Language-course signup",
+    "es": "Inscripción a un curso de idioma",
+    "pt-BR": "Inscrição num curso de língua",
+    "ar": "التسجيل في دورة لغة"
+  },
+  "אנליטיקה": {
+    "en": "Analytics",
+    "es": "Analítica",
+    "pt-BR": "Analítica",
+    "ar": "تحليلات"
+  },
+  "חדש בקולקציה": {
+    "en": "New in the collection",
+    "es": "Nuevo en la colección",
+    "pt-BR": "Novo na coleção",
+    "ar": "جديد في المجموعة"
+  },
+  "קולקציית נשים": {
+    "en": "Women's collection",
+    "es": "Colección de mujer",
+    "pt-BR": "Coleção feminina",
+    "ar": "مجموعة النساء"
+  },
+  "קולקציית גברים": {
+    "en": "Men's collection",
+    "es": "Colección de hombre",
+    "pt-BR": "Coleção masculina",
+    "ar": "مجموعة الرجال"
+  },
+  "טי שירט אוברסייז": {
+    "en": "Oversized tee",
+    "es": "Camiseta oversized",
+    "pt-BR": "Camiseta oversized",
+    "ar": "تي شيرت واسع"
+  },
+  "הגעות שבועיות למלתחה מודרנית": {
+    "en": "Weekly arrivals for a modern wardrobe",
+    "es": "Llegadas semanales para un guardarropa moderno",
+    "pt-BR": "Chegadas semanais para um guarda-roupa moderno",
+    "ar": "وصولات أسبوعية لخزانة حديثة"
+  },
+  "גדלים כל יום": {
+    "en": "Sizes every day",
+    "es": "Tallas todos los días",
+    "pt-BR": "Tamanhos todos os dias",
+    "ar": "مقاسات كل يوم"
+  },
+  "נלבש על ידי אנשים שמזיזים תרבות": {
+    "en": "Worn by people who move culture",
+    "es": "Lo llevan personas que mueven la cultura",
+    "pt-BR": "Usado por pessoas que movem cultura",
+    "ar": "يرتديه أناس يحرّكون الثقافة"
+  },
+  "בלוק הוכחה חברתית נועז עם שכבות דימויים, אווטארים צפים וסטטיסטיקה חזקה — מושלם לאופנה, סטריטוור, יופי ולייפסטייל.": {
+    "en": "A bold social-proof block with layered imagery, floating avatars, and strong stats — right for fashion, streetwear, beauty, and lifestyle.",
+    "es": "Un bloque de prueba social con capas de imagen, avatares flotantes y estadísticas fuertes: perfecto para moda, streetwear, belleza y lifestyle.",
+    "pt-BR": "Um bloco de prova social com camadas de imagem, avatares flutuantes e estatísticas fortes — certo para moda, streetwear, beleza e lifestyle.",
+    "ar": "بلوك إثبات اجتماعي جريء بطبقات صور وأفاتارات عائمة وإحصاءات قوية — مناسب للأزياء والستريتوير والجمال ونمط الحياة."
+  },
+  "אוהבים את הגזרה": {
+    "en": "They love the cut",
+    "es": "Les encanta el corte",
+    "pt-BR": "Adoram o corte",
+    "ar": "يحبون القصة"
+  },
+  "הפריטים האחרונים": {
+    "en": "The latest pieces",
+    "es": "Las últimas piezas",
+    "pt-BR": "As últimas peças",
+    "ar": "أحدث القطع"
+  },
+  "כרטיסי מוצר עם תמונות גדולות, תגיות, קטגוריות ותמחור נקי. אפשר לחבר אחר כך ללוגיקת החנות.": {
+    "en": "Product cards with large photos, tags, categories, and clean pricing. You can connect store logic later.",
+    "es": "Fichas de producto con fotos grandes, etiquetas, categorías y precios limpios. Luego se puede conectar la tienda.",
+    "pt-BR": "Cartões de produto com fotos grandes, tags, categorias e preços limpos. Depois podem ligar a lógica da loja.",
+    "ar": "بطاقات منتج بصور كبيرة ووسوم وفئات وتسعير نظيف. يمكن ربط منطق المتجر لاحقاً."
+  },
+  "חולצות כותנה": {
+    "en": "Cotton shirts",
+    "es": "Camisas de algodón",
+    "pt-BR": "Camisas de algodão",
+    "ar": "قمصان قطن"
+  },
+  "חולצת משי": {
+    "en": "Silk shirt",
+    "es": "Camisa de seda",
+    "pt-BR": "Camisa de seda",
+    "ar": "قميص حرير"
+  },
+  "הוסף לסל": {
+    "en": "Add to cart",
+    "es": "Añadir al carrito",
+    "pt-BR": "Adicionar ao carrinho",
+    "ar": "أضيفوا إلى السلة"
+  },
+  "חייטות": {
+    "en": "Tailoring",
+    "es": "Sastrería",
+    "pt-BR": "Alfaiataria",
+    "ar": "خياطة"
+  },
+  "בלייזר אוברסייז": {
+    "en": "Oversized blazer",
+    "es": "Blazer oversized",
+    "pt-BR": "Blazer oversized",
+    "ar": "بليزر واسع"
+  },
+  "אורטוור": {
+    "en": "Outerwear",
+    "es": "Abrigos",
+    "pt-BR": "Casacos",
+    "ar": "ملابس خارجية"
+  },
+  "מעיל פוך": {
+    "en": "Down coat",
+    "es": "Abrigo de plumas",
+    "pt-BR": "Casaco de penas",
+    "ar": "معطف ريش"
+  },
+  "פריט נבחר": {
+    "en": "Featured piece",
+    "es": "Pieza destacada",
+    "pt-BR": "Peça em destaque",
+    "ar": "قطعة مختارة"
+  },
+  "הפריט שתלבשו כל יום": {
+    "en": "The piece you will wear every day",
+    "es": "La pieza que os pondréis cada día",
+    "pt-BR": "A peça que vão vestir todos os dias",
+    "ar": "القطعة التي ستلبسونها كل يوم"
+  },
+  "פולובר חצות": {
+    "en": "Midnight pullover",
+    "es": "Jersey medianoche",
+    "pt-BR": "Pulôver meia-noite",
+    "ar": "بلوفر منتصف الليل"
+  },
+  "סל": {
+    "en": "Cart",
+    "es": "Carrito",
+    "pt-BR": "Carrinho",
+    "ar": "سلة"
+  },
+  "חברים": {
+    "en": "Members",
+    "es": "Miembros",
+    "pt-BR": "Membros",
+    "ar": "أعضاء"
+  },
+  "מוגבל": {
+    "en": "Limited",
+    "es": "Limitado",
+    "pt-BR": "Limitado",
+    "ar": "محدود"
+  },
+  "חורף": {
+    "en": "Winter",
+    "es": "Invierno",
+    "pt-BR": "Inverno",
+    "ar": "شتاء"
+  },
+  "לרכישה": {
+    "en": "Shop now",
+    "es": "Comprar",
+    "pt-BR": "Comprar",
+    "ar": "للشراء"
+  },
+  "משלוחים לכל העולם": {
+    "en": "Worldwide shipping",
+    "es": "Envíos a todo el mundo",
+    "pt-BR": "Envios para o mundo todo",
+    "ar": "شحن لكل العالم"
+  },
+  "החזרות חינם": {
+    "en": "Free returns",
+    "es": "Devoluciones gratis",
+    "pt-BR": "Devoluções grátis",
+    "ar": "إرجاع مجاني"
+  },
+  "פליס פרימיום": {
+    "en": "Premium fleece",
+    "es": "Forro premium",
+    "pt-BR": "Fleece premium",
+    "ar": "فليس فاخر"
+  },
+  "בלוקי משלוח מהירים שגורמים לחנות להרגיש אמינה ומלאה.": {
+    "en": "Fast shipping blocks that make the store feel reliable and complete.",
+    "es": "Bloques de envío rápidos que hacen que la tienda se sienta fiable y completa.",
+    "pt-BR": "Blocos de entrega rápidos que fazem a loja parecer fiável e completa.",
+    "ar": "بلوكات شحن سريعة تجعل المتجر يبدو موثوقاً وكاملاً."
+  },
+  "כרטיסי אמון נקיים עם אייקונים, ניגודיות חזקה וטקסט פשוט.": {
+    "en": "Clean trust cards with icons, strong contrast, and simple copy.",
+    "es": "Tarjetas de confianza limpias, con iconos, contraste fuerte y texto simple.",
+    "pt-BR": "Cartões de confiança limpos, com ícones, contraste forte e texto simples.",
+    "ar": "بطاقات ثقة نظيفة بأيقونات وتباين قوي ونص بسيط."
+  }
+}

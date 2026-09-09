@@ -1,11 +1,12 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import { servoraEditorCss } from "./editorCss";
 import ServoraPages from "./pages";
 
 export default function ServoraPreview() {
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="servora"
       className="h-screen min-h-screen w-full bg-[#fff7ed] text-[#111827]"
       style={{

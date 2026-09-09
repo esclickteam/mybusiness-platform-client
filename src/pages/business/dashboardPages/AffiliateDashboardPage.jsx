@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import API from "@api";
@@ -7,6 +8,7 @@ import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function AffiliateDashboardPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
@@ -56,7 +58,7 @@ export default function AffiliateDashboardPage() {
       showCopyStatus(successMessage);
     } catch (err) {
       console.error("Copy failed:", err);
-      alert("Failed to copy");
+      alert(t("leftover.affiliate.copyFailed"));
     }
   };
 
@@ -81,7 +83,7 @@ export default function AffiliateDashboardPage() {
       setCurrentBalance(data.balance || 0);
     } catch (err) {
       console.error(err);
-      setErrorStats("Error loading data");
+      setErrorStats(t("leftover.affiliate.loadError"));
     } finally {
       setLoadingStats(false);
     }
@@ -103,13 +105,13 @@ export default function AffiliateDashboardPage() {
         withCredentials: true,
       });
 
-      alert(response.data.message || "Bank details updated successfully");
+      alert(response.data.message || t("leftover.affiliate.bankUpdated"));
       setShowBankForm(false);
       await refreshStats();
     } catch (error) {
       console.error(error);
       alert(
-        error?.response?.data?.message || "Error updating bank details"
+        error?.response?.data?.message || t("leftover.affiliate.bankUpdateError")
       );
       throw error;
     }
@@ -123,17 +125,17 @@ export default function AffiliateDashboardPage() {
       const amount = Number(payoutAmount);
 
       if (!amount || amount <= 0) {
-        setPayoutError("Please enter a valid amount");
+        setPayoutError(t("leftover.affiliate.invalidAmount"));
         return;
       }
 
       if (amount < 50) {
-        setPayoutError("Minimum payout amount is $50");
+        setPayoutError(t("leftover.affiliate.minPayout"));
         return;
       }
 
       if (amount > currentBalance) {
-        setPayoutError("Amount exceeds available balance");
+        setPayoutError(t("leftover.affiliate.exceedsBalance"));
         return;
       }
 
@@ -145,14 +147,14 @@ export default function AffiliateDashboardPage() {
         { withCredentials: true }
       );
 
-      setPayoutMessage("Payout request sent successfully ✅");
+      setPayoutMessage(`${t("leftover.affiliate.payoutSent")} ✅`);
       setPayoutAmount("");
 
       await refreshStats();
     } catch (err) {
       console.error(err);
       setPayoutError(
-        err?.response?.data?.message || "Failed to send payout request"
+        err?.response?.data?.message || t("leftover.affiliate.payoutFailed")
       );
     } finally {
       setPayoutLoading(false);
@@ -201,7 +203,7 @@ export default function AffiliateDashboardPage() {
 
         <button
           onClick={() =>
-            copyToClipboard(inviteLink, "Invite link copied successfully")
+            copyToClipboard(inviteLink, t("leftover.affiliate.inviteCopied"))
           }
           disabled={!inviteLink}
         >
@@ -273,7 +275,7 @@ export default function AffiliateDashboardPage() {
 
       {/* 📊 MONTHS */}
       <section className="affiliate-stats">
-        {loadingStats && <BizuplyLoader size="lg" label="Loading data..." />}
+        {loadingStats && <BizuplyLoader size="lg" label={t("leftover.affiliate.loading")} />}
         {errorStats && <p>{errorStats}</p>}
 
         {allStats.length > 0 && (
@@ -309,13 +311,13 @@ export default function AffiliateDashboardPage() {
         <div className="payout-box">
           <input
             type="number"
-            placeholder="Enter amount (min $50)"
+            placeholder={t("leftover.affiliate.amountPh")}
             value={payoutAmount}
             onChange={(e) => setPayoutAmount(e.target.value)}
           />
 
           <button onClick={handleRequestPayout} disabled={payoutLoading}>
-            {payoutLoading ? "Sending..." : "Request Payout"}
+            {payoutLoading ? t("leftover.affiliate.sending") : t("leftover.affiliate.requestPayout")}
           </button>
 
           {payoutMessage && <p className="success">{payoutMessage}</p>}

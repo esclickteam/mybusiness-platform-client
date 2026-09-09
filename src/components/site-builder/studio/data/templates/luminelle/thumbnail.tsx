@@ -1,11 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 import { luminelleDefaultData } from "./defaultData";
 
 export default function LuminelleThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden p-5"
       style={{ background: "#E8E4DF", color: "#2A2430", fontFamily: "Outfit, sans-serif" }}
     >
@@ -36,11 +40,9 @@ export default function LuminelleThumbnail() {
             className="mt-5 max-w-[165px] text-[27px] font-bold leading-[1.08]"
             style={{ fontFamily: "'Libre Baskerville', serif" }}
           >
-            טיפוח מדויק, רגוע, בלתי מתפשר.
-          </h3>
+            {tx("טיפוח מדויק, רגוע, בלתי מתפשר.")}</h3>
           <p className="mt-4 text-[11px] leading-5" style={{ color: "#7A736C" }}>
-            סלון יופי בוטיק בשפה נקייה, מקצועית ומעודנת.
-          </p>
+            {tx("סלון יופי בוטיק בשפה נקייה, מקצועית ומעודנת.")}</p>
         </div>
         <div className="overflow-hidden" style={{ background: "#F4F1EC", boxShadow: "0 18px 45px rgba(26,22,28,0.16)" }}>
           <img

@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function FloriqueThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#FFF7FB", color: "#3B1028" }}>
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#FFF7FB", color: "#3B1028" }}>
       <div className="absolute -left-14 -top-8 h-36 w-36 rounded-full blur-3xl" style={{ background: "rgba(225,29,140,0.18)" }} />
       <div className="flex items-center justify-between">
         <span className="text-5xl leading-none" style={{ fontFamily: "\"Great Vibes\", cursive", color: "#E11D8C" }}>Florique</span>
@@ -16,12 +20,11 @@ export default function FloriqueThumbnail() {
         </div>
       </div>
       <div className="mt-5 text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#E11D8C" }}>סטודיו פרחים</p>
-        <h3 className="mx-auto mt-2 max-w-[230px] text-xl font-semibold leading-tight">זרים שנראים כאילו נקטפו מתוך מכתב אהבה.</h3>
+        <p className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#E11D8C" }}>{tx("סטודיו פרחים")}</p>
+        <h3 className="mx-auto mt-2 max-w-[230px] text-xl font-semibold leading-tight">{tx("זרים שנראים כאילו נקטפו מתוך מכתב אהבה.")}</h3>
       </div>
       <div className="absolute bottom-0 left-0 right-0 px-5 py-3 text-center text-xs font-black uppercase tracking-[0.2em] text-white" style={{ background: "#E11D8C" }}>
-        הזמינו זר
-      </div>
+        {tx("הזמינו זר")}</div>
     </div>
   );
 }

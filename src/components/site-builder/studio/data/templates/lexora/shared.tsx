@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import type { RefObject } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { LexoraSeed } from "./lexoraData";
 
 export type LexoraPageKey =
@@ -32,7 +33,7 @@ export function SafeImage({
     "data-visual-media-type": "image",
     "data-resource-type": "image",
     "data-visual-current-src": src,
-    "data-visual-edit-label": alt || "תמונה",
+    "data-visual-edit-label": alt || tx("תמונה"),
     ...(id
       ? {
           "data-visual-edit-id": id,
@@ -197,13 +198,13 @@ export function LexoraHeader({
           <span className="lex-brand-name">{data.brand.name}</span>
         </button>
 
-        <nav className="lex-nav" aria-label="ניווט ראשי">
+        <nav className="lex-nav" aria-label={tx("ניווט ראשי")}>
           <NavButton
             page="services"
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            שירותים
+            {tx("שירותים")}
           </NavButton>
 
           <NavButton
@@ -211,7 +212,7 @@ export function LexoraHeader({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            תיקים
+            {tx("תיקים")}
           </NavButton>
 
           <NavButton
@@ -219,7 +220,7 @@ export function LexoraHeader({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            תהליך
+            {tx("תהליך")}
           </NavButton>
 
           <NavButton
@@ -227,7 +228,7 @@ export function LexoraHeader({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            אודות
+            {tx("אודות")}
           </NavButton>
         </nav>
 
@@ -236,7 +237,7 @@ export function LexoraHeader({
           className="lex-header-cta"
           onClick={() => onNavigate("contact")}
         >
-          ייעוץ משפטי
+          {tx("ייעוץ משפטי")}
         </button>
       </div>
     </header>
@@ -274,7 +275,7 @@ export function ServicesGrid({
 
             <strong>{item.meta}</strong>
 
-            <em>לייעוץ</em>
+            <em>{tx("לייעוץ")}</em>
           </button>
         </Reveal>
       ))}
@@ -312,21 +313,21 @@ export function CasesList({
 
             <div className="lex-case-info">
               <div>
-                <span>מיקום</span>
+                <span>{tx("מיקום")}</span>
                 <strong>{item.location}</strong>
               </div>
               <div>
-                <span>משך טיפול</span>
+                <span>{tx("משך טיפול")}</span>
                 <strong>{item.duration}</strong>
               </div>
               <div>
-                <span>סטטוס</span>
+                <span>{tx("סטטוס")}</span>
                 <strong>{item.status}</strong>
               </div>
             </div>
 
             <button type="button" onClick={() => onNavigate("contact")}>
-              ייעוץ דומה
+              {tx("ייעוץ דומה")}
             </button>
           </div>
         </Reveal>
@@ -372,8 +373,8 @@ export function FaqSection({ data }: { data: LexoraSeed }) {
     <section className="lex-section lex-faq-section">
       <div className="lex-container">
         <Reveal className="lex-center-head">
-          <div className="lex-eyebrow">שאלות נפוצות</div>
-          <h2 className="lex-section-title">מה חשוב לדעת לפני שמתחילים?</h2>
+          <div className="lex-eyebrow">{tx("שאלות נפוצות")}</div>
+          <h2 className="lex-section-title">{tx("מה חשוב לדעת לפני שמתחילים?")}</h2>
         </Reveal>
 
         <div className="lex-faq-list">
@@ -416,26 +417,26 @@ export function ConsultationSection({ data }: { data: LexoraSeed }) {
               data-bizuply-crm-lead="true"
               data-bizuply-form-builder="true" data-bizuply-form-skin="template"
               data-bizuply-form-id="lexora-contact"
-              data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+              data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
             >
               <label>
-                <span>שם מלא</span>
-                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder="השם שלך" />
+                <span>{tx("שם מלא")}</span>
+                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder={tx("השם שלך")} />
               </label>
 
               <label>
-                <span>טלפון</span>
+                <span>{tx("טלפון")}</span>
                 <input type="tel" name="phone" data-bizuply-form-field-id="phone" autoComplete="tel" placeholder="050-0000000" />
               </label>
 
               <label>
-                <span>אימייל</span>
+                <span>{tx("אימייל")}</span>
                 <input type="email" name="email" data-bizuply-form-field-id="email" autoComplete="email" placeholder="name@email.com" />
               </label>
 
               <label>
-                <span>סיבת הפנייה</span>
-                <textarea name="message" data-bizuply-form-field-id="message" placeholder="ספרו בקצרה במה צריך עזרה" />
+                <span>{tx("סיבת הפנייה")}</span>
+                <textarea name="message" data-bizuply-form-field-id="message" placeholder={tx("ספרו בקצרה במה צריך עזרה")} />
               </label>
 
               <button type="submit">{data.consultation.button}</button>
@@ -470,7 +471,7 @@ export function LexoraFooter({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            בית
+            {tx("בית")}
           </NavButton>
 
           <NavButton
@@ -478,7 +479,7 @@ export function LexoraFooter({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            שירותים
+            {tx("שירותים")}
           </NavButton>
 
           <NavButton
@@ -486,7 +487,7 @@ export function LexoraFooter({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            תיקים
+            {tx("תיקים")}
           </NavButton>
 
           <NavButton
@@ -494,7 +495,7 @@ export function LexoraFooter({
             activePage={activePage}
             onNavigate={onNavigate}
           >
-            יצירת קשר
+            {tx("יצירת קשר")}
           </NavButton>
         </nav>
       </div>

@@ -19,7 +19,7 @@ const headingBase = {
   color: "#0f172a",
   fontWeight: "900",
   lineHeight: "1.05",
-  textAlign: "right",
+  textAlign: "start",
 };
 
 const paragraphBase = {
@@ -27,7 +27,7 @@ const paragraphBase = {
   fontSize: "18px",
   fontWeight: "500",
   lineHeight: "1.75",
-  textAlign: "right",
+  textAlign: "start",
 };
 
 export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
@@ -1031,7 +1031,7 @@ export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
     description: "Horizontal row of icons",
     keywords: ["סושיאל", "שורה", "אייקונים"],
     previewHtml:
-      '<div style="display:flex;gap:10px"><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">אי</span><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">לין</span><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">אקס</span></div>',
+      '<div style="display:flex;gap:10px"><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">IG</span><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">in</span><span style="padding:10px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;font-weight:800">X</span></div>',
     nodes: [
       boxNode(
         "wrap",
@@ -1045,9 +1045,9 @@ export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
         "שורת סושיאל",
       ),
       ...[
-        { key: "ig", label: "אי", href: "https://instagram.com", x: 0 },
-        { key: "li", label: "לין", href: "https://linkedin.com", x: 88 },
-        { key: "x", label: "אקס", href: "https://x.com", x: 176 },
+        { key: "ig", label: "IG", href: "https://instagram.com", x: 0 },
+        { key: "li", label: "in", href: "https://linkedin.com", x: 88 },
+        { key: "x", label: "X", href: "https://x.com", x: 176 },
       ].map((item) =>
         buttonNode(
           item.key,

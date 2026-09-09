@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import i18n from "../../../../../i18n/i18n";
+import { localizeBuiltInText } from "../../../../../i18n/templateCopy";
 import { getTextDirection } from "../../../../../i18n/localeUtils";
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
 import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
@@ -15,9 +16,11 @@ function nodeText(
   for (const key of keys) {
     const found = section.nodes.find((n) => n.key === key);
     const text = found?.content?.text;
-    if (typeof text === "string" && text.trim()) return text.trim();
+    if (typeof text === "string" && text.trim()) {
+      return localizeBuiltInText(text.trim(), i18n.language);
+    }
   }
-  return fallback;
+  return localizeBuiltInText(fallback, i18n.language);
 }
 
 function nodeImage(

@@ -87,21 +87,14 @@ export default function AutomationCancelConfirmModal({
         endLabel
           ? t("automations.billing.cancel.toastWithDate", {
               date: endLabel,
-              defaultValue: "החבילה תבוטל בסוף תקופת החיוב ({{date}})",
             })
-          : t(
-              "automations.billing.cancel.toast",
-              "החבילה תבוטל בסוף תקופת החיוב"
-            )
+          : t("automations.billing.cancel.toast")
       );
       onCancelled();
       onClose();
     } catch {
       toast.error(
-        t(
-          "automations.billing.cancel.error",
-          "לא הצלחנו לבטל את החבילה כרגע. נסו שוב."
-        )
+        t("automations.billing.cancel.error")
       );
       setSubmitting(false);
     }
@@ -134,22 +127,15 @@ export default function AutomationCancelConfirmModal({
 
         <h2 id={titleId}>{t("automations.billing.cancelPlan")}</h2>
         <p>
-          {t(
-            "automations.billing.cancel.stayActive",
-            "החבילה תישאר פעילה עד סוף תקופת החיוב הנוכחית."
-          )}
+          {t("automations.billing.cancel.stayActive")}
         </p>
         <p>
-          {t(
-            "automations.billing.cancel.afterCancel",
-            "לאחר מכן אוטומציות לא יוכלו להתחיל פעולות חדשות עד לבחירת חבילה חדשה."
-          )}
+          {t("automations.billing.cancel.afterCancel")}
         </p>
         {periodEnd ? (
           <p className="ax-billing-cancel__date">
             {t("automations.billing.cancel.periodEnd", {
               date: periodEnd,
-              defaultValue: "סוף התקופה: {{date}}",
             })}
           </p>
         ) : null}
@@ -170,7 +156,7 @@ export default function AutomationCancelConfirmModal({
             onClick={() => void handleCancel()}
           >
             {submitting ? <Loader2 size={16} className="ax-billing-spin" /> : null}
-            {t("automations.billing.cancel.confirm", "ביטול החבילה")}
+            {t("automations.billing.cancel.confirm")}
           </button>
         </div>
       </div>

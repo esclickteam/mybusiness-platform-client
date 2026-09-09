@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { glinticaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -107,7 +109,7 @@ function Services({ data }: { data: Record<string, any> }) {
                   <h3 className="t-display mt-1 text-2xl sm:text-4xl font-semibold">{title}</h3>
                 </div>
                 <div className="gl-dots hidden md:block" />
-                <div className="text-left md:text-right">
+                <div className="text-left md:text-start">
                   <p className="mb-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>
                   <p className="t-display text-2xl sm:text-4xl font-semibold text-[var(--p)]">{price}</p>
                 </div>
@@ -144,7 +146,7 @@ function BeforeAfter({ data }: { data: Record<string, any> }) {
                 onClick={() => setCompare(value)}
                 className="border border-[var(--p)]/30 px-4 py-2 text-xs tracking-[0.22em] text-[var(--p)] transition hover:bg-[var(--p)] hover:text-[var(--dark)]"
               >
-                {value === 40 ? "לפני" : value === 50 ? "חצי" : "אחרי"}
+                {value === 40 ? tx("לפני") : value === 50 ? tx("חצי") : tx("אחרי")}
               </button>
             ))}
           </div>
@@ -162,11 +164,11 @@ function BeforeAfter({ data }: { data: Record<string, any> }) {
         >
           <figure className="relative overflow-hidden">
             <img src={getValue(data, "beforeImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-            <figcaption className="absolute bottom-5 right-5 bg-[#1F1A1C]/80 px-4 py-2 text-xs tracking-[0.26em] text-[var(--p)] backdrop-blur">לפני</figcaption>
+            <figcaption className="absolute bottom-5 right-5 bg-[#1F1A1C]/80 px-4 py-2 text-xs tracking-[0.26em] text-[var(--p)] backdrop-blur">{tx("לפני")}</figcaption>
           </figure>
           <figure className="relative overflow-hidden border-r border-[var(--p)]">
             <img src={getValue(data, "afterImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-            <figcaption className="absolute bottom-5 left-5 bg-[var(--p)] px-4 py-2 text-xs font-bold tracking-[0.26em] text-[var(--dark)]">אחרי</figcaption>
+            <figcaption className="absolute bottom-5 left-5 bg-[var(--p)] px-4 py-2 text-xs font-bold tracking-[0.26em] text-[var(--dark)]">{tx("אחרי")}</figcaption>
           </figure>
           <div className="pointer-events-none absolute inset-y-0" style={{ right: `${compare}%` }}>
             <span className="absolute top-1/2 grid h-16 w-16 -translate-y-1/2 translate-x-1/2 place-items-center border border-[var(--p)] bg-[#1F1A1C]/80 text-[var(--p)] backdrop-blur">
@@ -174,7 +176,7 @@ function BeforeAfter({ data }: { data: Record<string, any> }) {
             </span>
           </div>
           <input
-            aria-label="השוואת לפני ואחרי"
+            aria-label={tx("השוואת לפני ואחרי")}
             className="gl-range absolute inset-x-10 bottom-8"
             type="range"
             min="32"
@@ -210,7 +212,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <span className="t-display text-3xl md:text-7xl font-semibold text-white/10">0{index + 1}</span>
                 <div>
                   <h3 className="t-display text-2xl md:text-5xl font-semibold">{title}</h3>
-                  <p className="mt-4 min-h-[84px] text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 min-h-[84px] text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <p className="t-display text-2xl md:text-5xl font-semibold text-[var(--p)]">{price}</p>
               </article>
@@ -294,7 +296,7 @@ function Faq({ data }: { data: Record<string, any> }) {
         <div className="mt-12 border-t border-[var(--p)]/25">
           {faqs.map(([question, answer], index) => (
             <div key={question} className="border-b border-[var(--p)]/25">
-              <button type="button" onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-6 py-6 text-right">
+              <button type="button" onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-6 py-6 text-start">
                 <span className="t-display text-3xl font-semibold">{question}</span>
                 <span className="grid h-10 w-10 shrink-0 place-items-center border border-[var(--p)]/40 text-[var(--p)]">{open === index ? "-" : "+"}</span>
               </button>
@@ -317,19 +319,19 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
         <h2 className="t-display mt-4 text-5xl font-semibold leading-none md:text-7xl">{getValue(data, "contactTitle")}</h2>
         <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
         <CrmBookingMount className="mx-auto mt-10 min-h-[420px] w-full border border-[var(--p)]/25 bg-[#251F22]/70 p-3" accent="#d4a0a7" />
-        <form className="mt-6 grid gap-4 border border-[var(--p)]/25 bg-[#251F22]/70 p-6 text-right md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="glintica-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="תאריך האירוע" name="date" data-bizuply-form-field-id="date" />
-          <textarea className="min-h-[120px] border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="מה תרצי שנדע?" name="message" data-bizuply-form-field-id="message"></textarea>
+        <form className="mt-6 grid gap-4 border border-[var(--p)]/25 bg-[#251F22]/70 p-6 text-start md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="glintica-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-start outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-start outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-start outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder={tx("תאריך האירוע")} name="date" data-bizuply-form-field-id="date" />
+          <textarea className="min-h-[120px] border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-start outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder={tx("מה תרצי שנדע?")} name="message" data-bizuply-form-field-id="message"></textarea>
           <button type="submit" className="gl-button mt-3 px-8 py-4 text-sm font-bold tracking-[0.22em]">
             {getValue(data, "contactButton")}
           </button>
         </form>
         <div className="mt-8 space-y-2 text-sm text-[var(--muted)]">
-          <p><span className="text-[var(--p)]">טלפון</span> · {getValue(data, "phone")}</p>
-          <p><span className="text-[var(--p)]">אימייל</span> · {getValue(data, "email")}</p>
-          <p><span className="text-[var(--p)]">כתובת</span> · {getValue(data, "address")}</p>
+          <p><span className="text-[var(--p)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+          <p><span className="text-[var(--p)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+          <p><span className="text-[var(--p)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
         </div>
       </Reveal>
     </section>
@@ -359,9 +361,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">x</button>
         <h3 className="t-display text-2xl sm:text-4xl font-semibold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="glintica-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="glintica-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="gl-button py-4 text-sm font-bold tracking-[0.22em]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -395,7 +397,7 @@ export default function GlinticaPages(props: GlinticaPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="glintica" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="glintica" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: glinticaEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

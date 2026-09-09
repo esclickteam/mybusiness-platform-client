@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { atelierxDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -201,7 +203,7 @@ function EditorialStory({ data }: { data: Record<string, any> }) {
                 </div>
                 <div className="bg-white p-8 md:p-12">
                   <h3 className="t-display text-5xl font-black leading-none tracking-[-0.06em] md:text-7xl">{title}</h3>
-                  <p className="mt-8 max-w-xl text-xl font-semibold leading-9 text-black/70">{text}</p>
+                  <p className="mt-8 max-w-xl text-xl font-semibold leading-9 text-black/70">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -233,7 +235,7 @@ function ServicesList({ data }: { data: Record<string, any> }) {
               <div className="grid gap-5 border-b border-black py-7 md:grid-cols-[0.2fr_0.42fr_1fr] md:items-baseline">
                 <span className="text-xs font-black uppercase tracking-[0.28em] text-[var(--a)]">0{index + 1}</span>
                 <h3 className="t-display text-4xl font-black tracking-[-0.06em] md:text-6xl">{title}</h3>
-                <p className="text-xl font-semibold leading-8 text-black/65">{text}</p>
+                <p className="text-xl font-semibold leading-8 text-black/65">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -288,16 +290,16 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input aria-label="טלפון" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input aria-label={tx("שם מלא")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input aria-label={tx("טלפון")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <input aria-label="מידה" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מידה"  name="other" data-bizuply-form-field-id="other" />
-              <input aria-label="מועד רצוי" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מועד רצוי"  name="other_2" data-bizuply-form-field-id="other_2" />
+              <input aria-label={tx("מידה")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מידה")}  name="other" data-bizuply-form-field-id="other" />
+              <input aria-label={tx("מועד רצוי")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מועד רצוי")}  name="other_2" data-bizuply-form-field-id="other_2" />
             </div>
-            <textarea aria-label="מה מחפשים" className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מה תרצו למדוד או לאיזה אירוע?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+            <textarea aria-label={tx("מה מחפשים")} className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מה תרצו למדוד או לאיזה אירוע?")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
             <button type="submit" className="mt-8 w-full bg-black px-8 py-4 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:bg-[var(--a)]">
               {getValue(data, "contactButton")}
             </button>
@@ -332,7 +334,7 @@ export default function AtelierxPages({ initialPage = "home", mode = "preview", 
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="atelierx" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="atelierx" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: atelierxEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

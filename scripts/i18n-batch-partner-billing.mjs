@@ -19,6 +19,13 @@ const PARTNER_BRANDING = {
 };
 
 const PARTNER_DEAL = {
+  eyebrow: row(
+    "Deal #{{number}}",
+    "עסקה #{{number}}",
+    "Trato #{{number}}",
+    "Negócio #{{number}}",
+    "صفقة #{{number}}"
+  ),
   confirmingStripe: row(
     "Confirming the payment with Stripe. Commission is not available to withdraw until the customer is activated.",
     "מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל.",

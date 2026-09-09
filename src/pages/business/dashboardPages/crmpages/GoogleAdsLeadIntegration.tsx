@@ -7,10 +7,12 @@ import {
   Info,
   Unplug,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import i18n from "../../../../i18n/i18n";
 import API from "@api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { getApiErrorMessage as getSharedApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 
 type GoogleCustomer = {
   customerId: string;
@@ -70,29 +72,29 @@ type GoogleAdsLeadIntegrationProps = {
 function getApiErrorMessage(err: unknown): string {
   return getSharedApiErrorMessage(
     err,
-    i18n.t("leftover.adsLead.failed", "The action failed. Try again.")
+    i18n.t("crm.googleAds.failed")
   );
 }
 
 function mapGoogleAdsError(raw: string, fallback: string): string {
   const msg = String(raw || "");
   if (/authorization has expired|AUTH_EXPIRED|invalid_grant/i.test(msg)) {
-    return "Your Google authorization has expired. Reconnect Google Ads to continue importing leads.";
+    return i18n.t("crm.googleAds.authExpired");
   }
   if (/revoked|ACCESS_REVOKED/i.test(msg)) {
-    return "Access to Google Ads was revoked. Please reconnect your account.";
+    return i18n.t("crm.googleAds.accessRevoked");
   }
   if (/CUSTOMER_NOT_ENABLED|no longer has access|Account access/i.test(msg)) {
-    return "Bizuply no longer has access to the selected Google Ads account.";
+    return i18n.t("crm.googleAds.noAccess");
   }
   if (/USER_PERMISSION_DENIED|PERMISSION_DENIED|AUTHORIZATION_ERROR/i.test(msg)) {
-    return "Bizuply no longer has access to the selected Google Ads account.";
+    return i18n.t("crm.googleAds.noAccess");
   }
   if (/temporarily unavailable|UNAVAILABLE|503|429/i.test(msg)) {
-    return "Google Ads is temporarily unavailable. We will retry automatically.";
+    return i18n.t("crm.googleAds.temporarilyUnavailable");
   }
   if (/DEVELOPER_TOKEN/i.test(msg)) {
-    return "Google Ads platform configuration is incomplete. Please contact Bizuply support.";
+    return i18n.t("crm.googleAds.configIncomplete");
   }
   if (msg.length > 180 || /[A-Z_]{6,}:/.test(msg)) {
     return fallback;
@@ -100,11 +102,11 @@ function mapGoogleAdsError(raw: string, fallback: string): string {
   return msg || fallback;
 }
 
-function formatDate(value?: string | null) {
+function formatDate(value?: string | null, locale?: string) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("en-US", {
+  return date.toLocaleString(getIntlLocale(locale || i18n.language), {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -117,6 +119,7 @@ export default function GoogleAdsLeadIntegration({
   businessId,
   onBack,
 }: GoogleAdsLeadIntegrationProps) {
+  const { t, i18n: i18nInstance } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
@@ -179,7 +182,7 @@ export default function GoogleAdsLeadIntegration({
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "We could not connect your Google Ads account. Please try again."
+          t("crm.googleAds.connectFailed")
         )
       );
     } finally {
@@ -212,7 +215,7 @@ export default function GoogleAdsLeadIntegration({
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "Bizuply no longer has access to the selected Google Ads account."
+          t("crm.googleAds.noAccess")
         )
       );
     } finally {
@@ -234,12 +237,12 @@ export default function GoogleAdsLeadIntegration({
       setError(
         mapGoogleAdsError(
           decodeURIComponent(googleError),
-          "We could not connect your Google Ads account. Please try again."
+          t("crm.googleAds.connectFailed")
         )
       );
     }
     if (connected) {
-      setSuccess("Google Ads account connected successfully.");
+      setSuccess(t("crm.googleAds.connectedSuccess"));
       setForceSetup(true);
     }
 
@@ -269,7 +272,7 @@ export default function GoogleAdsLeadIntegration({
       );
       if (!data.url) {
         throw new Error(
-          "We could not connect your Google Ads account. Please try again."
+          t("crm.googleAds.connectFailed")
         );
       }
       window.location.href = data.url;
@@ -278,7 +281,7 @@ export default function GoogleAdsLeadIntegration({
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "We could not connect your Google Ads account. Please try again."
+          t("crm.googleAds.connectFailed")
         )
       );
     }
@@ -291,12 +294,12 @@ export default function GoogleAdsLeadIntegration({
       null;
 
     if (!selectedCustomerId) {
-      setError("Select a Google Ads account");
+      setError(t("crm.googleAds.selectAccount"));
       return;
     }
     if (!form) {
       setError(
-        "No accessible Google Ads lead forms were found for this account. Create a Lead Form in Google Ads, then try again."
+        t("crm.googleAds.noForms")
       );
       return;
     }
@@ -328,17 +331,17 @@ export default function GoogleAdsLeadIntegration({
         setError(
           mapGoogleAdsError(
             data.warning || "",
-            "Google Ads is temporarily unavailable. We will retry automatically."
+            t("crm.googleAds.temporarilyUnavailable")
           )
         );
       }
-      setSuccess("Google Ads account connected successfully.");
+      setSuccess(t("crm.googleAds.connectedSuccess"));
       await loadStatus();
     } catch (err) {
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "We could not connect your Google Ads account. Please try again."
+          t("crm.googleAds.connectFailed")
         )
       );
     } finally {
@@ -352,13 +355,13 @@ export default function GoogleAdsLeadIntegration({
       setError("");
       setSuccess("");
       await API.post("/google-ads-leads/send-test", {}, { params: tenantParams });
-      setSuccess("Google Ads test lead created successfully.");
+      setSuccess(t("crm.googleAds.testLeadSuccess"));
       await loadStatus();
     } catch (err) {
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "We could not create the Google Ads test lead. Please try again."
+          t("crm.googleAds.testLeadFailed")
         )
       );
     } finally {
@@ -378,12 +381,12 @@ export default function GoogleAdsLeadIntegration({
       setForms([]);
       setForceSetup(false);
       setConfirmDisconnect(false);
-      setSuccess("Google Ads has been disconnected successfully.");
+      setSuccess(t("crm.googleAds.disconnectSuccess"));
     } catch (err) {
       setError(
         mapGoogleAdsError(
           getApiErrorMessage(err),
-          "We could not disconnect Google Ads. Please try again."
+          t("crm.googleAds.disconnectFailed")
         )
       );
     } finally {
@@ -401,20 +404,23 @@ export default function GoogleAdsLeadIntegration({
   const statusLabel =
     connection.integrationStatus ||
     (connection.enabled
-      ? "Connected"
+      ? t("crm.googleAds.statusConnected")
       : connection.oauthConnected
-        ? "Action Required"
-        : "Disconnected");
+        ? t("crm.googleAds.statusActionRequired")
+        : t("crm.googleAds.statusDisconnected"));
 
   return (
-    <div className="mx-auto w-full min-w-0 max-w-4xl overflow-x-hidden px-2 sm:px-0" dir="ltr">
+    <div
+      className="mx-auto w-full min-w-0 max-w-4xl overflow-x-hidden px-2 sm:px-0"
+      dir={getTextDirection(i18nInstance.language)}
+    >
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="flex items-center justify-between gap-3 bg-[#0F766E] px-5 py-4 text-white">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-teal-100">
-              Google Ads Lead Forms
+              {t("crm.googleAds.eyebrow")}
             </p>
-            <h2 className="mt-1 text-xl font-black">Google Ads Integration</h2>
+            <h2 className="mt-1 text-xl font-black">{t("crm.googleAds.title")}</h2>
           </div>
           {onBack && (
             <button
@@ -423,15 +429,14 @@ export default function GoogleAdsLeadIntegration({
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-white/15 px-3 text-sm font-black text-white transition hover:bg-white/25"
             >
               <ArrowRight className="h-4 w-4 rotate-180" />
-              Back
+              {t("crm.googleAds.back")}
             </button>
           )}
         </div>
 
         <div className="space-y-5 p-5">
           <p className="text-sm font-semibold leading-6 text-slate-600">
-            Connect your Google Ads account to import lead form submissions
-            directly into your Bizuply CRM.
+            {t("crm.googleAds.intro")}
           </p>
 
           <div className="rounded-2xl border border-sky-100 bg-sky-50/80 p-4">
@@ -439,22 +444,16 @@ export default function GoogleAdsLeadIntegration({
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />
               <div>
                 <h3 className="text-sm font-black text-slate-900">
-                  How Bizuply Uses Google Ads Access
+                  {t("crm.googleAds.howTitle")}
                 </h3>
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-                  Bizuply uses Google Ads access to connect the advertising
-                  account selected by the user and import Google Ads lead form
-                  submissions into the Bizuply CRM.
+                  {t("crm.googleAds.howP1")}
                 </p>
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-                  Bizuply does not modify or delete campaigns, ads, budgets, or
-                  account settings. The only write action is configuring the
-                  delivery of new submissions from the lead form selected by
-                  the user so they can reach Bizuply.
+                  {t("crm.googleAds.howP2")}
                 </p>
                 <p className="mt-2 text-xs font-bold text-slate-500">
-                  Only the Google Ads account selected by the user is connected
-                  to this Bizuply workspace.
+                  {t("crm.googleAds.howP3")}
                 </p>
               </div>
             </div>
@@ -480,20 +479,18 @@ export default function GoogleAdsLeadIntegration({
             </div>
           ) : connection.platformReady === false ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold text-amber-900">
-              <p className="font-black">Google Ads platform is not ready</p>
+              <p className="font-black">{t("crm.googleAds.platformNotReady")}</p>
               <p className="mt-2">
-                Bizuply still needs Google Ads API credentials on the server
-                before connections can start.
+                {t("crm.googleAds.platformNotReadyHint")}
               </p>
             </div>
           ) : wizardStep === 1 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
               <h3 className="text-lg font-black text-slate-900">
-                Connect Google Ads
+                {t("crm.googleAds.connectTitle")}
               </h3>
               <p className="mt-2 text-sm font-semibold text-slate-600">
-                Authorize Bizuply to access your Google Ads accounts, then
-                choose the Customer ID and lead form to import into CRM.
+                {t("crm.googleAds.connectHint")}
               </p>
               <button
                 type="button"
@@ -502,29 +499,27 @@ export default function GoogleAdsLeadIntegration({
                 className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0F766E] px-5 text-sm font-black text-white disabled:opacity-60"
               >
                 {busy ? <BizuplyLoader size="xs" compact /> : null}
-                {busy ? "Connecting to Google Ads..." : "Connect Google Ads"}
+                {busy ? t("crm.googleAds.connecting") : t("crm.googleAds.connectCta")}
               </button>
             </div>
           ) : wizardStep === 2 ? (
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-black text-slate-900">
-                  Google Ads Connected
+                  {t("crm.googleAds.connectedTitle")}
                 </h3>
                 <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Your Google Ads account is connected successfully. Select the
-                  advertising account you want to use with Bizuply.
+                  {t("crm.googleAds.connectedHint")}
                 </p>
               </div>
 
               <div>
                 <label className="mb-2 block text-xs font-black uppercase tracking-[0.08em] text-slate-500">
-                  Google Ads Account
+                  {t("crm.googleAds.accountLabel")}
                 </label>
                 {(connection.customers || []).length === 0 ? (
                   <p className="rounded-xl bg-slate-50 px-3 py-4 text-sm font-semibold text-slate-500">
-                    No accessible Google Ads accounts were found for this Google
-                    account.
+                    {t("crm.googleAds.noAccounts")}
                   </p>
                 ) : (
                   <div className="grid gap-2 sm:grid-cols-2">
@@ -546,7 +541,7 @@ export default function GoogleAdsLeadIntegration({
                             {customer.descriptiveName || customer.customerId}
                           </p>
                           <p className="mt-1 text-xs font-semibold text-slate-500">
-                            Customer ID: {customer.customerId}
+                            {t("crm.googleAds.customerId", { id: customer.customerId })}
                           </p>
                         </button>
                       );
@@ -557,7 +552,7 @@ export default function GoogleAdsLeadIntegration({
 
               <div>
                 <label className="mb-2 block text-xs font-black uppercase tracking-[0.08em] text-slate-500">
-                  Lead Form
+                  {t("crm.googleAds.leadFormLabel")}
                 </label>
                 {busy && forms.length === 0 ? (
                   <div className="flex justify-center py-6">
@@ -568,7 +563,7 @@ export default function GoogleAdsLeadIntegration({
                     disabled
                     className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-500"
                   >
-                    <option>Select a Google Ads account</option>
+                    <option>{t("crm.googleAds.selectAccount")}</option>
                   </select>
                 ) : (
                   <select
@@ -576,7 +571,7 @@ export default function GoogleAdsLeadIntegration({
                     onChange={(e) => setSelectedFormId(e.target.value)}
                     className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800"
                   >
-                    <option value="">Select a Google Ads account</option>
+                    <option value="">{t("crm.googleAds.selectAccount")}</option>
                     {forms.map((form) => (
                       <option key={form.assetId} value={form.assetId}>
                         {form.name}
@@ -585,8 +580,7 @@ export default function GoogleAdsLeadIntegration({
                   </select>
                 )}
                 <p className="mt-2 text-xs font-semibold text-slate-500">
-                  Bizuply sets up delivery on the selected lead form so new
-                  submissions appear in the CRM.
+                  {t("crm.googleAds.deliveryHint")}
                 </p>
               </div>
 
@@ -598,7 +592,7 @@ export default function GoogleAdsLeadIntegration({
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0F766E] px-5 text-sm font-black text-white disabled:opacity-60"
                 >
                   {busy ? <BizuplyLoader size="xs" compact /> : null}
-                  {busy ? "Saving..." : "Save Google Ads Account"}
+                  {busy ? t("crm.googleAds.saving") : t("crm.googleAds.saveAccount")}
                 </button>
                 <button
                   type="button"
@@ -606,7 +600,7 @@ export default function GoogleAdsLeadIntegration({
                   onClick={() => void startOAuth()}
                   className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700"
                 >
-                  Reconnect Google Ads
+                  {t("crm.googleAds.reconnect")}
                 </button>
                 <button
                   type="button"
@@ -615,7 +609,7 @@ export default function GoogleAdsLeadIntegration({
                   className="inline-flex h-11 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-sm font-black text-rose-700"
                 >
                   <Unplug className="h-3.5 w-3.5" />
-                  Disconnect Google Ads
+                  {t("crm.googleAds.disconnect")}
                 </button>
               </div>
             </div>
@@ -624,24 +618,23 @@ export default function GoogleAdsLeadIntegration({
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Google Ads Connected
+                  {t("crm.googleAds.connectedTitle")}
                 </div>
                 <h3 className="mt-3 text-2xl font-black text-slate-900">
-                  Google Ads Connected
+                  {t("crm.googleAds.connectedTitle")}
                 </h3>
                 <p className="mt-2 text-sm font-semibold text-slate-600">
-                  Your Google Ads account is connected successfully. New lead
-                  form submissions are imported into your Bizuply CRM.
+                  {t("crm.googleAds.connectedSuccessBody")}
                 </p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <SummaryRow label="Status" value={statusLabel} />
+                  <SummaryRow label={t("crm.googleAds.labelStatus")} value={statusLabel} />
                   <SummaryRow
-                    label="Google Account"
-                    value={connection.googleAccountEmail || "Authorized Google account"}
+                    label={t("crm.googleAds.labelGoogleAccount")}
+                    value={connection.googleAccountEmail || t("crm.googleAds.authorizedAccount")}
                   />
                   <SummaryRow
-                    label="Google Ads Account"
+                    label={t("crm.googleAds.labelAdsAccount")}
                     value={
                       connection.connectedCustomer?.descriptiveName ||
                       connection.connectedCustomer?.customerId ||
@@ -649,20 +642,20 @@ export default function GoogleAdsLeadIntegration({
                     }
                   />
                   <SummaryRow
-                    label="Customer ID"
+                    label={t("crm.googleAds.labelCustomerId")}
                     value={connection.connectedCustomer?.customerId || "—"}
                   />
                   <SummaryRow
-                    label="Connected On"
+                    label={t("crm.googleAds.labelConnectedOn")}
                     value={formatDate(connection.connectedOn)}
                   />
                   <SummaryRow
-                    label="Last Activity"
+                    label={t("crm.googleAds.labelLastActivity")}
                     value={formatDate(connection.lastActivity)}
                   />
-                  <SummaryRow label="Integration Status" value={statusLabel} />
+                  <SummaryRow label={t("crm.googleAds.labelIntegrationStatus")} value={statusLabel} />
                   <SummaryRow
-                    label="Lead Form"
+                    label={t("crm.googleAds.labelLeadForm")}
                     value={connection.selectedForm?.name || "—"}
                   />
                 </div>
@@ -675,7 +668,7 @@ export default function GoogleAdsLeadIntegration({
                     onClick={onBack}
                     className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#0F766E] px-4 text-xs font-black text-white"
                   >
-                    Back to CRM
+                    {t("crm.googleAds.backToCrm")}
                   </button>
                 )}
                 <button
@@ -684,7 +677,7 @@ export default function GoogleAdsLeadIntegration({
                   onClick={() => void sendTestLead()}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-800"
                 >
-                  {busy ? "Sending..." : "Send test lead"}
+                  {busy ? t("crm.googleAds.sending") : t("crm.googleAds.sendTestLead")}
                 </button>
                 <button
                   type="button"
@@ -692,7 +685,7 @@ export default function GoogleAdsLeadIntegration({
                   onClick={() => setForceSetup(true)}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
                 >
-                  Change account
+                  {t("crm.googleAds.changeAccount")}
                 </button>
                 <button
                   type="button"
@@ -700,7 +693,7 @@ export default function GoogleAdsLeadIntegration({
                   onClick={() => void startOAuth()}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
                 >
-                  Reconnect Google Ads
+                  {t("crm.googleAds.reconnect")}
                 </button>
                 <button
                   type="button"
@@ -709,31 +702,29 @@ export default function GoogleAdsLeadIntegration({
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 text-xs font-black text-rose-700"
                 >
                   <Unplug className="h-3.5 w-3.5" />
-                  Disconnect Google Ads
+                  {t("crm.googleAds.disconnect")}
                 </button>
               </div>
 
               <section className="rounded-2xl border border-slate-200 p-4">
                 <div className="mb-1 flex items-center justify-between gap-2">
                   <h3 className="text-sm font-black text-slate-800">
-                    Recent Google Ads Leads
+                    {t("crm.googleAds.recentTitle")}
                   </h3>
                   <span className="text-xs font-bold text-slate-500">
                     {googleLeadCount}
                   </span>
                 </div>
                 <p className="mb-3 text-xs font-semibold text-slate-500">
-                  The latest lead form submissions imported from your connected
-                  Google Ads account.
+                  {t("crm.googleAds.recentHint")}
                 </p>
                 {recentLeads.length === 0 ? (
                   <div className="rounded-xl bg-slate-50 px-3 py-5">
                     <p className="text-sm font-black text-slate-700">
-                      No Google Ads leads received yet
+                      {t("crm.googleAds.noLeadsTitle")}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-500">
-                      Once a customer submits a connected Google Ads lead form,
-                      the lead will appear here and in your CRM.
+                      {t("crm.googleAds.noLeadsHint")}
                     </p>
                   </div>
                 ) : (
@@ -746,17 +737,17 @@ export default function GoogleAdsLeadIntegration({
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="truncate text-sm font-black text-slate-800">
-                              {lead.fullName || lead.name || "Unnamed lead"}
+                              {lead.fullName || lead.name || t("crm.googleAds.unnamedLead")}
                             </p>
                             {lead.google?.isTest && (
                               <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-700 ring-1 ring-amber-100">
-                                Test
+                                {t("crm.googleAds.testBadge")}
                               </span>
                             )}
                           </div>
                           <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
                             {[lead.email, lead.phone].filter(Boolean).join(" · ") ||
-                              "No contact details"}
+                              t("crm.googleAds.noContact")}
                           </p>
                           <p className="mt-0.5 truncate text-xs font-semibold text-slate-400">
                             {[
@@ -777,7 +768,7 @@ export default function GoogleAdsLeadIntegration({
                           onClick={() => openLead(lead._id)}
                           className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
                         >
-                          View Lead
+                          {t("crm.googleAds.viewLead")}
                         </button>
                       </div>
                     ))}
@@ -793,11 +784,10 @@ export default function GoogleAdsLeadIntegration({
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/45 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
             <h3 className="text-lg font-black text-slate-900">
-              Disconnect Google Ads?
+              {t("crm.googleAds.disconnectTitle")}
             </h3>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-              Bizuply will stop importing new Google Ads leads from this
-              account. Existing CRM leads will not be deleted.
+              {t("crm.googleAds.disconnectBody")}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
@@ -806,7 +796,7 @@ export default function GoogleAdsLeadIntegration({
                 onClick={() => setConfirmDisconnect(false)}
                 className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700"
               >
-                Cancel
+                {t("crm.googleAds.cancel")}
               </button>
               <button
                 type="button"
@@ -814,7 +804,7 @@ export default function GoogleAdsLeadIntegration({
                 onClick={() => void disconnect()}
                 className="inline-flex h-10 items-center rounded-xl bg-rose-600 px-4 text-sm font-black text-white disabled:opacity-60"
               >
-                {busy ? "Saving..." : "Disconnect"}
+                {busy ? t("crm.googleAds.saving") : t("crm.googleAds.disconnectConfirm")}
               </button>
             </div>
           </div>

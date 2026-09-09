@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { juicepressDefaultData } from "./defaultData";
 import { juicepressEditorCss } from "./editorCss";
@@ -27,7 +29,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = juicepressPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = juicepressPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 bg-transparent">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -144,7 +146,7 @@ function CitrusHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
               <blockquote className="border p-5" style={{ borderColor: "rgba(28,25,23,0.1)", background: "#ffffff" }}>
-                <p className="text-sm leading-7" style={{ color: "#78716c" }}>״{text}״</p>
+                <p className="text-sm leading-7" style={{ color: "#78716c" }}>״{tx(text)}״</p>
                 <footer className="mt-4 text-sm font-bold">{name} <span className="font-normal" style={{ color: "#78716c" }}>· {role}</span></footer>
               </blockquote>
             </Reveal>
@@ -170,7 +172,7 @@ function CitrusHomeStats({ data }: { data: Record<string, any> }) {
             </Reveal>
           ))}
         </div>
-        <p className="max-w-md text-center text-sm leading-7 md:text-right" style={{ color: "#78716c" }}>{v(data, "hours")}</p>
+        <p className="max-w-md text-center text-sm leading-7 md:text-start" style={{ color: "#78716c" }}>{v(data, "hours")}</p>
       </div>
     </section>
   );
@@ -217,7 +219,7 @@ function CitrusFullMenuBoard({ data }: { data: Record<string, any> }) {
               <img src={img} alt="" className="aspect-square w-full object-cover" />
               <div>
                 <h3 className="tpl-display text-2xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm leading-7" style={{ color: "#78716c" }}>{text}</p>
+                <p className="mt-1 text-sm leading-7" style={{ color: "#78716c" }}>{tx(text)}</p>
               </div>
               <p className="text-sm font-bold" style={{ color: "#f59e0b" }}>{meta}</p>
             </article>
@@ -374,7 +376,7 @@ function CitrusAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#f59e0b", background: "#fffbeb" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#f59e0b" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -437,11 +439,11 @@ function CitrusReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
           <p className="mt-4 leading-8" style={{ color: "#78716c" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#78716c" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="מספר סועדים" name="guests" data-bizuply-form-field-id="guests" />
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-start outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder={tx("מספר סועדים")} name="guests" data-bizuply-form-field-id="guests" />
           <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -579,7 +581,7 @@ export default function JuicepressPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="juicepress" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="juicepress" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fffbeb", color: "#1c1917" }}>
       <style dangerouslySetInnerHTML={{ __html: juicepressEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

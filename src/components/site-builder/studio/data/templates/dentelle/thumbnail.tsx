@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 export default function DentelleThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden p-5"
       style={{
         background: "#F8FAFC",
@@ -18,8 +22,7 @@ export default function DentelleThumbnail() {
               D
             </span>
             <p className="mt-4 text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#2DD4BF" }}>
-              רפואת שיניים
-            </p>
+              {tx("רפואת שיניים")}</p>
           </div>
           <div>
             <h3 className="text-5xl font-semibold leading-[0.82] tracking-[-0.1em]">Dentelle</h3>

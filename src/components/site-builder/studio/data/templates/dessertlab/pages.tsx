@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { dessertlabDefaultData } from "./defaultData";
 import { dessertlabEditorCss } from "./editorCss";
@@ -27,7 +29,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = dessertlabPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = dessertlabPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#1a1220f5", borderColor: "rgba(248,238,248,0.12)" }}>
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-5 py-5">
@@ -139,7 +141,7 @@ function SugarHomeReviews({ data }: { data: Record<string, any> }) {
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#e879f9", background: "#241832" }}>
-              <p className="text-sm leading-7" style={{ color: "#b89bb8" }}>״{text}״</p>
+              <p className="text-sm leading-7" style={{ color: "#b89bb8" }}>״{tx(text)}״</p>
               <footer className="mt-4 text-sm font-bold">{name}</footer>
             </blockquote>
           ))}
@@ -204,7 +206,7 @@ function SugarFullMenuBoard({ data }: { data: Record<string, any> }) {
             <div key={title} className="flex items-start justify-between gap-4 py-5">
               <div>
                 <h3 className="tpl-display text-xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm" style={{ color: "#b89bb8" }}>{text}</p>
+                <p className="mt-1 text-sm" style={{ color: "#b89bb8" }}>{tx(text)}</p>
               </div>
               <span className="whitespace-nowrap text-sm font-bold" style={{ color: "#e879f9" }}>{meta}</span>
             </div>
@@ -361,7 +363,7 @@ function SugarAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#e879f9", background: "#1a1220" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#e879f9" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -422,10 +424,10 @@ function SugarReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-sm" style={{ color: "#b89bb8" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
-          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.12)", background: "#1a1220" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e879f9" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dessertlab-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
+          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.12)", background: "#1a1220" }}>{tx("היי! מתי נוח לכם?")}</div>
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e879f9" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dessertlab-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#e879f9", color: "#e879f9Text" }}>{v(data, "cta")}</button>
           </form>
         </div>
@@ -564,7 +566,7 @@ export default function DessertlabPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="dessertlab" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="dessertlab" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a1220", color: "#f8eef8" }}>
       <style dangerouslySetInnerHTML={{ __html: dessertlabEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

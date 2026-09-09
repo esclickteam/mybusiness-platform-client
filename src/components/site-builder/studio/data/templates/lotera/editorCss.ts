@@ -2,7 +2,7 @@ export const loteraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="lotera"], [data-template-id="lotera"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #07131f; --tpl-surface: #0b1b2a; --tpl-text: #eef5fb;
   --tpl-muted: #8fa8bd; --tpl-primary: #5eb4ff; --tpl-primary-text: #041018;

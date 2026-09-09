@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -10,7 +11,7 @@ import {
 } from "../utils/detectPhoneCountry";
 
 function Contact() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const prefillMessage =
     typeof location.state?.prefillMessage === "string"
@@ -119,7 +120,7 @@ function Contact() {
   return (
     <main
       className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <Helmet>
         <title>{t("contact.seoTitle")}</title>

@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { dunewaveDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -27,12 +29,12 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = dunewavePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = dunewavePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#f4ead8f2", borderColor: "rgba(61,47,31,0.14)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#c9956a", color: "#2a1c10" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(61,47,31,0.14)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -62,13 +64,13 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dunewave-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dunewave-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(61,47,31,0.14)", color: "#3d2f1f" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#c9956a", color: "#2a1c10" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -104,7 +106,7 @@ function VillaCardsRail({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(61,47,31,0.14)", background: "#fff8ee" }}>
       <div className="mx-auto max-w-7xl">
-        <h2 className="tpl-display text-4xl font-bold md:text-5xl">וילות על הדיונות</h2>
+        <h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("וילות על הדיונות")}</h2>
         <div className="tpl-villa-rail mt-10">
           {cards.map((c) => (
             <article key={c.title} className="overflow-hidden border" style={{ borderColor: "rgba(61,47,31,0.14)", background: "#f4ead8" }}>
@@ -130,7 +132,7 @@ function DuneStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l]) => (
           <div key={l} className="tpl-climb">
             <div className="tpl-display text-4xl font-bold md:text-5xl" style={{ color: "#c9956a" }}>{n}</div>
-            <p className="mt-2 text-sm" style={{ color: "#8a7358" }}>{l}</p>
+            <p className="mt-2 text-sm" style={{ color: "#8a7358" }}>{tx(l)}</p>
           </div>
         ))}
       </div>
@@ -143,7 +145,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(61,47,31,0.14)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9956a" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9956a" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#8a7358" }}>{v(data, "aboutText")}</p>
         </div>
@@ -158,7 +160,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(61,47,31,0.14)", background: "#fff8ee" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9956a" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9956a" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#8a7358" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#8a7358" }}>
@@ -237,7 +239,7 @@ export default function DunewavePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="dunewave" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="dunewave" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f4ead8", color: "#3d2f1f" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

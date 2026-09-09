@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { getIntlLocale } from "../../i18n/localeUtils";
+import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
 
 /**
  * Multi-select catalog upsells.
@@ -104,15 +105,15 @@ export default function UpsellPicker({
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block font-black text-slate-900">
-                    {item.nameHe || item.sku}
+                    {catalogProductName(t, item)}
                   </span>
                   <span className="mt-0.5 block text-[11px] font-bold text-slate-500">
                     {billingLabel(item.billing)}{" "}
                     · {t("billing.upsell.catalogPrice", { amount: item.amountIls })}
                   </span>
-                  {item.descriptionHe ? (
+                  {item.descriptionHe || item.descriptionEn ? (
                     <span className="mt-1 block text-[11px] font-semibold leading-4 text-slate-500">
-                      {item.descriptionHe}
+                      {catalogProductDescription(t, item)}
                     </span>
                   ) : null}
                 </span>

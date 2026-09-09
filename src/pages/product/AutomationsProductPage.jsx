@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { Helmet } from "react-helmet-async";
 import {
   BellRing,
@@ -42,7 +43,7 @@ const MODULE_ICONS = [BellRing, RefreshCw, CheckCircle2, Zap, Bot, Clock3];
 
 export default function AutomationsProductPage() {
   const { t, i18n } = useTranslation();
-  const dir = i18n.language === "he" ? "rtl" : "ltr";
+  const dir = getTextDirection(i18n.language);
 
   const seoTitle = t("automationsPage.seoTitle");
   const seoDescription = t("automationsPage.seoDescription");

@@ -1215,7 +1215,7 @@ export default function CollabChat({
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {loadingConversations ? (
             <div className="flex min-h-[40vh] items-center justify-center py-8">
-              <BizuplyLoader size="lg" label="Loading conversations..." />
+              <BizuplyLoader size="lg" label={t("leftover.collab.chat.loadingConversations")} />
             </div>
           ) : filteredConversations.length === 0 ? (
             <EmptySidebar onRefresh={fetchConversations} />

@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -112,7 +114,7 @@ function KineticSectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.36em]",
@@ -136,7 +138,7 @@ function KineticSectionTitle({
           as="p"
           className={cx("mt-5 text-lg leading-8", light ? "text-[#d0d0d0]" : "text-[#696969]")}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -169,11 +171,11 @@ function KineticHeader({
     >
       <div className="h-1 w-full bg-[#ff2d2d]" />
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#ff2d2d] bg-[#ff2d2d] text-sm font-black tracking-[0.2em] text-black">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-black uppercase tracking-tight text-white">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -228,7 +230,7 @@ function KineticHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-black uppercase tracking-[0.22em]",
+                  "border px-4 py-3 text-start text-sm font-black uppercase tracking-[0.22em]",
                   currentPage === id
                     ? "border-[#ff2d2d] bg-[#ff2d2d] text-black"
                     : "border-white/10 text-white",
@@ -330,7 +332,7 @@ function ImpactGrid() {
               {title}
             </TemplateText>
             <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#aaaaaa]">
-              {text}
+              {tx(text)}
             </TemplateText>
           </article>
         ))}
@@ -399,7 +401,7 @@ function ProgramGrid({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 max-w-xl text-sm leading-7 text-[#aaaaaa]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -431,7 +433,7 @@ function ResultsWall({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 text-sm leading-7 text-[#aaaaaa]">
-                {text}
+                {tx(text)}
               </TemplateText>
               <div className="mt-8 border-t border-white/10 pt-4">
                 <TemplateText as="div" className="text-sm font-black uppercase tracking-[0.28em] text-[#ff2d2d]">
@@ -468,7 +470,7 @@ function ProcessTrack({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -483,9 +485,9 @@ function ScheduleBoard() {
     <section className="bg-black px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <KineticSectionTitle
-          eyebrow="מערכת שעות"
-          title="עמודים בנויים להנעה מהירה לפעולה."
-          text="הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג."
+          eyebrow={tx("מערכת שעות")}
+          title={tx("עמודים בנויים להנעה מהירה לפעולה.")}
+          text={tx("הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג.")}
           light
         />
         <div className="mt-12 border border-white/10">
@@ -498,7 +500,7 @@ function ScheduleBoard() {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -544,23 +546,21 @@ function ContactIntake({ data }: { data: Record<string, any> }) {
                   {num}
                 </TemplateText>
                 <TemplateText as="div" className="text-sm leading-7 text-[#d0d0d0]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?"  name="other" data-bizuply-form-field-id="other"></textarea>
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-start text-white outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-start text-white outline-none md:col-span-2" placeholder={tx("מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?")}  name="other" data-bizuply-form-field-id="other"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
-            <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">
-              דף יצירת קשר נבנה כמו מסך המרה קשוח: מעט הסחות, הרבה בהירות, והזמנה ברורה לשיעור ניסיון.
-            </TemplateText>
+            <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">{tx("דף יצירת קשר נבנה כמו מסך המרה קשוח: מעט הסחות, הרבה בהירות, והזמנה ברורה לשיעור ניסיון.")}</TemplateText>
             <button type="submit" className="border border-[#ff2d2d] bg-[#ff2d2d] px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>
@@ -586,7 +586,7 @@ function PageHero({
     <section className="border-b border-white/10 bg-black">
       <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-          <KineticSectionTitle eyebrow={eyebrow} title={title} text={text} light />
+          <KineticSectionTitle eyebrow={eyebrow} title={title} text={tx(text)} light />
         </div>
         <div className="border-r border-white/10 p-3">
           <img src={image} alt="" className="h-[320px] w-full object-cover lg:h-[420px]" />
@@ -680,7 +680,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="עמוד שירותים שבנוי כמו לוח אימון: מסלולים ברורים, עצימות, שגרה ותנועה ישירה לעבר ההרשמה."
+        text={tx("עמוד שירותים שבנוי כמו לוח אימון: מסלולים ברורים, עצימות, שגרה ותנועה ישירה לעבר ההרשמה.")}
         image={getValue(data, "heroImage")}
       />
       <ProgramGrid data={data} />
@@ -697,7 +697,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="הצלחות, מסלולי התקדמות ושפה תחרותית שממחישה איך העבודה נראית מבפנים ולא רק איך היא משווקת."
+        text={tx("הצלחות, מסלולי התקדמות ושפה תחרותית שממחישה איך העבודה נראית מבפנים ולא רק איך היא משווקת.")}
         image={getValue(data, "heroImage")}
       />
       <ResultsWall data={data} />
@@ -762,7 +762,7 @@ export default function KineticPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="kinetic"
       className="min-h-screen w-full overflow-x-hidden bg-black text-white"
       style={{ fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif' }}

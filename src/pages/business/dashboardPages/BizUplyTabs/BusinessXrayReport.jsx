@@ -1,9 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import "./BusinessXrayReport.css";
 
 const BusinessXrayReport = ({ data, insights, businessType }) => {
-  if (!data || !insights) return <p>No data found to display.</p>;
+  const { t } = useTranslation();
+  if (!data || !insights) return <p>{t("leftover.xrayChrome.noData")}</p>;
 
   // Convert score object to recharts format
   const chartData = Object.entries(data).map(([category, score]) => ({
@@ -14,8 +16,8 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
 
   return (
     <div className="report-container">
-      <h2>📊 Business X-Ray Report</h2>
-      <p>Business type: <strong>{businessType}</strong></p>
+      <h2>📊 {t("leftover.xrayChrome.reportTitle")}</h2>
+      <p>{t("leftover.xrayChrome.businessTypeLabel")} <strong>{businessType}</strong></p>
 
       <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height={300}>
@@ -29,7 +31,7 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
       </div>
 
       <div className="insights-box">
-        <h3>🧠 Insights tailored to your business:</h3>
+        <h3>🧠 {t("leftover.xrayChrome.insightsTitle")}</h3>
         <pre>{insights}</pre>
       </div>
     </div>

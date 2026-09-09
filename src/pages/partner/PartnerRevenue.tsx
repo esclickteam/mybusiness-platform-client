@@ -54,7 +54,7 @@ export default function PartnerRevenue() {
             {t("partner.revenue.myPartnerPlan")}
           </p>
           <p className="mt-2 text-2xl font-black">
-            {due?.partnerSubscription?.planName || "Partner"}
+            {due?.partnerSubscription?.planName || t("partner.planNames.partner_basic")}
           </p>
           <p className="mt-1 font-bold text-slate-700">
             {t("partner.dashboard.perMonthPlain", {

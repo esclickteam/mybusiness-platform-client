@@ -1,0 +1,500 @@
+{
+  "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.": {
+    "en": "A short, sharp, powerful session that mixes a high heart rate, strength, and fast movement.",
+    "es": "Una sesión corta, afilada y potente que mezcla pulso alto, fuerza y movimiento rápido.",
+    "pt-BR": "Um treino curto, afiado e potente que mistura batimento alto, força e movimento rápido.",
+    "ar": "تدريب قصير وحاد وقوي يمزج نبضاً عالياً وقوة وحركة سريعة."
+  },
+  "אימוני כוח מדויקים לבניית שריר, יציבה, שליטה וביטחון.": {
+    "en": "Precise strength training to build muscle, posture, control, and confidence.",
+    "es": "Entrenamiento de fuerza preciso para construir músculo, postura, control y confianza.",
+    "pt-BR": "Treino de força preciso para construir músculo, postura, controle e confiança.",
+    "ar": "تدريبات قوة دقيقة لبناء العضلة والوضعية والسيطرة والثقة."
+  },
+  "תנועה, גמישות והתאוששות כדי לשמור על גוף חזק לאורך זמן.": {
+    "en": "Movement, flexibility, and recovery to keep a strong body over time.",
+    "es": "Movimiento, flexibilidad y recuperación para mantener un cuerpo fuerte a lo largo del tiempo.",
+    "pt-BR": "Movimento, flexibilidade e recuperação para manter um corpo forte ao longo do tempo.",
+    "ar": "حركة ومرونة وتعافٍ للحفاظ على جسم قوي مع الوقت."
+  },
+  "מאמנת כוח ותנועה": {
+    "en": "Strength and movement coach",
+    "es": "Entrenadora de fuerza y movimiento",
+    "pt-BR": "Treinadora de força e movimento",
+    "ar": "مدربة قوة وحركة"
+  },
+  "מתמחה בבניית תוכניות אישיות, טכניקה נכונה ושיפור ביצועים.": {
+    "en": "Specializes in personal plans, correct technique, and better performance.",
+    "es": "Se especializa en planes personales, técnica correcta y mejora de rendimiento.",
+    "pt-BR": "Especializa-se em planos pessoais, técnica correta e melhoria de desempenho.",
+    "ar": "تتخصص في بناء خطط شخصية وتقنية صحيحة وتحسين الأداء."
+  },
+  "מאמן HIIT ופונקציונלי": {
+    "en": "HIIT and functional trainer",
+    "es": "Entrenador de HIIT y funcional",
+    "pt-BR": "Treinador de HIIT e funcional",
+    "ar": "مدرب HIIT ووظيفي"
+  },
+  "מוביל אימונים אנרגטיים עם דגש על קצב, התמדה ותוצאות.": {
+    "en": "Leads energetic sessions with a focus on pace, consistency, and results.",
+    "es": "Dirige entrenos energéticos con foco en ritmo, constancia y resultados.",
+    "pt-BR": "Lidera treinos energéticos com foco em ritmo, constância e resultados.",
+    "ar": "يقود تدريبات طاقيّة مع تركيز على الإيقاع والمثابرة والنتائج."
+  },
+  "מאמנת מוביליטי": {
+    "en": "Mobility coach",
+    "es": "Entrenadora de movilidad",
+    "pt-BR": "Treinadora de mobilidade",
+    "ar": "مدربة حركة"
+  },
+  "עוזרת למתאמנים לזוז טוב יותר, להימנע מעומסים ולהתחזק נכון.": {
+    "en": "Helps trainees move better, avoid overload, and get stronger the right way.",
+    "es": "Ayuda a entrenar mejor el movimiento, evitar sobrecargas y fortalecerse bien.",
+    "pt-BR": "Ajuda quem treina a se mover melhor, evitar sobrecarga e fortalecer do jeito certo.",
+    "ar": "تساعد المتدربين على الحركة الأفضل وتجنّب الإحمال والتقوية الصحيحة."
+  },
+  "עילית": {
+    "en": "Elite",
+    "es": "Élite",
+    "pt-BR": "Elite",
+    "ar": "النخبة"
+  },
+  "למי שרוצה להתחיל לזוז בקצב נוח.": {
+    "en": "For anyone who wants to start moving at a comfortable pace.",
+    "es": "Para quien quiere empezar a moverse a un ritmo cómodo.",
+    "pt-BR": "Para quem quer começar a se mover em um ritmo confortável.",
+    "ar": "لمن يريد البدء بالحركة بإيقاع مريح."
+  },
+  "2 אימונים בשבוע": {
+    "en": "2 sessions a week",
+    "es": "2 entrenos por semana",
+    "pt-BR": "2 treinos por semana",
+    "ar": "تدريبان في الأسبوع"
+  },
+  "גישה לאפליקציה": {
+    "en": "App access",
+    "es": "Acceso a la app",
+    "pt-BR": "Acesso ao app",
+    "ar": "وصول إلى التطبيق"
+  },
+  "קבוצת וואטסאפ": {
+    "en": "WhatsApp group",
+    "es": "Grupo de WhatsApp",
+    "pt-BR": "Grupo de WhatsApp",
+    "ar": "مجموعة واتساب"
+  },
+  "המסלול הפופולרי למי שרוצה תוצאות עקביות.": {
+    "en": "The popular track for anyone who wants consistent results.",
+    "es": "El recorrido popular para quien quiere resultados constantes.",
+    "pt-BR": "O plano popular para quem quer resultados consistentes.",
+    "ar": "المسار الشائع لمن يريد نتائج ثابتة."
+  },
+  "אימונים ללא הגבלה": {
+    "en": "Unlimited sessions",
+    "es": "Entrenos ilimitados",
+    "pt-BR": "Treinos ilimitados",
+    "ar": "تدريبات بلا حد"
+  },
+  "בדיקת מדדים חודשית": {
+    "en": "Monthly metrics check",
+    "es": "Revisión mensual de métricas",
+    "pt-BR": "Checagem mensal de métricas",
+    "ar": "فحص مؤشرات شهري"
+  },
+  "ליווי מאמן": {
+    "en": "Coach support",
+    "es": "Acompañamiento de entrenador",
+    "pt-BR": "Acompanhamento de treinador",
+    "ar": "مرافقة مدرب"
+  },
+  "ליווי אישי מלא למי שרוצה תוכנית מדויקת.": {
+    "en": "Full personal coaching for anyone who wants a precise plan.",
+    "es": "Acompañamiento personal completo para quien quiere un plan preciso.",
+    "pt-BR": "Acompanhamento pessoal completo para quem quer um plano preciso.",
+    "ar": "مرافقة شخصية كاملة لمن يريد خطة دقيقة."
+  },
+  "תוכנית אישית": {
+    "en": "Personal plan",
+    "es": "Plan personal",
+    "pt-BR": "Plano pessoal",
+    "ar": "خطة شخصية"
+  },
+  "2 פגישות מאמן בחודש": {
+    "en": "2 coach meetings a month",
+    "es": "2 reuniones de entrenador al mes",
+    "pt-BR": "2 reuniões com treinador por mês",
+    "ar": "جلستان مع المدرب في الشهر"
+  },
+  "מעקב תזונה והרגלים": {
+    "en": "Nutrition and habits tracking",
+    "es": "Seguimiento de nutrición y hábitos",
+    "pt-BR": "Acompanhamento de nutrição e hábitos",
+    "ar": "متابعة تغذية وعادات"
+  },
+  "הפעם הראשונה שהתמדתי יותר מחודשיים — וזה פשוט עובד.": {
+    "en": "The first time I stuck with it for more than two months — and it just works.",
+    "es": "La primera vez que aguanté más de dos meses — y simplemente funciona.",
+    "pt-BR": "A primeira vez que aguentei mais de dois meses — e simplesmente funciona.",
+    "ar": "أول مرة أواظب أكثر من شهرين — وهو ببساطة يعمل."
+  },
+  "האימונים קצרים, חזקים ומדויקים. סוף סוף רואים תוצאות.": {
+    "en": "The sessions are short, strong, and precise. You finally see results.",
+    "es": "Los entrenos son cortos, fuertes y precisos. Por fin se ven resultados.",
+    "pt-BR": "Os treinos são curtos, fortes e precisos. Finalmente dá para ver resultados.",
+    "ar": "التدريبات قصيرة وقوية ودقيقة. أخيراً تظهر النتائج."
+  },
+  "הצוות נותן תחושה אישית גם בקבוצה.": {
+    "en": "The team still feels personal even in a group.",
+    "es": "El equipo da una sensación personal también en grupo.",
+    "pt-BR": "A equipe dá uma sensação pessoal mesmo em grupo.",
+    "ar": "الفريق يعطي شعوراً شخصياً حتى في المجموعة."
+  },
+  "המערכת והאווירה גורמות לי להגיע גם כשאין כוח.": {
+    "en": "The system and the vibe make me show up even when I have no energy.",
+    "es": "El sistema y el ambiente me hacen llegar también cuando no hay energía.",
+    "pt-BR": "O sistema e o clima me fazem aparecer mesmo quando não tem energia.",
+    "ar": "النظام والأجواء تجعلني أحضر حتى عندما لا توجد طاقة."
+  },
+  "צריך ניסיון קודם?": {
+    "en": "Do I need prior experience?",
+    "es": "¿Hace falta experiencia previa?",
+    "pt-BR": "Precisa de experiência anterior?",
+    "ar": "هل أحتاج خبرة سابقة؟"
+  },
+  "לא. יש התאמה לפי רמה, קצב ומטרה אישית.": {
+    "en": "No. We match the level, pace, and personal goal.",
+    "es": "No. Hay adaptación según nivel, ritmo y objetivo personal.",
+    "pt-BR": "Não. Há adaptação por nível, ritmo e objetivo pessoal.",
+    "ar": "لا. هناك ملاءمة حسب المستوى والإيقاع والهدف الشخصي."
+  },
+  "אפשר להגיע לאימון ניסיון?": {
+    "en": "Can I come for a trial session?",
+    "es": "¿Puedo ir a un entreno de prueba?",
+    "pt-BR": "Posso ir a um treino experimental?",
+    "ar": "هل يمكنني الحضور لتدريب تجريبي؟"
+  },
+  "כן. אפשר להשאיר פרטים ולקבוע אימון ראשון ללא התחייבות.": {
+    "en": "Yes. You can leave details and book a first session with no commitment.",
+    "es": "Sí. Puedes dejar datos y reservar un primer entreno sin compromiso.",
+    "pt-BR": "Sim. Você pode deixar dados e marcar um primeiro treino sem compromisso.",
+    "ar": "نعم. يمكن ترك التفاصيل وحجز تدريب أول بلا التزام."
+  },
+  "יש תוכניות אישיות?": {
+    "en": "Are there personal plans?",
+    "es": "¿Hay planes personales?",
+    "pt-BR": "Existem planos pessoais?",
+    "ar": "هل توجد خطط شخصية؟"
+  },
+  "כן. במסלולים המתקדמים אפשר לקבל תוכנית מותאמת ומעקב מאמן.": {
+    "en": "Yes. Advanced tracks include a tailored plan and coach follow-up.",
+    "es": "Sí. En los recorridos avanzados se puede recibir un plan a medida y seguimiento de entrenador.",
+    "pt-BR": "Sim. Nos planos avançados dá para receber um plano sob medida e acompanhamento de treinador.",
+    "ar": "نعم. في المسارات المتقدمة يمكن الحصول على خطة مخصصة ومتابعة مدرب."
+  },
+  "פנייה ואבחון": {
+    "en": "Inquiry and diagnosis",
+    "es": "Consulta y diagnóstico",
+    "pt-BR": "Consulta e diagnóstico",
+    "ar": "استفسار وتشخيص"
+  },
+  "מספרים לנו מה הבעיה ומקבלים הכוונה ראשונית.": {
+    "en": "Tell us the issue and get initial guidance.",
+    "es": "Nos contáis el problema y recibís una orientación inicial.",
+    "pt-BR": "Contem o problema e recebam uma orientação inicial.",
+    "ar": "تخبروننا بالمشكلة وتحصلون على توجيه أولي."
+  },
+  "בדיקה ותכנון": {
+    "en": "Inspection and planning",
+    "es": "Revisión y planificación",
+    "pt-BR": "Verificação e planejamento",
+    "ar": "فحص وتخطيط"
+  },
+  "מתאמים ביקור, בודקים עומסים ומציעים פתרון.": {
+    "en": "We book a visit, check the load, and offer a solution.",
+    "es": "Coordinamos una visita, revisamos cargas y proponemos una solución.",
+    "pt-BR": "Agendamos uma visita, verificamos cargas e propomos uma solução.",
+    "ar": "ننسّق زيارة ونفحص الأحمال ونقترح حلاً."
+  },
+  "הצעת מחיר": {
+    "en": "Quote",
+    "es": "Presupuesto",
+    "pt-BR": "Orçamento",
+    "ar": "عرض سعر"
+  },
+  "מקבלים הצעה מסודרת וברורה לפני תחילת העבודה.": {
+    "en": "You get a clear, organized quote before work starts.",
+    "es": "Recibís un presupuesto claro y ordenado antes de empezar el trabajo.",
+    "pt-BR": "Vocês recebem um orçamento claro e organizado antes de começar o trabalho.",
+    "ar": "تحصلون على عرض مرتّب وواضح قبل بدء العمل."
+  },
+  "ביצוע מקצועי": {
+    "en": "Professional execution",
+    "es": "Ejecución profesional",
+    "pt-BR": "Execução profissional",
+    "ar": "تنفيذ مهني"
+  },
+  "מבצעים את העבודה בצורה נקייה, בטוחה ומהירה.": {
+    "en": "We do the work cleanly, safely, and quickly.",
+    "es": "Hacemos el trabajo de forma limpia, segura y rápida.",
+    "pt-BR": "Fazemos o trabalho de forma limpa, segura e rápida.",
+    "ar": "ننفّذ العمل بشكل نظيف وآمن وسريع."
+  },
+  "שירות וליווי": {
+    "en": "Service and support",
+    "es": "Servicio y acompañamiento",
+    "pt-BR": "Serviço e acompanhamento",
+    "ar": "خدمة ومرافقة"
+  },
+  "אחריות מלאה וליווי גם לאחר הביצוע.": {
+    "en": "Full warranty and support even after the work is done.",
+    "es": "Garantía completa y acompañamiento también después de la ejecución.",
+    "pt-BR": "Garantia completa e acompanhamento também depois da execução.",
+    "ar": "ضمان كامل ومرافقة حتى بعد التنفيذ."
+  },
+  "הגעה לאבחון ותיקון תקלה בסיסית בבית או בעסק.": {
+    "en": "A visit to diagnose and fix a basic fault at home or in a business.",
+    "es": "Visita para diagnosticar y reparar una avería básica en casa o en un negocio.",
+    "pt-BR": "Visita para diagnosticar e consertar uma falha básica em casa ou no negócio.",
+    "ar": "وصول للتشخيص وإصلاح عطل أساسي في البيت أو العمل."
+  },
+  "מענה 24/7": {
+    "en": "24/7 response",
+    "es": "Respuesta 24/7",
+    "pt-BR": "Atendimento 24/7",
+    "ar": "رد 24/7"
+  },
+  "מחיר שקוף": {
+    "en": "Transparent price",
+    "es": "Precio transparente",
+    "pt-BR": "Preço transparente",
+    "ar": "سعر شفاف"
+  },
+  "אחריות מלאה": {
+    "en": "Full warranty",
+    "es": "Garantía completa",
+    "pt-BR": "Garantia completa",
+    "ar": "ضمان كامل"
+  },
+  "הכל משודרג": {
+    "en": "Everything upgraded",
+    "es": "Todo actualizado",
+    "pt-BR": "Tudo atualizado",
+    "ar": "كل شيء مُحدَّث"
+  },
+  "שדרוג נקודות חשמל, התקנת אביזרים ותיקונים מתקדמים.": {
+    "en": "Upgrading electrical points, installing fixtures, and advanced repairs.",
+    "es": "Actualizar puntos eléctricos, instalar accesorios y reparaciones avanzadas.",
+    "pt-BR": "Atualizar pontos elétricos, instalar acessórios e reparos avançados.",
+    "ar": "ترقية نقاط الكهرباء وتركيب ملحقات وإصلاحات متقدمة."
+  },
+  "חומרים איכותיים": {
+    "en": "Quality materials",
+    "es": "Materiales de calidad",
+    "pt-BR": "Materiais de qualidade",
+    "ar": "مواد عالية الجودة"
+  },
+  "עבודה מסודרת": {
+    "en": "Organized work",
+    "es": "Trabajo ordenado",
+    "pt-BR": "Trabalho organizado",
+    "ar": "عمل مرتّب"
+  },
+  "התקנה בסיסית": {
+    "en": "Basic installation",
+    "es": "Instalación básica",
+    "pt-BR": "Instalação básica",
+    "ar": "تركيب أساسي"
+  },
+  "התקנת נקודה, גוף תאורה או מערכת חשמל בסיסית.": {
+    "en": "Installing a point, a light fixture, or a basic electrical system.",
+    "es": "Instalar un punto, una luminaria o un sistema eléctrico básico.",
+    "pt-BR": "Instalar um ponto, uma luminária ou um sistema elétrico básico.",
+    "ar": "تركيب نقطة أو جسم إنارة أو نظام كهرباء أساسي."
+  },
+  "ייעוץ ראשוני": {
+    "en": "Initial consultation",
+    "es": "Consulta inicial",
+    "pt-BR": "Consulta inicial",
+    "ar": "استشارة أولية"
+  },
+  "בדיקת עומסים": {
+    "en": "Load check",
+    "es": "Revisión de cargas",
+    "pt-BR": "Verificação de cargas",
+    "ar": "فحص أحمال"
+  },
+  "סיום נקי": {
+    "en": "A clean finish",
+    "es": "Un acabado limpio",
+    "pt-BR": "Um acabamento limpo",
+    "ar": "إنهاء نظيف"
+  },
+  "לקוח פרטי": {
+    "en": "Private client",
+    "es": "Cliente particular",
+    "pt-BR": "Cliente particular",
+    "ar": "زبون خاص"
+  },
+  "לקוחה פרטית": {
+    "en": "Private client",
+    "es": "Clienta particular",
+    "pt-BR": "Cliente particular",
+    "ar": "زبونة خاصة"
+  },
+  "בעל עסק": {
+    "en": "Business owner",
+    "es": "Dueño de negocio",
+    "pt-BR": "Dono de negócio",
+    "ar": "صاحب عمل"
+  },
+  "שירות מעולה, מהיר ואמין. פתרו את התקלה במקצועיות ותודה רבה!": {
+    "en": "Excellent, fast, reliable service. They fixed the fault professionally — thank you!",
+    "es": "Servicio excelente, rápido y fiable. Resolvieron la avería con profesionalidad. ¡Gracias!",
+    "pt-BR": "Serviço excelente, rápido e confiável. Resolveram a falha com profissionalismo. Obrigado!",
+    "ar": "خدمة ممتازة وسريعة وموثوقة. أصلحوا العطل بمهنية وشكراً جزيلاً!"
+  },
+  "הגיעו בזמן, הסבירו בדיוק מה צריך לעשות והמחיר היה ברור מראש.": {
+    "en": "They arrived on time, explained exactly what needed to be done, and the price was clear up front.",
+    "es": "Llegaron a tiempo, explicaron exactamente qué había que hacer y el precio quedó claro de antemano.",
+    "pt-BR": "Chegaram no horário, explicaram exatamente o que precisava ser feito e o preço ficou claro de antemão.",
+    "ar": "وصلوا في الوقت وشرحوا بالضبط ما يجب فعله وكان السعر واضحاً مسبقاً."
+  },
+  "עבודה נקייה מאוד, התקנה מקצועית ושירות אדיב. ממליץ בחום.": {
+    "en": "Very clean work, professional installation, and kind service. Highly recommended.",
+    "es": "Trabajo muy limpio, instalación profesional y un servicio amable. Lo recomiendo mucho.",
+    "pt-BR": "Trabalho muito limpo, instalação profissional e atendimento gentil. Recomendo muito.",
+    "ar": "عمل نظيف جداً وتركيب مهني وخدمة لطيفة. أنصح بحرارة."
+  },
+  "האם אתם נותנים אחריות על העבודה?": {
+    "en": "Do you give a warranty on the work?",
+    "es": "¿Dais garantía del trabajo?",
+    "pt-BR": "Vocês dão garantia do trabalho?",
+    "ar": "هل تعطون ضماناً على العمل؟"
+  },
+  "כן. כל עבודה מתבצעת על ידי חשמלאי מוסמך וכוללת אחריות בהתאם לסוג העבודה.": {
+    "en": "Yes. Every job is done by a licensed electrician and includes a warranty matching the type of work.",
+    "es": "Sí. Cada trabajo lo hace un electricista colegiado e incluye garantía según el tipo de trabajo.",
+    "pt-BR": "Sim. Cada trabalho é feito por um eletricista licenciado e inclui garantia conforme o tipo de trabalho.",
+    "ar": "نعم. كل عمل ينفّذه كهربائي مرخّص ويشمل ضماناً حسب نوع العمل."
+  },
+  "כמה זמן לוקח להגיע לטיפול?": {
+    "en": "How long does it take to arrive for a job?",
+    "es": "¿Cuánto tarda en llegar al servicio?",
+    "pt-BR": "Quanto tempo leva para chegar ao atendimento?",
+    "ar": "كم يستغرق الوصول للعلاج؟"
+  },
+  "בקריאות דחופות ניתן לתאם הגעה מהירה לפי אזור וזמינות.": {
+    "en": "For urgent calls we can book a fast arrival by area and availability.",
+    "es": "En llamadas urgentes se puede coordinar una llegada rápida según zona y disponibilidad.",
+    "pt-BR": "Em chamados urgentes dá para agendar uma chegada rápida por região e disponibilidade.",
+    "ar": "في النداءات العاجلة يمكن تنسيق وصول سريع حسب المنطقة والتوفّر."
+  },
+  "האם השירות מתאים גם לבתים וגם לעסקים?": {
+    "en": "Does the service fit both homes and businesses?",
+    "es": "¿El servicio encaja tanto en casas como en negocios?",
+    "pt-BR": "O serviço serve tanto para casas quanto para negócios?",
+    "ar": "هل الخدمة تناسب البيوت والأعمال معاً؟"
+  },
+  "כן. אנחנו עובדים עם דירות, בתים פרטיים, משרדים, חנויות ועסקים קטנים.": {
+    "en": "Yes. We work with apartments, private homes, offices, shops, and small businesses.",
+    "es": "Sí. Trabajamos con pisos, casas particulares, oficinas, tiendas y negocios pequeños.",
+    "pt-BR": "Sim. Trabalhamos com apartamentos, casas particulares, escritórios, lojas e negócios pequenos.",
+    "ar": "نعم. نعمل مع شقق وبيوت خاصة ومكاتب ومتاجر وأعمال صغيرة."
+  },
+  "איך מתבצע התשלום?": {
+    "en": "How does payment work?",
+    "es": "¿Cómo se hace el pago?",
+    "pt-BR": "Como funciona o pagamento?",
+    "ar": "كيف يتم الدفع؟"
+  },
+  "התשלום מתבצע לאחר ביצוע העבודה או לפי שלבי הפרויקט, בהתאם למה שסוכם מראש.": {
+    "en": "Payment is after the work is done or by project stages, according to what was agreed up front.",
+    "es": "El pago se hace después del trabajo o por fases del proyecto, según lo acordado de antemano.",
+    "pt-BR": "O pagamento é depois do trabalho ou por etapas do projeto, conforme o combinado de antemão.",
+    "ar": "يتم الدفع بعد تنفيذ العمل أو حسب مراحل المشروع وفق ما اتُّفق مسبقاً."
+  },
+  "זקוקים לחשמלאי עכשיו?": {
+    "en": "Need an electrician now?",
+    "es": "¿Necesitáis un electricista ahora?",
+    "pt-BR": "Precisam de um eletricista agora?",
+    "ar": "تحتاجون كهربائياً الآن؟"
+  },
+  "שירות מהיר, אמין ומקצועי — אנחנו כאן בשבילכם.": {
+    "en": "Fast, reliable, professional service — we are here for you.",
+    "es": "Servicio rápido, fiable y profesional — estamos aquí para vosotros.",
+    "pt-BR": "Serviço rápido, confiável e profissional — estamos aqui por vocês.",
+    "ar": "خدمة سريعة وموثوقة ومهنية — نحن هنا من أجلكم."
+  },
+  "התקשרו עכשיו": {
+    "en": "Call now",
+    "es": "Llamad ahora",
+    "pt-BR": "Liguem agora",
+    "ar": "اتصلوا الآن"
+  },
+  "לקביעת ביקור או ייעוץ": {
+    "en": "To book a visit or a consult",
+    "es": "Para reservar una visita o una consulta",
+    "pt-BR": "Para marcar uma visita ou uma consultoria",
+    "ar": "لحجز زيارة أو استشارة"
+  },
+  "השאירו פרטים ונחזור אליכם במהירות.": {
+    "en": "Leave your details and we will get back to you quickly.",
+    "es": "Dejad los datos y os responderemos rápido.",
+    "pt-BR": "Deixem os dados e voltaremos rapidamente.",
+    "ar": "اتركوا التفاصيل وسنعود إليكم بسرعة."
+  },
+  "נשמח להבין מה התקלה, לתאם ביקור ולתת הצעת מחיר מסודרת.": {
+    "en": "We will gladly understand the fault, book a visit, and give an organized quote.",
+    "es": "Nos alegrará entender la avería, coordinar una visita y dar un presupuesto ordenado.",
+    "pt-BR": "Vamos entender a falha, agendar uma visita e dar um orçamento organizado.",
+    "ar": "يسعدنا فهم العطل وتنسيق زيارة وتقديم عرض سعر مرتّب."
+  },
+  "חומרים איכותיים ותקניים": {
+    "en": "Quality, standards-compliant materials",
+    "es": "Materiales de calidad y normativas",
+    "pt-BR": "Materiais de qualidade e em conformidade",
+    "ar": "مواد عالية الجودة ومطابقة للمواصفات"
+  },
+  "שקיפות מלאה במחיר": {
+    "en": "Full price transparency",
+    "es": "Transparencia total en el precio",
+    "pt-BR": "Transparência total no preço",
+    "ar": "شفافية كاملة في السعر"
+  },
+  "שירות אישי וליווי עד סיום העבודה": {
+    "en": "Personal service and support until the work is done",
+    "es": "Servicio personal y acompañamiento hasta el final del trabajo",
+    "pt-BR": "Serviço pessoal e acompanhamento até o fim do trabalho",
+    "ar": "خدمة شخصية ومرافقة حتى انتهاء العمل"
+  },
+  "חבילת התחלה": {
+    "en": "Starter package",
+    "es": "Paquete de inicio",
+    "pt-BR": "Pacote inicial",
+    "ar": "باقة البداية"
+  },
+  "חבילת צמיחה": {
+    "en": "Growth package",
+    "es": "Paquete de crecimiento",
+    "pt-BR": "Pacote de crescimento",
+    "ar": "باقة النمو"
+  },
+  "חבילת ארגונים": {
+    "en": "Enterprise package",
+    "es": "Paquete para organizaciones",
+    "pt-BR": "Pacote para organizações",
+    "ar": "باقة المؤسسات"
+  },
+  "אימונים בשבוע": {
+    "en": "Sessions a week",
+    "es": "Entrenos por semana",
+    "pt-BR": "Treinos por semana",
+    "ar": "تدريبات في الأسبوع"
+  },
+  "שיפור ממוצע": {
+    "en": "Average improvement",
+    "es": "Mejora media",
+    "pt-BR": "Melhora média",
+    "ar": "تحسّن متوسط"
+  }
+}

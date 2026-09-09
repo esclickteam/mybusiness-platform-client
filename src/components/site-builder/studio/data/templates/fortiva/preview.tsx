@@ -1,10 +1,11 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import FortivaPages from "./pages";
 
 export default function FortivaPreview() {
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="fortiva"
       className="min-h-screen w-full bg-[#f6f5f1] text-[#0f1e3d]"
       style={{

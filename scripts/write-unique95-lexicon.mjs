@@ -1,0 +1,212 @@
+/**
+ * unique95 — leftover gallery thumbnail blurbs after unique94.
+ * Truncated ellipsis is literal source copy. Skip personal names.
+ */
+import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const r = (en, es, pt, ar) => ({ en, es, "pt-BR": pt, ar });
+
+const rows = {
+  "תבנית כושר PulseCore": r(
+    "PulseCore fitness template",
+    "Plantilla de fitness PulseCore",
+    "Modelo de fitness PulseCore",
+    "قالب لياقة PulseCore",
+  ),
+  "חולצה (M) × 2 — 120.00 ₪": r(
+    "Shirt (M) × 2 — ₪120.00",
+    "Camisa (M) × 2 — ₪120.00",
+    "Camisa (M) × 2 — ₪120.00",
+    "قميص (M) × 2 — ₪120.00",
+  ),
+  "נשלח לכתובת:": r("Ships to:", "Envío a:", "Enviado para:", "يُرسل إلى:"),
+  "ארבורה מתכננת חצרות, גגות ומרחבים ציבוריים — עם …": r(
+    "Arbora designs yards, roofs, and public spaces — with...",
+    "Arbora proyecta patios, cubiertas y espacios públicos — con...",
+    "Arbora projeta pátios, telhados e espaços públicos — com...",
+    "Arbora تصمم الساحات والأسطح والفراغات العامة — مع...",
+  ),
+  "במה למוזיקה חיה, שיחות ואמנות. ערבים שנבחרים בקפ…": r(
+    "A stage for live music, talks, and art. Evenings chosen with ca...",
+    "Un escenario de música en vivo, charlas y arte. Veladas elegidas con cu...",
+    "Um palco de música ao vivo, conversas e arte. Noites escolhidas com cu...",
+    "منصة لموسيقى حية وأحاديث وفن. أمسيات تُختار بعناي...",
+  ),
+  "חתונות ואירועים פרטיים עם קו עיצובי נקי, רגש מדו…": r(
+    "Weddings and private events with a clean design line, precise em...",
+    "Bodas y eventos privados con una línea limpia y emoción preci...",
+    "Casamentos e eventos privados com linha limpa e emoção preci...",
+    "أعراس ومناسبات خاصة بخط تصميم نظيف وشعور دقي...",
+  ),
+  "סינדר היא בית קלייה ושולחן טעימות. פולים טריים, …": r(
+    "Cinder is a roastery and tasting table. Fresh beans, ...",
+    "Cinder es una tostaduría y mesa de cata. Granos frescos, ...",
+    "Cinder é uma torrefação e mesa de degustação. Grãos frescos, ...",
+    "Cinder محمصة وطاولة تذوّق. حبوب طازجة، ...",
+  ),
+  "שהייה שקטה מעל הים. חדרים מדויקים, אור רך, ושירו…": r(
+    "A quiet stay above the sea. Precise rooms, soft light, and ser...",
+    "Una estancia serena sobre el mar. Habitaciones precisas, luz suave y ser...",
+    "Uma estadia serena sobre o mar. Quartos precisos, luz suave e ser...",
+    "إقامة هادئة فوق البحر. غرف دقيقة، ضوء ناعم، وهدو...",
+  ),
+  "תבנית יוקרתית לסוכנות נסיעות עם הירו גדול, יעדים, חבילות וטופס לידים.": r(
+    "A luxury travel-agency template with a large hero, destinations, packages, and a lead form.",
+    "Una plantilla de lujo para agencia de viajes con un hero grande, destinos, paquetes y un formulario de leads.",
+    "Um modelo de luxo para agência de viagens com hero grande, destinos, pacotes e um formulário de leads.",
+    "قالب فاخر لوكالة سفر مع بطل كبير ووجهات وحزم ونموذج عملاء محتملين.",
+  ),
+  "בוטקמפ מעשי לפולסטאק — פרויקטים אמיתיים, מנטורים מהתעשייה, ופורטפוליו …": r(
+    "A practical full-stack bootcamp — real projects, industry mentors, and a portfolio...",
+    "Un bootcamp práctico de full-stack — proyectos reales, mentores de la industria y un portafolio...",
+    "Um bootcamp prático de full-stack — projetos reais, mentores da indústria e um portfólio...",
+    "معسكر عملي للفرونت والباك — مشاريع حقيقية وموجهون من الصناعة ومعرض أعمال...",
+  ),
+  "מאסטרקלאסים בלעדיים עם יוצרים ומנהיגים — עומק, אלגנטיות, ותובנות שלא מ…": r(
+    "Exclusive masterclasses with creators and leaders — depth, elegance, and insights that do not...",
+    "Masterclasses exclusivas con creadores y líderes — profundidad, elegancia e ideas que no...",
+    "Masterclasses exclusivas com criadores e líderes — profundidade, elegância e insights que não...",
+    "ماستر كلاس حصري مع صنّاع وقادة — عمق وأناقة ورؤى لا...",
+  ),
+  "קורסים אונליין עם קצב קולנועי — שיעורים חדים, מנטורים חיים, ותוצאות שר…": r(
+    "Online courses with a cinematic pace — sharp lessons, live mentors, and results that...",
+    "Cursos online con ritmo de cine — clases nítidas, mentores en vivo y resultados que...",
+    "Cursos online com ritmo de cinema — aulas nítidas, mentores ao vivo e resultados que...",
+    "دورات أونلاين بإيقاع سينمائي — دروس حادة وموجهون أحياء ونتائج ت...",
+  ),
+  "שיעורים פרטיים לבגרות, אקדמיה ופסיכומטרי — עם מרצים שמדברים בגובה העינ…": r(
+    "Private lessons for matriculation, academy, and psychometric — with teachers who speak at eye lev...",
+    "Clases particulares para bachillerato, academia y psicométrico — con docentes que hablan a la altu...",
+    "Aulas particulares para vestibular, academia e psicométrico — com professores que falam na altu...",
+    "دروس خاصة للبجروت والأكاديمية والسيكومتري — مع محاضرين يتحدثون بارتفاع العي...",
+  ),
+  "תבנית יוקרתית בעברית למשרד עורכי דין, שירותים, תיקים, תהליך וטופס ייעוץ.": r(
+    "A luxury law-firm template with services, cases, process, and a consult form.",
+    "Una plantilla de lujo para despacho de abogados, con servicios, casos, proceso y un formulario de consulta.",
+    "Um modelo de luxo para escritório de advocacia, com serviços, casos, processo e um formulário de consultoria.",
+    "قالب فاخر لمكتب محاماة مع خدمات وقضايا ومسار ونموذج استشارة.",
+  ),
+  "איפור ושיער לכלות ולמלוות — ניסיון מקדים, לוק שנשאר בתמונות, וליווי רגוע…": r(
+    "Makeup and hair for brides and the wedding party — a prior trial, a look that lasts in photos, and calm guidance...",
+    "Maquillaje y peinado para novias y acompañantes — prueba previa, un look que permanece en las fotos y un acompañamiento sereno...",
+    "Maquiagem e cabelo para noivas e acompanhantes — teste prévio, um look que permanece nas fotos e um acompanhamento calmo...",
+    "مكياج وشعر للعرائس والمرافقات — تجربة مسبقة وإطلالة تبقى في الصور ومرافقة هادئة...",
+  ),
+  "איפור כלות שמצטלם יפה ונשאר טבעי מקרוב — ניסיון מקדים, ליווי ביום האירוע…": r(
+    "Bridal makeup that photographs well and stays natural up close — a prior trial, and support on the day...",
+    "Maquillaje nupcial que se fotografía bien y sigue natural de cerca — prueba previa y acompañamiento el día del evento...",
+    "Maquiagem de noiva que fotografa bem e permanece natural de perto — teste prévio e acompanhamento no dia do evento...",
+    "مكياج عرائس يُصوَّر جميلاً ويبقى طبيعياً عن قرب — تجربة مسبقة ومرافقة يوم المناسبة...",
+  ),
+  "איפור קבוע בשיטת שכבות עדינות — תכנון צורה, פיגמנט בטוח והנחיות החלמה מד…": r(
+    "Permanent makeup in a delicate layering method — shape planning, safe pigment, and recovery guidance...",
+    "Maquillaje permanente en capas delicadas — planificación de forma, pigmento seguro e indicaciones de recuperación...",
+    "Maquiagem permanente em camadas delicadas — planejamento de forma, pigmento seguro e orientações de recuperação...",
+    "مكياج دائم بطريقة طبقات رقيقة — تخطيط الشكل وصبغة آمنة وإرشادات تعافٍ...",
+  ),
+  "הארכות ריסים קלאסיק ווליום עם מיפוי אישי, דבק איכותי ומילוי שמחזיר סימטר…": r(
+    "Classic and volume lash extensions with personal mapping, quality adhesive, and a fill that restores symmet...",
+    "Extensiones de pestañas clásicas y de volumen con mapeo personal, adhesivo de calidad y un relleno que devuelve la simetr...",
+    "Alongamentos clássico e volume com mapeamento pessoal, adesivo de qualidade e um preenchimento que devolve a simetr...",
+    "تمديد رموش كلاسيك وفوليوم مع تخطيط شخصي ولصق عالي الجودة وملء يعيد التماث...",
+  ),
+  "הארכות ריסים, למינציה ועיצוב גבות — מיפוי אישי, היגיינה קלינית, ותוצאה ט…": r(
+    "Lash extensions, lamination, and brow shaping — personal mapping, clinical hygiene, and a nat...",
+    "Extensiones de pestañas, laminado y diseño de cejas — mapeo personal, higiene clínica y un result...",
+    "Alongamento de cílios, laminação e design de sobrancelhas — mapeamento pessoal, higiene clínica e um result...",
+    "تمديد رموش وتصفيح وتصميم حواجب — تخطيط شخصي ونظافة سريرية ونتيجة ط...",
+  ),
+  "הסרת שיער מקצועית לנשים וגברים — טכניקה עדינה, סטריליות מלאה, ותוצאה חלק…": r(
+    "Professional hair removal for women and men — a gentle technique, full sterility, and a smooth result...",
+    "Depilación profesional para mujeres y hombres — técnica suave, esterilidad completa y un resultado liso...",
+    "Depilação profissional para mulheres e homens — técnica suave, esterilidade completa e um resultado liso...",
+    "إزالة شعر احترافية للنساء والرجال — تقنية لطيفة وتعقيم كامل ونتيجة ناعم...",
+  ),
+  "חיתוך, צבע וטיפול קרטין בגישה עיתונאית נקייה — פחות רעש, יותר מבנה ותנוע…": r(
+    "Cut, color, and keratin in a clean editorial approach — less noise, more structure and move...",
+    "Corte, color y keratina con un enfoque editorial limpio — menos ruido, más estructura y movim...",
+    "Corte, cor e queratina com abordagem editorial limpa — menos ruído, mais estrutura e movim...",
+    "قص وصبغ وعلاج كيراتين بنهج تحريري نظيف — ضوضاء أقل وبنية وحركة أكث...",
+  ),
+  "טיפולי אקנה וקוסמטיקה רפואית בשילוב תיעוד, הדרכה ושינויים קטנים שמחזיקים…": r(
+    "Acne treatments and medical cosmetics with records, guidance, and small changes that last...",
+    "Tratamientos de acné y cosmética médica con registro, guía y cambios pequeños que se mantienen...",
+    "Tratamentos de acne e cosmética médica com registro, orientação e mudanças pequenas que se sustentam...",
+    "علاجات حب الشباب وتجميل طبي مع توثيق وإرشاد وتغييرات صغيرة تصمد...",
+  ),
+  "טיפולי עיצוב, ניקוז לימפטי והתאוששות — מסלולים מדידים עם תוצאה שמרגישים …": r(
+    "Body contouring, lymphatic drainage, and recovery — measurable paths with a result you can feel...",
+    "Tratamientos de silueta, drenaje linfático y recuperación — recorridos medibles con un resultado que se siente...",
+    "Tratamentos de contorno, drenagem linfática e recuperação — percursos mensuráveis com um resultado que se sente...",
+    "علاجات نحت وتصريف لمفاوي وتعافٍ — مسارات قابلة للقياس بنتيجة تُشعَر...",
+  ),
+  "טיפולי פנים מותאמים אישית, חומרים פעילים במינון נכון ושיחה שמתרגמת לשגרה…": r(
+    "Personalized facials, actives in the right dose, and a conversation that becomes a routine...",
+    "Tratamientos faciales personalizados, activos en la dosis correcta y una conversación que se traduce en rutina...",
+    "Tratamentos faciais personalizados, ativos na dose certa e uma conversa que vira rotina...",
+    "علاجات وجه مخصّصة ومواد فعّالة بالجرعة الصحيحة وحوار يتحول إلى روتين...",
+  ),
+  "טיפולי פנים, זקן וגבות לגברים שרוצים להיראות מסודרים בלי להפוך את זה לפר…": r(
+    "Facial, beard, and brow treatments for men who want to look sharp without turning it into a prod...",
+    "Tratamientos de rostro, barba y cejas para hombres que quieren verse ordenados sin convertirlo en un espectá...",
+    "Tratamentos de rosto, barba e sobrancelhas para homens que querem parecer arrumados sem transformar isso em um espetá...",
+    "علاجات وجه ولحية وحواجب لرجال يريدون مظهراً مرتّباً دون تحويل الأمر إلى عرض...",
+  ),
+  "טקסי גוף ופנים באווירת לילה קטיפתית — שמנים נדירים, ידיים מדויקות, זמן ב…": r(
+    "Body and face rituals in a velvet-night mood — rare oils, precise hands, time to...",
+    "Rituales de cuerpo y rostro en un ambiente de noche aterciopelada — aceites raros, manos precisas, tiempo pa...",
+    "Rituais de corpo e rosto em clima de noite aveludada — óleos raros, mãos precisas, tempo pa...",
+    "طقوس جسم ووجه بأجواء ليل مخملي — زيوت نادرة وأيدٍ دقيقة ووقت لـ...",
+  ),
+  "לוקים לאירועים, כלות וצילומים — עור זוהר, קווים מדויקים, וסטייל שמתאים ל…": r(
+    "Looks for events, brides, and photos — glowing skin, precise lines, and a style that fits...",
+    "Looks para eventos, novias y sesiones — piel luminosa, líneas precisas y un estilo que encaja con...",
+    "Looks para eventos, noivas e fotos — pele luminosa, linhas precisas e um estilo que combina com...",
+    "إطلالات للمناسبات والعرائس والتصوير — بشرة مضيئة وخطوط دقيقة وأسلوب يناسب...",
+  ),
+  "לק ג׳ל נקי, קווי פרנץ׳ מדויקים וצבעים שמותאמים לעור ולסגנון היומיומי שלך…": r(
+    "Clean gel polish, precise French lines, and colors matched to your skin and everyday style...",
+    "Esmalte gel limpio, líneas French precisas y colores adaptados a vuestra piel y estilo diario...",
+    "Esmalte em gel limpo, linhas french precisas e cores combinadas à sua pele e ao estilo do dia a dia...",
+    "جل نظيف وخطوط فرنش دقيقة وألوان تناسب بشرتك وأسلوبك اليومي...",
+  ),
+  "מיקרובליידינג בגישה טבעית: סקיצה איטית, בחירת פיגמנט והסבר מלא על החלמה …": r(
+    "Microblading in a natural approach: a slow sketch, pigment choice, and a full recovery brief...",
+    "Microblading con un enfoque natural: boceto lento, elección de pigmento y una explicación completa de la recuperación...",
+    "Microblading com abordagem natural: esboço lento, escolha de pigmento e uma explicação completa da recuperação...",
+    "مايكروبليدنغ بنهج طبيعي: رسم بطيء واختيار صبغة وشرح كامل للتعافي...",
+  ),
+  "מניקור, פדיקור ונייל־ארט מדויק — סטייל מתוק, היגיינה ברזל, ותורים בלי המ…": r(
+    "Precise manicure, pedicure, and nail art — a sweet style, iron hygiene, and bookings without the wai...",
+    "Manicura, pedicura y nail art precisos — estilo dulce, higiene de hierro y citas sin la espe...",
+    "Manicure, pedicure e nail art precisos — estilo doce, higiene de ferro e horários sem a espe...",
+    "مانيكير وباديكير وفن أظافر دقيق — أسلوب حلو ونظافة حديدية ومواعيد بلا انتظ...",
+  ),
+  "סלון רב־תחומי — עור, שיער, גבות ואיפור — במקום אחד עם וייב טרקלין וטיפול…": r(
+    "A multi-service salon — skin, hair, brows, and makeup — in one place with a lounge vibe and care...",
+    "Un salón multidisciplinar — piel, cabello, cejas y maquillaje — en un solo lugar con vibra de salón y cuidado...",
+    "Um salão multidisciplinar — pele, cabelo, sobrancelhas e maquiagem — num só lugar com vibe de lounge e cuidado...",
+    "صالون متعدد المجالات — بشرة وشعر وحواجب ومكياج — في مكان واحد بأجواء صالة وعناية...",
+  ),
+  "פילינגים וטיפולי פנים לפי מצב העור, עונות השנה וקצב החלמה שמתאים לחיים ש…": r(
+    "Peels and facials by skin condition, season, and a recovery pace that fits the life you...",
+    "Peelings y faciales según el estado de la piel, la estación y un ritmo de recuperación que encaja con la vida que...",
+    "Peelings e faciais conforme o estado da pele, a estação e um ritmo de recuperação que combina com a vida que...",
+    "تقشير وعلاجات وجه حسب حالة البشرة والفصل وإيقاع تعافٍ يناسب الحياة التي...",
+  ),
+  "פרוטוקולים מותאמים אישית — ניקוי עמוק, חומצות עדינות וליווי מדעי לשגרה ש…": r(
+    "Personalized protocols — deep cleanse, gentle acids, and scientific guidance for a routine that...",
+    "Protocolos personalizados — limpieza profunda, ácidos suaves y acompañamiento científico para una rutina que...",
+    "Protocolos personalizados — limpeza profunda, ácidos suaves e acompanhamento científico para uma rotina que...",
+    "بروتوكولات مخصّصة — تنظيف عميق وأحماض لطيفة ومرافقة علمية لروتين ي...",
+  ),
+};
+
+const out = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../src/i18n/templateExactLexicon.unique95.json",
+);
+writeFileSync(out, JSON.stringify(rows, null, 2) + "\n");
+console.log(`wrote ${Object.keys(rows).length} unique95 rows`);

@@ -1,0 +1,668 @@
+{
+  "מובייל Booking": {
+    "en": "Mobile booking",
+    "es": "Booking móvil",
+    "pt-BR": "Booking mobile",
+    "ar": "حجز جوال"
+  },
+  "מומחים לפי תחום": {
+    "en": "Experts by field",
+    "es": "Expertos por área",
+    "pt-BR": "Especialistas por área",
+    "ar": "خبراء حسب المجال"
+  },
+  "מוצר מוביל גדול": {
+    "en": "Large lead product",
+    "es": "Producto destacado grande",
+    "pt-BR": "Produto em destaque grande",
+    "ar": "منتج بارز كبير"
+  },
+  "מחירון ברשימה": {
+    "en": "Price list",
+    "es": "Lista de precios",
+    "pt-BR": "Lista de preços",
+    "ar": "قائمة أسعار"
+  },
+  "מחירון שירותים": {
+    "en": "Services price list",
+    "es": "Tarifa de servicios",
+    "pt-BR": "Lista de preços de serviços",
+    "ar": "قائمة أسعار خدمات"
+  },
+  "מיני סל קניות": {
+    "en": "Mini cart",
+    "es": "Mini carrito",
+    "pt-BR": "Mini sacola",
+    "ar": "سلة صغيرة"
+  },
+  "ממורכז נקי": {
+    "en": "Clean centered",
+    "es": "Centrado limpio",
+    "pt-BR": "Centralizado limpo",
+    "ar": "مركزي نظيف"
+  },
+  "מספרים ונתונים": {
+    "en": "Numbers and stats",
+    "es": "Números y datos",
+    "pt-BR": "Números e dados",
+    "ar": "أرقام وبيانات"
+  },
+  "מרצים / משתתפים": {
+    "en": "Speakers / guests",
+    "es": "Ponentes / participantes",
+    "pt-BR": "Palestrantes / participantes",
+    "ar": "محاضرون / مشاركون"
+  },
+  "ניוזלטר עם תמונה": {
+    "en": "Newsletter with a photo",
+    "es": "Newsletter con foto",
+    "pt-BR": "Newsletter com foto",
+    "ar": "نشرة مع صورة"
+  },
+  "סושיאל + וואטסאפ": {
+    "en": "Social + WhatsApp",
+    "es": "Social + WhatsApp",
+    "pt-BR": "Social + WhatsApp",
+    "ar": "اجتماعي + واتساب"
+  },
+  "סושיאל + ניוזלטר": {
+    "en": "Social + newsletter",
+    "es": "Social + newsletter",
+    "pt-BR": "Social + newsletter",
+    "ar": "اجتماعي + نشرة"
+  },
+  "סושיאל SaaS": {
+    "en": "SaaS social",
+    "es": "Social SaaS",
+    "pt-BR": "Social SaaS",
+    "ar": "اجتماعي SaaS"
+  },
+  "סושיאל כהה פרימיום": {
+    "en": "Dark premium social",
+    "es": "Social oscuro premium",
+    "pt-BR": "Social escuro premium",
+    "ar": "اجتماعي داكن فاخر"
+  },
+  "סושיאל לחנות": {
+    "en": "Store social",
+    "es": "Social para tienda",
+    "pt-BR": "Social para loja",
+    "ar": "اجتماعي للمتجر"
+  },
+  "סושיאל מינימליסטי": {
+    "en": "Minimal social",
+    "es": "Social minimalista",
+    "pt-BR": "Social minimalista",
+    "ar": "اجتماعي بسيط"
+  },
+  "סושיאל על תמונת רקע": {
+    "en": "Social on a background photo",
+    "es": "Social sobre foto de fondo",
+    "pt-BR": "Social sobre foto de fundo",
+    "ar": "اجتماعي على صورة خلفية"
+  },
+  "סושיאל עם וידאו": {
+    "en": "Social with video",
+    "es": "Social con vídeo",
+    "pt-BR": "Social com vídeo",
+    "ar": "اجتماعي مع فيديو"
+  },
+  "סושיאל עם מספרים": {
+    "en": "Social with numbers",
+    "es": "Social con números",
+    "pt-BR": "Social com números",
+    "ar": "اجتماعي مع أرقام"
+  },
+  "סיכום דירוגים": {
+    "en": "Ratings summary",
+    "es": "Resumen de valoraciones",
+    "pt-BR": "Resumo de avaliações",
+    "ar": "ملخص تقييمات"
+  },
+  "סיפור העסק": {
+    "en": "Business story",
+    "es": "Historia del negocio",
+    "pt-BR": "História do negócio",
+    "ar": "قصة العمل"
+  },
+  "ספקי אירוע": {
+    "en": "Event vendors",
+    "es": "Proveedores del evento",
+    "pt-BR": "Fornecedores do evento",
+    "ar": "مورّدو فعالية"
+  },
+  "סקשן על תמונת רקע": {
+    "en": "Section on a background photo",
+    "es": "Sección sobre foto de fondo",
+    "pt-BR": "Seção sobre foto de fundo",
+    "ar": "قسم على صورة خلفية"
+  },
+  "סקשן פתיחה בסיסי": {
+    "en": "Basic opening section",
+    "es": "Sección de apertura básica",
+    "pt-BR": "Seção de abertura básica",
+    "ar": "قسم افتتاح أساسي"
+  },
+  "ערכים בכרטיסים": {
+    "en": "Values in cards",
+    "es": "Valores en tarjetas",
+    "pt-BR": "Valores em cartões",
+    "ar": "قيم في بطاقات"
+  },
+  "פיד אינסטגרם": {
+    "en": "Instagram feed",
+    "es": "Feed de Instagram",
+    "pt-BR": "Feed do Instagram",
+    "ar": "تغذية إنستغرام"
+  },
+  "פרופילים חברתיים": {
+    "en": "Social profiles",
+    "es": "Perfiles sociales",
+    "pt-BR": "Perfis sociais",
+    "ar": "ملفات اجتماعية"
+  },
+  "פתיחה עם המלצה": {
+    "en": "Opening with a testimonial",
+    "es": "Apertura con recomendación",
+    "pt-BR": "Abertura com depoimento",
+    "ar": "افتتاح مع توصية"
+  },
+  "צוות SaaS": {
+    "en": "SaaS team",
+    "es": "Equipo SaaS",
+    "pt-BR": "Equipe SaaS",
+    "ar": "فريق SaaS"
+  },
+  "צוות בגריד 4": {
+    "en": "Team in a 4-grid",
+    "es": "Equipo en rejilla de 4",
+    "pt-BR": "Equipe em grade de 4",
+    "ar": "فريق بشبكة 4"
+  },
+  "צוות בכרטיסים": {
+    "en": "Team in cards",
+    "es": "Equipo en tarjetas",
+    "pt-BR": "Equipe em cartões",
+    "ar": "فريق في بطاقات"
+  },
+  "צוות כהה יוקרתי": {
+    "en": "Dark luxurious team",
+    "es": "Equipo oscuro de lujo",
+    "pt-BR": "Equipe escura luxuosa",
+    "ar": "فريق داكن فاخر"
+  },
+  "צוות מינימליסטי": {
+    "en": "Minimal team",
+    "es": "Equipo minimalista",
+    "pt-BR": "Equipe minimalista",
+    "ar": "فريق بسيط"
+  },
+  "צוות על תמונת רקע": {
+    "en": "Team on a background photo",
+    "es": "Equipo sobre foto de fondo",
+    "pt-BR": "Equipe sobre foto de fundo",
+    "ar": "فريق على صورة خلفية"
+  },
+  "צוות עם גלריה": {
+    "en": "Team with a gallery",
+    "es": "Equipo con galería",
+    "pt-BR": "Equipe com galeria",
+    "ar": "فريق مع معرض"
+  },
+  "צוות עם המלצה": {
+    "en": "Team with a testimonial",
+    "es": "Equipo con recomendación",
+    "pt-BR": "Equipe com depoimento",
+    "ar": "فريق مع توصية"
+  },
+  "צוות עם וידאו": {
+    "en": "Team with video",
+    "es": "Equipo con vídeo",
+    "pt-BR": "Equipe com vídeo",
+    "ar": "فريق مع فيديو"
+  },
+  "צוות עם מדיה להוספה": {
+    "en": "Team with media to add",
+    "es": "Equipo con media para añadir",
+    "pt-BR": "Equipe com mídia para adicionar",
+    "ar": "فريق مع وسائط للإضافة"
+  },
+  "צוות עם מחלקות": {
+    "en": "Team with departments",
+    "es": "Equipo con departamentos",
+    "pt-BR": "Equipe com departamentos",
+    "ar": "فريق مع أقسام"
+  },
+  "צוות עם נתונים": {
+    "en": "Team with numbers",
+    "es": "Equipo con datos",
+    "pt-BR": "Equipe com dados",
+    "ar": "فريق مع بيانات"
+  },
+  "צוות עם פרופיל מודגש": {
+    "en": "Team with a highlighted profile",
+    "es": "Equipo con perfil destacado",
+    "pt-BR": "Equipe com perfil em destaque",
+    "ar": "فريق مع ملف مبرز"
+  },
+  "צוות קומפקטי": {
+    "en": "Compact team",
+    "es": "Equipo compacto",
+    "pt-BR": "Equipe compacta",
+    "ar": "فريق مدمج"
+  },
+  "צוות קצר עם CTA": {
+    "en": "Short team with CTA",
+    "es": "Equipo corto con CTA",
+    "pt-BR": "Equipe curta com CTA",
+    "ar": "فريق قصير مع CTA"
+  },
+  "ציטוט גדול": {
+    "en": "Large quote",
+    "es": "Cita grande",
+    "pt-BR": "Citação grande",
+    "ar": "اقتباس كبير"
+  },
+  "צ׳קליסט מקצועי": {
+    "en": "Professional checklist",
+    "es": "Checklist profesional",
+    "pt-BR": "Checklist profissional",
+    "ar": "قائمة تحقق مهنية"
+  },
+  "קהילה חברתית": {
+    "en": "Social community",
+    "es": "Comunidad social",
+    "pt-BR": "Comunidade social",
+    "ar": "مجتمع اجتماعي"
+  },
+  "קולקציה / תמונות": {
+    "en": "Collection / photos",
+    "es": "Colección / fotos",
+    "pt-BR": "Coleção / fotos",
+    "ar": "مجموعة / صور"
+  },
+  "קולקציות קטגוריות": {
+    "en": "Category collections",
+    "es": "Colecciones de categorías",
+    "pt-BR": "Coleções de categorias",
+    "ar": "مجموعات فئات"
+  },
+  "קופון יוקרתי": {
+    "en": "Luxurious coupon",
+    "es": "Cupón de lujo",
+    "pt-BR": "Cupom luxuoso",
+    "ar": "كوبون فاخر"
+  },
+  "קרוסלת ביקורות": {
+    "en": "Reviews carousel",
+    "es": "Carrusel de reseñas",
+    "pt-BR": "Carrossel de avaliações",
+    "ar": "دائري تقييمات"
+  },
+  "קרוסלת המלצות": {
+    "en": "Testimonials carousel",
+    "es": "Carrusel de recomendaciones",
+    "pt-BR": "Carrossel de depoimentos",
+    "ar": "دائري توصيات"
+  },
+  "קרוסלת מוצרים": {
+    "en": "Products carousel",
+    "es": "Carrusel de productos",
+    "pt-BR": "Carrossel de produtos",
+    "ar": "دائري منتجات"
+  },
+  "קרוסלת תמונות": {
+    "en": "Photos carousel",
+    "es": "Carrusel de fotos",
+    "pt-BR": "Carrossel de fotos",
+    "ar": "دائري صور"
+  },
+  "קשר לחנות": {
+    "en": "Store contact",
+    "es": "Contacto para tienda",
+    "pt-BR": "Contato para loja",
+    "ar": "تواصل للمتجر"
+  },
+  "קשר מינימליסטי": {
+    "en": "Minimal contact",
+    "es": "Contacto minimalista",
+    "pt-BR": "Contato minimalista",
+    "ar": "تواصل بسيط"
+  },
+  "קשר מפוצל יוקרתי": {
+    "en": "Luxurious split contact",
+    "es": "Contacto partido de lujo",
+    "pt-BR": "Contato dividido luxuoso",
+    "ar": "تواصل مقسوم فاخر"
+  },
+  "קשר על תמונת רקע": {
+    "en": "Contact on a background photo",
+    "es": "Contacto sobre foto de fondo",
+    "pt-BR": "Contato sobre foto de fundo",
+    "ar": "تواصل على صورة خلفية"
+  },
+  "קשר עם ביקורת": {
+    "en": "Contact with a review",
+    "es": "Contacto con reseña",
+    "pt-BR": "Contato com avaliação",
+    "ar": "تواصل مع تقييم"
+  },
+  "קשר עם וידאו": {
+    "en": "Contact with video",
+    "es": "Contacto con vídeo",
+    "pt-BR": "Contato com vídeo",
+    "ar": "تواصل مع فيديو"
+  },
+  "קשר עם סטטיסטיקות": {
+    "en": "Contact with stats",
+    "es": "Contacto con estadísticas",
+    "pt-BR": "Contato com estatísticas",
+    "ar": "تواصل مع إحصاءات"
+  },
+  "רצועת לוגואים": {
+    "en": "Logo strip",
+    "es": "Franja de logos",
+    "pt-BR": "Faixa de logos",
+    "ar": "شريط شعارات"
+  },
+  "רשימה + טופס ליד": {
+    "en": "List + lead form",
+    "es": "Lista + formulario de lead",
+    "pt-BR": "Lista + formulário de lead",
+    "ar": "قائمة + نموذج عميل محتمل"
+  },
+  "רשימה + תמונה": {
+    "en": "List + photo",
+    "es": "Lista + foto",
+    "pt-BR": "Lista + foto",
+    "ar": "قائمة + صورة"
+  },
+  "רשימה כהה פרימיום": {
+    "en": "Dark premium list",
+    "es": "Lista oscura premium",
+    "pt-BR": "Lista escura premium",
+    "ar": "قائمة داكنة فاخرة"
+  },
+  "רשימה מינימליסטית": {
+    "en": "Minimal list",
+    "es": "Lista minimalista",
+    "pt-BR": "Lista minimalista",
+    "ar": "قائمة بسيطة"
+  },
+  "רשימה ממוספרת": {
+    "en": "Numbered list",
+    "es": "Lista numerada",
+    "pt-BR": "Lista numerada",
+    "ar": "قائمة مرقّمة"
+  },
+  "רשימה על תמונת רקע": {
+    "en": "List on a background photo",
+    "es": "Lista sobre foto de fondo",
+    "pt-BR": "Lista sobre foto de fundo",
+    "ar": "قائمة على صورة خلفية"
+  },
+  "רשימה עם וידאו": {
+    "en": "List with video",
+    "es": "Lista con vídeo",
+    "pt-BR": "Lista com vídeo",
+    "ar": "قائمة مع فيديو"
+  },
+  "רשימה עם נתונים": {
+    "en": "List with numbers",
+    "es": "Lista con datos",
+    "pt-BR": "Lista com dados",
+    "ar": "قائمة مع بيانات"
+  },
+  "רשימות בכרטיסים": {
+    "en": "Lists in cards",
+    "es": "Listas en tarjetas",
+    "pt-BR": "Listas em cartões",
+    "ar": "قوائم في بطاقات"
+  },
+  "רשימת FAQ": {
+    "en": "FAQ list",
+    "es": "Lista FAQ",
+    "pt-BR": "Lista FAQ",
+    "ar": "قائمة FAQ"
+  },
+  "רשימת Tags / Pills": {
+    "en": "Tags / pills list",
+    "es": "Lista de tags / pills",
+    "pt-BR": "Lista de tags / pills",
+    "ar": "قائمة وسوم / حبوب"
+  },
+  "רשימת פיצ׳רים SaaS": {
+    "en": "SaaS features list",
+    "es": "Lista de funciones SaaS",
+    "pt-BR": "Lista de recursos SaaS",
+    "ar": "قائمة ميزات SaaS"
+  },
+  "שאלות ותשובות טקסט": {
+    "en": "Text Q&A",
+    "es": "Preguntas y respuestas de texto",
+    "pt-BR": "Perguntas e respostas de texto",
+    "ar": "أسئلة وأجوبة نصية"
+  },
+  "שותפים עסקיים": {
+    "en": "Business partners",
+    "es": "Socios de negocio",
+    "pt-BR": "Parceiros de negócio",
+    "ar": "شركاء أعمال"
+  },
+  "שירות מרכזי": {
+    "en": "Central service",
+    "es": "Servicio central",
+    "pt-BR": "Serviço central",
+    "ar": "خدمة مركزية"
+  },
+  "שירותים SaaS": {
+    "en": "SaaS services",
+    "es": "Servicios SaaS",
+    "pt-BR": "Serviços SaaS",
+    "ar": "خدمات SaaS"
+  },
+  "שירותים בכרטיסים": {
+    "en": "Services in cards",
+    "es": "Servicios en tarjetas",
+    "pt-BR": "Serviços em cartões",
+    "ar": "خدمات في بطاقات"
+  },
+  "שירותים כהה יוקרתי": {
+    "en": "Dark luxurious services",
+    "es": "Servicios oscuros de lujo",
+    "pt-BR": "Serviços escuros luxuosos",
+    "ar": "خدمات داكنة فاخرة"
+  },
+  "שירותים מינימליסטי": {
+    "en": "Minimal services",
+    "es": "Servicios minimalistas",
+    "pt-BR": "Serviços minimalistas",
+    "ar": "خدمات بسيطة"
+  },
+  "שירותים על תמונת רקע": {
+    "en": "Services on a background photo",
+    "es": "Servicios sobre foto de fondo",
+    "pt-BR": "Serviços sobre foto de fundo",
+    "ar": "خدمات على صورة خلفية"
+  },
+  "שירותים עם אמון": {
+    "en": "Services with trust",
+    "es": "Servicios con confianza",
+    "pt-BR": "Serviços com confiança",
+    "ar": "خدمات مع ثقة"
+  },
+  "שירותים עם גלריה": {
+    "en": "Services with a gallery",
+    "es": "Servicios con galería",
+    "pt-BR": "Serviços com galeria",
+    "ar": "خدمات مع معرض"
+  },
+  "שירותים עם וואטסאפ": {
+    "en": "Services with WhatsApp",
+    "es": "Servicios con WhatsApp",
+    "pt-BR": "Serviços com WhatsApp",
+    "ar": "خدمات مع واتساب"
+  },
+  "שירותים עם וידאו": {
+    "en": "Services with video",
+    "es": "Servicios con vídeo",
+    "pt-BR": "Serviços com vídeo",
+    "ar": "خدمات مع فيديو"
+  },
+  "שירותים עם טופס ליד": {
+    "en": "Services with a lead form",
+    "es": "Servicios con formulario de lead",
+    "pt-BR": "Serviços com formulário de lead",
+    "ar": "خدمات مع نموذج عميل محتمل"
+  },
+  "שירותים עם יומן": {
+    "en": "Services with a journal",
+    "es": "Servicios con agenda",
+    "pt-BR": "Serviços com agenda",
+    "ar": "خدمات مع يوميات"
+  },
+  "שירותים עם מדיה להוספה": {
+    "en": "Services with media to add",
+    "es": "Servicios con media para añadir",
+    "pt-BR": "Serviços com mídia para adicionar",
+    "ar": "خدمات مع وسائط للإضافة"
+  },
+  "שירותים עם תמונה": {
+    "en": "Services with a photo",
+    "es": "Servicios con foto",
+    "pt-BR": "Serviços com foto",
+    "ar": "خدمات مع صورة"
+  },
+  "שירותים קצר עם CTA": {
+    "en": "Short services with CTA",
+    "es": "Servicios cortos con CTA",
+    "pt-BR": "Serviços curtos com CTA",
+    "ar": "خدمات قصيرة مع CTA"
+  },
+  "שלוש דרכי קשר": {
+    "en": "Three contact paths",
+    "es": "Tres vías de contacto",
+    "pt-BR": "Três vias de contato",
+    "ar": "ثلاث طرق تواصل"
+  },
+  "שלוש עמודות טקסט": {
+    "en": "Three text columns",
+    "es": "Tres columnas de texto",
+    "pt-BR": "Três colunas de texto",
+    "ar": "ثلاث أعمدة نص"
+  },
+  "שלושה יתרונות": {
+    "en": "Three benefits",
+    "es": "Tres ventajas",
+    "pt-BR": "Três vantagens",
+    "ar": "ثلاث مزايا"
+  },
+  "שתי תמונות": {
+    "en": "Two photos",
+    "es": "Dos fotos",
+    "pt-BR": "Duas fotos",
+    "ar": "صورتان"
+  },
+  "תהליך בשלבים": {
+    "en": "Process in stages",
+    "es": "Proceso en etapas",
+    "pt-BR": "Processo em etapas",
+    "ar": "مسار بمراحل"
+  },
+  "תהליך קביעת תור": {
+    "en": "Booking process",
+    "es": "Proceso de cita",
+    "pt-BR": "Processo de agendamento",
+    "ar": "مسار حجز موعد"
+  },
+  "תור + הוכחת אמון": {
+    "en": "Booking + trust proof",
+    "es": "Cita + prueba de confianza",
+    "pt-BR": "Agendamento + prova de confiança",
+    "ar": "موعد + إثبات ثقة"
+  },
+  "תור + וואטסאפ": {
+    "en": "Booking + WhatsApp",
+    "es": "Cita + WhatsApp",
+    "pt-BR": "Agendamento + WhatsApp",
+    "ar": "موعد + واتساب"
+  },
+  "תור + מחירון": {
+    "en": "Booking + price list",
+    "es": "Cita + tarifa",
+    "pt-BR": "Agendamento + lista de preços",
+    "ar": "موعد + قائمة أسعار"
+  },
+  "תור בבית הלקוח": {
+    "en": "Booking at the customer's home",
+    "es": "Cita en casa del cliente",
+    "pt-BR": "Agendamento na casa do cliente",
+    "ar": "موعد في بيت الزبون"
+  },
+  "תור על תמונת רקע": {
+    "en": "Booking on a background photo",
+    "es": "Cita sobre foto de fondo",
+    "pt-BR": "Agendamento sobre foto de fundo",
+    "ar": "موعد على صورة خلفية"
+  },
+  "תור עם וידאו": {
+    "en": "Booking with video",
+    "es": "Cita con vídeo",
+    "pt-BR": "Agendamento com vídeo",
+    "ar": "موعد مع فيديو"
+  },
+  "תור עם מדיה": {
+    "en": "Booking with media",
+    "es": "Cita con media",
+    "pt-BR": "Agendamento com mídia",
+    "ar": "موعد مع وسائط"
+  },
+  "תיאום לפי צוות": {
+    "en": "Booking by team",
+    "es": "Cita por equipo",
+    "pt-BR": "Agendamento por equipe",
+    "ar": "تنسيق حسب الفريق"
+  },
+  "תיאום עם תמונה": {
+    "en": "Booking with a photo",
+    "es": "Cita con foto",
+    "pt-BR": "Agendamento com foto",
+    "ar": "تنسيق مع صورة"
+  },
+  "תמונה + טופס": {
+    "en": "Photo + form",
+    "es": "Foto + formulario",
+    "pt-BR": "Foto + formulário",
+    "ar": "صورة + نموذج"
+  },
+  "תמונה + צוות": {
+    "en": "Photo + team",
+    "es": "Foto + equipo",
+    "pt-BR": "Foto + equipe",
+    "ar": "صورة + فريق"
+  },
+  "תמונה + רשימה": {
+    "en": "Photo + list",
+    "es": "Foto + lista",
+    "pt-BR": "Foto + lista",
+    "ar": "صورة + قائمة"
+  },
+  "תמונה + שירותים": {
+    "en": "Photo + services",
+    "es": "Foto + servicios",
+    "pt-BR": "Foto + serviços",
+    "ar": "صورة + خدمات"
+  },
+  "תמונה גדולה + קטנות": {
+    "en": "Large photo + small ones",
+    "es": "Foto grande + pequeñas",
+    "pt-BR": "Foto grande + pequenas",
+    "ar": "صورة كبيرة + صغيرة"
+  },
+  "תמונת רקע מלאה": {
+    "en": "Full background photo",
+    "es": "Foto de fondo completa",
+    "pt-BR": "Foto de fundo completa",
+    "ar": "صورة خلفية كاملة"
+  }
+}

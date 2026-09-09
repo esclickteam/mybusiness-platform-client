@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   DEFAULT_TIMEZONE,
   MIN_INTERVAL_MINUTES,
@@ -44,7 +45,7 @@ export default function ScheduleTriggerFields({
   disabled,
   onChange,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const config = ensureConfig(value);
   const activeEnabled = Boolean(config.activeHours);
   const weekdayDefaults = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -85,7 +86,7 @@ export default function ScheduleTriggerFields({
   };
 
   return (
-    <div className="af-schedule" dir="rtl">
+    <div className="af-schedule" dir={getTextDirection(i18n.language)}>
       <label>
         {t("automations.schedule.frequency", "Frequency")}
         <select

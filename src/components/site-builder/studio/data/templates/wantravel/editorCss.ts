@@ -5,7 +5,7 @@ export const wantravelEditorCss = `
 }
 
 [data-template-id="wantravel"] {
-  direction: rtl;
+  
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: visible;

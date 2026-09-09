@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import './ChatMessages.css';
 import VoiceBubble from './VoiceBubble'; // Audio player
 
 const ChatMessages = ({ messages, currentClientId }) => {
+  const { t, i18n } = useTranslation();
   const endRef = useRef(null);
 
   // Auto-scroll to bottom when messages update
@@ -11,7 +14,7 @@ const ChatMessages = ({ messages, currentClientId }) => {
   }, [messages]);
 
   return (
-    <div className="chat-box" dir="rtl">
+    <div className="chat-box" dir={getTextDirection(i18n.language)}>
       {messages.map((msg) => {
         const safeClientId = msg.clientId?.toString().trim();
         const safeCurrentId = currentClientId?.toString().trim();
@@ -30,10 +33,10 @@ const ChatMessages = ({ messages, currentClientId }) => {
             <div className="chat-bubble">
               <span className="sender-label">
                 {fromClass === 'from-customer'
-                  ? 'You (Customer)'
+                  ? t('leftover.bizChatChrome.youCustomer')
                   : fromClass === 'from-business'
-                  ? 'Business'
-                  : 'System'}
+                  ? t('leftover.bizChatChrome.business')
+                  : t('leftover.bizChatChrome.system')}
               </span>
 
               {/* Text */}

@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
+import { normalizeLiveSource, type LiveDemoSource } from "../i18n/liveDemo";
 
-type Source = "meta" | "site" | "google" | "whatsapp";
+type Source = LiveDemoSource;
 type Status = "new" | "contacted" | "interested" | "won";
 
 type Lead = {
@@ -49,16 +51,19 @@ const MAX_ARRIVALS = 12;
  * list. Falls back to a still board under prefers-reduced-motion.
  */
 export default function LiveBoard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const people = useMemo(
-    () =>
+  const people = useMemo(() => {
+    const raw =
       (t("live.people", { returnObjects: true }) as unknown as
-        | { name: string; initials: string; service: string; source: Source }[]
-        | undefined) || [],
-    [t],
-  );
+        | { name: string; initials: string; service: string; source: string }[]
+        | undefined) || [];
+    return raw.map((person) => ({
+      ...person,
+      source: normalizeLiveSource(person.source),
+    }));
+  }, [t]);
 
   const [rows, setRows] = useState<Lead[]>([]);
   const [counts, setCounts] = useState({ total: 24, fresh: 9, working: 5, won: 2 });
@@ -131,7 +136,7 @@ export default function LiveBoard() {
   ];
 
   return (
-    <div className="relative" dir="rtl">
+    <div className="relative" dir={getTextDirection(i18n.language)}>
       <div className="pointer-events-none absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-300/30 via-violet-300/25 to-cyan-300/30 blur-3xl" />
 
       <div className="relative overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/80 p-2 shadow-[0_30px_100px_rgba(79,70,229,0.2)] backdrop-blur-xl sm:p-3">

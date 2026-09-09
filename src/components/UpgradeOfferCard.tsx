@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type UpgradeOfferCardProps = {
   onUpgrade: () => void | Promise<void>;
@@ -10,12 +11,15 @@ type UpgradeOfferCardProps = {
 
 const EARLY_BIRD_DISMISSED_KEY = "bizuplyEarlyBirdDismissed";
 
-function formatTimeLeft(ms: number) {
+function formatTimeLeft(
+  ms: number,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-  return `${hours}h ${minutes}m`;
+  return t("billing.earlyBird.timeLeft", { hours, minutes });
 }
 
 export default function UpgradeOfferCard({
@@ -23,6 +27,7 @@ export default function UpgradeOfferCard({
   onClose,
   expiresAt,
 }: UpgradeOfferCardProps) {
+  const { t } = useTranslation();
   const [now, setNow] = useState(Date.now());
   const [dismissed, setDismissed] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
@@ -47,9 +52,9 @@ export default function UpgradeOfferCard({
   const targetTs = useMemo(() => {
     if (!expiresAt) return fallbackExpiresAt;
 
-    const t = new Date(expiresAt).getTime();
+    const parsed = new Date(expiresAt).getTime();
 
-    return Number.isFinite(t) ? t : fallbackExpiresAt;
+    return Number.isFinite(parsed) ? parsed : fallbackExpiresAt;
   }, [expiresAt, fallbackExpiresAt]);
 
   useEffect(() => {
@@ -86,7 +91,7 @@ export default function UpgradeOfferCard({
       await onUpgrade?.();
     } catch (error) {
       console.error("Early bird upgrade failed:", error);
-      alert("Could not open checkout right now. Please try again.");
+      alert(t("billing.earlyBird.checkoutFailed"));
     } finally {
       setUpgrading(false);
     }
@@ -123,7 +128,7 @@ export default function UpgradeOfferCard({
 
         <button
           type="button"
-          aria-label="Close offer"
+          aria-label={t("billing.earlyBird.closeAria")}
           onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -155,11 +160,11 @@ export default function UpgradeOfferCard({
             text-sm font-extrabold text-violet-700
           "
         >
-          🎁 Limited-time offer
+          🎁 {t("billing.earlyBird.badge")}
         </div>
 
         <h2 className="mb-2 text-3xl font-black tracking-tight text-slate-800">
-          First Month Only{" "}
+          {t("billing.earlyBird.titleLead")}{" "}
           <span className="text-violet-700">₪119</span>
           <span className="ml-2 align-middle text-lg font-black text-slate-400 line-through">
             ₪149
@@ -167,25 +172,23 @@ export default function UpgradeOfferCard({
         </h2>
 
         <p className="mb-4 text-sm font-bold text-emerald-600">
-          Save ₪30 on your first month
+          {t("billing.earlyBird.save")}
         </p>
 
         {!isExpired && (
           <p className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-            Offer ends in <strong>{formatTimeLeft(msLeft)}</strong>
+            {t("billing.earlyBird.endsIn", {
+              time: formatTimeLeft(msLeft, t),
+            })}
           </p>
         )}
 
         <p className="mb-4 text-[15px] leading-7 text-slate-600">
-          Unlock <strong className="text-slate-800">BizUply</strong>{" "}
-          automations, CRM, messaging and AI tools.
-          <br />
-          Special early access pricing — no commitment.
+          {t("billing.earlyBird.body")}
         </p>
 
         <p className="mb-5 text-sm text-slate-500">
-          Then <strong className="text-slate-800">₪149/month</strong>. Cancel
-          anytime.
+          {t("billing.earlyBird.thenMonthly")}
         </p>
 
         <button
@@ -210,11 +213,13 @@ export default function UpgradeOfferCard({
             pointer-events-auto
           "
         >
-          {upgrading ? "Redirecting to checkout..." : "Upgrade for ₪119"}
+          {upgrading
+            ? t("billing.earlyBird.checkoutBusy")
+            : t("billing.earlyBird.cta")}
         </button>
 
         <p className="mt-4 text-xs font-semibold text-slate-400">
-          Your trial stays active • No obligation
+          {t("billing.earlyBird.finePrint")}
         </p>
       </div>
     </div>

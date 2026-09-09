@@ -1,0 +1,566 @@
+{
+  "הופכים פניות": {
+    "en": "Turn inquiries",
+    "es": "Convertid consultas",
+    "pt-BR": "Transformem consultas",
+    "ar": "حوّلوا الاستفسارات"
+  },
+  "ללקוחות משלמים": {
+    "en": "into paying customers",
+    "es": "en clientes de pago",
+    "pt-BR": "em clientes pagantes",
+    "ar": "إلى زبائن يدفعون"
+  },
+  "קבעו שיחת התאמה": {
+    "en": "Book a fit call",
+    "es": "Reservad una llamada de encaje",
+    "pt-BR": "Marquem uma chamada de encaixe",
+    "ar": "احجزوا مكالمة ملاءمة"
+  },
+  "לראות פתרונות": {
+    "en": "See solutions",
+    "es": "Ver soluciones",
+    "pt-BR": "Ver soluções",
+    "ar": "رؤية الحلول"
+  },
+  "· הסטודיו": {
+    "en": "· The studio",
+    "es": "· El estudio",
+    "pt-BR": "· O estúdio",
+    "ar": "· الاستوديو"
+  },
+  "אנחנו לא בונים רק אתר": {
+    "en": "We don't just build a site",
+    "es": "No construimos solo un sitio",
+    "pt-BR": "Não construímos só um site",
+    "ar": "نحن لا نبني موقعاً فقط"
+  },
+  "אנחנו בונים": {
+    "en": "We build",
+    "es": "Construimos",
+    "pt-BR": "Construímos",
+    "ar": "نحن نبني"
+  },
+  "מערכת שמוכרת": {
+    "en": "a system that sells",
+    "es": "un sistema que vende",
+    "pt-BR": "um sistema que vende",
+    "ar": "منظومة تبيع"
+  },
+  "ומייצרת": {
+    "en": "and creates",
+    "es": "y crea",
+    "pt-BR": "e cria",
+    "ar": "وتصنع"
+  },
+  "סדר בעסק": {
+    "en": "order in the business",
+    "es": "orden en el negocio",
+    "pt-BR": "ordem no negócio",
+    "ar": "ترتيباً في العمل"
+  },
+  "תהליכי מכירה": {
+    "en": "Sales processes",
+    "es": "Procesos de venta",
+    "pt-BR": "Processos de vendas",
+    "ar": "عمليات بيع"
+  },
+  "שיפור ממוצע בסדר, מעקב וזמן תגובה אחרי הטמעת תהליך מסודר.": {
+    "en": "Average improvement in order, follow-up, and response time after a clear process is in place.",
+    "es": "Mejora media en orden, seguimiento y tiempo de respuesta después de implantar un proceso ordenado.",
+    "pt-BR": "Melhora média em ordem, acompanhamento e tempo de resposta depois de implantar um processo organizado.",
+    "ar": "تحسّن متوسط في الترتيب والمتابعة وزمن الرد بعد تثبيت عملية مرتّبة."
+  },
+  "פחות פעולות ידניות": {
+    "en": "Fewer manual actions",
+    "es": "Menos acciones manuales",
+    "pt-BR": "Menos ações manuais",
+    "ar": "إجراءات يدوية أقل"
+  },
+  "לידים שנוהלו": {
+    "en": "Leads handled",
+    "es": "Leads gestionados",
+    "pt-BR": "Leads geridos",
+    "ar": "عملاء محتملون أُديروا"
+  },
+  "תחומים שונים": {
+    "en": "Different fields",
+    "es": "Ámbitos distintos",
+    "pt-BR": "Áreas diferentes",
+    "ar": "مجالات مختلفة"
+  },
+  "פחות עומס": {
+    "en": "Less overload",
+    "es": "Menos carga",
+    "pt-BR": "Menos sobrecarga",
+    "ar": "حمل أقل"
+  },
+  "יותר מכירות": {
+    "en": "More sales",
+    "es": "Más ventas",
+    "pt-BR": "Mais vendas",
+    "ar": "مبيعات أكثر"
+  },
+  "מגמת לידים חודשית": {
+    "en": "Monthly lead trend",
+    "es": "Tendencia mensual de leads",
+    "pt-BR": "Tendência mensal de leads",
+    "ar": "اتجاه العملاء المحتملين الشهري"
+  },
+  "מדד שירות שבועי": {
+    "en": "Weekly service metric",
+    "es": "Métrica semanal de servicio",
+    "pt-BR": "Métrica semanal de serviço",
+    "ar": "مؤشر خدمة أسبوعي"
+  },
+  "כשעיצוב טוב פוגש": {
+    "en": "When good design meets",
+    "es": "Cuando un buen diseño encuentra",
+    "pt-BR": "Quando um bom design encontra",
+    "ar": "عندما يلتقي تصميم جيد"
+  },
+  "תהליך עסקי מדויק": {
+    "en": "a precise business process",
+    "es": "un proceso de negocio preciso",
+    "pt-BR": "um processo de negócio preciso",
+    "ar": "عملية أعمال دقيقة"
+  },
+  "בוחרים את הקצב שמתאים לעסק": {
+    "en": "Choose the pace that fits the business",
+    "es": "Elegid el ritmo que encaja en el negocio",
+    "pt-BR": "Escolham o ritmo que cabe no negócio",
+    "ar": "اختاروا الإيقاع الذي يناسب العمل"
+  },
+  "מה השתנה אצל לקוחות": {
+    "en": "What changed for clients",
+    "es": "Qué cambió en los clientes",
+    "pt-BR": "O que mudou nos clientes",
+    "ar": "ما الذي تغيّر عند الزبائن"
+  },
+  "רעיונות לעסק שעובד חכם": {
+    "en": "Ideas for a business that works smart",
+    "es": "Ideas para un negocio que trabaja inteligente",
+    "pt-BR": "Ideias para um negócio que trabalha inteligente",
+    "ar": "أفكار لعمل يعمل بذكاء"
+  },
+  "לכל המאמרים": {
+    "en": "All articles",
+    "es": "Todos los artículos",
+    "pt-BR": "Todos os artigos",
+    "ar": "كل المقالات"
+  },
+  "הגיע הזמן שהעסק יעבוד בשבילכם": {
+    "en": "It is time the business worked for you",
+    "es": "Es hora de que el negocio trabaje para vosotros",
+    "pt-BR": "Está na hora do negócio trabalhar por vocês",
+    "ar": "حان وقت أن يعمل العمل من أجلكم"
+  },
+  "השאירו פרטים, קבעו שיחה או חברו את הטופס למערכת הלידים שלכם.": {
+    "en": "Leave details, book a call, or connect the form to your leads system.",
+    "es": "Dejad datos, reservad una llamada o conectad el formulario a vuestro sistema de leads.",
+    "pt-BR": "Deixem dados, marquem uma chamada ou liguem o formulário ao sistema de leads.",
+    "ar": "اتركوا التفاصيل أو احجزوا مكالمة أو اربطوا النموذج بمنظومة العملاء المحتملين."
+  },
+  "פתרונות דיגיטליים שמסדרים מכירות ושירות": {
+    "en": "Digital solutions that organize sales and service",
+    "es": "Soluciones digitales que ordenan ventas y servicio",
+    "pt-BR": "Soluções digitais que organizam vendas e serviço",
+    "ar": "حلول رقمية ترتّب المبيعات والخدمة"
+  },
+  "סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה": {
+    "en": "A studio that connects design, process, and technology",
+    "es": "Un estudio que conecta diseño, proceso y tecnología",
+    "pt-BR": "Um estúdio que liga design, processo e tecnologia",
+    "ar": "استوديو يربط التصميم والعملية والتقنية"
+  },
+  "חבילות שמתאימות לקצב הצמיחה שלכם": {
+    "en": "Packages that match your growth pace",
+    "es": "Paquetes que encajan con vuestro ritmo de crecimiento",
+    "pt-BR": "Pacotes que combinam com o ritmo de crescimento de vocês",
+    "ar": "باقات تناسب إيقاع نموّكم"
+  },
+  "רעיונות לעסק שעובד חכם יותר": {
+    "en": "Ideas for a business that works smarter",
+    "es": "Ideas para un negocio que trabaja más inteligente",
+    "pt-BR": "Ideias para um negócio que trabalha mais inteligente",
+    "ar": "أفكار لعمل يعمل بذكاء أكبر"
+  },
+  "בואו נבנה לכם תהליך שמייצר יותר פניות": {
+    "en": "Let's build you a process that creates more inquiries",
+    "es": "Construyamos un proceso que os genere más consultas",
+    "pt-BR": "Vamos construir um processo que gere mais consultas para vocês",
+    "ar": "لنبنِ لكم عملية تصنع المزيد من الاستفسارات"
+  },
+  "ספרו לנו איפה העסק נתקע": {
+    "en": "Tell us where the business is stuck",
+    "es": "Contadnos dónde se atasca el negocio",
+    "pt-BR": "Contem onde o negócio trava",
+    "ar": "أخبرونا أين يتعثّر العمل"
+  },
+  "מה תרצו לשפר בעסק?": {
+    "en": "What do you want to improve in the business?",
+    "es": "¿Qué queréis mejorar en el negocio?",
+    "pt-BR": "O que vocês querem melhorar no negócio?",
+    "ar": "ماذا تريدون تحسينه في العمل؟"
+  },
+  "הודעות": {
+    "en": "Messages",
+    "es": "Mensajes",
+    "pt-BR": "Mensagens",
+    "ar": "رسائل"
+  },
+  "ליד חדש": {
+    "en": "New lead",
+    "es": "Lead nuevo",
+    "pt-BR": "Lead novo",
+    "ar": "عميل محتمل جديد"
+  },
+  "נכנס עכשיו": {
+    "en": "Just came in",
+    "es": "Entró ahora",
+    "pt-BR": "Entrou agora",
+    "ar": "دخل الآن"
+  },
+  "מקמפיין ממומן": {
+    "en": "From a paid campaign",
+    "es": "De una campaña de pago",
+    "pt-BR": "De uma campanha paga",
+    "ar": "من حملة مدفوعة"
+  },
+  "פניות החודש": {
+    "en": "Inquiries this month",
+    "es": "Consultas del mes",
+    "pt-BR": "Consultas do mês",
+    "ar": "استفسارات هذا الشهر"
+  },
+  "עלייה של 31%": {
+    "en": "Up 31%",
+    "es": "Subida del 31%",
+    "pt-BR": "Alta de 31%",
+    "ar": "ارتفاع 31%"
+  },
+  "זמן תגובה": {
+    "en": "Response time",
+    "es": "Tiempo de respuesta",
+    "pt-BR": "Tempo de resposta",
+    "ar": "زمن الرد"
+  },
+  "2.4 דק׳": {
+    "en": "2.4 min",
+    "es": "2.4 min",
+    "pt-BR": "2.4 min",
+    "ar": "2.4 دقائق"
+  },
+  "ממוצע לצוות": {
+    "en": "Team average",
+    "es": "Media del equipo",
+    "pt-BR": "Média da equipe",
+    "ar": "متوسط الفريق"
+  },
+  "עסקאות": {
+    "en": "Deals",
+    "es": "Tratos",
+    "pt-BR": "Negócios",
+    "ar": "صفقات"
+  },
+  "מגמת מכירות": {
+    "en": "Sales trend",
+    "es": "Tendencia de ventas",
+    "pt-BR": "Tendência de vendas",
+    "ar": "اتجاه المبيعات"
+  },
+  "בעלייה": {
+    "en": "Rising",
+    "es": "En alza",
+    "pt-BR": "Em alta",
+    "ar": "في ارتفاع"
+  },
+  "דוח שבועי": {
+    "en": "Weekly report",
+    "es": "Informe semanal",
+    "pt-BR": "Relatório semanal",
+    "ar": "تقرير أسبوعي"
+  },
+  "פייפליין": {
+    "en": "Pipeline",
+    "es": "Pipeline",
+    "pt-BR": "Pipeline",
+    "ar": "خط الأنابيب"
+  },
+  "38 עסקאות": {
+    "en": "38 deals",
+    "es": "38 tratos",
+    "pt-BR": "38 negócios",
+    "ar": "38 صفقة"
+  },
+  "בשלבי טיפול": {
+    "en": "In progress",
+    "es": "En tratamiento",
+    "pt-BR": "Em andamento",
+    "ar": "في مراحل المعالجة"
+  },
+  "CRM + הודעות": {
+    "en": "CRM + messages",
+    "es": "CRM + mensajes",
+    "pt-BR": "CRM + mensagens",
+    "ar": "CRM + رسائل"
+  },
+  "Flow פעיל": {
+    "en": "Active Flow",
+    "es": "Flow activo",
+    "pt-BR": "Flow ativo",
+    "ar": "Flow نشط"
+  },
+  "דופק ממוצע": {
+    "en": "Average BPM",
+    "es": "Pulso medio",
+    "pt-BR": "Batimento médio",
+    "ar": "نبض متوسط"
+  },
+  "אימון ממוקד": {
+    "en": "Focused session",
+    "es": "Entreno enfocado",
+    "pt-BR": "Treino focado",
+    "ar": "تدريب مركّز"
+  },
+  "אימון פיטנס עוצמתי": {
+    "en": "Powerful fitness training",
+    "es": "Entrenamiento de fitness potente",
+    "pt-BR": "Treino de fitness potente",
+    "ar": "تدريب لياقة قوي"
+  },
+  "סטודיו פרטי לאימונים מותאמים אישית": {
+    "en": "A private studio for tailored training",
+    "es": "Un estudio privado para entrenos a medida",
+    "pt-BR": "Um estúdio privado para treinos sob medida",
+    "ar": "استوديو خاص لتدريبات مفصّلة"
+  },
+  "אימון חזק.": {
+    "en": "Strong training.",
+    "es": "Entreno fuerte.",
+    "pt-BR": "Treino forte.",
+    "ar": "تدريب قوي."
+  },
+  "אנרגיה גבוהה.": {
+    "en": "High energy.",
+    "es": "Energía alta.",
+    "pt-BR": "Energia alta.",
+    "ar": "طاقة عالية."
+  },
+  "תוצאה ברורה.": {
+    "en": "A clear result.",
+    "es": "Un resultado claro.",
+    "pt-BR": "Um resultado claro.",
+    "ar": "نتيجة واضحة."
+  },
+  "לקביעת אימון ניסיון": {
+    "en": "Book a trial session",
+    "es": "Reservar un entreno de prueba",
+    "pt-BR": "Marcar um treino experimental",
+    "ar": "لحجز تدريب تجريبي"
+  },
+  "אימון ניסיון זמין השבוע": {
+    "en": "A trial session is available this week",
+    "es": "Hay un entreno de prueba esta semana",
+    "pt-BR": "Há um treino experimental esta semana",
+    "ar": "تدريب تجريبي متاح هذا الأسبوع"
+  },
+  "בחרו את האימון": {
+    "en": "Choose the session",
+    "es": "Elegid el entreno",
+    "pt-BR": "Escolham o treino",
+    "ar": "اختاروا التدريب"
+  },
+  "שמדליק אתכם": {
+    "en": "that lights you up",
+    "es": "que os enciende",
+    "pt-BR": "que acende vocês",
+    "ar": "الذي يشعلكم"
+  },
+  "הרשמה לאימון": {
+    "en": "Sign up for a session",
+    "es": "Apuntarse al entreno",
+    "pt-BR": "Inscrever-se no treino",
+    "ar": "التسجيل للتدريب"
+  },
+  "מאמנים שמרימים אתכם קדימה": {
+    "en": "Coaches who push you forward",
+    "es": "Entrenadores que os empujan adelante",
+    "pt-BR": "Treinadores que empurram vocês para frente",
+    "ar": "مدربون يدفعونكم إلى الأمام"
+  },
+  "מסלול שמתאים לקצב שלכם": {
+    "en": "A track that matches your pace",
+    "es": "Un recorrido que encaja con vuestro ritmo",
+    "pt-BR": "Um plano que combina com o ritmo de vocês",
+    "ar": "مسار يناسب إيقاعكم"
+  },
+  "שבוע מלא באנרגיה": {
+    "en": "A week full of energy",
+    "es": "Una semana llena de energía",
+    "pt-BR": "Uma semana cheia de energia",
+    "ar": "أسبوع مليء بالطاقة"
+  },
+  "אנשים שמרגישים את השינוי": {
+    "en": "People who feel the change",
+    "es": "Personas que sienten el cambio",
+    "pt-BR": "Pessoas que sentem a mudança",
+    "ar": "ناس يشعرون بالتغيير"
+  },
+  "לפני שמתחילים": {
+    "en": "Before you start",
+    "es": "Antes de empezar",
+    "pt-BR": "Antes de começar",
+    "ar": "قبل أن تبدأوا"
+  },
+  "מוכנים להתחיל לזוז?": {
+    "en": "Ready to start moving?",
+    "es": "¿Listos para empezar a moveros?",
+    "pt-BR": "Prontos para começar a se mover?",
+    "ar": "مستعدون للبدء بالحركة؟"
+  },
+  "מטרה עיקרית": {
+    "en": "Main goal",
+    "es": "Objetivo principal",
+    "pt-BR": "Objetivo principal",
+    "ar": "الهدف الأساسي"
+  },
+  "תוכניות אימון לכל רמה וקצב": {
+    "en": "Training plans for every level and pace",
+    "es": "Planes de entreno para cada nivel y ritmo",
+    "pt-BR": "Planos de treino para cada nível e ritmo",
+    "ar": "خطط تدريب لكل مستوى وإيقاع"
+  },
+  "מאמנים שמלווים אתכם עד התוצאה": {
+    "en": "Coaches who stay with you until the result",
+    "es": "Entrenadores que os acompañan hasta el resultado",
+    "pt-BR": "Treinadores que acompanham vocês até o resultado",
+    "ar": "مدربون يرافقونكم حتى النتيجة"
+  },
+  "מנויים גמישים לפי מטרה": {
+    "en": "Flexible memberships by goal",
+    "es": "Suscripciones flexibles según objetivo",
+    "pt-BR": "Assinaturas flexíveis por objetivo",
+    "ar": "اشتراكات مرنة حسب الهدف"
+  },
+  "מערכת שעות שבועית": {
+    "en": "Weekly schedule",
+    "es": "Horario semanal",
+    "pt-BR": "Grade semanal",
+    "ar": "جدول ساعات أسبوعي"
+  },
+  "קבעו אימון ניסיון": {
+    "en": "Book a trial session",
+    "es": "Reservad un entreno de prueba",
+    "pt-BR": "Marquem um treino experimental",
+    "ar": "احجزوا تدريباً تجريبياً"
+  },
+  "שני": {
+    "en": "Monday",
+    "es": "Lunes",
+    "pt-BR": "Segunda",
+    "ar": "الاثنين"
+  },
+  "שלישי": {
+    "en": "Tuesday",
+    "es": "Martes",
+    "pt-BR": "Terça",
+    "ar": "الثلاثاء"
+  },
+  "רביעי": {
+    "en": "Wednesday",
+    "es": "Miércoles",
+    "pt-BR": "Quarta",
+    "ar": "الأربعاء"
+  },
+  "חמישי": {
+    "en": "Thursday",
+    "es": "Jueves",
+    "pt-BR": "Quinta",
+    "ar": "الخميس"
+  },
+  "חשמלאי מקצועי": {
+    "en": "A professional electrician",
+    "es": "Un electricista profesional",
+    "pt-BR": "Um eletricista profissional",
+    "ar": "كهربائي مهني"
+  },
+  "לתיאום ייעוץ": {
+    "en": "Book a consult",
+    "es": "Coordinar una consulta",
+    "pt-BR": "Agendar uma consultoria",
+    "ar": "لتنسيق استشارة"
+  },
+  "צפו במחירים": {
+    "en": "See prices",
+    "es": "Ver precios",
+    "pt-BR": "Ver preços",
+    "ar": "عرض الأسعار"
+  },
+  "עבודת חשמל מקצועית": {
+    "en": "Professional electrical work",
+    "es": "Trabajo eléctrico profesional",
+    "pt-BR": "Trabalho elétrico profissional",
+    "ar": "عمل كهرباء مهني"
+  },
+  "שירות זמין עבורכם": {
+    "en": "Service available for you",
+    "es": "Servicio disponible para vosotros",
+    "pt-BR": "Serviço disponível para vocês",
+    "ar": "خدمة متاحة لكم"
+  },
+  "תהליך קצר וברור שמוביל לתיקון בטוח": {
+    "en": "A short, clear process that leads to a safe repair",
+    "es": "Un proceso corto y claro que lleva a una reparación segura",
+    "pt-BR": "Um processo curto e claro que leva a um conserto seguro",
+    "ar": "عملية قصيرة وواضحة تؤدي إلى إصلاح آمن"
+  },
+  "מחירים התחלתיים וברורים לפני שמשאירים פרטים.": {
+    "en": "Clear starting prices before you leave details.",
+    "es": "Precios iniciales y claros antes de dejar datos.",
+    "pt-BR": "Preços iniciais e claros antes de deixar dados.",
+    "ar": "أسعار ابتدائية وواضحة قبل ترك التفاصيل."
+  },
+  "הזמנה עכשיו": {
+    "en": "Order now",
+    "es": "Pedir ahora",
+    "pt-BR": "Pedir agora",
+    "ar": "اطلبوا الآن"
+  },
+  "כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.": {
+    "en": "Everything a client wants to know before leaving details.",
+    "es": "Todo lo que un cliente quiere saber antes de dejar datos.",
+    "pt-BR": "Tudo o que um cliente quer saber antes de deixar dados.",
+    "ar": "كل ما يريد الزبون معرفته قبل ترك التفاصيل."
+  },
+  "צריכים חשמלאי עכשיו?": {
+    "en": "Need an electrician now?",
+    "es": "¿Necesitáis un electricista ahora?",
+    "pt-BR": "Precisam de um eletricista agora?",
+    "ar": "تحتاجون كهربائياً الآن؟"
+  },
+  "שירות נקי, מקצועי ומדויק בכל בית ועסק.": {
+    "en": "Clean, professional, precise service in every home and business.",
+    "es": "Servicio limpio, profesional y preciso en cada casa y negocio.",
+    "pt-BR": "Serviço limpo, profissional e preciso em cada casa e negócio.",
+    "ar": "خدمة نظيفة ومهنية ودقيقة في كل بيت وعمل."
+  },
+  "בפריסה ארצית": {
+    "en": "Nationwide coverage",
+    "es": "Cobertura nacional",
+    "pt-BR": "Cobertura nacional",
+    "ar": "تغطية على مستوى البلاد"
+  },
+  "תהליך מדויק שמוביל לפנייה": {
+    "en": "A precise process that leads to an inquiry",
+    "es": "Un proceso preciso que lleva a una consulta",
+    "pt-BR": "Um processo preciso que leva a uma consulta",
+    "ar": "عملية دقيقة تؤدي إلى استفسار"
+  },
+  "תבנית אתר פרימיום לעסקים שרוצים לשדר אמינות, מקצועיות ונוכחות חזקה מהרגע הראשון.": {
+    "en": "A premium website template for businesses that want to project trust, professionalism, and a strong presence from the first moment.",
+    "es": "Una plantilla premium para negocios que quieren proyectar confianza, profesionalidad y una presencia fuerte desde el primer momento.",
+    "pt-BR": "Um modelo premium para negócios que querem projetar confiança, profissionalismo e uma presença forte desde o primeiro momento.",
+    "ar": "قالب موقع فاخر لأعمال تريد إظهار ثقة ومهنية وحضوراً قوياً من اللحظة الأولى."
+  }
+}

@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { sushisenDefaultData } from "./defaultData";
 import { sushisenEditorCss } from "./editorCss";
@@ -32,7 +34,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = sushisenPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = sushisenPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#0b0b0b", borderColor: "rgba(242,240,234,0.12)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-2.5 lg:px-8">
@@ -44,7 +46,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
           ))}
         </nav>
         <button type="button" onClick={() => { setNavOpen(false); onCta(); }} className="border px-4 py-1.5 text-xs font-semibold tracking-wider" style={{ borderColor: "#d4af37", color: "#d4af37" }}>{v(data, "heroPrimary")}</button>
-        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
           <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
         </button>
       </div>
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <nav className="border-t px-5 py-4 lg:hidden" style={{ borderColor: "rgba(0,0,0,0.08)", background: "var(--surface, #fff)" }}>
           <div className="mx-auto grid max-w-7xl gap-2">
             {nav.map(([id, label]) => (
-              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </nav>
@@ -92,14 +94,14 @@ function NigiriSnapRail({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(242,240,234,0.12)", background: "#161616" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">מסילת ניגירי</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("מסילת ניגירי")}</h2></Reveal>
         <div className="tpl-nigiri-rail mt-10 pb-2">
           {boards.map(([title, meta, text, img], i) => (
             <article key={title} className="tpl-nigiri-card border p-3" style={{ borderColor: "rgba(242,240,234,0.12)", background: "#0b0b0b", animationDelay: `${i * 0.5}s` }}>
               <img src={img} alt="" className="aspect-[4/3] w-full object-cover" />
               <p className="mt-3 text-xs tracking-wider" style={{ color: "#d4af37" }}>{meta}</p>
               <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-              <p className="mt-2 text-sm" style={{ color: "#9a958c" }}>{text}</p>
+              <p className="mt-2 text-sm" style={{ color: "#9a958c" }}>{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -344,8 +346,8 @@ function Insights({ data }: { data: Record<string, any> }) {
               <div className="journal-card-media relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
-              <div className="flex flex-col justify-center p-6 text-right sm:p-8 lg:p-10">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
+              <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(featured.tag)}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#9a958c" }}>{featured.text}</p>
               </div>
@@ -357,8 +359,8 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <div className="journal-card-media relative aspect-[16/10] overflow-hidden">
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-5 text-right sm:p-6">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
+                <div className="p-5 text-start sm:p-6">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(post.tag)}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#9a958c" }}>{post.text}</p>
                 </div>
@@ -394,7 +396,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
         <div className="h-72 w-56 overflow-hidden border" style={{ borderColor: "#d4af37" }}>
           <img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" />
         </div>
-        <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#d4af37" }}>אודות</p>
+        <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#d4af37" }}>{tx("אודות")}</p>
         <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "aboutTitle")}</h2>
         <p className="mt-5 text-lg leading-8" style={{ color: "#9a958c" }}>{v(data, "aboutText")}</p>
       </div>
@@ -409,9 +411,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="mb-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
         <h2 className="tpl-display text-center text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-center text-sm" style={{ color: "#9a958c" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="sushisen-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-8 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="sushisen-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border bg-transparent px-4 py-3 text-start outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3 text-start outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="px-6 py-3 text-sm font-bold tracking-wider" style={{ background: "#d4af37", color: "#0b0b0b" }}>{v(data, "cta")}</button>
         </form>
         <div className="mt-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
@@ -490,7 +492,7 @@ function JournalPage({ data, onCta }: { data: Record<string, any>; onCta: () => 
           <img src={posts[0]?.image || v(data, "gallery2Image") || v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20" />
-        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-start text-white lg:px-8 lg:py-24">
           <SectionKicker label={v(data, "insightsKicker")} />
           <h1 className="tpl-display mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">{v(data, "insightsTitle")}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">{v(data, "pageHeroText")}</p>
@@ -545,7 +547,7 @@ export default function SushisenPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="sushisen" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="sushisen" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#0b0b0b", color: "#f2f0ea" }}>
       <style dangerouslySetInnerHTML={{ __html: sushisenEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

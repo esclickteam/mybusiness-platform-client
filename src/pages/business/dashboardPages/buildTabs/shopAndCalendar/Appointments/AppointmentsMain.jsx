@@ -5,6 +5,7 @@ import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 import { format } from 'date-fns';
 import { useAuth } from '../../../../../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 function normalizeWorkHours(data) {
   let map = {};
@@ -34,6 +35,7 @@ const AppointmentsMain = ({
   initialBusinessId = null,
 }) => {
   const { currentUser, socket } = useAuth();
+  const { t } = useTranslation();
 
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
@@ -94,9 +96,9 @@ const AppointmentsMain = ({
             setWorkHours(filteredHours);
             setBusinessDetails(prev => ({ ...prev, workHours: filteredHours }));
             setShowCalendarSetup(false);
-            alert('Working hours saved successfully!');
+            alert(t('leftover.hours.saved'));
           } catch {
-            alert('Error saving working hours');
+            alert(t('leftover.hours.saveError'));
           }
         }}
         onCancel={() => setShowCalendarSetup(false)}
@@ -107,10 +109,10 @@ const AppointmentsMain = ({
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
-        <h2 className="services-form-title">📅 Schedule Appointment</h2>
+        <h2 className="services-form-title">📅 {t('leftover.appointmentsMain.title')}</h2>
 
         <div className="defined-services-section">
-          <h3 className="defined-services-title">Select Service</h3>
+          <h3 className="defined-services-title">{t('leftover.appointmentsMain.selectService')}</h3>
           <ServiceList
             services={services}
             setServices={setServices}
@@ -125,7 +127,7 @@ const AppointmentsMain = ({
 
         {selectedService && (
           <div className="date-picker">
-            <h3>Select Date</h3>
+            <h3>{t('leftover.appointmentsMain.selectDate')}</h3>
             <input
               type="date"
               value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
@@ -137,7 +139,7 @@ const AppointmentsMain = ({
 
         {selectedDate && availableSlots.length > 0 && (
           <div className="slots-list">
-            <h3>Available Times</h3>
+            <h3>{t('leftover.appointmentsMain.availableTimes')}</h3>
             <div className="slots-grid">
               {availableSlots.map(slot => (
                 <button
@@ -155,7 +157,10 @@ const AppointmentsMain = ({
         {selectedSlot && (
           <div className="book-action">
             <button onClick={handleBook}>
-              📅 Book appointment for {format(selectedDate, 'dd.MM.yyyy')} at {selectedSlot}
+              📅 {t('leftover.appointmentsMain.bookFor', {
+                date: format(selectedDate, 'dd.MM.yyyy'),
+                time: selectedSlot,
+              })}
             </button>
           </div>
         )}
@@ -164,7 +169,7 @@ const AppointmentsMain = ({
           className="go-to-calendar-btn"
           onClick={() => setShowCalendarSetup(true)}
         >
-          📅 Set Calendar
+          📅 {t('leftover.appointmentsMain.setCalendar')}
         </button>
       </div>
     </div>

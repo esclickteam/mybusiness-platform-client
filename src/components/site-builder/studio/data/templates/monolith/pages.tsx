@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -200,23 +202,23 @@ function MonolithMark({ data }: { data: Record<string, any> }) {
         <EditableText
           data={data}
           dataKey="logoText"
-          label="טקסט לוגו"
+          label={tx("טקסט לוגו")}
           as="span"
           className="text-sm"
         />
       </div>
-      <div className="text-right">
+      <div className="text-start">
         <EditableText
           data={data}
           dataKey="brandName"
-          label="שם המותג"
+          label={tx("שם המותג")}
           as="div"
           className="text-xl font-semibold tracking-[0.08em] text-white"
         />
         <EditableText
           data={data}
           dataKey="tagline"
-          label="שורת תיאור"
+          label={tx("שורת תיאור")}
           as="div"
           className="text-[11px] uppercase tracking-[0.34em] text-[#c8a96a]"
         />
@@ -247,7 +249,7 @@ function SectionHeading({
   dark?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-start")}>
       <EditableText
         data={data}
         dataKey={eyebrowKey}
@@ -317,7 +319,7 @@ function Header({
       className="sticky top-0 z-50 border-b border-[#c8a96a]/25 bg-[#0c1a33]/95 backdrop-blur"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="text-start">
           <MonolithMark data={data} />
         </button>
 
@@ -337,7 +339,7 @@ function Header({
               <TemplateText
                 as="span"
                 editId={item.key}
-                editLabel={item.label}
+                editLabel={tx(item.label)}
               >
                 {getValue(data, item.key)}
               </TemplateText>
@@ -384,7 +386,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(item.id)}
                 className={cx(
-                  "border px-4 py-4 text-right text-sm uppercase tracking-[0.2em]",
+                  "border px-4 py-4 text-start text-sm uppercase tracking-[0.2em]",
                   currentPage === item.id
                     ? "border-[#c8a96a] bg-[#c8a96a] text-[#0c1a33]"
                     : "border-[#c8a96a]/25 text-white",
@@ -393,7 +395,7 @@ function Header({
                 <TemplateText
                   as="span"
                   editId={item.key}
-                  editLabel={item.label}
+                  editLabel={tx(item.label)}
                 >
                   {getValue(data, item.key)}
                 </TemplateText>
@@ -420,21 +422,21 @@ function Hero({
           <EditableText
             data={data}
             dataKey="heroEyebrow"
-            label="אייברו הירו"
+            label={tx("אייברו הירו")}
             as="p"
             className="text-xs uppercase tracking-[0.42em] text-[#c8a96a]"
           />
           <EditableText
             data={data}
             dataKey="heroTitle"
-            label="כותרת ראשית הירו"
+            label={tx("כותרת ראשית הירו")}
             as="h1"
             className="mx-auto mt-8 max-w-5xl text-5xl font-semibold leading-[0.95] text-[#f6f1e7] md:text-7xl lg:text-8xl"
           />
           <EditableText
             data={data}
             dataKey="heroSubtitle"
-            label="טקסט משנה הירו"
+            label={tx("טקסט משנה הירו")}
             as="p"
             className="mx-auto mt-8 max-w-3xl text-base leading-8 text-white/72 md:text-lg"
           />
@@ -473,21 +475,21 @@ function Hero({
             <EditableText
               data={data}
               dataKey="heroPanelBadge"
-              label="תג הירו"
+              label={tx("תג הירו")}
               as="p"
               className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]"
             />
             <EditableText
               data={data}
               dataKey="heroPanelTitle"
-              label="כותרת פאנל הירו"
+              label={tx("כותרת פאנל הירו")}
               as="h3"
               className="mt-6 text-3xl font-semibold leading-[1.15] text-[#f6f1e7]"
             />
             <EditableText
               data={data}
               dataKey="heroPanelText"
-              label="טקסט פאנל הירו"
+              label={tx("טקסט פאנל הירו")}
               as="p"
               className="mt-5 text-base leading-8 text-white/72"
             />
@@ -498,7 +500,7 @@ function Hero({
                 <EditableText
                   data={data}
                   dataKey="tagline"
-                  label="תג ליין"
+                  label={tx("תג ליין")}
                   as="p"
                   className="text-lg text-[#f6f1e7]"
                 />
@@ -531,8 +533,8 @@ function Hero({
             <EditableImage
               data={data}
               dataKey="heroImage"
-              label="תמונת הירו"
-                alt="הירו Monolith"
+              label={tx("תמונת הירו")}
+                alt={tx("הירו Monolith")}
               className="relative h-[420px] w-full object-cover lg:h-[640px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0c1a33] via-[#0c1a33]/20 to-transparent" />
@@ -580,10 +582,10 @@ function MarqueeSection({ data }: { data: Record<string, any> }) {
       >
         {[...items, ...items].map((item, index) => (
           <div
-            key={`${item}-${index}`}
+            key={`${tx(item)}-${index}`}
             className="monolith-marquee-item border px-6 py-3 text-xs uppercase tracking-[0.34em] text-[#f6f1e7]"
           >
-            {item}
+            {tx(item)}
           </div>
         ))}
       </div>
@@ -668,8 +670,8 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           <EditableImage
             data={data}
             dataKey="aboutImage"
-            label="תמונת אודות"
-                alt="אודות Monolith"
+            label={tx("תמונת אודות")}
+                alt={tx("אודות Monolith")}
             className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
           />
         </Reveal>
@@ -955,21 +957,21 @@ function ContactSection({
           <EditableText
             data={data}
             dataKey="contactEyebrow"
-            label="אייברו יצירת קשר"
+            label={tx("אייברו יצירת קשר")}
             as="p"
             className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]"
           />
           <EditableText
             data={data}
             dataKey={titleKey}
-            label="כותרת יצירת קשר"
+            label={tx("כותרת יצירת קשר")}
             as="h2"
             className="mt-6 text-4xl font-semibold leading-[1.08] text-[#f6f1e7] md:text-5xl"
           />
           <EditableText
             data={data}
             dataKey={textKey}
-            label="טקסט יצירת קשר"
+            label={tx("טקסט יצירת קשר")}
             as="p"
             className="mt-5 text-base leading-8 text-white/72"
           />
@@ -1008,48 +1010,48 @@ function ContactSection({
             data-visual-editable="true"
             data-visual-edit-id="contact.form"
             data-visual-edit-type="box"
-            data-visual-edit-label="טופס יצירת קשר"
+            data-visual-edit-label={tx("טופס יצירת קשר")}
             className="grid gap-0 border border-[#d7c7a5] bg-white"
           >
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
-              placeholder="שם מלא"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:border-l"
+              placeholder={tx("שם מלא")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.name"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה שם"
+              data-visual-edit-label={tx("שדה שם")}
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
-              placeholder="טלפון"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
+              placeholder={tx("טלפון")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.phone"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה טלפון"
+              data-visual-edit-label={tx("שדה טלפון")}
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
-              placeholder="אימייל"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:border-l"
+              placeholder={tx("אימייל")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.email"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה אימייל"
+              data-visual-edit-label={tx("שדה אימייל")}
             />
             <input
-              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
-              placeholder="תחום ייעוץ"
+              className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596]"
+              placeholder={tx("תחום ייעוץ")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.topic"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה תחום ייעוץ"
+              data-visual-edit-label={tx("שדה תחום ייעוץ")}
             />
             <textarea
-              className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
-              placeholder="ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג"
+              className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-start text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
+              placeholder={tx("ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.message"
               data-visual-edit-type="control"
-              data-visual-edit-label="שדה הודעה"
+              data-visual-edit-label={tx("שדה הודעה")}
             />
             <button
               type="submit"
@@ -1058,7 +1060,7 @@ function ContactSection({
               data-visual-editable="true"
               data-visual-edit-id="contact.form.submit"
               data-visual-edit-type="button"
-              data-visual-edit-label="כפתור שליחת טופס"
+              data-visual-edit-label={tx("כפתור שליחת טופס")}
             >
               <TemplateText
                 as="span"
@@ -1086,21 +1088,21 @@ function CtaSection({
     <section className="border-b border-[#c8a96a]/20 bg-[#102140] px-4 py-20 lg:px-8">
       <Reveal className="mx-auto max-w-7xl border border-[#c8a96a]/25 bg-[#0c1a33] p-6 lg:p-10">
         <div className="grid gap-0 lg:grid-cols-[1fr_1px_0.8fr] lg:items-center">
-          <div className="pb-8 text-right lg:pb-0 lg:pl-8">
+          <div className="pb-8 text-start lg:pb-0 lg:pl-8">
             <div className="text-xs uppercase tracking-[0.36em] text-[#c8a96a]">
               board call
             </div>
             <EditableText
               data={data}
               dataKey="ctaTitle"
-              label="כותרת קריאה לפעולה"
+              label={tx("כותרת קריאה לפעולה")}
               as="h2"
               className="mt-6 text-4xl font-semibold leading-[1.08] text-[#f6f1e7] md:text-5xl"
             />
             <EditableText
               data={data}
               dataKey="ctaText"
-              label="טקסט קריאה לפעולה"
+              label={tx("טקסט קריאה לפעולה")}
               as="p"
               className="mt-5 max-w-2xl text-base leading-8 text-white/72"
             />
@@ -1165,7 +1167,7 @@ function Footer({
             <EditableText
               data={data}
               dataKey="footerText"
-              label="טקסט פוטר"
+              label={tx("טקסט פוטר")}
               as="p"
               className="mt-5 max-w-xl text-sm leading-7 text-white/68"
             />
@@ -1178,12 +1180,12 @@ function Footer({
                   key={item.id}
                   type="button"
                   onClick={() => goTo(item.id)}
-                  className="border border-[#c8a96a]/20 px-4 py-3 text-right text-sm uppercase tracking-[0.18em] text-[#f6f1e7] transition hover:border-[#c8a96a]"
+                  className="border border-[#c8a96a]/20 px-4 py-3 text-start text-sm uppercase tracking-[0.18em] text-[#f6f1e7] transition hover:border-[#c8a96a]"
                 >
                   <TemplateText
                     as="span"
                     editId={item.key}
-                    editLabel={item.label}
+                    editLabel={tx(item.label)}
                   >
                     {getValue(data, item.key)}
                   </TemplateText>
@@ -1372,7 +1374,7 @@ export default function MonolithPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="monolith"
       data-template-mode={mode}
       className="min-h-screen overflow-x-hidden bg-[#0c1a33] text-[#0c1a33]"

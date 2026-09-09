@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { neuralisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -147,7 +149,7 @@ function Hero({ data }: { data: Record<string, any> }) {
                 <div className="mt-4 h-2 w-full bg-white/10">
                   <span className="block h-full w-[76%] bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.75)]" />
                 </div>
-                <p className="mt-4 text-sm leading-6 text-cyan-50/72">הסוכן איתר חריגה, יצר הסבר והכין פעולה לאישור.</p>
+                <p className="mt-4 text-sm leading-6 text-cyan-50/72">{tx("הסוכן איתר חריגה, יצר הסבר והכין פעולה לאישור.")}</p>
               </div>
             </div>
           </div>
@@ -216,11 +218,11 @@ function FeaturesBento({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 85} variant="up">
-              <article className="neuralis-card relative flex min-h-[280px] flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 text-right transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 md:min-h-[320px]">
+              <article className="neuralis-card relative flex min-h-[280px] flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 text-start transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 md:min-h-[320px]">
                 <span className="neuralis-display text-5xl font-bold text-cyan-300/28 md:text-6xl">0{index + 1}</span>
                 <div className="relative z-10">
                   <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
-                  <p className="mt-4 text-sm font-medium leading-7 text-cyan-50/72">{text}</p>
+                  <p className="mt-4 text-sm font-medium leading-7 text-cyan-50/72">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -252,7 +254,7 @@ function Workflow({ data }: { data: Record<string, any> }) {
               <article className="group relative min-h-[360px] border border-cyan-300/22 bg-[#09182d] p-8 shadow-[0_0_0_rgba(34,211,238,0)] transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 hover:shadow-[0_0_70px_rgba(34,211,238,0.18)]">
                 <span className="grid h-20 w-20 place-items-center border border-cyan-300 bg-cyan-300 text-2xl font-black text-[#050816] shadow-[0_0_42px_rgba(34,211,238,0.45)]">0{index + 1}</span>
                 <h3 className="neuralis-display mt-10 text-2xl sm:text-4xl font-bold text-white">{title}</h3>
-                <p className="mt-5 text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   {Array.from({ length: 8 }).map((_, dot) => (
                     <span key={dot} className={`h-2 bg-cyan-300/20 ${dot <= index + 3 ? "bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.72)]" : ""}`} />
@@ -293,7 +295,7 @@ function Pricing({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="neuralis-display text-2xl sm:text-4xl font-bold">{name}</p>
                   <p className="neuralis-display mt-7 text-3xl md:text-6xl font-bold">{price}</p>
-                  <p className={`mt-5 text-sm font-semibold leading-7 ${index === 1 ? "text-[#073242]/75" : "text-[var(--muted)]"}`}>{text}</p>
+                  <p className={`mt-5 text-sm font-semibold leading-7 ${index === 1 ? "text-[#073242]/75" : "text-[var(--muted)]"}`}>{tx(text)}</p>
                 </div>
                 <div className={`space-y-2 border-t pt-5 text-sm font-bold ${index === 1 ? "border-[#050816]/20" : "border-cyan-300/15"}`}>
                   {String(features).split("|").map((feature) => (
@@ -353,7 +355,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="flex aspect-square flex-col justify-between border border-cyan-300/18 bg-[#071126] p-7">
-                <p className="text-xl font-semibold leading-9 text-cyan-50">"{text}"</p>
+                <p className="text-xl font-semibold leading-9 text-cyan-50">"{tx(text)}"</p>
                 <footer>
                   <p className="font-black text-cyan-300">{name}</p>
                   <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-cyan-50/45">{role}</p>
@@ -382,13 +384,13 @@ function DemoForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("אימייל עבודה")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             </div>
-            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="חברה ותפקיד"  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
+            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("חברה ותפקיד")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-start text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("איזה תהליך הייתם רוצים להפוך לחכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>
@@ -445,7 +447,7 @@ export default function NeuralisPages(props: NeuralisPagesProps) {
   );
 
   return (
-    <div dir="rtl" data-template-id="neuralis" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="neuralis" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: neuralisEditorCss }} />
       <Header data={mergedData} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: <HomePage data={mergedData} /> }]} />

@@ -1,0 +1,470 @@
+{
+  "שיווק חכם": {
+    "en": "Smart marketing",
+    "es": "Marketing inteligente",
+    "pt-BR": "Marketing inteligente",
+    "ar": "تسويق ذكي"
+  },
+  "חוויית שיווק מבוססת נתונים": {
+    "en": "A data-driven marketing experience",
+    "es": "Una experiencia de marketing basada en datos",
+    "pt-BR": "Uma experiência de marketing baseada em dados",
+    "ar": "تجربة تسويق مبنية على البيانات"
+  },
+  "שנבנתה לצמיחה.": {
+    "en": "built for growth.",
+    "es": "construida para crecer.",
+    "pt-BR": "feita para crescer.",
+    "ar": "بُنيت للنمو."
+  },
+  "אסטרטגיה, אוטומציות, קריאייטיב ומדידה מתחברים למערכת אחת שמקדמת את העסק מהר יותר.": {
+    "en": "Strategy, automations, creative, and measurement connect into one system that moves the business faster.",
+    "es": "Estrategia, automatizaciones, creativo y medición se conectan en un sistema que impulsa el negocio más rápido.",
+    "pt-BR": "Estratégia, automações, criativo e medição se conectam num sistema que impulsiona o negócio mais rápido.",
+    "ar": "الاستراتيجية والأتمتة والإبداع والقياس تتصل في منظومة واحدة تدفع العمل أسرع."
+  },
+  "המשיכו לגלול": {
+    "en": "Keep scrolling",
+    "es": "Seguid bajando",
+    "pt-BR": "Continuem rolando",
+    "ar": "تابعوا التمرير"
+  },
+  "מעטפת שיווקית לעסקים שרוצים לעבוד מדויק, להיראות מקצועיים ולהפוך יותר עניין להכנסות.": {
+    "en": "A marketing wrap for businesses that want to work precisely, look professional, and turn more interest into revenue.",
+    "es": "Una envoltura de marketing para negocios que quieren trabajar con precisión, verse profesionales y convertir más interés en ingresos.",
+    "pt-BR": "Uma envoltória de marketing para negócios que querem trabalhar com precisão, parecer profissionais e transformar mais interesse em receita.",
+    "ar": "غلاف تسويقي لأعمال تريد العمل بدقة وتبدو مهنية وتحوّل مزيداً من الاهتمام إلى إيراد."
+  },
+  "✦ נבחרים על ידי צוותים שממוקדים בצמיחה.": {
+    "en": "✦ Chosen by teams focused on growth.",
+    "es": "✦ Elegidos por equipos centrados en el crecimiento.",
+    "pt-BR": "✦ Escolhidos por equipes focadas em crescimento.",
+    "ar": "✦ يختارهم فرق تركّز على النمو."
+  },
+  "נבחרים על ידי צוותים שממוקדים בצמיחה.": {
+    "en": "Chosen by teams focused on growth.",
+    "es": "Elegidos por equipos centrados en el crecimiento.",
+    "pt-BR": "Escolhidos por equipes focadas em crescimento.",
+    "ar": "يختارهم فرق تركّز على النمو."
+  },
+  "הפתרונות שלנו": {
+    "en": "Our solutions",
+    "es": "Nuestras soluciones",
+    "pt-BR": "Nossas soluções",
+    "ar": "حلولنا"
+  },
+  "אסטרטגיות שגדלות איתכם": {
+    "en": "Strategies that grow with you",
+    "es": "Estrategias que crecen con vosotros",
+    "pt-BR": "Estratégias que crescem com vocês",
+    "ar": "استراتيجيات تنمو معكم"
+  },
+  "שגדלות איתכם": {
+    "en": "that grow with you",
+    "es": "que crecen con vosotros",
+    "pt-BR": "que crescem com vocês",
+    "ar": "تنمو معكم"
+  },
+  "אוטומציה חכמה": {
+    "en": "Smart automation",
+    "es": "Automatización inteligente",
+    "pt-BR": "Automação inteligente",
+    "ar": "أتمتة ذكية"
+  },
+  "תהליכים": {
+    "en": "Processes",
+    "es": "Procesos",
+    "pt-BR": "Processos",
+    "ar": "عمليات"
+  },
+  "מערכי לידים, ניהול לקוחות ותהליכים אוטומטיים שמורידים עומס ומקצרים זמני תגובה.": {
+    "en": "Lead systems, client management, and automated processes that cut overload and shorten response times.",
+    "es": "Sistemas de leads, gestión de clientes y procesos automáticos que bajan la carga y acortan los tiempos de respuesta.",
+    "pt-BR": "Sistemas de leads, gestão de clientes e processos automáticos que reduzem sobrecarga e encurtam o tempo de resposta.",
+    "ar": "منظومات عملاء محتملين وإدارة زبائن وعمليات مؤتمتة تخفّض العبء وتقصر زمن الرد."
+  },
+  "זמן טיפול": {
+    "en": "handling time",
+    "es": "tiempo de gestión",
+    "pt-BR": "tempo de atendimento",
+    "ar": "وقت المعالجة"
+  },
+  "-61% זמן טיפול": {
+    "en": "-61% handling time",
+    "es": "-61% tiempo de gestión",
+    "pt-BR": "-61% tempo de atendimento",
+    "ar": "-61% وقت المعالجة"
+  },
+  "תובנות בזמן אמת": {
+    "en": "Real-time insights",
+    "es": "Insights en tiempo real",
+    "pt-BR": "Insights em tempo real",
+    "ar": "رؤى فورية"
+  },
+  "דשבורדים ותובנות שמראים מה באמת עובד, איפה נשרף תקציב ומה הצעד הבא.": {
+    "en": "Dashboards and insights that show what really works, where budget burns, and what the next step is.",
+    "es": "Dashboards e insights que muestran qué funciona de verdad, dónde se quema presupuesto y cuál es el siguiente paso.",
+    "pt-BR": "Dashboards e insights que mostram o que realmente funciona, onde o orçamento queima e qual é o próximo passo.",
+    "ar": "لوحات ورؤى تُظهر ما الذي يعمل حقاً وأين يُحرق الميزانية وما الخطوة التالية."
+  },
+  "לקוחות • 4.9/5": {
+    "en": "clients • 4.9/5",
+    "es": "clientes • 4.9/5",
+    "pt-BR": "clientes • 4.9/5",
+    "ar": "زبائن • 4.9/5"
+  },
+  "200+ לקוחות • 4.9/5": {
+    "en": "200+ clients • 4.9/5",
+    "es": "200+ clientes • 4.9/5",
+    "pt-BR": "200+ clientes • 4.9/5",
+    "ar": "200+ زبائن • 4.9/5"
+  },
+  "תכנון צמיחה": {
+    "en": "Growth planning",
+    "es": "Planificación de crecimiento",
+    "pt-BR": "Planejamento de crescimento",
+    "ar": "تخطيط النمو"
+  },
+  "תוכנית מותאמת לעסק עם מסרים, הצעה, משפך ותעדוף שמייצרים צמיחה יציבה.": {
+    "en": "A plan fitted to the business with messages, offer, funnel, and priorities that create stable growth.",
+    "es": "Un plan adaptado al negocio con mensajes, oferta, embudo y prioridades que generan crecimiento estable.",
+    "pt-BR": "Um plano ajustado ao negócio com mensagens, oferta, funil e prioridades que geram crescimento estável.",
+    "ar": "خطة ملائمة للعمل مع رسائل وعرض وقمع وأولويات تصنع نمواً ثابتاً."
+  },
+  "תוכנית 90 יום": {
+    "en": "A 90-day plan",
+    "es": "Un plan de 90 días",
+    "pt-BR": "Um plano de 90 dias",
+    "ar": "خطة 90 يوماً"
+  },
+  "מיקוד מדויק": {
+    "en": "Precise targeting",
+    "es": "Enfoque preciso",
+    "pt-BR": "Foco preciso",
+    "ar": "تركيز دقيق"
+  },
+  "פרסום": {
+    "en": "Advertising",
+    "es": "Publicidad",
+    "pt-BR": "Publicidade",
+    "ar": "إعلان"
+  },
+  "קמפיינים מדויקים שמחברים בין קריאייטיב חזק, קהלים נכונים ומדידה אמיתית.": {
+    "en": "Precise campaigns that connect strong creative, the right audiences, and real measurement.",
+    "es": "Campañas precisas que conectan creativo fuerte, audiencias correctas y medición real.",
+    "pt-BR": "Campanhas precisas que ligam criativo forte, públicos certos e medição real.",
+    "ar": "حملات دقيقة تربط إبداعاً قوياً وجمهوراً صحيحاً وقياساً حقيقياً."
+  },
+  "החזר פי 4.8": {
+    "en": "4.8x return",
+    "es": "Retorno x4.8",
+    "pt-BR": "Retorno 4,8x",
+    "ar": "عائد 4.8 ضعف"
+  },
+  "אינסטגרם": {
+    "en": "Instagram",
+    "es": "Instagram",
+    "pt-BR": "Instagram",
+    "ar": "Instagram"
+  },
+  "לינקדאין": {
+    "en": "LinkedIn",
+    "es": "LinkedIn",
+    "pt-BR": "LinkedIn",
+    "ar": "LinkedIn"
+  },
+  "פייסבוק": {
+    "en": "Facebook",
+    "es": "Facebook",
+    "pt-BR": "Facebook",
+    "ar": "Facebook"
+  },
+  "משלוח חינם לכל הארץ · קולקציית אביב 2026 כאן": {
+    "en": "Free shipping nationwide · Spring 2026 collection is here",
+    "es": "Envío gratis a todo el país · La colección primavera 2026 ya está aquí",
+    "pt-BR": "Frete grátis para o país todo · A coleção primavera 2026 já chegou",
+    "ar": "شحن مجاني لكل البلاد · مجموعة ربيع 2026 هنا"
+  },
+  "גלו עכשיו": {
+    "en": "Discover now",
+    "es": "Descubrid ahora",
+    "pt-BR": "Descubram agora",
+    "ar": "اكتشفوا الآن"
+  },
+  "הצטרפו": {
+    "en": "Join",
+    "es": "Uníos",
+    "pt-BR": "Entrem",
+    "ar": "انضموا"
+  },
+  "קולקציית אביב 2026": {
+    "en": "Spring 2026 collection",
+    "es": "Colección primavera 2026",
+    "pt-BR": "Coleção primavera 2026",
+    "ar": "مجموعة ربيع 2026"
+  },
+  "אלגנטיות": {
+    "en": "Elegance",
+    "es": "Elegancia",
+    "pt-BR": "Elegância",
+    "ar": "أناقة"
+  },
+  "שעוצבת לנצח": {
+    "en": "designed to last",
+    "es": "diseñada para durar",
+    "pt-BR": "desenhada para durar",
+    "ar": "مصمّمة لتدوم"
+  },
+  "תיקים, תכשיטים ואקססוריז מעור יוקרתי — מיוצרים בקפידה באיטליה ומגיעים אליכם עם חוויית רכישה פרימיום.": {
+    "en": "Bags, jewelry, and accessories in luxury leather — made carefully in Italy and delivered with a premium shopping experience.",
+    "es": "Bolsos, joyas y accesorios de cuero de lujo — hechos con cuidado en Italia y llegan con una experiencia de compra premium.",
+    "pt-BR": "Bolsas, joias e acessórios de couro de luxo — feitos com cuidado na Itália e chegam com uma experiência de compra premium.",
+    "ar": "حقائب ومجوهرات وإكسسوارات من جلد فاخر — تُصنع بعناية في إيطاليا وتصل بتجربة شراء فاخرة."
+  },
+  "לקולקציה החדשה": {
+    "en": "To the new collection",
+    "es": "A la nueva colección",
+    "pt-BR": "Para a coleção nova",
+    "ar": "إلى المجموعة الجديدة"
+  },
+  "גלו את העולם שלנו": {
+    "en": "Discover our world",
+    "es": "Descubrid nuestro mundo",
+    "pt-BR": "Descubram nosso mundo",
+    "ar": "اكتشفوا عالمنا"
+  },
+  "העולם שלנו": {
+    "en": "our world",
+    "es": "nuestro mundo",
+    "pt-BR": "nosso mundo",
+    "ar": "عالمنا"
+  },
+  "תיקי עור": {
+    "en": "Leather bags",
+    "es": "Bolsos de cuero",
+    "pt-BR": "Bolsas de couro",
+    "ar": "حقائب جلد"
+  },
+  "עיצוב מינימליסטי עם גימור ידני מושלם": {
+    "en": "Minimal design with a perfect hand finish",
+    "es": "Diseño minimalista con un acabado manual perfecto",
+    "pt-BR": "Design minimalista com acabamento manual perfeito",
+    "ar": "تصميم بسيط مع تشطيب يدوي مثالي"
+  },
+  "זהב מבריק ופנינים נבחרות לכל אירוע": {
+    "en": "Bright gold and selected pearls for every occasion",
+    "es": "Oro brillante y perlas seleccionadas para cada ocasión",
+    "pt-BR": "Ouro brilhante e pérolas escolhidas para cada ocasião",
+    "ar": "ذهب لامع ولآلئ مختارة لكل مناسبة"
+  },
+  "מנגנון שוויצרי ועיצוב קלאסי לדור הבא": {
+    "en": "A Swiss movement and classic design for the next generation",
+    "es": "Mecanismo suizo y diseño clásico para la próxima generación",
+    "pt-BR": "Mecanismo suíço e design clássico para a próxima geração",
+    "ar": "حركة سويسرية وتصميم كلاسيكي للجيل التالي"
+  },
+  "חגורות, צעיפים ופריטים משלימים ללוק מושלם": {
+    "en": "Belts, scarves, and finishing pieces for a complete look",
+    "es": "Cinturones, pañuelos y piezas que cierran un look perfecto",
+    "pt-BR": "Cintos, lenços e peças que fecham um look perfeito",
+    "ar": "أحزمة وأوشحة وقطع تكمل إطلالة كاملة"
+  },
+  "מומלצים": {
+    "en": "Featured",
+    "es": "Destacados",
+    "pt-BR": "Em destaque",
+    "ar": "مختارة"
+  },
+  "תיק קלאסיקה קטן": {
+    "en": "Small classic bag",
+    "es": "Bolso clásico pequeño",
+    "pt-BR": "Bolsa clássica pequena",
+    "ar": "حقيبة كلاسيكية صغيرة"
+  },
+  "שרשרת פנינה מעוצבת": {
+    "en": "Designed pearl necklace",
+    "es": "Collar de perlas diseñado",
+    "pt-BR": "Colar de pérolas desenhado",
+    "ar": "عقد لؤلؤ مصمّم"
+  },
+  "שעון אובל דה-לוקס": {
+    "en": "Deluxe oval watch",
+    "es": "Reloj oval de lujo",
+    "pt-BR": "Relógio oval deluxe",
+    "ar": "ساعة بيضاوية فاخرة"
+  },
+  "ארנק עור מרובע": {
+    "en": "Square leather wallet",
+    "es": "Cartera de cuero cuadrada",
+    "pt-BR": "Carteira de couro quadrada",
+    "ar": "محفظة جلد مربّعة"
+  },
+  "עגילי זהב מעוטרים": {
+    "en": "Ornamented gold earrings",
+    "es": "Pendientes de oro ornamentados",
+    "pt-BR": "Brincos de ouro ornamentados",
+    "ar": "أقراط ذهب مزخرفة"
+  },
+  "צעיף משי פרימיום": {
+    "en": "Premium silk scarf",
+    "es": "Pañuelo de seda premium",
+    "pt-BR": "Lenço de seda premium",
+    "ar": "وشاح حرير فاخر"
+  },
+  "הערכים שלנו": {
+    "en": "Our values",
+    "es": "Nuestros valores",
+    "pt-BR": "Nossos valores",
+    "ar": "قيمنا"
+  },
+  "בלי פשרות": {
+    "en": "without compromise",
+    "es": "sin concesiones",
+    "pt-BR": "sem concessões",
+    "ar": "بلا تنازل"
+  },
+  "איכות ללא פשרות": {
+    "en": "Uncompromising quality",
+    "es": "Calidad sin concesiones",
+    "pt-BR": "Qualidade sem concessões",
+    "ar": "جودة بلا تنازل"
+  },
+  "חומרי גלם נבחרים ותהליכי ייצור מוקפדים בכל שלב.": {
+    "en": "Selected materials and careful production at every step.",
+    "es": "Materias primas seleccionadas y procesos de fabricación cuidadosos en cada etapa.",
+    "pt-BR": "Matérias-primas escolhidas e processos de fabricação cuidadosos em cada etapa.",
+    "ar": "مواد خام مختارة وعمليات تصنيع دقيقة في كل مرحلة."
+  },
+  "ייצור אחראי": {
+    "en": "Responsible production",
+    "es": "Producción responsable",
+    "pt-BR": "Produção responsável",
+    "ar": "تصنيع مسؤول"
+  },
+  "שקיפות מלאה בשרשרת האספקה ומחויבות לקיימות.": {
+    "en": "Full supply-chain transparency and a commitment to sustainability.",
+    "es": "Transparencia total en la cadena de suministro y compromiso con la sostenibilidad.",
+    "pt-BR": "Transparência total na cadeia de suprimento e compromisso com a sustentabilidade.",
+    "ar": "شفافية كاملة في سلسلة التوريد والتزام بالاستدامة."
+  },
+  "עיצוב נצחי": {
+    "en": "Timeless design",
+    "es": "Diseño eterno",
+    "pt-BR": "Design atemporal",
+    "ar": "تصميم خالد"
+  },
+  "קווים נקיים שעוברים מעונות ונשארים רלוונטיים.": {
+    "en": "Clean lines that move through seasons and stay relevant.",
+    "es": "Líneas limpias que atraviesan temporadas y siguen siendo relevantes.",
+    "pt-BR": "Linhas limpas que atravessam temporadas e continuam relevantes.",
+    "ar": "خطوط نظيفة تعبر المواسم وتبقى ذات صلة."
+  },
+  "חומרי גלם": {
+    "en": "Ingredients",
+    "es": "Materias primas",
+    "pt-BR": "Ingredientes",
+    "ar": "مواد خام"
+  },
+  "עונתיים, מקומיים וטריים בכל בוקר": {
+    "en": "Seasonal, local, and fresh every morning",
+    "es": "De temporada, locales y frescos cada mañana",
+    "pt-BR": "Sazonais, locais e frescos toda manhã",
+    "ar": "موسمية ومحلية وطيبة كل صباح"
+  },
+  "מטבח פתוח": {
+    "en": "Open kitchen",
+    "es": "Cocina abierta",
+    "pt-BR": "Cozinha aberta",
+    "ar": "مطبخ مفتوح"
+  },
+  "שקיפות מלאה מהאש ועד הצלחת": {
+    "en": "Full transparency from the fire to the plate",
+    "es": "Transparencia total del fuego al plato",
+    "pt-BR": "Transparência total do fogo até o prato",
+    "ar": "شفافية كاملة من النار حتى الطبق"
+  },
+  "אירוח חם": {
+    "en": "Warm hospitality",
+    "es": "Hospitalidad cálida",
+    "pt-BR": "Hospitalidade calorosa",
+    "ar": "ضيافة دافئة"
+  },
+  "שירות אישי שמרגיש כמו בבית": {
+    "en": "Personal service that feels like home",
+    "es": "Un servicio personal que se siente como en casa",
+    "pt-BR": "Um serviço pessoal que parece casa",
+    "ar": "خدمة شخصية تشعر وكأنها بيت"
+  },
+  "מוכנים לערב?": {
+    "en": "Ready for the evening?",
+    "es": "¿Listos para la noche?",
+    "pt-BR": "Prontos para a noite?",
+    "ar": "مستعدون لليلة؟"
+  },
+  "שולחן מחכה לכם.": {
+    "en": "A table is waiting for you.",
+    "es": "Hay una mesa esperándoos.",
+    "pt-BR": "Uma mesa espera por vocês.",
+    "ar": "طاولة بانتظاركم."
+  },
+  "תבנית Aurelia · Bizuply Studio": {
+    "en": "Aurelia template · Bizuply Studio",
+    "es": "Plantilla Aurelia · Bizuply Studio",
+    "pt-BR": "Modelo Aurelia · Bizuply Studio",
+    "ar": "قالب Aurelia · Bizuply Studio"
+  },
+  "נשמור לכם ערב מושלם.": {
+    "en": "We'll save you a perfect evening.",
+    "es": "Os guardaremos una noche perfecta.",
+    "pt-BR": "Vamos guardar uma noite perfeita para vocês.",
+    "ar": "سنحفظ لكم أمسية مثالية."
+  },
+  "מספר סועדים": {
+    "en": "Number of guests",
+    "es": "Número de comensales",
+    "pt-BR": "Número de pessoas",
+    "ar": "عدد الضيوف"
+  },
+  "2 סועדים": {
+    "en": "2 guests",
+    "es": "2 comensales",
+    "pt-BR": "2 pessoas",
+    "ar": "ضيفان"
+  },
+  "3-4 סועדים": {
+    "en": "3-4 guests",
+    "es": "3-4 comensales",
+    "pt-BR": "3-4 pessoas",
+    "ar": "3-4 ضيوف"
+  },
+  "5-6 סועדים": {
+    "en": "5-6 guests",
+    "es": "5-6 comensales",
+    "pt-BR": "5-6 pessoas",
+    "ar": "5-6 ضيوف"
+  },
+  "7+ / אירוע": {
+    "en": "7+ / event",
+    "es": "7+ / evento",
+    "pt-BR": "7+ / evento",
+    "ar": "7+ / مناسبة"
+  },
+  "בקשות מיוחדות": {
+    "en": "Special requests",
+    "es": "Peticiones especiales",
+    "pt-BR": "Pedidos especiais",
+    "ar": "طلبات خاصة"
+  },
+  "כתובת": {
+    "en": "Address",
+    "es": "Dirección",
+    "pt-BR": "Endereço",
+    "ar": "عنوان"
+  },
+  "א׳–ה׳ 18:00–23:30 · ו׳–ש׳ 12:00–23:30": {
+    "en": "Sun–Thu 18:00–23:30 · Fri–Sat 12:00–23:30",
+    "es": "Dom–jue 18:00–23:30 · vie–sáb 12:00–23:30",
+    "pt-BR": "Dom–qui 18:00–23:30 · sex–sáb 12:00–23:30",
+    "ar": "أحد–خميس 18:00–23:30 · جمعة–سبت 12:00–23:30"
+  }
+}

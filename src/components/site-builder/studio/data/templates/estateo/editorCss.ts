@@ -2,7 +2,7 @@ export const estateoEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="estateo"], [data-template-id="estateo"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #100e0c; --tpl-surface: #1a1612; --tpl-text: #f4ecdf;
   --tpl-muted: #a89880; --tpl-primary: #d4af6a; --tpl-primary-text: #100e0c;

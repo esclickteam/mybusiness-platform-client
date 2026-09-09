@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -81,7 +83,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.34em]",
@@ -108,7 +110,7 @@ function SectionTitle({
             light ? "text-[#e8ddd0]" : "text-[#6b645c]",
           )}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -140,11 +142,11 @@ function HorizonHeader({
       className="sticky top-0 z-50 border-b border-[#1c1c1c]/10 bg-[#f7f3ed]/95 backdrop-blur-2xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#1c1c1c]/12 bg-[#1c1c1c] text-sm font-semibold tracking-[0.2em] text-[#f7f3ed]">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-semibold tracking-tight text-[#1c1c1c]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -199,7 +201,7 @@ function HorizonHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-semibold tracking-[0.16em] uppercase",
+                  "border px-4 py-3 text-start text-sm font-semibold tracking-[0.16em] uppercase",
                   currentPage === id
                     ? "border-[#1c1c1c] bg-[#1c1c1c] text-[#f7f3ed]"
                     : "border-[#1c1c1c]/10 text-[#6b645c]",
@@ -272,12 +274,10 @@ function HorizonHero({
               <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#8f6d4b]">
                 Panorama Index
               </TemplateText>
-              <TemplateText as="div" className="mt-3 max-w-sm text-sm leading-7 text-[#6b645c]">
-                ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.
-              </TemplateText>
+              <TemplateText as="div" className="mt-3 max-w-sm text-sm leading-7 text-[#6b645c]">{tx("ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.")}</TemplateText>
             </div>
             {stats.map(([value, label]) => (
-              <div key={label} className="border-b border-[#1c1c1c]/10 px-5 py-6 text-right md:border-b-0 md:border-l lg:px-8">
+              <div key={label} className="border-b border-[#1c1c1c]/10 px-5 py-6 text-start md:border-b-0 md:border-l lg:px-8">
                 <TemplateText as="div" className="text-3xl font-semibold tracking-[-0.04em] text-[#1c1c1c]">
                   {value}
                 </TemplateText>
@@ -298,9 +298,9 @@ function MarketStrip() {
     <section className="border-b border-[#1c1c1c]/10 bg-[#fffdf9]">
       <div className="mx-auto flex max-w-7xl flex-wrap">
         {serviceNotes.map((item) => (
-          <div key={item} className="border-l border-[#1c1c1c]/10 px-5 py-4 last:border-l-0 lg:px-8">
+          <div key={tx(item)} className="border-l border-[#1c1c1c]/10 px-5 py-4 last:border-l-0 lg:px-8">
             <TemplateText as="span" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#8f6d4b]">
-              {item}
+              {tx(item)}
             </TemplateText>
           </div>
         ))}
@@ -391,7 +391,7 @@ function ServiceGrid({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-4 max-w-xl text-base leading-7 text-[#6b645c]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </article>
           ))}
@@ -429,7 +429,7 @@ function PropertyShowcase({ data }: { data: Record<string, any> }) {
                 </TemplateText>
               </div>
               <TemplateText as="p" className="mt-6 text-base leading-7 text-[#d6cec4]">
-                {text}
+                {tx(text)}
               </TemplateText>
               <div className="mt-8 grid gap-3 border-t border-[#b8956b]/20 pt-5 text-sm text-[#efe4d7]">
                 <TemplateText as="div">{propertyMeta[index]?.size}</TemplateText>
@@ -465,7 +465,7 @@ function ProcessAxis({ data }: { data: Record<string, any> }) {
                 {title}
               </TemplateText>
               <TemplateText as="p" className="mt-3 text-sm leading-7 text-[#6b645c]">
-                {text}
+                {tx(text)}
               </TemplateText>
             </div>
           ))}
@@ -480,16 +480,16 @@ function DistrictTable() {
     <section className="border-y border-[#1c1c1c]/10 bg-[#fffdf9] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionTitle
-          eyebrow="סריקת שוק"
-          title="שכונות, מגמות והזדמנויות בזמן אמת."
-          text="מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה."
+          eyebrow={tx("סריקת שוק")}
+          title={tx("שכונות, מגמות והזדמנויות בזמן אמת.")}
+          text={tx("מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה.")}
         />
         <div className="mt-12 border border-[#1c1c1c]/10">
           {districtRows.map(([area, focus, signal], index) => (
             <div
               key={area}
               className={cx(
-                "grid gap-4 border-b border-[#1c1c1c]/10 px-5 py-5 text-right md:grid-cols-[1fr_1fr_1fr]",
+                "grid gap-4 border-b border-[#1c1c1c]/10 px-5 py-5 text-start md:grid-cols-[1fr_1fr_1fr]",
                 index === districtRows.length - 1 ? "border-b-0" : "",
               )}
             >
@@ -531,18 +531,14 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
                   {title}
                 </TemplateText>
                 <TemplateText as="p" className="mt-4 text-base leading-7 text-[#6b645c]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </article>
             ))}
           </div>
           <div className="border border-[#1c1c1c]/10 bg-[#1c1c1c] p-8">
-            <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">
-              דסק ייעוץ
-            </TemplateText>
-            <TemplateText as="h3" className="mt-5 text-2xl sm:text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">
-              תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.
-            </TemplateText>
+            <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">{tx("דסק ייעוץ")}</TemplateText>
+            <TemplateText as="h3" className="mt-5 text-2xl sm:text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">{tx("תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.")}</TemplateText>
             <div className="mt-10 grid gap-5 border-t border-[#b8956b]/20 pt-6">
               {[
                 ["מפת ערך", "ניתוח שכונות, מחירי יעד ומסלולי השבחה."],
@@ -554,7 +550,7 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
                     {title}
                   </TemplateText>
                   <TemplateText as="p" className="mt-2 text-sm leading-7 text-[#e7ddd2]">
-                    {text}
+                    {tx(text)}
                   </TemplateText>
                 </div>
               ))}
@@ -591,17 +587,15 @@ function ContactSection({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="horizon-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="horizon-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים."  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים.")}  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#1c1c1c]/10 pt-6">
-            <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">
-              פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.
-            </TemplateText>
+            <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">{tx("פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.")}</TemplateText>
             <button type="submit" className="border border-[#1c1c1c] bg-[#1c1c1c] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#f7f3ed] transition hover:bg-[#2a2a2a]">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>
@@ -627,7 +621,7 @@ function PageHero({
     <section className="border-b border-[#1c1c1c]/10 bg-[#fffdf9]">
       <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-          <SectionTitle eyebrow={eyebrow} title={title} text={text} />
+          <SectionTitle eyebrow={eyebrow} title={title} text={tx(text)} />
         </div>
         <div className="border-r border-[#1c1c1c]/10 p-3">
           <img src={image} alt="" className="h-[320px] w-full object-cover lg:h-[420px]" />
@@ -722,7 +716,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="דף שירותים מלא עם רמות ליווי, מהלכי ביצוע ומבנה ברור שמרגיש כמו משרד בוטיק לנכסי יוקרה."
+        text={tx("דף שירותים מלא עם רמות ליווי, מהלכי ביצוע ומבנה ברור שמרגיש כמו משרד בוטיק לנכסי יוקרה.")}
         image={getValue(data, "heroImage")}
       />
       <ServiceGrid data={data} />
@@ -739,7 +733,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="נכסים, פרויקטים ומסלולי עבודה שמודגשים כשילוב של מלאי איכותי, מידע שיווקי וסטוריטלינג מכירתי."
+        text={tx("נכסים, פרויקטים ומסלולי עבודה שמודגשים כשילוב של מלאי איכותי, מידע שיווקי וסטוריטלינג מכירתי.")}
         image={getValue(data, "heroImage")}
       />
       <PropertyShowcase data={data} />
@@ -756,7 +750,7 @@ function InsightsPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "insights")}
         eyebrow={getValue(data, "insightsEyebrow")}
-        text="עמוד תובנות שמרחיב את הנראות המקצועית עם מאמרים, סיגנלים שוקיים ומבנה קריא של דוח פנימי."
+        text={tx("עמוד תובנות שמרחיב את הנראות המקצועית עם מאמרים, סיגנלים שוקיים ומבנה קריא של דוח פנימי.")}
         image={getValue(data, "aboutImage")}
       />
       <InsightPanels data={data} />
@@ -821,7 +815,7 @@ export default function HorizonPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="horizon"
       className="min-h-screen w-full overflow-x-hidden bg-[#f7f3ed] text-[#1c1c1c]"
       style={{ fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif' }}

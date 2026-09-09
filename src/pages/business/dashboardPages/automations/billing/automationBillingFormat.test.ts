@@ -8,11 +8,11 @@ import {
 
 describe("automationBillingFormat", () => {
   it("formatHeNumber formats Basic limit 2,500", () => {
-    expect(formatHeNumber(2500)).toBe("2,500");
+    expect(formatHeNumber(2500, "en-US")).toBe("2,500");
   });
 
   it("formatHeNumber formats Growth limit 10,000", () => {
-    expect(formatHeNumber(10000)).toBe("10,000");
+    expect(formatHeNumber(10000, "en-US")).toBe("10,000");
   });
 
   it("formatHeNumber falls back to 0 for non-finite", () => {
@@ -49,9 +49,14 @@ describe("automationBillingFormat", () => {
     expect(formatHeDate("not-a-date")).toBeNull();
   });
 
-  it("formatHeDateTime returns a Hebrew label for valid ISO", () => {
-    const label = formatHeDateTime("2026-09-01T12:30:00.000Z");
+  it("formatHeDateTime returns a localized label for valid ISO", () => {
+    const label = formatHeDateTime("2026-09-01T12:30:00.000Z", "en-US");
     expect(label).toBeTruthy();
     expect(typeof label).toBe("string");
+  });
+
+  it("formatHeDate respects locale argument", () => {
+    const label = formatHeDate("2026-09-01T12:00:00.000Z", "en-US");
+    expect(label).toMatch(/September/);
   });
 });

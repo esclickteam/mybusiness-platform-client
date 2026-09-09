@@ -2,6 +2,7 @@
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { Reveal, WordReveal } from "./product-marketing";
@@ -10,13 +11,13 @@ import SourcesMarquee from "./SourcesMarquee";
 import "../styles/homeWow.css";
 
 export default function HeroSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
 
   return (
     <section
       className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-800"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-[-260px] h-[620px] w-[980px] -translate-x-1/2 rounded-full bg-indigo-200/50 blur-3xl" />

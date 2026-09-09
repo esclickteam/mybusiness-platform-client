@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function SavoryThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-[28px]"
       style={{
         background: "#12100E",
@@ -30,17 +34,15 @@ export default function SavoryThumbnail() {
         </div>
         <div className="mt-8">
           <p className="text-[9px] font-extrabold tracking-[0.2em]" style={{ color: "#E8A317" }}>
-            מסעדת שף
-          </p>
+            {tx("מסעדת שף")}</p>
           <h3
             className="mt-3 text-[25px] font-bold leading-[0.95]"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            מטבח עונתי וטעם שנשאר
-          </h3>
+            {tx("מטבח עונתי וטעם שנשאר")}</h3>
           <div className="mt-5 h-px w-16" style={{ background: "#E8A317" }} />
           <div className="mt-5 space-y-2">
-            {["טרטר דג ים", "ניוקי מרווה", "בר ים על גחלים"].map((item, index) => (
+            {[tx("טרטר דג ים"), tx("ניוקי מרווה"), tx("בר ים על גחלים")].map((item, index) => (
               <div key={item} className="flex items-center justify-between gap-3 border-b border-white/10 pb-2">
                 <span className="truncate text-[10px]" style={{ color: "#A39E94" }}>
                   {item}
@@ -55,8 +57,7 @@ export default function SavoryThumbnail() {
       </div>
       <div className="absolute bottom-4 left-4 border border-[#E8A317]/70 bg-[#0A0908] px-4 py-3">
         <p className="text-[10px] font-bold" style={{ color: "#E8A317" }}>
-          הזמנת שולחן
-        </p>
+          {tx("הזמנת שולחן")}</p>
       </div>
     </div>
   );

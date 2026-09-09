@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { autovoltDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -80,7 +82,7 @@ function Header({ data, goHome }: { data: Record<string, any>; goHome: () => voi
           <span className="av-logo-slash grid h-11 w-11 place-items-center border border-[var(--blue)] text-sm font-black text-[var(--blue)]">{getValue(data, "logoText")}</span>
           <span className="t-display text-3xl font-bold uppercase leading-none tracking-[0.03em]">{getValue(data, "brandName")}</span>
         </button>
-        <nav className="hidden items-center gap-7 text-xs font-bold uppercase tracking-[0.22em] text-white/62 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-7 text-xs font-bold uppercase tracking-[0.22em] text-white/62 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="transition hover:text-[var(--blue)]">
               {label}
@@ -152,9 +154,9 @@ function Services({ data }: { data: Record<string, any> }) {
                 </div>
                 <div>
                   <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase leading-none text-white">{title}</h3>
-                  <p className="mt-4 text-sm font-semibold leading-6 text-white/58">{text}</p>
+                  <p className="mt-4 text-sm font-semibold leading-6 text-white/58">{tx(text)}</p>
                 </div>
-                <strong className="t-display text-right text-3xl md:text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
+                <strong className="t-display text-start text-3xl md:text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -184,7 +186,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="av-process-step relative min-h-[270px] border border-[var(--blue)]/28 bg-[var(--surface)] p-6">
                 <span className="grid h-14 w-14 place-items-center bg-[var(--blue)] text-xl font-black text-[#0A0F14]">0{index + 1}</span>
                 <h3 className="t-display mt-10 text-2xl sm:text-4xl font-bold uppercase leading-none text-white">{title}</h3>
-                <p className="mt-5 text-sm font-semibold leading-7 text-white/58">{text}</p>
+                <p className="mt-5 text-sm font-semibold leading-7 text-white/58">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -243,10 +245,10 @@ function Packages({ data }: { data: Record<string, any> }) {
               <article className="av-tier group relative aspect-square overflow-hidden border border-[var(--blue)]/35 bg-[var(--surface)] p-8 md:p-10">
                 <span className="text-xs font-black uppercase tracking-[0.32em] text-[var(--blue)]">tier 0{index + 1}</span>
                 <h3 className="t-display mt-8 text-6xl font-bold uppercase leading-none text-white md:text-8xl">{title}</h3>
-                <p className="mt-6 max-w-md text-base font-semibold leading-8 text-white/62">{text}</p>
+                <p className="mt-6 max-w-md text-base font-semibold leading-8 text-white/62">{tx(text)}</p>
                 <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-5 border-t border-white/14 pt-6">
                   <strong className="t-display text-3xl md:text-7xl font-bold leading-none text-[var(--blue)]">{price}</strong>
-                  <span className="max-w-[14rem] text-right text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
+                  <span className="max-w-[14rem] text-start text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
                 </div>
               </article>
             </Reveal>
@@ -318,18 +320,18 @@ function Booking({ data }: { data: Record<string, any> }) {
           <a href={`tel:${getValue(data, "phone")}`} className="t-display mt-10 block text-6xl font-bold uppercase leading-none text-[var(--blue)] md:text-7xl">{getValue(data, "phone")}</a>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="autovolt-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="autovolt-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 md:grid-cols-2">
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="דגם הרכב"  name="other" data-bizuply-form-field-id="other" />
-            <select className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition focus:border-[var(--blue)]" defaultValue="">
-              <option value="" disabled>בחרו חבילה</option>
+            <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("דגם הרכב")}  name="other" data-bizuply-form-field-id="other" />
+            <select className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition focus:border-[var(--blue)]" defaultValue="">
+              <option value="" disabled>{tx("בחרו חבילה")}</option>
               <option>{getValue(data, "packageOneTitle")}</option>
               <option>{getValue(data, "packageTwoTitle")}</option>
             </select>
-            <textarea className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="מה מצב הצבע ומה חשוב לכם?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <textarea className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-start font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder={tx("מה מצב הצבע ומה חשוב לכם?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
             <button type="submit" className="bg-[var(--blue)] px-8 py-4 text-sm font-black uppercase tracking-[0.24em] text-[#0A0F14] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>
@@ -379,7 +381,7 @@ export default function AutovoltPages({ initialPage = "home", mode = "preview", 
   );
 
   return (
-    <div dir="rtl" data-template-id="autovolt" className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
+    <div dir={templateDir()} data-template-id="autovolt" className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
       <style dangerouslySetInnerHTML={{ __html: autovoltEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content }]} />
     </div>

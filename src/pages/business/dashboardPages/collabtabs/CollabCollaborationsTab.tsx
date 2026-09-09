@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Clock3,
   FileText,
@@ -26,36 +27,40 @@ type TabItem = {
   icon: React.ElementType;
 };
 
-const tabs: TabItem[] = [
-  {
-    key: "active",
-    label: "Active Collaborations",
-    description: "Approved and active partner collaborations",
-    icon: Handshake,
-  },
-  {
-    key: "pending",
-    label: "Pending Collaborations",
-    description: "Requests and proposals waiting for approval",
-    icon: Clock3,
-  },
-  {
-    key: "agreements",
-    label: "Partnership Agreements",
-    description: "Upload, manage and send collaboration agreements",
-    icon: FileText,
-  },
-];
-
 export default function CollabCollaborationsTab({
   userBusinessId,
   token,
 }: CollabCollaborationsTabProps) {
+  const { t } = useTranslation();
   const [activeView, setActiveView] = useState<CollabView>("active");
+
+  const tabs: TabItem[] = useMemo(
+    () => [
+      {
+        key: "active",
+        label: t("leftover.collab.workspace.tabActive"),
+        description: t("leftover.collab.workspace.tabActiveHint"),
+        icon: Handshake,
+      },
+      {
+        key: "pending",
+        label: t("leftover.collab.workspace.tabPending"),
+        description: t("leftover.collab.workspace.tabPendingHint"),
+        icon: Clock3,
+      },
+      {
+        key: "agreements",
+        label: t("leftover.collab.workspace.tabAgreements"),
+        description: t("leftover.collab.workspace.tabAgreementsHint"),
+        icon: FileText,
+      },
+    ],
+    [t]
+  );
 
   const activeTab = useMemo(() => {
     return tabs.find((tab) => tab.key === activeView) || tabs[0];
-  }, [activeView]);
+  }, [activeView, tabs]);
 
   const ActiveIcon = activeTab.icon;
 
@@ -69,16 +74,15 @@ export default function CollabCollaborationsTab({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
-              Collaboration Workspace
+              {t("leftover.collab.workspace.badge")}
             </div>
 
             <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              Business Collaborations
+              {t("leftover.collab.workspace.title")}
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Manage active partnerships, pending requests and official
-              collaboration agreements from one professional workspace.
+              {t("leftover.collab.workspace.subtitle")}
             </p>
           </div>
 

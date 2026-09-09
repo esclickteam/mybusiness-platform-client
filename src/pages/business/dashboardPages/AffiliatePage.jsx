@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 const AffiliatePage = () => {
+  const { t } = useTranslation();
 
   const [affiliateId, setAffiliateId] = useState(null);
   const [referralCode, setReferralCode] = useState(null);
@@ -41,7 +43,7 @@ const AffiliatePage = () => {
         setAffiliateId(business._id);
         setReferralCode(business.referralCode || null);
       } catch {
-        setErrorStats("Failed to retrieve business details");
+        setErrorStats(t("leftover.affiliate.businessDetailsFailed"));
       }
     })();
   }, []);
@@ -66,7 +68,7 @@ const AffiliatePage = () => {
         setErrorStats(null);
 
       } catch {
-        setErrorStats("Error loading data");
+        setErrorStats(t("leftover.affiliate.loadError"));
       } finally {
         setLoadingStats(false);
       }
@@ -81,7 +83,7 @@ const AffiliatePage = () => {
   const handleCreateClient = async () => {
 
     if (!clientBusinessName || !clientName || !clientEmail || !clientPhone) {
-      return alert("Please fill all fields");
+      return alert(t("leftover.affiliate.fillAll"));
     }
 
     try {
@@ -95,7 +97,7 @@ const AffiliatePage = () => {
       });
 
       setPaymentLink(data.paymentLink);
-      setClientStatus("Client created successfully. Invite email sent.");
+      setClientStatus(t("leftover.affiliate.clientCreated"));
 
       // reset form
       setClientBusinessName("");
@@ -104,7 +106,7 @@ const AffiliatePage = () => {
       setClientPhone("");
 
     } catch (err) {
-      alert(err.response?.data?.message || "Error creating client");
+      alert(err.response?.data?.message || t("leftover.affiliate.createClientError"));
     }
   };
 
@@ -117,11 +119,11 @@ const AffiliatePage = () => {
     const amount = Number(withdrawAmount);
 
     if (isNaN(amount) || amount < 200) {
-      return alert("Minimum withdrawal amount is $200");
+      return alert(t("leftover.affiliate.minWithdraw"));
     }
 
     if (amount > currentBalance) {
-      return alert("Withdrawal amount exceeds available balance");
+      return alert(t("leftover.affiliate.withdrawExceeds"));
     }
 
     try {
@@ -131,10 +133,10 @@ const AffiliatePage = () => {
         amount
       });
 
-      setWithdrawStatus(data.message || "Withdrawal request received.");
+      setWithdrawStatus(data.message || t("leftover.affiliate.withdrawReceived"));
 
     } catch (err) {
-      alert(err.response?.data?.message || "Error submitting withdrawal request");
+      alert(err.response?.data?.message || t("leftover.affiliate.withdrawError"));
     }
   };
 
@@ -188,14 +190,14 @@ const AffiliatePage = () => {
 
         <input
           type="text"
-          placeholder="Business Name"
+          placeholder={t("leftover.affiliate.businessNamePh")}
           value={clientBusinessName}
           onChange={(e) => setClientBusinessName(e.target.value)}
         />
 
         <input
           type="text"
-          placeholder="Contact Name"
+          placeholder={t("leftover.affiliate.contactNamePh")}
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
         />

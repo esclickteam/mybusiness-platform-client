@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -56,7 +58,7 @@ function SectionTitle({
   center?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
         {eyebrow}
       </p>
@@ -64,7 +66,7 @@ function SectionTitle({
         {title}
       </h2>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#51707c]">{text}</p>
+        <p className="mt-5 text-lg leading-8 text-[#51707c]">{tx(text)}</p>
       ) : null}
     </div>
   );
@@ -107,7 +109,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-lg font-bold text-white shadow-lg shadow-[#0891b2]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -162,7 +164,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id ? "bg-white text-[#0891b2] shadow-sm" : "text-[#51707c]",
                 )}
               >
@@ -209,27 +211,25 @@ function BookingModal({
           ×
         </button>
         <div className="relative z-10">
-          <p className="inline-flex rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
-            קביעת תור
-          </p>
-          <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">נשמח לקבל אתכם.</h3>
+          <p className="inline-flex rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">{tx("קביעת תור")}</p>
+          <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">{tx("נשמח לקבל אתכם.")}</h3>
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]">
-              <option>סוג הטיפול</option>
-              <option>בדיקה כללית</option>
-              <option>יישור שיניים</option>
-              <option>השתלות</option>
-              <option>אסתטיקה והלבנה</option>
-              <option>טיפול חירום</option>
+            <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]">
+              <option>{tx("סוג הטיפול")}</option>
+              <option>{tx("בדיקה כללית")}</option>
+              <option>{tx("יישור שיניים")}</option>
+              <option>{tx("השתלות")}</option>
+              <option>{tx("אסתטיקה והלבנה")}</option>
+              <option>{tx("טיפול חירום")}</option>
             </select>
             <button
               type="submit"
@@ -337,9 +337,9 @@ function TrustStrip({ data }: { data: Record<string, any> }) {
     <section className="px-5 pb-4 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-4 rounded-[28px] border border-[#0891b2]/8 bg-white p-6 shadow-lg shadow-[#0f2a36]/5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item) => (
-          <div key={item} className="flex items-center gap-3">
+          <div key={tx(item)} className="flex items-center gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#0ea5a4]/12 text-[#0891b2]">✓</span>
-            <span className="text-sm font-semibold text-[#0f2a36]">{item}</span>
+            <span className="text-sm font-semibold text-[#0f2a36]">{tx(item)}</span>
           </div>
         ))}
       </div>
@@ -361,7 +361,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           </div>
           <div className="absolute -bottom-6 right-6 rounded-[24px] bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] px-7 py-5 text-white shadow-2xl">
             <div className="text-3xl font-bold">20K+</div>
-            <div className="mt-1 text-xs font-semibold text-white/80">מטופלים מרוצים</div>
+            <div className="mt-1 text-xs font-semibold text-white/80">{tx("מטופלים מרוצים")}</div>
           </div>
         </div>
         <div>
@@ -376,9 +376,9 @@ function AboutSection({ data }: { data: Record<string, any> }) {
               "הסבר מלא לכל שלב בטיפול",
               "צוות שמקשיב ומלווה באמת",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-3 text-[#334155]">
+              <div key={tx(item)} className="flex items-center gap-3 text-[#334155]">
                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#0ea5a4]/12 text-[#0891b2]">✓</span>
-                <span className="text-base font-medium">{item}</span>
+                <span className="text-base font-medium">{tx(item)}</span>
               </div>
             ))}
           </div>
@@ -418,7 +418,7 @@ function ServicesSection({
                 {icon}
               </span>
               <h3 className="mt-6 text-xl font-bold text-[#0f2a36]">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#51707c]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[#51707c]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -454,7 +454,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {index + 1}
               </div>
               <h3 className="text-2xl font-bold text-[#0f2a36]">{title}</h3>
-              <p className="mt-3 text-base leading-7 text-[#51707c]">{text}</p>
+              <p className="mt-3 text-base leading-7 text-[#51707c]">{tx(text)}</p>
             </div>
           ))}
         </div>
@@ -510,7 +510,7 @@ function ReviewsSection({ data }: { data: Record<string, any> }) {
               className="group rounded-[28px] border border-[#0891b2]/8 bg-white p-8 shadow-lg shadow-[#0f2a36]/5 transition duration-500 hover:-translate-y-2 hover:shadow-xl"
             >
               <div className="mb-5 text-[#0891b2]">★★★★★</div>
-              <p className="text-base leading-8 text-[#334155]">“{text}”</p>
+              <p className="text-base leading-8 text-[#334155]">“{tx(text)}”</p>
               <div className="mt-7 flex items-center gap-3 border-t border-[#0891b2]/8 pt-5">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-sm font-bold text-white">
                   {String(name).charAt(0)}
@@ -545,7 +545,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-lg font-bold text-[#0f2a36]">{question}</span>
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] text-lg text-white">
@@ -597,29 +597,29 @@ function ContactSection({
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
             {info.map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">{label}</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">{tx(label)}</div>
                 <div className="mt-1 text-base font-semibold text-white">{value}</div>
               </div>
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="אימייל"
+              className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
-              className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="במה נוכל לעזור?"
+              className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-start outline-none transition focus:border-[#0891b2]"
+              placeholder={tx("במה נוכל לעזור?")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -679,7 +679,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Vitalis · Bizuply Studio</p>
+        <p>{tx("תבנית Vitalis · Bizuply Studio")}</p>
       </div>
     </footer>
   );
@@ -802,7 +802,7 @@ export default function VitalisPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="vitalis"
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#f7fcfc_0%,#ffffff_40%)] font-sans text-[#0f2a36]"
     >

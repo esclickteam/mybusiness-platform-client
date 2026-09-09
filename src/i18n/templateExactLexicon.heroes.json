@@ -1,0 +1,3308 @@
+{
+  "הצעד הבא בלמידה מתחיל בשיחה קצרה — בלי התחייבות.": {
+    "en": "Your next step in learning starts with a short conversation — no commitment.",
+    "es": "El siguiente paso en el aprendizaje empieza con una conversación breve — sin compromiso.",
+    "pt-BR": "O próximo passo no aprendizado começa com uma conversa rápida — sem compromisso.",
+    "ar": "خطوتكم التالية في التعلم تبدأ بمحادثة قصيرة — دون أي التزام."
+  },
+  "קבעו שיחת ייעוץ ונבנה יחד את הצעד הבא.": {
+    "en": "Book a consultation and we'll build the next step together.",
+    "es": "Reserven una llamada de asesoría y construyamos juntos el siguiente paso.",
+    "pt-BR": "Agendem uma conversa de consultoria e vamos construir juntos o próximo passo.",
+    "ar": "احجزوا مكالمة استشارية وسنبني معاً الخطوة التالية."
+  },
+  "שיחת היכרות קצרה מספיקה כדי להבין התאמה.": {
+    "en": "A short intro call is enough to see if it's a fit.",
+    "es": "Una breve llamada de presentación basta para ver si encajamos.",
+    "pt-BR": "Uma conversa rápida de apresentação já basta para entender se faz sentido.",
+    "ar": "مكالمة تعارف قصيرة تكفي لمعرفة مدى التوافق."
+  },
+  "למנות": {
+    "en": "See the dishes",
+    "es": "Ver los platos",
+    "pt-BR": "Ver os pratos",
+    "ar": "إلى الأطباق"
+  },
+  "לתיאום פגישה": {
+    "en": "Book a meeting",
+    "es": "Agendar una cita",
+    "pt-BR": "Agendar uma reunião",
+    "ar": "لتنسيق موعد"
+  },
+  "קבעו ביקור": {
+    "en": "Book a visit",
+    "es": "Reserven una visita",
+    "pt-BR": "Agendem uma visita",
+    "ar": "احجزوا زيارة"
+  },
+  "אבחון עור": {
+    "en": "Skin diagnosis",
+    "es": "Diagnóstico de piel",
+    "pt-BR": "Diagnóstico de pele",
+    "ar": "تشخيص البشرة"
+  },
+  "אבחון פילינג": {
+    "en": "Peel diagnosis",
+    "es": "Diagnóstico de peeling",
+    "pt-BR": "Diagnóstico de peeling",
+    "ar": "تشخيص التقشير"
+  },
+  "אבחון ראשון": {
+    "en": "First diagnosis",
+    "es": "Primera evaluación",
+    "pt-BR": "Primeiro diagnóstico",
+    "ar": "التشخيص الأول"
+  },
+  "אבטחת מידע": {
+    "en": "Information security",
+    "es": "Seguridad de la información",
+    "pt-BR": "Segurança da informação",
+    "ar": "أمن المعلومات"
+  },
+  "אדריכלות אורבנית / מגורים / מלונאות": {
+    "en": "Urban architecture / residential / hospitality",
+    "es": "Arquitectura urbana / residencial / hotelera",
+    "pt-BR": "Arquitetura urbana / residencial / hoteleira",
+    "ar": "عمارة حضرية / سكنية / فندقية"
+  },
+  "אוכל מהים. על החול.": {
+    "en": "Food from the sea. On the sand.",
+    "es": "Comida del mar. Sobre la arena.",
+    "pt-BR": "Comida do mar. Na areia.",
+    "ar": "طعام من البحر. على الرمال."
+  },
+  "אוכל רחוב · פודטראק": {
+    "en": "Street food · food truck",
+    "es": "Comida callejera · food truck",
+    "pt-BR": "Comida de rua · food truck",
+    "ar": "أكل الشارع · عربة طعام"
+  },
+  "אופנה שנעה כמו חצות": {
+    "en": "Fashion that moves like midnight",
+    "es": "Moda que se mueve como la medianoche",
+    "pt-BR": "Moda que se move como a meia-noite",
+    "ar": "أزياء تتحرك كمنتصف الليل"
+  },
+  "אורבניקס מתמחה בדירות במגדלים, לופטים ופנטהאוזים במיקומים עם דופק, תחבורה ותנועה אמיתית.": {
+    "en": "Urbanix specializes in tower apartments, lofts, and penthouses in locations with pulse, transit, and real movement.",
+    "es": "Urbanix se especializa en departamentos en torres, lofts y penthouses en ubicaciones con pulso, transporte y movimiento real.",
+    "pt-BR": "A Urbanix é especialista em apartamentos em torres, lofts e coberturas em endereços com pulso, transporte e movimento de verdade.",
+    "ar": "تتخصص Urbanix في شقق الأبراج واللوفت والبنتهاوس في مواقع ذات نبض ومواصلات وحركة حقيقية."
+  },
+  "אורליה היא חוויית אוכל עילית שמשלבת מטבח עונתי, חומרי גלם מקומיים ואווירה חמה. תפריט מתחלף, יינות נבחרים ושירות שמרגיש כמו בבית — רק הרבה יותר מדויק.": {
+    "en": "Aurelia is a fine-dining experience that brings together seasonal cooking, local ingredients, and a warm atmosphere. A rotating menu, selected wines, and service that feels like home — only far more precise.",
+    "es": "Aurelia es una experiencia de alta cocina que combina temporada, producto local y una atmósfera cálida. Menú rotativo, vinos seleccionados y un servicio que se siente como en casa — solo mucho más preciso.",
+    "pt-BR": "Aurelia é uma experiência de alta gastronomia que une cozinha sazonal, ingredientes locais e uma atmosfera acolhedora. Cardápio rotativo, vinhos selecionados e um serviço que parece casa — só que bem mais preciso.",
+    "ar": "Aurelia تجربة طعام راقٍ تجمع مطبخاً موسمياً ومكونات محلية وأجواء دافئة. قائمة متجددة، نبيذ مختار، وخدمة تشبه البيت — لكنها أدق بكثير."
+  },
+  "אחוזות, בתים פרטיים ונכסי אספנות נבחרים - בדיסקרטיות מלאה, עם גישה רק לקונים מתאימים.": {
+    "en": "Estates, private homes, and collector properties — in full discretion, with access only for the right buyers.",
+    "es": "Estancias, casas particulares y propiedades de colección — con total discreción, y acceso solo para compradores adecuados.",
+    "pt-BR": "Propriedades, casas particulares e imóveis de colecionador — com discrição total, e acesso só para os compradores certos.",
+    "ar": "عقارات وأملاك خاصة ومنازل لهواة الجمع — بسرية تامة، وبوصول للمشترين المناسبين فقط."
+  },
+  "איורים קטנים, טקסטורות, כרום וקולקציות השראה שמתרגמות מצב רוח לסט מושלם.": {
+    "en": "Small illustrations, textures, chrome, and mood collections that turn a feeling into a perfect set.",
+    "es": "Ilustraciones pequeñas, texturas, cromo y colecciones de inspiración que convierten un estado de ánimo en un set perfecto.",
+    "pt-BR": "Ilustrações pequenas, texturas, cromo e coleções de inspiração que transformam um humor em um set perfeito.",
+    "ar": "رسوم صغيرة وملامس وكروم ومجموعات إلهام تترجم المزاج إلى طقم مكتمل."
+  },
+  "אימוני כוח, תזונה ומעקב ביצועים למי שרוצה תוצאה שנראית בגוף ומרגישה ביום-יום.": {
+    "en": "Strength training, nutrition, and performance tracking for anyone who wants results you can see on the body and feel every day.",
+    "es": "Entrenamiento de fuerza, nutrición y seguimiento de rendimiento para quien quiere un resultado que se ve en el cuerpo y se siente en el día a día.",
+    "pt-BR": "Treino de força, nutrição e acompanhamento de performance para quem quer um resultado que aparece no corpo e se sente no dia a dia.",
+    "ar": "تدريب قوة وتغذية ومتابعة أداء لمن يريد نتيجة تُرى على الجسم وتُحسّ في كل يوم."
+  },
+  "אינסטלציה · חשמל · שיפוצים": {
+    "en": "Plumbing · electrical · renovations",
+    "es": "Plomería · electricidad · reformas",
+    "pt-BR": "Hidráulica · elétrica · reformas",
+    "ar": "سباكة · كهرباء · ترميم"
+  },
+  "איפה אנחנו עכשיו": {
+    "en": "Where we are now",
+    "es": "Dónde estamos ahora",
+    "pt-BR": "Onde estamos agora",
+    "ar": "أين نحن الآن"
+  },
+  "איפה שהמדבר נפגש בים.": {
+    "en": "Where the desert meets the sea.",
+    "es": "Donde el desierto se encuentra con el mar.",
+    "pt-BR": "Onde o deserto encontra o mar.",
+    "ar": "حيث يلتقي الصحراء بالبحر."
+  },
+  "איפור ושיער לכלות ולמלוות — ניסיון מקדים, לוק שנשאר בתמונות, וליווי רגוע ביום האירוע.": {
+    "en": "Makeup and hair for brides and their party — a trial first, a look that lasts in the photos, and calm support on the day.",
+    "es": "Maquillaje y peinado para novias y acompañantes — prueba previa, un look que se queda en las fotos y un acompañamiento sereno el día del evento.",
+    "pt-BR": "Maquiagem e cabelo para noivas e acompanhantes — teste prévio, um look que permanece nas fotos e um acompanhamento calmo no dia do evento.",
+    "ar": "مكياج وشعر للعرائس والمرافقات — تجربة مسبقة، إطلالة تثبت في الصور، ومرافقة هادئة يوم المناسبة."
+  },
+  "איפור כלות": {
+    "en": "Bridal makeup",
+    "es": "Maquillaje de novia",
+    "pt-BR": "Maquiagem para noivas",
+    "ar": "مكياج عرائس"
+  },
+  "איפור כלות ואירועים": {
+    "en": "Bridal and event makeup",
+    "es": "Maquillaje de novias y eventos",
+    "pt-BR": "Maquiagem para noivas e eventos",
+    "ar": "مكياج عرائس ومناسبات"
+  },
+  "איפור כלות שמצטלם יפה ונשאר טבעי מקרוב — ניסיון מקדים, ליווי ביום האירוע ותיקון אחרון לפני יציאה.": {
+    "en": "Bridal makeup that photographs beautifully and stays natural up close — a trial, day-of support, and a last touch-up before you walk out.",
+    "es": "Maquillaje de novia que se ve hermoso en fotos y sigue natural de cerca — prueba previa, acompañamiento el día del evento y un retoque final antes de salir.",
+    "pt-BR": "Maquiagem de noiva que fotografa lindo e continua natural de perto — teste prévio, acompanhamento no dia e um retoque final antes de sair.",
+    "ar": "مكياج عروس يظهر جميلاً في الصور ويبقى طبيعياً عن قرب — تجربة مسبقة، مرافقة يوم المناسبة، وتعديل أخير قبل الخروج."
+  },
+  "איפור קבוע / PMU": {
+    "en": "Permanent makeup / PMU",
+    "es": "Maquillaje permanente / PMU",
+    "pt-BR": "Maquiagem permanente / PMU",
+    "ar": "مكياج دائم / PMU"
+  },
+  "איפור קבוע בשיטת שכבות עדינות — תכנון צורה, פיגמנט בטוח והנחיות החלמה מדויקות.": {
+    "en": "Permanent makeup with a delicate layering method — shape design, safe pigment, and precise aftercare.",
+    "es": "Maquillaje permanente con capas suaves — diseño de forma, pigmento seguro e indicaciones de recuperación precisas.",
+    "pt-BR": "Maquiagem permanente em camadas suaves — desenho da forma, pigmento seguro e orientações de recuperação precisas.",
+    "ar": "مكياج دائم بأسلوب طبقات رقيقة — تخطيط الشكل، صبغة آمنة، وإرشادات تعافٍ دقيقة."
+  },
+  "אירועים שמתוזמרים כמו הופעה חיה.": {
+    "en": "Events orchestrated like a live show.",
+    "es": "Eventos orquestados como un concierto en vivo.",
+    "pt-BR": "Eventos orquestrados como um show ao vivo.",
+    "ar": "مناسبات تُدار كعرض حي."
+  },
+  "אלפי צוותים כבר עברו ל-Nexora. הצטרפו בחינם, בלי התחייבות, וגלו כמה זמן אפשר לחסוך.": {
+    "en": "Thousands of teams have already switched to Nexora. Join free, with no commitment, and see how much time you can save.",
+    "es": "Miles de equipos ya se pasaron a Nexora. Únanse gratis, sin compromiso, y descubran cuánto tiempo se puede ahorrar.",
+    "pt-BR": "Milhares de equipes já migraram para a Nexora. Entrem de graça, sem compromisso, e vejam quanto tempo dá para economizar.",
+    "ar": "آلاف الفرق انتقلت بالفعل إلى Nexora. انضموا مجاناً دون التزام، واكتشفوا كم من الوقت يمكن توفيره."
+  },
+  "אלקטרוניקה וגאדג׳טים": {
+    "en": "Electronics and gadgets",
+    "es": "Electrónica y gadgets",
+    "pt-BR": "Eletrônicos e gadgets",
+    "ar": "إلكترونيات وأجهزة ذكية"
+  },
+  "אנגלית, ספרדית, ערבית ועוד — שיעורים חיים, תרגול יומי, וביטחון לדבר.": {
+    "en": "English, Spanish, Arabic, and more — live lessons, daily practice, and the confidence to speak.",
+    "es": "Inglés, español, árabe y más — clases en vivo, práctica diaria y confianza para hablar.",
+    "pt-BR": "Inglês, espanhol, árabe e mais — aulas ao vivo, prática diária e confiança para falar.",
+    "ar": "الإنجليزية والإسبانية والعربية والمزيد — دروس مباشرة، تمرين يومي، وثقة في الكلام."
+  },
+  "אסטרטגיה משפטית\nלפני כל צעד.": {
+    "en": "Legal strategy\nbefore every move.",
+    "es": "Estrategia jurídica\nantes de cada paso.",
+    "pt-BR": "Estratégia jurídica\nantes de cada passo.",
+    "ar": "استراتيجية قانونية\nقبل كل خطوة."
+  },
+  "אסטרטגיה, מדיה ותוכן שמזיזים לידים — לא רק מצגות יפות.": {
+    "en": "Strategy, media, and content that move leads — not just pretty decks.",
+    "es": "Estrategia, medios y contenido que mueven leads — no solo presentaciones bonitas.",
+    "pt-BR": "Estratégia, mídia e conteúdo que geram leads — não só apresentações bonitas.",
+    "ar": "استراتيجية ووسائط ومحتوى يحرّك العملاء المحتملين — لا مجرد عروض أنيقة."
+  },
+  "אסטרטגיה, קריאייטיב ומדיה שעובדים כמו חדר מלחמה אחד: מסר חד, ניסוי מהיר, אופטימיזציה בלי רחמים.": {
+    "en": "Strategy, creative, and media working as one war room: a sharp message, fast experiments, relentless optimization.",
+    "es": "Estrategia, creativo y medios que trabajan como una sola sala de guerra: mensaje nítido, prueba rápida, optimización sin piedad.",
+    "pt-BR": "Estratégia, criativo e mídia funcionando como uma única sala de guerra: mensagem afiada, teste rápido, otimização sem piedade.",
+    "ar": "استراتيجية وإبداع ووسائط تعمل كغرفة عمليات واحدة: رسالة حادة، تجربة سريعة، وتحسين بلا هوادة."
+  },
+  "אסטרטגיית מותג, זהות ויזואלית ושפה — ממחקר ועד מערכת נכסים חיה.": {
+    "en": "Brand strategy, visual identity, and voice — from research to a living asset system.",
+    "es": "Estrategia de marca, identidad visual y lenguaje — de la investigación a un sistema de activos vivo.",
+    "pt-BR": "Estratégia de marca, identidade visual e linguagem — da pesquisa a um sistema de ativos vivo.",
+    "ar": "استراتيجية علامة وهوية بصرية ولغة — من البحث حتى منظومة أصول حيّة."
+  },
+  "אספרסו עמוק, קלייה יומית ובר קפה שמרגיש כמו ערב ארוך בעיר. כל כוס נטחנת לפי הזמנה, כל סיפור מתחיל בפולים.": {
+    "en": "Deep espresso, daily roasting, and a coffee bar that feels like a long night in the city. Every cup is ground to order; every story starts with the beans.",
+    "es": "Espresso profundo, tueste diario y una barra de café que se siente como una noche larga en la ciudad. Cada taza se muele al momento; cada historia empieza en el grano.",
+    "pt-BR": "Espresso profundo, torra diária e um bar de café que parece uma noite longa na cidade. Cada xícara é moída na hora; cada história começa nos grãos.",
+    "ar": "إسبريسو عميق، تحميص يومي، وبار قهوة يشبه ليلة طويلة في المدينة. كل فنجان يُطحن حسب الطلب، وكل قصة تبدأ من الحبوب."
+  },
+  "אש על טורטייה.": {
+    "en": "Fire on a tortilla.",
+    "es": "Fuego sobre una tortilla.",
+    "pt-BR": "Fogo em uma tortilla.",
+    "ar": "نار على تورتيلا."
+  },
+  "אaxispoint מציגה נדל״ן בפריסה גאומטרית — חדה, מודern ומדויקת.": {
+    "en": "Axispoint presents real estate in a geometric layout — sharp, modern, and precise.",
+    "es": "Axispoint presenta el inmobiliario en una composición geométrica — nítida, moderna y precisa.",
+    "pt-BR": "A Axispoint apresenta imóveis em uma composição geométrica — nítida, moderna e precisa.",
+    "ar": "تعرض Axispoint العقارات بتخطيط هندسي — حاد وحديث ودقيق."
+  },
+  "אopenhause מארגנת סיורי בתים פתוחים — כדי שתחוו את הנכס לפני שאתם מחליטים.": {
+    "en": "Openhaus organizes open-house tours — so you can experience the property before you decide.",
+    "es": "Openhaus organiza visitas de casas abiertas — para que experimenten la propiedad antes de decidir.",
+    "pt-BR": "A Openhaus organiza tours de casas abertas — para vocês vivenciarem o imóvel antes de decidir.",
+    "ar": "تنظّم Openhaus جولات البيوت المفتوحة — لتعيشوا العقار قبل أن تقرروا."
+  },
+  "ב-Vitalcare פוגשים צוות מומחים בכירים, אבחון מתקדם וליווי אישי שמכבד את הזמן, החששות והצרכים הרפואיים של כל מטופלת ומטופל.": {
+    "en": "At Vitalcare you meet a team of senior specialists, advanced diagnostics, and personal care that respects every patient's time, concerns, and medical needs.",
+    "es": "En Vitalcare encuentran un equipo de especialistas senior, diagnóstico avanzado y un acompañamiento personal que respeta el tiempo, las preocupaciones y las necesidades médicas de cada paciente.",
+    "pt-BR": "Na Vitalcare vocês encontram uma equipe de especialistas seniores, diagnóstico avançado e um acompanhamento pessoal que respeita o tempo, as preocupações e as necessidades médicas de cada paciente.",
+    "ar": "في Vitalcare تلتقون فريقاً من الأخصائيين الكبار، وتشخيصاً متقدماً، ومرافقة شخصية تحترم وقت كل مريضة ومريض ومخاوفهم واحتياجاتهم الطبية."
+  },
+  "ב־Luminelle אנחנו מחברות אבחון מקצועי, טכניקות עדינות וחומרי פרימיום כדי ליצור תוצאה נקייה, טבעית ומוארת.": {
+    "en": "At Luminelle we combine professional diagnosis, gentle techniques, and premium products to create a clean, natural, luminous result.",
+    "es": "En Luminelle unimos diagnóstico profesional, técnicas suaves y productos premium para crear un resultado limpio, natural y luminoso.",
+    "pt-BR": "Na Luminelle unimos diagnóstico profissional, técnicas suaves e produtos premium para criar um resultado limpo, natural e luminoso.",
+    "ar": "في Luminelle نجمع بين التشخيص المهني والتقنيات اللطيفة والمنتجات الفاخرة لنصنع نتيجة نقية وطبيعية ومضيئة."
+  },
+  "בדקו זמינות": {
+    "en": "Check availability",
+    "es": "Consulten disponibilidad",
+    "pt-BR": "Verifiquem disponibilidade",
+    "ar": "تحققوا من التوفر"
+  },
+  "בואו לביקור קצר, הכירו את הצוות וראו איפה חיית המחמד שלכם תבלה.": {
+    "en": "Come for a short visit, meet the team, and see where your pet will spend their time.",
+    "es": "Vengan a una visita corta, conozcan al equipo y vean dónde pasará el tiempo su mascota.",
+    "pt-BR": "Venham para uma visita rápida, conheçam a equipe e vejam onde o pet de vocês vai passar o tempo.",
+    "ar": "تعالوا لزيارة قصيرة، تعرّفوا على الفريق، وشاهدوا أين ستقضي حيوانكم الأليف وقته."
+  },
+  "בואו לראות. בואו להרגיש.": {
+    "en": "Come see. Come feel.",
+    "es": "Vengan a ver. Vengan a sentir.",
+    "pt-BR": "Venham ver. Venham sentir.",
+    "ar": "تعالوا لتروا. تعالوا لتشعروا."
+  },
+  "בואו נבנה מהלך שמפריע לפיד, לא עוד קמפיין שמבקש תשומת לב בנימוס.": {
+    "en": "Let's build a move that interrupts the feed — not another campaign politely asking for attention.",
+    "es": "Construyamos un movimiento que interrumpa el feed — no otra campaña que pide atención con educación.",
+    "pt-BR": "Vamos construir um movimento que interrompe o feed — não mais uma campanha pedindo atenção educadamente.",
+    "ar": "لنبنِ خطوة تقطع التغذية — لا حملة أخرى تطلب الانتباه بأدب."
+  },
+  "בואו נדבר על הסגנון, השעה, הלוקיישן וכל הפרטים הקטנים שגורמים לאיפור להרגיש טבעי ומדויק.": {
+    "en": "Let's talk style, timing, location, and all the small details that make makeup feel natural and exact.",
+    "es": "Hablemos del estilo, la hora, el lugar y todos los detalles que hacen que el maquillaje se sienta natural y preciso.",
+    "pt-BR": "Vamos falar do estilo, do horário, do local e de todos os detalhes que fazem a maquiagem parecer natural e precisa.",
+    "ar": "لنتحدث عن الأسلوب والوقت والموقع وكل التفاصيل الصغيرة التي تجعل المكياج طبيعياً ودقيقاً."
+  },
+  "בוטיק אופנה עצמאי": {
+    "en": "Independent fashion boutique",
+    "es": "Boutique de moda independiente",
+    "pt-BR": "Boutique de moda independente",
+    "ar": "بوتيك أزياء مستقل"
+  },
+  "בוטיק קטן. בחירה חדה. קו אדום אחד.": {
+    "en": "A small boutique. A sharp edit. One red line.",
+    "es": "Una boutique pequeña. Una selección nítida. Una sola línea roja.",
+    "pt-BR": "Uma boutique pequena. Uma seleção afiada. Uma linha vermelha.",
+    "ar": "بوتيك صغير. اختيار حاد. خط أحمر واحد."
+  },
+  "בוטקמפ מעשי לפולסטאק — פרויקטים אמיתיים, מנטורים מהתעשייה, ופורטפוליו שמגייס.": {
+    "en": "A hands-on full-stack bootcamp — real projects, industry mentors, and a portfolio that gets you hired.",
+    "es": "Un bootcamp práctico de full-stack — proyectos reales, mentores de la industria y un portafolio que consigue trabajo.",
+    "pt-BR": "Um bootcamp prático de full-stack — projetos reais, mentores da indústria e um portfólio que contrata.",
+    "ar": "معسكر عملي لتطوير full-stack — مشاريع حقيقية، مرشدون من الصناعة، ومعرض أعمال يفتح أبواب التوظيف."
+  },
+  "בוטקמפ תכנות": {
+    "en": "Coding bootcamp",
+    "es": "Bootcamp de programación",
+    "pt-BR": "Bootcamp de programação",
+    "ar": "معسكر برمجة"
+  },
+  "בויטליס אנחנו משלבים רפואה מדויקת, טכנולוגיה מתקדמת ויחס אנושי חם. צוות מומחים, ציוד חדשני וסביבה רגועה — כדי שכל ביקור יהיה קל, ברור ונטול חשש.": {
+    "en": "At Vitalis we combine precise medicine, advanced technology, and genuine human care. Expert staff, innovative equipment, and a calm setting — so every visit is easy, clear, and free of worry.",
+    "es": "En Vitalis combinamos medicina precisa, tecnología avanzada y un trato humano cálido. Equipo experto, equipamiento innovador y un entorno sereno — para que cada visita sea fácil, clara y sin miedo.",
+    "pt-BR": "Na Vitalis unimos medicina precisa, tecnologia avançada e um cuidado humano de verdade. Equipe especialista, equipamentos inovadores e um ambiente calmo — para que cada visita seja fácil, clara e sem medo.",
+    "ar": "في Vitalis نجمع الطب الدقيق والتقنية المتقدمة والعناية الإنسانية الدافئة. فريق خبراء، أجهزة مبتكرة، وبيئة هادئة — ليكون كل زيارة سهلة وواضحة وخالية من القلق."
+  },
+  "בונת ציפורניים": {
+    "en": "Nail artist",
+    "es": "Manicurista",
+    "pt-BR": "Nail designer",
+    "ar": "خبيرة أظافر"
+  },
+  "בחירת קומה": {
+    "en": "Choose a floor",
+    "es": "Elegir planta",
+    "pt-BR": "Escolher andar",
+    "ar": "اختيار الطابق"
+  },
+  "בחרו מסלול, קבעו אבחון, ותנו לנתונים להוביל את השינוי.": {
+    "en": "Choose a program, book an assessment, and let the data lead the change.",
+    "es": "Elijan un plan, agenden un diagnóstico y dejen que los datos lideren el cambio.",
+    "pt-BR": "Escolham um percurso, agendem um diagnóstico e deixem os dados conduzirem a mudança.",
+    "ar": "اختاروا مساراً، احجزوا تشخيصاً، ودعوا البيانات تقود التغيير."
+  },
+  "בחרו שפה": {
+    "en": "Choose a language",
+    "es": "Elegir idioma",
+    "pt-BR": "Escolher idioma",
+    "ar": "اختاروا لغة"
+  },
+  "בחרו תאריך, אספו את האנשים הנכונים ותנו לנו לבנות סביבכם ארוחה שנשארת בזיכרון.": {
+    "en": "Pick a date, gather the right people, and let us build a meal around you that stays in memory.",
+    "es": "Elijan una fecha, reúnan a las personas adecuadas y déjennos construir alrededor una comida que se queda en la memoria.",
+    "pt-BR": "Escolham uma data, reúnam as pessoas certas e deixem a gente construir ao redor de vocês uma refeição que fica na memória.",
+    "ar": "اختاروا تاريخاً، اجمعوا الأشخاص المناسبين، ودعونا نبني حولكم وجبة تبقى في الذاكرة."
+  },
+  "ביגוד, צעצועים ואביזרי חדר — חנות מלאה עם קטגוריות וסינונים שמחוברים לתוסף החנות.": {
+    "en": "Clothing, toys, and room accessories — a full store with categories and filters connected to the shop plugin.",
+    "es": "Ropa, juguetes y accesorios de habitación — una tienda completa con categorías y filtros conectados al complemento de tienda.",
+    "pt-BR": "Roupas, brinquedos e acessórios de quarto — uma loja completa com categorias e filtros ligados ao complemento da loja.",
+    "ar": "ملابس وألعاب وإكسسوارات غرفة — متجر كامل بفئات وفلاتر متصلة بإضافة المتجر."
+  },
+  "ביטוח שמרגיש כמו שקט, לא כמו טפסים.": {
+    "en": "Insurance that feels like calm, not like forms.",
+    "es": "Un seguro que se siente como calma, no como formularios.",
+    "pt-BR": "Um seguro que parece paz, não papelada.",
+    "ar": "تأمين يشبه الطمأنينة، لا الاستمارات."
+  },
+  "בין אם אתם בתחילת דרך עסקית, בעיצומה של עסקה או מול אתגר משפטי — פורטיבה כאן כדי לתת לכם שקט וביטחון.": {
+    "en": "Whether you're just starting a business, mid-deal, or facing a legal challenge — Fortiva is here to give you calm and confidence.",
+    "es": "Estén al inicio de un camino empresarial, en medio de una operación o frente a un reto jurídico — Fortiva está aquí para darles calma y confianza.",
+    "pt-BR": "Estejam no começo de um caminho empresarial, no meio de um negócio ou diante de um desafio jurídico — a Fortiva está aqui para dar calma e confiança.",
+    "ar": "سواء كنتم في بداية طريق تجاري أو في خضم صفقة أو أمام تحدٍ قانوني — Fortiva هنا لتمنحكم هدوءاً وثقة."
+  },
+  "בין אם אתם מותג חדש שרוצה להתחיל נכון, או מותג קיים שצריך רענון — Studiora כאן כדי לקחת אתכם לשלב הבא.": {
+    "en": "Whether you're a new brand that wants to start right, or an existing one that needs a refresh — Studiora is here to take you to the next stage.",
+    "es": "Sean una marca nueva que quiere empezar bien, o una marca existente que necesita una renovación — Studiora está aquí para llevarlos a la siguiente etapa.",
+    "pt-BR": "Sejam uma marca nova que quer começar certo, ou uma marca existente que precisa de uma renovação — a Studiora está aqui para levar vocês ao próximo estágio.",
+    "ar": "سواء كنتم علامة جديدة تريد أن تبدأ بشكل صحيح، أو علامة قائمة تحتاج إلى تجديد — Studiora هنا لتأخذكم إلى المرحلة التالية."
+  },
+  "בין אם זו ארוחה זוגית, חגיגה או ערב שף — אורליה בנויה לרגעים שנשארים. בואו לשבת, לטעום ולהישאר קצת יותר.": {
+    "en": "Whether it's a couple's dinner, a celebration, or a chef's evening — Aurelia is built for moments that linger. Come sit, taste, and stay a little longer.",
+    "es": "Sea una cena en pareja, una celebración o una noche de chef — Aurelia está hecha para momentos que se quedan. Vengan a sentarse, a probar y a quedarse un poco más.",
+    "pt-BR": "Seja um jantar a dois, uma celebração ou uma noite de chef — a Aurelia foi feita para momentos que ficam. Venham sentar, provar e ficar um pouco mais.",
+    "ar": "سواء كانت وجبة لزوجين أو احتفالاً أو سهرة شيف — Aurelia مبنية للحظات التي تبقى. تعالوا اجلسوا، تذوقوا، وابقوا قليلاً أكثر."
+  },
+  "בין אם זו בדיקה שגרתית, טיפול מורכב או שיקום חיוך — ויטליס כאן כדי ללוות אתכם בביטחון ובחום.": {
+    "en": "Whether it's a routine checkup, complex treatment, or restoring a smile — Vitalis is here to walk with you in confidence and warmth.",
+    "es": "Sea una revisión rutinaria, un tratamiento complejo o la restauración de una sonrisa — Vitalis está aquí para acompañarlos con confianza y calidez.",
+    "pt-BR": "Seja um check-up de rotina, um tratamento complexo ou a reconstrução de um sorriso — a Vitalis está aqui para acompanhar vocês com confiança e calor.",
+    "ar": "سواء كان فحصاً روتينياً أو علاجاً معقداً أو ترميم ابتسامة — Vitalis هنا لترافقكم بثقة ودفء."
+  },
+  "בית ועיצוב": {
+    "en": "Home and design",
+    "es": "Hogar y diseño",
+    "pt-BR": "Casa e design",
+    "ar": "منزل وتصميم"
+  },
+  "בית חם לכלבים וחתולים": {
+    "en": "A warm home for dogs and cats",
+    "es": "Un hogar cálido para perros y gatos",
+    "pt-BR": "Um lar aconchegante para cães e gatos",
+    "ar": "بيت دافئ للكلاب والقطط"
+  },
+  "בית ספר למוזיקה": {
+    "en": "Music school",
+    "es": "Escuela de música",
+    "pt-BR": "Escola de música",
+    "ar": "مدرسة موسيقى"
+  },
+  "בית ספר למוזיקה חיה והפקה": {
+    "en": "School for live music and production",
+    "es": "Escuela de música en vivo y producción",
+    "pt-BR": "Escola de música ao vivo e produção",
+    "ar": "مدرسة للموسيقى الحية والإنتاج"
+  },
+  "בית ספר לשפות": {
+    "en": "Language school",
+    "es": "Escuela de idiomas",
+    "pt-BR": "Escola de idiomas",
+    "ar": "مدرسة لغات"
+  },
+  "בית שהילדים רצים בו החוצה.": {
+    "en": "A home where the kids run outside.",
+    "es": "Una casa de la que los niños salen corriendo al exterior.",
+    "pt-BR": "Uma casa da qual as crianças saem correndo para fora.",
+    "ar": "بيت يندفع منه الأطفال إلى الخارج."
+  },
+  "בלוקווייז מציגה נדל״ן עירוני בפריסה נועזת — מספרים, מיקום ומחיר בלי עטיפות.": {
+    "en": "Blockwise presents urban real estate in a bold layout — numbers, location, and price, no wrapping.",
+    "es": "Blockwise presenta el inmobiliario urbano en una composición audaz — números, ubicación y precio, sin envoltorio.",
+    "pt-BR": "A Blockwise apresenta imóveis urbanos em uma composição ousada — números, localização e preço, sem embalagem.",
+    "ar": "تعرض Blockwise العقارات الحضرية بتخطيط جريء — أرقام وموقع وسعر بلا تغليف."
+  },
+  "בליאז׳, גוונים ותיקוני צבע עם אבחון שיער, בדיקת היסטוריה ושמירה על ברק.": {
+    "en": "Balayage, highlights, and color correction with a hair diagnosis, history check, and shine that lasts.",
+    "es": "Balayage, mechas y corrección de color con diagnóstico capilar, revisión del historial y brillo que se mantiene.",
+    "pt-BR": "Balayage, mechas e correção de cor com diagnóstico capilar, checagem do histórico e brilho que permanece.",
+    "ar": "بالياج ودرجات وتصحيح لون مع تشخيص للشعر وفحص للتاريخ والحفاظ على اللمعان."
+  },
+  "בנייה בג׳ל, מילוי ותיקוני שברים עם דגש על אנטומיה, איזון וקו נקי.": {
+    "en": "Gel extensions, fills, and break repairs with a focus on anatomy, balance, and a clean line.",
+    "es": "Construcción en gel, rellenos y reparación de roturas con énfasis en anatomía, equilibrio y una línea limpia.",
+    "pt-BR": "Alongamento em gel, preenchimento e reparo de quebras com ênfase em anatomia, equilíbrio e linha limpa.",
+    "ar": "بناء بالجل وتعبئة وإصلاح كسور مع التركيز على التشريح والتوازن والخط النظيف."
+  },
+  "בניית מערכי מכירה, סקריפטים, SDR וסגירה — עם לוח תוצאות שרואים כל בוקר.": {
+    "en": "Building sales systems, scripts, SDR, and closing — with a scoreboard you see every morning.",
+    "es": "Construcción de sistemas de ventas, scripts, SDR y cierre — con un tablero de resultados que se ve cada mañana.",
+    "pt-BR": "Construção de sistemas de vendas, scripts, SDR e fechamento — com um painel de resultados que vocês veem toda manhã.",
+    "ar": "بناء منظومات بيع ونصوص وSDR وإغلاق — مع لوحة نتائج تُرى كل صباح."
+  },
+  "בקשת סיור פרטי": {
+    "en": "Request a private tour",
+    "es": "Solicitar un tour privado",
+    "pt-BR": "Solicitar um tour particular",
+    "ar": "طلب جولة خاصة"
+  },
+  "ברביקיו · מעשנה": {
+    "en": "Barbecue · smokehouse",
+    "es": "Barbacoa · ahumadero",
+    "pt-BR": "Churrasco · defumação",
+    "ar": "باربكيو · مدخنة"
+  },
+  "ברוקריה מלווה קונים ומשקיעים בנכסי פרימיום — עם תמונה מדויקת, סיורים ממוקדים ועסקאות שקופות.": {
+    "en": "Brokeria guides buyers and investors through premium properties — with an accurate picture, focused tours, and transparent deals.",
+    "es": "Brokeria acompaña a compradores e inversores en propiedades premium — con una imagen precisa, tours enfocados y operaciones transparentes.",
+    "pt-BR": "A Brokeria acompanha compradores e investidores em imóveis premium — com uma imagem precisa, tours focados e negócios transparentes.",
+    "ar": "ترافق Brokeria المشترين والمستثمرين في عقارات فاخرة — بصورة دقيقة وجولات مركّزة وصفقات شفافة."
+  },
+  "בריאות בידיים טובות, חיוך בביטחון מלא.": {
+    "en": "Health in good hands, a smile in full confidence.",
+    "es": "Salud en buenas manos, una sonrisa con total confianza.",
+    "pt-BR": "Saúde em boas mãos, um sorriso com confiança plena.",
+    "ar": "صحة بين أيادٍ أمينة، وابتسامة بثقة كاملة."
+  },
+  "בתים למשפחה": {
+    "en": "Family homes",
+    "es": "Casas para familias",
+    "pt-BR": "Casas para famílias",
+    "ar": "منازل للعائلات"
+  },
+  "בתים פתוחים · סיורים": {
+    "en": "Open houses · tours",
+    "es": "Casas abiertas · tours",
+    "pt-BR": "Casas abertas · tours",
+    "ar": "بيوت مفتوحة · جولات"
+  },
+  "בתים שנבחרו\nבדיוק כמוכם.": {
+    "en": "Homes chosen\njust like you.",
+    "es": "Casas elegidas\ntal como ustedes.",
+    "pt-BR": "Casas escolhidas\ncomo vocês.",
+    "ar": "منازل اختيرت\nتماماً مثلكم."
+  },
+  "בתים שקטים ליד מים": {
+    "en": "Quiet homes by the water",
+    "es": "Casas tranquilas junto al agua",
+    "pt-BR": "Casas tranquilas perto da água",
+    "ar": "منازل هادئة قرب الماء"
+  },
+  "גאדג׳טים חכמים לבית, למשרד ולדרך.": {
+    "en": "Smart gadgets for home, office, and the road.",
+    "es": "Gadgets inteligentes para el hogar, la oficina y el camino.",
+    "pt-BR": "Gadgets inteligentes para casa, escritório e a estrada.",
+    "ar": "أجهزة ذكية للمنزل والمكتب والطريق."
+  },
+  "גיוס הייטק, מכירות ומנהלים — תהליך מהיר, שקוף ומדויק.": {
+    "en": "Hiring for tech, sales, and executives — a fast, transparent, precise process.",
+    "es": "Reclutamiento de tecnología, ventas y ejecutivos — un proceso rápido, transparente y preciso.",
+    "pt-BR": "Recrutamento de tecnologia, vendas e executivos — um processo rápido, transparente e preciso.",
+    "ar": "توظيف للتقنية والمبيعات والمديرين — عملية سريعة وشفافة ودقيقة."
+  },
+  "גלו אזורים": {
+    "en": "Discover areas",
+    "es": "Descubran zonas",
+    "pt-BR": "Descubram regiões",
+    "ar": "اكتشفوا المناطق"
+  },
+  "גלו וילות": {
+    "en": "Discover villas",
+    "es": "Descubran villas",
+    "pt-BR": "Descubram villas",
+    "ar": "اكتشفوا الفيلات"
+  },
+  "גלו סוויטות": {
+    "en": "Discover suites",
+    "es": "Descubran suites",
+    "pt-BR": "Descubram suítes",
+    "ar": "اكتشفوا الأجنحة"
+  },
+  "גלו שכונות": {
+    "en": "Discover neighborhoods",
+    "es": "Descubran barrios",
+    "pt-BR": "Descubram bairros",
+    "ar": "اكتشفوا الأحياء"
+  },
+  "גלידה · ג׳לאטו": {
+    "en": "Ice cream · gelato",
+    "es": "Helado · gelato",
+    "pt-BR": "Sorvete · gelato",
+    "ar": "آيس كريم · جيلاتو"
+  },
+  "גריל · סטייקים": {
+    "en": "Grill · steaks",
+    "es": "Parrilla · steaks",
+    "pt-BR": "Grill · steaks",
+    "ar": "شواية · ستيك"
+  },
+  "דווליסט מציגה נכסים דרך תוכניות קומה, חלוקה חכמה והבנה של איך באמת חיים בבית.": {
+    "en": "Dwellist presents properties through floor plans, smart layouts, and an understanding of how a home is actually lived in.",
+    "es": "Dwellist presenta propiedades a través de planos, distribución inteligente y una comprensión de cómo se vive de verdad en una casa.",
+    "pt-BR": "A Dwellist apresenta imóveis por plantas, divisão inteligente e uma compreensão de como se vive de verdade em uma casa.",
+    "ar": "تعرض Dwellist العقارات عبر مخططات الطوابق وتقسيم ذكي وفهم لكيفية العيش فعلاً في البيت."
+  },
+  "דיוק בביס אחד.": {
+    "en": "Precision in a single bite.",
+    "es": "Precisión en un solo bocado.",
+    "pt-BR": "Precisão em uma só mordida.",
+    "ar": "دقة في قضمة واحدة."
+  },
+  "דימ סאם · כיסונים": {
+    "en": "Dim sum · dumplings",
+    "es": "Dim sum · dumplings",
+    "pt-BR": "Dim sum · dumplings",
+    "ar": "ديم سام · دامبلنغ"
+  },
+  "דירות בעיר": {
+    "en": "City apartments",
+    "es": "Departamentos en la ciudad",
+    "pt-BR": "Apartamentos na cidade",
+    "ar": "شقق في المدينة"
+  },
+  "דירות פנויות": {
+    "en": "Available apartments",
+    "es": "Departamentos disponibles",
+    "pt-BR": "Apartamentos disponíveis",
+    "ar": "شقق متاحة"
+  },
+  "האוסף": {
+    "en": "The collection",
+    "es": "La colección",
+    "pt-BR": "A coleção",
+    "ar": "المجموعة"
+  },
+  "הארכות ריסים": {
+    "en": "Lash extensions",
+    "es": "Extensiones de pestañas",
+    "pt-BR": "Alongamento de cílios",
+    "ar": "تمديد رموش"
+  },
+  "הארכות ריסים קלאסיק ווליום עם מיפוי אישי, דבק איכותי ומילוי שמחזיר סימטריה.": {
+    "en": "Classic and volume lash extensions with personal mapping, quality adhesive, and a fill that restores symmetry.",
+    "es": "Extensiones de pestañas classic y volume con mapeo personal, adhesivo de calidad y un relleno que devuelve la simetría.",
+    "pt-BR": "Alongamento de cílios classic e volume com mapeamento pessoal, cola de qualidade e um preenchimento que devolve a simetria.",
+    "ar": "تمديد رموش كلاسيك وفوليوم مع تخطيط شخصي ولاصق عالي الجودة وتعبئة تعيد التماثل."
+  },
+  "הארכות ריסים, למינציה ועיצוב גבות — מיפוי אישי, היגיינה קלינית, ותוצאה טבעית עד דרמטית.": {
+    "en": "Lash extensions, lamination, and brow design — personal mapping, clinical hygiene, and a result from natural to dramatic.",
+    "es": "Extensiones de pestañas, laminado y diseño de cejas — mapeo personal, higiene clínica y un resultado de natural a dramático.",
+    "pt-BR": "Alongamento de cílios, laminação e design de sobrancelhas — mapeamento pessoal, higiene clínica e um resultado do natural ao dramático.",
+    "ar": "تمديد رموش ولامينيشن وتصميم حواجب — تخطيط شخصي ونظافة سريرية ونتيجة من الطبيعي إلى الدرامي."
+  },
+  "האש מדברת. הבשר עונה.": {
+    "en": "The fire speaks. The meat answers.",
+    "es": "El fuego habla. La carne responde.",
+    "pt-BR": "O fogo fala. A carne responde.",
+    "ar": "النار تتكلم. واللحم يجيب."
+  },
+  "הבית נפתח אל הים.": {
+    "en": "The house opens onto the sea.",
+    "es": "La casa se abre al mar.",
+    "pt-BR": "A casa se abre para o mar.",
+    "ar": "البيت ينفتح على البحر."
+  },
+  "הגנה שמתחילה בקו הקוד.": {
+    "en": "Protection that starts at the line of code.",
+    "es": "Protección que empieza en la línea de código.",
+    "pt-BR": "Proteção que começa na linha de código.",
+    "ar": "حماية تبدأ من سطر الشفرة."
+  },
+  "הודו · תבלינים": {
+    "en": "India · spices",
+    "es": "India · especias",
+    "pt-BR": "Índia · especiarias",
+    "ar": "الهند · بهارات"
+  },
+  "הומרה מחפשת בתים עם חצר, בתי ספר קרובים, רחובות שקטים ושכונה שאפשר לגדול בה לאורך שנים.": {
+    "en": "Homara looks for homes with a yard, nearby schools, quiet streets, and a neighborhood you can grow in for years.",
+    "es": "Homara busca casas con patio, escuelas cerca, calles tranquilas y un barrio en el que se pueda crecer durante años.",
+    "pt-BR": "A Homara procura casas com quintal, escolas por perto, ruas tranquilas e um bairro em que dá para crescer ao longo dos anos.",
+    "ar": "تبحث Homara عن منازل بفناء ومدارس قريبة وشوارع هادئة وحي يمكن النمو فيه على مدى سنوات."
+  },
+  "הזמינו איפור": {
+    "en": "Book makeup",
+    "es": "Reserven maquillaje",
+    "pt-BR": "Agendem maquiagem",
+    "ar": "احجزوا مكياجاً"
+  },
+  "הזמינו טאקוס": {
+    "en": "Order tacos",
+    "es": "Pidan tacos",
+    "pt-BR": "Peçam tacos",
+    "ar": "اطلبوا تاكو"
+  },
+  "הזמינו טיפול": {
+    "en": "Book a treatment",
+    "es": "Reserven un tratamiento",
+    "pt-BR": "Agendem um tratamento",
+    "ar": "احجزوا علاجاً"
+  },
+  "הזמינו טעימה": {
+    "en": "Book a tasting",
+    "es": "Reserven una cata",
+    "pt-BR": "Agendem uma degustação",
+    "ar": "احجزوا تذوقاً"
+  },
+  "הזמינו מאפים": {
+    "en": "Order pastries",
+    "es": "Pidan horneados",
+    "pt-BR": "Peçam assados",
+    "ar": "اطلبوا معجنات"
+  },
+  "הזמינו מושב": {
+    "en": "Reserve a seat",
+    "es": "Reserven un asiento",
+    "pt-BR": "Reservem um assento",
+    "ar": "احجزوا مقعداً"
+  },
+  "הזמינו סיור": {
+    "en": "Book a tour",
+    "es": "Reserven un tour",
+    "pt-BR": "Agendem um tour",
+    "ar": "احجزوا جولة"
+  },
+  "הזמינו קערה": {
+    "en": "Order a bowl",
+    "es": "Pidan un bowl",
+    "pt-BR": "Peçam um bowl",
+    "ar": "اطلبوا وعاء"
+  },
+  "הזמינו שהות": {
+    "en": "Book a stay",
+    "es": "Reserven una estancia",
+    "pt-BR": "Reservem uma estadia",
+    "ar": "احجزوا إقامة"
+  },
+  "הזמינו תאלי": {
+    "en": "Order a thali",
+    "es": "Pidan un thali",
+    "pt-BR": "Peçam um thali",
+    "ar": "اطلبوا ثالي"
+  },
+  "החול נושם. הים קורא.": {
+    "en": "The sand breathes. The sea calls.",
+    "es": "La arena respira. El mar llama.",
+    "pt-BR": "A areia respira. O mar chama.",
+    "ar": "الرمل يتنفس. والبحر ينادي."
+  },
+  "החלטות חדות.\nצמיחה יציבה.": {
+    "en": "Sharp decisions.\nSteady growth.",
+    "es": "Decisiones nítidas.\nCrecimiento estable.",
+    "pt-BR": "Decisões afiadas.\nCrescimento estável.",
+    "ar": "قرارات حادة.\nنمو ثابت."
+  },
+  "הטאלנט הנכון משנה רבעון שלם.": {
+    "en": "The right talent changes an entire quarter.",
+    "es": "El talento correcto cambia un trimestre entero.",
+    "pt-BR": "O talento certo muda um trimestre inteiro.",
+    "ar": "الموهبة الصحيحة تغيّر ربعاً كاملاً."
+  },
+  "הייצוג המשפטי שלכם": {
+    "en": "Your legal representation",
+    "es": "Su representación jurídica",
+    "pt-BR": "A representação jurídica de vocês",
+    "ar": "تمثيلكم القانوني"
+  },
+  "הירשמו לקורס": {
+    "en": "Enroll in a course",
+    "es": "Inscríbanse en un curso",
+    "pt-BR": "Inscrevam-se no curso",
+    "ar": "سجلوا في الدورة"
+  },
+  "הכול לכלבים וחתולים — בבחירה מדויקת.": {
+    "en": "Everything for dogs and cats — chosen with precision.",
+    "es": "Todo para perros y gatos — con una selección precisa.",
+    "pt-BR": "Tudo para cães e gatos — em uma escolha precisa.",
+    "ar": "كل شيء للكلاب والقطط — باختيار دقيق."
+  },
+  "הכול לקטנטנים — בעיצוב רך ובטוח.": {
+    "en": "Everything for little ones — in a soft, safe design.",
+    "es": "Todo para los más pequeños — con un diseño suave y seguro.",
+    "pt-BR": "Tudo para os pequenos — em um design macio e seguro.",
+    "ar": "كل شيء للصغار — بتصميم ناعم وآمن."
+  },
+  "הכשרות קריירה פרקטיות — מכירות, ניהול, דאטה ותקשורת — בלי מילים ריקות.": {
+    "en": "Practical career training — sales, management, data, and communication — no empty words.",
+    "es": "Formación profesional práctica — ventas, gestión, datos y comunicación — sin palabras vacías.",
+    "pt-BR": "Formações de carreira práticas — vendas, gestão, dados e comunicação — sem palavras vazias.",
+    "ar": "تأهيل مهني عملي — مبيعات وإدارة وبيانات وتواصل — بلا كلام فارغ."
+  },
+  "המבורגר · סמאש": {
+    "en": "Burger · smash",
+    "es": "Hamburguesa · smash",
+    "pt-BR": "Hambúrguer · smash",
+    "ar": "برغر · سماش"
+  },
+  "המסלול הבא נפתח עכשיו. שיעור ניסיון, הרכב ראשון או טרק ראשון - הכל מתחיל בשיחה קצרה.": {
+    "en": "The next path opens now. A trial lesson, a first ensemble, or a first trek — it all starts with a short conversation.",
+    "es": "El siguiente camino se abre ahora. Una clase de prueba, una primera formación o un primer trek: todo empieza con una conversación breve.",
+    "pt-BR": "O próximo percurso abre agora. Uma aula experimental, uma primeira formação ou um primeiro trek — tudo começa com uma conversa rápida.",
+    "ar": "المسار التالي يُفتح الآن. درس تجريبي أو تشكيلة أولى أو رحلة أولى — كل شيء يبدأ بمحادثة قصيرة."
+  },
+  "המקום שבו צוותי פיתוח מגלים מה קורה עכשיו.": {
+    "en": "The place where engineering teams find out what's happening now.",
+    "es": "El lugar donde los equipos de desarrollo descubren qué está pasando ahora.",
+    "pt-BR": "O lugar onde equipes de desenvolvimento descobrem o que está acontecendo agora.",
+    "ar": "المكان الذي تكتشف فيه فرق التطوير ما يحدث الآن."
+  },
+  "הנהלת חשבונות, שכר, דוחות וייעוץ מס לעסקים שמעדיפים לראות את התמונה הפיננסית בזמן אמת.": {
+    "en": "Bookkeeping, payroll, reports, and tax advice for businesses that prefer to see the financial picture in real time.",
+    "es": "Contabilidad, nómina, informes y asesoría fiscal para negocios que prefieren ver la imagen financiera en tiempo real.",
+    "pt-BR": "Contabilidade, folha de pagamento, relatórios e consultoria tributária para empresas que preferem ver o quadro financeiro em tempo real.",
+    "ar": "مسك دفاتر ورواتب وتقارير واستشارة ضريبية للأعمال التي تفضّل رؤية الصورة المالية في الوقت الفعلي."
+  },
+  "הסיפור הנכון מגיע לכותרת הנכונה.": {
+    "en": "The right story reaches the right headline.",
+    "es": "La historia correcta llega al titular correcto.",
+    "pt-BR": "A história certa chega à manchete certa.",
+    "ar": "القصة الصحيحة تصل إلى العنوان الصحيح."
+  },
+  "הסרת שיער מקצועית לנשים וגברים — טכניקה עדינה, סטריליות מלאה, ותוצאה חלקה לשבועות.": {
+    "en": "Professional hair removal for women and men — a gentle technique, full sterility, and smooth results for weeks.",
+    "es": "Depilación profesional para mujeres y hombres — técnica suave, esterilidad total y un resultado liso durante semanas.",
+    "pt-BR": "Depilação profissional para mulheres e homens — técnica suave, esterilidade total e um resultado liso por semanas.",
+    "ar": "إزالة شعر احترافية للنساء والرجال — تقنية لطيفة وتعقيم كامل ونتيجة ناعمة لأسابيع."
+  },
+  "העיר נפתחת. הנכס מחכה.": {
+    "en": "The city opens. The property is waiting.",
+    "es": "La ciudad se abre. La propiedad espera.",
+    "pt-BR": "A cidade se abre. O imóvel espera.",
+    "ar": "المدينة تنفتح. والعقار ينتظر."
+  },
+  "העיר. הדירה. הקצב.": {
+    "en": "The city. The apartment. The pace.",
+    "es": "La ciudad. El departamento. El ritmo.",
+    "pt-BR": "A cidade. O apartamento. O ritmo.",
+    "ar": "المدينة. الشقة. الإيقاع."
+  },
+  "הערות תכנון": {
+    "en": "Planning notes",
+    "es": "Notas de planificación",
+    "pt-BR": "Notas de planejamento",
+    "ar": "ملاحظات التخطيط"
+  },
+  "הפגישה הראשונה מוקדשת לזיהוי הפוטנציאל האדריכלי האמיתי של הנכס.": {
+    "en": "The first meeting is dedicated to identifying the property's true architectural potential.",
+    "es": "La primera reunión se dedica a identificar el verdadero potencial arquitectónico de la propiedad.",
+    "pt-BR": "A primeira reunião é dedicada a identificar o verdadeiro potencial arquitetônico do imóvel.",
+    "ar": "الاجتماع الأول مخصص لتحديد الإمكانات المعمارية الحقيقية للعقار."
+  },
+  "הצטרפו לאלפי מפתחים שכבר קוראים ב-Fluxora. בחינם, בלי כרטיס אשראי, ובלי רעש מיותר.": {
+    "en": "Join thousands of developers already reading on Fluxora. Free, no credit card, and no extra noise.",
+    "es": "Únanse a miles de desarrolladores que ya leen en Fluxora. Gratis, sin tarjeta de crédito y sin ruido de más.",
+    "pt-BR": "Entrem com milhares de desenvolvedores que já leem na Fluxora. De graça, sem cartão de crédito e sem ruído extra.",
+    "ar": "انضموا إلى آلاف المطوّرين الذين يقرأون بالفعل على Fluxora. مجاناً، بلا بطاقة ائتمان، وبلا ضجيج زائد."
+  },
+  "הצטרפו לשיעור ניסיון או שמרו מקום בריטריט הקרוב. הסטודיו פתוח, המזרן מחכה.": {
+    "en": "Join a trial class or save a spot in the next retreat. The studio is open, the mat is waiting.",
+    "es": "Únanse a una clase de prueba o reserven un lugar en el retiro próximo. El estudio está abierto, la esterilla espera.",
+    "pt-BR": "Entrem em uma aula experimental ou reservem um lugar no próximo retiro. O estúdio está aberto, o tapete espera.",
+    "ar": "انضموا إلى درس تجريبي أو احفظوا مكاناً في الخلوة القادمة. الاستوديو مفتوح، والحصيرة تنتظر."
+  },
+  "הצטרפי לסטודיו שמטפל בכל פרט: מהאבחון הראשון ועד התחושה שאיתה יוצאים מהדלת.": {
+    "en": "Join a studio that tends to every detail: from the first diagnosis to the feeling you leave with.",
+    "es": "Únete a un estudio que cuida cada detalle: del primer diagnóstico a la sensación con la que sales por la puerta.",
+    "pt-BR": "Entre para um estúdio que cuida de cada detalhe: do primeiro diagnóstico à sensação com que se sai pela porta.",
+    "ar": "انضمّي إلى استوديو يعتني بكل تفصيل: من التشخيص الأول حتى الإحساس الذي تخرجين به من الباب."
+  },
+  "הציר": {
+    "en": "The axis",
+    "es": "El eje",
+    "pt-BR": "O eixo",
+    "ar": "المحور"
+  },
+  "הציר שלכם. הנכס שלכם.": {
+    "en": "Your axis. Your property.",
+    "es": "Su eje. Su propiedad.",
+    "pt-BR": "O eixo de vocês. O imóvel de vocês.",
+    "ar": "محوركم. عقاركم."
+  },
+  "הרחוב מבשל. אתם באים.": {
+    "en": "The street is cooking. You show up.",
+    "es": "La calle cocina. Ustedes llegan.",
+    "pt-BR": "A rua cozinha. Vocês aparecem.",
+    "ar": "الشارع يطبخ. وأنتم تأتون."
+  },
+  "השוו דירות": {
+    "en": "Compare apartments",
+    "es": "Comparen departamentos",
+    "pt-BR": "Comparem apartamentos",
+    "ar": "قارنوا الشقق"
+  },
+  "השוו נכסים": {
+    "en": "Compare properties",
+    "es": "Comparen propiedades",
+    "pt-BR": "Comparem imóveis",
+    "ar": "قارنوا العقارات"
+  },
+  "השוואת נכסים · before/after": {
+    "en": "Property comparison · before/after",
+    "es": "Comparación de propiedades · before/after",
+    "pt-BR": "Comparação de imóveis · before/after",
+    "ar": "مقارنة عقارات · before/after"
+  },
+  "השקות, כנסים וערב מותג — חוויה, לוגיסטיקה ותוכן באותו קצב.": {
+    "en": "Launches, conferences, and brand evenings — experience, logistics, and content at the same tempo.",
+    "es": "Lanzamientos, conferencias y noches de marca — experiencia, logística y contenido al mismo ritmo.",
+    "pt-BR": "Lançamentos, conferências e noites de marca — experiência, logística e conteúdo no mesmo ritmo.",
+    "ar": "إطلاقات ومؤتمرات وأمسيات علامة — تجربة ولوجستيات ومحتوى بالإيقاع نفسه."
+  },
+  "השקיעה. המוזיקה. הרגע.": {
+    "en": "The sunset. The music. The moment.",
+    "es": "El atardecer. La música. El momento.",
+    "pt-BR": "O pôr do sol. A música. O momento.",
+    "ar": "الغروب. الموسيقى. اللحظة."
+  },
+  "התוכנה שמריצה את העסק שלכם קדימה.": {
+    "en": "The software that drives your business forward.",
+    "es": "El software que impulsa su negocio hacia adelante.",
+    "pt-BR": "O software que leva o negócio de vocês para frente.",
+    "ar": "البرنامج الذي يدفع أعمالكم إلى الأمام."
+  },
+  "התחילו בחינם": {
+    "en": "Start for free",
+    "es": "Empiecen gratis",
+    "pt-BR": "Comecem de graça",
+    "ar": "ابدأوا مجاناً"
+  },
+  "התחילו הזמנה": {
+    "en": "Start an order",
+    "es": "Empiecen un pedido",
+    "pt-BR": "Comecem um pedido",
+    "ar": "ابدأوا طلباً"
+  },
+  "התחילו חיפוש": {
+    "en": "Start a search",
+    "es": "Empiecen una búsqueda",
+    "pt-BR": "Comecem uma busca",
+    "ar": "ابدأوا بحثاً"
+  },
+  "התחילו ללמוד": {
+    "en": "Start learning",
+    "es": "Empiecen a aprender",
+    "pt-BR": "Comecem a aprender",
+    "ar": "ابدأوا التعلم"
+  },
+  "התחילו תהליך": {
+    "en": "Start a process",
+    "es": "Empiecen un proceso",
+    "pt-BR": "Comecem um processo",
+    "ar": "ابدأوا عملية"
+  },
+  "התחלה חינם": {
+    "en": "Start free",
+    "es": "Inicio gratis",
+    "pt-BR": "Começo grátis",
+    "ar": "بداية مجانية"
+  },
+  "התחלת מסלול": {
+    "en": "Start a program",
+    "es": "Inicio de itinerario",
+    "pt-BR": "Início de percurso",
+    "ar": "بدء المسار"
+  },
+  "התקשרו עכשיו": {
+    "en": "Call now",
+    "es": "Llamen ahora",
+    "pt-BR": "Liguem agora",
+    "ar": "اتصلوا الآن"
+  },
+  "וולטור מציגה נכסי פרימיום בלעדיים — עם דיסקרטיות, ליווי VIP ועסקאות מדויקות.": {
+    "en": "Vaulture presents exclusive premium properties — with discretion, VIP guidance, and precise deals.",
+    "es": "Vaulture presenta propiedades premium exclusivas — con discreción, acompañamiento VIP y operaciones precisas.",
+    "pt-BR": "A Vaulture apresenta imóveis premium exclusivos — com discrição, acompanhamento VIP e negócios precisos.",
+    "ar": "تعرض Vaulture عقارات فاخرة حصرية — بسرية ومرافقة VIP وصفقات دقيقة."
+  },
+  "וילה אחת. החלטה גדולה.": {
+    "en": "One villa. A big decision.",
+    "es": "Una villa. Una gran decisión.",
+    "pt-BR": "Uma villa. Uma grande decisão.",
+    "ar": "فيلا واحدة. قرار كبير."
+  },
+  "וילר מציגה תיק מצומצם של וילות אדריכליות, אחוזות שקטות ובתים שלא נראים כמו עוד מודעה.": {
+    "en": "Villaire presents a tight portfolio of architectural villas, quiet estates, and homes that don't look like another listing.",
+    "es": "Villaire presenta un portafolio reducido de villas arquitectónicas, estancias tranquilas y casas que no se ven como otro anuncio.",
+    "pt-BR": "A Villaire apresenta um portfólio enxuto de villas arquitetônicas, propriedades tranquilas e casas que não parecem mais um anúncio.",
+    "ar": "تعرض Villaire ملفاً محدوداً من فيلات معمارية وأملاك هادئة ومنازل لا تشبه إعلاناً آخر."
+  },
+  "זרים, מיצבים וקומפוזיציות עונתיות שנראות כאילו נקטפו מתוך מכתב אהבה.": {
+    "en": "Bouquets, installations, and seasonal compositions that look as if they were picked from a love letter.",
+    "es": "Ramos, instalaciones y composiciones de temporada que parecen habérseles cortado de una carta de amor.",
+    "pt-BR": "Arranjos, instalações e composições sazonais que parecem ter sido colhidos de uma carta de amor.",
+    "ar": "باقات ومنحوتات وتكوينات موسمية تبدو كأنها قُطفت من رسالة حب."
+  },
+  "חוגים, העשרה וכישורי חיים לילדים — עם הנאה, ביטחון וסקרנות.": {
+    "en": "Classes, enrichment, and life skills for kids — with joy, confidence, and curiosity.",
+    "es": "Clases, enriquecimiento y habilidades de vida para niños — con alegría, confianza y curiosidad.",
+    "pt-BR": "Aulas, enriquecimento e habilidades de vida para crianças — com alegria, confiança e curiosidade.",
+    "ar": "حصص وإثراء ومهارات حياة للأطفال — بمتعة وثقة وفضول."
+  },
+  "חוזק שאפשר למדוד.": {
+    "en": "Strength you can measure.",
+    "es": "Fuerza que se puede medir.",
+    "pt-BR": "Força que dá para medir.",
+    "ar": "قوة يمكن قياسها."
+  },
+  "חיוך רגוע, מדויק, ומואר מבפנים.": {
+    "en": "A calm, precise smile, lit from within.",
+    "es": "Una sonrisa serena, precisa y luminosa desde dentro.",
+    "pt-BR": "Um sorriso calmo, preciso e iluminado por dentro.",
+    "ar": "ابتسامة هادئة ودقيقة ومضيئة من الداخل."
+  },
+  "חינוך לילדים": {
+    "en": "Children's education",
+    "es": "Educación infantil",
+    "pt-BR": "Educação infantil",
+    "ar": "تعليم للأطفال"
+  },
+  "חיתוך, צבע וטיפול קרטין בגישה עיתונאית נקייה — פחות רעש, יותר מבנה ותנועה.": {
+    "en": "Cut, color, and keratin in a clean editorial approach — less noise, more structure and movement.",
+    "es": "Corte, color y queratina con un enfoque editorial limpio — menos ruido, más estructura y movimiento.",
+    "pt-BR": "Corte, cor e queratina com uma abordagem editorial limpa — menos ruído, mais estrutura e movimento.",
+    "ar": "قص ولون وعلاج كيراتين بأسلوب تحريري نظيف — ضجيج أقل، وهيكل وحركة أكثر."
+  },
+  "חלל אופנה ערוך כמו מגזין: פריטים חדים, סטיילינג אישי, דרופים קטנים וקולקציות שמגיעות לזמן קצר בלבד.": {
+    "en": "A fashion space edited like a magazine: sharp pieces, personal styling, small drops, and collections that stay only a short while.",
+    "es": "Un espacio de moda editado como una revista: piezas nítidas, styling personal, drops pequeños y colecciones que llegan solo por un tiempo breve.",
+    "pt-BR": "Um espaço de moda editado como uma revista: peças afiadas, styling pessoal, drops pequenos e coleções que ficam só por pouco tempo.",
+    "ar": "فضاء أزياء محرَّر كمجلة: قطع حادة، تنسيق شخصي، دروب صغيرة، ومجموعات تصل لفترة قصيرة فقط."
+  },
+  "חללים שקטים,\nחומרים עם עומק.": {
+    "en": "Quiet spaces,\nmaterials with depth.",
+    "es": "Espacios serenos,\nmateriales con profundidad.",
+    "pt-BR": "Espaços silenciosos,\nmateriais com profundidade.",
+    "ar": "مساحات هادئة،\nمواد ذات عمق."
+  },
+  "חנות אלקטרוניקה פרימיום עם קטגוריות, סינונים ומוצרים שמגיעים ישירות מתוסף החנות של Bizuply.": {
+    "en": "A premium electronics store with categories, filters, and products that come straight from the Bizuply shop plugin.",
+    "es": "Una tienda de electrónica premium con categorías, filtros y productos que llegan directo del complemento de tienda de Bizuply.",
+    "pt-BR": "Uma loja de eletrônicos premium com categorias, filtros e produtos que vêm direto do complemento de loja da Bizuply.",
+    "ar": "متجر إلكترونيات فاخر بفئات وفلاتر ومنتجات تصل مباشرة من إضافة متجر Bizuply."
+  },
+  "חנות ספרים ומכתבים למי שאוהב לקרוא לאט.": {
+    "en": "A bookstore and stationery shop for those who love to read slowly.",
+    "es": "Una librería y papelería para quien ama leer despacio.",
+    "pt-BR": "Uma livraria e papelaria para quem ama ler devagar.",
+    "ar": "مكتبة وقرطاسية لمن يحب القراءة ببطء."
+  },
+  "חנות עיצוב הבית עם קולקציות, סינונים ומוצרים חיים מתוסף החנות.": {
+    "en": "A home-design shop with collections, filters, and live products from the shop plugin.",
+    "es": "Una tienda de diseño del hogar con colecciones, filtros y productos vivos del complemento de tienda.",
+    "pt-BR": "Uma loja de design da casa com coleções, filtros e produtos ao vivo do complemento da loja.",
+    "ar": "متجر تصميم المنزل بمجموعات وفلاتر ومنتجات حيّة من إضافة المتجر."
+  },
+  "טבעוני · צמחי": {
+    "en": "Vegan · plant-based",
+    "es": "Vegano · vegetal",
+    "pt-BR": "Vegano · vegetal",
+    "ar": "نباتي · نباتي صرف"
+  },
+  "טבעות, שרשראות ושעונים — חנות יוקרה מלאה עם קטגוריות, סינונים ומוצרים מתוסף החנות.": {
+    "en": "Rings, necklaces, and watches — a full luxury store with categories, filters, and products from the shop plugin.",
+    "es": "Anillos, collares y relojes — una tienda de lujo completa con categorías, filtros y productos del complemento de tienda.",
+    "pt-BR": "Anéis, colares e relógios — uma loja de luxo completa com categorias, filtros e produtos do complemento da loja.",
+    "ar": "خواتم وسلاسل وساعات — متجر فاخر كامل بفئات وفلاتر ومنتجات من إضافة المتجر."
+  },
+  "טיפוח גברים": {
+    "en": "Men's grooming",
+    "es": "Cuidado masculino",
+    "pt-BR": "Cuidados masculinos",
+    "ar": "عناية رجالية"
+  },
+  "טיפוח מדויק, רגוע, בלתי מתפשר.": {
+    "en": "Precise, calm, uncompromising care.",
+    "es": "Cuidado preciso, sereno, sin concesiones.",
+    "pt-BR": "Cuidado preciso, calmo, intransigente.",
+    "ar": "عناية دقيقة وهادئة بلا تنازل."
+  },
+  "טיפוח, איפור ואביזרים — חנות מלאה עם קטגוריות וסינונים מהתוסף.": {
+    "en": "Skincare, makeup, and accessories — a full store with categories and filters from the plugin.",
+    "es": "Cuidado, maquillaje y accesorios — una tienda completa con categorías y filtros del complemento.",
+    "pt-BR": "Cuidados, maquiagem e acessórios — uma loja completa com categorias e filtros do complemento.",
+    "ar": "عناية ومكياج وإكسسوارات — متجر كامل بفئات وفلاتر من الإضافة."
+  },
+  "טיפול יומי, פנסיון וטיפוח שמרגישים כמו בית.": {
+    "en": "Daycare, boarding, and grooming that feel like home.",
+    "es": "Cuidado diario, pensión y estética que se sienten como en casa.",
+    "pt-BR": "Creche, pensão e tosa que parecem casa.",
+    "ar": "رعاية يومية وإقامة وعناية تشعر كأنها بيت."
+  },
+  "טיפולי אקנה וקוסמטיקה רפואית בשילוב תיעוד, הדרכה ושינויים קטנים שמחזיקים לאורך זמן.": {
+    "en": "Acne treatments and medical aesthetics with documentation, guidance, and small changes that last.",
+    "es": "Tratamientos de acné y cosmética médica con registro, orientación y cambios pequeños que se sostienen en el tiempo.",
+    "pt-BR": "Tratamentos de acne e cosmética médica com registro, orientação e mudanças pequenas que se sustentam no tempo.",
+    "ar": "علاجات حب الشباب وتجميل طبي مع توثيق وإرشاد وتغييرات صغيرة تصمد مع الوقت."
+  },
+  "טיפולי גוף": {
+    "en": "Body treatments",
+    "es": "Tratamientos corporales",
+    "pt-BR": "Tratamentos corporais",
+    "ar": "علاجات الجسم"
+  },
+  "טיפולי עיצוב, ניקוז לימפטי והתאוששות — מסלולים מדידים עם תוצאה שמרגישים על העור.": {
+    "en": "Body contouring, lymphatic drainage, and recovery — measurable programs with a result you feel on the skin.",
+    "es": "Tratamientos de silueta, drenaje linfático y recuperación — planes medibles con un resultado que se siente en la piel.",
+    "pt-BR": "Tratamentos de contorno, drenagem linfática e recuperação — percursos mensuráveis com um resultado que se sente na pele.",
+    "ar": "علاجات نحت وتصريف لمفاوي وتعافٍ — مسارات قابلة للقياس بنتيجة تُحسّ على الجلد."
+  },
+  "טיפולי פנים מותאמים אישית, חומרים פעילים במינון נכון ושיחה שמתרגמת לשגרה אפשרית בבית.": {
+    "en": "Personalized facial treatments, active ingredients in the right dose, and a conversation that turns into a realistic routine at home.",
+    "es": "Tratamientos faciales a medida, activos en la dosis correcta y una conversación que se traduce en una rutina posible en casa.",
+    "pt-BR": "Tratamentos faciais personalizados, ativos na dose certa e uma conversa que vira uma rotina possível em casa.",
+    "ar": "علاجات وجه مخصصة، ومواد فعالة بالجرعة الصحيحة، وحوار يتحوّل إلى روتين ممكن في البيت."
+  },
+  "טיפולי פנים, זקן וגבות לגברים שרוצים להיראות מסודרים בלי להפוך את זה לפרויקט.": {
+    "en": "Facial, beard, and brow treatments for men who want to look put-together without making it a project.",
+    "es": "Tratamientos de rostro, barba y cejas para hombres que quieren verse ordenados sin convertir esto en un proyecto.",
+    "pt-BR": "Tratamentos de rosto, barba e sobrancelhas para homens que querem parecer arrumados sem transformar isso em um projeto.",
+    "ar": "علاجات وجه ولحية وحواجب للرجال الذين يريدون مظهراً مرتباً دون تحويل الأمر إلى مشروع."
+  },
+  "טעם שמספר סיפור, בכל צלחת מחדש.": {
+    "en": "A taste that tells a story, on every plate again.",
+    "es": "Un sabor que cuenta una historia, en cada plato de nuevo.",
+    "pt-BR": "Um sabor que conta uma história, em cada prato de novo.",
+    "ar": "طعم يروي قصة، في كل طبق من جديد."
+  },
+  "טקס פנים": {
+    "en": "Facial ritual",
+    "es": "Ritual facial",
+    "pt-BR": "Ritual facial",
+    "ar": "طقس للوجه"
+  },
+  "טקסי גוף ופנים באווירת לילה קטיפתית — שמנים נדירים, ידיים מדויקות, זמן בלי רעש.": {
+    "en": "Body and facial rituals in a velvet-night atmosphere — rare oils, precise hands, time without noise.",
+    "es": "Rituales de cuerpo y rostro en una atmósfera de noche de terciopelo — aceites raros, manos precisas, tiempo sin ruido.",
+    "pt-BR": "Rituais de corpo e rosto em uma atmosfera de noite aveludada — óleos raros, mãos precisas, tempo sem ruído.",
+    "ar": "طقوس جسم ووجه في أجواء ليل مخملي — زيوت نادرة، أيدٍ دقيقة، ووقت بلا ضجيج."
+  },
+  "טרקלין יופי": {
+    "en": "Beauty lounge",
+    "es": "Lounge de belleza",
+    "pt-BR": "Lounge de beleza",
+    "ar": "ردهة جمال"
+  },
+  "יאcht · שייט": {
+    "en": "Yacht · sailing",
+    "es": "Yate · navegación",
+    "pt-BR": "Iate · navegação",
+    "ar": "يخت · إبحار"
+  },
+  "יום חתונה שמרגיש\nקל, אישי ויפהפה.": {
+    "en": "A wedding day that feels\neasy, personal, and beautiful.",
+    "es": "Un día de boda que se siente\nligero, personal y hermoso.",
+    "pt-BR": "Um dia de casamento que parece\nleve, pessoal e lindo.",
+    "ar": "يوم زفاف يبدو\nخفيفاً وشخصياً وجميلاً."
+  },
+  "יופי לכלות": {
+    "en": "Bridal beauty",
+    "es": "Belleza para novias",
+    "pt-BR": "Beleza para noivas",
+    "ar": "جمال للعرائس"
+  },
+  "יופי נקי.\nנוכחות בלתי נשכחת.": {
+    "en": "Clean beauty.\nUnforgettable presence.",
+    "es": "Belleza limpia.\nPresencia inolvidable.",
+    "pt-BR": "Beleza limpa.\nPresença inesquecível.",
+    "ar": "جمال نقي.\nحضور لا يُنسى."
+  },
+  "יוקרה ששומרת על ערך.": {
+    "en": "Luxury that holds its value.",
+    "es": "Lujo que conserva su valor.",
+    "pt-BR": "Luxo que preserva o valor.",
+    "ar": "فخامة تحافظ على قيمتها."
+  },
+  "יחסי ציבור, משברים ודוברות מנכ״ל — מוניטין שנבנה לאורך זמן.": {
+    "en": "PR, crisis, and CEO communications — a reputation built over time.",
+    "es": "Relaciones públicas, crisis y vocería de CEO: una reputación que se construye con el tiempo.",
+    "pt-BR": "Relações públicas, crises e assessoria de CEO — uma reputação construída ao longo do tempo.",
+    "ar": "علاقات عامة وأزمات والنطق باسم الرئيس التنفيذي — سمعة تُبنى مع الوقت."
+  },
+  "יין · טעימות": {
+    "en": "Wine · Tastings",
+    "es": "Vino · Catas",
+    "pt-BR": "Vinho · Degustações",
+    "ar": "نبيذ · تذوق"
+  },
+  "ייעוץ ארגוני": {
+    "en": "Organizational consulting",
+    "es": "Consultoría organizacional",
+    "pt-BR": "Consultoria organizacional",
+    "ar": "استشارات تنظيمية"
+  },
+  "ייעוץ ארגוני ברמת פרימיום.": {
+    "en": "Premium organizational consulting.",
+    "es": "Consultoría organizacional de nivel premium.",
+    "pt-BR": "Consultoria organizacional em nível premium.",
+    "ar": "استشارات تنظيمية بمستوى فاخر."
+  },
+  "ייעוץ גבות": {
+    "en": "Brow consultation",
+    "es": "Asesoría de cejas",
+    "pt-BR": "Consultoria de sobrancelhas",
+    "ar": "استشارة حواجب"
+  },
+  "ייעוץ טכנולוגי": {
+    "en": "Technology consulting",
+    "es": "Consultoría tecnológica",
+    "pt-BR": "Consultoria tecnológica",
+    "ar": "استشارات تقنية"
+  },
+  "ייעוץ ללא התחייבות": {
+    "en": "No-obligation consult",
+    "es": "Consulta sin compromiso",
+    "pt-BR": "Consultoria sem compromisso",
+    "ar": "استشارة بلا التزام"
+  },
+  "ייעוץ עסקי אסטרטגי": {
+    "en": "Strategic business consulting",
+    "es": "Consultoría estratégica de negocios",
+    "pt-BR": "Consultoria empresarial estratégica",
+    "ar": "استشارات أعمال استراتيجية"
+  },
+  "ייעוץ צבע": {
+    "en": "Color consultation",
+    "es": "Asesoría de color",
+    "pt-BR": "Consultoria de cor",
+    "ar": "استشارة ألوان"
+  },
+  "ייעוץ ראשון באווירה שקטה, עם צילום, סריקה ותכנית טיפול שקופה.": {
+    "en": "A first consultation in a quiet setting, with photos, a scan, and a transparent treatment plan.",
+    "es": "Una primera consulta en un ambiente sereno, con fotos, un escaneo y un plan de tratamiento transparente.",
+    "pt-BR": "Uma primeira consulta em um ambiente calmo, com fotos, um escaneamento e um plano de tratamento transparente.",
+    "ar": "استشارة أولى في أجواء هادئة، مع تصوير ومسح ضوئي وخطة علاج واضحة."
+  },
+  "ייעוץ שמתרגם אסטרטגיה לפעולות בשטח.": {
+    "en": "Consulting that turns strategy into action on the ground.",
+    "es": "Consultoría que convierte la estrategia en acciones sobre el terreno.",
+    "pt-BR": "Consultoria que transforma estratégia em ações no campo.",
+    "ar": "استشارات تحوّل الاستراتيجية إلى خطوات على الأرض."
+  },
+  "ייעוץ PMU": {
+    "en": "PMU consultation",
+    "es": "Consulta de PMU",
+    "pt-BR": "Consultoria de PMU",
+    "ar": "استشارة PMU"
+  },
+  "ייצור תעשייתי": {
+    "en": "Industrial manufacturing",
+    "es": "Producción industrial",
+    "pt-BR": "Produção industrial",
+    "ar": "تصنيع صناعي"
+  },
+  "ירקות, פירות, דגנים וממרחים נבחרים — עם קטגוריות, סינון וחיבור מלא לתוסף החנות.": {
+    "en": "Selected vegetables, fruit, grains, and spreads — with categories, filters, and a full connection to the shop plugin.",
+    "es": "Verduras, frutas, cereales y untables seleccionados — con categorías, filtros y conexión completa al plugin de la tienda.",
+    "pt-BR": "Legumes, frutas, grãos e pastas selecionados — com categorias, filtros e conexão completa com o plugin da loja.",
+    "ar": "خضار وفاكهة وحبوب ومعاجين مختارة — مع تصنيفات وتصفية وربط كامل بإضافة المتجر."
+  },
+  "כוס. סיפור. רגע.": {
+    "en": "A glass. A story. A moment.",
+    "es": "Una copa. Una historia. Un instante.",
+    "pt-BR": "Uma taça. Uma história. Um instante.",
+    "ar": "كأس. حكاية. لحظة."
+  },
+  "כיסא פתוח, להב מוכן, מוזיקה עובדת. כל מה שנשאר הוא לבחור שעה.": {
+    "en": "Chair open, blade ready, music on. All that's left is to pick a time.",
+    "es": "Silla libre, navaja lista, música sonando. Solo falta elegir una hora.",
+    "pt-BR": "Cadeira livre, navalha pronta, música tocando. Só falta escolher um horário.",
+    "ar": "كرسي شاغر، موس جاهز، والموسيقى شغّالة. لم يبقَ إلا اختيار الساعة."
+  },
+  "כישורי קריירה": {
+    "en": "Career skills",
+    "es": "Habilidades profesionales",
+    "pt-BR": "Competências de carreira",
+    "ar": "مهارات مهنية"
+  },
+  "כל שכונה. סיפור משלה.": {
+    "en": "Every neighborhood. A story of its own.",
+    "es": "Cada barrio. Su propia historia.",
+    "pt-BR": "Cada bairro. Uma história só dele.",
+    "ar": "كل حيّ. حكايته الخاصة."
+  },
+  "כלי עבודה ו-DIY": {
+    "en": "Tools & DIY",
+    "es": "Herramientas y DIY",
+    "pt-BR": "Ferramentas e DIY",
+    "ar": "أدوات وDIY"
+  },
+  "כלי עבודה מקצועיים לפרויקט הבא שלכם.": {
+    "en": "Professional tools for your next project.",
+    "es": "Herramientas profesionales para su próximo proyecto.",
+    "pt-BR": "Ferramentas profissionais para o próximo projeto de vocês.",
+    "ar": "أدوات احترافية لمشروعكم القادم."
+  },
+  "לאינדקס": {
+    "en": "Browse the index",
+    "es": "Ver el índice",
+    "pt-BR": "Ver o índice",
+    "ar": "تصفّحوا الفهرس"
+  },
+  "לבורגרים": {
+    "en": "See the burgers",
+    "es": "Ver las hamburguesas",
+    "pt-BR": "Ver os burgers",
+    "ar": "شاهدوا البرغر"
+  },
+  "לבשרים": {
+    "en": "See the meats",
+    "es": "Ver las carnes",
+    "pt-BR": "Ver as carnes",
+    "ar": "شاهدوا اللحوم"
+  },
+  "להורים — התחילו כאן": {
+    "en": "For parents — start here",
+    "es": "Para padres — empiecen aquí",
+    "pt-BR": "Para pais — comecem aqui",
+    "ar": "للأهل — ابدأوا من هنا"
+  },
+  "להזמנת שולחן": {
+    "en": "Book a table",
+    "es": "Reservar mesa",
+    "pt-BR": "Reservar mesa",
+    "ar": "احجزوا طاولة"
+  },
+  "להצטרף ל-Aura": {
+    "en": "Join Aura",
+    "es": "Unirse a Aura",
+    "pt-BR": "Junte-se à Aura",
+    "ar": "انضموا إلى Aura"
+  },
+  "להתחיל לנגן": {
+    "en": "Start playing",
+    "es": "Empezar a tocar",
+    "pt-BR": "Comece a tocar",
+    "ar": "ابدأوا العزف"
+  },
+  "להתפיסה": {
+    "en": "Order takeout",
+    "es": "Para llevar",
+    "pt-BR": "Para viagem",
+    "ar": "للطلب سفري"
+  },
+  "לוח אירועים": {
+    "en": "Events calendar",
+    "es": "Calendario de eventos",
+    "pt-BR": "Agenda de eventos",
+    "ar": "جدول الفعاليات"
+  },
+  "לוח סיורים": {
+    "en": "Tour schedule",
+    "es": "Calendario de tours",
+    "pt-BR": "Agenda de tours",
+    "ar": "جدول الجولات"
+  },
+  "לוח צלילות": {
+    "en": "Dive schedule",
+    "es": "Calendario de inmersiones",
+    "pt-BR": "Agenda de mergulhos",
+    "ar": "جدول الغوص"
+  },
+  "לוטרה בוחרת נכסי חוף עם אור, רוח ומרחק נשימה מהמים - עבור קונים שמחפשים שקט מדויק.": {
+    "en": "Lutra selects coastal homes with light, breeze, and a breath of space from the water - for buyers seeking a precise kind of quiet.",
+    "es": "Lutra elige propiedades de costa con luz, brisa y un respiro de distancia del agua - para compradores que buscan una calma precisa.",
+    "pt-BR": "Lutra escolhe imóveis à beira-mar com luz, brisa e um respiro de distância da água - para compradores que buscam um silêncio preciso.",
+    "ar": "تختار Lutra عقارات ساحلية فيها ضوء ونسيم ومسافة تنفّس عن الماء - لمشترين يبحثون عن هدوء دقيق."
+  },
+  "לוקים לאירועים, כלות וצילומים — עור זוהר, קווים מדויקים, וסטייל שמתאים לפנים שלכן.": {
+    "en": "Looks for events, brides, and photoshoots — glowing skin, precise lines, and a style that fits your face.",
+    "es": "Looks para eventos, novias y sesiones de fotos: piel luminosa, líneas precisas y un estilo que se adapta a su rostro.",
+    "pt-BR": "Looks para eventos, noivas e ensaios — pele luminosa, traços precisos e um estilo que combina com o rosto de vocês.",
+    "ar": "إطلالات للمناسبات والعرائس والتصوير — بشرة متوهجة وخطوط دقيقة وأسلوب يليق بوجوهكن."
+  },
+  "לחיות מעל רעש העיר.": {
+    "en": "Live above the city's noise.",
+    "es": "Vivir por encima del ruido de la ciudad.",
+    "pt-BR": "Viver acima do barulho da cidade.",
+    "ar": "عيشوا فوق ضجيج المدينة."
+  },
+  "לטעמים": {
+    "en": "See the flavors",
+    "es": "Ver los sabores",
+    "pt-BR": "Ver os sabores",
+    "ar": "شاهدوا النكهات"
+  },
+  "ליווי אישי למשפחות ועסקים — כיסויים מדויקים, שקיפות מלאה וטיפול בתביעות עד הסוף.": {
+    "en": "Personal guidance for families and businesses — precise coverage, full transparency, and claims handled through to the end.",
+    "es": "Acompañamiento personal para familias y empresas: coberturas precisas, transparencia total y siniestros gestionados hasta el final.",
+    "pt-BR": "Acompanhamento pessoal para famílias e empresas — coberturas precisas, transparência total e sinistros cuidados até o fim.",
+    "ar": "مرافقة شخصية للعائلات والأعمال — تغطيات دقيقة وشفافية كاملة ومتابعة المطالبات حتى النهاية."
+  },
+  "ליווי אישי לרכישת נכסי יוקרה בתל אביב והמרכז — שקיפות מלאה, סיורים מדויקים, והחלטות בלי רעש.": {
+    "en": "Personal guidance for buying luxury property in Tel Aviv and the center — full transparency, precise tours, and decisions without the noise.",
+    "es": "Acompañamiento personal para comprar propiedades de lujo en Tel Aviv y el centro: transparencia total, visitas precisas y decisiones sin ruido.",
+    "pt-BR": "Acompanhamento pessoal para compra de imóveis de luxo em Tel Aviv e no centro — transparência total, tours precisos e decisões sem barulho.",
+    "ar": "مرافقة شخصية لشراء عقارات فاخرة في تل أبيب والمركز — شفافية كاملة وجولات دقيقة وقرارات بلا ضجيج."
+  },
+  "ליווי למנכ״לים ובעלי עסקים שרוצים להפוך אינטואיציה לתכנית עבודה, מספרים ומומנטום ניהולי.": {
+    "en": "Guidance for CEOs and business owners who want to turn instinct into a work plan, numbers, and managerial momentum.",
+    "es": "Acompañamiento para CEOs y dueños de negocios que quieren convertir la intuición en un plan de trabajo, cifras e impulso de gestión.",
+    "pt-BR": "Acompanhamento para CEOs e donos de negócios que querem transformar intuição em plano de trabalho, números e impulso de gestão.",
+    "ar": "مرافقة للرؤساء التنفيذيين وأصحاب الأعمال الذين يريدون تحويل الحدس إلى خطة عمل وأرقام وزخم إداري."
+  },
+  "ליווי משפטי ופיננסי שאפשר לסמוך עליו.": {
+    "en": "Legal and financial guidance you can trust.",
+    "es": "Acompañamiento jurídico y financiero en el que se puede confiar.",
+    "pt-BR": "Acompanhamento jurídico e financeiro em que dá para confiar.",
+    "ar": "مرافقة قانونية ومالية يمكن الوثوق بها."
+  },
+  "ליומן האופנה": {
+    "en": "See the fashion journal",
+    "es": "Ver el diario de moda",
+    "pt-BR": "Ver o diário de moda",
+    "ar": "شاهدوا يوميات الموضة"
+  },
+  "ליינות": {
+    "en": "See the wines",
+    "es": "Ver los vinos",
+    "pt-BR": "Ver os vinhos",
+    "ar": "شاهدوا النبيذ"
+  },
+  "למדפי הבוקר": {
+    "en": "See the morning shelves",
+    "es": "Ver los estantes del desayuno",
+    "pt-BR": "Ver as prateleiras da manhã",
+    "ar": "شاهدوا رفوف الصباح"
+  },
+  "למזטה": {
+    "en": "See the mezze",
+    "es": "Ver el mezze",
+    "pt-BR": "Ver o mezze",
+    "ar": "شاهدوا المزة"
+  },
+  "למיצים": {
+    "en": "See the juices",
+    "es": "Ver los jugos",
+    "pt-BR": "Ver os sucos",
+    "ar": "شاهدوا العصائر"
+  },
+  "למסילת הנכסים": {
+    "en": "See the property rail",
+    "es": "Ver el carrusel de propiedades",
+    "pt-BR": "Ver o carrossel de imóveis",
+    "ar": "شاهدوا مسار العقارات"
+  },
+  "למתוקים": {
+    "en": "See the sweets",
+    "es": "Ver los dulces",
+    "pt-BR": "Ver os doces",
+    "ar": "شاهدوا الحلويات"
+  },
+  "לנדמרק מדריכה אתכם בין אזורים — עם נכסים, מחירים ותובנות על כל שכונה.": {
+    "en": "Landmark guides you through the districts — with listings, prices, and insight on every neighborhood.",
+    "es": "Landmark les guía entre zonas — con propiedades, precios e ideas sobre cada barrio.",
+    "pt-BR": "Landmark guia vocês entre as regiões — com imóveis, preços e insights sobre cada bairro.",
+    "ar": "ترشدكم Landmark بين المناطق — مع عقارات وأسعار ورؤى عن كل حيّ."
+  },
+  "לסלים": {
+    "en": "See the baskets",
+    "es": "Ver las cestas",
+    "pt-BR": "Ver as cestas",
+    "ar": "شاهدوا السلال"
+  },
+  "לפנטהאוזים": {
+    "en": "See the penthouses",
+    "es": "Ver los penthouses",
+    "pt-BR": "Ver os penthouses",
+    "ar": "شاهدوا البنتهاوس"
+  },
+  "לפני בית, בודקים קרקע.": {
+    "en": "Before a home, we check the ground.",
+    "es": "Antes de una casa, revisamos el terreno.",
+    "pt-BR": "Antes de uma casa, conferimos o terreno.",
+    "ar": "قبل البيت، نفحص الأرض."
+  },
+  "לפני. אחרי. החלטה.": {
+    "en": "Before. After. The decision.",
+    "es": "Antes. Después. La decisión.",
+    "pt-BR": "Antes. Depois. A decisão.",
+    "ar": "قبل. بعد. القرار."
+  },
+  "לפסטות": {
+    "en": "See the pastas",
+    "es": "Ver las pastas",
+    "pt-BR": "Ver as massas",
+    "ar": "شاهدوا المعكرونة"
+  },
+  "לצי שלנו": {
+    "en": "See our fleet",
+    "es": "Ver nuestra flota",
+    "pt-BR": "Ver a nossa frota",
+    "ar": "شاهدوا أسطولنا"
+  },
+  "לק ג׳ל": {
+    "en": "Gel polish",
+    "es": "Esmalte en gel",
+    "pt-BR": "Esmalte em gel",
+    "ar": "طلاء جل"
+  },
+  "לק ג׳ל נקי, קווי פרנץ׳ מדויקים וצבעים שמותאמים לעור ולסגנון היומיומי שלך.": {
+    "en": "Clean gel polish, precise French lines, and colors matched to your skin and everyday style.",
+    "es": "Esmalte en gel limpio, líneas french precisas y colores adaptados a tu piel y a tu estilo de cada día.",
+    "pt-BR": "Esmalte em gel limpo, linhas french precisas e cores combinadas com a sua pele e o seu estilo do dia a dia.",
+    "ar": "طلاء جل نظيف، وخطوط فرنش دقيقة، وألوان تُلائم بشرتكِ وأسلوبكِ اليومي."
+  },
+  "לקבוע הסרה": {
+    "en": "Book a removal",
+    "es": "Reservar una depilación",
+    "pt-BR": "Agendar uma depilação",
+    "ar": "احجزوا إزالة"
+  },
+  "לקערות": {
+    "en": "See the bowls",
+    "es": "Ver los bowls",
+    "pt-BR": "Ver os bowls",
+    "ar": "شاهدوا الأطباق"
+  },
+  "לקערות שלנו": {
+    "en": "See our bowls",
+    "es": "Ver nuestros bowls",
+    "pt-BR": "Ver os nossos bowls",
+    "ar": "شاهدوا أطباقنا"
+  },
+  "לראות בתים ליד מים": {
+    "en": "See homes by the water",
+    "es": "Ver casas junto al agua",
+    "pt-BR": "Ver casas perto da água",
+    "ar": "شاهدوا بيوتًا قرب الماء"
+  },
+  "לתיאום ביקור": {
+    "en": "Book a visit",
+    "es": "Agendar una visita",
+    "pt-BR": "Agendar uma visita",
+    "ar": "احجزوا زيارة"
+  },
+  "לתיאום שיחת היכרות": {
+    "en": "Book an intro call",
+    "es": "Agendar una llamada de presentación",
+    "pt-BR": "Agendar uma conversa de apresentação",
+    "ar": "احجزوا مكالمة تعارف"
+  },
+  "לתיק הוילות": {
+    "en": "See the villa portfolio",
+    "es": "Ver el portafolio de villas",
+    "pt-BR": "Ver o portfólio de vilas",
+    "ar": "شاهدوا ملف الفيلات"
+  },
+  "לתיק הנכסים": {
+    "en": "See the property portfolio",
+    "es": "Ver el portafolio de propiedades",
+    "pt-BR": "Ver o portfólio de imóveis",
+    "ar": "شاهدوا ملف العقارات"
+  },
+  "לתפריט הגריל": {
+    "en": "See the grill menu",
+    "es": "Ver el menú a la parrilla",
+    "pt-BR": "Ver o cardápio do grill",
+    "ar": "شاهدوا قائمة المشاوي"
+  },
+  "לתפריט החריף": {
+    "en": "See the spicy menu",
+    "es": "Ver el menú picante",
+    "pt-BR": "Ver o cardápio apimentado",
+    "ar": "شاهدوا القائمة الحارّة"
+  },
+  "לתפריט הרחוב": {
+    "en": "See the street menu",
+    "es": "Ver el menú callejero",
+    "pt-BR": "Ver o cardápio de rua",
+    "ar": "شاهدوا قائمة الشارع"
+  },
+  "מאסטרקלאס": {
+    "en": "Masterclass",
+    "es": "Masterclass",
+    "pt-BR": "Masterclass",
+    "ar": "ماستركلاس"
+  },
+  "מאסטרקלאסים בלעדיים עם יוצרים ומנהיגים — עומק, אלגנטיות, ותובנות שלא מקבלים במצגת.": {
+    "en": "Exclusive masterclasses with creators and leaders — depth, elegance, and insights you won't get from a slide deck.",
+    "es": "Masterclasses exclusivas con creadores y líderes: profundidad, elegancia e ideas que no aparecen en una presentación.",
+    "pt-BR": "Masterclasses exclusivas com criadores e líderes — profundidade, elegância e insights que não vêm em uma apresentação.",
+    "ar": "ماستركلاس حصري مع صنّاع وقادة — عمق وأناقة ورؤى لا تُمنح في عرض شرائح."
+  },
+  "מאפייה · מאפים": {
+    "en": "Bakery · Pastries",
+    "es": "Panadería · Pastelería",
+    "pt-BR": "Padaria · Confeitaria",
+    "ar": "مخبز · معجنات"
+  },
+  "מגדלי מגורים · פנטהאוזים": {
+    "en": "Residential towers · Penthouses",
+    "es": "Torres residenciales · Penthouses",
+    "pt-BR": "Torres residenciais · Penthouses",
+    "ar": "أبراج سكنية · بنتهاوس"
+  },
+  "מגדלים פעילים": {
+    "en": "Active towers",
+    "es": "Torres activas",
+    "pt-BR": "Torres ativas",
+    "ar": "أبراج نشطة"
+  },
+  "מגרשים זמינים": {
+    "en": "Lots available",
+    "es": "Parcelas disponibles",
+    "pt-BR": "Terrenos disponíveis",
+    "ar": "قطع أراضٍ متاحة"
+  },
+  "מדבר · ים": {
+    "en": "Desert · Sea",
+    "es": "Desierto · Mar",
+    "pt-BR": "Deserto · Mar",
+    "ar": "صحراء · بحر"
+  },
+  "מדיה עם מוח: תקציב חכם, תוצאה ברורה.": {
+    "en": "Media with a mind: a smart budget, a clear result.",
+    "es": "Medios con cerebro: presupuesto inteligente, resultado claro.",
+    "pt-BR": "Mídia com cérebro: orçamento inteligente, resultado claro.",
+    "ar": "إعلام بعقل: ميزانية ذكية ونتيجة واضحة."
+  },
+  "מדריך אזורים · נדל״ן": {
+    "en": "Area guide · Real estate",
+    "es": "Guía de zonas · Inmobiliaria",
+    "pt-BR": "Guia de regiões · Imobiliário",
+    "ar": "دليل المناطق · عقارات"
+  },
+  "מומחיות משפטית שאפשר לסמוך עליה.": {
+    "en": "Legal expertise you can trust.",
+    "es": "Experiencia jurídica en la que se puede confiar.",
+    "pt-BR": "Expertise jurídica em que dá para confiar.",
+    "ar": "خبرة قانونية يمكن الوثوق بها."
+  },
+  "מותג שלא צריך להציג את עצמו פעמיים.": {
+    "en": "A brand that never has to introduce itself twice.",
+    "es": "Una marca que no necesita presentarse dos veces.",
+    "pt-BR": "Uma marca que não precisa se apresentar duas vezes.",
+    "ar": "علامة لا تحتاج أن تقدّم نفسها مرتين."
+  },
+  "מותגים שאי אפשר להתעלם מהם.": {
+    "en": "Brands you can't ignore.",
+    "es": "Marcas imposibles de ignorar.",
+    "pt-BR": "Marcas impossíveis de ignorar.",
+    "ar": "علامات لا يمكن تجاهلها."
+  },
+  "מזווה אורגני שמרגיש כמו שוק איכרים דיגיטלי.": {
+    "en": "An organic pantry that feels like a digital farmers' market.",
+    "es": "Una despensa orgánica que se siente como un mercado de agricultores digital.",
+    "pt-BR": "Uma despensa orgânica que parece uma feira de produtores digital.",
+    "ar": "مخزن عضوي يُحسّ كسوق مزارعين رقمي."
+  },
+  "מזון אורגני": {
+    "en": "Organic food",
+    "es": "Alimentos orgánicos",
+    "pt-BR": "Alimentos orgânicos",
+    "ar": "غذاء عضوي"
+  },
+  "מזון, צעצועים ואביזרים עם קטגוריות, סינון ומוצרים חיים מתוסף החנות.": {
+    "en": "Food, toys, and accessories with categories, filters, and live products from the shop plugin.",
+    "es": "Comida, juguetes y accesorios con categorías, filtros y productos en vivo del plugin de la tienda.",
+    "pt-BR": "Comida, brinquedos e acessórios com categorias, filtros e produtos ao vivo do plugin da loja.",
+    "ar": "طعام وألعاب وإكسسوارات مع تصنيفات وتصفية ومنتجات حيّة من إضافة المتجر."
+  },
+  "מזטה · ים-תיכוני": {
+    "en": "Mezze · Mediterranean",
+    "es": "Mezze · Mediterráneo",
+    "pt-BR": "Mezze · Mediterrâneo",
+    "ar": "مزة · متوسطي"
+  },
+  "מטבח עונתי, אש פתוחה וטעם שנשאר.": {
+    "en": "Seasonal cooking, open fire, and a taste that lingers.",
+    "es": "Cocina de temporada, fuego abierto y un sabor que se queda.",
+    "pt-BR": "Cozinha sazonal, fogo aberto e um sabor que permanece.",
+    "ar": "مطبخ موسمي ونار مكشوفة وطعم يبقى."
+  },
+  "מטפלים בבית\nבלי רעש מיותר.": {
+    "en": "We treat you at home\nwithout the extra noise.",
+    "es": "Atendemos en casa\nsin ruido de más.",
+    "pt-BR": "Atendemos em casa\nsem barulho extra.",
+    "ar": "نعالج في البيت\nبلا ضجيج زائد."
+  },
+  "מילוי הבא": {
+    "en": "Next fill",
+    "es": "Próximo relleno",
+    "pt-BR": "Próximo preenchimento",
+    "ar": "التعبئة التالية"
+  },
+  "מיפוי גבות לפי מבנה הפנים, ניקוי מדויק וצבע עדין שמחזיק בלי להכביד.": {
+    "en": "Brow mapping to your facial structure, precise cleanup, and a soft tint that lasts without weighing you down.",
+    "es": "Mapeo de cejas según la estructura del rostro, limpieza precisa y un tinte suave que se sostiene sin pesar.",
+    "pt-BR": "Mapeamento de sobrancelhas conforme a estrutura do rosto, limpeza precisa e uma cor suave que segura sem pesar.",
+    "ar": "تخطيط حواجب حسب بنية الوجه، وتنظيف دقيق ولون خفيف يثبت من دون إثقال."
+  },
+  "מיפוי ריסים": {
+    "en": "Lash mapping",
+    "es": "Mapeo de pestañas",
+    "pt-BR": "Mapeamento de cílios",
+    "ar": "تخطيط رموش"
+  },
+  "מיצים · בר בריאות": {
+    "en": "Juices · Wellness bar",
+    "es": "Jugos · Bar de bienestar",
+    "pt-BR": "Sucos · Bar de bem-estar",
+    "ar": "عصائر · بار العافية"
+  },
+  "מיקרובליידינג": {
+    "en": "Microblading",
+    "es": "Microblading",
+    "pt-BR": "Microblading",
+    "ar": "مايكروبليدنغ"
+  },
+  "מיקרובליידינג בגישה טבעית: סקיצה איטית, בחירת פיגמנט והסבר מלא על החלמה וביקורת.": {
+    "en": "Microblading, the natural way: a slow sketch, pigment selection, and a full briefing on healing and the touch-up visit.",
+    "es": "Microblading con enfoque natural: un boceto lento, elección de pigmento y una explicación completa de la recuperación y la revisión.",
+    "pt-BR": "Microblading com abordagem natural: um esboço lento, escolha de pigmento e uma explicação completa sobre a cicatrização e o retoque.",
+    "ar": "مايكروبليدنغ بأسلوب طبيعي: رسم بطيء واختيار صبغة وشرح كامل للتعافي وجلسة المراجعة."
+  },
+  "מלח. אש. ים.": {
+    "en": "Salt. Fire. Sea.",
+    "es": "Sal. Fuego. Mar.",
+    "pt-BR": "Sal. Fogo. Mar.",
+    "ar": "ملح. نار. بحر."
+  },
+  "מנועי צמיחה שעובדים בלילה.": {
+    "en": "Growth engines that work through the night.",
+    "es": "Motores de crecimiento que trabajan de noche.",
+    "pt-BR": "Motores de crescimento que trabalham à noite.",
+    "ar": "محرّكات نمو تعمل في الليل."
+  },
+  "מנטורשיפ אחד־על־אחד לקריירה, עסק וצמיחה אישית — עם מפת דרכים ברורה.": {
+    "en": "One-on-one mentorship for career, business, and personal growth — with a clear roadmap.",
+    "es": "Mentoría uno a uno para carrera, negocio y crecimiento personal — con un mapa de ruta claro.",
+    "pt-BR": "Mentoria um a um para carreira, negócio e crescimento pessoal — com um mapa de caminho claro.",
+    "ar": "إرشاد فردي للمسار المهني والعمل والنمو الشخصي — مع خارطة طريق واضحة."
+  },
+  "מנטורשיפ אישי": {
+    "en": "Personal mentorship",
+    "es": "Mentoría personal",
+    "pt-BR": "Mentoria pessoal",
+    "ar": "إرشاد شخصي"
+  },
+  "מניקור, פדיקור ונייל־ארט מדויק — סטייל מתוק, היגיינה ברזל, ותורים בלי המתנה מיותרת.": {
+    "en": "Manicures, pedicures, and precise nail art — sweet style, ironclad hygiene, and appointments without the extra wait.",
+    "es": "Manicura, pedicura y nail art preciso: estilo dulce, higiene de acero y citas sin esperas de más.",
+    "pt-BR": "Manicure, pedicure e nail art preciso — estilo doce, higiene de ferro e horários sem espera extra.",
+    "ar": "مانيكير وباديكير وفن أظافر دقيق — أسلوب لطيف ونظافة حديدية ومواعيد بلا انتظار زائد."
+  },
+  "מסעדת חוף": {
+    "en": "Beach restaurant",
+    "es": "Restaurante de playa",
+    "pt-BR": "Restaurante de praia",
+    "ar": "مطعم شاطئ"
+  },
+  "מסעדת שף • יין • חוויה קולינרית": {
+    "en": "Chef's restaurant • Wine • A culinary experience",
+    "es": "Restaurante de chef • Vino • Experiencia culinaria",
+    "pt-BR": "Restaurante de chef • Vinho • Experiência culinária",
+    "ar": "مطعم شيف • نبيذ • تجربة طهو"
+  },
+  "מספרים מסודרים.\nהחלטות שקטות.": {
+    "en": "Numbers in order.\nQuiet decisions.",
+    "es": "Cifras en orden.\nDecisiones serenas.",
+    "pt-BR": "Números em ordem.\nDecisões silenciosas.",
+    "ar": "أرقام مرتّبة.\nقرارات هادئة."
+  },
+  "מספרים עם הקשר עסקי.": {
+    "en": "Numbers with business context.",
+    "es": "Cifras con contexto de negocio.",
+    "pt-BR": "Números com contexto empresarial.",
+    "ar": "أرقام بسياق أعمال."
+  },
+  "מספרת בוטיק": {
+    "en": "Boutique salon",
+    "es": "Salón boutique",
+    "pt-BR": "Salão boutique",
+    "ar": "صالون بوتيك"
+  },
+  "מספרת גברים שחורה, חדה ומדויקת: פיידים, זקנים, גילוח חם וגימור שיוצא טוב גם ברחוב וגם במצלמה.": {
+    "en": "A black, sharp, precise men's barbershop: fades, beards, hot shaves, and a finish that looks right on the street and on camera.",
+    "es": "Una barbería de hombres negra, afilada y precisa: fades, barbas, afeitado en caliente y un acabado que queda bien en la calle y en cámara.",
+    "pt-BR": "Uma barbearia masculina preta, afiada e precisa: fades, barbas, barbear quente e um acabamento que fica bem na rua e na câmera.",
+    "ar": "صالون حلاقة رجالي أسود، حاد ودقيق: فيد ولحى وحلاقة ساخنة ولمسة تخرج أنيقة في الشارع وأمام الكاميرا."
+  },
+  "מעט נכסים. הרבה תשומת לב.": {
+    "en": "Few properties. A great deal of attention.",
+    "es": "Pocas propiedades. Mucha atención.",
+    "pt-BR": "Poucos imóveis. Muita atenção.",
+    "ar": "عقارات قليلة. اهتمام كبير."
+  },
+  "מעצבת גבות": {
+    "en": "Brow designer",
+    "es": "Diseñadora de cejas",
+    "pt-BR": "Designer de sobrancelhas",
+    "ar": "مصممة حواجب"
+  },
+  "מערכות שמזנקות קדימה.": {
+    "en": "Systems that leap ahead.",
+    "es": "Sistemas que saltan hacia adelante.",
+    "pt-BR": "Sistemas que disparam para frente.",
+    "ar": "أنظمة تنطلق إلى الأمام."
+  },
+  "מצאו בית": {
+    "en": "Find a home",
+    "es": "Encontrar casa",
+    "pt-BR": "Encontre um lar",
+    "ar": "اعثروا على بيت"
+  },
+  "מקדחות, ארגזים ואביזרי DIY — חנות מלאה עם סינון קטגוריות ומוצרים מתוסף החנות.": {
+    "en": "Drills, toolboxes, and DIY accessories — a full shop with category filters and products from the shop plugin.",
+    "es": "Taladros, cajas de herramientas y accesorios DIY: una tienda completa con filtros por categoría y productos del plugin de la tienda.",
+    "pt-BR": "Furadeiras, caixas de ferramentas e acessórios de DIY — uma loja completa com filtros por categoria e produtos do plugin da loja.",
+    "ar": "مثاقب وصناديق وأدوات DIY — متجر كامل مع تصفية حسب الفئة ومنتجات من إضافة المتجر."
+  },
+  "מקסיקני · טאקו": {
+    "en": "Mexican · Tacos",
+    "es": "Mexicano · Tacos",
+    "pt-BR": "Mexicano · Tacos",
+    "ar": "مكسيكي · تاكو"
+  },
+  "מרחב שקט לגוף ער, נשימה עמוקה ותנועה שמחזירה אתכם הביתה.": {
+    "en": "A quiet space for an awake body, deep breath, and movement that brings you home.",
+    "es": "Un espacio sereno para un cuerpo despierto, una respiración profunda y un movimiento que les devuelve a casa.",
+    "pt-BR": "Um espaço calmo para um corpo acordado, uma respiração profunda e um movimento que traz vocês de volta para casa.",
+    "ar": "فضاء هادئ لجسم يقظ ونَفَس عميق وحركة تعيدكم إلى البيت."
+  },
+  "מרחב שקט שמוביל לבהירות, ביטחון ושינוי.": {
+    "en": "A quiet space that leads to clarity, confidence, and change.",
+    "es": "Un espacio sereno que conduce a claridad, confianza y cambio.",
+    "pt-BR": "Um espaço calmo que leva a clareza, confiança e mudança.",
+    "ar": "فضاء هادئ يقود إلى وضوح وثقة وتغيير."
+  },
+  "מרחבים שמדברים בקו ישר.": {
+    "en": "Spaces that speak in a straight line.",
+    "es": "Espacios que hablan en línea recta.",
+    "pt-BR": "Espaços que falam em linha reta.",
+    "ar": "فضاءات تتكلم بخط مستقيم."
+  },
+  "מרפאה רב-תחומית פרטית · תל אביב": {
+    "en": "Private multidisciplinary clinic · Tel Aviv",
+    "es": "Clínica multidisciplinaria privada · Tel Aviv",
+    "pt-BR": "Clínica multidisciplinar privada · Tel Aviv",
+    "ar": "عيادة متعددة التخصصات خاصة · تل أبيب"
+  },
+  "מרפאת שיניים בוטיק / אסתטיקה / שיקום": {
+    "en": "Boutique dental clinic / Aesthetics / Restoration",
+    "es": "Clínica dental boutique / Estética / Rehabilitación",
+    "pt-BR": "Clínica odontológica boutique / Estética / Reabilitação",
+    "ar": "عيادة أسنان بوتيك / تجميل / ترميم"
+  },
+  "מרפאת שיניים ובריאות · טכנולוגיה מתקדמת": {
+    "en": "Dental & wellness clinic · Advanced technology",
+    "es": "Clínica dental y de salud · Tecnología avanzada",
+    "pt-BR": "Clínica odontológica e de saúde · Tecnologia avançada",
+    "ar": "عيادة أسنان وصحة · تقنية متقدمة"
+  },
+  "משרד הנהלת חשבונות": {
+    "en": "Bookkeeping firm",
+    "es": "Despacho de contabilidad",
+    "pt-BR": "Escritório de contabilidade",
+    "ar": "مكتب محاسبة"
+  },
+  "משרד עורכי דין וייעוץ פיננסי": {
+    "en": "Law firm and financial advisory",
+    "es": "Bufete de abogados y asesoría financiera",
+    "pt-BR": "Escritório de advocacia e consultoria financeira",
+    "ar": "مكتب محاماة واستشارات مالية"
+  },
+  "משרד עורכי דין מוביל שמעניק ייעוץ, אסטרטגיה וייצוג מקצועי לכל צורך משפטי — בדיסקרטיות, בהירות וזמינות.": {
+    "en": "A leading law firm offering counsel, strategy, and professional representation for every legal need — with discretion, clarity, and availability.",
+    "es": "Un bufete líder que ofrece asesoría, estrategia y representación profesional para cada necesidad jurídica — con discreción, claridad y disponibilidad.",
+    "pt-BR": "Um escritório de advocacia líder que oferece consultoria, estratégia e representação profissional para cada necessidade jurídica — com discrição, clareza e disponibilidade.",
+    "ar": "مكتب محاماة رائد يقدّم المشورة والاستراتيجية والتمثيل المهني لكل حاجة قانونية — بتكتم ووضوح وتوافر."
+  },
+  "משרד עורכי דין מסחרי": {
+    "en": "Commercial law firm",
+    "es": "Bufete de derecho comercial",
+    "pt-BR": "Escritório de direito comercial",
+    "ar": "مكتب محاماة تجاري"
+  },
+  "משרטטים חללים שמרגישים כמו הכרזה.": {
+    "en": "We draft spaces that feel like a manifesto.",
+    "es": "Trazamos espacios que se sienten como un manifiesto.",
+    "pt-BR": "Desenhamos espaços que parecem um manifesto.",
+    "ar": "نرسم فضاءات تُحسّ كالبيان."
+  },
+  "נבחר יחד סגנון, לוקיישן וקצב מסירה שמתאימים למותג ולתקציב.": {
+    "en": "Together we'll choose a style, location, and delivery pace that fit the brand and the budget.",
+    "es": "Elegiremos juntos un estilo, una ubicación y un ritmo de entrega que encajen con la marca y el presupuesto.",
+    "pt-BR": "Vamos escolher juntos um estilo, um local e um ritmo de entrega que combinem com a marca e o orçamento.",
+    "ar": "نختار معًا أسلوبًا وموقعًا ووتيرة تسليم تلائم العلامة والميزانية."
+  },
+  "נבין יחד את נפח הפעילות, נמליץ על מסלול ונגדיר תהליך עבודה קבוע.": {
+    "en": "Together we'll understand the volume of work, recommend a track, and set a steady workflow.",
+    "es": "Entenderemos juntos el volumen de actividad, recomendaremos un recorrido y definiremos un proceso de trabajo estable.",
+    "pt-BR": "Vamos entender juntos o volume de atividade, recomendar um caminho e definir um fluxo de trabalho estável.",
+    "ar": "نفهم معًا حجم النشاط، ونوصي بمسار، ونضع عملية عمل ثابتة."
+  },
+  "נדל״ן בrutalist · עיר": {
+    "en": "Brutalist Real Estate · City",
+    "es": "Inmobiliaria brutalista · Ciudad",
+    "pt-BR": "Imobiliário brutalista · Cidade",
+    "ar": "عقارات بروتاليست · مدينة"
+  },
+  "נדל״ן גאומטרי · diagonal": {
+    "en": "Geometric Real Estate · diagonal",
+    "es": "Inmobiliaria geométrica · diagonal",
+    "pt-BR": "Imobiliário geométrico · diagonal",
+    "ar": "عقارات هندسية · diagonal"
+  },
+  "נדל״ן חכם · נתונים": {
+    "en": "Smart Real Estate · Data",
+    "es": "Inmobiliaria inteligente · Datos",
+    "pt-BR": "Imobiliário inteligente · Dados",
+    "ar": "عقارات ذكية · بيانات"
+  },
+  "נדל״ן יוקרה · חוף": {
+    "en": "Luxury Real Estate · Coast",
+    "es": "Inmobiliaria de lujo · Costa",
+    "pt-BR": "Imobiliário de luxo · Costa",
+    "ar": "عقارات فاخرة · ساحل"
+  },
+  "נדל״ן יוקרה · כסף וזהב": {
+    "en": "Luxury Real Estate · Silver & Gold",
+    "es": "Inmobiliaria de lujo · Plata y oro",
+    "pt-BR": "Imobiliário de luxo · Prata e ouro",
+    "ar": "عقارات فاخرة · فضة وذهب"
+  },
+  "נדל״ן פרטי · יוקרה": {
+    "en": "Private Real Estate · Luxury",
+    "es": "Inmobiliaria privada · Lujo",
+    "pt-BR": "Imobiliário privado · Luxo",
+    "ar": "عقارات خاصة · فخامة"
+  },
+  "נדל״ן פרימיום · תל אביב": {
+    "en": "Premium Real Estate · Tel Aviv",
+    "es": "Inmobiliaria premium · Tel Aviv",
+    "pt-BR": "Imobiliário premium · Tel Aviv",
+    "ar": "عقارات بريميوم · تل أبيب"
+  },
+  "נוף שמשנה החלטות.": {
+    "en": "A view that changes decisions.",
+    "es": "Una vista que cambia decisiones.",
+    "pt-BR": "Uma vista que muda decisões.",
+    "ar": "إطلالة تغيّر القرارات."
+  },
+  "נחדד את הסיכון, נגדיר אפשרויות ונעזור לכם לבחור צעד משפטי שלא תצטערו עליו.": {
+    "en": "We'll sharpen the risk, lay out the options, and help you choose a legal step you won't regret.",
+    "es": "Afinaremos el riesgo, definiremos opciones y les ayudaremos a elegir un paso jurídico del que no se arrepientan.",
+    "pt-BR": "Vamos afiar o risco, definir as opções e ajudar vocês a escolher um passo jurídico do qual não vão se arrepender.",
+    "ar": "نحدّد المخاطر ونضع الخيارات ونساعدكم على اختيار خطوة قانونية لن تندموا عليها."
+  },
+  "נייל ארט": {
+    "en": "Nail art",
+    "es": "Nail art",
+    "pt-BR": "Nail art",
+    "ar": "فن الأظافر"
+  },
+  "נכס נבחר": {
+    "en": "Featured property",
+    "es": "Propiedad destacada",
+    "pt-BR": "Imóvel em destaque",
+    "ar": "عقار مختار"
+  },
+  "נכסים שלא מפרסמים.": {
+    "en": "Properties that aren't advertised.",
+    "es": "Propiedades que no se anuncian.",
+    "pt-BR": "Imóveis que não são anunciados.",
+    "ar": "عقارات لا تُعلن."
+  },
+  "נכסים. בלוקים. עסקאות.": {
+    "en": "Properties. Blocks. Deals.",
+    "es": "Propiedades. Bloques. Operaciones.",
+    "pt-BR": "Imóveis. Blocos. Negócios.",
+    "ar": "عقارات. مبانٍ. صفقات."
+  },
+  "נכסים. שכונות. תהליך ברור.": {
+    "en": "Properties. Neighborhoods. A clear process.",
+    "es": "Propiedades. Barrios. Un proceso claro.",
+    "pt-BR": "Imóveis. Bairros. Um processo claro.",
+    "ar": "عقارات. أحياء. مسار واضح."
+  },
+  "נסטורה עובדת עם שלושה עד חמישה לקוחות בכל רגע, כדי לראות את הפרטים הקטנים לפני שמתחילים להראות כתובות.": {
+    "en": "Nestora works with three to five clients at a time, so we see the small details before we start showing addresses.",
+    "es": "Nestora trabaja con tres a cinco clientes en cada momento, para ver los detalles pequeños antes de empezar a mostrar direcciones.",
+    "pt-BR": "Nestora trabalha com três a cinco clientes a cada momento, para ver os detalhes pequenos antes de começar a mostrar endereços.",
+    "ar": "تعمل Nestora مع ثلاثة إلى خمسة عملاء في كل لحظة، لنرى التفاصيل الصغيرة قبل أن نبدأ بعرض العناوين."
+  },
+  "נסטiq מציגה נדל״ן עם מספרים אמיתיים — מחירים, מגמות ותובנות שקופות.": {
+    "en": "Nestiq presents real estate with real numbers — prices, trends, and transparent insights.",
+    "es": "Nestiq muestra inmobiliaria con cifras reales: precios, tendencias e ideas transparentes.",
+    "pt-BR": "Nestiq apresenta imóveis com números reais — preços, tendências e insights transparentes.",
+    "ar": "تعرض Nestiq العقارات بأرقام حقيقية — أسعار واتجاهات ورؤى شفافة."
+  },
+  "נעליים, בגדי כושר ואביזרי אימון — חנות מלאה עם פילטרים ומוצרים מתוסף החנות.": {
+    "en": "Shoes, activewear, and training gear — a full shop with filters and products from the shop plugin.",
+    "es": "Zapatos, ropa de entrenamiento y accesorios: una tienda completa con filtros y productos del plugin de la tienda.",
+    "pt-BR": "Sapatos, roupas de treino e acessórios — uma loja completa com filtros e produtos do plugin da loja.",
+    "ar": "أحذية وملابس رياضية وأدوات تمرين — متجر كامل مع تصفية ومنتجات من إضافة المتجر."
+  },
+  "נשמח להכיר אתכם, להבין מה חשוב באמת ולבנות יחד יום שנראה ומרגיש שלכם.": {
+    "en": "We'd love to meet you, understand what truly matters, and build a day that looks and feels like yours.",
+    "es": "Nos encantará conocerles, entender qué importa de verdad y construir juntos un día que se vea y se sienta suyo.",
+    "pt-BR": "Vamos adorar conhecer vocês, entender o que importa de verdade e construir juntos um dia que pareça e se sinta de vocês.",
+    "ar": "يسعدنا أن نتعرّف عليكم، ونفهم ما يهم حقًا، ونبني معًا يومًا يبدو ويُحسّ وكأنه لكم."
+  },
+  "נשמח לשמוע מה אתם רוצים לשנות, לשמר או לגלות מחדש בבית.": {
+    "en": "We'd love to hear what you want to change, keep, or rediscover at home.",
+    "es": "Nos encantará oír qué quieren cambiar, conservar o redescubrir en casa.",
+    "pt-BR": "Vamos adorar ouvir o que vocês querem mudar, preservar ou redescobrir em casa.",
+    "ar": "يسعدنا أن نسمع ما تريدون تغييره أو الإبقاء عليه أو اكتشافه من جديد في البيت."
+  },
+  "נתונים. נכסים. החלטות.": {
+    "en": "Data. Properties. Decisions.",
+    "es": "Datos. Propiedades. Decisiones.",
+    "pt-BR": "Dados. Imóveis. Decisões.",
+    "ar": "بيانات. عقارات. قرارات."
+  },
+  "סדנאות אמנות": {
+    "en": "Art workshops",
+    "es": "Talleres de arte",
+    "pt-BR": "Oficinas de arte",
+    "ar": "ورش فنون"
+  },
+  "סדנאות קרמיקה, ציור, הדפס ועיצוב — באטלייה שקטה עם חומרים אמיתיים.": {
+    "en": "Workshops in ceramics, painting, print, and design — in a quiet atelier with real materials.",
+    "es": "Talleres de cerámica, pintura, estampación y diseño — en un atelier sereno con materiales reales.",
+    "pt-BR": "Oficinas de cerâmica, pintura, impressão e design — em um ateliê calmo com materiais de verdade.",
+    "ar": "ورش خزف ورسم وطباعة وتصميم — في أتيليه هادئ بمواد حقيقية."
+  },
+  "סוגרים עסקאות. לא מבלים בשיחות סרק.": {
+    "en": "We close deals. We don't waste time on empty talk.",
+    "es": "Cerramos operaciones. No perdemos el tiempo en conversaciones vacías.",
+    "pt-BR": "Fechamos negócios. Não perdemos tempo com conversa fiada.",
+    "ar": "نُغلق الصفقات. لا نضيّع الوقت في حديث بلا طائل."
+  },
+  "סוכנות אירועים": {
+    "en": "Events agency",
+    "es": "Agencia de eventos",
+    "pt-BR": "Agência de eventos",
+    "ar": "وكالة فعاليات"
+  },
+  "סוכנות בוטיק שקטה": {
+    "en": "A quiet boutique agency",
+    "es": "Una agencia boutique serena",
+    "pt-BR": "Uma agência boutique silenciosa",
+    "ar": "وكالة بوتيك هادئة"
+  },
+  "סוכנות ביטוח": {
+    "en": "Insurance agency",
+    "es": "Agencia de seguros",
+    "pt-BR": "Agência de seguros",
+    "ar": "وكالة تأمين"
+  },
+  "סוכנות גיוס": {
+    "en": "Recruiting agency",
+    "es": "Agencia de reclutamiento",
+    "pt-BR": "Agência de recrutamento",
+    "ar": "وكالة توظيف"
+  },
+  "סוכנות יחסי ציבור": {
+    "en": "PR agency",
+    "es": "Agencia de relaciones públicas",
+    "pt-BR": "Agência de relações públicas",
+    "ar": "وكالة علاقات عامة"
+  },
+  "סוכנות ייעוץ עסקי": {
+    "en": "Business consulting agency",
+    "es": "Agencia de consultoría de negocios",
+    "pt-BR": "Agência de consultoria empresarial",
+    "ar": "وكالة استشارات أعمال"
+  },
+  "סוכנות מדיה": {
+    "en": "Media agency",
+    "es": "Agencia de medios",
+    "pt-BR": "Agência de mídia",
+    "ar": "وكالة إعلام"
+  },
+  "סוכנות מיתוג": {
+    "en": "Branding agency",
+    "es": "Agencia de branding",
+    "pt-BR": "Agência de branding",
+    "ar": "وكالة بناء علامات"
+  },
+  "סוכנות מכירות": {
+    "en": "Sales agency",
+    "es": "Agencia de ventas",
+    "pt-BR": "Agência de vendas",
+    "ar": "وكالة مبيعات"
+  },
+  "סוכנות נדל״ן חכמה": {
+    "en": "Smart real estate agency",
+    "es": "Agencia inmobiliaria inteligente",
+    "pt-BR": "Agência imobiliária inteligente",
+    "ar": "وكالة عقارات ذكية"
+  },
+  "סוכנות עיצוב": {
+    "en": "Design agency",
+    "es": "Agencia de diseño",
+    "pt-BR": "Agência de design",
+    "ar": "وكالة تصميم"
+  },
+  "סוכנות פרסום": {
+    "en": "Advertising agency",
+    "es": "Agencia de publicidad",
+    "pt-BR": "Agência de publicidade",
+    "ar": "وكالة إعلان"
+  },
+  "סוכנות שיווק": {
+    "en": "Marketing agency",
+    "es": "Agencia de marketing",
+    "pt-BR": "Agência de marketing",
+    "ar": "وكالة تسويق"
+  },
+  "סוכריות / שעווה": {
+    "en": "Sugaring / Wax",
+    "es": "Azúcar / Cera",
+    "pt-BR": "Açúcar / Cera",
+    "ar": "سكر / شمع"
+  },
+  "סוכריות ושעווה באווירה נעימה, עם התאמת שיטה לאזור, לעור ולרגישות שלך.": {
+    "en": "Sugaring and wax in a comfortable setting, with the method matched to the area, your skin, and your sensitivity.",
+    "es": "Azúcar y cera en un ambiente agradable, con el método adaptado a la zona, a tu piel y a tu sensibilidad.",
+    "pt-BR": "Açúcar e cera em um ambiente agradável, com o método combinado à área, à sua pele e à sua sensibilidade.",
+    "ar": "سكر وشمع في أجواء مريحة، مع مواءمة الطريقة للمنطقة ولجلدكِ ولحساسيتكِ."
+  },
+  "סושי · אומאקאסה": {
+    "en": "Sushi · Omakase",
+    "es": "Sushi · Omakase",
+    "pt-BR": "Sushi · Omakase",
+    "ar": "سوشي · أوماكاسه"
+  },
+  "סטודיו אדריכלות": {
+    "en": "Architecture studio",
+    "es": "Estudio de arquitectura",
+    "pt-BR": "Estúdio de arquitetura",
+    "ar": "استوديو عمارة"
+  },
+  "סטודיו איפור": {
+    "en": "Makeup studio",
+    "es": "Estudio de maquillaje",
+    "pt-BR": "Estúdio de maquiagem",
+    "ar": "استوديو مكياج"
+  },
+  "סטודיו איפור בוטיק לכלות, הפקות וצילומים. מראה זוהר, עמיד ומדויק שנבנה סביב הפנים שלך.": {
+    "en": "A boutique makeup studio for brides, productions, and photoshoots. A luminous, lasting, precise look built around your face.",
+    "es": "Un estudio boutique de maquillaje para novias, producciones y sesiones de fotos. Un look luminoso, duradero y preciso construido alrededor de tu rostro.",
+    "pt-BR": "Um estúdio boutique de maquiagem para noivas, produções e ensaios. Um visual luminoso, duradouro e preciso construído em torno do seu rosto.",
+    "ar": "استوديو مكياج بوتيك للعرائس والإنتاج والتصوير. إطلالة متوهجة وثابتة ودقيقة تُبنى حول وجهكِ."
+  },
+  "סטודיו ביוטי בוטיק": {
+    "en": "Boutique beauty studio",
+    "es": "Estudio de belleza boutique",
+    "pt-BR": "Estúdio de beleza boutique",
+    "ar": "استوديو تجميل بوتيك"
+  },
+  "סטודיו דיטיילינג אגרסיבי לרכבים שמגיעים מלוכלכים ויוצאים כמו מכונה חדשה: תיקון צבע, ציפוי קרמי, פוליש, פנים ושטיפה עמוקה.": {
+    "en": "An aggressive detailing studio for cars that arrive dirty and leave like a new machine: paint correction, ceramic coating, polish, interior, and a deep wash.",
+    "es": "Un estudio de detailing agresivo para autos que llegan sucios y salen como una máquina nueva: corrección de pintura, recubrimiento cerámico, pulido, interior y un lavado profundo.",
+    "pt-BR": "Um estúdio de detailing agressivo para carros que chegam sujos e saem como uma máquina nova: correção de pintura, revestimento cerâmico, polimento, interior e uma lavagem profunda.",
+    "ar": "استوديو تفصيل عدواني لسيارات تصل متّسخة وتخرج كآلة جديدة: تصحيح طلاء وطلاء سيراميك وتلميع وداخل وغسيل عميق."
+  },
+  "סטודיו יוגה נשימה ותנועה": {
+    "en": "Yoga studio — breath and movement",
+    "es": "Estudio de yoga, respiración y movimiento",
+    "pt-BR": "Estúdio de ioga, respiração e movimento",
+    "ar": "استوديو يوغا تنفّس وحركة"
+  },
+  "סטודיו יופי שמרגיש יוקרתי מהקליק הראשון.": {
+    "en": "A beauty studio that feels luxurious from the first click.",
+    "es": "Un estudio de belleza que se siente de lujo desde el primer clic.",
+    "pt-BR": "Um estúdio de beleza que parece luxuoso desde o primeiro clique.",
+    "ar": "استوديو تجميل يُحسّ فاخرًا من أول نقرة."
+  },
+  "סטודיו כוח וחיטוב": {
+    "en": "Strength and sculpt studio",
+    "es": "Estudio de fuerza y definición",
+    "pt-BR": "Estúdio de força e definição",
+    "ar": "استوديو قوة ونحت"
+  },
+  "סטודיו כושר": {
+    "en": "Fitness studio",
+    "es": "Estudio de fitness",
+    "pt-BR": "Estúdio de fitness",
+    "ar": "استوديو لياقة"
+  },
+  "סטודיו לעיצוב פנים": {
+    "en": "Interior design studio",
+    "es": "Estudio de interiorismo",
+    "pt-BR": "Estúdio de design de interiores",
+    "ar": "استوديو تصميم داخلي"
+  },
+  "סטודיו לעיצוב, מיתוג ודיגיטל": {
+    "en": "Studio for design, branding, and digital",
+    "es": "Estudio de diseño, branding y digital",
+    "pt-BR": "Estúdio de design, branding e digital",
+    "ar": "استوديو للتصميم وبناء العلامات والرقمي"
+  },
+  "סטודיו פרחים רומנטי": {
+    "en": "Romantic flower studio",
+    "es": "Estudio floral romántico",
+    "pt-BR": "Estúdio de flores romântico",
+    "ar": "استوديو زهور رومانسي"
+  },
+  "סטודיו צמיחה למותגים רעבים": {
+    "en": "A growth studio for hungry brands",
+    "es": "Un estudio de crecimiento para marcas hambrientas",
+    "pt-BR": "Um estúdio de crescimento para marcas famintas",
+    "ar": "استوديو نمو لعلامات جائعة"
+  },
+  "סטודיו שעווה": {
+    "en": "Wax studio",
+    "es": "Estudio de cera",
+    "pt-BR": "Estúdio de cera",
+    "ar": "استوديو شمع"
+  },
+  "סטודיו Archora מתכנן בתים, קומות משרדים וחללי אירוח עם משמעת מודולרית, חומרים אמיצים ונוכחות שמחזיקה שנים.": {
+    "en": "Studio Archora designs homes, office floors, and hospitality spaces with modular discipline, bold materials, and a presence that lasts for years.",
+    "es": "El estudio Archora proyecta casas, plantas de oficinas y espacios de hospitalidad con disciplina modular, materiales valientes y una presencia que se sostiene durante años.",
+    "pt-BR": "O estúdio Archora projeta casas, andares de escritório e espaços de hospitalidade com disciplina modular, materiais ousados e uma presença que dura anos.",
+    "ar": "يصمّم استوديو Archora بيوتًا وطوابق مكاتب وفضاءات ضيافة بانضباط معياري ومواد جريئة وحضور يصمد سنوات."
+  },
+  "סיטונאות": {
+    "en": "Wholesale",
+    "es": "Mayorista",
+    "pt-BR": "Atacado",
+    "ar": "جملة"
+  },
+  "סלון ציפורניים": {
+    "en": "Nail salon",
+    "es": "Salón de uñas",
+    "pt-BR": "Salão de unhas",
+    "ar": "صالون أظافر"
+  },
+  "סלון רב־תחומי — עור, שיער, גבות ואיפור — במקום אחד עם וייב טרקלין וטיפולים חדים.": {
+    "en": "A multidisciplinary salon — skin, hair, brows, and makeup — in one place with a lounge vibe and sharp treatments.",
+    "es": "Un salón multidisciplinario — piel, cabello, cejas y maquillaje — en un solo lugar con vibe de lounge y tratamientos precisos.",
+    "pt-BR": "Um salão multidisciplinar — pele, cabelo, sobrancelhas e maquiagem — em um só lugar com vibe de lounge e tratamentos precisos.",
+    "ar": "صالون متعدد التخصصات — بشرة وشعر وحواجب ومكياج — في مكان واحد بأجواء صالة ومعالجات حادة."
+  },
+  "ספא / עיסוי פנים": {
+    "en": "Spa / Facial massage",
+    "es": "Spa / Masaje facial",
+    "pt-BR": "Spa / Massagem facial",
+    "ar": "سبا / تدليك وجه"
+  },
+  "ספא יוקרתי": {
+    "en": "Luxury spa",
+    "es": "Spa de lujo",
+    "pt-BR": "Spa de luxo",
+    "ar": "سبا فاخر"
+  },
+  "ספורט וכושר": {
+    "en": "Sports & fitness",
+    "es": "Deporte y fitness",
+    "pt-BR": "Esporte e fitness",
+    "ar": "رياضة ولياقة"
+  },
+  "ספרות, ילדים, מחברות וכלי כתיבה — עם סינון קטגוריות ומוצרים מתוסף החנות.": {
+    "en": "Literature, children's books, notebooks, and stationery — with category filters and products from the shop plugin.",
+    "es": "Literatura, infantil, cuadernos y material de escritura — con filtros por categoría y productos del plugin de la tienda.",
+    "pt-BR": "Literatura, infantil, cadernos e material de escrita — com filtros por categoria e produtos do plugin da loja.",
+    "ar": "أدب وأطفال ودفاتر وأدوات كتابة — مع تصفية حسب الفئة ومنتجات من إضافة المتجر."
+  },
+  "ספרים ומכתבים": {
+    "en": "Books & stationery",
+    "es": "Libros y papelería",
+    "pt-BR": "Livros e papelaria",
+    "ar": "كتب وقرطاسية"
+  },
+  "סקיילרה מתמחה בדירות גבוהות, מגדלי מגורים ונופים פתוחים. אנחנו קוראים כל בניין לפי קומה, אור, שירותים וחוויית כניסה.": {
+    "en": "Skylera specializes in high-floor apartments, residential towers, and open views. We read every building by floor, light, amenities, and the arrival experience.",
+    "es": "Skylera se especializa en pisos altos, torres residenciales y vistas abiertas. Leemos cada edificio por planta, luz, servicios y la experiencia de llegada.",
+    "pt-BR": "Skylera é especializada em apartamentos altos, torres residenciais e vistas abertas. Lemos cada prédio por andar, luz, serviços e a experiência de entrada.",
+    "ar": "تتخصص Skylera في شقق مرتفعة وأبراج سكنية وإطلالات مفتوحة. نقرأ كل مبنى حسب الطابق والضوء والخدمات وتجربة الدخول."
+  },
+  "סקaihold מתמחה בפנטהאוזים ודירות גבוהות — עם נוף, שקט ואיכות בנייה.": {
+    "en": "Skyhold specializes in penthouses and high-floor apartments — with views, quiet, and build quality.",
+    "es": "Skyhold se especializa en áticos y departamentos en pisos altos — con vistas, calma y calidad de construcción.",
+    "pt-BR": "A Skyhold é especializada em coberturas e apartamentos altos — com vista, silêncio e qualidade de construção.",
+    "ar": "تتخصص Skyhold في البنتهاوس والشقق المرتفعة — مع إطلالة وهدوء وجودة بناء."
+  },
+  "סignet מלווה כל שלב — מחיפוש ועד חתימה — עם תהליך ברור וחותמת איכות.": {
+    "en": "Signet walks with you through every step — from search to signing — with a clear process and a quality seal.",
+    "es": "Signet te acompaña en cada etapa — de la búsqueda a la firma — con un proceso claro y un sello de calidad.",
+    "pt-BR": "A Signet acompanha vocês em cada etapa — da busca à assinatura — com um processo claro e um selo de qualidade.",
+    "ar": "ترافقكم Signet في كل مرحلة — من البحث حتى التوقيع — بعملية واضحة وختم جودة."
+  },
+  "עולים. רואים. קונים.": {
+    "en": "Go up. See. Buy.",
+    "es": "Sube. Mira. Compra.",
+    "pt-BR": "Suba. Veja. Compre.",
+    "ar": "اصعدوا. شاهدوا. اشتروا."
+  },
+  "עיסוי פנים, ניקוז לימפטי וגוואשה בטקס שקט שמחזיר רכות, זרימה וזוהר טבעי.": {
+    "en": "Facial massage, lymphatic drainage, and gua sha in a quiet ritual that restores softness, flow, and a natural glow.",
+    "es": "Masaje facial, drenaje linfático y gua sha en un ritual silencioso que devuelve suavidad, fluidez y un brillo natural.",
+    "pt-BR": "Massagem facial, drenagem linfática e gua sha num ritual silencioso que devolve maciez, fluidez e um brilho natural.",
+    "ar": "تدليك للوجه وتصريف لمفاوي وغوا شا في طقس هادئ يعيد النعومة والتدفق والإشراق الطبيعي."
+  },
+  "עסקה חתומה. ביטחון מלא.": {
+    "en": "Deal signed. Full confidence.",
+    "es": "Trato cerrado. Confianza total.",
+    "pt-BR": "Negócio assinado. Confiança total.",
+    "ar": "صفقة مُوقَّعة. ثقة كاملة."
+  },
+  "פארסל מציגה מגרשים דרך נתונים תכנוניים, קווי ייעוד והיגיון שטח. כל חלקה נבחנת כמו סקר - לא כמו גלריית כרטיסים.": {
+    "en": "Parcel presents lots through planning data, zoning lines, and land logic. Every plot is examined like a survey — not a card gallery.",
+    "es": "Parcel presenta terrenos a través de datos urbanísticos, líneas de zonificación y la lógica del predio. Cada parcela se examina como un estudio — no como una galería de tarjetas.",
+    "pt-BR": "A Parcel apresenta terrenos por meio de dados de planejamento, linhas de zoneamento e a lógica do lote. Cada parcela é analisada como um levantamento — não como uma galeria de cards.",
+    "ar": "تعرض Parcel القطع عبر بيانات تخطيطية وخطوط تصنيف الاستخدام ومنطق المساحة. تُدرس كل قطعة كمسح ميداني — لا كمعرض بطاقات."
+  },
+  "פוקה · קערות": {
+    "en": "Poke · Bowls",
+    "es": "Poke · Bowls",
+    "pt-BR": "Poke · Bowls",
+    "ar": "بوكي · أوعية"
+  },
+  "פורטיבה מלווה חברות ויחידים בצמתים הקריטיים — מסחר, נדל״ן, מיסוי והשקעות. אנחנו מחברים ידע משפטי מדויק לחשיבה עסקית, כדי שתקבלו החלטות בביטחון מלא.": {
+    "en": "Fortiva advises companies and individuals at the critical junctures — commerce, real estate, tax, and investments. We connect precise legal knowledge with business thinking, so you can decide with complete confidence.",
+    "es": "Fortiva acompaña a empresas y particulares en los cruces críticos — comercio, inmobiliaria, fiscalidad e inversiones. Unimos conocimiento jurídico preciso con pensamiento empresarial, para que decidan con total confianza.",
+    "pt-BR": "A Fortiva acompanha empresas e pessoas nos momentos decisivos — comércio, imóveis, tributos e investimentos. Ligamos conhecimento jurídico preciso ao pensamento empresarial, para que vocês decidam com confiança total.",
+    "ar": "ترافق Fortiva الشركات والأفراد عند المنعطفات الحاسمة — التجارة والعقارات والضرائب والاستثمارات. نربط المعرفة القانونية الدقيقة بالتفكير التجاري، لتتخذوا قراراتكم بثقة كاملة."
+  },
+  "פילינג / טיפולי פנים": {
+    "en": "Peels / Facials",
+    "es": "Peelings / Tratamientos faciales",
+    "pt-BR": "Peelings / Tratamentos faciais",
+    "ar": "تقشير / علاجات للوجه"
+  },
+  "פילינגים וטיפולי פנים לפי מצב העור, עונות השנה וקצב החלמה שמתאים לחיים שלך.": {
+    "en": "Peels and facials tailored to your skin, the season, and a recovery pace that fits your life.",
+    "es": "Peelings y tratamientos faciales según el estado de tu piel, la estación y un ritmo de recuperación que encaja con tu vida.",
+    "pt-BR": "Peelings e tratamentos faciais conforme o estado da sua pele, a estação e um ritmo de recuperação que cabe na sua vida.",
+    "ar": "تقشير وعلاجات للوجه حسب حالة البشرة وفصول السنة وإيقاع تعافٍ يناسب حياتك."
+  },
+  "פיננסים והנהלת חשבונות": {
+    "en": "Finance and bookkeeping",
+    "es": "Finanzas y contabilidad",
+    "pt-BR": "Finanças e contabilidade",
+    "ar": "المالية والمحاسبة"
+  },
+  "פירות ים · דגים": {
+    "en": "Seafood · Fish",
+    "es": "Mariscos · Pescados",
+    "pt-BR": "Frutos do mar · Peixes",
+    "ar": "مأكولات بحرية · أسماك"
+  },
+  "פלטפורמת ידע · קהילת מפתחים · פיד חכם": {
+    "en": "Knowledge platform · Developer community · Smart feed",
+    "es": "Plataforma de conocimiento · Comunidad de desarrolladores · Feed inteligente",
+    "pt-BR": "Plataforma de conhecimento · Comunidade de desenvolvedores · Feed inteligente",
+    "ar": "منصة معرفة · مجتمع مطورين · موجز ذكي"
+  },
+  "פלטפורמת SaaS · אוטומציה · צמיחה": {
+    "en": "SaaS platform · Automation · Growth",
+    "es": "Plataforma SaaS · Automatización · Crecimiento",
+    "pt-BR": "Plataforma SaaS · Automação · Crescimento",
+    "ar": "منصة SaaS · أتمتة · نمو"
+  },
+  "פלטפורמת SaaS לעסקים שרוצים להפוך רעשי מידע לתהליכים חכמים: סוכני AI, ניטור מודלים, אבטחה ארגונית ודשבורד אחד לצוותים שרצים מהר.": {
+    "en": "A SaaS platform for businesses that want to turn information noise into smart processes: AI agents, model monitoring, enterprise security, and one dashboard for teams that move fast.",
+    "es": "Una plataforma SaaS para empresas que quieren convertir el ruido de información en procesos inteligentes: agentes de IA, monitoreo de modelos, seguridad empresarial y un solo panel para equipos que van rápido.",
+    "pt-BR": "Uma plataforma SaaS para negócios que querem transformar ruído de informação em processos inteligentes: agentes de IA, monitoramento de modelos, segurança corporativa e um dashboard só para equipes que correm rápido.",
+    "ar": "منصة SaaS للشركات التي تريد تحويل ضجيج المعلومات إلى عمليات ذكية: وكلاء ذكاء اصطناعي ومراقبة للنماذج وأمن مؤسسي ولوحة واحدة للفرق التي تتحرك بسرعة."
+  },
+  "פסטה · איטלקי": {
+    "en": "Pasta · Italian",
+    "es": "Pasta · Italiano",
+    "pt-BR": "Massa · Italiano",
+    "ar": "باستا · إيطالي"
+  },
+  "פרוטוקולים מותאמים אישית — ניקוי עמוק, חומצות עדינות וליווי מדעי לשגרה שעובדת.": {
+    "en": "Custom protocols — deep cleansing, gentle acids, and science-backed guidance for a routine that actually works.",
+    "es": "Protocolos a medida — limpieza profunda, ácidos suaves y acompañamiento científico para una rutina que funciona.",
+    "pt-BR": "Protocolos personalizados — limpeza profunda, ácidos suaves e acompanhamento científico para uma rotina que funciona de verdade.",
+    "ar": "بروتوكولات مخصصة — تنظيف عميق وأحماض لطيفة ومرافقة علمية لروتين يعمل فعلاً."
+  },
+  "פרופנקס מחברת בין נתונים, עיצוב וליווי אישי — כדי שתמצאו נכס בלי רעש מיותר.": {
+    "en": "Propnex connects data, design, and personal guidance — so you find a home without the extra noise.",
+    "es": "Propnex conecta datos, diseño y acompañamiento personal — para que encuentren una propiedad sin ruido de más.",
+    "pt-BR": "A Propnex conecta dados, design e acompanhamento pessoal — para vocês encontrarem um imóvel sem ruído desnecessário.",
+    "ar": "تربط Propnex بين البيانات والتصميم والمرافقة الشخصية — لتجدوا عقاراً بلا ضجيج زائد."
+  },
+  "פריחה על החוף.": {
+    "en": "Bloom on the beach.",
+    "es": "Floración en la playa.",
+    "pt-BR": "Florescimento na praia.",
+    "ar": "إزهار على الشاطئ."
+  },
+  "פריים אחרי פריים.": {
+    "en": "Frame after frame.",
+    "es": "Fotograma tras fotograma.",
+    "pt-BR": "Frame após frame.",
+    "ar": "إطار تلو إطار."
+  },
+  "פריימים חדים\nלמותגים חיים.": {
+    "en": "Sharp frames\nfor living brands.",
+    "es": "Fotogramas nítidos\npara marcas vivas.",
+    "pt-BR": "Frames nítidos\npara marcas vivas.",
+    "ar": "إطارات حادة\nلعلامات حية."
+  },
+  "פרaimview מציגה נכסים לפני ואחרי — כדי שתראו פוטנציאל, לא רק מצב נוכחי.": {
+    "en": "Primeview shows properties before and after — so you see potential, not just the current state.",
+    "es": "Primeview muestra propiedades antes y después — para que vean el potencial, no solo el estado actual.",
+    "pt-BR": "A Primeview apresenta imóveis antes e depois — para vocês verem o potencial, não só o estado atual.",
+    "ar": "تعرض Primeview العقارات قبل وبعد — لتروا الإمكانات، لا الحالة الراهنة فحسب."
+  },
+  "פתחו תהליך": {
+    "en": "Start a process",
+    "es": "Iniciar un proceso",
+    "pt-BR": "Abrir um processo",
+    "ar": "ابدأوا عملية"
+  },
+  "צבע שיער": {
+    "en": "Hair color",
+    "es": "Color de cabello",
+    "pt-BR": "Coloração",
+    "ar": "صبغ الشعر"
+  },
+  "צוותי Handcraft מגיעים מהר, עובדים נקי ומשאירים אחריהם תיקון יציב - מצנרת וחשמל ועד שיפוץ חדר רטוב מלא.": {
+    "en": "Handcraft crews arrive fast, work clean, and leave a solid repair behind — from plumbing and electrical to a full wet-room remodel.",
+    "es": "Los equipos de Handcraft llegan rápido, trabajan limpio y dejan una reparación sólida — de fontanería y electricidad hasta una reforma completa del baño.",
+    "pt-BR": "As equipes da Handcraft chegam rápido, trabalham limpo e deixam um conserto estável — de encanamento e elétrica até a reforma completa do banheiro.",
+    "ar": "فرق Handcraft تصل بسرعة وتعمل بنظافة وتترك إصلاحاً ثابتاً — من السباكة والكهرباء حتى تجديد غرفة رطبة بالكامل."
+  },
+  "צורה. צבע. מסר.": {
+    "en": "Shape. Color. Message.",
+    "es": "Forma. Color. Mensaje.",
+    "pt-BR": "Forma. Cor. Mensagem.",
+    "ar": "شكل. لون. رسالة."
+  },
+  "ציוד לחיות מחמד": {
+    "en": "Pet supplies",
+    "es": "Artículos para mascotas",
+    "pt-BR": "Itens para pets",
+    "ar": "مستلزمات الحيوانات الأليفة"
+  },
+  "ציוד ספורט חד, קל ומוכן לאימון הבא.": {
+    "en": "Sharp, light sports gear — ready for the next workout.",
+    "es": "Equipamiento deportivo nítido, ligero y listo para el próximo entrenamiento.",
+    "pt-BR": "Equipamento esportivo nítido, leve e pronto para o próximo treino.",
+    "ar": "معدات رياضية حادة وخفيفة وجاهزة للتمرين التالي."
+  },
+  "צילום · חוף": {
+    "en": "Photography · Beach",
+    "es": "Fotografía · Playa",
+    "pt-BR": "Fotografia · Praia",
+    "ar": "تصوير · شاطئ"
+  },
+  "צילום מוצר, קמפיינים ואירועים עם תאורה מדויקת, קומפוזיציה אמיצה ועריכה שמחזיקה מסך.": {
+    "en": "Product photography, campaigns, and events with precise lighting, bold composition, and editing that holds the screen.",
+    "es": "Fotografía de producto, campañas y eventos con iluminación precisa, composición valiente y una edición que sostiene la pantalla.",
+    "pt-BR": "Fotografia de produto, campanhas e eventos com iluminação precisa, composição ousada e edição que segura a tela.",
+    "ar": "تصوير منتجات وحملات وفعاليات بإضاءة دقيقة وتكوين جريء ومونتاج يثبت على الشاشة."
+  },
+  "צלילה · שונית": {
+    "en": "Diving · Reef",
+    "es": "Buceo · Arrecife",
+    "pt-BR": "Mergulho · Recife",
+    "ar": "غوص · شعاب"
+  },
+  "צללו לעומק. חזרו אחרת.": {
+    "en": "Dive deep. Come back changed.",
+    "es": "Sumérgete. Vuelve distinto.",
+    "pt-BR": "Mergulhem fundo. Voltem diferentes.",
+    "ar": "اغوصوا في العمق. ارجعوا مختلفين."
+  },
+  "צעד קטן לקביעת תור יכול להפוך את הטיפול לברור, רציף ונעים יותר כבר מהשיחה הראשונה.": {
+    "en": "A small step to book an appointment can make treatment clearer, more continuous, and more pleasant from the very first call.",
+    "es": "Un paso pequeño para reservar una cita puede hacer el tratamiento más claro, continuo y agradable ya desde la primera llamada.",
+    "pt-BR": "Um passo pequeno para marcar horário pode deixar o tratamento mais claro, contínuo e agradável já na primeira conversa.",
+    "ar": "خطوة صغيرة لحجز موعد يمكن أن تجعل العلاج أوضح وأكثر استمرارية وألطف منذ المكالمة الأولى."
+  },
+  "קביעת אודישן": {
+    "en": "Book an audition",
+    "es": "Reservar una audición",
+    "pt-BR": "Agendar uma audição",
+    "ar": "احجزوا تجربة أداء"
+  },
+  "קביעת ג׳ל": {
+    "en": "Book gel",
+    "es": "Reservar gel",
+    "pt-BR": "Agendar gel",
+    "ar": "احجزوا جل"
+  },
+  "קבלו כיוון": {
+    "en": "Get direction",
+    "es": "Recibir orientación",
+    "pt-BR": "Recebam direção",
+    "ar": "احصلوا على توجيه"
+  },
+  "קבעו דמו עכשיו": {
+    "en": "Book a demo now",
+    "es": "Agendar una demo ahora",
+    "pt-BR": "Marquem uma demo agora",
+    "ar": "احجزوا عرضاً تجريبياً الآن"
+  },
+  "קבעו עכשיו": {
+    "en": "Book now",
+    "es": "Reservar ahora",
+    "pt-BR": "Marquem agora",
+    "ar": "احجزوا الآن"
+  },
+  "קבעו שיחת סטודיו": {
+    "en": "Book a studio call",
+    "es": "Agendar una llamada de estudio",
+    "pt-BR": "Marquem uma conversa de estúdio",
+    "ar": "احجزوا مكالمة الاستوديو"
+  },
+  "קו אופק. ים פתוח.": {
+    "en": "Horizon line. Open sea.",
+    "es": "Línea de horizonte. Mar abierto.",
+    "pt-BR": "Linha do horizonte. Mar aberto.",
+    "ar": "خط الأفق. بحر مفتوح."
+  },
+  "קו האופק. הפריים המושלם.": {
+    "en": "The horizon. The perfect frame.",
+    "es": "El horizonte. El encuadre perfecto.",
+    "pt-BR": "O horizonte. O frame perfeito.",
+    "ar": "خط الأفق. الإطار المثالي."
+  },
+  "קו מים פרטי לחיים רכים.": {
+    "en": "A private waterline for a softer life.",
+    "es": "Una línea de agua privada para una vida más suave.",
+    "pt-BR": "Uma linha d'água privativa para uma vida mais suave.",
+    "ar": "خط ماء خاص لحياة أرق."
+  },
+  "קוסמטיקאית": {
+    "en": "Esthetician",
+    "es": "Esteticista",
+    "pt-BR": "Esteticista",
+    "ar": "أخصائية تجميل"
+  },
+  "קוסמטיקה ויופי": {
+    "en": "Cosmetics and beauty",
+    "es": "Cosmética y belleza",
+    "pt-BR": "Cosméticos e beleza",
+    "ar": "مستحضرات تجميل وجمال"
+  },
+  "קוסמטיקה נקייה שנראית כמו סלון יוקרה.": {
+    "en": "Clean cosmetics that look like a luxury salon.",
+    "es": "Cosmética limpia que se ve como un salón de lujo.",
+    "pt-BR": "Cosméticos clean que parecem um salão de luxo.",
+    "ar": "مستحضرات نظيفة تبدو كصالون فاخر."
+  },
+  "קוסמטיקה רפואית / אקנה": {
+    "en": "Medical cosmetics / Acne",
+    "es": "Cosmética médica / Acné",
+    "pt-BR": "Cosmética médica / Acne",
+    "ar": "تجميل طبي / حب الشباب"
+  },
+  "קורסים אונליין": {
+    "en": "Online courses",
+    "es": "Cursos online",
+    "pt-BR": "Cursos online",
+    "ar": "دورات عبر الإنترنت"
+  },
+  "קורסים אונליין עם קצב קולנועי — שיעורים חדים, מנטורים חיים, ותוצאות שרואים על המסך.": {
+    "en": "Online courses with cinematic pacing — sharp lessons, live mentors, and results you can see on screen.",
+    "es": "Cursos online con ritmo cinematográfico — clases nítidas, mentores en vivo y resultados que se ven en pantalla.",
+    "pt-BR": "Cursos online com ritmo cinematográfico — aulas nítidas, mentores ao vivo e resultados que aparecem na tela.",
+    "ar": "دورات عبر الإنترنت بإيقاع سينمائي — دروس حادة ومرشدون مباشرون ونتائج تُرى على الشاشة."
+  },
+  "קיטור. עומק. קערה אחת.": {
+    "en": "Steam. Depth. One bowl.",
+    "es": "Vapor. Profundidad. Un solo bowl.",
+    "pt-BR": "Vapor. Profundidade. Uma tigela.",
+    "ar": "بخار. عمق. وعاء واحد."
+  },
+  "קייטרינג, טעימות קלייה, סדנאות בריסטה ובר קפה מלא למשרד.": {
+    "en": "Catering, roast tastings, barista workshops, and a full coffee bar for the office.",
+    "es": "Catering, catas de tueste, talleres de barista y una barra de café completa para la oficina.",
+    "pt-BR": "Buffet, degustações de torra, oficinas de barista e um bar de café completo para o escritório.",
+    "ar": "تموين وتذوق تحميص وورش باريستا وبار قهوة كامل للمكتب."
+  },
+  "קינוחים · פטיסרי": {
+    "en": "Desserts · Patisserie",
+    "es": "Postres · Pastelería",
+    "pt-BR": "Sobremesas · Confeitaria",
+    "ar": "حلويات · باتيسري"
+  },
+  "קליניקה פרטית • טיפול רגשי • ייעוץ • ליווי אישי": {
+    "en": "Private clinic • Emotional therapy • Counseling • Personal guidance",
+    "es": "Clínica privada • Terapia emocional • Consultoría • Acompañamiento personal",
+    "pt-BR": "Clínica particular • Terapia emocional • Aconselhamento • Acompanhamento pessoal",
+    "ar": "عيادة خاصة • علاج عاطفي • استشارة • مرافقة شخصية"
+  },
+  "קליניקת עור": {
+    "en": "Skin clinic",
+    "es": "Clínica de piel",
+    "pt-BR": "Clínica de pele",
+    "ar": "عيادة بشرة"
+  },
+  "קפסולה עונתית חדשה": {
+    "en": "New seasonal capsule",
+    "es": "Nueva cápsula de temporada",
+    "pt-BR": "Nova cápsula da estação",
+    "ar": "كبسولة موسمية جديدة"
+  },
+  "קריאייטיב, הפקה ומדיה — קמפיינים שאי אפשר להתעלם מהם.": {
+    "en": "Creative, production, and media — campaigns you can't ignore.",
+    "es": "Creatividad, producción y medios — campañas imposibles de ignorar.",
+    "pt-BR": "Criação, produção e mídia — campanhas impossíveis de ignorar.",
+    "ar": "إبداع وإنتاج ووسائط — حملات لا يمكن تجاهلها."
+  },
+  "קרקעות, חלקות וזכויות": {
+    "en": "Land, lots, and rights",
+    "es": "Terrenos, parcelas y derechos",
+    "pt-BR": "Terrenos, lotes e direitos",
+    "ar": "أراضٍ وقطع وحقوق"
+  },
+  "ראמן · אסיה": {
+    "en": "Ramen · Asia",
+    "es": "Ramen · Asia",
+    "pt-BR": "Ramen · Ásia",
+    "ar": "رامن · آسيا"
+  },
+  "רהיטים ואקססוריז שמעצבים אווירה.": {
+    "en": "Furniture and accessories that shape the mood.",
+    "es": "Muebles y accesorios que diseñan el ambiente.",
+    "pt-BR": "Móveis e acessórios que criam a atmosfera.",
+    "ar": "أثاث وإكسسوارات تصمم الأجواء."
+  },
+  "ריברה אוספת בתים שנושמים נחל, אגם ופארק. כל בחירה נבדקת לפי אור, קרבה לשבילי טבע ותחושת שקט אמיתית.": {
+    "en": "Rivara gathers homes that breathe creek, lake, and park. Every choice is checked for light, proximity to nature trails, and a real sense of quiet.",
+    "es": "Rivara reúne casas que respiran arroyo, lago y parque. Cada elección se revisa según la luz, la cercanía a senderos naturales y una sensación real de calma.",
+    "pt-BR": "A Rivara reúne casas que respiram riacho, lago e parque. Cada escolha é avaliada por luz, proximidade de trilhas na natureza e uma sensação verdadeira de silêncio.",
+    "ar": "تجمع Rivara بيوتاً تتنفس الجدول والبحيرة والحديقة. يُفحص كل اختيار حسب الضوء والقرب من مسارات الطبيعة وإحساس حقيقي بالهدوء."
+  },
+  "ריסים וגבות": {
+    "en": "Lashes and brows",
+    "es": "Pestañas y cejas",
+    "pt-BR": "Cílios e sobrancelhas",
+    "ar": "رموش وحواجب"
+  },
+  "רעיונות שעוצרים גלילה.": {
+    "en": "Ideas that stop the scroll.",
+    "es": "Ideas que detienen el scroll.",
+    "pt-BR": "Ideias que param o scroll.",
+    "ar": "أفكار توقف التمرير."
+  },
+  "רפואה רגועה,\nמדויקת ואנושית.": {
+    "en": "Calm medicine,\nprecise and human.",
+    "es": "Medicina serena,\nprecisa y humana.",
+    "pt-BR": "Medicina calma,\nprecisa e humana.",
+    "ar": "طب هادئ،\nدقيق وإنساني."
+  },
+  "שווארמה · גריל": {
+    "en": "Shawarma · Grill",
+    "es": "Shawarma · Parrilla",
+    "pt-BR": "Shawarma · Grelha",
+    "ar": "شاورما · شواء"
+  },
+  "שולחן משותף. טעמים רבים.": {
+    "en": "A shared table. Many flavors.",
+    "es": "Mesa compartida. Muchos sabores.",
+    "pt-BR": "Mesa compartilhada. Muitos sabores.",
+    "ar": "طاولة مشتركة. نكهات كثيرة."
+  },
+  "שיווק שלא\nמבקש רשות.": {
+    "en": "Marketing that doesn't\nask permission.",
+    "es": "Marketing que no\npide permiso.",
+    "pt-BR": "Marketing que não\npede licença.",
+    "ar": "تسويق لا\nيستأذن."
+  },
+  "שיחה אחת מספיקה כדי להבין אם הבעיה היא אסטרטגיה, תפעול, רווחיות או קצב הנהלה.": {
+    "en": "One conversation is enough to see whether the problem is strategy, operations, profitability, or the pace of leadership.",
+    "es": "Una sola conversación basta para entender si el problema es estrategia, operaciones, rentabilidad o el ritmo de la dirección.",
+    "pt-BR": "Uma conversa basta para entender se o problema é estratégia, operação, lucratividade ou o ritmo da liderança.",
+    "ar": "محادثة واحدة تكفي لفهم ما إذا كانت المشكلة في الاستراتيجية أو التشغيل أو الربحية أو إيقاع الإدارة."
+  },
+  "שיחת התאמה": {
+    "en": "Fit call",
+    "es": "Llamada de encaje",
+    "pt-BR": "Conversa de encaixe",
+    "ar": "مكالمة مواءمة"
+  },
+  "שיחת התאמה רגועה": {
+    "en": "A calm fit call",
+    "es": "Una llamada de encaje serena",
+    "pt-BR": "Uma conversa de encaixe calma",
+    "ar": "مكالمة مواءمة هادئة"
+  },
+  "שיעורי גיטרה, פסנתר, שירה והפקה — מהתו הראשון ועד הבמה.": {
+    "en": "Guitar, piano, voice, and production lessons — from the first note to the stage.",
+    "es": "Clases de guitarra, piano, canto y producción — de la primera nota al escenario.",
+    "pt-BR": "Aulas de violão, piano, canto e produção — da primeira nota ao palco.",
+    "ar": "دروس غيتار وبيانو وغناء وإنتاج — من النغمة الأولى حتى المسرح."
+  },
+  "שיעורי יוגה, מדיטציה וריטריטים קטנים בתוך חלל עמוק בגווני שזיף וסגול רך. כל שיעור נבנה סביב קצב, קשב ונוכחות.": {
+    "en": "Yoga, meditation, and small retreats in a deep plum-and-soft-violet space. Every class is built around pace, attention, and presence.",
+    "es": "Clases de yoga, meditación y retiros íntimos en un espacio profundo en tonos ciruela y violeta suave. Cada clase se construye alrededor del ritmo, la atención y la presencia.",
+    "pt-BR": "Aulas de ioga, meditação e retiros pequenos num espaço profundo em tons de ameixa e violeta suave. Cada aula é construída em torno de ritmo, atenção e presença.",
+    "ar": "دروس يوغا وتأمل وخلوات صغيرة داخل فضاء عميق بدرجات البرقوق والبنفسج الناعم. يُبنى كل درس حول الإيقاع والانتباه والحضور."
+  },
+  "שיעורי נגינה, הפקה והרכבים בתוך אולפני חזרות אמיתיים. גיטרות, קלידים, קול, ביטים ובמה אחת שמחכה לתלמיד הבא.": {
+    "en": "Instrument, production, and ensemble lessons inside real rehearsal studios. Guitars, keys, voice, beats, and one stage waiting for the next student.",
+    "es": "Clases de instrumento, producción y ensambles en estudios de ensayo de verdad. Guitarras, teclados, voz, beats y un escenario que espera al siguiente alumno.",
+    "pt-BR": "Aulas de instrumento, produção e grupos em estúdios de ensaio de verdade. Guitarras, teclados, voz, beats e um palco esperando o próximo aluno.",
+    "ar": "دروس عزف وإنتاج وتشكيلات داخل استوديوهات بروفة حقيقية. غيتارات ولوحات مفاتيح وصوت وإيقاعات ومنصة واحدة تنتظر الطالب التالي."
+  },
+  "שיעורים פרטיים": {
+    "en": "Private lessons",
+    "es": "Clases particulares",
+    "pt-BR": "Aulas particulares",
+    "ar": "دروس خاصة"
+  },
+  "שיעורים פרטיים לבגרות, אקדמיה ופסיכומטרי — עם מרצים שמדברים בגובה העיניים.": {
+    "en": "Private tutoring for high-school exams, university, and the psychometric — with teachers who meet you at eye level.",
+    "es": "Clases particulares para bachillerato, universidad y el psicométrico — con docentes que hablan de igual a igual.",
+    "pt-BR": "Aulas particulares para o ensino médio, a universidade e o psicométrico — com professores que falam de igual para igual.",
+    "ar": "دروس خاصة للثانوية والجامعة والامتحان السيكومتري — مع محاضرين يتحدثون بندّية."
+  },
+  "שכבה על שכבה. חמאה על חמאה.": {
+    "en": "Layer on layer. Butter on butter.",
+    "es": "Capa sobre capa. Mantequilla sobre mantequilla.",
+    "pt-BR": "Camada sobre camada. Manteiga sobre manteiga.",
+    "ar": "طبقة فوق طبقة. زبدة فوق زبدة."
+  },
+  "שכונות מומלצות": {
+    "en": "Recommended neighborhoods",
+    "es": "Barrios recomendados",
+    "pt-BR": "Bairros recomendados",
+    "ar": "أحياء مُوصى بها"
+  },
+  "שריינו תאריך": {
+    "en": "Reserve a date",
+    "es": "Reservar una fecha",
+    "pt-BR": "Reservem uma data",
+    "ar": "احجزوا تاريخاً"
+  },
+  "תאמו ניסיון": {
+    "en": "Book a trial",
+    "es": "Agendar una prueba",
+    "pt-BR": "Agendem uma experiência",
+    "ar": "نسّقوا تجربة"
+  },
+  "תבלין שמספר בית.": {
+    "en": "Spice that tells of home.",
+    "es": "Una especia que cuenta un hogar.",
+    "pt-BR": "Tempero que conta um lar.",
+    "ar": "توابل تحكي بيتاً."
+  },
+  "תגיעו.\nתדלקו.\nתפרצו.": {
+    "en": "Show up.\nFuel up.\nBreak through.",
+    "es": "Llega.\nCárgate.\nRompe.",
+    "pt-BR": "Cheguem.\nAbasteçam.\nExplodam.",
+    "ar": "صلوا.\nزوّدوا.\nانطلقوا."
+  },
+  "תהליך עסקה · חותמת": {
+    "en": "Deal process · Seal",
+    "es": "Proceso de operación · Sello",
+    "pt-BR": "Processo de negócio · Selo",
+    "ar": "مسار الصفقة · ختم"
+  },
+  "תהליכים, מדדים וצוותים — ליווי ניהולי שמזיז את הארגון קדימה.": {
+    "en": "Processes, metrics, and teams — executive guidance that moves the organization forward.",
+    "es": "Procesos, indicadores y equipos — acompañamiento directivo que mueve a la organización hacia adelante.",
+    "pt-BR": "Processos, indicadores e equipes — acompanhamento de gestão que empurra a organização para frente.",
+    "ar": "عمليات ومؤشرات وفرق — مرافقة إدارية تحرّك المؤسسة إلى الأمام."
+  },
+  "תור טיפוח": {
+    "en": "Grooming appointment",
+    "es": "Cita de cuidado",
+    "pt-BR": "Horário de cuidados",
+    "ar": "موعد عناية"
+  },
+  "תחזית היום": {
+    "en": "Today's forecast",
+    "es": "Pronóstico de hoy",
+    "pt-BR": "Previsão de hoje",
+    "ar": "توقعات اليوم"
+  },
+  "תיאום אבחון": {
+    "en": "Book a diagnosis",
+    "es": "Coordinar un diagnóstico",
+    "pt-BR": "Agendar um diagnóstico",
+    "ar": "تنسيق تشخيص"
+  },
+  "תיאום ייעוץ": {
+    "en": "Book a consultation",
+    "es": "Coordinar una consulta",
+    "pt-BR": "Agendar uma consultoria",
+    "ar": "تنسيق استشارة"
+  },
+  "תיאום ניסיון": {
+    "en": "Book a trial",
+    "es": "Coordinar una prueba",
+    "pt-BR": "Agendar uma experiência",
+    "ar": "تنسيق تجربة"
+  },
+  "תיאום סיור חוף": {
+    "en": "Book a beach tour",
+    "es": "Coordinar un tour de playa",
+    "pt-BR": "Agendar um tour na praia",
+    "ar": "تنسيق جولة شاطئية"
+  },
+  "תיאום שיחה": {
+    "en": "Book a call",
+    "es": "Coordinar una llamada",
+    "pt-BR": "Agendar uma conversa",
+    "ar": "تنسيق مكالمة"
+  },
+  "תיאום שיחה קצרה. בלי התחייבות. עם כיוון ברור.": {
+    "en": "Book a short call. No commitment. With a clear direction.",
+    "es": "Una llamada breve. Sin compromiso. Con un rumbo claro.",
+    "pt-BR": "Agende uma conversa curta. Sem compromisso. Com direção clara.",
+    "ar": "تنسيق مكالمة قصيرة. بلا التزام. مع اتجاه واضح."
+  },
+  "תיאום שיחת אבחון": {
+    "en": "Book a diagnostic call",
+    "es": "Coordinar una llamada de diagnóstico",
+    "pt-BR": "Agendar uma conversa de diagnóstico",
+    "ar": "تنسيق مكالمة تشخيص"
+  },
+  "תינוקות וילדים": {
+    "en": "Babies and kids",
+    "es": "Bebés y niños",
+    "pt-BR": "Bebês e crianças",
+    "ar": "رضّع وأطفال"
+  },
+  "תכנון חתונות אינטימי": {
+    "en": "Intimate wedding planning",
+    "es": "Planificación de bodas íntimas",
+    "pt-BR": "Planejamento de casamentos íntimos",
+    "ar": "تخطيط أعراس حميمة"
+  },
+  "תכנון מגורים · נדל״ן": {
+    "en": "Residential planning · Real estate",
+    "es": "Planificación residencial · Inmobiliaria",
+    "pt-BR": "Planejamento residencial · Imóveis",
+    "ar": "تخطيط سكني · عقارات"
+  },
+  "תכנון מדיה, רכישה ואופטימיזציה — דשבורד אחד לכל הערוצים.": {
+    "en": "Media planning, buying, and optimization — one dashboard for every channel.",
+    "es": "Planificación de medios, compra y optimización — un solo panel para todos los canales.",
+    "pt-BR": "Planejamento de mídia, compra e otimização — um dashboard para todos os canais.",
+    "ar": "تخطيط الوسائط والشراء والتحسين — لوحة واحدة لكل القنوات."
+  },
+  "תכנון שמספר סיפור.": {
+    "en": "Planning that tells a story.",
+    "es": "Una planificación que cuenta una historia.",
+    "pt-BR": "Um planejamento que conta uma história.",
+    "ar": "تخطيط يحكي قصة."
+  },
+  "תכשיטים ושעונים": {
+    "en": "Jewelry and watches",
+    "es": "Joyería y relojes",
+    "pt-BR": "Joias e relógios",
+    "ar": "مجوهرات وساعات"
+  },
+  "תכשיטים ושעונים שנבחרים כמו יצירת אמנות.": {
+    "en": "Jewelry and watches chosen like works of art.",
+    "es": "Joyería y relojes elegidos como una obra de arte.",
+    "pt-BR": "Joias e relógios escolhidos como uma obra de arte.",
+    "ar": "مجوهرات وساعات تُختار كعمل فني."
+  },
+  "תנועה שמייצרת תוצאות.": {
+    "en": "Motion that produces results.",
+    "es": "Movimiento que produce resultados.",
+    "pt-BR": "Movimento que gera resultados.",
+    "ar": "حركة تصنع نتائج."
+  },
+  "תפסו את הגאות.": {
+    "en": "Catch the tide.",
+    "es": "Atrapa la marea.",
+    "pt-BR": "Peguem a maré.",
+    "ar": "التقطوا المد."
+  },
+  "תפסו תור": {
+    "en": "Grab a slot",
+    "es": "Tomar un turno",
+    "pt-BR": "Peguem um horário",
+    "ar": "احجزوا موعداً"
+  },
+  "Artisan · חוף": {
+    "en": "Artisan · Beach",
+    "es": "Artisan · Playa",
+    "pt-BR": "Artisan · Praia",
+    "ar": "Artisan · شاطئ"
+  },
+  "Azureline — שכירת יאכטות, הפלגות יומיות ומסלולי שייט מותאמים לאורחים פרטיים.": {
+    "en": "Azureline — yacht charters, day sails, and cruising routes tailored for private guests.",
+    "es": "Azureline — alquiler de yates, salidas diarias y rutas de navegación a medida para huéspedes privados.",
+    "pt-BR": "Azureline — aluguel de iates, passeios diários e rotas de navegação sob medida para convidados particulares.",
+    "ar": "Azureline — استئجار يخوت ورحلات يومية ومسارات إبحار مخصصة للضيوف الخاصين."
+  },
+  "Bakora — מאפים שיוצאים מהתנור כל בוקר. קרואסונים, לחמים ובצק עלים שנפרם ברכות.": {
+    "en": "Bakora — pastries that leave the oven every morning. Croissants, breads, and puff pastry that flakes softly.",
+    "es": "Bakora — horneados que salen del horno cada mañana. Croissants, panes y hojaldre que se deshoja con suavidad.",
+    "pt-BR": "Bakora — assados que saem do forno toda manhã. Croissants, pães e massa folhada que se desfolha com suavidade.",
+    "ar": "Bakora — مخبوزات تخرج من الفرن كل صباح. كرواسون وخبز وعجين مورق يتفتت بنعومة."
+  },
+  "Beach Club · שקיעה": {
+    "en": "Beach Club · Sunset",
+    "es": "Beach Club · Atardecer",
+    "pt-BR": "Beach Club · Pôr do sol",
+    "ar": "Beach Club · غروب"
+  },
+  "Beauty salon • טיפוח אישי • חוויית פרימיום": {
+    "en": "Beauty salon • Personal care • A premium experience",
+    "es": "Beauty salon • Cuidado personal • Experiencia premium",
+    "pt-BR": "Beauty salon • Cuidados pessoais • Experiência premium",
+    "ar": "Beauty salon • عناية شخصية • تجربة فاخرة"
+  },
+  "Blushlab\nאיפור שנשאר בתמונה.": {
+    "en": "Blushlab\nMakeup that stays in the photo.",
+    "es": "Blushlab\nMaquillaje que se queda en la foto.",
+    "pt-BR": "Blushlab\nMaquiagem que permanece na foto.",
+    "ar": "Blushlab\nمكياج يبقى في الصورة."
+  },
+  "Bridaluxe\nכלה רגועה, עור זוהר.": {
+    "en": "Bridaluxe\nA calm bride, glowing skin.",
+    "es": "Bridaluxe\nUna novia serena, piel luminosa.",
+    "pt-BR": "Bridaluxe\nUma noiva calma, pele iluminada.",
+    "ar": "Bridaluxe\nعروس هادئة، بشرة مشرقة."
+  },
+  "Browline\nמסגרת קטנה, שינוי גדול.": {
+    "en": "Browline\nA small frame, a big change.",
+    "es": "Browline\nUn marco pequeño, un gran cambio.",
+    "pt-BR": "Browline\nUma moldura pequena, uma mudança grande.",
+    "ar": "Browline\nإطار صغير، تغيير كبير."
+  },
+  "Burgerhaus — המבורגר · סמאש. טעם מדויק, חוויה שלמה.": {
+    "en": "Burgerhaus — burgers · smash. Precise flavor, a complete experience.",
+    "es": "Burgerhaus — hamburguesa · smash. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Burgerhaus — hambúrguer · smash. Sabor preciso, uma experiência completa.",
+    "ar": "Burgerhaus — برغر · سماش. طعم دقيق، تجربة كاملة."
+  },
+  "Campusly\nציונים שעולים. ביטחון שנשאר.": {
+    "en": "Campusly\nGrades that rise. Confidence that stays.",
+    "es": "Campusly\nNotas que suben. Confianza que permanece.",
+    "pt-BR": "Campusly\nNotas que sobem. Confiança que fica.",
+    "ar": "Campusly\nدرجات ترتفع. ثقة تبقى."
+  },
+  "Chromabar\nצבע שמאיר את התנועה.": {
+    "en": "Chromabar\nColor that lights up the motion.",
+    "es": "Chromabar\nColor que ilumina el movimiento.",
+    "pt-BR": "Chromabar\nCor que ilumina o movimento.",
+    "ar": "Chromabar\nلون يضيء الحركة."
+  },
+  "Clearskin\nתוכנית עור עם מעקב אמיתי.": {
+    "en": "Clearskin\nA skin plan with real follow-up.",
+    "es": "Clearskin\nUn plan de piel con seguimiento de verdad.",
+    "pt-BR": "Clearskin\nUm plano de pele com acompanhamento de verdade.",
+    "ar": "Clearskin\nخطة بشرة بمتابعة حقيقية."
+  },
+  "Coraline — קורסי צלילה, ליווי מדריכים מוסמכים וצלילות לשונית עם ציוד פרימיום.": {
+    "en": "Coraline — diving courses, certified instructor guidance, and reef dives with premium gear.",
+    "es": "Coraline — cursos de buceo, acompañamiento de instructores certificados e inmersiones al arrecife con equipo premium.",
+    "pt-BR": "Coraline — cursos de mergulho, acompanhamento de instrutores certificados e mergulhos no recife com equipamento premium.",
+    "ar": "Coraline — دورات غوص ومرافقة مدربين معتمدين وغوصات للشعاب بمعدات فاخرة."
+  },
+  "Cosmella\nעור רגוע מתחיל באבחון.": {
+    "en": "Cosmella\nCalm skin starts with a diagnosis.",
+    "es": "Cosmella\nLa piel serena empieza con un diagnóstico.",
+    "pt-BR": "Cosmella\nPele calma começa no diagnóstico.",
+    "ar": "Cosmella\nالبشرة الهادئة تبدأ بالتشخيص."
+  },
+  "Craftora\nידיים שעובדות. רעיונות שנושמים.": {
+    "en": "Craftora\nHands that work. Ideas that breathe.",
+    "es": "Craftora\nManos que trabajan. Ideas que respiran.",
+    "pt-BR": "Craftora\nMãos que trabalham. Ideias que respiram.",
+    "ar": "Craftora\nأيدٍ تعمل. أفكار تتنفس."
+  },
+  "Dentelle משלבת רפואת שיניים דיגיטלית, אסתטיקה עדינה ומרחב טיפולי שקט שמוריד דופק מהרגע הראשון.": {
+    "en": "Dentelle combines digital dentistry, gentle aesthetics, and a quiet treatment space that lowers your pulse from the first moment.",
+    "es": "Dentelle combina odontología digital, estética delicada y un espacio de tratamiento silencioso que baja el pulso desde el primer instante.",
+    "pt-BR": "A Dentelle combina odontologia digital, estética delicada e um espaço de tratamento silencioso que baixa o pulso desde o primeiro instante.",
+    "ar": "تجمع Dentelle طب الأسنان الرقمي والجماليات الرقيقة وفضاء علاج هادئ يخفض النبض من اللحظة الأولى."
+  },
+  "Dermara\nעור שמדבר בריאות.": {
+    "en": "Dermara\nSkin that speaks health.",
+    "es": "Dermara\nPiel que habla de salud.",
+    "pt-BR": "Dermara\nPele que fala saúde.",
+    "ar": "Dermara\nبشرة تتحدث صحة."
+  },
+  "Dessertlab — קינוחים · פטיסרי. טעם מדויק, חוויה שלמה.": {
+    "en": "Dessertlab — desserts · patisserie. Precise flavor, a complete experience.",
+    "es": "Dessertlab — postres · pastelería. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Dessertlab — sobremesas · confeitaria. Sabor preciso, uma experiência completa.",
+    "ar": "Dessertlab — حلويات · باتيسري. طعم دقيق، تجربة كاملة."
+  },
+  "Dimsumix — דימ סאם · כיסונים. טעם מדויק, חוויה שלמה.": {
+    "en": "Dimsumix — dim sum · dumplings. Precise flavor, a complete experience.",
+    "es": "Dimsumix — dim sum · dumplings. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Dimsumix — dim sum · dumplings. Sabor preciso, uma experiência completa.",
+    "ar": "Dimsumix — ديم سام · فطائر محشوة. طعم دقيق، تجربة كاملة."
+  },
+  "Driftwood — מסעדת חוף עם דגים טריים, יין מקומי ושולחנות ממש על המים.": {
+    "en": "Driftwood — a beach restaurant with fresh fish, local wine, and tables right on the water.",
+    "es": "Driftwood — un restaurante de playa con pescado fresco, vino local y mesas justo sobre el agua.",
+    "pt-BR": "Driftwood — um restaurante de praia com peixe fresco, vinho local e mesas bem sobre a água.",
+    "ar": "Driftwood — مطعم شاطئ بسمك طازج ونبيذ محلي وطاولات على الماء مباشرة."
+  },
+  "Dunewave — ריזורט בוטיק על קו הדיונות עם וילות פרטיות, בריכות מים מלוחים ושקיעות שאין להן מתחרות.": {
+    "en": "Dunewave — a boutique resort on the dune line with private villas, saltwater pools, and sunsets that have no rival.",
+    "es": "Dunewave — un resort boutique sobre la línea de dunas con villas privadas, piscinas de agua salada y atardeceres sin rival.",
+    "pt-BR": "Dunewave — um resort boutique na linha das dunas com vilas privativas, piscinas de água salgada e pores do sol sem rival.",
+    "ar": "Dunewave — منتجع بوتيك على خط الكثبان بفيلات خاصة وبرك مياه مالحة وغروب لا منافس له."
+  },
+  "Emberplate — גריל פחמים, נתחים נבחרים ועישון איטי. טעם עמוק בלי פשרות.": {
+    "en": "Emberplate — charcoal grill, selected cuts, and slow smoking. Deep flavor, no compromises.",
+    "es": "Emberplate — parrilla de carbón, cortes seleccionados y ahumado lento. Sabor profundo, sin concesiones.",
+    "pt-BR": "Emberplate — grelha de carvão, cortes selecionados e defumação lenta. Sabor profundo, sem concessões.",
+    "ar": "Emberplate — شواء فحم وقطع مختارة وتدخين بطيء. طعم عميق بلا تنازلات."
+  },
+  "Florique יוצרת רגעים רכים עם פרחים עונתיים, עטיפה מוקפדת ומשלוח שמגיע בזמן.": {
+    "en": "Florique creates soft moments with seasonal flowers, careful wrapping, and delivery that arrives on time.",
+    "es": "Florique crea momentos suaves con flores de temporada, un envoltorio cuidado y un envío que llega a tiempo.",
+    "pt-BR": "A Florique cria momentos suaves com flores da estação, embalagem caprichada e entrega que chega no horário.",
+    "ar": "تصنع Florique لحظات رقيقة بأزهار موسمية وتغليف متقن وتوصيل يصل في موعده."
+  },
+  "Fluxora מרכזת חדשות, מאמרים ושיחות מקצועיות לפיד אחד מותאם אישית — כדי שהצוות שלכם יישאר מעודכן בלי לבזבז שעות על חיפוש.": {
+    "en": "Fluxora gathers news, articles, and professional conversations into one personalized feed — so your team stays current without wasting hours searching.",
+    "es": "Fluxora reúne noticias, artículos y conversaciones profesionales en un feed personalizado — para que su equipo se mantenga al día sin perder horas buscando.",
+    "pt-BR": "A Fluxora reúne notícias, artigos e conversas profissionais num feed personalizado — para que a equipe de vocês continue atualizada sem perder horas procurando.",
+    "ar": "تجمع Fluxora الأخبار والمقالات والمحادثات المهنية في موجز واحد مخصص — كي يبقى فريقكم على اطلاع دون إضاعة ساعات في البحث."
+  },
+  "Formara מתכננת בתים, דירות בוטיק וחללים מסחריים עם שכבות של טקסטורה, אור טבעי וקו חומרי מדויק.": {
+    "en": "Formara designs homes, boutique apartments, and commercial spaces with layers of texture, natural light, and a precise material line.",
+    "es": "Formara proyecta casas, departamentos boutique y espacios comerciales con capas de textura, luz natural y una línea material precisa.",
+    "pt-BR": "A Formara projeta casas, apartamentos boutique e espaços comerciais com camadas de textura, luz natural e uma linha material precisa.",
+    "ar": "تصمم Formara بيوتاً وشققاً بوتيك ومساحات تجارية بطبقات من الملمس والضوء الطبيعي وخط مادي دقيق."
+  },
+  "Formella\nגוף בתנועה נכונה.": {
+    "en": "Formella\nA body in the right motion.",
+    "es": "Formella\nUn cuerpo en el movimiento correcto.",
+    "pt-BR": "Formella\nUm corpo no movimento certo.",
+    "ar": "Formella\nجسم في الحركة الصحيحة."
+  },
+  "Gelatix — גלידה · ג׳לאטו. טעם מדויק, חוויה שלמה.": {
+    "en": "Gelatix — ice cream · gelato. Precise flavor, a complete experience.",
+    "es": "Gelatix — helado · gelato. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Gelatix — sorvete · gelato. Sabor preciso, uma experiência completa.",
+    "ar": "Gelatix — آيس كريم · جيلاتو. طعم دقيق، تجربة كاملة."
+  },
+  "Gelora\nברק ג׳ל שמחזיק את השבוע.": {
+    "en": "Gelora\nGel shine that lasts the week.",
+    "es": "Gelora\nBrillo de gel que sostiene la semana.",
+    "pt-BR": "Gelora\nBrilho de gel que segura a semana.",
+    "ar": "Gelora\nلمعان جل يصمد طوال الأسبوع."
+  },
+  "Glowhaus\nזוהר של עיר בלילה.": {
+    "en": "Glowhaus\nThe glow of a city at night.",
+    "es": "Glowhaus\nEl brillo de una ciudad de noche.",
+    "pt-BR": "Glowhaus\nO brilho de uma cidade à noite.",
+    "ar": "Glowhaus\nتوهج مدينة في الليل."
+  },
+  "Groomora\nטיפוח קצר, תוצאה נקייה.": {
+    "en": "Groomora\nA short grooming, a clean result.",
+    "es": "Groomora\nUn arreglo breve, un resultado limpio.",
+    "pt-BR": "Groomora\nUm cuidado curto, um resultado limpo.",
+    "ar": "Groomora\nعناية قصيرة، نتيجة نظيفة."
+  },
+  "Handcraft מרכזת אינסטלציה, חשמל ושיפוצים תחת צוות אחד, עם אחריות כתובה וקו טלפון פעיל.": {
+    "en": "Handcraft brings plumbing, electrical, and renovations under one crew, with written warranty and a live phone line.",
+    "es": "Handcraft reúne fontanería, electricidad y reformas bajo un solo equipo, con garantía por escrito y una línea telefónica activa.",
+    "pt-BR": "A Handcraft reúne encanamento, elétrica e reformas sob uma só equipe, com garantia por escrito e uma linha telefônica ativa.",
+    "ar": "تجمع Handcraft السباكة والكهرباء والتجديدات تحت فريق واحد، مع ضمان مكتوب وخط هاتف عامل."
+  },
+  "Horizonix — סיורי צילום בחוף, workshop לשקיעות וגלריה של רגעים שתפסנו.": {
+    "en": "Horizonix — beach photography tours, sunset workshops, and a gallery of moments we caught.",
+    "es": "Horizonix — tours de fotografía en la playa, talleres de atardecer y una galería de momentos que capturamos.",
+    "pt-BR": "Horizonix — tours de fotografia na praia, oficinas de pôr do sol e uma galeria de momentos que capturamos.",
+    "ar": "Horizonix — جولات تصوير على الشاطئ وورش غروب ومعرض للحظات التقطناها."
+  },
+  "Juicepress — מיצים · בר בריאות. טעם מדויק, חוויה שלמה.": {
+    "en": "Juicepress — juices · health bar. Precise flavor, a complete experience.",
+    "es": "Juicepress — jugos · barra de salud. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Juicepress — sucos · bar de saúde. Sabor preciso, uma experiência completa.",
+    "ar": "Juicepress — عصائر · بار صحة. طعم دقيق، تجربة كاملة."
+  },
+  "Justora מתאימה למשרדי עורכי דין שרוצים נוכחות דיגיטלית מקצועית, אמינה ומרשימה — עם חוויית משתמש שמובילה את הלקוח לקביעת ייעוץ.": {
+    "en": "Justora is built for law firms that want a professional, trustworthy, impressive digital presence — with a user experience that leads the client to book a consultation.",
+    "es": "Justora está pensada para despachos de abogados que quieren una presencia digital profesional, fiable e impactante — con una experiencia de usuario que lleva al cliente a agendar una consulta.",
+    "pt-BR": "A Justora é feita para escritórios de advocacia que querem uma presença digital profissional, confiável e impressionante — com uma experiência do usuário que leva o cliente a marcar uma consultoria.",
+    "ar": "تناسب Justora مكاتب المحاماة التي تريد حضوراً رقمياً مهنياً وموثوقاً ومؤثراً — مع تجربة مستخدم تقود العميل إلى حجز استشارة."
+  },
+  "Kidwise\nלמידה שמרגישה כמו משחק.": {
+    "en": "Kidwise\nLearning that feels like play.",
+    "es": "Kidwise\nAprendizaje que se siente como un juego.",
+    "pt-BR": "Kidwise\nAprendizado que parece brincadeira.",
+    "ar": "Kidwise\nتعلّم يشبه اللعب."
+  },
+  "Lashatelier\nריסים שנבנים לפי העין.": {
+    "en": "Lashatelier\nLashes built for the eye.",
+    "es": "Lashatelier\nPestañas que se construyen según el ojo.",
+    "pt-BR": "Lashatelier\nCílios construídos conforme o olho.",
+    "ar": "Lashatelier\nرموش تُبنى حسب العين."
+  },
+  "Lashora\nמבט שנפתח לאט.": {
+    "en": "Lashora\nA gaze that opens slowly.",
+    "es": "Lashora\nUna mirada que se abre despacio.",
+    "pt-BR": "Lashora\nUm olhar que se abre devagar.",
+    "ar": "Lashora\nنظرة تنفتح ببطء."
+  },
+  "Lectora\nלומדים כמו בסרט.": {
+    "en": "Lectora\nLearn like it's a film.",
+    "es": "Lectora\nAprender como en una película.",
+    "pt-BR": "Lectora\nAprender como num filme.",
+    "ar": "Lectora\nتتعلمون كما في فيلم."
+  },
+  "Lexhaven מלווה חברות, יזמים ומשפחות הון בנושאי חוזים, נדל״ן וליטיגציה — עם דיוק משפטי, שפה ברורה וניהול סיכונים קר.": {
+    "en": "Lexhaven advises companies, founders, and families of wealth on contracts, real estate, and litigation — with legal precision, clear language, and cool-headed risk management.",
+    "es": "Lexhaven acompaña a empresas, emprendedores y familias de patrimonio en contratos, inmobiliaria y litigios — con precisión jurídica, lenguaje claro y una gestión de riesgos fría.",
+    "pt-BR": "A Lexhaven acompanha empresas, empreendedores e famílias de patrimônio em contratos, imóveis e litígios — com precisão jurídica, linguagem clara e gestão de riscos fria.",
+    "ar": "ترافق Lexhaven الشركات وروّاد الأعمال وعائلات الثروة في العقود والعقارات والتقاضي — بدقة قانونية ولغة واضحة وإدارة مخاطر باردة."
+  },
+  "Mentora\nליווי שמשנה מסלול.": {
+    "en": "Mentora\nGuidance that changes the path.",
+    "es": "Mentora\nUn acompañamiento que cambia el rumbo.",
+    "pt-BR": "Mentora\nUm acompanhamento que muda o rumo.",
+    "ar": "Mentora\nمرافقة تغيّر المسار."
+  },
+  "Mezzaline — מזטה טרייה, שמן זית מקומי ומנות קטנות שנועדו לחלוק.": {
+    "en": "Mezzaline — fresh mezze, local olive oil, and small plates made to share.",
+    "es": "Mezzaline — mezze fresco, aceite de oliva local y platos pequeños pensados para compartir.",
+    "pt-BR": "Mezzaline — mezze fresco, azeite local e pratos pequenos pensados para compartilhar.",
+    "ar": "Mezzaline — مزة طازجة وزيت زيتون محلي وأطباق صغيرة صُممت للمشاركة."
+  },
+  "Microarch\nשערות קטנות. דיוק גדול.": {
+    "en": "Microarch\nTiny hairs. Great precision.",
+    "es": "Microarch\nPelitos. Gran precisión.",
+    "pt-BR": "Microarch\nFios pequenos. Precisão grande.",
+    "ar": "Microarch\nشعيرات صغيرة. دقة كبيرة."
+  },
+  "Mirage — ריזורט יוקרתי בין דיונות לשונית, עם סpa מדברי ובריכות אינסופיות.": {
+    "en": "Mirage — a luxury resort between dunes and reef, with a desert spa and infinity pools.",
+    "es": "Mirage — un resort de lujo entre dunas y arrecife, con spa desértico y piscinas infinitas.",
+    "pt-BR": "Mirage — um resort de luxo entre dunas e recife, com spa desértico e piscinas infinitas.",
+    "ar": "Mirage — منتجع فاخر بين الكثبان والشعاب، مع سبا صحراوي وبرك لا نهائية."
+  },
+  "Nailmuse\nציפורניים עם רעיון.": {
+    "en": "Nailmuse\nNails with an idea.",
+    "es": "Nailmuse\nUñas con una idea.",
+    "pt-BR": "Nailmuse\nUnhas com uma ideia.",
+    "ar": "Nailmuse\nأظافر بفكرة."
+  },
+  "Nailora\nציפורניים שמדברות צבע.": {
+    "en": "Nailora\nNails that speak color.",
+    "es": "Nailora\nUñas que hablan en color.",
+    "pt-BR": "Nailora\nUnhas que falam cor.",
+    "ar": "Nailora\nأظافر تتحدث لوناً."
+  },
+  "Neuralis הופכת את שכבת ה-AI שלכם למוצר נשלט, מדיד ומוכן לצמיחה.": {
+    "en": "Neuralis turns your AI layer into a product that's controllable, measurable, and ready to scale.",
+    "es": "Neuralis convierte su capa de IA en un producto controlable, medible y listo para crecer.",
+    "pt-BR": "A Neuralis transforma a camada de IA de vocês num produto controlável, mensurável e pronto para crescer.",
+    "ar": "تحوّل Neuralis طبقة الذكاء الاصطناعي لديكم إلى منتج قابل للضبط والقياس وجاهز للنمو."
+  },
+  "Nexora מאחדת נתונים, אוטומציה וצוות במקום אחד — כדי שתעבדו פחות על התהליכים ויותר על הצמיחה. הקמה בדקות, אינטגרציות מוכנות, ותובנות בזמן אמת.": {
+    "en": "Nexora unifies data, automation, and team in one place — so you spend less on processes and more on growth. Live in minutes, ready-made integrations, and real-time insights.",
+    "es": "Nexora unifica datos, automatización y equipo en un solo lugar — para que trabajen menos en los procesos y más en el crecimiento. Puesta en marcha en minutos, integraciones listas e insights en tiempo real.",
+    "pt-BR": "A Nexora une dados, automação e equipe num só lugar — para vocês trabalharem menos nos processos e mais no crescimento. No ar em minutos, integrações prontas e insights em tempo real.",
+    "ar": "توحّد Nexora البيانات والأتمتة والفريق في مكان واحد — لتعملوا أقل على العمليات وأكثر على النمو. تشغيل خلال دقائق وتكاملات جاهزة ورؤى في الوقت الفعلي."
+  },
+  "Noodlix — ראמן בעבודת יד, ציר שמתבשל 18 שעות ואטריות טריות כל בוקר.": {
+    "en": "Noodlix — handmade ramen, broth that simmers 18 hours, and fresh noodles every morning.",
+    "es": "Noodlix — ramen artesanal, un caldo que hierve 18 horas y fideos frescos cada mañana.",
+    "pt-BR": "Noodlix — ramen artesanal, caldo que cozinha 18 horas e macarrão fresco toda manhã.",
+    "ar": "Noodlix — رامن يدوي ومرق يُطبخ 18 ساعة ونودلز طازجة كل صباح."
+  },
+  "Noteline\nהמוזיקה שלכם, בנפח מלא.": {
+    "en": "Noteline\nYour music, at full volume.",
+    "es": "Noteline\nSu música, a volumen completo.",
+    "pt-BR": "Noteline\nA música de vocês, no volume cheio.",
+    "ar": "Noteline\nموسيقاكم، بملء الصوت."
+  },
+  "Pastafora — פסטה · איטלקי. טעם מדויק, חוויה שלמה.": {
+    "en": "Pastafora — pasta · Italian. Precise flavor, a complete experience.",
+    "es": "Pastafora — pasta · italiano. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Pastafora — massa · italiano. Sabor preciso, uma experiência completa.",
+    "ar": "Pastafora — باستا · إيطالي. طعم دقيق، تجربة كاملة."
+  },
+  "Pawhaus הוא מרחב טיפול חם ומדויק לחיות מחמד: השגחה, משחק, מנוחה, טיפוח ועדכונים שקטים לבעלים לאורך כל היום.": {
+    "en": "Pawhaus is a warm, precise care space for pets: supervision, play, rest, grooming, and quiet updates for owners throughout the day.",
+    "es": "Pawhaus es un espacio de cuidado cálido y preciso para mascotas: supervisión, juego, descanso, grooming y actualizaciones discretas para los dueños a lo largo del día.",
+    "pt-BR": "A Pawhaus é um espaço de cuidado quente e preciso para pets: supervisão, brincadeira, descanso, tosa e atualizações discretas para os donos ao longo do dia.",
+    "ar": "Pawhaus مساحة رعاية دافئة ودقيقة للحيوانات الأليفة: إشراف ولعب وراحة وعناية وتحديثات هادئة للمالكين طوال اليوم."
+  },
+  "Peelora\nחידוש עדין, שכבה אחרי שכבה.": {
+    "en": "Peelora\nGentle renewal, layer after layer.",
+    "es": "Peelora\nRenovación suave, capa tras capa.",
+    "pt-BR": "Peelora\nRenovação suave, camada após camada.",
+    "ar": "Peelora\nتجديد لطيف، طبقة بعد طبقة."
+  },
+  "Permanova\nקווים רכים שנשארים.": {
+    "en": "Permanova\nSoft lines that stay.",
+    "es": "Permanova\nLíneas suaves que se quedan.",
+    "pt-BR": "Permanova\nLinhas suaves que ficam.",
+    "ar": "Permanova\nخطوط ناعمة تبقى."
+  },
+  "Petaluxe\nהיום הכי יפה — בעדינות.": {
+    "en": "Petaluxe\nThe most beautiful day — gently.",
+    "es": "Petaluxe\nEl día más bello — con delicadeza.",
+    "pt-BR": "Petaluxe\nO dia mais bonito — com delicadeza.",
+    "ar": "Petaluxe\nأجمل يوم — برقة."
+  },
+  "Plantora — טבעוני · צמחי. טעם מדויק, חוויה שלמה.": {
+    "en": "Plantora — vegan · plant-based. Precise flavor, a complete experience.",
+    "es": "Plantora — vegano · vegetal. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Plantora — vegano · vegetal. Sabor preciso, uma experiência completa.",
+    "ar": "Plantora — نباتي · من النباتات. طعم دقيق، تجربة كاملة."
+  },
+  "Pokeline — פוקה · קערות. טעם מדויק, חוויה שלמה.": {
+    "en": "Pokeline — poke · bowls. Precise flavor, a complete experience.",
+    "es": "Pokeline — poke · bowls. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Pokeline — poke · bowls. Sabor preciso, uma experiência completa.",
+    "ar": "Pokeline — بوكي · أوعية. طعم دقيق، تجربة كاملة."
+  },
+  "Polyglota\nשפה חדשה. עולם חדש.": {
+    "en": "Polyglota\nA new language. A new world.",
+    "es": "Polyglota\nUn idioma nuevo. Un mundo nuevo.",
+    "pt-BR": "Polyglota\nUm idioma novo. Um mundo novo.",
+    "ar": "Polyglota\nلغة جديدة. عالم جديد."
+  },
+  "Resort · דיונות": {
+    "en": "Resort · Dunes",
+    "es": "Resort · Dunas",
+    "pt-BR": "Resort · Dunas",
+    "ar": "Resort · كثبان"
+  },
+  "Saltforge — מלח ים artisan, תבלינים חוף ומוצרי מלאכה מחומרים טבעיים.": {
+    "en": "Saltforge — artisan sea salt, coastal spices, and craft goods from natural materials.",
+    "es": "Saltforge — sal marina artesanal, especias de costa y artesanías de materiales naturales.",
+    "pt-BR": "Saltforge — sal marinho artesanal, temperos de praia e peças artesanais de materiais naturais.",
+    "ar": "Saltforge — ملح بحر حرفي وتوابل ساحلية ومنتجات حرفية من مواد طبيعية."
+  },
+  "Savory היא מסעדת שף אינטימית בתל אביב, המגישה חומרי גלם מקומיים, יינות מדויקים וקצב ערב שנבנה סביב שולחן אחד בלתי נשכח.": {
+    "en": "Savory is an intimate chef's restaurant in Tel Aviv, serving local ingredients, precise wines, and an evening tempo built around one unforgettable table.",
+    "es": "Savory es un restaurante de chef íntimo en Tel Aviv, que sirve materia prima local, vinos precisos y un ritmo de noche construido alrededor de una mesa inolvidable.",
+    "pt-BR": "A Savory é um restaurante de chef íntimo em Tel Aviv, que serve ingredientes locais, vinhos precisos e um ritmo de noite construído em torno de uma mesa inesquecível.",
+    "ar": "Savory مطعم شيف حميمي في تل أبيب، يقدّم مواد أولية محلية ونبيذاً دقيقاً وإيقاع أمسية يُبنى حول طاولة واحدة لا تُنسى."
+  },
+  "Seabloom — spa טרופי עם טיפולי גוף, ארומatherapy וגן צמחי מרפא מול הים.": {
+    "en": "Seabloom — a tropical spa with body treatments, aromatherapy, and a medicinal garden facing the sea.",
+    "es": "Seabloom — un spa tropical con tratamientos corporales, aromaterapia y un jardín de plantas medicinales frente al mar.",
+    "pt-BR": "Seabloom — um spa tropical com tratamentos corporais, aromaterapia e um jardim de plantas medicinais de frente para o mar.",
+    "ar": "Seabloom — سبا استوائي بعلاجات للجسم وعلاج بالروائح وحديقة أعشاب طبية تطل على البحر."
+  },
+  "Seafoodix — פירות ים · דגים. טעם מדויק, חוויה שלמה.": {
+    "en": "Seafoodix — seafood · fish. Precise flavor, a complete experience.",
+    "es": "Seafoodix — mariscos · pescados. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Seafoodix — frutos do mar · peixes. Sabor preciso, uma experiência completa.",
+    "ar": "Seafoodix — مأكولات بحرية · أسماك. طعم دقيق، تجربة كاملة."
+  },
+  "Serenova מתאימה לעסקים טיפוליים, יועצים וקליניקות שרוצים נוכחות דיגיטלית עדינה, יוקרתית וברורה — עם חוויית משתמש שמובילה את המבקר צעד אחר צעד.": {
+    "en": "Serenova is built for wellness businesses, advisors, and clinics that want a gentle, luxurious, clear digital presence — with a user experience that leads the visitor step by step.",
+    "es": "Serenova está pensada para negocios terapéuticos, consultores y clínicas que quieren una presencia digital suave, lujosa y clara — con una experiencia de usuario que guía al visitante paso a paso.",
+    "pt-BR": "A Serenova é feita para negócios terapêuticos, consultores e clínicas que querem uma presença digital suave, sofisticada e clara — com uma experiência do usuário que leva o visitante passo a passo.",
+    "ar": "تناسب Serenova الأعمال العلاجية والمستشارين والعيادات التي تريد حضوراً رقمياً رقيقاً وفاخراً وواضحاً — مع تجربة مستخدم تقود الزائر خطوة بخطوة."
+  },
+  "Shawarmia — שווארמה · גריל. טעם מדויק, חוויה שלמה.": {
+    "en": "Shawarmia — shawarma · grill. Precise flavor, a complete experience.",
+    "es": "Shawarmia — shawarma · parrilla. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Shawarmia — shawarma · grelha. Sabor preciso, uma experiência completa.",
+    "ar": "Shawarmia — شاورما · شواء. طعم دقيق، تجربة كاملة."
+  },
+  "Silkbar\nשיער שנופל נכון.": {
+    "en": "Silkbar\nHair that falls right.",
+    "es": "Silkbar\nCabello que cae bien.",
+    "pt-BR": "Silkbar\nCabelo que cai certo.",
+    "ar": "Silkbar\nشعر يسقط كما ينبغي."
+  },
+  "Skillforge\nכישורים שנבנים בחום.": {
+    "en": "Skillforge\nSkills built in the heat.",
+    "es": "Skillforge\nHabilidades que se forjan en calor.",
+    "pt-BR": "Skillforge\nHabilidades construídas no calor.",
+    "ar": "Skillforge\nمهارات تُبنى في الحرارة."
+  },
+  "Smokepit — ברביקיו · מעשנה. טעם מדויק, חוויה שלמה.": {
+    "en": "Smokepit — barbecue · smokehouse. Precise flavor, a complete experience.",
+    "es": "Smokepit — barbacoa · ahumadero. Sabor preciso, una experiencia completa.",
+    "pt-BR": "Smokepit — churrasco · defumador. Sabor preciso, uma experiência completa.",
+    "ar": "Smokepit — باربكيو · مدخنة. طعم دقيق، تجربة كاملة."
+  },
+  "Spa · טרופי": {
+    "en": "Spa · Tropical",
+    "es": "Spa · Tropical",
+    "pt-BR": "Spa · Tropical",
+    "ar": "Spa · استوائي"
+  },
+  "Spajade\nפנים רגועות, נשימה עמוקה.": {
+    "en": "Spajade\nA calm face, a deep breath.",
+    "es": "Spajade\nUn rostro sereno, una respiración profunda.",
+    "pt-BR": "Spajade\nUm rosto calmo, uma respiração profunda.",
+    "ar": "Spajade\nوجه هادئ، نفس عميق."
+  },
+  "Spiceforge — קארי ביתי, תאלי צבעוני ותערובות תבלינים שנטחנות במקום.": {
+    "en": "Spiceforge — home-style curry, a colorful thali, and spice blends ground on site.",
+    "es": "Spiceforge — curry casero, un thali de color y mezclas de especias molidas en el lugar.",
+    "pt-BR": "Spiceforge — curry caseiro, um thali colorido e misturas de temperos moídas na hora.",
+    "ar": "Spiceforge — كاري بيتي وتالي ملون وخلطات توابل تُطحن في المكان."
+  },
+  "Streetbite — פודטראקים, דוכני לילה ומנות שמגיעות חמות מהחלון. עקבו אחרי המיקום.": {
+    "en": "Streetbite — food trucks, night stalls, and dishes that arrive hot from the window. Follow the location.",
+    "es": "Streetbite — food trucks, puestos de noche y platos que llegan calientes desde la ventanilla. Sigan la ubicación.",
+    "pt-BR": "Streetbite — food trucks, barracas noturnas e pratos que chegam quentes da janela. Sigam a localização.",
+    "ar": "Streetbite — شاحنات طعام وأكشاك ليلية وأطباق تصل ساخنة من النافذة. تابعوا الموقع."
+  },
+  "Studiora הוא סטודיו קריאייטיב שבונה מותגים, חוויות דיגיטליות וקמפיינים שגורמים לאנשים לעצור, להסתכל ולזכור. אנחנו מחברים אסטרטגיה חדה לעיצוב נועז — ומתרגמים את זה לתוצאות.": {
+    "en": "Studiora is a creative studio that builds brands, digital experiences, and campaigns that make people stop, look, and remember. We connect sharp strategy to bold design — and turn that into results.",
+    "es": "Studiora es un estudio creativo que construye marcas, experiencias digitales y campañas que hacen que la gente se detenga, mire y recuerde. Unimos estrategia nítida con diseño audaz — y lo traducimos en resultados.",
+    "pt-BR": "A Studiora é um estúdio criativo que constrói marcas, experiências digitais e campanhas que fazem as pessoas parar, olhar e lembrar. Ligamos estratégia afiada a design ousado — e traduzimos isso em resultados.",
+    "ar": "Studiora استوديو إبداعي يبني علامات وتجارب رقمية وحملات تجعل الناس يتوقفون وينظرون ويتذكرون. نربط استراتيجية حادة بتصميم جريء — ونحوّل ذلك إلى نتائج."
+  },
+  "Sugarose\nחלקות מתוקה, בלי לחץ.": {
+    "en": "Sugarose\nSweet smoothness, no pressure.",
+    "es": "Sugarose\nSuavidad dulce, sin presión.",
+    "pt-BR": "Sugarose\nLisura doce, sem pressão.",
+    "ar": "Sugarose\nنعومة حلوة، بلا ضغط."
+  },
+  "Sunrift — מועדון חוף עם DJ sets, בר קוקטיילים ושולחנות VIP מול הים.": {
+    "en": "Sunrift — a beach club with DJ sets, a cocktail bar, and VIP tables facing the sea.",
+    "es": "Sunrift — un club de playa con DJ sets, barra de cócteles y mesas VIP frente al mar.",
+    "pt-BR": "Sunrift — um clube de praia com DJ sets, bar de coquetéis e mesas VIP de frente para o mar.",
+    "ar": "Sunrift — نادي شاطئ مع DJ sets وبار كوكتيل وطاولات VIP مقابل البحر."
+  },
+  "Surf · גלים": {
+    "en": "Surf · Waves",
+    "es": "Surf · Olas",
+    "pt-BR": "Surf · Ondas",
+    "ar": "Surf · أمواج"
+  },
+  "Sushisen — אומאקאסה, ניגירי יומי ודגים טריים שמגיעים עם הבוקר.": {
+    "en": "Sushisen — omakase, daily nigiri, and fresh fish that arrives with the morning.",
+    "es": "Sushisen — omakase, nigiri del día y pescado fresco que llega con la mañana.",
+    "pt-BR": "Sushisen — omakase, nigiri do dia e peixe fresco que chega com a manhã.",
+    "ar": "Sushisen — أوماكاسه ونيغيري يومي وسمك طازج يصل مع الصباح."
+  },
+  "Tacoflare — טאקוס רחוב, בשר על פלנצ׳ה וסלסות שבונות חום.": {
+    "en": "Tacoflare — street tacos, plancha meat, and salsas that build the heat.",
+    "es": "Tacoflare — tacos de calle, carne a la plancha y salsas que construyen el calor.",
+    "pt-BR": "Tacoflare — tacos de rua, carne na chapa e salsas que constroem o calor.",
+    "ar": "Tacoflare — تاكو شارع ولحم على البلانشا وصلصات تبني الحرارة."
+  },
+  "Tidehaus — גלשנים, חליפות, שיעורי גלישה ותחזית גלים מעודכנת לכל חוף.": {
+    "en": "Tidehaus — boards, wetsuits, surf lessons, and an updated wave forecast for every beach.",
+    "es": "Tidehaus — tablas, trajes, clases de surf y un pronóstico de olas actualizado para cada playa.",
+    "pt-BR": "Tidehaus — pranchas, roupas de neoprene, aulas de surf e uma previsão de ondas atualizada para cada praia.",
+    "ar": "Tidehaus — ألواح وبدلات ودروس ركوب أمواج وتوقعات أمواج محدّثة لكل شاطئ."
+  },
+  "Tipcraft\nמבנה שנראה טבעי ומרגיש חזק.": {
+    "en": "Tipcraft\nStructure that looks natural and feels strong.",
+    "es": "Tipcraft\nUna estructura que se ve natural y se siente fuerte.",
+    "pt-BR": "Tipcraft\nUma estrutura que parece natural e se sente forte.",
+    "ar": "Tipcraft\nبنية تبدو طبيعية وتُحسّ قوية."
+  },
+  "Velvetine\nשקט שנשמע כמו יוקרה.": {
+    "en": "Velvetine\nQuiet that sounds like luxury.",
+    "es": "Velvetine\nUn silencio que suena a lujo.",
+    "pt-BR": "Velvetine\nUm silêncio que soa como luxo.",
+    "ar": "Velvetine\nهدوء يُسمع كترف."
+  },
+  "Vineria — בר יין עם מרתף נבחר, טעימות מודרכות וגבינות שמתאימות לכל בקבוק.": {
+    "en": "Vineria — a wine bar with a curated cellar, guided tastings, and cheeses that match every bottle.",
+    "es": "Vineria — un wine bar con una cava seleccionada, catas guiadas y quesos que encajan con cada botella.",
+    "pt-BR": "Vineria — um bar de vinhos com uma adega escolhida, degustações guiadas e queijos que combinam com cada garrafa.",
+    "ar": "Vineria — بار نبيذ بقبو مختار وتذوق موجّه وأجبان تناسب كل زجاجة."
+  },
+  "Vowline מלווה זוגות מהרגע הראשון ועד הריקוד האחרון: קונספט, ספקים, לו״ז, עיצוב וניהול מדויק ביום האירוע.": {
+    "en": "Vowline guides couples from the first moment to the last dance: concept, vendors, timeline, design, and precise management on the day.",
+    "es": "Vowline acompaña a las parejas desde el primer instante hasta el último baile: concepto, proveedores, cronograma, diseño y una gestión precisa el día del evento.",
+    "pt-BR": "A Vowline acompanha casais do primeiro instante até a última dança: conceito, fornecedores, cronograma, design e gestão precisa no dia do evento.",
+    "ar": "ترافق Vowline الأزواج من اللحظة الأولى حتى الرقصة الأخيرة: المفهوم والموردون والجدول والتصميم وإدارة دقيقة في يوم المناسبة."
+  },
+  "Waxelle\nחלק. מהיר. בלי דרמה.": {
+    "en": "Waxelle\nSmooth. Fast. No drama.",
+    "es": "Waxelle\nSuave. Rápido. Sin drama.",
+    "pt-BR": "Waxelle\nLiso. Rápido. Sem drama.",
+    "ar": "Waxelle\nناعم. سريع. بلا دراما."
+  }
+}

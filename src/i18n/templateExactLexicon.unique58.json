@@ -1,0 +1,518 @@
+{
+  "בית חוף שדות ים": {
+    "en": "Sdot Yam beach house",
+    "es": "Casa de playa en Sdot Yam",
+    "pt-BR": "Casa de praia em Sdot Yam",
+    "ar": "بيت شاطئ سدوت يام"
+  },
+  "שלחו בקשת סיור": {
+    "en": "Send a tour request",
+    "es": "Enviad una petición de visita",
+    "pt-BR": "Enviem um pedido de tour",
+    "ar": "أرسلوا طلب جولة"
+  },
+  "קו מים נבחר": {
+    "en": "A chosen waterline",
+    "es": "Una línea de agua elegida",
+    "pt-BR": "Uma linha de água escolhida",
+    "ar": "خط ماء مختار"
+  },
+  "נכסים שנראים כמו אופק פתוח.": {
+    "en": "Properties that look like an open horizon.",
+    "es": "Inmuebles que parecen un horizonte abierto.",
+    "pt-BR": "Imóveis que parecem um horizonte aberto.",
+    "ar": "عقارات تبدو كأفق مفتوح."
+  },
+  "מסילה אופקית עם עומק, מחיר ותחושת מקום - לא רשימת כרטיסים רגילה.": {
+    "en": "A horizontal track with depth, price, and a sense of place — not a regular card list.",
+    "es": "Un raíl horizontal con profundidad, precio y sentido de lugar — no una lista de tarjetas habitual.",
+    "pt-BR": "Um trilho horizontal com profundidade, preço e senso de lugar — não uma lista de cartões comum.",
+    "ar": "مسار أفقي بعمق وسعر وإحساس مكان — وليس قائمة بطاقات عادية."
+  },
+  "עוגנים שיחה": {
+    "en": "Anchors a conversation",
+    "es": "Ancla una conversación",
+    "pt-BR": "Ancora uma conversa",
+    "ar": "يرسي محادثة"
+  },
+  "מה חשוב לכם לראות מהחלון?": {
+    "en": "What matters for you to see from the window?",
+    "es": "¿Qué os importa ver desde la ventana?",
+    "pt-BR": "O que importa vocês verem da janela?",
+    "ar": "ماذا يهمكم أن تروا من النافذة؟"
+  },
+  "אחוזת כרמל": {
+    "en": "Carmel estate",
+    "es": "Finca Carmel",
+    "pt-BR": "Propriedade Carmel",
+    "ar": "ضيعة الكرمل"
+  },
+  "וילה הרצליה פיתוח": {
+    "en": "Herzliya Pituach villa",
+    "es": "Villa en Herzliya Pituach",
+    "pt-BR": "Villa em Herzliya Pituach",
+    "ar": "فيلا هرتسليا بيتواح"
+  },
+  "הזמנה לשיחה פרטית": {
+    "en": "An invitation to a private call",
+    "es": "Una invitación a una llamada privada",
+    "pt-BR": "Um convite para uma chamada privada",
+    "ar": "دعوة لمكالمة خاصة"
+  },
+  "שלחו בקשת גישה": {
+    "en": "Send an access request",
+    "es": "Enviad una petición de acceso",
+    "pt-BR": "Enviem um pedido de acesso",
+    "ar": "أرسلوا طلب وصول"
+  },
+  "טלפון פרטי": {
+    "en": "Private phone",
+    "es": "Teléfono privado",
+    "pt-BR": "Telefone privado",
+    "ar": "هاتف خاص"
+  },
+  "טווח רכישה": {
+    "en": "Purchase range",
+    "es": "Rango de compra",
+    "pt-BR": "Faixa de compra",
+    "ar": "نطاق شراء"
+  },
+  "בית רמת השרון": {
+    "en": "Ramat Hasharon home",
+    "es": "Casa en Ramat Hasharon",
+    "pt-BR": "Casa em Ramat Hasharon",
+    "ar": "بيت رمات هشارون"
+  },
+  "קוטג׳ הוד השרון": {
+    "en": "Hod Hasharon cottage",
+    "es": "Cottage en Hod Hasharon",
+    "pt-BR": "Chalé em Hod Hasharon",
+    "ar": "كوخ هود هشارون"
+  },
+  "בית גן כפר סבא": {
+    "en": "Kfar Saba garden house",
+    "es": "Casa jardín en Kfar Saba",
+    "pt-BR": "Casa jardim em Kfar Saba",
+    "ar": "بيت حديقة كفار سابا"
+  },
+  "ספרו איך נראה הבית שלכם": {
+    "en": "Tell us what your home looks like",
+    "es": "Contadnos cómo se ve vuestra casa",
+    "pt-BR": "Contem como é a casa de vocês",
+    "ar": "أخبرونا كيف يبدو بيتكم"
+  },
+  "בתים עם מקום לשגרה טובה.": {
+    "en": "Homes with room for a good routine.",
+    "es": "Casas con sitio para una buena rutina.",
+    "pt-BR": "Casas com espaço para uma rotina boa.",
+    "ar": "بيوت فيها مكان لروتين جيد."
+  },
+  "אזור ושכונה": {
+    "en": "Area and neighborhood",
+    "es": "Zona y barrio",
+    "pt-BR": "Região e bairro",
+    "ar": "منطقة وحي"
+  },
+  "כמה חדרים?": {
+    "en": "How many rooms?",
+    "es": "¿Cuántas habitaciones?",
+    "pt-BR": "Quantos quartos?",
+    "ar": "كم غرفة؟"
+  },
+  "נדל״ן בקצב העיר.": {
+    "en": "Real estate at the city's pace.",
+    "es": "Inmobiliaria al ritmo de la ciudad.",
+    "pt-BR": "Imobiliário no ritmo da cidade.",
+    "ar": "عقارات بإيقاع المدينة."
+  },
+  "סטודיו פלורנטין": {
+    "en": "Florentin studio",
+    "es": "Estudio Florentin",
+    "pt-BR": "Estúdio Florentin",
+    "ar": "استوديو فلورنتين"
+  },
+  "לופט יפו": {
+    "en": "Jaffa loft",
+    "es": "Loft en Jaffa",
+    "pt-BR": "Loft em Jaffa",
+    "ar": "لوفت يافا"
+  },
+  "רוצים דירה עכשיו?": {
+    "en": "Want an apartment now?",
+    "es": "¿Queréis un piso ahora?",
+    "pt-BR": "Querem um apartamento agora?",
+    "ar": "تريدون شقة الآن؟"
+  },
+  "דירות לפי קצב ומחיר.": {
+    "en": "Apartments by pace and price.",
+    "es": "Pisos según ritmo y precio.",
+    "pt-BR": "Apartamentos por ritmo e preço.",
+    "ar": "شقق حسب الإيقاع والسعر."
+  },
+  "מחירון טיפוגרפי חד: שם, קו מקווקו, מחיר. בלי כרטיסים.": {
+    "en": "A sharp typographic price list: name, dashed line, price. No cards.",
+    "es": "Una tarifa tipográfica nítida: nombre, línea de puntos, precio. Sin tarjetas.",
+    "pt-BR": "Uma tabela tipográfica nítida: nome, linha tracejada, preço. Sem cartões.",
+    "ar": "قائمة أسعار طباعية حادة: اسم، خط متقطع، سعر. بلا بطاقات."
+  },
+  "שכונה": {
+    "en": "Neighborhood",
+    "es": "Barrio",
+    "pt-BR": "Bairro",
+    "ar": "حي"
+  },
+  "מה הדדליין לכניסה?": {
+    "en": "What is the move-in deadline?",
+    "es": "¿Cuál es el plazo de entrada?",
+    "pt-BR": "Qual é o prazo de entrada?",
+    "ar": "ما الموعد النهائي للدخول؟"
+  },
+  "מים": {
+    "en": "Water",
+    "es": "Agua",
+    "pt-BR": "Água",
+    "ar": "ماء"
+  },
+  "אור": {
+    "en": "Light",
+    "es": "Luz",
+    "pt-BR": "Luz",
+    "ar": "ضوء"
+  },
+  "שקט": {
+    "en": "Quiet",
+    "es": "Silencio",
+    "pt-BR": "Silêncio",
+    "ar": "هدوء"
+  },
+  "5 חדרים · מרפסת מים": {
+    "en": "5 rooms · water terrace",
+    "es": "5 habitaciones · terraza de agua",
+    "pt-BR": "5 quartos · terraço de água",
+    "ar": "5 غرف · شرفة ماء"
+  },
+  "6 חדרים · בריכה שקטה": {
+    "en": "6 rooms · a quiet pool",
+    "es": "6 habitaciones · piscina quieta",
+    "pt-BR": "6 quartos · piscina quieta",
+    "ar": "6 غرف · مسبح هادئ"
+  },
+  "צל": {
+    "en": "Shade",
+    "es": "Sombra",
+    "pt-BR": "Sombra",
+    "ar": "ظل"
+  },
+  "שביל": {
+    "en": "Path",
+    "es": "Sendero",
+    "pt-BR": "Trilha",
+    "ar": "درب"
+  },
+  "אופק": {
+    "en": "Horizon",
+    "es": "Horizonte",
+    "pt-BR": "Horizonte",
+    "ar": "أفق"
+  },
+  "שליחת בקשה שקטה": {
+    "en": "Send a quiet request",
+    "es": "Enviar una petición quieta",
+    "pt-BR": "Enviar um pedido quieto",
+    "ar": "إرسال طلب هادئ"
+  },
+  "טבע קרוב": {
+    "en": "Nearby nature",
+    "es": "Naturaleza cerca",
+    "pt-BR": "Natureza perto",
+    "ar": "طبيعة قريبة"
+  },
+  "שיחה רגועה": {
+    "en": "A calm conversation",
+    "es": "Una conversación calmada",
+    "pt-BR": "Uma conversa calma",
+    "ar": "محادثة هادئة"
+  },
+  "מים, פארק, פרטיות - מה חשוב לכם?": {
+    "en": "Water, park, privacy — what matters to you?",
+    "es": "Agua, parque, privacidad — ¿qué os importa?",
+    "pt-BR": "Água, parque, privacidade — o que importa para vocês?",
+    "ar": "ماء، حديقة، خصوصية — ماذا يهمكم؟"
+  },
+  "7 חדרים": {
+    "en": "7 rooms",
+    "es": "7 habitaciones",
+    "pt-BR": "7 quartos",
+    "ar": "7 غرف"
+  },
+  "6 חדרים": {
+    "en": "6 rooms",
+    "es": "6 habitaciones",
+    "pt-BR": "6 quartos",
+    "ar": "6 غرف"
+  },
+  "8 חדרים": {
+    "en": "8 rooms",
+    "es": "8 habitaciones",
+    "pt-BR": "8 quartos",
+    "ar": "8 غرف"
+  },
+  "פרטים בשיחה": {
+    "en": "Details on a call",
+    "es": "Detalles en una llamada",
+    "pt-BR": "Detalhes numa chamada",
+    "ar": "تفاصيل في مكالمة"
+  },
+  "צפייה בתיק": {
+    "en": "View the dossier",
+    "es": "Ver el dossier",
+    "pt-BR": "Ver o dossiê",
+    "ar": "عرض الملف"
+  },
+  "אור לפני שטח": {
+    "en": "Light before land",
+    "es": "Luz antes que solar",
+    "pt-BR": "Luz antes de terreno",
+    "ar": "ضوء قبل المساحة"
+  },
+  "איזו וילה אתם מדמיינים?": {
+    "en": "Which villa are you imagining?",
+    "es": "¿Qué villa imagináis?",
+    "pt-BR": "Qual villa vocês imaginam?",
+    "ar": "أي فيلا تتخيلون؟"
+  },
+  "מ״ר": {
+    "en": "sqm",
+    "es": "m²",
+    "pt-BR": "m²",
+    "ar": "م²"
+  },
+  "שולי תכנון": {
+    "en": "Planning margins",
+    "es": "Márgenes de planificación",
+    "pt-BR": "Margens de planejamento",
+    "ar": "هوامش تخطيط"
+  },
+  "בקשת סקר": {
+    "en": "Survey request",
+    "es": "Petición de estudio",
+    "pt-BR": "Pedido de levantamento",
+    "ar": "طلب مسح"
+  },
+  "גודל רצוי במ״ר": {
+    "en": "Desired size in sqm",
+    "es": "Tamaño deseado en m²",
+    "pt-BR": "Tamanho desejado em m²",
+    "ar": "حجم مرغوب بالم²"
+  },
+  "ייעוד, תקציב, הערות תכנון": {
+    "en": "Use, budget, planning notes",
+    "es": "Uso, presupuesto, notas de planificación",
+    "pt-BR": "Uso, orçamento, notas de planejamento",
+    "ar": "استخدام، ميزانية، ملاحظات تخطيط"
+  },
+  "פנטהאוז קו ים": {
+    "en": "Sea-line penthouse",
+    "es": "Ático en línea de mar",
+    "pt-BR": "Cobertura na linha do mar",
+    "ar": "بنتهاوس خط بحر"
+  },
+  "4 חדרים · שתי חזיתות": {
+    "en": "4 rooms · two facades",
+    "es": "4 habitaciones · dos fachadas",
+    "pt-BR": "4 quartos · duas fachadas",
+    "ar": "4 غرف · واجهتان"
+  },
+  "3 חדרים · לובי פרטי": {
+    "en": "3 rooms · private lobby",
+    "es": "3 habitaciones · vestíbulo privado",
+    "pt-BR": "3 quartos · saguão privado",
+    "ar": "3 غرف · ردهة خاصة"
+  },
+  "חדר כושר גבוה": {
+    "en": "A high gym",
+    "es": "Gimnasio alto",
+    "pt-BR": "Academia alta",
+    "ar": "صالة رياضة عالية"
+  },
+  "שליחת בקשת קומה": {
+    "en": "Send a floor request",
+    "es": "Enviar una petición de planta",
+    "pt-BR": "Enviar um pedido de andar",
+    "ar": "إرسال طلب طابق"
+  },
+  "קומה רצויה": {
+    "en": "Desired floor",
+    "es": "Planta deseada",
+    "pt-BR": "Andar desejado",
+    "ar": "طابق مرغوب"
+  },
+  "אזור / מגדל": {
+    "en": "Area / tower",
+    "es": "Zona / torre",
+    "pt-BR": "Região / torre",
+    "ar": "منطقة / برج"
+  },
+  "נוף, מרפסת, שירותי בניין": {
+    "en": "View, terrace, building amenities",
+    "es": "Vista, terraza, servicios del edificio",
+    "pt-BR": "Vista, terraço, serviços do prédio",
+    "ar": "إطلالة، شرفة، خدمات المبنى"
+  },
+  "5 חדרים · חצר פנימית": {
+    "en": "5 rooms · inner courtyard",
+    "es": "5 habitaciones · patio interior",
+    "pt-BR": "5 quartos · pátio interno",
+    "ar": "5 غرف · فناء داخلي"
+  },
+  "המכתב שלנו": {
+    "en": "Our letter",
+    "es": "Nuestra carta",
+    "pt-BR": "Nossa carta",
+    "ar": "رسالتنا"
+  },
+  "פתק אישי": {
+    "en": "A personal note",
+    "es": "Una nota personal",
+    "pt-BR": "Um recado pessoal",
+    "ar": "ملاحظة شخصية"
+  },
+  "מה יהיה בית מדויק עבורכם?": {
+    "en": "What would be a precise home for you?",
+    "es": "¿Qué sería una casa precisa para vosotros?",
+    "pt-BR": "O que seria uma casa precisa para vocês?",
+    "ar": "ما الذي سيكون بيتاً دقيقاً لكم؟"
+  },
+  "מלון בוטיק · תל אביב": {
+    "en": "Boutique hotel · Tel Aviv",
+    "es": "Hotel boutique · Tel Aviv",
+    "pt-BR": "Hotel boutique · Tel Aviv",
+    "ar": "فندق بوتيك · تل أبيب"
+  },
+  "מרידיאן.": {
+    "en": "Meridian.",
+    "es": "Meridian.",
+    "pt-BR": "Meridian.",
+    "ar": "Meridian."
+  },
+  "בחרו את הקצב שלכם": {
+    "en": "Choose your pace",
+    "es": "Elegid vuestro ritmo",
+    "pt-BR": "Escolham o ritmo de vocês",
+    "ar": "اختاروا إيقاعكم"
+  },
+  "חדר ים": {
+    "en": "Sea room",
+    "es": "Habitación mar",
+    "pt-BR": "Quarto mar",
+    "ar": "غرفة بحر"
+  },
+  "28 מ״ר": {
+    "en": "28 sqm",
+    "es": "28 m²",
+    "pt-BR": "28 m²",
+    "ar": "28 م²"
+  },
+  "42 מ״ר": {
+    "en": "42 sqm",
+    "es": "42 m²",
+    "pt-BR": "42 m²",
+    "ar": "42 م²"
+  },
+  "68 מ״ר": {
+    "en": "68 sqm",
+    "es": "68 m²",
+    "pt-BR": "68 m²",
+    "ar": "68 م²"
+  },
+  "פנטהאוז": {
+    "en": "Penthouse",
+    "es": "Ático",
+    "pt-BR": "Cobertura",
+    "ar": "بنتهاوس"
+  },
+  "תבנית Meridian · Bizuply Studio": {
+    "en": "Meridian template · Bizuply Studio",
+    "es": "Plantilla Meridian · Bizuply Studio",
+    "pt-BR": "Modelo Meridian · Bizuply Studio",
+    "ar": "قالب Meridian · Bizuply Studio"
+  },
+  "בית קלייה · יפו": {
+    "en": "Roastery · Jaffa",
+    "es": "Tostadero · Jaffa",
+    "pt-BR": "Torrefação · Jaffa",
+    "ar": "محمصة · يافا"
+  },
+  "קלייה קטנה. טעם גדול.": {
+    "en": "A small roast. A big taste.",
+    "es": "Tueste pequeño. Sabor grande.",
+    "pt-BR": "Torra pequena. Sabor grande.",
+    "ar": "تحميص صغير. طعم كبير."
+  },
+  "פילטר": {
+    "en": "Filter",
+    "es": "Filtro",
+    "pt-BR": "Filtro",
+    "ar": "فلتر"
+  },
+  "תבנית Cinder · Bizuply Studio": {
+    "en": "Cinder template · Bizuply Studio",
+    "es": "Plantilla Cinder · Bizuply Studio",
+    "pt-BR": "Modelo Cinder · Bizuply Studio",
+    "ar": "قالب Cinder · Bizuply Studio"
+  },
+  "אולם תרבות · ירושלים": {
+    "en": "Culture hall · Jerusalem",
+    "es": "Sala de cultura · Jerusalén",
+    "pt-BR": "Sala de cultura · Jerusalém",
+    "ar": "قاعة ثقافة · القدس"
+  },
+  "וספרה": {
+    "en": "Vespera",
+    "es": "Vespera",
+    "pt-BR": "Vespera",
+    "ar": "Vespera"
+  },
+  "ערב שנבנה כמו יצירה": {
+    "en": "An evening built like a work",
+    "es": "Una noche construida como una obra",
+    "pt-BR": "Uma noite construída como uma obra",
+    "ar": "مساء يُبنى كعمل فني"
+  },
+  "תרבות בלי רעש מיותר": {
+    "en": "Culture without extra noise",
+    "es": "Cultura sin ruido de más",
+    "pt-BR": "Cultura sem ruído extra",
+    "ar": "ثقافة بلا ضجيج زائد"
+  },
+  "בקשת כרטיסים": {
+    "en": "Ticket request",
+    "es": "Petición de entradas",
+    "pt-BR": "Pedido de ingressos",
+    "ar": "طلب تذاكر"
+  },
+  "חמישי 21:00": {
+    "en": "Thursday 21:00",
+    "es": "Jueves 21:00",
+    "pt-BR": "Quinta 21:00",
+    "ar": "الخميس 21:00"
+  },
+  "שישי 20:30": {
+    "en": "Friday 20:30",
+    "es": "Viernes 20:30",
+    "pt-BR": "Sexta 20:30",
+    "ar": "الجمعة 20:30"
+  },
+  "שבת 19:00": {
+    "en": "Saturday 19:00",
+    "es": "Sábado 19:00",
+    "pt-BR": "Sábado 19:00",
+    "ar": "السبت 19:00"
+  },
+  "תבנית Vespera · Bizuply Studio": {
+    "en": "Vespera template · Bizuply Studio",
+    "es": "Plantilla Vespera · Bizuply Studio",
+    "pt-BR": "Modelo Vespera · Bizuply Studio",
+    "ar": "قالب Vespera · Bizuply Studio"
+  }
+}

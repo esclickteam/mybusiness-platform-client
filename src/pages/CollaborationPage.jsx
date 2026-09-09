@@ -1,11 +1,13 @@
 // src/pages/CollaborationPage.jsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "../../api";
 import CollabFindPartnerTab from "../components/collabtabs/CollabFindPartnerTab";
 import CollabSentRequestsTab from "../components/collabtabs/CollabSentRequestsTab";
 import CollabReceivedRequestsTab from "../components/collabtabs/CollabReceivedRequestsTab";
 
 export default function CollaborationPage({ isDevUser }) {
+  const { t } = useTranslation();
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
@@ -16,7 +18,7 @@ export default function CollaborationPage({ isDevUser }) {
       setRefreshSent((f) => f + 1);
     } catch (err) {
       console.error(err);
-      alert("Error sending the proposal");
+      alert(t("leftover.collab.sendProposalError"));
     }
   };
 

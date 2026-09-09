@@ -7,6 +7,8 @@ import React, {
   type ComponentType,
 } from "react";
 import { FileText, Home } from "lucide-react";
+import i18n from "../../../../i18n/i18n";
+import { getHtmlLang, getTextDirection } from "../../../../i18n/localeUtils";
 
 import PageLibraryCardPreview from "./library/PageLibraryCardPreview";
 import { getPageTemplateById } from "./library/pageLibrary";
@@ -45,7 +47,7 @@ const PAGE_PANEL_FORCE_CSS = `
 
 function buildSrcDoc(html: string, css = "") {
   return `<!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="${getHtmlLang(i18n.language)}" dir="${getTextDirection(i18n.language)}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />

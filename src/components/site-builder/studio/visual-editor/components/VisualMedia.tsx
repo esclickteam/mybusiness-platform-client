@@ -1,5 +1,6 @@
 import React from "react";
 import i18n from "../../../../../i18n/i18n";
+import { tx } from "../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import {
   readVisualContent,
@@ -81,7 +82,7 @@ export default function VisualMedia({
           "data-visual-editable": "true",
           "data-visual-edit-id": id,
           "data-visual-edit-type": "image",
-          "data-visual-edit-label": label,
+          "data-visual-edit-label": tx(label),
           "data-visual-media-type": mediaType,
           "data-resource-type": mediaType,
           "data-image-field": id,

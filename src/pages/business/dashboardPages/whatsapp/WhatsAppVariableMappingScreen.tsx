@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { Loader2, Save, Eye, ArrowRight, Check } from "lucide-react";
 import {
   getWhatsAppTemplateVariableMappings,
@@ -21,6 +22,12 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import {
+  mappingFieldLabel,
+  mappingFormatLabel,
+  mappingFriendlyName,
+  mappingSourceLabel,
+} from "../../../../i18n/whatsappMappingCopy";
 
 type Props = {
   businessId: string;
@@ -61,7 +68,7 @@ export default function WhatsAppVariableMappingScreen({
   onClose,
   onSaved,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -177,7 +184,7 @@ export default function WhatsAppVariableMappingScreen({
             source: report.source || row.source,
             field: report.field || row.field,
             format: report.format || row.format,
-            friendlyName: row.friendlyName || report.labelHe || "",
+            friendlyName: row.friendlyName || "",
             mappingOrigin: "user" as const,
             mappingConfirmed: true,
           }
@@ -335,7 +342,7 @@ export default function WhatsAppVariableMappingScreen({
   }
 
   return (
-    <section className={`${cardBase} space-y-4 p-4 sm:p-5`} dir="rtl">
+    <section className={`${cardBase} space-y-4 p-4 sm:p-5`} dir={getTextDirection(i18n.language)}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <button
@@ -460,9 +467,33 @@ export default function WhatsAppVariableMappingScreen({
             mapped && row.mappingOrigin !== "user" && !isSuggested;
           const sourceMeta = catalog?.sources?.find((s) => s.id === row.source);
           const fieldMeta = sourceMeta?.fields?.find((f) => f.id === row.field);
-          const sourceLabel =
-            report?.sourceLabelHe || sourceMeta?.label || "";
-          const fieldLabel = report?.fieldLabelHe || fieldMeta?.label || "";
+          const sourceLabel = mappingSourceLabel(
+            t,
+            row.source || report?.source || sourceMeta?.id,
+            report?.sourceLabelHe || sourceMeta?.label || "",
+            i18n.language
+          );
+          const fieldLabel = mappingFieldLabel(
+            t,
+            row.source || report?.source || sourceMeta?.id,
+            row.field || report?.field || fieldMeta?.id,
+            report?.fieldLabelHe || fieldMeta?.label || "",
+            i18n.language
+          );
+          const displayName = mappingFriendlyName(t, {
+            friendlyName: row.friendlyName,
+            source: row.source || report?.source,
+            field: row.field || report?.field,
+            apiFieldLabel: report?.labelHe || fieldMeta?.label || "",
+            language: i18n.language,
+          });
+          const suggestionLabel = mappingFriendlyName(t, {
+            friendlyName: report?.labelHe,
+            source: report?.source || row.source,
+            field: report?.field || row.field,
+            apiFieldLabel: report?.labelHe || fieldMeta?.label || "",
+            language: i18n.language,
+          });
           const showChangeForm =
             editingVariable === row.variable ||
             report?.status === "unknown" ||
@@ -480,8 +511,7 @@ export default function WhatsAppVariableMappingScreen({
                   {`{{${row.variable}}}`}
                 </span>
                 <span className="text-sm font-black text-slate-800">
-                  {row.friendlyName ||
-                    report?.labelHe ||
+                  {displayName ||
                     (report?.status === "unknown"
                       ? ""
                       : t("whatsapp.mapping.friendlyNamePlaceholder"))}
@@ -508,11 +538,11 @@ export default function WhatsAppVariableMappingScreen({
                 </p>
               ) : null}
 
-              {isSuggested && report?.labelHe ? (
+              {isSuggested && suggestionLabel ? (
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <p className="text-sm font-semibold text-amber-800">
                     {t("whatsapp.mapping.autoProbably", {
-                      label: report.labelHe,
+                      label: suggestionLabel,
                     })}
                   </p>
                   <button
@@ -593,7 +623,7 @@ export default function WhatsAppVariableMappingScreen({
                     <option value="">{t("whatsapp.mapping.selectSource")}</option>
                     {(catalog?.sources || []).map((src) => (
                       <option key={src.id} value={src.id}>
-                        {src.label}
+                        {mappingSourceLabel(t, src.id, src.label, i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -626,7 +656,13 @@ export default function WhatsAppVariableMappingScreen({
                       <option value="">{t("whatsapp.mapping.selectField")}</option>
                       {fields.map((field) => (
                         <option key={field.id} value={field.id}>
-                          {field.label}
+                          {mappingFieldLabel(
+                            t,
+                            row.source,
+                            field.id,
+                            field.label,
+                            i18n.language
+                          )}
                         </option>
                       ))}
                     </select>
@@ -677,7 +713,12 @@ export default function WhatsAppVariableMappingScreen({
                       <option value="">{t("whatsapp.mapping.formatNone")}</option>
                       {formats.map((fmt) => (
                         <option key={fmt.id} value={fmt.id}>
-                          {fmt.label}
+                          {mappingFormatLabel(
+                            t,
+                            fmt.id,
+                            fmt.label,
+                            i18n.language
+                          )}
                         </option>
                       ))}
                     </select>
@@ -757,9 +798,13 @@ export default function WhatsAppVariableMappingScreen({
                   .map((v) => {
                     const row = mappings.find((m) => m.variable === v);
                     const token = `{{${v}}}`;
-                    return row?.friendlyName
-                      ? `${token} (${row.friendlyName})`
-                      : token;
+                    const label = mappingFriendlyName(t, {
+                      friendlyName: row?.friendlyName,
+                      source: row?.source,
+                      field: row?.field,
+                      language: i18n.language,
+                    });
+                    return label ? `${token} (${label})` : token;
                   })
                   .join(", "),
               })}

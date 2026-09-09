@@ -11,7 +11,7 @@ export const podcastixEditorCss = `
   font-family: "Arimo", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="podcastix"] .text-center,
 [data-template-id="podcastix"] .text-center { text-align: center; }

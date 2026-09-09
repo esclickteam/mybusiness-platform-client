@@ -11,7 +11,7 @@ export const uxforgeEditorCss = `
   font-family: "Miriam Libre", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="uxforge"] .text-center,
 [data-template-id="uxforge"] .text-center { text-align: center; }

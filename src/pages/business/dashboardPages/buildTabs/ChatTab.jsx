@@ -1,5 +1,6 @@
 // src/pages/business/dashboardPages/build/buildTabs/ChatTab.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 // General build page styles
 import '../build/Build.css';
 // Specific styles for the chat tab
@@ -10,9 +11,10 @@ import CustomerChatPreview from './CustomerChatPreview';
 import { v4 as uuidv4 } from 'uuid';
 
 const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  if (!businessDetails) return <p>Loading chat data...</p>;
+  if (!businessDetails) return <p>{t('leftover.bizChatChrome.loadingChatData')}</p>;
 
   const messages = businessDetails?.messages ?? [];
 
@@ -73,14 +75,13 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
           }}
         >
           <h3 style={{ fontSize: "1.3rem", marginBottom: "1rem" }}>
-            ✉️ Manage Your Messages
+            ✉️ {t("leftover.bizChatChrome.manageTitle")}
           </h3>
           <p>
-            All messages received from clients on your business page are centralized for you in the{" "}
-            <strong>"Customer Messages"</strong> page.
+            {t("leftover.bizChatChrome.manageBody1")}
           </p>
           <p style={{ marginTop: "0.5rem" }}>
-            From there, you can read, reply, and manage conversations efficiently and neatly.
+            {t("leftover.bizChatChrome.manageBody2")}
           </p>
           <button
             style={{
@@ -95,7 +96,7 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
             }}
             onClick={() => navigate("/dashboard/messages")}
           >
-            Go to Messages Page
+            {t("leftover.bizChatChrome.goToMessages")}
           </button>
         </div>
       )}

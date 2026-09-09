@@ -5,6 +5,7 @@ import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../i18n/i18n";
 import { getIntlLocale } from "../../../i18n/localeUtils";
+import { localizeBuiltInText } from "../../../i18n/localizeBuiltInTemplateSeed";
 
 import type {
   DeviceMode,
@@ -46,7 +47,11 @@ import {
 } from "./utils/customDomainPublishUi";
 import { getPublicSiteDomain } from "../../../utils/publicSiteHost";
 
-import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
+import {
+  getStudioTemplateRenderer,
+  hasStudioTemplateLoader,
+} from "./data/templates/loadStudioTemplate";
+import { useStudioTemplateRenderer } from "./data/templates/useStudioTemplateRenderer";
 import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
@@ -989,18 +994,18 @@ function buildRendererSeedFromKey(
   const key = normalizeStudioTemplateKey(templateKey);
   if (!key) return null;
   const resolved = renderer || getStudioTemplateRenderer(key);
-  if (!resolved?.Component) return null;
+  if (!resolved?.Component && !hasStudioTemplateLoader(key)) return null;
 
   return {
     id: key,
     key,
-    rendererKey: normalizeStudioTemplateKey(resolved.key) || key,
+    rendererKey: normalizeStudioTemplateKey(resolved?.key) || key,
     renderMode: "registry",
     editorMode: "renderer",
-    name: resolved.name || key,
+    name: resolved?.name || key,
     category: "business",
     description: "",
-    heroTitle: resolved.name || key,
+    heroTitle: resolved?.name || key,
     heroSubtitle: "",
     palette: {},
     colors: {},
@@ -1137,38 +1142,14 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       כדי שהתבנית תיכנס ל-React renderer ולא ל-GrapesJS סטטי.
     */
     const renderer = getStudioTemplateRenderer(templateFromUrl);
+    const fallbackSeed = buildRendererSeedFromKey(templateFromUrl, renderer);
 
-    if (renderer?.Component) {
-      const fallbackSeed = {
-        id: templateFromUrl,
-        key: templateFromUrl,
-        rendererKey: templateFromUrl,
-        renderMode: "registry",
-        editorMode: "renderer",
-        name: renderer.name || templateFromUrl,
-        category: "business",
-        description: "",
-        heroTitle: renderer.name || templateFromUrl,
-        heroSubtitle: "",
-        palette: {},
-        colors: {},
-        fonts: {},
-        layoutSettings: {},
-        blocks: [],
-        pages: [],
-        editor: {
-          slug: templateFromUrl,
-          activePageId: "home",
-          pages: [],
-        },
-      } as unknown as ReadyWebsiteTemplateSeed;
-
+    if (fallbackSeed) {
       studioDebug("readTemplateSeedFromStorage:success-from-url-renderer", {
         templateFromUrl,
-        rendererKey: renderer.key,
-        rendererName: renderer.name,
+        rendererKey: fallbackSeed.rendererKey || templateFromUrl,
+        rendererName: fallbackSeed.name,
       });
-
       return fallbackSeed;
     }
 
@@ -1730,7 +1711,6 @@ body {
 }
 
 [data-template-id="${safeTemplateId}"] {
-  direction: rtl;
   min-height: 100vh;
 }
 
@@ -1832,7 +1812,9 @@ function createPagesFromRegisteredRenderer(
 
     return {
       id: pageId,
-      title: String(page.label || page.name || page.title || pageId),
+      title: localizeBuiltInText(
+        String(page.label || page.name || page.title || pageId)
+      ),
       slug: cleanSlug,
       type: (isHome ? "home" : pageId === "shop" ? "store" : "blank") as StudioSitePageType,
       isHome,
@@ -4779,12 +4761,13 @@ export default function WebsiteStudioPage({
   const selectedTemplateSeed = resolvedTemplateSeed;
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
-
-  const selectedTemplateRenderer = useMemo(() => {
-    if (!selectedTemplateSeed) return null;
-
-    return getTemplateRendererBySeed(selectedTemplateSeed);
-  }, [selectedTemplateSeed]);
+  const selectedRendererKey = selectedTemplateSeed
+    ? getSeedRendererKey(selectedTemplateSeed) ||
+      normalizeStudioTemplateKey((selectedTemplateSeed as any).key) ||
+      normalizeStudioTemplateKey(selectedTemplateSeed.id)
+    : "";
+  const { renderer: selectedTemplateRenderer, loading: loadingTemplateRenderer } =
+    useStudioTemplateRenderer(selectedRendererKey);
 
   const isVisualReactTemplate = Boolean(
     selectedTemplateRenderer?.Component &&
@@ -8692,6 +8675,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     );
   }
 
+  if (
+    selectedTemplateSeed &&
+    shouldUseTemplateRenderer(selectedTemplateSeed) &&
+    !selectedTemplateRenderer &&
+    (loadingTemplateRenderer || hasStudioTemplateLoader(selectedRendererKey))
+  ) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label={t("studio.loadingSavedSite")}
+      />
+    );
+  }
+
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
       <BizuplyLoader
@@ -9583,7 +9580,7 @@ function StudioWixRail({
     { id: "add", label: t("studio.add"), icon: "+", onClick: onOpenAdd },
     {
       id: "pages",
-      label: t("studio.pages"),
+      label: t("studio.pagesNav"),
       icon: "▦",
       onClick: onOpenPages,
       active: activePanel === "pages",
@@ -9613,7 +9610,7 @@ function StudioWixRail({
   return (
     <aside className="absolute left-4 top-4 z-30 flex w-[82px] flex-col items-center gap-3 rounded-[28px] border border-white/80 bg-white/95 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
       <div className="mb-1 w-full rounded-[22px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-        <p className="truncate text-[10px] font-black text-black/55">PAGE</p>
+        <p className="truncate text-[10px] font-black text-black/55">{t("studio.pageChip")}</p>
         <p className="mt-1 truncate text-xs font-black">{activePageTitle}</p>
       </div>
 

@@ -1,0 +1,410 @@
+{
+  "חולצה": {
+    "en": "Shirt",
+    "es": "Camisa",
+    "pt-BR": "Camisa",
+    "ar": "قميص"
+  },
+  "מקור:": {
+    "en": "Source:",
+    "es": "Origen:",
+    "pt-BR": "Origem:",
+    "ar": "المصدر:"
+  },
+  "תספורת": {
+    "en": "Haircut",
+    "es": "Corte",
+    "pt-BR": "Corte",
+    "ar": "قصة شعر"
+  },
+  "נשלח לכתובת": {
+    "en": "Ships to",
+    "es": "Envío a",
+    "pt-BR": "Enviado para",
+    "ar": "يُرسل إلى"
+  },
+  "הנחה: 20.00 ₪": {
+    "en": "Discount: ₪20.00",
+    "es": "Descuento: ₪20.00",
+    "pt-BR": "Desconto: ₪20.00",
+    "ar": "خصم: ₪20.00"
+  },
+  "משלוח: 25.00 ₪": {
+    "en": "Shipping: ₪25.00",
+    "es": "Envío: ₪25.00",
+    "pt-BR": "Frete: ₪25.00",
+    "ar": "شحن: ₪25.00"
+  },
+  "נא לשלוח עד הצהריים": {
+    "en": "Please send by noon",
+    "es": "Enviad antes del mediodía",
+    "pt-BR": "Envie até o meio-dia",
+    "ar": "يُرجى الإرسال حتى الظهر"
+  },
+  "סה״כ שולם: 185.00 ₪": {
+    "en": "Total paid: ₪185.00",
+    "es": "Total pagado: ₪185.00",
+    "pt-BR": "Total pago: ₪185.00",
+    "ar": "الإجمالي المدفوع: ₪185.00"
+  },
+  "סכום ביניים: 180.00 ₪": {
+    "en": "Subtotal: ₪180.00",
+    "es": "Subtotal: ₪180.00",
+    "pt-BR": "Subtotal: ₪180.00",
+    "ar": "المجموع الفرعي: ₪180.00"
+  },
+  "כמות: 2 · מחיר ליחידה: 60.00 ₪": {
+    "en": "Qty: 2 · unit price: ₪60.00",
+    "es": "Cant.: 2 · precio ud.: ₪60.00",
+    "pt-BR": "Qtd.: 2 · preço unitário: ₪60.00",
+    "ar": "الكمية: 2 · سعر الوحدة: ₪60.00"
+  },
+  ". קיבלנו את פנייתך ונחזור אליך בהקדם.": {
+    "en": ". We received your inquiry and will get back to you soon.",
+    "es": ". Recibimos vuestra consulta y os responderemos pronto.",
+    "pt-BR": ". Recebemos seu contato e retornaremos em breve.",
+    "ar": ". تلقّينا تواصلكم وسنعود إليكم قريباً."
+  },
+  "המייל נשלח מ-{{store.name}} באמצעות BizUply.": {
+    "en": "This email was sent from {{store.name}} via BizUply.",
+    "es": "Este correo se envió desde {{store.name}} a través de BizUply.",
+    "pt-BR": "Este e-mail foi enviado de {{store.name}} via BizUply.",
+    "ar": "أُرسل هذا البريد من {{store.name}} عبر BizUply."
+  },
+  "העסק שלי": {
+    "en": "My business",
+    "es": "Mi negocio",
+    "pt-BR": "Meu negócio",
+    "ar": "عملي"
+  },
+  "החנות שלי": {
+    "en": "My store",
+    "es": "Mi tienda",
+    "pt-BR": "Minha loja",
+    "ar": "متجري"
+  },
+  "דמו חי": {
+    "en": "Live demo",
+    "es": "Demo en vivo",
+    "pt-BR": "Demo ao vivo",
+    "ar": "عرض حي"
+  },
+  "ערב שף": {
+    "en": "Chef evening",
+    "es": "Noche de chef",
+    "pt-BR": "Noite de chef",
+    "ar": "أمسية شيف"
+  },
+  "תגיעו.": {
+    "en": "Show up.",
+    "es": "Llegad.",
+    "pt-BR": "Chegue.",
+    "ar": "احضروا."
+  },
+  "תדלקו.": {
+    "en": "Fuel up.",
+    "es": "Cargad.",
+    "pt-BR": "Abasteça.",
+    "ar": "تزوّدوا."
+  },
+  "תפרצו.": {
+    "en": "Break through.",
+    "es": "Romped.",
+    "pt-BR": "Avance.",
+    "ar": "انطلقوا."
+  },
+  "אנטריקוט": {
+    "en": "Entrecôte",
+    "es": "Entrecot",
+    "pt-BR": "Entrecôte",
+    "ar": "أنتركوت"
+  },
+  "מסעדת שף": {
+    "en": "Chef restaurant",
+    "es": "Restaurante de chef",
+    "pt-BR": "Restaurante de chef",
+    "ar": "مطعم شيف"
+  },
+  "קו ראשון": {
+    "en": "First line",
+    "es": "Primera línea",
+    "pt-BR": "Primeira linha",
+    "ar": "الخط الأول"
+  },
+  "וילה אחת.": {
+    "en": "One villa.",
+    "es": "Una villa.",
+    "pt-BR": "Uma villa.",
+    "ar": "فيلا واحدة."
+  },
+  "משרד מסחרי": {
+    "en": "Commercial firm",
+    "es": "Despacho comercial",
+    "pt-BR": "Escritório comercial",
+    "ar": "مكتب تجاري"
+  },
+  "פיד מפתחים": {
+    "en": "Dev feed",
+    "es": "Feed de desarrollo",
+    "pt-BR": "Feed de devs",
+    "ar": "خلاصة المطوّرين"
+  },
+  "בוטיק אופנה": {
+    "en": "Fashion boutique",
+    "es": "Boutique de moda",
+    "pt-BR": "Boutique de moda",
+    "ar": "بوتيك أزياء"
+  },
+  "מגורי יוקרה": {
+    "en": "Luxury living",
+    "es": "Vivienda de lujo",
+    "pt-BR": "Moradia de luxo",
+    "ar": "سكن فاخر"
+  },
+  "מרפאה פרטית": {
+    "en": "Private clinic",
+    "es": "Clínica privada",
+    "pt-BR": "Clínica particular",
+    "ar": "عيادة خاصة"
+  },
+  "סטודיו יוגה": {
+    "en": "Yoga studio",
+    "es": "Estudio de yoga",
+    "pt-BR": "Estúdio de ioga",
+    "ar": "استوديو يوغا"
+  },
+  "סטודיו יופי": {
+    "en": "Beauty studio",
+    "es": "Estudio de belleza",
+    "pt-BR": "Estúdio de beleza",
+    "ar": "استوديو تجميل"
+  },
+  "בודקים קרקע.": {
+    "en": "We check the land.",
+    "es": "Revisamos el terreno.",
+    "pt-BR": "Checamos o terreno.",
+    "ar": "نفحص الأرض."
+  },
+  "לפני כל צעד.": {
+    "en": "Before every step.",
+    "es": "Antes de cada paso.",
+    "pt-BR": "Antes de cada passo.",
+    "ar": "قبل كل خطوة."
+  },
+  "סטודיו פרחים": {
+    "en": "Flower studio",
+    "es": "Estudio floral",
+    "pt-BR": "Estúdio de flores",
+    "ar": "استوديو ورود"
+  },
+  "פריימים חדים": {
+    "en": "Sharp frames",
+    "es": "Fotogramas nítidos",
+    "pt-BR": "Frames nítidos",
+    "ar": "إطارات حادة"
+  },
+  "רפואת שיניים": {
+    "en": "Dentistry",
+    "es": "Odontología",
+    "pt-BR": "Odontologia",
+    "ar": "طب الأسنان"
+  },
+  "שמתחילה נכון": {
+    "en": "That starts right",
+    "es": "Que empieza bien",
+    "pt-BR": "Que começa certo",
+    "ar": "تبدأ بشكل صحيح"
+  },
+  "תכנון חתונות": {
+    "en": "Wedding planning",
+    "es": "Planificación de bodas",
+    "pt-BR": "Planejamento de casamentos",
+    "ar": "تخطيط أعراس"
+  },
+  "החלטות שקטות.": {
+    "en": "Quiet decisions.",
+    "es": "Decisiones serenas.",
+    "pt-BR": "Decisões serenas.",
+    "ar": "قرارات هادئة."
+  },
+  "חוויית מגורים": {
+    "en": "Living experience",
+    "es": "Experiencia de vivienda",
+    "pt-BR": "Experiência de morar",
+    "ar": "تجربة سكن"
+  },
+  "למותגים חיים.": {
+    "en": "For living brands.",
+    "es": "Para marcas vivas.",
+    "pt-BR": "Para marcas vivas.",
+    "ar": "لعلامات حيّة."
+  },
+  "פלטפורמת SaaS": {
+    "en": "SaaS platform",
+    "es": "Plataforma SaaS",
+    "pt-BR": "Plataforma SaaS",
+    "ar": "منصة SaaS"
+  },
+  "מסעדת שף • יין": {
+    "en": "Chef restaurant • wine",
+    "es": "Restaurante de chef • vino",
+    "pt-BR": "Restaurante de chef • vinho",
+    "ar": "مطعم شيف • نبيذ"
+  },
+  "אסטרטגיה משפטית": {
+    "en": "Legal strategy",
+    "es": "Estrategia jurídica",
+    "pt-BR": "Estratégia jurídica",
+    "ar": "استراتيجية قانونية"
+  },
+  "לחיות מעל העיר.": {
+    "en": "Live above the city.",
+    "es": "Vivir sobre la ciudad.",
+    "pt-BR": "Viver acima da cidade.",
+    "ar": "عيشوا فوق المدينة."
+  },
+  "מספרים מסודרים.": {
+    "en": "Numbers in order.",
+    "es": "Números en orden.",
+    "pt-BR": "Números em ordem.",
+    "ar": "أرقام مرتّبة."
+  },
+  "חיוך בביטחון מלא.": {
+    "en": "A smile with full confidence.",
+    "es": "Una sonrisa con plena confianza.",
+    "pt-BR": "Um sorriso com confiança plena.",
+    "ar": "ابتسامة بثقة كاملة."
+  },
+  "מותגים בלתי נשכחים.": {
+    "en": "Unforgettable brands.",
+    "es": "Marcas inolvidables.",
+    "pt-BR": "Marcas inesquecíveis.",
+    "ar": "علامات لا تُنسى."
+  },
+  "מרפאת שיניים ובריאות": {
+    "en": "Dental and health clinic",
+    "es": "Clínica dental y de salud",
+    "pt-BR": "Clínica dental e de saúde",
+    "ar": "عيادة أسنان وصحة"
+  },
+  "ייצוג משפטי חד וברור.": {
+    "en": "Sharp, clear legal representation.",
+    "es": "Representación jurídica nítida y clara.",
+    "pt-BR": "Representação jurídica nítida e clara.",
+    "ar": "تمثيل قانوني حاد وواضح."
+  },
+  "מטבח עונתי וטעם שנשאר": {
+    "en": "Seasonal kitchen and flavor that stays",
+    "es": "Cocina de temporada y sabor que permanece",
+    "pt-BR": "Cozinha sazonal e sabor que fica",
+    "ar": "مطبخ موسمي وطعم يبقى"
+  },
+  "“הבית שלא צריך לשכנע.”": {
+    "en": "“The home that needs no selling.”",
+    "es": "“La casa que no necesita convencer.”",
+    "pt-BR": "“A casa que não precisa convencer.”",
+    "ar": "«البيت الذي لا يحتاج إلى إقناع.»"
+  },
+  "עיצוב · מיתוג · דיגיטל": {
+    "en": "Design · branding · digital",
+    "es": "Diseño · marca · digital",
+    "pt-BR": "Design · marca · digital",
+    "ar": "تصميم · علامة · رقمي"
+  },
+  "ליווי שאפשר לסמוך עליו.": {
+    "en": "Guidance you can trust.",
+    "es": "Un acompañamiento en el que se puede confiar.",
+    "pt-BR": "Um acompanhamento em que se pode confiar.",
+    "ar": "مرافقة يمكن الوثوق بها."
+  },
+  "בתים שנבחרו בדיוק כמוכם.": {
+    "en": "Homes chosen exactly like you.",
+    "es": "Casas elegidas exactamente como vosotros.",
+    "pt-BR": "Casas escolhidas exatamente como vocês.",
+    "ar": "بيوت اختيرت تماماً مثلكم."
+  },
+  "מרחב רגוע לצמיחה ושינוי.": {
+    "en": "A calm space for growth and change.",
+    "es": "Un espacio sereno para crecer y cambiar.",
+    "pt-BR": "Um espaço calmo para crescer e mudar.",
+    "ar": "مساحة هادئة للنمو والتغيير."
+  },
+  "מטפלים בבית בלי רעש מיותר.": {
+    "en": "We treat the home without extra noise.",
+    "es": "Cuidamos la casa sin ruido de más.",
+    "pt-BR": "Cuidamos a casa sem barulho extra.",
+    "ar": "نعالج البيت بلا ضوضاء زائدة."
+  },
+  "מגלים מה קורה עכשיו בפיתוח.": {
+    "en": "See what is happening in development now.",
+    "es": "Descubrid qué pasa ahora en desarrollo.",
+    "pt-BR": "Veja o que acontece agora no desenvolvimento.",
+    "ar": "اكتشفوا ما يحدث الآن في التطوير."
+  },
+  "התוכנה שמריצה את העסק קדימה.": {
+    "en": "Software that runs the business forward.",
+    "es": "El software que empuja el negocio adelante.",
+    "pt-BR": "O software que leva o negócio adiante.",
+    "ar": "البرمجيات التي تدفع العمل إلى الأمام."
+  },
+  "יופי נקי. נוכחות בלתי נשכחת.": {
+    "en": "Clean beauty. Unforgettable presence.",
+    "es": "Belleza limpia. Presencia inolvidable.",
+    "pt-BR": "Beleza limpa. Presença inesquecível.",
+    "ar": "جمال نظيف. حضور لا يُنسى."
+  },
+  "משרד עורכי דין • ייעוץ משפטי": {
+    "en": "Law firm • legal counsel",
+    "es": "Despacho de abogados • asesoría jurídica",
+    "pt-BR": "Escritório de advocacia • consultoria jurídica",
+    "ar": "مكتب محاماة • استشارة قانونية"
+  },
+  "רפואה רגועה, מדויקת ואנושית.": {
+    "en": "Calm, precise, human medicine.",
+    "es": "Medicina serena, precisa y humana.",
+    "pt-BR": "Medicina calma, precisa e humana.",
+    "ar": "طب هادئ ودقيق وإنساني."
+  },
+  "820 מ״ר · מגורים א׳ · חזית דרומית": {
+    "en": "820 m² · residence A · south facade",
+    "es": "820 m² · vivienda A · fachada sur",
+    "pt-BR": "820 m² · residência A · fachada sul",
+    "ar": "820 م² · سكن أ · واجهة جنوبية"
+  },
+  "יום חתונה שמרגיש קל, אישי ויפהפה.": {
+    "en": "A wedding day that feels light, personal, and beautiful.",
+    "es": "Un día de boda que se siente ligero, personal y hermoso.",
+    "pt-BR": "Um dia de casamento leve, pessoal e bonito.",
+    "ar": "يوم زفاف يشعر خفيفاً وشخصياً وجميلاً."
+  },
+  "ניאון, במה, מורים וגלריית סטריפים": {
+    "en": "Neon, a stage, teachers, and a strip gallery",
+    "es": "Neón, escenario, profesores y una galería de tiras",
+    "pt-BR": "Néon, palco, professores e uma galeria de tiras",
+    "ar": "نيون ومنصة ومعلمون ومعرض شرائط"
+  },
+  "הפקת וידאו וצילום למותגים מודרניים": {
+    "en": "Video production and photography for modern brands",
+    "es": "Producción de vídeo y foto para marcas modernas",
+    "pt-BR": "Produção de vídeo e foto para marcas modernas",
+    "ar": "إنتاج فيديو وتصوير لعلامات حديثة"
+  },
+  "מנוע AI שמחבר דאטה, החלטות ואוטומציות.": {
+    "en": "An AI engine that joins data, decisions, and automations.",
+    "es": "Un motor de IA que une datos, decisiones y automatizaciones.",
+    "pt-BR": "Um motor de IA que une dados, decisões e automações.",
+    "ar": "محرك ذكاء يربط البيانات والقرارات والأتمتة."
+  },
+  "זרים שנראים כאילו נקטפו מתוך מכתב אהבה.": {
+    "en": "Bouquets that look picked from a love letter.",
+    "es": "Ramos que parecen cortados de una carta de amor.",
+    "pt-BR": "Buquês que parecem colhidos de uma carta de amor.",
+    "ar": "باقات تبدو كأنها قُطفت من رسالة حب."
+  },
+  "סלון יופי בוטיק בשפה נקייה, מקצועית ומעודנת.": {
+    "en": "A boutique beauty salon in a clean, professional, refined voice.",
+    "es": "Un salón boutique con un lenguaje limpio, profesional y refinado.",
+    "pt-BR": "Um salão boutique com linguagem limpa, profissional e refinada.",
+    "ar": "صالون تجميل بوتيك بلغة نظيفة ومهنية وراقية."
+  }
+}

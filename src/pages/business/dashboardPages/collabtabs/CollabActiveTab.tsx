@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -51,6 +52,7 @@ type CollabActiveTabProps = {
 export default function CollabActiveTab({
   userBusinessId,
 }: CollabActiveTabProps) {
+  const { t } = useTranslation();
   const [view, setView] = useState<ProposalView>("active");
   const [activeProposals, setActiveProposals] = useState<ProposalItem[]>([]);
   const [sentProposals, setSentProposals] = useState<ProposalItem[]>([]);
@@ -79,7 +81,7 @@ export default function CollabActiveTab({
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (fetchError) {
         console.error("Error loading proposals:", fetchError);
-        setError("Error loading proposals");
+        setError(t("leftover.collab.activeTab.loadError"));
       } finally {
         setLoading(false);
       }
@@ -149,7 +151,7 @@ export default function CollabActiveTab({
       updateStatus(id, "accepted");
     } catch (acceptError) {
       console.error("Error approving proposal:", acceptError);
-      alert("Error approving proposal");
+      alert(t("leftover.collab.activeTab.approveError"));
     }
   };
 
@@ -164,14 +166,14 @@ export default function CollabActiveTab({
       updateStatus(id, "rejected");
     } catch (rejectError) {
       console.error("Error rejecting proposal:", rejectError);
-      alert("Error rejecting proposal");
+      alert(t("leftover.collab.activeTab.rejectError"));
     }
   };
 
   const handleCancel = async (id: string) => {
     if (!id) return;
 
-    if (!window.confirm("Are you sure you want to cancel this proposal?")) {
+    if (!window.confirm(t("leftover.collab.activeTab.cancelConfirm"))) {
       return;
     }
 
@@ -180,7 +182,7 @@ export default function CollabActiveTab({
       removeProposal(id);
     } catch (cancelError) {
       console.error("Error cancelling proposal:", cancelError);
-      alert("Error cancelling proposal");
+      alert(t("leftover.collab.activeTab.cancelError"));
     }
   };
 
@@ -194,16 +196,15 @@ export default function CollabActiveTab({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
-              Build. Partner. Grow.
+              {t("leftover.collab.activeTab.badge")}
             </div>
 
             <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              Collaboration Center
+              {t("leftover.collab.activeTab.title")}
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              Manage partner proposals, referral opportunities and business
-              collaborations from one clean workspace.
+              {t("leftover.collab.activeTab.subtitle")}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -212,7 +213,7 @@ export default function CollabActiveTab({
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5"
               >
                 <Search className="h-4 w-4" />
-                Find Partners
+                {t("leftover.collab.activeTab.findPartners")}
               </button>
 
               <button
@@ -220,7 +221,7 @@ export default function CollabActiveTab({
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <Plus className="h-4 w-4" />
-                Create Proposal
+                {t("leftover.collab.activeTab.createProposal")}
               </button>
             </div>
           </div>
@@ -243,7 +244,7 @@ export default function CollabActiveTab({
 
               <div className="absolute bottom-6 right-6 rounded-2xl bg-white px-4 py-3 shadow-md">
                 <p className="text-xs font-black text-slate-400">
-                  Partner match
+                  {t("leftover.collab.activeTab.partnerMatch")}
                 </p>
                 <p className="mt-1 text-lg font-black text-emerald-600">92%</p>
               </div>
@@ -254,30 +255,30 @@ export default function CollabActiveTab({
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Active Collaborations"
+          label={t("leftover.collab.activeTab.statActive")}
           value={activeProposals.length}
-          helper="live collaborations"
+          helper={t("leftover.collab.activeTab.helperActive")}
           icon={Handshake}
           tone="sky"
         />
         <StatCard
-          label="Sent Proposals"
+          label={t("leftover.collab.activeTab.statSent")}
           value={sentProposals.length}
-          helper="waiting for response"
+          helper={t("leftover.collab.activeTab.helperSent")}
           icon={Send}
           tone="violet"
         />
         <StatCard
-          label="Pending Received"
+          label={t("leftover.collab.activeTab.statPending")}
           value={pendingReceived}
-          helper="needs your action"
+          helper={t("leftover.collab.activeTab.helperPending")}
           icon={Inbox}
           tone="amber"
         />
         <StatCard
-          label="Accepted"
+          label={t("leftover.collab.activeTab.statAccepted")}
           value={acceptedCount}
-          helper="approved proposals"
+          helper={t("leftover.collab.activeTab.helperAccepted")}
           icon={CheckCircle2}
           tone="emerald"
         />
@@ -290,16 +291,18 @@ export default function CollabActiveTab({
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700">
                   <TrendingUp className="h-4 w-4" />
-                  Proposal pipeline
+                  {t("leftover.collab.activeTab.pipelineBadge")}
                 </div>
 
                 <h3 className="mt-3 text-2xl font-black text-slate-800">
-                  Collaboration Proposals
+                  {t("leftover.collab.activeTab.proposalsTitle")}
                 </h3>
 
                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                  {proposalsToShow.length} proposals shown ·{" "}
-                  {formatMoney(totalAmount)} total value
+                  {t("leftover.collab.activeTab.proposalsShown", {
+                    count: proposalsToShow.length,
+                    amount: formatMoney(totalAmount),
+                  })}
                 </p>
               </div>
 
@@ -308,21 +311,21 @@ export default function CollabActiveTab({
                   active={view === "active"}
                   onClick={() => setView("active")}
                   icon={Handshake}
-                  label="Active"
+                  label={t("leftover.collab.activeTab.filterActive")}
                   count={activeProposals.length}
                 />
                 <TabButton
                   active={view === "sent"}
                   onClick={() => setView("sent")}
                   icon={Send}
-                  label="Sent"
+                  label={t("leftover.collab.activeTab.filterSent")}
                   count={sentProposals.length}
                 />
                 <TabButton
                   active={view === "received"}
                   onClick={() => setView("received")}
                   icon={Inbox}
-                  label="Received"
+                  label={t("leftover.collab.activeTab.filterReceived")}
                   count={receivedProposals.length}
                 />
               </div>
@@ -381,6 +384,7 @@ function ProposalCard({
   onReject: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <article className="group rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-sky-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="mb-5 flex items-start justify-between gap-4">
@@ -391,11 +395,13 @@ function ProposalCard({
 
           <div className="min-w-0">
             <h4 className="truncate text-lg font-black text-slate-800">
-              {proposal.title || "Untitled proposal"}
+              {proposal.title || t("leftover.collab.activeTab.untitled")}
             </h4>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-slate-500">
               <Clock3 className="h-4 w-4" />
-              Created {formatDate(proposal.createdAt)}
+              {t("leftover.collab.activeTab.createdOn", {
+                date: formatDate(proposal.createdAt),
+              })}
             </p>
           </div>
         </div>
@@ -405,25 +411,25 @@ function ProposalCard({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <InfoTile
-          label="From"
+          label={t("leftover.collab.activeTab.from")}
           value={getBusinessName(
             proposal.fromBusinessName,
             proposal.fromBusinessId
           )}
         />
         <InfoTile
-          label="To"
+          label={t("leftover.collab.activeTab.to")}
           value={
             getBusinessName(proposal.toBusinessName, proposal.toBusinessId) ||
-            "Public Market"
+            t("leftover.collab.activeTab.publicMarket")
           }
         />
-        <InfoTile label="Amount" value={formatMoney(proposal.amount)} />
-        <InfoTile label="Valid Until" value={formatDate(proposal.validUntil)} />
+        <InfoTile label={t("leftover.collab.activeTab.amount")} value={formatMoney(proposal.amount)} />
+        <InfoTile label={t("leftover.collab.activeTab.validUntil")} value={formatDate(proposal.validUntil)} />
       </div>
 
       <p className="mt-4 rounded-2xl bg-slate-50/80 p-4 text-sm font-semibold leading-6 text-slate-600">
-        {proposal.description || "No description provided."}
+        {proposal.description || t("leftover.collab.activeTab.noDescription")}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
@@ -431,7 +437,7 @@ function ProposalCard({
           type="button"
           className="inline-flex items-center gap-2 text-sm font-black text-sky-700 transition hover:text-violet-700"
         >
-          View details
+          {t("leftover.collab.activeTab.viewDetails")}
           <ArrowRight className="h-4 w-4" />
         </button>
 
@@ -443,7 +449,7 @@ function ProposalCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
             >
               <Trash2 className="h-4 w-4" />
-              Cancel
+              {t("leftover.collab.activeTab.cancel")}
             </button>
           )}
 
@@ -455,7 +461,7 @@ function ProposalCard({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
               >
                 <XCircle className="h-4 w-4" />
-                Reject
+                {t("leftover.collab.activeTab.reject")}
               </button>
 
               <button
@@ -464,7 +470,7 @@ function ProposalCard({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                Accept
+                {t("leftover.collab.activeTab.accept")}
               </button>
             </>
           )}
@@ -525,6 +531,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -540,7 +547,9 @@ function StatCard({
           <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            {t("leftover.collab.activeTab.statusActiveLabel")}
+          </p>
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
 
@@ -574,6 +583,7 @@ function InfoTile({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const normalized = status.toLowerCase();
 
   const statusClass =
@@ -585,16 +595,26 @@ function StatusBadge({ status }: { status: string }) {
       ? "bg-slate-100 text-slate-600 ring-slate-200"
       : "bg-amber-50 text-amber-700 ring-amber-100";
 
+  const label =
+    normalized === "accepted"
+      ? t("leftover.collab.activeTab.statusAccepted")
+      : normalized === "rejected"
+      ? t("leftover.collab.activeTab.statusRejected")
+      : normalized === "cancelled" || normalized === "canceled"
+      ? t("leftover.collab.activeTab.statusCancelled")
+      : t("leftover.collab.activeTab.statusPending");
+
   return (
     <span
-      className={`rounded-full px-3 py-1.5 text-xs font-black capitalize ring-1 ${statusClass}`}
+      className={`rounded-full px-3 py-1.5 text-xs font-black ring-1 ${statusClass}`}
     >
-      {status}
+      {label}
     </span>
   );
 }
 
 function HumanUpsellCard() {
+  const { t } = useTranslation();
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-5 text-white shadow-[0_20px_70px_rgba(124,58,237,0.22)]">
       <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
@@ -605,26 +625,25 @@ function HumanUpsellCard() {
         </div>
 
         <h3 className="mt-4 text-xl font-black">
-          Human Collaboration Manager
+          {t("leftover.collab.activeTab.humanTitle")}
         </h3>
 
         <p className="mt-2 text-sm font-semibold leading-6 text-white/85">
-          Let a Bizuply representative find partners, contact them, follow up
-          and manage the collaboration process for this business.
+          {t("leftover.collab.activeTab.humanSubtitle")}
         </p>
 
         <div className="mt-4 space-y-2 text-sm font-bold text-black/90">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            Partner research and outreach
+            {t("leftover.collab.activeTab.humanBenefit1")}
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            Follow-up messages and reminders
+            {t("leftover.collab.activeTab.humanBenefit2")}
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            Monthly collaboration report
+            {t("leftover.collab.activeTab.humanBenefit3")}
           </div>
         </div>
 
@@ -632,7 +651,7 @@ function HumanUpsellCard() {
           type="button"
           className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 text-sm font-black text-violet-700 shadow-lg shadow-violet-700/10 transition hover:-translate-y-0.5"
         >
-          Activate Human Service
+          {t("leftover.collab.activeTab.humanCta")}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -641,22 +660,23 @@ function HumanUpsellCard() {
 }
 
 function QuickActionsCard() {
+  const { t } = useTranslation();
   const actions = [
     {
-      label: "Find Partners",
-      helper: "Discover matching businesses",
+      label: t("leftover.collab.activeTab.quickFind"),
+      helper: t("leftover.collab.activeTab.quickFindHint"),
       icon: Search,
       tone: "bg-violet-50 text-violet-700",
     },
     {
-      label: "Create Proposal",
-      helper: "Start a new collaboration",
+      label: t("leftover.collab.activeTab.quickCreate"),
+      helper: t("leftover.collab.activeTab.quickCreateHint"),
       icon: Plus,
       tone: "bg-emerald-50 text-emerald-700",
     },
     {
-      label: "Business Messages",
-      helper: "Manage partner conversations",
+      label: t("leftover.collab.activeTab.quickMessages"),
+      helper: t("leftover.collab.activeTab.quickMessagesHint"),
       icon: MessageCircle,
       tone: "bg-amber-50 text-amber-700",
     },
@@ -664,7 +684,9 @@ function QuickActionsCard() {
 
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <h3 className="text-lg font-black text-slate-800">Quick Actions</h3>
+      <h3 className="text-lg font-black text-slate-800">
+        {t("leftover.collab.activeTab.quickActionsTitle")}
+      </h3>
 
       <div className="mt-4 space-y-3">
         {actions.map((action) => (
@@ -709,25 +731,26 @@ function ReadinessCard({
   sentCount: number;
   receivedCount: number;
 }) {
+  const { t } = useTranslation();
   const checks = [
     {
-      label: "Profile is ready",
+      label: t("leftover.collab.activeTab.checklistProfile"),
       completed: true,
     },
     {
-      label: "Created or received proposals",
+      label: t("leftover.collab.activeTab.checklistProposals"),
       completed: allProposalsCount > 0,
     },
     {
-      label: "Active collaboration exists",
+      label: t("leftover.collab.activeTab.checklistActive"),
       completed: activeCount > 0,
     },
     {
-      label: "Sent partner proposal",
+      label: t("leftover.collab.activeTab.checklistSent"),
       completed: sentCount > 0,
     },
     {
-      label: "Received partner proposal",
+      label: t("leftover.collab.activeTab.checklistReceived"),
       completed: receivedCount > 0,
     },
   ];
@@ -740,10 +763,10 @@ function ReadinessCard({
       <div className="flex items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-black text-slate-800">
-            Collaboration Readiness
+            {t("leftover.collab.activeTab.readinessTitle")}
           </h3>
           <p className="mt-1 text-xs font-semibold text-slate-500">
-            Complete the flow to generate more partner leads.
+            {t("leftover.collab.activeTab.readinessSubtitle")}
           </p>
         </div>
 
@@ -778,35 +801,38 @@ function ReadinessCard({
         className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-violet-100 bg-violet-50 text-sm font-black text-violet-700 transition hover:-translate-y-0.5 hover:bg-violet-100"
       >
         <Wand2 className="h-4 w-4" />
-        Improve Collaboration Profile
+        {t("leftover.collab.activeTab.readinessCta")}
       </button>
     </section>
   );
 }
 
 function LoadingState() {
-  return <BizuplyLoadingState label="Loading proposals..." />;
+  const { t } = useTranslation();
+  return <BizuplyLoadingState label={t("leftover.collab.activeTab.loading")} />;
 }
 
 function ErrorState({ text }: { text: string }) {
+  const { t } = useTranslation();
   return (
     <div className="m-5 rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center">
       <XCircle className="mx-auto h-10 w-10 text-rose-600" />
       <p className="mt-4 text-lg font-black text-rose-700">{text}</p>
       <p className="mt-2 text-sm font-semibold text-rose-500">
-        Please refresh and try again.
+        {t("leftover.collab.activeTab.refreshHint")}
       </p>
     </div>
   );
 }
 
 function EmptyState({ view }: { view: ProposalView }) {
+  const { t } = useTranslation();
   const text =
     view === "active"
-      ? "Active collaborations will appear here once a proposal is accepted."
+      ? t("leftover.collab.activeTab.emptyActive")
       : view === "sent"
-      ? "Sent proposals will appear here after you contact a potential partner."
-      : "Received proposals will appear here when businesses contact you.";
+      ? t("leftover.collab.activeTab.emptySent")
+      : t("leftover.collab.activeTab.emptyReceived");
 
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
@@ -815,7 +841,7 @@ function EmptyState({ view }: { view: ProposalView }) {
       </div>
 
       <h4 className="mt-4 text-xl font-black text-slate-800">
-        No proposals to display
+        {t("leftover.collab.activeTab.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
@@ -827,7 +853,7 @@ function EmptyState({ view }: { view: ProposalView }) {
         className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
       >
         <Plus className="h-4 w-4" />
-        Create First Proposal
+        {t("leftover.collab.activeTab.createFirst")}
       </button>
     </div>
   );

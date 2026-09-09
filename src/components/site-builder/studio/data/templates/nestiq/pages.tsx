@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nestiqDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -40,14 +42,14 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#faf5fff2", borderColor: "rgba(30,27,75,0.1)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
         <nav className="hidden items-center gap-6 lg:flex">
           {nav.map((item) => (
             <button key={item.id} type="button" onClick={() => goTo(item.id)} className="text-sm font-semibold"
-              style={{ color: currentPage === item.id || currentPage === item.href.replace(/^\//, "") ? "#1e1b4b" : "#6366f1" }}>{item.label}</button>
+              style={{ color: currentPage === item.id || currentPage === item.href.replace(/^\//, "") ? "#1e1b4b" : "#6366f1" }}>{tx(item.label)}</button>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -60,7 +62,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map((item) => (
-              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{item.label}</button>
+              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{tx(item.label)}</button>
             ))}
           </div>
         </div>
@@ -70,13 +72,13 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -117,7 +119,7 @@ function BadgeCards({ data }: { data: Record<string, any> }) {
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor:"rgba(30,27,75,0.1)", background:"#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 lg:grid-cols-4">
         {[1,2,3,4].map((i)=>(<article key={i} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}>
-          <div className="mb-3 flex flex-wrap gap-1">{badges.slice(0,2).map((b)=><span key={b} className="rounded px-2 py-0.5 text-[10px] font-bold" style={{ background:"#7c3aed22", color:"#7c3aed" }}>{b}</span>)}</div>
+          <div className="mb-3 flex flex-wrap gap-1">{badges.slice(0,2).map((b)=><span key={b} className="rounded px-2 py-0.5 text-[10px] font-bold" style={{ background:"#7c3aed22", color:"#7c3aed" }}>{tx(b)}</span>)}</div>
           <h3 className="tpl-display text-lg font-bold">{v(data,`item${i}Title`)}</h3>
           <p className="mt-2 text-sm" style={{ color:"#7c3aed" }}>{v(data,`item${i}Price`)}</p>
         </article>))}
@@ -130,7 +132,7 @@ function FaqVisual({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor:"rgba(30,27,75,0.1)" }}>
       <div className="mx-auto max-w-3xl grid gap-3">
-        {faqs.map(([q,a])=>(<div key={q} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}><p className="font-bold">{q}</p><p className="mt-2 text-sm" style={{ color:"#6366f1" }}>{a}</p></div>))}
+        {faqs.map(([q,a])=>(<div key={q} className="border p-4" style={{ borderColor:"rgba(30,27,75,0.1)" }}><p className="font-bold">{tx(q)}</p><p className="mt-2 text-sm" style={{ color:"#6366f1" }}>{tx(a)}</p></div>))}
       </div>
     </section>
   );
@@ -194,7 +196,7 @@ function CounterMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(30,27,75,0.1)", background: "#ffffff" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Counter</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("תובנות Counter")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
@@ -272,7 +274,7 @@ function CounterProcessRail({ data }: { data: Record<string, any> }) {
         {steps.map(([t,d],i) => (
           <div key={t} className="tpl-climb border-t pt-4" style={{ borderColor: "#7c3aed", animationDelay: `${i*0.1}s` }}>
             <span className="text-2xl font-bold" style={{ color: "#7c3aed" }}>0{i+1}</span>
-            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#6366f1" }}>{d}</p>
+            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#6366f1" }}>{tx(d)}</p>
           </div>
         ))}
       </div>
@@ -317,7 +319,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6366f1" }}>{v(data, "aboutText")}</p>
         </div>
@@ -332,7 +334,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(30,27,75,0.1)", background: "#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#6366f1" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#6366f1" }}>
@@ -423,7 +425,7 @@ export default function NestiqPages({
     ),
   };
     pageContent["listings"] = (
-      <InnerPage data={merged} title="נכסים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("נכסים")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <CounterListingGrid data={merged} />
@@ -434,7 +436,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["insights"] = (
-      <InnerPage data={merged} title="תובנות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("תובנות")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <FaqVisual data={merged} />
@@ -445,7 +447,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["faq"] = (
-      <InnerPage data={merged} title="שאלות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("שאלות")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <FaqVisual data={merged} />
@@ -456,7 +458,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["about"] = (
-      <InnerPage data={merged} title="אודות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אודות")} onCta={() => goTo("contact")}>
         <>
           <AboutBlock data={merged} />
       <CounterAgentRoster data={merged} />
@@ -467,7 +469,7 @@ export default function NestiqPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf5ff", color: "#1e1b4b" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo(ctaPage)} />
       <VisualPageStack data={merged} activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

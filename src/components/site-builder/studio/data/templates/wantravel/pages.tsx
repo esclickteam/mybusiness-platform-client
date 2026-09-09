@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { wantravelEditorCss } from "./editorCss";
@@ -305,7 +306,7 @@ export default function WantravelPages(props: WantravelPagesProps) {
   return (
     <div
       ref={rootRef}
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="wantravel"
       className="wan-page"
       onClickCapture={handleTemplateClickCapture}

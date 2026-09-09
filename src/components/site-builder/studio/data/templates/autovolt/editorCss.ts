@@ -2,7 +2,7 @@ export const autovoltEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;600;700&family=Oswald:wght@500;600;700&display=swap');
 [data-template-id="autovolt"], [data-template-id="autovolt"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #38BDF8;
   --blue: #38BDF8;

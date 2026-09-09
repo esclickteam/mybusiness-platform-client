@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { plantoraDefaultData } from "./defaultData";
 import { plantoraEditorCss } from "./editorCss";
@@ -27,7 +29,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = plantoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = plantoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50" style={{ background: "#f4f7f0f0" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -146,7 +148,7 @@ function RootHomeReviews({ data }: { data: Record<string, any> }) {
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#65a30d", background: "#ffffff" }}>
-              <p className="text-sm leading-7" style={{ color: "#5c7a5c" }}>״{text}״</p>
+              <p className="text-sm leading-7" style={{ color: "#5c7a5c" }}>״{tx(text)}״</p>
               <footer className="mt-4 text-sm font-bold">{name}</footer>
             </blockquote>
           ))}
@@ -211,7 +213,7 @@ function RootFullMenuBoard({ data }: { data: Record<string, any> }) {
             <div key={title} className="flex items-start justify-between gap-4 py-5">
               <div>
                 <h3 className="tpl-display text-xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm" style={{ color: "#5c7a5c" }}>{text}</p>
+                <p className="mt-1 text-sm" style={{ color: "#5c7a5c" }}>{tx(text)}</p>
               </div>
               <span className="whitespace-nowrap text-sm font-bold" style={{ color: "#65a30d" }}>{meta}</span>
             </div>
@@ -368,7 +370,7 @@ function RootAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#65a30d", background: "#f4f7f0" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#65a30d" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -429,10 +431,10 @@ function RootReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-sm" style={{ color: "#5c7a5c" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
-          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(26,46,26,0.12)", background: "#f4f7f0" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="plantora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
+          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(26,46,26,0.12)", background: "#f4f7f0" }}>{tx("היי! מתי נוח לכם?")}</div>
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="plantora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#65a30d", color: "#65a30dText" }}>{v(data, "cta")}</button>
           </form>
         </div>
@@ -571,7 +573,7 @@ export default function PlantoraPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="plantora" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="plantora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f4f7f0", color: "#1a2e1a" }}>
       <style dangerouslySetInnerHTML={{ __html: plantoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

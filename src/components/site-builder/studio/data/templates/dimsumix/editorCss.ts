@@ -2,7 +2,7 @@ export const dimsumixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="dimsumix"], [data-template-id="dimsumix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0f1412; --tpl-surface: #18201c; --tpl-text: #f0f5f2;
   --tpl-muted: #8aa89a; --tpl-primary: #86efac; --tpl-primary-text: #0f1412;

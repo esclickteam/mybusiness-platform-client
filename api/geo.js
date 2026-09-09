@@ -81,11 +81,19 @@ export default function handler(req, res) {
 
   res.setHeader("Cache-Control", "private, no-store");
 
+  const cookies = [];
   if (language) {
-    res.setHeader(
-      "Set-Cookie",
+    cookies.push(
       `bizuply_geo_lang=${encodeURIComponent(language)}; Path=/; Max-Age=2592000; SameSite=Lax`,
     );
+  }
+  if (knownCountry) {
+    cookies.push(
+      `bizuply_geo_country=${encodeURIComponent(country)}; Path=/; Max-Age=2592000; SameSite=Lax`,
+    );
+  }
+  if (cookies.length) {
+    res.setHeader("Set-Cookie", cookies);
   }
 
   res.status(200).json({

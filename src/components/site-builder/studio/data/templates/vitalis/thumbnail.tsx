@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function VitalisThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl bg-[#f7fcfc] p-5 text-[#0f2a36]"
     >
       <div className="absolute left-4 top-6 h-24 w-24 rounded-full bg-[#0ea5a4]/18 blur-2xl" />
@@ -23,14 +27,12 @@ export default function VitalisThumbnail() {
 
       <div className="relative z-10 mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0891b2]">
-          מרפאת שיניים ובריאות
-        </p>
+          {tx("מרפאת שיניים ובריאות")}</p>
         <h3 className="max-w-[230px] text-3xl font-bold leading-[1.08]">
-          חיוך בביטחון מלא.
-        </h3>
+          {tx("חיוך בביטחון מלא.")}</h3>
 
         <div className="mt-6 grid grid-cols-3 gap-2">
-          {[["15+", "ניסיון"], ["20K", "מטופלים"], ["4.9", "דירוג"]].map(([n, l]) => (
+          {[["15+", tx("ניסיון")], ["20K", tx("מטופלים")], ["4.9", tx("דירוג")]].map(([n, l]) => (
             <div key={l} className="rounded-xl border border-[#0891b2]/10 bg-white py-2 text-center shadow-sm">
               <div className="text-sm font-bold text-[#0891b2]">{n}</div>
               <div className="text-[9px] font-semibold text-[#7c95a0]">{l}</div>

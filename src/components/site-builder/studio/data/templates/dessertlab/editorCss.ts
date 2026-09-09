@@ -2,7 +2,7 @@ export const dessertlabEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="dessertlab"], [data-template-id="dessertlab"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a1220; --tpl-surface: #241832; --tpl-text: #f8eef8;
   --tpl-muted: #b89bb8; --tpl-primary: #e879f9; --tpl-primary-text: #1a1220;

@@ -11,6 +11,8 @@ import {
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 import { LEAD_WELCOME_EMAIL_DEFAULTS } from "./leadWelcomeEmail";
+import { localizeAutomationEmailDefaults } from "./localizeAutomationEmailDefaults";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -46,6 +48,15 @@ type GraphBuildOptions = {
   businessSender?: BusinessEmailSender | null;
 };
 
+function localizeActionDefaults(defaults?: Record<string, unknown>) {
+  if (!defaults) return {};
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(defaults)) {
+    out[key] = typeof value === "string" ? localizeBuiltInText(value) : value;
+  }
+  return out;
+}
+
 function actionNode(
   id: string,
   action: LocalTemplateAction,
@@ -56,10 +67,10 @@ function actionNode(
     type: "action",
     position,
     data: {
-      label: action.label,
+      label: localizeBuiltInText(action.label),
       actionKey: action.actionKey,
       templateId: "",
-      ...(action.defaults || {}),
+      ...localizeActionDefaults(action.defaults),
     },
   };
 }
@@ -194,7 +205,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
         actionKey: "connected_email",
         label: "אימייל אישור פגישה",
         defaults: {
-          ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
+          ...localizeAutomationEmailDefaults(APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS),
         },
       },
     ],
@@ -248,7 +259,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
         actionKey: "connected_email",
         label: "אימייל לליד",
         defaults: {
-          ...LEAD_WELCOME_EMAIL_DEFAULTS,
+          ...localizeAutomationEmailDefaults(LEAD_WELCOME_EMAIL_DEFAULTS),
         },
       },
       { actionKey: "create_task", label: "משימת מעקב" },
@@ -369,7 +380,7 @@ export function buildLocalAutomationGraph(
       type: "trigger",
       position: { x: 80, y: 160 },
       data: {
-        label: template.triggerLabel,
+        label: localizeBuiltInText(template.triggerLabel),
         triggerKey,
         routeCount,
         ...(template.hoursBefore != null
@@ -391,7 +402,7 @@ export function buildLocalAutomationGraph(
       target: id,
       sourceHandle: `route_${index + 1}`,
       targetHandle: null,
-      label: `תוצאה ${index + 1}`,
+      label: localizeBuiltInText(`תוצאה ${index + 1}`),
     });
   });
 

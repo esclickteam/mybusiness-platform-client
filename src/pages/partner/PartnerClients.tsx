@@ -197,7 +197,7 @@ export default function PartnerClients() {
                     <td className="px-3 py-4 font-bold text-slate-600" dir="ltr">
                       {row.contact?.phone || "—"}
                     </td>
-                    <td className="px-3 py-4 font-bold text-slate-600">{eventTypeLabel(row)}</td>
+                    <td className="px-3 py-4 font-bold text-slate-600">{eventTypeLabel(row, t)}</td>
                     <td className="px-3 py-4 font-bold text-slate-600">
                       {partnerStatusLabel(row.source, t)}
                     </td>

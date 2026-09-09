@@ -11,7 +11,7 @@ export const brandforgeEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="brandforge"] .text-center,
 [data-template-id="brandforge"] .text-center { text-align: center; }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -53,7 +54,7 @@ const heroWord = {
 };
 
 function About() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const values = [1, 2, 3, 4].map((n, i) => ({
     key: n,
@@ -69,7 +70,7 @@ function About() {
   }));
 
   return (
-    <div className="about-page" dir="rtl">
+    <div className="about-page" dir={getTextDirection(i18n.language)}>
       <Helmet>
         <title>{t("about.seoTitle")}</title>
         <meta name="description" content={t("about.seoDescription")} />

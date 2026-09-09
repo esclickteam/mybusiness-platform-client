@@ -45,8 +45,19 @@ export function getAutomationPlanDefinition(planKey: string | null | undefined) 
   return AUTOMATION_PLAN_DEFINITIONS.find((plan) => plan.key === key) || null;
 }
 
-export function getAutomationPlanDisplayName(planKey: string | null | undefined) {
-  return getAutomationPlanDefinition(planKey)?.name || planKey || "חבילת אוטומציות";
+type TranslateFn = (key: string, options?: { defaultValue?: string }) => string;
+
+export function getAutomationPlanDisplayName(
+  planKey: string | null | undefined,
+  t?: TranslateFn
+) {
+  const def = getAutomationPlanDefinition(planKey);
+  const fallback = def?.name || planKey || "חבילת אוטומציות";
+  if (!t) return fallback;
+  if (def?.key) {
+    return t(`automations.billing.planNames.${def.key}`, { defaultValue: fallback });
+  }
+  return t("automations.billing.fallbackPlanName", { defaultValue: fallback });
 }
 
 export function planRank(planKey: string | null | undefined) {

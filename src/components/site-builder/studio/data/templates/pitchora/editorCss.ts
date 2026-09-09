@@ -11,7 +11,7 @@ export const pitchoraEditorCss = `
   font-family: "Assistant", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="pitchora"] .text-center,
 [data-template-id="pitchora"] .text-center { text-align: center; }

@@ -40,7 +40,10 @@ describe("/api/geo country mapping", () => {
       language,
       fallback: "en",
     });
-    expect(res.headers["set-cookie"]).toContain(`bizuply_geo_lang=${encodeURIComponent(language)}`);
+    const cookie = res.headers["set-cookie"];
+    const blob = Array.isArray(cookie) ? cookie.join(";") : String(cookie || "");
+    expect(blob).toContain(`bizuply_geo_lang=${encodeURIComponent(language)}`);
+    expect(blob).toContain(`bizuply_geo_country=${country}`);
   });
 
   it("does not invent a country when geo headers are missing", () => {

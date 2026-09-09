@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api"; // Assume API is configured with axios
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [form, setForm] = useState({
@@ -45,7 +47,7 @@ const BankDetailsForm = () => {
 
     try {
       if (!user) {
-        throw new Error("Business details are unavailable. Please sign in again.");
+        throw new Error(t("dashboard.bankDetails.unavailable"));
       }
 
       const formData = new FormData();
@@ -58,10 +60,10 @@ const BankDetailsForm = () => {
       const response = await API.put("/business/my/bank-details", formData);
 
       if (response.status !== 200) {
-        throw new Error("Error saving details");
+        throw new Error(t("dashboard.bankDetails.saveError"));
       }
 
-      alert("Details saved successfully!");
+      alert(t("dashboard.bankDetails.saved"));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -71,24 +73,22 @@ const BankDetailsForm = () => {
 
   return (
     <section className="bank-details-form">
-      <h2>🏦 Bank Account Details for Payment</h2>
-      <p className="disclaimer">
-        You are responsible for updating these details if anything changes.
-      </p>
+      <h2>🏦 {t("dashboard.bankDetails.title")}</h2>
+      <p className="disclaimer">{t("dashboard.bankDetails.disclaimer")}</p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label htmlFor="bankName">Bank Name:</label>
+        <label htmlFor="bankName">{t("dashboard.bankDetails.bankName")}</label>
         <input
           type="text"
           id="bankName"
           name="bankName"
-          placeholder="Bank Hapoalim"
+          placeholder={t("dashboard.bankDetails.placeholderBank")}
           required
           value={form.bankName}
           onChange={handleChange}
         />
 
-        <label htmlFor="branchNumber">Branch Number:</label>
+        <label htmlFor="branchNumber">{t("dashboard.bankDetails.branchNumber")}</label>
         <input
           type="text"
           id="branchNumber"
@@ -99,7 +99,7 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="accountNumber">Account Number:</label>
+        <label htmlFor="accountNumber">{t("dashboard.bankDetails.accountNumber")}</label>
         <input
           type="text"
           id="accountNumber"
@@ -110,18 +110,18 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="fullName">Full Name:</label>
+        <label htmlFor="fullName">{t("dashboard.bankDetails.fullName")}</label>
         <input
           type="text"
           id="fullName"
           name="fullName"
-          placeholder="The name as it appears at the bank"
+          placeholder={t("dashboard.bankDetails.placeholderName")}
           required
           value={form.fullName}
           onChange={handleChange}
         />
 
-        <label htmlFor="idNumber">ID / Company Number:</label>
+        <label htmlFor="idNumber">{t("dashboard.bankDetails.idNumber")}</label>
         <input
           type="text"
           id="idNumber"
@@ -133,7 +133,9 @@ const BankDetailsForm = () => {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "💾 Save Details"}
+          {loading
+            ? t("dashboard.bankDetails.saving")
+            : `💾 ${t("dashboard.bankDetails.save")}`}
         </button>
       </form>
 

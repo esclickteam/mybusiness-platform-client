@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lexoraEditorCss } from "./editorCss";
@@ -149,7 +150,7 @@ export default function LexoraPages(props: LexoraPagesProps) {
   return (
     <div
       ref={rootRef}
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="lexora"
       className="lex-page"
       data-active-page={activePage}

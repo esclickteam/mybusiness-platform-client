@@ -2,7 +2,7 @@ export const rivaraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="rivara"], [data-template-id="rivara"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #e8f3f2; --tpl-surface: #d9ecea; --tpl-text: #12343a;
   --tpl-muted: #4f6d72; --tpl-primary: #1f7a78; --tpl-primary-text: #e8f3f2;

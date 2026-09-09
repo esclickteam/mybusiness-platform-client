@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { codehausDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -86,7 +88,7 @@ const navLabelKeys: Record<string, string> = {
 type PageProps = { data: Record<string, any>; openModal: () => void; goTo: (pageId: string) => void };
 
 function getNavLabel(data: Record<string, any>, page: { id: string; label: string }) {
-  return getValue(data, navLabelKeys[page.id]) || page.label;
+  return getValue(data, navLabelKeys[page.id]) || tx(page.label);
 }
 
 function Header({ data, currentPage, goTo, openModal }: { data: Record<string, any>; currentPage: string; goTo: (pageId: string) => void; openModal: () => void }) {
@@ -135,7 +137,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
           <Reveal key={title} delayMs={i*80} className="t-hover border border-[var(--p)]/30 bg-[var(--surface)] p-5">
             <pre className="text-xs text-[var(--muted)]">{"{"}"</pre>
             <p className="text-[var(--p)]">"track": "{title}",</p>
-            <p className="text-white/80">"desc": "{text}",</p>
+            <p className="text-white/80">"desc": "{tx(text)}",</p>
             <p className="text-[var(--a)]">"price": {[8900,12000,6500][i]}</p>
             <pre className="text-xs text-[var(--muted)]">{"}"}</pre>
           </Reveal>
@@ -153,7 +155,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         {[["feat: setup env","שבוע 1-2"],["feat: first app","שבוע 3-6"],["feat: APIs","שבוע 7-10"],["release: portfolio","שבוע 11-12"]].map(([c,w],i) => (
           <Reveal key={c} delayMs={i*90} className="relative mb-8">
             <span className="absolute -right-[41px] top-1 h-4 w-4 rounded-full bg-[var(--p)]" />
-            <p className="text-xs text-[var(--muted)]">commit {i+1} · {w}</p>
+            <p className="text-xs text-[var(--muted)]">commit {i+1} · {tx(w)}</p>
             <p className="text-lg text-white">{c}</p>
           </Reveal>
         ))}
@@ -202,7 +204,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         {[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text,name,role],i) => (
           <Reveal key={name} delayMs={i*80} className="t-hover border border-[var(--p)]/30 bg-[var(--surface)] p-5">
             <p className="text-xs text-[var(--a)]">PR #{120+i} merged · {role}</p>
-            <p className="mt-2 text-white/90">"{text}"</p>
+            <p className="mt-2 text-white/90">"{tx(text)}"</p>
             <p className="mt-3 text-sm text-[var(--p)]">@{name.replace(" ","_").toLowerCase()}</p>
           </Reveal>
         ))}
@@ -296,7 +298,7 @@ function About({ data }: { data: Record<string, any> }) {
         <Reveal className="relative min-h-[360px] overflow-hidden border border-[var(--p)]/35 bg-[var(--surface)]">
           <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
-          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold border border-[var(--p)] text-[var(--p)]">קוד</span>
+          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold border border-[var(--p)] text-[var(--p)]">{tx("קוד")}</span>
         </Reveal>
         <Reveal variant="up" className="border border-[var(--p)]/35 bg-[var(--surface)] p-8 lg:p-12">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--a)]">{getValue(data,"aboutEyebrow")}</p>
@@ -320,7 +322,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           <Reveal key={title} delayMs={i * 80} className="t-hover border border-[var(--p)]/30 bg-black p-5">
             <span className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold border border-[var(--p)] text-[var(--p)]">{i + 1}</span>
             <h3 className="text-xl font-bold">{title}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
           </Reveal>
         ))}
       </div>
@@ -340,7 +342,7 @@ function Method({ data }: { data: Record<string, any> }) {
           <Reveal key={title} delayMs={i * 90} className="t-hover border border-[var(--p)]/30 bg-black p-5">
             <p className="t-display text-2xl sm:text-4xl text-[var(--a)]">{String(i + 1).padStart(2, "0")}</p>
             <h3 className="mt-4 text-lg font-bold">{title}</h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
           </Reveal>
         ))}
       </div>
@@ -379,7 +381,7 @@ function Outcomes({ data }: { data: Record<string, any> }) {
           {outcomeItems(data).map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90} className="t-hover border-t border-[var(--p)]/25 pt-6">
               <p className="t-display text-2xl sm:text-4xl font-bold text-[var(--a)]">{title}</p>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </Reveal>
           ))}
         </div>
@@ -400,7 +402,7 @@ function Pricing({ data, goTo }: Pick<PageProps, "data" | "goTo">) {
           <Reveal key={title} delayMs={i * 90} className="t-hover border border-[var(--p)]/30 bg-black p-5">
             <p className="text-sm text-[var(--muted)]">{title}</p>
             <p className="t-display mt-4 text-2xl sm:text-4xl font-bold">₪{price}</p>
-            <p className="mt-4 min-h-14 text-sm leading-7 text-[var(--muted)]">{text}</p>
+            <p className="mt-4 min-h-14 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             <button type="button" onClick={() => goTo("contact")} className="mt-8 w-full px-5 py-3 text-sm font-bold border border-[var(--p)] text-[var(--p)]">{getValue(data,"ctaBandButton")}</button>
           </Reveal>
         ))}
@@ -423,7 +425,7 @@ function Insights({ data, goTo }: Pick<PageProps, "data" | "goTo">) {
             <Reveal key={title} delayMs={i * 80} className="t-hover border border-[var(--p)]/30 bg-black p-5">
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--a)]">article 0{i + 1}</p>
               <h3 className="mt-3 text-2xl font-bold">{title}</h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </Reveal>
           ))}
         </div>
@@ -452,7 +454,7 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="text-xs text-[var(--muted)]">// application.js</p>
           <h2 className="mt-2 text-xl text-[var(--p)]">{getValue(data,"contactTitle")}</h2>
         </Reveal>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="codehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="codehaus-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input className="border border-[var(--p)]/30 bg-transparent px-4 py-3 text-[var(--p)] outline-none" placeholder="name ="  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="border border-[var(--p)]/30 bg-transparent px-4 py-3 text-[var(--p)] outline-none" placeholder="email ="  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <button type="submit" onClick={openModal} className="bg-[var(--p)] py-3 font-bold text-black">node submit.js</button>
@@ -480,9 +482,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="codehaus-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="codehaus-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -536,7 +538,7 @@ export default function CodehausPages(props: CodehausPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="codehaus" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="codehaus" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: codehausEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} openModal={() => setModalOpen(true)} />
       <VisualPageStack activePageId={currentPage} pages={codehausPages.map((page) => ({ id: page.id, content: <>{(pageSectionOrder[page.id] ?? pageSectionOrder.home).map((sectionName, index) => <React.Fragment key={page.id + "-" + sectionName + "-" + index}>{renderSection(sectionName, page, { data: mergedData, openModal: () => setModalOpen(true), goTo })}</React.Fragment>)}</> }))} />

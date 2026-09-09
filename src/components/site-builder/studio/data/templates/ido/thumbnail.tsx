@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function IdoThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[220px] w-full overflow-hidden rounded-[1.8rem] bg-[#07100e] text-white"
     >
       <div className="absolute -left-10 -top-10 h-36 w-36 rounded-full bg-[#c9f4dc]/25 blur-2xl" />
@@ -29,10 +33,8 @@ export default function IdoThumbnail() {
           </div>
 
           <div className="text-2xl font-semibold leading-[0.95] tracking-[-0.06em]">
-            סטודיו יופי
-            <br />
-            פרימיום
-          </div>
+            {tx("סטודיו יופי")}<br />
+            {tx("פרימיום")}</div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             <span className="h-2 rounded-full bg-[#c9f4dc]" />

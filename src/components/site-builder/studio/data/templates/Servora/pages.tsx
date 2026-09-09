@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -52,7 +54,7 @@ function visualProps(
     "data-visual-edit-type": type,
     "data-visual-type": type,
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 
@@ -65,7 +67,7 @@ function sectionProps(
     ...visualProps(id, "section", label),
     "data-template-section-id": id,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
   };
 }
 
@@ -444,7 +446,7 @@ export default function ServoraPages({
       <style>{servoraEditorCss}</style>
 
       <main
-        dir="rtl"
+        dir={templateDir()}
         data-template-id="servora"
         data-template-mode={mode}
         data-template-page-id={isLibraryPage ? rawPageId : currentPage}
@@ -518,7 +520,7 @@ function Header({
               event.preventDefault();
               onNavigate("home");
             }}
-            aria-label="חזרה לדף הבית"
+            aria-label={tx("חזרה לדף הבית")}
             data-editable="button"
             {...visualProps("global.header.brand", "button", "לוגו ומותג")}
           >
@@ -553,7 +555,7 @@ function Header({
             </span>
           </a>
 
-          <nav className="servora-nav" aria-label="ניווט ראשי">
+          <nav className="servora-nav" aria-label={tx("ניווט ראשי")}>
             {safeArray(data.nav).map((item, index) => {
               const pageKey = String(item.page || "home");
               const href = navHrefForServoraPage(pageKey);
@@ -735,9 +737,7 @@ function Header({
                 "button",
                 "כפתור ראשי בכותרת",
               )}
-            >
-              לקביעת ביקור
-            </button>
+            >{tx("לקביעת ביקור")}</button>
           </div>
         </div>
       </div>
@@ -772,7 +772,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
               >
                 <MediaElement
                   src={data.hero.image}
-                  alt="חשמלאי מקצועי"
+                  alt={tx("חשמלאי מקצועי")}
                   field="hero.image"
                 />
               </div>
@@ -916,16 +916,12 @@ function ServiceRequestCard({
           <h3
             data-editable="text"
             {...visualProps(`${scope}.title`, "text", "כותרת הטופס")}
-          >
-            בקשת שירות מהירה
-          </h3>
+          >{tx("בקשת שירות מהירה")}</h3>
 
           <p
             data-editable="text"
             {...visualProps(`${scope}.text`, "text", "תיאור הטופס")}
-          >
-            השאירו פרטים ונחזור אליכם עם הצעה.
-          </p>
+          >{tx("השאירו פרטים ונחזור אליכם עם הצעה.")}</p>
         </div>
 
         <span className="servora-request-icon" aria-hidden="true">
@@ -935,33 +931,33 @@ function ServiceRequestCard({
 
       <form
         className="servora-request-form"
-        data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="servora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+        data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="servora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
       >
         <input
           name="name"
           type="text"
-          placeholder="שם מלא"
-          aria-label="שם מלא"
+          placeholder={tx("שם מלא")}
+          aria-label={tx("שם מלא")}
           data-editable="input"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.nameInput`, "box", "שדה שם")}
          data-bizuply-form-field-id="name" autoComplete="name" />
 
         <input
           name="phone"
           type="tel"
-          placeholder="טלפון"
-          aria-label="טלפון"
+          placeholder={tx("טלפון")}
+          aria-label={tx("טלפון")}
           data-editable="input"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.phoneInput`, "box", "שדה טלפון")}
          data-bizuply-form-field-id="phone" autoComplete="tel" />
 
         <select
           name="service"
-          aria-label="בחירת שירות"
+          aria-label={tx("בחירת שירות")}
           data-editable="select"
-          dir="rtl"
+          dir={templateDir()}
           {...visualProps(`${scope}.serviceSelect`, "box", "בחירת שירות")}
         >
           {safeArray(data.services).map((service, index) => (
@@ -974,9 +970,7 @@ function ServiceRequestCard({
           className="servora-btn servora-btn-orange servora-request-submit"
           data-editable="button"
           {...visualProps(`${scope}.submit`, "button", "שליחת בקשה")}
-        >
-          שליחת בקשה
-        </button>
+        >{tx("שליחת בקשה")}</button>
       </form>
     </div>
   );
@@ -1001,7 +995,7 @@ function TrustStrip({ data, scope }: SharedProps & ScopedProps) {
                 `יתרון מהיר ${index + 1}`,
               )}
             >
-              {item}
+              {tx(item)}
             </span>
           ))}
         </div>
@@ -1037,9 +1031,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                 "text",
                 "כותרת שירות חירום",
               )}
-            >
-              שירות חשמלאי מקצועי 24/7
-            </h2>
+            >{tx("שירות חשמלאי מקצועי 24/7")}</h2>
 
             <p
               data-editable="text"
@@ -1048,10 +1040,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                 "text",
                 "תיאור שירות חירום",
               )}
-            >
-              זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם
-              אחריות מלאה.
-            </p>
+            >{tx("זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם\nאחריות מלאה.")}</p>
 
             <a
               href={`tel:${data.brand.phone}`}
@@ -1062,9 +1051,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                 "button",
                 "כפתור חייגו עכשיו",
               )}
-            >
-              חייגו עכשיו
-            </a>
+            >{tx("חייגו עכשיו")}</a>
           </article>
 
           <article
@@ -1088,9 +1075,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                   "text",
                   "כותרת משנה",
                 )}
-              >
-                למה לבחור בנו
-              </span>
+              >{tx("למה לבחור בנו")}</span>
 
               <h2
                 data-editable="text"
@@ -1099,9 +1084,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                   "text",
                   "כותרת הכרטיס",
                 )}
-              >
-                שירותי חשמל שעושים את ההבדל
-              </h2>
+              >{tx("שירותי חשמל שעושים את ההבדל")}</h2>
 
               <p
                 data-editable="text"
@@ -1110,10 +1093,7 @@ function IntroSection({ data, scope }: SharedProps & ScopedProps) {
                   "text",
                   "תיאור הכרטיס",
                 )}
-              >
-                חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע
-                נקי ואחריות בסיום העבודה.
-              </p>
+              >{tx("חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע\nנקי ואחריות בסיום העבודה.")}</p>
             </div>
           </article>
         </div>
@@ -1194,9 +1174,9 @@ function ServicesSection({
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="השירותים שלנו"
-          title="כל שירותי החשמל במקום אחד"
-          text="כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה."
+          eyebrow={tx("השירותים שלנו")}
+          title={tx("כל שירותי החשמל במקום אחד")}
+          text={tx("כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.")}
         />
 
         <div className="servora-services-grid">
@@ -1257,9 +1237,7 @@ function ServicesSection({
                   "button",
                   `כפתור שירות ${index + 1}`,
                 )}
-              >
-                קראו עוד ←
-              </button>
+              >{tx("קראו עוד ←")}</button>
             </article>
           ))}
         </div>
@@ -1342,9 +1320,7 @@ function FeatureSection({
                   "button",
                   "כפתור תיאום ייעוץ",
                 )}
-              >
-                לתיאום ייעוץ
-              </button>
+              >{tx("לתיאום ייעוץ")}</button>
 
               <button
                 type="button"
@@ -1356,9 +1332,7 @@ function FeatureSection({
                   "button",
                   "כפתור צפייה במחירים",
                 )}
-              >
-                צפו במחירים
-              </button>
+              >{tx("צפו במחירים")}</button>
             </div>
           </article>
 
@@ -1372,7 +1346,7 @@ function FeatureSection({
           >
             <MediaElement
               src={data.project.image}
-              alt="עבודת חשמל מקצועית"
+              alt={tx("עבודת חשמל מקצועית")}
               field="project.image"
             />
 
@@ -1402,9 +1376,7 @@ function FeatureSection({
                   "text",
                   "טקסט התג",
                 )}
-              >
-                שירות זמין עבורכם
-              </span>
+              >{tx("שירות זמין עבורכם")}</span>
             </div>
           </div>
         </div>
@@ -1422,8 +1394,8 @@ function ProcessSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="איך זה עובד"
-          title="תהליך קצר וברור שמוביל לתיקון בטוח"
+          eyebrow={tx("איך זה עובד")}
+          title={tx("תהליך קצר וברור שמוביל לתיקון בטוח")}
         />
 
         <div className="servora-process-line">
@@ -1496,8 +1468,8 @@ function TestimonialsSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="לקוחות מספרים"
-          title="מה אומרים עלינו"
+          eyebrow={tx("לקוחות מספרים")}
+          title={tx("מה אומרים עלינו")}
         />
 
         <div className="servora-testimonials-grid">
@@ -1612,9 +1584,9 @@ function PricingSection({
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="מחירים הוגנים"
-          title="חבילות מומלצות"
-          text="מחירים התחלתיים וברורים לפני שמשאירים פרטים."
+          eyebrow={tx("מחירים הוגנים")}
+          title={tx("חבילות מומלצות")}
+          text={tx("מחירים התחלתיים וברורים לפני שמשאירים פרטים.")}
         />
 
         <div className="servora-pricing-grid">
@@ -1639,9 +1611,7 @@ function PricingSection({
                     "text",
                     "תג פופולרי",
                   )}
-                >
-                  הכי פופולרי
-                </span>
+                >{tx("הכי פופולרי")}</span>
               )}
 
               <span
@@ -1705,9 +1675,7 @@ function PricingSection({
                     "button",
                     `כפתור הזמנה לחבילה ${index + 1}`,
                   )}
-                >
-                  הזמנה עכשיו
-                </button>
+                >{tx("הזמנה עכשיו")}</button>
               )}
             </article>
           ))}
@@ -1726,8 +1694,8 @@ function FaqSection({ data, scope }: SharedProps & ScopedProps) {
       <div className="servora-shell">
         <SectionTitle
           scope={`${scope}.heading`}
-          eyebrow="שאלות נפוצות"
-          title="כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים."
+          eyebrow={tx("שאלות נפוצות")}
+          title={tx("כל מה שלקוח רוצה לדעת לפני שהוא משאיר פרטים.")}
         />
 
         <div className="servora-faq">
@@ -1794,9 +1762,7 @@ function CtaSection({
                 "text",
                 "כותרת משנה לקריאה לפעולה",
               )}
-            >
-              צריכים חשמלאי עכשיו?
-            </span>
+            >{tx("צריכים חשמלאי עכשיו?")}</span>
 
             <h2
               data-editable="text"
@@ -1837,9 +1803,7 @@ function CtaSection({
                 "button",
                 "כפתור פרטים נוספים",
               )}
-            >
-              פרטים נוספים
-            </a>
+            >{tx("פרטים נוספים")}</a>
           </div>
         </div>
       </div>
@@ -1868,7 +1832,7 @@ function SectionTitle({
         data-editable="text"
         {...visualProps(`${scope}.eyebrow`, "text", "כותרת קטנה")}
       >
-        {eyebrow}
+        {tx(eyebrow)}
       </span>
 
       <h2
@@ -1885,7 +1849,7 @@ function SectionTitle({
           data-editable="text"
           {...visualProps(`${scope}.text`, "text", "תיאור האזור")}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -1897,9 +1861,9 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="services.pageHero"
-        eyebrow="שירותי חשמל"
-        title="כל שירותי החשמל במקום אחד"
-        text="תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ."
+        eyebrow={tx("שירותי חשמל")}
+        title={tx("כל שירותי החשמל במקום אחד")}
+        text={tx("תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ.")}
       />
 
       <ServicesSection
@@ -1924,9 +1888,9 @@ function PricingPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="pricing.pageHero"
-        eyebrow="מחירים"
-        title="חבילות ומחירים ברורים"
-        text="מחירון נקי ומקצועי שמוביל לפנייה."
+        eyebrow={tx("מחירים")}
+        title={tx("חבילות ומחירים ברורים")}
+        text={tx("מחירון נקי ומקצועי שמוביל לפנייה.")}
       />
 
       <PricingSection
@@ -1945,9 +1909,9 @@ function GalleryPage({ data, onNavigate }: SharedProps & NavigateProps) {
     <>
       <PageHero
         scope="gallery.pageHero"
-        eyebrow="עבודות"
-        title="עבודות חשמל מסודרות ומקצועיות"
-        text="אזור פרויקטים, תהליך והוכחות חברתיות."
+        eyebrow={tx("עבודות")}
+        title={tx("עבודות חשמל מסודרות ומקצועיות")}
+        text={tx("אזור פרויקטים, תהליך והוכחות חברתיות.")}
       />
 
       <FeatureSection
@@ -1992,9 +1956,7 @@ function ContactPage({ data }: SharedProps) {
                 "text",
                 "כותרת פרטי קשר",
               )}
-            >
-              ברקמן — פתרונות חשמל שקטים, אמינים ונקיים.
-            </h2>
+            >{tx("ברקמן — פתרונות חשמל שקטים, אמינים ונקיים.")}</h2>
 
             <p
               data-editable="text"
@@ -2115,7 +2077,7 @@ function PageHero({
             data-editable="text"
             {...visualProps(textId, "text", "תיאור העמוד")}
           >
-            {text}
+            {tx(text)}
           </p>
         </div>
       </div>
@@ -2157,9 +2119,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
                 "text",
                 "תיאור העסק בפוטר",
               )}
-            >
-              שירות נקי, מקצועי ומדויק בכל בית ועסק.
-            </span>
+            >{tx("שירות נקי, מקצועי ומדויק בכל בית ועסק.")}</span>
 
             <b
               data-editable="text"
@@ -2168,9 +2128,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
                 "text",
                 "אזור שירות",
               )}
-            >
-              בפריסה ארצית
-            </b>
+            >{tx("בפריסה ארצית")}</b>
           </div>
 
           <div
@@ -2188,9 +2146,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
                 "text",
                 "כותרת צור קשר",
               )}
-            >
-              צור קשר
-            </strong>
+            >{tx("צור קשר")}</strong>
 
             <span
               data-editable="text"
@@ -2247,7 +2203,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
               "זכויות יוצרים",
             )}
           >
-            © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
+            © {new Date().getFullYear()} {data.brand.name}. {tx("כל הזכויות שמורות.")}
           </span>
 
           <nav>

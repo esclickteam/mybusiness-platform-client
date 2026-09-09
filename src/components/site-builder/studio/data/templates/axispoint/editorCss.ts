@@ -2,7 +2,7 @@ export const axispointEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="axispoint"], [data-template-id="axispoint"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0c1222; --tpl-surface: #151d32; --tpl-text: #e2e8f0;
   --tpl-muted: #94a3b8; --tpl-primary: #f43f5e; --tpl-primary-text: #ffffff;

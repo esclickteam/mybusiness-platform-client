@@ -99,7 +99,7 @@ describe("AutomationUsageCard", () => {
   it("active Basic renders 2,500 limit via formatHeNumber", () => {
     renderCard(baseUsage());
     expect(screen.getByText(formatHeNumber(2500))).toBeInTheDocument();
-    expect(screen.getByText(/חבילת Automation Basic/)).toBeInTheDocument();
+    expect(screen.getByText(/חבילת אוטומציה בסיסית/)).toBeInTheDocument();
   });
 
   it("active plan progress renders with aria-valuenow", () => {

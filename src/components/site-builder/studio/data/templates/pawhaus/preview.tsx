@@ -1,8 +1,9 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
 import PawhausPages from "./pages";
 export default function PawhausPreview() {
   return (
-    <div dir="rtl" data-template-id="pawhaus" className="min-h-screen w-full" style={{ background: "#FAF7F2", overflowX: "hidden" }}>
+    <div dir={templateDir()} data-template-id="pawhaus" className="min-h-screen w-full" style={{ background: "#FAF7F2", overflowX: "hidden" }}>
       <PawhausPages initialPage="home" mode="preview" />
     </div>
   );

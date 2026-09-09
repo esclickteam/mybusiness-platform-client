@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { blockwiseDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -27,12 +29,12 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = blockwisePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = blockwisePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#e8e4dff2", borderColor: "rgba(26,26,26,0.18)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#e63946", color: "#ffffff" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(26,26,26,0.18)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -62,13 +64,13 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 }
 
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "w-full border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="blockwise-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="blockwise-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(26,26,26,0.18)", color: "#1a1a1a" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#e63946", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -175,7 +177,7 @@ function BlockMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(26,26,26,0.18)", background: "#f5f2ee" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Block</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("תובנות Block")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(26,26,26,0.18)" }}>
@@ -253,7 +255,7 @@ function BlockProcessRail({ data }: { data: Record<string, any> }) {
         {steps.map(([t,d],i) => (
           <div key={t} className="tpl-climb border-t pt-4" style={{ borderColor: "#e63946", animationDelay: `${i*0.1}s` }}>
             <span className="text-2xl font-bold" style={{ color: "#e63946" }}>0{i+1}</span>
-            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#666666" }}>{d}</p>
+            <h3 className="mt-2 font-bold">{t}</h3><p className="mt-1 text-sm" style={{ color: "#666666" }}>{tx(d)}</p>
           </div>
         ))}
       </div>
@@ -298,7 +300,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(26,26,26,0.18)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e63946" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e63946" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#666666" }}>{v(data, "aboutText")}</p>
         </div>
@@ -313,7 +315,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(26,26,26,0.18)", background: "#f5f2ee" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e63946" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e63946" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#666666" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#666666" }}>
@@ -402,7 +404,7 @@ export default function BlockwisePages({
     ),
   };
     pageContent["index"] = (
-      <InnerPage data={merged} title="אינדקס" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אינדקס")} onCta={() => goTo("contact")}>
         <>
           <NumberedIndex data={merged} />
       <BlockGalleryWall data={merged} />
@@ -413,7 +415,7 @@ export default function BlockwisePages({
       </InnerPage>
     );
     pageContent["listings"] = (
-      <InnerPage data={merged} title="נכסים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("נכסים")} onCta={() => goTo("contact")}>
         <>
           <BlockListingGrid data={merged} />
       <NumberedIndex data={merged} />
@@ -424,7 +426,7 @@ export default function BlockwisePages({
       </InnerPage>
     );
     pageContent["about"] = (
-      <InnerPage data={merged} title="אודות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אודות")} onCta={() => goTo("contact")}>
         <>
           <AboutBlock data={merged} />
       <BlockAgentRoster data={merged} />
@@ -435,7 +437,7 @@ export default function BlockwisePages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id="blockwise" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="blockwise" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#e8e4df", color: "#1a1a1a" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function HandcraftThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden p-5"
       style={{ background: "#F4F2EE", color: "#1C1E20" }}
     >
@@ -22,17 +26,14 @@ export default function HandcraftThumbnail() {
             <span className="text-xs font-black uppercase tracking-[-0.04em]">Handcraft</span>
           </div>
           <span className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: "#6B6F74" }}>
-            שירותי בית
-          </span>
+            {tx("שירותי בית")}</span>
         </div>
         <div className="mt-8 max-w-[230px]">
           <div className="mb-4 h-1 w-14" style={{ background: "#C56A3A" }} />
           <p className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#C56A3A" }}>
-            אינסטלציה · חשמל · שיפוצים
-          </p>
+            {tx("אינסטלציה · חשמל · שיפוצים")}</p>
           <h3 className="mt-3 text-3xl font-black leading-[0.9] tracking-[-0.08em]">
-            מטפלים בבית בלי רעש מיותר.
-          </h3>
+            {tx("מטפלים בבית בלי רעש מיותר.")}</h3>
         </div>
         <div className="mt-8 grid grid-cols-4 gap-1">
           {[1, 2, 3, 4].map((item) => (

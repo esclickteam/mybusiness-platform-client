@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -138,9 +140,9 @@ const SERENOVA_MODAL_FIELDS: BizuplyFormField[] = [
 
 const fieldClassByTone = {
   section:
-    "rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]",
+    "rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b99067]",
   modal:
-    "rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]",
+    "rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-start outline-none transition focus:border-[#b99067]",
 } as const;
 
 function renderSerenovaField(
@@ -150,7 +152,7 @@ function renderSerenovaField(
 ) {
   const baseClass = fieldClassByTone[tone];
   const name = field.id;
-  const placeholder = field.placeholder || field.label;
+  const placeholder = tx(field.placeholder || field.label);
   const className =
     field.type === "textarea" ? cx(baseClass, textareaClassName) : baseClass;
 
@@ -171,7 +173,7 @@ function renderSerenovaField(
   if (field.type === "select") {
     const options = field.options?.length
       ? field.options
-      : [placeholder || "בחרו אפשרות"];
+      : [placeholder || tx("בחרו אפשרות")];
     return (
       <select
         key={name}
@@ -184,7 +186,7 @@ function renderSerenovaField(
       >
         {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {tx(option)}
           </option>
         ))}
       </select>
@@ -237,10 +239,17 @@ function SerenovaLeadForm({
   textareaClassName?: string;
 }) {
   const resolved = resolveTemplateLeadForm(data, formId, {
-    fields: fallbackFields,
-    submitText: String(getValue(data, "contactButton") || "שליחת פרטים"),
+    fields: fallbackFields.map((field) => ({
+      ...field,
+      label: tx(field.label),
+      placeholder: tx(field.placeholder || ""),
+      options: Array.isArray(field.options)
+        ? field.options.map((option) => tx(String(option)))
+        : field.options,
+    })),
+    submitText: String(getValue(data, "contactButton") || tx("שליחת פרטים")),
     title: "",
-    successMessage: "תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.",
+    successMessage: tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."),
   });
 
   return (
@@ -283,7 +292,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 
@@ -293,7 +302,7 @@ function sectionProps(id: string, label: string, kind?: string) {
     "data-visual-edit-type": "section",
     "data-visual-type": "section",
     "data-visual-editable": "true",
-    "data-visual-edit-label": label,
+    "data-visual-edit-label": tx(label),
     "data-template-section-id": id,
     "data-section-kind": kind || id,
     "data-section-title": label,
@@ -324,7 +333,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
+    <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-start")}>
       <p
         className={cx(
           "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur-xl",
@@ -352,7 +361,7 @@ function SectionTitle({
             light ? "text-[#fbf6ec]/72" : "text-[#5d6c61]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       ) : null}
     </div>
@@ -393,7 +402,7 @@ function Header({
         <button
           type="button"
           onClick={() => handleNavigate("home")}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#244236] text-lg font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -450,7 +459,7 @@ function Header({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
+                  "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition",
                   currentPage === id
                     ? "bg-[#244236] text-[#fbf6ec]"
                     : "text-[#405349] hover:bg-white",
@@ -504,17 +513,11 @@ function BookingModal({
 
         <div className="relative z-10 grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="bg-[#244236] p-8 text-[#fbf6ec] lg:p-10">
-            <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              קביעת שיחת היכרות
-            </p>
+            <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("קביעת שיחת היכרות")}</p>
 
-            <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">
-              חוויה רגועה שמובילה לפנייה בלי לחץ.
-            </h3>
+            <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">{tx("חוויה רגועה שמובילה לפנייה בלי לחץ.")}</h3>
 
-            <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">
-              מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.
-            </p>
+            <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">{tx("מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.")}</p>
 
             <div className="mt-8 grid gap-3">
               {[
@@ -523,10 +526,10 @@ function BookingModal({
                 "התאמה אישית לפי סוג השירות",
               ].map((item) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold backdrop-blur"
                 >
-                  ✓ {item}
+                  ✓ {tx(item)}
                 </div>
               ))}
             </div>
@@ -665,10 +668,10 @@ function Hero({
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((item) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="rounded-2xl bg-[#f2eadc] px-3 py-2 text-center text-xs font-semibold text-[#244236]"
                 >
-                  {item}
+                  {tx(item)}
                 </div>
               ))}
             </div>
@@ -681,9 +684,7 @@ function Hero({
             </div>
           </div>
 
-          <div className="absolute left-[30%] top-3 z-40 rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#405349] shadow-xl shadow-[#244236]/10 backdrop-blur-xl">
-            חוויה רגועה
-          </div>
+          <div className="absolute left-[30%] top-3 z-40 rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#405349] shadow-xl shadow-[#244236]/10 backdrop-blur-xl">{tx("חוויה רגועה")}</div>
         </div>
       </div>
     </section>
@@ -720,8 +721,8 @@ function ExperienceStrip({
                 </span>
                 <span className="h-2 w-2 rounded-full bg-[#b8cfae] transition duration-500 group-hover:scale-[2]" />
               </div>
-              <h3 className="text-xl font-semibold tracking-[-0.04em]">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{text}</p>
+              <h3 className="text-xl font-semibold tracking-[-0.04em]">{tx(title)}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#fbf6ec]/70">{tx(text)}</p>
             </div>
           ))}
 
@@ -729,9 +730,7 @@ function ExperienceStrip({
             type="button"
             onClick={() => goTo("contact")}
             className="rounded-[30px] bg-[#fbf6ec] px-7 py-5 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-1 lg:min-w-[170px]"
-          >
-            להתחיל תהליך
-          </button>
+          >{tx("להתחיל תהליך")}</button>
         </div>
       </div>
     </section>
@@ -767,9 +766,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
 
           <div className="absolute -bottom-8 right-6 max-w-[275px] rounded-[32px] border border-white/80 bg-white/82 p-5 shadow-2xl shadow-[#244236]/15 backdrop-blur-xl">
             <div className="text-2xl sm:text-4xl font-semibold tracking-[-0.07em] text-[#20342a]">01</div>
-            <p className="mt-2 text-sm leading-6 text-[#5f6c62]">
-              היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.
-            </p>
+            <p className="mt-2 text-sm leading-6 text-[#5f6c62]">{tx("היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.")}</p>
           </div>
         </div>
 
@@ -783,7 +780,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           <div className="mt-9 grid gap-4 md:grid-cols-2">
             {bullets.map((item, index) => (
               <div
-                key={item}
+                key={tx(item)}
                 className={cx(
                   "group rounded-[30px] border border-[#244236]/10 bg-white/62 p-5 text-[#405349] shadow-2xl shadow-[#244236]/8 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:bg-white/85",
                   index === 1 || index === 2 ? "md:translate-y-6" : "",
@@ -792,7 +789,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 <span className="mb-4 grid h-10 w-10 place-items-center rounded-full bg-[#b8cfae]/45 text-[#244236] transition duration-500 group-hover:bg-[#244236] group-hover:text-[#fbf6ec]">
                   ✓
                 </span>
-                <p className="text-base font-semibold leading-7">{item}</p>
+                <p className="text-base font-semibold leading-7">{tx(item)}</p>
               </div>
             ))}
           </div>
@@ -858,7 +855,7 @@ function ServicesSection({
 
       <div className="relative mx-auto max-w-7xl">
         <div className="grid items-end gap-8 lg:grid-cols-[1fr_340px]">
-          <div className="max-w-3xl text-right">
+          <div className="max-w-3xl text-start">
             <p className="mb-4 inline-flex rounded-full border border-[#244236]/15 bg-white/65 px-4 py-2 text-sm font-semibold text-[#5b725f] shadow-sm backdrop-blur-xl">
               {getValue(data, "servicesEyebrow")}
             </p>
@@ -867,18 +864,13 @@ function ServicesSection({
               {getValue(data, "servicesTitle")}
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">
-              שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,
-              CTA עדין והיררכיה שמרגישה פרימיום.
-            </p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">{tx("שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\nCTA עדין והיררכיה שמרגישה פרימיום.")}</p>
           </div>
 
           <div className="rounded-[34px] border border-[#244236]/10 bg-white/60 p-5 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl">
             <div className="mb-5 flex items-center justify-between">
               <span className="text-sm font-semibold text-[#5b725f]">overview</span>
-              <span className="rounded-full bg-[#244236] px-3 py-1 text-xs font-semibold text-[#fbf6ec]">
-                4 שירותים
-              </span>
+              <span className="rounded-full bg-[#244236] px-3 py-1 text-xs font-semibold text-[#fbf6ec]">{tx("4 שירותים")}</span>
             </div>
 
             <div className="grid gap-3">
@@ -888,9 +880,9 @@ function ServicesSection({
                 ["מענה", "ברור, אישי ומהיר"],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-[#f3ecdf] px-4 py-3">
-                  <div className="text-xs font-semibold text-[#6b756f]">{label}</div>
+                  <div className="text-xs font-semibold text-[#6b756f]">{tx(label)}</div>
                   <div className="mt-1 text-lg font-semibold text-[#20342a]">
-                    {value}
+                    {tx(value)}
                   </div>
                 </div>
               ))}
@@ -914,7 +906,7 @@ function ServicesSection({
               <div className="relative z-10">
                 <div className="mb-8 flex items-start justify-between gap-4">
                   <span className="rounded-full border border-[#244236]/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[#6a756e]">
-                    {service.tag}
+                    {tx(service.tag)}
                   </span>
 
                   <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#244236] text-sm font-semibold text-[#fbf6ec] shadow-lg shadow-[#244236]/20">
@@ -936,7 +928,7 @@ function ServicesSection({
                       key={bullet}
                       className="rounded-full border border-[#244236]/10 bg-white/70 px-3 py-2 text-xs font-semibold text-[#4b5d53]"
                     >
-                      {bullet}
+                      {tx(bullet)}
                     </span>
                   ))}
                 </div>
@@ -944,8 +936,8 @@ function ServicesSection({
 
               <div className="relative z-10 mt-8 border-t border-[#244236]/10 pt-5">
                 <div className="mb-4 flex items-center justify-between text-sm">
-                  <span className="font-semibold text-[#b99067]">{service.note}</span>
-                  <span className="text-[#6c7871]">בדיקת התאמה ראשונית</span>
+                  <span className="font-semibold text-[#b99067]">{tx(service.note)}</span>
+                  <span className="text-[#6c7871]">{tx("בדיקת התאמה ראשונית")}</span>
                 </div>
 
                 <button
@@ -953,7 +945,7 @@ function ServicesSection({
                   onClick={openBooking}
                   className="flex w-full items-center justify-between rounded-full border border-[#244236]/10 bg-white/75 px-5 py-4 text-sm font-semibold text-[#244236] shadow-sm transition duration-300 hover:bg-[#244236] hover:text-[#fbf6ec]"
                 >
-                  <span>לבדוק התאמה</span>
+                  <span>{tx("לבדוק התאמה")}</span>
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-[#244236]/10 text-[#244236]">
                     ↗
                   </span>
@@ -984,14 +976,12 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow={getValue(data, "processEyebrow")}
             title={getValue(data, "processTitle")}
-            text="Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה."
+            text={tx("Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה.")}
           />
 
           <div className="mt-8 rounded-[34px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-2xl shadow-[#244236]/16">
             <p className="text-sm opacity-70">Client Journey</p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">
-              מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.
-            </h3>
+            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">{tx("מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.")}</h3>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((step) => (
@@ -1021,7 +1011,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
                 {title}
               </h3>
 
-              <p className="mt-4 text-lg leading-8 text-[#5f6c62]">{text}</p>
+              <p className="mt-4 text-lg leading-8 text-[#5f6c62]">{tx(text)}</p>
 
               <div className="mt-7 h-2 w-full overflow-hidden rounded-full bg-[#244236]/8">
                 <div
@@ -1064,7 +1054,7 @@ function PricingSection({
           center
           eyebrow={getValue(data, "pricingEyebrow")}
           title={getValue(data, "pricingTitle")}
-          text="מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה."
+          text={tx("מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
@@ -1082,13 +1072,9 @@ function PricingSection({
                 <h3 className="text-2xl font-semibold tracking-[-0.04em]">{name}</h3>
 
                 {index === 1 ? (
-                  <span className="rounded-full bg-[#fbf6ec] px-3 py-1 text-xs font-semibold text-[#244236]">
-                    מומלץ
-                  </span>
+                  <span className="rounded-full bg-[#fbf6ec] px-3 py-1 text-xs font-semibold text-[#244236]">{tx("מומלץ")}</span>
                 ) : (
-                  <span className="rounded-full border border-[#244236]/10 px-3 py-1 text-xs font-semibold text-[#66736a]">
-                    רגיל
-                  </span>
+                  <span className="rounded-full border border-[#244236]/10 px-3 py-1 text-xs font-semibold text-[#66736a]">{tx("רגיל")}</span>
                 )}
               </div>
 
@@ -1097,13 +1083,13 @@ function PricingSection({
               </div>
 
               <p className={cx("mt-5 leading-7", index === 1 ? "text-[#fbf6ec]/75" : "text-[#5f6c62]")}>
-                {text}
+                {tx(text)}
               </p>
 
               <ul className={cx("mt-7 space-y-3 text-sm", index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]")}>
-                <li>• התאמה מלאה למובייל</li>
-                <li>• אזורי אמון ו־CTA</li>
-                <li>• מבנה שמוביל לפנייה</li>
+                <li>{tx("• התאמה מלאה למובייל")}</li>
+                <li>{tx("• אזורי אמון ו־CTA")}</li>
+                <li>{tx("• מבנה שמוביל לפנייה")}</li>
               </ul>
 
               <button
@@ -1115,9 +1101,7 @@ function PricingSection({
                     ? "bg-[#fbf6ec] text-[#244236] hover:-translate-y-0.5"
                     : "bg-[#244236] text-[#fbf6ec] hover:-translate-y-0.5",
                 )}
-              >
-                בחירת מסלול
-              </button>
+              >{tx("בחירת מסלול")}</button>
             </article>
           ))}
         </div>
@@ -1168,7 +1152,7 @@ function GallerySection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "galleryEyebrow")}
           title={getValue(data, "galleryTitle")}
-          text="גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה."
+          text={tx("גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-4 lg:grid-rows-[280px_280px_300px]">
@@ -1194,8 +1178,8 @@ function GallerySection({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#17251e]/58 via-transparent to-transparent opacity-80" />
 
                 <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-white/15 bg-[#244236]/72 px-4 py-4 text-[#fbf6ec] backdrop-blur-md transition duration-500 group-hover:translate-y-[-4px]">
-                  <div className="text-sm opacity-70">{item.text}</div>
-                  <div className="text-xl font-semibold tracking-[-0.04em]">{item.title}</div>
+                  <div className="text-sm opacity-70">{tx(item.text)}</div>
+                  <div className="text-xl font-semibold tracking-[-0.04em]">{tx(item.title)}</div>
                 </div>
               </div>
             </div>
@@ -1223,7 +1207,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "blogEyebrow")}
           title={getValue(data, "blogTitle")}
-          text="כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים."
+          text={tx("כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
@@ -1234,7 +1218,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
             >
               <div className="mb-7 flex items-center justify-between">
                 <p className="text-sm font-semibold text-[#b99067]">
-                  מאמר 0{index + 1}
+                  {tx("מאמר")} 0{index + 1}
                 </p>
 
                 <span className="rounded-full border border-[#244236]/10 bg-white/55 px-3 py-1 text-xs font-semibold text-[#66736a]">
@@ -1246,7 +1230,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
                 {title}
               </h3>
 
-              <p className="mt-4 leading-7 text-[#5f6c62]">{text}</p>
+              <p className="mt-4 leading-7 text-[#5f6c62]">{tx(text)}</p>
 
               <div className="mt-7 h-1.5 w-full overflow-hidden rounded-full bg-[#244236]/10">
                 <div
@@ -1262,9 +1246,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 className="mt-8 rounded-full border border-[#244236]/15 px-5 py-3 text-sm font-semibold text-[#244236] transition duration-300 hover:bg-white"
-              >
-                לקריאה
-              </button>
+              >{tx("לקריאה")}</button>
             </article>
           ))}
         </div>
@@ -1291,7 +1273,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
         <SectionTitle
           eyebrow={getValue(data, "faqEyebrow")}
           title={getValue(data, "faqTitle")}
-          text="אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם."
+          text={tx("אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם.")}
         />
 
         <div className="space-y-4">
@@ -1306,7 +1288,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-xl font-semibold tracking-[-0.04em] text-[#20342a]">
                     {question}
@@ -1380,7 +1362,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold text-[#fbf6ec]/60">{label}</div>
+                  <div className="text-xs font-semibold text-[#fbf6ec]/60">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold text-[#fbf6ec]">
                     {value}
                   </div>
@@ -1392,9 +1374,7 @@ function ContactSection({
               type="button"
               onClick={openBooking}
               className="mt-8 rounded-full bg-[#fbf6ec] px-7 py-4 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-0.5"
-            >
-              לפתיחת חלון פנייה מהירה
-            </button>
+            >{tx("לפתיחת חלון פנייה מהירה")}</button>
           </div>
         </div>
 
@@ -1440,9 +1420,7 @@ function CtaFooter({
 
           <div className="rounded-[38px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-xl shadow-[#244236]/15">
             <div className="text-sm opacity-70">Ready to start?</div>
-            <div className="mt-3 text-2xl font-semibold tracking-[-0.05em]">
-              חוויה רגועה, נקייה ויותר פרימיום.
-            </div>
+            <div className="mt-3 text-2xl font-semibold tracking-[-0.05em]">{tx("חוויה רגועה, נקייה ויותר פרימיום.")}</div>
 
             <div className="mt-6 grid gap-3">
               <button
@@ -1457,9 +1435,7 @@ function CtaFooter({
                 type="button"
                 onClick={() => goTo("services")}
                 className="rounded-full border border-white/15 px-8 py-4 text-base font-semibold text-[#fbf6ec] transition duration-300 hover:bg-white/10"
-              >
-                לראות שירותים
-              </button>
+              >{tx("לראות שירותים")}</button>
             </div>
           </div>
         </div>
@@ -1469,7 +1445,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Serenova · Bizuply Studio</p>
+        <p>{tx("תבנית Serenova · Bizuply Studio")}</p>
       </div>
     </footer>
   );
@@ -1599,7 +1575,7 @@ export default function SerenovaPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="serenova"
       className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(184,207,174,0.38),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(215,191,151,0.32),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(184,207,174,0.20),transparent_24%),linear-gradient(180deg,#f7efe3_0%,#f2eadc_48%,#edf2ea_100%)] font-sans text-[#20342a]"
     >

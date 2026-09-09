@@ -2,7 +2,7 @@ export const brokeriaEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="brokeria"], [data-template-id="brokeria"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0a0f18; --tpl-surface: #141c2a; --tpl-text: #f0f4fa;
   --tpl-muted: #8b9cb5; --tpl-primary: #c9a962; --tpl-primary-text: #0a0f18;

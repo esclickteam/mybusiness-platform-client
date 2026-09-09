@@ -11,7 +11,7 @@ export const growthlyEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="growthly"] .text-center,
 [data-template-id="growthly"] .text-center { text-align: center; }

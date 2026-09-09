@@ -17,7 +17,7 @@ export const booknookEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #1D4ED822, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #93C5FD18, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="booknook"] .store-display,
 [data-template-id="booknook"] .store-display {

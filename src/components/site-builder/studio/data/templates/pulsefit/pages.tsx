@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { pulsefitDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -120,7 +122,7 @@ function Programs({ data }: { data: Record<string, any> }) {
                     <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">0{index + 1}</span>
                     <div>
                       <h3 className="t-display text-3xl font-bold uppercase text-white md:text-5xl">{title}</h3>
-                      <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                     </div>
                   </div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{meta}</p>
@@ -188,7 +190,7 @@ function Method({ data }: { data: Record<string, any> }) {
               <article className="pulsefit-method-panel h-full border border-white/15 bg-[var(--surface)] p-8 lg:min-h-[300px]" style={{ clipPath: "polygon(0 0, 92% 0, 100% 100%, 8% 100%)" }}>
                 <span className="t-display text-3xl md:text-6xl font-bold text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display mt-8 text-3xl font-bold uppercase text-white">{title}</h3>
-                <p className="mt-4 text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -219,7 +221,7 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
               <article className={`min-h-[420px] border-2 p-8 md:p-10 ${index === 0 ? "border-white/20 bg-[var(--bg)]" : "border-[var(--p)] bg-[var(--p)] text-black"}`}>
                 <p className="t-display text-2xl sm:text-4xl font-bold uppercase">{name}</p>
                 <p className="t-display mt-8 text-3xl md:text-7xl font-bold uppercase">{price}</p>
-                <p className={`mt-5 max-w-xl text-base font-semibold leading-8 ${index === 0 ? "text-[var(--muted)]" : "text-black/70"}`}>{text}</p>
+                <p className={`mt-5 max-w-xl text-base font-semibold leading-8 ${index === 0 ? "text-[var(--muted)]" : "text-black/70"}`}>{tx(text)}</p>
                 <div className={`mt-8 space-y-3 border-t pt-6 text-sm font-bold ${index === 0 ? "border-white/15 text-white" : "border-black/20 text-black"}`}>
                   {String(features).split("|").map((feature) => (
                     <p key={feature}>/ {feature}</p>
@@ -278,7 +280,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up" className="flex-1">
               <blockquote className="flex aspect-square flex-col justify-between border-2 border-[var(--p)] p-7">
-                <p className="t-display text-2xl sm:text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{text}"</p>
+                <p className="t-display text-2xl sm:text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{tx(text)}"</p>
                 <footer className="text-sm font-black uppercase tracking-[0.2em] text-white">{name}</footer>
               </blockquote>
             </Reveal>
@@ -304,13 +306,13 @@ function StartForm({ data, openModal }: { data: Record<string, any>; openModal: 
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsefit-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsefit-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מטרה: חיטוב / כוח / כושר"  name="other" data-bizuply-form-field-id="other" />
-            <textarea className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מה חייב להשתנות ב-90 הימים הקרובים?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("מטרה: חיטוב / כוח / כושר")}  name="other" data-bizuply-form-field-id="other" />
+            <textarea className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("מה חייב להשתנות ב-90 הימים הקרובים?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
             <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -346,9 +348,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border-2 border-[var(--p)] bg-black p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
         <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsefit-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsefit-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-black uppercase text-black">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -382,7 +384,7 @@ export default function PulsefitPages(props: PulsefitPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="pulsefit" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="pulsefit" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: pulsefitEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

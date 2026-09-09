@@ -32,7 +32,7 @@ const PLUGIN_HELP = {
     "After install — settings are in the plugin management tab, and you add it to pages from the site editor → Plugins.",
     "לאחר ההתקנה — הגדרות בלשונית הניהול של התוסף, והוספה לעמודים דרך עורך האתר → תוספים.",
     "Tras instalar — ajustes en la pestaña del complemento, y se añade a páginas desde el editor → Complementos.",
-    "Após instalar — definições no separador do extra, e adicione-o às páginas no editor → Extras.",
+    "Após instalar — configurações na aba do extra, e adicione-o às páginas no editor → Extras.",
     "بعد التثبيت — الإعدادات في تبويب إدارة الإضافة، وتُضاف للصفحات من المحرر → الإضافات."
   ),
 };
@@ -44,7 +44,7 @@ const SITE_PAYMENTS = {
   disconnectConfirm: row("Disconnect {{name}}?", "לנתק את {{name}}?", "¿Desconectar {{name}}?", "Desligar {{name}}?", "فصل {{name}}؟"),
   disconnectedOk: row("{{name}} disconnected successfully", "{{name}} נותק בהצלחה", "{{name}} se desconectó correctamente", "{{name}} desligado com sucesso", "تم فصل {{name}} بنجاح"),
   disconnectError: row("Could not disconnect the payment provider", "שגיאה בניתוק ספק התשלום", "No se pudo desconectar el proveedor", "Não foi possível desligar o provedor", "تعذّر فصل مزود الدفع"),
-  loading: row("Loading payment providers...", "טוען ספקי תשלום...", "Cargando proveedores...", "A carregar provedores...", "جارٍ تحميل مزودي الدفع..."),
+  loading: row("Loading payment providers...", "טוען ספקי תשלום...", "Cargando proveedores...", "Carregando provedores...", "جارٍ تحميل مزودي الدفع..."),
   title: row("Payments", "תשלומים", "Pagos", "Pagamentos", "المدفوعات"),
   description: row(
     "Connect checkout providers to the site. The live-site cart uses the connected provider you mark as primary (PayPal, Stripe, and more).",
@@ -122,31 +122,31 @@ const AI_TEMPLATE = {
 const PUSH_TOGGLE = {
   blocked: row("Blocked in browser / device settings", "חסום בהגדרות הדפדפן/המכשיר", "Bloqueado en el navegador / dispositivo", "Bloqueado no navegador / dispositivo", "محظور في إعدادات المتصفح/الجهاز"),
   onOther: row("Active on an installed device · {{count}} registered device", "פעיל במכשיר מותקן · {{count}} מכשיר רשום", "Activo en un dispositivo instalado · {{count}} dispositivo", "Ativo num dispositivo instalado · {{count}} dispositivo", "نشط على جهاز مثبت · {{count}} جهاز مسجّل"),
-  unsupportedIos: row("Cannot enable from here — open Safari from the home-screen icon", "לא ניתן להפעיל מכאן — פתחו מ-Safari דרך האייקון במסך הבית", "No se puede activar aquí — ábrelo en Safari desde el icono de inicio", "Não dá para ativar daqui — abra no Safari pelo ícone no ecrã inicial", "لا يمكن التفعيل من هنا — افتح Safari من أيقونة الشاشة الرئيسية"),
+  unsupportedIos: row("Cannot enable from here — open Safari from the home-screen icon", "לא ניתן להפעיל מכאן — פתחו מ-Safari דרך האייקון במסך הבית", "No se puede activar aquí — ábrelo en Safari desde el icono de inicio", "Não dá para ativar daqui — abra no Safari pelo ícone na tela inicial", "لا يمكن التفعيل من هنا — افتح Safari من أيقونة الشاشة الرئيسية"),
   unsupported: row("This browser does not support Push", "הדפדפן הזה לא תומך ב-Push", "Este navegador no admite Push", "Este navegador não suporta Push", "هذا المتصفح لا يدعم الإشعارات"),
   onReady: row("On · {{count}} registered device", "מופעל · {{count}} מכשיר רשום", "Activado · {{count}} dispositivo", "Ativado · {{count}} dispositivo", "مفعّل · {{count}} جهاز مسجّل"),
-  onUnbound: row("On on this device, but not registered on the server yet — tap Test", "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה", "Activado en el dispositivo, pero aún no registrado — pulsa Probar", "Ativado no dispositivo, mas ainda não registado — toque em Testar", "مفعّل على الجهاز لكن غير مسجّل في الخادم — اضغط اختبار"),
-  needRebind: row("Permission is granted, but this device is not registered — tap to re-register", "יש הרשאה, אבל אין רישום במכשיר — לחץ לרישום מחדש", "Hay permiso, pero el dispositivo no está registrado — pulsa para registrar de nuevo", "Há permissão, mas o dispositivo não está registado — toque para registar de novo", "هناك إذن لكن الجهاز غير مسجّل — اضغط لإعادة التسجيل"),
-  off: row("Off — tap to enable phone notifications", "כבוי — לחץ להפעלה לקבלת התראות לטלפון", "Desactivado — pulsa para recibir avisos en el teléfono", "Desligado — toque para ativar avisos no telemóvel", "إيقاف — اضغط للتفعيل واستلام التنبيهات على الهاتف"),
+  onUnbound: row("On on this device, but not registered on the server yet — tap Test", "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה", "Activado en el dispositivo, pero aún no registrado — pulsa Probar", "Ativado no dispositivo, mas ainda não registrado — toque em Testar", "مفعّل على الجهاز لكن غير مسجّل في الخادم — اضغط اختبار"),
+  needRebind: row("Permission is granted, but this device is not registered — tap to re-register", "יש הרשאה, אבל אין רישום במכשיר — לחץ לרישום מחדש", "Hay permiso, pero el dispositivo no está registrado — pulsa para registrar de nuevo", "Há permissão, mas o dispositivo não está registrado — toque para registrar de novo", "هناك إذن لكن الجهاز غير مسجّل — اضغط لإعادة التسجيل"),
+  off: row("Off — tap to enable phone notifications", "כבוי — לחץ להפעלה לקבלת התראות לטלפון", "Desactivado — pulsa para recibir avisos en el teléfono", "Desligado — toque para ativar avisos no celular", "إيقاف — اضغط للتفعيل واستلام التنبيهات على الهاتف"),
 };
 
 const INSTANT_FORM = {
   continue: row("Continue", "המשך", "Continuar", "Continuar", "متابعة"),
   submit: row("Submit", "שלח", "Enviar", "Enviar", "إرسال"),
   answerPh: row("Enter your answer", "הזן את תשובתך", "Escribe tu respuesta", "Escreva a sua resposta", "أدخل إجابتك"),
-  contactInfo: row("Contact information", "פרטי התקשרות", "Información de contacto", "Informações de contacto", "بيانات التواصل"),
+  contactInfo: row("Contact information", "פרטי התקשרות", "Información de contacto", "Informações de contato", "بيانات التواصل"),
   privacy: row("Privacy policy", "מדיניות פרטיות", "Política de privacidad", "Política de privacidade", "سياسة الخصوصية"),
   privacyShort: row("Privacy", "פרטיות", "Privacidad", "Privacidade", "الخصوصية"),
   privacyBody: row(
     "By continuing, you agree that {{name}} may contact you.",
     "הפרטים שתשלחו ישמשו ליצירת קשר עם {{name}}.",
     "Al continuar, aceptas que {{name}} pueda contactarte.",
-    "Ao continuar, aceita que {{name}} possa contactá-lo.",
+    "Ao continuar, você aceita que {{name}} possa contatá-lo.",
     "بالمتابعة توافق أن يتواصل معك {{name}}."
   ),
   businessFallback: row("this business", "העסק", "este negocio", "este negócio", "هذا العمل"),
   thanks: row("Thanks!", "תודה!", "¡Gracias!", "Obrigado!", "شكراً!"),
-  thanksBody: row("We’ll be in touch soon.", "ניצור איתכם קשר בהקדם.", "Nos pondremos en contacto pronto.", "Entraremos em contacto em breve.", "سنتواصل معكم قريباً."),
+  thanksBody: row("We’ll be in touch soon.", "ניצור איתכם קשר בהקדם.", "Nos pondremos en contacto pronto.", "Entraremos em contato em breve.", "سنتواصل معكم قريباً."),
   done: row("Done", "סיום", "Listo", "Concluído", "تم"),
   toSite: row("To the site", "לאתר", "Al sitio", "Para o site", "إلى الموقع"),
   quoteCta: row("Send a message to get a quote", "שלחו הודעה לקבלת הצעת מחיר", "Envía un mensaje para recibir presupuesto", "Envie uma mensagem para orçamento", "أرسل رسالة لطلب عرض سعر"),
@@ -163,9 +163,9 @@ const PLUGIN_GENERIC = {
 const PLUGIN_FRAME = {
   manage: row("Plugin management", "ניהול תוסף", "Gestión del complemento", "Gestão do extra", "إدارة الإضافة"),
   addEditor: row("Add in editor", "הוספה בעורך", "Añadir en el editor", "Adicionar no editor", "إضافة في المحرر"),
-  loading: row("Loading settings...", "טוען הגדרות...", "Cargando ajustes...", "A carregar definições...", "جارٍ تحميل الإعدادات..."),
+  loading: row("Loading settings...", "טוען הגדרות...", "Cargando ajustes...", "Carregando configurações...", "جارٍ تحميل الإعدادات..."),
   savedSitewide: row("Changes are saved for the whole site", "שינויים נשמרים לכל האתר", "Los cambios se guardan en todo el sitio", "As alterações ficam para todo o site", "تُحفظ التغييرات لكل الموقع"),
-  save: row("Save settings", "שמירת הגדרות", "Guardar ajustes", "Guardar definições", "حفظ الإعدادات"),
+  save: row("Save settings", "שמירת הגדרות", "Guardar ajustes", "Salvar configurações", "حفظ الإعدادات"),
 };
 
 const AI_RECS = {
@@ -184,8 +184,8 @@ const PLUGIN_DEFAULTS = {
 };
 
 const PLUGIN_SETTINGS = {
-  loadError: row("Could not load settings", "שגיאה בטעינת הגדרות", "No se pudieron cargar los ajustes", "Não foi possível carregar as definições", "تعذّر تحميل الإعدادات"),
-  saved: row("Settings saved", "ההגדרות נשמרו", "Ajustes guardados", "Definições guardadas", "تم حفظ الإعدادات"),
+  loadError: row("Could not load settings", "שגיאה בטעינת הגדרות", "No se pudieron cargar los ajustes", "Não foi possível carregar as configurações", "تعذّر تحميل الإعدادات"),
+  saved: row("Settings saved", "ההגדרות נשמרו", "Ajustes guardados", "Configurações salvas", "تم حفظ الإعدادات"),
   saveError: row("Could not save", "שגיאה בשמירה", "No se pudo guardar", "Não foi possível guardar", "تعذّر الحفظ"),
 };
 
@@ -254,7 +254,7 @@ const META_MAP = {
 };
 
 const PROFILE = {
-  loading: row("Loading...", "טוען...", "Cargando...", "A carregar...", "جارٍ التحميل..."),
+  loading: row("Loading...", "טוען...", "Cargando...", "Carregando...", "جارٍ التحميل..."),
 };
 
 const UPGRADE = {
@@ -270,7 +270,7 @@ const WA_INBOX = {
 };
 
 const WA_BILLING = {
-  loadError: row("We could not load WhatsApp billing data right now.", "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.", "No pudimos cargar la facturación de WhatsApp ahora.", "Não foi possível carregar a faturação do WhatsApp agora.", "تعذّر تحميل بيانات فوترة واتساب الآن."),
+  loadError: row("We could not load WhatsApp billing data right now.", "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.", "No pudimos cargar la facturación de WhatsApp ahora.", "Não foi possível carregar o faturamento do WhatsApp agora.", "تعذّر تحميل بيانات فوترة واتساب الآن."),
 };
 
 const WA_OTP = {

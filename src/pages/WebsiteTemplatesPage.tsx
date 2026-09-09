@@ -18,10 +18,8 @@ import {
   Wand2,
 } from "lucide-react";
 
-import {
-  studioTemplateDefinitions,
-  getStudioTemplateSeedById,
-} from "../components/site-builder/studio/data/templates";
+import { studioGalleryCatalog } from "../components/site-builder/studio/data/templates/galleryCatalog";
+import { loadStudioTemplateSeedById } from "../components/site-builder/studio/data/templates/loadStudioTemplate";
 
 import { createMySite, listMySites } from "../api/mySitesApi";
 import TemplateCardPreview from "../components/website/TemplateCardPreview";
@@ -261,6 +259,22 @@ function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
   return "business";
 }
 
+function localizeGalleryTemplate(
+  template: WebsiteTemplate,
+  language?: string,
+): WebsiteTemplate {
+  return {
+    ...template,
+    name: localizeBuiltInText(template.name || "", language),
+    categoryLabel: localizeBuiltInText(template.categoryLabel || "", language),
+    description: localizeBuiltInText(template.description || "", language),
+    niche: localizeBuiltInText(template.niche || "", language),
+    badge: localizeBuiltInText(template.badge || "", language),
+    heroTitle: localizeBuiltInText(template.heroTitle || "", language),
+    heroSubtitle: localizeBuiltInText(template.heroSubtitle || "", language),
+  };
+}
+
 function getTemplateSearchText(template: WebsiteTemplate) {
   return [
     template.name,
@@ -278,83 +292,22 @@ function mapDefinitionToGalleryTemplate(
   definition: any,
   index: number
 ): WebsiteTemplate {
-  const seed = (definition?.seed ||
-    getStudioTemplateSeedById(definition?.id || definition?.key) ||
-    {}) as any;
-
-  // Some templates store content as seed.defaultData; others (chanel/cyclora)
-  // set seed = defaultData itself.
-  const defaultData =
-    (definition?.defaultData as Record<string, any> | undefined) ||
-    (seed?.defaultData as Record<string, any> | undefined) ||
-    (seed?.data as Record<string, any> | undefined) ||
-    (seed?.hero || seed?.heroImage || seed?.brand || seed?.images
-      ? (seed as Record<string, any>)
-      : {}) ||
-    {};
-
-  const pickUrl = (...candidates: unknown[]) => {
-    for (const value of candidates) {
-      const src = String(value || "").trim();
-      if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
-    }
-    return "";
-  };
-
-  const image = pickUrl(
-    definition?.previewImage,
-    definition?.image,
-    definition?.thumbnailUrl,
-    seed?.previewImage,
-    seed?.image,
-    defaultData.previewImage,
-    defaultData.previewImageUrl,
-    defaultData.thumbnailUrl,
-    defaultData.heroImage,
-    defaultData.image,
-    defaultData.coverImage,
-    defaultData.hero?.image,
-    defaultData.hero?.backgroundImage,
-    defaultData.home?.hero?.image,
-    defaultData.images?.hero,
-    Array.isArray(defaultData.images?.hero)
-      ? defaultData.images.hero[0]
-      : "",
-    Array.isArray(defaultData.products) ? defaultData.products[0]?.image : "",
-    Array.isArray(defaultData.gallery) ? defaultData.gallery[0] : "",
-  );
-
-  const badge =
-    definition?.badge ||
-    (definition?.priceLabel === "Premium" ? "Premium" : "") ||
-    "";
+  const key = String(definition?.id || definition?.key || "").toLowerCase();
+  const badge = String(definition?.badge || "");
 
   return {
-    key: String(definition?.id || definition?.key || "").toLowerCase(),
+    key,
     name: definition?.name || definition?.id || "Website template",
-    category: definition?.category || seed.category || "business",
-    categoryLabel: localizeBuiltInText(
-      definition?.categoryLabel || seed.categoryLabel || definition?.category || "",
-    ),
-    description: localizeBuiltInText(
-      definition?.description || seed.description || "",
-    ),
-    niche: seed.niche,
-    layout: seed.layout,
-    image,
-    heroTitle: seed.heroTitle || defaultData.heroTitle || definition?.name,
-    heroSubtitle:
-      seed.heroSubtitle || defaultData.heroSubtitle || definition?.description,
+    category: definition?.category || "business",
+    categoryLabel: definition?.categoryLabel || definition?.category || "",
+    description: definition?.description || "",
+    heroTitle: definition?.name,
+    heroSubtitle: definition?.description,
     isNew: badge === "חדש" || badge === "NEW" || badge === "New",
-    badge: localizeBuiltInText(badge),
-    thumbnailUrl: image,
-    previewImageUrl: image,
+    badge,
     fullPagePreview:
       String(definition?.fullPagePreview || "").trim() ||
-      getTemplateFullPageScreenshotUrl(
-        String(definition?.id || definition?.key || ""),
-      ),
-    palette: seed.palette,
+      getTemplateFullPageScreenshotUrl(key),
     order: index + 1,
   };
 }
@@ -373,7 +326,7 @@ function mergeWithLocalTemplates(
 ): WebsiteTemplate[] {
   const byKey = new Map<string, WebsiteTemplate>();
 
-  studioTemplateDefinitions.forEach((definition, index) => {
+  studioGalleryCatalog.forEach((definition, index) => {
     const key = normalizeText(
       (definition as any)?.id || (definition as any)?.key
     );
@@ -563,13 +516,18 @@ export default function WebsiteTemplatesPage() {
     return counts;
   }, [templates]);
 
+  const localizedTemplates = useMemo(
+    () => templates.map((template) => localizeGalleryTemplate(template, i18n.language)),
+    [templates, i18n.language],
+  );
+
   const filteredTemplates = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     const categoryTemplates =
       activeCategory === "all"
-        ? templates
-        : templates.filter(
+        ? localizedTemplates
+        : localizedTemplates.filter(
             (template) => getTemplateCategoryId(template) === activeCategory
           );
 
@@ -595,7 +553,7 @@ export default function WebsiteTemplatesPage() {
 
       return String(b._id || b.key).localeCompare(String(a._id || a.key));
     });
-  }, [activeCategory, search, sortValue, templates, i18n.language]);
+  }, [activeCategory, search, sortValue, localizedTemplates, i18n.language]);
 
   useEffect(() => {
     setVisibleCount(GALLERY_INITIAL_SIZE);
@@ -715,7 +673,7 @@ export default function WebsiteTemplatesPage() {
     .trim()
     .toLowerCase();
 
-  const localSeed = getStudioTemplateSeedById(cleanTemplateKey);
+  const localSeed = await loadStudioTemplateSeedById(cleanTemplateKey);
   const localSeedAny = (localSeed || {}) as any;
 
   const templateForEditor = {

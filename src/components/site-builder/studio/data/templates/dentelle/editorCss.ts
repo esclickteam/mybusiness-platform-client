@@ -2,7 +2,7 @@ export const dentelleEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
 [data-template-id="dentelle"], [data-template-id="dentelle"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #2DD4BF;
   --bg: #F8FAFC;

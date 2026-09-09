@@ -1,11 +1,19 @@
+import { localizeBuiltInText } from "./templateCopy";
+
 type TranslateFn = (key: string, options?: { defaultValue?: string }) => string;
+
+function localizedFallback(fallback: string) {
+  return localizeBuiltInText(fallback);
+}
 
 export function studioCategoryLabel(
   t: TranslateFn,
   key: string,
   fallback: string
 ) {
-  return t(`studio.library.categories.${key}`, { defaultValue: fallback });
+  return t(`studio.library.categories.${key}`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioElementLabel(
@@ -13,7 +21,9 @@ export function studioElementLabel(
   id: string,
   fallback: string
 ) {
-  return t(`studio.library.elements.${id}.label`, { defaultValue: fallback });
+  return t(`studio.library.elements.${id}.label`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioElementDescription(
@@ -22,7 +32,7 @@ export function studioElementDescription(
   fallback: string
 ) {
   return t(`studio.library.elements.${id}.description`, {
-    defaultValue: fallback,
+    defaultValue: localizedFallback(fallback),
   });
 }
 
@@ -31,7 +41,7 @@ export function studioSectionKindLabel(
   key: string,
   fallback: string
 ) {
-  return t(`studio.kind.${key}`, { defaultValue: fallback });
+  return t(`studio.kind.${key}`, { defaultValue: localizedFallback(fallback) });
 }
 
 export function studioSectionKindHint(
@@ -39,7 +49,7 @@ export function studioSectionKindHint(
   key: string,
   fallback: string
 ) {
-  return t(`studio.kindHint.${key}`, { defaultValue: fallback });
+  return t(`studio.kindHint.${key}`, { defaultValue: localizedFallback(fallback) });
 }
 
 export function studioLibraryItemTitle(
@@ -47,7 +57,9 @@ export function studioLibraryItemTitle(
   id: string,
   fallback: string
 ) {
-  return t(`studio.library.items.${id}.title`, { defaultValue: fallback });
+  return t(`studio.library.items.${id}.title`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioLibraryItemDescription(
@@ -55,7 +67,9 @@ export function studioLibraryItemDescription(
   id: string,
   fallback: string
 ) {
-  return t(`studio.library.items.${id}.description`, { defaultValue: fallback });
+  return t(`studio.library.items.${id}.description`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioSectionTitle(
@@ -63,7 +77,9 @@ export function studioSectionTitle(
   id: string,
   fallback: string
 ) {
-  return t(`studio.library.sections.${id}.title`, { defaultValue: fallback });
+  return t(`studio.library.sections.${id}.title`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioSectionDescription(
@@ -72,7 +88,7 @@ export function studioSectionDescription(
   fallback: string
 ) {
   return t(`studio.library.sections.${id}.description`, {
-    defaultValue: fallback,
+    defaultValue: localizedFallback(fallback),
   });
 }
 
@@ -81,7 +97,7 @@ export function studioSectionNavLabel(
   id: string,
   fallback: string
 ) {
-  return t(`studio.sectionNav.${id}`, { defaultValue: fallback });
+  return t(`studio.sectionNav.${id}`, { defaultValue: localizedFallback(fallback) });
 }
 
 export function studioPortalSectionNavLabel(
@@ -89,7 +105,9 @@ export function studioPortalSectionNavLabel(
   id: string,
   fallback: string
 ) {
-  return t(`studio.portalSectionNav.${id}`, { defaultValue: fallback });
+  return t(`studio.portalSectionNav.${id}`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioPageNavLabel(
@@ -97,7 +115,27 @@ export function studioPageNavLabel(
   id: string,
   fallback: string
 ) {
-  return t(`studio.pageNav.${id}`, { defaultValue: fallback });
+  return t(`studio.pageNav.${id}`, { defaultValue: localizedFallback(fallback) });
+}
+
+export function studioPageTitle(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.library.pages.${id}.title`, {
+    defaultValue: localizedFallback(fallback),
+  });
+}
+
+export function studioPageDescription(
+  t: TranslateFn,
+  id: string,
+  fallback: string
+) {
+  return t(`studio.library.pages.${id}.description`, {
+    defaultValue: localizedFallback(fallback),
+  });
 }
 
 export function studioPortalPageNavLabel(
@@ -105,5 +143,5 @@ export function studioPortalPageNavLabel(
   id: string,
   fallback: string
 ) {
-  return t(`studio.portalPageNav.${id}`, { defaultValue: fallback });
+  return t(`studio.portalPageNav.${id}`, { defaultValue: localizedFallback(fallback) });
 }

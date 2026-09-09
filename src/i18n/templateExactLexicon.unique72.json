@@ -1,0 +1,842 @@
+{
+  "אודות המאפרת": {
+    "en": "About the makeup artist",
+    "es": "Sobre la maquilladora",
+    "pt-BR": "Sobre a maquiadora",
+    "ar": "عن خبيرة المكياج"
+  },
+  "אודות הסטודיו": {
+    "en": "About the studio",
+    "es": "Sobre el estudio",
+    "pt-BR": "Sobre o estúdio",
+    "ar": "عن الاستوديو"
+  },
+  "אודות הצלם": {
+    "en": "About the photographer",
+    "es": "Sobre el fotógrafo",
+    "pt-BR": "Sobre o fotógrafo",
+    "ar": "عن المصور"
+  },
+  "אודות הקליניקה": {
+    "en": "About the clinic",
+    "es": "Sobre la clínica",
+    "pt-BR": "Sobre a clínica",
+    "ar": "عن العيادة"
+  },
+  "אורחים": {
+    "en": "Guests",
+    "es": "Huéspedes",
+    "pt-BR": "Hóspedes",
+    "ar": "ضيوف"
+  },
+  "איך מתחילים": {
+    "en": "How to start",
+    "es": "Cómo se empieza",
+    "pt-BR": "Como começar",
+    "ar": "كيف تبدأون"
+  },
+  "אימונים": {
+    "en": "Workouts",
+    "es": "Entrenamientos",
+    "pt-BR": "Treinos",
+    "ar": "تدريبات"
+  },
+  "בדיקת זמינות": {
+    "en": "Check availability",
+    "es": "Comprobar disponibilidad",
+    "pt-BR": "Verificar disponibilidade",
+    "ar": "فحص التوفر"
+  },
+  "בדיקת תאריך": {
+    "en": "Check a date",
+    "es": "Comprobar una fecha",
+    "pt-BR": "Verificar uma data",
+    "ar": "فحص تاريخ"
+  },
+  "גלריה גדולה, שירותים, חבילות, תהליך ופנייה.": {
+    "en": "A large gallery, services, packages, a process, and an inquiry.",
+    "es": "Una galería grande, servicios, paquetes, un proceso y una consulta.",
+    "pt-BR": "Uma galeria grande, serviços, pacotes, um processo e um contato.",
+    "ar": "معرض كبير وخدمات وباقات ومسار وتواصل."
+  },
+  "גלריה, חבילות, המלצות וקביעת צילום.": {
+    "en": "Gallery, packages, testimonials, and a photo booking.",
+    "es": "Galería, paquetes, testimonios y reserva de sesión.",
+    "pt-BR": "Galeria, pacotes, depoimentos e agendamento de foto.",
+    "ar": "معرض وباقات وشهادات وحجز تصوير."
+  },
+  "גלריות, חבילות, ביקורות ופגישת התאמה לזוגות.": {
+    "en": "Galleries, packages, reviews, and a matching session for couples.",
+    "es": "Galerías, paquetes, reseñas y una sesión de encaje para parejas.",
+    "pt-BR": "Galerias, pacotes, avaliações e uma sessão de combinação para casais.",
+    "ar": "معارض وباقات وتقييمات وجلسة ملاءمة للأزواج."
+  },
+  "גלריית אוכל": {
+    "en": "Food gallery",
+    "es": "Galería de comida",
+    "pt-BR": "Galeria de comida",
+    "ar": "معرض طعام"
+  },
+  "גלריית כלות, חבילות, המלצות ותיאום פגישת ניסיון.": {
+    "en": "A bridal gallery, packages, testimonials, and a trial-session booking.",
+    "es": "Una galería nupcial, paquetes, testimonios y coordinación de una sesión de prueba.",
+    "pt-BR": "Uma galeria de noivas, pacotes, depoimentos e agendamento de uma sessão de teste.",
+    "ar": "معرض عرائس وباقات وشهادات وتنسيق جلسة تجربة."
+  },
+  "דף נחיתה חד לעסק, מבצע, הוכחות וטופס ליד.": {
+    "en": "A sharp landing page for a business, with an offer, proof, and a lead form.",
+    "es": "Una landing nítida para un negocio, con una oferta, pruebas y un formulario de lead.",
+    "pt-BR": "Uma landing nítida para um negócio, com uma oferta, provas e um formulário de lead.",
+    "ar": "صفحة هبوط حادة لعمل، مع عرض وإثباتات ونموذج عميل محتمل."
+  },
+  "האמן": {
+    "en": "The artist",
+    "es": "El artista",
+    "pt-BR": "O artista",
+    "ar": "الفنان"
+  },
+  "הורים ותלמידים": {
+    "en": "Parents and students",
+    "es": "Padres y alumnos",
+    "pt-BR": "Pais e alunos",
+    "ar": "أهل وتلاميذ"
+  },
+  "הזמנת טיפול": {
+    "en": "Book a treatment",
+    "es": "Reservar un tratamiento",
+    "pt-BR": "Reservar um tratamento",
+    "ar": "حجز علاج"
+  },
+  "הזמנת מקום": {
+    "en": "Book a table",
+    "es": "Reservar mesa",
+    "pt-BR": "Reservar mesa",
+    "ar": "حجز طاولة"
+  },
+  "הטבות": {
+    "en": "Benefits",
+    "es": "Ventajas",
+    "pt-BR": "Benefícios",
+    "ar": "مزايا"
+  },
+  "הטבות, הרשמה, קופונים, מוצרים וטופס הצטרפות.": {
+    "en": "Benefits, signup, coupons, products, and a join form.",
+    "es": "Ventajas, registro, cupones, productos y un formulario de alta.",
+    "pt-BR": "Benefícios, inscrição, cupons, produtos e um formulário de adesão.",
+    "ar": "مزايا وتسجيل وكوبونات ومنتجات ونموذج انضمام."
+  },
+  "הלקוח רואה זמינות, שירותים, המלצות ויכול להשאיר פרטים.": {
+    "en": "The customer sees availability, services, and testimonials, and can leave details.",
+    "es": "El cliente ve disponibilidad, servicios y testimonios, y puede dejar datos.",
+    "pt-BR": "O cliente vê disponibilidade, serviços e depoimentos, e pode deixar dados.",
+    "ar": "العميل يرى التوفر والخدمات والشهادات ويمكنه ترك بياناته."
+  },
+  "המרפאה": {
+    "en": "The clinic",
+    "es": "La clínica",
+    "pt-BR": "A clínica",
+    "ar": "العيادة"
+  },
+  "המתחם": {
+    "en": "The venue",
+    "es": "El recinto",
+    "pt-BR": "O recinto",
+    "ar": "المجمع"
+  },
+  "הצטרפות למועדון": {
+    "en": "Join the club",
+    "es": "Uníos al club",
+    "pt-BR": "Entre no clube",
+    "ar": "الانضمام للنادي"
+  },
+  "הרשמה לשיעור": {
+    "en": "Sign up for a class",
+    "es": "Registraos a una clase",
+    "pt-BR": "Inscreva-se em uma aula",
+    "ar": "التسجيل لدرس"
+  },
+  "התפריט שלנו": {
+    "en": "Our menu",
+    "es": "Nuestro menú",
+    "pt-BR": "Nosso cardápio",
+    "ar": "قائمتنا"
+  },
+  "זוגות ממליצים": {
+    "en": "Couples recommend",
+    "es": "Las parejas recomiendan",
+    "pt-BR": "Casais recomendam",
+    "ar": "أزواج يوصون"
+  },
+  "חבילות איפור": {
+    "en": "Makeup packages",
+    "es": "Paquetes de maquillaje",
+    "pt-BR": "Pacotes de maquiagem",
+    "ar": "باقات مكياج"
+  },
+  "חבילות אירוח": {
+    "en": "Stay packages",
+    "es": "Paquetes de hospedaje",
+    "pt-BR": "Pacotes de hospedagem",
+    "ar": "باقات إقامة"
+  },
+  "חבילות, לפני ואחרי, יומן תורים וביקורות.": {
+    "en": "Packages, before and after, a booking journal, and reviews.",
+    "es": "Paquetes, antes y después, una agenda de citas y reseñas.",
+    "pt-BR": "Pacotes, antes e depois, uma agenda de horários e avaliações.",
+    "ar": "باقات وقبل وبعد ويوميات مواعيد وتقييمات."
+  },
+  "חבילות, ספקים, גלריה, תהליך וטופס פנייה.": {
+    "en": "Packages, vendors, a gallery, a process, and an inquiry form.",
+    "es": "Paquetes, proveedores, una galería, un proceso y un formulario de consulta.",
+    "pt-BR": "Pacotes, fornecedores, uma galeria, um processo e um formulário de contato.",
+    "ar": "باقات وموردون ومعرض ومسار ونموذج تواصل."
+  },
+  "חברי מועדון": {
+    "en": "Club members",
+    "es": "Miembros del club",
+    "pt-BR": "Membros do clube",
+    "ar": "أعضاء النادي"
+  },
+  "חדרים, גלריה, זמינות, המלצות וטופס הזמנה.": {
+    "en": "Rooms, a gallery, availability, testimonials, and a booking form.",
+    "es": "Habitaciones, una galería, disponibilidad, testimonios y un formulario de reserva.",
+    "pt-BR": "Quartos, uma galeria, disponibilidade, depoimentos e um formulário de reserva.",
+    "ar": "غرف ومعرض وتوفر وشهادات ونموذج حجز."
+  },
+  "חללים מעוצבים": {
+    "en": "Designed spaces",
+    "es": "Espacios diseñados",
+    "pt-BR": "Espaços desenhados",
+    "ar": "فراغات مصمّمة"
+  },
+  "טופס ליד": {
+    "en": "Lead form",
+    "es": "Formulario de lead",
+    "pt-BR": "Formulário de lead",
+    "ar": "نموذج عميل محتمل"
+  },
+  "טופס פנייה": {
+    "en": "Inquiry form",
+    "es": "Formulario de consulta",
+    "pt-BR": "Formulário de contato",
+    "ar": "نموذج تواصل"
+  },
+  "טיפולים, חבילות, תיאום תור, מתנות והמלצות.": {
+    "en": "Treatments, packages, appointment booking, gifts, and testimonials.",
+    "es": "Tratamientos, paquetes, reserva de cita, regalos y testimonios.",
+    "pt-BR": "Tratamentos, pacotes, agendamento, presentes e depoimentos.",
+    "ar": "علاجات وباقات وتنسيق موعد وهدايا وشهادات."
+  },
+  "טיפולים, רופאים, שעות פנויות, ביקורות וטופס פנייה.": {
+    "en": "Treatments, doctors, open hours, reviews, and an inquiry form.",
+    "es": "Tratamientos, médicos, horas libres, reseñas y un formulario de consulta.",
+    "pt-BR": "Tratamentos, médicos, horários livres, avaliações e um formulário de contato.",
+    "ar": "علاجات وأطباء وساعات متاحة وتقييمات ونموذج تواصل."
+  },
+  "יומן שעות פנויות": {
+    "en": "Open-hours journal",
+    "es": "Agenda de horas libres",
+    "pt-BR": "Agenda de horários livres",
+    "ar": "يوميات ساعات متاحة"
+  },
+  "כתובת ושעות": {
+    "en": "Address and hours",
+    "es": "Dirección y horario",
+    "pt-BR": "Endereço e horário",
+    "ar": "عنوان وساعات"
+  },
+  "מבצע השקה": {
+    "en": "Launch offer",
+    "es": "Oferta de lanzamiento",
+    "pt-BR": "Oferta de lançamento",
+    "ar": "عرض إطلاق"
+  },
+  "מבצעי השבוע": {
+    "en": "This week's specials",
+    "es": "Ofertas de la semana",
+    "pt-BR": "Ofertas da semana",
+    "ar": "عروض الأسبوع"
+  },
+  "מבצעים": {
+    "en": "Specials",
+    "es": "Ofertas",
+    "pt-BR": "Ofertas",
+    "ar": "عروض"
+  },
+  "מה מקבלים": {
+    "en": "What you get",
+    "es": "Qué recibís",
+    "pt-BR": "O que você recebe",
+    "ar": "ماذا تحصلون"
+  },
+  "מוצרי רכב": {
+    "en": "Car products",
+    "es": "Productos de coche",
+    "pt-BR": "Produtos de carro",
+    "ar": "منتجات سيارة"
+  },
+  "מוצרים דיגיטליים": {
+    "en": "Digital products",
+    "es": "Productos digitales",
+    "pt-BR": "Produtos digitais",
+    "ar": "منتجات رقمية"
+  },
+  "מוצרים לחברים": {
+    "en": "Member products",
+    "es": "Productos para socios",
+    "pt-BR": "Produtos para membros",
+    "ar": "منتجات للأعضاء"
+  },
+  "מוצרים מובילים": {
+    "en": "Featured products",
+    "es": "Productos destacados",
+    "pt-BR": "Produtos em destaque",
+    "ar": "منتجات بارزة"
+  },
+  "מוצרים, קטגוריות, מבצע, ביקורות וטופס פנייה.": {
+    "en": "Products, categories, a promo, reviews, and an inquiry form.",
+    "es": "Productos, categorías, una oferta, reseñas y un formulario de consulta.",
+    "pt-BR": "Produtos, categorias, uma oferta, avaliações e um formulário de contato.",
+    "ar": "منتجات وفئات وعرض وتقييمات ونموذج تواصل."
+  },
+  "מחירון, צוות, מוצרים ויומן תורים מחובר לעסק.": {
+    "en": "A price list, team, products, and a booking journal connected to the business.",
+    "es": "Una lista de precios, equipo, productos y una agenda de citas conectada al negocio.",
+    "pt-BR": "Uma lista de preços, equipe, produtos e uma agenda de horários ligada ao negócio.",
+    "ar": "قائمة أسعار وفريق ومنتجات ويوميات مواعيد مربوطة بالعمل."
+  },
+  "מטופלים": {
+    "en": "Patients",
+    "es": "Pacientes",
+    "pt-BR": "Pacientes",
+    "ar": "مرضى"
+  },
+  "מטופלים ממליצים": {
+    "en": "Patients recommend",
+    "es": "Los pacientes recomiendan",
+    "pt-BR": "Pacientes recomendam",
+    "ar": "مرضى يوصون"
+  },
+  "ממליצות": {
+    "en": "They recommend",
+    "es": "Recomiendan",
+    "pt-BR": "Recomendam",
+    "ar": "يوصين"
+  },
+  "מנות ואירועים": {
+    "en": "Dishes and events",
+    "es": "Platos y eventos",
+    "pt-BR": "Pratos e eventos",
+    "ar": "أطباق وفعاليات"
+  },
+  "מסלולי חברות": {
+    "en": "Membership tracks",
+    "es": "Itinerarios de socio",
+    "pt-BR": "Percursos de associação",
+    "ar": "مسارات عضوية"
+  },
+  "מסלולים, תהליך, המלצות, תיאום שיחה וטופס ליד.": {
+    "en": "Tracks, a process, testimonials, a call booking, and a lead form.",
+    "es": "Itinerarios, un proceso, testimonios, reserva de llamada y un formulario de lead.",
+    "pt-BR": "Percursos, um processo, depoimentos, agendamento de chamada e um formulário de lead.",
+    "ar": "مسارات ومسار عمل وشهادات وتنسيق مكالمة ونموذج عميل محتمل."
+  },
+  "מפת אזורים": {
+    "en": "Service-area map",
+    "es": "Mapa de zonas",
+    "pt-BR": "Mapa de áreas",
+    "ar": "خريطة مناطق"
+  },
+  "מקצועות": {
+    "en": "Subjects",
+    "es": "Asignaturas",
+    "pt-BR": "Matérias",
+    "ar": "مواد"
+  },
+  "מקצועות, תהליך למידה, שעות פנויות והמלצות.": {
+    "en": "Subjects, a learning process, open hours, and testimonials.",
+    "es": "Asignaturas, un proceso de aprendizaje, horas libres y testimonios.",
+    "pt-BR": "Matérias, um processo de aprendizagem, horários livres e depoimentos.",
+    "ar": "مواد ومسار تعلّم وساعات متاحة وشهادات."
+  },
+  "מתאמנות": {
+    "en": "Women training",
+    "es": "Entrenan ellas",
+    "pt-BR": "Elas treinam",
+    "ar": "يتدرّبن"
+  },
+  "מתאמנים": {
+    "en": "Trainees",
+    "es": "Entrenan",
+    "pt-BR": "Quem treina",
+    "ar": "متدرّبون"
+  },
+  "נכסים מובילים": {
+    "en": "Featured listings",
+    "es": "Propiedades destacadas",
+    "pt-BR": "Imóveis em destaque",
+    "ar": "عقارات بارزة"
+  },
+  "נתונים": {
+    "en": "Numbers",
+    "es": "Datos",
+    "pt-BR": "Dados",
+    "ar": "بيانات"
+  },
+  "סגנונות": {
+    "en": "Styles",
+    "es": "Estilos",
+    "pt-BR": "Estilos",
+    "ar": "أساليب"
+  },
+  "סוגי צילום": {
+    "en": "Photography types",
+    "es": "Tipos de fotografía",
+    "pt-BR": "Tipos de fotografia",
+    "ar": "أنواع تصوير"
+  },
+  "סילבוס, יתרונות, מחיר, שאלות והרשמה.": {
+    "en": "Syllabus, benefits, price, questions, and signup.",
+    "es": "Temario, ventajas, precio, preguntas y registro.",
+    "pt-BR": "Ementa, vantagens, preço, perguntas e inscrição.",
+    "ar": "منهج ومزايا وسعر وأسئلة وتسجيل."
+  },
+  "סיפור המותג": {
+    "en": "Brand story",
+    "es": "Historia de la marca",
+    "pt-BR": "História da marca",
+    "ar": "قصة العلامة"
+  },
+  "ספקים ושירותים": {
+    "en": "Vendors and services",
+    "es": "Proveedores y servicios",
+    "pt-BR": "Fornecedores e serviços",
+    "ar": "موردون وخدمات"
+  },
+  "עבודות, סגנונות, תיאום פגישה, ביקורות וטופס.": {
+    "en": "Work, styles, appointment booking, reviews, and a form.",
+    "es": "Trabajos, estilos, reserva de cita, reseñas y un formulario.",
+    "pt-BR": "Trabalhos, estilos, agendamento, avaliações e um formulário.",
+    "ar": "أعمال وأساليب وتنسيق موعد وتقييمات ونموذج."
+  },
+  "עיצוב רך, תמונות גדולות, טיפולים, תורים ומוצרים.": {
+    "en": "Soft design, large photos, treatments, bookings, and products.",
+    "es": "Diseño suave, fotos grandes, tratamientos, citas y productos.",
+    "pt-BR": "Design suave, fotos grandes, tratamentos, horários e produtos.",
+    "ar": "تصميم ناعم وصور كبيرة وعلاجات ومواعيد ومنتجات."
+  },
+  "פגישת התאמה": {
+    "en": "Matching session",
+    "es": "Sesión de encaje",
+    "pt-BR": "Sessão de combinação",
+    "ar": "جلسة ملاءمة"
+  },
+  "פגישת טעימות": {
+    "en": "Tasting session",
+    "es": "Sesión de cata",
+    "pt-BR": "Sessão de degustação",
+    "ar": "جلسة تذوّق"
+  },
+  "פגישת ניסיון": {
+    "en": "Trial session",
+    "es": "Sesión de prueba",
+    "pt-BR": "Sessão de teste",
+    "ar": "جلسة تجربة"
+  },
+  "פיצ׳רים": {
+    "en": "Features",
+    "es": "Funciones",
+    "pt-BR": "Recursos",
+    "ar": "ميزات"
+  },
+  "פרויקטים, שירותים, תהליך, אודות וטופס פנייה.": {
+    "en": "Projects, services, a process, about, and an inquiry form.",
+    "es": "Proyectos, servicios, un proceso, sobre nosotros y un formulario de consulta.",
+    "pt-BR": "Projetos, serviços, um processo, sobre e um formulário de contato.",
+    "ar": "مشاريع وخدمات ومسار ومن نحن ونموذج تواصل."
+  },
+  "פרופיל מומחה": {
+    "en": "Expert profile",
+    "es": "Perfil de experto",
+    "pt-BR": "Perfil de especialista",
+    "ar": "ملف خبير"
+  },
+  "פתיח Fullscreen": {
+    "en": "Fullscreen opening",
+    "es": "Apertura fullscreen",
+    "pt-BR": "Abertura fullscreen",
+    "ar": "افتتاح ملء الشاشة"
+  },
+  "פתיח אוכל": {
+    "en": "Food opening",
+    "es": "Apertura de comida",
+    "pt-BR": "Abertura de comida",
+    "ar": "افتتاح طعام"
+  },
+  "פתיח אירוח": {
+    "en": "Hospitality opening",
+    "es": "Apertura de hospedaje",
+    "pt-BR": "Abertura de hospedagem",
+    "ar": "افتتاح ضيافة"
+  },
+  "פתיח גלריה": {
+    "en": "Gallery opening",
+    "es": "Apertura de galería",
+    "pt-BR": "Abertura de galeria",
+    "ar": "افتتاح معرض"
+  },
+  "פתיח חזק": {
+    "en": "Strong opening",
+    "es": "Apertura potente",
+    "pt-BR": "Abertura forte",
+    "ar": "افتتاح قوي"
+  },
+  "פתיח חם": {
+    "en": "Warm opening",
+    "es": "Apertura cálida",
+    "pt-BR": "Abertura calorosa",
+    "ar": "افتتاح دافئ"
+  },
+  "פתיח חתונה": {
+    "en": "Wedding opening",
+    "es": "Apertura de boda",
+    "pt-BR": "Abertura de casamento",
+    "ar": "افتتاح زفاف"
+  },
+  "פתיח טבעי": {
+    "en": "Natural opening",
+    "es": "Apertura natural",
+    "pt-BR": "Abertura natural",
+    "ar": "افتتاح طبيعي"
+  },
+  "פתיח טכני": {
+    "en": "Technical opening",
+    "es": "Apertura técnica",
+    "pt-BR": "Abertura técnica",
+    "ar": "افتتاح تقني"
+  },
+  "פתיח יוקרתי": {
+    "en": "Luxury opening",
+    "es": "Apertura de lujo",
+    "pt-BR": "Abertura de luxo",
+    "ar": "افتتاح فاخر"
+  },
+  "פתיח כהה": {
+    "en": "Dark opening",
+    "es": "Apertura oscura",
+    "pt-BR": "Abertura escura",
+    "ar": "افتتاح داكن"
+  },
+  "פתיח לימודי": {
+    "en": "Learning opening",
+    "es": "Apertura de estudio",
+    "pt-BR": "Abertura de estudo",
+    "ar": "افتتاح تعليمي"
+  },
+  "פתיח מכובד": {
+    "en": "Formal opening",
+    "es": "Apertura formal",
+    "pt-BR": "Abertura formal",
+    "ar": "افتتاح رسمي"
+  },
+  "פתיח מכירה": {
+    "en": "Sales opening",
+    "es": "Apertura de venta",
+    "pt-BR": "Abertura de venda",
+    "ar": "افتتاح بيع"
+  },
+  "פתיח מסעדה": {
+    "en": "Restaurant opening",
+    "es": "Apertura de restaurante",
+    "pt-BR": "Abertura de restaurante",
+    "ar": "افتتاح مطعم"
+  },
+  "פתיח נכסים": {
+    "en": "Listings opening",
+    "es": "Apertura de propiedades",
+    "pt-BR": "Abertura de imóveis",
+    "ar": "افتتاح عقارات"
+  },
+  "פתיח נקי": {
+    "en": "Clean opening",
+    "es": "Apertura limpia",
+    "pt-BR": "Abertura limpa",
+    "ar": "افتتاح نظيف"
+  },
+  "פתיח עם יומן": {
+    "en": "Opening with a journal",
+    "es": "Apertura con agenda",
+    "pt-BR": "Abertura com agenda",
+    "ar": "افتتاح مع يوميات"
+  },
+  "פתיח עם נתונים": {
+    "en": "Opening with numbers",
+    "es": "Apertura con datos",
+    "pt-BR": "Abertura com dados",
+    "ar": "افتتاح مع بيانات"
+  },
+  "פתיח עם תורים": {
+    "en": "Opening with bookings",
+    "es": "Apertura con citas",
+    "pt-BR": "Abertura com horários",
+    "ar": "افتتاح مع مواعيد"
+  },
+  "פתיח עסקי": {
+    "en": "Business opening",
+    "es": "Apertura de negocio",
+    "pt-BR": "Abertura de negócio",
+    "ar": "افتتاح أعمال"
+  },
+  "פתיח צמיחה": {
+    "en": "Growth opening",
+    "es": "Apertura de crecimiento",
+    "pt-BR": "Abertura de crescimento",
+    "ar": "افتتاح نمو"
+  },
+  "פתיח קטלוג": {
+    "en": "Catalog opening",
+    "es": "Apertura de catálogo",
+    "pt-BR": "Abertura de catálogo",
+    "ar": "افتتاح كتالوج"
+  },
+  "פתיח קלאסי": {
+    "en": "Classic opening",
+    "es": "Apertura clásica",
+    "pt-BR": "Abertura clássica",
+    "ar": "افتتاح كلاسيكي"
+  },
+  "פתיח רגוע": {
+    "en": "Calm opening",
+    "es": "Apertura serena",
+    "pt-BR": "Abertura calma",
+    "ar": "افتتاح هادئ"
+  },
+  "פתיח רך": {
+    "en": "Soft opening",
+    "es": "Apertura suave",
+    "pt-BR": "Abertura suave",
+    "ar": "افتتاح ناعم"
+  },
+  "פתיח שירות": {
+    "en": "Service opening",
+    "es": "Apertura de servicio",
+    "pt-BR": "Abertura de serviço",
+    "ar": "افتتاح خدمة"
+  },
+  "פתיח תכשיטים": {
+    "en": "Jewelry opening",
+    "es": "Apertura de joyería",
+    "pt-BR": "Abertura de joias",
+    "ar": "افتتاح مجوهرات"
+  },
+  "פתיח תמונה כהה": {
+    "en": "Dark-image opening",
+    "es": "Apertura de imagen oscura",
+    "pt-BR": "Abertura de imagem escura",
+    "ar": "افتتاح صورة داكنة"
+  },
+  "צוות המשרד": {
+    "en": "The office team",
+    "es": "El equipo del despacho",
+    "pt-BR": "A equipe do escritório",
+    "ar": "فريق المكتب"
+  },
+  "צוות רפואי": {
+    "en": "Medical team",
+    "es": "Equipo médico",
+    "pt-BR": "Equipe médica",
+    "ar": "فريق طبي"
+  },
+  "קביעת אימון": {
+    "en": "Book a workout",
+    "es": "Reservar un entrenamiento",
+    "pt-BR": "Marcar um treino",
+    "ar": "حجز تدريب"
+  },
+  "קביעת ביקור": {
+    "en": "Book a visit",
+    "es": "Reservar una visita",
+    "pt-BR": "Marcar uma visita",
+    "ar": "حجز زيارة"
+  },
+  "קביעת צילום": {
+    "en": "Book a shoot",
+    "es": "Reservar una sesión",
+    "pt-BR": "Marcar uma sessão",
+    "ar": "حجز تصوير"
+  },
+  "קביעת שיעור": {
+    "en": "Book a class",
+    "es": "Reservar una clase",
+    "pt-BR": "Marcar uma aula",
+    "ar": "حجز درس"
+  },
+  "קולקציה, מוצרים, סיפור מותג, גלריה וביקורות.": {
+    "en": "A collection, products, a brand story, a gallery, and reviews.",
+    "es": "Una colección, productos, una historia de marca, una galería y reseñas.",
+    "pt-BR": "Uma coleção, produtos, uma história de marca, uma galeria e avaliações.",
+    "ar": "مجموعة ومنتجات وقصة علامة ومعرض وتقييمات."
+  },
+  "קייס סטאדיז": {
+    "en": "Case studies",
+    "es": "Casos de estudio",
+    "pt-BR": "Estudos de caso",
+    "ar": "دراسات حالة"
+  },
+  "קריאה מהירה": {
+    "en": "A fast call",
+    "es": "Una llamada rápida",
+    "pt-BR": "Uma chamada rápida",
+    "ar": "نداء سريع"
+  },
+  "קריאה מהירה, מחירון, אזורי שירות וטופס ליד.": {
+    "en": "A fast call, a price list, service areas, and a lead form.",
+    "es": "Una llamada rápida, una lista de precios, zonas de servicio y un formulario de lead.",
+    "pt-BR": "Uma chamada rápida, uma lista de preços, áreas de serviço e um formulário de lead.",
+    "ar": "نداء سريع وقائمة أسعار ومناطق خدمة ونموذج عميل محتمل."
+  },
+  "רגעים מהשיעורים": {
+    "en": "Moments from class",
+    "es": "Momentos de las clases",
+    "pt-BR": "Momentos das aulas",
+    "ar": "لحظات من الدروس"
+  },
+  "שוברי מתנה": {
+    "en": "Gift vouchers",
+    "es": "Vales regalo",
+    "pt-BR": "Vales-presente",
+    "ar": "قسائم هدية"
+  },
+  "שיעור ניסיון": {
+    "en": "Trial class",
+    "es": "Clase de prueba",
+    "pt-BR": "Aula experimental",
+    "ar": "درس تجربة"
+  },
+  "שיעורים, מנויים, יומן, המלצות וטופס הצטרפות.": {
+    "en": "Classes, memberships, a journal, testimonials, and a join form.",
+    "es": "Clases, suscripciones, una agenda, testimonios y un formulario de alta.",
+    "pt-BR": "Aulas, assinaturas, uma agenda, depoimentos e um formulário de adesão.",
+    "ar": "دروس واشتراكات ويوميات وشهادات ونموذج انضمام."
+  },
+  "שיעורים, תהליך, יומן, המלצות וטופס פנייה.": {
+    "en": "Classes, a process, a journal, testimonials, and an inquiry form.",
+    "es": "Clases, un proceso, una agenda, testimonios y un formulario de consulta.",
+    "pt-BR": "Aulas, um processo, uma agenda, depoimentos e um formulário de contato.",
+    "ar": "دروس ومسار ويوميات وشهادات ونموذج تواصل."
+  },
+  "שירותי ניקיון": {
+    "en": "Cleaning services",
+    "es": "Servicios de limpieza",
+    "pt-BR": "Serviços de limpeza",
+    "ar": "خدمات تنظيف"
+  },
+  "שירותים, אזורי שירות, מחירון, ביקורות וטופס ליד.": {
+    "en": "Services, service areas, a price list, reviews, and a lead form.",
+    "es": "Servicios, zonas de servicio, una lista de precios, reseñas y un formulario de lead.",
+    "pt-BR": "Serviços, áreas de serviço, uma lista de preços, avaliações e um formulário de lead.",
+    "ar": "خدمات ومناطق خدمة وقائمة أسعار وتقييمات ونموذج عميل محتمل."
+  },
+  "שירותים, גלריה, אזורי שירות והצעת מחיר.": {
+    "en": "Services, a gallery, service areas, and a quote.",
+    "es": "Servicios, una galería, zonas de servicio y un presupuesto.",
+    "pt-BR": "Serviços, uma galeria, áreas de serviço e um orçamento.",
+    "ar": "خدمات ومعرض ومناطق خدمة وعرض سعر."
+  },
+  "שירותים, גלריה, יומן, ביקורות וטופס ליד.": {
+    "en": "Services, a gallery, a journal, reviews, and a lead form.",
+    "es": "Servicios, una galería, una agenda, reseñas y un formulario de lead.",
+    "pt-BR": "Serviços, uma galeria, uma agenda, avaliações e um formulário de lead.",
+    "ar": "خدمات ومعرض ويوميات وتقييمات ونموذج عميل محتمل."
+  },
+  "שירותים, קייסים, תהליך עבודה וטופס ליד.": {
+    "en": "Services, cases, a work process, and a lead form.",
+    "es": "Servicios, casos, un proceso de trabajo y un formulario de lead.",
+    "pt-BR": "Serviços, casos, um processo de trabalho e um formulário de lead.",
+    "ar": "خدمات وحالات ومسار عمل ونموذج عميل محتمل."
+  },
+  "שירותים, תהליך עבודה, יומן פגישות וטופס ליד.": {
+    "en": "Services, a work process, a meeting journal, and a lead form.",
+    "es": "Servicios, un proceso de trabajo, una agenda de reuniones y un formulario de lead.",
+    "pt-BR": "Serviços, um processo de trabalho, uma agenda de reuniões e um formulário de lead.",
+    "ar": "خدمات ومسار عمل ويوميات اجتماعات ونموذج عميل محتمل."
+  },
+  "שירותים, תהליך, מחירון, יומן וטופס פנייה.": {
+    "en": "Services, a process, a price list, a journal, and an inquiry form.",
+    "es": "Servicios, un proceso, una lista de precios, una agenda y un formulario de consulta.",
+    "pt-BR": "Serviços, um processo, uma lista de preços, uma agenda e um formulário de contato.",
+    "ar": "خدمات ومسار وقائمة أسعار ويوميات ونموذج تواصل."
+  },
+  "תהליך למידה": {
+    "en": "Learning process",
+    "es": "Proceso de aprendizaje",
+    "pt-BR": "Processo de aprendizagem",
+    "ar": "مسار تعلّم"
+  },
+  "תוכניות, חבילות, תוצאות, המלצות וקביעת אימון.": {
+    "en": "Programs, packages, results, testimonials, and a workout booking.",
+    "es": "Programas, paquetes, resultados, testimonios y reserva de entrenamiento.",
+    "pt-BR": "Programas, pacotes, resultados, depoimentos e agendamento de treino.",
+    "ar": "برامج وباقات ونتائج وشهادات وحجز تدريب."
+  },
+  "תחומי התמחות, פגישת ייעוץ, צוות, שאלות וטופס פנייה.": {
+    "en": "Practice areas, a consult, a team, questions, and an inquiry form.",
+    "es": "Áreas de práctica, una consulta, un equipo, preguntas y un formulario de consulta.",
+    "pt-BR": "Áreas de atuação, uma consulta, uma equipe, perguntas e um formulário de contato.",
+    "ar": "مجالات اختصاص واستشارة وفريق وأسئلة ونموذج تواصل."
+  },
+  "תיאום ניקיון": {
+    "en": "Book a cleaning",
+    "es": "Coordinar una limpieza",
+    "pt-BR": "Agendar uma limpeza",
+    "ar": "تنسيق تنظيف"
+  },
+  "תיקים ותחומים": {
+    "en": "Cases and practice areas",
+    "es": "Casos y áreas",
+    "pt-BR": "Casos e áreas",
+    "ar": "قضايا ومجالات"
+  },
+  "תלמידים": {
+    "en": "Students",
+    "es": "Alumnos",
+    "pt-BR": "Alunos",
+    "ar": "تلاميذ"
+  },
+  "תפריט, גלריה, שעות פתיחה, מבצעים ומועדון לקוחות.": {
+    "en": "A menu, a gallery, opening hours, specials, and a customer club.",
+    "es": "Un menú, una galería, horario, ofertas y un club de clientes.",
+    "pt-BR": "Um cardápio, uma galeria, horário, ofertas e um clube de clientes.",
+    "ar": "قائمة ومعرض وساعات عمل وعروض ونادي عملاء."
+  },
+  "תפריט, תמונות, מבצעים, המלצות והזמנת מקום בקליק.": {
+    "en": "A menu, photos, specials, testimonials, and one-click table booking.",
+    "es": "Un menú, fotos, ofertas, testimonios y reserva de mesa en un clic.",
+    "pt-BR": "Um cardápio, fotos, ofertas, depoimentos e reserva de mesa em um clique.",
+    "ar": "قائمة وصور وعروض وشهادات وحجز طاولة بنقرة."
+  },
+  "תפריטים": {
+    "en": "Menus",
+    "es": "Menús",
+    "pt-BR": "Cardápios",
+    "ar": "قوائم"
+  },
+  "תפריטים, חבילות, גלריה, ביקורות וטופס אירוע.": {
+    "en": "Menus, packages, a gallery, reviews, and an event form.",
+    "es": "Menús, paquetes, una galería, reseñas y un formulario de evento.",
+    "pt-BR": "Cardápios, pacotes, uma galeria, avaliações e um formulário de evento.",
+    "ar": "قوائم وباقات ومعرض وتقييمات ونموذج حدث."
+  },
+  "תצוגת נכסים, מפה, שירותים וטופס פנייה.": {
+    "en": "A listings display, a map, services, and an inquiry form.",
+    "es": "Una exhibición de propiedades, un mapa, servicios y un formulario de consulta.",
+    "pt-BR": "Uma exibição de imóveis, um mapa, serviços e um formulário de contato.",
+    "ar": "عرض عقارات وخريطة وخدمات ونموذج تواصل."
+  },
+  "מדורים": {
+    "en": "Sections",
+    "es": "Secciones",
+    "pt-BR": "Seções",
+    "ar": "أقسام"
+  }
+}

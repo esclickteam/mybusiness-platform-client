@@ -2,7 +2,7 @@ export const smokepitEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="smokepit"], [data-template-id="smokepit"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #120c08; --tpl-surface: #1c140e; --tpl-text: #f3e8d8;
   --tpl-muted: #a89078; --tpl-primary: #ea580c; --tpl-primary-text: #120c08;

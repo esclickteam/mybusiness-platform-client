@@ -1,0 +1,914 @@
+{
+  "שם איש צוות": {
+    "en": "Team member name",
+    "es": "Nombre del miembro del equipo",
+    "pt-BR": "Nome do membro da equipe",
+    "ar": "اسم عضو الفريق"
+  },
+  "לקוחה חדשה": {
+    "en": "New customer",
+    "es": "Nueva clienta",
+    "pt-BR": "Nova cliente",
+    "ar": "عميلة جديدة"
+  },
+  "כאן תופיע תשובה קצרה וברורה שאפשר לערוך.": {
+    "en": "A short, clear answer you can edit will appear here.",
+    "es": "Aquí aparecerá una respuesta corta y clara que podéis editar.",
+    "pt-BR": "Aqui aparecerá uma resposta curta e clara que você pode editar.",
+    "ar": "ستظهر هنا إجابة قصيرة وواضحة يمكنكم تعديلها."
+  },
+  "מוצר ראשון": {
+    "en": "First product",
+    "es": "Primer producto",
+    "pt-BR": "Primeiro produto",
+    "ar": "المنتج الأول"
+  },
+  "מוצר שני": {
+    "en": "Second product",
+    "es": "Segundo producto",
+    "pt-BR": "Segundo produto",
+    "ar": "المنتج الثاني"
+  },
+  "מוצר שלישי": {
+    "en": "Third product",
+    "es": "Tercer producto",
+    "pt-BR": "Terceiro produto",
+    "ar": "المنتج الثالث"
+  },
+  "טקסט": {
+    "en": "Text",
+    "es": "Texto",
+    "pt-BR": "Texto",
+    "ar": "نص"
+  },
+  "60 דקות": {
+    "en": "60 minutes",
+    "es": "60 minutos",
+    "pt-BR": "60 minutos",
+    "ar": "60 دقيقة"
+  },
+  "מעבר לחנות": {
+    "en": "Go to store",
+    "es": "Ir a la tienda",
+    "pt-BR": "Ir à loja",
+    "ar": "الانتقال إلى المتجر"
+  },
+  "כל ההמלצות": {
+    "en": "All testimonials",
+    "es": "Todos los testimonios",
+    "pt-BR": "Todos os depoimentos",
+    "ar": "كل التوصيات"
+  },
+  "כל הביקורות": {
+    "en": "All reviews",
+    "es": "Todas las reseñas",
+    "pt-BR": "Todas as avaliações",
+    "ar": "كل المراجعات"
+  },
+  "נקודה שנייה": {
+    "en": "Second point",
+    "es": "Segundo punto",
+    "pt-BR": "Segundo ponto",
+    "ar": "النقطة الثانية"
+  },
+  "תיאום תורים": {
+    "en": "Appointment booking",
+    "es": "Coordinación de citas",
+    "pt-BR": "Agendamento",
+    "ar": "تنسيق المواعيد"
+  },
+  "נקודה ראשונה": {
+    "en": "First point",
+    "es": "Primer punto",
+    "pt-BR": "Primeiro ponto",
+    "ar": "النقطة الأولى"
+  },
+  "נקודה שלישית": {
+    "en": "Third point",
+    "es": "Tercer punto",
+    "pt-BR": "Terceiro ponto",
+    "ar": "النقطة الثالثة"
+  },
+  "שליחת וואטסאפ": {
+    "en": "Send WhatsApp",
+    "es": "Enviar WhatsApp",
+    "pt-BR": "Enviar WhatsApp",
+    "ar": "إرسال واتساب"
+  },
+  "תיאור קצר של השירות ומה הוא כולל.": {
+    "en": "A short description of the service and what it includes.",
+    "es": "Una descripción breve del servicio y qué incluye.",
+    "pt-BR": "Uma descrição curta do serviço e o que ele inclui.",
+    "ar": "وصف قصير للخدمة وما تتضمنه."
+  },
+  "וידאו": {
+    "en": "Video",
+    "es": "Vídeo",
+    "pt-BR": "Vídeo",
+    "ar": "فيديو"
+  },
+  "קישור": {
+    "en": "Link",
+    "es": "Enlace",
+    "pt-BR": "Link",
+    "ar": "رابط"
+  },
+  "תזכורת": {
+    "en": "Reminder",
+    "es": "Recordatorio",
+    "pt-BR": "Lembrete",
+    "ar": "تذكير"
+  },
+  "מקצועי": {
+    "en": "Professional",
+    "es": "Profesional",
+    "pt-BR": "Profissional",
+    "ar": "مهني"
+  },
+  "אייקון": {
+    "en": "Icon",
+    "es": "Icono",
+    "pt-BR": "Ícone",
+    "ar": "أيقونة"
+  },
+  "תשלומים": {
+    "en": "Payments",
+    "es": "Pagos",
+    "pt-BR": "Pagamentos",
+    "ar": "مدفوعات"
+  },
+  "90 דקות": {
+    "en": "90 minutes",
+    "es": "90 minutos",
+    "pt-BR": "90 minutos",
+    "ar": "90 دقيقة"
+  },
+  "שם הספק": {
+    "en": "Vendor name",
+    "es": "Nombre del proveedor",
+    "pt-BR": "Nome do fornecedor",
+    "ar": "اسم المورّد"
+  },
+  "מומחה/ית": {
+    "en": "Expert",
+    "es": "Experto/a",
+    "pt-BR": "Especialista",
+    "ar": "خبير/ة"
+  },
+  "אוטומציות": {
+    "en": "Automations",
+    "es": "Automatizaciones",
+    "pt-BR": "Automações",
+    "ar": "أتمتة"
+  },
+  "קנייה עכשיו": {
+    "en": "Buy now",
+    "es": "Comprar ahora",
+    "pt-BR": "Comprar agora",
+    "ar": "اشتروا الآن"
+  },
+  "שאלה על מוצר": {
+    "en": "Product question",
+    "es": "Pregunta sobre un producto",
+    "pt-BR": "Pergunta sobre produto",
+    "ar": "سؤال عن منتج"
+  },
+  "שאלה בוואטסאפ": {
+    "en": "WhatsApp question",
+    "es": "Pregunta por WhatsApp",
+    "pt-BR": "Pergunta no WhatsApp",
+    "ar": "سؤال عبر واتساب"
+  },
+  "זמינות דיגיטלית": {
+    "en": "Digital availability",
+    "es": "Disponibilidad digital",
+    "pt-BR": "Disponibilidade digital",
+    "ar": "توافر رقمي"
+  },
+  "כמה מילים על האדם, הניסיון והאחריות שלו בצוות.": {
+    "en": "A few words about the person, their experience, and their responsibility on the team.",
+    "es": "Unas palabras sobre la persona, su experiencia y su responsabilidad en el equipo.",
+    "pt-BR": "Algumas palavras sobre a pessoa, a experiência e a responsabilidade na equipe.",
+    "ar": "بضع كلمات عن الشخص وخبرته ومسؤوليته في الفريق."
+  },
+  "עסק": {
+    "en": "Business",
+    "es": "Negocio",
+    "pt-BR": "Negócio",
+    "ar": "عمل"
+  },
+  "תגית": {
+    "en": "Tag",
+    "es": "Etiqueta",
+    "pt-BR": "Tag",
+    "ar": "وسم"
+  },
+  "שלב שני": {
+    "en": "Second step",
+    "es": "Segundo paso",
+    "pt-BR": "Segundo passo",
+    "ar": "الخطوة الثانية"
+  },
+  "30 דקות": {
+    "en": "30 minutes",
+    "es": "30 minutos",
+    "pt-BR": "30 minutos",
+    "ar": "30 دقيقة"
+  },
+  "עוד מידע": {
+    "en": "More info",
+    "es": "Más información",
+    "pt-BR": "Mais informações",
+    "ar": "مزيد من المعلومات"
+  },
+  "שם המקום": {
+    "en": "Place name",
+    "es": "Nombre del lugar",
+    "pt-BR": "Nome do local",
+    "ar": "اسم المكان"
+  },
+  "שאלה לפני": {
+    "en": "Question before",
+    "es": "Pregunta previa",
+    "pt-BR": "Pergunta antes",
+    "ar": "سؤال قبل"
+  },
+  "שלב ראשון": {
+    "en": "First step",
+    "es": "Primer paso",
+    "pt-BR": "Primeiro passo",
+    "ar": "الخطوة الأولى"
+  },
+  "שלב שלישי": {
+    "en": "Third step",
+    "es": "Tercer paso",
+    "pt-BR": "Terceiro passo",
+    "ar": "الخطوة الثالثة"
+  },
+  "סטטיסטיקה": {
+    "en": "Statistics",
+    "es": "Estadísticas",
+    "pt-BR": "Estatísticas",
+    "ar": "إحصاءات"
+  },
+  "2022–היום": {
+    "en": "2022–present",
+    "es": "2022–hoy",
+    "pt-BR": "2022–hoje",
+    "ar": "2022–اليوم"
+  },
+  "מוצר רביעי": {
+    "en": "Fourth product",
+    "es": "Cuarto producto",
+    "pt-BR": "Quarto produto",
+    "ar": "المنتج الرابع"
+  },
+  "שאלה שנייה?": {
+    "en": "Second question?",
+    "es": "¿Segunda pregunta?",
+    "pt-BR": "Segunda pergunta?",
+    "ar": "السؤال الثاني؟"
+  },
+  "לקביעת פגישה": {
+    "en": "Book a meeting",
+    "es": "Reservar una reunión",
+    "pt-BR": "Agendar uma reunião",
+    "ar": "لحجز اجتماع"
+  },
+  "שאלה ראשונה?": {
+    "en": "First question?",
+    "es": "¿Primera pregunta?",
+    "pt-BR": "Primeira pergunta?",
+    "ar": "السؤال الأول؟"
+  },
+  "שאלה שלישית?": {
+    "en": "Third question?",
+    "es": "¿Tercera pregunta?",
+    "pt-BR": "Terceira pergunta?",
+    "ar": "السؤال الثالث؟"
+  },
+  "שאלה רביעית?": {
+    "en": "Fourth question?",
+    "es": "¿Cuarta pregunta?",
+    "pt-BR": "Quarta pergunta?",
+    "ar": "السؤال الرابع؟"
+  },
+  "שיחה טלפונית": {
+    "en": "Phone call",
+    "es": "Llamada telefónica",
+    "pt-BR": "Chamada telefônica",
+    "ar": "مكالمة هاتفية"
+  },
+  "סיפורי לקוחות": {
+    "en": "Customer stories",
+    "es": "Historias de clientes",
+    "pt-BR": "Histórias de clientes",
+    "ar": "قصص العملاء"
+  },
+  "מנהל/ת לקוחות": {
+    "en": "Account manager",
+    "es": "Gestor/a de clientes",
+    "pt-BR": "Gerente de clientes",
+    "ar": "مدير/ة حسابات"
+  },
+  "זמינות אונליין": {
+    "en": "Online availability",
+    "es": "Disponibilidad online",
+    "pt-BR": "Disponibilidade online",
+    "ar": "توافر عبر الإنترنت"
+  },
+  "תורים וזמינות.": {
+    "en": "Appointments and availability.",
+    "es": "Citas y disponibilidad.",
+    "pt-BR": "Agendamentos e disponibilidade.",
+    "ar": "مواعيد والتوافر."
+  },
+  "צפייה בפיצ׳רים": {
+    "en": "View features",
+    "es": "Ver funciones",
+    "pt-BR": "Ver recursos",
+    "ar": "عرض الميزات"
+  },
+  "תיאור קצר ומדויק.": {
+    "en": "A short, precise description.",
+    "es": "Una descripción breve y precisa.",
+    "pt-BR": "Uma descrição curta e precisa.",
+    "ar": "وصف قصير ودقيق."
+  },
+  "תיאום תורים וזמינות.": {
+    "en": "Appointment booking and availability.",
+    "es": "Coordinación de citas y disponibilidad.",
+    "pt-BR": "Agendamento e disponibilidade.",
+    "ar": "تنسيق المواعيد والتوافر."
+  },
+  "נקודה שנייה שאפשר לערוך": {
+    "en": "Second editable point",
+    "es": "Segundo punto editable",
+    "pt-BR": "Segundo ponto editável",
+    "ar": "نقطة ثانية قابلة للتعديل"
+  },
+  "נקודה ראשונה שאפשר לערוך": {
+    "en": "First editable point",
+    "es": "Primer punto editable",
+    "pt-BR": "Primeiro ponto editável",
+    "ar": "نقطة أولى قابلة للتعديل"
+  },
+  "נקודה שלישית שאפשר לערוך": {
+    "en": "Third editable point",
+    "es": "Tercer punto editable",
+    "pt-BR": "Terceiro ponto editável",
+    "ar": "نقطة ثالثة قابلة للتعديل"
+  },
+  "תיאור קצר של יתרון או מסר.": {
+    "en": "A short description of a benefit or message.",
+    "es": "Una descripción breve de una ventaja o mensaje.",
+    "pt-BR": "Uma descrição curta de uma vantagem ou mensagem.",
+    "ar": "وصف قصير لميزة أو رسالة."
+  },
+  "נכס": {
+    "en": "Asset",
+    "es": "Activo",
+    "pt-BR": "Ativo",
+    "ar": "أصل"
+  },
+  "כסף": {
+    "en": "Money",
+    "es": "Dinero",
+    "pt-BR": "Dinheiro",
+    "ar": "مال"
+  },
+  "מעקב": {
+    "en": "Tracking",
+    "es": "Seguimiento",
+    "pt-BR": "Acompanhamento",
+    "ar": "متابعة"
+  },
+  "פסקה": {
+    "en": "Paragraph",
+    "es": "Párrafo",
+    "pt-BR": "Parágrafo",
+    "ar": "فقرة"
+  },
+  "באנר": {
+    "en": "Banner",
+    "es": "Banner",
+    "pt-BR": "Banner",
+    "ar": "بانر"
+  },
+  "פעיל": {
+    "en": "Active",
+    "es": "Activo",
+    "pt-BR": "Ativo",
+    "ar": "نشط"
+  },
+  "8 ש׳": {
+    "en": "8 hrs",
+    "es": "8 h",
+    "pt-BR": "8 h",
+    "ar": "8 س"
+  },
+  "חזרה": {
+    "en": "Back",
+    "es": "Volver",
+    "pt-BR": "Voltar",
+    "ar": "رجوع"
+  },
+  "שיתוף": {
+    "en": "Share",
+    "es": "Compartir",
+    "pt-BR": "Compartilhar",
+    "ar": "مشاركة"
+  },
+  "טפסים": {
+    "en": "Forms",
+    "es": "Formularios",
+    "pt-BR": "Formulários",
+    "ar": "نماذج"
+  },
+  "העלאה": {
+    "en": "Upload",
+    "es": "Subida",
+    "pt-BR": "Envio",
+    "ar": "رفع"
+  },
+  "מעוגל": {
+    "en": "Rounded",
+    "es": "Redondeado",
+    "pt-BR": "Arredondado",
+    "ar": "مستدير"
+  },
+  "אופקי": {
+    "en": "Horizontal",
+    "es": "Horizontal",
+    "pt-BR": "Horizontal",
+    "ar": "أفقي"
+  },
+  "צבעים": {
+    "en": "Colors",
+    "es": "Colores",
+    "pt-BR": "Cores",
+    "ar": "ألوان"
+  },
+  "תשובה": {
+    "en": "Answer",
+    "es": "Respuesta",
+    "pt-BR": "Resposta",
+    "ar": "إجابة"
+  },
+  "תחתית": {
+    "en": "Footer",
+    "es": "Pie",
+    "pt-BR": "Rodapé",
+    "ar": "تذييل"
+  },
+  "הפעלה": {
+    "en": "Activation",
+    "es": "Activación",
+    "pt-BR": "Ativação",
+    "ar": "تفعيل"
+  },
+  "ביוטי": {
+    "en": "Beauty",
+    "es": "Belleza",
+    "pt-BR": "Beleza",
+    "ar": "تجميل"
+  },
+  "בנייה": {
+    "en": "Construction",
+    "es": "Construcción",
+    "pt-BR": "Construção",
+    "ar": "بناء"
+  },
+  "יזמית": {
+    "en": "Entrepreneur",
+    "es": "Emprendedora",
+    "pt-BR": "Empreendedora",
+    "ar": "رائدة أعمال"
+  },
+  "כוכבים": {
+    "en": "Stars",
+    "es": "Estrellas",
+    "pt-BR": "Estrelas",
+    "ar": "نجوم"
+  },
+  "דיגיטל": {
+    "en": "Digital",
+    "es": "Digital",
+    "pt-BR": "Digital",
+    "ar": "رقمي"
+  },
+  "בריאות": {
+    "en": "Health",
+    "es": "Salud",
+    "pt-BR": "Saúde",
+    "ar": "صحة"
+  },
+  "תיירות": {
+    "en": "Travel",
+    "es": "Turismo",
+    "pt-BR": "Turismo",
+    "ar": "سياحة"
+  },
+  "מייסדת": {
+    "en": "Founder",
+    "es": "Fundadora",
+    "pt-BR": "Fundadora",
+    "ar": "مؤسِّسة"
+  },
+  "עצמאית": {
+    "en": "Independent",
+    "es": "Independiente",
+    "pt-BR": "Independente",
+    "ar": "مستقلة"
+  },
+  "בונוסים": {
+    "en": "Bonuses",
+    "es": "Bonos",
+    "pt-BR": "Bônus",
+    "ar": "مكافآت"
+  },
+  "קופונים": {
+    "en": "Coupons",
+    "es": "Cupones",
+    "pt-BR": "Cupons",
+    "ar": "قسائم"
+  },
+  "שם השדה": {
+    "en": "Field name",
+    "es": "Nombre del campo",
+    "pt-BR": "Nome do campo",
+    "ar": "اسم الحقل"
+  },
+  "אונליין": {
+    "en": "Online",
+    "es": "Online",
+    "pt-BR": "Online",
+    "ar": "أونلاين"
+  },
+  "מקצועיות": {
+    "en": "Professionalism",
+    "es": "Profesionalidad",
+    "pt-BR": "Profissionalismo",
+    "ar": "احترافية"
+  },
+  "שם האולם": {
+    "en": "Hall name",
+    "es": "Nombre de la sala",
+    "pt-BR": "Nome do salão",
+    "ar": "اسم القاعة"
+  },
+  "מוצר חדש": {
+    "en": "New product",
+    "es": "Producto nuevo",
+    "pt-BR": "Produto novo",
+    "ar": "منتج جديد"
+  },
+  "הורדת CV": {
+    "en": "Download CV",
+    "es": "Descargar CV",
+    "pt-BR": "Baixar CV",
+    "ar": "تنزيل السيرة"
+  },
+  "יום פתוח": {
+    "en": "Open day",
+    "es": "Jornada de puertas abiertas",
+    "pt-BR": "Dia aberto",
+    "ar": "يوم مفتوح"
+  },
+  "חברת בטא": {
+    "en": "Beta company",
+    "es": "Empresa Beta",
+    "pt-BR": "Empresa Beta",
+    "ar": "شركة بيتا"
+  },
+  "עוד פרטים": {
+    "en": "More details",
+    "es": "Más detalles",
+    "pt-BR": "Mais detalhes",
+    "ar": "المزيد من التفاصيل"
+  },
+  "חבילת VIP": {
+    "en": "VIP package",
+    "es": "Paquete VIP",
+    "pt-BR": "Pacote VIP",
+    "ar": "باقة VIP"
+  },
+  "שירות מלא": {
+    "en": "Full service",
+    "es": "Servicio completo",
+    "pt-BR": "Serviço completo",
+    "ar": "خدمة كاملة"
+  },
+  "סוג שירות": {
+    "en": "Service type",
+    "es": "Tipo de servicio",
+    "pt-BR": "Tipo de serviço",
+    "ar": "نوع الخدمة"
+  },
+  "מחיר השקה": {
+    "en": "Launch price",
+    "es": "Precio de lanzamiento",
+    "pt-BR": "Preço de lançamento",
+    "ar": "سعر الإطلاق"
+  },
+  "מדריך PDF": {
+    "en": "PDF guide",
+    "es": "Guía PDF",
+    "pt-BR": "Guia PDF",
+    "ar": "دليل PDF"
+  },
+  "מוצר נבחר": {
+    "en": "Featured product",
+    "es": "Producto destacado",
+    "pt-BR": "Produto em destaque",
+    "ar": "منتج مختار"
+  },
+  "אנשי צוות": {
+    "en": "Team members",
+    "es": "Miembros del equipo",
+    "pt-BR": "Membros da equipe",
+    "ar": "أعضاء الفريق"
+  },
+  "פבר׳ 2026": {
+    "en": "Feb 2026",
+    "es": "Feb 2026",
+    "pt-BR": "Fev 2026",
+    "ar": "فبراير 2026"
+  },
+  "ינו׳ 2026": {
+    "en": "Jan 2026",
+    "es": "Ene 2026",
+    "pt-BR": "Jan 2026",
+    "ar": "يناير 2026"
+  },
+  "פרילנסרית": {
+    "en": "Freelancer",
+    "es": "Freelancer",
+    "pt-BR": "Freelancer",
+    "ar": "مستقلة"
+  },
+  "עוד המלצות": {
+    "en": "More testimonials",
+    "es": "Más testimonios",
+    "pt-BR": "Mais depoimentos",
+    "ar": "مزيد من التوصيات"
+  },
+  "סדנת פתיחה": {
+    "en": "Opening workshop",
+    "es": "Taller de apertura",
+    "pt-BR": "Oficina de abertura",
+    "ar": "ورشة افتتاح"
+  },
+  "מפגש קהילה": {
+    "en": "Community meetup",
+    "es": "Encuentro comunitario",
+    "pt-BR": "Encontro da comunidade",
+    "ar": "لقاء مجتمعي"
+  },
+  "רכישת כרטיס": {
+    "en": "Buy a ticket",
+    "es": "Comprar entrada",
+    "pt-BR": "Comprar ingresso",
+    "ar": "شراء تذكرة"
+  },
+  "שליחת אישור": {
+    "en": "Send confirmation",
+    "es": "Enviar confirmación",
+    "pt-BR": "Enviar confirmação",
+    "ar": "إرسال تأكيد"
+  },
+  "הפעלת מערכת": {
+    "en": "Activate system",
+    "es": "Activar sistema",
+    "pt-BR": "Ativar sistema",
+    "ar": "تفعيل النظام"
+  },
+  "גישה מוקדמת": {
+    "en": "Early access",
+    "es": "Acceso anticipado",
+    "pt-BR": "Acesso antecipado",
+    "ar": "وصول مبكر"
+  },
+  "בלוג – סדרה": {
+    "en": "Blog – series",
+    "es": "Blog – serie",
+    "pt-BR": "Blog – série",
+    "ar": "مدونة – سلسلة"
+  },
+  "צוות – גיוס": {
+    "en": "Team – hiring",
+    "es": "Equipo – contratación",
+    "pt-BR": "Equipe – contratação",
+    "ar": "فريق – توظيف"
+  },
+  "ליווי חודשי": {
+    "en": "Monthly guidance",
+    "es": "Acompañamiento mensual",
+    "pt-BR": "Acompanhamento mensal",
+    "ar": "مرافقة شهرية"
+  },
+  "תמיכה שוטפת": {
+    "en": "Ongoing support",
+    "es": "Soporte continuo",
+    "pt-BR": "Suporte contínuo",
+    "ar": "دعم مستمر"
+  },
+  "הרצאה פתוחה": {
+    "en": "Open lecture",
+    "es": "Conferencia abierta",
+    "pt-BR": "Palestra aberta",
+    "ar": "محاضرة مفتوحة"
+  },
+  "מעצבת בכירה": {
+    "en": "Senior designer",
+    "es": "Diseñadora sénior",
+    "pt-BR": "Designer sênior",
+    "ar": "مصممة أولى"
+  },
+  "סטודיו אלפא": {
+    "en": "Alpha Studio",
+    "es": "Studio Alpha",
+    "pt-BR": "Estúdio Alpha",
+    "ar": "استوديو ألفا"
+  },
+  "מכללה למדיה": {
+    "en": "Media college",
+    "es": "Escuela de medios",
+    "pt-BR": "Faculdade de mídia",
+    "ar": "كلية إعلام"
+  },
+  "סדנה מקצועית": {
+    "en": "Professional workshop",
+    "es": "Taller profesional",
+    "pt-BR": "Oficina profissional",
+    "ar": "ورشة مهنية"
+  },
+  "השארת ביקורת": {
+    "en": "Leave a review",
+    "es": "Dejar una reseña",
+    "pt-BR": "Deixar uma avaliação",
+    "ar": "ترك مراجعة"
+  },
+  "בלוג – מגזין": {
+    "en": "Blog – magazine",
+    "es": "Blog – revista",
+    "pt-BR": "Blog – revista",
+    "ar": "مدونة – مجلة"
+  },
+  "מוצרים – רשת": {
+    "en": "Products – grid",
+    "es": "Productos – red",
+    "pt-BR": "Produtos – grade",
+    "ar": "منتجات – شبكة"
+  },
+  "צוות – תרבות": {
+    "en": "Team – culture",
+    "es": "Equipo – cultura",
+    "pt-BR": "Equipe – cultura",
+    "ar": "فريق – ثقافة"
+  },
+  "עיצוב וחוויה": {
+    "en": "Design and experience",
+    "es": "Diseño y experiencia",
+    "pt-BR": "Design e experiência",
+    "ar": "تصميم وتجربة"
+  },
+  "צמיחה ושיווק": {
+    "en": "Growth and marketing",
+    "es": "Crecimiento y marketing",
+    "pt-BR": "Crescimento e marketing",
+    "ar": "نمو وتسويق"
+  },
+  "שיחה בוואטסאפ": {
+    "en": "WhatsApp chat",
+    "es": "Chat de WhatsApp",
+    "pt-BR": "Conversa no WhatsApp",
+    "ar": "محادثة واتساب"
+  },
+  "צפייה במוצרים": {
+    "en": "View products",
+    "es": "Ver productos",
+    "pt-BR": "Ver produtos",
+    "ar": "عرض المنتجات"
+  },
+  "בלוג – ארכיון": {
+    "en": "Blog – archive",
+    "es": "Blog – archivo",
+    "pt-BR": "Blog – arquivo",
+    "ar": "مدونة – أرشيف"
+  },
+  "אירועים – לוח": {
+    "en": "Events – board",
+    "es": "Eventos – tablón",
+    "pt-BR": "Eventos – painel",
+    "ar": "فعاليات – لوحة"
+  },
+  "גלריה – פנייה": {
+    "en": "Gallery – inquiry",
+    "es": "Galería – consulta",
+    "pt-BR": "Galeria – contato",
+    "ar": "معرض – تواصل"
+  },
+  "ביקורות – כהה": {
+    "en": "Reviews – dark",
+    "es": "Reseñas – oscuro",
+    "pt-BR": "Avaliações – escuro",
+    "ar": "مراجعات – داكن"
+  },
+  "בלוג – ניוזלטר": {
+    "en": "Blog – newsletter",
+    "es": "Blog – boletín",
+    "pt-BR": "Blog – newsletter",
+    "ar": "مدونة – نشرة"
+  },
+  "אירועים – לו״ז": {
+    "en": "Events – schedule",
+    "es": "Eventos – agenda",
+    "pt-BR": "Eventos – agenda",
+    "ar": "فعاليات – جدول"
+  },
+  "אירועים – RSVP": {
+    "en": "Events – RSVP",
+    "es": "Eventos – RSVP",
+    "pt-BR": "Eventos – RSVP",
+    "ar": "فعاليات – RSVP"
+  },
+  "גלריה – קולאז׳": {
+    "en": "Gallery – collage",
+    "es": "Galería – collage",
+    "pt-BR": "Galeria – colagem",
+    "ar": "معرض – كولاج"
+  },
+  "מוצרים – הזמנה": {
+    "en": "Products – order",
+    "es": "Productos – pedido",
+    "pt-BR": "Produtos – pedido",
+    "ar": "منتجات – طلب"
+  },
+  "תמחור – השוואה": {
+    "en": "Pricing – comparison",
+    "es": "Precios – comparación",
+    "pt-BR": "Preços – comparação",
+    "ar": "تسعير – مقارنة"
+  },
+  "בלוג – כרטיסים": {
+    "en": "Blog – cards",
+    "es": "Blog – tarjetas",
+    "pt-BR": "Blog – cartões",
+    "ar": "مدونة – بطاقات"
+  },
+  "צוות – תפקידים": {
+    "en": "Team – roles",
+    "es": "Equipo – roles",
+    "pt-BR": "Equipe – funções",
+    "ar": "فريق – أدوار"
+  },
+  "שאלה לפני תיאום": {
+    "en": "Question before booking",
+    "es": "Pregunta antes de coordinar",
+    "pt-BR": "Pergunta antes do agendamento",
+    "ar": "سؤال قبل التنسيق"
+  },
+  "הצטרפות ללקוחות": {
+    "en": "Join as a customer",
+    "es": "Unirse como cliente",
+    "pt-BR": "Entrar como cliente",
+    "ar": "الانضمام كعميل"
+  },
+  "נחיתה – יתרונות": {
+    "en": "Landing – benefits",
+    "es": "Aterrizaje – ventajas",
+    "pt-BR": "Landing – vantagens",
+    "ar": "هبوط – مزايا"
+  },
+  "שירותים – מגזין": {
+    "en": "Services – magazine",
+    "es": "Servicios – revista",
+    "pt-BR": "Serviços – revista",
+    "ar": "خدمات – مجلة"
+  },
+  "שירותים – תהליך": {
+    "en": "Services – process",
+    "es": "Servicios – proceso",
+    "pt-BR": "Serviços – processo",
+    "ar": "خدمات – مسار"
+  },
+  "תמחור – כרטיסים": {
+    "en": "Pricing – cards",
+    "es": "Precios – tarjetas",
+    "pt-BR": "Preços – cartões",
+    "ar": "تسعير – بطاقات"
+  },
+  "התאמה לפי הצורך.": {
+    "en": "Tailored to your needs.",
+    "es": "Adaptado a vuestra necesidad.",
+    "pt-BR": "Adaptado à necessidade.",
+    "ar": "مواءمة حسب الحاجة."
+  },
+  "חבילות ותשלומים.": {
+    "en": "Packages and payments.",
+    "es": "Paquetes y pagos.",
+    "pt-BR": "Pacotes e pagamentos.",
+    "ar": "باقات ومدفوعات."
+  }
+}

@@ -2,7 +2,7 @@ export const coralineEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="coraline"], [data-template-id="coraline"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #041824; --tpl-surface: #0a2438; --tpl-text: #e8f4ff;
   --tpl-muted: #7eb8d4; --tpl-primary: #3dffd4; --tpl-primary-text: #041824;

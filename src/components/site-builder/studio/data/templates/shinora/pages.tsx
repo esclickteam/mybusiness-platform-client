@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { shinoraDefaultData, type ShinoraTemplateData } from "./defaultData";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useStorePluginCatalog } from "../shared/useStorePluginCatalog";
@@ -151,7 +153,7 @@ function SectionLabel({
       )}
       data-visual-editable="true"
       data-visual-edit-type="box"
-      data-visual-edit-label="תגית סקשן"
+      data-visual-edit-label={tx("תגית סקשן")}
     >
       <span
         className={cx(
@@ -219,7 +221,7 @@ function Header({
       data-template-section-type="header"
       data-section-kind="header"
       className="sticky top-0 z-50 border-b border-[#ead7c8]/80 bg-[#fff8f2]/90 backdrop-blur-2xl"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="header"
       data-visual-editable="true"
       data-visual-edit-id="header.section"
@@ -230,11 +232,11 @@ function Header({
         <button
           type="button"
           onClick={() => navigateTo("home", onNavigate)}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
           data-visual-editable="true"
           data-visual-edit-id="header.logo"
           data-visual-edit-type="button"
-          data-visual-edit-label="לוגו"
+          data-visual-edit-label={tx("לוגו")}
         >
           <span className="grid h-12 w-12 place-items-center rounded-full bg-[#241612] text-lg font-black text-white shadow-xl shadow-[#2b1710]/20 transition duration-300 group-hover:rotate-6">
             {data.logoText}
@@ -264,7 +266,7 @@ function Header({
               data-visual-editable="true"
               data-visual-edit-id={`header.nav.${id}`}
               data-visual-edit-type="button"
-              data-visual-edit-label={`ניווט ${label}`}
+              data-visual-edit-label={tx(`ניווט ${label}`)}
             >
               {label}
             </button>
@@ -280,7 +282,7 @@ function Header({
             data-visual-editable="true"
             data-visual-edit-id="header.cart"
             data-visual-edit-type="button"
-            data-visual-edit-label="עגלה"
+            data-visual-edit-label={tx("עגלה")}
           >
             0
             <span className="absolute -left-1 -top-1 h-4 w-4 rounded-full bg-[#b78563]" />
@@ -305,7 +307,7 @@ function Hero({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2]"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="hero"
       data-section-kind="hero"
       data-visual-editable="true"
@@ -323,26 +325,26 @@ function Hero({
             <div className="absolute left-2 top-3 h-[520px] w-[68%] overflow-hidden rounded-[999px] border-[12px] border-white bg-[#efd6c3] shadow-[0_40px_120px_rgba(56,31,22,0.18)] transition duration-700 hover:scale-[1.02]">
               <img
                 src={data.heroImage}
-                alt="סלון יופי פרימיום"
+                alt={tx("סלון יופי פרימיום")}
                 className="h-full w-full object-cover"
                 loading="eager"
                 data-visual-editable="true"
                 data-visual-edit-id="hero.image.primary"
                 data-visual-edit-type="image"
-                data-visual-edit-label="תמונת הירו ראשית"
+                data-visual-edit-label={tx("תמונת הירו ראשית")}
               />
             </div>
 
             <div className="absolute bottom-4 right-0 h-[370px] w-[55%] overflow-hidden rounded-[48px] border-[10px] border-[#fff8f2] bg-[#e7c5ad] shadow-[0_34px_100px_rgba(56,31,22,0.2)] transition duration-700 hover:-translate-y-2">
               <img
                 src={data.heroImageTwo}
-                alt="טיפול שיער בסלון"
+                alt={tx("טיפול שיער בסלון")}
                 className="h-full w-full object-cover"
                 loading="eager"
                 data-visual-editable="true"
                 data-visual-edit-id="hero.image.secondary"
                 data-visual-edit-type="image"
-                data-visual-edit-label="תמונת הירו משנית"
+                data-visual-edit-label={tx("תמונת הירו משנית")}
               />
             </div>
 
@@ -351,7 +353,7 @@ function Hero({
               data-visual-editable="true"
               data-visual-edit-id="hero.badge"
               data-visual-edit-type="box"
-              data-visual-edit-label="כרטיס ייעוץ הירו"
+              data-visual-edit-label={tx("כרטיס ייעוץ הירו")}
             >
               <div className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#b78563]">
                 {data.heroBadgeTop}
@@ -369,7 +371,7 @@ function Hero({
             data-visual-editable="true"
             data-visual-edit-id="hero.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת הירו"
+            data-visual-edit-label={tx("כותרת הירו")}
           >
             {data.heroTitle}
           </h1>
@@ -379,7 +381,7 @@ function Hero({
             data-visual-editable="true"
             data-visual-edit-id="hero.subtitle"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט הירו"
+            data-visual-edit-label={tx("טקסט הירו")}
           >
             {data.heroSubtitle}
           </p>
@@ -411,13 +413,13 @@ function SalonVideoSection({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2] py-20"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="video-main"
       data-section-kind="video-main"
       data-visual-editable="true"
       data-visual-edit-id="videoMain.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק סרטון ראשי"
+      data-visual-edit-label={tx("בלוק סרטון ראשי")}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(92,54,37,0.08)_1px,transparent_0)] bg-[length:28px_28px] opacity-50" />
 
@@ -430,7 +432,7 @@ function SalonVideoSection({
             data-visual-editable="true"
             data-visual-edit-id="videoMain.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת סרטון ראשי"
+            data-visual-edit-label={tx("כותרת סרטון ראשי")}
           >
             {data.videoSectionTitle}
           </h2>
@@ -440,7 +442,7 @@ function SalonVideoSection({
             data-visual-editable="true"
             data-visual-edit-id="videoMain.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט סרטון ראשי"
+            data-visual-edit-label={tx("טקסט סרטון ראשי")}
           >
             {data.videoSectionText}
           </p>
@@ -452,13 +454,13 @@ function SalonVideoSection({
             data-visual-editable="true"
             data-visual-edit-id="videoMain.wrapper"
             data-visual-edit-type="box"
-            data-visual-edit-label="מסגרת סרטון ראשי"
+            data-visual-edit-label={tx("מסגרת סרטון ראשי")}
           >
             <video
               data-visual-editable="true"
               data-visual-edit-id="video.main"
               data-visual-edit-type="image"
-              data-visual-edit-label="סרטון ראשי"
+              data-visual-edit-label={tx("סרטון ראשי")}
               className="aspect-[16/9] h-full min-h-[320px] w-full object-cover md:min-h-[620px]"
               poster={data.videoPoster}
               title={data.videoSectionTitle}
@@ -469,9 +471,7 @@ function SalonVideoSection({
               playsInline
               preload="metadata"
             >
-              <source src={data.videoUrl} type="video/mp4" />
-              הדפדפן לא תומך בניגון וידאו.
-            </video>
+              <source src={data.videoUrl} type="video/mp4" />{tx("הדפדפן לא תומך בניגון וידאו.")}</video>
 
             <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#241612]/35 to-transparent" />
 
@@ -480,7 +480,7 @@ function SalonVideoSection({
               data-visual-editable="true"
               data-visual-edit-id="videoMain.badge"
               data-visual-edit-type="box"
-              data-visual-edit-label="תגית על הסרטון"
+              data-visual-edit-label={tx("תגית על הסרטון")}
             >
               {data.videoBadge}
             </div>
@@ -492,11 +492,11 @@ function SalonVideoSection({
           className="mt-8 flex flex-col items-center justify-between gap-4 rounded-[38px] border border-[#ead7c8] bg-white/70 p-5 shadow-sm md:flex-row"
         >
           <p
-            className="max-w-2xl text-center text-base font-bold leading-7 text-[#6f4f40] md:text-right"
+            className="max-w-2xl text-center text-base font-bold leading-7 text-[#6f4f40] md:text-start"
             data-visual-editable="true"
             data-visual-edit-id="videoMain.ctaText"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט החלפת סרטון"
+            data-visual-edit-label={tx("טקסט החלפת סרטון")}
           >
             {data.videoCtaText}
           </p>
@@ -525,13 +525,13 @@ function ServicesSection({
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="services"
       data-section-kind="services"
       data-visual-editable="true"
       data-visual-edit-id="services.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק שירותים"
+      data-visual-edit-label={tx("בלוק שירותים")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -543,7 +543,7 @@ function ServicesSection({
               data-visual-editable="true"
               data-visual-edit-id="services.title"
               data-visual-edit-type="text"
-              data-visual-edit-label="כותרת שירותים"
+              data-visual-edit-label={tx("כותרת שירותים")}
             >
               {data.servicesTitle}
             </h2>
@@ -555,7 +555,7 @@ function ServicesSection({
               data-visual-editable="true"
               data-visual-edit-id="services.text"
               data-visual-edit-type="text"
-              data-visual-edit-label="טקסט שירותים"
+              data-visual-edit-label={tx("טקסט שירותים")}
             >
               {data.servicesText}
             </p>
@@ -588,7 +588,7 @@ function ServicesSection({
                 data-visual-editable="true"
                 data-visual-edit-id={`services.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`כרטיס שירות ${index + 1}`}
+                data-visual-edit-label={tx(`כרטיס שירות ${index + 1}`)}
               >
                 <div className="relative h-72 overflow-hidden bg-[#e8d0bd]">
                   <img
@@ -598,7 +598,7 @@ function ServicesSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`services.${index}.image`}
                     data-visual-edit-type="image"
-                    data-visual-edit-label={`תמונת שירות ${service.title}`}
+                    data-visual-edit-label={tx(`תמונת שירות ${service.title}`)}
                   />
 
                   <div
@@ -606,7 +606,7 @@ function ServicesSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`services.${index}.category`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`קטגוריית שירות ${index + 1}`}
+                    data-visual-edit-label={tx(`קטגוריית שירות ${index + 1}`)}
                   >
                     {service.category}
                   </div>
@@ -619,7 +619,7 @@ function ServicesSection({
                       data-visual-editable="true"
                       data-visual-edit-id={`services.${index}.title`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`כותרת שירות ${index + 1}`}
+                      data-visual-edit-label={tx(`כותרת שירות ${index + 1}`)}
                     >
                       {service.title}
                     </h3>
@@ -629,7 +629,7 @@ function ServicesSection({
                       data-visual-editable="true"
                       data-visual-edit-id={`services.${index}.price`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`מחיר שירות ${index + 1}`}
+                      data-visual-edit-label={tx(`מחיר שירות ${index + 1}`)}
                     >
                       {service.price}
                     </span>
@@ -640,7 +640,7 @@ function ServicesSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`services.${index}.text`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`טקסט שירות ${index + 1}`}
+                    data-visual-edit-label={tx(`טקסט שירות ${index + 1}`)}
                   >
                     {service.text}
                   </p>
@@ -652,10 +652,8 @@ function ServicesSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`services.${index}.button`}
                     data-visual-edit-type="button"
-                    data-visual-edit-label={`כפתור שירות ${index + 1}`}
-                  >
-                    לפרטי טיפול ←
-                  </button>
+                    data-visual-edit-label={tx(`כפתור שירות ${index + 1}`)}
+                  >{tx("לפרטי טיפול ←")}</button>
                 </div>
               </article>
             </Reveal>
@@ -670,13 +668,13 @@ function ConsultationSection({ data }: { data: any }) {
   return (
     <section
       className="relative overflow-hidden bg-[#241612] py-12 md:py-24 text-white"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="consultation"
       data-section-kind="consultation"
       data-visual-editable="true"
       data-visual-edit-id="consultation.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק ייעוץ"
+      data-visual-edit-label={tx("בלוק ייעוץ")}
     >
       <div className="absolute -right-28 top-0 h-96 w-96 rounded-full bg-[#b78563]/20 blur-3xl" />
       <div className="absolute -left-24 bottom-0 h-96 w-96 rounded-full bg-[#f1d0b7]/10 blur-3xl" />
@@ -688,7 +686,7 @@ function ConsultationSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="consultation.formBox"
             data-visual-edit-type="box"
-            data-visual-edit-label="קופסת טופס ייעוץ"
+            data-visual-edit-label={tx("קופסת טופס ייעוץ")}
           >
             <SectionLabel dark>{data.navContact}</SectionLabel>
 
@@ -697,7 +695,7 @@ function ConsultationSection({ data }: { data: any }) {
               data-visual-editable="true"
               data-visual-edit-id="consultation.title"
               data-visual-edit-type="text"
-              data-visual-edit-label="כותרת ייעוץ"
+              data-visual-edit-label={tx("כותרת ייעוץ")}
             >
               {data.consultationTitle}
             </h2>
@@ -707,7 +705,7 @@ function ConsultationSection({ data }: { data: any }) {
               data-visual-editable="true"
               data-visual-edit-id="consultation.text"
               data-visual-edit-type="text"
-              data-visual-edit-label="טקסט ייעוץ"
+              data-visual-edit-label={tx("טקסט ייעוץ")}
             >
               {data.consultationText}
             </p>
@@ -718,39 +716,39 @@ function ConsultationSection({ data }: { data: any }) {
               data-visual-editable="true"
               data-visual-edit-id="consultation.form"
               data-visual-edit-type="box"
-              data-visual-edit-label="טופס ייעוץ"
+              data-visual-edit-label={tx("טופס ייעוץ")}
             >
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
-                placeholder="שם מלא"
+                placeholder={tx("שם מלא")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.name"
                 data-visual-edit-type="button"
-                data-visual-edit-label="שדה שם מלא"
+                data-visual-edit-label={tx("שדה שם מלא")}
               />
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
-                placeholder="טלפון"
+                placeholder={tx("טלפון")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.phone"
                 data-visual-edit-type="button"
-                data-visual-edit-label="שדה טלפון"
+                data-visual-edit-label={tx("שדה טלפון")}
               />
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4] md:col-span-2"
-                placeholder="איזה טיפול מעניין אותך?"
+                placeholder={tx("איזה טיפול מעניין אותך?")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.service"
                 data-visual-edit-type="button"
-                data-visual-edit-label="שדה טיפול"
+                data-visual-edit-label={tx("שדה טיפול")}
               />
               <textarea
                 className="min-h-32 rounded-[32px] border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4] md:col-span-2"
-                placeholder="ספרי לנו בקצרה מה חשוב לך"
+                placeholder={tx("ספרי לנו בקצרה מה חשוב לך")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.message"
                 data-visual-edit-type="button"
-                data-visual-edit-label="שדה הודעה"
+                data-visual-edit-label={tx("שדה הודעה")}
               />
               <button
                 type="button"
@@ -758,7 +756,7 @@ function ConsultationSection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.submit"
                 data-visual-edit-type="button"
-                data-visual-edit-label="כפתור שליחת בקשה"
+                data-visual-edit-label={tx("כפתור שליחת בקשה")}
               >
                 {data.consultationButton}
               </button>
@@ -770,12 +768,12 @@ function ConsultationSection({ data }: { data: any }) {
           <div className="absolute inset-0 overflow-hidden rounded-[54px] bg-[#e6c4ac] shadow-[0_40px_120px_rgba(0,0,0,0.22)]">
             <img
               src={data.heroImageThree}
-              alt="ייעוץ חינמי"
+              alt={tx("ייעוץ חינמי")}
               className="h-full w-full object-cover"
               data-visual-editable="true"
               data-visual-edit-id="consultation.image"
               data-visual-edit-type="image"
-              data-visual-edit-label="תמונת ייעוץ"
+              data-visual-edit-label={tx("תמונת ייעוץ")}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#241612]/55 via-transparent to-transparent" />
           </div>
@@ -785,12 +783,10 @@ function ConsultationSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="consultation.badge"
             data-visual-edit-type="box"
-            data-visual-edit-label="תגית Free"
+            data-visual-edit-label={tx("תגית Free")}
           >
             <div className="text-3xl font-black">Free</div>
-            <div className="mt-1 text-sm font-bold leading-6 text-[#745344]">
-              ייעוץ ראשוני לפני קביעת טיפול
-            </div>
+            <div className="mt-1 text-sm font-bold leading-6 text-[#745344]">{tx("ייעוץ ראשוני לפני קביעת טיפול")}</div>
           </div>
         </Reveal>
       </div>
@@ -808,13 +804,13 @@ function WhySection({
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="why"
       data-section-kind="why"
       data-visual-editable="true"
       data-visual-edit-id="why.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק למה לבחור בנו"
+      data-visual-edit-label={tx("בלוק למה לבחור בנו")}
     >
       <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[0.92fr_1.08fr] lg:px-8">
         <Reveal>
@@ -823,13 +819,13 @@ function WhySection({
             data-visual-editable="true"
             data-visual-edit-id="videoVertical.wrapper"
             data-visual-edit-type="box"
-            data-visual-edit-label="מסגרת סרטון אנכי"
+            data-visual-edit-label={tx("מסגרת סרטון אנכי")}
           >
             <video
               data-visual-editable="true"
               data-visual-edit-id="video.vertical"
               data-visual-edit-type="image"
-              data-visual-edit-label="סרטון אנכי"
+              data-visual-edit-label={tx("סרטון אנכי")}
               className="aspect-[4/5] h-[620px] w-full object-cover"
               poster={data.videoPoster}
               title={data.videoTitle}
@@ -840,9 +836,7 @@ function WhySection({
               playsInline
               preload="metadata"
             >
-              <source src={data.videoVerticalUrl || data.videoUrl} type="video/mp4" />
-              הדפדפן לא תומך בניגון וידאו.
-            </video>
+              <source src={data.videoVerticalUrl || data.videoUrl} type="video/mp4" />{tx("הדפדפן לא תומך בניגון וידאו.")}</video>
           </div>
         </Reveal>
 
@@ -854,7 +848,7 @@ function WhySection({
             data-visual-editable="true"
             data-visual-edit-id="why.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת למה לבחור בנו"
+            data-visual-edit-label={tx("כותרת למה לבחור בנו")}
           >
             {data.whyTitle}
           </h2>
@@ -864,7 +858,7 @@ function WhySection({
             data-visual-editable="true"
             data-visual-edit-id="why.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט למה לבחור בנו"
+            data-visual-edit-label={tx("טקסט למה לבחור בנו")}
           >
             {data.whyText}
           </p>
@@ -877,7 +871,7 @@ function WhySection({
                 data-visual-editable="true"
                 data-visual-edit-id={`why.stats.${index}`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`סטטיסטיקה ${index + 1}`}
+                data-visual-edit-label={tx(`סטטיסטיקה ${index + 1}`)}
               >
                 <div className="text-3xl font-black text-[#241612]">
                   {stat.value}
@@ -894,14 +888,14 @@ function WhySection({
             data-visual-editable="true"
             data-visual-edit-id="why.videoTextBox"
             data-visual-edit-type="box"
-            data-visual-edit-label="קופסת טקסט ליד סרטון"
+            data-visual-edit-label={tx("קופסת טקסט ליד סרטון")}
           >
             <h3
               className="text-2xl font-black text-[#241612]"
               data-visual-editable="true"
               data-visual-edit-id="why.videoTitle"
               data-visual-edit-type="text"
-              data-visual-edit-label="כותרת ליד הסרטון"
+              data-visual-edit-label={tx("כותרת ליד הסרטון")}
             >
               {data.videoTitle}
             </h3>
@@ -911,7 +905,7 @@ function WhySection({
               data-visual-editable="true"
               data-visual-edit-id="why.videoText"
               data-visual-edit-type="text"
-              data-visual-edit-label="טקסט ליד הסרטון"
+              data-visual-edit-label={tx("טקסט ליד הסרטון")}
             >
               {data.videoText}
             </p>
@@ -920,9 +914,7 @@ function WhySection({
               <ArrowButton
                 variant="ghost"
                 onClick={() => navigateTo("gallery", onNavigate)}
-              >
-                לראות גלריה
-              </ArrowButton>
+              >{tx("לראות גלריה")}</ArrowButton>
             </div>
           </div>
         </Reveal>
@@ -935,13 +927,13 @@ function DirectorSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="director"
       data-section-kind="director"
       data-visual-editable="true"
       data-visual-edit-id="director.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק מנהלת"
+      data-visual-edit-label={tx("בלוק מנהלת")}
     >
       <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[0.86fr_1.14fr] lg:px-8">
         <Reveal>
@@ -953,7 +945,7 @@ function DirectorSection({ data }: { data: any }) {
               data-visual-editable="true"
               data-visual-edit-id="director.image"
               data-visual-edit-type="image"
-              data-visual-edit-label="תמונת מנהלת"
+              data-visual-edit-label={tx("תמונת מנהלת")}
             />
           </div>
         </Reveal>
@@ -964,7 +956,7 @@ function DirectorSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="director.role"
             data-visual-edit-type="text"
-            data-visual-edit-label="תפקיד מנהלת"
+            data-visual-edit-label={tx("תפקיד מנהלת")}
           >
             {data.directorRole}
           </div>
@@ -974,7 +966,7 @@ function DirectorSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="director.name"
             data-visual-edit-type="text"
-            data-visual-edit-label="שם מנהלת"
+            data-visual-edit-label={tx("שם מנהלת")}
           >
             {data.directorName}
           </h2>
@@ -984,7 +976,7 @@ function DirectorSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="director.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט מנהלת"
+            data-visual-edit-label={tx("טקסט מנהלת")}
           >
             {data.directorText}
           </p>
@@ -994,7 +986,7 @@ function DirectorSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="director.quote"
             data-visual-edit-type="text"
-            data-visual-edit-label="ציטוט מנהלת"
+            data-visual-edit-label={tx("ציטוט מנהלת")}
           >
             “{data.directorQuote}”
           </blockquote>
@@ -1007,7 +999,7 @@ function DirectorSection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id={`director.stats.${index}`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`סטטיסטיקה מנהלת ${index + 1}`}
+                data-visual-edit-label={tx(`סטטיסטיקה מנהלת ${index + 1}`)}
               >
                 <div className="text-2xl sm:text-4xl font-black">{stat.value}</div>
                 <div className="mt-2 text-sm font-bold text-white/65">
@@ -1026,13 +1018,13 @@ function TestimonialsSection({ data }: { data: any }) {
   return (
     <section
       className="overflow-hidden bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="testimonials"
       data-section-kind="testimonials"
       data-visual-editable="true"
       data-visual-edit-id="testimonials.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק המלצות"
+      data-visual-edit-label={tx("בלוק המלצות")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mx-auto max-w-3xl text-center">
@@ -1043,7 +1035,7 @@ function TestimonialsSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="testimonials.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת המלצות"
+            data-visual-edit-label={tx("כותרת המלצות")}
           >
             {data.testimonialsTitle}
           </h2>
@@ -1053,7 +1045,7 @@ function TestimonialsSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="testimonials.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט המלצות"
+            data-visual-edit-label={tx("טקסט המלצות")}
           >
             {data.testimonialsText}
           </p>
@@ -1078,14 +1070,14 @@ function TestimonialsSection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id={`testimonials.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`כרטיס המלצה ${index + 1}`}
+                data-visual-edit-label={tx(`כרטיס המלצה ${index + 1}`)}
               >
                 <p
                   className="text-base font-bold leading-8 text-[#614334]"
                   data-visual-editable="true"
                   data-visual-edit-id={`testimonials.${index}.quote`}
                   data-visual-edit-type="text"
-                  data-visual-edit-label={`טקסט המלצה ${index + 1}`}
+                  data-visual-edit-label={tx(`טקסט המלצה ${index + 1}`)}
                 >
                   “{item.quote}”
                 </p>
@@ -1098,7 +1090,7 @@ function TestimonialsSection({ data }: { data: any }) {
                     data-visual-editable="true"
                     data-visual-edit-id={`testimonials.${index}.image`}
                     data-visual-edit-type="image"
-                    data-visual-edit-label={`תמונת ממליצה ${index + 1}`}
+                    data-visual-edit-label={tx(`תמונת ממליצה ${index + 1}`)}
                   />
 
                   <div>
@@ -1107,7 +1099,7 @@ function TestimonialsSection({ data }: { data: any }) {
                       data-visual-editable="true"
                       data-visual-edit-id={`testimonials.${index}.name`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`שם ממליצה ${index + 1}`}
+                      data-visual-edit-label={tx(`שם ממליצה ${index + 1}`)}
                     >
                       {item.name}
                     </div>
@@ -1116,7 +1108,7 @@ function TestimonialsSection({ data }: { data: any }) {
                       data-visual-editable="true"
                       data-visual-edit-id={`testimonials.${index}.role`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`תפקיד ממליצה ${index + 1}`}
+                      data-visual-edit-label={tx(`תפקיד ממליצה ${index + 1}`)}
                     >
                       {item.role}
                     </div>
@@ -1150,13 +1142,13 @@ function PartnersSection({ data }: { data: any }) {
   return (
     <section
       className="border-y border-[#ead7c8] bg-[#fffdfb] py-10"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="partners"
       data-section-kind="partners"
       data-visual-editable="true"
       data-visual-edit-id="partners.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק מותגים"
+      data-visual-edit-label={tx("בלוק מותגים")}
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 lg:px-8">
         {data.partners.map((partner: string, index: number) => (
@@ -1166,7 +1158,7 @@ function PartnersSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id={`partners.${index}`}
             data-visual-edit-type="text"
-            data-visual-edit-label={`מותג ${index + 1}`}
+            data-visual-edit-label={tx(`מותג ${index + 1}`)}
           >
             {partner}
           </div>
@@ -1188,13 +1180,13 @@ function BlogSection({
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="blog"
       data-section-kind="blog"
       data-visual-editable="true"
       data-visual-edit-id="blog.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק בלוג"
+      data-visual-edit-label={tx("בלוק בלוג")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -1206,7 +1198,7 @@ function BlogSection({
               data-visual-editable="true"
               data-visual-edit-id="blog.title"
               data-visual-edit-type="text"
-              data-visual-edit-label="כותרת בלוג"
+              data-visual-edit-label={tx("כותרת בלוג")}
             >
               {data.blogTitle}
             </h2>
@@ -1235,7 +1227,7 @@ function BlogSection({
                 data-visual-editable="true"
                 data-visual-edit-id={`blog.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`כרטיס בלוג ${index + 1}`}
+                data-visual-edit-label={tx(`כרטיס בלוג ${index + 1}`)}
               >
                 <div className="h-72 overflow-hidden bg-[#e9d1bf]">
                   <img
@@ -1245,7 +1237,7 @@ function BlogSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`blog.${index}.image`}
                     data-visual-edit-type="image"
-                    data-visual-edit-label={`תמונת מאמר ${index + 1}`}
+                    data-visual-edit-label={tx(`תמונת מאמר ${index + 1}`)}
                   />
                 </div>
 
@@ -1255,7 +1247,7 @@ function BlogSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`blog.${index}.date`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`תאריך מאמר ${index + 1}`}
+                    data-visual-edit-label={tx(`תאריך מאמר ${index + 1}`)}
                   >
                     {post.date}
                   </div>
@@ -1265,7 +1257,7 @@ function BlogSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`blog.${index}.title`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`כותרת מאמר ${index + 1}`}
+                    data-visual-edit-label={tx(`כותרת מאמר ${index + 1}`)}
                   >
                     {post.title}
                   </h3>
@@ -1275,7 +1267,7 @@ function BlogSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`blog.${index}.text`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`טקסט מאמר ${index + 1}`}
+                    data-visual-edit-label={tx(`טקסט מאמר ${index + 1}`)}
                   >
                     {post.text}
                   </p>
@@ -1286,10 +1278,8 @@ function BlogSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`blog.${index}.button`}
                     data-visual-edit-type="button"
-                    data-visual-edit-label={`כפתור מאמר ${index + 1}`}
-                  >
-                    לקריאה ←
-                  </button>
+                    data-visual-edit-label={tx(`כפתור מאמר ${index + 1}`)}
+                  >{tx("לקריאה ←")}</button>
                 </div>
               </article>
             </Reveal>
@@ -1304,13 +1294,13 @@ function GallerySection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="gallery"
       data-section-kind="gallery"
       data-visual-editable="true"
       data-visual-edit-id="gallery.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק גלריה"
+      data-visual-edit-label={tx("בלוק גלריה")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mb-12 max-w-3xl">
@@ -1321,10 +1311,8 @@ function GallerySection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="gallery.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת גלריה"
-          >
-            גלריית טיפולים ואווירה
-          </h2>
+            data-visual-edit-label={tx("כותרת גלריה")}
+          >{tx("גלריית טיפולים ואווירה")}</h2>
         </Reveal>
 
         <div className="grid auto-rows-[260px] gap-4 md:grid-cols-4">
@@ -1348,16 +1336,16 @@ function GallerySection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id={`gallery.${index}.box`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`מסגרת תמונת גלריה ${index + 1}`}
+                data-visual-edit-label={tx(`מסגרת תמונת גלריה ${index + 1}`)}
               >
                 <img
                   src={image}
-                  alt="גלריית סלון"
+                  alt={tx("גלריית סלון")}
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                   data-visual-editable="true"
                   data-visual-edit-id={`gallery.${index}.image`}
                   data-visual-edit-type="image"
-                  data-visual-edit-label={`תמונת גלריה ${index + 1}`}
+                  data-visual-edit-label={tx(`תמונת גלריה ${index + 1}`)}
                 />
               </div>
             </Reveal>
@@ -1372,13 +1360,13 @@ function PricingSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fffdfb] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="pricing"
       data-section-kind="pricing"
       data-visual-editable="true"
       data-visual-edit-id="pricing.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק מחירון"
+      data-visual-edit-label={tx("בלוק מחירון")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mx-auto mb-12 max-w-3xl text-center">
@@ -1389,10 +1377,8 @@ function PricingSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="pricing.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת מחירון"
-          >
-            מחירון וחבילות
-          </h2>
+            data-visual-edit-label={tx("כותרת מחירון")}
+          >{tx("מחירון וחבילות")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1413,14 +1399,14 @@ function PricingSection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id={`pricing.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`חבילת מחיר ${index + 1}`}
+                data-visual-edit-label={tx(`חבילת מחיר ${index + 1}`)}
               >
                 <div
                   className="text-lg font-black"
                   data-visual-editable="true"
                   data-visual-edit-id={`pricing.${index}.title`}
                   data-visual-edit-type="text"
-                  data-visual-edit-label={`שם חבילה ${index + 1}`}
+                  data-visual-edit-label={tx(`שם חבילה ${index + 1}`)}
                 >
                   {plan.title}
                 </div>
@@ -1430,7 +1416,7 @@ function PricingSection({ data }: { data: any }) {
                   data-visual-editable="true"
                   data-visual-edit-id={`pricing.${index}.price`}
                   data-visual-edit-type="text"
-                  data-visual-edit-label={`מחיר חבילה ${index + 1}`}
+                  data-visual-edit-label={tx(`מחיר חבילה ${index + 1}`)}
                 >
                   {plan.price}
                 </div>
@@ -1443,7 +1429,7 @@ function PricingSection({ data }: { data: any }) {
                   data-visual-editable="true"
                   data-visual-edit-id={`pricing.${index}.description`}
                   data-visual-edit-type="text"
-                  data-visual-edit-label={`תיאור חבילה ${index + 1}`}
+                  data-visual-edit-label={tx(`תיאור חבילה ${index + 1}`)}
                 >
                   {plan.description}
                 </p>
@@ -1451,12 +1437,12 @@ function PricingSection({ data }: { data: any }) {
                 <ul className="mt-7 space-y-3">
                   {plan.items.map((item: string, itemIndex: number) => (
                     <li
-                      key={item}
+                      key={tx(item)}
                       className="flex items-center gap-3 text-sm font-bold"
                       data-visual-editable="true"
                       data-visual-edit-id={`pricing.${index}.item.${itemIndex}`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`סעיף חבילה ${index + 1}.${itemIndex + 1}`}
+                      data-visual-edit-label={tx(`סעיף חבילה ${index + 1}.${itemIndex + 1}`)}
                     >
                       <span
                         className={cx(
@@ -1464,7 +1450,7 @@ function PricingSection({ data }: { data: any }) {
                           plan.featured ? "bg-[#f0cdb4]" : "bg-[#b78563]",
                         )}
                       />
-                      {item}
+                      {tx(item)}
                     </li>
                   ))}
                 </ul>
@@ -1516,14 +1502,14 @@ function ProductsSection({
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="shop"
       data-section-kind="shop"
       data-bizuply-block="store"
       data-visual-editable="true"
       data-visual-edit-id="shop.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק חנות"
+      data-visual-edit-label={tx("בלוק חנות")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mb-12 max-w-3xl">
@@ -1534,10 +1520,8 @@ function ProductsSection({
             data-visual-editable="true"
             data-visual-edit-id="shop.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת חנות"
-          >
-            חנות מוצרי טיפוח
-          </h2>
+            data-visual-edit-label={tx("כותרת חנות")}
+          >{tx("חנות מוצרי טיפוח")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1553,7 +1537,7 @@ function ProductsSection({
                 data-visual-editable="true"
                 data-visual-edit-id={`products.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`מוצר ${index + 1}`}
+                data-visual-edit-label={tx(`מוצר ${index + 1}`)}
               >
                 <div className="h-80 overflow-hidden bg-[#e9d1bf]">
                   <img
@@ -1563,7 +1547,7 @@ function ProductsSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`products.${index}.image`}
                     data-visual-edit-type="image"
-                    data-visual-edit-label={`תמונת מוצר ${index + 1}`}
+                    data-visual-edit-label={tx(`תמונת מוצר ${index + 1}`)}
                   />
                 </div>
 
@@ -1574,7 +1558,7 @@ function ProductsSection({
                       data-visual-editable="true"
                       data-visual-edit-id={`products.${index}.name`}
                       data-visual-edit-type="text"
-                      data-visual-edit-label={`שם מוצר ${index + 1}`}
+                      data-visual-edit-label={tx(`שם מוצר ${index + 1}`)}
                     >
                       {product.name}
                     </h3>
@@ -1588,7 +1572,7 @@ function ProductsSection({
                     data-visual-editable="true"
                     data-visual-edit-id={`products.${index}.price`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`מחיר מוצר ${index + 1}`}
+                    data-visual-edit-label={tx(`מחיר מוצר ${index + 1}`)}
                   >
                     {product.price}
                   </div>
@@ -1606,13 +1590,13 @@ function TeamSection({ data }: { data: any }) {
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="team"
       data-section-kind="team"
       data-visual-editable="true"
       data-visual-edit-id="team.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="בלוק צוות"
+      data-visual-edit-label={tx("בלוק צוות")}
     >
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mb-12 max-w-3xl">
@@ -1623,10 +1607,8 @@ function TeamSection({ data }: { data: any }) {
             data-visual-editable="true"
             data-visual-edit-id="team.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת צוות"
-          >
-            הצוות המקצועי
-          </h2>
+            data-visual-edit-label={tx("כותרת צוות")}
+          >{tx("הצוות המקצועי")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1642,7 +1624,7 @@ function TeamSection({ data }: { data: any }) {
                 data-visual-editable="true"
                 data-visual-edit-id={`team.${index}.card`}
                 data-visual-edit-type="box"
-                data-visual-edit-label={`איש צוות ${index + 1}`}
+                data-visual-edit-label={tx(`איש צוות ${index + 1}`)}
               >
                 <div className="h-[440px] overflow-hidden">
                   <img
@@ -1652,7 +1634,7 @@ function TeamSection({ data }: { data: any }) {
                     data-visual-editable="true"
                     data-visual-edit-id={`team.${index}.image`}
                     data-visual-edit-type="image"
-                    data-visual-edit-label={`תמונת איש צוות ${index + 1}`}
+                    data-visual-edit-label={tx(`תמונת איש צוות ${index + 1}`)}
                   />
                 </div>
 
@@ -1662,7 +1644,7 @@ function TeamSection({ data }: { data: any }) {
                     data-visual-editable="true"
                     data-visual-edit-id={`team.${index}.name`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`שם איש צוות ${index + 1}`}
+                    data-visual-edit-label={tx(`שם איש צוות ${index + 1}`)}
                   >
                     {member.name}
                   </h3>
@@ -1671,7 +1653,7 @@ function TeamSection({ data }: { data: any }) {
                     data-visual-editable="true"
                     data-visual-edit-id={`team.${index}.role`}
                     data-visual-edit-type="text"
-                    data-visual-edit-label={`תפקיד איש צוות ${index + 1}`}
+                    data-visual-edit-label={tx(`תפקיד איש צוות ${index + 1}`)}
                   >
                     {member.role}
                   </p>
@@ -1696,7 +1678,7 @@ function Footer({
     {
       title: data.navDemos,
       items: [
-        ["home", "בית"],
+        ["home", tx("בית")],
         ["about", data.navAbout],
         ["gallery", data.navGallery],
       ],
@@ -1704,9 +1686,9 @@ function Footer({
     {
       title: data.navServices,
       items: [
-        ["services", "עיצוב גבות"],
-        ["services", "מניקור"],
-        ["services", "תספורות"],
+        ["services", tx("עיצוב גבות")],
+        ["services", tx("מניקור")],
+        ["services", tx("תספורות")],
       ],
     },
     {
@@ -1718,7 +1700,7 @@ function Footer({
       ],
     },
     {
-      title: "מידע",
+      title: tx("מידע"),
       items: [
         ["gallery", data.navGallery],
         ["contact", data.navContact],
@@ -1730,7 +1712,7 @@ function Footer({
   return (
     <footer
       className="bg-[#241612] py-16 text-white"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="footer"
       data-section-kind="footer"
       data-visual-editable="true"
@@ -1751,7 +1733,7 @@ function Footer({
                 data-visual-editable="true"
                 data-visual-edit-id="footer.brand"
                 data-visual-edit-type="text"
-                data-visual-edit-label="שם מותג בפוטר"
+                data-visual-edit-label={tx("שם מותג בפוטר")}
               >
                 {data.brandName}
               </div>
@@ -1766,7 +1748,7 @@ function Footer({
             data-visual-editable="true"
             data-visual-edit-id="footer.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט פוטר"
+            data-visual-edit-label={tx("טקסט פוטר")}
           >
             {data.footerText}
           </p>
@@ -1776,7 +1758,7 @@ function Footer({
             data-visual-editable="true"
             data-visual-edit-id="footer.phone"
             data-visual-edit-type="text"
-            data-visual-edit-label="טלפון פוטר"
+            data-visual-edit-label={tx("טלפון פוטר")}
           >
             {data.phone}
           </div>
@@ -1786,7 +1768,7 @@ function Footer({
             data-visual-editable="true"
             data-visual-edit-id="footer.address"
             data-visual-edit-type="text"
-            data-visual-edit-label="כתובת פוטר"
+            data-visual-edit-label={tx("כתובת פוטר")}
           >
             {data.address}
           </div>
@@ -1800,7 +1782,7 @@ function Footer({
                 data-visual-editable="true"
                 data-visual-edit-id={`footer.group.${groupIndex}.title`}
                 data-visual-edit-type="text"
-                data-visual-edit-label={`כותרת קבוצת פוטר ${groupIndex + 1}`}
+                data-visual-edit-label={tx(`כותרת קבוצת פוטר ${groupIndex + 1}`)}
               >
                 {group.title}
               </h4>
@@ -1815,7 +1797,7 @@ function Footer({
                     data-visual-editable="true"
                     data-visual-edit-id={`footer.group.${groupIndex}.item.${itemIndex}`}
                     data-visual-edit-type="button"
-                    data-visual-edit-label={`קישור פוטר ${label}`}
+                    data-visual-edit-label={tx(`קישור פוטר ${label}`)}
                   >
                     {label}
                   </button>
@@ -1830,14 +1812,14 @@ function Footer({
           data-visual-editable="true"
           data-visual-edit-id="footer.newsletter"
           data-visual-edit-type="box"
-          data-visual-edit-label="הרשמה לעדכונים"
+          data-visual-edit-label={tx("הרשמה לעדכונים")}
         >
           <h4
             className="text-xl font-black"
             data-visual-editable="true"
             data-visual-edit-id="footer.newsletter.title"
             data-visual-edit-type="text"
-            data-visual-edit-label="כותרת הרשמה לעדכונים"
+            data-visual-edit-label={tx("כותרת הרשמה לעדכונים")}
           >
             {data.newsletterTitle}
           </h4>
@@ -1847,7 +1829,7 @@ function Footer({
             data-visual-editable="true"
             data-visual-edit-id="footer.newsletter.text"
             data-visual-edit-type="text"
-            data-visual-edit-label="טקסט הרשמה לעדכונים"
+            data-visual-edit-label={tx("טקסט הרשמה לעדכונים")}
           >
             {data.newsletterText}
           </p>
@@ -1855,11 +1837,11 @@ function Footer({
           <div className="mt-5 flex rounded-full border border-white/10 bg-white/10 p-1">
             <input
               className="min-w-0 flex-1 bg-transparent px-4 text-sm font-bold text-white placeholder:text-white/35 outline-none"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
               data-visual-editable="true"
               data-visual-edit-id="footer.newsletter.input"
               data-visual-edit-type="button"
-              data-visual-edit-label="שדה אימייל"
+              data-visual-edit-label={tx("שדה אימייל")}
             />
             <button
               type="button"
@@ -1867,10 +1849,8 @@ function Footer({
               data-visual-editable="true"
               data-visual-edit-id="footer.newsletter.button"
               data-visual-edit-type="button"
-              data-visual-edit-label="כפתור שליחה"
-            >
-              שליחה
-            </button>
+              data-visual-edit-label={tx("כפתור שליחה")}
+            >{tx("שליחה")}</button>
           </div>
         </div>
       </div>
@@ -1894,13 +1874,13 @@ function PageHero({
   return (
     <section
       className="relative overflow-hidden bg-[#fff8f2] py-12 md:py-24"
-      dir="rtl"
+      dir={templateDir()}
       data-template-section-id="page-hero"
       data-section-kind="page-hero"
       data-visual-editable="true"
       data-visual-edit-id="pageHero.section"
       data-visual-edit-type="section"
-      data-visual-edit-label="Hero פנימי"
+      data-visual-edit-label={tx("Hero פנימי")}
     >
       <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-[#f4d5bd]/55 blur-3xl" />
 
@@ -1912,7 +1892,7 @@ function PageHero({
           data-visual-editable="true"
           data-visual-edit-id="pageHero.title"
           data-visual-edit-type="text"
-          data-visual-edit-label="כותרת עמוד פנימי"
+          data-visual-edit-label={tx("כותרת עמוד פנימי")}
         >
           {title}
         </h1>
@@ -1922,9 +1902,9 @@ function PageHero({
           data-visual-editable="true"
           data-visual-edit-id="pageHero.text"
           data-visual-edit-type="text"
-          data-visual-edit-label="טקסט עמוד פנימי"
+          data-visual-edit-label={tx("טקסט עמוד פנימי")}
         >
-          {text}
+          {tx(text)}
         </p>
       </div>
     </section>
@@ -1956,7 +1936,7 @@ function HomePage({
 function AboutPage({ data }: { data: any }) {
   return (
     <>
-      <PageHero data={data} title="מי אנחנו" text={data.introText} />
+      <PageHero data={data} title={tx("מי אנחנו")} text={data.introText} />
       <WhySection data={data} />
       <DirectorSection data={data} />
       <TeamSection data={data} />
@@ -1974,7 +1954,7 @@ function ServicesPage({
 }) {
   return (
     <>
-      <PageHero data={data} title="כל השירותים" text={data.servicesText} />
+      <PageHero data={data} title={tx("כל השירותים")} text={data.servicesText} />
       <ServicesSection data={data} onNavigate={onNavigate} />
       <ConsultationSection data={data} />
     </>
@@ -1984,7 +1964,7 @@ function ServicesPage({
 function ContactPage({ data }: { data: any }) {
   return (
     <>
-      <PageHero data={data} title="ייעוץ וקביעת תור" text={data.consultationText} />
+      <PageHero data={data} title={tx("ייעוץ וקביעת תור")} text={data.consultationText} />
       <ConsultationSection data={data} />
     </>
   );
@@ -2003,7 +1983,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
   return (
     <main
       className="min-h-screen bg-[#fff8f2] font-sans text-[#241612]"
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="shinora"
       data-visual-template-root="true"
     >
@@ -2033,8 +2013,8 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="מחירון"
-                  text="חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית."
+                  title={tx("מחירון")}
+                  text={tx("חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית.")}
                 />
                 <PricingSection data={data} />
               </>
@@ -2046,8 +2026,8 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="גלריה"
-                  text="תמונות אווירה, טיפולים ותוצאות מתוך הסלון."
+                  title={tx("גלריה")}
+                  text={tx("תמונות אווירה, טיפולים ותוצאות מתוך הסלון.")}
                 />
                 <GallerySection data={data} />
               </>
@@ -2059,8 +2039,8 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="חנות"
-                  text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
+                  title={tx("חנות")}
+                  text={tx("מוצרי טיפוח משלימים לחוויית סלון גם בבית.")}
                 />
                 <ProductsSection data={data} businessId={props.businessId} />
               </>
@@ -2072,8 +2052,8 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="בלוג"
-                  text="טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור."
+                  title={tx("בלוג")}
+                  text={tx("טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור.")}
                 />
                 <BlogSection
                   data={data}

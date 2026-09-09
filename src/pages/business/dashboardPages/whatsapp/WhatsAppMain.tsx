@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   Activity,
@@ -55,7 +56,7 @@ function readWaBillingFlag(searchParams: URLSearchParams) {
 }
 
 export default function WhatsAppMain() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -138,7 +139,7 @@ export default function WhatsAppMain() {
 
   return (
     <section
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">

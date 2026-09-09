@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { skylaraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +28,7 @@ function v(data: Record<string, any>, key: string) {
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const nav = skylaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = skylaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header
       data-template-section-type="header"
@@ -35,7 +37,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       style={{ background: "#06101cf5", borderColor: "rgba(57,208,255,0.22)", backdropFilter: "blur(14px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-start">
           <span className="tpl-pulse-line h-10 w-1" style={{ background: "#39d0ff" }} />
           <span className="tpl-display text-2xl font-bold tracking-[-0.03em]" style={{ color: "#e8f1ff" }}>{v(data, "brandName")}</span>
         </button>
@@ -54,7 +56,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(57,208,255,0.2)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-right text-sm font-bold" style={{ borderColor: "rgba(57,208,255,0.14)" }}>{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-start text-sm font-bold" style={{ borderColor: "rgba(57,208,255,0.14)" }}>{label}</button>
             ))}
           </div>
         </div>
@@ -167,7 +169,7 @@ function SkylineBand({ data }: { data: Record<string, any> }) {
 }
 
 function CyanContact({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#06101c" }}>
       <div className="mx-auto grid max-w-7xl gap-10 border p-6 lg:grid-cols-[0.75fr_1fr] lg:p-10" style={{ borderColor: "rgba(57,208,255,0.26)", background: "#0c1a2b" }}>
@@ -177,11 +179,11 @@ function CyanContact({ data }: { data: Record<string, any> }) {
           <p className="mt-5 text-lg leading-8" style={{ color: "#7f97b0" }}>{v(data, "contactText")}</p>
           <p className="mt-8 text-sm font-bold tracking-[0.2em]" style={{ color: "#39d0ff" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="skylara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="קומה רצויה" name="other" data-bizuply-form-field-id="other" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="אזור / מגדל" name="other_2" data-bizuply-form-field-id="other_2" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="נוף, מרפסת, שירותי בניין"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="skylara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("קומה רצויה")} name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("אזור / מגדל")} name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("נוף, מרפסת, שירותי בניין")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#39d0ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -240,13 +242,13 @@ export default function SkylaraPages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    towers: <InnerPage data={merged} title="מגדלים"><SkylineBand data={merged} /><AmenityOutlines data={merged} /></InnerPage>,
-    floors: <InnerPage data={merged} title="קומות"><FloorApartments data={merged} /><CyanContact data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><AmenityOutlines data={merged} /><SkylineBand data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><CyanContact data={merged} /></InnerPage>,
+    towers: <InnerPage data={merged} title={tx("מגדלים")}><SkylineBand data={merged} /><AmenityOutlines data={merged} /></InnerPage>,
+    floors: <InnerPage data={merged} title={tx("קומות")}><FloorApartments data={merged} /><CyanContact data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><AmenityOutlines data={merged} /><SkylineBand data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><CyanContact data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="skylara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
+    <div dir={templateDir()} data-template-id="skylara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

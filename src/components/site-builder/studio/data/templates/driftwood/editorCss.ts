@@ -2,7 +2,7 @@ export const driftwoodEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="driftwood"], [data-template-id="driftwood"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f0e8dc; --tpl-surface: #faf5ed; --tpl-text: #3c2e22;
   --tpl-muted: #8b7355; --tpl-primary: #8b5e3c; --tpl-primary-text: #faf5ed;

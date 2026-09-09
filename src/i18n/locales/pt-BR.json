@@ -84,7 +84,8 @@
     "automations": "Automações",
     "agents": "Agentes de negócio",
     "contact": "Contato",
-    "cta": "Começar"
+    "cta": "Começar",
+    "mainAria": "Navegação principal"
   },
   "seo": {
     "homeTitle": "BizUply — Administre seu negócio. Tudo em um só lugar.",
@@ -128,7 +129,7 @@
         "name": "Dana Levi.",
         "initials": "DL",
         "service": "Renovação da cozinha",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Amir Cohen",
@@ -140,19 +141,19 @@
         "name": "Ronit Bar",
         "initials": "RB",
         "service": "Primeira consulta",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "Yuval Sade",
         "initials": "YS",
         "service": "Renovação do contrato",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "Noa Avraham",
         "initials": "NA",
         "service": "Marque uma consulta",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Tomer Shapira",
@@ -164,19 +165,19 @@
         "name": "Michal Levi",
         "initials": "ML",
         "service": "Pacote de site e loja",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "Idan Golan.",
         "initials": "IG",
         "service": "Retentor mensal",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Hila David",
         "initials": "HD",
         "service": "Fotografia de evento",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "Eli Shemesh",
@@ -1452,6 +1453,11 @@
         "continueHint": "Você pode voltar e continuar com as automações.",
         "timeoutTitle": "Pagamento recebido e a atualização ainda está em andamento.",
         "timeoutHint": "A maioria termina em pouco tempo."
+      },
+      "planNames": {
+        "automation_basic_39_ils": "Automação Basic",
+        "automation_growth_79_ils": "Automação Growth",
+        "automation_pro_149_ils": "Automação Pro"
       }
     },
     "runs": {
@@ -1629,6 +1635,358 @@
       "viewPlans": "Ver planos",
       "estimateOnlyNoUpgrade": "É só uma estimativa — não há upgrade automático.",
       "estimateNote": "Só estimativa pelo caminho mais caro e a frequência."
+    },
+    "working": {
+      "wa_new_lead_welcome": {
+        "name": "Novo lead → só abertura no WhatsApp",
+        "description": "Só a mensagem de abertura imediata (sem follow-ups). Para abertura + follow-ups por resposta, usem “Novo lead → abertura + follow-ups por resposta”.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Mensagem de abertura no WhatsApp"
+      },
+      "wa_new_lead_owner_alert": {
+        "name": "Novo lead → alerta de WhatsApp ao dono",
+        "description": "Um lead entra no CRM → alerta interno no WhatsApp para o dono.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Alerta de WhatsApp ao dono"
+      },
+      "wa_appointment_reminder_1_day": {
+        "name": "Lembrete de agendamento — 1 dia antes",
+        "description": "Um dia antes do agendamento → lembrete no WhatsApp para o cliente (ativado na hora).",
+        "trigger": "Agendamento próximo (1 dia antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_2_days": {
+        "name": "Lembrete de agendamento — 2 dias antes",
+        "description": "48 horas antes do agendamento → lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (2 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_3_days": {
+        "name": "Lembrete de agendamento — 3 dias antes",
+        "description": "72 horas antes do agendamento → lembrete antecipado no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (3 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_2_hours": {
+        "name": "Lembrete de agendamento — 2 horas antes",
+        "description": "Duas horas antes do agendamento → lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (2 horas antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_reminder_1_hour": {
+        "name": "Lembrete de agendamento — 1 hora antes",
+        "description": "Uma hora antes do agendamento → último lembrete no WhatsApp (ativado na hora).",
+        "trigger": "Agendamento próximo (1 hora antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "wa_appointment_thanks": {
+        "name": "Agradecimento após o agendamento (WhatsApp)",
+        "description": "Após o fim do agendamento → agradecimento no WhatsApp (pelo horário do agendamento, não pela criação).",
+        "trigger": "Agendamento encerrado",
+        "result1": "Mensagem de agradecimento"
+      },
+      "wa_appointment_review": {
+        "name": "Pedir avaliação após o agendamento",
+        "description": "Um dia após o fim do agendamento → pedido de avaliação no WhatsApp (pelo horário do agendamento).",
+        "trigger": "Agendamento encerrado",
+        "result1": "Pedido de avaliação"
+      },
+      "wa_lead_no_response": {
+        "name": "Follow-up para lead que não respondeu → WhatsApp",
+        "description": "Unido à rota unificada “Novo lead → abertura + follow-ups por resposta”. Não aparece como cartão separado.",
+        "trigger": "Lead que não respondeu no WhatsApp",
+        "result1": "Follow-up no WhatsApp"
+      },
+      "wa_lead_followup_2": {
+        "name": "Segundo follow-up para o lead",
+        "description": "Unido à rota unificada “Novo lead → abertura + follow-ups por resposta”. Não aparece como cartão separado.",
+        "trigger": "Lead sem conversão",
+        "result1": "Segundo follow-up"
+      },
+      "wa_new_client_welcome": {
+        "name": "Novo cliente → boas-vindas",
+        "description": "Novo cliente no CRM → mensagem de abertura no WhatsApp (ativado na hora).",
+        "trigger": "Novo cliente",
+        "result1": "Mensagem de abertura"
+      },
+      "wa_inactive_client": {
+        "name": "Cliente inativo → contato",
+        "description": "Cliente sem atividade há ~30 dias → mensagem de contato (ativado na hora).",
+        "trigger": "Cliente inativo",
+        "result1": "Mensagem de contato"
+      },
+      "wf_lead_multi": {
+        "name": "Novo lead → WhatsApp + tarefa + alerta",
+        "description": "Só abertura imediata: WhatsApp + tarefa + alerta. Sem follow-ups por resposta — para o caminho completo vejam “abertura + follow-ups por resposta”.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "Tarefa",
+        "result3": "Alerta"
+      },
+      "wf_lead_wa_email": {
+        "name": "Novo lead → WhatsApp + e-mail",
+        "description": "Só abertura imediata: WhatsApp + e-mail. Sem follow-ups de WhatsApp por resposta.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "E-mail"
+      },
+      "wf_lead_full_onboarding": {
+        "name": "Novo lead → WhatsApp + e-mail + tarefa + alerta",
+        "description": "Pacote de onboarding imediato em todos os canais. Sem follow-ups de WhatsApp por resposta.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp",
+        "result2": "E-mail",
+        "result3": "Tarefa",
+        "result4": "Alerta"
+      },
+      "wf_lead_email_task": {
+        "name": "Novo lead → e-mail + tarefa",
+        "description": "Sem WhatsApp: e-mail pelo Gmail, Outlook ou e-mail comercial + tarefa de acompanhamento no CRM.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail",
+        "result2": "Tarefa de acompanhamento"
+      },
+      "wf_lead_email_only": {
+        "name": "Novo lead → e-mail de abertura",
+        "description": "Um lead novo recebe um e-mail de abertura pelo Gmail, Outlook ou e-mail comercial.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail"
+      },
+      "wf_store_order_confirmation": {
+        "name": "Confirmação de pedido da loja",
+        "description": "Chegou um pedido da loja → enviar um e-mail de confirmação formatado ao cliente.",
+        "trigger": "Pedido da loja recebido",
+        "result1": "E-mail de confirmação do pedido"
+      },
+      "wf_lead_desk_alert": {
+        "name": "Novo lead → tarefa + alerta à equipe",
+        "description": "Sem mensagens ao cliente: tarefa e alerta interno quando entra um lead.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Tarefa",
+        "result2": "Alerta"
+      },
+      "wf_lead_no_response_pack": {
+        "name": "Novo lead → abertura + follow-ups por resposta",
+        "description": "A mensagem de abertura é enviada na hora. Se o lead não responder, um follow-up sai após 24 horas e outro após 3 dias.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Abertura no WhatsApp",
+        "result2": "Follow-up nº 1",
+        "result3": "Follow-up nº 2"
+      },
+      "wf_lead_status_sales": {
+        "name": "Mudança de status do lead → tarefa + alerta",
+        "description": "Quando o status de um lead muda, a equipe recebe uma tarefa e um alerta.",
+        "trigger": "Status do lead alterado",
+        "result1": "Tarefa",
+        "result2": "Alerta"
+      },
+      "wf_new_client_pack": {
+        "name": "Novo cliente → WhatsApp + e-mail + tarefa de retenção",
+        "description": "Entrada de novo cliente: mensagem de abertura, e-mail e tarefa de retenção.",
+        "trigger": "Novo cliente",
+        "result1": "WhatsApp",
+        "result2": "E-mail",
+        "result3": "Tarefa de retenção"
+      },
+      "wf_appointment_email": {
+        "name": "Novo agendamento → e-mail de confirmação",
+        "description": "Um agendamento é criado → e-mail de confirmação ao cliente pelo Gmail ou Outlook.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação"
+      },
+      "wf_appointment_email_notify": {
+        "name": "Novo agendamento → e-mail ao cliente + alerta à equipe",
+        "description": "Confirmação ao cliente por e-mail + alerta interno ao dono.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação",
+        "result2": "Alerta"
+      },
+      "wf_appointment_gcal": {
+        "name": "Novo agendamento → Google Agenda",
+        "description": "Novo agendamento → evento no Google Agenda (exige calendário conectado).",
+        "trigger": "Novo agendamento",
+        "result1": "Evento no Google Agenda"
+      },
+      "wf_appointment_email_gcal": {
+        "name": "Novo agendamento → e-mail + Google Agenda",
+        "description": "Confirmação por e-mail + evento no calendário juntos.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação",
+        "result2": "Evento no calendário"
+      },
+      "wf_appointment_confirm_pack": {
+        "name": "Novo agendamento → e-mail + tarefa + alerta",
+        "description": "Pacote de confirmação de agendamento para a equipe e o cliente, sem WhatsApp.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail",
+        "result2": "Tarefa",
+        "result3": "Alerta"
+      },
+      "wf_appointment_done_email": {
+        "name": "Após o agendamento → e-mail de agradecimento",
+        "description": "Ao encerrar o agendamento é enviado um e-mail de agradecimento ao cliente.",
+        "trigger": "Agendamento encerrado",
+        "result1": "E-mail de agradecimento"
+      },
+      "wf_appointment_duo": {
+        "name": "Novo agendamento → confirmação WhatsApp + lembrete + tarefa",
+        "description": "Ao criar um agendamento: confirmação no WhatsApp ao cliente, tarefa de preparação e lembrete antes do horário (sem agradecimento ao encerrar).",
+        "trigger": "Novo agendamento / lembrete antecipado",
+        "result1": "Confirmação no WhatsApp",
+        "result2": "Lembrete antecipado",
+        "result3": "Tarefa"
+      }
+    },
+    "aiConfig": {
+      "criteria": {
+        "label": "O que importa na pontuação?",
+        "default": "Ajuste ao serviço, urgência e potencial de compra"
+      },
+      "fieldsHint": {
+        "label": "Quais dados do lead a IA deve analisar?",
+        "default": "Nome, origem, mensagem, status e tags existentes"
+      },
+      "scoreMin": {
+        "label": "Pontuação mínima"
+      },
+      "scoreMax": {
+        "label": "Pontuação máxima"
+      },
+      "saveAsTag": {
+        "label": "Onde salvar o resultado (tag)?"
+      },
+      "categories": {
+        "label": "Categorias"
+      },
+      "maxTags": {
+        "label": "Máximo de tags"
+      },
+      "threshold": {
+        "label": "Limiar de detecção"
+      },
+      "style": {
+        "label": "Tom"
+      },
+      "channel": {
+        "label": "Canal"
+      },
+      "createTask": {
+        "label": "Criar uma tarefa"
+      },
+      "dueInHours": {
+        "label": "Prazo em horas"
+      },
+      "lookbackHours": {
+        "label": "Olhar para trás (horas)"
+      },
+      "title": {
+        "label": "Título",
+        "default": "Resumo diário"
+      },
+      "extraInstructions": {
+        "label": "Instruções extra para a IA"
+      },
+      "option1": "Quente",
+      "option2": "Médio",
+      "option3": "Frio"
+    },
+    "local": {
+      "local_appointment_reminder_1_day": {
+        "name": "Lembrete de agendamento — 1 dia antes",
+        "description": "Gatilho: agendamento próximo 1 dia antes. Resultado: lembrete no WhatsApp.",
+        "trigger": "Agendamento próximo (1 dia antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_reminder_2_days": {
+        "name": "Lembrete de agendamento — 2 dias antes",
+        "description": "Gatilho: agendamento próximo 2 dias antes. Resultado: lembrete no WhatsApp.",
+        "trigger": "Agendamento próximo (2 dias antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_reminder_hours": {
+        "name": "Lembrete de agendamento — 2 horas antes",
+        "description": "Gatilho: agendamento próximo 2 horas antes. Resultado: lembrete no WhatsApp. As horas podem ser alteradas no construtor.",
+        "trigger": "Agendamento próximo (2 horas antes)",
+        "result1": "Lembrete no WhatsApp"
+      },
+      "local_appointment_thanks": {
+        "name": "Agradecimento depois de um agendamento",
+        "description": "Gatilho: agendamento novo ou encerrado. Resultado: agradecimento no WhatsApp.",
+        "trigger": "Agendamento",
+        "result1": "Agradecimento no WhatsApp"
+      },
+      "local_appointment_review": {
+        "name": "Pedido de avaliação depois de um agendamento",
+        "description": "Gatilho: agendamento. Resultado: pedido de avaliação no WhatsApp.",
+        "trigger": "Agendamento",
+        "result1": "Pedido de avaliação no WhatsApp"
+      },
+      "local_appointment_gcal": {
+        "name": "Agendamento → Google Calendar",
+        "description": "Gatilho: novo agendamento. Resultado: criar um evento no Google Calendar (conexão Calendar).",
+        "trigger": "Novo agendamento",
+        "result1": "Evento no Google Calendar"
+      },
+      "local_appointment_email": {
+        "name": "Agendamento → e-mail de confirmação",
+        "description": "Gatilho: novo agendamento. Resultado: enviar um e-mail de confirmação ao cliente.",
+        "trigger": "Novo agendamento",
+        "result1": "E-mail de confirmação"
+      },
+      "local_lead_multi_results": {
+        "name": "Novo lead — vários resultados juntos",
+        "description": "Gatilho: novo lead no CRM. Resultados juntos: WhatsApp, tarefa para o agente e alerta ao dono.",
+        "trigger": "Novo lead no CRM",
+        "result1": "WhatsApp imediato",
+        "result2": "Tarefa para o agente",
+        "result3": "Alerta ao dono"
+      },
+      "local_lead_email_welcome": {
+        "name": "Novo lead → e-mail + tarefa",
+        "description": "Gatilho: novo lead. Resultados: e-mail e tarefa de acompanhamento no CRM.",
+        "trigger": "Novo lead no CRM",
+        "result1": "E-mail",
+        "result2": "Tarefa de acompanhamento"
+      },
+      "local_lead_no_response": {
+        "name": "Novo lead → abertura + follow-ups por resposta",
+        "description": "Abertura imediata; se não houver resposta no WhatsApp — follow-up após 24h e após 3 dias.",
+        "trigger": "Novo lead no CRM",
+        "result1": "Abertura no WhatsApp",
+        "result2": "Follow-up #1",
+        "result3": "Follow-up #2"
+      },
+      "local_lead_followup_2": {
+        "name": "Segundo follow-up de lead (mesclado)",
+        "description": "Mesclado no caminho unificado “Novo lead → abertura + follow-ups por resposta”.",
+        "trigger": "Lead sem conversão",
+        "result1": "Segundo follow-up no WhatsApp"
+      },
+      "local_new_client_welcome": {
+        "name": "Cliente novo — boas-vindas",
+        "description": "Gatilho: cliente novo. Resultados: mensagem de abertura e tarefa de retenção.",
+        "trigger": "Cliente novo",
+        "result1": "Mensagem de abertura",
+        "result2": "Tarefa de retenção"
+      },
+      "local_inactive_client": {
+        "name": "Cliente inativo — um toque",
+        "description": "Gatilho: cliente inativo. Resultado: toque no WhatsApp.",
+        "trigger": "Cliente inativo",
+        "result1": "Toque no WhatsApp"
+      }
+    },
+    "readiness": {
+      "comingSoon": "Em breve — ainda não dá para ativar",
+      "connectWhatsapp": "Conecte o WhatsApp Business (Bizuply) para ativar",
+      "noApprovedTemplates": "Não há modelos de WhatsApp aprovados (APPROVED) para escolher",
+      "notAvailable": "Esta automação ainda não está disponível para ativar no sistema",
+      "connectCalendar": "Conecte o Google Calendar na tela de conexões para ativar",
+      "cannotEnable": "Não é possível ativar este modelo",
+      "noSupportedTrigger": "Não há um gatilho compatível para ativar esta automação agora",
+      "missingApproved": "Faltam modelos de WhatsApp aprovados: {{names}}",
+      "recipeNotAvailable": "Esta receita ainda não está disponível para ativar nesta conta",
+      "recipeMissing": "A receita não foi encontrada no servidor"
     }
   },
   "layout": {
@@ -1711,7 +2069,8 @@
     "metricAppointments": "Agendamentos",
     "metricCollaborations": "Colaborações",
     "confirmed": "Confirmado",
-    "pending": "Pendente"
+    "pending": "Pendente",
+    "loadingDashboard": "Carregando painel..."
   },
   "dashboard": {
     "live": "Viva",
@@ -1765,7 +2124,9 @@
       "description": "Revise as recomendações da IA antes de enviá-las aos clientes.",
       "client": "Cliente:",
       "aiSuggestion": "Sugestão de IA:",
-      "approveAndSend": "Aprovar e enviar"
+      "approveAndSend": "Aprovar e enviar",
+      "approveSubtitle": "Aprove ações inteligentes antes de enviar",
+      "pendingCount": "{{count}} pendentes"
     },
     "performance": {
       "eyebrow": "Desempenho de negócios",
@@ -1817,7 +2178,9 @@
       "today": "Hoje",
       "selected": "Selecionado",
       "appointment": "{{count}} nomeação",
-      "appointments": "{{count}} nomeações"
+      "appointments": "{{count}} nomeações",
+      "openInCrm": "Abrir compromisso no CRM",
+      "more": "+{{count}} mais"
     },
     "states": {
       "loading": "Carregando o painel de negócios...",
@@ -1831,8 +2194,112 @@
       "somethingWrong": "Algo deu errado. Por favor, tente novamente.",
       "closeOfferError": "Não pude fechar a oferta agora. Por favor, tente novamente.",
       "socketNotConnected": "Conexão em tempo real não está conectada",
-      "unknownError": "Erro desconhecido"
-    }
+      "unknownError": "Erro desconhecido",
+      "errorWithDetail": "Erro: {{detail}}"
+    },
+    "openLeads": {
+      "title": "Leads abertos",
+      "empty": "Não há leads abertos para exibir",
+      "name": "Nome",
+      "date": "Data",
+      "status": "Status",
+      "action": "Ação",
+      "changeStatusTitle": "Clique para alterar o status",
+      "handleNow": "Tratar agora",
+      "stale": "Atrasado",
+      "awaitingResponse": "Aguardando resposta",
+      "inProgress": "Em andamento",
+      "closed": "Fechado"
+    },
+    "appointmentOverview": {
+      "title": "Visão geral de agendamentos",
+      "subtitle": "Sincronizado com agendamentos em tempo real",
+      "thisWeek": "Esta semana",
+      "lastWeek": "Semana passada",
+      "upcoming": "Próximos",
+      "completed": "Concluídos",
+      "canceled": "Cancelados",
+      "totalAppointments": "Total de agendamentos",
+      "fromAll": "De todos os agendamentos do sistema",
+      "averagePerDay": "Média de agendamentos por dia",
+      "basedOnWeek": "Com base na semana atual",
+      "trend": "Tendência de agendamentos",
+      "peakDay": "Dia de pico: {{day}}",
+      "peakCount": "{{count}} agendamentos",
+      "thisWeekCount": "Esta semana: {{count}}",
+      "lastWeekCount": "Semana passada: {{count}}",
+      "loading": "Carregando..."
+    },
+    "header": {
+      "greetingMorning": "Bom dia",
+      "greetingAfternoon": "Boa tarde",
+      "greetingEvening": "Boa noite",
+      "subtitle": "Veja o que está acontecendo no seu negócio hoje.",
+      "businessOwner": "Dono do negócio",
+      "demoName": "Demo"
+    },
+    "upcomingPanel": {
+      "title": "Próximos compromissos",
+      "subtitle": "Seus próximos compromissos agendados",
+      "viewAll": "Ver tudo",
+      "empty": "Ainda não há compromissos próximos",
+      "badge": "Próximo"
+    },
+    "recentActivity": {
+      "title": "Atividade recente",
+      "subtitle": "Atualizações ao vivo do seu negócio",
+      "viewAll": "Ver tudo",
+      "empty": "Ainda não há atividade recente.",
+      "newAppointment": "Novo compromisso agendado",
+      "newReview": "Nova avaliação 5 estrelas",
+      "reviewFallback": "Um cliente deixou uma avaliação",
+      "now": "Agora",
+      "hourAgo": "Há 1 hora"
+    },
+    "insights": {
+      "ariaLabel": "Insights do negócio",
+      "profileViews": "Visualizações do perfil",
+      "noChange": "Sem alteração",
+      "viewsUp": "Ótimo! Seu perfil foi visto mais esta semana ({{thisWeek}}) do que na semana passada ({{lastWeek}}).",
+      "viewsDown": "As visualizações do perfil caíram em relação à semana passada. Considere atualizar o perfil ou promover a disponibilidade.",
+      "viewsSame": "As visualizações do perfil permaneceram iguais esta semana ({{thisWeek}}).",
+      "appointments": "Compromissos",
+      "appointmentsScheduled_one": "Você tem {{count}} compromisso agendado esta semana.",
+      "appointmentsScheduled_other": "Você tem {{count}} compromissos agendados esta semana.",
+      "appointmentsEmpty": "Não há compromissos agendados esta semana. Você pode oferecer horários abertos ou uma promoção limitada."
+    },
+    "recentActivitiesTable": {
+      "title": "Atividades recentes",
+      "empty": "Nenhuma atividade para exibir.",
+      "date": "Data",
+      "actionType": "Tipo de ação",
+      "details": "Detalhes"
+    },
+    "lineChart": {
+      "title": "Atividade da última semana",
+      "empty": "Nenhum dado para exibir",
+      "views": "Visualizações",
+      "requests": "Solicitações",
+      "orders": "Pedidos"
+    },
+    "bankDetails": {
+      "title": "Dados bancários para pagamento",
+      "disclaimer": "Você é responsável por atualizar esses dados se algo mudar.",
+      "bankName": "Nome do banco:",
+      "branchNumber": "Número da agência:",
+      "accountNumber": "Número da conta:",
+      "fullName": "Nome completo:",
+      "idNumber": "CPF / CNPJ:",
+      "placeholderBank": "Bank Hapoalim",
+      "placeholderName": "O nome como aparece no banco",
+      "save": "Salvar dados",
+      "saving": "Salvando...",
+      "saved": "Dados salvos com sucesso!",
+      "unavailable": "Os dados do negócio não estão disponíveis. Entre novamente.",
+      "saveError": "Erro ao salvar os dados"
+    },
+    "unknownClient": "Cliente desconhecido",
+    "unknownService": "Serviço desconhecido"
   },
   "features": {
     "seoTitle": "BizUply - Todas as ferramentas que seu negócio precisa em um só lugar",
@@ -2033,7 +2500,7 @@
     "alertUserNotLoaded": "Os dados do usuário ainda não foram carregados. Entre ou registre-se para continuar a verificação.",
     "alertCheckoutFailed": "Falha ao iniciar o checkout",
     "alertGenericError": "Erro, por favor, tente novamente.",
-    "websiteContactMessage": "Oi, gostaria de começar com o pacote somente no site em  600/ano (autoatendimento a partir do modelo, vinculado ao CRM).",
+    "websiteContactMessage": "Oi, gostaria de começar com o pacote Apenas website a {{price}}/ano (autoatendimento a partir do modelo, ligado ao CRM).",
     "packageWithWebsiteContactMessage": "Oi, eu gostaria de me juntar ao {{package}} no {{price}}{{period}}, incluindo o complemento {{websitePrice}} do site uma vez (construção do site de autoatendimento).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + add-on {{websitePrice}} de uma só vez",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + site {{websitePrice}} uma vez (em Stripe)",
@@ -2077,8 +2544,355 @@
       "support": "Suporte mensal"
     },
     "websiteAddon": {
-      "label": "₪550 único — site self-serve como extra do plano",
+      "label": "{{price}} único — site self-serve como extra do plano Business",
       "hint": "Pagamento único, sem renovação automática · modelos e editor visual, ligado ao CRM — domínio grátis por 1 ano"
+    },
+    "packages": {
+      "website": {
+        "name": "Apenas website",
+        "badge": "Self-service",
+        "description": "Crie um site profissional a partir de um modelo — publique, receba contatos e tudo liga ao CRM.",
+        "note": "Pagamento único — sem compromisso e sem renovação automática",
+        "button": "Começar com um site",
+        "pricePeriod": "/ano",
+        "features": {
+          "0": "Construtor visual completo de sites",
+          "1": "Centenas de modelos prontos por setor",
+          "2": "Páginas, seções, galerias e formulários",
+          "3": "Adaptado a celular, tablet e desktop",
+          "4": "Domínio grátis no primeiro ano",
+          "5": "Publique na URL da BizUply ou no seu domínio",
+          "6": "Formulário de leads do site ligado ao CRM",
+          "7": "Ferramentas de acessibilidade incluídas",
+          "8": "SEO básico de páginas",
+          "9": "Edite quando quiser por conta própria"
+        }
+      },
+      "monthly": {
+        "name": "BizUply Business",
+        "badge": "Flexível",
+        "description": "Acesso ao sistema de negócio BizUply — CRM, marcações, colaborações, automações e IA. O site não está incluído.",
+        "note": "Cobrança mensal renovável",
+        "button": "Começar mensal",
+        "pricePeriod": "/mês",
+        "features": {
+          "0": "Página profissional do negócio na plataforma",
+          "1": "CRM para leads e clientes",
+          "2": "Agenda de marcações e serviços",
+          "3": "Mensagens integradas",
+          "4": "Gestão de avaliações e notas",
+          "5": "Rede de colaborações de negócio",
+          "6": "Automações inteligentes",
+          "7": "Consultor de IA da BizUply e insights",
+          "8": "Tarefas, registro de chamadas e alertas",
+          "9": "Análises e painel de desempenho",
+          "10": "Opção de adicionar agentes humanos",
+          "11": "Opção de adicionar o site à parte"
+        }
+      },
+      "yearly": {
+        "name": "BizUply Business anual",
+        "badge": "Melhor valor",
+        "description": "O sistema de negócio a um melhor preço anual — CRM, marcações, colaborações e IA. O site não está incluído.",
+        "note": "Cobrança anual renovável · economize {{savings}} em relação ao mensal",
+        "button": "Começar anual",
+        "pricePeriod": "/ano",
+        "features": {
+          "0": "Tudo do pacote Business mensal",
+          "1": "Poupança anual significativa",
+          "2": "Acesso completo a todos os módulos de negócio",
+          "3": "CRM + marcações + colaborações + IA",
+          "4": "Automações e alertas sem limites",
+          "5": "Painel de desempenho e análises",
+          "6": "Opção de adicionar o site à parte",
+          "7": "Opção de adicionar mais serviços de negócio"
+        }
+      }
+    },
+    "addons": {
+      "automations-setup": {
+        "name": "Configuração de automações",
+        "description": "Criamos fluxos automáticos que continuam cuidando de leads e clientes mesmo quando você não está no sistema.",
+        "price": "A partir de ₪390 único",
+        "details": {
+          "0": "Uma automação simples: ₪390",
+          "1": "Pacote de 3: ₪890",
+          "2": "Pacote de 6: ₪1.490",
+          "3": "Processo complexo: orçamento sob medida"
+        },
+        "tracks": {
+          "0": {
+            "label": "Uma automação simples",
+            "price": "₪390"
+          },
+          "1": {
+            "label": "Pacote de 3 automações",
+            "price": "₪890"
+          },
+          "2": {
+            "label": "Pacote de 6 automações",
+            "price": "₪1.490"
+          },
+          "3": {
+            "label": "Processo complexo",
+            "price": "Orçamento sob medida"
+          }
+        },
+        "examples": {
+          "0": "Um lead novo entra no sistema",
+          "1": "Mensagem automática no WhatsApp",
+          "2": "E-mail automático",
+          "3": "Abrir uma tarefa para um agente",
+          "4": "Lembrete se não houve ação",
+          "5": "Follow-up automático depois de alguns dias",
+          "6": "Mudança de status conforme uma ação",
+          "7": "Lembrete de reunião",
+          "8": "Mensagem após a compra",
+          "9": "Pedido automático de avaliação"
+        },
+        "note": "Não inclui custos de WhatsApp, SMS, e-mail nem serviços de terceiros."
+      },
+      "website-build": {
+        "name": "Site criado por um especialista",
+        "description": "Um especialista da Bizuply cria e publica um site profissional com os modelos e ferramentas da plataforma.",
+        "price": "A partir de ₪1.490 único",
+        "details": {
+          "0": "Site de até 5 páginas",
+          "1": "Escolha de modelo existente",
+          "2": "Conteúdo e imagens que o cliente fornece",
+          "3": "Adaptação a celular",
+          "4": "Formulário de leads",
+          "5": "Conexão ao CRM",
+          "6": "Conexão de domínio",
+          "7": "Até 2 rodadas de correções"
+        },
+        "extras": {
+          "0": {
+            "label": "Página extra",
+            "price": "₪190"
+          },
+          "1": {
+            "label": "Redação de conteúdo",
+            "price": "₪590"
+          },
+          "2": {
+            "label": "Loja básica",
+            "price": "+ ₪1.490"
+          },
+          "3": {
+            "label": "Design personalizado avançado",
+            "price": "A partir de ₪2.990"
+          }
+        }
+      },
+      "crm-migration": {
+        "name": "Migração de outro CRM",
+        "description": "Especialmente útil se o cliente muda para você — migramos clientes, leads e status, e mapeamos campos para o negócio seguir fluido.",
+        "price": "A partir de ₪790 único",
+        "details": {
+          "0": "Transferência de clientes e leads",
+          "1": "Transferência de status",
+          "2": "Mapeamento de campos",
+          "3": "Checagem de qualidade",
+          "4": "Treinamento após a migração"
+        },
+        "tracks": {
+          "0": {
+            "label": "Migração básica",
+            "price": "A partir de ₪790"
+          }
+        },
+        "note": "O escopo e o preço final dependem do volume de registros e da complexidade do sistema atual."
+      },
+      "store-products-upload": {
+        "name": "Envio de produtos para a loja",
+        "description": "Para clientes que montam uma loja com você — enviamos produtos com imagens, descrições, categorias, preços, variações e envio.",
+        "price": "A partir de ₪490 único",
+        "details": {
+          "0": "Envio de produtos",
+          "1": "Imagens e descrições",
+          "2": "Categorias",
+          "3": "Preços e variações",
+          "4": "Configurações de envio"
+        },
+        "tracks": {
+          "0": {
+            "label": "Até 20 produtos",
+            "price": "₪490"
+          },
+          "1": {
+            "label": "Até 50 produtos",
+            "price": "₪990"
+          },
+          "2": {
+            "label": "Além disso",
+            "price": "Orçamento sob medida"
+          }
+        }
+      },
+      "paid-campaign-setup": {
+        "name": "Configuração de campanha paga",
+        "description": "Um especialista lança uma campanha profissional no Meta e conecta os leads direto na Bizuply.",
+        "price": "A partir de ₪690 único",
+        "details": {
+          "0": "Configuração de campanha no Meta",
+          "1": "Definição de público",
+          "2": "Criação de conjunto de anúncios",
+          "3": "Até 3 anúncios",
+          "4": "Formulário de leads ou landing existente",
+          "5": "Leads conectados à Bizuply",
+          "6": "Instalação de rastreamento básico",
+          "7": "Checagem antes da publicação"
+        },
+        "tracks": {
+          "0": {
+            "label": "Configuração de campanha no Meta",
+            "price": "₪690"
+          },
+          "1": {
+            "label": "Campanha avançada no Meta",
+            "price": "₪990"
+          }
+        },
+        "note": "O preço cobre só a configuração — não inclui gestão contínua nem orçamento de anúncios. Por agora só no Meta."
+      },
+      "content-creation": {
+        "name": "Criação de conteúdo",
+        "description": "A equipe da Bizuply cria conteúdo desenhado e pronto para publicar no Facebook e no Instagram.",
+        "price": "A partir de ₪990 / mês",
+        "details": {
+          "0": "8 posts por mês",
+          "1": "Redação e design",
+          "2": "Adaptação para Facebook e Instagram",
+          "3": "Plano de conteúdo mensal",
+          "4": "Relatório básico"
+        },
+        "tracks": {
+          "0": {
+            "label": "8 posts",
+            "price": "₪990 / mês"
+          },
+          "1": {
+            "label": "12 posts",
+            "price": "₪1.390 / mês"
+          },
+          "2": {
+            "label": "8 posts + 4 vídeos com material do cliente",
+            "price": "₪1.790 / mês"
+          }
+        },
+        "note": "Fotografia profissional e agendamento de publicações não estão incluídos agora."
+      },
+      "collab-manager": {
+        "name": "Gestor pessoal de colaborações",
+        "description": "Um gestor que encontra negócios relevantes, apresenta as partes e acompanha a comunicação.",
+        "price": "A partir de ₪790 / mês",
+        "details": {
+          "0": "Encontrar até 10 negócios adequados",
+          "1": "Primeiro contato",
+          "2": "Proposta de ideia de colaboração",
+          "3": "Conectar os dois lados",
+          "4": "Acompanhamento do progresso",
+          "5": "Relatório mensal"
+        },
+        "tracks": {
+          "0": {
+            "label": "Até 10 negócios",
+            "price": "A partir de ₪790 / mês"
+          },
+          "1": {
+            "label": "Percurso ampliado até 25 contatos",
+            "price": "₪1.290 / mês"
+          }
+        },
+        "note": "O serviço não garante um número específico de colaborações fechadas."
+      },
+      "lead-first-response": {
+        "name": "Primeira resposta a leads",
+        "description": "Um agente humano liga para leads novos, faz um filtro inicial e atualiza cada detalhe no CRM.",
+        "price": "A partir de ₪690 / mês",
+        "details": {
+          "0": "Até 40 leads por mês",
+          "1": "Até 3 tentativas de ligação por lead",
+          "2": "Questionário inicial adaptado ao negócio",
+          "3": "Filtro de leads",
+          "4": "Atualização de status e resumo da ligação",
+          "5": "Relatório mensal de atividade",
+          "6": "Lead extra: ₪15"
+        }
+      },
+      "personal-sales-rep": {
+        "name": "Representante de vendas pessoal",
+        "description": "Um representante que faz ligações de venda, envia propostas, trata objeções e acompanha até a decisão.",
+        "price": "₪1.490 / mês + 5% de sucesso",
+        "details": {
+          "0": "Até 40 leads quentes por mês",
+          "1": "Ligações de venda",
+          "2": "Follow-ups",
+          "3": "Envio de propostas prontas",
+          "4": "Resultados atualizados no CRM",
+          "5": "Relatório mensal de vendas",
+          "6": "Lead extra: ₪25"
+        }
+      },
+      "old-leads-followup": {
+        "name": "Follow-up de leads antigos",
+        "description": "Reativar leads não fechados — você define o que é um lead antigo no CRM e eles passam sozinhos para uma aba de follow-up.",
+        "price": "₪590 único",
+        "details": {
+          "0": "Definir leads antigos por dias sem atividade",
+          "1": "Passagem automática para a aba de leads antigos",
+          "2": "Tratar até 50 leads",
+          "3": "Até 2 tentativas de ligação",
+          "4": "Checar relevância e voltar ao processo de venda"
+        },
+        "tracks": {
+          "0": {
+            "label": "Pacote de 50 leads",
+            "price": "₪590"
+          },
+          "1": {
+            "label": "Até 100 leads",
+            "price": "₪990"
+          }
+        }
+      },
+      "crm-manager": {
+        "name": "Gestor pessoal de CRM",
+        "description": "Um gestor que revisa leads, organiza status, abre tarefas e evita que algum cliente seja esquecido.",
+        "price": "A partir de ₪490 / mês",
+        "details": {
+          "0": "Revisão do sistema duas vezes por semana",
+          "1": "Organização de status",
+          "2": "Encontrar leads sem tratamento",
+          "3": "Abrir tarefas e lembretes",
+          "4": "Limpeza básica de duplicados",
+          "5": "Relatório mensal"
+        },
+        "tracks": {
+          "0": {
+            "label": "Revisão duas vezes por semana",
+            "price": "A partir de ₪490 / mês"
+          },
+          "1": {
+            "label": "Percurso de revisão diária",
+            "price": "₪890 / mês"
+          }
+        }
+      },
+      "external-support": {
+        "name": "Suporte ao cliente externo",
+        "description": "Um agente trata consultas de clientes atuais por telefone, WhatsApp ou seu sistema de tickets.",
+        "price": "A partir de ₪1.290 / mês",
+        "details": {
+          "0": "Até 10 horas de atendimento por mês",
+          "1": "Respostas conforme os procedimentos do negócio",
+          "2": "Tickets atualizados no sistema",
+          "3": "Casos complexos encaminhados ao dono",
+          "4": "Relatório mensal de serviço",
+          "5": "Hora extra: ₪75"
+        }
+      }
     }
   },
   "howItWorks": {
@@ -2762,7 +3576,17 @@
         "thursday": "Quinta-feira",
         "friday": "Sexta-feira",
         "saturday": "Sábado"
-      }
+      },
+      "setupTitle": "Definir horário semanal",
+      "dayColumn": "Dia",
+      "startColumn": "Início",
+      "endColumn": "Fim",
+      "closedColumn": "Fechado",
+      "closedOnAria": "Fechado em {{day}}",
+      "saveButton": "Salvar horário semanal",
+      "savedAlert": "O horário semanal foi salvo!",
+      "summaryTitle": "Resumo do horário:",
+      "notSet": "Não definido"
     },
     "leads": {
       "badge": "CRM inteligente",
@@ -3515,6 +4339,202 @@
         "followUpPlanDesc": "Tabela de acompanhamento por cliente — data, ação e status",
         "fieldN": "Campo {{n}}"
       }
+    },
+    "customerProfile": {
+      "badge": "Ficha do cliente",
+      "fallbackName": "Perfil do cliente",
+      "subtitle": "Gerencie detalhes do cliente, campos personalizados, compromissos e a linha do tempo do CRM em uma ficha limpa.",
+      "addEvent": "Adicionar evento",
+      "phone": "Telefone",
+      "phoneHelper": "contato do cliente",
+      "email": "E-mail",
+      "emailHelper": "e-mail do cliente",
+      "customFields": "Campos personalizados",
+      "customFieldsHelper": "valores preenchidos",
+      "activity": "Atividade",
+      "activityHelper": "registros da linha do tempo",
+      "addEventTitle": "Adicionar evento do CRM",
+      "addEventSubtitle": "Adicione uma chamada, mensagem, tarefa, nota de arquivo ou atividade.",
+      "eventType": "Tipo de evento",
+      "title": "Título *",
+      "titlePlaceholder": "Título *",
+      "date": "Data",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "meeting": "Reunião",
+      "loadFailed": "Falha ao carregar os dados do cliente",
+      "titleRequired": "O título é obrigatório",
+      "eventAdded": "Evento adicionado",
+      "eventAddFailed": "Falha ao adicionar o evento",
+      "eventUpdated": "Evento atualizado",
+      "eventUpdateFailed": "Falha ao atualizar",
+      "deleteConfirm": "Excluir este evento?",
+      "eventDeleted": "Evento excluído",
+      "eventDeleteFailed": "Falha ao excluir",
+      "fieldsSavedLocal": "O endpoint de campos personalizados ainda não está pronto. Salvo localmente.",
+      "fieldsSaved": "Campos do cliente salvos",
+      "fieldsSaveFailed": "Falha ao salvar os campos do cliente",
+      "types": {
+        "call": "Chamada",
+        "message": "Mensagem",
+        "meeting": "Reunião",
+        "task": "Tarefa",
+        "file": "Arquivo"
+      },
+      "defaultFields": {
+        "weightLabel": "Peso",
+        "weightDescription": "Peso do cliente / valor numérico",
+        "summaryLabel": "Resumo do cliente",
+        "summaryDescription": "Resumo interno ou voltado ao cliente",
+        "statusLabel": "Status do cliente",
+        "statusDescription": "Status atual do cliente",
+        "statusNew": "Novo",
+        "statusInProgress": "Em andamento",
+        "statusWaiting": "Aguardando",
+        "statusCompleted": "Concluído",
+        "statusCancelled": "Cancelado"
+      },
+      "activityTimeline": "Linha do tempo de atividade",
+      "activitySubtitle": "Compromissos e eventos do CRM ligados a este cliente.",
+      "noActivityTitle": "Ainda não há atividade",
+      "noActivityHint": "Adicione o primeiro evento ou atividade de compromisso.",
+      "noDate": "Sem data",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "saving": "Salvando...",
+      "saveClientData": "Salvar dados do cliente",
+      "noCustomFields": "Ainda não há campos personalizados",
+      "customFieldsHint": "Campos criados no Mini SaaS aparecem aqui automaticamente para cada cliente.",
+      "noCustomFieldsHint": "Crie campos no Mini SaaS e eles aparecerão aqui automaticamente.",
+      "customFieldsBadge": "Campos personalizados do cliente",
+      "clientDataFields": "Campos de dados do cliente",
+      "overviewTitle": "Visão geral do cliente",
+      "overviewSubtitle": "Detalhes básicos do cliente",
+      "name": "Nome",
+      "activities": "Atividades",
+      "missing": "Ausente"
+    },
+    "customerFile": {
+      "newBadge": "Nova ficha de cliente",
+      "createTitle": "Criar cliente",
+      "createSubtitle": "Adicione um novo cliente à base do CRM.",
+      "fullName": "Nome completo",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "address": "Endereço",
+      "cancel": "Cancelar",
+      "saveClient": "Salvar cliente",
+      "saving": "Salvando...",
+      "namePhoneRequired": "Nome completo e telefone são obrigatórios",
+      "saved": "Cliente salvo com sucesso",
+      "saveFailed": "Falha ao salvar o cliente",
+      "loadFailed": "Falha ao carregar os dados do cliente",
+      "badge": "Ficha do cliente",
+      "unnamed": "Cliente sem nome",
+      "clientId": "ID do cliente: {{id}}",
+      "metricAppointments": "Compromissos",
+      "metricRevenue": "Receita",
+      "metricPaidVisits": "Visitas pagas",
+      "metricNextVisit": "Próxima visita",
+      "tabAppointments": "Compromissos",
+      "tabNotesTasks": "Notas e tarefas",
+      "noAppointmentsTitle": "Não há compromissos para este cliente",
+      "noAppointmentsHint": "Quando este cliente agendar ou receber um serviço, o histórico completo aparecerá aqui.",
+      "lastAppointment": "Último compromisso",
+      "nextAppointment": "Próximo compromisso",
+      "historyTitle": "Histórico de compromissos",
+      "unknownService": "Serviço desconhecido",
+      "duration": "Duração",
+      "price": "Preço",
+      "payment": "Pagamento",
+      "paid": "Pago",
+      "unpaid": "Não pago",
+      "refreshHint": "Atualize a página e tente novamente.",
+      "clientFallback": "Cliente"
+    },
+    "appointmentsHistory": {
+      "title": "Histórico de compromissos",
+      "loading": "Carregando compromissos...",
+      "loadError": "Erro ao carregar o histórico de compromissos",
+      "empty": "Não há compromissos para exibir",
+      "closeAria": "Fechar histórico de compromissos",
+      "date": "Data",
+      "time": "Hora",
+      "service": "Serviço",
+      "status": "Status",
+      "notes": "Notas"
+    },
+    "googleAds": {
+      "failed": "A ação falhou. Tente novamente.",
+      "authExpired": "Sua autorização do Google expirou. Reconecte o Google Ads para continuar importando leads.",
+      "accessRevoked": "O acesso ao Google Ads foi revogado. Reconecte sua conta.",
+      "noAccess": "A Bizuply não tem mais acesso à conta do Google Ads selecionada.",
+      "temporarilyUnavailable": "O Google Ads está temporariamente indisponível. Tentaremos novamente automaticamente.",
+      "configIncomplete": "A configuração da plataforma Google Ads está incompleta. Contate o suporte da Bizuply.",
+      "connectFailed": "Não foi possível conectar sua conta do Google Ads. Tente novamente.",
+      "connectedSuccess": "Conta do Google Ads conectada com sucesso.",
+      "selectAccount": "Selecione uma conta do Google Ads",
+      "noForms": "Nenhum formulário de leads acessível foi encontrado nesta conta. Crie um Lead Form no Google Ads e tente novamente.",
+      "testLeadSuccess": "Lead de teste do Google Ads criado com sucesso.",
+      "testLeadFailed": "Não foi possível criar o lead de teste do Google Ads. Tente novamente.",
+      "disconnectSuccess": "Google Ads desconectado com sucesso.",
+      "disconnectFailed": "Não foi possível desconectar o Google Ads. Tente novamente.",
+      "statusConnected": "Conectado",
+      "statusActionRequired": "Ação necessária",
+      "statusDisconnected": "Desconectado",
+      "eyebrow": "Formulários de leads do Google Ads",
+      "title": "Integração Google Ads",
+      "back": "Voltar",
+      "intro": "Conecte sua conta do Google Ads para importar envios de formulários de leads diretamente para o CRM da Bizuply.",
+      "howTitle": "Como a Bizuply usa o acesso ao Google Ads",
+      "howP1": "A Bizuply usa o acesso ao Google Ads para conectar a conta publicitária selecionada e importar envios de formulários para o CRM.",
+      "howP2": "A Bizuply não modifica nem exclui campanhas, anúncios, orçamentos ou configurações. A única escrita é configurar a entrega dos novos envios do formulário selecionado para a Bizuply.",
+      "howP3": "Somente a conta do Google Ads selecionada é conectada a este espaço da Bizuply.",
+      "platformNotReady": "A plataforma Google Ads não está pronta",
+      "platformNotReadyHint": "A Bizuply ainda precisa das credenciais da API do Google Ads no servidor antes de iniciar conexões.",
+      "connectTitle": "Conectar Google Ads",
+      "connectHint": "Autorize a Bizuply a acessar suas contas do Google Ads e depois escolha o Customer ID e o formulário de leads.",
+      "connecting": "Conectando ao Google Ads...",
+      "connectCta": "Conectar Google Ads",
+      "connectedTitle": "Google Ads conectado",
+      "connectedHint": "Sua conta do Google Ads foi conectada com sucesso. Selecione a conta publicitária que deseja usar com a Bizuply.",
+      "accountLabel": "Conta do Google Ads",
+      "noAccounts": "Nenhuma conta do Google Ads acessível foi encontrada para esta conta Google.",
+      "customerId": "Customer ID: {{id}}",
+      "leadFormLabel": "Formulário de leads",
+      "deliveryHint": "A Bizuply configura a entrega no formulário selecionado para que os envios apareçam no CRM.",
+      "saving": "Salvando...",
+      "saveAccount": "Salvar conta do Google Ads",
+      "reconnect": "Reconectar Google Ads",
+      "disconnect": "Desconectar Google Ads",
+      "connectedSuccessBody": "Sua conta do Google Ads está conectada. Novos envios de formulários são importados para o CRM da Bizuply.",
+      "labelStatus": "Status",
+      "labelGoogleAccount": "Conta Google",
+      "authorizedAccount": "Conta Google autorizada",
+      "labelAdsAccount": "Conta do Google Ads",
+      "labelCustomerId": "Customer ID",
+      "labelConnectedOn": "Conectado em",
+      "labelLastActivity": "Última atividade",
+      "labelIntegrationStatus": "Status da integração",
+      "labelLeadForm": "Formulário de leads",
+      "backToCrm": "Voltar ao CRM",
+      "sending": "Enviando...",
+      "sendTestLead": "Enviar lead de teste",
+      "changeAccount": "Trocar conta",
+      "recentTitle": "Leads recentes do Google Ads",
+      "recentHint": "Os envios mais recentes importados da sua conta conectada do Google Ads.",
+      "noLeadsTitle": "Ainda não há leads do Google Ads",
+      "noLeadsHint": "Quando um cliente enviar um formulário conectado, o lead aparecerá aqui e no CRM.",
+      "unnamedLead": "Lead sem nome",
+      "testBadge": "Teste",
+      "noContact": "Sem dados de contato",
+      "viewLead": "Ver lead",
+      "disconnectTitle": "Desconectar Google Ads?",
+      "disconnectBody": "A Bizuply deixará de importar novos leads do Google Ads desta conta. Os leads existentes do CRM não serão excluídos.",
+      "cancel": "Cancelar",
+      "disconnectConfirm": "Desconectar"
     }
   },
   "notifications": {
@@ -3554,7 +4574,13 @@
     "dueTime": "-Devido:",
     "clientFallback": "Cliente",
     "reviewFrom": "⭐ Nova avaliação de {{clientName}}",
-    "reviewFromComment": "⭐ Nova avaliação de {{clientName}}: \"{{comment}}\""
+    "reviewFromComment": "⭐ Nova avaliação de {{clientName}}: \"{{comment}}\"",
+    "closeAria": "Fechar notificações",
+    "upcomingAppointments": "Você tem {{count}} compromisso(s) nas próximas 24 horas",
+    "staleLeads": "Há {{count}} lead(s) sem tratamento há mais de 3 dias",
+    "noReviews": "Ainda não há avaliações novas para o seu negócio",
+    "noServices": "Nenhum serviço configurado — adicione alguns para atrair clientes",
+    "allGood": "Tudo certo! Nenhuma notificação no momento"
   },
   "chatbot": {
     "openAria": "Abra o assistente inteligente BizUply",
@@ -3610,7 +4636,12 @@
     "humanActive": "Conectado a um agente ao vivo",
     "humanError": "Não consegui me conectar a um agente agora. Por favor, tente novamente em breve.",
     "humanPlaceholder": "Escreva uma mensagem para o agente...",
-    "agentLabel": "Agente de suporte"
+    "agentLabel": "Agente de suporte",
+    "supportViewConversation": "Ver conversa",
+    "supportStatusClosed": "Conversa fechada · somente leitura",
+    "supportResumeChat": "Continuar esta conversa",
+    "supportEmptyTranscript": "Não há mensagens nesta conversa",
+    "supportStatusClosedShort": "Fechada"
   },
   "aiInsights": {
     "loadingAria": "Carregando recomendações",
@@ -4626,7 +5657,10 @@
     },
     "errors": {
       "missingBusiness": "Não conseguimos identificar o negócio. Atualize a página.",
-      "loadFailed": "Não carreguei o centro de faturamento. Por favor, tente novamente."
+      "loadFailed": "Não carreguei o centro de faturamento. Por favor, tente novamente.",
+      "pricingConfiguration": "O pagamento está indisponível no momento. A equipe da BizUply foi avisada.",
+      "subscriptionAlreadyActive": "Já existe uma assinatura ativa. Gerencie ou altere em faturamento.",
+      "addonRequiresPlan": "O extra de website só está disponível com um plano de negócio ativo."
     },
     "plans": {
       "trial": "Julgamento",
@@ -4637,7 +5671,9 @@
       "yearly": "Plano de negócios anual",
       "monthly": "Plano de negócios mensal",
       "website": "Apenas site",
-      "trial": "Plano de julgamento"
+      "trial": "Plano de julgamento",
+      "crm_only": "Apenas CRM",
+      "earlybird": "Plano mensal de negócio (Early Bird)"
     },
     "statusLabels": {
       "active": "Ativo",
@@ -4682,7 +5718,8 @@
     "history": {
       "transaction": "Transação",
       "description": "Descrição",
-      "type": "Tipo"
+      "type": "Tipo",
+      "domainRenewal": "Renovação de domínio {{domain}}"
     },
     "filters": {
       "all": "Tudo",
@@ -4735,7 +5772,8 @@
     "upcoming": {
       "badge": "Próximos",
       "title": "Suas próximas acusações",
-      "cancelScheduled": "Cancelamento agendado no final do período"
+      "cancelScheduled": "Cancelamento agendado no final do período",
+      "websiteRenewal": "Renovação do site por mais um ano"
     },
     "failed": {
       "banner": "Há pagamentos fracassados que precisam de atenção",
@@ -4812,10 +5850,60 @@
       "customPrice": "Valor a cobrar (₪)"
     },
     "upgrade": {
-      "title": "Este módulo não está no seu plano",
-      "text": "Seu plano atual inclui só gestão de site e domínio.\nPara CRM, leads, horários, colaborações, automações e IA de negócio, faça upgrade para o plano business.",
-      "upgradeCta": "Fazer upgrade para o plano business",
+      "title": "Este módulo não está incluído no seu plano",
+      "text": "O seu plano atual inclui apenas o site e o domínio.\nPara CRM, leads, marcações, colaborações, automações e IA — atualize para o plano Business.",
+      "upgradeCta": "Atualizar para o plano Business",
       "backToWebsite": "Voltar à gestão do site"
+    },
+    "markets": {
+      "israel": "Israel (ILS)",
+      "usa": "Estados Unidos (USD)",
+      "europe": "Europa (EUR)",
+      "brazil": "Brasil (BRL)",
+      "uae": "Emirados Árabes Unidos (AED)",
+      "latam": "América Latina (USD)",
+      "global": "Internacional (USD)"
+    },
+    "regional": {
+      "unavailable": "Este preço regional ainda não está configurado para pagamento. Contacte o suporte — não cobramos noutra moeda."
+    },
+    "addons": {
+      "push_notifications": "Notificações push",
+      "client_portal": "Área pessoal",
+      "automation_actions": "Plano de ações de automação",
+      "site_plugin": "Plugin do site",
+      "whatsapp_usage": "Cobrança de uso do WhatsApp"
+    },
+    "earlyBird": {
+      "redirecting": "Sua oferta exclusiva está pronta — levando você ao pagamento…",
+      "badge": "Oferta por tempo limitado",
+      "titleLead": "Só o primeiro mês",
+      "save": "Economize ₪30 no primeiro mês",
+      "endsIn": "A oferta termina em {{time}}",
+      "timeLeft": "{{hours}} h {{minutes}} min",
+      "body": "Liberar automações, CRM, mensagens e ferramentas de IA da BizUply. Preço especial de acesso antecipado — sem compromisso.",
+      "thenMonthly": "Depois ₪149/mês. Cancele quando quiser.",
+      "cta": "Upgrade por ₪119",
+      "checkoutBusy": "Redirecionando para o pagamento...",
+      "closeAria": "Fechar oferta",
+      "checkoutFailed": "Não foi possível abrir o pagamento agora. Tente de novo.",
+      "finePrint": "Seu teste permanece ativo • Sem obrigação",
+      "title": "Somente o primeiro mês",
+      "savings": "Economize ₪{{amount}} no primeiro mês",
+      "endsInPlain": "A oferta termina em {{time}}",
+      "hoursUnit": "h",
+      "minutesUnit": "m",
+      "bodyLine1": "Desbloqueie automações, CRM, mensagens e ferramentas de IA do <strong>BizUply</strong>.",
+      "bodyLine2": "Preço especial de acesso antecipado — sem compromisso.",
+      "ctaRedirecting": "Redirecionando para o pagamento...",
+      "footer": "Seu teste continua ativo • Sem obrigação"
+    },
+    "trialEnded": {
+      "title": "Seu teste de 14 dias terminou",
+      "description": "O período de teste gratuito acabou, mas não se preocupe — seus clientes, chats e dados do negócio estão seguros. Faça upgrade agora para continuar gerenciando seu negócio com as ferramentas de IA do BizUply.",
+      "upgradeCta": "Fazer upgrade agora",
+      "contactCta": "Falar com o suporte",
+      "footer": "Você pode reativar sua conta a qualquer momento. Seus dados permanecerão seguros por 30 dias após o fim do teste."
     }
   },
   "collab": {
@@ -6967,7 +8055,10 @@
         "activeMediumQuality": "Ativo - qualidade média",
         "activeLowQuality": "Ativo - baixa qualidade",
         "active": "Ativo",
-        "localDraft": "Projeto local"
+        "localDraft": "Projeto local",
+        "pendingDeletion": "Pendente de exclusão",
+        "deleted": "Excluída",
+        "limitExceeded": "Pausada (limite de ritmo)"
       },
       "mappingStatus": {
         "ready": "Pronto para enviar",
@@ -7404,7 +8495,139 @@
       "autoUnknown": "Não conseguimos identificar {{var}} escolher uma fonte de dados.",
       "confirmSuggestion": "Confirmar",
       "changeMapping": "Mudar",
-      "sourceFieldLine": "{{source}}  {{field}}"
+      "sourceFieldLine": "{{source}}  {{field}}",
+      "sources": {
+        "manual": "Valor manual",
+        "constant": "Valor fixo",
+        "contact": "Cliente / contato",
+        "lead": "Lead",
+        "meta_lead": "Lead do Meta",
+        "google_lead": "Lead do Google Ads",
+        "form": "Formulário",
+        "appointment": "Agendamento",
+        "business": "Negócio",
+        "system": "Valores do sistema"
+      },
+      "fields": {
+        "firstName": "Nome",
+        "fullName": "Nome completo",
+        "name": "Nome",
+        "clientName": "Nome do cliente",
+        "clientSnapshot_name": "Nome completo",
+        "clientSnapshot_phone": "Telefone",
+        "clientSnapshot_email": "E-mail",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "address": "Endereço",
+        "tags": "Tags",
+        "notes": "Observações",
+        "lastInteraction": "Último contato",
+        "createdAt": "Data de criação",
+        "updatedAt": "Data de atualização",
+        "message": "Mensagem",
+        "source": "Origem do lead",
+        "provider": "Provedor",
+        "status": "Status",
+        "date": "Data",
+        "time": "Hora",
+        "dateTime": "Data e hora",
+        "duration": "Duração",
+        "serviceName": "Nome do serviço",
+        "isConfirmed": "Confirmado",
+        "note": "Observações",
+        "price": "Preço",
+        "paid": "Pago",
+        "paymentMethod": "Forma de pagamento",
+        "businessName": "Nome do negócio",
+        "contact": "Pessoa de contato",
+        "address_city": "Cidade",
+        "area": "Área",
+        "description": "Descrição do negócio",
+        "category": "Categoria",
+        "websiteUrl": "Site",
+        "whatsappUrl": "Link do WhatsApp",
+        "schedule": "Horário de funcionamento",
+        "ownerName": "Nome do dono",
+        "ownerEmail": "E-mail do dono",
+        "currentDate": "Data atual",
+        "currentTime": "Hora atual",
+        "currentDateTime": "Data e hora atuais",
+        "currentYear": "Ano atual",
+        "currentMonth": "Mês atual",
+        "currentDay": "Dia atual",
+        "uniqueId": "ID exclusivo",
+        "relativeTime": "Tempo até o agendamento",
+        "externalFormId": "ID do formulário",
+        "facebook_leadId": "ID do lead",
+        "facebook_formId": "ID do formulário",
+        "facebook_formName": "Nome do formulário",
+        "facebook_pageId": "ID da página",
+        "facebook_pageName": "Nome da página",
+        "facebook_createdTime": "Hora de criação",
+        "google_customerId": "ID da conta do Google Ads",
+        "google_campaignId": "ID da campanha",
+        "google_campaignName": "Nome da campanha",
+        "google_formId": "ID do formulário",
+        "google_formName": "Nome do formulário",
+        "google_leadId": "ID do envio",
+        "google_gclId": "ID de clique do Google",
+        "google_createdTime": "Data de envio",
+        "google_leadStage": "Etapa do lead",
+        "google_adgroupId": "ID do grupo de anúncios",
+        "google_creativeId": "ID do anúncio"
+      },
+      "fieldBySource": {
+        "lead": {
+          "name": "Nome do lead",
+          "status": "Status do lead"
+        },
+        "form": {
+          "name": "Nome do contato",
+          "createdAt": "Data de envio"
+        },
+        "meta_lead": {
+          "name": "Nome do lead"
+        },
+        "google_lead": {
+          "name": "Nome do lead"
+        },
+        "appointment": {
+          "date": "Data do agendamento",
+          "time": "Hora do agendamento",
+          "dateTime": "Data e hora do agendamento",
+          "status": "Status do agendamento",
+          "address": "Endereço / local"
+        },
+        "business": {
+          "name": "Nome do negócio",
+          "phone": "Telefone do negócio",
+          "email": "E-mail do negócio"
+        }
+      },
+      "formats": {
+        "date_dmy": "Dia/mês/ano",
+        "date_mdy": "Mês/dia/ano",
+        "date_ymd": "Ano-mês-dia",
+        "date_dmy_dot": "Dia.mês.ano",
+        "time_24": "24 horas",
+        "time_12": "12 horas com AM/PM",
+        "datetime_long": "5 de agosto de 2026 às 10:00",
+        "datetime_dmy_24": "05/08/2026 10:00",
+        "datetime_mdy_12": "08/05/2026 10:00 AM",
+        "datetime_ymd_24": "2026-08-05 10:00",
+        "integer": "Número inteiro",
+        "decimal": "Decimal",
+        "currency": "Moeda",
+        "percent": "Porcentagem",
+        "original": "Como recebido",
+        "upper": "Maiúsculas",
+        "lower": "Minúsculas",
+        "capitalize": "Primeira letra maiúscula",
+        "trim": "Remover espaços extras",
+        "international": "Formato internacional",
+        "local": "Formato local",
+        "masked": "Parcialmente oculto"
+      }
     },
     "wizard": {
       "ariaCreate": "Criar modelo",
@@ -7678,7 +8901,8 @@
       "currencyLabel": "Moeda: {{currency}}",
       "connectedThroughMeta": "Conectado através da Meta",
       "switchAccount": "Selecione a conta de anúncio",
-      "lastUpdated": "Última atualização: {{time}}"
+      "lastUpdated": "Última atualização: {{time}}",
+      "lastUpdatedLabel": "Última atualização"
     },
     "accountStatus": {
       "active": "Ativo",
@@ -7703,7 +8927,14 @@
       "pause": "Pausa",
       "activate": "Ativar",
       "delete": "Excluir",
-      "viewDetails": "Ver detalhes"
+      "viewDetails": "Ver detalhes",
+      "resume": "Retomar",
+      "resumeHint": "Retomar esta campanha",
+      "pauseHint": "Pausar esta campanha",
+      "confirmPauseTitle": "Pausar a campanha?",
+      "confirmPauseBody": "Pausar {{name}} no Meta? Os anúncios param até você retomar.",
+      "confirmResumeTitle": "Retomar a campanha?",
+      "confirmResumeBody": "Retomar {{name}} no Meta? Os anúncios voltam a rodar com as configurações salvas."
     },
     "creationMode": {
       "title": "Nova campanha",
@@ -8118,7 +9349,10 @@
       "loadingFromMeta": "Carregando dados da campanha do Meta...",
       "noCampaignsInRange": "Nenhuma campanha foi encontrada para o intervalo de datas selecionado.",
       "permissionTitle": "Sem permissão para ler dados da conta",
-      "permissionBody": "Por favor, reconecte sua conta Meta."
+      "permissionBody": "Por favor, reconecte sua conta Meta.",
+      "selectAccountTitle": "Selecione uma conta de anúncios",
+      "selectAccountBody": "Escolha uma conta de anúncios do Meta para carregar campanhas e resultados.",
+      "selectAccountCta": "Escolher conta de anúncios"
     },
     "form": {
       "back": "Voltar à visão geral",
@@ -8596,7 +9830,23 @@
       "budgetTitle": "Rastreamento mensal do orçamento",
       "budgetHint": "Usado pelo KPI de utilização do orçamento na visão geral.",
       "monthlyBudget": "Limite de orçamento mensal",
-      "saveBudget": "Salvar orçamento"
+      "saveBudget": "Salvar orçamento",
+      "business": "Negócio do Meta",
+      "businessHint": "Escolha o portfólio do Meta que possui ou compartilha as contas de anúncios que você vai gerenciar.",
+      "businessPlaceholder": "Selecione um negócio do Meta",
+      "businessTitle": "Portfólio de negócio do Meta",
+      "connectHint": "Entre com o Facebook Login e conceda ads_read, ads_management e business_management.",
+      "grantedPermissions": "Permissões concedidas",
+      "noBusinesses": "O Meta não devolveu negócios. Reconecte e conceda business_management.",
+      "permissionWhyTitle": "Por que estas permissões",
+      "permissionWhyAdsRead": "ads_read — carregar campanhas e resultados do Meta.",
+      "permissionWhyAdsManagement": "ads_management — pausar ou retomar campanhas pelo BizUply.",
+      "permissionWhyBusinessManagement": "business_management — listar portfólios e suas contas de anúncios.",
+      "saveAccountHint": "Salvar a conta de anúncios selecionada para gerenciar campanhas.",
+      "saveBusiness": "Salvar negócio do Meta",
+      "saveBusinessHint": "Salve o portfólio do Meta e depois escolha uma conta de anúncios.",
+      "selectBusinessRequired": "Selecione um negócio do Meta",
+      "tokenInvalid": "O token do Meta não é mais válido. Reconecte para continuar."
     },
     "toasts": {
       "connected": "Meta Ads conectados com sucesso",
@@ -8613,7 +9863,8 @@
       "activated": "Campanha ativada",
       "paused": "Campanha pausada",
       "mediaUploaded": "Mídia enviada para Meta",
-      "leadFormCreated": "Formulário de lead criado"
+      "leadFormCreated": "Formulário de lead criado",
+      "businessSelected": "Negócio do Meta salvo"
     },
     "errors": {
       "loadOverview": "Falha ao carregar a visão geral da campanha",
@@ -8632,7 +9883,48 @@
       "disconnect": "Falha ao desconectar o Meta Ads",
       "mediaUpload": "Falha no upload de mídia",
       "leadForms": "Falha ao carregar formulários de lead",
-      "createLeadForm": "Falha ao criar o formulário de lead"
+      "createLeadForm": "Falha ao criar o formulário de lead",
+      "selectBusiness": "Não foi possível salvar o negócio do Meta",
+      "statusNotPersisted": "O Meta atualizou a campanha, mas o BizUply não conseguiu salvar o novo status. Atualize e tente de novo."
+    },
+    "review": {
+      "captionsAuth": "Revisão do app · Facebook Login · ads_read · ads_management · business_management",
+      "captionsUse": "Revisão do app · ads_read · ads_management · business_management",
+      "hideCaptions": "Ocultar",
+      "managementBadge": "ads_management",
+      "captionN": "Legenda {{n}}",
+      "settingsCaption1": "O dono entra no BizUply e inicia o Facebook Login para conectar o Meta Ads.",
+      "settingsCaption2": "O Facebook Login pede ads_read, ads_management e business_management.",
+      "settingsCaption3": "O BizUply usa business_management para listar portfólios e contas de anúncios do negócio escolhido.",
+      "settingsCaption4": "Depois da autorização, escolha o portfólio do Meta e a conta de anúncios para ver e gerenciar campanhas.",
+      "overviewCaption1": "O BizUply usa ads_read para buscar no Meta as campanhas e métricas do negócio autenticado.",
+      "overviewCaption2": "O painel mostra nomes, status, gasto, impressões, alcance, cliques e o período selecionado.",
+      "overviewCaption3": "O BizUply usa ads_management para pausar ou retomar uma campanha pelo BizUply.",
+      "overviewCaption4": "Depois de Pausar ou Retomar, o BizUply lê a campanha de novo no Meta e mostra o status atualizado."
+    },
+    "adsToasts": {
+      "selectPageFirst": "Selecione primeiro uma Página do Facebook",
+      "formNameRequired": "O nome do formulário é obrigatório",
+      "introRequired": "O título de introdução é obrigatório",
+      "needQuestion": "Adicionem ao menos um campo de contato ou pergunta personalizada",
+      "thankYouRequired": "O título de agradecimento é obrigatório",
+      "needWhatsapp": "Conectem ou informem um número de WhatsApp",
+      "needActionLink": "Adicionem um link para a ação adicional",
+      "needCallPhone": "Adicionem um telefone para Ligar para o negócio",
+      "noFormId": "A Meta não retornou um ID de formulário",
+      "leadFormCreated": "Formulário de leads criado na Meta",
+      "leadFormFailed": "Falha ao criar o formulário de leads",
+      "connectMetaFirst": "Conectem o Meta Ads primeiro",
+      "videoUploaded": "Vídeo enviado à Meta",
+      "imageUploaded": "Imagem enviada à Meta",
+      "mediaUploadFailed": "Falha no upload da mídia",
+      "connectAndSelect": "Conectem o Meta Ads e selecionem uma conta de anúncios",
+      "selectAdAccount": "Selecione uma conta de anúncios antes de publicar",
+      "resolveValidation": "Resolvam os problemas de validação antes de publicar",
+      "noAdId": "A Meta não retornou um ID de anúncio — publicação não confirmada",
+      "campaignSubmitted": "Campanha enviada à Meta",
+      "instantFormsFailed": "Falha ao carregar Instant Forms da Meta",
+      "retryCompleted": "Nova tentativa concluída — ID do anúncio confirmado pela Meta"
     }
   },
   "socialSchedule": {
@@ -13825,7 +15117,10 @@
       "about": "Sobre",
       "projects": "Projetos",
       "block": "Bloco"
-    }
+    },
+    "pagesNav": "Páginas",
+    "sitePagesNav": "Páginas do site",
+    "pageChip": "Página"
   },
   "partnerNav": {
     "brand": "Parceiro BizUply",
@@ -14189,7 +15484,158 @@
       "package": "Pacote",
       "remove": "Remover",
       "search": "Buscar serviços...",
-      "selected": "Selecionado"
+      "selected": "Selecionado",
+      "categories": {
+        "website": "Site e presença digital",
+        "crm": "CRM e gestão de clientes",
+        "automations": "Automações",
+        "whatsapp": "WhatsApp e comunicação",
+        "ai": "IA",
+        "store": "Vendas e loja",
+        "personal": "Área pessoal",
+        "marketing": "Marketing",
+        "plugins": "Plugins",
+        "professional": "Serviços profissionais"
+      },
+      "products": {
+        "monthly": {
+          "name": "Licença do sistema de negócio",
+          "description": "₪149 por mês — cobrança mensal recorrente",
+          "tagline": "Licença completa de gestão — CRM, leads, agendamentos, automações e mais.",
+          "included": {
+            "0": "CRM",
+            "1": "Leads",
+            "2": "Agendamentos",
+            "3": "Automações",
+            "4": "Assistente de IA",
+            "5": "WhatsApp gerenciado",
+            "6": "Colaborações"
+          }
+        },
+        "yearly": {
+          "name": "Licença do sistema (anual)",
+          "description": "₪1.490 por ano — cobrança anual recorrente",
+          "tagline": "A mesma licença do sistema, cobrada anualmente.",
+          "included": {
+            "0": "CRM",
+            "1": "Leads",
+            "2": "Agendamentos",
+            "3": "Automações",
+            "4": "Assistente de IA",
+            "5": "WhatsApp gerenciado",
+            "6": "Colaborações"
+          }
+        },
+        "crm_only_monthly": {
+          "name": "Somente CRM",
+          "description": "₪89 por mês — cobrança mensal · somente CRM"
+        },
+        "earlybird": {
+          "name": "Mensal Early Bird (inativo)",
+          "description": "Preço de lançamento — desativado, não dá para comprar"
+        },
+        "website_only": {
+          "name": "Somente site",
+          "description": "₪600 por ano — pagamento único, sem compromisso e sem renovação automática · inclui domínio grátis no primeiro ano",
+          "tagline": "Criação de site e domínio — sem módulos de CRM.",
+          "included": {
+            "0": "Criador de sites",
+            "1": "Domínio"
+          }
+        },
+        "website_addon": {
+          "name": "Complemento de site",
+          "description": "₪550 único — site self-serve como extra do plano · inclui domínio grátis por 1 ano"
+        },
+        "push_notifications_monthly_29_ils": {
+          "name": "Notificações push — mensal",
+          "description": "₪29 / mês — 7 dias de teste, cobrança mensal"
+        },
+        "push_notifications_annual_228_ils": {
+          "name": "Notificações push — anual",
+          "description": "₪228 / ano (equiv. ₪19/mês) — 7 dias de teste, anual"
+        },
+        "client_portal_monthly_199_ils": {
+          "name": "Área pessoal",
+          "description": "₪199 / mês — extra de área pessoal recorrente"
+        },
+        "automations_setup_1_390_ils": {
+          "name": "Configuração de 1 automação",
+          "description": "Configuração de uma automação de negócio"
+        },
+        "automations_setup_3_890_ils": {
+          "name": "Pacote de 3 automações",
+          "description": "Configuração de três automações"
+        },
+        "automations_setup_6_1490_ils": {
+          "name": "Pacote de 6 automações",
+          "description": "Configuração de seis automações"
+        },
+        "crm_migration_790_ils": {
+          "name": "Migração de CRM",
+          "description": "Transferência de clientes, leads e status de um CRM existente"
+        },
+        "expert_website_build_1490_ils": {
+          "name": "Site criado por um especialista",
+          "description": "Site profissional criado por um especialista da BizUply"
+        },
+        "store_products_upload_490_ils": {
+          "name": "Envio de produtos (até 20)",
+          "description": "Envie até 20 produtos com imagens, categorias e preços"
+        },
+        "store_products_upload_50_990_ils": {
+          "name": "Envio de produtos (até 50)",
+          "description": "Envie até 50 produtos com imagens, categorias e preços"
+        },
+        "old_leads_followup_590_ils": {
+          "name": "Follow-up de leads antigos (50)",
+          "description": "Reativar leads antigos e verificar relevância — até 50"
+        },
+        "old_leads_followup_100_990_ils": {
+          "name": "Follow-up de leads antigos (até 100)",
+          "description": "Reativar leads antigos e verificar relevância — até 100"
+        },
+        "lead_response_690_ils_monthly": {
+          "name": "Primeira resposta a leads (mensal)",
+          "description": "Um agente humano responde a leads novos e atualiza o CRM"
+        },
+        "collaboration_manager_790_ils_monthly": {
+          "name": "Gestor de colaborações (mensal)",
+          "description": "Encontrar parceiros e gerenciar colaborações"
+        },
+        "personal_sales_rep_1490_ils_monthly": {
+          "name": "Representante de vendas pessoal (mensal)",
+          "description": "Representante de vendas até o fechamento"
+        },
+        "automation_basic_39_ils": {
+          "name": "Automação Basic",
+          "description": "2.500 ações de automação por mês"
+        },
+        "automation_growth_79_ils": {
+          "name": "Automação Growth",
+          "description": "10.000 ações de automação por mês"
+        },
+        "automation_pro_149_ils": {
+          "name": "Automação Pro",
+          "description": "30.000 ações de automação por mês"
+        },
+        "expert_website_extra_page_190_ils": {
+          "name": "Página extra do site",
+          "description": "Página adicional no site criado por um especialista"
+        },
+        "expert_website_content_writing_590_ils": {
+          "name": "Redação de conteúdo do site",
+          "description": "Redação de conteúdo de marketing para as páginas"
+        },
+        "expert_website_basic_store_1490_ils": {
+          "name": "Loja online básica",
+          "description": "Loja online básica adicionada ao site"
+        },
+        "expert_website_advanced_design_2990_ils": {
+          "name": "Design avançado do site",
+          "description": "Design avançado e sob medida do site"
+        }
+      }
     },
     "markup": {
       "retailCompare": "Preço regular só para comparação: {{amount}} — não entra no cálculo",
@@ -14601,7 +16047,9 @@
       "saved": "Vitrine salva",
       "showRetail": "Mostrar o preço regular para comparação",
       "subtitle": "Página de vendas pessoal",
-      "title": "Vitrine"
+      "title": "Vitrine",
+      "slug": "slug",
+      "whatsapp": "WhatsApp"
     },
     "transactions": {
       "allCommissionStatuses": "Todos os status de comissão",
@@ -14671,7 +16119,14 @@
         "cancelled": "Cancelado"
       }
     },
-    "licenseFallback": "Licença de uso de um sistema completo de gestão empresarial"
+    "licenseFallback": "Licença de uso de um sistema completo de gestão empresarial",
+    "statusLabel": "Status",
+    "planNames": {
+      "partner_basic": "Partner",
+      "partner_pro": "Partner Pro",
+      "partner_premium": "Partner Premium",
+      "partner_percent": "Somente percentual"
+    }
   },
   "storeManager": {
     "noBusinessId": "Não encontramos o ID do negócio. Entre como dono para gerenciar a loja.",
@@ -15144,7 +16599,8 @@
         "label": "Alertas de campanha de IA",
         "description": "Recomendações de desempenho para campanhas da Meta — apenas aviso e crítico"
       }
-    }
+    },
+    "iphoneSafariStep": "Safari → bizuply.com"
   },
   "domainSearch": {
     "free": "Grátis",
@@ -17232,7 +18688,13 @@
       "backToStore": "Voltar à loja",
       "addToCart": "Adicionar ao carrinho",
       "sampleProduct": "Produto de exemplo × 1",
-      "sampleExtra": "Extra × 2"
+      "sampleExtra": "Extra × 2",
+      "chooseVariant": "Escolha uma variação antes de adicionar ao carrinho",
+      "leftInStock": "Restam {{count}} em estoque",
+      "soldOut": "Esgotado",
+      "productCount": "{{count}} produtos",
+      "fromYourStore": " · produtos da sua loja",
+      "demoTemporary": " · demo temporário — adicionem produtos no painel da loja"
     },
     "site": {
       "skipLink": "Ir ao conteúdo principal",
@@ -17624,15 +19086,15 @@
       "notFound": "O caminho não foi encontrado no servidor.",
       "invalidDomain": "Introduza um domínio válido, por exemplo mybusiness.co.il",
       "checkFailed": "Falha ao verificar disponibilidade do domínio",
-      "contactDomainRequired": "É preciso um domínio válido para criar o contacto",
-      "contactFailed": "Falha ao criar o contacto",
+      "contactDomainRequired": "É preciso um domínio válido para criar o contato",
+      "contactFailed": "Falha ao criar o contato",
       "estimateMissing": "Falta o domínio para estimar o preço",
       "estimateFailed": "Falha ao estimar o preço do domínio",
       "estimateInvalid": "A estimativa devolveu um preço inválido",
       "missingRegistrationId": "Falta o ID de registo",
       "quoteFailed": "Não foi possível obter o preço do domínio",
       "checkoutFailed": "Não foi possível criar o pagamento do domínio",
-      "registerMissingId": "Falta o ID. Crie um contacto antes de registar o domínio",
+      "registerMissingId": "Falta o ID. Crie um contato antes de registrar o domínio",
       "registerFailed": "Falha no registo do domínio",
       "loadFailed": "Não foi possível carregar os registos",
       "renewMissingId": "Falta o ID do domínio para renovar",
@@ -17661,13 +19123,13 @@
       "loadFailed": "Não foi possível carregar o convite",
       "acceptFailed": "Não foi possível aceitar o convite",
       "title": "Convite para o site no Bizuply",
-      "loading": "A carregar convite...",
+      "loading": "Carregando convite...",
       "home": "Voltar ao início",
-      "accepted": "Convite aceite. A ir para Os meus sites...",
+      "accepted": "Convite aceito. Levando você para Meus sites...",
       "invitedTo": "Foi convidado para {{name}}",
       "forEmail": "para {{email}}",
       "transfer": "É uma transferência total: depois de aceitar, o site só aparece na sua conta.",
-      "share": "É uma partilha adicional: terá acesso de {{role}}.",
+      "share": "É um compartilhamento adicional: você terá acesso de {{role}}.",
       "viewer": "visualização",
       "editor": "edição",
       "accept": "Aceitar convite"
@@ -17680,7 +19142,7 @@
       "featureHistory": "Histórico de atividade CRM",
       "featureDash": "Painel e dados de CRM",
       "payError": "Não foi possível iniciar o pagamento. Tente de novo.",
-      "alreadyActive": "Já existe uma assinatura ativa. Gira-a na faturação.",
+      "alreadyActive": "Já existe uma assinatura ativa. Gerencie-a no faturamento.",
       "seoTitle": "Só CRM — BizUply",
       "badge": "Oferta especial",
       "title": "Só CRM",
@@ -17724,7 +19186,7 @@
       "openFailed": "Não foi possível abrir a demo.",
       "expiredTitle": "Esta ligação da demo já não está ativa",
       "expiredBody": "A demo expirou. Se quiser vê-la de novo, peça-nos uma nova ligação.",
-      "contactCta": "Quer uma nova demo? Fale connosco",
+      "contactCta": "Quer uma nova demo? Fale conosco",
       "opening": "A abrir…",
       "enter": "Entrar na demo",
       "introDash": "Painel",
@@ -17784,7 +19246,7 @@
       "blockerMigration": "Mudar de um sistema atual",
       "blockerTime": "Tempo de implementação",
       "blockerMissing": "Falta-me algo no sistema",
-      "blockerInfo": "Preciso entender como funcionaria connosco",
+      "blockerInfo": "Preciso entender como funcionaria conosco",
       "blockerConsult": "Preciso consultar outra pessoa",
       "blockerFit": "Ainda não tenho a certeza de que encaixa",
       "blockerNone": "Nada me atrasa neste momento",
@@ -17920,7 +19382,7 @@
       "siteDesc": "Ainda não há um site publicado — criar um ajuda a conseguir leads.",
       "siteAction": "Criar um site",
       "seoTitle": "Conclua o SEO",
-      "seoDesc": "Ao site \"O meu site\" faltam definições SEO.",
+      "seoDesc": "Ao site \"Meu site\" faltam configurações SEO.",
       "seoAction": "Editar SEO"
     },
     "miniSite": {
@@ -17952,12 +19414,12 @@
       "loadError": "Não foi possível carregar o modelo",
       "missingBusiness": "Não foi encontrado o ID do negócio. Não é possível guardar.",
       "mySiteTitle": "{{name}} | O meu site",
-      "mySite": "O meu site",
+      "mySite": "Meu site",
       "professionalSite": "Um site profissional criado com a Bizuply",
-      "myBusiness": "O meu negócio",
+      "myBusiness": "Meu negócio",
       "noHtml": "O site não foi publicado porque não foi criado HTML.",
       "saveFailed": "Erro ao guardar o site. Veja a consola.",
-      "loadingEditor": "A carregar o modelo no editor... {{id}}",
+      "loadingEditor": "Carregando o modelo no editor... {{id}}",
       "openFailed": "Não foi possível abrir o modelo",
       "notFound": "Não encontrado",
       "tryAgain": "Tentar de novo",
@@ -17976,7 +19438,176 @@
       "editHours": "Editar horário",
       "editHoursHint": "Definir dias e disponibilidade",
       "editServices": "Editar serviços",
-      "editServicesHint": "Gerir preços e duração"
+      "editServicesHint": "Gerir preços e duração",
+      "serviceList": {
+        "typeLabel": "Tipo de serviço:",
+        "atBusiness": "Atendimento no negócio",
+        "onSite": "Serviço no local",
+        "atBusinessShort": "Atendimento no negócio",
+        "namePlaceholder": "ex.: Tratamento facial",
+        "durationLabel": "Duração do serviço:",
+        "hours": "horas",
+        "minutes": "minutos",
+        "pricePlaceholder": "ex.: 250",
+        "descriptionOptional": "Descrição do serviço (opcional):",
+        "descriptionPlaceholder": "Detalhes sobre o serviço...",
+        "uploadImage": "Enviar imagem do serviço (opcional):",
+        "previewAlt": "Pré-visualização",
+        "definedTitle": "Serviços definidos:",
+        "typeValue": "Tipo: {{type}}",
+        "addError": "Erro ao adicionar serviço"
+      },
+      "shopTab": {
+        "title": "Gerencie sua loja",
+        "categories": "Categorias",
+        "newCategoryPlaceholder": "Nome da nova categoria",
+        "generalCategory": "Geral",
+        "productName": "Nome do produto",
+        "productDescription": "Descrição...",
+        "pricePlaceholder": "Preço $",
+        "previewAlt": "Pré-visualização do produto",
+        "existingProducts": "Produtos existentes",
+        "paymentSetup": "Configuração de pagamentos do negócio",
+        "selectProvider": "Selecionar provedor de pagamento",
+        "providerKey": "Chave para {{provider}}",
+        "providerKeyHint": "Salve esta chave para autenticar pagamentos.",
+        "paymentOptions": "Opções de pagamento para clientes",
+        "onlineOnly": "Somente pagamento online",
+        "phoneOnly": "Somente pagamento por telefone",
+        "both": "Ambos",
+        "shippingOptions": "Opções de envio",
+        "shippingNote": "O custo de envio será adicionado ao preço final do pedido.",
+        "freeShipping": "Frete grátis",
+        "paidShipping": "Frete pago",
+        "shippingAmount": "Valor $",
+        "createCoupon": "Criar cupom de desconto",
+        "couponCode": "Código do cupom (SUMMER10)",
+        "couponDiscount": "Percentual de desconto (10)",
+        "addCoupon": "Adicionar cupom",
+        "existingCoupons": "Cupons existentes",
+        "code": "Código",
+        "discount": "Desconto",
+        "from": "De",
+        "until": "Até",
+        "loadError": "Erro ao carregar dados",
+        "addProductError": "Erro ao adicionar produto",
+        "deleteProductConfirm": "Excluir este produto?",
+        "deleteProductError": "Erro ao excluir produto",
+        "addCouponError": "Erro ao criar cupom",
+        "deleteCouponConfirm": "Excluir este cupom?",
+        "deleteCouponError": "Erro ao excluir cupom"
+      },
+      "appointmentsMain": {
+        "title": "Agendar horário",
+        "selectService": "Selecionar serviço",
+        "selectDate": "Selecionar data",
+        "availableTimes": "Horários disponíveis",
+        "bookFor": "Agendar para {{date}} às {{time}}",
+        "setCalendar": "Configurar calendário"
+      },
+      "booking": {
+        "selectedService": "Serviço selecionado",
+        "loadAvailabilityError": "Não foi possível carregar a disponibilidade. Tente novamente.",
+        "enterName": "Informe seu nome completo.",
+        "enterPhone": "Informe seu telefone.",
+        "enterAddress": "Informe seu endereço.",
+        "noSlot": "Nenhum horário selecionado.",
+        "missingService": "Serviço ausente. Escolha um serviço novamente.",
+        "submitError": "Erro ao enviar o agendamento: {{message}}",
+        "unknownError": "Erro desconhecido",
+        "eyebrow": "Agendamento",
+        "chooseDateTitle": "Escolha uma data para ver horários disponíveis",
+        "chooseDateHint": "Selecione uma data e escolha um dos horários disponíveis.",
+        "prevMonth": "Mês anterior",
+        "nextMonth": "Próximo mês",
+        "selectedDate": "Data selecionada",
+        "checkingTitle": "Verificando disponibilidade…",
+        "checkingText": "Aguarde enquanto carregamos os horários disponíveis.",
+        "unableTitle": "Não foi possível carregar a disponibilidade",
+        "unableText": "Tente novamente em alguns instantes.",
+        "closedTitle": "Este negócio está fechado neste dia",
+        "closedText": "Escolha outra data.",
+        "workingHours": "Horário de funcionamento",
+        "breaks": "Intervalos",
+        "availableSlots": "Horários disponíveis",
+        "fullTitle": "Todos os horários estão ocupados neste dia",
+        "fullText": "Tente outra data.",
+        "summaryEyebrow": "Resumo do agendamento",
+        "confirmTitle": "Confirme seu horário",
+        "service": "Serviço",
+        "date": "Data",
+        "time": "Horário",
+        "duration": "Duração",
+        "price": "Preço",
+        "yourDetails": "Seus dados",
+        "contactTitle": "Preencha suas informações de contato",
+        "contactHint": "Não é necessária uma conta para agendar.",
+        "namePlaceholder": "Digite o nome completo",
+        "address": "Endereço",
+        "addressPlaceholder": "Digite o endereço",
+        "note": "Observação",
+        "notePlaceholder": "Observação adicional",
+        "submitting": "Enviando…",
+        "confirmBooking": "Confirmar agendamento",
+        "backToSlots": "Voltar aos horários",
+        "successTitle": "Agendamento enviado com sucesso!",
+        "successEmail": "Um e-mail de confirmação foi enviado para o seu endereço.",
+        "successConfirmed": "Seu agendamento está confirmado.",
+        "backToList": "Voltar à lista"
+      },
+      "payment": {
+        "title": "Pagamento",
+        "selectMethod": "Selecione o método de pagamento preferido:",
+        "creditCard": "Pagamento com cartão",
+        "phonePayment": "Pagamento por telefone",
+        "onlinePayment": "Pagamento online",
+        "fullName": "Nome completo",
+        "phone": "Telefone",
+        "cardNumber": "Número do cartão",
+        "expiry": "Validade",
+        "cvv": "CVV",
+        "makePayment": "Efetuar pagamento",
+        "phoneFormTitle": "Preencha seus dados e ligaremos para você",
+        "consultationService": "Serviço de consulta",
+        "confirmationSent": "Confirmação enviada por e-mail",
+        "emailError": "Ocorreu um erro ao enviar o e-mail. Verifique o console.",
+        "sendAndCall": "Enviar e ligaremos para você",
+        "fillRequired": "Preencha todos os campos obrigatórios, incluindo o e-mail.",
+        "phoneNote": "Entraremos em contato para concluir o pagamento por telefone.",
+        "onlineNote": "Seu pagamento foi recebido e estamos processando o pedido.",
+        "yourBusiness": "Seu negócio",
+        "notProvided": "Não informado",
+        "shippingAddress": "Endereço de entrega",
+        "thankYou": "Obrigado, {{name}}!",
+        "businessLabel": "Negócio",
+        "confirmationTo": "Confirmação enviada para",
+        "addressLabel": "Endereço",
+        "totalAmount": "Valor total",
+        "payNow": "Pagar agora"
+      },
+      "cart": {
+        "title": "Seu carrinho de compras",
+        "empty": "Seu carrinho está vazio",
+        "unnamed": "Sem nome",
+        "color": "Cor",
+        "size": "Tamanho",
+        "quantity": "Quantidade",
+        "lineTotal": "Total",
+        "couponPlaceholder": "Digite o código do cupom (ex.: SUMMER10)",
+        "beforeDiscount": "Antes do desconto",
+        "discount": "Desconto",
+        "shipping": "Frete",
+        "totalToPay": "Total a pagar",
+        "backToStore": "Voltar à loja",
+        "proceedToPayment": "Ir para o pagamento"
+      },
+      "preview": {
+        "storeTitle": "Sua loja",
+        "viewCart": "Ver carrinho ({{count}}) 🛒",
+        "all": "Todos",
+        "showDescription": "Mostrar descrição",
+        "addToCart": "Adicionar ao carrinho"
+      }
     },
     "lazyRoute": {
       "newVersion": "Há uma versão nova do site",
@@ -18093,7 +19724,7 @@
       "category": "Categoria",
       "price": "Preço",
       "futurePrice": "Preço futuro",
-      "afterInstall": "Após instalar — definições no separador do extra, e adicione-o às páginas no editor → Extras."
+      "afterInstall": "Após instalar — configurações na aba do extra, e adicione-o às páginas no editor → Extras."
     },
     "sitePayments": {
       "loadError": "Não foi possível carregar os provedores",
@@ -18102,7 +19733,7 @@
       "disconnectConfirm": "Desligar {{name}}?",
       "disconnectedOk": "{{name}} desligado com sucesso",
       "disconnectError": "Não foi possível desligar o provedor",
-      "loading": "A carregar provedores...",
+      "loading": "Carregando provedores...",
       "title": "Pagamentos",
       "description": "Ligue provedores de cobrança. O carrinho do site usará o provedor principal (PayPal, Stripe e mais).",
       "connectedToSite": "{{name}} está ligado ao site",
@@ -18157,24 +19788,24 @@
     "pushToggle": {
       "blocked": "Bloqueado no navegador / dispositivo",
       "onOther": "Ativo num dispositivo instalado · {{count}} dispositivo",
-      "unsupportedIos": "Não dá para ativar daqui — abra no Safari pelo ícone no ecrã inicial",
+      "unsupportedIos": "Não dá para ativar daqui — abra no Safari pelo ícone na tela inicial",
       "unsupported": "Este navegador não suporta Push",
       "onReady": "Ativado · {{count}} dispositivo",
-      "onUnbound": "Ativado no dispositivo, mas ainda não registado — toque em Testar",
-      "needRebind": "Há permissão, mas o dispositivo não está registado — toque para registar de novo",
-      "off": "Desligado — toque para ativar avisos no telemóvel"
+      "onUnbound": "Ativado no dispositivo, mas ainda não registrado — toque em Testar",
+      "needRebind": "Há permissão, mas o dispositivo não está registrado — toque para registrar de novo",
+      "off": "Desligado — toque para ativar avisos no celular"
     },
     "instantForm": {
       "continue": "Continuar",
       "submit": "Enviar",
       "answerPh": "Escreva a sua resposta",
-      "contactInfo": "Informações de contacto",
+      "contactInfo": "Informações de contato",
       "privacy": "Política de privacidade",
       "privacyShort": "Privacidade",
-      "privacyBody": "Ao continuar, aceita que {{name}} possa contactá-lo.",
+      "privacyBody": "Ao continuar, você aceita que {{name}} possa contatá-lo.",
       "businessFallback": "este negócio",
       "thanks": "Obrigado!",
-      "thanksBody": "Entraremos em contacto em breve.",
+      "thanksBody": "Entraremos em contato em breve.",
       "done": "Concluído",
       "toSite": "Para o site",
       "quoteCta": "Envie uma mensagem para orçamento"
@@ -18189,9 +19820,9 @@
     "pluginFrame": {
       "manage": "Gestão do extra",
       "addEditor": "Adicionar no editor",
-      "loading": "A carregar definições...",
+      "loading": "Carregando configurações...",
       "savedSitewide": "As alterações ficam para todo o site",
-      "save": "Guardar definições"
+      "save": "Salvar configurações"
     },
     "aiRecs": {
       "load": "Não foi possível carregar as recomendações. Tente de novo.",
@@ -18207,8 +19838,8 @@
       "offline": "Responderemos no horário de funcionamento"
     },
     "pluginSettings": {
-      "loadError": "Não foi possível carregar as definições",
-      "saved": "Definições guardadas",
+      "loadError": "Não foi possível carregar as configurações",
+      "saved": "Configurações salvas",
       "saveError": "Não foi possível guardar"
     },
     "audience": {
@@ -18237,7 +19868,58 @@
     },
     "calendar": {
       "noBusiness": "Não identificámos o negócio. Atualize a página.",
-      "noBusinessRetry": "Não identificámos o negócio. Atualize e tente de novo."
+      "noBusinessRetry": "Não identificámos o negócio. Atualize e tente de novo.",
+      "enterFullName": "Informe seu nome completo.",
+      "enterPhone": "Informe seu telefone.",
+      "enterAddress": "Informe seu endereço.",
+      "noSlot": "Nenhum horário selecionado.",
+      "missingService": "Falta o serviço. Escolha um serviço de novo.",
+      "submitError": "Erro ao enviar o agendamento: {{detail}}",
+      "unknownError": "Erro desconhecido",
+      "loadFailed": "Não foi possível carregar a disponibilidade. Tente de novo.",
+      "bookingEyebrow": "Agendamento",
+      "chooseDateTitle": "Escolha uma data para ver horários disponíveis",
+      "chooseDateHint": "Selecione uma data do serviço e escolha um dos horários disponíveis.",
+      "prevMonth": "← Mês anterior",
+      "nextMonth": "Próximo mês →",
+      "selectedDate": "Data selecionada",
+      "checkingTitle": "Verificando disponibilidade…",
+      "checkingText": "Aguarde enquanto carregamos os horários disponíveis.",
+      "loadTitle": "Não foi possível carregar a disponibilidade",
+      "loadText": "Tente de novo em alguns instantes.",
+      "closedTitle": "Este negócio está fechado neste dia",
+      "closedText": "Escolha outra data.",
+      "workingHours": "Horário",
+      "breaks": "Intervalos",
+      "availableSlots": "Horários disponíveis",
+      "fullTitle": "Todos os horários deste dia estão reservados",
+      "fullText": "Tente outra data.",
+      "summaryEyebrow": "Resumo do agendamento",
+      "confirmTitle": "Confirme seu horário",
+      "labelService": "Serviço",
+      "labelDate": "Data",
+      "labelTime": "Horário",
+      "labelDuration": "Duração",
+      "labelPrice": "Preço",
+      "durationValue": "{{hours}} h {{minutes}} min",
+      "yourDetails": "Seus dados",
+      "contactTitle": "Preencha suas informações de contato",
+      "contactHint": "Não é necessária uma conta para agendar este horário.",
+      "fullName": "Nome completo",
+      "fullNamePh": "Informe o nome completo",
+      "phone": "Telefone",
+      "address": "Endereço",
+      "addressPh": "Informe o endereço",
+      "note": "Observação",
+      "notePh": "Observação adicional",
+      "submitting": "Enviando…",
+      "confirmBooking": "Confirmar agendamento",
+      "backToSlots": "Voltar aos horários",
+      "successTitle": "Agendamento enviado com sucesso!",
+      "successEmail": "Um e-mail de confirmação foi enviado para o seu endereço.",
+      "successPlain": "Seu agendamento está confirmado.",
+      "backToList": "Voltar à lista",
+      "selectedService": "Serviço selecionado"
     },
     "metaMap": {
       "realRadius": "<br/>Raio real: {{km}} km em torno da cidade",
@@ -18247,7 +19929,7 @@
       "locating": "A cidade foi escolhida, mas ainda sem ponto. A localizar coordenadas…"
     },
     "profile": {
-      "loading": "A carregar...",
+      "loading": "Carregando...",
       "logo": "Logótipo do negócio",
       "businessName": "Nome do negócio",
       "editProfile": "Editar perfil",
@@ -18263,7 +19945,7 @@
       "demoSend": "Envie uma mensagem de demo — não vai a um cliente real"
     },
     "waBilling": {
-      "loadError": "Não foi possível carregar a faturação do WhatsApp agora."
+      "loadError": "Não foi possível carregar o faturamento do WhatsApp agora."
     },
     "waOtp": {
       "body": "{{1}} é o seu código de verificação.",
@@ -18389,7 +20071,19 @@
     "hours": {
       "loading": "A carregar...",
       "noneSet": "Sem horário — defina para marcar reuniões",
-      "openDays": "{{count}} dias de atividade"
+      "openDays": "{{count}} dias de atividade",
+      "saved": "Horário salvo com sucesso",
+      "saveError": "Erro ao salvar o horário",
+      "setupTitle": "Defina o horário semanal (incluindo sábado)",
+      "colDay": "Dia",
+      "colStart": "Início",
+      "colEnd": "Fim",
+      "colClosed": "Fechado",
+      "closedAria": "Fechado {{day}}",
+      "saveWeekly": "Salvar horário semanal",
+      "summary": "Resumo do horário:",
+      "closed": "Fechado",
+      "notSet": "Não definido"
     },
     "timePicker": {
       "start": "Hora de início:",
@@ -18425,6 +20119,1021 @@
       "defaultCategory": "Modelo de site",
       "defaultHeroTitle": "Site de negócio pronto",
       "defaultHeroSubtitle": "Modelo de site pronto para edição completa."
+    },
+    "upgradeBanner": {
+      "text": "Esta funcionalidade só está incluída em planos avançados.",
+      "cta": "Atualizar agora"
+    },
+    "crmFile": {
+      "namePhoneRequired": "Nome completo e telefone são obrigatórios",
+      "saved": "Cliente salvo com sucesso",
+      "saveFailed": "Falha ao salvar o cliente"
+    },
+    "bizChat": {
+      "micDenied": "Não foi possível acessar o microfone",
+      "agreementSoon": "Abrindo o formulário de acordo — em breve",
+      "withPartner": "Chat com {{name}}",
+      "placeholder": "Digite uma mensagem...",
+      "send": "Enviar",
+      "startRec": "Iniciar gravação",
+      "stopRec": "Parar gravação",
+      "sendAgreement": "Enviar acordo"
+    },
+    "appointmentsMain": {
+      "title": "Agendar horário",
+      "selectService": "Selecionar serviço",
+      "selectDate": "Selecionar data",
+      "availableTimes": "Horários disponíveis",
+      "bookFor": "Agendar para {{date}} às {{time}}",
+      "setCalendar": "Definir agenda"
+    },
+    "shop": {
+      "loadError": "Erro ao carregar os dados",
+      "addProductError": "Erro ao adicionar o produto",
+      "deleteProductError": "Erro ao excluir o produto",
+      "createCouponError": "Erro ao criar o cupom",
+      "deleteCouponError": "Erro ao excluir o cupom"
+    },
+    "services": {
+      "addError": "Erro ao adicionar o serviço",
+      "deleteError": "Erro ao excluir o serviço"
+    },
+    "payment": {
+      "fillRequired": "Preencha todos os campos obrigatórios, incluindo o e-mail.",
+      "confirmSent": "Confirmação enviada para o e-mail 🎉",
+      "emailSendError": "Ocorreu um erro ao enviar o e-mail. Verifique o console."
+    },
+    "agreements": {
+      "createdSent": "O acordo foi criado e enviado para a assinatura da outra parte!",
+      "updated": "O acordo foi atualizado com sucesso!",
+      "signBeforeSubmit": "Assine antes de enviar",
+      "signedOk": "Assinado com sucesso!",
+      "signError": "Erro ao assinar: {{detail}}",
+      "unauthorized": "Você não tem autorização para ver este acordo ou ele não foi encontrado",
+      "signFirst": "Assine primeiro",
+      "agreementSignedOk": "Acordo assinado com sucesso!",
+      "saveSignatureError": "Erro ao salvar a assinatura",
+      "senderMustSign": "O remetente deve assinar!",
+      "receiverMustSign": "O destinatário deve assinar o acordo!",
+      "selectPartner": "Você deve escolher um negócio parceiro com um ID válido",
+      "sendError": "Erro ao enviar o acordo: {{detail}}",
+      "fillRequired": "Preencha todos os campos obrigatórios.",
+      "needDatesOrCancelable": "Informe datas de início e fim ou selecione 'Pode ser cancelado a qualquer momento'.",
+      "addSenderSignature": "Adicione a assinatura do remetente.",
+      "waitingPartnerSignature": "O acordo aguarda a assinatura do negócio parceiro.",
+      "alreadyApproved": "O acordo já foi aprovado e não pode ser alterado.",
+      "updateError": "Erro ao atualizar o acordo, tente de novo.",
+      "approvalSendError": "Erro ao enviar a aprovação do acordo, tente de novo."
+    },
+    "collab": {
+      "sendProposalError": "Erro ao enviar a proposta",
+      "openChatError": "Erro ao abrir o chat, tente de novo.",
+      "loginAgain": "Algo deu errado, entre de novo.",
+      "sendFailed": "Falha ao enviar a mensagem: {{detail}}",
+      "unknownError": "Erro desconhecido",
+      "approveError": "Erro ao aprovar a proposta",
+      "rejectError": "Erro ao rejeitar a proposta",
+      "cancelOk": "Proposta cancelada com sucesso",
+      "cancelError": "Erro ao cancelar a proposta",
+      "approveShortError": "Erro ao aprovar a proposta",
+      "rejectShortError": "Erro ao rejeitar a proposta",
+      "cancelShortError": "Erro ao cancelar a proposta",
+      "workspace": {
+        "badge": "Espaço de colaboração",
+        "title": "Colaborações comerciais",
+        "subtitle": "Gerenciem parcerias ativas, pedidos pendentes e acordos oficiais em um só lugar.",
+        "tabActive": "Colaborações ativas",
+        "tabActiveHint": "Colaborações de parceiros aprovadas e ativas",
+        "tabPending": "Colaborações pendentes",
+        "tabPendingHint": "Pedidos e propostas aguardando aprovação",
+        "tabAgreements": "Acordos de parceria",
+        "tabAgreementsHint": "Enviem, gerenciem e enviem acordos de colaboração"
+      },
+      "activeTab": {
+        "loadError": "Erro ao carregar propostas",
+        "approveError": "Erro ao aprovar a proposta",
+        "rejectError": "Erro ao rejeitar a proposta",
+        "cancelConfirm": "Tem certeza de que deseja cancelar esta proposta?",
+        "cancelError": "Erro ao cancelar a proposta",
+        "loading": "Carregando propostas...",
+        "statActive": "Colaborações ativas",
+        "statSent": "Propostas enviadas",
+        "statPending": "Pendentes recebidas",
+        "statAccepted": "Aceitas",
+        "filterActive": "Ativas",
+        "filterSent": "Enviadas",
+        "filterReceived": "Recebidas",
+        "untitled": "Proposta sem título",
+        "from": "De",
+        "to": "Para",
+        "publicMarket": "Mercado público",
+        "amount": "Valor",
+        "validUntil": "Válida até",
+        "noDescription": "Sem descrição.",
+        "quickFind": "Encontrar parceiros",
+        "quickFindHint": "Descubram negócios compatíveis",
+        "quickCreate": "Criar proposta",
+        "quickCreateHint": "Iniciem uma nova colaboração",
+        "quickMessages": "Mensagens comerciais",
+        "quickMessagesHint": "Gerenciem conversas com parceiros",
+        "checklistProfile": "O perfil está pronto",
+        "checklistProposals": "Propostas criadas ou recebidas",
+        "checklistActive": "Existe uma colaboração ativa",
+        "checklistSent": "Proposta enviada a um parceiro",
+        "checklistReceived": "Proposta recebida de um parceiro",
+        "emptyActive": "As colaborações ativas aparecerão aqui quando uma proposta for aceita.",
+        "emptySent": "As propostas enviadas aparecerão aqui depois de contactar um parceiro potencial.",
+        "emptyReceived": "As propostas recebidas aparecerão aqui quando negócios entrarem em contato.",
+        "badge": "Construir. Parceirar. Crescer.",
+        "title": "Central de colaborações",
+        "subtitle": "Gerencie propostas de parceiros, oportunidades de indicação e colaborações comerciais em um espaço limpo.",
+        "findPartners": "Encontrar parceiros",
+        "createProposal": "Criar proposta",
+        "partnerMatch": "Compatibilidade de parceiro",
+        "helperActive": "colaborações ativas",
+        "helperSent": "aguardando resposta",
+        "helperPending": "precisa da sua ação",
+        "helperAccepted": "propostas aprovadas",
+        "pipelineBadge": "Pipeline de propostas",
+        "proposalsTitle": "Propostas de colaboração",
+        "proposalsShown": "{{count}} propostas exibidas · valor total {{amount}}",
+        "createdOn": "Criado em {{date}}",
+        "viewDetails": "Ver detalhes",
+        "cancel": "Cancelar",
+        "reject": "Recusar",
+        "accept": "Aceitar",
+        "statusActiveLabel": "▲ Ativo",
+        "statusAccepted": "Aceita",
+        "statusRejected": "Recusada",
+        "statusCancelled": "Cancelada",
+        "statusPending": "Pendente",
+        "humanTitle": "Gestor humano de colaborações",
+        "humanSubtitle": "Deixe um representante da Bizuply encontrar parceiros, contatá-los, acompanhar e gerenciar o processo de colaboração para este negócio.",
+        "humanBenefit1": "Pesquisa e prospecção de parceiros",
+        "humanBenefit2": "Mensagens de acompanhamento e lembretes",
+        "humanBenefit3": "Relatório mensal de colaborações",
+        "humanCta": "Ativar serviço humano",
+        "quickActionsTitle": "Ações rápidas",
+        "readinessTitle": "Prontidão para colaboração",
+        "readinessSubtitle": "Conclua o fluxo para gerar mais leads de parceiros.",
+        "readinessCta": "Melhorar perfil de colaboração",
+        "refreshHint": "Atualize e tente novamente.",
+        "emptyTitle": "Nenhuma proposta para exibir",
+        "createFirst": "Criar primeira proposta"
+      },
+      "sent": {
+        "loadError": "Erro ao carregar propostas enviadas",
+        "cancelConfirm": "Tem certeza de que deseja cancelar esta proposta?",
+        "cancelSuccess": "Proposta cancelada com sucesso",
+        "cancelError": "Erro ao cancelar a proposta",
+        "chatIntro": "Iniciando um chat sobre a proposta com {{name}}",
+        "publicMarket": "Mercado público",
+        "sent": "Enviadas",
+        "pending": "Pendentes",
+        "accepted": "Aceitas",
+        "rejected": "Rejeitadas",
+        "fallbackTitle": "Proposta enviada",
+        "from": "De",
+        "to": "Para",
+        "amount": "Valor",
+        "validUntil": "Válida até",
+        "noDescription": "Sem descrição.",
+        "provideTitle": "O que vocês oferecem",
+        "provideEmpty": "Sem itens oferecidos",
+        "receiveTitle": "O que vocês recebem",
+        "receiveEmpty": "Sem itens solicitados",
+        "badge": "Propostas enviadas",
+        "title": "Acompanhe as propostas que você enviou",
+        "subtitle": "Revise propostas de colaboração enviadas, acompanhe o status e cancele solicitações que não são mais relevantes.",
+        "refresh": "Atualizar",
+        "helperSent": "propostas enviadas",
+        "helperPending": "aguardando resposta",
+        "helperAccepted": "propostas aprovadas",
+        "helperRejected": "propostas recusadas",
+        "statusActiveLabel": "▲ Ativo",
+        "listTitle": "Solicitações enviadas",
+        "shownCount": "{{count}} propostas enviadas exibidas",
+        "sentOn": "Enviado em {{date}}",
+        "description": "Descrição",
+        "payment": "Pagamento",
+        "resend": "Reenviar",
+        "cancel": "Cancelar",
+        "statusAccepted": "Aceita",
+        "statusRejected": "Recusada",
+        "statusPending": "Pendente",
+        "loading": "Carregando propostas enviadas...",
+        "refreshHint": "Atualize e tente novamente.",
+        "tryAgain": "Tentar novamente",
+        "emptyTitle": "Nenhuma proposta enviada ainda",
+        "emptyHint": "Propostas de colaboração enviadas aparecerão aqui quando este negócio enviar solicitações a parceiros.",
+        "resendSoon": "Reenviar proposta para {{name}} (recurso em breve)"
+      },
+      "received": {
+        "loadError": "Erro ao carregar propostas recebidas",
+        "approveError": "Erro ao aprovar a proposta",
+        "rejectError": "Erro ao rejeitar a proposta",
+        "received": "Recebidas",
+        "pending": "Pendentes",
+        "accepted": "Aceitas",
+        "rejected": "Rejeitadas",
+        "fallbackTitle": "Proposta recebida",
+        "from": "De",
+        "to": "Para",
+        "amount": "Valor",
+        "validUntil": "Válida até",
+        "noDescription": "Sem descrição.",
+        "theyProvide": "O que eles oferecem",
+        "theyProvideEmpty": "Sem itens oferecidos",
+        "theyExpect": "O que eles esperam",
+        "theyExpectEmpty": "Sem itens esperados",
+        "badge": "Propostas recebidas",
+        "title": "Revise solicitações de colaboração",
+        "subtitle": "Gerencie propostas de colaboração recebidas, aprove oportunidades relevantes e crie acordos automaticamente.",
+        "refresh": "Atualizar",
+        "helperReceived": "propostas recebidas",
+        "helperPending": "aguardando resposta",
+        "helperAccepted": "propostas aprovadas",
+        "helperRejected": "propostas recusadas",
+        "statusActiveLabel": "▲ Ativo",
+        "listTitle": "Solicitações recebidas",
+        "shownCount": "{{count}} propostas recebidas exibidas",
+        "receivedOn": "Recebido em {{date}}",
+        "description": "Descrição",
+        "payment": "Pagamento",
+        "viewAgreement": "Ver acordo",
+        "reject": "Recusar",
+        "accept": "Aceitar",
+        "statusAccepted": "Aceita",
+        "statusRejected": "Recusada",
+        "statusPending": "Pendente",
+        "loading": "Carregando propostas recebidas...",
+        "refreshHint": "Atualize e tente novamente.",
+        "tryAgain": "Tentar novamente",
+        "emptyTitle": "Nenhuma proposta recebida ainda",
+        "emptyHint": "Propostas de colaboração recebidas aparecerão aqui quando negócios enviarem solicitações a este negócio."
+      },
+      "agreementForm": {
+        "title": "Acordo de parceria",
+        "senderMustSign": "O remetente deve assinar!",
+        "receiverMustSign": "O destinatário deve assinar o acordo!",
+        "needPartnerId": "Selecione um negócio parceiro com um ID válido",
+        "sentForSignature": "Acordo enviado ao destinatário para assinatura!",
+        "complete": "O acordo está completo!",
+        "sendError": "Erro ao enviar o acordo: {{message}}",
+        "partnerId": "ID do negócio parceiro (toBusinessId):",
+        "partnerIdPh": "Informe o ID do negócio parceiro",
+        "yourName": "Nome do seu negócio:",
+        "yourNamePh": "Informe o nome do seu negócio",
+        "partnerName": "Nome do negócio parceiro:",
+        "partnerNamePh": "Informe o nome do negócio parceiro",
+        "agreementTitle": "Título do acordo:",
+        "agreementTitlePh": "Título do acordo (ex.: campanha de verão)",
+        "description": "Descrição da parceria:",
+        "descriptionPh": "Descrevam brevemente a parceria",
+        "provide": "O que vocês fornecerão no acordo:",
+        "providePh": "O que fornecerão no acordo",
+        "receive": "O que vocês receberão no acordo:",
+        "receivePh": "O que receberão no acordo",
+        "type": "Tipo de parceria:",
+        "typeSelect": "Selecionar tipo",
+        "typeJoint": "Campanha conjunta",
+        "typeReferral": "Indicações",
+        "typeResale": "Revenda",
+        "typeOther": "Outro",
+        "commission": "Comissão / pagamento (se houver):",
+        "commissionPh": "ex.: 10% de comissão",
+        "startDate": "Data de início:",
+        "endDate": "Data de término:",
+        "cancelAnytime": "Pode ser cancelado em qualquer etapa",
+        "confidentiality": "Cláusula de confidencialidade",
+        "sigFirst": "Assinatura (primeiro signatário):",
+        "sigSecond": "Assinatura (segundo signatário):",
+        "senderAlt": "Assinatura do remetente",
+        "receiverAlt": "Assinatura do destinatário",
+        "clearSig": "Limpar assinatura",
+        "firstNotSigned": "O primeiro signatário ainda não assinou",
+        "secondNotSigned": "O segundo signatário ainda não assinou",
+        "sending": "Enviando...",
+        "submit": "Enviar acordo"
+      },
+      "agreementsList": {
+        "loadError": "Erro ao carregar acordos",
+        "loading": "Carregando...",
+        "back": "Voltar à lista de acordos",
+        "empty": "Nenhum acordo para exibir",
+        "title": "Acordos de parceria"
+      },
+      "signPage": {
+        "loadError": "Erro ao carregar o acordo",
+        "signFirst": "Assinem primeiro",
+        "signBeforeSubmit": "Assinem antes de enviar",
+        "signedSuccess": "Acordo assinado com sucesso!",
+        "signedOk": "Assinado com sucesso!",
+        "saveError": "Erro ao salvar a assinatura",
+        "signError": "Erro ao assinar: {{message}}",
+        "loading": "Carregando...",
+        "notFound": "Acordo não encontrado.",
+        "noPermission": "Vocês não têm permissão para ver ou assinar este acordo.",
+        "description": "Descrição:",
+        "terms": "Termos do acordo:",
+        "payment": "Detalhes de pagamento:",
+        "status": "Status do acordo:",
+        "yourSigCreator": "Sua assinatura (criador do acordo)",
+        "yourSigInvited": "Sua assinatura (negócio convidado)",
+        "alreadySignedOn": "Já assinado em {{date}}",
+        "signatureAlt": "Assinatura",
+        "clearSig": "Limpar assinatura",
+        "saving": "Salvando...",
+        "signSubmit": "Assinar e enviar",
+        "otherSig": "Assinatura da outra parte",
+        "otherSignedOn": "A outra parte assinou em {{date}}",
+        "otherAlt": "Assinatura da outra parte",
+        "otherNotSigned": "A outra parte ainda não assinou.",
+        "agreementHeading": "Acordo: {{title}}",
+        "sender": "Remetente:",
+        "partner": "Parceiro:",
+        "senderSig": "Assinatura do remetente:",
+        "partnerSig": "Assinatura do parceiro:",
+        "noSignature": "Sem assinatura",
+        "sending": "Enviando...",
+        "signCta": "Assinar o acordo",
+        "notSignedYet": "Ainda não assinado"
+      },
+      "chat": {
+        "loadingConversations": "Carregando conversas..."
+      },
+      "profile": {
+        "loading": "Carregando perfil...",
+        "waNotifyPh": "Número de notificação do WhatsApp (E.164)"
+      },
+      "pending": {
+        "loadError": "Ocorreu um erro ao carregar os dados.",
+        "fallbackTitle": "Colaboração pendente",
+        "noDescription": "Sem descrição.",
+        "badge": "Colaborações pendentes",
+        "title": "Colaborações aguardando aprovação",
+        "subtitle": "Revise contratos de colaboração ainda pendentes, confira os detalhes do parceiro e acompanhe as datas de validade.",
+        "refresh": "Atualizar",
+        "statTotal": "Total pendente",
+        "helperTotal": "colaborações em espera",
+        "statActivePending": "Pendentes ativas",
+        "helperActivePending": "ainda disponíveis",
+        "statExpired": "Expiradas",
+        "helperExpired": "passaram da data de validade",
+        "statStatus": "Status",
+        "helperStatus": "fluxo atual",
+        "statusPending": "Pendente",
+        "statusExpired": "Expirada",
+        "statusActiveLabel": "▲ Ativo",
+        "listTitle": "Solicitações pendentes",
+        "shownCount": "{{count}} colaborações exibidas",
+        "createdOn": "Criado em {{date}}",
+        "from": "De",
+        "to": "Para",
+        "expiresOn": "Expira em",
+        "status": "Status",
+        "description": "Descrição",
+        "unavailable": "Indisponível",
+        "loading": "Carregando colaborações pendentes...",
+        "refreshHint": "Atualize e tente novamente.",
+        "tryAgain": "Tentar novamente",
+        "emptyTitle": "Nenhuma colaboração pendente",
+        "emptyHint": "Contratos de colaboração pendentes aparecerão aqui quando negócios enviarem ou receberem solicitações que ainda precisam de revisão."
+      }
+    },
+    "affiliate": {
+      "fillAll": "Preencha todos os campos",
+      "minWithdraw": "O saque mínimo é de $200",
+      "exceedBalance": "O saque excede o saldo disponível",
+      "copyFailed": "Falha ao copiar",
+      "bankSaved": "Dados salvos com sucesso!",
+      "loadError": "Erro ao carregar dados",
+      "bankUpdated": "Dados bancários atualizados",
+      "bankUpdateError": "Erro ao atualizar dados bancários",
+      "invalidAmount": "Informe um valor válido",
+      "minPayout": "O valor mínimo de saque é $50",
+      "exceedsBalance": "O valor excede o saldo disponível",
+      "payoutSent": "Pedido de saque enviado",
+      "payoutFailed": "Falha ao enviar o pedido de saque",
+      "inviteCopied": "Link de convite copiado",
+      "loading": "Carregando dados...",
+      "amountPh": "Informe o valor (mín. $50)",
+      "sending": "Enviando...",
+      "requestPayout": "Solicitar saque",
+      "businessDetailsFailed": "Falha ao obter detalhes do negócio",
+      "clientCreated": "Cliente criado. E-mail de convite enviado.",
+      "createClientError": "Erro ao criar o cliente",
+      "withdrawExceeds": "O saque excede o saldo disponível",
+      "withdrawReceived": "Pedido de saque recebido.",
+      "withdrawError": "Erro ao enviar o pedido de saque",
+      "businessNamePh": "Nome do negócio",
+      "contactNamePh": "Nome do contato"
+    },
+    "upload": {
+      "selectFile": "Selecione um arquivo para enviar",
+      "imageOk": "Imagem enviada com sucesso!",
+      "noImageUrl": "Erro: nenhuma URL de imagem recebida",
+      "fileUploadError": "Ocorreu um erro ao enviar o arquivo",
+      "logoOk": "Logo atualizado com sucesso!",
+      "logoUpdateError": "Erro ao atualizar o logo",
+      "logoUpdateErrorGeneric": "Ocorreu um erro ao atualizar o logo",
+      "logoUploadError": "Erro ao enviar o logo",
+      "galleryUploadError": "Erro ao enviar a galeria"
+    },
+    "xray": {
+      "fillAll": "Preencha todas as perguntas e escolha um tipo de negócio.",
+      "submitError": "Ocorreu um erro ao enviar o questionário. Tente mais tarde."
+    },
+    "misc": {
+      "weeklyHoursSaved": "O horário semanal foi salvo!",
+      "approveRecError": "Erro ao aprovar a recomendação: {{detail}}",
+      "messageSendFailed": "Falha ao enviar a mensagem: {{detail}}"
+    },
+    "profileEdit": {
+      "title": "Editar perfil",
+      "businessName": "Nome do negócio:",
+      "businessNamePh": "Informe o nome do negócio",
+      "email": "E-mail:",
+      "emailPh": "Informe o e-mail",
+      "phone": "Telefone:",
+      "phonePh": "Informe o telefone",
+      "city": "Cidade:",
+      "cityPh": "Informe a cidade",
+      "save": "Salvar",
+      "savedOk": "Perfil salvo com sucesso ✅"
+    },
+    "bizChatChrome": {
+      "sendFailedTitle": "Falha na mensagem",
+      "sendFailedBody": "Não foi possível enviar a mensagem. Tente de novo.",
+      "loadingChat": "Carregando chat...",
+      "loadingMessages": "Carregando mensagens...",
+      "loadingChatData": "Carregando dados do chat...",
+      "manageTitle": "Gerenciem suas mensagens",
+      "manageBody1": "Todas as mensagens de clientes na página do negócio ficam centralizadas na página \"Mensagens de clientes\".",
+      "manageBody2": "De lá vocês podem ler, responder e gerenciar conversas de forma eficiente e organizada.",
+      "goToMessages": "Ir à página de mensagens",
+      "yourNamePh": "Seu nome",
+      "writeMessagePh": "Escrevam uma mensagem...",
+      "stop": "Parar",
+      "record": "Gravar",
+      "send": "Enviar",
+      "file": "Arquivo",
+      "audioUnsupported": "Seu navegador não oferece suporte à reprodução de áudio.",
+      "youCustomer": "Vocês (cliente)",
+      "business": "Negócio",
+      "system": "Sistema"
+    },
+    "loading": {
+      "appointments": "Carregando agendamentos...",
+      "slots": "Carregando horários disponíveis…",
+      "bankDetails": "Carregando dados bancários..."
+    },
+    "shopChrome": {
+      "savePaymentKey": "Salve esta chave para autenticação de pagamento.",
+      "paymentOptions": "Opções de pagamento para clientes",
+      "onlineOnly": "Somente pagamento online",
+      "phoneOnly": "Somente pagamento por telefone",
+      "both": "Ambos",
+      "keyFor": "Chave para {{provider}}",
+      "manageTitle": "Gerenciem sua loja",
+      "categories": "Categorias",
+      "newCategoryPh": "Nome da nova categoria",
+      "add": "Adicionar",
+      "productNamePh": "Nome do produto",
+      "descriptionPh": "Descrição...",
+      "pricePh": "Preço $",
+      "productPreviewAlt": "Prévia do produto",
+      "save": "Salvar",
+      "existingProducts": "Produtos existentes",
+      "paymentSetup": "Configuração de pagamento do negócio",
+      "shippingOptions": "Opções de frete",
+      "shippingNote": "O custo do frete será adicionado ao preço final do pedido.",
+      "amountPh": "Valor $",
+      "deleteProductConfirm": "Excluir este produto?",
+      "deleteCouponConfirm": "Excluir este cupom?",
+      "generalCategory": "Geral",
+      "yourStore": "Sua loja",
+      "backToStore": "Voltar à loja",
+      "viewCart": "Ver carrinho ({{count}})",
+      "shoppingCart": "Seu carrinho de compras",
+      "emptyCart": "Seu carrinho está vazio",
+      "quantity": "Quantidade: {{count}}",
+      "lineTotal": "Total: $ {{amount}}",
+      "couponPh": "Digitem o código do cupom (ex.: SUMMER10)",
+      "beforeDiscount": "Antes do desconto: $ {{amount}}",
+      "discountLine": "Desconto: $ {{amount}}",
+      "shippingLine": "Frete: $ {{amount}}",
+      "totalToPay": "Total a pagar: $ {{amount}}",
+      "proceedPayment": "Prosseguir para o pagamento",
+      "allCategories": "Tudo",
+      "addToCart": "Adicionar ao carrinho"
+    },
+    "servicesChrome": {
+      "addService": "Adicionar um serviço",
+      "serviceType": "Tipo de serviço:",
+      "atBusiness": "Atendimento no estabelecimento",
+      "onSite": "Serviço no local",
+      "serviceName": "Nome do serviço:",
+      "serviceNamePh": "ex.: Tratamento facial",
+      "duration": "Duração do serviço:",
+      "hours": "horas",
+      "minutes": "minutos",
+      "price": "Preço do serviço:",
+      "pricePh": "ex.: 250",
+      "description": "Descrição do serviço (opcional):",
+      "descriptionPh": "Detalhes do serviço...",
+      "uploadImage": "Enviar imagem do serviço (opcional):",
+      "previewAlt": "Prévia",
+      "saveService": "Salvar serviço",
+      "yourServices": "Seus serviços",
+      "delete": "Excluir",
+      "noServices": "Ainda não há serviços",
+      "saving": "Salvando...",
+      "addServiceBtn": "Adicionar serviço",
+      "definedServices": "Serviços definidos:",
+      "typeLabel": "Tipo:"
+    },
+    "couponChrome": {
+      "createTitle": "Criar cupom de desconto",
+      "codePh": "Código do cupom (SUMMER10)",
+      "discountPh": "Percentual de desconto (10)",
+      "code": "Código",
+      "discount": "Desconto",
+      "from": "De",
+      "until": "Até",
+      "delete": "Excluir",
+      "addCoupon": "Adicionar cupom",
+      "existingCoupons": "Cupons existentes"
+    },
+    "affiliateChrome": {
+      "createClient": "Criar novo cliente",
+      "businessNamePh": "Nome do negócio",
+      "contactNamePh": "Nome do contato",
+      "emailPh": "E-mail",
+      "phonePh": "Telefone",
+      "createAndPay": "Criar cliente e link de pagamento",
+      "paymentLink": "Link de pagamento:",
+      "copyLink": "Copiar link",
+      "stats": "Estatísticas",
+      "loading": "Carregando...",
+      "title": "Programa de afiliados",
+      "personalLink": "Seu link pessoal de afiliado",
+      "month": "Mês",
+      "purchases": "Compras",
+      "paid": "Pago",
+      "unpaid": "Não pago",
+      "withdrawTitle": "Sacar saldo",
+      "availableBalance": "Saldo disponível:",
+      "minAmountPh": "Mínimo $200",
+      "requestWithdraw": "Solicitar saque",
+      "manageBank": "Gerenciar dados bancários",
+      "clientCreated": "Cliente criado. E-mail de convite enviado.",
+      "createError": "Erro ao criar o cliente",
+      "withdrawOk": "Pedido de saque recebido.",
+      "withdrawError": "Erro ao enviar o pedido de saque",
+      "loadBusinessError": "Falha ao obter os dados do negócio",
+      "loadDataError": "Erro ao carregar os dados"
+    },
+    "marketerBank": {
+      "title": "Atualizar dados bancários - Marketer",
+      "bankName": "Nome do banco",
+      "branchNumber": "Número da agência",
+      "accountNumber": "Número da conta",
+      "fullName": "Nome completo",
+      "idNumber": "Número de identidade",
+      "save": "Salvar dados",
+      "saving": "Salvando..."
+    },
+    "goalsChrome": {
+      "close": "Fechar",
+      "title": "Minhas metas",
+      "addGoal": "Adicionar meta",
+      "history": "Histórico de metas",
+      "nameLabel": "Nome da meta",
+      "namePh": "Ex.: Conseguir 10 clientes",
+      "typeLabel": "Tipo de meta",
+      "typeClients": "Novos clientes",
+      "typeRevenue": "Receita",
+      "typeOrders": "Pedidos / Agendamentos",
+      "typeMessages": "Consultas do site",
+      "typeReturning": "Clientes recorrentes",
+      "typeReviews": "Avaliações / Notas",
+      "targetLabel": "Meta numérica",
+      "targetPh": "Quantos / quanto?",
+      "deadlineLabel": "Prazo",
+      "completedTitle": "Metas concluídas",
+      "completedOn": "Concluída em: {{date}}",
+      "targetLine": "Meta: {{target}} | Data: {{date}}",
+      "summaryBtn": "Resumo e inspiração",
+      "summaryTitle": "Resumo da meta: {{title}}",
+      "progress": "Progresso:",
+      "motivation": "Motivação:",
+      "tip": "Dica:",
+      "mot0": "Toda jornada começa com um passo — vamos!",
+      "mot10": "Vocês estão avançando — continuem!",
+      "mot20": "Ótimo! Vocês estão em 20% do caminho.",
+      "mot30": "Ótimo progresso — mantenham o ritmo!",
+      "mot40": "Quase na metade — vocês conseguem!",
+      "mot50": "Na metade do caminho — incrível!",
+      "mot60": "Ritmo forte! Não parem agora.",
+      "mot70": "Está perto — impulso final!",
+      "mot80": "Quase lá! Só mais um pouco.",
+      "mot90": "A um passo da meta — terminem fortes.",
+      "mot100": "Meta alcançada! Consistência incrível 🎉",
+      "motDefault": "Vocês estão no caminho certo — continuem!",
+      "tipClients": "✉️ Enviem aos leads da semana passada uma oferta ou cupom.",
+      "tipRevenue": "📊 Criem uma promo forte para um pacote de alto valor.",
+      "tipOrders": "🔔 Lembrem quem não concluiu a compra — não desistam.",
+      "tipMessages": "💬 Acompanhem pessoalmente quem perguntou e ainda não comprou.",
+      "tipReturning": "👋 Enviem um obrigado com código de desconto a clientes recorrentes.",
+      "tipReviews": "🌟 Enviem um pedido curto de avaliação com um link fácil.",
+      "tipDefault": "🎯 Façam hoje uma pequena ação que aproxime vocês da meta.",
+      "achieved": "🏆 Meta alcançada: \"{{title}}\" em {{date}}"
+    },
+    "metaFormChrome": {
+      "createForm": "Criar formulário",
+      "creating": "Criando…",
+      "closeAria": "Fechar"
+    },
+    "contractChrome": {
+      "formTitle": "Acordo de colaboração",
+      "yourBusiness": "Nome do seu negócio:",
+      "partnerBusiness": "Nome do negócio parceiro:",
+      "partnerPh": "Digite o nome do negócio parceiro",
+      "agreementTitle": "Título do acordo:",
+      "agreementTitlePh": "Título do acordo (ex.: Campanha de verão)",
+      "description": "Descrição da colaboração:",
+      "giving": "O que vocês fornecerão no acordo:",
+      "receiving": "O que vocês receberão no acordo:",
+      "type": "Tipo de colaboração:",
+      "selectType": "Selecionar tipo",
+      "typeOneSided": "Unilateral",
+      "typeTwoSided": "Bilateral",
+      "typeCommissions": "Com comissões",
+      "payment": "Comissão / Pagamento (se houver):",
+      "validity": "Validade do acordo:",
+      "cancelAnytime": "O acordo pode ser cancelado a qualquer momento",
+      "confidentiality": "Cláusula de confidencialidade",
+      "signatureOf": "Assinatura de {{name}}:",
+      "signatureAlt": "Assinatura",
+      "resign": "Assinar novamente",
+      "saveSignature": "Salvar assinatura",
+      "send": "Enviar acordo",
+      "viewTitle": "Acordo de colaboração",
+      "noContract": "Nenhum contrato para exibir",
+      "senderBusiness": "Nome do negócio remetente:",
+      "receiverBusiness": "Nome do negócio destinatário:",
+      "titleLabel": "Título:",
+      "descriptionLabel": "Descrição:",
+      "senderProvides": "O que o remetente fornece:",
+      "expectedReturn": "O que se espera em troca:",
+      "collabType": "Tipo de colaboração:",
+      "commissionPayment": "Comissão / Pagamento:",
+      "none": "Nenhum",
+      "validityLabel": "Validade:",
+      "notSet": "Não definido",
+      "to": "até",
+      "terms": "Termos:",
+      "cancelAnytimeShort": "Cancelar a qualquer momento",
+      "confidentialityShort": "Confidencialidade",
+      "createdAt": "Criado em:",
+      "status": "Status:",
+      "notSignedYet": "Ainda não assinado",
+      "senderSigAlt": "Assinatura do remetente",
+      "receiverSigAlt": "Assinatura do destinatário"
+    },
+    "affiliateDash": {
+      "title": "Painel de parceiros",
+      "usersCreated": "Usuários criados",
+      "payingUsers": "Usuários pagantes",
+      "monthEarnings": "Ganhos deste mês",
+      "availableBalance": "Saldo disponível",
+      "paidOut": "Pago",
+      "inviteLink": "Seu link de convite",
+      "copyInvite": "Copiar link de convite",
+      "inviteCopied": "Link de convite copiado",
+      "yourClients": "Seus clientes",
+      "noClients": "Ainda não há clientes",
+      "business": "Negócio",
+      "email": "E-mail",
+      "plan": "Plano",
+      "status": "Status",
+      "created": "Criado",
+      "thisMonth": "Este mês",
+      "totalCommission": "Comissão total",
+      "yearly": "Anual (único)",
+      "monthly": "Mensal (recorrente)",
+      "month": "Mês",
+      "commission": "Comissão",
+      "payments": "Pagamentos",
+      "balanceLine": "Saldo disponível:",
+      "amountPh": "Digite o valor (mín. $50)",
+      "sending": "Enviando...",
+      "requestPayout": "Solicitar saque",
+      "manageBank": "Gerenciar dados bancários",
+      "loading": "Carregando dados...",
+      "loadError": "Erro ao carregar os dados"
+    },
+    "bankForm": {
+      "title": "Dados da conta bancária para pagamento",
+      "disclaimer": "Vocês são responsáveis por atualizar esses dados se algo mudar.",
+      "bankName": "Nome do banco:",
+      "bankPh": "Bank Hapoalim",
+      "branchNumber": "Número da agência:",
+      "accountNumber": "Número da conta:",
+      "fullName": "Nome completo:",
+      "fullNamePh": "O nome como aparece no banco",
+      "idNumber": "CPF / CNPJ:",
+      "save": "Salvar dados",
+      "saving": "Salvando..."
+    },
+    "aiPartnerChrome": {
+      "title": "Parceiro IA – Pedir uma ação ou resposta",
+      "placeholder": "Escreva aqui o pedido para o parceiro de IA...",
+      "ariaRequest": "Pedido ao parceiro de IA",
+      "send": "Enviar",
+      "sending": "Enviando...",
+      "errorPrefix": "Erro: {{detail}}",
+      "response": "Resposta da IA:",
+      "recommendedAction": "Ação recomendada:",
+      "sendFailed": "Erro ao enviar o comando"
+    },
+    "aiRecsChrome": {
+      "title": "Recomendações de IA aguardando aprovação",
+      "noneNew": "Não há recomendações novas.",
+      "limitReached": "Limite de aprovações atingido! Só é possível ver, não aprovar mais.",
+      "limitReachedItem": "Limite de aprovações atingido. Vocês podem continuar recebendo recomendações, mas não aprová-las.",
+      "saveDraft": "Salvar rascunho",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "approveSend": "Aprovar e enviar",
+      "reject": "Rejeitar",
+      "question": "Pergunta:",
+      "answer": "Resposta:",
+      "showHistory": "Ver histórico de recomendações",
+      "hideHistory": "Ocultar histórico de recomendações",
+      "historyTitle": "Histórico de recomendações",
+      "nonePast": "Não há recomendações anteriores.",
+      "status": "Status:",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada",
+      "monthlyLimit": "Vocês atingiram o limite mensal de aprovações. Não é possível aprovar mais.",
+      "connectionError": "Erro de conexão com o servidor, tentem mais tarde.",
+      "saveApprove": "Salvar e aprovar"
+    },
+    "xrayChrome": {
+      "title": "Raio-X do negócio",
+      "intro": "Preencham um questionário curto e ajudaremos vocês a entender a situação do negócio em fluxo de caixa, vendas, marketing e gestão.",
+      "generalQuestions": "Perguntas gerais:",
+      "selectRating": "Selecionar avaliação",
+      "businessTypeQ": "Qual é o tipo do negócio?",
+      "selectType": "Selecionar tipo de negócio",
+      "openByType": "Perguntas abertas por tipo de negócio:",
+      "submit": "Enviar",
+      "sending": "Enviando...",
+      "noData": "Nenhum dado encontrado para exibir.",
+      "reportTitle": "Relatório de raio-X do negócio",
+      "businessTypeLabel": "Tipo de negócio:",
+      "insightsTitle": "Insights adaptados ao seu negócio:",
+      "typeServices": "Serviços",
+      "typeCommerce": "Comércio",
+      "typeRestaurant": "Restaurante / Café",
+      "typeStudio": "Estúdio / Clínica"
+    },
+    "galleryChrome": {
+      "title": "Design da galeria",
+      "uploadMedia": "Enviar mídia",
+      "uploadHint": "Vocês podem enviar imagens ou vídeos",
+      "addMedia": "Adicionar mídia",
+      "dragReorder": "Vocês podem arrastar para reordenar",
+      "dragReorderItems": "Vocês podem arrastar e reordenar os itens",
+      "save": "Salvar",
+      "preview": "Prévia",
+      "imageAlt": "Imagem",
+      "editMedia": "Editar mídia",
+      "deleteMedia": "Excluir mídia"
+    },
+    "agreementListChrome": {
+      "loading": "Carregando...",
+      "loadError": "Erro ao carregar os acordos",
+      "back": "Voltar à lista de acordos",
+      "empty": "Não há acordos para exibir",
+      "title": "Acordos de parceria",
+      "status": "Status: {{status}}",
+      "fromDate": "De: {{date}}"
+    },
+    "signAgreementChrome": {
+      "loadError": "Erro ao carregar o acordo",
+      "loading": "Carregando...",
+      "notFound": "Acordo não encontrado.",
+      "noPermission": "Vocês não têm permissão para ver ou assinar este acordo.",
+      "description": "Descrição:",
+      "terms": "Termos do acordo:",
+      "payment": "Detalhes de pagamento:",
+      "status": "Status do acordo:",
+      "yourSignature": "Sua assinatura ({{role}})",
+      "roleCreator": "Criador do acordo",
+      "roleInvited": "Negócio convidado",
+      "alreadySignedOn": "Já assinado em {{date}}",
+      "signatureAlt": "Assinatura",
+      "clearSignature": "Limpar assinatura",
+      "saving": "Salvando...",
+      "signSubmit": "Assinar e enviar",
+      "otherSignature": "Assinatura da outra parte",
+      "otherSignedOn": "A outra parte assinou em {{date}}",
+      "otherAlt": "Assinatura da outra parte",
+      "otherNotSigned": "A outra parte ainda não assinou."
+    },
+    "agreementFormChrome": {
+      "title": "Acordo de parceria",
+      "partnerId": "ID do negócio parceiro (toBusinessId):",
+      "partnerIdPh": "Informem o ID do negócio parceiro",
+      "yourName": "Nome do seu negócio:",
+      "yourNamePh": "Informem o nome do seu negócio",
+      "partnerName": "Nome do negócio parceiro:",
+      "partnerNamePh": "Informem o nome do negócio parceiro",
+      "agreementTitle": "Título do acordo:",
+      "agreementTitlePh": "Título do acordo (ex.: Campanha de verão)",
+      "description": "Descrição da parceria:",
+      "descriptionPh": "Descrevam brevemente a parceria",
+      "provide": "O que vocês fornecerão no acordo:",
+      "providePh": "O que vocês fornecerão no acordo",
+      "receive": "O que vocês receberão no acordo:",
+      "receivePh": "O que vocês receberão no acordo",
+      "type": "Tipo de parceria:",
+      "selectType": "Selecionar tipo",
+      "typeJoint": "Campanha conjunta",
+      "typeReferral": "Indicações",
+      "typeResale": "Revenda",
+      "typeOther": "Outro",
+      "commission": "Comissão / pagamento (se houver):",
+      "commissionPh": "ex.: 10% de comissão",
+      "startDate": "Data de início do acordo:",
+      "endDate": "Data de término do acordo:",
+      "cancellable": "Pode ser cancelado em qualquer etapa",
+      "confidentiality": "Cláusula de confidencialidade",
+      "sigFirst": "Assinatura (primeiro signatário):",
+      "sigSecond": "Assinatura (segundo signatário):",
+      "clearSignature": "Limpar assinatura",
+      "firstNotSigned": "O primeiro signatário ainda não assinou",
+      "secondNotSigned": "O segundo signatário ainda não assinou",
+      "senderAlt": "Assinatura do remetente",
+      "receiverAlt": "Assinatura do destinatário",
+      "sending": "Enviando...",
+      "submit": "Enviar o acordo",
+      "sentOk": "Acordo enviado ao destinatário para assinatura!",
+      "completeOk": "O acordo está completo!"
+    },
+    "dashAppointChrome": {
+      "overviewTitle": "Visão geral de horários",
+      "overviewSubtitle": "Sincronizado com horários em tempo real",
+      "thisWeek": "Esta semana",
+      "lastWeek": "Semana passada",
+      "total": "Total de horários",
+      "totalHint": "De todos os horários do sistema",
+      "average": "Média de horários por dia",
+      "averageHint": "Com base na semana atual",
+      "trend": "Tendência de horários",
+      "thisWeekCount": "Esta semana: {{count}}",
+      "upcoming": "Próximos",
+      "completed": "Concluídos",
+      "canceled": "Cancelados",
+      "businessOwner": "Dono do negócio",
+      "greetingFallback": "Demo",
+      "greetingSubtitle": "Veja o que está acontecendo no seu negócio hoje.",
+      "clientLabel": "Cliente:",
+      "aiSuggestion": "Sugestão de IA:",
+      "approveSend": "Aprovar e enviar",
+      "thisWeekBtn": "Esta semana",
+      "totalAppointments": "Total de horários",
+      "totalFromSystem": "De todos os horários do sistema",
+      "averagePerDay": "Média de horários por dia",
+      "basedCurrentWeek": "Com base na semana atual",
+      "appointmentTrend": "Tendência de horários",
+      "lastWeekLabel": "Semana passada",
+      "lastWeekTitle": "Semana passada: {{count}}",
+      "thisWeekTitle": "Esta semana: {{count}}",
+      "aiRecsTitle": "Recomendações de IA",
+      "aiRecsSubtitle": "Aprovem ações inteligentes antes de enviar",
+      "pendingCount": "{{count}} pendentes",
+      "clientColon": "Cliente:",
+      "aiSuggestionColon": "Sugestão de IA:",
+      "approveAndSend": "Aprovar e enviar",
+      "greetingSubtitleAlt": "Veja o que está acontecendo no seu negócio hoje.",
+      "goodMorning": "Bom dia",
+      "goodAfternoon": "Boa tarde",
+      "goodEvening": "Boa noite",
+      "peakDay": "Dia de pico: {{day}}",
+      "peakAppointments": "{{count}} horários"
+    },
+    "paymentFormChrome": {
+      "fullName": "Nome completo",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "shippingAddress": "Endereço de entrega",
+      "cardNumber": "Número do cartão",
+      "expiryDate": "Validade",
+      "cvv": "CVV",
+      "onlinePayment": "Pagamento online",
+      "payNow": "Pagar agora",
+      "makePayment": "Fazer pagamento",
+      "back": "Voltar",
+      "thankYou": "Obrigado, {{name}}!",
+      "business": "Negócio:",
+      "yourBusiness": "Seu negócio",
+      "confirmationSent": "Confirmação enviada para:",
+      "address": "Endereço:",
+      "totalAmount": "Valor total:",
+      "phonePayTitle": "Preencham os dados e ligaremos para vocês",
+      "showDescription": "Mostrar descrição",
+      "selectPaymentProvider": "Selecionar provedor de pagamento",
+      "freeShipping": "Frete grátis",
+      "paidShipping": "Frete pago",
+      "paymentTitle": "Pagamento",
+      "selectMethod": "Selecione o método de pagamento preferido:",
+      "creditCardPayment": "Pagamento com cartão",
+      "phonePayment": "Pagamento por telefone",
+      "sendAndCall": "Enviar e ligaremos para vocês",
+      "phoneContactNote": "Entraremos em contato para concluir o pagamento por telefone.",
+      "paymentReceivedNote": "Seu pagamento foi recebido e estamos processando o pedido.",
+      "notProvided": "Não informado",
+      "consultationService": "Serviço de consultoria",
+      "phoneTimeLabel": "Telefone"
+    },
+    "ratingChrome": {
+      "title": "Avaliar o serviço",
+      "service": "Serviço",
+      "professionalism": "Profissionalismo",
+      "punctuality": "Pontualidade",
+      "availability": "Disponibilidade",
+      "value": "Custo-benefício",
+      "goal": "Alcance do objetivo",
+      "experience": "Experiência geral",
+      "commentPh": "Adicionem detalhes / avaliação",
+      "submit": "Enviar avaliação",
+      "latestReviews": "Avaliações recentes",
+      "customer": "Cliente"
+    },
+    "appointHistoryChrome": {
+      "title": "Histórico de horários",
+      "loadError": "Erro ao carregar o histórico de horários",
+      "empty": "Não há horários para exibir",
+      "date": "Data",
+      "time": "Hora",
+      "service": "Serviço",
+      "status": "Status",
+      "notes": "Notas",
+      "closeAria": "Fechar histórico de horários",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "selectTime": "Selecionar um horário",
+      "select": "Selecionar",
+      "message": "Mensagem",
+      "meeting": "Reunião"
     }
+  },
+  "businessChat": {
+    "title": "Chat com {{name}}",
+    "micDenied": "Não é possível acessar o microfone",
+    "agreementSoon": "Abrindo o formulário de acordo de colaboração — em breve",
+    "stopRecording": "Parar gravação",
+    "startRecording": "Iniciar gravação",
+    "sendAgreement": "Enviar acordo",
+    "placeholder": "Digite uma mensagem...",
+    "send": "Enviar"
+  },
+  "build": {
+    "chatTab": {
+      "loading": "Carregando dados do chat...",
+      "manageTitle": "Gerencie suas mensagens",
+      "manageP1Before": "Todas as mensagens de clientes na página do negócio ficam centralizadas na página",
+      "manageP1Strong": "Mensagens de clientes",
+      "manageP1After": ".",
+      "manageP2": "De lá você pode ler, responder e gerenciar conversas de forma eficiente.",
+      "goToMessages": "Ir para a página de mensagens",
+      "previewTitle": "Chat com o negócio",
+      "yourName": "Seu nome",
+      "writeMessage": "Escreva uma mensagem...",
+      "stop": "Parar",
+      "record": "Gravar",
+      "send": "Enviar",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "file": "Arquivo",
+      "audioUnsupported": "Seu navegador não oferece suporte à reprodução de áudio.",
+      "youCustomer": "Você (cliente)",
+      "business": "Negócio",
+      "system": "Sistema"
+    }
+  },
+  "clientChat": {
+    "placeholder": "Digite uma mensagem...",
+    "openFailed": "Não foi possível abrir o chat com este negócio.",
+    "loadError": "Erro ao carregar as mensagens.",
+    "loading": "Carregando a conversa...",
+    "refresh": "Atualizar",
+    "sidebarTitle": "Chat com o negócio",
+    "businessFallback": "Negócio",
+    "unknown": "Desconhecido"
   }
 }

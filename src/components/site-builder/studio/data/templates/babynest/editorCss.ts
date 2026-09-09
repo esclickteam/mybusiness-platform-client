@@ -17,7 +17,7 @@ export const babynestEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #F472B622, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #FBCFE818, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="babynest"] .store-display,
 [data-template-id="babynest"] .store-display {

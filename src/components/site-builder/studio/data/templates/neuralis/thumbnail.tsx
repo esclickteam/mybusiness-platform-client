@@ -1,8 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function NeuralisThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#050816", color: "#E8F7FF" }}>
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#050816", color: "#E8F7FF" }}>
       <div className="absolute -left-12 top-8 h-36 w-36 rounded-full blur-3xl" style={{ background: "rgba(34,211,238,0.28)" }} />
       <div className="absolute -right-10 bottom-2 h-44 w-44 rounded-full blur-3xl" style={{ background: "rgba(14,165,233,0.2)" }} />
       <div className="relative z-10 flex items-center justify-between">
@@ -10,7 +14,7 @@ export default function NeuralisThumbnail() {
         <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#8BA3B8" }}>AI OS</span>
       </div>
       <h3 className="relative z-10 mt-6 text-5xl font-black leading-none" style={{ fontFamily: "\"Space Grotesk\", sans-serif", letterSpacing: "-0.06em" }}>Neuralis</h3>
-      <p className="relative z-10 mt-3 max-w-[230px] text-sm font-semibold leading-5" style={{ color: "#8BA3B8" }}>מנוע AI שמחבר דאטה, החלטות ואוטומציות.</p>
+      <p className="relative z-10 mt-3 max-w-[230px] text-sm font-semibold leading-5" style={{ color: "#8BA3B8" }}>{tx("מנוע AI שמחבר דאטה, החלטות ואוטומציות.")}</p>
       <div className="relative z-10 mt-6 grid grid-cols-3 gap-2">
         {[42, 8, 99].map((value) => (
           <div key={value} className="aspect-square border p-2" style={{ borderColor: "rgba(34,211,238,0.28)", background: "rgba(255,255,255,0.04)" }}>
@@ -20,8 +24,7 @@ export default function NeuralisThumbnail() {
         ))}
       </div>
       <div className="absolute bottom-0 left-0 right-0 px-5 py-3 text-xs font-black uppercase tracking-[0.22em]" style={{ background: "#22D3EE", color: "#050816" }}>
-        דמו חי
-      </div>
+        {tx("דמו חי")}</div>
     </div>
   );
 }

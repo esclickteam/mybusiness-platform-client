@@ -2,7 +2,7 @@ export const tacoflareEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="tacoflare"], [data-template-id="tacoflare"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a0e0a; --tpl-surface: #251610; --tpl-text: #fff3e8;
   --tpl-muted: #c49a7a; --tpl-primary: #e85d04; --tpl-primary-text: #1a0e0a;

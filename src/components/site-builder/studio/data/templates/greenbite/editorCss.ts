@@ -17,7 +17,7 @@ export const greenbiteEditorCss = `
     radial-gradient(1200px 600px at 100% -10%, #15803D22, transparent 55%),
     radial-gradient(900px 500px at 0% 100%, #4ADE8018, transparent 50%),
     var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="greenbite"] .store-display,
 [data-template-id="greenbite"] .store-display {

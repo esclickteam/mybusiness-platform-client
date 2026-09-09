@@ -1,0 +1,1088 @@
+{
+  "הכל": {
+    "en": "All",
+    "es": "Todo",
+    "pt-BR": "Tudo",
+    "ar": "الكل"
+  },
+  "הסר": {
+    "en": "Remove",
+    "es": "Quitar",
+    "pt-BR": "Remover",
+    "ar": "إزالة"
+  },
+  "הוסף": {
+    "en": "Add",
+    "es": "Añadir",
+    "pt-BR": "Adicionar",
+    "ar": "إضافة"
+  },
+  "כללי": {
+    "en": "General",
+    "es": "General",
+    "pt-BR": "Geral",
+    "ar": "عام"
+  },
+  "אטליה": {
+    "en": "Atelier",
+    "es": "Atelier",
+    "pt-BR": "Ateliê",
+    "ar": "أتيليه"
+  },
+  "נוחות": {
+    "en": "Comfort",
+    "es": "Comodidad",
+    "pt-BR": "Conforto",
+    "ar": "راحة"
+  },
+  "פשרות": {
+    "en": "Compromises",
+    "es": "Concesiones",
+    "pt-BR": "Concessões",
+    "ar": "تنازلات"
+  },
+  "ראיון": {
+    "en": "Interview",
+    "es": "Entrevista",
+    "pt-BR": "Entrevista",
+    "ar": "مقابلة"
+  },
+  "אומנות": {
+    "en": "Craft",
+    "es": "Oficio",
+    "pt-BR": "Ofício",
+    "ar": "حرفة"
+  },
+  "הכוונה": {
+    "en": "Guidance",
+    "es": "Orientación",
+    "pt-BR": "Orientação",
+    "ar": "توجيه"
+  },
+  "טלפון:": {
+    "en": "Phone:",
+    "es": "Teléfono:",
+    "pt-BR": "Telefone:",
+    "ar": "هاتف:"
+  },
+  "כתובת:": {
+    "en": "Address:",
+    "es": "Dirección:",
+    "pt-BR": "Endereço:",
+    "ar": "عنوان:"
+  },
+  "לצפייה": {
+    "en": "View",
+    "es": "Ver",
+    "pt-BR": "Ver",
+    "ar": "للمشاهدة"
+  },
+  "מוכנות": {
+    "en": "Readiness",
+    "es": "Preparación",
+    "pt-BR": "Prontidão",
+    "ar": "جهوزية"
+  },
+  "עד הסל": {
+    "en": "To the cart",
+    "es": "Al carrito",
+    "pt-BR": "Até a sacola",
+    "ar": "إلى السلة"
+  },
+  "אימייל:": {
+    "en": "Email:",
+    "es": "Correo:",
+    "pt-BR": "E-mail:",
+    "ar": "بريد:"
+  },
+  "מדיניות": {
+    "en": "Policy",
+    "es": "Política",
+    "pt-BR": "Política",
+    "ar": "سياسة"
+  },
+  "מדיניות פרטיות": {
+    "en": "Privacy policy",
+    "es": "Política de privacidad",
+    "pt-BR": "Política de privacidade",
+    "ar": "سياسة الخصوصية"
+  },
+  "ציר זמן": {
+    "en": "Timeline",
+    "es": "Línea de tiempo",
+    "pt-BR": "Linha do tempo",
+    "ar": "جدول زمني"
+  },
+  "בינלאומי": {
+    "en": "International",
+    "es": "Internacional",
+    "pt-BR": "Internacional",
+    "ar": "دولي"
+  },
+  "בניית סט": {
+    "en": "Set building",
+    "es": "Construcción de set",
+    "pt-BR": "Montagem de set",
+    "ar": "بناء مشهد"
+  },
+  "התבוננות": {
+    "en": "Observation",
+    "es": "Observación",
+    "pt-BR": "Observação",
+    "ar": "تأمّل"
+  },
+  "חדר שינה": {
+    "en": "Bedroom",
+    "es": "Dormitorio",
+    "pt-BR": "Quarto",
+    "ar": "غرفة نوم"
+  },
+  "מדף נבחר": {
+    "en": "Featured shelf",
+    "es": "Estante destacado",
+    "pt-BR": "Prateleira em destaque",
+    "ar": "رف مختار"
+  },
+  "רגעי בית": {
+    "en": "Home moments",
+    "es": "Momentos de casa",
+    "pt-BR": "Momentos de casa",
+    "ar": "لحظات بيت"
+  },
+  "שם מנהלת": {
+    "en": "Director name",
+    "es": "Nombre de la directora",
+    "pt-BR": "Nome da diretora",
+    "ar": "اسم المديرة"
+  },
+  "בלוק בלוג": {
+    "en": "Blog block",
+    "es": "Bloque de blog",
+    "pt-BR": "Bloco de blog",
+    "ar": "كتلة مدونة"
+  },
+  "בלוק חנות": {
+    "en": "Store block",
+    "es": "Bloque de tienda",
+    "pt-BR": "Bloco de loja",
+    "ar": "كتلة متجر"
+  },
+  "בלוק צוות": {
+    "en": "Team block",
+    "es": "Bloque de equipo",
+    "pt-BR": "Bloco de equipe",
+    "ar": "كتلة فريق"
+  },
+  "גריד ציוד": {
+    "en": "Gear grid",
+    "es": "Rejilla de equipo",
+    "pt-BR": "Grade de equipamentos",
+    "ar": "شبكة معدات"
+  },
+  "חדר האזנה": {
+    "en": "Listening room",
+    "es": "Sala de escucha",
+    "pt-BR": "Sala de escuta",
+    "ar": "غرفة استماع"
+  },
+  "לוח זמנים": {
+    "en": "Schedule",
+    "es": "Horario",
+    "pt-BR": "Agenda",
+    "ar": "جدول مواعيد"
+  },
+  "משקי מקור": {
+    "en": "Source farms",
+    "es": "Granjas de origen",
+    "pt-BR": "Fazendas de origem",
+    "ar": "مزارع المصدر"
+  },
+  "סטים רכים": {
+    "en": "Soft sets",
+    "es": "Sets suaves",
+    "pt-BR": "Sets suaves",
+    "ar": "مشاهد ناعمة"
+  },
+  "פינות בית": {
+    "en": "Home corners",
+    "es": "Rincones de casa",
+    "pt-BR": "Cantos de casa",
+    "ar": "زوايا بيت"
+  },
+  "קטיף בוקר": {
+    "en": "Morning harvest",
+    "es": "Cosecha de mañana",
+    "pt-BR": "Colheita da manhã",
+    "ar": "قطاف صباحي"
+  },
+  "קיר פרסים": {
+    "en": "Awards wall",
+    "es": "Muro de premios",
+    "pt-BR": "Parede de prêmios",
+    "ar": "جدار جوائز"
+  },
+  "קצב אימון": {
+    "en": "Training pace",
+    "es": "Ritmo de entrenamiento",
+    "pt-BR": "Ritmo de treino",
+    "ar": "إيقاع تدريب"
+  },
+  "שגרת בוקר": {
+    "en": "Morning routine",
+    "es": "Rutina de mañana",
+    "pt-BR": "Rotina matinal",
+    "ar": "روتين صباحي"
+  },
+  "שורות מדף": {
+    "en": "Shelf rows",
+    "es": "Filas de estante",
+    "pt-BR": "Fileiras de prateleira",
+    "ar": "صفوف رف"
+  },
+  "תגית סקשן": {
+    "en": "Section tag",
+    "es": "Etiqueta de sección",
+    "pt-BR": "Tag de seção",
+    "ar": "وسم قسم"
+  },
+  "תגית Free": {
+    "en": "Free tag",
+    "es": "Etiqueta Free",
+    "pt-BR": "Tag Free",
+    "ar": "وسم Free"
+  },
+  "אוסף מוביל": {
+    "en": "Lead collection",
+    "es": "Colección destacada",
+    "pt-BR": "Coleção em destaque",
+    "ar": "مجموعة بارزة"
+  },
+  "בדיקת ציוד": {
+    "en": "Gear check",
+    "es": "Revisión de equipo",
+    "pt-BR": "Checagem de equipamento",
+    "ar": "فحص معدات"
+  },
+  "בית זכוכית": {
+    "en": "Glass house",
+    "es": "Casa de cristal",
+    "pt-BR": "Casa de vidro",
+    "ar": "بيت زجاج"
+  },
+  "בלוק גלריה": {
+    "en": "Gallery block",
+    "es": "Bloque de galería",
+    "pt-BR": "Bloco de galeria",
+    "ar": "كتلة معرض"
+  },
+  "בלוק ייעוץ": {
+    "en": "Consulting block",
+    "es": "Bloque de consultoría",
+    "pt-BR": "Bloco de consultoria",
+    "ar": "كتلة استشارة"
+  },
+  "בלוק מנהלת": {
+    "en": "Director block",
+    "es": "Bloque de dirección",
+    "pt-BR": "Bloco da direção",
+    "ar": "كتلة المديرة"
+  },
+  "גלריית ברק": {
+    "en": "Spark gallery",
+    "es": "Galería de destello",
+    "pt-BR": "Galeria de brilho",
+    "ar": "معرض ومضة"
+  },
+  "גלריית מסע": {
+    "en": "Journey gallery",
+    "es": "Galería de viaje",
+    "pt-BR": "Galeria de jornada",
+    "ar": "معرض رحلة"
+  },
+  "השלמות לסל": {
+    "en": "Cart add-ons",
+    "es": "Complementos al carrito",
+    "pt-BR": "Complementos da sacola",
+    "ar": "إكمالات للسلة"
+  },
+  "חדר משחקים": {
+    "en": "Playroom",
+    "es": "Sala de juegos",
+    "pt-BR": "Sala de jogos",
+    "ar": "غرفة ألعاب"
+  },
+  "טופס ייעוץ": {
+    "en": "Consulting form",
+    "es": "Formulario de consultoría",
+    "pt-BR": "Formulário de consultoria",
+    "ar": "نموذج استشارة"
+  },
+  "טלפון פוטר": {
+    "en": "Footer phone",
+    "es": "Teléfono del pie",
+    "pt-BR": "Telefone do rodapé",
+    "ar": "هاتف التذييل"
+  },
+  "טקסט ייעוץ": {
+    "en": "Consulting text",
+    "es": "Texto de consultoría",
+    "pt-BR": "Texto de consultoria",
+    "ar": "نص استشارة"
+  },
+  "טקסט מנהלת": {
+    "en": "Director text",
+    "es": "Texto de la directora",
+    "pt-BR": "Texto da diretora",
+    "ar": "نص المديرة"
+  },
+  "כותרת בלוג": {
+    "en": "Blog title",
+    "es": "Título del blog",
+    "pt-BR": "Título do blog",
+    "ar": "عنوان المدونة"
+  },
+  "כתובת פוטר": {
+    "en": "Footer address",
+    "es": "Dirección del pie",
+    "pt-BR": "Endereço do rodapé",
+    "ar": "عنوان التذييل"
+  },
+  "מטבח ניסוי": {
+    "en": "Test kitchen",
+    "es": "Cocina de ensayo",
+    "pt-BR": "Cozinha de teste",
+    "ar": "مطبخ تجربة"
+  },
+  "ניווט נייד": {
+    "en": "Mobile nav",
+    "es": "Navegación móvil",
+    "pt-BR": "Navegação móvel",
+    "ar": "تنقل جوّال"
+  },
+  "סוג פרויקט": {
+    "en": "Project type",
+    "es": "Tipo de proyecto",
+    "pt-BR": "Tipo de projeto",
+    "ar": "نوع المشروع"
+  },
+  "סצנות סלון": {
+    "en": "Living-room scenes",
+    "es": "Escenas de salón",
+    "pt-BR": "Cenas de sala",
+    "ar": "مشاهد صالون"
+  },
+  "סרטון אנכי": {
+    "en": "Vertical video",
+    "es": "Vídeo vertical",
+    "pt-BR": "Vídeo vertical",
+    "ar": "فيديو عمودي"
+  },
+  "סרטון ראשי": {
+    "en": "Main video",
+    "es": "Vídeo principal",
+    "pt-BR": "Vídeo principal",
+    "ar": "فيديو رئيسي"
+  },
+  "ערימת דנים": {
+    "en": "Denim stack",
+    "es": "Pila de denim",
+    "pt-BR": "Pilha de jeans",
+    "ar": "كومة دنيم"
+  },
+  "שולחן ערוך": {
+    "en": "Set table",
+    "es": "Mesa puesta",
+    "pt-BR": "Mesa posta",
+    "ar": "طاولة معدّة"
+  },
+  "שלבי הזמנה": {
+    "en": "Order steps",
+    "es": "Pasos del pedido",
+    "pt-BR": "Etapas do pedido",
+    "ar": "خطوات الطلب"
+  },
+  "תווי ניחוח": {
+    "en": "Scent notes",
+    "es": "Notas de aroma",
+    "pt-BR": "Notas de aroma",
+    "ar": "نوتات عطر"
+  },
+  "Hero פנימי": {
+    "en": "Inner hero",
+    "es": "Hero interior",
+    "pt-BR": "Hero interno",
+    "ar": "هيرو داخلي"
+  },
+  "ארכיון מרתף": {
+    "en": "Cellar archive",
+    "es": "Archivo de bodega",
+    "pt-BR": "Arquivo da adega",
+    "ar": "أرشيف قبو"
+  },
+  "בלוק המלצות": {
+    "en": "Testimonials block",
+    "es": "Bloque de testimonios",
+    "pt-BR": "Bloco de depoimentos",
+    "ar": "كتلة شهادات"
+  },
+  "בלוק מותגים": {
+    "en": "Brands block",
+    "es": "Bloque de marcas",
+    "pt-BR": "Bloco de marcas",
+    "ar": "كتلة علامات"
+  },
+  "בלוק מחירון": {
+    "en": "Price-list block",
+    "es": "Bloque de tarifas",
+    "pt-BR": "Bloco de tabela",
+    "ar": "كتلة قائمة أسعار"
+  },
+  "בריף פרויקט": {
+    "en": "Project brief",
+    "es": "Brief del proyecto",
+    "pt-BR": "Brief do projeto",
+    "ar": "موجز مشروع"
+  },
+  "גלריית כביש": {
+    "en": "Road gallery",
+    "es": "Galería de carretera",
+    "pt-BR": "Galeria de estrada",
+    "ar": "معرض طريق"
+  },
+  "גלריית סלון": {
+    "en": "Living-room gallery",
+    "es": "Galería de salón",
+    "pt-BR": "Galeria de sala",
+    "ar": "معرض صالون"
+  },
+  "גלריית רחוב": {
+    "en": "Street gallery",
+    "es": "Galería de calle",
+    "pt-BR": "Galeria de rua",
+    "ar": "معرض شارع"
+  },
+  "האימייל שלך": {
+    "en": "Your email",
+    "es": "Vuestro correo",
+    "pt-BR": "Seu e-mail",
+    "ar": "بريدكم"
+  },
+  "המשך לתשלום": {
+    "en": "Continue to payment",
+    "es": "Seguid al pago",
+    "pt-BR": "Continuar para o pagamento",
+    "ar": "المتابعة للدفع"
+  },
+  "טקסט המלצות": {
+    "en": "Testimonials text",
+    "es": "Texto de testimonios",
+    "pt-BR": "Texto de depoimentos",
+    "ar": "نص الشهادات"
+  },
+  "להמשך קריאה": {
+    "en": "Read more",
+    "es": "Seguid leyendo",
+    "pt-BR": "Continuar a leitura",
+    "ar": "لمتابعة القراءة"
+  },
+  "לוקבוק רחוב": {
+    "en": "Street lookbook",
+    "es": "Lookbook de calle",
+    "pt-BR": "Lookbook de rua",
+    "ar": "لوك بوك شارع"
+  },
+  "מוצרי מתכון": {
+    "en": "Recipe products",
+    "es": "Productos de receta",
+    "pt-BR": "Produtos de receita",
+    "ar": "منتجات وصفة"
+  },
+  "מוצרים לבית": {
+    "en": "Home products",
+    "es": "Productos para casa",
+    "pt-BR": "Produtos para casa",
+    "ar": "منتجات للبيت"
+  },
+  "סדנת נעליים": {
+    "en": "Shoe workshop",
+    "es": "Taller de zapatos",
+    "pt-BR": "Oficina de sapatos",
+    "ar": "ورشة أحذية"
+  },
+  "פאנלי מסלול": {
+    "en": "Track panels",
+    "es": "Paneles de itinerario",
+    "pt-BR": "Painéis de percurso",
+    "ar": "لوحات مسار"
+  },
+  "פיצולי ציוד": {
+    "en": "Gear splits",
+    "es": "Desgloses de equipo",
+    "pt-BR": "Divisões de equipamento",
+    "ar": "تقسيمات معدات"
+  },
+  "ציטוט מנהלת": {
+    "en": "Director quote",
+    "es": "Cita de la directora",
+    "pt-BR": "Citação da diretora",
+    "ar": "اقتباس المديرة"
+  },
+  "תמונת ייעוץ": {
+    "en": "Consulting image",
+    "es": "Imagen de consultoría",
+    "pt-BR": "Imagem de consultoria",
+    "ar": "صورة استشارة"
+  },
+  "תמונת מנהלת": {
+    "en": "Director photo",
+    "es": "Foto de la directora",
+    "pt-BR": "Foto da diretora",
+    "ar": "صورة المديرة"
+  },
+  "תפקיד מנהלת": {
+    "en": "Director role",
+    "es": "Cargo de la directora",
+    "pt-BR": "Cargo da diretora",
+    "ar": "دور المديرة"
+  },
+  "בחירה אחראית": {
+    "en": "Responsible choice",
+    "es": "Elección responsable",
+    "pt-BR": "Escolha responsável",
+    "ar": "اختيار مسؤول"
+  },
+  "בחירות מערכת": {
+    "en": "System choices",
+    "es": "Elecciones de sistema",
+    "pt-BR": "Escolhas de sistema",
+    "ar": "اختيارات منظومة"
+  },
+  "בלוק שירותים": {
+    "en": "Services block",
+    "es": "Bloque de servicios",
+    "pt-BR": "Bloco de serviços",
+    "ar": "كتلة خدمات"
+  },
+  "דוכני מוצרים": {
+    "en": "Product stalls",
+    "es": "Puestos de productos",
+    "pt-BR": "Barracas de produtos",
+    "ar": "أكشاك منتجات"
+  },
+  "כותרת המלצות": {
+    "en": "Testimonials title",
+    "es": "Título de testimonios",
+    "pt-BR": "Título de depoimentos",
+    "ar": "عنوان الشهادات"
+  },
+  "כותרת מחירון": {
+    "en": "Price-list title",
+    "es": "Título de tarifas",
+    "pt-BR": "Título da tabela",
+    "ar": "عنوان قائمة الأسعار"
+  },
+  "לוקים נבחרים": {
+    "en": "Featured looks",
+    "es": "Looks destacados",
+    "pt-BR": "Looks em destaque",
+    "ar": "إطلالات مختارة"
+  },
+  "ליישום במותג": {
+    "en": "For brand use",
+    "es": "Para aplicar en la marca",
+    "pt-BR": "Para aplicar na marca",
+    "ar": "للتطبيق في العلامة"
+  },
+  "מוצרים דומים": {
+    "en": "Similar products",
+    "es": "Productos similares",
+    "pt-BR": "Produtos semelhantes",
+    "ar": "منتجات مشابهة"
+  },
+  "מסילת מוצרים": {
+    "en": "Product rail",
+    "es": "Carril de productos",
+    "pt-BR": "Trilho de produtos",
+    "ar": "سكة منتجات"
+  },
+  "ספסלי מוצרים": {
+    "en": "Product benches",
+    "es": "Bancos de productos",
+    "pt-BR": "Bancos de produtos",
+    "ar": "مقاعد منتجات"
+  },
+  "סצנות נוספות": {
+    "en": "More scenes",
+    "es": "Más escenas",
+    "pt-BR": "Mais cenas",
+    "ar": "مشاهد إضافية"
+  },
+  "קטגוריות כוח": {
+    "en": "Power categories",
+    "es": "Categorías de fuerza",
+    "pt-BR": "Categorias de força",
+    "ar": "فئات قوة"
+  },
+  "איך המותג גדל": {
+    "en": "How the brand grew",
+    "es": "Cómo creció la marca",
+    "pt-BR": "Como a marca cresceu",
+    "ar": "كيف نمت العلامة"
+  },
+  "גלריית סניקרס": {
+    "en": "Sneaker gallery",
+    "es": "Galería de zapatillas",
+    "pt-BR": "Galeria de tênis",
+    "ar": "معرض أحذية رياضية"
+  },
+  "גלריית שעונים": {
+    "en": "Watch gallery",
+    "es": "Galería de relojes",
+    "pt-BR": "Galeria de relógios",
+    "ar": "معرض ساعات"
+  },
+  "הסל ריק כרגע.": {
+    "en": "The cart is empty for now.",
+    "es": "El carrito está vacío por ahora.",
+    "pt-BR": "A sacola está vazia por enquanto.",
+    "ar": "السلة فارغة حالياً."
+  },
+  "יצירות נבחרות": {
+    "en": "Featured works",
+    "es": "Obras destacadas",
+    "pt-BR": "Obras em destaque",
+    "ar": "أعمال مختارة"
+  },
+  "לוקבוק אוספים": {
+    "en": "Collection lookbook",
+    "es": "Lookbook de colecciones",
+    "pt-BR": "Lookbook de coleções",
+    "ar": "لوك بوك مجموعات"
+  },
+  "מאחורי הצילום": {
+    "en": "Behind the shoot",
+    "es": "Detrás de la sesión",
+    "pt-BR": "Por trás da foto",
+    "ar": "خلف الكاميرا"
+  },
+  "מדפים מסודרים": {
+    "en": "Arranged shelves",
+    "es": "Estantes ordenados",
+    "pt-BR": "Prateleiras arrumadas",
+    "ar": "رفوف مرتّبة"
+  },
+  "מוזאיקה ראשית": {
+    "en": "Main mosaic",
+    "es": "Mosaico principal",
+    "pt-BR": "Mosaico principal",
+    "ar": "فسيفساء رئيسية"
+  },
+  "מחוגים נבחרים": {
+    "en": "Featured hands",
+    "es": "Manecillas destacadas",
+    "pt-BR": "Ponteiros em destaque",
+    "ar": "عقارب مختارة"
+  },
+  "נושאים לקריאה": {
+    "en": "Topics to read",
+    "es": "Temas para leer",
+    "pt-BR": "Temas para ler",
+    "ar": "مواضيع للقراءة"
+  },
+  "סצנות בית קפה": {
+    "en": "Café scenes",
+    "es": "Escenas de café",
+    "pt-BR": "Cenas de café",
+    "ar": "مشاهد مقهى"
+  },
+  "סקרולר מוצרים": {
+    "en": "Product scroller",
+    "es": "Scroller de productos",
+    "pt-BR": "Scroller de produtos",
+    "ar": "تمرير منتجات"
+  },
+  "פורטרטים מוצר": {
+    "en": "Product portraits",
+    "es": "Retratos de producto",
+    "pt-BR": "Retratos de produto",
+    "ar": "صور منتج"
+  },
+  "קמפיין / מושן": {
+    "en": "Campaign / motion",
+    "es": "Campaña / motion",
+    "pt-BR": "Campanha / motion",
+    "ar": "حملة / موشن"
+  },
+  "רצועות נבחרות": {
+    "en": "Featured straps",
+    "es": "Correas destacadas",
+    "pt-BR": "Pulseiras em destaque",
+    "ar": "أشرطة مختارة"
+  },
+  "רשתות חברתיות": {
+    "en": "Social networks",
+    "es": "Redes sociales",
+    "pt-BR": "Redes sociais",
+    "ar": "شبكات اجتماعية"
+  },
+  "שולחנות צמחים": {
+    "en": "Plant tables",
+    "es": "Mesas de plantas",
+    "pt-BR": "Mesas de plantas",
+    "ar": "طاولات نباتات"
+  },
+  "שורה על הספסל": {
+    "en": "A row on the bench",
+    "es": "Una fila en el banco",
+    "pt-BR": "Uma fileira no banco",
+    "ar": "صف على المقعد"
+  },
+  "שם מותג בפוטר": {
+    "en": "Footer brand name",
+    "es": "Nombre de marca en el pie",
+    "pt-BR": "Nome da marca no rodapé",
+    "ar": "اسم العلامة في التذييل"
+  },
+  "אריזות מיותרות": {
+    "en": "Extra packaging",
+    "es": "Embalajes de más",
+    "pt-BR": "Embalagens extras",
+    "ar": "تغليف زائد"
+  },
+  "בחירות מומלצות": {
+    "en": "Recommended picks",
+    "es": "Elecciones recomendadas",
+    "pt-BR": "Escolhas recomendadas",
+    "ar": "اختيارات موصى بها"
+  },
+  "לא מצאת תשובה?": {
+    "en": "Didn't find an answer?",
+    "es": "¿No encontrasteis respuesta?",
+    "pt-BR": "Não encontrou uma resposta?",
+    "ar": "لم تجدوا إجابة؟"
+  },
+  "מהזמנה עד הדלת": {
+    "en": "From order to the door",
+    "es": "Del pedido a la puerta",
+    "pt-BR": "Do pedido até a porta",
+    "ar": "من الطلب حتى الباب"
+  },
+  "מינונים נבחרים": {
+    "en": "Featured doses",
+    "es": "Dosis destacadas",
+    "pt-BR": "Doses em destaque",
+    "ar": "جرعات مختارة"
+  },
+  "שימושים וסגנון": {
+    "en": "Uses and style",
+    "es": "Usos y estilo",
+    "pt-BR": "Usos e estilo",
+    "ar": "استخدامات وأسلوب"
+  },
+  "תגית על הסרטון": {
+    "en": "Tag on the video",
+    "es": "Etiqueta sobre el vídeo",
+    "pt-BR": "Tag no vídeo",
+    "ar": "وسم على الفيديو"
+  },
+  "איך אפשר לעזור?": {
+    "en": "How can we help?",
+    "es": "¿Cómo podemos ayudaros?",
+    "pt-BR": "Como podemos ajudar?",
+    "ar": "كيف يمكننا المساعدة؟"
+  },
+  "בלוק סרטון ראשי": {
+    "en": "Main video block",
+    "es": "Bloque de vídeo principal",
+    "pt-BR": "Bloco de vídeo principal",
+    "ar": "كتلة فيديو رئيسي"
+  },
+  "טקסט ליד הסרטון": {
+    "en": "Text beside the video",
+    "es": "Texto junto al vídeo",
+    "pt-BR": "Texto ao lado do vídeo",
+    "ar": "نص بجانب الفيديو"
+  },
+  "טקסט סרטון ראשי": {
+    "en": "Main video text",
+    "es": "Texto del vídeo principal",
+    "pt-BR": "Texto do vídeo principal",
+    "ar": "نص الفيديو الرئيسي"
+  },
+  "טקסט עמוד פנימי": {
+    "en": "Inner page text",
+    "es": "Texto de página interior",
+    "pt-BR": "Texto de página interna",
+    "ar": "نص صفحة داخلية"
+  },
+  "לצפייה בקטגוריה": {
+    "en": "View category",
+    "es": "Ved la categoría",
+    "pt-BR": "Ver a categoria",
+    "ar": "مشاهدة الفئة"
+  },
+  "צעצועים ומוצרים": {
+    "en": "Toys and products",
+    "es": "Juguetes y productos",
+    "pt-BR": "Brinquedos e produtos",
+    "ar": "ألعاب ومنتجات"
+  },
+  "אולי תרצו להוסיף": {
+    "en": "You might want to add",
+    "es": "Quizá queráis añadir",
+    "pt-BR": "Talvez você queira adicionar",
+    "ar": "ربما تريدون إضافة"
+  },
+  "טקסט החלפת סרטון": {
+    "en": "Video swap text",
+    "es": "Texto de cambio de vídeo",
+    "pt-BR": "Texto de troca de vídeo",
+    "ar": "نص تبديل فيديو"
+  },
+  "כותרת ליד הסרטון": {
+    "en": "Title beside the video",
+    "es": "Título junto al vídeo",
+    "pt-BR": "Título ao lado do vídeo",
+    "ar": "عنوان بجانب الفيديو"
+  },
+  "כותרת סרטון ראשי": {
+    "en": "Main video title",
+    "es": "Título del vídeo principal",
+    "pt-BR": "Título do vídeo principal",
+    "ar": "عنوان الفيديو الرئيسي"
+  },
+  "כותרת עמוד פנימי": {
+    "en": "Inner page title",
+    "es": "Título de página interior",
+    "pt-BR": "Título de página interna",
+    "ar": "عنوان صفحة داخلية"
+  },
+  "כפתור שליחת בקשה": {
+    "en": "Send-request button",
+    "es": "Botón de envío de solicitud",
+    "pt-BR": "Botão de envio de pedido",
+    "ar": "زر إرسال طلب"
+  },
+  "כרטיס ייעוץ הירו": {
+    "en": "Hero consulting card",
+    "es": "Tarjeta de consultoría del hero",
+    "pt-BR": "Cartão de consultoria do hero",
+    "ar": "بطاقة استشارة الهيرو"
+  },
+  "מה קורה אחרי הסל": {
+    "en": "What happens after the cart",
+    "es": "Qué pasa después del carrito",
+    "pt-BR": "O que acontece depois da sacola",
+    "ar": "ماذا يحدث بعد السلة"
+  },
+  "מסגרת סרטון אנכי": {
+    "en": "Vertical video frame",
+    "es": "Marco de vídeo vertical",
+    "pt-BR": "Moldura de vídeo vertical",
+    "ar": "إطار فيديو عمودي"
+  },
+  "מסגרת סרטון ראשי": {
+    "en": "Main video frame",
+    "es": "Marco de vídeo principal",
+    "pt-BR": "Moldura de vídeo principal",
+    "ar": "إطار الفيديو الرئيسي"
+  },
+  "פורטרטים ריחניים": {
+    "en": "Scented portraits",
+    "es": "Retratos aromáticos",
+    "pt-BR": "Retratos aromáticos",
+    "ar": "صور عطرة"
+  },
+  "קופסת טופס ייעוץ": {
+    "en": "Consulting form box",
+    "es": "Caja del formulario de consultoría",
+    "pt-BR": "Caixa do formulário de consultoria",
+    "ar": "صندوق نموذج استشارة"
+  },
+  "תמונת אזור פתיחה": {
+    "en": "Opening-area image",
+    "es": "Imagen de zona de apertura",
+    "pt-BR": "Imagem da área de abertura",
+    "ar": "صورة منطقة الافتتاح"
+  },
+  "תמונת הירו משנית": {
+    "en": "Secondary hero image",
+    "es": "Imagen secundaria del hero",
+    "pt-BR": "Imagem secundária do hero",
+    "ar": "صورة هيرو ثانوية"
+  },
+  "תמונת הירו ראשית": {
+    "en": "Primary hero image",
+    "es": "Imagen principal del hero",
+    "pt-BR": "Imagem principal do hero",
+    "ar": "صورة هيرو رئيسية"
+  },
+  "אין מוצרים להצגה.": {
+    "en": "No products to show.",
+    "es": "No hay productos para mostrar.",
+    "pt-BR": "Não há produtos para exibir.",
+    "ar": "لا منتجات للعرض."
+  },
+  "גלריית מדיה מרחפת": {
+    "en": "Hover media gallery",
+    "es": "Galería de media al pasar",
+    "pt-BR": "Galeria de mídia ao passar",
+    "ar": "معرض وسائط عند التمرير"
+  },
+  "סלון יופי פרימיום": {
+    "en": "Premium beauty salon",
+    "es": "Salón de belleza premium",
+    "pt-BR": "Salão de beleza premium",
+    "ar": "صالون جمال فاخر"
+  },
+  "בלוק למה לבחור בנו": {
+    "en": "Why-choose-us block",
+    "es": "Bloque de por qué elegirnos",
+    "pt-BR": "Bloco de por que nos escolher",
+    "ar": "كتلة لماذا تختاروننا"
+  },
+  "טקסט למה לבחור בנו": {
+    "en": "Why-choose-us text",
+    "es": "Texto de por qué elegirnos",
+    "pt-BR": "Texto de por que nos escolher",
+    "ar": "نص لماذا تختاروننا"
+  },
+  "ספרו לנו על הרעיון": {
+    "en": "Tell us about the idea",
+    "es": "Contadnos la idea",
+    "pt-BR": "Conte-nos a ideia",
+    "ar": "أخبرونا عن الفكرة"
+  },
+  "אולי גם יעניין אתכם": {
+    "en": "You may also like",
+    "es": "También os puede interesar",
+    "pt-BR": "Talvez também interesse a você",
+    "ar": "ربما يهمكم أيضاً"
+  },
+  "טקסט הרשמה לעדכונים": {
+    "en": "Updates-signup text",
+    "es": "Texto de alta a novedades",
+    "pt-BR": "Texto de inscrição em novidades",
+    "ar": "نص التسجيل للتحديثات"
+  },
+  "כותרת למה לבחור בנו": {
+    "en": "Why-choose-us title",
+    "es": "Título de por qué elegirnos",
+    "pt-BR": "Título de por que nos escolher",
+    "ar": "عنوان لماذا تختاروننا"
+  },
+  "מוצרים מתוך הלוקבוק": {
+    "en": "Products from the lookbook",
+    "es": "Productos del lookbook",
+    "pt-BR": "Produtos do lookbook",
+    "ar": "منتجات من اللوك بوك"
+  },
+  "קרוסלת מוצרים עדינה": {
+    "en": "Soft product carousel",
+    "es": "Carrusel suave de productos",
+    "pt-BR": "Carrossel suave de produtos",
+    "ar": "دائري منتجات لطيف"
+  },
+  "אירוע או סיבה למשלוח": {
+    "en": "Event or reason for delivery",
+    "es": "Evento o motivo de envío",
+    "pt-BR": "Evento ou motivo da entrega",
+    "ar": "مناسبة أو سبب للتسليم"
+  },
+  "אפשר להוסיף פתק אישי": {
+    "en": "You can add a personal note",
+    "es": "Podéis añadir una nota personal",
+    "pt-BR": "Você pode adicionar um bilhete pessoal",
+    "ar": "يمكن إضافة بطاقة شخصية"
+  },
+  "בואו נבנה משהו גדול.": {
+    "en": "Let's build something big.",
+    "es": "Construyamos algo grande.",
+    "pt-BR": "Vamos construir algo grande.",
+    "ar": "لنبنِ شيئاً كبيراً."
+  },
+  "כותרת הרשמה לעדכונים": {
+    "en": "Updates-signup title",
+    "es": "Título de alta a novedades",
+    "pt-BR": "Título de inscrição em novidades",
+    "ar": "عنوان التسجيل للتحديثات"
+  },
+  "קופסת טקסט ליד סרטון": {
+    "en": "Text box beside a video",
+    "es": "Caja de texto junto a un vídeo",
+    "pt-BR": "Caixa de texto ao lado de um vídeo",
+    "ar": "صندوق نص بجانب فيديو"
+  },
+  "האוסף שהלקוחות בוחרים": {
+    "en": "The collection customers pick",
+    "es": "La colección que eligen los clientes",
+    "pt-BR": "A coleção que os clientes escolhem",
+    "ar": "المجموعة التي يختارها الزبائن"
+  },
+  "בואו נדבר על הצעד הבא של העסק.": {
+    "en": "Let's talk about the business's next step.",
+    "es": "Hablemos del siguiente paso del negocio.",
+    "pt-BR": "Vamos falar do próximo passo do negócio.",
+    "ar": "لنتحدّث عن الخطوة التالية للعمل."
+  },
+  "תפקידים פתוחים שמחכים לאדם הנכון.": {
+    "en": "Open roles waiting for the right person.",
+    "es": "Puestos abiertos que esperan a la persona adecuada.",
+    "pt-BR": "Vagas abertas à espera da pessoa certa.",
+    "ar": "وظائف مفتوحة تنتظر الشخص المناسب."
+  },
+  "ספרו לנו בקצרה על העסק והמטרה שלכם": {
+    "en": "Tell us briefly about your business and your goal",
+    "es": "Contadnos en breve el negocio y vuestro objetivo",
+    "pt-BR": "Conte-nos em breve sobre o negócio e o seu objetivo",
+    "ar": "أخبرونا باختصار عن العمل وهدفكم"
+  },
+  "לשלוח קורות חיים או לדבר עם מגייס/ת?": {
+    "en": "Send a CV or talk with a recruiter?",
+    "es": "¿Enviar un CV o hablar con un reclutador/a?",
+    "pt-BR": "Enviar um currículo ou falar com um recrutador(a)?",
+    "ar": "إرسال سيرة أو التحدث مع مسؤول توظيف؟"
+  },
+  "אין מוצרים להצגה. הגדירו מוצרים בתוסף החנות.": {
+    "en": "No products to show. Set up products in the store add-on.",
+    "es": "No hay productos para mostrar. Definid productos en el complemento de tienda.",
+    "pt-BR": "Não há produtos para exibir. Defina produtos no complemento da loja.",
+    "ar": "لا منتجات للعرض. عرّفوا منتجات في إضافة المتجر."
+  },
+  "לא נמצאו מוצרים בסינון הנוכחי. נסו חיפוש אחר או קטגוריה אחרת.": {
+    "en": "No products found in the current filter. Try another search or another category.",
+    "es": "No se encontraron productos en el filtro actual. Probad otra búsqueda u otra categoría.",
+    "pt-BR": "Nenhum produto encontrado no filtro atual. Tente outra busca ou outra categoria.",
+    "ar": "لم يُعثر على منتجات في التصفية الحالية. جرّبوا بحثاً آخر أو فئة أخرى."
+  },
+  "מערכת מותג נבנית ברצף של החלטות ברורות: מחקר, ניסוח, עיצוב והטמעה.": {
+    "en": "A brand system is built through a sequence of clear decisions: research, wording, design, and rollout.",
+    "es": "Un sistema de marca se construye con una secuencia de decisiones claras: investigación, redacción, diseño e implantación.",
+    "pt-BR": "Um sistema de marca se constrói numa sequência de decisões claras: pesquisa, redação, design e implantação.",
+    "ar": "منظومة علامة تُبنى بتسلسل قرارات واضحة: بحث وصياغة وتصميم وتثبيت."
+  },
+  "כל רכיב ויזואלי בתבנית ממוקם כדי לחזק היררכיה, זכירות ותנועה בין עמודים.": {
+    "en": "Every visual element in the template is placed to strengthen hierarchy, memorability, and movement between pages.",
+    "es": "Cada elemento visual de la plantilla se coloca para reforzar jerarquía, recuerdo y movimiento entre páginas.",
+    "pt-BR": "Cada elemento visual do modelo é posicionado para reforçar hierarquia, memorização e movimento entre páginas.",
+    "ar": "كل عنصر بصري في القالب يُوضع ليعزّز التراتبية والتذكّر والحركة بين الصفحات."
+  },
+  "לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.": {
+    "en": "No products found in the current filter. Add products in the store add-on or try another category.",
+    "es": "No se encontraron productos en el filtro actual. Añadid productos en el complemento de tienda o probad otra categoría.",
+    "pt-BR": "Nenhum produto encontrado no filtro atual. Adicione produtos no complemento da loja ou tente outra categoria.",
+    "ar": "لم يُعثر على منتجات في التصفية الحالية. أضيفوا منتجات في إضافة المتجر أو جرّبوا فئة أخرى."
+  },
+  "עמוד שירותים שבנוי כמו לוח אימון: מסלולים ברורים, עצימות, שגרה ותנועה ישירה לעבר ההרשמה.": {
+    "en": "A services page built like a training board: clear tracks, intensity, routine, and a direct move toward signup.",
+    "es": "Una página de servicios construida como un tablón de entrenamiento: itinerarios claros, intensidad, rutina y un movimiento directo hacia el registro.",
+    "pt-BR": "Uma página de serviços construída como um quadro de treino: percursos claros, intensidade, rotina e um movimento direto rumo à inscrição.",
+    "ar": "صفحة خدمات مبنية كلوحة تدريب: مسارات واضحة وكثافة وروتين وحركة مباشرة نحو التسجيل."
+  },
+  "עמוד תובנות שמרחיב את הנראות המקצועית עם מאמרים, סיגנלים שוקיים ומבנה קריא של דוח פנימי.": {
+    "en": "An insights page that widens the professional presence with articles, market signals, and a readable internal-report structure.",
+    "es": "Una página de insights que amplía la presencia profesional con artículos, señales de mercado y una estructura legible de informe interno.",
+    "pt-BR": "Uma página de insights que amplia a presença profissional com artigos, sinais de mercado e uma estrutura legível de relatório interno.",
+    "ar": "صفحة رؤى توسّع الحضور المهني بمقالات وإشارات سوق وبنية مقروءة لتقرير داخلي."
+  }
+}

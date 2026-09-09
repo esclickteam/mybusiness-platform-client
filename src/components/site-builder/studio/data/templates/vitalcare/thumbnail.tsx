@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function VitalcareThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl"
       style={{
         background: "linear-gradient(135deg, #F5F7F8 0%, #FFFFFF 48%, #DDEAE9 100%)",
@@ -37,13 +41,11 @@ export default function VitalcareThumbnail() {
             className="mb-3 text-[9px] font-semibold uppercase tracking-[0.26em]"
             style={{ color: "#0D5C63" }}
           >
-            מרפאה פרטית
-          </p>
+            {tx("מרפאה פרטית")}</p>
           <h3 className="text-2xl font-semibold leading-tight" style={{ fontFamily: "Georgia, serif", color: "#163033" }}>
-            רפואה רגועה, מדויקת ואנושית.
-          </h3>
+            {tx("רפואה רגועה, מדויקת ואנושית.")}</h3>
           <div className="mt-5 grid max-w-[170px] grid-cols-3 gap-2">
-            {["התמחויות", "רופאים", "ביטוחים"].map((label) => (
+            {[tx("התמחויות"), tx("רופאים"), tx("ביטוחים")].map((label) => (
               <div key={label} className="rounded-lg bg-white/80 px-2 py-2 text-center text-[8px] font-semibold" style={{ color: "#5F6F72" }}>
                 {label}
               </div>

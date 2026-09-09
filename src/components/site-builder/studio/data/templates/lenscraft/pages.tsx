@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lenscraftDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -36,8 +38,8 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         </a>
         <nav className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.18em] text-white/60 md:flex">
           <a href="#services" className="transition hover:text-[var(--p)]">{getValue(data, "navServices")}</a>
-          <a href="#gallery" className="transition hover:text-[var(--p)]">גלריה</a>
-          <a href="#packages" className="transition hover:text-[var(--p)]">חבילות</a>
+          <a href="#gallery" className="transition hover:text-[var(--p)]">{tx("גלריה")}</a>
+          <a href="#packages" className="transition hover:text-[var(--p)]">{tx("חבילות")}</a>
         </nav>
         <button type="button" onClick={openModal} className="border border-[var(--p)] px-5 py-2.5 text-sm font-bold text-[var(--p)] transition hover:bg-[var(--p)] hover:text-white">
           {getValue(data, "heroPrimaryButton")}
@@ -55,7 +57,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
       <div className="absolute inset-y-0 left-0 w-px bg-[var(--p)]" />
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl items-center px-5 pt-24 lg:px-8" style={{ direction: "ltr" }}>
         <Reveal variant="right" className="w-full max-w-2xl" delayMs={80}>
-          <div dir="rtl" className="border-r-2 border-[var(--p)] pr-6 text-white">
+          <div dir={templateDir()} className="border-r-2 border-[var(--p)] pr-6 text-white">
             <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--p)]">{getValue(data, "heroEyebrow")}</p>
             <h1 className="mt-5 whitespace-pre-line text-5xl font-bold leading-[0.94] tracking-[-0.08em] md:text-7xl lg:text-8xl">{getValue(data, "heroTitle")}</h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-white/72">{getValue(data, "heroSubtitle")}</p>
@@ -97,7 +99,7 @@ function ServicesFilmstrip({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-x-0 bottom-0 p-5">
                   <span className="text-xs font-bold text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-2 text-2xl font-bold tracking-[-0.05em]">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-white/70">{text}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/70">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -164,7 +166,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                   <span className="text-sm font-bold text-[var(--p)]">0{index + 1}</span>
                   <h3 className="text-2xl font-bold tracking-[-0.05em]">{title}</h3>
                 </div>
-                <p className="border-y border-dashed border-white/14 py-4 text-sm leading-7 text-white/64 md:border-x md:border-y-0 md:px-8 md:py-0">{text}</p>
+                <p className="border-y border-dashed border-white/14 py-4 text-sm leading-7 text-white/64 md:border-x md:border-y-0 md:px-8 md:py-0">{tx(text)}</p>
                 <div className="text-left">
                   <span className="block text-xs font-bold uppercase tracking-[0.2em] text-white/42">starting</span>
                   <strong className="text-3xl text-[var(--p)]">{price}</strong>
@@ -199,7 +201,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 {index < steps.length - 1 ? <span className="absolute left-0 top-1/2 hidden h-16 w-px -translate-y-1/2 bg-[var(--p)] lg:block" /> : null}
                 <div className="text-2xl md:text-5xl font-bold tracking-[-0.08em] text-[var(--p)]">0{index + 1}</div>
                 <h3 className="mt-4 text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/58">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-white/58">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -258,7 +260,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
                   <img src={image} alt="" className="h-full w-full object-cover grayscale transition duration-700 hover:grayscale-0" />
                 </div>
                 <figcaption className="border-x border-b border-white/12 bg-black p-5">
-                  <p className="text-sm leading-7 text-white/76">"{text}"</p>
+                  <p className="text-sm leading-7 text-white/76">"{tx(text)}"</p>
                   <p className="mt-4 font-bold text-[var(--p)]">{name}</p>
                   <p className="text-xs text-white/45">{role}</p>
                 </figcaption>
@@ -282,17 +284,17 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--p)]">book a shoot</p>
           <h2 className="mt-3 text-4xl font-bold tracking-[-0.06em] md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-4 text-sm leading-7 text-white/62">{getValue(data, "contactText")}</p>
-          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-28 border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="איזה צילום אתם צריכים?"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-white/14 bg-black px-5 py-4 text-start text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/14 bg-black px-5 py-4 text-start text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/14 bg-black px-5 py-4 text-start text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-28 border border-white/14 bg-black px-5 py-4 text-start text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder={tx("איזה צילום אתם צריכים?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white transition hover:bg-[var(--a)]">{getValue(data, "contactButton")}</button>
           </form>
           <div className="mt-7 grid gap-2 text-sm text-white/56">
-            <p><span className="text-[var(--p)]">טלפון</span> · {getValue(data, "phone")}</p>
-            <p><span className="text-[var(--p)]">אימייל</span> · {getValue(data, "email")}</p>
-            <p><span className="text-[var(--p)]">כתובת</span> · {getValue(data, "address")}</p>
+            <p><span className="text-[var(--p)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+            <p><span className="text-[var(--p)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+            <p><span className="text-[var(--p)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
           </div>
         </Reveal>
       </div>
@@ -324,9 +326,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/40 bg-[var(--surface)] p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70 transition hover:text-[var(--p)]">×</button>
         <h3 className="text-3xl font-bold tracking-[-0.05em]">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/14 bg-black px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/14 bg-black px-5 py-4 text-start text-white outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -360,7 +362,7 @@ export default function LenscraftPages(props: LenscraftPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="lenscraft" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir={templateDir()} data-template-id="lenscraft" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: lenscraftEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

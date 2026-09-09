@@ -50,7 +50,7 @@ export default function ClientCalendar({
   onBackToList,
   businessId,
 }: ClientCalendarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<number>(new Date().getMonth());
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -106,7 +106,7 @@ export default function ClientCalendar({
   const serviceDuration = Number(selectedService?.duration) || 30;
   const servicePrice = Number(selectedService?.price) || 0;
   const serviceName =
-    selectedService?.name || selectedService?.title || "Selected service";
+    selectedService?.name || selectedService?.title || t("leftover.calendar.selectedService");
 
   const dateStr = useMemo(() => {
     return selectedDate.toLocaleDateString("en-CA");
@@ -159,7 +159,7 @@ export default function ClientCalendar({
     } catch (err) {
       console.error("Error fetching booked slots:", err);
       setBookedSlots([]);
-      setError("Unable to load availability. Please try again.");
+      setError(t("leftover.calendar.loadFailed"));
     } finally {
       setLoadingSlots(false);
     }
@@ -286,12 +286,12 @@ export default function ClientCalendar({
 
   const validateBookingForm = () => {
     if (!clientName.trim()) {
-      alert("Please enter your full name.");
+      alert(t("leftover.calendar.enterFullName"));
       return false;
     }
 
     if (!clientPhone.trim()) {
-      alert("Please enter your phone number.");
+      alert(t("leftover.calendar.enterPhone"));
       return false;
     }
 
@@ -302,12 +302,12 @@ export default function ClientCalendar({
     }
 
     if (!clientAddress.trim()) {
-      alert("Please enter your address.");
+      alert(t("leftover.calendar.enterAddress"));
       return false;
     }
 
     if (!selectedSlot) {
-      alert("No time slot selected.");
+      alert(t("leftover.calendar.noSlot"));
       return false;
     }
 
@@ -322,7 +322,7 @@ export default function ClientCalendar({
     }
 
     if (!selectedService?._id) {
-      alert("Missing service. Please choose a service again.");
+      alert(t("leftover.calendar.missingService"));
       return false;
     }
 
@@ -371,8 +371,12 @@ export default function ClientCalendar({
       const apiErr = err as ApiError;
 
       alert(
-        "Error submitting booking: " +
-          (apiErr?.response?.data?.message || apiErr.message || "Unknown error")
+        t("leftover.calendar.submitError", {
+          detail:
+            apiErr?.response?.data?.message ||
+            apiErr.message ||
+            t("leftover.calendar.unknownError"),
+        })
       );
     } finally {
       setSubmittingBooking(false);
@@ -405,16 +409,15 @@ export default function ClientCalendar({
         <div className="space-y-6">
           <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-600">
-              Appointment booking
+              {t("leftover.calendar.bookingEyebrow")}
             </p>
 
             <h3 className="mt-2 text-2xl font-black text-slate-800">
-              Choose a date to see available times
+              {t("leftover.calendar.chooseDateTitle")}
             </h3>
 
             <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Select a service date and choose one of the available appointment
-              slots.
+              {t("leftover.calendar.chooseDateHint")}
             </p>
           </div>
 
@@ -426,7 +429,7 @@ export default function ClientCalendar({
                   className="rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-bold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50"
                   type="button"
                 >
-                  ← Previous Month
+                  {t("leftover.calendar.prevMonth")}
                 </button>
 
                 <button
@@ -434,7 +437,7 @@ export default function ClientCalendar({
                   className="rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-bold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50"
                   type="button"
                 >
-                  Next Month →
+                  {t("leftover.calendar.nextMonth")}
                 </button>
               </div>
 
@@ -455,11 +458,11 @@ export default function ClientCalendar({
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Selected date
+                  {t("leftover.calendar.selectedDate")}
                 </p>
 
                 <h4 className="mt-1 text-2xl font-black text-slate-800">
-                  {selectedDate.toLocaleDateString("en-GB")}
+                  {selectedDate.toLocaleDateString(i18n.language)}
                 </h4>
               </div>
 
@@ -471,24 +474,24 @@ export default function ClientCalendar({
             {loadingSlots && (
               <InfoBox
                 variant="muted"
-                title="Checking availability…"
-                text="Please wait while we load available time slots."
+                title={t("leftover.calendar.checkingTitle")}
+                text={t("leftover.calendar.checkingText")}
               />
             )}
 
             {!loadingSlots && error && (
               <InfoBox
                 variant="error"
-                title="Unable to load availability"
-                text="Please try again in a few moments."
+                title={t("leftover.calendar.loadTitle")}
+                text={t("leftover.calendar.loadText")}
               />
             )}
 
             {!loadingSlots && !error && isClosedDay && (
               <InfoBox
                 variant="closed"
-                title="This business is closed on this day"
-                text="Please choose another date."
+                title={t("leftover.calendar.closedTitle")}
+                text={t("leftover.calendar.closedText")}
               />
             )}
 
@@ -497,7 +500,7 @@ export default function ClientCalendar({
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl bg-slate-50 p-4">
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Working hours
+                      {t("leftover.calendar.workingHours")}
                     </p>
 
                     <p className="mt-1 text-lg font-black text-slate-800">
@@ -508,7 +511,7 @@ export default function ClientCalendar({
                   {config.breaks && (
                     <div className="rounded-2xl bg-amber-50 p-4">
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-500">
-                        Breaks
+                        {t("leftover.calendar.breaks")}
                       </p>
 
                       <p className="mt-1 text-sm font-bold text-amber-700">
@@ -521,7 +524,7 @@ export default function ClientCalendar({
                 {availableSlots.length > 0 ? (
                   <div>
                     <h5 className="mb-3 text-sm font-black text-slate-800">
-                      Available Slots
+                      {t("leftover.calendar.availableSlots")}
                     </h5>
 
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -540,8 +543,8 @@ export default function ClientCalendar({
                 ) : (
                   <InfoBox
                     variant="full"
-                    title="All slots are booked for this day"
-                    text="Try another date."
+                    title={t("leftover.calendar.fullTitle")}
+                    text={t("leftover.calendar.fullText")}
                   />
                 )}
               </div>
@@ -556,53 +559,54 @@ export default function ClientCalendar({
             <>
               <div className="rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-5 text-slate-800 shadow-xl shadow-violet-100">
                 <p className="text-sm font-bold text-violet-100">
-                  Booking Summary
+                  {t("leftover.calendar.summaryEyebrow")}
                 </p>
 
                 <h4 className="mt-2 text-2xl font-black">
-                  Confirm your appointment
+                  {t("leftover.calendar.confirmTitle")}
                 </h4>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <SummaryItem label="Service" value={selectedSlot.name} />
-                  <SummaryItem label="Date" value={selectedSlot.date} />
-                  <SummaryItem label="Time" value={selectedSlot.time} />
+                  <SummaryItem label={t("leftover.calendar.labelService")} value={selectedSlot.name} />
+                  <SummaryItem label={t("leftover.calendar.labelDate")} value={selectedSlot.date} />
+                  <SummaryItem label={t("leftover.calendar.labelTime")} value={selectedSlot.time} />
                   <SummaryItem
-                    label="Duration"
-                    value={`${Math.floor(selectedSlot.duration / 60)}h ${
-                      selectedSlot.duration % 60
-                    }m`}
+                    label={t("leftover.calendar.labelDuration")}
+                    value={t("leftover.calendar.durationValue", {
+                      hours: Math.floor(selectedSlot.duration / 60),
+                      minutes: selectedSlot.duration % 60,
+                    })}
                   />
-                  <SummaryItem label="Price" value={`$${selectedSlot.price}`} />
+                  <SummaryItem label={t("leftover.calendar.labelPrice")} value={`$${selectedSlot.price}`} />
                 </div>
               </div>
 
               <div className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-5">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
-                    Your details
+                    {t("leftover.calendar.yourDetails")}
                   </p>
 
                   <h4 className="mt-1 text-xl font-black text-slate-800">
-                    Fill in your contact information
+                    {t("leftover.calendar.contactTitle")}
                   </h4>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    No account is required to book this appointment.
+                    {t("leftover.calendar.contactHint")}
                   </p>
                 </div>
 
                 <div className="grid gap-4">
-                  <FormField label="Full Name" required>
+                  <FormField label={t("leftover.calendar.fullName")} required>
                     <input
                       value={clientName}
                       onChange={(event) => setClientName(event.target.value)}
-                      placeholder="Enter full name"
+                      placeholder={t("leftover.calendar.fullNamePh")}
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
 
-                  <FormField label="Phone" required>
+                  <FormField label={t("leftover.calendar.phone")} required>
                     <PhoneInput
                       country="us"
                       enableSearch
@@ -633,20 +637,20 @@ export default function ClientCalendar({
                     />
                   </FormField>
 
-                  <FormField label="Address" required>
+                  <FormField label={t("leftover.calendar.address")} required>
                     <input
                       value={clientAddress}
                       onChange={(event) => setClientAddress(event.target.value)}
-                      placeholder="Enter address"
+                      placeholder={t("leftover.calendar.addressPh")}
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
 
-                  <FormField label="Note">
+                  <FormField label={t("leftover.calendar.note")}>
                     <textarea
                       value={clientNote}
                       onChange={(event) => setClientNote(event.target.value)}
-                      placeholder="Additional note"
+                      placeholder={t("leftover.calendar.notePh")}
                       rows={4}
                       className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
@@ -661,7 +665,9 @@ export default function ClientCalendar({
                   onClick={handleSubmitBooking}
                   disabled={submittingBooking}
                 >
-                  {submittingBooking ? "Submitting…" : "Confirm Booking"}
+                  {submittingBooking
+                    ? t("leftover.calendar.submitting")
+                    : t("leftover.calendar.confirmBooking")}
                 </button>
 
                 <button
@@ -670,7 +676,7 @@ export default function ClientCalendar({
                   onClick={() => setMode("slots")}
                   disabled={submittingBooking}
                 >
-                  Back to Time Slots
+                  {t("leftover.calendar.backToSlots")}
                 </button>
               </div>
             </>
@@ -681,13 +687,13 @@ export default function ClientCalendar({
               </div>
 
               <h4 className="text-2xl font-black text-emerald-800">
-                Booking Submitted Successfully!
+                {t("leftover.calendar.successTitle")}
               </h4>
 
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-emerald-700">
                 {clientEmail
-                  ? "A confirmation email has been sent to your email address."
-                  : "Your booking is confirmed."}
+                  ? t("leftover.calendar.successEmail")
+                  : t("leftover.calendar.successPlain")}
               </p>
 
               <button
@@ -695,7 +701,7 @@ export default function ClientCalendar({
                 className="mt-6 rounded-md border border-emerald-200/80 bg-gradient-to-l from-emerald-100 via-green-50 to-white px-6 py-3 text-sm font-black text-black shadow-lg shadow-emerald-100 transition hover:-translate-y-0.5 hover:from-emerald-200/80 hover:via-green-50 hover:to-white"
                 onClick={onBackToList}
               >
-                Back to List
+                {t("leftover.calendar.backToList")}
               </button>
             </div>
           )}

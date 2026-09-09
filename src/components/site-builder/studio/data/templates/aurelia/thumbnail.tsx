@@ -1,9 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function AureliaThumbnail() {
+  const { i18n } = useTranslation();
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl bg-[#14100d] p-5 text-[#f5eee1]"
     >
       <div className="absolute left-4 top-6 h-24 w-24 rounded-full bg-[#c9a24b]/25 blur-2xl" />
@@ -23,20 +27,18 @@ export default function AureliaThumbnail() {
 
       <div className="relative z-10 mt-10">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">
-          מסעדת שף • יין
-        </p>
+          {tx("מסעדת שף • יין")}</p>
         <h3 className="max-w-[230px] font-serif text-3xl font-semibold leading-[1.05]">
-          טעם שמספר סיפור.
-        </h3>
+          {tx("טעם שמספר סיפור.")}</h3>
 
         <div className="mt-6 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-[#c9a24b]/15 bg-[#1a1510] p-3">
             <div className="h-16 rounded-xl bg-[#c9a24b]/20" />
-            <p className="mt-3 font-serif text-[11px] font-semibold">אנטריקוט</p>
+            <p className="mt-3 font-serif text-[11px] font-semibold">{tx("אנטריקוט")}</p>
           </div>
           <div className="translate-y-5 rounded-2xl bg-[#c9a24b] p-3 text-[#14100d]">
             <div className="h-16 rounded-xl bg-[#14100d]/25" />
-            <p className="mt-3 font-serif text-[11px] font-semibold">ערב שף</p>
+            <p className="mt-3 font-serif text-[11px] font-semibold">{tx("ערב שף")}</p>
           </div>
         </div>
       </div>

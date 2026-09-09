@@ -58,9 +58,15 @@ import {
   aiTemplateTitle,
 } from "../../../../i18n/aiAutomationLabels";
 import {
+  workingTemplateCopy,
+  workingTemplateSearchHaystack,
+} from "../../../../i18n/workingTemplateCopy";
+import { translateReadinessBlocker } from "../../../../i18n/automationReadinessCopy";
+import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
+  isAiGalleryTemplate,
   getWaTemplateId,
   isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
@@ -355,14 +361,7 @@ export default function AutomationsTemplatesPage() {
         if (seen.has(template.key)) return false;
         seen.add(template.key);
         if (!q) return true;
-        return [
-          template.name,
-          template.description,
-          template.triggerLabel,
-          template.resultLabels.join(" "),
-          ...(template.keywords || []),
-        ]
-          .join(" ")
+        return workingTemplateSearchHaystack(t, template)
           .toLowerCase()
           .includes(q);
       })
@@ -372,7 +371,7 @@ export default function AutomationsTemplatesPage() {
         if (aiA !== aiB) return aiA - aiB;
         return a.template.rank - b.template.rank;
       });
-  }, [cards, category, query]);
+  }, [cards, category, query, t]);
 
   const visibleCategories = useMemo(() => TEMPLATE_CATEGORIES.filter((item) => item.id === "all" || cards.some(({ template }) => template.categories.includes(item.id))), [cards]);
 
@@ -491,8 +490,8 @@ export default function AutomationsTemplatesPage() {
 
     const created = await createAutomationWorkflow(businessId, {
       useStarter: false,
-      name: template.name,
-      description: template.description,
+      name: workingTemplateCopy(t, template).name,
+      description: workingTemplateCopy(t, template).description,
       nodes,
       edges: graph.edges,
     });
@@ -539,7 +538,7 @@ export default function AutomationsTemplatesPage() {
     ) {
       const created = await createAutomationWorkflow(businessId, {
         recipe: readiness.recipe.key,
-        name: template.name,
+        name: workingTemplateCopy(t, template).name,
       });
       if (!isAi) try {
         await publishAutomationWorkflow(businessId, created._id);
@@ -644,8 +643,8 @@ export default function AutomationsTemplatesPage() {
 
     const created = await createAutomationWorkflow(businessId, {
       useStarter: false,
-      name: template.name,
-      description: template.description,
+      name: workingTemplateCopy(t, template).name,
+      description: workingTemplateCopy(t, template).description,
       nodes,
       edges: graph.edges,
     });
@@ -690,7 +689,10 @@ export default function AutomationsTemplatesPage() {
         navigate(`/business/${businessId}/dashboard/whatsapp`);
         return;
       }
-      toast.error(card.readiness.blocker || t("automations.toasts.notReady"));
+      toast.error(
+        translateReadinessBlocker(t, card.readiness.blocker) ||
+          t("automations.toasts.notReady"),
+      );
       return;
     }
 
@@ -911,6 +913,7 @@ export default function AutomationsTemplatesPage() {
                 : isAi
                   ? t("automations.templates.ctaEnableAi")
                   : t("automations.templates.ctaEnableNow");
+            const blockerText = translateReadinessBlocker(t, readiness.blocker);
 
             return (
               <article
@@ -945,41 +948,43 @@ export default function AutomationsTemplatesPage() {
 
                 <h3 className="ax-template-card__title">
                   {(() => {
-                    const catalog = getAiTemplateByKey(
-                      template.key || template.recipeKey
-                    );
+                    const catalog = isAiGalleryTemplate(template)
+                      ? getAiTemplateByKey(template.key || template.recipeKey)
+                      : undefined;
                     return catalog
                       ? aiTemplateTitle(t, catalog)
-                      : template.name;
+                      : workingTemplateCopy(t, template).name;
                   })()}
                 </h3>
                 <p className="ax-template-card__desc">
                   {(() => {
-                    const catalog = getAiTemplateByKey(
-                      template.key || template.recipeKey
-                    );
+                    const catalog = isAiGalleryTemplate(template)
+                      ? getAiTemplateByKey(template.key || template.recipeKey)
+                      : undefined;
                     return catalog
                       ? aiTemplateDescription(t, catalog)
-                      : template.description;
+                      : workingTemplateCopy(t, template).description;
                   })()}
                 </p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>{t("automations.templates.trigger")}</em>
-                    {template.triggerLabel}
+                    {workingTemplateCopy(t, template).triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>{t("automations.templates.result")}</em>
-                    {template.resultLabels.join(" · ")}
+                    {workingTemplateCopy(t, template)
+                      .resultLabels
+                      .join(" · ")}
                   </span>
                 </div>
 
-                {!readiness.ready && readiness.blocker ? (
-                  <p className="ax-template-card__blocker">{readiness.blocker}</p>
+                {!readiness.ready && blockerText ? (
+                  <p className="ax-template-card__blocker">{blockerText}</p>
                 ) : isWa ? (
                   <p className="ax-template-card__hint">
                     {readiness.suggestedWaTemplateName
@@ -1001,7 +1006,7 @@ export default function AutomationsTemplatesPage() {
                     !hasPlan
                       ? t("automations.templates.planRequiredTitle")
                       : !readiness.ready
-                        ? readiness.blocker
+                        ? blockerText
                         : writeBlockedTitle
                   }
                   onClick={() => {
@@ -1119,7 +1124,7 @@ export default function AutomationsTemplatesPage() {
             >
               <X size={16} />
             </button>
-            <h2>{t("automations.templates.activateTitle", { name: picker.template.name })}</h2>
+            <h2>{t("automations.templates.activateTitle", { name: workingTemplateCopy(t, picker.template).name })}</h2>
             {picker.template.engine === "whatsapp_simple" ||
             picker.template.requiresWaTemplate ? (
               <>

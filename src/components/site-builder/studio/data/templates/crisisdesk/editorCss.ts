@@ -11,7 +11,7 @@ export const crisisdeskEditorCss = `
   font-family: "Tinos", sans-serif;
   background: var(--bg);
   color: var(--text);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="crisisdesk"] .text-center,
 [data-template-id="crisisdesk"] .text-center { text-align: center; }

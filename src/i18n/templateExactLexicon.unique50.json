@@ -1,0 +1,38 @@
+{
+  "כתובת המשרד": {
+    "en": "Office address",
+    "es": "Dirección del despacho",
+    "pt-BR": "Endereço do escritório",
+    "ar": "عنوان المكتب"
+  },
+  "בחרו אפשרות": {
+    "en": "Choose an option",
+    "es": "Elegid una opción",
+    "pt-BR": "Escolham uma opção",
+    "ar": "اختاروا خياراً"
+  },
+  "מה מעניין אותך?": {
+    "en": "What interests you?",
+    "es": "¿Qué os interesa?",
+    "pt-BR": "O que interessa a vocês?",
+    "ar": "ما الذي يهمكم؟"
+  },
+  "סדנה / הרצאה": {
+    "en": "Workshop / lecture",
+    "es": "Taller / conferencia",
+    "pt-BR": "Oficina / palestra",
+    "ar": "ورشة / محاضرة"
+  },
+  "כמה מילים על הצורך": {
+    "en": "A few words about the need",
+    "es": "Unas palabras sobre la necesidad",
+    "pt-BR": "Algumas palavras sobre a necessidade",
+    "ar": "كلمات قليلة عن الحاجة"
+  },
+  "מה תרצו לשאול?": {
+    "en": "What would you like to ask?",
+    "es": "¿Qué queréis preguntar?",
+    "pt-BR": "O que vocês querem perguntar?",
+    "ar": "ماذا تريدون أن تسألوا؟"
+  }
+}

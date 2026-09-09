@@ -37,7 +37,7 @@ const FREEZE_MOTION_CSS = `
 
 function buildSrcDoc(html: string, css = "") {
   return `<!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html dir="auto">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />

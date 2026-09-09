@@ -1,6 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function AtelierxThumbnail() {
+  const { i18n } = useTranslation();
   const images = [
     "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=75",
     "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=75",
@@ -8,12 +12,12 @@ export default function AtelierxThumbnail() {
   ];
 
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden" style={{ background: "#FAFAFA", color: "#111111" }}>
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden" style={{ background: "#FAFAFA", color: "#111111" }}>
       <img src={images[0]} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-white/10" />
       <div className="relative z-10 flex h-full min-h-[260px] flex-col justify-between p-5 text-white">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-black uppercase tracking-[0.28em]">בוטיק אופנה</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.28em]">{tx("בוטיק אופנה")}</span>
           <span className="h-px w-12" style={{ background: "#E11D48" }} />
         </div>
         <div>

@@ -14,7 +14,7 @@
   --wa-danger: #e41e3f;
   --wa-radius: 8px;
   --wa-field-h: 36px;
-  direction: rtl;
+
   color: var(--wa-text);
   background: var(--wa-bg);
   border: 1px solid var(--wa-border);

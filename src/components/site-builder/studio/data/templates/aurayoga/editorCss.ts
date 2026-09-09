@@ -4,7 +4,7 @@ export const aurayogaEditorCss = `
 [data-template-id="aurayoga"],
 [data-template-id="aurayoga"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #A78BFA;
   --bg: #1C1526;

@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 type Props = {
   className?: string;
@@ -15,10 +18,11 @@ export function CrmBookingMount({
   minHeight = 420,
   accent,
 }: Props) {
+  const { i18n } = useTranslation();
   return (
     <div
       className={className}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
@@ -35,8 +39,8 @@ export function CrmBookingMount({
         width: "100%",
         maxWidth: 720,
       }}
-      title="יומן פגישות מה-CRM"
-      aria-label="יומן פגישות מה-CRM"
+      title={tx("יומן פגישות מה-CRM")}
+      aria-label={tx("יומן פגישות מה-CRM")}
     />
   );
 }

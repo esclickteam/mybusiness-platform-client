@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -280,15 +282,13 @@ function Header({
                 activePage === item.id ? "text-[#D7FF36]" : "text-white/75",
               ].join(" ")}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
 
         <div className="hidden lg:block">
-          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
-            אימון ניסיון
-            <ArrowLeft className="h-4 w-4" />
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>{tx("אימון ניסיון")}<ArrowLeft className="h-4 w-4" />
           </PulseButton>
         </div>
 
@@ -296,7 +296,7 @@ function Header({
           type="button"
           onClick={() => setMobileOpen((value) => !value)}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black lg:hidden"
-          aria-label="תפריט"
+          aria-label={tx("תפריט")}
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -314,9 +314,9 @@ function Header({
               }}
               data-bizuply-spa-nav="true"
               data-bizuply-page-id={item.id}
-              className="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-black/5"
+              className="rounded-2xl px-4 py-3 text-start text-sm font-black hover:bg-black/5"
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
 
@@ -328,10 +328,8 @@ function Header({
             }}
             data-bizuply-spa-nav="true"
             data-bizuply-page-id="contact"
-            className="rounded-2xl bg-black px-4 py-3 text-right text-sm font-black text-white"
-          >
-            אימון ניסיון
-          </button>
+            className="rounded-2xl bg-black px-4 py-3 text-start text-sm font-black text-white"
+          >{tx("אימון ניסיון")}</button>
         </div>
       ) : null}
     </header>
@@ -346,9 +344,9 @@ function HeroFloatingStats() {
           <HeartPulse className="h-5 w-5" />
         </span>
 
-        <div className="text-right">
+        <div className="text-start">
           <p className="text-sm font-black">BPM 148</p>
-          <p className="text-xs font-bold text-white/45">דופק ממוצע</p>
+          <p className="text-xs font-bold text-white/45">{tx("דופק ממוצע")}</p>
         </div>
       </div>
 
@@ -357,9 +355,9 @@ function HeroFloatingStats() {
           <Timer className="h-5 w-5" />
         </span>
 
-        <div className="text-right">
-          <p className="text-sm font-black">45 דקות</p>
-          <p className="text-xs font-bold text-white/45">אימון ממוקד</p>
+        <div className="text-start">
+          <p className="text-sm font-black">{tx("45 דקות")}</p>
+          <p className="text-xs font-bold text-white/45">{tx("אימון ממוקד")}</p>
         </div>
       </div>
     </div>
@@ -376,7 +374,7 @@ function HeroSection({
       <img
         data-gjs-type="image"
         src={pulsecoreImages.hero}
-        alt="אימון פיטנס עוצמתי"
+        alt={tx("אימון פיטנס עוצמתי")}
         className="absolute inset-0 h-full w-full object-cover object-center opacity-80"
       />
 
@@ -386,36 +384,23 @@ function HeroSection({
 
       <div className="relative z-10 mx-auto flex min-h-[760px] max-w-[1320px] flex-col items-center justify-center text-center md:min-h-[calc(100vh-8rem)]">
         <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black text-white/80 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-          <Sparkles className="h-4 w-4 text-[#D7FF36]" />
-          סטודיו פרטי לאימונים מותאמים אישית
-        </div>
+          <Sparkles className="h-4 w-4 text-[#D7FF36]" />{tx("סטודיו פרטי לאימונים מותאמים אישית")}</div>
 
         <h1
           data-gjs-type="text"
           className="mx-auto max-w-6xl text-6xl font-black leading-[0.88] tracking-[-0.09em] drop-shadow-[0_14px_35px_rgba(0,0,0,0.75)] md:text-8xl lg:text-[112px]"
-        >
-          אימון חזק.
-          <span className="block text-[#D7FF36]">אנרגיה גבוהה.</span>
-          תוצאה ברורה.
-        </h1>
+        >{tx("אימון חזק.")}<span className="block text-[#D7FF36]">{tx("אנרגיה גבוהה.")}</span>{tx("תוצאה ברורה.")}</h1>
 
         <p
           data-gjs-type="text"
           className="mx-auto mt-8 max-w-2xl text-base font-semibold leading-8 text-white/76 drop-shadow-[0_10px_25px_rgba(0,0,0,0.75)] md:text-lg"
-        >
-          תכנית כושר אישית, מותאמת, סטודיו פרטי וחדר כושר פרימיום להצגת
-          תוצאות אימון אמיתיות, מחירים והצטרפות מהירה.
-        </p>
+        >{tx("תכנית כושר אישית, מותאמת, סטודיו פרטי וחדר כושר פרימיום להצגת\nתוצאות אימון אמיתיות, מחירים והצטרפות מהירה.")}</p>
 
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
-            לקביעת אימון ניסיון
-            <ArrowLeft className="h-4 w-4" />
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>{tx("לקביעת אימון ניסיון")}<ArrowLeft className="h-4 w-4" />
           </PulseButton>
 
-          <PulseButton pageId="programs" variant="light" onClick={() => onPageChange("programs")}>
-            לראות תוכניות
-            <Play className="h-4 w-4" />
+          <PulseButton pageId="programs" variant="light" onClick={() => onPageChange("programs")}>{tx("לראות תוכניות")}<Play className="h-4 w-4" />
           </PulseButton>
         </div>
       </div>
@@ -423,9 +408,7 @@ function HeroSection({
       <div className="absolute left-6 top-28 z-20 hidden items-center gap-3 rounded-full border border-white/14 bg-white/10 px-4 py-3 text-xs font-black text-white shadow-[0_20px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:flex lg:top-32">
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D7FF36] text-black">
           <Flame className="h-4 w-4" />
-        </span>
-        אימון ניסיון זמין השבוע
-      </div>
+        </span>{tx("אימון ניסיון זמין השבוע")}</div>
 
       <HeroFloatingStats />
     </section>
@@ -446,20 +429,12 @@ function ProgramsSection({
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">
-              תוכניות אימון
-            </p>
+            <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">{tx("תוכניות אימון")}</p>
 
-            <h2 className="mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">
-              בחרו את האימון
-              <br />
-              שמדליק אתכם
-            </h2>
+            <h2 className="mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">{tx("בחרו את האימון")}<br />{tx("שמדליק אתכם")}</h2>
           </div>
 
-          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
-            להצטרפות
-            <ArrowLeft className="h-4 w-4" />
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>{tx("להצטרפות")}<ArrowLeft className="h-4 w-4" />
           </PulseButton>
         </div>
 
@@ -480,20 +455,18 @@ function ProgramsSection({
                 </div>
 
                 <h3 className="mt-24 text-2xl sm:text-4xl font-black tracking-[-0.06em]">
-                  {program.title}
+                  {tx(program.title)}
                 </h3>
 
                 <p className="mt-6 text-base font-medium leading-8 text-white/55 group-hover:text-black/55">
-                  {program.text}
+                  {tx(program.text)}
                 </p>
 
                 <button
                   type="button"
                   onClick={() => onPageChange("contact")}
                   className="mt-8 inline-flex items-center gap-3 text-sm font-black text-[#D7FF36] group-hover:text-black"
-                >
-                  הרשמה לאימון
-                  <ArrowLeft className="h-4 w-4" />
+                >{tx("הרשמה לאימון")}<ArrowLeft className="h-4 w-4" />
                 </button>
               </article>
             );
@@ -509,13 +482,9 @@ function TrainersSection() {
     <section className="bg-[#D7FF36] px-5 py-14 md:py-28 text-black">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 text-center">
-          <p className="text-sm font-black tracking-[0.32em] text-black/45">
-            הצוות
-          </p>
+          <p className="text-sm font-black tracking-[0.32em] text-black/45">{tx("הצוות")}</p>
 
-          <h2 className="mx-auto mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">
-            מאמנים שמרימים אתכם קדימה
-          </h2>
+          <h2 className="mx-auto mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">{tx("מאמנים שמרימים אתכם קדימה")}</h2>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -536,7 +505,7 @@ function TrainersSection() {
 
               <div className="p-7">
                 <p className="text-sm font-black text-[#D7FF36]">
-                  {trainer.role}
+                  {tx(trainer.role)}
                 </p>
 
                 <h3 className="mt-2 text-3xl font-black tracking-[-0.06em]">
@@ -544,7 +513,7 @@ function TrainersSection() {
                 </h3>
 
                 <p className="mt-4 text-sm leading-7 text-white/55">
-                  {trainer.text}
+                  {tx(trainer.text)}
                 </p>
               </div>
             </article>
@@ -564,13 +533,9 @@ function PricingSection({
     <section className="bg-[#080808] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 text-center">
-          <p className="text-sm font-black tracking-[0.32em] text-[#FF4D1D]">
-            מנויים
-          </p>
+          <p className="text-sm font-black tracking-[0.32em] text-[#FF4D1D]">{tx("מנויים")}</p>
 
-          <h2 className="mx-auto mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">
-            מסלול שמתאים לקצב שלכם
-          </h2>
+          <h2 className="mx-auto mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">{tx("מסלול שמתאים לקצב שלכם")}</h2>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -584,24 +549,24 @@ function PricingSection({
                   : "border-white/10 bg-white/[0.06] text-white",
               ].join(" ")}
             >
-              <p className="text-sm font-black opacity-55">{plan.name}</p>
+              <p className="text-sm font-black opacity-55">{tx(plan.name)}</p>
 
               <h3 className="mt-7 text-3xl md:text-6xl font-black tracking-[-0.08em]">
                 {plan.price}
               </h3>
 
-              <p className="mt-4 text-sm leading-7 opacity-60">{plan.text}</p>
+              <p className="mt-4 text-sm leading-7 opacity-60">{tx(plan.text)}</p>
 
               <div className="mt-8 grid gap-3">
                 {plan.items.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-bold">
+                  <div key={tx(item)} className="flex items-center gap-3 text-sm font-bold">
                     <CheckCircle2
                       className={[
                         "h-5 w-5",
                         plan.featured ? "text-black" : "text-[#D7FF36]",
                       ].join(" ")}
                     />
-                    <span>{item}</span>
+                    <span>{tx(item)}</span>
                   </div>
                 ))}
               </div>
@@ -615,9 +580,7 @@ function PricingSection({
                     ? "bg-black text-white"
                     : "bg-[#D7FF36] text-black",
                 ].join(" ")}
-              >
-                להצטרפות
-              </button>
+              >{tx("להצטרפות")}</button>
             </article>
           ))}
         </div>
@@ -636,18 +599,12 @@ function ScheduleSection({
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">
-              מערכת שעות
-            </p>
+            <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">{tx("מערכת שעות")}</p>
 
-            <h2 className="mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">
-              שבוע מלא באנרגיה
-            </h2>
+            <h2 className="mt-5 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl">{tx("שבוע מלא באנרגיה")}</h2>
           </div>
 
-          <PulseButton pageId="contact" variant="orange" onClick={() => onPageChange("contact")}>
-            שמירת מקום
-            <CalendarDays className="h-4 w-4" />
+          <PulseButton pageId="contact" variant="orange" onClick={() => onPageChange("contact")}>{tx("שמירת מקום")}<CalendarDays className="h-4 w-4" />
           </PulseButton>
         </div>
 
@@ -657,11 +614,11 @@ function ScheduleSection({
               key={`${item.day}-${item.time}-${item.name}`}
               className="group grid gap-4 rounded-[28px] border border-white/10 bg-white/[0.06] p-5 transition duration-300 hover:-translate-y-1 hover:bg-white hover:text-black md:grid-cols-[1fr_1fr_1.5fr_auto]"
             >
-              <p className="text-xl font-black">{item.day}</p>
+              <p className="text-xl font-black">{tx(item.day)}</p>
               <p className="text-xl font-black text-[#D7FF36] group-hover:text-black">
                 {item.time}
               </p>
-              <p className="text-xl font-black">{item.name}</p>
+              <p className="text-xl font-black">{tx(item.name)}</p>
 
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF4D1D] text-white">
                 {index + 1}
@@ -682,9 +639,7 @@ function TestimonialsSection() {
           <div>
             <BadgeCheck className="h-14 w-14 text-[#D7FF36]" />
 
-            <h2 className="mt-7 text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl">
-              אנשים שמרגישים את השינוי
-            </h2>
+            <h2 className="mt-7 text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl">{tx("אנשים שמרגישים את השינוי")}</h2>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -698,7 +653,7 @@ function TestimonialsSection() {
                 key={index}
                 className="rounded-[28px] border border-white/10 bg-white/[0.06] p-6"
               >
-                <p className="text-sm leading-7 text-white/70">“{text}”</p>
+                <p className="text-sm leading-7 text-white/70">“{tx(text)}”</p>
 
                 <div className="mt-5 flex gap-1 text-[#D7FF36]">
                   {Array.from({ length: 5 }).map((_, starIndex) => (
@@ -734,13 +689,9 @@ function FaqSection() {
     <section className="bg-[#080808] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[980px]">
         <div className="text-center">
-          <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">
-            שאלות נפוצות
-          </p>
+          <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">{tx("שאלות נפוצות")}</p>
 
-          <h2 className="mt-5 text-3xl md:text-6xl font-black leading-[0.9] tracking-[-0.08em]">
-            לפני שמתחילים
-          </h2>
+          <h2 className="mt-5 text-3xl md:text-6xl font-black leading-[0.9] tracking-[-0.08em]">{tx("לפני שמתחילים")}</h2>
         </div>
 
         <div className="mt-12 grid gap-4">
@@ -749,8 +700,8 @@ function FaqSection() {
               key={faq.q}
               className="rounded-[28px] border border-white/10 bg-white/[0.06] p-6"
             >
-              <h3 className="text-2xl font-black">{faq.q}</h3>
-              <p className="mt-3 text-sm leading-7 text-white/55">{faq.a}</p>
+              <h3 className="text-2xl font-black">{tx(faq.q)}</h3>
+              <p className="mt-3 text-sm leading-7 text-white/55">{tx(faq.a)}</p>
             </article>
           ))}
         </div>
@@ -766,14 +717,9 @@ function ContactSection() {
         <div className="rounded-[40px] bg-black p-8 text-white lg:p-12">
           <ShieldCheck className="h-14 w-14 text-[#D7FF36]" />
 
-          <h2 className="mt-7 text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl">
-            מוכנים להתחיל לזוז?
-          </h2>
+          <h2 className="mt-7 text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl">{tx("מוכנים להתחיל לזוז?")}</h2>
 
-          <p className="mt-6 max-w-xl text-base leading-8 text-white/60">
-            השאירו פרטים ונחזור אליכם לתיאום אימון ניסיון, התאמת מסלול או
-            שיחת היכרות קצרה.
-          </p>
+          <p className="mt-6 max-w-xl text-base leading-8 text-white/60">{tx("השאירו פרטים ונחזור אליכם לתיאום אימון ניסיון, התאמת מסלול או\nשיחת היכרות קצרה.")}</p>
         </div>
 
         <ContactLeadForm />
@@ -788,31 +734,31 @@ function ContactLeadForm() {
   return (
     <form
       className="grid gap-4 rounded-[40px] bg-white p-8 lg:p-12"
-      data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsecore-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+      data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsecore-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
     >
       <input
         name="name"
         required
-        placeholder="שם מלא"
+        placeholder={tx("שם מלא")}
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
        data-bizuply-form-field-id="name" type="text" autoComplete="name" />
 
       <input
         name="phone"
         required
-        placeholder="טלפון"
+        placeholder={tx("טלפון")}
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
        data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
 
       <input
         name="goal"
-        placeholder="מטרה עיקרית"
+        placeholder={tx("מטרה עיקרית")}
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
        data-bizuply-form-field-id="other" />
 
       <textarea
         name="notes"
-        placeholder="מה חשוב לנו לדעת?"
+        placeholder={tx("מה חשוב לנו לדעת?")}
         className="min-h-36 rounded-2xl border border-black/10 p-5 text-sm font-bold outline-none"
        data-bizuply-form-field-id="other_2"></textarea>
 
@@ -820,7 +766,7 @@ function ContactLeadForm() {
         type="submit"
         className="h-14 rounded-full bg-black text-sm font-black text-white transition hover:-translate-y-1"
       >
-        {sent ? "נשלח — נחזור אליכם בקרוב" : "שליחה"}
+        {sent ? tx("נשלח — נחזור אליכם בקרוב") : tx("שליחה")}
       </button>
     </form>
   );
@@ -837,14 +783,11 @@ function Footer({
         <div>
           <p className="text-3xl font-black tracking-[-0.06em]">PulseCore</p>
 
-          <p className="mt-5 max-w-md text-sm leading-7 text-white/45">
-            תבנית פיטנס אנרגטית למאמנים, חדרי כושר וסטודיואים שרוצים אתר
-            שמרגיש חזק, חי וממיר.
-          </p>
+          <p className="mt-5 max-w-md text-sm leading-7 text-white/45">{tx("תבנית פיטנס אנרגטית למאמנים, חדרי כושר וסטודיואים שרוצים אתר\nשמרגיש חזק, חי וממיר.")}</p>
         </div>
 
         <div>
-          <p className="text-sm font-black text-white/35">עמודים</p>
+          <p className="text-sm font-black text-white/35">{tx("עמודים")}</p>
 
           <div className="mt-4 grid gap-2">
             {pulsecorePages.map((page) => (
@@ -854,20 +797,20 @@ function Footer({
                 onClick={() => onPageChange(page.id)}
                 data-bizuply-spa-nav="true"
                 data-bizuply-page-id={page.id}
-                className="text-right text-sm font-bold text-white/55 transition hover:text-white"
+                className="text-start text-sm font-bold text-white/55 transition hover:text-white"
               >
-                {page.name}
+                {tx(page.name)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <p className="text-sm font-black text-white/35">עדכונים</p>
+          <p className="text-sm font-black text-white/35">{tx("עדכונים")}</p>
 
           <div className="mt-4 flex rounded-full border border-white/10 bg-white/[0.06] p-1">
             <input
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
               className="min-w-0 flex-1 bg-transparent px-4 text-sm font-bold outline-none placeholder:text-white/30"
             />
 
@@ -876,7 +819,7 @@ function Footer({
               onClick={() => onPageChange("contact")}
               data-bizuply-spa-nav="true"
               data-bizuply-page-id="contact"
-              aria-label="יצירת קשר"
+              aria-label={tx("יצירת קשר")}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7FF36] text-black"
             >
               <Mail className="h-4 w-4" />
@@ -901,7 +844,7 @@ function PulsecoreShell({
     <div
       data-template-id="pulsecore"
       data-template-page-id={activePage}
-      dir="rtl"
+      dir={templateDir()}
       className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#080808] text-white"
     >
       <style>{pulsecoreEditorCss}</style>
@@ -1003,7 +946,7 @@ export default function PulsecorePages({
             {
               id: "programs",
               content: (
-                <SimplePage title="תוכניות אימון לכל רמה וקצב" label="תוכניות">
+                <SimplePage title={tx("תוכניות אימון לכל רמה וקצב")} label={tx("תוכניות")}>
                   <ProgramsSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -1011,7 +954,7 @@ export default function PulsecorePages({
             {
               id: "trainers",
               content: (
-                <SimplePage title="מאמנים שמלווים אתכם עד התוצאה" label="מאמנים">
+                <SimplePage title={tx("מאמנים שמלווים אתכם עד התוצאה")} label={tx("מאמנים")}>
                   <TrainersSection />
                 </SimplePage>
               ),
@@ -1019,7 +962,7 @@ export default function PulsecorePages({
             {
               id: "pricing",
               content: (
-                <SimplePage title="מנויים גמישים לפי מטרה" label="מחירים">
+                <SimplePage title={tx("מנויים גמישים לפי מטרה")} label={tx("מחירים")}>
                   <PricingSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -1027,7 +970,7 @@ export default function PulsecorePages({
             {
               id: "schedule",
               content: (
-                <SimplePage title="מערכת שעות שבועית" label="מערכת שעות">
+                <SimplePage title={tx("מערכת שעות שבועית")} label={tx("מערכת שעות")}>
                   <ScheduleSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
@@ -1035,7 +978,7 @@ export default function PulsecorePages({
             {
               id: "contact",
               content: (
-                <SimplePage title="קבעו אימון ניסיון" label="הצטרפות">
+                <SimplePage title={tx("קבעו אימון ניסיון")} label={tx("הצטרפות")}>
                   <ContactSection />
                 </SimplePage>
               ),

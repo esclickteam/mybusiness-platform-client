@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { Helmet } from "react-helmet-async";
 import {
   CalendarCheck2,
@@ -60,7 +61,7 @@ export default function AgentsProductPage() {
   const seoDescription = t("agentsPage.seo.description");
 
   return (
-    <div className="pm pm-hero-page" dir={i18n.language === "he" ? "rtl" : "ltr"}>
+    <div className="pm pm-hero-page" dir={getTextDirection(i18n.language)}>
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />

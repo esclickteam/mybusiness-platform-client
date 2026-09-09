@@ -2,7 +2,7 @@ export const noodlixEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="noodlix"], [data-template-id="noodlix"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0f1412; --tpl-surface: #18201c; --tpl-text: #eef6f1;
   --tpl-muted: #8aa89a; --tpl-primary: #3dd6c6; --tpl-primary-text: #0a1210;

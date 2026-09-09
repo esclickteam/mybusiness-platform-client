@@ -54,8 +54,8 @@ const fallbackT: TFunction = (key, values) => {
 const formatNumber = (value?: number, locale = "en-US") => {
   return new Intl.NumberFormat(locale).format(value ?? 0);
 };
-const isHebrewLocale = (locale: string) => {
-  return locale === "he" || locale === "he-IL";
+const isRtlLocale = (locale: string) => {
+  return /^(he|ar)([-_]|$)/i.test(locale);
 };
 
 const ProfileViewsIcon = () => (
@@ -151,7 +151,7 @@ const DashboardCards = React.memo(
       }
     }, [stats]);
 
-    const isRtl = isHebrewLocale(locale);
+    const isRtl = isRtlLocale(locale);
     const cards: CardItem[] = [
       {
         key: "profileViews",

@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { LexoraSeed } from "./lexoraData";
 import {
   ConsultationSection,
@@ -19,11 +20,10 @@ export default function LexoraServicesPage({
       <section className="lex-page-hero">
         <div className="lex-container">
           <Reveal>
-            <div className="lex-page-kicker">שירותים משפטיים</div>
-            <h1>תחומי התמחות שמייצרים בהירות וביטחון</h1>
+            <div className="lex-page-kicker">{tx("שירותים משפטיים")}</div>
+            <h1>{tx("תחומי התמחות שמייצרים בהירות וביטחון")}</h1>
             <p>
-              שירותים משפטיים לעסקים, יזמים ולקוחות פרטיים שצריכים ליווי
-              מקצועי, מדויק וזמין.
+              {tx("שירותים משפטיים לעסקים, יזמים ולקוחות פרטיים שצריכים ליווי\nמקצועי, מדויק וזמין.")}
             </p>
           </Reveal>
         </div>

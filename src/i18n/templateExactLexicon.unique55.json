@@ -1,0 +1,626 @@
+{
+  "קהילות מקצועיות": {
+    "en": "Professional communities",
+    "es": "Comunidades profesionales",
+    "pt-BR": "Comunidades profissionais",
+    "ar": "مجتمعات مهنية"
+  },
+  "מצב קריירה": {
+    "en": "Career mode",
+    "es": "Modo carrera",
+    "pt-BR": "Modo carreira",
+    "ar": "وضع مهنة"
+  },
+  "אירועי למידה": {
+    "en": "Learning events",
+    "es": "Eventos de aprendizaje",
+    "pt-BR": "Eventos de aprendizado",
+    "ar": "فعاليات تعلّم"
+  },
+  "פלוס": {
+    "en": "Plus",
+    "es": "Plus",
+    "pt-BR": "Plus",
+    "ar": "Plus"
+  },
+  "VP הנדסה, Northline": {
+    "en": "VP of engineering, Northline",
+    "es": "VP de ingeniería, Northline",
+    "pt-BR": "VP de engenharia, Northline",
+    "ar": "نائب رئيس الهندسة، Northline"
+  },
+  "מפתחת Full-Stack": {
+    "en": "Full-stack developer",
+    "es": "Desarrolladora full-stack",
+    "pt-BR": "Desenvolvedora full-stack",
+    "ar": "مطوّرة Full-Stack"
+  },
+  "מאיפה מגיע התוכן?": {
+    "en": "Where does the content come from?",
+    "es": "¿De dónde llega el contenido?",
+    "pt-BR": "De onde vem o conteúdo?",
+    "ar": "من أين يأتي المحتوى؟"
+  },
+  "רוצים Fluxora לצוות שלכם?": {
+    "en": "Want Fluxora for your team?",
+    "es": "¿Queréis Fluxora para vuestro equipo?",
+    "pt-BR": "Querem Fluxora para a equipe de vocês?",
+    "ar": "تريدون Fluxora لفريقكم؟"
+  },
+  "בואו נפתח לכם את Fluxora.": {
+    "en": "Let us open Fluxora for you.",
+    "es": "Os abrimos Fluxora.",
+    "pt-BR": "Vamos abrir a Fluxora para vocês.",
+    "ar": "دعونا نفتح لكم Fluxora."
+  },
+  "שם החברה / הצוות": {
+    "en": "Company / team name",
+    "es": "Nombre de la empresa / el equipo",
+    "pt-BR": "Nome da empresa / equipe",
+    "ar": "اسم الشركة / الفريق"
+  },
+  "הפיד שלי": {
+    "en": "My feed",
+    "es": "Mi feed",
+    "pt-BR": "Meu feed",
+    "ar": "خلاصتـي"
+  },
+  "תוסף דפדפן": {
+    "en": "Browser extension",
+    "es": "Extensión de navegador",
+    "pt-BR": "Extensão de navegador",
+    "ar": "إضافة متصفح"
+  },
+  "קהילות בסיסיות": {
+    "en": "Basic communities",
+    "es": "Comunidades básicas",
+    "pt-BR": "Comunidades básicas",
+    "ar": "مجتمعات أساسية"
+  },
+  "סינון מתקדם": {
+    "en": "Advanced filtering",
+    "es": "Filtrado avanzado",
+    "pt-BR": "Filtro avançado",
+    "ar": "تصفية متقدمة"
+  },
+  "סיכומים שבועיים": {
+    "en": "Weekly summaries",
+    "es": "Resúmenes semanales",
+    "pt-BR": "Resumos semanais",
+    "ar": "ملخصات أسبوعية"
+  },
+  "ללא פרסומות": {
+    "en": "No ads",
+    "es": "Sin anuncios",
+    "pt-BR": "Sem anúncios",
+    "ar": "بدون إعلانات"
+  },
+  "הכול בפלוס": {
+    "en": "Everything in Plus",
+    "es": "Todo en Plus",
+    "pt-BR": "Tudo no Plus",
+    "ar": "كل شيء في Plus"
+  },
+  "שיתוף צוותי": {
+    "en": "Team sharing",
+    "es": "Compartir en equipo",
+    "pt-BR": "Compartilhamento em equipe",
+    "ar": "مشاركة فريق"
+  },
+  "דוחות למנהלים": {
+    "en": "Manager reports",
+    "es": "Informes para managers",
+    "pt-BR": "Relatórios para gestores",
+    "ar": "تقارير للمديرين"
+  },
+  "SSO והרשאות": {
+    "en": "SSO and permissions",
+    "es": "SSO y permisos",
+    "pt-BR": "SSO e permissões",
+    "ar": "SSO وصلاحيات"
+  },
+  "תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.": {
+    "en": "Thank you! We received the inquiry and will get back to you soon.",
+    "es": "¡Gracias! Recibimos la consulta y volveremos pronto.",
+    "pt-BR": "Obrigado! Recebemos o contato e voltamos em breve.",
+    "ar": "شكراً! استلمنا الطلب وسنعود إليكم قريباً."
+  },
+  "תבנית Fluxora · Bizuply Studio": {
+    "en": "Fluxora template · Bizuply Studio",
+    "es": "Plantilla Fluxora · Bizuply Studio",
+    "pt-BR": "Modelo Fluxora · Bizuply Studio",
+    "ar": "قالب Fluxora · Bizuply Studio"
+  },
+  "מספרים שמספרים אמת": {
+    "en": "Numbers that tell the truth",
+    "es": "Números que cuentan la verdad",
+    "pt-BR": "Números que contam a verdade",
+    "ar": "أرقام تروي الحقيقة"
+  },
+  "מה הלקוחות מספרים": {
+    "en": "What clients say",
+    "es": "Lo que cuentan los clientes",
+    "pt-BR": "O que os clientes contam",
+    "ar": "ماذا يقول العملاء"
+  },
+  "פנטהאוז הרצליה פיתוח": {
+    "en": "Herzliya Pituach penthouse",
+    "es": "Ático en Herzliya Pituach",
+    "pt-BR": "Cobertura em Herzliya Pituach",
+    "ar": "بنتهاوس هرتسليا بيتواح"
+  },
+  "5 חדרים · 210 מ״ר · מרפסת 360° עם נוף לים.": {
+    "en": "5 rooms · 210 sqm · a 360° terrace with a sea view.",
+    "es": "5 habitaciones · 210 m² · terraza 360° con vistas al mar.",
+    "pt-BR": "5 quartos · 210 m² · terraço 360° com vista para o mar.",
+    "ar": "5 غرف · 210 م² · شرفة 360° بإطلالة على البحر."
+  },
+  "וילה כפר שמריהו": {
+    "en": "Kfar Shmaryahu villa",
+    "es": "Villa en Kfar Shmaryahu",
+    "pt-BR": "Villa em Kfar Shmaryahu",
+    "ar": "فيلا كفار شمرياهو"
+  },
+  "דירת גן תל אביב": {
+    "en": "Tel Aviv garden apartment",
+    "es": "Piso jardín en Tel Aviv",
+    "pt-BR": "Apartamento jardim em Tel Aviv",
+    "ar": "شقة حديقة في تل أبيب"
+  },
+  "רוכשת, תל אביב": {
+    "en": "Buyer, Tel Aviv",
+    "es": "Compradora, Tel Aviv",
+    "pt-BR": "Compradora, Tel Aviv",
+    "ar": "مشترية، تل أبيب"
+  },
+  "משקיע נדל״ן": {
+    "en": "Real-estate investor",
+    "es": "Inversor inmobiliario",
+    "pt-BR": "Investidor imobiliário",
+    "ar": "مستثمر عقاري"
+  },
+  "שליחת פנייה": {
+    "en": "Send inquiry",
+    "es": "Enviar consulta",
+    "pt-BR": "Enviar contato",
+    "ar": "إرسال طلب"
+  },
+  "מבינים תקציב, אזור וסגנון חיים.": {
+    "en": "We understand budget, area, and lifestyle.",
+    "es": "Entendemos presupuesto, zona y estilo de vida.",
+    "pt-BR": "Entendemos orçamento, região e estilo de vida.",
+    "ar": "نفهم الميزانية والمنطقة ونمط الحياة."
+  },
+  "רק נכסים שבאמת מתאימים — בלי בזבוז זמן.": {
+    "en": "Only properties that truly fit — no wasted time.",
+    "es": "Solo inmuebles que encajan de verdad — sin perder tiempo.",
+    "pt-BR": "Só imóveis que realmente cabem — sem perder tempo.",
+    "ar": "عقارات تناسب فعلاً فقط — دون إضاعة وقت."
+  },
+  "ליווי עד חתימה": {
+    "en": "Guidance through signing",
+    "es": "Acompañamiento hasta la firma",
+    "pt-BR": "Acompanhamento até a assinatura",
+    "ar": "مرافقة حتى التوقيع"
+  },
+  "משא ומתן, בדיקות, וסגירה רגועה.": {
+    "en": "Negotiation, checks, and a calm close.",
+    "es": "Negociación, comprobaciones y un cierre tranquilo.",
+    "pt-BR": "Negociação, verificações e um fechamento calmo.",
+    "ar": "تفاوض وفحوصات وإغلاق هادئ."
+  },
+  "התחלת סיור": {
+    "en": "Start a tour",
+    "es": "Empezar una visita",
+    "pt-BR": "Começar um tour",
+    "ar": "بدء جولة"
+  },
+  "סוכנת בכירה · תל אביב": {
+    "en": "Senior agent · Tel Aviv",
+    "es": "Agente sénior · Tel Aviv",
+    "pt-BR": "Agente sênior · Tel Aviv",
+    "ar": "وكيلة أولى · تل أبيب"
+  },
+  "מומחה יוקרה · הרצליה": {
+    "en": "Luxury specialist · Herzliya",
+    "es": "Especialista de lujo · Herzliya",
+    "pt-BR": "Especialista em luxo · Herzliya",
+    "ar": "أخصائي فاخر · هرتسليا"
+  },
+  "ליווי משקיעים · מרכז": {
+    "en": "Investor guidance · Center",
+    "es": "Acompañamiento a inversores · Centro",
+    "pt-BR": "Acompanhamento a investidores · Centro",
+    "ar": "مرافقة مستثمرين · المركز"
+  },
+  "אירוח עסקי": {
+    "en": "Business hosting",
+    "es": "Hospitalidad de empresa",
+    "pt-BR": "Hospitalidade empresarial",
+    "ar": "ضيافة أعمال"
+  },
+  "אירועים פרטיים": {
+    "en": "Private events",
+    "es": "Eventos privados",
+    "pt-BR": "Eventos privados",
+    "ar": "مناسبات خاصة"
+  },
+  "חדר פרטי עד 22 אורחים": {
+    "en": "Private room for up to 22 guests",
+    "es": "Sala privada para hasta 22 invitados",
+    "pt-BR": "Sala privada para até 22 convidados",
+    "ar": "غرفة خاصة حتى 22 ضيفاً"
+  },
+  "תפריט טעימות, התאמת יין ושירות צמוד סביב שולחן אחד.": {
+    "en": "A tasting menu, wine pairing, and close service around one table.",
+    "es": "Menú degustación, maridaje de vino y servicio cercano en una mesa.",
+    "pt-BR": "Menu degustação, harmonização de vinhos e serviço próximo em uma mesa.",
+    "ar": "قائمة تذوّق ومواءمة نبيذ وخدمة قريبة حول طاولة واحدة."
+  },
+  "ערבי יין ושף": {
+    "en": "Wine and chef evenings",
+    "es": "Veladas de vino y chef",
+    "pt-BR": "Noites de vinho e chef",
+    "ar": "أمسيات نبيذ وطاهٍ"
+  },
+  "ראשון-חמישי · 18:00-23:30": {
+    "en": "Sunday–Thursday · 18:00-23:30",
+    "es": "Domingo–jueves · 18:00-23:30",
+    "pt-BR": "Domingo–quinta · 18:00-23:30",
+    "ar": "الأحد–الخميس · 18:00-23:30"
+  },
+  "שישי · 12:30-16:00": {
+    "en": "Friday · 12:30-16:00",
+    "es": "Viernes · 12:30-16:00",
+    "pt-BR": "Sexta · 12:30-16:00",
+    "ar": "الجمعة · 12:30-16:00"
+  },
+  "שבת · 19:00-23:30": {
+    "en": "Saturday · 19:00-23:30",
+    "es": "Sábado · 19:00-23:30",
+    "pt-BR": "Sábado · 19:00-23:30",
+    "ar": "السبت · 19:00-23:30"
+  },
+  "חניה בחניון גרוזנברג וחניון בית הדר": {
+    "en": "Parking at Grozenberg lot and Beit Hadar lot",
+    "es": "Aparcamiento en el parking Grozenberg y Beit Hadar",
+    "pt-BR": "Estacionamento no pátio Grozenberg e Beit Hadar",
+    "ar": "موقف في موقف غروزنبرغ وموقف بيت هدار"
+  },
+  "הערב הבא שלכם מתחיל ב-Savory.": {
+    "en": "Your next evening starts at Savory.",
+    "es": "Vuestra próxima noche empieza en Savory.",
+    "pt-BR": "A próxima noite de vocês começa no Savory.",
+    "ar": "مساؤكم التالي يبدأ في Savory."
+  },
+  "בקשת אירוע": {
+    "en": "Request an event",
+    "es": "Pedir un evento",
+    "pt-BR": "Pedir um evento",
+    "ar": "طلب مناسبة"
+  },
+  "שעות ומיקום": {
+    "en": "Hours and location",
+    "es": "Horario y ubicación",
+    "pt-BR": "Horário e local",
+    "ar": "ساعات وموقع"
+  },
+  "סגירת חלון": {
+    "en": "Close window",
+    "es": "Cerrar ventana",
+    "pt-BR": "Fechar janela",
+    "ar": "إغلاق النافذة"
+  },
+  "שיער רך עם ברק טבעי": {
+    "en": "Soft hair with a natural shine",
+    "es": "Cabello suave con brillo natural",
+    "pt-BR": "Cabelo macio com brilho natural",
+    "ar": "شعر ناعم بلمعان طبيعي"
+  },
+  "פרוטוקולים פעילים ומדויקים": {
+    "en": "Active, precise protocols",
+    "es": "Protocolos activos y precisos",
+    "pt-BR": "Protocolos ativos e precisos",
+    "ar": "بروتوكولات نشطة ودقيقة"
+  },
+  "פגישת אבחון, טיפול פנים ממוקד ועיצוב גבות עדין.": {
+    "en": "A diagnostic visit, a focused facial, and a gentle brow shape.",
+    "es": "Una visita de diagnóstico, un facial enfocado y un diseño de cejas suave.",
+    "pt-BR": "Uma visita de diagnóstico, um facial focado e um design de sobrancelhas suave.",
+    "ar": "زيارة تشخيص وعلاج وجه مركّز وتصميم حواجب لطيف."
+  },
+  "אבחון עור אישי": {
+    "en": "Personal skin diagnosis",
+    "es": "Diagnóstico de piel personal",
+    "pt-BR": "Diagnóstico de pele pessoal",
+    "ar": "تشخيص بشرة شخصي"
+  },
+  "טיפול חידוש עדין": {
+    "en": "A gentle renewal treatment",
+    "es": "Un tratamiento de renovación suave",
+    "pt-BR": "Um tratamento de renovação suave",
+    "ar": "علاج تجديد لطيف"
+  },
+  "טיפול פנים מתקדם": {
+    "en": "Advanced facial treatment",
+    "es": "Tratamiento facial avanzado",
+    "pt-BR": "Tratamento facial avançado",
+    "ar": "علاج وجه متقدم"
+  },
+  "ברק וגוון לשיער": {
+    "en": "Shine and tone for hair",
+    "es": "Brillo y tono para el cabello",
+    "pt-BR": "Brilho e tom para o cabelo",
+    "ar": "لمعان ودرجة للشعر"
+  },
+  "3 טיפולי עומק": {
+    "en": "3 depth treatments",
+    "es": "3 tratamientos de profundidad",
+    "pt-BR": "3 tratamentos de profundidade",
+    "ar": "3 علاجات عمق"
+  },
+  "מעקב עור ושיער": {
+    "en": "Skin and hair follow-up",
+    "es": "Seguimiento de piel y cabello",
+    "pt-BR": "Acompanhamento de pele e cabelo",
+    "ar": "متابعة بشرة وشعر"
+  },
+  "כמה זמן מראש כדאי לקבוע תור?": {
+    "en": "How far ahead should you book?",
+    "es": "¿Con cuánta antelación conviene reservar?",
+    "pt-BR": "Com quanta antecedência vale marcar?",
+    "ar": "كم مسبقاً يستحسن حجز موعد؟"
+  },
+  "ראשון-חמישי 09:00-20:00 · שישי 09:00-14:00": {
+    "en": "Sunday–Thursday 09:00-20:00 · Friday 09:00-14:00",
+    "es": "Domingo–jueves 09:00-20:00 · Viernes 09:00-14:00",
+    "pt-BR": "Domingo–quinta 09:00-20:00 · Sexta 09:00-14:00",
+    "ar": "الأحد–الخميس 09:00-20:00 · الجمعة 09:00-14:00"
+  },
+  "יופי שמרגיש שקט, מדויק ושלך.": {
+    "en": "Beauty that feels quiet, precise, and yours.",
+    "es": "Belleza que se siente quieta, precisa y tuya.",
+    "pt-BR": "Beleza que parece quieta, precisa e sua.",
+    "ar": "جمال يشعر بالهدوء والدقة وبأنه لك."
+  },
+  "לקביעת תור אישי": {
+    "en": "Book a personal appointment",
+    "es": "Reservar una cita personal",
+    "pt-BR": "Marcar um horário pessoal",
+    "ar": "لحجز موعد شخصي"
+  },
+  "רפואת ילדים": {
+    "en": "Pediatrics",
+    "es": "Pediatría",
+    "pt-BR": "Pediatria",
+    "ar": "طب أطفال"
+  },
+  "שביעות רצון לאחר ביקור": {
+    "en": "Satisfaction after a visit",
+    "es": "Satisfacción después de la visita",
+    "pt-BR": "Satisfação após a visita",
+    "ar": "رضا بعد الزيارة"
+  },
+  "כללית מושלם": {
+    "en": "Clalit Mushlam",
+    "es": "Clalit Mushlam",
+    "pt-BR": "Clalit Mushlam",
+    "ar": "Clalit Mushlam"
+  },
+  "מכבי שלי": {
+    "en": "Maccabi Sheli",
+    "es": "Maccabi Sheli",
+    "pt-BR": "Maccabi Sheli",
+    "ar": "Maccabi Sheli"
+  },
+  "מאוחדת עדיף": {
+    "en": "Meuhedet Adif",
+    "es": "Meuhedet Adif",
+    "pt-BR": "Meuhedet Adif",
+    "ar": "Meuhedet Adif"
+  },
+  "לאומית זהב": {
+    "en": "Leumit Zahav",
+    "es": "Leumit Zahav",
+    "pt-BR": "Leumit Zahav",
+    "ar": "Leumit Zahav"
+  },
+  "הראל": {
+    "en": "Harel",
+    "es": "Harel",
+    "pt-BR": "Harel",
+    "ar": "Harel"
+  },
+  "מגדל": {
+    "en": "Migdal",
+    "es": "Migdal",
+    "pt-BR": "Migdal",
+    "ar": "Migdal"
+  },
+  "מידע חשוב לפני שמגיעים": {
+    "en": "Important information before you arrive",
+    "es": "Información importante antes de llegar",
+    "pt-BR": "Informação importante antes de chegar",
+    "ar": "معلومات مهمة قبل الوصول"
+  },
+  "האם אפשר לקבל סיכום ביקור דיגיטלי?": {
+    "en": "Can you get a digital visit summary?",
+    "es": "¿Se puede recibir un resumen digital de la visita?",
+    "pt-BR": "Dá para receber um resumo digital da visita?",
+    "ar": "هل يمكن الحصول على ملخص زيارة رقمي؟"
+  },
+  "קבעו תור ב-Vitalcare": {
+    "en": "Book an appointment at Vitalcare",
+    "es": "Reservad cita en Vitalcare",
+    "pt-BR": "Marquem horário na Vitalcare",
+    "ar": "احجزوا موعداً في Vitalcare"
+  },
+  "ראשון-חמישי 08:00-20:00 · שישי 08:00-13:00": {
+    "en": "Sunday–Thursday 08:00-20:00 · Friday 08:00-13:00",
+    "es": "Domingo–jueves 08:00-20:00 · Viernes 08:00-13:00",
+    "pt-BR": "Domingo–quinta 08:00-20:00 · Sexta 08:00-13:00",
+    "ar": "الأحد–الخميس 08:00-20:00 · الجمعة 08:00-13:00"
+  },
+  "טלפון לחזרה": {
+    "en": "Callback phone",
+    "es": "Teléfono de retorno",
+    "pt-BR": "Telefone para retorno",
+    "ar": "هاتف للرد"
+  },
+  "תחום רפואי מבוקש": {
+    "en": "Requested medical field",
+    "es": "Área médica solicitada",
+    "pt-BR": "Área médica pedida",
+    "ar": "تخصص طبي مطلوب"
+  },
+  "למה Handcraft": {
+    "en": "Why Handcraft",
+    "es": "Por qué Handcraft",
+    "pt-BR": "Por que Handcraft",
+    "ar": "لماذا Handcraft"
+  },
+  "ביקור ואבחון": {
+    "en": "Visit and diagnosis",
+    "es": "Visita y diagnóstico",
+    "pt-BR": "Visita e diagnóstico",
+    "ar": "زيارة وتشخيص"
+  },
+  "תיקון ממוקד": {
+    "en": "Focused repair",
+    "es": "Reparación puntual",
+    "pt-BR": "Reparo pontual",
+    "ar": "إصلاح مركّز"
+  },
+  "כולל לוח זמנים וחומרים": {
+    "en": "Includes a schedule and materials",
+    "es": "Incluye calendario y materiales",
+    "pt-BR": "Inclui cronograma e materiais",
+    "ar": "يشمل جدولاً ومواد"
+  },
+  "פריסה": {
+    "en": "Coverage",
+    "es": "Cobertura",
+    "pt-BR": "Cobertura",
+    "ar": "تغطية"
+  },
+  "שליחת קריאה": {
+    "en": "Send a call-out",
+    "es": "Enviar un aviso",
+    "pt-BR": "Enviar um chamado",
+    "ar": "إرسال بلاغ"
+  },
+  "דירה בגבעתיים": {
+    "en": "Apartment in Givatayim",
+    "es": "Piso en Givatayim",
+    "pt-BR": "Apartamento em Givatayim",
+    "ar": "شقة في جفعتايم"
+  },
+  "משרד קטן בתל אביב": {
+    "en": "Small office in Tel Aviv",
+    "es": "Oficina pequeña en Tel Aviv",
+    "pt-BR": "Escritório pequeno em Tel Aviv",
+    "ar": "مكتب صغير في تل أبيب"
+  },
+  "בית פרטי ברעננה": {
+    "en": "Private home in Ra'anana",
+    "es": "Casa particular en Ra'anana",
+    "pt-BR": "Casa particular em Ra'anana",
+    "ar": "منزل خاص في رعنانا"
+  },
+  "אינסטלציה · חשמל · שיפוצים · תחזוקת נכסים": {
+    "en": "Plumbing · electrical · renovations · property upkeep",
+    "es": "Fontanería · electricidad · reformas · mantenimiento",
+    "pt-BR": "Encanamento · elétrica · reformas · manutenção de imóveis",
+    "ar": "سباكة · كهرباء · ترميم · صيانة عقارات"
+  },
+  "מה התקלה?": {
+    "en": "What's the issue?",
+    "es": "¿Cuál es la avería?",
+    "pt-BR": "Qual é o problema?",
+    "ar": "ما العطل؟"
+  },
+  "תחומי עומק": {
+    "en": "Depth areas",
+    "es": "Áreas de profundidad",
+    "pt-BR": "Áreas de profundidade",
+    "ar": "مجالات عمق"
+  },
+  "שגרות הנהלה": {
+    "en": "Leadership routines",
+    "es": "Rutinas de dirección",
+    "pt-BR": "Rotinas de direção",
+    "ar": "روتينات إدارة"
+  },
+  "מדידה שבועית": {
+    "en": "Weekly measurement",
+    "es": "Medición semanal",
+    "pt-BR": "Medição semanal",
+    "ar": "قياس أسبوعي"
+  },
+  "מספרים שמחזיקים החלטות.": {
+    "en": "Numbers that hold decisions.",
+    "es": "Números que sostienen decisiones.",
+    "pt-BR": "Números que sustentam decisões.",
+    "ar": "أرقام تمسك القرارات."
+  },
+  "קול לקוח": {
+    "en": "Client voice",
+    "es": "Voz de cliente",
+    "pt-BR": "Voz do cliente",
+    "ar": "صوت العميل"
+  },
+  "בעלים, רשת שירותים": {
+    "en": "Owner, services network",
+    "es": "Propietario, red de servicios",
+    "pt-BR": "Dono, rede de serviços",
+    "ar": "مالك، شبكة خدمات"
+  },
+  "שאלות לפני שיחה": {
+    "en": "Questions before a call",
+    "es": "Preguntas antes de una llamada",
+    "pt-BR": "Perguntas antes de uma chamada",
+    "ar": "أسئلة قبل مكالمة"
+  },
+  "מה כדאי לדעת לפני שמתחילים?": {
+    "en": "What should you know before you start?",
+    "es": "¿Qué conviene saber antes de empezar?",
+    "pt-BR": "O que vale saber antes de começar?",
+    "ar": "ماذا يستحسن معرفته قبل البدء؟"
+  },
+  "בואו נדבר על העסק": {
+    "en": "Let's talk about the business",
+    "es": "Hablemos del negocio",
+    "pt-BR": "Vamos falar sobre o negócio",
+    "ar": "لنتحدث عن العمل"
+  },
+  "שיחת אבחון": {
+    "en": "Diagnostic call",
+    "es": "Llamada de diagnóstico",
+    "pt-BR": "Chamada de diagnóstico",
+    "ar": "مكالمة تشخيص"
+  },
+  "שליחה ותיאום": {
+    "en": "Send and schedule",
+    "es": "Enviar y coordinar",
+    "pt-BR": "Enviar e agendar",
+    "ar": "إرسال وتنسيق"
+  },
+  "בואו נהפוך רעש\nלכיוון ניהולי.": {
+    "en": "Let's turn noise\ninto a management direction.",
+    "es": "Convirtamos el ruido\nen una dirección de gestión.",
+    "pt-BR": "Vamos transformar ruído\nem direção de gestão.",
+    "ar": "لنحوّل الضجيج\nإلى اتجاه إداري."
+  },
+  "מה האתגר העסקי המרכזי?": {
+    "en": "What is the main business challenge?",
+    "es": "¿Cuál es el reto empresarial central?",
+    "pt-BR": "Qual é o desafio empresarial central?",
+    "ar": "ما التحدي التجاري المركزي؟"
+  },
+  "עדות": {
+    "en": "Testimonial",
+    "es": "Testimonio",
+    "pt-BR": "Depoimento",
+    "ar": "شهادة"
+  }
+}

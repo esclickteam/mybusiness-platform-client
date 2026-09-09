@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 
 export type AdionPageId =
@@ -223,7 +225,7 @@ function Shell({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="adion-framion-inspired"
       className={cx(
         "min-h-screen bg-[#10100e] text-[#f6efe3]",
@@ -286,7 +288,7 @@ function Header({
                   : "text-white/62 hover:bg-white/10 hover:text-white"
               )}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -297,7 +299,7 @@ function Header({
           className="group relative overflow-hidden rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-500 hover:border-[#f7c873]/80"
         >
           <span className="absolute inset-0 translate-y-full bg-[#f7c873] transition-transform duration-500 group-hover:translate-y-0" />
-          <span className="relative group-hover:text-[#10100e]">קבעו צילום</span>
+          <span className="relative group-hover:text-[#10100e]">{tx("קבעו צילום")}</span>
         </button>
       </div>
 
@@ -314,7 +316,7 @@ function Header({
                 : "border-white/10 bg-white/[0.04] text-white/65"
             )}
           >
-            {item.label}
+            {tx(item.label)}
           </button>
         ))}
       </div>
@@ -377,10 +379,10 @@ function SectionTitle({
     <div
       className={cx(
         "mx-auto mb-12 max-w-5xl",
-        align === "center" ? "text-center" : "text-right"
+        align === "center" ? "text-center" : "text-start"
       )}
     >
-      <Eyebrow>{eyebrow}</Eyebrow>
+      <Eyebrow>{tx(eyebrow)}</Eyebrow>
       <h2 className="text-5xl font-black uppercase leading-[0.86] tracking-[-0.08em] text-[#f6efe3] sm:text-7xl lg:text-8xl">
         {title}
       </h2>
@@ -391,7 +393,7 @@ function SectionTitle({
             align === "center" && "mx-auto"
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -416,9 +418,9 @@ function Marquee({
         )}
       >
         {doubled.map((item, index) => (
-          <React.Fragment key={`${item}-${index}`}>
+          <React.Fragment key={`${tx(item)}-${index}`}>
             <span className="text-xl font-black uppercase tracking-[-0.04em] text-white/80 sm:text-3xl">
-              {item}
+              {tx(item)}
             </span>
             <span className="text-[#f7c873]">✦</span>
           </React.Fragment>
@@ -570,9 +572,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
         </div>
 
         <div className="relative z-20 mt-3 flex items-center justify-center">
-          <p className="adion-fade-up max-w-2xl text-center text-base font-medium leading-7 text-white/62 sm:text-lg lg:text-xl">
-            הפקת וידאו, צילום ותוכן ויזואלי למותגים מודרניים.
-          </p>
+          <p className="adion-fade-up max-w-2xl text-center text-base font-medium leading-7 text-white/62 sm:text-lg lg:text-xl">{tx("הפקת וידאו, צילום ותוכן ויזואלי למותגים מודרניים.")}</p>
         </div>
 
         <div className="pointer-events-none absolute left-0 top-[170px] z-30 hidden items-center gap-4 sm:flex lg:top-[185px]">
@@ -623,9 +623,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
             type="button"
             onClick={() => setPage("cases")}
             className="group relative overflow-hidden rounded-full bg-[#f6efe3] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-[#10100e] transition duration-500 hover:bg-[#f7c873]"
-          >
-            צפייה בעבודות
-            <span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
+          >{tx("צפייה בעבודות")}<span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
               ←
             </span>
           </button>
@@ -633,9 +631,7 @@ function Hero({ setPage }: { setPage: (page: AdionPageId) => void }) {
             type="button"
             onClick={() => setPage("contact")}
             className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.05] px-7 py-4 text-xs font-black uppercase tracking-[0.22em] text-white backdrop-blur-xl transition duration-500 hover:border-white/45 hover:bg-white/10"
-          >
-            צור קשר
-            <span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
+          >{tx("צור קשר")}<span className="mr-3 inline-block transition duration-300 group-hover:-translate-x-1">
               ←
             </span>
           </button>
@@ -649,17 +645,15 @@ function Partners() {
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1500px] rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 sm:p-6">
-        <div className="mb-5 text-xs font-black uppercase tracking-[0.25em] text-white/45">
-          לקוחות ושותפים
-        </div>
+        <div className="mb-5 text-xs font-black uppercase tracking-[0.25em] text-white/45">{tx("לקוחות ושותפים")}</div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {["Northway", "Moment", "Frontier", "Skyline", "Nova", "Studio X"].map(
             (item) => (
               <div
-                key={item}
+                key={tx(item)}
                 className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-[#10100e]/50 text-sm font-black uppercase tracking-[0.25em] text-white/42 transition duration-500 hover:bg-white hover:text-[#10100e]"
               >
-                {item}
+                {tx(item)}
               </div>
             )
           )}
@@ -675,34 +669,16 @@ function Manifesto({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto max-w-[1500px]">
         <div className="grid gap-10 lg:grid-cols-[1fr_.75fr] lg:items-end">
           <div>
-            <h2 className="text-[16vw] font-black uppercase leading-[0.78] tracking-[-0.12em] text-[#f6efe3] sm:text-[12vw] lg:text-[8.4vw]">
-              המקום
-              <br />
-              שבו
-              <br />
-              רעיון
-              <br />
-              הופך
-              <br />
-              לסיפור
-              <br />
-              ויזואלי.
-            </h2>
+            <h2 className="text-[16vw] font-black uppercase leading-[0.78] tracking-[-0.12em] text-[#f6efe3] sm:text-[12vw] lg:text-[8.4vw]">{tx("המקום")}<br />{tx("שבו")}<br />{tx("רעיון")}<br />{tx("הופך")}<br />{tx("לסיפור")}<br />{tx("ויזואלי.")}</h2>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
             <div className="mb-8 h-16 w-16 rounded-full bg-[#f7c873] p-4 text-center text-2xl text-[#10100e]">
               ▶
             </div>
-            <p className="text-xl leading-9 text-white/66">
-              אנחנו הופכים רעיונות לחוויות ויזואליות קולנועיות. אסטרטגיה,
-              צילום, הפקה ועריכה מתחברים יחד כדי ליצור תוכן שנראה חד,
-              רגשי ופרימיום.
-            </p>
+            <p className="text-xl leading-9 text-white/66">{tx("אנחנו הופכים רעיונות לחוויות ויזואליות קולנועיות. אסטרטגיה,\nצילום, הפקה ועריכה מתחברים יחד כדי ליצור תוכן שנראה חד,\nרגשי ופרימיום.")}</p>
             <div className="mt-8">
-              <Button variant="ghost" onClick={() => setPage("about")}>
-                הסיפור שלנו
-              </Button>
+              <Button variant="ghost" onClick={() => setPage("about")}>{tx("הסיפור שלנו")}</Button>
             </div>
           </div>
         </div>
@@ -734,15 +710,11 @@ function Services() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="שירותים"
+          eyebrow={tx("שירותים")}
           title={
-            <>
-              מהרעיון
-              <br />
-              ועד הפריים הסופי.
-            </>
+            <>{tx("מהרעיון")}<br />{tx("ועד הפריים הסופי.")}</>
           }
-          text="סטודיו ויזואלי מלא לצילום, סרטוני מותג, תוכן לסושיאל וקמפיינים פרימיום."
+          text={tx("סטודיו ויזואלי מלא לצילום, סרטוני מותג, תוכן לסושיאל וקמפיינים פרימיום.")}
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -754,7 +726,7 @@ function Services() {
               <div className="relative h-[360px] overflow-hidden">
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={tx(item.title)}
                   className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-110 group-hover:grayscale-0"
                 />
                 <div className="absolute left-5 top-5 rounded-full bg-[#f6efe3] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]">
@@ -763,9 +735,9 @@ function Services() {
               </div>
               <div className="p-6 sm:p-8">
                 <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-[-0.07em]">
-                  {item.title}
+                  {tx(item.title)}
                 </h3>
-                <p className="mt-4 leading-7 text-white/56">{item.text}</p>
+                <p className="mt-4 leading-7 text-white/56">{tx(item.text)}</p>
               </div>
             </article>
           ))}
@@ -808,19 +780,13 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto max-w-[1500px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="עבודות נבחרות"
+            eyebrow={tx("עבודות נבחרות")}
             title={
-              <>
-                פרויקטים
-                <br />
-                עם אימפקט ויזואלי.
-              </>
+              <>{tx("פרויקטים")}<br />{tx("עם אימפקט ויזואלי.")}</>
             }
           />
           <div className="pb-3">
-            <Button variant="ghost" onClick={() => setPage("cases")}>
-              לכל העבודות
-            </Button>
+            <Button variant="ghost" onClick={() => setPage("cases")}>{tx("לכל העבודות")}</Button>
           </div>
         </div>
 
@@ -842,7 +808,7 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#10100e] via-transparent to-transparent" />
                 <div className="absolute left-6 right-6 top-6 flex items-center justify-between">
                   <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]">
-                    {item.tag}
+                    {tx(item.tag)}
                   </span>
                   <span className="rounded-full border border-white/20 bg-black/25 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur">
                     {item.year}
@@ -894,15 +860,11 @@ function Reviews() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="ביקורות"
+          eyebrow={tx("ביקורות")}
           title={
-            <>
-              מה הלקוחות
-              <br />
-              אומרים.
-            </>
+            <>{tx("מה הלקוחות")}<br />{tx("אומרים.")}</>
           }
-          text="מילים אמיתיות ממותגים ויוצרים שחיפשו תוצאה ויזואלית ברמה גבוהה ותהליך חלק."
+          text={tx("מילים אמיתיות ממותגים ויוצרים שחיפשו תוצאה ויזואלית ברמה גבוהה ותהליך חלק.")}
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -915,15 +877,15 @@ function Reviews() {
                 <span className="text-2xl md:text-5xl font-black tracking-[-0.08em]">
                   {item.rating}
                 </span>
-                <span className="text-2xl md:text-5xl leading-none">״</span>
+                <span className="text-2xl md:text-5xl leading-none">{tx("״")}</span>
               </div>
-              <p className="text-xl font-semibold leading-9">{item.quote}</p>
+              <p className="text-xl font-semibold leading-9">{tx(item.quote)}</p>
               <div className="mt-10 border-t border-black/10 pt-5">
                 <div className="font-black uppercase tracking-[-0.03em]">
                   {item.name}
                 </div>
                 <div className="mt-1 text-sm font-semibold text-black/55">
-                  {item.role}
+                  {tx(item.role)}
                 </div>
               </div>
             </article>
@@ -968,15 +930,11 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="מחירים"
+          eyebrow={tx("מחירים")}
           title={
-            <>
-              חבילות ברורות.
-              <br />
-              תוצאה פרימיום.
-            </>
+            <>{tx("חבילות ברורות.")}<br />{tx("תוצאה פרימיום.")}</>
           }
-          text="חבילות פשוטות ששומרות על תהליך מקצועי, מדויק וממוקד."
+          text={tx("חבילות פשוטות ששומרות על תהליך מקצועי, מדויק וממוקד.")}
         />
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -1007,12 +965,12 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
               </div>
 
               <h3 className="text-3xl md:text-6xl font-black uppercase leading-none tracking-[-0.09em]">
-                {plan.name}
+                {tx(plan.name)}
               </h3>
               <div className="mt-5 text-3xl font-black tracking-[-0.06em]">
-                {plan.price}
+                {tx(plan.price)}
               </div>
-              <p className="mt-5 max-w-xl leading-8 opacity-70">{plan.text}</p>
+              <p className="mt-5 max-w-xl leading-8 opacity-70">{tx(plan.text)}</p>
 
               <button
                 type="button"
@@ -1023,20 +981,16 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
                     ? "bg-[#10100e] text-[#f6efe3] hover:bg-black"
                     : "bg-[#f6efe3] text-[#10100e] hover:bg-[#f7c873]"
                 )}
-              >
-                התחלת פרויקט ←
-              </button>
+              >{tx("התחלת פרויקט ←")}</button>
 
               <div className="mt-10 space-y-4">
-                <div className="text-xs font-black uppercase tracking-[0.22em] opacity-50">
-                  מה כלול:
-                </div>
+                <div className="text-xs font-black uppercase tracking-[0.22em] opacity-50">{tx("מה כלול:")}</div>
                 {plan.features.map((feature) => (
                   <div
                     key={feature}
                     className="flex items-center justify-between border-t border-current/10 pt-4"
                   >
-                    <span className="font-semibold">{feature}</span>
+                    <span className="font-semibold">{tx(feature)}</span>
                     <span>+</span>
                   </div>
                 ))}
@@ -1074,19 +1028,13 @@ function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <div className="mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[.65fr_1fr]">
         <div>
           <SectionTitle
-            eyebrow="שאלות נפוצות"
+            eyebrow={tx("שאלות נפוצות")}
             title={
-              <>
-                עדיין יש
-                <br />
-                שאלות?
-              </>
+              <>{tx("עדיין יש")}<br />{tx("שאלות?")}</>
             }
-            text="כל מה שלקוחות בדרך כלל שואלים לפני שמתחילים הפקה ויזואלית."
+            text={tx("כל מה שלקוחות בדרך כלל שואלים לפני שמתחילים הפקה ויזואלית.")}
           />
-          <Button variant="ghost" onClick={() => setPage("contact")}>
-            דברו איתנו
-          </Button>
+          <Button variant="ghost" onClick={() => setPage("contact")}>{tx("דברו איתנו")}</Button>
         </div>
 
         <div className="space-y-3">
@@ -1098,11 +1046,11 @@ function Faq({ setPage }: { setPage: (page: AdionPageId) => void }) {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-black tracking-[-0.04em]">
                 <span>
-                  {index + 1}. {item.q}
+                  {index + 1}. {tx(item.q)}
                 </span>
                 <span className="transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-5 max-w-3xl leading-8 text-white/58">{item.a}</p>
+              <p className="mt-5 max-w-3xl leading-8 text-white/58">{tx(item.a)}</p>
             </details>
           ))}
         </div>
@@ -1118,23 +1066,15 @@ function BigCta({ setPage }: { setPage: (page: AdionPageId) => void }) {
         <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] bg-[#10100e] p-6 text-[#f6efe3] sm:p-10">
           <img
             src={images.heroAlt}
-            alt="הפקה ויזואלית"
+            alt={tx("הפקה ויזואלית")}
             className="absolute inset-0 h-full w-full object-cover opacity-40 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#10100e] via-[#10100e]/50 to-transparent" />
 
           <div className="relative z-10 flex min-h-[460px] flex-col justify-end">
-            <h2 className="max-w-6xl text-[16vw] font-black uppercase leading-[0.75] tracking-[-0.12em] sm:text-[11vw] lg:text-[8.2vw]">
-              בואו
-              <br />
-              ניצור
-              <br />
-              את הסרטון
-              <br />
-              שלכם.
-            </h2>
+            <h2 className="max-w-6xl text-[16vw] font-black uppercase leading-[0.75] tracking-[-0.12em] sm:text-[11vw] lg:text-[8.2vw]">{tx("בואו")}<br />{tx("ניצור")}<br />{tx("את הסרטון")}<br />{tx("שלכם.")}</h2>
             <div className="mt-8">
-              <Button onClick={() => setPage("contact")}>יצירת קשר</Button>
+              <Button onClick={() => setPage("contact")}>{tx("יצירת קשר")}</Button>
             </div>
           </div>
         </div>
@@ -1166,25 +1106,15 @@ function AboutPage() {
         <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-3">
           <img
             src={images.portrait}
-            alt="מייסד הסטודיו"
+            alt={tx("מייסד הסטודיו")}
             className="h-[680px] w-full rounded-[1.5rem] object-cover grayscale"
           />
         </div>
 
         <div>
-          <Eyebrow>אודות</Eyebrow>
-          <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">
-            סטודיו
-            <br />
-            לסיפורים
-            <br />
-            קולנועיים.
-          </h1>
-          <p className="mt-8 max-w-3xl text-xl leading-9 text-white/62">
-            Adion הוא סטודיו ויזואלי לצלמים, יוצרי וידאו וצוותי הפקה שרוצים
-            נוכחות דיגיטלית יוקרתית. התבנית משלבת טיפוגרפיה גדולה,
-            תמונות חזקות ותנועה קולנועית.
-          </p>
+          <Eyebrow>{tx("אודות")}</Eyebrow>
+          <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">{tx("סטודיו")}<br />{tx("לסיפורים")}<br />{tx("קולנועיים.")}</h1>
+          <p className="mt-8 max-w-3xl text-xl leading-9 text-white/62">{tx("Adion הוא סטודיו ויזואלי לצלמים, יוצרי וידאו וצוותי הפקה שרוצים\nנוכחות דיגיטלית יוקרתית. התבנית משלבת טיפוגרפיה גדולה,\nתמונות חזקות ותנועה קולנועית.")}</p>
         </div>
       </div>
 
@@ -1200,7 +1130,7 @@ function AboutPage() {
           >
             <div className="text-3xl md:text-7xl font-black tracking-[-0.1em]">{num}</div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.25em] text-white/45">
-              {label}
+              {tx(label)}
             </div>
           </div>
         ))}
@@ -1215,15 +1145,11 @@ function CasesPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="עבודות"
+            eyebrow={tx("עבודות")}
             title={
-              <>
-                עבודות
-                <br />
-                עם נוכחות.
-              </>
+              <>{tx("עבודות")}<br />{tx("עם נוכחות.")}</>
             }
-            text="עמוד עבודות בסגנון קייס סטאדי, עם כרטיסי תמונה גדולים, שנים, קטגוריות ותנועה פרימיום."
+            text={tx("עמוד עבודות בסגנון קייס סטאדי, עם כרטיסי תמונה גדולים, שנים, קטגוריות ותנועה פרימיום.")}
           />
         </div>
       </section>
@@ -1242,15 +1168,11 @@ function PricingPage({ setPage }: { setPage: (page: AdionPageId) => void }) {
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-[1500px]">
           <SectionTitle
-            eyebrow="מחירים"
+            eyebrow={tx("מחירים")}
             title={
-              <>
-                בחרו את
-                <br />
-                ההפקה שלכם.
-              </>
+              <>{tx("בחרו את")}<br />{tx("ההפקה שלכם.")}</>
             }
-            text="עמוד לחבילות, הצעות מחיר מותאמות ותהליך עבודה ברור."
+            text={tx("עמוד לחבילות, הצעות מחיר מותאמות ותהליך עבודה ברור.")}
           />
         </div>
       </section>
@@ -1283,15 +1205,11 @@ function BlogPage() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1500px]">
         <SectionTitle
-          eyebrow="בלוג"
+          eyebrow={tx("בלוג")}
           title={
-            <>
-              הערות
-              <br />
-              מהסטודיו.
-            </>
+            <>{tx("הערות")}<br />{tx("מהסטודיו.")}</>
           }
-          text="כרטיסים עריכתיים למדריכים, עדכונים וסיפורים מאחורי הקלעים."
+          text={tx("כרטיסים עריכתיים למדריכים, עדכונים וסיפורים מאחורי הקלעים.")}
         />
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1314,9 +1232,7 @@ function BlogPage() {
                 <h2 className="text-3xl font-black uppercase leading-none tracking-[-0.06em]">
                   {post.title}
                 </h2>
-                <p className="mt-5 leading-7 text-white/55">
-                  תקציר קצר למאמר שיוכל להתחבר בהמשך למערכת הבלוג שלכם.
-                </p>
+                <p className="mt-5 leading-7 text-white/55">{tx("תקציר קצר למאמר שיוכל להתחבר בהמשך למערכת הבלוג שלכם.")}</p>
               </div>
             </article>
           ))}
@@ -1331,20 +1247,12 @@ function ContactPage() {
     <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[.9fr_1.1fr]">
         <div>
-          <Eyebrow>צור קשר</Eyebrow>
-          <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">
-            מתחילים
-            <br />
-            את
-            <br />
-            הפרויקט.
-          </h1>
-          <p className="mt-8 max-w-2xl text-xl leading-9 text-white/62">
-            ספרו לנו מה תרצו לצלם, מתי אתם צריכים את זה ואיזו תוצאה תרצו ליצור.
-          </p>
+          <Eyebrow>{tx("צור קשר")}</Eyebrow>
+          <h1 className="text-[16vw] font-black uppercase leading-[0.76] tracking-[-0.12em] sm:text-[11vw] lg:text-[7.8vw]">{tx("מתחילים")}<br />{tx("את")}<br />{tx("הפרויקט.")}</h1>
+          <p className="mt-8 max-w-2xl text-xl leading-9 text-white/62">{tx("ספרו לנו מה תרצו לצלם, מתי אתם צריכים את זה ואיזו תוצאה תרצו ליצור.")}</p>
         </div>
 
-        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="adion-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="adion-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             ["שם", "השם שלכם"],
             ["אימייל", "hello@email.com"],
@@ -1352,22 +1260,20 @@ function ContactPage() {
           ].map(([label, placeholder]) => (
             <label key={label} className="mb-5 block">
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
-                {label}
+                {tx(label)}
               </span>
               <input
-                placeholder={placeholder}
+                placeholder={tx(placeholder)}
                 className="w-full rounded-2xl border border-white/10 bg-[#10100e] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#f7c873]"
               />
             </label>
           ))}
 
           <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
-              הודעה
-            </span>
+            <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">{tx("הודעה")}</span>
             <textarea
               rows={6}
-              placeholder="ספרו לנו על הפרויקט..."
+              placeholder={tx("ספרו לנו על הפרויקט...")}
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#10100e] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#f7c873]"
              name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
@@ -1375,9 +1281,7 @@ function ContactPage() {
           <button
             type="submit"
             className="mt-6 w-full rounded-full bg-[#f7c873] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-[#10100e] transition hover:bg-[#f6efe3]"
-          >
-            שליחת הודעה ←
-          </button>
+          >{tx("שליחת הודעה ←")}</button>
         </form>
       </div>
     </section>
@@ -1396,9 +1300,7 @@ function Footer({ setPage }: { setPage: (page: AdionPageId) => void }) {
           >
             Adion ®
           </button>
-          <p className="mt-4 max-w-md text-sm leading-7 text-white/46">
-            בונים מותגים ויזואליים עם אסטרטגיה, תנועה וקריאייטיב קולנועי.
-          </p>
+          <p className="mt-4 max-w-md text-sm leading-7 text-white/46">{tx("בונים מותגים ויזואליים עם אסטרטגיה, תנועה וקריאייטיב קולנועי.")}</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -1409,16 +1311,14 @@ function Footer({ setPage }: { setPage: (page: AdionPageId) => void }) {
               onClick={() => setPage(item.id)}
               className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white/52 transition hover:border-[#f7c873] hover:text-[#f7c873]"
             >
-              {item.label} 0{index + 1}
+              {tx(item.label)} 0{index + 1}
             </button>
           ))}
           <button
             type="button"
             onClick={scrollTop}
             className="rounded-full bg-[#f6efe3] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#10100e]"
-          >
-            חזרה למעלה
-          </button>
+          >{tx("חזרה למעלה")}</button>
         </div>
       </div>
     </footer>

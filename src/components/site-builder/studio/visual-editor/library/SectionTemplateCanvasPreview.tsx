@@ -6,6 +6,12 @@ import React, {
   type CSSProperties,
 } from "react";
 
+import { useTranslation } from "react-i18next";
+
+import {
+  localizeBuiltInText,
+  localizeLibraryInsertStyle,
+} from "../../../../../i18n/templateCopy";
 import type {
   VisualLibraryNodeTemplate,
   VisualLibrarySectionTemplate,
@@ -113,9 +119,16 @@ function NodePreview({
   fallbackImage: string;
   lockPalette?: boolean;
 }) {
+  const { i18n } = useTranslation();
   const content = node.content || {};
-  const style = nodeLayoutStyle(node, theme, lockPalette);
-  const text = String(content.text || node.label || "");
+  const style = localizeLibraryInsertStyle(
+    nodeLayoutStyle(node, theme, lockPalette) as Record<string, unknown>,
+    i18n.language,
+  ) as CSSProperties;
+  const text = localizeBuiltInText(
+    String(content.text || node.label || ""),
+    i18n.language,
+  );
 
   if (isBookingMount(node)) {
     const variant =
@@ -262,7 +275,10 @@ function NodePreview({
       <input
         readOnly
         tabIndex={-1}
-        placeholder={String(content.placeholder || node.label || "")}
+        placeholder={localizeBuiltInText(
+          String(content.placeholder || node.label || ""),
+          i18n.language,
+        )}
         style={style}
       />
     );

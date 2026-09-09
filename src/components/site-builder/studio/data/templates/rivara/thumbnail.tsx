@@ -1,13 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../../../../../i18n/localeUtils";
 
 export default function RivaraThumbnail() {
+  const { i18n } = useTranslation();
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
+    <div dir={getTextDirection(i18n.language)} className="relative h-full min-h-[260px] w-full overflow-hidden">
       <div className="flex h-full min-h-[260px] flex-col" style={{ background: "#e8f3f2", color: "#12343a" }}>
         <div className="flex items-center justify-between border-b p-4" style={{ borderColor: "rgba(31,122,120,0.18)" }}>
           <div>
             <h3 className="text-3xl font-bold leading-none" style={{ fontFamily: '"Frank Ruhl Libre", serif' }}>Rivara</h3>
-            <p className="mt-1 text-[10px] tracking-[0.24em]" style={{ color: "#1f7a78" }}>מים · אור · שקט</p>
+            <p className="mt-1 text-[10px] tracking-[0.24em]" style={{ color: "#1f7a78" }}>{tx("מים · אור · שקט")}</p>
           </div>
           <div className="h-7 w-11 border-y-2" style={{ borderColor: "#1f7a78" }} />
         </div>

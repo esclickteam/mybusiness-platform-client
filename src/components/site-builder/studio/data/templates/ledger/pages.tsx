@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -80,7 +82,7 @@ function LedgerSectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-4xl", center ? "mx-auto text-center" : "text-start")}>
       <div
         className={cx(
           "mb-4 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.34em]",
@@ -107,7 +109,7 @@ function LedgerSectionTitle({
             light ? "text-[#d9e4de]" : "text-[#5a6b62]",
           )}
         >
-          {text}
+          {tx(text)}
         </TemplateText>
       ) : null}
     </div>
@@ -139,11 +141,11 @@ function LedgerHeader({
       className="sticky top-0 z-50 border-b border-[#102018]/10 bg-[#fffdf8]/95 backdrop-blur-2xl"
     >
       <div className="mx-auto grid max-w-7xl items-center gap-4 px-5 py-4 lg:grid-cols-[auto_1fr_auto] lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-right">
+        <button type="button" onClick={() => handleNavigate("home")} className="flex items-center gap-3 text-start">
           <span className="grid h-11 w-11 place-items-center border border-[#102018]/12 bg-[#0d5c45] text-sm font-semibold tracking-[0.2em] text-[#f6f3ea]">
             {getValue(data, "logoText")}
           </span>
-          <div className="text-right">
+          <div className="text-start">
             <TemplateText as="div" className="text-lg font-semibold tracking-tight text-[#102018]">
               {getValue(data, "brandName")}
             </TemplateText>
@@ -198,7 +200,7 @@ function LedgerHeader({
                 type="button"
                 onClick={() => handleNavigate(id)}
                 className={cx(
-                  "border px-4 py-3 text-right text-sm font-semibold uppercase tracking-[0.2em]",
+                  "border px-4 py-3 text-start text-sm font-semibold uppercase tracking-[0.2em]",
                   currentPage === id
                     ? "border-[#0d5c45] bg-[#0d5c45] text-[#f6f3ea]"
                     : "border-[#102018]/10 text-[#5a6b62]",
@@ -265,12 +267,12 @@ function LedgerHero({
               <TemplateText as="span" className="text-xl font-semibold tracking-[-0.04em] text-[#0d5c45]">
                 0{index + 1}
               </TemplateText>
-              <div className="text-right">
+              <div className="text-start">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#102018]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="p" className="mt-2 text-sm leading-7 text-[#5a6b62]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             </div>
@@ -327,10 +329,10 @@ function AboutLedger({ data }: { data: Record<string, any> }) {
             {governanceRows.map(([label, text]) => (
               <div key={label} className="grid gap-2 border-b border-[#102018]/10 py-4 md:grid-cols-[180px_1fr]">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#0d5c45]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-                  {text}
+                  {tx(text)}
                 </TemplateText>
               </div>
             ))}
@@ -410,9 +412,9 @@ function RegisterTable() {
     <section className="border-y border-[#102018]/10 bg-[#fffdf8] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <LedgerSectionTitle
-          eyebrow="תצוגת Ledger"
-          title="מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק."
-          text="הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה."
+          eyebrow={tx("תצוגת Ledger")}
+          title={tx("מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק.")}
+          text={tx("הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה.")}
         />
         <div className="mt-12 border border-[#102018]/10">
           {registerRows.map(([quarter, scope]) => (
@@ -421,7 +423,7 @@ function RegisterTable() {
                 {quarter}
               </TemplateText>
               <TemplateText as="div" className="text-sm leading-7 text-[#5a6b62]">
-                {scope}
+                {tx(scope)}
               </TemplateText>
               <TemplateText as="div" className="text-sm font-semibold text-[#102018]">
                 Ready for board review
@@ -486,7 +488,7 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             {info.map(([label, value]) => (
               <div key={label} className="grid gap-2 border-b border-[#d8e8e2]/20 py-4 md:grid-cols-[120px_1fr]">
                 <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d8e8e2]">
-                  {label}
+                  {tx(label)}
                 </TemplateText>
                 <TemplateText as="div" className="text-sm leading-7 text-[#f6f3ea]">
                   {value}
@@ -495,17 +497,15 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="ledger-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="ledger-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו מה תרצו למדוד, לייעל או לייצב."  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-start outline-none md:col-span-2" placeholder={tx("ספרו לנו מה תרצו למדוד, לייעל או לייצב.")}  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-[#102018]/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
-            <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
-              שיחת ההתנעה מיועדת למנהלים, בעלי עסקים וגורמי כספים שמבקשים תהליך מסודר ולא רק ייעוץ חד-פעמי.
-            </TemplateText>
+            <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">{tx("שיחת ההתנעה מיועדת למנהלים, בעלי עסקים וגורמי כספים שמבקשים תהליך מסודר ולא רק ייעוץ חד-פעמי.")}</TemplateText>
             <button type="submit" className="border border-[#0d5c45] bg-[#0d5c45] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#f6f3ea]">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>
@@ -531,7 +531,7 @@ function PageHero({
     <section className="border-b border-[#102018]/10 bg-[#fffdf8]">
       <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-          <LedgerSectionTitle eyebrow={eyebrow} title={title} text={text} />
+          <LedgerSectionTitle eyebrow={eyebrow} title={title} text={tx(text)} />
         </div>
         <div className="border-r border-[#102018]/10 p-3">
           <img src={image} alt="" className="h-[320px] w-full object-cover lg:h-[420px]" />
@@ -624,7 +624,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="עמוד שירותים שנבנה כמו מסמך Scope: טבלאות, תאי בקרה ותחומי אחריות ברורים לכל שלב."
+        text={tx("עמוד שירותים שנבנה כמו מסמך Scope: טבלאות, תאי בקרה ותחומי אחריות ברורים לכל שלב.")}
         image={getValue(data, "heroImage")}
       />
       <ServicesLedger data={data} />
@@ -641,7 +641,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="פרויקטים מוצגים כלוג עבודה: מה הבעיה, מה בוצע, ומה היה השינוי העסקי אחרי הסגירה."
+        text={tx("פרויקטים מוצגים כלוג עבודה: מה הבעיה, מה בוצע, ומה היה השינוי העסקי אחרי הסגירה.")}
         image={getValue(data, "heroImage")}
       />
       <WorkRegister data={data} />
@@ -706,7 +706,7 @@ export default function LedgerPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="ledger"
       className="min-h-screen w-full overflow-x-hidden bg-[#f6f3ea] text-[#102018]"
       style={{ fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace' }}

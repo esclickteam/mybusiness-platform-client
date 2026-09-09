@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { WantravelSeed } from "./wantravelData";
 import {
   BookingSection,
@@ -38,9 +39,9 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
 
             <Reveal className="wan-hero-reveal" delay={150}>
               <h1 className="wan-hero-title">
-                <span>חופשה</span>
-                <span>שמרגישה</span>
-                <span>תפורה אישית</span>
+                <span>{tx("חופשה")}</span>
+                <span>{tx("שמרגישה")}</span>
+                <span>{tx("תפורה אישית")}</span>
               </h1>
             </Reveal>
 
@@ -66,13 +67,13 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
             <Reveal className="wan-showcase-main" delay={180}>
               <SafeImage
                 src={data.hero.floatingImage}
-                alt="חופשת בוטיק"
+                alt={tx("חופשת בוטיק")}
                 editId="hero.floatingImage"
                 className="wan-showcase-image"
               />
               <div className="wan-showcase-label">
                 <span>01</span>
-                <strong>יעד נבחר</strong>
+                <strong>{tx("יעד נבחר")}</strong>
               </div>
             </Reveal>
 
@@ -84,12 +85,12 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
 
             <Reveal className="wan-mini-card wan-mini-card-one" delay={480}>
               <strong>+48</strong>
-              <span>יעדים בהתאמה</span>
+              <span>{tx("יעדים בהתאמה")}</span>
             </Reveal>
 
             <Reveal className="wan-mini-card wan-mini-card-two" delay={560}>
               <strong>24/7</strong>
-              <span>ליווי אישי</span>
+              <span>{tx("ליווי אישי")}</span>
             </Reveal>
           </div>
         </div>
@@ -98,19 +99,19 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
           <Reveal delay={620}>
             <div className="wan-search-card">
               <div className="wan-search-item">
-                <span>יעד</span>
-                <strong>לאן תרצו לטוס?</strong>
+                <span>{tx("יעד")}</span>
+                <strong>{tx("לאן תרצו לטוס?")}</strong>
               </div>
               <div className="wan-search-item">
-                <span>סגנון</span>
-                <strong>יוקרה / משפחתי / זוגי</strong>
+                <span>{tx("סגנון")}</span>
+                <strong>{tx("יוקרה / משפחתי / זוגי")}</strong>
               </div>
               <div className="wan-search-item">
-                <span>תקציב</span>
-                <strong>מותאם אישית</strong>
+                <span>{tx("תקציב")}</span>
+                <strong>{tx("מותאם אישית")}</strong>
               </div>
               <a href="#booking" className="wan-search-button">
-                התחילו תכנון
+                {tx("התחילו תכנון")}
               </a>
             </div>
           </Reveal>
@@ -198,11 +199,10 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
       <section className="wan-editorial-section">
         <div className="wan-container wan-editorial-grid">
           <Reveal className="wan-editorial-copy">
-            <span>חוויה מלאה</span>
-            <h2>לא עוד אתר רגיל. נראות של מותג נסיעות פרימיום.</h2>
+            <span>{tx("חוויה מלאה")}</span>
+            <h2>{tx("לא עוד אתר רגיל. נראות של מותג נסיעות פרימיום.")}</h2>
             <p>
-              עמוד בית שמרגיש כמו מגזין תיירות יוקרתי: תמונות גדולות, תנועה
-              חלקה, שכבות, עומק, כרטיסים צפים וקריאה ברורה להשארת פרטים.
+              {tx("עמוד בית שמרגיש כמו מגזין תיירות יוקרתי: תמונות גדולות, תנועה\nחלקה, שכבות, עומק, כרטיסים צפים וקריאה ברורה להשארת פרטים.")}
             </p>
           </Reveal>
 
@@ -210,7 +210,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
             <Reveal className="wan-editorial-image wan-editorial-image-one">
               <SafeImage
                 src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=90"
-                alt="נוף הררי"
+                alt={tx("נוף הררי")}
                 editId="editorial.image.1"
               />
             </Reveal>
@@ -221,7 +221,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
             >
               <SafeImage
                 src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=90"
-                alt="חופשה טרופית"
+                alt={tx("חופשה טרופית")}
                 editId="editorial.image.2"
               />
             </Reveal>

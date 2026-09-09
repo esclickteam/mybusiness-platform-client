@@ -1,0 +1,38 @@
+{
+  "צור קשר": {
+    "en": "Contact us",
+    "es": "Contactar",
+    "pt-BR": "Fale conosco",
+    "ar": "تواصلوا معنا"
+  },
+  "פעולה משנית": {
+    "en": "Secondary action",
+    "es": "Acción secundaria",
+    "pt-BR": "Ação secundária",
+    "ar": "إجراء ثانوي"
+  },
+  "צפייה בדמו": {
+    "en": "View demo",
+    "es": "Ver demo",
+    "pt-BR": "Ver demo",
+    "ar": "عرض العرض التوضيحي"
+  },
+  "הלקוח מבין מיד מה מוצע.": {
+    "en": "The customer immediately understands the offer.",
+    "es": "El cliente entiende de inmediato la oferta.",
+    "pt-BR": "O cliente entende imediatamente a oferta.",
+    "ar": "يفهم العميل العرض فوراً."
+  },
+  "ממיר": {
+    "en": "Converts",
+    "es": "Convierte",
+    "pt-BR": "Converte",
+    "ar": "يحوّل"
+  },
+  "כפתור פעולה בולט.": {
+    "en": "A prominent call-to-action button.",
+    "es": "Un botón de acción destacado.",
+    "pt-BR": "Um botão de ação em destaque.",
+    "ar": "زر إجراء بارز."
+  }
+}

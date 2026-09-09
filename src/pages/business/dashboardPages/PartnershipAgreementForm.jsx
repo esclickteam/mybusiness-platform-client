@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
 
@@ -21,6 +22,7 @@ const partnershipAgreementFormInitial = {
 };
 
 export default function PartnershipAgreementForm({ isSender = true, onSubmit, agreementId, token }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
   const [sending, setSending] = useState(false);
 
@@ -76,15 +78,15 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
     e.preventDefault();
 
     if (isSender && !formData.senderSignature) {
-      alert("The sender must sign!");
+      alert(t("leftover.collab.agreementForm.senderMustSign"));
       return;
     }
     if (!isSender && !formData.receiverSignature) {
-      alert("The receiver must sign the agreement!");
+      alert(t("leftover.collab.agreementForm.receiverMustSign"));
       return;
     }
     if (!formData.toBusinessId) {
-      alert("You must select a partner business with a valid ID");
+      alert(t("leftover.collab.agreementForm.needPartnerId"));
       return;
     }
 
@@ -103,10 +105,10 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           withCredentials: true,
         }
       );
-      alert(isSender ? "Agreement sent to the receiver for signature!" : "The agreement is complete!");
+      alert(isSender ? t("leftover.collab.agreementForm.sentForSignature") : t("leftover.collab.agreementForm.complete"));
       if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
     } catch (err) {
-      alert("Error sending agreement: " + (err?.response?.data?.error || err.message));
+      alert(t("leftover.collab.agreementForm.sendError", { message: err?.response?.data?.error || err.message }));
     } finally {
       setSending(false);
     }
@@ -125,68 +127,68 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         color: "#4a4a9e",
       }}
     >
-      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>Partnership Agreement 🤝</h2>
+      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>{t("leftover.collab.agreementForm.title")} 🤝</h2>
 
       {/* Form fields */}
       <label>
-        Partner Business ID (toBusinessId):
+        {t("leftover.collab.agreementForm.partnerId")}
         <input
           type="text"
           name="toBusinessId"
           value={formData.toBusinessId}
           onChange={handleChange}
-          placeholder="Enter partner business ID"
+          placeholder={t("leftover.collab.agreementForm.partnerIdPh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Your Business Name:
+        {t("leftover.collab.agreementForm.yourName")}
         <input
           type="text"
           name="yourBusinessName"
           value={formData.yourBusinessName}
           onChange={handleChange}
-          placeholder="Enter your business name"
+          placeholder={t("leftover.collab.agreementForm.yourNamePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Partner Business Name:
+        {t("leftover.collab.agreementForm.partnerName")}
         <input
           type="text"
           name="partnerBusinessName"
           value={formData.partnerBusinessName}
           onChange={handleChange}
-          placeholder="Enter partner business name"
+          placeholder={t("leftover.collab.agreementForm.partnerNamePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Agreement Title:
+        {t("leftover.collab.agreementForm.agreementTitle")}
         <input
           type="text"
           name="agreementTitle"
           value={formData.agreementTitle}
           onChange={handleChange}
-          placeholder="Agreement title (e.g., Summer Campaign)"
+          placeholder={t("leftover.collab.agreementForm.agreementTitlePh")}
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Partnership Description:
+        {t("leftover.collab.agreementForm.description")}
         <textarea
           name="partnershipDescription"
           value={formData.partnershipDescription}
           onChange={handleChange}
-          placeholder="Briefly describe the partnership"
+          placeholder={t("leftover.collab.agreementForm.descriptionPh")}
           style={textareaStyle}
           rows={4}
           required
@@ -194,31 +196,31 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        What will you provide under the agreement:
+        {t("leftover.collab.agreementForm.provide")}
         <textarea
           name="agreementSupplies"
           value={formData.agreementSupplies}
           onChange={handleChange}
-          placeholder="What you will provide under the agreement"
+          placeholder={t("leftover.collab.agreementForm.providePh")}
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        What will you receive under the agreement:
+        {t("leftover.collab.agreementForm.receive")}
         <textarea
           name="agreementBenefits"
           value={formData.agreementBenefits}
           onChange={handleChange}
-          placeholder="What you will receive under the agreement"
+          placeholder={t("leftover.collab.agreementForm.receivePh")}
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        Partnership Type:
+        {t("leftover.collab.agreementForm.type")}
         <select
           name="partnershipType"
           value={formData.partnershipType}
@@ -226,28 +228,28 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           style={inputStyle}
           required
         >
-          <option value="">Select type</option>
-          <option value="jointCampaign">Joint Campaign</option>
-          <option value="referral">Referrals</option>
-          <option value="resale">Resale</option>
-          <option value="other">Other</option>
+          <option value="">{t("leftover.collab.agreementForm.typeSelect")}</option>
+          <option value="jointCampaign">{t("leftover.collab.agreementForm.typeJoint")}</option>
+          <option value="referral">{t("leftover.collab.agreementForm.typeReferral")}</option>
+          <option value="resale">{t("leftover.collab.agreementForm.typeResale")}</option>
+          <option value="other">{t("leftover.collab.agreementForm.typeOther")}</option>
         </select>
       </label>
 
       <label>
-        Commission / Payment (if any):
+        {t("leftover.collab.agreementForm.commission")}
         <input
           type="text"
           name="commissionOrPayment"
           value={formData.commissionOrPayment}
           onChange={handleChange}
-          placeholder="e.g., 10% commission"
+          placeholder={t("leftover.collab.agreementForm.commissionPh")}
           style={inputStyle}
         />
       </label>
 
       <label>
-        Agreement Start Date:
+        {t("leftover.collab.agreementForm.startDate")}
         <input
           type="date"
           name="agreementStartDate"
@@ -259,7 +261,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        Agreement End Date:
+        {t("leftover.collab.agreementForm.endDate")}
         <input
           type="date"
           name="agreementEndDate"
@@ -278,7 +280,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.cancellableAtAnyStage}
             onChange={handleChange}
           />
-          Can be cancelled at any stage
+          {t("leftover.collab.agreementForm.cancelAnytime")}
         </label>
       </div>
 
@@ -290,19 +292,19 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.confidentialityClause}
             onChange={handleChange}
           />
-          Confidentiality clause
+          {t("leftover.collab.agreementForm.confidentiality")}
         </label>
       </div>
 
       {/* Signatures */}
       <div style={{ marginTop: 20 }}>
-        <label>Signature (First Signer):</label>
+        <label>{t("leftover.collab.agreementForm.sigFirst")}</label>
         {isSender ? (
           <>
             {formData.senderSignature ? (
               <img
                 src={formData.senderSignature}
-                alt="Sender Signature"
+                alt={t("leftover.collab.agreementForm.senderAlt")}
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -319,7 +321,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveSenderSignature}
                 />
                 <button type="button" onClick={clearSenderSignature} style={{ marginTop: 5 }}>
-                  Clear Signature
+                  {t("leftover.collab.agreementForm.clearSig")}
                 </button>
               </>
             )}
@@ -327,22 +329,22 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.senderSignature ? (
           <img
             src={formData.senderSignature}
-            alt="Sender Signature"
+            alt={t("leftover.collab.agreementForm.senderAlt")}
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>The first signer has not signed yet</p>
+          <p>{t("leftover.collab.agreementForm.firstNotSigned")}</p>
         )}
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <label>Signature (Second Signer):</label>
+        <label>{t("leftover.collab.agreementForm.sigSecond")}</label>
         {!isSender ? (
           <>
             {formData.receiverSignature ? (
               <img
                 src={formData.receiverSignature}
-                alt="Receiver Signature"
+                alt={t("leftover.collab.agreementForm.receiverAlt")}
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -359,7 +361,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveReceiverSignature}
                 />
                 <button type="button" onClick={clearReceiverSignature} style={{ marginTop: 5 }}>
-                  Clear Signature
+                  {t("leftover.collab.agreementForm.clearSig")}
                 </button>
               </>
             )}
@@ -367,11 +369,11 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.receiverSignature ? (
           <img
             src={formData.receiverSignature}
-            alt="Receiver Signature"
+            alt={t("leftover.collab.agreementForm.receiverAlt")}
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>The second signer has not signed yet</p>
+          <p>{t("leftover.collab.agreementForm.secondNotSigned")}</p>
         )}
       </div>
 
@@ -390,7 +392,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           opacity: sending ? 0.7 : 1,
         }}
       >
-        {sending ? "Sending..." : "Submit Agreement 📩"}
+        {sending ? t("leftover.collab.agreementForm.sending") : `${t("leftover.collab.agreementForm.submit")} 📩`}
       </button>
     </form>
   );

@@ -2,7 +2,7 @@ export const vineriaEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@400;500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="vineria"], [data-template-id="vineria"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #1a1218; --tpl-surface: #241820; --tpl-text: #f5ebe0;
   --tpl-muted: #a8959a; --tpl-primary: #9b2335; --tpl-primary-text: #f5ebe0;

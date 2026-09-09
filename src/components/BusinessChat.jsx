@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -15,6 +16,7 @@ export default function BusinessChat({
   getValidAccessToken,
   onLogout,
 }) {
+  const { t } = useTranslation();
   const { refreshAccessToken } = useAuth();
   const [socket, setSocket] = useState(null);
   const [conversationId, setConversationId] = useState(null);
@@ -198,7 +200,7 @@ export default function BusinessChat({
         setFirstMessageSent(true); // ✅ מסמן שההודעה הראשונה נשלחה
       } else {
         console.error("❗️ sendMessage failed:", ack.error);
-        alert("Message sending failed: " + ack.error);
+        alert(t("leftover.misc.messageSendFailed", { detail: ack.error }));
       }
     });
   };

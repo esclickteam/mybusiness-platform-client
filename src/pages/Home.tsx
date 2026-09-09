@@ -3,6 +3,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 
 import HeroSection from "../components/HeroSection";
 import ProductsGrid from "../components/ProductsGrid";
@@ -11,10 +12,10 @@ import WhyBizuply from "../components/WhyBizuply";
 import FAQMini from "../components/FAQMini";
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir="rtl">
+    <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
       <Helmet>
         <title>{t("seo.homeTitle")}</title>
 

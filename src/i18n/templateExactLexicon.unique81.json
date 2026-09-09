@@ -1,0 +1,542 @@
+{
+  "מתאים לעסקים שמקבלים פניות מהירות ורוצים לסגור לקוחות בשיחה.": {
+    "en": "Fits businesses that get fast inquiries and want to close customers in a chat.",
+    "es": "Encaja en negocios que reciben consultas rápidas y quieren cerrar clientes en una conversación.",
+    "pt-BR": "Combina com negócios que recebem contatos rápidos e querem fechar clientes numa conversa.",
+    "ar": "يناسب أعمالاً تتلقى تواصلاً سريعاً وتريد إغلاق زبائن في حوار."
+  },
+  "מתאים לקליניקות, יועצים, שירותי VIP, נדל״ן, אירועים ומותגים.": {
+    "en": "Fits clinics, consultants, VIP services, real estate, events, and brands.",
+    "es": "Encaja en clínicas, asesores, servicios VIP, inmobiliaria, eventos y marcas.",
+    "pt-BR": "Combina com clínicas, consultores, serviços VIP, imóveis, eventos e marcas.",
+    "ar": "يناسب عيادات ومستشارين وخدمات VIP وعقارات وفعاليات وعلامات."
+  },
+  "מתאים לתהליך עבודה, הרשמה, קנייה, תיאום תור, שירות או הדרכה.": {
+    "en": "Fits a work process, signup, purchase, booking, a service, or training.",
+    "es": "Encaja en un proceso de trabajo, registro, compra, cita, servicio o formación.",
+    "pt-BR": "Combina com um processo de trabalho, inscrição, compra, agendamento, serviço ou formação.",
+    "ar": "يناسب مسار عمل أو تسجيلاً أو شراء أو تنسيق موعد أو خدمة أو تدريباً."
+  },
+  "סקשן קצר, מעוצב וממיר שמתאים לסוף עמוד או אחרי סקשן שירותים.": {
+    "en": "A short, designed, converting section that fits the end of a page or after services.",
+    "es": "Una sección corta, diseñada y que convierte, que encaja al final de una página o después de servicios.",
+    "pt-BR": "Uma seção curta, desenhada e que converte, que combina no fim de uma página ou depois de serviços.",
+    "ar": "قسم قصير ومصمم ومُحوِّل يناسب نهاية صفحة أو بعد قسم خدمات."
+  },
+  "פתיחה ויזואלית חזקה עם תמונה, מסר ברור וכפתור שמוביל לפנייה.": {
+    "en": "A strong visual opening with an image, a clear message, and a button that leads to an inquiry.",
+    "es": "Una apertura visual fuerte con imagen, un mensaje claro y un botón que lleva a una consulta.",
+    "pt-BR": "Uma abertura visual forte com imagem, uma mensagem clara e um botão que leva a um contato.",
+    "ar": "افتتاح بصري قوي بصورة ورسالة واضحة وزر يقود إلى تواصل."
+  },
+  "קרוסלה נקייה שמאפשרת להציג הרבה ביקורות בלי להעמיס על העמוד.": {
+    "en": "A clean carousel that lets you show many reviews without overloading the page.",
+    "es": "Un carrusel limpio que permite mostrar muchas reseñas sin recargar la página.",
+    "pt-BR": "Um carrossel limpo que permite mostrar muitas avaliações sem sobrecarregar a página.",
+    "ar": "دائري نظيف يتيح عرض تقييمات كثيرة بلا إثقال الصفحة."
+  },
+  "שילוב של המלצות ונתונים יוצר אמון חזק ומעודד את הלקוח לפעול.": {
+    "en": "Pairing testimonials with numbers creates strong trust and encourages the customer to act.",
+    "es": "Combinar recomendaciones y datos crea una confianza fuerte y anima al cliente a actuar.",
+    "pt-BR": "Juntar recomendações e dados cria uma confiança forte e anima o cliente a agir.",
+    "ar": "جمع التوصيات والبيانات يصنع ثقة قوية ويشجّع الزبون على الإجراء."
+  },
+  "תיאור קצר על המרצה, נותן השירות, האומן או בעל התפקיד באירוע.": {
+    "en": "A short description of the speaker, the service provider, the artist, or the role at the event.",
+    "es": "Una descripción corta del ponente, el prestador, el artista o el rol en el evento.",
+    "pt-BR": "Uma descrição curta do palestrante, do prestador, do artista ou do papel no evento.",
+    "ar": "وصف قصير عن المحاضر أو مقدّم الخدمة أو الفنان أو صاحب الدور في الفعالية."
+  },
+  "תיאור קצר של האירוע, למי הוא מתאים ומה חשוב לדעת לפני הרשמה.": {
+    "en": "A short description of the event, who it is for, and what to know before signup.",
+    "es": "Una descripción corta del evento, para quién encaja y qué importa saber antes del registro.",
+    "pt-BR": "Uma descrição curta do evento, para quem combina e o que importa saber antes da inscrição.",
+    "ar": "وصف قصير للفعالية ولمن تناسب وما المهم معرفته قبل التسجيل."
+  },
+  "הבוט עונה, ממליץ, אוסף פרטים ומוביל את הלקוח לצעד הבא — 24/7.": {
+    "en": "The bot answers, recommends, collects details, and leads the customer to the next step — 24/7.",
+    "es": "El bot responde, recomienda, recoge datos y lleva al cliente al siguiente paso — 24/7.",
+    "pt-BR": "O bot responde, recomenda, reúne dados e leva o cliente ao próximo passo — 24/7.",
+    "ar": "البوت يجيب ويوصي ويجمع بيانات ويقود الزبون إلى الخطوة التالية — 24/7."
+  },
+  "הלקוחות יכולים לקרוא על השירותים ולהשאיר פנייה ישירות מהסקשן.": {
+    "en": "Customers can read about the services and leave an inquiry right from the section.",
+    "es": "Los clientes pueden leer sobre los servicios y dejar una consulta directamente desde la sección.",
+    "pt-BR": "Os clientes podem ler sobre os serviços e deixar um contato direto da seção.",
+    "ar": "يمكن للزبائن قراءة الخدمات وترك تواصل مباشرة من القسم."
+  },
+  "הציגו אנשי צוות, תפקידים, מומחיות וניסיון בצורה נקייה וברורה.": {
+    "en": "Show team members, roles, expertise, and experience in a clean, clear way.",
+    "es": "Mostrad al equipo, roles, especialidad y experiencia de forma limpia y clara.",
+    "pt-BR": "Mostre a equipe, papéis, especialidade e experiência de forma limpa e clara.",
+    "ar": "اعرضوا أفراد الفريق والأدوار والخبرة والتجربة بشكل نظيف وواضح."
+  },
+  "מבנה שמתאים לעסקים שרוצים להציג ותק, לקוחות, הצלחות ודירוגים.": {
+    "en": "A layout for businesses that want to show seniority, customers, wins, and ratings.",
+    "es": "Una estructura para negocios que quieren mostrar antigüedad, clientes, éxitos y valoraciones.",
+    "pt-BR": "Uma estrutura para negócios que querem mostrar tempo, clientes, sucessos e avaliações.",
+    "ar": "بنية تناسب أعمالاً تريد عرض أقدمية وزبائن ونجاحات وتقييمات."
+  },
+  "מתאים ל־CRM, תורים, חנות, קורסים, אזור לקוחות, AI ואוטומציות.": {
+    "en": "Fits CRM, bookings, a store, courses, a customer area, AI, and automations.",
+    "es": "Encaja en CRM, citas, una tienda, cursos, un área de clientes, IA y automatizaciones.",
+    "pt-BR": "Combina com CRM, horários, uma loja, cursos, uma área de clientes, IA e automações.",
+    "ar": "يناسب CRM ومواعيد ومتجراً ودورات ومنطقة زبائن وذكاء وأتمتة."
+  },
+  "מתאים לאולמות, מפיקים, אירועים פרטיים, כנסים, הופעות וסדנאות.": {
+    "en": "Fits halls, producers, private events, conferences, shows, and workshops.",
+    "es": "Encaja en salas, productores, eventos privados, congresos, espectáculos y talleres.",
+    "pt-BR": "Combina com salões, produtores, eventos particulares, congressos, espetáculos e oficinas.",
+    "ar": "يناسب قاعات ومنتجين وفعاليات خاصة ومؤتمرات وعروضاً وورش."
+  },
+  "מתאים לאירועים עם הרשמה מוקדמת, כנסים, סדנאות, הרצאות והשקות.": {
+    "en": "Fits events with early signup, conferences, workshops, talks, and launches.",
+    "es": "Encaja en eventos con registro previo, congresos, talleres, charlas y lanzamientos.",
+    "pt-BR": "Combina com eventos com inscrição antecipada, congressos, oficinas, palestras e lançamentos.",
+    "ar": "يناسب فعاليات بتسجيل مبكر ومؤتمرات وورش ومحاضرات وإطلاقات."
+  },
+  "מתאים להדגמה של הבוט, הסבר שירות, מוצר, קורס, תהליך או מערכת.": {
+    "en": "Fits a bot demo, a service explanation, a product, a course, a process, or a system.",
+    "es": "Encaja en una demo del bot, una explicación de servicio, un producto, un curso, un proceso o un sistema.",
+    "pt-BR": "Combina com uma demo do bot, uma explicação de serviço, um produto, um curso, um processo ou um sistema.",
+    "ar": "يناسب تجربة البوت أو شرح خدمة أو منتج أو دورة أو مسار أو منظومة."
+  },
+  "מתאים להצגת מוצר, שירות, תהליך, הדרכה, תוצאה או תוכן ויזואלי.": {
+    "en": "Fits showing a product, service, process, training, result, or visual content.",
+    "es": "Encaja para mostrar un producto, servicio, proceso, formación, resultado o contenido visual.",
+    "pt-BR": "Combina para mostrar um produto, serviço, processo, formação, resultado ou conteúdo visual.",
+    "ar": "يناسب عرض منتج أو خدمة أو مسار أو تدريب أو نتيجة أو محتوى بصري."
+  },
+  "מתאים לחבילות מוצרים, סטים, שירותים, קורסים, מנויים או ערכות.": {
+    "en": "Fits product bundles, sets, services, courses, subscriptions, or kits.",
+    "es": "Encaja en packs de productos, sets, servicios, cursos, suscripciones o kits.",
+    "pt-BR": "Combina com pacotes de produtos, sets, serviços, cursos, assinaturas ou kits.",
+    "ar": "يناسب باقات منتجات أو أطقم أو خدمات أو دورات أو اشتراكات أو عدة."
+  },
+  "מתאים לטיפול, מוצר, קורס, חבילה, פגישה, ייעוץ או שירות עיקרי.": {
+    "en": "Fits a treatment, product, course, package, meeting, consult, or main service.",
+    "es": "Encaja en un tratamiento, producto, curso, paquete, reunión, asesoría o servicio principal.",
+    "pt-BR": "Combina com um tratamento, produto, curso, pacote, reunião, consultoria ou serviço principal.",
+    "ar": "يناسب علاجاً أو منتجاً أو دورة أو باقة أو لقاء أو استشارة أو خدمة رئيسية."
+  },
+  "מתאים לכל סקשן שבו בעל העסק רוצה להעלות תמונה או וידאו בעצמו.": {
+    "en": "Fits any section where the owner wants to upload a photo or video themselves.",
+    "es": "Encaja en cualquier sección donde el dueño quiera subir una foto o un vídeo por sí mismo.",
+    "pt-BR": "Combina em qualquer seção onde o dono queira enviar uma foto ou um vídeo sozinho.",
+    "ar": "يناسب أي قسم يريد صاحب العمل رفع صورة أو فيديو بنفسه."
+  },
+  "מתאים למותגים שרוצים לבנות קהל, מועדון לקוחות ורכישות חוזרות.": {
+    "en": "Fits brands that want to build an audience, a customer club, and repeat purchases.",
+    "es": "Encaja en marcas que quieren construir audiencia, un club de clientes y compras repetidas.",
+    "pt-BR": "Combina com marcas que querem construir público, um clube de clientes e compras repetidas.",
+    "ar": "يناسب علامات تريد بناء جمهور ونادي زبائن ومشتريات متكررة."
+  },
+  "מתאים לעסקים שרוצים טופס מרשים, נקי ויוקרתי עם תחושת פרימיום.": {
+    "en": "Fits businesses that want an impressive, clean, luxurious form with a premium feel.",
+    "es": "Encaja en negocios que quieren un formulario impresionante, limpio y de lujo con sensación premium.",
+    "pt-BR": "Combina com negócios que querem um formulário impressionante, limpo e luxuoso com sensação premium.",
+    "ar": "يناسب أعمالاً تريد نموذجاً مبهراً نظيفاً فاخراً بإحساس فاخر."
+  },
+  "הוסיפו הוכחות אמון ליד הטופס כדי לשפר המרות ולתת ביטחון ללקוח.": {
+    "en": "Add trust proof beside the form to improve conversions and give the customer confidence.",
+    "es": "Añadid pruebas de confianza junto al formulario para mejorar conversiones y dar seguridad al cliente.",
+    "pt-BR": "Adicione provas de confiança ao lado do formulário para melhorar conversões e dar segurança ao cliente.",
+    "ar": "أضيفوا إثباتات ثقة بجانب النموذج لتحسين التحويلات وإعطاء الزبون أماناً."
+  },
+  "הציגו את השירותים המרכזיים של העסק בצורה מקצועית, קצרה וברורה.": {
+    "en": "Show the business's main services in a professional, short, clear way.",
+    "es": "Mostrad los servicios centrales del negocio de forma profesional, corta y clara.",
+    "pt-BR": "Mostre os serviços centrais do negócio de forma profissional, curta e clara.",
+    "ar": "اعرضوا الخدمات المركزية للعمل بشكل مهني وقصير وواضح."
+  },
+  "הציגו נתוני אמון, ניסיון ושביעות רצון לפני שהלקוח משאיר פרטים.": {
+    "en": "Show trust numbers, experience, and satisfaction before the customer leaves details.",
+    "es": "Mostrad datos de confianza, experiencia y satisfacción antes de que el cliente deje datos.",
+    "pt-BR": "Mostre dados de confiança, experiência e satisfação antes de o cliente deixar dados.",
+    "ar": "اعرضوا بيانات ثقة وخبرة ورضا قبل أن يترك الزبون بيانات."
+  },
+  "מבנה שמחבר AI עם טופס ליד רגיל, כדי לתת ללקוח שתי דרכים לפנות.": {
+    "en": "A layout that joins AI with a regular lead form, so the customer has two ways to reach you.",
+    "es": "Una estructura que une IA con un formulario de lead normal, para dar al cliente dos vías de contacto.",
+    "pt-BR": "Uma estrutura que une IA com um formulário de lead normal, para dar ao cliente duas vias de contato.",
+    "ar": "بنية تربط الذكاء بنموذج عميل محتمل عادي لتعطي الزبون طريقين للتواصل."
+  },
+  "מתאים ל־CRM, תורים, חנות, קורסים, אזור לקוחות, אוטומציות ו־AI.": {
+    "en": "Fits CRM, bookings, a store, courses, a customer area, automations, and AI.",
+    "es": "Encaja en CRM, citas, una tienda, cursos, un área de clientes, automatizaciones e IA.",
+    "pt-BR": "Combina com CRM, horários, uma loja, cursos, uma área de clientes, automações e IA.",
+    "ar": "يناسب CRM ومواعيد ومتجراً ودورات ومنطقة زبائن وأتمتة وذكاء."
+  },
+  "מתאים ל־PDF, קורסים, תבניות, קבצים, הדרכות, מנויים ותוכן נעול.": {
+    "en": "Fits PDFs, courses, templates, files, training, subscriptions, and locked content.",
+    "es": "Encaja en PDF, cursos, plantillas, archivos, formaciones, suscripciones y contenido bloqueado.",
+    "pt-BR": "Combina com PDF, cursos, modelos, arquivos, formações, assinaturas e conteúdo bloqueado.",
+    "ar": "يناسب PDF ودورات وقوالب وملفات وتدريبات واشتراكات ومحتوى مقفولاً."
+  },
+  "מתאים להדגשה, מעבר בין אזורים, CTA, הצגת יתרונות או תוכן חשוב.": {
+    "en": "Fits a highlight, a transition between areas, a CTA, showing benefits, or important content.",
+    "es": "Encaja en un énfasis, un paso entre zonas, un CTA, mostrar ventajas o contenido importante.",
+    "pt-BR": "Combina com um destaque, uma passagem entre áreas, um CTA, mostrar vantagens ou conteúdo importante.",
+    "ar": "يناسب إبرازاً أو انتقالاً بين مناطق أو CTA أو عرض مزايا أو محتوى مهماً."
+  },
+  "מתאים להסבר מוצר, הדגמה, שימוש, Lookbook, קורס או סרטון תדמית.": {
+    "en": "Fits a product explanation, a demo, usage, a lookbook, a course, or a brand video.",
+    "es": "Encaja en una explicación de producto, una demo, el uso, un lookbook, un curso o un vídeo de marca.",
+    "pt-BR": "Combina com uma explicação de produto, uma demo, o uso, um lookbook, um curso ou um vídeo de marca.",
+    "ar": "يناسب شرح منتج أو تجربة أو استخدام أو lookbook أو دورة أو فيديو هوية."
+  },
+  "מתאים לעסקים שרוצים לקבל פניות מהירות, שאלות, תיאומים והזמנות.": {
+    "en": "Fits businesses that want fast inquiries, questions, bookings, and orders.",
+    "es": "Encaja en negocios que quieren consultas rápidas, preguntas, citas y pedidos.",
+    "pt-BR": "Combina com negócios que querem contatos rápidos, perguntas, agendamentos e pedidos.",
+    "ar": "يناسب أعمالاً تريد تواصلاً سريعاً وأسئلة وتنسيقات وطلبات."
+  },
+  "מתאים לעסקים שרוצים מסר חד בלי עומס, עם כפתורים ברורים לפעולה.": {
+    "en": "Fits businesses that want a sharp message without clutter, with clear action buttons.",
+    "es": "Encaja en negocios que quieren un mensaje nítido sin recarga, con botones claros de acción.",
+    "pt-BR": "Combina com negócios que querem uma mensagem nítida sem excesso, com botões claros de ação.",
+    "ar": "يناسب أعمالاً تريد رسالة حادة بلا ازدحام مع أزرار إجراء واضحة."
+  },
+  "מתאים לקליניקות, יועצים, חנויות, SaaS, משרדים ושירותי פרימיום.": {
+    "en": "Fits clinics, consultants, stores, SaaS, offices, and premium services.",
+    "es": "Encaja en clínicas, asesores, tiendas, SaaS, oficinas y servicios premium.",
+    "pt-BR": "Combina com clínicas, consultores, lojas, SaaS, escritórios e serviços premium.",
+    "ar": "يناسب عيادات ومستشارين ومتاجر وSaaS ومكاتب وخدمات فاخرة."
+  },
+  "סקשן נקי שמתאים לאתרים אלגנטיים שרוצים להציג ביקורות בלי עומס.": {
+    "en": "A clean section for elegant sites that want to show reviews without clutter.",
+    "es": "Una sección limpia para sitios elegantes que quieren mostrar reseñas sin recarga.",
+    "pt-BR": "Uma seção limpa para sites elegantes que querem mostrar avaliações sem excesso.",
+    "ar": "قسم نظيف يناسب مواقع أنيقة تريد عرض تقييمات بلا ازدحام."
+  },
+  "סקשן קצר שמתאים לסוף עמוד, אחרי שירותים או ליד טופס יצירת קשר.": {
+    "en": "A short section that fits the end of a page, after services, or beside a contact form.",
+    "es": "Una sección corta que encaja al final de una página, después de servicios o junto a un formulario de contacto.",
+    "pt-BR": "Uma seção curta que combina no fim de uma página, depois de serviços ou ao lado de um formulário de contato.",
+    "ar": "قسم قصير يناسب نهاية صفحة أو بعد الخدمات أو بجانب نموذج تواصل."
+  },
+  "מבנה קשר יוקרתי שמתאים לעסקים שרוצים להיראות ברמה של מותג גדול.": {
+    "en": "A luxurious contact layout for businesses that want to look like a big brand.",
+    "es": "Una estructura de contacto de lujo para negocios que quieren verse al nivel de una marca grande.",
+    "pt-BR": "Uma estrutura de contato luxuosa para negócios que querem parecer no nível de uma marca grande.",
+    "ar": "بنية تواصل فاخرة تناسب أعمالاً تريد أن تبدو بمستوى علامة كبيرة."
+  },
+  "מתאים לאזורי מעבר, הודעה חשובה, קריאה לפעולה או הצגת מסר מרכזי.": {
+    "en": "Fits transition areas, an important notice, a call to action, or showing a central message.",
+    "es": "Encaja en zonas de paso, un aviso importante, una llamada a la acción o mostrar un mensaje central.",
+    "pt-BR": "Combina com áreas de passagem, um aviso importante, uma chamada à ação ou mostrar uma mensagem central.",
+    "ar": "يناسب مناطق انتقال أو إشعاراً مهماً أو دعوة لإجراء أو عرض رسالة مركزية."
+  },
+  "מתאים לדפי נחיתה, קמפיינים, שירותים, מוצרים, קורסים או אירועים.": {
+    "en": "Fits landing pages, campaigns, services, products, courses, or events.",
+    "es": "Encaja en landing pages, campañas, servicios, productos, cursos o eventos.",
+    "pt-BR": "Combina com landing pages, campanhas, serviços, produtos, cursos ou eventos.",
+    "ar": "يناسب صفحات هبوط أو حملات أو خدمات أو منتجات أو دورات أو فعاليات."
+  },
+  "מתאים למותגים, קליניקות, משרדים, SaaS, אירועים ושירותי פרימיום.": {
+    "en": "Fits brands, clinics, offices, SaaS, events, and premium services.",
+    "es": "Encaja en marcas, clínicas, oficinas, SaaS, eventos y servicios premium.",
+    "pt-BR": "Combina com marcas, clínicas, escritórios, SaaS, eventos e serviços premium.",
+    "ar": "يناسب علامات وعيادات ومكاتب وSaaS وفعاليات وخدمات فاخرة."
+  },
+  "מתאים לעסק שרוצה להראות תוצאה, מקום, מוצרים, שירותים או אווירה.": {
+    "en": "Fits a business that wants to show a result, a place, products, services, or atmosphere.",
+    "es": "Encaja en un negocio que quiere mostrar un resultado, un lugar, productos, servicios o atmósfera.",
+    "pt-BR": "Combina com um negócio que quer mostrar um resultado, um lugar, produtos, serviços ou atmosfera.",
+    "ar": "يناسب عملاً يريد إظهار نتيجة أو مكان أو منتجات أو خدمات أو أجواء."
+  },
+  "מתאים לעסקים שמקבלים פניות, שאלות, הזמנות ותיאומים דרך וואטסאפ.": {
+    "en": "Fits businesses that get inquiries, questions, orders, and bookings through WhatsApp.",
+    "es": "Encaja en negocios que reciben consultas, preguntas, pedidos y citas por WhatsApp.",
+    "pt-BR": "Combina com negócios que recebem contatos, perguntas, pedidos e agendamentos pelo WhatsApp.",
+    "ar": "يناسب أعمالاً تتلقى تواصلاً وأسئلة وطلبات وتنسيقات عبر واتساب."
+  },
+  "מתאים לקורס דיגיטלי, סדנה, וובינר, שיעורים פרטיים או תוכן נעול.": {
+    "en": "Fits a digital course, a workshop, a webinar, private lessons, or locked content.",
+    "es": "Encaja en un curso digital, un taller, un webinar, clases particulares o contenido bloqueado.",
+    "pt-BR": "Combina com um curso digital, uma oficina, um webinar, aulas particulares ou conteúdo bloqueado.",
+    "ar": "يناسب دورة رقمية أو ورشة أو ندوة أو دروساً خاصة أو محتوى مقفولاً."
+  },
+  "מתאים לקורסים, וובינרים, סדנאות, שיעורים אונליין ותוכן דיגיטלי.": {
+    "en": "Fits courses, webinars, workshops, online lessons, and digital content.",
+    "es": "Encaja en cursos, webinars, talleres, clases online y contenido digital.",
+    "pt-BR": "Combina com cursos, webinars, oficinas, aulas online e conteúdo digital.",
+    "ar": "يناسب دورات وندوات وورش ودروساً أونلاين ومحتوى رقمياً."
+  },
+  "מתאים לקליניקות, יועצים, SaaS, חנויות, משרדים, אירועים ומותגים.": {
+    "en": "Fits clinics, consultants, SaaS, stores, offices, events, and brands.",
+    "es": "Encaja en clínicas, asesores, SaaS, tiendas, oficinas, eventos y marcas.",
+    "pt-BR": "Combina com clínicas, consultores, SaaS, lojas, escritórios, eventos e marcas.",
+    "ar": "يناسب عيادات ومستشارين وSaaS ومتاجر ومكاتب وفعاليات وعلامات."
+  },
+  "אפשר להשתמש בסקשן הזה כדי להציג ביקורת, סיפור לקוח או משפט אמון.": {
+    "en": "You can use this section to show a review, a customer story, or a trust line.",
+    "es": "Podéis usar esta sección para mostrar una reseña, una historia de cliente o una frase de confianza.",
+    "pt-BR": "Você pode usar esta seção para mostrar uma avaliação, uma história de cliente ou uma frase de confiança.",
+    "ar": "يمكن استخدام هذا القسم لعرض تقييم أو قصة زبون أو جملة ثقة."
+  },
+  "הציגו כתובת, חניה, שעה, אולם, קישור ניווט ופרטים חשובים לאורחים.": {
+    "en": "Show address, parking, time, hall, a navigation link, and important details for guests.",
+    "es": "Mostrad dirección, aparcamiento, hora, sala, un enlace de navegación y datos importantes para invitados.",
+    "pt-BR": "Mostre endereço, estacionamento, horário, salão, um link de navegação e dados importantes para convidados.",
+    "ar": "اعرضوا عنواناً وموقفاً وساعة وقاعة ورابط تنقل وتفاصيل مهمة للضيوف."
+  },
+  "הציגו מספרים שמחזקים אמון: עוקבים, צפיות, תגובות, לקוחות וקהילה.": {
+    "en": "Show numbers that strengthen trust: followers, views, comments, customers, and community.",
+    "es": "Mostrad números que refuerzan la confianza: seguidores, vistas, comentarios, clientes y comunidad.",
+    "pt-BR": "Mostre números que reforçam a confiança: seguidores, visualizações, comentários, clientes e comunidade.",
+    "ar": "اعرضوا أرقاماً تعزّز الثقة: متابعون ومشاهدات وتعليقات وزبائن ومجتمع."
+  },
+  "הציגו מסר מרכזי לצד מחיר, הטבה, שעות פעילות, קופון או נתון חשוב.": {
+    "en": "Show a central message beside a price, offer, opening hours, coupon, or important figure.",
+    "es": "Mostrad un mensaje central junto a un precio, oferta, horario, cupón o dato importante.",
+    "pt-BR": "Mostre uma mensagem central ao lado de um preço, oferta, horário, cupom ou dado importante.",
+    "ar": "اعرضوا رسالة مركزية بجانب سعر أو عرض أو ساعات عمل أو كوبون أو بيان مهم."
+  },
+  "הציגו שעות פעילות, טלפון, כתובת ודרכי קשר בצורה מסודרת ומקצועית.": {
+    "en": "Show opening hours, phone, address, and contact paths in an orderly, professional way.",
+    "es": "Mostrad horario, teléfono, dirección y vías de contacto de forma ordenada y profesional.",
+    "pt-BR": "Mostre horário, telefone, endereço e vias de contato de forma organizada e profissional.",
+    "ar": "اعرضوا ساعات العمل والهاتف والعنوان وطرق التواصل بشكل مرتب ومهني."
+  },
+  "הציגו תאריך, מיקום, פרטים, הרשמה ואישור הגעה בצורה ברורה ומרגשת.": {
+    "en": "Show date, location, details, signup, and RSVP in a clear, exciting way.",
+    "es": "Mostrad fecha, ubicación, datos, registro y confirmación de asistencia de forma clara y emocionante.",
+    "pt-BR": "Mostre data, local, dados, inscrição e confirmação de presença de forma clara e empolgante.",
+    "ar": "اعرضوا تاريخاً وموقعاً وتفاصيل وتسجيلاً وتأكيد حضور بشكل واضح ومثير."
+  },
+  "מבנה שמתאים להצגת יתרונות, מה כלול, תהליך, תכולת שירות או חבילה.": {
+    "en": "A layout for showing benefits, what's included, a process, service contents, or a package.",
+    "es": "Una estructura para mostrar ventajas, qué incluye, un proceso, el contenido de un servicio o un paquete.",
+    "pt-BR": "Uma estrutura para mostrar vantagens, o que inclui, um processo, o conteúdo de um serviço ou um pacote.",
+    "ar": "بنية تناسب عرض المزايا وما يشمله والمسار ومحتوى خدمة أو باقة."
+  },
+  "מתאים לסרטון המלצה, Case Study, ביקורת לקוח, תוצאה או עדות אמון.": {
+    "en": "Fits a testimonial video, a case study, a customer review, a result, or a trust quote.",
+    "es": "Encaja en un vídeo de recomendación, un case study, una reseña de cliente, un resultado o un testimonio de confianza.",
+    "pt-BR": "Combina com um vídeo de recomendação, um case study, uma avaliação de cliente, um resultado ou um depoimento de confiança.",
+    "ar": "يناسب فيديو توصية أو دراسة حالة أو تقييم زبون أو نتيجة أو شهادة ثقة."
+  },
+  "מתאים לעסק שרוצה לקבל הזמנות למוצר, שירות, חבילה, אירוע או קורס.": {
+    "en": "Fits a business that wants orders for a product, service, package, event, or course.",
+    "es": "Encaja en un negocio que quiere pedidos de un producto, servicio, paquete, evento o curso.",
+    "pt-BR": "Combina com um negócio que quer pedidos de um produto, serviço, pacote, evento ou curso.",
+    "ar": "يناسب عملاً يريد طلبات لمنتج أو خدمة أو باقة أو فعالية أو دورة."
+  },
+  "מתאים לעסקים שמנהלים תורים, פגישות, טיפולים, ייעוצים או שיעורים.": {
+    "en": "Fits businesses that manage bookings, meetings, treatments, consults, or lessons.",
+    "es": "Encaja en negocios que gestionan citas, reuniones, tratamientos, asesorías o clases.",
+    "pt-BR": "Combina com negócios que gerenciam horários, reuniões, tratamentos, consultorias ou aulas.",
+    "ar": "يناسب أعمالاً تدير مواعيد ولقاءات وعلاجات واستشارات أو دروساً."
+  },
+  "מתאים לעסקים שרוצים לאסוף הרשמות וגם לפתוח שיחה ישירה עם לקוחות.": {
+    "en": "Fits businesses that want to collect signups and also open a direct chat with customers.",
+    "es": "Encaja en negocios que quieren recoger registros y también abrir una conversación directa con clientes.",
+    "pt-BR": "Combina com negócios que querem reunir inscrições e também abrir uma conversa direta com clientes.",
+    "ar": "يناسب أعمالاً تريد جمع تسجيلات وفتح حوار مباشر مع الزبائن أيضاً."
+  },
+  "מתאים לעסקים שרוצים לאסוף פניות לתורים בלי יומן מלא בשלב הראשון.": {
+    "en": "Fits businesses that want booking inquiries without a full journal in the first stage.",
+    "es": "Encaja en negocios que quieren consultas de cita sin una agenda completa en la primera etapa.",
+    "pt-BR": "Combina com negócios que querem contatos de horário sem uma agenda completa na primeira etapa.",
+    "ar": "يناسب أعمالاً تريد تواصل مواعيد بلا يوميات كاملة في المرحلة الأولى."
+  },
+  "מתאים לשאלות, הזמנות, תיאום תורים, שירות לקוחות או פניות מהירות.": {
+    "en": "Fits questions, orders, booking, customer service, or fast inquiries.",
+    "es": "Encaja en preguntas, pedidos, citas, atención al cliente o consultas rápidas.",
+    "pt-BR": "Combina com perguntas, pedidos, agendamento, atendimento ou contatos rápidos.",
+    "ar": "يناسب أسئلة أو طلبات أو تنسيق مواعيد أو خدمة زبائن أو تواصلاً سريعاً."
+  },
+  "סקשן מרשים לצוות, משרד, קליניקה, סוכנות או עסק עם נראות מקצועית.": {
+    "en": "An impressive section for a team, office, clinic, agency, or a business with a professional look.",
+    "es": "Una sección impresionante para equipo, oficina, clínica, agencia o un negocio con presencia profesional.",
+    "pt-BR": "Uma seção impressionante para equipe, escritório, clínica, agência ou um negócio com presença profissional.",
+    "ar": "قسم مبهر لفريق أو مكتب أو عيادة أو وكالة أو عمل بمظهر مهني."
+  },
+  "שילוב של יומן, מספרים והמלצות מחזק את ההחלטה של הלקוח לקבוע תור.": {
+    "en": "Pairing a journal, numbers, and testimonials strengthens the customer's decision to book.",
+    "es": "Combinar agenda, números y recomendaciones refuerza la decisión del cliente de reservar cita.",
+    "pt-BR": "Juntar agenda, números e recomendações reforça a decisão do cliente de agendar.",
+    "ar": "جمع اليوميات والأرقام والتوصيات يعزّز قرار الزبون بحجز موعد."
+  },
+  "שלבו רשימת יתרונות עם מספרים כדי להראות ניסיון, תוצאה ומקצועיות.": {
+    "en": "Combine a benefits list with numbers to show experience, result, and professionalism.",
+    "es": "Combinad una lista de ventajas con números para mostrar experiencia, resultado y profesionalidad.",
+    "pt-BR": "Combine uma lista de vantagens com números para mostrar experiência, resultado e profissionalismo.",
+    "ar": "اجمعوا قائمة مزايا مع أرقام لإظهار الخبرة والنتيجة والمهنية."
+  },
+  "תצוגה נקייה שמתאימה לעסקים שרוצים עמוד מינימליסטי, אלגנטי ומהיר.": {
+    "en": "A clean display for businesses that want a minimal, elegant, fast page.",
+    "es": "Una vista limpia para negocios que quieren una página minimalista, elegante y rápida.",
+    "pt-BR": "Uma vista limpa para negócios que querem uma página minimalista, elegante e rápida.",
+    "ar": "عرض نظيف يناسب أعمالاً تريد صفحة بسيطة أنيقة سريعة."
+  },
+  "כאן כותבים איך העסק פועל בפועל כדי להשיג את החזון ולתת ערך אמיתי.": {
+    "en": "Here you write how the business actually works to reach the vision and give real value.",
+    "es": "Aquí escribís cómo funciona el negocio de verdad para alcanzar la visión y dar valor real.",
+    "pt-BR": "Aqui você escreve como o negócio funciona de verdade para alcançar a visão e dar valor real.",
+    "ar": "هنا تكتبون كيف يعمل العمل فعلياً لتحقيق الرؤية وإعطاء قيمة حقيقية."
+  },
+  "מלאו פרטים או שלחו הודעה ונחזור אליכם עם מענה מקצועי, מהיר וברור.": {
+    "en": "Fill in details or send a message and we will get back with a professional, fast, clear reply.",
+    "es": "Rellenad datos o enviad un mensaje y os responderemos con una respuesta profesional, rápida y clara.",
+    "pt-BR": "Preencha dados ou envie uma mensagem e voltaremos com uma resposta profissional, rápida e clara.",
+    "ar": "املأوا بيانات أو أرسلوا رسالة وسنعود برد مهني وسريع وواضح."
+  },
+  "מתאים לבונה אתרים שבו בעל העסק בוחר תמונות, וידאו, קאבר או גלריה.": {
+    "en": "Fits a website builder where the owner chooses photos, video, a cover, or a gallery.",
+    "es": "Encaja en un constructor de sitios donde el dueño elige fotos, vídeo, una portada o una galería.",
+    "pt-BR": "Combina com um construtor de sites onde o dono escolhe fotos, vídeo, uma capa ou uma galeria.",
+    "ar": "يناسب بانٍ لمواقع يختار فيه صاحب العمل صوراً أو فيديو أو غلافاً أو معرضاً."
+  },
+  "מתאים לביוטי, אופנה, אוכל, אירועים, נדל״ן, סטודיו, גלריה או מוצר.": {
+    "en": "Fits beauty, fashion, food, events, real estate, a studio, a gallery, or a product.",
+    "es": "Encaja en belleza, moda, comida, eventos, inmobiliaria, un estudio, una galería o un producto.",
+    "pt-BR": "Combina com beleza, moda, comida, eventos, imóveis, um estúdio, uma galeria ou um produto.",
+    "ar": "يناسب تجميلاً أو موضة أو طعاماً أو فعاليات أو عقارات أو استوديو أو معرضاً أو منتجاً."
+  },
+  "מתאים לדפי נחיתה, SaaS, קליניקות, מותגים, קורסים ושירותי פרימיום.": {
+    "en": "Fits landing pages, SaaS, clinics, brands, courses, and premium services.",
+    "es": "Encaja en landing pages, SaaS, clínicas, marcas, cursos y servicios premium.",
+    "pt-BR": "Combina com landing pages, SaaS, clínicas, marcas, cursos e serviços premium.",
+    "ar": "يناسب صفحات هبوط وSaaS وعيادات وعلامات ودورات وخدمات فاخرة."
+  },
+  "מתאים לווידאו הסבר, תמונת קופון, תמונת מוצר, מדריך, קורס או השקה.": {
+    "en": "Fits an explainer video, a coupon photo, a product photo, a guide, a course, or a launch.",
+    "es": "Encaja en un vídeo explicativo, una foto de cupón, una foto de producto, una guía, un curso o un lanzamiento.",
+    "pt-BR": "Combina com um vídeo explicativo, uma foto de cupom, uma foto de produto, um guia, um curso ou um lançamento.",
+    "ar": "يناسب فيديو شرح أو صورة كوبون أو صورة منتج أو دليلاً أو دورة أو إطلاقاً."
+  },
+  "מתאים למותגים, קליניקות, SaaS, חנויות, אירועים וקמפיינים מיוחדים.": {
+    "en": "Fits brands, clinics, SaaS, stores, events, and special campaigns.",
+    "es": "Encaja en marcas, clínicas, SaaS, tiendas, eventos y campañas especiales.",
+    "pt-BR": "Combina com marcas, clínicas, SaaS, lojas, eventos e campanhas especiais.",
+    "ar": "يناسب علامات وعيادات وSaaS ومتاجر وفعاليات وحملات خاصة."
+  },
+  "מתאים למיני SaaS, מוצר דיגיטלי, CRM, אוטומציות או פלטפורמה עסקית.": {
+    "en": "Fits Mini SaaS, a digital product, CRM, automations, or a business platform.",
+    "es": "Encaja en Mini SaaS, un producto digital, CRM, automatizaciones o una plataforma de negocio.",
+    "pt-BR": "Combina com Mini SaaS, um produto digital, CRM, automações ou uma plataforma de negócio.",
+    "ar": "يناسب Mini SaaS أو منتجاً رقمياً أو CRM أو أتمتة أو منصة أعمال."
+  },
+  "מתאים לסרטון תדמית, הדרכה, הצגת מוצר, הסבר שירות או תוכן דיגיטלי.": {
+    "en": "Fits a brand video, training, a product showcase, a service explanation, or digital content.",
+    "es": "Encaja en un vídeo de marca, formación, mostrar un producto, explicar un servicio o contenido digital.",
+    "pt-BR": "Combina com um vídeo de marca, formação, mostrar um produto, explicar um serviço ou conteúdo digital.",
+    "ar": "يناسب فيديو هوية أو تدريباً أو عرض منتج أو شرح خدمة أو محتوى رقمياً."
+  },
+  "מתאים לקורס, הדרכה, שירות מורכב, מוצר דיגיטלי או הסבר לפני רכישה.": {
+    "en": "Fits a course, training, a complex service, a digital product, or an explanation before purchase.",
+    "es": "Encaja en un curso, formación, un servicio complejo, un producto digital o una explicación antes de comprar.",
+    "pt-BR": "Combina com um curso, formação, um serviço complexo, um produto digital ou uma explicação antes da compra.",
+    "ar": "يناسب دورة أو تدريباً أو خدمة معقدة أو منتجاً رقمياً أو شرحاً قبل الشراء."
+  },
+  "מתאים לרשימת יתרונות, מה כלול, תהליך, תנאים, הסברים או תקנון קצר.": {
+    "en": "Fits a benefits list, what's included, a process, terms, explanations, or a short policy.",
+    "es": "Encaja en una lista de ventajas, qué incluye, un proceso, condiciones, explicaciones o un reglamento corto.",
+    "pt-BR": "Combina com uma lista de vantagens, o que inclui, um processo, condições, explicações ou um regulamento curto.",
+    "ar": "يناسب قائمة مزايا أو ما يشمله أو مساراً أو شروطاً أو شروحاً أو لائحة قصيرة."
+  },
+  "מתאים לשירות לקוחות, תמיכה טכנית, שאלות על מוצר, הזמנות או תורים.": {
+    "en": "Fits customer service, technical support, product questions, orders, or bookings.",
+    "es": "Encaja en atención al cliente, soporte técnico, preguntas de producto, pedidos o citas.",
+    "pt-BR": "Combina com atendimento, suporte técnico, perguntas de produto, pedidos ou horários.",
+    "ar": "يناسب خدمة زبائن أو دعماً تقنياً أو أسئلة منتج أو طلبات أو مواعيد."
+  },
+  "אפשר להציג הטבה, זמינות, מחיר, תאריך קרוב, שירות פופולרי או סטטוס.": {
+    "en": "You can show an offer, availability, a price, an upcoming date, a popular service, or a status.",
+    "es": "Podéis mostrar una oferta, disponibilidad, un precio, una fecha próxima, un servicio popular o un estado.",
+    "pt-BR": "Você pode mostrar uma oferta, disponibilidade, um preço, uma data próxima, um serviço popular ou um status.",
+    "ar": "يمكن عرض عرض أو توفر أو سعر أو تاريخ قريب أو خدمة شائعة أو حالة."
+  },
+  "הרשמה פשוטה לניוזלטר, מועדון לקוחות, מבצעים, השקות או תוכן מקצועי.": {
+    "en": "Simple signup for a newsletter, customer club, promos, launches, or professional content.",
+    "es": "Registro simple a un newsletter, club de clientes, ofertas, lanzamientos o contenido profesional.",
+    "pt-BR": "Inscrição simples em uma newsletter, clube de clientes, ofertas, lançamentos ou conteúdo profissional.",
+    "ar": "تسجيل بسيط لنشرة أو نادي زبائن أو عروض أو إطلاقات أو محتوى مهني."
+  },
+  "כל הערוצים במקום אחד — אינסטגרם, פייסבוק, טיקטוק, יוטיוב ווואטסאפ.": {
+    "en": "All channels in one place — Instagram, Facebook, TikTok, YouTube, and WhatsApp.",
+    "es": "Todos los canales en un solo lugar — Instagram, Facebook, TikTok, YouTube y WhatsApp.",
+    "pt-BR": "Todos os canais em um só lugar — Instagram, Facebook, TikTok, YouTube e WhatsApp.",
+    "ar": "كل القنوات في مكان واحد — إنستغرام وفيسبوك وتيك توك ويوتيوب وواتساب."
+  },
+  "מבנה נקי שמתאים לאתרים אלגנטיים, דפי נחיתה או עמודים עם פחות עומס.": {
+    "en": "A clean layout for elegant sites, landing pages, or pages with less clutter.",
+    "es": "Una estructura limpia para sitios elegantes, landing pages o páginas con menos recarga.",
+    "pt-BR": "Uma estrutura limpa para sites elegantes, landing pages ou páginas com menos excesso.",
+    "ar": "بنية نظيفة تناسب مواقع أنيقة أو صفحات هبوط أو صفحات بأقل ازدحام."
+  },
+  "משפט קצר שמסביר מה העסק נותן, למי הוא מתאים ולמה כדאי לפנות עכשיו.": {
+    "en": "A short sentence that explains what the business gives, who it is for, and why to reach out now.",
+    "es": "Una frase corta que explica qué da el negocio, para quién encaja y por qué conviene contactar ahora.",
+    "pt-BR": "Uma frase curta que explica o que o negócio dá, para quem combina e por que vale entrar em contato agora.",
+    "ar": "جملة قصيرة تشرح ماذا يعطي العمل ولمن يناسب ولماذا يستحق التواصل الآن."
+  },
+  "מתאים לאיפור קבוע, שיער, טיפולי פנים, ציפורניים, קוסמטיקה וסטודיו.": {
+    "en": "Fits permanent makeup, hair, facial treatments, nails, cosmetics, and a studio.",
+    "es": "Encaja en maquillaje permanente, cabello, tratamientos faciales, uñas, cosmética y un estudio.",
+    "pt-BR": "Combina com maquiagem permanente, cabelo, tratamentos faciais, unhas, cosmética e um estúdio.",
+    "ar": "يناسب مكياجاً دائماً وشعراً وعلاجات وجه وأظافراً وتجميلاً واستوديو."
+  },
+  "מתאים להצגת יתרונות, תכולת שירות, פיצ׳רים, חבילות או הבטחות ללקוח.": {
+    "en": "Fits showing benefits, service contents, features, packages, or promises to the customer.",
+    "es": "Encaja para mostrar ventajas, contenido de servicio, funciones, paquetes o promesas al cliente.",
+    "pt-BR": "Combina para mostrar vantagens, conteúdo de serviço, recursos, pacotes ou promessas ao cliente.",
+    "ar": "يناسب عرض المزايا أو محتوى خدمة أو ميزات أو باقات أو وعوداً للزبون."
+  },
+  "מתאים למועדון לקוחות, השקות, מבצעים, קופונים, קורסים ותוכן מקצועי.": {
+    "en": "Fits a customer club, launches, promos, coupons, courses, and professional content.",
+    "es": "Encaja en un club de clientes, lanzamientos, ofertas, cupones, cursos y contenido profesional.",
+    "pt-BR": "Combina com um clube de clientes, lançamentos, ofertas, cupons, cursos e conteúdo profissional.",
+    "ar": "يناسب نادي زبائن وإطلاقات وعروضاً وكوبونات ودورات ومحتوى مهنياً."
+  },
+  "מתאים למותגים, קורסים, חנויות, קליניקות ועסקים שרוצים לבנות קהילה.": {
+    "en": "Fits brands, courses, stores, clinics, and businesses that want to build a community.",
+    "es": "Encaja en marcas, cursos, tiendas, clínicas y negocios que quieren construir una comunidad.",
+    "pt-BR": "Combina com marcas, cursos, lojas, clínicas e negócios que querem construir uma comunidade.",
+    "ar": "يناسب علامات ودورات ومتاجر وعيادات وأعمالاً تريد بناء مجتمع."
+  },
+  "מתאים למערכות, מיני SaaS, CRM, תורים, קורסים, אזור לקוחות ומנויים.": {
+    "en": "Fits systems, Mini SaaS, CRM, bookings, courses, a customer area, and subscriptions.",
+    "es": "Encaja en sistemas, Mini SaaS, CRM, citas, cursos, un área de clientes y suscripciones.",
+    "pt-BR": "Combina com sistemas, Mini SaaS, CRM, horários, cursos, uma área de clientes e assinaturas.",
+    "ar": "يناسب منظومات وMini SaaS وCRM ومواعيد ودورات ومنطقة زبائن واشتراكات."
+  },
+  "מתאים לסרטון תדמית, הסבר על טיפול, הדרכה קצרה, קורס או הצגת תהליך.": {
+    "en": "Fits a brand video, a treatment explanation, a short training, a course, or showing a process.",
+    "es": "Encaja en un vídeo de marca, una explicación de tratamiento, una formación corta, un curso o mostrar un proceso.",
+    "pt-BR": "Combina com um vídeo de marca, uma explicação de tratamento, uma formação curta, um curso ou mostrar um processo.",
+    "ar": "يناسب فيديو هوية أو شرح علاج أو تدريباً قصيراً أو دورة أو عرض مسار."
+  },
+  "מתאים לקליניקות, יועצים, מאמנים, טיפולים, שיעורים ושירותים אישיים.": {
+    "en": "Fits clinics, consultants, coaches, treatments, lessons, and personal services.",
+    "es": "Encaja en clínicas, asesores, entrenadores, tratamientos, clases y servicios personales.",
+    "pt-BR": "Combina com clínicas, consultores, treinadores, tratamentos, aulas e serviços pessoais.",
+    "ar": "يناسب عيادات ومستشارين ومدربين وعلاجات ودروساً وخدمات شخصية."
+  },
+  "מתאים לקליניקות, יועצים, משרדים, נדל״ן, אירועים, מותגים וסוכנויות.": {
+    "en": "Fits clinics, consultants, offices, real estate, events, brands, and agencies.",
+    "es": "Encaja en clínicas, asesores, oficinas, inmobiliaria, eventos, marcas y agencias.",
+    "pt-BR": "Combina com clínicas, consultores, escritórios, imóveis, eventos, marcas e agências.",
+    "ar": "يناسب عيادات ومستشارين ومكاتب وعقارات وفعاليات وعلامات ووكالات."
+  },
+  "סקשן מושלם לעסקים שרוצים להציג מקצועיות, יחס אישי ותוצאות אמיתיות.": {
+    "en": "A perfect section for businesses that want to show professionalism, personal care, and real results.",
+    "es": "Una sección perfecta para negocios que quieren mostrar profesionalidad, trato personal y resultados reales.",
+    "pt-BR": "Uma seção perfeita para negócios que querem mostrar profissionalismo, atendimento pessoal e resultados reais.",
+    "ar": "قسم مثالي لأعمال تريد عرض المهنية والتعامل الشخصي والنتائج الحقيقية."
+  },
+  "שילוב של תמונות והמלצה יוצר אמון חזק ומראה ללקוח מה הוא יכול לקבל.": {
+    "en": "Pairing photos with a recommendation creates strong trust and shows the customer what they can get.",
+    "es": "Combinar fotos y una recomendación crea una confianza fuerte y muestra al cliente lo que puede recibir.",
+    "pt-BR": "Juntar fotos e uma recomendação cria uma confiança forte e mostra ao cliente o que pode receber.",
+    "ar": "جمع الصور مع توصية يصنع ثقة قوية ويُري الزبون ماذا يمكنه الحصول عليه."
+  },
+  "מבנה שמתאים לשירותים, מוצרים, קורסים, מערכות, תהליכים או דפי נחיתה.": {
+    "en": "A layout that fits services, products, courses, systems, processes, or landing pages.",
+    "es": "Una estructura que encaja en servicios, productos, cursos, sistemas, procesos o landing pages.",
+    "pt-BR": "Uma estrutura que combina com serviços, produtos, cursos, sistemas, processos ou landing pages.",
+    "ar": "بنية تناسب خدمات أو منتجات أو دورات أو منظومات أو مسارات أو صفحات هبوط."
+  }
+}

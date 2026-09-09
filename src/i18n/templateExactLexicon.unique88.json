@@ -1,0 +1,542 @@
+{
+  "אותו מבנה כמו רשימה ותמונה, רק הפוך.": {
+    "en": "The same layout as a list and photo, only reversed.",
+    "es": "La misma estructura que lista y foto, solo invertida.",
+    "pt-BR": "A mesma estrutura que lista e foto, só invertida.",
+    "ar": "نفس البنية كقائمة وصورة، معكوسة فقط."
+  },
+  "כפתורי סושיאל יחד עם הרשמה לעדכונים.": {
+    "en": "Social buttons together with signup for updates.",
+    "es": "Botones sociales junto con registro a novedades.",
+    "pt-BR": "Botões sociais junto com inscrição em novidades.",
+    "ar": "أزرار اجتماعية مع تسجيل للتحديثات."
+  },
+  "סקשן בסיסי להצגת תמונות בצורה נקייה.": {
+    "en": "A basic section for showing photos in a clean way.",
+    "es": "Una sección básica para mostrar fotos de forma limpia.",
+    "pt-BR": "Uma seção básica para mostrar fotos de forma limpa.",
+    "ar": "قسم أساسي لعرض صور بشكل نظيف."
+  },
+  "רשימה עם אזור להוספת תמונה או וידאו.": {
+    "en": "A list with an area to add a photo or video.",
+    "es": "Una lista con una zona para añadir una foto o un vídeo.",
+    "pt-BR": "Uma lista com uma área para adicionar uma foto ou um vídeo.",
+    "ar": "قائمة مع منطقة لإضافة صورة أو فيديو."
+  },
+  "גריד פוסטים ויזואלי בסגנון אינסטגרם.": {
+    "en": "A visual posts grid in Instagram style.",
+    "es": "Una rejilla visual de posts al estilo Instagram.",
+    "pt-BR": "Uma grade visual de posts no estilo Instagram.",
+    "ar": "شبكة منشورات بصرية بأسلوب إنستغرام."
+  },
+  "סקשן טקסט קצר, נקי ואלגנטי בלי עומס.": {
+    "en": "A short, clean, elegant text section without clutter.",
+    "es": "Una sección de texto corta, limpia y elegante sin recarga.",
+    "pt-BR": "Uma seção de texto curta, limpa e elegante sem excesso.",
+    "ar": "قسم نص قصير ونظيف وأنيق بلا ازدحام."
+  },
+  "סקשן הרשמה עם תמונת רקע גדולה וטופס.": {
+    "en": "A signup section with a large background photo and a form.",
+    "es": "Una sección de registro con una foto de fondo grande y un formulario.",
+    "pt-BR": "Uma seção de inscrição com uma foto de fundo grande e um formulário.",
+    "ar": "قسم تسجيل بصورة خلفية كبيرة ونموذج."
+  },
+  "המלצות בצד אחד וטופס פנייה בצד השני.": {
+    "en": "Testimonials on one side and an inquiry form on the other.",
+    "es": "Recomendaciones a un lado y un formulario de consulta al otro.",
+    "pt-BR": "Depoimentos de um lado e um formulário de contato do outro.",
+    "ar": "توصيات في جانب ونموذج تواصل في الجانب الآخر."
+  },
+  "טקסט ורשימת יתרונות לצד תמונה גדולה.": {
+    "en": "Text and a benefits list beside a large photo.",
+    "es": "Texto y una lista de ventajas junto a una foto grande.",
+    "pt-BR": "Texto e uma lista de vantagens ao lado de uma foto grande.",
+    "ar": "نص وقائمة مزايا بجانب صورة كبيرة."
+  },
+  "רשימת שאלות נפוצות בסגנון נקי וברור.": {
+    "en": "A FAQ list in a clean, clear style.",
+    "es": "Una lista de preguntas frecuentes en un estilo limpio y claro.",
+    "pt-BR": "Uma lista de perguntas frequentes em um estilo limpo e claro.",
+    "ar": "قائمة أسئلة شائعة بأسلوب نظيف وواضح."
+  },
+  "בוט שאוסף פרטי לקוח ומעביר ליד לעסק.": {
+    "en": "A bot that collects customer details and passes a lead to the business.",
+    "es": "Un bot que recoge datos del cliente y pasa un lead al negocio.",
+    "pt-BR": "Um bot que reúne dados do cliente e passa um lead ao negócio.",
+    "ar": "بوت يجمع بيانات الزبون ويمرّر عميلاً محتملاً للعمل."
+  },
+  "גלריית תמונות קלאסית, מסודרת ונקייה.": {
+    "en": "A classic, orderly, clean photo gallery.",
+    "es": "Una galería de fotos clásica, ordenada y limpia.",
+    "pt-BR": "Uma galeria de fotos clássica, organizada e limpa.",
+    "ar": "معرض صور كلاسيكي مرتب ونظيف."
+  },
+  "הרשמה לעדכוני חנות, קולקציות ומבצעים.": {
+    "en": "Signup for store updates, collections, and promos.",
+    "es": "Registro a novedades de tienda, colecciones y ofertas.",
+    "pt-BR": "Inscrição em novidades da loja, coleções e ofertas.",
+    "ar": "تسجيل لتحديثات المتجر والمجموعات والعروض."
+  },
+  "דירוג ממוצע, כוכבים והתפלגות ביקורות.": {
+    "en": "Average rating, stars, and review distribution.",
+    "es": "Valoración media, estrellas y distribución de reseñas.",
+    "pt-BR": "Nota média, estrelas e distribuição de avaliações.",
+    "ar": "متوسط تقييم ونجوم وتوزيع تقييمات."
+  },
+  "תמונות עם כותרת ותיאור קצר לכל עבודה.": {
+    "en": "Photos with a title and a short description for each work.",
+    "es": "Fotos con título y una descripción corta para cada trabajo.",
+    "pt-BR": "Fotos com título e uma descrição curta para cada trabalho.",
+    "ar": "صور بعنوان ووصف قصير لكل عمل."
+  },
+  "רשימה פשוטה, נקייה ואלגנטית בלי עומס.": {
+    "en": "A simple, clean, elegant list without clutter.",
+    "es": "Una lista simple, limpia y elegante sin recarga.",
+    "pt-BR": "Uma lista simples, limpa e elegante sem excesso.",
+    "ar": "قائمة بسيطة نظيفة أنيقة بلا ازدحام."
+  },
+  "וידאו ביקורת / עדות לקוח לצד ביקורות.": {
+    "en": "A review / customer-testimonial video beside reviews.",
+    "es": "Un vídeo de reseña / testimonio de cliente junto a reseñas.",
+    "pt-BR": "Um vídeo de avaliação / depoimento de cliente ao lado de avaliações.",
+    "ar": "فيديو تقييم / شهادة زبون بجانب تقييمات."
+  },
+  "שלושה כרטיסי יתרונות בסיסיים וברורים.": {
+    "en": "Three basic, clear benefit cards.",
+    "es": "Tres tarjetas de ventajas básicas y claras.",
+    "pt-BR": "Três cartões de vantagens básicos e claros.",
+    "ar": "ثلاث بطاقات مزايا أساسية وواضحة."
+  },
+  "סקשן קשר שמוביל ישירות לשיחת וואטסאפ.": {
+    "en": "A contact section that leads directly to a WhatsApp chat.",
+    "es": "Una sección de contacto que lleva directamente a una conversación de WhatsApp.",
+    "pt-BR": "Uma seção de contato que leva direto a uma conversa no WhatsApp.",
+    "ar": "قسم تواصل يقود مباشرة إلى حوار واتساب."
+  },
+  "בוט שמציג זמינות, שירותים ותיאום תור.": {
+    "en": "A bot that shows availability, services, and booking.",
+    "es": "Un bot que muestra disponibilidad, servicios y citas.",
+    "pt-BR": "Um bot que mostra disponibilidade, serviços e agendamento.",
+    "ar": "بوت يعرض التوفر والخدمات وتنسيق موعد."
+  },
+  "צוות לצד המלצת לקוח ליצירת אמון מהיר.": {
+    "en": "A team beside a customer testimonial for fast trust.",
+    "es": "Un equipo junto a una recomendación de cliente para crear confianza rápida.",
+    "pt-BR": "Uma equipe ao lado de um depoimento de cliente para criar confiança rápida.",
+    "ar": "فريق بجانب توصية زبون لصنع ثقة سريعة."
+  },
+  "גלריה שמתאימה למותג, חנות או קולקציה.": {
+    "en": "A gallery that fits a brand, a store, or a collection.",
+    "es": "Una galería que encaja en una marca, una tienda o una colección.",
+    "pt-BR": "Uma galeria que combina com uma marca, uma loja ou uma coleção.",
+    "ar": "معرض يناسب علامة أو متجراً أو مجموعة."
+  },
+  "סקשן קצר, נקי ואלגנטי לרשתות חברתיות.": {
+    "en": "A short, clean, elegant section for social networks.",
+    "es": "Una sección corta, limpia y elegante para redes sociales.",
+    "pt-BR": "Uma seção curta, limpa e elegante para redes sociais.",
+    "ar": "قسم قصير ونظيف وأنيق للشبكات الاجتماعية."
+  },
+  "תמונות לקוחות / פרויקטים לצד לוגואים.": {
+    "en": "Customer / project photos beside logos.",
+    "es": "Fotos de clientes / proyectos junto a logos.",
+    "pt-BR": "Fotos de clientes / projetos ao lado de logos.",
+    "ar": "صور زبائن / مشاريع بجانب شعارات."
+  },
+  "סקשן לוח זמנים מקצועי עם שעות ושלבים.": {
+    "en": "A professional schedule section with hours and stages.",
+    "es": "Una sección de horario profesional con horas y etapas.",
+    "pt-BR": "Uma seção de horário profissional com horas e etapas.",
+    "ar": "قسم جدول مهني بساعات ومراحل."
+  },
+  "סקשן קצר וחזק לסוף עמוד שמוביל לרכישה.": {
+    "en": "A short, strong end-of-page section that leads to a purchase.",
+    "es": "Una sección corta y fuerte para el final de una página que lleva a una compra.",
+    "pt-BR": "Uma seção curta e forte para o fim de uma página que leva a uma compra.",
+    "ar": "قسم قصير وقوي لنهاية صفحة يقود إلى شراء."
+  },
+  "טקסט הסבר בצד וגלריית תמונות בצד השני.": {
+    "en": "Explainer text on one side and a photo gallery on the other.",
+    "es": "Texto explicativo a un lado y una galería de fotos al otro.",
+    "pt-BR": "Texto explicativo de um lado e uma galeria de fotos do outro.",
+    "ar": "نص شرح في جانب ومعرض صور في الجانب الآخر."
+  },
+  "מבנה שמחבר תמונות תוצאה עם המלצת לקוח.": {
+    "en": "A layout that joins result photos with a customer testimonial.",
+    "es": "Una estructura que une fotos de resultado con una recomendación de cliente.",
+    "pt-BR": "Uma estrutura que une fotos de resultado com um depoimento de cliente.",
+    "ar": "بنية تجمع صور نتيجة مع توصية زبون."
+  },
+  "רשימת יתרונות על תמונת רקע עם Overlay.": {
+    "en": "A benefits list on a background photo with overlay.",
+    "es": "Una lista de ventajas sobre foto de fondo con overlay.",
+    "pt-BR": "Uma lista de vantagens sobre foto de fundo com overlay.",
+    "ar": "قائمة مزايا على صورة خلفية مع تراكب."
+  },
+  "סקשן מרשים עם תמונת רקע וטקסט לבן מעל.": {
+    "en": "An impressive section with a background photo and white text on top.",
+    "es": "Una sección impresionante con foto de fondo y texto blanco encima.",
+    "pt-BR": "Uma seção impressionante com foto de fundo e texto branco por cima.",
+    "ar": "قسم مبهر بصورة خلفية ونص أبيض فوقها."
+  },
+  "בחירת איש צוות / מומחה לפני בחירת שעה.": {
+    "en": "Choose a team member / expert before choosing a time.",
+    "es": "Elegid a un miembro del equipo / experto antes de elegir hora.",
+    "pt-BR": "Escolha um membro da equipe / especialista antes de escolher a hora.",
+    "ar": "اختيار فرد فريق / خبير قبل اختيار الساعة."
+  },
+  "רשתות חברתיות לחנות, מוצרים וקולקציות.": {
+    "en": "Social networks for a store, products, and collections.",
+    "es": "Redes sociales para una tienda, productos y colecciones.",
+    "pt-BR": "Redes sociais para uma loja, produtos e coleções.",
+    "ar": "شبكات اجتماعية لمتجر ومنتجات ومجموعات."
+  },
+  "חבילת מוצרים או שירותים עם מחיר מיוחד.": {
+    "en": "A product or service bundle with a special price.",
+    "es": "Un pack de productos o servicios con un precio especial.",
+    "pt-BR": "Um pacote de produtos ou serviços com um preço especial.",
+    "ar": "باقة منتجات أو خدمات بسعر خاص."
+  },
+  "סקשן טופס קצר, צבעוני וממיר לסוף עמוד.": {
+    "en": "A short, colorful, converting form section for the end of a page.",
+    "es": "Una sección de formulario corta, de color y que convierte, para el final de una página.",
+    "pt-BR": "Uma seção de formulário curta, colorida e que converte, para o fim de uma página.",
+    "ar": "قسم نموذج قصير وملوّن ومُحوِّل لنهاية صفحة."
+  },
+  "טופס וקריאה לפעולה מעל תמונת רקע חזקה.": {
+    "en": "A form and a call to action over a strong background photo.",
+    "es": "Un formulario y una llamada a la acción sobre una foto de fondo fuerte.",
+    "pt-BR": "Um formulário e uma chamada à ação sobre uma foto de fundo forte.",
+    "ar": "نموذج ودعوة لإجراء فوق صورة خلفية قوية."
+  },
+  "וידאו תדמית או רילס לצד כפתורי סושיאל.": {
+    "en": "A brand video or Reels beside social buttons.",
+    "es": "Un vídeo de marca o Reels junto a botones sociales.",
+    "pt-BR": "Um vídeo de marca ou Reels ao lado de botões sociais.",
+    "ar": "فيديو هوية أو ريلز بجانب أزرار اجتماعية."
+  },
+  "סקשן צוות עם תמונת רקע חזקה וטקסט לבן.": {
+    "en": "A team section with a strong background photo and white text.",
+    "es": "Una sección de equipo con una foto de fondo fuerte y texto blanco.",
+    "pt-BR": "Uma seção de equipe com uma foto de fundo forte e texto branco.",
+    "ar": "قسم فريق بصورة خلفية قوية ونص أبيض."
+  },
+  "פתיחה עם וידאו או קאבר וידאו לצד טקסט.": {
+    "en": "An opening with a video or a video cover beside text.",
+    "es": "Una apertura con un vídeo o una portada de vídeo junto a texto.",
+    "pt-BR": "Uma abertura com um vídeo ou uma capa de vídeo ao lado de texto.",
+    "ar": "افتتاح بفيديو أو غلاف فيديو بجانب نص."
+  },
+  "כפתורי סושיאל על רקע תמונה עם Overlay.": {
+    "en": "Social buttons on a photo background with overlay.",
+    "es": "Botones sociales sobre foto de fondo con overlay.",
+    "pt-BR": "Botões sociais sobre foto de fundo com overlay.",
+    "ar": "أزرار اجتماعية على خلفية صورة مع تراكب."
+  },
+  "מבצע שמוביל להשארת פרטים דרך טופס בצד.": {
+    "en": "A promo that leads to leaving details through a side form.",
+    "es": "Una oferta que lleva a dejar datos a través de un formulario al lado.",
+    "pt-BR": "Uma oferta que leva a deixar dados por um formulário ao lado.",
+    "ar": "عرض يقود إلى ترك بيانات عبر نموذج جانبي."
+  },
+  "בוט שמכוון לרכישה, מוצר מתאים או הצעה.": {
+    "en": "A bot that points to a purchase, a matching product, or an offer.",
+    "es": "Un bot que orienta a una compra, un producto adecuado o una oferta.",
+    "pt-BR": "Um bot que aponta para uma compra, um produto adequado ou uma oferta.",
+    "ar": "بوت يوجّه إلى شراء أو منتج مناسب أو عرض."
+  },
+  "רצועת לוגואים קצרה שמתאימה בין סקשנים.": {
+    "en": "A short logo strip that fits between sections.",
+    "es": "Una franja corta de logos que encaja entre secciones.",
+    "pt-BR": "Uma faixa curta de logos que combina entre seções.",
+    "ar": "شريط شعارات قصير يناسب بين الأقسام."
+  },
+  "סקשן טקסט קצר, צבעוני וממיר לסוף עמוד.": {
+    "en": "A short, colorful, converting text section for the end of a page.",
+    "es": "Una sección de texto corta, de color y que convierte, para el final de una página.",
+    "pt-BR": "Uma seção de texto curta, colorida e que converte, para o fim de uma página.",
+    "ar": "قسم نص قصير وملوّن ومُحوِّل لنهاية صفحة."
+  },
+  "ציטוט גדול ומרשים שמציג המלצה אחת חזקה.": {
+    "en": "A large, impressive quote that shows one strong testimonial.",
+    "es": "Una cita grande e impresionante que muestra una recomendación fuerte.",
+    "pt-BR": "Uma citação grande e impressionante que mostra um depoimento forte.",
+    "ar": "اقتباس كبير ومبهر يعرض توصية واحدة قوية."
+  },
+  "הרשמה למועדון לקוחות עם יתרונות וכפתור.": {
+    "en": "Signup for a customer club with benefits and a button.",
+    "es": "Registro a un club de clientes con ventajas y un botón.",
+    "pt-BR": "Inscrição em um clube de clientes com vantagens e um botão.",
+    "ar": "تسجيل لنادي زبائن مع مزايا وزر."
+  },
+  "פתיחה שמתמקדת בשירות או מוצר אחד מרכזי.": {
+    "en": "An opening that focuses on one central service or product.",
+    "es": "Una apertura que se centra en un servicio o producto central.",
+    "pt-BR": "Uma abertura que se concentra em um serviço ou produto central.",
+    "ar": "افتتاح يركّز على خدمة أو منتج مركزي واحد."
+  },
+  "כותרת, טקסט וכפתורים במבנה נקי ומקצועי.": {
+    "en": "A title, text, and buttons in a clean, professional layout.",
+    "es": "Un título, texto y botones en una estructura limpia y profesional.",
+    "pt-BR": "Um título, texto e botões em uma estrutura limpa e profissional.",
+    "ar": "عنوان ونص وأزرار في بنية نظيفة ومهنية."
+  },
+  "סקשן רשימה קצר, צבעוני וממיר לסוף עמוד.": {
+    "en": "A short, colorful, converting list section for the end of a page.",
+    "es": "Una sección de lista corta, de color y que convierte, para el final de una página.",
+    "pt-BR": "Uma seção de lista curta, colorida e que converte, para o fim de uma página.",
+    "ar": "قسم قائمة قصير وملوّن ومُحوِّل لنهاية صفحة."
+  },
+  "מבנה בסיסי עם טקסט בצד ותמונה בצד השני.": {
+    "en": "A basic layout with text on one side and a photo on the other.",
+    "es": "Una estructura básica con texto a un lado y una foto al otro.",
+    "pt-BR": "Uma estrutura básica com texto de um lado e uma foto do outro.",
+    "ar": "بنية أساسية بنص في جانب وصورة في الجانب الآخر."
+  },
+  "סקשן הרשמה שמציע גם אימייל וגם וואטסאפ.": {
+    "en": "A signup section that offers both email and WhatsApp.",
+    "es": "Una sección de registro que ofrece tanto correo como WhatsApp.",
+    "pt-BR": "Uma seção de inscrição que oferece e-mail e WhatsApp.",
+    "ar": "قسم تسجيل يعرض البريد وواتساب معاً."
+  },
+  "אותו מבנה מקצועי, רק עם תמונה בצד השני.": {
+    "en": "The same professional layout, only with the photo on the other side.",
+    "es": "La misma estructura profesional, solo con la foto al otro lado.",
+    "pt-BR": "A mesma estrutura profissional, só com a foto do outro lado.",
+    "ar": "نفس البنية المهنية، مع الصورة في الجانب الآخر فقط."
+  },
+  "טופס כהה, יוקרתי ומרשים לעסקים פרימיום.": {
+    "en": "A dark, luxurious, impressive form for premium businesses.",
+    "es": "Un formulario oscuro, de lujo e impresionante para negocios premium.",
+    "pt-BR": "Um formulário escuro, luxuoso e impressionante para negócios premium.",
+    "ar": "نموذج داكن فاخر ومبهر لأعمال فاخرة."
+  },
+  "כרטיסי פרופיל עם שם משתמש וכמות עוקבים.": {
+    "en": "Profile cards with a username and follower count.",
+    "es": "Tarjetas de perfil con nombre de usuario y cantidad de seguidores.",
+    "pt-BR": "Cartões de perfil com nome de usuário e quantidade de seguidores.",
+    "ar": "بطاقات ملف باسم مستخدم وعدد متابعين."
+  },
+  "כפתורי סושיאל עם נתוני עוקבים ומעורבות.": {
+    "en": "Social buttons with follower and engagement numbers.",
+    "es": "Botones sociales con datos de seguidores y participación.",
+    "pt-BR": "Botões sociais com dados de seguidores e engajamento.",
+    "ar": "أزرار اجتماعية ببيانات متابعين وتفاعل."
+  },
+  "טופס לצד סטטיסטיקות והמלצה לחיזוק אמון.": {
+    "en": "A form beside stats and a testimonial to strengthen trust.",
+    "es": "Un formulario junto a estadísticas y una recomendación para reforzar la confianza.",
+    "pt-BR": "Um formulário ao lado de estatísticas e um depoimento para reforçar a confiança.",
+    "ar": "نموذج بجانب إحصاءات وتوصية لتعزيز الثقة."
+  },
+  "כרטיסי לקוחות עם תוצאה מרכזית לכל לקוח.": {
+    "en": "Customer cards with a central result for each customer.",
+    "es": "Tarjetas de clientes con un resultado central para cada cliente.",
+    "pt-BR": "Cartões de clientes com um resultado central para cada cliente.",
+    "ar": "بطاقات زبائن بنتيجة مركزية لكل زبون."
+  },
+  "סקשן לקוחות שמתאים לחנות, מותג או קהילה.": {
+    "en": "A customers section that fits a store, a brand, or a community.",
+    "es": "Una sección de clientes que encaja en una tienda, una marca o una comunidad.",
+    "pt-BR": "Uma seção de clientes que combina com uma loja, uma marca ou uma comunidade.",
+    "ar": "قسم زبائن يناسب متجراً أو علامة أو مجتمعاً."
+  },
+  "הרשמה שמחוזקת על ידי מספרים ונתוני אמון.": {
+    "en": "Signup strengthened by numbers and trust stats.",
+    "es": "Un registro reforzado por números y datos de confianza.",
+    "pt-BR": "Uma inscrição reforçada por números e dados de confiança.",
+    "ar": "تسجيل معزّز بأرقام وبيانات ثقة."
+  },
+  "כרטיס נפרד לכל רשת חברתית עם כפתור מעבר.": {
+    "en": "A separate card for each social network with a go button.",
+    "es": "Una tarjeta aparte para cada red social con un botón de paso.",
+    "pt-BR": "Um cartão separado para cada rede social com um botão de passagem.",
+    "ar": "بطاقة منفصلة لكل شبكة اجتماعية مع زر انتقال."
+  },
+  "מבנה מבצע עם אזור להוספת תמונה או וידאו.": {
+    "en": "A promo layout with an area to add a photo or video.",
+    "es": "Una estructura de oferta con una zona para añadir una foto o un vídeo.",
+    "pt-BR": "Uma estrutura de oferta com uma área para adicionar uma foto ou um vídeo.",
+    "ar": "بنية عرض مع منطقة لإضافة صورة أو فيديو."
+  },
+  "המלצות לקוחות על מוצרים, משלוחים ושירות.": {
+    "en": "Customer testimonials about products, deliveries, and service.",
+    "es": "Recomendaciones de clientes sobre productos, envíos y servicio.",
+    "pt-BR": "Depoimentos de clientes sobre produtos, entregas e serviço.",
+    "ar": "توصيات زبائن عن منتجات وتسليمات وخدمة."
+  },
+  "סקשן קצר, צבעוני וממיר אחרי אזור המלצות.": {
+    "en": "A short, colorful, converting section after a testimonials area.",
+    "es": "Una sección corta, de color y que convierte, después de una zona de recomendaciones.",
+    "pt-BR": "Uma seção curta, colorida e que converte, depois de uma área de depoimentos.",
+    "ar": "قسم قصير وملوّن ومُحوِّل بعد منطقة توصيات."
+  },
+  "סקשן המלצה מרשים עם תמונת רקע וטקסט לבן.": {
+    "en": "An impressive testimonial section with a background photo and white text.",
+    "es": "Una sección de recomendación impresionante con foto de fondo y texto blanco.",
+    "pt-BR": "Uma seção de depoimento impressionante com foto de fundo e texto branco.",
+    "ar": "قسم توصية مبهر بصورة خلفية ونص أبيض."
+  },
+  "מבנה שמתחיל מבחירת שירות ואז תאריך ושעה.": {
+    "en": "A layout that starts from choosing a service, then date and time.",
+    "es": "Una estructura que empieza por elegir un servicio y luego fecha y hora.",
+    "pt-BR": "Uma estrutura que começa escolhendo um serviço e depois data e hora.",
+    "ar": "بنية تبدأ من اختيار خدمة ثم تاريخ وساعة."
+  },
+  "הרשמה למערכת, מוצר דיגיטלי או Mini SaaS.": {
+    "en": "Signup for a system, a digital product, or Mini SaaS.",
+    "es": "Registro a un sistema, un producto digital o Mini SaaS.",
+    "pt-BR": "Inscrição em um sistema, um produto digital ou Mini SaaS.",
+    "ar": "تسجيل لمنظومة أو منتج رقمي أو Mini SaaS."
+  },
+  "טופס שירות לקוחות / תמיכה עם בחירת נושא.": {
+    "en": "A customer-service / support form with topic choice.",
+    "es": "Un formulario de atención / soporte con elección de tema.",
+    "pt-BR": "Um formulário de atendimento / suporte com escolha de tema.",
+    "ar": "نموذج خدمة زبائن / دعم مع اختيار موضوع."
+  },
+  "מבנה עם מקום ברור להוספת תמונה או וידאו.": {
+    "en": "A layout with a clear place to add a photo or video.",
+    "es": "Una estructura con un lugar claro para añadir una foto o un vídeo.",
+    "pt-BR": "Uma estrutura com um lugar claro para adicionar uma foto ou um vídeo.",
+    "ar": "بنية بمكان واضح لإضافة صورة أو فيديو."
+  },
+  "טופס קביעת תור עם בחירת שירות, יום ושעה.": {
+    "en": "A booking form with service, day, and time choice.",
+    "es": "Un formulario de cita con elección de servicio, día y hora.",
+    "pt-BR": "Um formulário de agendamento com escolha de serviço, dia e hora.",
+    "ar": "نموذج حجز موعد مع اختيار خدمة ويوم وساعة."
+  },
+  "מוצרים לצד ביקורות לקוחות שמחזקות רכישה.": {
+    "en": "Products beside customer reviews that strengthen a purchase.",
+    "es": "Productos junto a reseñas de clientes que refuerzan la compra.",
+    "pt-BR": "Produtos ao lado de avaliações de clientes que reforçam a compra.",
+    "ar": "منتجات بجانب تقييمات زبائن تعزّز الشراء."
+  },
+  "הרשמה או שאלה לאירוע ישירות דרך וואטסאפ.": {
+    "en": "Signup or a question for an event directly through WhatsApp.",
+    "es": "Registro o una pregunta para un evento directamente por WhatsApp.",
+    "pt-BR": "Inscrição ou uma pergunta para um evento direto pelo WhatsApp.",
+    "ar": "تسجيل أو سؤال لفعالية مباشرة عبر واتساب."
+  },
+  "סקשן Quote גדול ויוקרתי להדגשת משפט חזק.": {
+    "en": "A large, luxurious quote section to highlight a strong line.",
+    "es": "Una sección Quote grande y de lujo para destacar una frase fuerte.",
+    "pt-BR": "Uma seção Quote grande e luxuosa para destacar uma frase forte.",
+    "ar": "قسم اقتباس كبير وفاخر لإبراز جملة قوية."
+  },
+  "מבנה עם בוט ואזור להוספת תמונה או וידאו.": {
+    "en": "A layout with a bot and an area to add a photo or video.",
+    "es": "Una estructura con un bot y una zona para añadir una foto o un vídeo.",
+    "pt-BR": "Uma estrutura com um bot e uma área para adicionar uma foto ou um vídeo.",
+    "ar": "بنية مع بوت ومنطقة لإضافة صورة أو فيديو."
+  },
+  "הצגת ביקורות Google, Facebook, אתר ועוד.": {
+    "en": "Showing Google, Facebook, site, and other reviews.",
+    "es": "Mostrar reseñas de Google, Facebook, el sitio y más.",
+    "pt-BR": "Mostrar avaliações do Google, Facebook, do site e mais.",
+    "ar": "عرض تقييمات Google وفيسبوك والموقع والمزيد."
+  },
+  "סקשן לקוחות דרמטי עם רקע גדול וטקסט לבן.": {
+    "en": "A dramatic customers section with a large background and white text.",
+    "es": "Una sección de clientes dramática con fondo grande y texto blanco.",
+    "pt-BR": "Uma seção de clientes dramática com fundo grande e texto branco.",
+    "ar": "قسم زبائن درامي بخلفية كبيرة ونص أبيض."
+  },
+  "סקשן המלצות שמוביל לשיחה מהירה בוואטסאפ.": {
+    "en": "A testimonials section that leads to a fast WhatsApp chat.",
+    "es": "Una sección de recomendaciones que lleva a una conversación rápida por WhatsApp.",
+    "pt-BR": "Uma seção de depoimentos que leva a uma conversa rápida no WhatsApp.",
+    "ar": "قسم توصيات يقود إلى حوار واتساب سريع."
+  },
+  "פתיחה למערכת, מוצר דיגיטלי או מיני SaaS.": {
+    "en": "An opening for a system, a digital product, or Mini SaaS.",
+    "es": "Una apertura para un sistema, un producto digital o Mini SaaS.",
+    "pt-BR": "Uma abertura para um sistema, um produto digital ou Mini SaaS.",
+    "ar": "افتتاح لمنظومة أو منتج رقمي أو Mini SaaS."
+  },
+  "שירותים בצד אחד וטופס יצירת קשר בצד השני.": {
+    "en": "Services on one side and a contact form on the other.",
+    "es": "Servicios a un lado y un formulario de contacto al otro.",
+    "pt-BR": "Serviços de um lado e um formulário de contato do outro.",
+    "ar": "خدمات في جانب ونموذج تواصل في الجانب الآخر."
+  },
+  "פתיחה שמתאימה לחנות, מוצר מוביל או קטלוג.": {
+    "en": "An opening that fits a store, a lead product, or a catalog.",
+    "es": "Una apertura que encaja en una tienda, un producto destacado o un catálogo.",
+    "pt-BR": "Uma abertura que combina com uma loja, um produto em destaque ou um catálogo.",
+    "ar": "افتتاح يناسب متجراً أو منتجاً بارزاً أو كتالوجاً."
+  },
+  "סקשן בוט כהה ויוקרתי לעסקים ברמת פרימיום.": {
+    "en": "A dark, luxurious bot section for premium-level businesses.",
+    "es": "Una sección de bot oscura y de lujo para negocios de nivel premium.",
+    "pt-BR": "Uma seção de bot escura e luxuosa para negócios de nível premium.",
+    "ar": "قسم بوت داكن فاخر لأعمال بمستوى فاخر."
+  },
+  "סקשן שירותים שמוביל ישירות לשיחת וואטסאפ.": {
+    "en": "A services section that leads directly to a WhatsApp chat.",
+    "es": "Una sección de servicios que lleva directamente a una conversación de WhatsApp.",
+    "pt-BR": "Uma seção de serviços que leva direto a uma conversa no WhatsApp.",
+    "ar": "قسم خدمات يقود مباشرة إلى حوار واتساب."
+  },
+  "סקשן קצר, צבעוני וממיר אחרי אזור ביקורות.": {
+    "en": "A short, colorful, converting section after a reviews area.",
+    "es": "Una sección corta, de color y que convierte, después de una zona de reseñas.",
+    "pt-BR": "Uma seção curta, colorida e que converte, depois de uma área de avaliações.",
+    "ar": "قسم قصير وملوّن ومُحوِّل بعد منطقة تقييمات."
+  },
+  "סקשן קשר עם תמונת רקע מלאה וכפתורי פעולה.": {
+    "en": "A contact section with a full background photo and action buttons.",
+    "es": "Una sección de contacto con foto de fondo completa y botones de acción.",
+    "pt-BR": "Uma seção de contato com foto de fundo completa e botões de ação.",
+    "ar": "قسم تواصل بصورة خلفية كاملة وأزرار إجراء."
+  },
+  "סקשן גלריה שמציג סרטון מרכזי ותמונות ליד.": {
+    "en": "A gallery section that shows a central clip and photos beside it.",
+    "es": "Una sección de galería que muestra un vídeo central y fotos al lado.",
+    "pt-BR": "Uma seção de galeria que mostra um vídeo central e fotos ao lado.",
+    "ar": "قسم معرض يعرض مقطعاً مركزياً وصوراً بجانبه."
+  },
+  "רשימה מקצועית עם מספרים, כותרות ותיאורים.": {
+    "en": "A professional list with numbers, titles, and descriptions.",
+    "es": "Una lista profesional con números, títulos y descripciones.",
+    "pt-BR": "Uma lista profissional com números, títulos e descrições.",
+    "ar": "قائمة مهنية بأرقام وعناوين وأوصاف."
+  },
+  "סקשן הרשמה לקורס דיגיטלי, סדנה או וובינר.": {
+    "en": "A signup section for a digital course, workshop, or webinar.",
+    "es": "Una sección de registro para un curso digital, un taller o un webinar.",
+    "pt-BR": "Uma seção de inscrição para um curso digital, uma oficina ou um webinar.",
+    "ar": "قسم تسجيل لدورة رقمية أو ورشة أو ندوة."
+  },
+  "בוט חכם לצד טופס למי שמעדיף להשאיר פרטים.": {
+    "en": "A smart bot beside a form for anyone who prefers to leave details.",
+    "es": "Un bot inteligente junto a un formulario para quien prefiera dejar datos.",
+    "pt-BR": "Um bot inteligente ao lado de um formulário para quem preferir deixar dados.",
+    "ar": "بوت ذكي بجانب نموذج لمن يفضّل ترك بيانات."
+  },
+  "רשתות חברתיות יחד עם כפתור וואטסאפ מרכזי.": {
+    "en": "Social networks together with a central WhatsApp button.",
+    "es": "Redes sociales junto con un botón central de WhatsApp.",
+    "pt-BR": "Redes sociais junto com um botão central de WhatsApp.",
+    "ar": "شبكات اجتماعية مع زر واتساب مركزي."
+  },
+  "רשימת שירותים נקייה בלי תמונות ובלי עומס.": {
+    "en": "A clean services list without photos and without clutter.",
+    "es": "Una lista de servicios limpia sin fotos y sin recarga.",
+    "pt-BR": "Uma lista de serviços limpa sem fotos e sem excesso.",
+    "ar": "قائمة خدمات نظيفة بلا صور وبلا ازدحام."
+  },
+  "איש צוות מוביל גדול לצד אנשי צוות נוספים.": {
+    "en": "A large lead team member beside additional team members.",
+    "es": "Un miembro destacado grande junto a más miembros del equipo.",
+    "pt-BR": "Um membro em destaque grande ao lado de outros membros da equipe.",
+    "ar": "فرد فريق بارز كبير بجانب أفراد فريق إضافيين."
+  },
+  "תמונה גדולה בצד וגריד אנשי צוות בצד השני.": {
+    "en": "A large photo on one side and a team grid on the other.",
+    "es": "Una foto grande a un lado y una rejilla de equipo al otro.",
+    "pt-BR": "Uma foto grande de um lado e uma grade de equipe do outro.",
+    "ar": "صورة كبيرة في جانب وشبكة فريق في الجانب الآخر."
+  }
+}

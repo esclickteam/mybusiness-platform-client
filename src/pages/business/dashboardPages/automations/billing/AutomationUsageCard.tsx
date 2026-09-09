@@ -170,8 +170,8 @@ export default function AutomationUsageCard({
   const cancelDateLabel =
     formatHeDate(usage.subscription?.currentPeriodEnd) || periodEndLabel;
   const pendingKey = usage.subscription?.pendingDowngradePlanKey || null;
-  const pendingName = pendingKey ? getAutomationPlanDisplayName(pendingKey) : null;
-  const planName = plan?.nameHe || plan?.name || getAutomationPlanDisplayName(plan?.key);
+  const pendingName = pendingKey ? getAutomationPlanDisplayName(pendingKey, t) : null;
+  const planName = getAutomationPlanDisplayName(plan?.key, t);
   const inPaymentGrace =
     usage.canExecute &&
     (Boolean(usage.subscription?.paymentGraceEndsAt) ||

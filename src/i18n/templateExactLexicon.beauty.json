@@ -1,0 +1,746 @@
+{
+  "45-75 דק׳": {
+    "en": "45-75 min",
+    "es": "45-75 min",
+    "pt-BR": "45-75 min",
+    "ar": "45-75 د"
+  },
+  "60-90 דק׳": {
+    "en": "60-90 min",
+    "es": "60-90 min",
+    "pt-BR": "60-90 min",
+    "ar": "60-90 د"
+  },
+  "30-60 דק׳": {
+    "en": "30-60 min",
+    "es": "30-60 min",
+    "pt-BR": "30-60 min",
+    "ar": "30-60 د"
+  },
+  "15-30 דק׳": {
+    "en": "15-30 min",
+    "es": "15-30 min",
+    "pt-BR": "15-30 min",
+    "ar": "15-30 د"
+  },
+  "מומחית": {
+    "en": "Specialist",
+    "es": "Especialista",
+    "pt-BR": "Especialista",
+    "ar": "أخصائية"
+  },
+  "משך משוער": {
+    "en": "Estimated duration",
+    "es": "Duración estimada",
+    "pt-BR": "Duração estimada",
+    "ar": "المدة التقريبية"
+  },
+  "אבחון קשוב, תיעוד מסודר ותוצאה שמותאמת לפנים ולשגרה.": {
+    "en": "Attentive diagnosis, organized notes, and a result tailored to the face and the daily routine.",
+    "es": "Diagnóstico atento, registro ordenado y un resultado adaptado al rostro y a la rutina.",
+    "pt-BR": "Diagnóstico atento, registro organizado e um resultado adaptado ao rosto e à rotina.",
+    "ar": "تشخيص منتبه وتوثيق مرتّب ونتيجة ملائمة للوجه وللروتين."
+  },
+  "בחרו יום ושעה פנויה. הלוח כאן לשמירת תור מהירה מתוך התבנית.": {
+    "en": "Pick a free day and time. This calendar is here for a quick booking from the template.",
+    "es": "Elegid un día y hora libres. Esta agenda sirve para reservar rápido desde la plantilla.",
+    "pt-BR": "Escolham um dia e horário livres. Esta agenda serve para marcar rápido a partir do modelo.",
+    "ar": "اختاروا يوماً وساعة متاحين. هذا الجدول هنا لحجز سريع من القالب."
+  },
+  "התמחות באבחון אישי, עבודה עדינה וליווי אחרי הטיפול. כל מפגש מתועד כדי לשמור על המשכיות ותוצאה מדויקת.": {
+    "en": "Specialized in personal diagnosis, precise work, and aftercare. Every visit is recorded so the result stays consistent.",
+    "es": "Especializadas en diagnóstico personal, trabajo delicado y seguimiento. Cada visita se documenta para mantener continuidad y precisión.",
+    "pt-BR": "Especializadas em diagnóstico pessoal, trabalho delicado e acompanhamento. Cada visita é registada para manter continuidade e precisão.",
+    "ar": "تخصّص في التشخيص الشخصي والعمل الدقيق والمتابعة بعد الجلسة. كل زيارة تُوثَّق للحفاظ على الاستمرارية والنتيجة."
+  },
+  "מדד שמספר על עקביות, דיוק וחוויה שחוזרות בכל ביקור.": {
+    "en": "A metric that speaks to consistency, precision, and an experience that repeats on every visit.",
+    "es": "Una métrica que habla de consistencia, precisión y una experiencia que se repite en cada visita.",
+    "pt-BR": "Uma métrica que fala de consistência, precisão e uma experiência que se repete em cada visita.",
+    "ar": "مؤشر يتحدث عن الثبات والدقة وتجربة تتكرر في كل زيارة."
+  },
+  "הוספת מערכת תורים ותיעוד דיגיטלי.": {
+    "en": "Adding an appointment system and digital records.",
+    "es": "Añadir un sistema de citas y un registro digital.",
+    "pt-BR": "Adicionar um sistema de horários e um registo digital.",
+    "ar": "إضافة نظام مواعيد وتوثيق رقمي."
+  },
+  "הכשרות קבועות והתנסות בטכניקות חדשות.": {
+    "en": "Regular training and practice with new techniques.",
+    "es": "Formación regular y práctica con técnicas nuevas.",
+    "pt-BR": "Formação regular e prática com técnicas novas.",
+    "ar": "تدريبات ثابتة وتجربة تقنيات جديدة."
+  },
+  "הנחיות בית ותיאום ביקורת לפי הצורך.": {
+    "en": "Home-care notes and a follow-up visit when needed.",
+    "es": "Indicaciones para casa y una revisión cuando haga falta.",
+    "pt-BR": "Orientações para casa e uma revisão quando for preciso.",
+    "ar": "إرشادات للبيت وتنسيق مراجعة عند الحاجة."
+  },
+  "הרחבת הצוות והכשרות מתקדמות.": {
+    "en": "Growing the team and advanced training.",
+    "es": "Ampliar el equipo y formaciones avanzadas.",
+    "pt-BR": "Ampliar a equipe e formações avançadas.",
+    "ar": "توسيع الفريق وتدريبات متقدمة."
+  },
+  "חלל חדש עם אזורי טיפול, המתנה ואבחון.": {
+    "en": "A new space with treatment, waiting, and diagnosis areas.",
+    "es": "Un espacio nuevo con zonas de tratamiento, espera y diagnóstico.",
+    "pt-BR": "Um espaço novo com zonas de tratamento, espera e diagnóstico.",
+    "ar": "مساحة جديدة مع مناطق علاج وانتظار وتشخيص."
+  },
+  "כלים מחוטאים, עמדות נקיות וחומרים מאושרים בלבד.": {
+    "en": "Sterilized tools, clean stations, and approved products only.",
+    "es": "Herramientas esterilizadas, puestos limpios y solo materiales aprobados.",
+    "pt-BR": "Ferramentas esterilizadas, postos limpos e só materiais aprovados.",
+    "ar": "أدوات معقّمة ومحطات نظيفة ومواد معتمدة فقط."
+  },
+  "לא מתחילות טיפול לפני התאמת ציפיות ותיעוד מלא.": {
+    "en": "We do not start a treatment before aligning expectations and completing the notes.",
+    "es": "No empezamos un tratamiento sin alinear expectativas y completar el registro.",
+    "pt-BR": "Não começamos um tratamento sem alinhar expectativas e completar o registo.",
+    "ar": "لا نبدأ علاجاً قبل مواءمة التوقعات والتوثيق الكامل."
+  },
+  "לוח תורים מרווח כדי שלא תרגישו חלק מפס ייצור.": {
+    "en": "A spacious booking board so you never feel like part of an assembly line.",
+    "es": "Una agenda holgada para que no os sintáis parte de una cadena de montaje.",
+    "pt-BR": "Uma agenda folgada para não se sentirem parte de uma linha de produção.",
+    "ar": "لوحة مواعيد واسعة حتى لا تشعروا أنكم جزء من خط إنتاج."
+  },
+  "מגדירות מטרה, רגישויות וסגנון אישי.": {
+    "en": "We define the goal, sensitivities, and personal style.",
+    "es": "Definimos el objetivo, las sensibilidades y el estilo personal.",
+    "pt-BR": "Definimos o objetivo, as sensibilidades e o estilo pessoal.",
+    "ar": "نحدّد الهدف والحساسيات والأسلوب الشخصي."
+  },
+  "מחיר, משך ותוצאה צפויה מוסברים מראש.": {
+    "en": "Price, duration, and the expected result are explained in advance.",
+    "es": "Precio, duración y resultado esperado se explican de antemano.",
+    "pt-BR": "Preço, duração e resultado esperado são explicados de antemão.",
+    "ar": "السعر والمدة والنتيجة المتوقعة تُشرح مسبقاً."
+  },
+  "מיטה מחוממת, סטריליות מלאה ומוזיקה מותאמת.": {
+    "en": "A heated bed, full sterility, and music chosen for the room.",
+    "es": "Camilla caliente, esterilidad completa y música adaptada.",
+    "pt-BR": "Maca aquecida, esterilidade completa e música adaptada.",
+    "ar": "سرير دافئ وتعقيم كامل وموسيقى ملائمة."
+  },
+  "מעקב אחרי הטיפול והמלצות המשך אמיתיות.": {
+    "en": "Aftercare follow-up and honest next-step recommendations.",
+    "es": "Seguimiento después del tratamiento y recomendaciones reales.",
+    "pt-BR": "Acompanhamento após o tratamento e recomendações reais.",
+    "ar": "متابعة بعد العلاج وتوصيات استمرار صادقة."
+  },
+  "מראה גדולה, מוצרי המשך והנחיות כתובות.": {
+    "en": "A large mirror, aftercare products, and written instructions.",
+    "es": "Un espejo grande, productos de continuación e indicaciones escritas.",
+    "pt-BR": "Um espelho grande, produtos de continuação e orientações escritas.",
+    "ar": "مرآة كبيرة ومنتجات استكمال وإرشادات مكتوبة."
+  },
+  "ניקוי, התאמה ובדיקת נוחות לפני תחילת הטיפול.": {
+    "en": "Cleansing, fitting, and a comfort check before the treatment starts.",
+    "es": "Limpieza, ajuste y prueba de confort antes de empezar.",
+    "pt-BR": "Limpeza, ajuste e teste de conforto antes de começar.",
+    "ar": "تنظيف وملاءمة وفحص راحة قبل بدء العلاج."
+  },
+  "עבודה מדויקת בקצב רגוע עם חומרי פרימיום.": {
+    "en": "Precise work at a calm pace with premium products.",
+    "es": "Trabajo preciso a un ritmo calmado con materiales premium.",
+    "pt-BR": "Trabalho preciso num ritmo calmo com materiais premium.",
+    "ar": "عمل دقيق بإيقاع هادئ ومواد فاخرة."
+  },
+  "עמדת ייעוץ שקטה עם תאורה רכה וכיבוד קטן.": {
+    "en": "A quiet consult desk with soft light and a small welcome drink.",
+    "es": "Una mesa de consulta tranquila con luz suave y un detalle de bienvenida.",
+    "pt-BR": "Uma mesa de consulta tranquila com luz suave e um mimo de boas-vindas.",
+    "ar": "محطة استشارة هادئة بإضاءة ناعمة وضيافة صغيرة."
+  },
+  "פתיחת החדר הראשון וקבלת לקוחות קבועות.": {
+    "en": "Opening the first room and welcoming regular clients.",
+    "es": "Abrir la primera sala y recibir clientas fijas.",
+    "pt-BR": "Abrir a primeira sala e receber clientes fixas.",
+    "ar": "افتتاح الغرفة الأولى واستقبال زبائن ثابتات."
+  },
+  "תעודה, רענון ויישום בפועל בצוות.": {
+    "en": "A certificate, a refresher, and real practice with the team.",
+    "es": "Un diploma, un repaso y aplicación real en el equipo.",
+    "pt-BR": "Um certificado, um reforço e aplicação real na equipe.",
+    "ar": "شهادة وتحديث وتطبيق فعلي مع الفريق."
+  },
+  "קבלת פנים": {
+    "en": "Reception",
+    "es": "Recepción",
+    "pt-BR": "Recepção",
+    "ar": "الاستقبال"
+  },
+  "חדר טיפול": {
+    "en": "Treatment room",
+    "es": "Sala de tratamiento",
+    "pt-BR": "Sala de tratamento",
+    "ar": "غرفة العلاج"
+  },
+  "פינת סיום": {
+    "en": "Finishing corner",
+    "es": "Rincón final",
+    "pt-BR": "Canto final",
+    "ar": "ركن الإنهاء"
+  },
+  "נהלי חיטוי": {
+    "en": "Sanitation rules",
+    "es": "Protocolos de higiene",
+    "pt-BR": "Protocolos de higiene",
+    "ar": "إجراءات التعقيم"
+  },
+  "בחירת חבילה": {
+    "en": "Choose a package",
+    "es": "Elegir paquete",
+    "pt-BR": "Escolher pacote",
+    "ar": "اختيار الباقة"
+  },
+  "הכשרות מוצר": {
+    "en": "Product training",
+    "es": "Formación de producto",
+    "pt-BR": "Formação de produto",
+    "ar": "تدريب المنتج"
+  },
+  "בטיחות לקוחה": {
+    "en": "Client safety",
+    "es": "Seguridad de la clienta",
+    "pt-BR": "Segurança da cliente",
+    "ar": "سلامة الزبونة"
+  },
+  "בדיקת חומרים": {
+    "en": "Product check",
+    "es": "Revisión de materiales",
+    "pt-BR": "Revisão de materiais",
+    "ar": "فحص المواد"
+  },
+  "קביעת טיפול דגל": {
+    "en": "Book the signature treatment",
+    "es": "Reservar el tratamiento firma",
+    "pt-BR": "Marcar o tratamento assinatura",
+    "ar": "حجز العلاج المميز"
+  },
+  "סטודיו מהיר": {
+    "en": "Express studio",
+    "es": "Estudio rápido",
+    "pt-BR": "Estúdio rápido",
+    "ar": "استوديو سريع"
+  },
+  "סטודיו עור": {
+    "en": "Skin studio",
+    "es": "Estudio de piel",
+    "pt-BR": "Estúdio de pele",
+    "ar": "استوديو البشرة"
+  },
+  "סטודיו שערה": {
+    "en": "Hair studio",
+    "es": "Estudio de cabello",
+    "pt-BR": "Estúdio de cabelo",
+    "ar": "استوديو الشعر"
+  },
+  "סטודיו צבע": {
+    "en": "Color studio",
+    "es": "Estudio de color",
+    "pt-BR": "Estúdio de cor",
+    "ar": "استوديو اللون"
+  },
+  "סטודיו מתוק": {
+    "en": "Sweet studio",
+    "es": "Estudio dulce",
+    "pt-BR": "Estúdio doce",
+    "ar": "استوديو حلو"
+  },
+  "אטלייה ריסים": {
+    "en": "Lash atelier",
+    "es": "Atelier de pestañas",
+    "pt-BR": "Ateliê de cílios",
+    "ar": "أتيليه الرموش"
+  },
+  "מספרה עיתונאית": {
+    "en": "Editorial salon",
+    "es": "Salón editorial",
+    "pt-BR": "Salão editorial",
+    "ar": "صالون تحريري"
+  },
+  "חדר מבט": {
+    "en": "Gaze room",
+    "es": "Sala de mirada",
+    "pt-BR": "Sala do olhar",
+    "ar": "غرفة النظرة"
+  },
+  "חדר פיגמנט": {
+    "en": "Pigment room",
+    "es": "Sala de pigmento",
+    "pt-BR": "Sala de pigmento",
+    "ar": "غرفة الصباغ"
+  },
+  "טקס ירקן": {
+    "en": "Jade ritual",
+    "es": "Ritual de jade",
+    "pt-BR": "Ritual de jade",
+    "ar": "طقس اليشم"
+  },
+  "קליניקה מדויקת": {
+    "en": "Precise clinic",
+    "es": "Clínica precisa",
+    "pt-BR": "Clínica precisa",
+    "ar": "عيادة دقيقة"
+  },
+  "מעבדת גוף": {
+    "en": "Body lab",
+    "es": "Laboratorio corporal",
+    "pt-BR": "Laboratório corporal",
+    "ar": "مختبر الجسم"
+  },
+  "מעבדת מבנה": {
+    "en": "Structure lab",
+    "es": "Laboratorio de estructura",
+    "pt-BR": "Laboratório de estrutura",
+    "ar": "مختبر البنية"
+  },
+  "מעקב עור": {
+    "en": "Skin follow-up",
+    "es": "Seguimiento de piel",
+    "pt-BR": "Acompanhamento de pele",
+    "ar": "متابعة البشرة"
+  },
+  "סוויטה פרטית": {
+    "en": "Private suite",
+    "es": "Suite privada",
+    "pt-BR": "Suíte privada",
+    "ar": "جناح خاص"
+  },
+  "סוויטת כלה": {
+    "en": "Bridal suite",
+    "es": "Suite nupcial",
+    "pt-BR": "Suíte nupcial",
+    "ar": "جناح العروس"
+  },
+  "קליניקת שכבות": {
+    "en": "Layer clinic",
+    "es": "Clínica de capas",
+    "pt-BR": "Clínica de camadas",
+    "ar": "عيادة الطبقات"
+  },
+  "כלה רגועה": {
+    "en": "A calm bride",
+    "es": "Una novia serena",
+    "pt-BR": "Uma noiva serena",
+    "ar": "عروس هادئة"
+  },
+  "טרקלין לילה": {
+    "en": "Night lounge",
+    "es": "Salón nocturno",
+    "pt-BR": "Salão noturno",
+    "ar": "ردهة ليلية"
+  },
+  "מה אתם מחפשים?": {
+    "en": "What are you looking for?",
+    "es": "¿Qué buscáis?",
+    "pt-BR": "O que procuram?",
+    "ar": "ماذا تبحثون؟"
+  },
+  "במה נוכל לעזור?": {
+    "en": "How can we help?",
+    "es": "¿En qué podemos ayudar?",
+    "pt-BR": "Em que podemos ajudar?",
+    "ar": "كيف يمكننا المساعدة؟"
+  },
+  "חברה / תחום": {
+    "en": "Company / field",
+    "es": "Empresa / sector",
+    "pt-BR": "Empresa / área",
+    "ar": "شركة / مجال"
+  },
+  "בדקו התאמה ←": {
+    "en": "Check the fit →",
+    "es": "Comprobad encaje →",
+    "pt-BR": "Verifiquem a adequação →",
+    "ar": "تحققوا من الملاءمة ←"
+  },
+  "מספר סועדים": {
+    "en": "Number of guests",
+    "es": "Número de comensales",
+    "pt-BR": "Número de pessoas",
+    "ar": "عدد الضيوف"
+  },
+  "תהליך עבודה": {
+    "en": "How we work",
+    "es": "Proceso de trabajo",
+    "pt-BR": "Processo de trabalho",
+    "ar": "سير العمل"
+  },
+  "המשך קניות": {
+    "en": "Continue shopping",
+    "es": "Seguir comprando",
+    "pt-BR": "Continuar a comprar",
+    "ar": "متابعة التسوق"
+  },
+  "טוען מוצרים מתוסף החנות...": {
+    "en": "Loading products from the store add-on...",
+    "es": "Cargando productos del complemento de tienda...",
+    "pt-BR": "A carregar produtos do extra da loja...",
+    "ar": "جارٍ تحميل المنتجات من إضافة المتجر..."
+  },
+  "עבודות נבחרות": {
+    "en": "Selected work",
+    "es": "Trabajos seleccionados",
+    "pt-BR": "Trabalhos selecionados",
+    "ar": "أعمال مختارة"
+  },
+  "השם שלך": {
+    "en": "Your name",
+    "es": "Tu nombre",
+    "pt-BR": "O seu nome",
+    "ar": "اسمكم"
+  },
+  "מערכת שעות": {
+    "en": "Hours system",
+    "es": "Sistema de horarios",
+    "pt-BR": "Sistema de horários",
+    "ar": "نظام الساعات"
+  },
+  "היי! מתי נוח לכם?": {
+    "en": "Hi! When is a good time?",
+    "es": "¡Hola! ¿Cuándo os viene bien?",
+    "pt-BR": "Oi! Quando fica bem?",
+    "ar": "مرحباً! متى يناسبكم؟"
+  },
+  "להצטרפות": {
+    "en": "Join",
+    "es": "Unirse",
+    "pt-BR": "Juntar-se",
+    "ar": "للانضمام"
+  },
+  "מה מעניין אותך?": {
+    "en": "What interests you?",
+    "es": "¿Qué te interesa?",
+    "pt-BR": "O que lhe interessa?",
+    "ar": "ما الذي يهمكم؟"
+  },
+  "מומלץ": {
+    "en": "Recommended",
+    "es": "Recomendado",
+    "pt-BR": "Recomendado",
+    "ar": "موصى به"
+  },
+  "מתחילים עכשיו": {
+    "en": "Starting now",
+    "es": "Empezamos ahora",
+    "pt-BR": "Começamos agora",
+    "ar": "نبدأ الآن"
+  },
+  "שם + טלפון": {
+    "en": "Name + phone",
+    "es": "Nombre + teléfono",
+    "pt-BR": "Nome + telefone",
+    "ar": "الاسم + الهاتف"
+  },
+  "שם העסק": {
+    "en": "Business name",
+    "es": "Nombre del negocio",
+    "pt-BR": "Nome do negócio",
+    "ar": "اسم العمل"
+  },
+  "תאריך ושעה": {
+    "en": "Date and time",
+    "es": "Fecha y hora",
+    "pt-BR": "Data e hora",
+    "ar": "التاريخ والوقت"
+  },
+  "בחרו וריאציה לפני הוספה לסל": {
+    "en": "Choose a variation before adding to cart",
+    "es": "Elegid una variante antes de añadir al carrito",
+    "pt-BR": "Escolham uma variação antes de adicionar ao carrinho",
+    "ar": "اختاروا خياراً قبل الإضافة إلى السلة"
+  },
+  "בנו קערה": {
+    "en": "Build a bowl",
+    "es": "Montad un bowl",
+    "pt-BR": "Montem uma tigela",
+    "ar": "ابنوا وعاء"
+  },
+  "בקשות מיוחדות": {
+    "en": "Special requests",
+    "es": "Peticiones especiales",
+    "pt-BR": "Pedidos especiais",
+    "ar": "طلبات خاصة"
+  },
+  "הוספה לסל": {
+    "en": "Add to cart",
+    "es": "Añadir al carrito",
+    "pt-BR": "Adicionar ao carrinho",
+    "ar": "أضيفوا إلى السلة"
+  },
+  "הכי פופולרי": {
+    "en": "Most popular",
+    "es": "Más popular",
+    "pt-BR": "Mais popular",
+    "ar": "الأكثر شعبية"
+  },
+  "חזרה לחנות": {
+    "en": "Back to store",
+    "es": "Volver a la tienda",
+    "pt-BR": "Voltar à loja",
+    "ar": "العودة إلى المتجر"
+  },
+  "לתשלום": {
+    "en": "Checkout",
+    "es": "Pagar",
+    "pt-BR": "Pagamento",
+    "ar": "للدفع"
+  },
+  "כל המאמרים": {
+    "en": "All articles",
+    "es": "Todos los artículos",
+    "pt-BR": "Todos os artigos",
+    "ar": "كل المقالات"
+  },
+  "ספרו לנו על הפרויקט": {
+    "en": "Tell us about the project",
+    "es": "Contadnos el proyecto",
+    "pt-BR": "Contem-nos o projeto",
+    "ar": "أخبرونا عن المشروع"
+  },
+  "שאלות ותשובות": {
+    "en": "Questions and answers",
+    "es": "Preguntas y respuestas",
+    "pt-BR": "Perguntas e respostas",
+    "ar": "أسئلة وأجوبة"
+  },
+  "שיחה ראשונה": {
+    "en": "First conversation",
+    "es": "Primera conversación",
+    "pt-BR": "Primeira conversa",
+    "ar": "المحادثة الأولى"
+  },
+  "שיחת ייעוץ": {
+    "en": "Consultation call",
+    "es": "Llamada de consulta",
+    "pt-BR": "Chamada de consulta",
+    "ar": "مكالمة استشارة"
+  },
+  "שליחת בקשה לתור": {
+    "en": "Send a booking request",
+    "es": "Enviar solicitud de cita",
+    "pt-BR": "Enviar pedido de horário",
+    "ar": "إرسال طلب موعد"
+  },
+  "שם החברה": {
+    "en": "Company name",
+    "es": "Nombre de la empresa",
+    "pt-BR": "Nome da empresa",
+    "ar": "اسم الشركة"
+  },
+  "שעות הסטודיו": {
+    "en": "Studio hours",
+    "es": "Horario del estudio",
+    "pt-BR": "Horário do estúdio",
+    "ar": "ساعات الاستوديو"
+  },
+  "תחומי עיסוק": {
+    "en": "Practice areas",
+    "es": "Áreas de práctica",
+    "pt-BR": "Áreas de atuação",
+    "ar": "مجالات العمل"
+  },
+  "בואו נתחיל": {
+    "en": "Let's start",
+    "es": "Empecemos",
+    "pt-BR": "Vamos começar",
+    "ar": "لنبدأ"
+  },
+  "אחריות מלאה": {
+    "en": "Full warranty",
+    "es": "Garantía completa",
+    "pt-BR": "Garantia completa",
+    "ar": "ضمان كامل"
+  },
+  "טיפול אישי": {
+    "en": "Personal treatment",
+    "es": "Tratamiento personal",
+    "pt-BR": "Tratamento pessoal",
+    "ar": "علاج شخصي"
+  },
+  "מה אנחנו עושים": {
+    "en": "What we do",
+    "es": "Qué hacemos",
+    "pt-BR": "O que fazemos",
+    "ar": "ماذا نفعل"
+  },
+  "מהדורות חדשות": {
+    "en": "New editions",
+    "es": "Nuevas ediciones",
+    "pt-BR": "Novas edições",
+    "ar": "إصدارات جديدة"
+  },
+  "לקוחה פרטית": {
+    "en": "Private client",
+    "es": "Clienta privada",
+    "pt-BR": "Cliente particular",
+    "ar": "زبونة خاصة"
+  },
+  "רעבים?": {
+    "en": "Hungry?",
+    "es": "¿Con hambre?",
+    "pt-BR": "Com fome?",
+    "ar": "جائعون؟"
+  },
+  "שיחה": {
+    "en": "Consult",
+    "es": "Consulta",
+    "pt-BR": "Consulta",
+    "ar": "جلسة"
+  },
+  "המשך": {
+    "en": "Follow-up",
+    "es": "Seguimiento",
+    "pt-BR": "Acompanhamento",
+    "ar": "متابعة"
+  },
+  "רוגע": {
+    "en": "Calm",
+    "es": "Calma",
+    "pt-BR": "Calma",
+    "ar": "هدوء"
+  },
+  "שקיפות": {
+    "en": "Transparency",
+    "es": "Transparencia",
+    "pt-BR": "Transparência",
+    "ar": "شفافية"
+  },
+  "למידה": {
+    "en": "Learning",
+    "es": "Aprendizaje",
+    "pt-BR": "Aprendizado",
+    "ar": "تعلّم"
+  },
+  "הערות": {
+    "en": "Notes",
+    "es": "Notas",
+    "pt-BR": "Observações",
+    "ar": "ملاحظات"
+  },
+  "ביצוע": {
+    "en": "Treatment",
+    "es": "Tratamiento",
+    "pt-BR": "Tratamento",
+    "ar": "تنفيذ"
+  },
+  "איפור מערכת": {
+    "en": "Editorial makeup",
+    "es": "Maquillaje editorial",
+    "pt-BR": "Maquiagem editorial",
+    "ar": "مكياج تحريري"
+  },
+  "סרגל גבות": {
+    "en": "Brow bar",
+    "es": "Barra de cejas",
+    "pt-BR": "Barra de sobrancelhas",
+    "ar": "بار الحواجب"
+  },
+  "עבודות": {
+    "en": "Work",
+    "es": "Trabajos",
+    "pt-BR": "Trabalhos",
+    "ar": "أعمال"
+  },
+  "הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.": {
+    "en": "We built a place that listens to the person in front of us first, before choosing a color, product, or protocol.",
+    "es": "Creamos un lugar que escucha primero a la persona de enfrente, antes de elegir color, material o protocolo.",
+    "pt-BR": "Criámos um lugar que escuta primeiro a pessoa à frente, antes de escolher cor, material ou protocolo.",
+    "ar": "بنينا مكاناً يستمع أولاً إلى الشخص أمامنا، قبل اختيار اللون أو المادة أو البروتوكول."
+  },
+  "כל טיפול מתועד בכרטיס לקוחה, עם העדפות, תגובות עור והמלצות המשך ברורות.": {
+    "en": "Every treatment is recorded on the client card, with preferences, skin reactions, and clear next-step notes.",
+    "es": "Cada tratamiento se documenta en la ficha, con preferencias, reacciones de la piel y recomendaciones claras.",
+    "pt-BR": "Cada tratamento fica registado na ficha, com preferências, reações da pele e recomendações claras.",
+    "ar": "كل علاج يُوثَّق في بطاقة الزبونة مع التفضيلات وتفاعلات البشرة وتوصيات واضحة."
+  },
+  "הצוות נפגש בכל שבוע לסקירת תוצאות, שיפור תהליכים ובדיקת חומרי עבודה חדשים.": {
+    "en": "The team meets every week to review results, improve the process, and test new products.",
+    "es": "El equipo se reúne cada semana para revisar resultados, mejorar procesos y probar materiales nuevos.",
+    "pt-BR": "A equipe reúne-se todas as semanas para rever resultados, melhorar processos e testar materiais novos.",
+    "ar": "يلتقي الفريق كل أسبوع لمراجعة النتائج وتحسين العمليات وفحص مواد عمل جديدة."
+  },
+  "רגליים מלאות": {
+    "en": "Full legs",
+    "es": "Piernas completas",
+    "pt-BR": "Pernas completas",
+    "ar": "الساقان بالكامل"
+  },
+  "ברזילאי": {
+    "en": "Brazilian",
+    "es": "Brasileño",
+    "pt-BR": "Brasileiro",
+    "ar": "برازيلي"
+  },
+  "פנים מדויק": {
+    "en": "Precise face",
+    "es": "Rostro preciso",
+    "pt-BR": "Rosto preciso",
+    "ar": "وجه دقيق"
+  },
+  "ייעוץ והתאמה": {
+    "en": "Consult and fitting",
+    "es": "Consulta y ajuste",
+    "pt-BR": "Consulta e ajuste",
+    "ar": "استشارة وملاءمة"
+  },
+  "כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שעווה רכה ותוצאה אחידה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Soft wax and an even result. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Cera suave y un resultado uniforme. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Cera suave e um resultado uniforme. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "شمع ناعم ونتيجة متساوية. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "טכניקה מדויקת ורגישה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "A precise, gentle technique. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Una técnica precisa y sensible. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Uma técnica precisa e sensível. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "تقنية دقيقة ولطيفة. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שפם, סנטר וקווי מתאר. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Lip, chin, and contour lines. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Labio, mentón y líneas de contorno. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Lábio, queixo e linhas de contorno. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "شارب وذقن وخطوط تحديد. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שיחת התאמה קצרה לבחירת הטיפול הנכון. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "A short fitting conversation to choose the right treatment. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Una conversación breve para elegir el tratamiento adecuado. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Uma conversa curta para escolher o tratamento certo. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "حديث ملاءمة قصير لاختيار العلاج المناسب. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "מנהלת מקצועית": {
+    "en": "Clinical director",
+    "es": "Directora profesional",
+    "pt-BR": "Diretora profissional",
+    "ar": "مديرة مهنية"
+  },
+  "מומחית טיפולים": {
+    "en": "Treatment specialist",
+    "es": "Especialista en tratamientos",
+    "pt-BR": "Especialista em tratamentos",
+    "ar": "أخصائية علاجات"
+  },
+  "אחראית חוויית לקוחה": {
+    "en": "Client experience lead",
+    "es": "Responsable de experiencia",
+    "pt-BR": "Responsável pela experiência",
+    "ar": "مسؤولة تجربة الزبونة"
+  },
+  "לקוחה קבועה": {
+    "en": "Regular client",
+    "es": "Clienta habitual",
+    "pt-BR": "Cliente frequente",
+    "ar": "زبونة دائمة"
+  }
+}

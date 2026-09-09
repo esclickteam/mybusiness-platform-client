@@ -1,0 +1,350 @@
+{
+  "ביקורת מהמערכת תופיע כאן.": {
+    "en": "A review from the system will appear here.",
+    "es": "Una reseña del sistema aparecerá aquí.",
+    "pt-BR": "Uma avaliação do sistema aparecerá aqui.",
+    "ar": "ستظهر مراجعة من المنظومة هنا."
+  },
+  "כן, ניתן לחבר סליקה לעסק.": {
+    "en": "Yes, you can connect checkout to the business.",
+    "es": "Sí, se puede conectar el cobro al negocio.",
+    "pt-BR": "Sim, dá para ligar a cobrança ao negócio.",
+    "ar": "نعم، يمكن ربط التحصيل بالعمل."
+  },
+  "טקסט קצר בתוך כרטיס מעוצב.": {
+    "en": "Short text inside a designed card.",
+    "es": "Texto corto dentro de una tarjeta diseñada.",
+    "pt-BR": "Texto curto dentro de um cartão desenhado.",
+    "ar": "نص قصير داخل بطاقة مصممة."
+  },
+  "✓ יתרון שלישי שמוביל לפעולה": {
+    "en": "✓ Third advantage that leads to action",
+    "es": "✓ Tercera ventaja que lleva a la acción",
+    "pt-BR": "✓ Terceira vantagem que leva à ação",
+    "ar": "✓ الميزة الثالثة التي تقود إلى إجراء"
+  },
+  "יוחלף אוטומטית במוצרי העסק.": {
+    "en": "Will be replaced automatically with the business products.",
+    "es": "Se sustituirá automáticamente por los productos del negocio.",
+    "pt-BR": "Será substituído automaticamente pelos produtos do negócio.",
+    "ar": "سيُستبدل تلقائياً بمنتجات العمل."
+  },
+  "כל ליד ייכנס ל־CRM של העסק.": {
+    "en": "Every lead will enter the business CRM.",
+    "es": "Cada lead entrará en el CRM del negocio.",
+    "pt-BR": "Cada lead entrará no CRM do negócio.",
+    "ar": "كل عميل محتمل سيدخل CRM العمل."
+  },
+  "יוחלף אוטומטית בשירותי העסק.": {
+    "en": "Will be replaced automatically with the business services.",
+    "es": "Se sustituirá automáticamente por los servicios del negocio.",
+    "pt-BR": "Será substituído automaticamente pelos serviços do negócio.",
+    "ar": "سيُستبدل تلقائياً بخدمات العمل."
+  },
+  "קבלו עדכונים, מבצעים והטבות.": {
+    "en": "Get updates, promos, and perks.",
+    "es": "Recibid novedades, ofertas y ventajas.",
+    "pt-BR": "Receba novidades, ofertas e benefícios.",
+    "ar": "احصلوا على تحديثات وعروض ومزايا."
+  },
+  "תיאור קצר על העסק והערך שלו.": {
+    "en": "A short description of the business and its value.",
+    "es": "Una descripción corta del negocio y su valor.",
+    "pt-BR": "Uma descrição curta do negócio e do valor dele.",
+    "ar": "وصف قصير عن العمل وقيمته."
+  },
+  "כאן אפשר לשים קוד חיצוני בהמשך.": {
+    "en": "You can place external code here later.",
+    "es": "Aquí podéis poner código externo más adelante.",
+    "pt-BR": "Aqui você pode colocar código externo depois.",
+    "ar": "هنا يمكن وضع كود خارجي لاحقاً."
+  },
+  "הדביקו קוד Embed דרך סרגל העריכה": {
+    "en": "Paste embed code from the editor bar",
+    "es": "Pegad código Embed desde la barra de edición",
+    "pt-BR": "Cole código Embed pela barra de edição",
+    "ar": "الصقوا كود التضمين من شريط التحرير"
+  },
+  "הישארו מעודכנים ברשתות החברתיות.": {
+    "en": "Stay updated on social networks.",
+    "es": "Seguid las novedades en las redes sociales.",
+    "pt-BR": "Fique atualizado nas redes sociais.",
+    "ar": "ابقوا على اطلاع في الشبكات الاجتماعية."
+  },
+  "קבלו הטבות, קופונים ועדכונים מהעסק.": {
+    "en": "Get perks, coupons, and updates from the business.",
+    "es": "Recibid ventajas, cupones y novedades del negocio.",
+    "pt-BR": "Receba benefícios, cupons e novidades do negócio.",
+    "ar": "احصلوا على مزايا وكوبونات وتحديثات من العمل."
+  },
+  "משפט קצר שמסביר למה כדאי לבחור בעסק.": {
+    "en": "A short line that explains why to choose the business.",
+    "es": "Una frase corta que explica por qué conviene elegir el negocio.",
+    "pt-BR": "Uma frase curta que explica por que vale escolher o negócio.",
+    "ar": "جملة قصيرة تشرح لماذا يستحق اختيار العمل."
+  },
+  "אפשר לחבר גביית מקדמה לפני קביעת תור.": {
+    "en": "You can connect a deposit before booking.",
+    "es": "Podéis conectar un cobro de anticipo antes de pedir cita.",
+    "pt-BR": "Você pode ligar a cobrança de sinal antes de agendar.",
+    "ar": "يمكن ربط تحصيل عربون قبل حجز الموعد."
+  },
+  "בחירת שירות, תאריך ושעה פנויה מה-CRM.": {
+    "en": "Pick a service, date, and open time from the CRM.",
+    "es": "Elegid servicio, fecha y hora libre desde el CRM.",
+    "pt-BR": "Escolha serviço, data e horário livre no CRM.",
+    "ar": "اختيار خدمة وتاريخ وساعة متاحة من الـ CRM."
+  },
+  "לוחצים על קביעת תור ובוחרים זמן פנוי.": {
+    "en": "Tap book and choose an open time.",
+    "es": "Pulsad pedir cita y elegid un tiempo libre.",
+    "pt-BR": "Toque em agendar e escolha um horário livre.",
+    "ar": "اضغطوا على حجز موعد واختاروا وقتاً متاحاً."
+  },
+  "אפשר להחליף תמונה, צבע, טקסט וכפתורים.": {
+    "en": "You can swap image, color, text, and buttons.",
+    "es": "Podéis cambiar imagen, color, texto y botones.",
+    "pt-BR": "Você pode trocar imagem, cor, texto e botões.",
+    "ar": "يمكن تبديل صورة ولون ونص وأزرار."
+  },
+  "מתאים להצגת שירותים, תוכניות או שלבים.": {
+    "en": "Fits showing services, plans, or steps.",
+    "es": "Encaja para mostrar servicios, planes o pasos.",
+    "pt-BR": "Combina para mostrar serviços, planos ou etapas.",
+    "ar": "يناسب عرض خدمات أو خطط أو خطوات."
+  },
+  "תיאור קצר על ניסיון, התמחות ויחס אישי.": {
+    "en": "A short description of experience, specialty, and personal care.",
+    "es": "Una descripción corta de experiencia, especialidad y trato personal.",
+    "pt-BR": "Uma descrição curta de experiência, especialidade e atendimento pessoal.",
+    "ar": "وصف قصير عن الخبرة والتخصص والتعامل الشخصي."
+  },
+  "מסונכרן לשירותים ולשעות הפעילות מה-CRM.": {
+    "en": "Synced to services and opening hours from the CRM.",
+    "es": "Sincronizado a servicios y horario desde el CRM.",
+    "pt-BR": "Sincronizado com serviços e horário do CRM.",
+    "ar": "متزامن مع الخدمات وساعات العمل من الـ CRM."
+  },
+  "כתבו כאן טקסט שמציג את העסק בצורה ברורה.": {
+    "en": "Write text here that presents the business clearly.",
+    "es": "Escribid aquí un texto que presente el negocio con claridad.",
+    "pt-BR": "Escreva aqui um texto que apresente o negócio com clareza.",
+    "ar": "اكتبوا هنا نصاً يعرض العمل بوضوح."
+  },
+  "שירות מדהים, מקצועי ומדויק. ממליצה בחום.": {
+    "en": "Amazing, professional, precise service. Highly recommended.",
+    "es": "Servicio increíble, profesional y preciso. Lo recomiendo mucho.",
+    "pt-BR": "Serviço incrível, profissional e preciso. Recomendo muito.",
+    "ar": "خدمة مذهلة ومهنية ودقيقة. أنصح بها بقوة."
+  },
+  "טקסט הסבר קצר וברור שמסביר את האזור באתר.": {
+    "en": "Short, clear helper text that explains this area of the site.",
+    "es": "Un texto corto y claro que explica esta zona del sitio.",
+    "pt-BR": "Um texto curto e claro que explica esta área do site.",
+    "ar": "نص شرح قصير وواضح يشرح هذه المنطقة في الموقع."
+  },
+  "כאן אפשר להציג וידאו או תמונת רקע מרשימה.": {
+    "en": "You can show a video or an impressive background image here.",
+    "es": "Aquí podéis mostrar un vídeo o una imagen de fondo impresionante.",
+    "pt-BR": "Aqui você pode mostrar um vídeo ou uma imagem de fundo impressionante.",
+    "ar": "هنا يمكن عرض فيديو أو صورة خلفية مبهرة."
+  },
+  "אפשר להחליף תמונה, צבעים, כפתורים וטקסטים.": {
+    "en": "You can swap image, colors, buttons, and texts.",
+    "es": "Podéis cambiar imagen, colores, botones y textos.",
+    "pt-BR": "Você pode trocar imagem, cores, botões e textos.",
+    "ar": "يمكن تبديل صورة وألوان وأزرار ونصوص."
+  },
+  "אפשר להשתמש כקופון, הודעה או קריאה לפעולה.": {
+    "en": "Use it as a coupon, a notice, or a call to action.",
+    "es": "Usadlo como cupón, aviso o llamada a la acción.",
+    "pt-BR": "Use como cupom, aviso ou chamada para ação.",
+    "ar": "استخدموه ككوبون أو إشعار أو دعوة لإجراء."
+  },
+  "אפשר לשנות צבעים, רקע, פינות, ריווח ותמונה.": {
+    "en": "You can change colors, background, corners, spacing, and image.",
+    "es": "Podéis cambiar colores, fondo, esquinas, espacio e imagen.",
+    "pt-BR": "Você pode mudar cores, fundo, cantos, espaçamento e imagem.",
+    "ar": "يمكن تغيير ألوان وخلفية وزوايا وتباعد وصورة."
+  },
+  "מתאים להצגת שירות יוקרתי, מבצע או מסר חשוב.": {
+    "en": "Fits showing a luxury service, a promo, or an important message.",
+    "es": "Encaja para mostrar un servicio de lujo, una oferta o un mensaje importante.",
+    "pt-BR": "Combina para mostrar um serviço de luxo, uma oferta ou uma mensagem importante.",
+    "ar": "يناسب عرض خدمة فاخرة أو عرضاً أو رسالة مهمة."
+  },
+  "“חוויה מקצועית, ברורה ויוקרתית מהרגע הראשון.”": {
+    "en": "“A professional, clear, luxury experience from the first moment.”",
+    "es": "“Una experiencia profesional, clara y de lujo desde el primer momento.”",
+    "pt-BR": "“Uma experiência profissional, clara e de luxo desde o primeiro momento.”",
+    "ar": "«تجربة مهنية وواضحة وفاخرة من اللحظة الأولى.»"
+  },
+  "הלקוח בוחר שירות ותאריך מועדף והבקשה נכנסת למערכת.": {
+    "en": "The customer picks a service and preferred date, and the request enters the system.",
+    "es": "El cliente elige servicio y fecha preferida y la solicitud entra en el sistema.",
+    "pt-BR": "O cliente escolhe serviço e data preferida e o pedido entra no sistema.",
+    "ar": "الزبون يختار خدمة وتاريخاً مفضلاً والطلب يدخل المنظومة."
+  },
+  "משפט קצר שמוביל את הלקוח להשאיר פרטים או לקבוע תור.": {
+    "en": "A short line that leads the customer to leave details or book.",
+    "es": "Una frase corta que lleva al cliente a dejar datos o pedir cita.",
+    "pt-BR": "Uma frase curta que leva o cliente a deixar dados ou agendar.",
+    "ar": "جملة قصيرة تقود الزبون لترك بيانات أو حجز موعد."
+  },
+  "הצגת מוצר אחד בצורה חזקה עם מחיר, תיאור וכפתור רכישה.": {
+    "en": "Show one product strongly with price, description, and a buy button.",
+    "es": "Mostrad un producto con fuerza, con precio, descripción y un botón de compra.",
+    "pt-BR": "Mostre um produto com força, com preço, descrição e um botão de compra.",
+    "ar": "اعرضوا منتجاً واحداً بقوة مع سعر ووصف وزر شراء."
+  },
+  "משפט מודגש שמוביל את הלקוח להבין למה לבחור דווקא בכם.": {
+    "en": "A highlighted line that helps the customer understand why to choose you.",
+    "es": "Una frase destacada que lleva al cliente a entender por qué elegiros a vosotros.",
+    "pt-BR": "Uma frase em destaque que leva o cliente a entender por que escolher vocês.",
+    "ar": "جملة بارزة تساعد الزبون على فهم لماذا يختاركم أنتم."
+  },
+  "טקסט בצד אחד ותמונה בצד השני. מתאים לשירות, אודות או מוצר.": {
+    "en": "Text on one side and an image on the other. Fits a service, about, or product.",
+    "es": "Texto a un lado e imagen al otro. Encaja en servicio, sobre nosotros o producto.",
+    "pt-BR": "Texto de um lado e imagem do outro. Combina com serviço, sobre ou produto.",
+    "ar": "نص في جانب وصورة في الجانب الآخر. يناسب خدمة أو عنّا أو منتجاً."
+  },
+  "תבנית פיטנס למאמנים, סטודיו כושר וחדרי כושר עם Hero חזק ותצוגה מלאה.": {
+    "en": "A fitness template for trainers, studios, and gyms with a strong hero and a full display.",
+    "es": "Una plantilla de fitness para entrenadores, estudios y gimnasios con un hero fuerte y una muestra completa.",
+    "pt-BR": "Um modelo de fitness para treinos, estúdios e academias com um hero forte e uma exibição completa.",
+    "ar": "قالب لياقة للمدربين واستوديوهات وصالات مع هيرو قوي وعرض كامل."
+  },
+  "כאן כותבים טקסט מקצועי וברור שמסביר את הערך של העסק, השירות או ההצעה.": {
+    "en": "Write clear professional text here that explains the value of the business, service, or offer.",
+    "es": "Aquí escribid un texto profesional y claro que explique el valor del negocio, el servicio o la oferta.",
+    "pt-BR": "Aqui escreva um texto profissional e claro que explique o valor do negócio, do serviço ou da oferta.",
+    "ar": "اكتبوا هنا نصاً مهنياً واضحاً يشرح قيمة العمل أو الخدمة أو العرض."
+  },
+  "מבצע מיוחד · קביעת תור אונליין · שירות מקצועי · חוויית לקוח פרימיום ·": {
+    "en": "Special promo · book online · professional service · premium customer experience ·",
+    "es": "Oferta especial · cita online · servicio profesional · experiencia de cliente premium ·",
+    "pt-BR": "Oferta especial · agende online · serviço profissional · experiência premium do cliente ·",
+    "ar": "عرض خاص · حجز موعد أونلاين · خدمة مهنية · تجربة زبون فاخرة ·"
+  },
+  "זמינים לקריאות דחופות, תיקון תקלות, התקנות ושדרוג חשמל — עם אחריות מלאה.": {
+    "en": "Available for urgent calls, fault repair, installs, and electrical upgrades — with full warranty.",
+    "es": "Disponibles para llamadas urgentes, reparación, instalaciones y mejora eléctrica — con garantía completa.",
+    "pt-BR": "Disponíveis para chamadas urgentes, reparo, instalações e upgrade elétrico — com garantia completa.",
+    "ar": "متاحون للمكالمات العاجلة وإصلاح الأعطال والتركيب وترقية الكهرباء — مع ضمان كامل."
+  },
+  "חשמלאים מוסמכים עם תהליך ברור: אבחון, הצעת מחיר מסודרת, ביצוע נקי ואחריות בסיום העבודה.": {
+    "en": "Licensed electricians with a clear process: diagnosis, a written quote, clean work, and warranty at the end.",
+    "es": "Electricistas titulados con un proceso claro: diagnóstico, presupuesto ordenado, ejecución limpia y garantía al terminar.",
+    "pt-BR": "Eletricistas habilitados com um processo claro: diagnóstico, orçamento organizado, execução limpa e garantia no fim.",
+    "ar": "كهربائيون مرخّصون بمسار واضح: تشخيص وعرض سعر مرتّب وتنفيذ نظيف وضمان عند نهاية العمل."
+  },
+  "> מתחילים בדיקת היקף": {
+    "en": "> Starting the scope check",
+    "es": "> Empezamos la revisión de alcance",
+    "pt-BR": "> Começamos a checagem de escopo",
+    "ar": "> نبدأ فحص النطاق"
+  },
+  "> מאמתים מצב תחנות קצה": {
+    "en": "> Verifying endpoint status",
+    "es": "> Verificamos el estado de los endpoints",
+    "pt-BR": "> Verificamos o estado dos endpoints",
+    "ar": "> نتحقق من حالة نقاط النهاية"
+  },
+  "> מסובבים הרשאות ומחילים MFA": {
+    "en": "> Rotating permissions and applying MFA",
+    "es": "> Rotamos permisos y aplicamos MFA",
+    "pt-BR": "> Rotacionamos permissões e aplicamos MFA",
+    "ar": "> ندير الصلاحيات ونطبّق MFA"
+  },
+  "> מסנכרנים מסלולי הסלמה ל־SOC": {
+    "en": "> Syncing escalation paths to the SOC",
+    "es": "> Sincronizamos rutas de escalado al SOC",
+    "pt-BR": "> Sincronizamos rotas de escalonamento para o SOC",
+    "ar": "> نزامن مسارات التصعيد إلى SOC"
+  },
+  "מיפוי KPI, תקציב, בקרה": {
+    "en": "KPI mapping, budget, controls",
+    "es": "Mapeo de KPI, presupuesto, control",
+    "pt-BR": "Mapeamento de KPI, orçamento, controle",
+    "ar": "رسم مؤشرات، ميزانية، رقابة"
+  },
+  "ייעול תמחור, רכש, גבייה": {
+    "en": "Pricing, purchasing, and collections improvements",
+    "es": "Mejora de precios, compras y cobro",
+    "pt-BR": "Melhoria de preço, compras e cobrança",
+    "ar": "تحسين التسعير والشراء والتحصيل"
+  },
+  "דיווח הנהלה, דשבורדים, תחזיות": {
+    "en": "Management reporting, dashboards, forecasts",
+    "es": "Informes de dirección, paneles, previsiones",
+    "pt-BR": "Relatórios da direção, dashboards, previsões",
+    "ar": "تقارير إدارة ولوحات وتوقعات"
+  },
+  "אופטימיזציה, צמיחה, היערכות": {
+    "en": "Optimization, growth, readiness",
+    "es": "Optimización, crecimiento, preparación",
+    "pt-BR": "Otimização, crescimento, preparação",
+    "ar": "تحسين ونمو واستعداد"
+  },
+  "קצב דירקטוריון": {
+    "en": "Board cadence",
+    "es": "Ritmo de consejo",
+    "pt-BR": "Ritmo de conselho",
+    "ar": "وتيرة مجلس الإدارة"
+  },
+  "מעקב סיכונים": {
+    "en": "Risk tracking",
+    "es": "Seguimiento de riesgos",
+    "pt-BR": "Acompanhamento de riscos",
+    "ar": "متابعة المخاطر"
+  },
+  "שכבת החלטות": {
+    "en": "Decision layer",
+    "es": "Capa de decisiones",
+    "pt-BR": "Camada de decisões",
+    "ar": "طبقة القرارات"
+  },
+  "פגישות סדורות, חומרים אחידים ותקציב פתוח.": {
+    "en": "Regular meetings, consistent materials, and an open budget.",
+    "es": "Reuniones ordenadas, materiales uniformes y presupuesto abierto.",
+    "pt-BR": "Reuniões regulares, materiais uniformes e orçamento aberto.",
+    "ar": "اجتماعات مرتّبة ومواد موحّدة وميزانية مفتوحة."
+  },
+  "זיהוי חריגות, תרחישים והשפעה ישירה על המזומן.": {
+    "en": "Spot exceptions, scenarios, and a direct cash impact.",
+    "es": "Identificad desviaciones, escenarios e impacto directo en caja.",
+    "pt-BR": "Identifique desvios, cenários e impacto direto no caixa.",
+    "ar": "رصد الانحرافات والسيناريوهات والأثر المباشر على النقد."
+  },
+  "מתרגמים נתונים לשאלות הנהלה, לא רק לאקסל.": {
+    "en": "We turn data into board questions, not only into a spreadsheet.",
+    "es": "Traducimos datos a preguntas de dirección, no solo a Excel.",
+    "pt-BR": "Traduzimos dados em perguntas da direção, não só em planilha.",
+    "ar": "نحوّل البيانات إلى أسئلة إدارة، لا إلى جدول فقط."
+  },
+  "תכנון תזרים ותרחישים": {
+    "en": "Cash-flow planning and scenarios",
+    "es": "Planificación de tesorería y escenarios",
+    "pt-BR": "Planejamento de fluxo de caixa e cenários",
+    "ar": "تخطيط التدفق والسيناريوهات"
+  },
+  "דוחות הנהלה וליווי תקציבי": {
+    "en": "Management reports and budget support",
+    "es": "Informes de dirección y acompañamiento presupuestario",
+    "pt-BR": "Relatórios da direção e acompanhamento orçamentário",
+    "ar": "تقارير إدارة ومرافقة ميزانية"
+  },
+  "בקרות, מעקב וסטנדרטיזציה": {
+    "en": "Controls, tracking, and standardization",
+    "es": "Controles, seguimiento y estandarización",
+    "pt-BR": "Controles, acompanhamento e padronização",
+    "ar": "رقابة ومتابعة وتوحيد"
+  },
+  "קבלת החלטות עם הקשר עסקי": {
+    "en": "Decisions with business context",
+    "es": "Toma de decisiones con contexto de negocio",
+    "pt-BR": "Decisões com contexto de negócio",
+    "ar": "اتخاذ قرارات بسياق أعمال"
+  }
+}

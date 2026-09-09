@@ -23,8 +23,8 @@ type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 export function billingLabel(billing?: string, t?: TranslateFn) {
   const key = billing === "recurring_month" ? "monthly" : billing === "recurring_year" ? "annual" : "oneTime";
-  const fallback = key === "monthly" ? "חודשי" : key === "annual" ? "שנתי" : "חד-פעמי";
-  return t ? t(`partner.billing.${key}`, { defaultValue: fallback }) : fallback;
+  const fallback = key === "monthly" ? "Monthly" : key === "annual" ? "Annual" : "One-time";
+  return t ? t(`partner.billing.${key}`) : fallback;
 }
 
 export function isMainPackageSku(sku?: string) {
@@ -40,8 +40,8 @@ export function publicPackageLabel(name?: string, fallback?: string, t?: Transla
   if (trimmed && !isBizuplyBrandedName(trimmed)) return trimmed;
   if (fallback != null && fallback !== "") return fallback;
   return t
-    ? t("partner.licenseFallback", { defaultValue: "רישיון שימוש במערכת ניהול עסק מלאה" })
-    : "רישיון שימוש במערכת";
+    ? t("partner.licenseFallback")
+    : "License to use a full business-management system";
 }
 
 export function computeDealPreview(

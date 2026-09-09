@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { advisoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -40,7 +42,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         <a href="#" className="grid h-11 w-11 place-items-center border border-[var(--p)] text-sm font-bold text-[var(--p)]" aria-label={getValue(data, "brandName")}>
           {getValue(data, "logoText")}
         </a>
-        <nav className="hidden items-center gap-8 text-sm font-semibold text-white/80 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-8 text-sm font-semibold text-white/80 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="a-nav-link">
               {label}
@@ -114,7 +116,7 @@ function Services({ data }: { data: Record<string, any> }) {
             <article key={`${title}-${index}`} className="a-service-panel aspect-square min-w-[260px] border border-[var(--p)]/30 bg-[var(--surface)] p-7 md:min-w-[320px]">
               <span className="text-sm font-bold text-[var(--p)]">0{(index % services.length) + 1}</span>
               <h3 className="t-display mt-10 text-3xl font-bold leading-tight">{title}</h3>
-              <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{text}</p>
+              <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
             </article>
           ))}
         </div>
@@ -208,7 +210,7 @@ function CaseStudies({ data }: { data: Record<string, any> }) {
                 <div className="p-7 lg:p-9">
                   <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--p)]">{tag}</p>
                   <h3 className="t-display mt-4 text-3xl font-bold leading-tight md:text-4xl">{title}</h3>
-                  <p className="mt-5 leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 leading-8 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -242,7 +244,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 <span className="absolute -right-[45px] top-1 h-7 w-7 border-4 border-[var(--bg)] bg-[var(--p)]" />
                 <p className="text-sm font-bold text-[var(--p)]">{num}</p>
                 <h3 className="t-display mt-2 text-3xl font-bold">{title}</h3>
-                <p className="mt-3 max-w-2xl leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 max-w-2xl leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -270,7 +272,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
         </Reveal>
         <Reveal delayMs={190} variant="scale">
           <blockquote className="mt-12 border-y border-[var(--p)]/30 py-10 text-center md:py-16">
-            <p className="t-display text-3xl font-bold leading-snug md:text-6xl">"{text}"</p>
+            <p className="t-display text-3xl font-bold leading-snug md:text-6xl">"{tx(text)}"</p>
             <footer className="mt-9">
               <p className="text-lg font-bold text-[var(--p)]">{name}</p>
               <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>
@@ -283,7 +285,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
                 type="button"
                 onClick={() => setActive(index)}
                 className={`h-3 w-12 border border-[var(--p)] transition ${active === index ? "bg-[var(--p)]" : "bg-transparent"}`}
-                aria-label={`עדות ${index + 1}`}
+                aria-label={`${tx("עדות")} ${index + 1}`}
               />
             ))}
           </div>
@@ -313,7 +315,7 @@ function Faq({ data }: { data: Record<string, any> }) {
           {faqs.map(([question, answer], index) => (
             <Reveal key={question} delayMs={160 + index * 110} variant="left">
               <div className="border border-[var(--p)]/25 bg-[#071428]">
-                <button type="button" onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-5 p-6 text-right">
+                <button type="button" onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-5 p-6 text-start">
                   <span className="text-lg font-bold">{question}</span>
                   <span className="grid h-9 w-9 shrink-0 place-items-center bg-[var(--p)] text-xl font-bold text-[var(--dark)]">{open === index ? "−" : "+"}</span>
                 </button>
@@ -353,11 +355,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           </div>
         </Reveal>
         <Reveal className="bg-[#06101F] p-8 lg:p-12" delayMs={160} variant="left">
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="advisora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="מה האתגר העסקי המרכזי?"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="advisora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("מה האתגר העסקי המרכזי?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" onClick={openModal} className="mt-2 bg-[var(--p)] px-7 py-4 text-sm font-bold text-[var(--dark)] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>
@@ -394,14 +396,14 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
   return (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/75 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md border border-[var(--p)]/40 bg-[#071428] p-8 text-[var(--text)] shadow-2xl shadow-black/40">
-        <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]" aria-label="סגירה">
+        <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]" aria-label={tx("סגירה")}>
           ×
         </button>
         <p className="text-sm font-bold uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "brandName")}</p>
         <h3 className="t-display mt-3 text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="advisora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="advisora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -435,7 +437,7 @@ export default function AdvisoraPages(props: AdvisoraPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="advisora" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="advisora" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: advisoraEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

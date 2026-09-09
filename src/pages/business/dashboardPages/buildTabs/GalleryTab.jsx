@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState, useRef, useEffect } from "react";
 import '../build/Build.css';
 import "./GalleryTab.css";
@@ -14,6 +15,7 @@ const GalleryTab = ({
   handleFitChange,
   handleConfirmEdit,
 }) => {
+  const { t } = useTranslation();
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const popupRef = useRef(null);
 
@@ -75,14 +77,14 @@ const GalleryTab = ({
       <div className="image-preview">
         {/* display image on the left side */}
         {galleryTabImages.length > 0 && (
-          <img src={galleryTabImages[0].url} alt="Image" className="image-preview-side" />
+          <img src={galleryTabImages[0].url} alt={t("leftover.galleryChrome.imageAlt")} className="image-preview-side" />
         )}
       </div>
 
       <div className="form-content">
-        <h2>🎨 Gallery Design</h2>
-        <h4>Upload Media</h4>
-        <p className="info-note">You can upload images or videos</p>
+        <h2>🎨 {t("leftover.galleryChrome.title")}</h2>
+        <h4>{t("leftover.galleryChrome.uploadMedia")}</h4>
+        <p className="info-note">{t("leftover.galleryChrome.uploadHint")}</p>
         <input
           type="file"
           multiple
@@ -91,9 +93,9 @@ const GalleryTab = ({
           onChange={handleUpload}
         />
         <button onClick={() => galleryTabInputRef.current.click()} className="upload-btn">
-          ➕ Add Media
+          ➕ {t("leftover.galleryChrome.addMedia")}
         </button>
-        <p className="info-note">You can drag to reorder</p>
+        <p className="info-note">{t("leftover.galleryChrome.dragReorder")}</p>
 
         <GalleryDndKit
           images={galleryTabImages}
@@ -110,9 +112,7 @@ const GalleryTab = ({
           galleryTabFits={galleryTabFits}
         />
 
-        <button className="save-btn" onClick={handleConfirmEdit}>
-          Save
-        </button>
+        <button className="save-btn" onClick={handleConfirmEdit}>{t("leftover.galleryChrome.save")}</button>
       </div>
     </div>
   );

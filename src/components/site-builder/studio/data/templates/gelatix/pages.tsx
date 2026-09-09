@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { gelatixDefaultData } from "./defaultData";
 import { gelatixEditorCss } from "./editorCss";
@@ -27,7 +29,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = gelatixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = gelatixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="fixed inset-x-0 top-4 z-50 px-4">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-full border px-5 py-3" style={{ background: "#ffffffee", borderColor: "rgba(43,24,34,0.1)", backdropFilter: "blur(14px)" }}>
@@ -147,7 +149,7 @@ function MeltHomeReviews({ data }: { data: Record<string, any> }) {
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#e85a8c", background: "#ffffff" }}>
-              <p className="text-sm leading-7" style={{ color: "#9a6b7c" }}>״{text}״</p>
+              <p className="text-sm leading-7" style={{ color: "#9a6b7c" }}>״{tx(text)}״</p>
               <footer className="mt-4 text-sm font-bold">{name}</footer>
             </blockquote>
           ))}
@@ -212,7 +214,7 @@ function MeltFullMenuBoard({ data }: { data: Record<string, any> }) {
             <div key={title} className="flex items-start justify-between gap-4 py-5">
               <div>
                 <h3 className="tpl-display text-xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm" style={{ color: "#9a6b7c" }}>{text}</p>
+                <p className="mt-1 text-sm" style={{ color: "#9a6b7c" }}>{tx(text)}</p>
               </div>
               <span className="whitespace-nowrap text-sm font-bold" style={{ color: "#e85a8c" }}>{meta}</span>
             </div>
@@ -369,7 +371,7 @@ function MeltAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#e85a8c", background: "#fff5f8" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#e85a8c" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -430,10 +432,10 @@ function MeltReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-sm" style={{ color: "#9a6b7c" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
-          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(43,24,34,0.1)", background: "#fff5f8" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e85a8c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="gelatix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
+          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(43,24,34,0.1)", background: "#fff5f8" }}>{tx("היי! מתי נוח לכם?")}</div>
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e85a8c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="gelatix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-start text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#e85a8c", color: "#e85a8cText" }}>{v(data, "cta")}</button>
           </form>
         </div>
@@ -572,7 +574,7 @@ export default function GelatixPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="gelatix" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="gelatix" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fff5f8", color: "#2b1822" }}>
       <style dangerouslySetInnerHTML={{ __html: gelatixEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

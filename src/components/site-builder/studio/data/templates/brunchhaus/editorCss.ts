@@ -2,7 +2,7 @@ export const brunchhausEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Heebo:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="brunchhaus"], [data-template-id="brunchhaus"] {
-  direction: rtl; text-align: right;
+   text-align: start;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #fff8f0; --tpl-surface: #ffffff; --tpl-text: #3a2a1e;
   --tpl-muted: #9a7b62; --tpl-primary: #f4a261; --tpl-primary-text: #3a2a1e;

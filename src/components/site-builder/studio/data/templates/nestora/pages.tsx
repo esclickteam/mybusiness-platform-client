@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nestoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +28,7 @@ function v(data: Record<string, any>, key: string) {
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const nav = nestoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = nestoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header
       data-template-section-type="header"
@@ -53,7 +55,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(61,90,128,0.16)" }}>
           <div className="grid pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-right text-sm" style={{ borderColor: "rgba(61,90,128,0.12)" }}>{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="border-b py-3 text-start text-sm" style={{ borderColor: "rgba(61,90,128,0.12)" }}>{label}</button>
             ))}
           </div>
         </div>
@@ -123,7 +125,7 @@ function PersonalLetter({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(61,90,128,0.14)", background: "#e2e7ee" }}>
       <div className="mx-auto max-w-4xl">
-        <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#3d5a80" }}>המכתב שלנו</p>
+        <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#3d5a80" }}>{tx("המכתב שלנו")}</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#1e2836" }}>{v(data, "approachTitle")}</h2>
         <div className="mt-10 space-y-8 text-xl leading-10" style={{ color: "#445064" }}>
           <p>{v(data, "approachParagraph1")}</p>
@@ -136,12 +138,12 @@ function PersonalLetter({ data }: { data: Record<string, any> }) {
 }
 
 function PersonalContact({ data }: { data: Record<string, any> }) {
-  const field = "border bg-transparent px-4 py-3.5 text-right outline-none";
+  const field = "border bg-transparent px-4 py-3.5 text-start outline-none";
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(61,90,128,0.14)", background: "#eef1f5" }}>
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.85fr]">
         <div className="border-r pr-7" style={{ borderColor: "#3d5a80" }}>
-          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#3d5a80" }}>פתק אישי</p>
+          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#3d5a80" }}>{tx("פתק אישי")}</p>
           <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#1e2836" }}>{v(data, "contactTitle")}</h2>
           <p className="mt-6 max-w-xl text-xl leading-9" style={{ color: "#6a7585" }}>{v(data, "contactText")}</p>
           <div className="mt-10 space-y-2 text-sm" style={{ color: "#6a7585" }}>
@@ -149,10 +151,10 @@ function PersonalContact({ data }: { data: Record<string, any> }) {
             <p>{v(data, "email")}</p>
           </div>
         </div>
-        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="מה יהיה בית מדויק עבורכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
+        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder={tx("מה יהיה בית מדויק עבורכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#3d5a80", color: "#eef1f5" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -206,13 +208,13 @@ export default function NestoraPages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    featured: <InnerPage data={merged} title="נבחרים"><BoutiqueProperties data={merged} /></InnerPage>,
-    approach: <InnerPage data={merged} title="גישה"><PersonalLetter data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><PersonalLetter data={merged} /><BoutiqueProperties data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><PersonalContact data={merged} /></InnerPage>,
+    featured: <InnerPage data={merged} title={tx("נבחרים")}><BoutiqueProperties data={merged} /></InnerPage>,
+    approach: <InnerPage data={merged} title={tx("גישה")}><PersonalLetter data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><PersonalLetter data={merged} /><BoutiqueProperties data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><PersonalContact data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id="nestora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#eef1f5", color: "#1e2836" }}>
+    <div dir={templateDir()} data-template-id="nestora" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#eef1f5", color: "#1e2836" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

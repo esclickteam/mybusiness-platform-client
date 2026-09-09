@@ -5,7 +5,7 @@ export const lexoraEditorCss = `
 }
 
 [data-template-id="lexora"] {
-  direction: rtl;
+  
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: visible;

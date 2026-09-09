@@ -16,12 +16,29 @@ export function formatIls(
   amount: number | null | undefined,
   locale: string
 ) {
+  return formatBillingMoney(amount, locale, "ILS");
+}
+
+export function formatBillingMoney(
+  amount: number | null | undefined,
+  locale: string,
+  currency?: string | null
+) {
   const safe = typeof amount === "number" ? amount : 0;
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 2,
-  }).format(safe);
+  const code = String(currency || "ILS").toUpperCase();
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: code,
+      maximumFractionDigits: 2,
+    }).format(safe);
+  } catch {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "ILS",
+      maximumFractionDigits: 2,
+    }).format(safe);
+  }
 }
 
 export function statusBadgeClass(status?: string | null) {

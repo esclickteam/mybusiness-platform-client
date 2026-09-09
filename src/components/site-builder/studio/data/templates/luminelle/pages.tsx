@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { CrmBookingMount } from "../shared/CrmBookingMount";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { luminelleDefaultData } from "./defaultData";
@@ -150,7 +152,7 @@ function Treatments({ data }: { data: Record<string, any> }) {
                 <h3 className="text-xl font-semibold text-[var(--l-ink)]">{title}</h3>
                 <p className="mt-2 text-sm font-semibold text-[var(--l-sage)]">{duration}</p>
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-[var(--l-muted)] md:text-base">{text}</p>
+              <p className="max-w-2xl text-sm leading-7 text-[var(--l-muted)] md:text-base">{tx(text)}</p>
               <p className="text-sm font-bold text-[var(--l-ink)] md:text-left">{price}</p>
             </article>
           ))}
@@ -224,7 +226,7 @@ function ProductsStrip({ data }: { data: Record<string, any> }) {
             {products.map(([name, text]) => (
               <div key={String(name)} className="border-r border-[var(--l-line)] pr-4">
                 <p className="text-sm font-bold text-[var(--l-ink)]">{name}</p>
-                <p className="mt-2 text-xs leading-5 text-[var(--l-muted)]">{text}</p>
+                <p className="mt-2 text-xs leading-5 text-[var(--l-muted)]">{tx(text)}</p>
               </div>
             ))}
           </div>
@@ -308,7 +310,7 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
                 <p className="text-xs font-bold tracking-[0.22em] text-[var(--l-sage)]">0{index + 1}</p>
                 <h3 className="l-display mt-5 text-2xl font-bold leading-tight">{name}</h3>
                 <p className="mt-5 text-2xl sm:text-4xl font-bold text-[var(--l-ink)]">{price}</p>
-                <p className="mt-5 text-sm leading-7 text-[var(--l-muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-7 text-[var(--l-muted)]">{tx(text)}</p>
                 <ul className="mt-7 space-y-3 border-t border-[var(--l-line)] pt-6 text-sm text-[var(--l-ink)]">
                   {(features as string[]).map((feature) => (
                     <li key={feature} className="flex gap-3">
@@ -352,7 +354,7 @@ function FAQ({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 onClick={() => setOpen(open === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-6 py-6 text-right"
+                className="flex w-full items-center justify-between gap-6 py-6 text-start"
               >
                 <span className="text-lg font-semibold text-[var(--l-ink)]">{question}</span>
                 <span className="grid h-9 w-9 shrink-0 place-items-center border border-[var(--l-line-strong)] text-lg text-[var(--l-sage)]">
@@ -378,16 +380,16 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="mt-6 max-w-xl text-lg leading-9 text-[#d8d2cb]">{getValue(data, "bookingIntro")}</p>
           <div className="mt-10 space-y-3 border-t border-white/12 pt-8 text-sm text-[#d8d2cb]">
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">טלפון</span> · {getValue(data, "phone")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("טלפון")}</span> · {getValue(data, "phone")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">אימייל</span> · {getValue(data, "email")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("אימייל")}</span> · {getValue(data, "email")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">כתובת</span> · {getValue(data, "address")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("כתובת")}</span> · {getValue(data, "address")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">שעות</span> · {getValue(data, "hours")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("שעות")}</span> · {getValue(data, "hours")}
             </p>
           </div>
         </div>
@@ -398,7 +400,7 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
           data-bizuply-crm-lead="true"
           data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-booking"
-          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
         >
           <input
             name="name"
@@ -478,7 +480,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           data-bizuply-crm-lead="true"
           data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-contact"
-          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
         >
           <input
             name="name"
@@ -543,7 +545,7 @@ export default function LuminellePages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="luminelle"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--l-bg)] text-[var(--l-ink)]"
     >

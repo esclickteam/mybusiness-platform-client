@@ -4,16 +4,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, LayoutTemplate, Pencil, Wand2 } from "lucide-react";
 
 import { createMySite, listMySites } from "../api/mySitesApi";
-import { getStudioTemplateById, getStudioTemplateSeedById } from "../components/site-builder/studio/data/templates";
-import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { getStudioGalleryCatalogEntry } from "../components/site-builder/studio/data/templates/galleryCatalog";
+import {
+  loadStudioTemplateSeedById,
+} from "../components/site-builder/studio/data/templates/loadStudioTemplate";
+import { useStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/useStudioTemplateRenderer";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { useTranslation } from "react-i18next";
-import i18n from "../i18n/i18n";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../i18n/localeUtils";
+import { setTemplateLanguageOverride } from "../i18n/templateDir";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function WebsiteTemplatePreviewPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  setTemplateLanguageOverride(i18n.language);
   const navigate = useNavigate();
 
   const { businessId, templateId } = useParams<{
@@ -25,13 +30,10 @@ export default function WebsiteTemplatePreviewPage() {
 
   const cleanTemplateId = String(templateId || "").trim().toLowerCase();
   const template = cleanTemplateId
-    ? getStudioTemplateById(cleanTemplateId)
+    ? getStudioGalleryCatalogEntry(cleanTemplateId)
     : undefined;
-
-  const renderer = useMemo(
-    () => (cleanTemplateId ? getStudioTemplateRenderer(cleanTemplateId) : null),
-    [cleanTemplateId],
-  );
+  const { renderer, loading: loadingRenderer } =
+    useStudioTemplateRenderer(cleanTemplateId);
 
   const homePage = renderer?.pages?.[0];
   const homePageId = homePage?.id || "home";
@@ -75,19 +77,21 @@ export default function WebsiteTemplatePreviewPage() {
       .toLowerCase();
     if (!cleanTemplateKey) return;
 
-    const localSeed = getStudioTemplateSeedById(cleanTemplateKey);
+    const localSeedPromise = loadStudioTemplateSeedById(cleanTemplateKey);
     localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
     localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
 
     openTemplateEditor(cleanTemplateKey);
 
     if (!businessId) return;
-    void createMySite({
+    void localSeedPromise.then((localSeed) =>
+      createMySite({
       businessId,
       name: (template as any)?.name || localSeed?.name || cleanTemplateKey,
       templateKey: cleanTemplateKey,
       templateName: (template as any)?.name || localSeed?.name || cleanTemplateKey,
-    }).then((site) => {
+    }),
+    ).then((site) => {
       if (!site?._id) return;
       navigate(
         `${basePath}/dashboard/website/sites/${site._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`,
@@ -149,6 +153,15 @@ export default function WebsiteTemplatePreviewPage() {
     );
     if (typeof document === "undefined") return bar;
     return createPortal(bar, document.body);
+  }
+
+  if (loadingRenderer) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label={t("studio.templatePreview.loading", "Loading template preview")}
+      />
+    );
   }
 
   if (!template && !renderer?.Component) {

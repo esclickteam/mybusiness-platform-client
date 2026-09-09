@@ -30,6 +30,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 import { getIntlLocale } from "../../i18n/localeUtils";
+import { catalogProductName } from "../../i18n/partnerCatalogCopy";
 import { formatPartnerDate, formatPartnerDateTime } from "../../lib/partnerWork";
 
 const MODE_TITLE_KEY: Record<string, string> = {
@@ -188,7 +189,7 @@ export default function PartnerClientDossier() {
                 onClick={activateClient}
                 className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
               >
-                {activating ? t("partner.dossier.activating") : t("partner.dossier.activateAfterPayment", { defaultValue: "הפעלת חשבון אחרי תשלום" })}
+                {activating ? t("partner.dossier.activating") : t("partner.dossier.activateAfterPayment")}
               </button>
             ) : null}
             {client.canEnterClient ? (
@@ -252,7 +253,7 @@ export default function PartnerClientDossier() {
 
       {tab === "overview" || tab === "details" || tab === "history" ? (
       <section className="grid gap-3 md:grid-cols-4">
-        <InfoCard icon={User} label={t("partner.status")} value={partnerStatusLabel(client.status, t)} />
+        <InfoCard icon={User} label={t("partner.statusLabel")} value={partnerStatusLabel(client.status, t)} />
         <InfoCard
           icon={Shield}
           label={t("partner.dossier.managementMode")}
@@ -273,11 +274,12 @@ export default function PartnerClientDossier() {
       <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-3">
         <MoneyCell
           label={t("partner.dossier.package")}
-          value={
-            (client.selectedSkus || []).find((line) =>
+          value={(() => {
+            const pkg = (client.selectedSkus || []).find((line) =>
               ["monthly", "yearly", "website_only"].includes(String(line.sku))
-            )?.nameHe || "—"
-          }
+            );
+            return pkg ? catalogProductName(t, pkg) : "—";
+          })()}
         />
         <MoneyCell
           label={t("partner.dossier.services")}
@@ -365,7 +367,7 @@ export default function PartnerClientDossier() {
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-lg font-black">{line.nameHe || line.nameEn}</p>
+                <p className="text-lg font-black">{catalogProductName(t, line)}</p>
                 <p className="text-sm font-bold text-slate-500">
                   {billingLabel(line.billing, t)}
                 </p>

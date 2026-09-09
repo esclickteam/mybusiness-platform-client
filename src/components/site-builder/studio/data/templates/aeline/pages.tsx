@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -70,7 +72,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 
@@ -304,7 +306,7 @@ function Header({
                 activePage === item.id ? "text-[#7FFFD4]" : "text-white",
               ].join(" ")}
             >
-              {item.label}
+              {tx(item.label)}
               {item.id === "pricing" && <ChevronDown className="h-4 w-4" />}
             </button>
           ))}
@@ -329,9 +331,9 @@ function Header({
                 onPageChange(item.id);
                 setMobileOpen(false);
               }}
-              className="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-black/5"
+              className="rounded-2xl px-4 py-3 text-start text-sm font-black hover:bg-black/5"
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </div>
@@ -425,7 +427,7 @@ function HeroCardRail() {
           mode === "ring"
             ? "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]"
             : "aeline-hero-mobile-card group relative h-[138px] w-[156px] shrink-0",
-          "overflow-hidden rounded-[18px] border border-white/70 p-4 text-right",
+          "overflow-hidden rounded-[18px] border border-white/70 p-4 text-start",
           "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
           "transition duration-500 hover:scale-110",
           card.type === "dark"
@@ -450,7 +452,7 @@ function HeroCardRail() {
             <img
               data-gjs-type="image"
               src={aelineImages.meeting}
-              alt="עסקאות פעילות"
+              alt={tx("עסקאות פעילות")}
               {...mediaProps("hero.carousel.image", "עסקאות פעילות")}
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -458,16 +460,12 @@ function HeroCardRail() {
             <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/92 p-2 text-[#160f2e] shadow-lg">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center">
                 <div>
-                  <p className="text-[9px] font-black text-[#160f2e]/35">
-                    נסגר
-                  </p>
+                  <p className="text-[9px] font-black text-[#160f2e]/35">{tx("נסגר")}</p>
                   <p className="text-sm font-black">₪31k</p>
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-black text-[#160f2e]/35">
-                    פתוח
-                  </p>
+                  <p className="text-[9px] font-black text-[#160f2e]/35">{tx("פתוח")}</p>
                   <p className="text-sm font-black">₪74k</p>
                 </div>
               </div>
@@ -476,15 +474,15 @@ function HeroCardRail() {
         ) : (
           <>
             <p className="text-[10px] font-black leading-4 tracking-[0.06em] opacity-55">
-              {card.title}
+              {tx(card.title)}
             </p>
 
             <p className="mt-3 text-2xl font-black leading-7 tracking-[-0.05em]">
-              {card.value}
+              {tx(card.value)}
             </p>
 
             <p className="mt-1 text-[10px] font-bold opacity-45">
-              {card.small}
+              {tx(card.small)}
             </p>
 
             {card.type === "chart" && (
@@ -511,10 +509,10 @@ function HeroCardRail() {
                 <div className="mt-3 grid gap-1">
                   {["מודעות", "לידים", "רימרקטינג"].map((item, itemIndex) => (
                     <div
-                      key={`${item}-${itemIndex}`}
+                      key={`${tx(item)}-${itemIndex}`}
                       className="flex items-center justify-between rounded-md bg-[#160f2e]/5 px-2 py-1 text-[8px] font-bold"
                     >
-                      <span>{item}</span>
+                      <span>{tx(item)}</span>
                       <span>₪720</span>
                     </div>
                   ))}
@@ -529,9 +527,7 @@ function HeroCardRail() {
                   <span className="h-2 w-2 rounded-full bg-[#7FFFD4]" />
                 </div>
 
-                <div className="mx-auto flex w-28 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">
-                  הודעות
-                  <span className="h-2 w-2 rounded-full bg-[#FF8A5B]" />
+                <div className="mx-auto flex w-28 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">{tx("הודעות")}<span className="h-2 w-2 rounded-full bg-[#FF8A5B]" />
                 </div>
               </div>
             )}
@@ -584,28 +580,19 @@ function HeroSection({
         <h1
           data-gjs-type="text"
           className="mx-auto max-w-5xl text-[2rem] font-black leading-[1.05] tracking-[-0.06em] text-white sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
-        >
-          הופכים פניות
-          <span className="block text-[#7FFFD4]">ללקוחות משלמים</span>
+        >{tx("הופכים פניות")}<span className="block text-[#7FFFD4]">{tx("ללקוחות משלמים")}</span>
         </h1>
 
         <p
           data-gjs-type="text"
           className="mx-auto mt-5 max-w-2xl px-1 text-sm font-semibold leading-7 text-white/86 sm:mt-7 sm:text-base sm:leading-8"
-        >
-          סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי
-          לעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.
-        </p>
+        >{tx("סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי\nלעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.")}</p>
 
         <div className="relative z-30 mx-auto mt-7 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
-          <AelineButton onClick={() => onPageChange("contact")}>
-            קבעו שיחת התאמה
-            <ArrowRight className="h-4 w-4" />
+          <AelineButton onClick={() => onPageChange("contact")}>{tx("קבעו שיחת התאמה")}<ArrowRight className="h-4 w-4" />
           </AelineButton>
 
-          <AelineButton variant="blue" onClick={() => onPageChange("services")}>
-            לראות פתרונות
-          </AelineButton>
+          <AelineButton variant="blue" onClick={() => onPageChange("services")}>{tx("לראות פתרונות")}</AelineButton>
         </div>
 
         <div className="relative z-10 mt-12 sm:mt-20 md:mt-32 lg:mt-40">
@@ -613,9 +600,7 @@ function HeroSection({
         </div>
 
         <div className="mt-6 px-2">
-          <p className="text-xs font-bold text-white sm:text-sm">
-            יותר מ־1,200 תהליכים דיגיטליים נבנו לעסקים בצמיחה
-          </p>
+          <p className="text-xs font-bold text-white sm:text-sm">{tx("יותר מ־1,200 תהליכים דיגיטליים נבנו לעסקים בצמיחה")}</p>
 
           <div className="mt-3 flex justify-center gap-1 text-[#7FFFD4]">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -637,38 +622,24 @@ function AboutSection() {
     >
       <div className="mx-auto max-w-[1280px]">
         <div className="text-center">
-          <p className="text-xs font-black tracking-[0.18em] text-[#3c1d6e]">
-            · הסטודיו
-          </p>
+          <p className="text-xs font-black tracking-[0.18em] text-[#3c1d6e]">{tx("· הסטודיו")}</p>
 
           <h2
             data-gjs-type="text"
             className="mx-auto mt-5 max-w-4xl text-[1.75rem] font-medium leading-[1.15] tracking-[-0.04em] sm:mt-7 sm:text-4xl sm:leading-[1.08] sm:tracking-[-0.06em] md:text-6xl"
-          >
-            אנחנו לא בונים רק אתר
-            <br />
-            אנחנו בונים
-            <span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#7FFFD4] align-middle text-[#160f2e] sm:mx-3 sm:h-14 sm:w-14">
+          >{tx("אנחנו לא בונים רק אתר")}<br />{tx("אנחנו בונים")}<span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#7FFFD4] align-middle text-[#160f2e] sm:mx-3 sm:h-14 sm:w-14">
               <BarChart3 className="h-5 w-5 sm:h-7 sm:w-7" />
-            </span>
-            מערכת שמוכרת
-            <br />
-            <span className="text-[#160f2e]/45">
-              ומייצרת
-              <span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#FF8A5B] align-middle text-white sm:mx-3 sm:h-14 sm:w-14">
+            </span>{tx("מערכת שמוכרת")}<br />
+            <span className="text-[#160f2e]/45">{tx("ומייצרת")}<span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#FF8A5B] align-middle text-white sm:mx-3 sm:h-14 sm:w-14">
                 <Sparkles className="h-5 w-5 sm:h-7 sm:w-7" />
-              </span>
-              סדר בעסק
-            </span>
+              </span>{tx("סדר בעסק")}</span>
           </h2>
         </div>
 
         <div className="mt-12 grid gap-4 sm:mt-20 sm:gap-5 lg:grid-cols-[1fr_1fr_1fr]">
           <article className="group overflow-hidden rounded-[24px] bg-[#3c1d6e] p-5 text-white shadow-[0_24px_70px_rgba(22,15,46,0.18)] transition duration-300 hover:-translate-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-xl font-black tracking-[-0.05em] sm:text-2xl">
-                תהליכי מכירה
-              </p>
+              <p className="text-xl font-black tracking-[-0.05em] sm:text-2xl">{tx("תהליכי מכירה")}</p>
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#160f2e]">
                 <LineChart className="h-5 w-5" />
               </span>
@@ -676,14 +647,12 @@ function AboutSection() {
 
             <div className="mt-16 rounded-[18px] bg-white p-5 text-[#160f2e]">
               <p className="text-5xl font-light tracking-[-0.08em] sm:text-7xl">84%</p>
-              <p className="mt-5 text-base leading-6">
-                שיפור ממוצע בסדר, מעקב וזמן תגובה אחרי הטמעת תהליך מסודר.
-              </p>
+              <p className="mt-5 text-base leading-6">{tx("שיפור ממוצע בסדר, מעקב וזמן תגובה אחרי הטמעת תהליך מסודר.")}</p>
             </div>
           </article>
 
           <article className="rounded-[24px] bg-white p-6 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(22,15,46,0.08)]">
-            <p className="text-sm font-medium">פחות פעולות ידניות</p>
+            <p className="text-sm font-medium">{tx("פחות פעולות ידניות")}</p>
             <p className="mt-5 text-4xl font-light tracking-[-0.06em] sm:text-5xl">42%</p>
 
             <div className="mt-16 flex -space-x-3">
@@ -699,29 +668,23 @@ function AboutSection() {
             <p
               data-gjs-type="text"
               className="mt-5 text-base font-medium leading-6"
-            >
-              “פתאום כל הפניות, המשימות והמעקבים נמצאים במקום אחד. הצוות פשוט
-              יודע מה לעשות.”
-            </p>
+            >{tx("“פתאום כל הפניות, המשימות והמעקבים נמצאים במקום אחד. הצוות פשוט\nיודע מה לעשות.”")}</p>
           </article>
 
           <div className="grid gap-5">
             <article className="rounded-[24px] bg-[#7FFFD4] p-6 text-[#160f2e] transition duration-300 hover:-translate-y-2">
-              <p className="text-sm font-medium">לידים שנוהלו</p>
+              <p className="text-sm font-medium">{tx("לידים שנוהלו")}</p>
               <p className="mt-5 text-4xl font-light tracking-[-0.06em] sm:text-5xl">
                 96k+
               </p>
               <p
                 data-gjs-type="text"
                 className="mt-9 max-w-sm text-base font-medium leading-6"
-              >
-                פניות עברו דרך תהליכים דיגיטליים שמסדרים טיפול, תזכורות
-                ופולואפים.
-              </p>
+              >{tx("פניות עברו דרך תהליכים דיגיטליים שמסדרים טיפול, תזכורות\nופולואפים.")}</p>
             </article>
 
             <article className="flex items-center justify-between rounded-[24px] bg-[#160f2e] p-6 text-white transition duration-300 hover:-translate-y-2">
-              <p className="text-base font-medium">תחומים שונים</p>
+              <p className="text-base font-medium">{tx("תחומים שונים")}</p>
               <p className="text-4xl font-light tracking-[-0.06em] sm:text-5xl">18+</p>
             </article>
           </div>
@@ -745,23 +708,15 @@ function ServicesSection({
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black tracking-[0.35em] text-[#160f2e]/35">
-              פתרונות
-            </p>
+            <p className="text-sm font-black tracking-[0.35em] text-[#160f2e]/35">{tx("פתרונות")}</p>
 
             <h2
               data-gjs-type="text"
               className="mt-5 max-w-4xl text-[2.35rem] font-black leading-[1] tracking-[-0.06em] sm:mt-8 sm:text-6xl sm:leading-[0.9] sm:tracking-[-0.08em] md:text-8xl"
-            >
-              פחות עומס
-              <br />
-              יותר מכירות
-            </h2>
+            >{tx("פחות עומס")}<br />{tx("יותר מכירות")}</h2>
           </div>
 
-          <AelineButton variant="dark" onClick={() => onPageChange("contact")}>
-            התחלת תהליך
-            <ArrowRight className="h-4 w-4" />
+          <AelineButton variant="dark" onClick={() => onPageChange("contact")}>{tx("התחלת תהליך")}<ArrowRight className="h-4 w-4" />
           </AelineButton>
         </div>
 
@@ -787,14 +742,14 @@ function ServicesSection({
                 data-gjs-type="text"
                 className="mt-10 text-3xl font-black tracking-[-0.06em] sm:mt-28 sm:text-4xl"
               >
-                {service.title}
+                {tx(service.title)}
               </h3>
 
               <p
                 data-gjs-type="text"
                 className="mt-5 text-base leading-7 text-[#160f2e]/55 group-hover:text-white/60 sm:mt-7 sm:text-lg sm:leading-8"
               >
-                {service.text}
+                {tx(service.text)}
               </p>
             </article>
           ))}
@@ -809,7 +764,7 @@ function VisualMockup({ kind }: { kind: string }) {
     return (
       <div className="relative h-64">
         <FloatingHeroCard className="left-1/2 top-4 w-[min(13rem,85%)] -translate-x-1/2 rotate-[-8deg] sm:left-12 sm:w-52 sm:translate-x-0">
-          <p className="text-xs font-bold">תקציב קמפיין</p>
+          <p className="text-xs font-bold">{tx("תקציב קמפיין")}</p>
           <p className="mt-2 text-2xl font-semibold">
             ₪12,600 <span className="text-[#160f2e]/25">/ ₪20,000</span>
           </p>
@@ -825,9 +780,7 @@ function VisualMockup({ kind }: { kind: string }) {
     return (
       <div className="relative h-64">
         <FloatingHeroCard className="left-1/2 top-4 w-[min(14rem,88%)] -translate-x-1/2 rotate-[7deg] sm:left-16 sm:w-56 sm:translate-x-0">
-          <p className="text-xl font-medium leading-6">
-            מגמת לידים חודשית
-          </p>
+          <p className="text-xl font-medium leading-6">{tx("מגמת לידים חודשית")}</p>
 
           <div className="mt-8 flex h-28 items-end gap-3">
             {[25, 42, 48, 72, 88, 116].map((height, index) => (
@@ -851,15 +804,13 @@ function VisualMockup({ kind }: { kind: string }) {
       <div className="relative h-64">
         <FloatingHeroCard className="left-1/2 top-10 w-[min(14rem,88%)] -translate-x-1/2 rotate-[-3deg] sm:left-16 sm:w-56 sm:translate-x-0">
           <div className="rounded-2xl bg-[#160f2e] p-4 text-white">
-            <p className="text-sm font-bold">תגובה מהירה</p>
-            <p className="text-[10px] text-white/45">מדד שירות שבועי</p>
+            <p className="text-sm font-bold">{tx("תגובה מהירה")}</p>
+            <p className="text-[10px] text-white/45">{tx("מדד שירות שבועי")}</p>
           </div>
 
           <p className="mt-5 text-2xl sm:text-4xl font-light tracking-[-0.08em]">
             2.4{" "}
-            <span className="rounded-full bg-[#7FFFD4] px-2 text-sm text-[#160f2e]">
-              דקות
-            </span>
+            <span className="rounded-full bg-[#7FFFD4] px-2 text-sm text-[#160f2e]">{tx("דקות")}</span>
           </p>
         </FloatingHeroCard>
       </div>
@@ -888,16 +839,12 @@ function ExpertiseSection() {
     >
       <div className="mx-auto max-w-[1420px]">
         <div className="mb-10 px-3 text-center sm:mb-16">
-          <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
-            יכולות
-          </p>
+          <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">{tx("יכולות")}</p>
 
           <h2
             data-gjs-type="text"
             className="mx-auto mt-5 max-w-4xl text-[1.85rem] font-medium leading-[1.1] tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:leading-[1] sm:tracking-[-0.07em] md:text-7xl"
-          >
-            כשעיצוב טוב פוגש
-            <span className="text-[#160f2e]/40"> תהליך עסקי מדויק</span>
+          >{tx("כשעיצוב טוב פוגש")}<span className="text-[#160f2e]/40">{tx("תהליך עסקי מדויק")}</span>
           </h2>
         </div>
 
@@ -913,14 +860,14 @@ function ExpertiseSection() {
                 data-gjs-type="text"
                 className="mt-6 text-center text-3xl font-medium tracking-[-0.05em]"
               >
-                {card.title}
+                {tx(card.title)}
               </h3>
 
               <p
                 data-gjs-type="text"
                 className="mx-auto mt-4 max-w-xl text-center text-base leading-7 text-[#160f2e]/60"
               >
-                {card.text}
+                {tx(card.text)}
               </p>
             </article>
           ))}
@@ -943,16 +890,12 @@ function PricingSection({
     >
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-10 text-center sm:mb-14">
-          <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
-            חבילות
-          </p>
+          <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">{tx("חבילות")}</p>
 
           <h2
             data-gjs-type="text"
             className="mx-auto mt-5 max-w-4xl text-[1.85rem] font-black leading-[1.1] tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
-          >
-            בוחרים את הקצב שמתאים לעסק
-          </h2>
+          >{tx("בוחרים את הקצב שמתאים לעסק")}</h2>
         </div>
 
         <div className="grid gap-4 sm:gap-5 lg:grid-cols-3">
@@ -967,28 +910,28 @@ function PricingSection({
               ].join(" ")}
             >
               <p className="text-sm font-black tracking-[0.12em] opacity-45">
-                {plan.name}
+                {tx(plan.name)}
               </p>
 
               <h3
                 data-gjs-type="text"
                 className="mt-6 text-4xl font-black tracking-[-0.07em] sm:mt-8 sm:text-5xl"
               >
-                {plan.price}
+                {tx(plan.price)}
               </h3>
 
               <p
                 data-gjs-type="text"
                 className="mt-3 text-sm leading-7 opacity-55"
               >
-                {plan.text}
+                {tx(plan.text)}
               </p>
 
               <div className="mt-8 grid gap-3">
                 {plan.items.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-bold">
+                  <div key={tx(item)} className="flex items-center gap-3 text-sm font-bold">
                     <CheckCircle2 className="h-5 w-5 text-[#7FFFD4]" />
-                    <span>{item}</span>
+                    <span>{tx(item)}</span>
                   </div>
                 ))}
               </div>
@@ -1003,9 +946,7 @@ function PricingSection({
                     ? "bg-[#7FFFD4] text-[#160f2e]"
                     : "bg-[#160f2e] text-white",
                 ].join(" ")}
-              >
-                לבדוק התאמה
-              </button>
+              >{tx("לבדוק התאמה")}</button>
             </article>
           ))}
         </div>
@@ -1029,9 +970,7 @@ function TestimonialsSection() {
             <h2
               data-gjs-type="text"
               className="mt-5 text-[1.85rem] font-black tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:tracking-[-0.07em]"
-            >
-              מה השתנה אצל לקוחות
-            </h2>
+            >{tx("מה השתנה אצל לקוחות")}</h2>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -1046,11 +985,11 @@ function TestimonialsSection() {
                 className="rounded-[26px] border border-white/10 bg-white/5 p-6 transition hover:-translate-y-2"
               >
                 <p data-gjs-type="text" className="text-sm leading-7 text-white/70">
-                  “{text}”
+                  “{tx(text)}”
                 </p>
 
                 <p className="mt-5 text-sm font-black text-white">
-                  עסק #{index + 1}
+                  {tx(`עסק #${index + 1}`)}
                 </p>
               </article>
             ))}
@@ -1075,21 +1014,15 @@ function BlogSection({
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-8 flex flex-col gap-6 sm:mb-12 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
-              מגזין
-            </p>
+            <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">{tx("מגזין")}</p>
 
             <h2
               data-gjs-type="text"
               className="mt-4 text-[1.85rem] font-black tracking-[-0.05em] sm:mt-5 sm:text-5xl sm:tracking-[-0.07em]"
-            >
-              רעיונות לעסק שעובד חכם
-            </h2>
+            >{tx("רעיונות לעסק שעובד חכם")}</h2>
           </div>
 
-          <AelineButton variant="light" onClick={() => onPageChange("blog")}>
-            לכל המאמרים
-          </AelineButton>
+          <AelineButton variant="light" onClick={() => onPageChange("blog")}>{tx("לכל המאמרים")}</AelineButton>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1107,22 +1040,20 @@ function BlogSection({
               />
 
               <div className="p-6">
-                <p className="text-xs font-black tracking-[0.12em] text-[#160f2e]/35">
-                  מדריך
-                </p>
+                <p className="text-xs font-black tracking-[0.12em] text-[#160f2e]/35">{tx("מדריך")}</p>
 
                 <h3
                   data-gjs-type="text"
                   className="mt-4 text-2xl font-black tracking-[-0.05em]"
                 >
-                  {post.title}
+                  {tx(post.title)}
                 </h3>
 
                 <p
                   data-gjs-type="text"
                   className="mt-3 text-sm leading-7 text-[#160f2e]/55"
                 >
-                  {post.text}
+                  {tx(post.text)}
                 </p>
               </div>
             </article>
@@ -1150,21 +1081,15 @@ function CtaSection({
         <h2
           data-gjs-type="text"
           className="mx-auto mt-6 max-w-4xl text-[1.85rem] font-black leading-[1.05] tracking-[-0.06em] sm:mt-8 sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
-        >
-          הגיע הזמן שהעסק יעבוד בשבילכם
-        </h2>
+        >{tx("הגיע הזמן שהעסק יעבוד בשבילכם")}</h2>
 
         <p
           data-gjs-type="text"
           className="mx-auto mt-6 max-w-2xl text-base font-semibold leading-8 text-white/80"
-        >
-          השאירו פרטים, קבעו שיחה או חברו את הטופס למערכת הלידים שלכם.
-        </p>
+        >{tx("השאירו פרטים, קבעו שיחה או חברו את הטופס למערכת הלידים שלכם.")}</p>
 
         <div className="mt-9 flex justify-center">
-          <AelineButton onClick={() => onPageChange("contact")}>
-            לקביעת שיחה
-            <ArrowRight className="h-4 w-4" />
+          <AelineButton onClick={() => onPageChange("contact")}>{tx("לקביעת שיחה")}<ArrowRight className="h-4 w-4" />
           </AelineButton>
         </div>
       </div>
@@ -1192,16 +1117,11 @@ function Footer({
           <p
             data-gjs-type="text"
             className="mt-5 max-w-md text-sm leading-7 text-white/55"
-          >
-            תבנית פרימיום לעסקים שרוצים להציג תהליך חכם, חוויית לקוח חזקה
-            ומערכת שמובילה לפניות איכותיות.
-          </p>
+          >{tx("תבנית פרימיום לעסקים שרוצים להציג תהליך חכם, חוויית לקוח חזקה\nומערכת שמובילה לפניות איכותיות.")}</p>
         </div>
 
         <div>
-          <p className="text-sm font-black tracking-[0.12em] text-white/35">
-            עמודים
-          </p>
+          <p className="text-sm font-black tracking-[0.12em] text-white/35">{tx("עמודים")}</p>
 
           <div className="mt-4 grid gap-2">
             {aelinePages.map((page) => (
@@ -1209,22 +1129,20 @@ function Footer({
                 key={page.id}
                 type="button"
                 onClick={() => onPageChange(page.id)}
-                className="text-right text-sm font-bold text-white/60 transition hover:text-white"
+                className="text-start text-sm font-bold text-white/60 transition hover:text-white"
               >
-                {page.name}
+                {tx(page.name)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <p className="text-sm font-black tracking-[0.12em] text-white/35">
-            עדכונים
-          </p>
+          <p className="text-sm font-black tracking-[0.12em] text-white/35">{tx("עדכונים")}</p>
 
           <div className="mt-4 flex rounded-full border border-white/10 bg-white/5 p-1">
             <input
-              placeholder="כתובת אימייל"
+              placeholder={tx("כתובת אימייל")}
               className="min-w-0 flex-1 bg-transparent px-4 text-sm font-bold text-white outline-none placeholder:text-white/35"
             />
 
@@ -1251,7 +1169,7 @@ function AelineShell({
     <div
       data-template-id="aeline"
       data-template-page-id={activePage}
-      dir="rtl"
+      dir={templateDir()}
       className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-white text-[#160f2e] [font-family:Inter,Arial,sans-serif]"
     >
       <style>{aelineEditorCss}</style>
@@ -1341,8 +1259,8 @@ export default function AelinePages({
               id: "services",
               content: (
                 <SimplePage
-                  title="פתרונות דיגיטליים שמסדרים מכירות ושירות"
-                  label="פתרונות"
+                  title={tx("פתרונות דיגיטליים שמסדרים מכירות ושירות")}
+                  label={tx("פתרונות")}
                   icon={<Bot className="h-4 w-4" />}
                 >
                   <ServicesSection onPageChange={setActivePage} />
@@ -1354,8 +1272,8 @@ export default function AelinePages({
               id: "about",
               content: (
                 <SimplePage
-                  title="סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה"
-                  label="הסטודיו"
+                  title={tx("סטודיו שמחבר בין עיצוב, תהליך וטכנולוגיה")}
+                  label={tx("הסטודיו")}
                   icon={<Globe2 className="h-4 w-4" />}
                 >
                   <AboutSection />
@@ -1366,8 +1284,8 @@ export default function AelinePages({
               id: "pricing",
               content: (
                 <SimplePage
-                  title="חבילות שמתאימות לקצב הצמיחה שלכם"
-                  label="חבילות"
+                  title={tx("חבילות שמתאימות לקצב הצמיחה שלכם")}
+                  label={tx("חבילות")}
                   icon={<BarChart3 className="h-4 w-4" />}
                 >
                   <PricingSection onPageChange={setActivePage} />
@@ -1378,8 +1296,8 @@ export default function AelinePages({
               id: "blog",
               content: (
                 <SimplePage
-                  title="רעיונות לעסק שעובד חכם יותר"
-                  label="מגזין"
+                  title={tx("רעיונות לעסק שעובד חכם יותר")}
+                  label={tx("מגזין")}
                   icon={<DatabaseZap className="h-4 w-4" />}
                 >
                   <BlogSection onPageChange={setActivePage} />
@@ -1390,8 +1308,8 @@ export default function AelinePages({
               id: "contact",
               content: (
                 <SimplePage
-                  title="בואו נבנה לכם תהליך שמייצר יותר פניות"
-                  label="שיחה ראשונה"
+                  title={tx("בואו נבנה לכם תהליך שמייצר יותר פניות")}
+                  label={tx("שיחה ראשונה")}
                   icon={<Mail className="h-4 w-4" />}
                 >
                   <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
@@ -1399,41 +1317,34 @@ export default function AelinePages({
                       <h2
                         data-gjs-type="text"
                         className="text-2xl sm:text-4xl font-black tracking-[-0.06em]"
-                      >
-                        ספרו לנו איפה העסק נתקע
-                      </h2>
+                      >{tx("ספרו לנו איפה העסק נתקע")}</h2>
 
                       <p
                         data-gjs-type="text"
                         className="mt-5 text-sm leading-7 text-white/55"
-                      >
-                        כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות
-                        בצורה מסודרת.
-                      </p>
+                      >{tx("כאן אפשר לחבר טופס, יומן פגישות או CRM כדי לאסוף פניות\nבצורה מסודרת.")}</p>
                     </div>
 
-                    <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+                    <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aeline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
                       <input
-                        placeholder="שם מלא"
+                        placeholder={tx("שם מלא")}
                         className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
                        name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
 
                       <input
-                        placeholder="אימייל"
+                        placeholder={tx("אימייל")}
                         className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"
                        name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
 
                       <textarea
-                        placeholder="מה תרצו לשפר בעסק?"
+                        placeholder={tx("מה תרצו לשפר בעסק?")}
                         className="min-h-36 rounded-2xl border border-[#160f2e]/10 p-4 text-sm font-bold outline-none"
                        name="other" data-bizuply-form-field-id="other"></textarea>
 
                       <button
                         type="submit"
                         className="h-12 rounded-full bg-[#160f2e] text-sm font-black text-white"
-                      >
-                        שליחה
-                      </button>
+                      >{tx("שליחה")}</button>
                     </form>
                   </div>
                 </SimplePage>

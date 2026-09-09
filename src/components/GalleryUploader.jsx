@@ -1,8 +1,10 @@
 // src/components/GalleryUploader.jsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 export default function GalleryUploader({ onUploaded }) {
+  const { t } = useTranslation();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
@@ -23,7 +25,7 @@ export default function GalleryUploader({ onUploaded }) {
       onUploaded(res.data.gallery); // array of URLs
     } catch (err) {
       console.error(err);
-      alert("Error uploading gallery");
+      alert(t("leftover.upload.galleryUploadError"));
     } finally {
       setUploading(false);
     }

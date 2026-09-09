@@ -19,7 +19,7 @@ export const servoraEditorCss = `
   --servora-radius-xl: 34px;
   --servora-radius-lg: 24px;
   --servora-radius-md: 16px;
-  direction: rtl;
+  
   width: 100%;
   min-height: 100%;
   color: var(--servora-ink);
@@ -129,7 +129,7 @@ export const servoraEditorCss = `
   background: transparent;
   color: inherit;
   cursor: pointer;
-  text-align: right;
+  text-align: start;
   text-decoration: none;
 }
 
@@ -527,19 +527,19 @@ export const servoraEditorCss = `
   padding: 0 13px;
   color: var(--servora-ink);
   outline: none;
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
 }
 
 [data-template-id="servora"] .servora-request-form input::placeholder {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   color: rgba(7, 17, 31, 0.42);
 }
 
 [data-template-id="servora"] .servora-request-form input[type="tel"] {
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
   unicode-bidi: plaintext;
 }
 

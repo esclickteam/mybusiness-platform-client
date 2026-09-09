@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Paperclip, Mic, Image, FileText, Send, ScrollText, FileSignature } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import API from "@api"; // use API instead of axios
 
 const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => {
@@ -10,6 +12,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   const messagesEndRef = useRef(null);
 
   const isDemo = partnerId === "demo123";
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,7 +102,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
       setIsRecording(true);
     } catch (err) {
       console.error("🎤 Microphone access error:", err);
-      alert("Cannot access the microphone");
+      alert(t("leftover.bizChat.micDenied"));
     }
   };
 
@@ -111,13 +114,13 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   };
 
   const handleSendAgreement = () => {
-    alert("📄 Opening collaboration agreement form — coming soon");
+    alert(t("leftover.bizChat.agreementSoon"));
   };
 
   return (
-    <div className="chat-card mx-auto max-w-3xl w-full bg-white rounded-2xl shadow border p-4" dir="rtl">
+    <div className="chat-card mx-auto max-w-3xl w-full bg-white rounded-2xl shadow border p-4" dir={getTextDirection(i18n.language)}>
       <div className="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 className="text-xl font-bold text-purple-700">💬 Chat with {partnerName}</h3>
+        <h3 className="text-xl font-bold text-purple-700">💬 {t("leftover.bizChat.withPartner", { name: partnerName })}</h3>
         <ScrollText className="text-purple-400" />
       </div>
 
@@ -146,25 +149,25 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
         <button
           className="p-2 hover:text-purple-600"
           onClick={isRecording ? stopRecording : startRecording}
-          title={isRecording ? "Stop recording" : "Start recording"}
+          title={isRecording ? t("leftover.bizChat.stopRec") : t("leftover.bizChat.startRec")}
         >
           <Mic size={18} color={isRecording ? "#e74c3c" : "#6c5ce7"} />
         </button>
-        <button className="p-2 hover:text-purple-600" onClick={handleSendAgreement} title="Send agreement">
+        <button className="p-2 hover:text-purple-600" onClick={handleSendAgreement} title={t("leftover.bizChat.sendAgreement")}>
           <FileSignature size={18} />
         </button>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t("leftover.bizChat.placeholder")}
           className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-purple-400"
         />
         <button
           onClick={handleSend}
           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full text-sm flex items-center gap-1"
         >
-          <Send size={16} /> Send
+          <Send size={16} /> {t("leftover.bizChat.send")}
         </button>
       </div>
     </div>

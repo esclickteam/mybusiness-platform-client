@@ -1,0 +1,668 @@
+{
+  "חידוש צבע אחרי החלמה או שנה.": {
+    "en": "Color refresh after healing or a year.",
+    "es": "Renovación de color después de la cicatrización o un año.",
+    "pt-BR": "Renovação de cor após a cicatrização ou um ano.",
+    "ar": "تجديد اللون بعد الشفاء أو بعد عام."
+  },
+  "ניקוי נקבוביות, מסכה והרגעה.": {
+    "en": "Pore cleanse, mask, and calm.",
+    "es": "Limpieza de poros, mascarilla y calma.",
+    "pt-BR": "Limpeza de poros, máscara e acalmar.",
+    "ar": "تنظيف المسام وقناع وتهدئة."
+  },
+  "שכבות לחות לעור מיובש ורגיש.": {
+    "en": "Hydration layers for dry, sensitive skin.",
+    "es": "Capas de hidratación para piel seca y sensible.",
+    "pt-BR": "Camadas de hidratação para pele seca e sensível.",
+    "ar": "طبقات ترطيب للبشرة الجافة والحساسة."
+  },
+  "מדידה, ניקוי וסימטריה עדינה.": {
+    "en": "Measuring, cleaning, and gentle symmetry.",
+    "es": "Medición, limpieza y simetría suave.",
+    "pt-BR": "Medição, limpeza e simetria suave.",
+    "ar": "قياس وتنظيف وتناسق لطيف."
+  },
+  "רענון טון והחזרת זוהר לשיער.": {
+    "en": "Tone refresh and restoring shine to hair.",
+    "es": "Refresco de tono y devolución de brillo al cabello.",
+    "pt-BR": "Atualização de tom e devolução de brilho ao cabelo.",
+    "ar": "تجديد اللون وإعادة اللمعان للشعر."
+  },
+  "חידוש מדויק בלי שינוי דרמטי.": {
+    "en": "Precise refresh without a dramatic change.",
+    "es": "Renovación precisa sin un cambio dramático.",
+    "pt-BR": "Renovação precisa sem uma mudança dramática.",
+    "ar": "تجديد دقيق دون تغيير درامي."
+  },
+  "אלוורה והנחיות למניעת גירוי.": {
+    "en": "Aloe and guidance to prevent irritation.",
+    "es": "Aloe y pautas para prevenir irritación.",
+    "pt-BR": "Aloe e orientações para evitar irritação.",
+    "ar": "صبار وإرشادات لمنع التهيج."
+  },
+  "שחרור שרירים, לסת ומתח עדין.": {
+    "en": "Release of muscles, jaw, and gentle tension.",
+    "es": "Liberación de músculos, mandíbula y tensión suave.",
+    "pt-BR": "Liberação de músculos, mandíbula e tensão suave.",
+    "ar": "تحرير العضلات والفك والتوتر اللطيف."
+  },
+  "תנועות איטיות להקלה בנפיחות.": {
+    "en": "Slow movements to ease puffiness.",
+    "es": "Movimientos lentos para aliviar hinchazón.",
+    "pt-BR": "Movimentos lentos para aliviar inchaço.",
+    "ar": "حركات بطيئة لتخفيف الانتفاخ."
+  },
+  "שמירה על צבע וצורה לאורך זמן.": {
+    "en": "Keeping color and shape over time.",
+    "es": "Mantener color y forma con el tiempo.",
+    "pt-BR": "Manter cor e forma ao longo do tempo.",
+    "ar": "الحفاظ على اللون والشكل مع الوقت."
+  },
+  "אבנים, פנינים ומרקמים עדינים.": {
+    "en": "Stones, pearls, and delicate textures.",
+    "es": "Piedras, perlas y texturas delicadas.",
+    "pt-BR": "Pedras, pérolas e texturas delicadas.",
+    "ar": "أحجار ولآلئ وقوامات رقيقة."
+  },
+  "איפור מלא, הכנת עור וטאצ׳־אפ.": {
+    "en": "Full makeup, skin prep, and touch-up.",
+    "es": "Maquillaje completo, preparación de piel y retoque.",
+    "pt-BR": "Maquiagem completa, preparo de pele e retoque.",
+    "ar": "مكياج كامل وتحضير البشرة ولمسات."
+  },
+  "ניקוי קומדונים והרגעה מבוקרת.": {
+    "en": "Comedone cleanse and controlled calming.",
+    "es": "Limpieza de comedones y calma controlada.",
+    "pt-BR": "Limpeza de comedões e acalmar controlado.",
+    "ar": "تنظيف الكوميدونات وتهدئة مضبوطة."
+  },
+  "ניקוי, לחות והרגעה ב־40 דקות.": {
+    "en": "Cleanse, hydrate, and calm in 40 minutes.",
+    "es": "Limpieza, hidratación y calma en 40 minutos.",
+    "pt-BR": "Limpeza, hidratação e acalmar em 40 minutos.",
+    "ar": "تنظيف وترطيب وتهدئة خلال 40 دقيقة."
+  },
+  "מסגרת נקייה והנחיות שמן ביתי.": {
+    "en": "A clean frame and at-home oil guidance.",
+    "es": "Un marco limpio y pautas de aceite en casa.",
+    "pt-BR": "Uma moldura limpa e orientações de óleo em casa.",
+    "ar": "إطار نظيف وإرشادات زيت منزلي."
+  },
+  "הרגעת אדמומיות ושערות כלואות.": {
+    "en": "Calming redness and ingrown hairs.",
+    "es": "Calmar enrojecimiento y vellos encarnados.",
+    "pt-BR": "Acalmar vermelhidão e pelos encravados.",
+    "ar": "تهدئة الاحمرار والشعر الناشب."
+  },
+  "איורים עדינים או סטייטמנט מלא.": {
+    "en": "Delicate illustrations or a full statement.",
+    "es": "Ilustraciones delicadas o un statement completo.",
+    "pt-BR": "Ilustrações delicadas ou um statement completo.",
+    "ar": "رسوم دقيقة أو بيان كامل."
+  },
+  "חידוש מרקם לעור רגיש או מתחיל.": {
+    "en": "Texture refresh for sensitive or beginner skin.",
+    "es": "Renovación de textura para piel sensible o principiante.",
+    "pt-BR": "Renovação de textura para pele sensível ou iniciante.",
+    "ar": "تجديد القوام للبشرة الحساسة أو المبتدئة."
+  },
+  "פגישות קצרות לכיול תגובת העור.": {
+    "en": "Short visits to calibrate the skin’s response.",
+    "es": "Visitas cortas para calibrar la respuesta de la piel.",
+    "pt-BR": "Visitas curtas para calibrar a resposta da pele.",
+    "ar": "جلسات قصيرة لمعايرة استجابة البشرة."
+  },
+  "ניקוי, עיסוי, מסכה וסרום סיום.": {
+    "en": "Cleanse, massage, mask, and finishing serum.",
+    "es": "Limpieza, masaje, mascarilla y serum de cierre.",
+    "pt-BR": "Limpeza, massagem, máscara e sérum de finalização.",
+    "ar": "تنظيف وتدليك وقناع وسيروم ختامي."
+  },
+  "מיקרו-טיפול לזוהר עדין ומתוחכם.": {
+    "en": "A micro-treatment for a delicate, refined glow.",
+    "es": "Un microtratamiento para un brillo delicado y sofisticado.",
+    "pt-BR": "Um microtratamento para um brilho delicado e sofisticado.",
+    "ar": "علاج مصغّر لتوهج رقيق وراقٍ."
+  },
+  "איזון מחדש ושמירה על חוזק טבעי.": {
+    "en": "Rebalancing and keeping natural strength.",
+    "es": "Reequilibrio y conservación de la fuerza natural.",
+    "pt-BR": "Reequilíbrio e preservação da força natural.",
+    "ar": "إعادة التوازن والحفاظ على القوة الطبيعية."
+  },
+  "פרחים, קווים או סמל קטן לכל יד.": {
+    "en": "Flowers, lines, or a small symbol on each hand.",
+    "es": "Flores, líneas o un símbolo pequeño en cada mano.",
+    "pt-BR": "Flores, linhas ou um símbolo pequeno em cada mão.",
+    "ar": "زهور أو خطوط أو رمز صغير لكل يد."
+  },
+  "אפקט מבריק על בסיס שקוף או צבע.": {
+    "en": "A glossy effect on a clear or color base.",
+    "es": "Un efecto brillante sobre base transparente o de color.",
+    "pt-BR": "Um efeito brilhante sobre base transparente ou de cor.",
+    "ar": "تأثير لامع على أساس شفاف أو ملون."
+  },
+  "בניית לוק, גוונים וצילום בדיקה.": {
+    "en": "Look building, shades, and a test photo.",
+    "es": "Construcción de look, tonos y foto de prueba.",
+    "pt-BR": "Construção de look, tons e foto de teste.",
+    "ar": "بناء لوك ودرجات وصورة تجريبية."
+  },
+  "המסה עדינה בלי משיכה בריס טבעי.": {
+    "en": "Gentle dissolve without pulling the natural lash.",
+    "es": "Disolución suave sin tirar de la pestaña natural.",
+    "pt-BR": "Dissolução suave sem puxar o cílio natural.",
+    "ar": "إذابة لطيفة دون سحب الرمش الطبيعي."
+  },
+  "עבודה עם אבן קרה וקווים מרימים.": {
+    "en": "Work with a cold stone and lifting lines.",
+    "es": "Trabajo con piedra fría y líneas que elevan.",
+    "pt-BR": "Trabalho com pedra fria e linhas que elevam.",
+    "ar": "عمل بحجر بارد وخطوط رافعة."
+  },
+  "סאונה, עיסוי וחליטת צמחים פרטית.": {
+    "en": "Sauna, massage, and a private herbal infusion.",
+    "es": "Sauna, masaje e infusión de hierbas privada.",
+    "pt-BR": "Sauna, massagem e infusão de ervas privada.",
+    "ar": "ساونا وتدليك ونقيع أعشاب خاص."
+  },
+  "קו לבן עדין עם בסיס טבעי ומחמיא.": {
+    "en": "A delicate white line with a natural, flattering base.",
+    "es": "Una línea blanca delicada con base natural y favorecedora.",
+    "pt-BR": "Uma linha branca delicada com base natural e favorecedora.",
+    "ar": "خط أبيض رقيق بأساس طبيعي ومُرضٍ."
+  },
+  "שכבת בסיס מחזקת לציפורניים רכות.": {
+    "en": "A strengthening base layer for soft nails.",
+    "es": "Una capa base fortalecedora para uñas blandas.",
+    "pt-BR": "Uma camada base fortalecedora para unhas macias.",
+    "ar": "طبقة أساس مقوية للأظافر اللينة."
+  },
+  "חיזוק אזורים אחרי קליטת הפיגמנט.": {
+    "en": "Reinforcing areas after the pigment settles.",
+    "es": "Refuerzo de zonas después de que el pigmento se asienta.",
+    "pt-BR": "Reforço de áreas depois que o pigmento assenta.",
+    "ar": "تعزيز مناطق بعد ثبات الصبغة."
+  },
+  "שפתון, פודרה והנחיות להמשך היום.": {
+    "en": "Lipstick, powder, and guidance for the rest of the day.",
+    "es": "Labial, polvos y pautas para el resto del día.",
+    "pt-BR": "Batom, pó e orientações para o resto do dia.",
+    "ar": "أحمر شفاه وبودرة وإرشادات لبقية اليوم."
+  },
+  "הארכה מדויקת עם מבנה מותאם לאצבע.": {
+    "en": "Precise lengthening with a structure matched to the finger.",
+    "es": "Alargamiento preciso con una estructura adaptada al dedo.",
+    "pt-BR": "Alongamento preciso com uma estrutura adaptada ao dedo.",
+    "ar": "إطالة دقيقة ببنية ملائمة للإصبع."
+  },
+  "הסרה בטוחה ותוכנית חיזוק לציפורן.": {
+    "en": "Safe removal and a strengthening plan for the nail.",
+    "es": "Retiro seguro y un plan de fortalecimiento para la uña.",
+    "pt-BR": "Remoção segura e um plano de fortalecimento para a unha.",
+    "ar": "إزالة آمنة وخطة تقوية للظفر."
+  },
+  "לחות, חומצות עדינות ומסכה מרגיעה.": {
+    "en": "Hydration, gentle acids, and a soothing mask.",
+    "es": "Hidratación, ácidos suaves y una mascarilla calmante.",
+    "pt-BR": "Hidratação, ácidos suaves e uma máscara calmante.",
+    "ar": "ترطيب وأحماض لطيفة وقناع مهدئ."
+  },
+  "איזון כתום, כתמים או מעברים קשים.": {
+    "en": "Balancing brassiness, spots, or harsh transitions.",
+    "es": "Equilibrio de naranja, manchas o transiciones duras.",
+    "pt-BR": "Equilíbrio de tom laranja, manchas ou transições duras.",
+    "ar": "موازنة البرتقالي أو البقع أو الانتقالات القاسية."
+  },
+  "90 דק׳ של שחרור עמוק עם שמני ארגן.": {
+    "en": "90 minutes of deep release with argan oils.",
+    "es": "90 minutos de liberación profunda con aceites de argán.",
+    "pt-BR": "90 minutos de liberação profunda com óleos de argão.",
+    "ar": "90 دقيقة من التحرير العميق بزيوت الأرغان."
+  },
+  "שגרה אישית שאתן יכולות לחזור עליה.": {
+    "en": "A personal routine you can repeat at home.",
+    "es": "Una rutina personal que pueden repetir en casa.",
+    "pt-BR": "Uma rotina pessoal que vocês podem repetir em casa.",
+    "ar": "روتين شخصي يمكنكن تكراره في المنزل."
+  },
+  "חיזוק מקומי בלי לפגוע במראה הכללי.": {
+    "en": "Local reinforcement without harming the overall look.",
+    "es": "Refuerzo local sin dañar el aspecto general.",
+    "pt-BR": "Reforço local sem prejudicar o visual geral.",
+    "ar": "تعزيز موضعي دون الإضرار بالمظهر العام."
+  },
+  "התאמת מוצרים לפי תקציב וסדר שימוש.": {
+    "en": "Matching products to budget and order of use.",
+    "es": "Ajuste de productos según presupuesto y orden de uso.",
+    "pt-BR": "Ajuste de produtos conforme orçamento e ordem de uso.",
+    "ar": "ملاءمة المنتجات حسب الميزانية وترتيب الاستخدام."
+  },
+  "ניקוי עודפים בלי שינוי אופי הפנים.": {
+    "en": "Clearing excess without changing the face’s character.",
+    "es": "Limpieza de excesos sin cambiar el carácter del rostro.",
+    "pt-BR": "Limpeza de excessos sem mudar o caráter do rosto.",
+    "ar": "تنظيف الزوائد دون تغيير طابع الوجه."
+  },
+  "עבודה מדורגת על כתמים וחוסר אחידות.": {
+    "en": "Gradual work on spots and unevenness.",
+    "es": "Trabajo gradual sobre manchas y falta de uniformidad.",
+    "pt-BR": "Trabalho gradual em manchas e falta de uniformidade.",
+    "ar": "عمل متدرج على البقع وعدم التجانس."
+  },
+  "הסרה עדינה לעור רגיש ואזורים קטנים.": {
+    "en": "Gentle removal for sensitive skin and small areas.",
+    "es": "Retiro suave para piel sensible y zonas pequeñas.",
+    "pt-BR": "Remoção suave para pele sensível e áreas pequenas.",
+    "ar": "إزالة لطيفة للبشرة الحساسة والمناطق الصغيرة."
+  },
+  "מיפוי טריגרים, שגרה וחומרים פעילים.": {
+    "en": "Mapping triggers, routine, and active ingredients.",
+    "es": "Mapeo de disparadores, rutina y activos.",
+    "pt-BR": "Mapeamento de gatilhos, rotina e ativos.",
+    "ar": "رسم محفزات وروتين ومواد فعالة."
+  },
+  "תיקון שבר או חידוש נקודתי בין תורים.": {
+    "en": "A break repair or spot refresh between appointments.",
+    "es": "Reparación de rotura o renovación puntual entre citas.",
+    "pt-BR": "Reparo de quebra ou renovação pontual entre horários.",
+    "ar": "إصلاح كسر أو تجديد نقطي بين المواعيد."
+  },
+  "עור רך, עיניים מדויקות, דמעות ידידותיות.": {
+    "en": "Soft skin, precise eyes, lash-friendly tears.",
+    "es": "Piel suave, ojos precisos, lágrimas amables con las pestañas.",
+    "pt-BR": "Pele macia, olhos precisos, lágrimas amigáveis aos cílios.",
+    "ar": "بشرة ناعمة وعيون دقيقة ودموع لطيفة بالرموش."
+  },
+  "הסרה עדינה, הכנה נקייה ושכבת צבע מבריקה.": {
+    "en": "Gentle removal, clean prep, and a glossy color layer.",
+    "es": "Retiro suave, preparación limpia y una capa de color brillante.",
+    "pt-BR": "Remoção suave, preparo limpo e uma camada de cor brilhante.",
+    "ar": "إزالة لطيفة وتحضير نظيف وطبقة لون لامعة."
+  },
+  "450 מעלות, 90 שניות, מוצרלה פרסקה — ככה נראית פיצה אמיתית.": {
+    "en": "450 degrees, 90 seconds, fresh mozzarella — this is real pizza.",
+    "es": "450 grados, 90 segundos, mozzarella fresca — así se ve una pizza de verdad.",
+    "pt-BR": "450 graus, 90 segundos, mozzarella fresca — assim é uma pizza de verdade.",
+    "ar": "450 درجة، 90 ثانية، موتزاريلا طازجة — هكذا تبدو البيتزا الحقيقية."
+  },
+  "התחלנו ממשאית אחת. היום צי של טעמים שמסתובב בעיר כל ערב.": {
+    "en": "We started with one truck. Today a fleet of flavors moves through the city every evening.",
+    "es": "Empezamos con un camión. Hoy una flota de sabores recorre la ciudad cada noche.",
+    "pt-BR": "Começamos com um caminhão. Hoje uma frota de sabores circula pela cidade toda noite.",
+    "ar": "بدأنا بشاحنة واحدة. اليوم أسطول نكهات يتجول في المدينة كل مساء."
+  },
+  "מנות קטנות, שיחות ארוכות ויין שנשפך בנדיבות — ככה אנחנו אוהבים לילות.": {
+    "en": "Small plates, long talks, and wine poured generously — that is how we love nights.",
+    "es": "Platos pequeños, conversaciones largas y vino servido con generosidad — así nos gustan las noches.",
+    "pt-BR": "Pratos pequenos, conversas longas e vinho servido com generosidade — assim gostamos das noites.",
+    "ar": "أطباق صغيرة وأحاديث طويلة ونبيذ يُسكب بسخاء — هكذا نحب الليالي."
+  },
+  "מיקבים קטנים, יקבים משפחתיים ויינות טבעיים — כל בקבוק נבחר בקפידה.": {
+    "en": "Small cellars, family wineries, and natural wines — every bottle chosen with care.",
+    "es": "Bodegas pequeñas, viñedos familiares y vinos naturales — cada botella elegida con cuidado.",
+    "pt-BR": "Adegas pequenas, vinícolas familiares e vinhos naturais — cada garrafa escolhida com cuidado.",
+    "ar": "أقبية صغيرة وكروم عائلية ونبيذ طبيعي — كل زجاجة مختارة بعناية."
+  },
+  "כל מנה מתחילה בחומרי גלם טריים ובחיוך — בלי לחץ, עם הרבה חמאה.": {
+    "en": "Every dish starts with fresh ingredients and a smile — no rush, plenty of butter.",
+    "es": "Cada plato empieza con materia prima fresca y una sonrisa — sin prisa, con mucha mantequilla.",
+    "pt-BR": "Cada prato começa com ingredientes frescos e um sorriso — sem pressa, com muita manteiga.",
+    "ar": "كل طبق يبدأ بمكونات طازجة وابتسامة — بلا عجلة، مع كثير من الزبدة."
+  },
+  "מתכונים שעברו דורות — עם טוויסט מודרני וחומרי גלם טריים כל יום.": {
+    "en": "Recipes passed down for generations — with a modern twist and fresh ingredients every day.",
+    "es": "Recetas que cruzaron generaciones — con un giro moderno y materia prima fresca cada día.",
+    "pt-BR": "Receitas que passaram gerações — com um toque moderno e ingredientes frescos todo dia.",
+    "ar": "وصفات عبرت أجيالاً — بلمسة عصرية ومكونات طازجة كل يوم."
+  },
+  "מתחילים בעצמות, ממשיכים בסבלנות — ומסיימים בקערה שמחממת מבפנים.": {
+    "en": "We start with bones, continue with patience — and finish with a bowl that warms from the inside.",
+    "es": "Empezamos con huesos, seguimos con paciencia — y terminamos en un bol que calienta por dentro.",
+    "pt-BR": "Começamos com ossos, seguimos com paciência — e terminamos numa tigela que aquece por dentro.",
+    "ar": "نبدأ بالعظام ونكمل بالصبر — وننتهي بوعاء يدفئ من الداخل."
+  },
+  "עשבים, קטניות וירקות עונתיים — פשוט, צבעוני ומלא שמש.": {
+    "en": "Herbs, legumes, and seasonal vegetables — simple, colorful, and full of sun.",
+    "es": "Hierbas, legumbres y verduras de temporada — simple, colorido y lleno de sol.",
+    "pt-BR": "Ervas, leguminosas e legumes da estação — simples, colorido e cheio de sol.",
+    "ar": "أعشاب وبقوليات وخضار موسمية — بسيط وملون ومليء بالشمس."
+  },
+  "כל נתח נצלה על גחלים חיות. אנחנו לא רודפים טרנדים — רק חום, עשן ומלח.": {
+    "en": "Every cut is seared on live coals. We do not chase trends — only heat, smoke, and salt.",
+    "es": "Cada corte se asa sobre brasas vivas. No perseguimos tendencias — solo calor, humo y sal.",
+    "pt-BR": "Cada corte é grelhado em brasas vivas. Não corremos atrás de tendências — só calor, fumaça e sal.",
+    "ar": "كل قطعة تُشوى على جمر حي. لا نلاحق صيحات — فقط حرارة ودخان وملح."
+  },
+  "בר של 12 מושבים. כל מנה נחתכת, מעוצבת ומוגשת ברגע הנכון.": {
+    "en": "A 12-seat bar. Every dish is cut, plated, and served at the right moment.",
+    "es": "Una barra de 12 asientos. Cada plato se corta, se emplata y se sirve en el momento justo.",
+    "pt-BR": "Um bar de 12 assentos. Cada prato é cortado, empratado e servido no momento certo.",
+    "ar": "بار من 12 مقعداً. كل طبق يُقطع ويُصفّ ويُقدَّم في اللحظة الصحيحة."
+  },
+  "Justora נבנתה למשרדי עורכי דין שרוצים לשדר אמינות, עוצמה ומקצועיות — בלי אתר כבד, מיושן או עמוס. המבנה מוביל את הלקוח מהבעיה, דרך תחומי ההתמחות, ועד קביעת ייעוץ.": {
+    "en": "Justora was built for law firms that want to signal trust, strength, and professionalism — without a heavy, outdated, or crowded site. The structure leads the client from the problem, through practice areas, to booking a consultation.",
+    "es": "Justora se construyó para despachos que quieren transmitir fiabilidad, fuerza y profesionalidad — sin un sitio pesado, anticuado o saturado. La estructura lleva al cliente del problema, por las especialidades, hasta pedir una consulta.",
+    "pt-BR": "A Justora foi feita para escritórios que querem transmitir confiança, força e profissionalismo — sem um site pesado, antigo ou lotado. A estrutura leva o cliente do problema, pelas especialidades, até marcar uma consulta.",
+    "ar": "Justora بُنيت لمكاتب محاماة تريد بث المصداقية والقوة والاحتراف — دون موقع ثقيل أو قديم أو مزدحم. البنية تقود الزبون من المشكلة عبر مجالات التخصص حتى حجز استشارة."
+  },
+  "Fluxora נולדה מתסכול של מפתחים — יותר מדי רעש, פחות מדי סינון. הקמנו פלטפורמה שמכבדת את הזמן שלכם: תוכן איכותי, קהילה מקצועית, וכלים שמתאימים לצוותי הנדסה רציניים.": {
+    "en": "Fluxora was born from developers’ frustration — too much noise, too little filtering. We built a platform that respects your time: quality content, a professional community, and tools that fit serious engineering teams.",
+    "es": "Fluxora nació de la frustración de desarrolladores — demasiado ruido, demasiado poco filtro. Creamos una plataforma que respeta vuestro tiempo: contenido de calidad, comunidad profesional y herramientas para equipos de ingeniería serios.",
+    "pt-BR": "A Fluxora nasceu da frustração de desenvolvedores — barulho demais, filtro de menos. Criamos uma plataforma que respeita o tempo de vocês: conteúdo de qualidade, comunidade profissional e ferramentas para equipes de engenharia sérias.",
+    "ar": "Fluxora وُلدت من إحباط المطوّرين — ضجيج كثير وتصفية قليلة. أنشأنا منصة تحترم وقتكم: محتوى جيد ومجتمع مهني وأدوات تناسب فرق هندسة جادة."
+  },
+  "Serenova נבנתה כדי לשדר רוגע, אמון ומקצועיות בלי להרגיש גנרית. היא מתאימה למטפלות, פסיכולוגיות, יועצות, קליניקות, מאמנות ומרכזי Wellness שרוצים אתר שמוביל בעדינות להשארת פרטים.": {
+    "en": "Serenova was built to signal calm, trust, and professionalism without feeling generic. It fits therapists, psychologists, advisors, clinics, coaches, and wellness centers that want a site that gently leads to leaving details.",
+    "es": "Serenova se construyó para transmitir calma, confianza y profesionalidad sin sentirse genérica. Encaja con terapeutas, psicólogas, asesoras, clínicas, coaches y centros de Wellness que quieren un sitio que lleve con suavidad a dejar datos.",
+    "pt-BR": "A Serenova foi feita para transmitir calma, confiança e profissionalismo sem parecer genérica. Serve a terapeutas, psicólogas, consultoras, clínicas, coaches e centros de Wellness que querem um site que leve com suavidade a deixar dados.",
+    "ar": "Serenova بُنيت لبث الهدوء والثقة والاحتراف دون أن تبدو عامة. تناسب معالجات وأخصائيات نفسيات ومستشارات وعيادات ومدربات ومراكز Wellness تريد موقعاً يقود بلطف إلى ترك بيانات."
+  },
+  "Nexora נולדה מתוך תסכול אמיתי — יותר מדי כלים, יותר מדי עבודה ידנית ואפס תמונה מלאה. הקמנו פלטפורמה אחת שמאחדת את הכול, כדי שצוותים יוכלו להתמקד ביצירת ערך ולא בתחזוקה של גיליונות.": {
+    "en": "Nexora was born from real frustration — too many tools, too much manual work, and zero full picture. We built one platform that unifies everything, so teams can focus on creating value instead of maintaining spreadsheets.",
+    "es": "Nexora nació de una frustración real — demasiadas herramientas, demasiado trabajo manual y cero imagen completa. Creamos una sola plataforma que unifica todo, para que los equipos se centren en crear valor y no en mantener hojas.",
+    "pt-BR": "A Nexora nasceu de uma frustração real — ferramentas demais, trabalho manual demais e zero imagem completa. Criamos uma plataforma só que unifica tudo, para as equipes focarem em criar valor e não em manter planilhas.",
+    "ar": "Nexora وُلدت من إحباط حقيقي — أدوات كثيرة وعمل يدوي كثير وصورة كاملة صفر. أنشأنا منصة واحدة توحد الكل، كي تركز الفرق على صنع قيمة لا على صيانة جداول."
+  },
+  "אורליה נפתחה מתוך חלום פשוט — להביא מטבח ים-תיכוני מזוקק לצלחת, בלי להתפשר על החום והאירוח. אנחנו עובדים ישירות עם חקלאים, דייגים ויקבים מקומיים, ומעצבים תפריט שמתחלף עם העונות ועם ההשראה של השף.": {
+    "en": "Aurelia opened from a simple dream — bringing a distilled Mediterranean kitchen to the plate, without compromising warmth and hospitality. We work directly with farmers, fishers, and local wineries, and shape a menu that changes with the seasons and the chef’s inspiration.",
+    "es": "Aurelia abrió desde un sueño sencillo — llevar una cocina mediterránea destilada al plato, sin ceder en el calor y la hospitalidad. Trabajamos directo con agricultores, pescadores y bodegas locales, y diseñamos un menú que cambia con las estaciones y la inspiración del chef.",
+    "pt-BR": "A Aurelia abriu a partir de um sonho simples — levar uma cozinha mediterrânea destilada ao prato, sem abrir mão do calor e da hospitalidade. Trabalhamos direto com agricultores, pescadores e vinícolas locais, e desenhamos um cardápio que muda com as estações e a inspiração do chef.",
+    "ar": "أوريليا فُتحت من حلم بسيط — إحضار مطبخ متوسطي مُصفّى إلى الطبق دون التنازل عن الدفء والضيافة. نعمل مباشرة مع مزارعين وصيادين وكروم محلية، ونصمم قائمة تتبدل مع المواسم وإلهام الشيف."
+  },
+  "ויטליס הוקמה עם מטרה אחת — להפוך את חוויית הטיפול לרגועה, מקצועית וברורה. אנחנו מאמינים ברפואה שמסבירה, מקשיבה ומלווה. הצוות שלנו משקיע בכל מטופל את הזמן והתשומת לב שמגיעים לו, בסביבה מודרנית ונקייה.": {
+    "en": "Vitalis was founded with one goal — making the treatment experience calm, professional, and clear. We believe in medicine that explains, listens, and accompanies. Our team gives every patient the time and attention they deserve, in a modern, clean setting.",
+    "es": "Vitalis se fundó con un objetivo — convertir la experiencia de tratamiento en algo calmo, profesional y claro. Creemos en una medicina que explica, escucha y acompaña. Nuestro equipo dedica a cada paciente el tiempo y la atención que merece, en un entorno moderno y limpio.",
+    "pt-BR": "A Vitalis foi fundada com um objetivo — tornar a experiência de tratamento calma, profissional e clara. Acreditamos numa medicina que explica, escuta e acompanha. Nossa equipe dedica a cada paciente o tempo e a atenção que merece, num ambiente moderno e limpo.",
+    "ar": "فيتاليس أُسست بهدف واحد — جعل تجربة العلاج هادئة ومهنية وواضحة. نؤمن بطب يشرح ويصغي ويرافق. فريقنا يمنح كل مريض الوقت والاهتمام الذي يستحقه، في بيئة حديثة ونظيفة."
+  },
+  "פורטיבה הוקם מתוך תפיסה שלקוח ראוי ליחס אישי ולליווי אסטרטגי, לא רק למענה נקודתי. הצוות שלנו משלב עורכי דין, יועצים פיננסיים ורואי חשבון, שעובדים יחד כדי לתת מענה שלם — מהצד המשפטי ועד ההשלכות העסקיות.": {
+    "en": "Fortiva was founded on the idea that a client deserves personal attention and strategic guidance, not only a one-off answer. Our team combines lawyers, financial advisors, and accountants who work together to give a complete response — from the legal side through the business implications.",
+    "es": "Fortiva se fundó con la idea de que un cliente merece trato personal y acompañamiento estratégico, no solo una respuesta puntual. Nuestro equipo une abogados, asesores financieros y contadores que trabajan juntos para dar una respuesta completa — del lado jurídico a las implicaciones de negocio.",
+    "pt-BR": "A Fortiva foi fundada na ideia de que um cliente merece tratamento pessoal e acompanhamento estratégico, não só uma resposta pontual. Nossa equipe une advogados, consultores financeiros e contadores que trabalham juntos para dar uma resposta completa — do lado jurídico às implicações de negócio.",
+    "ar": "فورتيفا أُسست من فكرة أن الزبون يستحق معاملة شخصية ومرافقة استراتيجية، لا رداً نقطياً فقط. فريقنا يجمع محامين ومستشارين ماليين ومحاسبين يعملون معاً لرد كامل — من الجانب القانوني حتى الآثار التجارية."
+  },
+  "Studiora הוא סטודיו קריאייטיב שבונה מותגים, חוויות דיגיטליות וקמפיינים שגורמים לאנשים לעצור, להסתכל ולזכור. אנחנו מחברים אסטרטגיה חדה לעיצוב נועז — ומתרגמים את זה לתוצאות.": {
+    "en": "Studiora is a creative studio that builds brands, digital experiences, and campaigns that make people stop, look, and remember. We connect a sharp strategy to bold design — and turn that into results.",
+    "es": "Studiora es un estudio creativo que construye marcas, experiencias digitales y campañas que hacen que la gente pare, mire y recuerde. Unimos una estrategia nítida a un diseño audaz — y lo traducimos en resultados.",
+    "pt-BR": "A Studiora é um estúdio criativo que constrói marcas, experiências digitais e campanhas que fazem as pessoas parar, olhar e lembrar. Ligamos uma estratégia nítida a um design ousado — e traduzimos isso em resultados.",
+    "ar": "Studiora استوديو إبداعي يبني علامات وتجارب رقمية وحملات تجعل الناس يتوقفون وينظرون ويتذكرون. نربط استراتيجية حادة بتصميم جريء — ونترجم ذلك إلى نتائج."
+  },
+  "אחרי עשור במטבחים מובילים בפריז, מילאנו ותל אביב, יונתן חזר לשוק המקומי עם תפיסה פשוטה: חומר גלם מעולה, יד בטוחה ואפס רעש מיותר. בכל צלחת יש אש, חמיצות, עשבוניות ומקום נדיב לשיחה.": {
+    "en": "After a decade in leading kitchens in Paris, Milan, and Tel Aviv, Jonathan returned to the local market with a simple idea: excellent ingredients, a sure hand, and zero extra noise. Every plate has fire, acidity, herbs, and generous room for conversation.",
+    "es": "Tras una década en cocinas líderes de París, Milán y Tel Aviv, Jonathan volvió al mercado local con una idea simple: materia prima excelente, mano segura y cero ruido extra. En cada plato hay fuego, acidez, hierbas y un espacio generoso para la conversación.",
+    "pt-BR": "Depois de uma década em cozinhas líderes em Paris, Milão e Tel Aviv, Jonathan voltou ao mercado local com uma ideia simples: ingrediente excelente, mão segura e zero barulho extra. Em cada prato há fogo, acidez, ervas e espaço generoso para a conversa.",
+    "ar": "بعد عقد في مطابخ رائدة في باريس وميلانو وتل أبيب، عاد يوناثان إلى السوق المحلي بفكرة بسيطة: مادة خام ممتازة ويد واثقة وضجيج زائد صفر. في كل طبق نار وحموضة وأعشاب ومكان واسع للحديث."
+  },
+  "מדיה": {
+    "en": "media",
+    "es": "medios",
+    "pt-BR": "mídia",
+    "ar": "إعلام"
+  },
+  "ייעוץ עסקי": {
+    "en": "business consulting",
+    "es": "consultoría de negocio",
+    "pt-BR": "consultoria de negócios",
+    "ar": "استشارة أعمال"
+  },
+  "התבנית בנויה לסוכן נדל״ן שרוצה להיראות מקצועי ויוקרתי, אבל לא עמוס או אגרסיבי. המטרה היא לגרום ללקוח להשאיר פרטים, לקבוע שיחה ולהרגיש שיש כאן מישהו שמבין את התהליך.": {
+    "en": "The template is built for a real-estate agent who wants to look professional and luxurious, without feeling crowded or aggressive. The goal is to get the client to leave details, book a call, and feel there is someone here who understands the process.",
+    "es": "La plantilla está hecha para un agente inmobiliario que quiere verse profesional y de lujo, sin saturación ni agresividad. El objetivo es que el cliente deje datos, pida una llamada y sienta que hay alguien que entiende el proceso.",
+    "pt-BR": "O modelo foi feito para um corretor que quer parecer profissional e de luxo, sem lotação nem agressividade. O objetivo é o cliente deixar dados, marcar uma conversa e sentir que há alguém que entende o processo.",
+    "ar": "القالب مبني لوكيل عقارات يريد أن يبدو مهنياً وفاخراً دون ازدحام أو عدوانية. الهدف أن يترك الزبون بياناته ويحجز مكالمة ويشعر أن هنا من يفهم المسار."
+  },
+  "אנחנו קבוצה של מעצבים, אסטרטגים ומפתחים שמאמינים שעיצוב טוב הוא לא קישוט — הוא כלי עסקי. כל פרויקט מקבל מאיתנו חשיבה, תשומת לב לפרטים ורצון אמיתי לעשות משהו יוצא דופן.": {
+    "en": "We are a group of designers, strategists, and developers who believe good design is not decoration — it is a business tool. Every project gets thinking, attention to detail, and a real will to make something exceptional.",
+    "es": "Somos un grupo de diseñadores, estrategas y desarrolladores que creen que un buen diseño no es adorno — es una herramienta de negocio. Cada proyecto recibe pensamiento, atención al detalle y una voluntad real de hacer algo extraordinario.",
+    "pt-BR": "Somos um grupo de designers, estrategistas e desenvolvedores que acreditam que um bom design não é enfeite — é uma ferramenta de negócio. Cada projeto recebe pensamento, atenção aos detalhes e uma vontade real de fazer algo fora do comum.",
+    "ar": "نحن مجموعة مصممين واستراتيجيين ومطوّرين يؤمنون أن التصميم الجيد ليس زينة — إنه أداة أعمال. كل مشروع يأخذ منا تفكيراً وانتباهاً للتفاصيل ورغبة حقيقية في صنع شيء استثنائي."
+  },
+  "איפור קבוע וטיפולי יופי": {
+    "en": "Permanent makeup and beauty treatments",
+    "es": "Maquillaje permanente y tratamientos de belleza",
+    "pt-BR": "Maquiagem permanente e tratamentos de beleza",
+    "ar": "مكياج دائم وعلاجات تجميل"
+  },
+  "איפור קבוע וטיפולי יופי בהתאמה אישית, בגימור טבעי ומדויק.": {
+    "en": "Permanent makeup and beauty treatments tailored to you, with a natural, precise finish.",
+    "es": "Maquillaje permanente y tratamientos de belleza a medida, con un acabado natural y preciso.",
+    "pt-BR": "Maquiagem permanente e tratamentos de beleza sob medida, com um acabamento natural e preciso.",
+    "ar": "مكياج دائم وعلاجات تجميل ملائمة شخصياً، بلمسة طبيعية ودقيقة."
+  },
+  "סטודיו מקצועי לטיפולי יופי, איפור קבוע, גבות ושירותי אסתטיקה מתקדמים.": {
+    "en": "A professional studio for beauty treatments, permanent makeup, brows, and advanced aesthetic services.",
+    "es": "Un estudio profesional de tratamientos de belleza, maquillaje permanente, cejas y servicios estéticos avanzados.",
+    "pt-BR": "Um estúdio profissional de tratamentos de beleza, maquiagem permanente, sobrancelhas e serviços estéticos avançados.",
+    "ar": "استوديو مهني لعلاجات التجميل والمكياج الدائم والحواجب وخدمات التجميل المتقدمة."
+  },
+  "כל טיפול מותאם אישית למבנה הפנים, לסגנון ולמטרה של הלקוחה.": {
+    "en": "Every treatment is matched to the client’s face, style, and goal.",
+    "es": "Cada tratamiento se adapta al rostro, el estilo y el objetivo de la clienta.",
+    "pt-BR": "Cada tratamento é adaptado ao rosto, ao estilo e ao objetivo da cliente.",
+    "ar": "كل علاج يُلائم وجه الزبونة وأسلوبها وهدفها."
+  },
+  "השירותים שלי": {
+    "en": "My services",
+    "es": "Mis servicios",
+    "pt-BR": "Meus serviços",
+    "ar": "خدماتي"
+  },
+  "איפור קבוע לגבות": {
+    "en": "Permanent brow makeup",
+    "es": "Maquillaje permanente de cejas",
+    "pt-BR": "Maquiagem permanente de sobrancelhas",
+    "ar": "مكياج دائم للحواجب"
+  },
+  "עיצוב ומילוי גבות בשיטה מתקדמת.": {
+    "en": "Brow design and fill with an advanced method.",
+    "es": "Diseño y relleno de cejas con un método avanzado.",
+    "pt-BR": "Design e preenchimento de sobrancelhas com um método avançado.",
+    "ar": "تصميم وملء حواجب بطريقة متقدمة."
+  },
+  "טיפולי פנים": {
+    "en": "Facial treatments",
+    "es": "Tratamientos faciales",
+    "pt-BR": "Tratamentos faciais",
+    "ar": "علاجات وجه"
+  },
+  "טיפול פנים מקצועי לניקוי, הזנה וזוהר.": {
+    "en": "A professional facial for cleansing, nourishment, and glow.",
+    "es": "Un facial profesional para limpiar, nutrir y dar brillo.",
+    "pt-BR": "Um facial profissional para limpar, nutrir e dar brilho.",
+    "ar": "علاج وجه مهني للتنظيف والتغذية والتوهج."
+  },
+  "הדגשת שפתיים": {
+    "en": "Lip tint",
+    "es": "Resalte de labios",
+    "pt-BR": "Destaque de lábios",
+    "ar": "إبراز الشفاه"
+  },
+  "הדגשה עדינה וטבעית למראה אלגנטי.": {
+    "en": "A delicate, natural tint for an elegant look.",
+    "es": "Un resalte suave y natural para un look elegante.",
+    "pt-BR": "Um destaque suave e natural para um visual elegante.",
+    "ar": "إبراز لطيف وطبيعي لمظهر أنيق."
+  },
+  "עסק מקצועי · אתר חכם": {
+    "en": "A professional business · a smart site",
+    "es": "Un negocio profesional · un sitio inteligente",
+    "pt-BR": "Um negócio profissional · um site inteligente",
+    "ar": "عمل مهني · موقع ذكي"
+  },
+  "בונים נוכחות דיגיטלית מרשימה": {
+    "en": "Building an impressive digital presence",
+    "es": "Construimos una presencia digital impresionante",
+    "pt-BR": "Construímos uma presença digital impressionante",
+    "ar": "نبني حضوراً رقمياً مبهراً"
+  },
+  "אתר עסקי מקצועי עם שירותים, תיאום תורים, לידים, סליקה ולקוחות.": {
+    "en": "A professional business site with services, booking, leads, payments, and clients.",
+    "es": "Un sitio de negocio profesional con servicios, citas, leads, cobros y clientes.",
+    "pt-BR": "Um site de negócio profissional com serviços, agendamento, leads, pagamentos e clientes.",
+    "ar": "موقع أعمال مهني بخدمات ومواعيد وليدات وتحصيل وعملاء."
+  },
+  "שם העסק שלך": {
+    "en": "Your business name",
+    "es": "El nombre de tu negocio",
+    "pt-BR": "O nome do seu negócio",
+    "ar": "اسم عملكم"
+  },
+  "תיאור קצר ומדויק של העסק, השירותים והערך שהלקוחות מקבלים.": {
+    "en": "A short, precise description of the business, the services, and the value clients get.",
+    "es": "Una descripción corta y precisa del negocio, los servicios y el valor que reciben los clientes.",
+    "pt-BR": "Uma descrição curta e precisa do negócio, dos serviços e do valor que os clientes recebem.",
+    "ar": "وصف قصير ودقيق للعمل والخدمات والقيمة التي يحصل عليها الزبائن."
+  },
+  "תודה שפנית אל {{business.name}}": {
+    "en": "Thank you for reaching out to {{business.name}}",
+    "es": "Gracias por escribir a {{business.name}}",
+    "pt-BR": "Obrigado por falar com {{business.name}}",
+    "ar": "شكراً لتواصلكم مع {{business.name}}"
+  },
+  "קיבלנו את פנייתך": {
+    "en": "We received your inquiry",
+    "es": "Recibimos tu consulta",
+    "pt-BR": "Recebemos o seu contato",
+    "ar": "استلمنا استفساركم"
+  },
+  "שלום {{lead.name}},": {
+    "en": "Hello {{lead.name}},",
+    "es": "Hola {{lead.name}},",
+    "pt-BR": "Olá {{lead.name}},",
+    "ar": "مرحباً {{lead.name}}،"
+  },
+  "תודה שפנית אל": {
+    "en": "Thank you for reaching out to",
+    "es": "Gracias por escribir a",
+    "pt-BR": "Obrigado por falar com",
+    "ar": "شكراً لتواصلكم مع"
+  },
+  "קיבלנו את פנייתך ונחזור אליך בהקדם.": {
+    "en": "We received your inquiry and will get back to you soon.",
+    "es": "Recibimos tu consulta y te responderemos pronto.",
+    "pt-BR": "Recebemos o seu contato e voltaremos em breve.",
+    "ar": "استلمنا استفساركم وسنعود إليكم قريباً."
+  },
+  "בברכה,": {
+    "en": "Best regards,",
+    "es": "Un saludo,",
+    "pt-BR": "Atenciosamente,",
+    "ar": "مع التحية،"
+  },
+  "מופעל באמצעות Bizuply": {
+    "en": "Powered by Bizuply",
+    "es": "Funciona con Bizuply",
+    "pt-BR": "Com tecnologia Bizuply",
+    "ar": "يعمل عبر Bizuply"
+  },
+  "תודה על הפנייה": {
+    "en": "Thank you for getting in touch",
+    "es": "Gracias por tu consulta",
+    "pt-BR": "Obrigado pelo contato",
+    "ar": "شكراً على التواصل"
+  },
+  "תודה שפנית אלינו": {
+    "en": "Thank you for reaching out",
+    "es": "Gracias por escribirnos",
+    "pt-BR": "Obrigado por falar conosco",
+    "ar": "شكراً لتواصلكم معنا"
+  },
+  "שמחנו לקבל את פנייתך אל": {
+    "en": "We were glad to receive your inquiry to",
+    "es": "Nos alegró recibir tu consulta a",
+    "pt-BR": "Ficamos felizes em receber o seu contato para",
+    "ar": "سعدنا باستلام استفساركم إلى"
+  },
+  "קיבלנו את הפרטים ונחזור אליך בהקדם עם כל המידע הרלוונטי.": {
+    "en": "We received the details and will get back to you soon with all the relevant information.",
+    "es": "Recibimos los datos y te responderemos pronto con toda la información relevante.",
+    "pt-BR": "Recebemos os dados e voltaremos em breve com todas as informações relevantes.",
+    "ar": "استلمنا التفاصيل وسنعود إليكم قريباً بكل المعلومات ذات الصلة."
+  },
+  "אישור פגישה": {
+    "en": "Appointment confirmation",
+    "es": "Confirmación de cita",
+    "pt-BR": "Confirmação de horário",
+    "ar": "تأكيد الموعد"
+  },
+  "אישור הזמנה": {
+    "en": "Order confirmation",
+    "es": "Confirmación de pedido",
+    "pt-BR": "Confirmação de pedido",
+    "ar": "تأكيد الطلب"
+  },
+  "נתראה בקרוב,": {
+    "en": "See you soon,",
+    "es": "Nos vemos pronto,",
+    "pt-BR": "Até breve,",
+    "ar": "نراك قريباً،"
+  },
+  "פרטי הפגישה:": {
+    "en": "Appointment details:",
+    "es": "Detalles de la cita:",
+    "pt-BR": "Detalhes do horário:",
+    "ar": "تفاصيل الموعد:"
+  },
+  "הפגישה שלך נקבעה בהצלחה": {
+    "en": "Your appointment is booked",
+    "es": "Tu cita quedó reservada",
+    "pt-BR": "Seu horário foi marcado",
+    "ar": "تم حجز موعدكم"
+  },
+  "הפגישה שלך עם": {
+    "en": "Your appointment with",
+    "es": "Tu cita con",
+    "pt-BR": "Seu horário com",
+    "ar": "موعدكم مع"
+  },
+  "נקבעה בהצלחה.": {
+    "en": "was booked successfully.",
+    "es": "quedó reservada con éxito.",
+    "pt-BR": "foi marcado com sucesso.",
+    "ar": "تم بنجاح."
+  },
+  "שלום {{appointment.clientName}},": {
+    "en": "Hello {{appointment.clientName}},",
+    "es": "Hola {{appointment.clientName}},",
+    "pt-BR": "Olá {{appointment.clientName}},",
+    "ar": "مرحباً {{appointment.clientName}}،"
+  },
+  "שלום {{customer.firstName}},": {
+    "en": "Hello {{customer.firstName}},",
+    "es": "Hola {{customer.firstName}},",
+    "pt-BR": "Olá {{customer.firstName}},",
+    "ar": "مرحباً {{customer.firstName}}،"
+  },
+  "תודה על הזמנתך! התשלום התקבל וההזמנה שלך בהכנה.": {
+    "en": "Thank you for your order! Payment was received and your order is being prepared.",
+    "es": "¡Gracias por tu pedido! Recibimos el pago y tu pedido está en preparación.",
+    "pt-BR": "Obrigado pelo pedido! O pagamento foi recebido e o seu pedido está em preparo.",
+    "ar": "شكراً لطلبكم! استُلم الدفع وطلبكم قيد التحضير."
+  },
+  "סיכום הזמנה": {
+    "en": "Order summary",
+    "es": "Resumen del pedido",
+    "pt-BR": "Resumo do pedido",
+    "ar": "ملخص الطلب"
+  },
+  "פרטי תשלום": {
+    "en": "Payment details",
+    "es": "Detalles de pago",
+    "pt-BR": "Detalhes do pagamento",
+    "ar": "تفاصيل الدفع"
+  },
+  "מספר הזמנה:": {
+    "en": "Order number:",
+    "es": "Número de pedido:",
+    "pt-BR": "Número do pedido:",
+    "ar": "رقم الطلب:"
+  },
+  "אישור הזמנה {{order.number}} - {{store.name}}": {
+    "en": "Order confirmation {{order.number}} - {{store.name}}",
+    "es": "Confirmación de pedido {{order.number}} - {{store.name}}",
+    "pt-BR": "Confirmação de pedido {{order.number}} - {{store.name}}",
+    "ar": "تأكيد الطلب {{order.number}} - {{store.name}}"
+  }
+}

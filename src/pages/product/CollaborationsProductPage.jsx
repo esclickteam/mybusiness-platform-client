@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../i18n/localeUtils";
 import {
   Bot,
   ChevronLeft,
@@ -51,7 +52,7 @@ export default function CollaborationsProductPage() {
   const collaborationsFaq = getCollaborationsFaq(t);
 
   return (
-    <div className="pm pm-hero-page" dir={i18n.language === "he" ? "rtl" : "ltr"}>
+    <div className="pm pm-hero-page" dir={getTextDirection(i18n.language)}>
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />

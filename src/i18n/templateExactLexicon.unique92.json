@@ -1,0 +1,410 @@
+{
+  "תוכן": {
+    "en": "Content",
+    "es": "Contenido",
+    "pt-BR": "Conteúdo",
+    "ar": "محتوى"
+  },
+  "✦ חדש": {
+    "en": "✦ New",
+    "es": "✦ Nuevo",
+    "pt-BR": "✦ Novo",
+    "ar": "✦ جديد"
+  },
+  "חבילה": {
+    "en": "Package",
+    "es": "Paquete",
+    "pt-BR": "Pacote",
+    "ar": "باقة"
+  },
+  "כמוסה": {
+    "en": "Capsule",
+    "es": "Cápsula",
+    "pt-BR": "Cápsula",
+    "ar": "كبسولة"
+  },
+  "מקדמה": {
+    "en": "Deposit",
+    "es": "Anticipo",
+    "pt-BR": "Sinal",
+    "ar": "عربون"
+  },
+  "צל רך": {
+    "en": "Soft shadow",
+    "es": "Sombra suave",
+    "pt-BR": "Sombra suave",
+    "ar": "ظل ناعم"
+  },
+  "טאב שני": {
+    "en": "Second tab",
+    "es": "Segunda pestaña",
+    "pt-BR": "Segunda aba",
+    "ar": "التبويب الثاني"
+  },
+  "בקשת תור": {
+    "en": "Booking request",
+    "es": "Solicitud de cita",
+    "pt-BR": "Pedido de agendamento",
+    "ar": "طلب موعد"
+  },
+  "עמודה א׳": {
+    "en": "Column A",
+    "es": "Columna A",
+    "pt-BR": "Coluna A",
+    "ar": "العمود أ"
+  },
+  "עמודה ב׳": {
+    "en": "Column B",
+    "es": "Columna B",
+    "pt-BR": "Coluna B",
+    "ar": "العمود ب"
+  },
+  "עמודה ג׳": {
+    "en": "Column C",
+    "es": "Columna C",
+    "pt-BR": "Coluna C",
+    "ar": "العمود ج"
+  },
+  "א · ב · ₪": {
+    "en": "A · B · ₪",
+    "es": "A · B · ₪",
+    "pt-BR": "A · B · ₪",
+    "ar": "أ · ب · ₪"
+  },
+  "טאב ראשון": {
+    "en": "First tab",
+    "es": "Primera pestaña",
+    "pt-BR": "Primeira aba",
+    "ar": "التبويب الأول"
+  },
+  "טאב שלישי": {
+    "en": "Third tab",
+    "es": "Tercera pestaña",
+    "pt-BR": "Terceira aba",
+    "ar": "التبويب الثالث"
+  },
+  "תוכן הטאב": {
+    "en": "Tab content",
+    "es": "Contenido de la pestaña",
+    "pt-BR": "Conteúdo da aba",
+    "ar": "محتوى التبويب"
+  },
+  "תחום העסק": {
+    "en": "Business field",
+    "es": "Área del negocio",
+    "pt-BR": "Área do negócio",
+    "ar": "مجال العمل"
+  },
+  "אזור מעוצב": {
+    "en": "Designed area",
+    "es": "Zona diseñada",
+    "pt-BR": "Área desenhada",
+    "ar": "منطقة مصممة"
+  },
+  "כותרת סקשן": {
+    "en": "Section title",
+    "es": "Título de sección",
+    "pt-BR": "Título da seção",
+    "ar": "عنوان القسم"
+  },
+  "כרטיס מידע": {
+    "en": "Info card",
+    "es": "Tarjeta de información",
+    "pt-BR": "Cartão de informação",
+    "ar": "بطاقة معلومات"
+  },
+  "מיקס צבעים": {
+    "en": "Color mix",
+    "es": "Mezcla de color",
+    "pt-BR": "Mistura de cores",
+    "ar": "مزيج ألوان"
+  },
+  "סקציה חדשה": {
+    "en": "New section",
+    "es": "Sección nueva",
+    "pt-BR": "Seção nova",
+    "ar": "قسم جديد"
+  },
+  "תפקיד בעסק": {
+    "en": "Role in the business",
+    "es": "Cargo en el negocio",
+    "pt-BR": "Cargo no negócio",
+    "ar": "دور في العمل"
+  },
+  "הטבה מיוחדת": {
+    "en": "Special offer",
+    "es": "Oferta especial",
+    "pt-BR": "Oferta especial",
+    "ar": "عرض خاص"
+  },
+  "כותרת כרטיס": {
+    "en": "Card title",
+    "es": "Título de tarjeta",
+    "pt-BR": "Título do cartão",
+    "ar": "عنوان البطاقة"
+  },
+  "כפתור פעולה": {
+    "en": "Action button",
+    "es": "Botón de acción",
+    "pt-BR": "Botão de ação",
+    "ar": "زر إجراء"
+  },
+  "מחובר ליומן": {
+    "en": "Connected to calendar",
+    "es": "Conectado al calendario",
+    "pt-BR": "Conectado à agenda",
+    "ar": "متصل بالتقويم"
+  },
+  "תשלום מקדמה": {
+    "en": "Deposit payment",
+    "es": "Pago de anticipo",
+    "pt-BR": "Pagamento de sinal",
+    "ar": "دفع العربون"
+  },
+  "גלריה מעוצבת": {
+    "en": "Designed gallery",
+    "es": "Galería diseñada",
+    "pt-BR": "Galeria desenhada",
+    "ar": "معرض مصمم"
+  },
+  "יוצאים לדרך.": {
+    "en": "Let's get started.",
+    "es": "Salimos al camino.",
+    "pt-BR": "Vamos começar.",
+    "ar": "ننطلق في الطريق."
+  },
+  "ליצירת קשר →": {
+    "en": "Contact →",
+    "es": "Contacto →",
+    "pt-BR": "Contato →",
+    "ar": "للتواصل →"
+  },
+  "מוצר מהמערכת": {
+    "en": "Product from the system",
+    "es": "Producto del sistema",
+    "pt-BR": "Produto do sistema",
+    "ar": "منتج من المنظومة"
+  },
+  "תצוגת עבודות": {
+    "en": "Work display",
+    "es": "Muestra de trabajos",
+    "pt-BR": "Exibição de trabalhos",
+    "ar": "عرض الأعمال"
+  },
+  "✓ אחריות מלאה": {
+    "en": "✓ Full warranty",
+    "es": "✓ Garantía completa",
+    "pt-BR": "✓ Garantia completa",
+    "ar": "✓ ضمان كامل"
+  },
+  "חבילה מקצועית": {
+    "en": "Professional package",
+    "es": "Paquete profesional",
+    "pt-BR": "Pacote profissional",
+    "ar": "باقة مهنية"
+  },
+  "מוצרים לרכישה": {
+    "en": "Products for sale",
+    "es": "Productos a la venta",
+    "pt-BR": "Produtos à venda",
+    "ar": "منتجات للشراء"
+  },
+  "מוצרים מהחנות": {
+    "en": "Store products",
+    "es": "Productos de la tienda",
+    "pt-BR": "Produtos da loja",
+    "ar": "منتجات المتجر"
+  },
+  "שירות מהמערכת": {
+    "en": "Service from the system",
+    "es": "Servicio del sistema",
+    "pt-BR": "Serviço do sistema",
+    "ar": "خدمة من المنظومة"
+  },
+  "שם השדה - ערך": {
+    "en": "Field name - value",
+    "es": "Nombre del campo - valor",
+    "pt-BR": "Nome do campo - valor",
+    "ar": "اسم الحقل - قيمة"
+  },
+  "✓ זמינות גבוהה": {
+    "en": "✓ High availability",
+    "es": "✓ Alta disponibilidad",
+    "pt-BR": "✓ Alta disponibilidade",
+    "ar": "✓ توفر عالٍ"
+  },
+  "✓ שירות מקצועי": {
+    "en": "✓ Professional service",
+    "es": "✓ Servicio profesional",
+    "pt-BR": "✓ Serviço profissional",
+    "ar": "✓ خدمة مهنية"
+  },
+  "בחרו שעה פנויה": {
+    "en": "Choose an open time",
+    "es": "Elegid una hora libre",
+    "pt-BR": "Escolha um horário livre",
+    "ar": "اختاروا ساعة متاحة"
+  },
+  "שליחה בוואטסאפ": {
+    "en": "Send on WhatsApp",
+    "es": "Envío por WhatsApp",
+    "pt-BR": "Envio no WhatsApp",
+    "ar": "إرسال عبر واتساب"
+  },
+  "איך קובעים תור?": {
+    "en": "How do you book?",
+    "es": "¿Cómo se pide cita?",
+    "pt-BR": "Como se agenda?",
+    "ar": "كيف تُحجزون موعداً؟"
+  },
+  "כיתוב מעל וידאו": {
+    "en": "Caption over video",
+    "es": "Texto sobre el vídeo",
+    "pt-BR": "Texto sobre o vídeo",
+    "ar": "نص فوق الفيديو"
+  },
+  "בחירת תאריך ושעה": {
+    "en": "Pick date and time",
+    "es": "Elegid fecha y hora",
+    "pt-BR": "Escolha data e hora",
+    "ar": "اختيار تاريخ وساعة"
+  },
+  "וידאו תדמית לעסק": {
+    "en": "Business brand video",
+    "es": "Vídeo de marca del negocio",
+    "pt-BR": "Vídeo de marca do negócio",
+    "ar": "فيديو هوية للعمل"
+  },
+  "מכירים את הצורך.": {
+    "en": "We know the need.",
+    "es": "Conocemos la necesidad.",
+    "pt-BR": "Conhecemos a necessidade.",
+    "ar": "نعرف الحاجة."
+  },
+  "מוצר פרימיום לעסק": {
+    "en": "Premium product for the business",
+    "es": "Producto premium para el negocio",
+    "pt-BR": "Produto premium para o negócio",
+    "ar": "منتج فاخر للعمل"
+  },
+  "סקציה רכה ומעוצבת": {
+    "en": "Soft designed section",
+    "es": "Sección suave y diseñada",
+    "pt-BR": "Seção suave e desenhada",
+    "ar": "قسم ناعم ومصمم"
+  },
+  "בונים פתרון מתאים.": {
+    "en": "Building the right solution.",
+    "es": "Construimos la solución adecuada.",
+    "pt-BR": "Construímos a solução certa.",
+    "ar": "نبني الحل المناسب."
+  },
+  "כותרת סקשן מקצועית": {
+    "en": "Professional section title",
+    "es": "Título de sección profesional",
+    "pt-BR": "Título de seção profissional",
+    "ar": "عنوان قسم مهني"
+  },
+  "כותרת על תמונת רקע": {
+    "en": "Title on a background image",
+    "es": "Título sobre imagen de fondo",
+    "pt-BR": "Título sobre imagem de fundo",
+    "ar": "عنوان على صورة خلفية"
+  },
+  "כותרת ראשית מרשימה": {
+    "en": "Impressive main title",
+    "es": "Título principal impresionante",
+    "pt-BR": "Título principal impressionante",
+    "ar": "عنوان رئيسي مبهر"
+  },
+  "נחזור אליכם בהקדם.": {
+    "en": "We will get back to you soon.",
+    "es": "Os responderemos pronto.",
+    "pt-BR": "Retornaremos em breve.",
+    "ar": "سنعود إليكم قريباً."
+  },
+  "סקציה כהה ויוקרתית": {
+    "en": "Dark luxury section",
+    "es": "Sección oscura y de lujo",
+    "pt-BR": "Seção escura e luxuosa",
+    "ar": "قسم داكن وفاخر"
+  },
+  "סקציה עם תמונת רקע": {
+    "en": "Section with background image",
+    "es": "Sección con imagen de fondo",
+    "pt-BR": "Seção com imagem de fundo",
+    "ar": "قسم بصورة خلفية"
+  },
+  "האם אפשר לשלם באתר?": {
+    "en": "Can you pay on the site?",
+    "es": "¿Se puede pagar en el sitio?",
+    "pt-BR": "Dá para pagar no site?",
+    "ar": "هل يمكن الدفع في الموقع؟"
+  },
+  "השאירו פרטים לתיאום": {
+    "en": "Leave details to book",
+    "es": "Dejad datos para coordinar",
+    "pt-BR": "Deixe dados para agendar",
+    "ar": "اتركوا بيانات للتنسيق"
+  },
+  "סקציה חצויה מקצועית": {
+    "en": "Professional split section",
+    "es": "Sección partida profesional",
+    "pt-BR": "Seção partida profissional",
+    "ar": "قسم مقسوم مهني"
+  },
+  "✓ יתרון ראשון של העסק": {
+    "en": "✓ First business advantage",
+    "es": "✓ Primera ventaja del negocio",
+    "pt-BR": "✓ Primeira vantagem do negócio",
+    "ar": "✓ الميزة الأولى للعمل"
+  },
+  "חדש · אתר מקצועי לעסק": {
+    "en": "New · a professional site for the business",
+    "es": "Nuevo · un sitio profesional para el negocio",
+    "pt-BR": "Novo · um site profissional para o negócio",
+    "ar": "جديد · موقع مهني للعمل"
+  },
+  "חיבור לסליקה של העסק.": {
+    "en": "Connected to the business checkout.",
+    "es": "Conexión al cobro del negocio.",
+    "pt-BR": "Ligação à cobrança do negócio.",
+    "ar": "ربط بتحصيل العمل."
+  },
+  "“הצלחה מתחילה בהחלטה.”": {
+    "en": "“Success starts with a decision.”",
+    "es": "“El éxito empieza con una decisión.”",
+    "pt-BR": "“O sucesso começa com uma decisão.”",
+    "ar": "«النجاح يبدأ بقرار.»"
+  },
+  "✓ יתרון שני שמחזק אמון": {
+    "en": "✓ Second advantage that builds trust",
+    "es": "✓ Segunda ventaja que refuerza la confianza",
+    "pt-BR": "✓ Segunda vantagem que reforça a confiança",
+    "ar": "✓ الميزة الثانية التي تعزّز الثقة"
+  },
+  "הצטרפות למועדון לקוחות": {
+    "en": "Join the customer club",
+    "es": "Uníos al club de clientes",
+    "pt-BR": "Entre no clube de clientes",
+    "ar": "انضموا لنادي الزبائن"
+  },
+  "קובעים תור ישירות מהאתר": {
+    "en": "Book directly from the site",
+    "es": "Pedid cita directo desde el sitio",
+    "pt-BR": "Agende direto pelo site",
+    "ar": "احجزوا موعداً مباشرة من الموقع"
+  },
+  "שם א-ת": {
+    "en": "Name A–Z",
+    "es": "Nombre A–Z",
+    "pt-BR": "Nome A–Z",
+    "ar": "الاسم أ–ي"
+  },
+  "מה תרצו למדוד או לאיזה אירוע?": {
+    "en": "What would you like to try on, or which event?",
+    "es": "¿Qué queréis probaros, o para qué evento?",
+    "pt-BR": "O que você quer provar, ou para qual evento?",
+    "ar": "ماذا تريدون قياسه، أو لأي مناسبة؟"
+  }
+}

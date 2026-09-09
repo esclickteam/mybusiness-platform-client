@@ -1,0 +1,5834 @@
+{
+  "תבנית רב-עמודית עם סקשנים מורכבים, פינות ישרות, תנועה וכניסות — מוכנה לעריכה מלאה בעורך.": {
+    "en": "A multi-page template with complex sections, square corners, motion, and entrances — ready for full editing in the editor.",
+    "es": "Plantilla de varias páginas con secciones complejas, esquinas rectas, movimiento y entradas, lista para edición completa.",
+    "pt-BR": "Modelo de várias páginas com seções complexas, cantos retos, movimento e entradas — pronto para edição completa.",
+    "ar": "قالب متعدد الصفحات بأقسام مركّبة وزوايا مستقيمة وحركة ودخولات — جاهز للتحرير الكامل في المحرر."
+  },
+  "תבנית אדריכלות נוף וגינון בעברית: צילום בוטני מלא, קווים ישרים, זית ואבן — פריסה עריכתית בלי כרטיסים.": {
+    "en": "A Hebrew landscape and garden architecture template: full botanical photography, straight lines, olive and stone — an editorial layout without cards.",
+    "es": "Plantilla hebrea de paisaje y jardinería: foto botánica, líneas rectas, olivo y piedra, maquetación editorial sin tarjetas.",
+    "pt-BR": "Modelo hebraico de paisagismo: foto botânica, linhas retas, oliveira e pedra — layout editorial sem cartões.",
+    "ar": "قالب عمارة حدائق بالعبرية: تصوير نباتي كامل وخطوط مستقيمة وزيتون وحجر — تخطيط تحريري بلا بطاقات."
+  },
+  "תבנית diagonal: הירo מפוצל אלכסוני, כרטיסים על grid skewed וטופס קשר על פanel זווית.": {
+    "en": "A diagonal template: a split angled hero, cards on a skewed grid, and a contact form on an angled panel.",
+    "es": "Plantilla diagonal: hero partido en ángulo, tarjetas en una grid sesgada y formulario en un panel angulado.",
+    "pt-BR": "Modelo diagonal: hero partido em ângulo, cartões em grade inclinada e formulário num painel angular.",
+    "ar": "قالب قطري: بطل مقسوم بزاوية وبطاقات على شبكة مائلة ونموذج تواصل على لوحة زاوية."
+  },
+  "תבנית שכירת יאכטות: הירו מינימלי עם קו אופק ripple, נקודות מסלול, מפרטי כלי שייט ופס הזמנה — אפקט ripple-expand.": {
+    "en": "A yacht-charter template: a minimal hero with a ripple horizon, route points, vessel specs, and a booking bar — ripple-expand effect.",
+    "es": "Plantilla de chárter de yates: hero mínimo con horizonte ripple, puntos de ruta, fichas de embarcaciones y barra de reserva.",
+    "pt-BR": "Modelo de aluguel de iates: hero mínimo com horizonte ripple, pontos de rota, fichas de embarcações e barra de reserva.",
+    "ar": "قالب تأجير يخوت: بطل بسيط مع أفق متموج ونقاط مسار ومواصفات القوارب وشريط حجز — تأثير ripple-expand."
+  },
+  "תבנית מאפייה: שכבות בצק כמו למינציה, מדפי מאפים אופקיים, אדים עדינים וטופס הזמנה בסגנון תג מחיר — חמימות של תנור בבוקר.": {
+    "en": "A bakery template: laminated dough layers, horizontal pastry shelves, soft steam, and a price-tag order form — morning-oven warmth.",
+    "es": "Plantilla de panadería: capas de masa, estantes de bollería, vapor suave y un formulario tipo etiqueta de precio.",
+    "pt-BR": "Modelo de padaria: camadas de massa, prateleiras de pães, vapor suave e formulário em estilo etiqueta.",
+    "ar": "قالب مخبز: طبقات عجين كالتصفيح ورفوف معجنات أفقية وبخار لطيف ونموذج طلب بطابع بطاقة سعر — دفء فرن الصباح."
+  },
+  "תבנית בrutalist: בלוקים מוערמים עם stagger climb, אינדקס נכסים ממוספר ופס קשר טיפוגרפי נועז.": {
+    "en": "A brutalist template: stacked blocks with a stagger climb, a numbered property index, and a bold typographic contact bar.",
+    "es": "Plantilla brutalista: bloques apilados con stagger climb, índice numerado de inmuebles y una franja de contacto tipográfica.",
+    "pt-BR": "Modelo brutalista: blocos empilhados com stagger climb, índice numerado de imóveis e faixa de contato tipográfica.",
+    "ar": "قالب بروتالي: كتل مرصوصة مع stagger climb وفهرس عقارات مرقّم وشريط تواصل طباعي جريء."
+  },
+  "תבנית קולנועית: הירו מסך מלא, טיקר נכסים נגלל, כרטיסי נכס עם זום, צוות סוכנים וסטטיסטיקות מונפשות.": {
+    "en": "A cinematic template: a full-screen hero, a scrolling property ticker, zooming listing cards, an agent team, and animated stats.",
+    "es": "Plantilla cinematográfica: hero a pantalla completa, ticker de inmuebles, tarjetas con zoom, equipo de agentes y estadísticas animadas.",
+    "pt-BR": "Modelo cinematográfico: hero em tela cheia, ticker de imóveis, cartões com zoom, equipe de corretores e estatísticas animadas.",
+    "ar": "قالب سينمائي: بطل بملء الشاشة وشريط عقارات متحرّك وبطاقات عقار مع تكبير وفريق وسطاء وإحصاءات متحركة."
+  },
+  "תבנית בראנץ׳ שמשית: הירו עם קרני שמש מסתובבות, גלריית פולארויד מסובבת, לוח סוף-שבוע כרשת וטופס גלויה — תנועה קלילה ושמחה.": {
+    "en": "A sunny brunch template: a hero with rotating sun rays, a tilted Polaroid gallery, a weekend grid, and a postcard form — light, happy motion.",
+    "es": "Plantilla de brunch soleado: hero con rayos, galería Polaroid, parrilla de fin de semana y formulario postal.",
+    "pt-BR": "Modelo de brunch ensolarado: hero com raios, galeria Polaroid, grade de fim de semana e formulário postal.",
+    "ar": "قالب برانش مشمس: بطل بأشعة شمس دوّارة ومعرض بولارويد مائل ولوحة عطلة كشبكة ونموذج بطاقة بريدية — حركة خفيفة ومرحة."
+  },
+  "תבנית בורגר: שכבות סמאש, לחמנייה זהובה וטופס הזמנה כבד — גריל אמריקאי ישיר.": {
+    "en": "A burger template: smash layers, a golden bun, and a heavy order form — straight-up American grill.",
+    "es": "Plantilla de hamburguesas: capas smash, pan dorado y un formulario contundente: grill americano directo.",
+    "pt-BR": "Modelo de hambúrguer: camadas smash, pão dourado e formulário pesado — grill americano direto.",
+    "ar": "قالب برغر: طبقات سماش وخبزة ذهبية ونموذج طلب ثقيل — شواء أمريكي مباشر."
+  },
+  "תבנית בית קלייה וקפה בעברית: טיפוגרפיה ענקית, רצועות צילום חדות, תפריט כרשימה טיפוגרפית — בלי כרטיסים.": {
+    "en": "A Hebrew roastery and coffee template: giant type, sharp photo strips, a typographic list menu — no cards.",
+    "es": "Plantilla hebrea de tueste y café: tipografía enorme, tiras fotográficas y un menú-lista, sin tarjetas.",
+    "pt-BR": "Modelo hebraico de torrefação e café: tipografia enorme, faixas fotográficas e cardápio em lista — sem cartões.",
+    "ar": "قالب محمصة وقهوة بالعبرية: طباعة ضخمة وأشرطة صور حادة وقائمة كنص طباعي — بلا بطاقات."
+  },
+  "תבנית סייבר: אסתטיקת טרמינל, ירוק מטריקס, 6 עמודים עם אנימציות סריקה וכניסות.": {
+    "en": "A cyber template: terminal aesthetics, matrix green, 6 pages with scan animations and entrances.",
+    "es": "Plantilla ciber: estética de terminal, verde matrix, 6 páginas con animaciones de escaneo.",
+    "pt-BR": "Modelo cyber: estética de terminal, verde matrix, 6 páginas com animações de varredura.",
+    "ar": "قالب سيبراني: جمالية طرفية وأخضر ماتريكس و6 صفحات مع حركات مسح ودخول."
+  },
+  "תבנית בית ספר לצלילה: הירו תת-ימי עם בועות צפות, כרטיסי זכוכית, ציר עומק וטופס טבילה — אפקט shimmer ייחודי.": {
+    "en": "A dive-school template: an underwater hero with floating bubbles, glass cards, a depth axis, and a splash form — a unique shimmer.",
+    "es": "Plantilla de escuela de buceo: hero submarino, burbujas, tarjetas de cristal, eje de profundidad y formulario de inmersión.",
+    "pt-BR": "Modelo de escola de mergulho: hero submerso, bolhas, cartões de vidro, eixo de profundidade e formulário de imersão.",
+    "ar": "قالب مدرسة غوص: بطل تحت الماء وفقاعات عائمة وبطاقات زجاج ومحور عمق ونموذج غطس — تأثير لمعان فريد."
+  },
+  "תבנית פיצרייה: הירו באלכסון עם פיצה מסתובבת, תפריט כבלוקי משולשים, רצועת חום תנור וטופס כרטיס הזמנה — אבק קמח ואנימציית stretch.": {
+    "en": "A pizzeria template: a diagonal hero with a spinning pizza, a triangle-block menu, an oven-heat strip, and a ticket order form — flour dust and a stretch animation. Crustora.",
+    "es": "Plantilla de pizzería: hero en diagonal con pizza giratoria, menú en bloques triangulares, franja de horno y formulario tipo ticket.",
+    "pt-BR": "Modelo de pizzaria: hero em diagonal com pizza girando, cardápio em blocos triangulares, faixa de forno e formulário tipo ticket.",
+    "ar": "قالب بيتزا: بطل قطري مع بيتزا دوّارة وقائمة ككتل مثلثة وشريط حرارة الفرن ونموذج بطاقة طلب — غبار طحين وحركة stretch. Crustora."
+  },
+  "תבנית פטיסרי: גבישי סוכר, קינוחים גיאומטריים וטופס הזמנה אלגנטי — מעבדת מתיקות.": {
+    "en": "A patisserie template: sugar crystals, geometric desserts, and an elegant order form — a sweetness lab.",
+    "es": "Plantilla de pastelería: cristales de azúcar, postres geométricos y un formulario elegante.",
+    "pt-BR": "Modelo de patisserie: cristais de açúcar, sobremesas geométricas e formulário elegante.",
+    "ar": "قالب حلويات: بلورات سكر وحلويات هندسية ونموذج طلب أنيق — مختبر حلاوة."
+  },
+  "תבנית דימ סאם: סלי במבוק מאודים, ענני קיטור וטופס הזמנה עגול — סעודת בוקר אסייתית.": {
+    "en": "A dim-sum template: steaming bamboo baskets, steam clouds, and a round order form — an Asian morning meal.",
+    "es": "Plantilla de dim sum: cestas de bambú al vapor, nubes de vapor y un formulario redondo.",
+    "pt-BR": "Modelo de dim sum: cestos de bambu no vapor, nuvens de vapor e formulário redondo.",
+    "ar": "قالب ديم سام: سلال خيزران مطهوّة وغيم بخار ونموذج طلب دائري — فطور آسيوي."
+  },
+  "תבנית Citadel — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Citadel template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Citadel: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Citadel — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Citadel — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Framehaus — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Framehaus template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Framehaus: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Framehaus — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Framehaus — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Gridline — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Gridline template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Gridline: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Gridline — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Gridline — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Horizon — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Horizon template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Horizon: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Horizon — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Horizon — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Kinetic — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Kinetic template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Kinetic: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Kinetic — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Kinetic — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Ledger — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Ledger template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Ledger: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Ledger — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Ledger — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Monolith — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Monolith template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Monolith: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Monolith — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Monolith — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Prism — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Prism template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Prism: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Prism — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Prism — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Steelworks — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Steelworks template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Steelworks: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Steelworks — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Steelworks — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית Vertex — אתר רב-עמודי מקצועי עם עיצוב מלבני ותנועה.": {
+    "en": "Vertex template — a professional multi-page site with rectangular design and motion.",
+    "es": "Plantilla Vertex: un sitio profesional de varias páginas con diseño rectangular y movimiento.",
+    "pt-BR": "Modelo Vertex — um site profissional de várias páginas com design retangular e movimento.",
+    "ar": "قالب Vertex — موقع متعدد الصفحات احترافي بتصميم مستطيل وحركة."
+  },
+  "תבנית אפייה Pro": {
+    "en": "Baking Pro template",
+    "es": "Plantilla Baking Pro",
+    "pt-BR": "Modelo Baking Pro",
+    "ar": "قالب خبز Pro"
+  },
+  "תבנית אפייה Pro מתוך קטלוג Panora — מטבח וכלי בישול.": {
+    "en": "Baking Pro template from the Panora catalog — kitchen and cookware.",
+    "es": "Plantilla Baking Pro del catálogo Panora: cocina y utensilios.",
+    "pt-BR": "Modelo Baking Pro do catálogo Panora — cozinha e utensílios.",
+    "ar": "قالب خبز Pro من كتالوج Panora — مطبخ وأدوات طبخ."
+  },
+  "תבנית לקוסמטיקה ותיאום תורים עם חוויית פרימיום, גלריה וטופס תור.": {
+    "en": "A cosmetics and booking template with a premium experience, gallery, and appointment form.",
+    "es": "Plantilla de cosmética y citas con experiencia premium, galería y formulario.",
+    "pt-BR": "Modelo de cosmética e agendamento com experiência premium, galeria e formulário.",
+    "ar": "قالب تجميل وحجز مواعيد مع تجربة فاخرة ومعرض ونموذج موعد."
+  },
+  "תבנית IDO לקוסמטיקה ותיאום תורים עם חוויית פרימיום, גלריה, טיפולים וטופס קביעת תור.": {
+    "en": "The IDO cosmetics and booking template with a premium experience, gallery, treatments, and an appointment form.",
+    "es": "Plantilla IDO de cosmética y citas con experiencia premium, galería, tratamientos y formulario.",
+    "pt-BR": "Modelo IDO de cosmética e agendamento com experiência premium, galeria, tratamentos e formulário.",
+    "ar": "قالب IDO للتجميل وحجز المواعيد مع تجربة فاخرة ومعرض وعلاجات ونموذج حجز."
+  },
+  "תבנית פרימיום לעסקים ושירותים עם Hero דרמטי, תמונה נפתחת לצדדים, שירותים, גלריה וטופס יצירת קשר.": {
+    "en": "A premium business-and-services template with a dramatic hero, a photo that opens to the sides, services, gallery, and a contact form.",
+    "es": "Plantilla premium de negocios con hero dramático, foto que se abre a los lados, servicios, galería y formulario.",
+    "pt-BR": "Modelo premium de negócios com hero dramático, foto que se abre para os lados, serviços, galeria e formulário.",
+    "ar": "قالب فاخر للأعمال والخدمات مع بطل درامي وصورة تنفتح جانبياً وخدمات ومعرض ونموذج تواصل."
+  },
+  "תבנית יוקרתית לעסקים ושירותים עם חוויית תיאום תורים ונוכחות מקצועית.": {
+    "en": "A luxury business-and-services template with appointment booking and a professional presence.",
+    "es": "Plantilla de lujo para negocios con reserva de citas y presencia profesional.",
+    "pt-BR": "Modelo de luxo para negócios com agendamento e presença profissional.",
+    "ar": "قالب فاخر للأعمال والخدمات مع تجربة حجز مواعيد وحضور مهني."
+  },
+  "תבנית עסקית נקייה עם הירו, שירותים, פרויקטים, תהליך עבודה, המלצות ויצירת קשר.": {
+    "en": "A clean business template with a hero, services, projects, process, testimonials, and contact.",
+    "es": "Plantilla de negocio limpia con hero, servicios, proyectos, proceso, testimonios y contacto.",
+    "pt-BR": "Modelo de negócio limpo com hero, serviços, projetos, processo, depoimentos e contato.",
+    "ar": "قالب أعمال نظيف مع بطل وخدمات ومشاريع وعملية عمل وتوصيات وتواصل."
+  },
+  "תבנית אתר עסקי נקייה, מקצועית ומודרנית לסוכנויות, יועצים, נותני שירותים ועסקים שרוצים נוכחות יוקרתית וברורה.": {
+    "en": "A clean, professional, modern business-site template for agencies, consultants, and service businesses that want a clear luxury presence.",
+    "es": "Plantilla de sitio de negocio limpia y moderna para agencias, consultores y negocios que quieren una presencia clara y de lujo.",
+    "pt-BR": "Modelo de site de negócio limpo e moderno para agências, consultores e negócios que querem presença clara e sofisticada.",
+    "ar": "قالب موقع أعمال نظيف ومهني وحديث للوكالات والمستشارين ومقدّمي الخدمات الذين يريدون حضوراً فاخراً وواضحاً."
+  },
+  "תבנית פרימיום לעסקים שרוצים להציג שירותים, פרויקטים, תהליך עבודה ויצירת קשר בצורה ברורה ומרשימה.": {
+    "en": "A premium template for businesses that want to show services, projects, process, and contact in a clear, impressive way.",
+    "es": "Plantilla premium para negocios que quieren mostrar servicios, proyectos, proceso y contacto con claridad.",
+    "pt-BR": "Modelo premium para negócios que querem mostrar serviços, projetos, processo e contato com clareza.",
+    "ar": "قالب فاخر للأعمال التي تريد عرض الخدمات والمشاريع وعملية العمل والتواصل بوضوح وإبهار."
+  },
+  "תבנית פרימיום לקליניקות, מטפלים, יועצים וקואצ׳רים שרוצים אתר מרגיע אבל לא משעמם — עם חוויית משתמש ברורה, שכבות ויזואליות, אמון, שירותים, מחירון ופנייה מהירה.": {
+    "en": "A premium template for clinics, therapists, consultants, and coaches who want a calming site that is not dull — with a clear UX, visual layers, trust, services, pricing, and a fast inquiry.",
+    "es": "Plantilla premium para clínicas, terapeutas y coaches que quieren un sitio calmado pero no aburrido, con UX clara, capas visuales, confianza, servicios, precios y consulta rápida.",
+    "pt-BR": "Modelo premium para clínicas, terapeutas e coaches que querem um site calmo mas não sem graça — UX clara, camadas visuais, confiança, serviços, preços e consulta rápida.",
+    "ar": "قالب فاخر للعيادات والمعالجين والمستشارين والمدربين الذين يريدون موقعاً هادئاً غير ممل — مع تجربة واضحة وطبقات بصرية وثقة وخدمات وأسعار وتواصل سريع."
+  },
+  "תבנית פרימיום רגועה לקליניקות, מטפלים, יועצים וקואצ׳רים עם אפקטים רכים, אזורי שירותים, מחירון, גלריה, מאמרים וטופס יצירת קשר.": {
+    "en": "A calm premium template for clinics, therapists, consultants, and coaches with soft effects, service areas, pricing, gallery, articles, and a contact form.",
+    "es": "Plantilla premium calmada para clínicas y coaches, con efectos suaves, servicios, precios, galería, artículos y formulario.",
+    "pt-BR": "Modelo premium calmo para clínicas e coaches, com efeitos suaves, serviços, preços, galeria, artigos e formulário.",
+    "ar": "قالب فاخر هادئ للعيادات والمعالجين والمستشارين والمدربين مع تأثيرات ناعمة ومناطق خدمات وأسعار ومعرض ومقالات ونموذج تواصل."
+  },
+  "תבנית דיגיטלית נועזת עם כרטיסים צפים, סקשנים יצירתיים, טיפוגרפיה חזקה ותנועה פרימיום.": {
+    "en": "A bold digital template with floating cards, creative sections, strong type, and premium motion.",
+    "es": "Plantilla digital audaz con tarjetas flotantes, secciones creativas, tipografía fuerte y movimiento premium.",
+    "pt-BR": "Modelo digital ousado com cartões flutuantes, seções criativas, tipografia forte e movimento premium.",
+    "ar": "قالب رقمي جريء ببطاقات عائمة وأقسام إبداعية وطباعة قوية وحركة فاخرة."
+  },
+  "תבנית סטודיو דיגיטלית צבעונית ומודרנית בסגנון Virello עם טיפוגרפיה ענקית, תמונות צפות, תנועה עדינה, שירותים, פרויקטים, צוות, תהליך, FAQ ובלוג.": {
+    "en": "A colorful modern digital studio template in the Virello style with giant type, floating images, soft motion, services, projects, team, process, FAQ, and a blog.",
+    "es": "Plantilla de estudio digital colorida al estilo Virello: tipografía enorme, fotos flotantes, movimiento suave, servicios, proyectos, equipo, proceso, FAQ y blog.",
+    "pt-BR": "Modelo de estúdio digital colorido no estilo Virello: tipografia enorme, fotos flutuantes, movimento suave, serviços, projetos, equipe, processo, FAQ e blog.",
+    "ar": "قالب استوديو رقمي ملون وحديث بأسلوب Virello مع طباعة ضخمة وصور عائمة وحركة لطيفة وخدمات ومشاريع وفريق وعملية وأسئلة شائعة ومدونة."
+  },
+  "תבנית סטודיו דיגיטלית מקורית בסגנון Virello: הירו טיפוגרפי ענק, תמונות צפות, כרטיסי שירות, פרויקטים, צוות, תהליך, FAQ ובלוג.": {
+    "en": "An original digital studio template in the Virello style: a giant type hero, floating images, service cards, projects, team, process, FAQ, and a blog.",
+    "es": "Plantilla original de estudio digital al estilo Virello: hero tipográfico, fotos flotantes, tarjetas de servicio, proyectos, equipo, proceso, FAQ y blog.",
+    "pt-BR": "Modelo original de estúdio digital no estilo Virello: hero tipográfico, fotos flutuantes, cartões de serviço, projetos, equipe, processo, FAQ e blog.",
+    "ar": "قالب استوديو رقمي أصيل بأسلوب Virello: بطل طباعي ضخم وصور عائمة وبطاقات خدمة ومشاريع وفريق وعملية وأسئلة شائعة ومدونة."
+  },
+  "תבנית פרימיום לסטודיו צילום ווידאו, עם פתיחה קולנועית, טיפוגרפיה גדולה, כרטיסי תמונה, עבודות נבחרות וקריאה לפעולה חזקה.": {
+    "en": "A premium photo-and-video studio template with a cinematic opening, large type, image cards, selected work, and a strong call to action.",
+    "es": "Plantilla premium de estudio de foto y vídeo con apertura cinematográfica, tipografía grande, tarjetas de imagen, trabajos y una CTA fuerte.",
+    "pt-BR": "Modelo premium de estúdio de foto e vídeo com abertura cinematográfica, tipografia grande, cartões de imagem, trabalhos e uma CTA forte.",
+    "ar": "قالب فاخر لاستوديو تصوير وفيديو مع افتتاح سينمائي وطباعة كبيرة وبطاقات صور وأعمال مختارة ودعوة قوية للإجراء."
+  },
+  "תבנית סטודיו קולנועית לצלמים, יוצרי וידאו, סטודיו קריאייטיב ומותגים שרוצים אתר פרימיום עם נראות חזקה, תנועה, גלריית עבודות ועמודי תוכן מלאים.": {
+    "en": "A cinematic studio template for photographers, video creators, creative studios, and brands that want a premium site with a strong look, motion, a work gallery, and full content pages.",
+    "es": "Plantilla cinematográfica para fotógrafos, vídeo y marcas que quieren un sitio premium con presencia, movimiento, galería y páginas de contenido.",
+    "pt-BR": "Modelo cinematográfico para fotógrafos, vídeo e marcas que querem um site premium com presença, movimento, galeria e páginas de conteúdo.",
+    "ar": "قالب استوديو سينمائي للمصورين وصنّاع الفيديو والاستوديوهات الإبداعية والعلامات التي تريد موقعاً فاخراً بحضور قوي وحركة ومعرض أعمال وصفحات محتوى كاملة."
+  },
+  "תבנית מסעדת שף פרימיום עם הירו כהה ואלגנטי, סיפור המסעדה, תפריט עונתי, חוויית סועד, גלריה, ביקורות והזמנת שולחן.": {
+    "en": "A premium chef-restaurant template with a dark elegant hero, the restaurant story, a seasonal menu, the guest experience, gallery, reviews, and table booking.",
+    "es": "Plantilla premium de restaurante de chef con hero oscuro, historia, menú de temporada, experiencia, galería, reseñas y reserva.",
+    "pt-BR": "Modelo premium de restaurante de chef com hero escuro, história, cardápio sazonal, experiência, galeria, avaliações e reserva.",
+    "ar": "قالب مطعم شيف فاخر مع بطل داكن وأنيق وقصة المطعم وقائمة موسمية وتجربة الضيف ومعرض ومراجعات وحجز طاولة."
+  },
+  "תבנית מסעדת שף פרימיום בסגנון fine dining: הירו קולנועי כהה, תפריט עונתי, חוויית סועד, גלריה, ביקורות והזמנת שולחן.": {
+    "en": "A premium chef-restaurant template in a fine-dining style: a dark cinematic hero, seasonal menu, guest experience, gallery, reviews, and table booking.",
+    "es": "Plantilla premium de fine dining: hero cinematográfico oscuro, menú de temporada, experiencia, galería, reseñas y reserva.",
+    "pt-BR": "Modelo premium de fine dining: hero cinematográfico escuro, cardápio sazonal, experiência, galeria, avaliações e reserva.",
+    "ar": "قالب مطعم شيف فاخر بأسلوب fine dining: بطل سينمائي داكن وقائمة موسمية وتجربة ضيف ومعرض ومراجعات وحجز طاولة."
+  },
+  "תבנית פרימיום לסוכני נדל״ן, יזמים ופרויקטים שרוצים לשדר יוקרה, סדר ואמון — עם עיצוב נקי, תמונות גדולות וקריאה ברורה לפנייה.": {
+    "en": "A premium template for real-estate agents, developers, and projects that want to signal luxury, order, and trust — with a clean design, large photos, and a clear inquiry call.",
+    "es": "Plantilla premium para agentes e inmobiliarias que quieren lujo, orden y confianza: diseño limpio, fotos grandes y una llamada clara.",
+    "pt-BR": "Modelo premium para corretores e incorporadoras que querem luxo, ordem e confiança — design limpo, fotos grandes e chamada clara.",
+    "ar": "قالب فاخر لوسطاء العقارات والمطوّرين والمشاريع التي تريد أن تبث الفخامة والترتيب والثقة — بتصميم نظيف وصور كبيرة ودعوة واضحة للتواصل."
+  },
+  "תבנית יוקרתית לסוכן נדל״ן שמעדיף לבנות אמון, להציג נכסים נבחרים ולייצר פניות איכותיות — בלי לפרסם מחירי בתים באתר.": {
+    "en": "A luxury template for an agent who prefers to build trust, show selected listings, and generate quality inquiries — without publishing home prices on the site.",
+    "es": "Plantilla de lujo para un agente que prefiere generar confianza, mostrar inmuebles selectos y consultas de calidad, sin publicar precios.",
+    "pt-BR": "Modelo de luxo para um corretor que prefere gerar confiança, mostrar imóveis selecionados e consultas de qualidade — sem publicar preços.",
+    "ar": "قالب فاخر لوسيط يفضّل بناء الثقة وعرض عقارات مختارة وتوليد استفسارات نوعية — دون نشر أسعار المنازل في الموقع."
+  },
+  "תבנית מקצועית בעברית לפלטפורמת ידע ופיד למפתחים: הירו עם כרטיסי פיד, קהילה, יכולות, תמחור, ביקורות וטופס הדגמה.": {
+    "en": "A professional Hebrew template for a developer knowledge-and-feed platform: a hero with feed cards, community, capabilities, pricing, reviews, and a demo form.",
+    "es": "Plantilla hebrea profesional para una plataforma de conocimiento: hero con tarjetas de feed, comunidad, capacidades, precios, reseñas y demo.",
+    "pt-BR": "Modelo hebraico profissional para uma plataforma de conhecimento: hero com cartões de feed, comunidade, capacidades, preços, avaliações e demo.",
+    "ar": "قالب مهني بالعبرية لمنصة معرفة وتغذية للمطوّرين: بطل ببطاقات تغذية ومجتمع وقدرات وتسعير ومراجعات ونموذج عرض."
+  },
+  "תבנית בעברית בהשראת פלטפורמות ידע למפתחים: פיד מותאם, קהילה מקצועית, תמחור שקוף ועיצוב כהה נקי.": {
+    "en": "A Hebrew template inspired by developer knowledge platforms: a tailored feed, a professional community, transparent pricing, and a clean dark design.",
+    "es": "Plantilla hebrea inspirada en plataformas para desarrolladores: feed a medida, comunidad, precios transparentes y un diseño oscuro limpio.",
+    "pt-BR": "Modelo hebraico inspirado em plataformas para desenvolvedores: feed sob medida, comunidade, preços transparentes e design escuro limpo.",
+    "ar": "قالب بالعبرية مستوحى من منصات معرفة المطوّرين: تغذية مخصّصة ومجتمع مهني وتسعير شفاف وتصميم داكن نظيف."
+  },
+  "תבנית פרימיום למשרד עורכי דין וייעוץ פיננסי עם הירו אלגנטי, ערכים, תחומי עיסוק, תהליך עבודה, הצלחות, צוות וטופס פנייה.": {
+    "en": "A premium law-and-finance template with an elegant hero, values, practice areas, process, successes, team, and an inquiry form.",
+    "es": "Plantilla premium para despacho y asesoría financiera: hero elegante, valores, áreas, proceso, éxitos, equipo y formulario.",
+    "pt-BR": "Modelo premium para escritório e consultoria financeira: hero elegante, valores, áreas, processo, sucessos, equipe e formulário.",
+    "ar": "قالب فاخر لمكتب محاماة واستشارة مالية مع بطل أنيق وقيم ومجالات عمل وعملية ونجاحات وفريق ونموذج تواصل."
+  },
+  "תבנית פרימיום למשרד עורכי דין וייעוץ פיננסי בסגנון קורפורייט יוקרתי: נייבי וזהב, תחומי עיסוק, הצלחות, צוות וטופס פנייה.": {
+    "en": "A premium law-and-finance template in a luxury corporate style: navy and gold, practice areas, successes, team, and an inquiry form.",
+    "es": "Plantilla premium corporativa de lujo para despacho y finanzas: marino y oro, áreas, éxitos, equipo y formulario.",
+    "pt-BR": "Modelo premium corporativo de luxo para escritório e finanças: marinho e ouro, áreas, sucessos, equipe e formulário.",
+    "ar": "قالب فاخر لمكتب محاماة واستشارة مالية بأسلوب شركات فخم: كحلي وذهب ومجالات عمل ونجاحات وفريق ونموذج تواصل."
+  },
+  "תבנית פרימיום למרפאת שיניים ובריאות עם הירו נקי, סרגל אמון, טיפולים, מסלול טיפול, צוות רפואי, ביקורות וקביעת תור.": {
+    "en": "A premium dental-and-health template with a clean hero, a trust bar, treatments, a care path, medical team, reviews, and booking.",
+    "es": "Plantilla premium de clínica dental: hero limpio, barra de confianza, tratamientos, recorrido, equipo, reseñas y cita.",
+    "pt-BR": "Modelo premium de clínica odontológica: hero limpo, barra de confiança, tratamentos, percurso, equipe, avaliações e agendamento.",
+    "ar": "قالب فاخر لعيادة أسنان وصحة مع بطل نظيف وشريط ثقة وعلاجات ومسار علاج وفريق طبي ومراجعات وحجز موعد."
+  },
+  "תבנית פרימיום למרפאת שיניים ובריאות: עיצוב נקי בטורקיז וכחול, טיפולים, צוות רפואי, ביקורות מטופלים וקביעת תור.": {
+    "en": "A premium dental-and-health template: a clean turquoise-and-blue design, treatments, medical team, patient reviews, and booking.",
+    "es": "Plantilla premium de clínica dental: diseño limpio en turquesa y azul, tratamientos, equipo, reseñas y cita.",
+    "pt-BR": "Modelo premium de clínica odontológica: design limpo em turquesa e azul, tratamentos, equipe, avaliações e agendamento.",
+    "ar": "قالب فاخر لعيادة أسنان وصحة: تصميم نظيف بفيروزي وأزرق وعلاجات وفريق طبي ومراجعات مرضى وحجز موعد."
+  },
+  "תבנית דף נחיתה ל-SaaS / הייטק עם הירו מוצר, לוגואים, גריד יכולות, תהליך, תמחור, ביקורות, שאלות נפוצות וטופס דמו.": {
+    "en": "A SaaS / high-tech landing template with a product hero, logos, a capabilities grid, process, pricing, reviews, FAQ, and a demo form.",
+    "es": "Landing de SaaS / high-tech con hero de producto, logos, grid de capacidades, proceso, precios, reseñas, FAQ y demo.",
+    "pt-BR": "Landing de SaaS / high-tech com hero de produto, logos, grade de capacidades, processo, preços, avaliações, FAQ e demo.",
+    "ar": "قالب صفحة هبوط لـ SaaS / هاي-تك مع بطل منتج وشعارات وشبكة قدرات وعملية وتسعير ومراجعات وأسئلة شائعة ونموذج عرض."
+  },
+  "תבנית דף נחיתה מודרנית ל-SaaS והייטק: הירו מוצר קולנועי, גריד יכולות, תמחור, ביקורות, FAQ וטופס תיאום דמו.": {
+    "en": "A modern SaaS and high-tech landing: a cinematic product hero, capabilities grid, pricing, reviews, FAQ, and a demo-booking form.",
+    "es": "Landing moderna de SaaS: hero cinematográfico, grid de capacidades, precios, reseñas, FAQ y formulario de demo.",
+    "pt-BR": "Landing moderna de SaaS: hero cinematográfico, grade de capacidades, preços, avaliações, FAQ e formulário de demo.",
+    "ar": "قالب صفحة هبوط حديث لـ SaaS والهاي-تك: بطل منتج سينمائي وشبكة قدرات وتسعير ومراجعات وأسئلة شائعة ونموذج تنسيق عرض."
+  },
+  "תבנית אופנה / מסחר אלקטרוני פרימיום עם הירו קולאז׳, מגה־מניו, באנרים זזים, רשת מוצרים, ביקורות, יומן, FAQ וניוזלטר.": {
+    "en": "A premium fashion / ecommerce template with a collage hero, mega-menu, moving banners, a product grid, reviews, a journal, FAQ, and a newsletter.",
+    "es": "Plantilla premium de moda / ecommerce: hero collage, mega menú, banners, grid de productos, reseñas, diario, FAQ y newsletter.",
+    "pt-BR": "Modelo premium de moda / e-commerce: hero colagem, mega menu, banners, grade de produtos, avaliações, diário, FAQ e newsletter.",
+    "ar": "قالب أزياء / تجارة إلكترونية فاخر مع بطل كولاج وقائمة ضخمة ولافتات متحركة وشبكة منتجات ومراجعات ويوميات وأسئلة شائعة ونشرة."
+  },
+  "תבנית אופנה פרימיום בסגנון Astral Threads: הירו קולאז׳, מגה־מניו, באנרים זזים, מוצרים, ביקורות, יומן, FAQ וניוזלטר.": {
+    "en": "A premium fashion template in the Astral Threads style: a collage hero, mega-menu, moving banners, products, reviews, journal, FAQ, and a newsletter.",
+    "es": "Plantilla de moda premium al estilo Astral Threads: hero collage, mega menú, banners, productos, reseñas, diario, FAQ y newsletter.",
+    "pt-BR": "Modelo de moda premium no estilo Astral Threads: hero colagem, mega menu, banners, produtos, avaliações, diário, FAQ e newsletter.",
+    "ar": "قالب أزياء فاخر بأسلوب Astral Threads: بطل كولاج وقائمة ضخمة ولافتات متحركة ومنتجات ومراجعات ويوميات وأسئلة شائعة ونشرة."
+  },
+  "תבנית סטודיו קריאייטיב / סוכנות עם הירו טיפוגרפי נועז, טקסט רץ, שירותים, תיק עבודות, סטטיסטיקות, ביקורות וטופס בריף.": {
+    "en": "A creative-studio / agency template with a bold type hero, running text, services, portfolio, stats, reviews, and a brief form.",
+    "es": "Plantilla de estudio / agencia: hero tipográfico, texto en movimiento, servicios, portafolio, estadísticas, reseñas y brief.",
+    "pt-BR": "Modelo de estúdio / agência: hero tipográfico, texto em movimento, serviços, portfólio, estatísticas, avaliações e brief.",
+    "ar": "قالب استوديو إبداعي / وكالة مع بطل طباعي جريء ونص راكض وخدمات ومعرض أعمال وإحصاءات ومراجعات ونموذج موجز."
+  },
+  "תבנית סטודיו קריאייטיב / סוכנות בסגנון עריכה נועז: שחור ולַיים, טיפוגרפיה גדולה, תיק עבודות, שירותים וטופס בריף.": {
+    "en": "A creative-studio / agency template in a bold editorial style: black and lime, large type, portfolio, services, and a brief form.",
+    "es": "Plantilla de estudio / agencia editorial: negro y lima, tipografía grande, portafolio, servicios y brief.",
+    "pt-BR": "Modelo de estúdio / agência editorial: preto e lima, tipografia grande, portfólio, serviços e brief.",
+    "ar": "قالب استوديو إبداعي / وكالة بأسلوب تحريري جريء: أسود وليم وطباعة كبيرة ومعرض أعمال وخدمات ونموذج موجز."
+  },
+  "תבנית וילות יוקרתית בשחור ושמפניה: כותרת קולנועית ממורכזת, תמונת 21:9, וילה מרכזית ענקית, רשימת וילות בשורות דקות ועקרונות אדריכלות אלגנטיים.": {
+    "en": "A luxury villas template in black and champagne: a centered cinematic title, a 21:9 image, a giant central villa, thin villa rows, and elegant architecture principles.",
+    "es": "Plantilla de villas de lujo en negro y champán: título cinematográfico, imagen 21:9, villa central, filas finas y principios de arquitectura.",
+    "pt-BR": "Modelo de vilas de luxo em preto e champanhe: título cinematográfico, imagem 21:9, vila central, linhas finas e princípios de arquitetura.",
+    "ar": "قالب فلل فاخر بالأسود والشامبانيا: عنوان سينمائي في الوسط وصورة 21:9 وفيلا مركزية ضخمة وقائمة فلل بصفوف رفيعة ومبادئ عمارة أنيقة."
+  },
+  "תבנית וילות יוקרתית עם הירו קולנועי, וילה מרכזית ענקית, שורות נכסים דקות וטופס פרטי ממורכז.": {
+    "en": "A luxury villas template with a cinematic hero, a giant central villa, thin listing rows, and a centered private form.",
+    "es": "Plantilla de villas de lujo con hero cinematográfico, villa central, filas finas y un formulario privado centrado.",
+    "pt-BR": "Modelo de vilas de luxo com hero cinematográfico, vila central, linhas finas e formulário privado centralizado.",
+    "ar": "قالب فلل فاخر مع بطل سينمائي وفيلا مركزية ضخمة وصفوف عقارات رفيعة ونموذج خاص في الوسط."
+  },
+  "תבנית בוטיק שקטה: הירו ציטוט גדול עם נכס מוביל, שלושה נכסים בלבד בערימה מרווחת, גישה כמכתב אישי וטופס קטן לצד פתק.": {
+    "en": "A quiet boutique template: a large-quote hero with a lead listing, only three properties in a spacious stack, access as a personal letter, and a small form beside a note.",
+    "es": "Plantilla boutique quieta: hero de cita grande, tres inmuebles en una pila amplia, acceso como carta y un formulario pequeño.",
+    "pt-BR": "Modelo boutique silencioso: hero de citação grande, três imóveis numa pilha ampla, acesso como carta e um formulário pequeno.",
+    "ar": "قالب بوتيك هادئ: بطل باقتباس كبير وعقار رائد وثلاثة عقارات فقط في رصّة مريحة ووصول كرسالة شخصية ونموذج صغير بجانب ورقة."
+  },
+  "תבנית בוטיק שקטה עם ציטוט גדול, נכס מוביל, שלושה נכסים מרווחים ומכתב גישה אישי.": {
+    "en": "A quiet boutique template with a large quote, a lead listing, three spacious properties, and a personal access letter.",
+    "es": "Plantilla boutique quieta con una cita grande, un inmueble destacado, tres propiedades y una carta de acceso.",
+    "pt-BR": "Modelo boutique silencioso com uma citação grande, um imóvel destaque, três propriedades e uma carta de acesso.",
+    "ar": "قالب بوتيك هادئ مع اقتباس كبير وعقار رائد وثلاثة عقارات مريحة ورسالة وصول شخصية."
+  },
+  "תבנית קרקעות ומגרשים בגישת סקר: מספר ענק על רשת מפה, תמונת חלקה משובצת, מפרטי מגרשים בסגנון מגזין והערות תכנון כשולי מסמך.": {
+    "en": "A land-and-lots survey template: a giant number on a map grid, a tiled plot photo, magazine-style lot specs, and planning notes as document margins.",
+    "es": "Plantilla de suelos y parcelas: número enorme sobre mapa, foto de parcela, fichas de revista y notas de planeamiento.",
+    "pt-BR": "Modelo de terrenos e lotes: número enorme sobre mapa, foto de lote, fichas de revista e notas de planejamento.",
+    "ar": "قالب أراضٍ وقطع بأسلوب مسح: رقم ضخم على شبكة خريطة وصورة قطعة مرصّعة ومواصفات قطع بطابع مجلة وملاحظات تخطيط كهوامش وثيقة."
+  },
+  "תבנית מגרשים עם הירו מספר ענק ורשת מפה, מפרטי חלקות מגזיניים, הערות תכנון ובקשת סקר.": {
+    "en": "A lots template with a giant-number hero and map grid, magazine plot specs, planning notes, and a survey request.",
+    "es": "Plantilla de parcelas con hero de número enorme, fichas de revista, notas de planeamiento y solicitud de estudio.",
+    "pt-BR": "Modelo de lotes com hero de número enorme, fichas de revista, notas de planejamento e pedido de levantamento.",
+    "ar": "قالب قطع مع بطل رقم ضخم وشبكة خريطة ومواصفات قطع مجلّية وملاحظات تخطيط وطلب مسح."
+  },
+  "תבנית נדל״ן טבעית ליד מים: הירו עם שלושה פסי נוף אופקיים, נכסים כשורות צילום רחבות, רצועת טבע מרובעת ופאנל קשר רגוע בגוון טורקיז.": {
+    "en": "A natural waterside real-estate template: a hero with three horizontal landscape bands, listings as wide photo rows, a square nature strip, and a calm turquoise contact panel.",
+    "es": "Plantilla inmobiliaria junto al agua: hero con tres franjas de paisaje, inmuebles en filas anchas, cinta de naturaleza y un panel de contacto turquesa.",
+    "pt-BR": "Modelo imobiliário à beira d’água: hero com três faixas de paisagem, imóveis em linhas largas, faixa de natureza e painel turquesa.",
+    "ar": "قالب عقاري طبيعي قرب الماء: بطل بثلاثة أشرطة منظر أفقية وعقارات كصفوف صور عريضة وشريط طبيعة مربع ولوحة تواصل هادئة فيروزية."
+  },
+  "תבנית נדל״ן טבעית ליד מים עם פסי נוף אופקיים, שורות נכסים רחבות ורצועת טבע ייחודית.": {
+    "en": "A natural waterside real-estate template with horizontal landscape bands, wide listing rows, and a distinctive nature strip.",
+    "es": "Plantilla inmobiliaria junto al agua con franjas de paisaje, filas anchas y una cinta de naturaleza.",
+    "pt-BR": "Modelo imobiliário à beira d’água com faixas de paisagem, linhas largas e uma faixa de natureza.",
+    "ar": "قالب عقاري طبيعي قرب الماء مع أشرطة منظر أفقية وصفوف عقارات عريضة وشريط طبيعة مميز."
+  },
+  "תבנית מגדלים בחצות וציאן: הירו מגדל אנכי עם סימוני קומות, רשימת דירות מטפסת, שורות שירותים בקווי מתאר ורצועת קו רקיע מלאה.": {
+    "en": "A midnight-and-cyan towers template: a vertical tower hero with floor marks, a climbing apartment list, outline service rows, and a full skyline strip.",
+    "es": "Plantilla de torres en cian nocturno: hero de torre, lista de pisos, filas de servicios y una franja de skyline.",
+    "pt-BR": "Modelo de torres em ciano noturno: hero de torre, lista de apartamentos, linhas de serviços e uma faixa de skyline.",
+    "ar": "قالب أبراج بمنتصف الليل والسيان: بطل برج عمودي مع علامات طوابق وقائمة شقق متسلقة وصفوف خدمات بخطوط محيط وشريط أفق كامل."
+  },
+  "תבנית היי-רייז עם עמוד מגדל אנכי, קומות מטפסות, שורות שירותים חדות ורצועת קו רקיע.": {
+    "en": "A high-rise template with a vertical tower column, climbing floors, sharp service rows, and a skyline strip.",
+    "es": "Plantilla high-rise con una columna de torre, plantas que suben, filas de servicios y una franja de skyline.",
+    "pt-BR": "Modelo high-rise com uma coluna de torre, andares que sobem, linhas de serviços e uma faixa de skyline.",
+    "ar": "قالب هاي-رايز مع عمود برج عمودي وطوابق متسلقة وصفوف خدمات حادة وشريط أفق."
+  },
+  "תבנית סלון יופי פרימיום בהשראת Shiny: הירו גדול, שירותים, ייעוץ חינמי, סטטיסטיקות, וידאו, מנהלת, המלצות, גלריה, חנות, בלוג ופוטר רחב.": {
+    "en": "A premium beauty-salon template inspired by Shiny: a large hero, services, a free consult, stats, video, the manager, testimonials, gallery, store, blog, and a wide footer.",
+    "es": "Plantilla premium de salón inspirada en Shiny: hero grande, servicios, consulta gratis, estadísticas, vídeo, directora, testimonios, galería, tienda, blog y pie amplio.",
+    "pt-BR": "Modelo premium de salão inspirado em Shiny: hero grande, serviços, consulta grátis, estatísticas, vídeo, gestora, depoimentos, galeria, loja, blog e rodapé amplo.",
+    "ar": "قالب صالون تجميل فاخر مستوحى من Shiny: بطل كبير وخدمات واستشارة مجانية وإحصاءات وفيديو ومديرة وتوصيات ومعرض ومتجر ومدونة وتذييل عريض."
+  },
+  "תבנית פרימיום למשרדי עורכי דין עם הירו סמכותי, תחומי התמחות, בדיקת תיק, צוות, תיקים, המלצות, מאמרים וטופס ייעוץ.": {
+    "en": "A premium law-office template with an authoritative hero, practice areas, a case review, team, cases, testimonials, articles, and a consult form.",
+    "es": "Plantilla premium de despacho: hero de autoridad, áreas, revisión de caso, equipo, casos, testimonios, artículos y consulta.",
+    "pt-BR": "Modelo premium de escritório: hero de autoridade, áreas, revisão de caso, equipe, casos, depoimentos, artigos e consulta.",
+    "ar": "قالب فاخر لمكاتب المحاماة مع بطل ذي سلطة ومجالات تخصص وفحص ملف وفريق وقضايا وتوصيات ومقالات ونموذج استشارة."
+  },
+  "טוב": {
+    "en": "good",
+    "es": "bueno",
+    "pt-BR": "bom",
+    "ar": "جيد"
+  },
+  "נכון": {
+    "en": "right",
+    "es": "correcto",
+    "pt-BR": "certo",
+    "ar": "صحيح"
+  },
+  "נעים": {
+    "en": "pleasant",
+    "es": "agradable",
+    "pt-BR": "agradável",
+    "ar": "لطيف"
+  },
+  "מתעד": {
+    "en": "documents",
+    "es": "documenta",
+    "pt-BR": "documenta",
+    "ar": "يوثّق"
+  },
+  "ניחוש": {
+    "en": "guesswork",
+    "es": "suposición",
+    "pt-BR": "achismo",
+    "ar": "تخمين"
+  },
+  "לאורך": {
+    "en": "along",
+    "es": "a lo largo de",
+    "pt-BR": "ao longo de",
+    "ar": "على مدار"
+  },
+  "הזמנה": {
+    "en": "order",
+    "es": "pedido",
+    "pt-BR": "pedido",
+    "ar": "طلب"
+  },
+  "מול": {
+    "en": "versus",
+    "es": "frente a",
+    "pt-BR": "diante de",
+    "ar": "أمام"
+  },
+  "עומס": {
+    "en": "load",
+    "es": "carga",
+    "pt-BR": "carga",
+    "ar": "حمل"
+  },
+  "דק": {
+    "en": "thin",
+    "es": "fino",
+    "pt-BR": "fino",
+    "ar": "رفيع"
+  },
+  "מנה": {
+    "en": "dish",
+    "es": "plato",
+    "pt-BR": "prato",
+    "ar": "طبق"
+  },
+  "חנויות": {
+    "en": "stores",
+    "es": "tiendas",
+    "pt-BR": "lojas",
+    "ar": "متاجر"
+  },
+  "אחרות": {
+    "en": "other",
+    "es": "otras",
+    "pt-BR": "outras",
+    "ar": "أخرى"
+  },
+  "עשרות": {
+    "en": "dozens of",
+    "es": "decenas de",
+    "pt-BR": "dezenas de",
+    "ar": "عشرات"
+  },
+  "קונים": {
+    "en": "buyers",
+    "es": "compradores",
+    "pt-BR": "compradores",
+    "ar": "مشترون"
+  },
+  "זוהר": {
+    "en": "glow",
+    "es": "brillo",
+    "pt-BR": "brilho",
+    "ar": "توهج"
+  },
+  "רמת": {
+    "en": "level of",
+    "es": "nivel de",
+    "pt-BR": "nível de",
+    "ar": "مستوى"
+  },
+  "הפך": {
+    "en": "became",
+    "es": "se convirtió",
+    "pt-BR": "virou",
+    "ar": "أصبح"
+  },
+  "שבוע": {
+    "en": "week",
+    "es": "semana",
+    "pt-BR": "semana",
+    "ar": "أسبوع"
+  },
+  "תוך": {
+    "en": "within",
+    "es": "en",
+    "pt-BR": "em",
+    "ar": "خلال"
+  },
+  "בניית": {
+    "en": "building",
+    "es": "construcción de",
+    "pt-BR": "construção de",
+    "ar": "بناء"
+  },
+  "חבילות": {
+    "en": "packages",
+    "es": "paquetes",
+    "pt-BR": "pacotes",
+    "ar": "باقات"
+  },
+  "מהרגע": {
+    "en": "from the moment",
+    "es": "desde el momento",
+    "pt-BR": "desde o momento",
+    "ar": "من اللحظة"
+  },
+  "היה": {
+    "en": "was",
+    "es": "fue",
+    "pt-BR": "foi",
+    "ar": "كان"
+  },
+  "יכולה": {
+    "en": "can",
+    "es": "puede",
+    "pt-BR": "pode",
+    "ar": "تستطيع"
+  },
+  "רגע": {
+    "en": "moment",
+    "es": "momento",
+    "pt-BR": "momento",
+    "ar": "لحظة"
+  },
+  "אמת": {
+    "en": "truth",
+    "es": "verdad",
+    "pt-BR": "verdade",
+    "ar": "حقيقة"
+  },
+  "בדיקה": {
+    "en": "check",
+    "es": "revisión",
+    "pt-BR": "checagem",
+    "ar": "فحص"
+  },
+  "בדיקות": {
+    "en": "checks",
+    "es": "revisiones",
+    "pt-BR": "checagens",
+    "ar": "فحوصات"
+  },
+  "חמאה": {
+    "en": "butter",
+    "es": "mantequilla",
+    "pt-BR": "manteiga",
+    "ar": "زبدة"
+  },
+  "שלי": {
+    "en": "mine",
+    "es": "mío",
+    "pt-BR": "meu",
+    "ar": "لي"
+  },
+  "אליכם": {
+    "en": "to you",
+    "es": "a vosotros",
+    "pt-BR": "a vocês",
+    "ar": "إليكم"
+  },
+  "רעש": {
+    "en": "noise",
+    "es": "ruido",
+    "pt-BR": "ruído",
+    "ar": "ضجيج"
+  },
+  "אחרת": {
+    "en": "otherwise",
+    "es": "de otro modo",
+    "pt-BR": "de outro modo",
+    "ar": "وإلا"
+  },
+  "חתימת": {
+    "en": "signature",
+    "es": "firma de",
+    "pt-BR": "assinatura de",
+    "ar": "توقيع"
+  },
+  "בונה": {
+    "en": "builds",
+    "es": "construye",
+    "pt-BR": "constrói",
+    "ar": "يبني"
+  },
+  "בלתי": {
+    "en": "un-",
+    "es": "in-",
+    "pt-BR": "in-",
+    "ar": "غير"
+  },
+  "רשימת": {
+    "en": "list of",
+    "es": "lista de",
+    "pt-BR": "lista de",
+    "ar": "قائمة"
+  },
+  "החל": {
+    "en": "starting",
+    "es": "desde",
+    "pt-BR": "a partir de",
+    "ar": "اعتباراً من"
+  },
+  "כניסה": {
+    "en": "entrance",
+    "es": "entrada",
+    "pt-BR": "entrada",
+    "ar": "دخول"
+  },
+  "רכיבה": {
+    "en": "riding",
+    "es": "equitación",
+    "pt-BR": "pedalada",
+    "ar": "ركوب"
+  },
+  "שינוי": {
+    "en": "change",
+    "es": "cambio",
+    "pt-BR": "mudança",
+    "ar": "تغيير"
+  },
+  "הכול": {
+    "en": "everything",
+    "es": "todo",
+    "pt-BR": "tudo",
+    "ar": "كل شيء"
+  },
+  "בתוך": {
+    "en": "inside",
+    "es": "dentro de",
+    "pt-BR": "dentro de",
+    "ar": "داخل"
+  },
+  "שלב": {
+    "en": "stage",
+    "es": "etapa",
+    "pt-BR": "etapa",
+    "ar": "مرحلة"
+  },
+  "צוותים": {
+    "en": "teams",
+    "es": "equipos",
+    "pt-BR": "equipes",
+    "ar": "فرق"
+  },
+  "מוצגים": {
+    "en": "are shown",
+    "es": "se muestran",
+    "pt-BR": "são exibidos",
+    "ar": "تُعرض"
+  },
+  "מרגישה": {
+    "en": "feels",
+    "es": "se siente",
+    "pt-BR": "parece",
+    "ar": "تشعر"
+  },
+  "אותו": {
+    "en": "it",
+    "es": "lo",
+    "pt-BR": "o",
+    "ar": "إياه"
+  },
+  "שיחת": {
+    "en": "a call about",
+    "es": "una llamada de",
+    "pt-BR": "uma chamada de",
+    "ar": "مكالمة"
+  },
+  "שוטף": {
+    "en": "ongoing",
+    "es": "continuo",
+    "pt-BR": "contínuo",
+    "ar": "جارٍ"
+  },
+  "רכות": {
+    "en": "softness",
+    "es": "suavidad",
+    "pt-BR": "suavidade",
+    "ar": "نعومة"
+  },
+  "דרופ": {
+    "en": "drop",
+    "es": "drop",
+    "pt-BR": "drop",
+    "ar": "دروب"
+  },
+  "פארם": {
+    "en": "pharma",
+    "es": "farma",
+    "pt-BR": "farma",
+    "ar": "أدوية"
+  },
+  "ראשונה": {
+    "en": "first",
+    "es": "primera",
+    "pt-BR": "primeira",
+    "ar": "أولى"
+  },
+  "טאקוס": {
+    "en": "tacos",
+    "es": "tacos",
+    "pt-BR": "tacos",
+    "ar": "تاكو"
+  },
+  "מקבל": {
+    "en": "receives",
+    "es": "recibe",
+    "pt-BR": "recebe",
+    "ar": "يتلقى"
+  },
+  "פגישת": {
+    "en": "a meeting of",
+    "es": "una reunión de",
+    "pt-BR": "uma reunião de",
+    "ar": "اجتماع"
+  },
+  "נשכח": {
+    "en": "forgotten",
+    "es": "olvidado",
+    "pt-BR": "esquecido",
+    "ar": "منسي"
+  },
+  "עומד": {
+    "en": "stands",
+    "es": "está",
+    "pt-BR": "está",
+    "ar": "يقف"
+  },
+  "מחובר": {
+    "en": "connected",
+    "es": "conectado",
+    "pt-BR": "conectado",
+    "ar": "متصل"
+  },
+  "להרגל": {
+    "en": "into a habit",
+    "es": "en hábito",
+    "pt-BR": "em hábito",
+    "ar": "إلى عادة"
+  },
+  "מוקדמות": {
+    "en": "early",
+    "es": "tempranas",
+    "pt-BR": "antecipadas",
+    "ar": "مبكرة"
+  },
+  "פחות": {
+    "en": "less",
+    "es": "menos",
+    "pt-BR": "menos",
+    "ar": "أقل"
+  },
+  "סיבות": {
+    "en": "reasons",
+    "es": "razones",
+    "pt-BR": "razões",
+    "ar": "أسباب"
+  },
+  "התאמות": {
+    "en": "adjustments",
+    "es": "ajustes",
+    "pt-BR": "ajustes",
+    "ar": "ملاءمات"
+  },
+  "טובה": {
+    "en": "good",
+    "es": "buena",
+    "pt-BR": "boa",
+    "ar": "جيدة"
+  },
+  "ציר": {
+    "en": "axis",
+    "es": "eje",
+    "pt-BR": "eixo",
+    "ar": "محور"
+  },
+  "מעושן": {
+    "en": "smoked",
+    "es": "ahumado",
+    "pt-BR": "defumado",
+    "ar": "مدخّن"
+  },
+  "אין": {
+    "en": "there is no",
+    "es": "no hay",
+    "pt-BR": "não há",
+    "ar": "لا يوجد"
+  },
+  "מדי": {
+    "en": "too",
+    "es": "demasiado",
+    "pt-BR": "demais",
+    "ar": "جداً"
+  },
+  "לב": {
+    "en": "heart",
+    "es": "corazón",
+    "pt-BR": "coração",
+    "ar": "قلب"
+  },
+  "הקינוח": {
+    "en": "the dessert",
+    "es": "el postre",
+    "pt-BR": "a sobremesa",
+    "ar": "الحلوى"
+  },
+  "אביב": {
+    "en": "Aviv",
+    "es": "Aviv",
+    "pt-BR": "Aviv",
+    "ar": "أبيب"
+  },
+  "המנה": {
+    "en": "the dish",
+    "es": "el plato",
+    "pt-BR": "o prato",
+    "ar": "الطبق"
+  },
+  "לתחום": {
+    "en": "into the field",
+    "es": "al ámbito",
+    "pt-BR": "ao campo",
+    "ar": "إلى المجال"
+  },
+  "לחות": {
+    "en": "moisture",
+    "es": "hidratación",
+    "pt-BR": "hidratação",
+    "ar": "رطوبة"
+  },
+  "בן": {
+    "en": "son",
+    "es": "hijo",
+    "pt-BR": "filho",
+    "ar": "ابن"
+  },
+  "השקות": {
+    "en": "launches",
+    "es": "lanzamientos",
+    "pt-BR": "lançamentos",
+    "ar": "إطلاقات"
+  },
+  "קרם": {
+    "en": "cream",
+    "es": "crema",
+    "pt-BR": "creme",
+    "ar": "كريم"
+  },
+  "מעלית": {
+    "en": "elevator",
+    "es": "ascensor",
+    "pt-BR": "elevador",
+    "ar": "مصعد"
+  },
+  "יד": {
+    "en": "hand",
+    "es": "mano",
+    "pt-BR": "mão",
+    "ar": "يد"
+  },
+  "יינות": {
+    "en": "wines",
+    "es": "vinos",
+    "pt-BR": "vinhos",
+    "ar": "نبيذ"
+  },
+  "להרגיש": {
+    "en": "to feel",
+    "es": "sentir",
+    "pt-BR": "sentir",
+    "ar": "للشعور"
+  },
+  "תמיכה": {
+    "en": "support",
+    "es": "soporte",
+    "pt-BR": "suporte",
+    "ar": "دعم"
+  },
+  "אחר": {
+    "en": "other",
+    "es": "otro",
+    "pt-BR": "outro",
+    "ar": "آخر"
+  },
+  "גיל": {
+    "en": "age",
+    "es": "edad",
+    "pt-BR": "idade",
+    "ar": "عمر"
+  },
+  "מודל": {
+    "en": "model",
+    "es": "modelo",
+    "pt-BR": "modelo",
+    "ar": "نموذج"
+  },
+  "קצרות": {
+    "en": "short",
+    "es": "cortas",
+    "pt-BR": "curtas",
+    "ar": "قصيرة"
+  },
+  "אחריות": {
+    "en": "responsibility",
+    "es": "responsabilidad",
+    "pt-BR": "responsabilidade",
+    "ar": "مسؤولية"
+  },
+  "שבועי": {
+    "en": "weekly",
+    "es": "semanal",
+    "pt-BR": "semanal",
+    "ar": "أسبوعي"
+  },
+  "תחושה": {
+    "en": "feeling",
+    "es": "sensación",
+    "pt-BR": "sensação",
+    "ar": "شعور"
+  },
+  "קונספט": {
+    "en": "concept",
+    "es": "concepto",
+    "pt-BR": "conceito",
+    "ar": "مفهوم"
+  },
+  "ראשונית": {
+    "en": "initial",
+    "es": "inicial",
+    "pt-BR": "inicial",
+    "ar": "أولية"
+  },
+  "ראשוני": {
+    "en": "initial",
+    "es": "inicial",
+    "pt-BR": "inicial",
+    "ar": "أولي"
+  },
+  "בלבד": {
+    "en": "only",
+    "es": "solamente",
+    "pt-BR": "apenas",
+    "ar": "فقط"
+  },
+  "השבוע": {
+    "en": "this week",
+    "es": "esta semana",
+    "pt-BR": "esta semana",
+    "ar": "هذا الأسبوع"
+  },
+  "מידה": {
+    "en": "size",
+    "es": "talla",
+    "pt-BR": "tamanho",
+    "ar": "مقاس"
+  },
+  "מחכה": {
+    "en": "waits",
+    "es": "espera",
+    "pt-BR": "espera",
+    "ar": "ينتظر"
+  },
+  "דג": {
+    "en": "fish",
+    "es": "pescado",
+    "pt-BR": "peixe",
+    "ar": "سمك"
+  },
+  "שוקולד": {
+    "en": "chocolate",
+    "es": "chocolate",
+    "pt-BR": "chocolate",
+    "ar": "شوكولاتة"
+  },
+  "אל": {
+    "en": "to",
+    "es": "hacia",
+    "pt-BR": "a",
+    "ar": "إلى"
+  },
+  "שתי": {
+    "en": "two",
+    "es": "dos",
+    "pt-BR": "duas",
+    "ar": "اثنتان"
+  },
+  "עמודים": {
+    "en": "pages",
+    "es": "páginas",
+    "pt-BR": "páginas",
+    "ar": "صفحات"
+  },
+  "אלון": {
+    "en": "Alon",
+    "es": "Alon",
+    "pt-BR": "Alon",
+    "ar": "ألون"
+  },
+  "מחברת": {
+    "en": "notebook",
+    "es": "cuaderno",
+    "pt-BR": "caderno",
+    "ar": "دفتر"
+  },
+  "מארז": {
+    "en": "set",
+    "es": "estuche",
+    "pt-BR": "kit",
+    "ar": "علبة"
+  },
+  "מכירה": {
+    "en": "sale",
+    "es": "venta",
+    "pt-BR": "venda",
+    "ar": "بيع"
+  },
+  "קל": {
+    "en": "easy",
+    "es": "fácil",
+    "pt-BR": "fácil",
+    "ar": "سهل"
+  },
+  "כולל": {
+    "en": "includes",
+    "es": "incluye",
+    "pt-BR": "inclui",
+    "ar": "يشمل"
+  },
+  "שליטה": {
+    "en": "control",
+    "es": "control",
+    "pt-BR": "controle",
+    "ar": "سيطرة"
+  },
+  "צפייה": {
+    "en": "viewing",
+    "es": "visualización",
+    "pt-BR": "visualização",
+    "ar": "مشاهدة"
+  },
+  "שעון": {
+    "en": "watch",
+    "es": "reloj",
+    "pt-BR": "relógio",
+    "ar": "ساعة"
+  },
+  "מסמכים": {
+    "en": "documents",
+    "es": "documentos",
+    "pt-BR": "documentos",
+    "ar": "مستندات"
+  },
+  "בוחרים": {
+    "en": "you choose",
+    "es": "elegís",
+    "pt-BR": "escolhem",
+    "ar": "تختارون"
+  },
+  "כך": {
+    "en": "so",
+    "es": "así",
+    "pt-BR": "assim",
+    "ar": "هكذا"
+  },
+  "עשירים": {
+    "en": "rich",
+    "es": "ricos",
+    "pt-BR": "ricos",
+    "ar": "غنيّة"
+  },
+  "כלות": {
+    "en": "brides",
+    "es": "novias",
+    "pt-BR": "noivas",
+    "ar": "عرائس"
+  },
+  "רפואית": {
+    "en": "medical",
+    "es": "médica",
+    "pt-BR": "médica",
+    "ar": "طبية"
+  },
+  "קרמיקה": {
+    "en": "ceramics",
+    "es": "cerámica",
+    "pt-BR": "cerâmica",
+    "ar": "سيراميك"
+  },
+  "לימון": {
+    "en": "lemon",
+    "es": "limón",
+    "pt-BR": "limão",
+    "ar": "ليمون"
+  },
+  "התחילו": {
+    "en": "started",
+    "es": "empezaron",
+    "pt-BR": "começaram",
+    "ar": "بدأوا"
+  },
+  "קריירה": {
+    "en": "career",
+    "es": "carrera",
+    "pt-BR": "carreira",
+    "ar": "مسيرة"
+  },
+  "גוף": {
+    "en": "body",
+    "es": "cuerpo",
+    "pt-BR": "corpo",
+    "ar": "جسم"
+  },
+  "עונתיים": {
+    "en": "seasonal",
+    "es": "de temporada",
+    "pt-BR": "sazonais",
+    "ar": "موسمية"
+  },
+  "קוסמטיקה": {
+    "en": "cosmetics",
+    "es": "cosmética",
+    "pt-BR": "cosmética",
+    "ar": "تجميل"
+  },
+  "ביטוח": {
+    "en": "insurance",
+    "es": "seguro",
+    "pt-BR": "seguro",
+    "ar": "تأمين"
+  },
+  "התאמת": {
+    "en": "matching",
+    "es": "ajuste de",
+    "pt-BR": "ajuste de",
+    "ar": "ملاءمة"
+  },
+  "מחברים": {
+    "en": "connectors",
+    "es": "conectores",
+    "pt-BR": "conectores",
+    "ar": "موصّلات"
+  },
+  "שלבי": {
+    "en": "stages of",
+    "es": "etapas de",
+    "pt-BR": "etapas de",
+    "ar": "مراحل"
+  },
+  "פסטה": {
+    "en": "pasta",
+    "es": "pasta",
+    "pt-BR": "massa",
+    "ar": "باستا"
+  },
+  "לחיות": {
+    "en": "to live",
+    "es": "vivir",
+    "pt-BR": "viver",
+    "ar": "للعيش"
+  },
+  "מחמד": {
+    "en": "pet",
+    "es": "mascota",
+    "pt-BR": "pet",
+    "ar": "أليف"
+  },
+  "חיות": {
+    "en": "animals",
+    "es": "animales",
+    "pt-BR": "animais",
+    "ar": "حيوانات"
+  },
+  "אוכל": {
+    "en": "food",
+    "es": "comida",
+    "pt-BR": "comida",
+    "ar": "طعام"
+  },
+  "עירונית": {
+    "en": "urban",
+    "es": "urbana",
+    "pt-BR": "urbana",
+    "ar": "حضرية"
+  },
+  "תרבות": {
+    "en": "culture",
+    "es": "cultura",
+    "pt-BR": "cultura",
+    "ar": "ثقافة"
+  },
+  "בטוח": {
+    "en": "safe",
+    "es": "seguro",
+    "pt-BR": "seguro",
+    "ar": "آمن"
+  },
+  "חיזוק": {
+    "en": "strengthening",
+    "es": "refuerzo",
+    "pt-BR": "reforço",
+    "ar": "تعزيز"
+  },
+  "לחץ": {
+    "en": "pressure",
+    "es": "presión",
+    "pt-BR": "pressão",
+    "ar": "ضغط"
+  },
+  "מעבר": {
+    "en": "transition",
+    "es": "paso",
+    "pt-BR": "passagem",
+    "ar": "انتقال"
+  },
+  "שותף": {
+    "en": "partner",
+    "es": "socio",
+    "pt-BR": "parceiro",
+    "ar": "شريك"
+  },
+  "לידים": {
+    "en": "leads",
+    "es": "leads",
+    "pt-BR": "leads",
+    "ar": "عملاء محتملون"
+  },
+  "הליכה": {
+    "en": "walking",
+    "es": "paseo",
+    "pt-BR": "caminhada",
+    "ar": "مشي"
+  },
+  "מקומיים": {
+    "en": "local",
+    "es": "locales",
+    "pt-BR": "locais",
+    "ar": "محليون"
+  },
+  "עמוקה": {
+    "en": "deep",
+    "es": "profunda",
+    "pt-BR": "profunda",
+    "ar": "عميقة"
+  },
+  "גב": {
+    "en": "back",
+    "es": "espalda",
+    "pt-BR": "costas",
+    "ar": "ظهر"
+  },
+  "הרבה": {
+    "en": "a lot",
+    "es": "mucho",
+    "pt-BR": "muito",
+    "ar": "كثير"
+  },
+  "הכי": {
+    "en": "the most",
+    "es": "lo más",
+    "pt-BR": "o mais",
+    "ar": "الأكثر"
+  },
+  "חודשים": {
+    "en": "months",
+    "es": "meses",
+    "pt-BR": "meses",
+    "ar": "أشهر"
+  },
+  "איכות": {
+    "en": "quality",
+    "es": "calidad",
+    "pt-BR": "qualidade",
+    "ar": "جودة"
+  },
+  "תחת": {
+    "en": "under",
+    "es": "bajo",
+    "pt-BR": "sob",
+    "ar": "تحت"
+  },
+  "משפחות": {
+    "en": "families",
+    "es": "familias",
+    "pt-BR": "famílias",
+    "ar": "عائلات"
+  },
+  "שכבה": {
+    "en": "layer",
+    "es": "capa",
+    "pt-BR": "camada",
+    "ar": "طبقة"
+  },
+  "סגנון": {
+    "en": "style",
+    "es": "estilo",
+    "pt-BR": "estilo",
+    "ar": "أسلوب"
+  },
+  "שגרה": {
+    "en": "routine",
+    "es": "rutina",
+    "pt-BR": "rotina",
+    "ar": "روتين"
+  },
+  "סוג": {
+    "en": "type",
+    "es": "tipo",
+    "pt-BR": "tipo",
+    "ar": "نوع"
+  },
+  "שירה": {
+    "en": "poetry",
+    "es": "poesía",
+    "pt-BR": "poesia",
+    "ar": "شعر"
+  },
+  "לוק": {
+    "en": "look",
+    "es": "look",
+    "pt-BR": "look",
+    "ar": "لوك"
+  },
+  "רענון": {
+    "en": "refresh",
+    "es": "actualización",
+    "pt-BR": "atualização",
+    "ar": "تحديث"
+  },
+  "מעיל": {
+    "en": "coat",
+    "es": "abrigo",
+    "pt-BR": "casaco",
+    "ar": "معطف"
+  },
+  "חייב": {
+    "en": "must",
+    "es": "debe",
+    "pt-BR": "deve",
+    "ar": "يجب"
+  },
+  "מגיע": {
+    "en": "arrives",
+    "es": "llega",
+    "pt-BR": "chega",
+    "ar": "يصل"
+  },
+  "מותאמת": {
+    "en": "tailored",
+    "es": "adaptada",
+    "pt-BR": "adaptada",
+    "ar": "مخصّصة"
+  },
+  "ראיונות": {
+    "en": "interviews",
+    "es": "entrevistas",
+    "pt-BR": "entrevistas",
+    "ar": "مقابلات"
+  },
+  "כפר": {
+    "en": "village",
+    "es": "pueblo",
+    "pt-BR": "vila",
+    "ar": "قرية"
+  },
+  "לאבד": {
+    "en": "to lose",
+    "es": "perder",
+    "pt-BR": "perder",
+    "ar": "لفقدان"
+  },
+  "עונה": {
+    "en": "season",
+    "es": "temporada",
+    "pt-BR": "estação",
+    "ar": "موسم"
+  },
+  "ליד": {
+    "en": "beside",
+    "es": "junto a",
+    "pt-BR": "ao lado de",
+    "ar": "بجانب"
+  },
+  "אנרגיה": {
+    "en": "energy",
+    "es": "energía",
+    "pt-BR": "energia",
+    "ar": "طاقة"
+  },
+  "שלבים": {
+    "en": "steps",
+    "es": "pasos",
+    "pt-BR": "etapas",
+    "ar": "خطوات"
+  },
+  "רב": {
+    "en": "multi",
+    "es": "multi",
+    "pt-BR": "multi",
+    "ar": "متعدد"
+  },
+  "בקרה": {
+    "en": "control",
+    "es": "control",
+    "pt-BR": "controle",
+    "ar": "رقابة"
+  },
+  "אוטומציה": {
+    "en": "automation",
+    "es": "automatización",
+    "pt-BR": "automação",
+    "ar": "أتمتة"
+  },
+  "סמאש": {
+    "en": "smash",
+    "es": "smash",
+    "pt-BR": "smash",
+    "ar": "سماش"
+  },
+  "איטית": {
+    "en": "slow",
+    "es": "lenta",
+    "pt-BR": "lenta",
+    "ar": "بطيئة"
+  },
+  "אורגני": {
+    "en": "organic",
+    "es": "orgánico",
+    "pt-BR": "orgânico",
+    "ar": "عضوي"
+  },
+  "זקן": {
+    "en": "beard",
+    "es": "barba",
+    "pt-BR": "barba",
+    "ar": "لحية"
+  },
+  "להורים": {
+    "en": "for parents",
+    "es": "para padres",
+    "pt-BR": "para pais",
+    "ar": "للأهل"
+  },
+  "מילוי": {
+    "en": "filling",
+    "es": "relleno",
+    "pt-BR": "preenchimento",
+    "ar": "حشو"
+  },
+  "ויזואלי": {
+    "en": "visual",
+    "es": "visual",
+    "pt-BR": "visual",
+    "ar": "بصري"
+  },
+  "שדרות": {
+    "en": "boulevard",
+    "es": "bulevar",
+    "pt-BR": "avenida",
+    "ar": "شارع"
+  },
+  "עו״ד": {
+    "en": "attorney",
+    "es": "abogado",
+    "pt-BR": "advogado",
+    "ar": "محامٍ"
+  },
+  "ממשל": {
+    "en": "government",
+    "es": "gobierno",
+    "pt-BR": "governo",
+    "ar": "حكومة"
+  },
+  "בקשת": {
+    "en": "a request for",
+    "es": "una solicitud de",
+    "pt-BR": "um pedido de",
+    "ar": "طلب"
+  },
+  "הזמנת": {
+    "en": "booking",
+    "es": "reserva de",
+    "pt-BR": "reserva de",
+    "ar": "حجز"
+  },
+  "מספיקה": {
+    "en": "is enough",
+    "es": "basta",
+    "pt-BR": "basta",
+    "ar": "تكفي"
+  },
+  "מתעדכנים": {
+    "en": "update",
+    "es": "se actualizan",
+    "pt-BR": "atualizam",
+    "ar": "تتحدّث"
+  },
+  "ישר": {
+    "en": "straight",
+    "es": "directo",
+    "pt-BR": "direto",
+    "ar": "مباشرة"
+  },
+  "חוסך": {
+    "en": "saves",
+    "es": "ahorra",
+    "pt-BR": "poupa",
+    "ar": "يوفر"
+  },
+  "מטורף": {
+    "en": "striking",
+    "es": "brutal",
+    "pt-BR": "absurdo",
+    "ar": "مذهل"
+  },
+  "לוותר": {
+    "en": "to give up",
+    "es": "renunciar",
+    "pt-BR": "abrir mão",
+    "ar": "للتخلّي"
+  },
+  "פונקציונליות": {
+    "en": "functionality",
+    "es": "funcionalidad",
+    "pt-BR": "funcionalidade",
+    "ar": "وظائف"
+  },
+  "סננו": {
+    "en": "filter",
+    "es": "filtrad",
+    "pt-BR": "filtrem",
+    "ar": "صفّوا"
+  },
+  "חפשו": {
+    "en": "search",
+    "es": "buscad",
+    "pt-BR": "busquem",
+    "ar": "ابحثوا"
+  },
+  "שם": {
+    "en": "name",
+    "es": "nombre",
+    "pt-BR": "nome",
+    "ar": "اسم"
+  },
+  "ומיינו": {
+    "en": "and sort",
+    "es": "y ordenad",
+    "pt-BR": "e ordenem",
+    "ar": "وفرزوا"
+  },
+  "נטענים": {
+    "en": "load",
+    "es": "se cargan",
+    "pt-BR": "carregam",
+    "ar": "تُحمَّل"
+  },
+  "שתגדירו": {
+    "en": "you define",
+    "es": "defináis",
+    "pt-BR": "definirem",
+    "ar": "تعرّفوا"
+  },
+  "בתצוגה": {
+    "en": "on display",
+    "es": "en vitrina",
+    "pt-BR": "em exibição",
+    "ar": "في العرض"
+  },
+  "פשוטה": {
+    "en": "simple",
+    "es": "sencilla",
+    "pt-BR": "simples",
+    "ar": "بسيطة"
+  },
+  "תובנות": {
+    "en": "insights",
+    "es": "ideas",
+    "pt-BR": "insights",
+    "ar": "رؤى"
+  },
+  "ושיפור": {
+    "en": "and improvement",
+    "es": "y mejora",
+    "pt-BR": "e melhoria",
+    "ar": "وتحسين"
+  },
+  "מתמשך": {
+    "en": "continuous",
+    "es": "continuo",
+    "pt-BR": "contínuo",
+    "ar": "مستمر"
+  },
+  "לייאאוט": {
+    "en": "layout",
+    "es": "maquetación",
+    "pt-BR": "layout",
+    "ar": "تخطيط"
+  },
+  "המחלקות": {
+    "en": "the departments",
+    "es": "los departamentos",
+    "pt-BR": "os departamentos",
+    "ar": "الأقسام"
+  },
+  "טיפולי": {
+    "en": "treatment",
+    "es": "de tratamiento",
+    "pt-BR": "de tratamento",
+    "ar": "علاجي"
+  },
+  "מוצרי": {
+    "en": "products of",
+    "es": "productos de",
+    "pt-BR": "produtos de",
+    "ar": "منتجات"
+  },
+  "ומסתיים": {
+    "en": "and ends",
+    "es": "y termina",
+    "pt-BR": "e termina",
+    "ar": "وينتهي"
+  },
+  "בהנחיות": {
+    "en": "in the guidelines",
+    "es": "en las indicaciones",
+    "pt-BR": "nas orientações",
+    "ar": "في الإرشادات"
+  },
+  "ואילו": {
+    "en": "while",
+    "es": "mientras",
+    "pt-BR": "enquanto",
+    "ar": "بينما"
+  },
+  "שתבחרו": {
+    "en": "you choose",
+    "es": "elijáis",
+    "pt-BR": "escolherem",
+    "ar": "تختارون"
+  },
+  "בבחירת": {
+    "en": "in choosing",
+    "es": "al elegir",
+    "pt-BR": "ao escolher",
+    "ar": "في اختيار"
+  },
+  "חד": {
+    "en": "sharp",
+    "es": "nítido",
+    "pt-BR": "nítido",
+    "ar": "حاد"
+  },
+  "שמתאימים": {
+    "en": "that fit",
+    "es": "que encajan",
+    "pt-BR": "que servem",
+    "ar": "تناسب"
+  },
+  "האחרון": {
+    "en": "the last",
+    "es": "el último",
+    "pt-BR": "o último",
+    "ar": "الأخير"
+  },
+  "דירת": {
+    "en": "apartment of",
+    "es": "piso de",
+    "pt-BR": "apartamento de",
+    "ar": "شقة"
+  },
+  "תפעול": {
+    "en": "operations",
+    "es": "operación",
+    "pt-BR": "operação",
+    "ar": "تشغيل"
+  },
+  "סוף": {
+    "en": "end",
+    "es": "final",
+    "pt-BR": "fim",
+    "ar": "نهاية"
+  },
+  "הייתה": {
+    "en": "was",
+    "es": "fue",
+    "pt-BR": "foi",
+    "ar": "كانت"
+  },
+  "אתכם": {
+    "en": "you",
+    "es": "os",
+    "pt-BR": "vocês",
+    "ar": "معكم"
+  },
+  "שנשאר": {
+    "en": "that remains",
+    "es": "que queda",
+    "pt-BR": "que fica",
+    "ar": "الذي يبقى"
+  },
+  "שמובילים": {
+    "en": "that lead",
+    "es": "que lideran",
+    "pt-BR": "que lideram",
+    "ar": "الذين يقودون"
+  },
+  "שנכנסים": {
+    "en": "that enter",
+    "es": "que entran",
+    "pt-BR": "que entram",
+    "ar": "الذين يدخلون"
+  },
+  "שעובד": {
+    "en": "that works",
+    "es": "que funciona",
+    "pt-BR": "que funciona",
+    "ar": "الذي يعمل"
+  },
+  "שמרגישה": {
+    "en": "that feels",
+    "es": "que se siente",
+    "pt-BR": "que parece",
+    "ar": "التي تشعر"
+  },
+  "שמכיר": {
+    "en": "that knows",
+    "es": "que conoce",
+    "pt-BR": "que conhece",
+    "ar": "الذي يعرف"
+  },
+  "וסאונד": {
+    "en": "and sound",
+    "es": "y sonido",
+    "pt-BR": "e som",
+    "ar": "وصوت"
+  },
+  "וריחות": {
+    "en": "and scents",
+    "es": "y aromas",
+    "pt-BR": "e aromas",
+    "ar": "وروائح"
+  },
+  "וטיפים": {
+    "en": "and tips",
+    "es": "y consejos",
+    "pt-BR": "e dicas",
+    "ar": "ونصائح"
+  },
+  "ומשתלה": {
+    "en": "and a nursery",
+    "es": "y un vivero",
+    "pt-BR": "e um viveiro",
+    "ar": "ومشتل"
+  },
+  "וקמפינג": {
+    "en": "and camping",
+    "es": "y camping",
+    "pt-BR": "e camping",
+    "ar": "وتخييم"
+  },
+  "מדידות": {
+    "en": "measurements",
+    "es": "medidas",
+    "pt-BR": "medições",
+    "ar": "قياسات"
+  },
+  "שמרגישים": {
+    "en": "that feel",
+    "es": "que se sienten",
+    "pt-BR": "que sentem",
+    "ar": "يشعرون"
+  },
+  "מדויקים": {
+    "en": "precise",
+    "es": "precisos",
+    "pt-BR": "precisos",
+    "ar": "دقيقة"
+  },
+  "שמגיעים": {
+    "en": "that arrive",
+    "es": "que llegan",
+    "pt-BR": "que chegam",
+    "ar": "الذين يصلون"
+  },
+  "בסופי": {
+    "en": "on weekend",
+    "es": "en fines de",
+    "pt-BR": "em fins de",
+    "ar": "في نهايات"
+  },
+  "שמחזיקים": {
+    "en": "that hold",
+    "es": "que sostienen",
+    "pt-BR": "que sustentam",
+    "ar": "الذين يمسكون"
+  },
+  "הנכון": {
+    "en": "the right one",
+    "es": "el correcto",
+    "pt-BR": "o certo",
+    "ar": "الصحيح"
+  },
+  "וגימור": {
+    "en": "and finishing",
+    "es": "y acabado",
+    "pt-BR": "e acabamento",
+    "ar": "وتشطيب"
+  },
+  "בשמם": {
+    "en": "in their name",
+    "es": "en su nombre",
+    "pt-BR": "em nome deles",
+    "ar": "باسمهم"
+  },
+  "ושומר": {
+    "en": "and keeps",
+    "es": "y guarda",
+    "pt-BR": "e guarda",
+    "ar": "ويحفظ"
+  },
+  "תחומי": {
+    "en": "fields of",
+    "es": "ámbitos de",
+    "pt-BR": "áreas de",
+    "ar": "مجالات"
+  },
+  "רפואת": {
+    "en": "medicine of",
+    "es": "medicina de",
+    "pt-BR": "medicina de",
+    "ar": "طب"
+  },
+  "לוקבוק": {
+    "en": "lookbook",
+    "es": "lookbook",
+    "pt-BR": "lookbook",
+    "ar": "لوك بوك"
+  },
+  "לוקים": {
+    "en": "looks",
+    "es": "looks",
+    "pt-BR": "looks",
+    "ar": "إطلالات"
+  },
+  "לצוותים": {
+    "en": "for teams",
+    "es": "para equipos",
+    "pt-BR": "para equipes",
+    "ar": "للفرق"
+  },
+  "לבחירת": {
+    "en": "for choosing",
+    "es": "para elegir",
+    "pt-BR": "para escolher",
+    "ar": "لاختيار"
+  },
+  "חנויות ומסחר": {
+    "en": "Stores and commerce",
+    "es": "Tiendas y comercio",
+    "pt-BR": "Lojas e comércio",
+    "ar": "متاجر وتجارة"
+  },
+  "דפי נחיתה": {
+    "en": "Landing pages",
+    "es": "Landing pages",
+    "pt-BR": "Landing pages",
+    "ar": "صفحات هبوط"
+  },
+  "יופי וטיפוח": {
+    "en": "Beauty and care",
+    "es": "Belleza y cuidado",
+    "pt-BR": "Beleza e cuidado",
+    "ar": "جمال وعناية"
+  },
+  "פורטפוליו וסוכנות": {
+    "en": "Portfolio and agency",
+    "es": "Portafolio y agencia",
+    "pt-BR": "Portfólio e agência",
+    "ar": "معرض أعمال ووكالة"
+  },
+  "אוכל ומסעדות": {
+    "en": "Food and restaurants",
+    "es": "Comida y restaurantes",
+    "pt-BR": "Comida e restaurantes",
+    "ar": "طعام ومطاعم"
+  },
+  "נדל״ן": {
+    "en": "Real estate",
+    "es": "Inmobiliaria",
+    "pt-BR": "Imobiliário",
+    "ar": "عقارات"
+  },
+  "תיירות וחוף": {
+    "en": "Travel and beach",
+    "es": "Turismo y playa",
+    "pt-BR": "Turismo e praia",
+    "ar": "سياحة وشاطئ"
+  },
+  "חינוך וקורסים": {
+    "en": "Education and courses",
+    "es": "Educación y cursos",
+    "pt-BR": "Educação e cursos",
+    "ar": "تعليم ودورات"
+  },
+  "עסקים ושירותים": {
+    "en": "Business and services",
+    "es": "Negocios y servicios",
+    "pt-BR": "Negócios e serviços",
+    "ar": "أعمال وخدمات"
+  },
+  "עסקים": {
+    "en": "Business",
+    "es": "Negocios",
+    "pt-BR": "Negócios",
+    "ar": "أعمال"
+  },
+  "קפה ואוכל": {
+    "en": "Coffee and food",
+    "es": "Café y comida",
+    "pt-BR": "Café e comida",
+    "ar": "قهوة وطعام"
+  },
+  "אירוח ומלונאות": {
+    "en": "Hospitality and hotels",
+    "es": "Hospitalidad y hoteles",
+    "pt-BR": "Hospitalidade e hotéis",
+    "ar": "ضيافة وفنادق"
+  },
+  "סייבר ואבטחה": {
+    "en": "Cyber and security",
+    "es": "Ciberseguridad",
+    "pt-BR": "Cibersegurança",
+    "ar": "أمن سيبراني"
+  },
+  "נוף וגינון": {
+    "en": "Landscape and gardening",
+    "es": "Paisaje y jardinería",
+    "pt-BR": "Paisagismo e jardinagem",
+    "ar": "حدائق ومناظر"
+  },
+  "קריאייטיב ועיצוב": {
+    "en": "Creative and design",
+    "es": "Creatividad y diseño",
+    "pt-BR": "Criativo e design",
+    "ar": "إبداع وتصميم"
+  },
+  "תעשייה וייצור": {
+    "en": "Industry and manufacturing",
+    "es": "Industria y fabricación",
+    "pt-BR": "Indústria e fabricação",
+    "ar": "صناعة وتصنيع"
+  },
+  "אירועים וחתונות": {
+    "en": "Events and weddings",
+    "es": "Eventos y bodas",
+    "pt-BR": "Eventos e casamentos",
+    "ar": "فعاليات وأعراس"
+  },
+  "עסקים וייעוץ": {
+    "en": "Business and consulting",
+    "es": "Negocios y consultoría",
+    "pt-BR": "Negócios e consultoria",
+    "ar": "أعمال واستشارات"
+  },
+  "רפואה ובריאות": {
+    "en": "Medicine and health",
+    "es": "Medicina y salud",
+    "pt-BR": "Medicina e saúde",
+    "ar": "طب وصحة"
+  },
+  "כושר וספורט": {
+    "en": "Fitness and sport",
+    "es": "Fitness y deporte",
+    "pt-BR": "Fitness e esporte",
+    "ar": "لياقة ورياضة"
+  },
+  "אדריכלות ובנייה": {
+    "en": "Architecture and construction",
+    "es": "Arquitectura y construcción",
+    "pt-BR": "Arquitetura e construção",
+    "ar": "عمارة وبناء"
+  },
+  "עורכי דין": {
+    "en": "Law firms",
+    "es": "Despachos de abogados",
+    "pt-BR": "Escritórios de advocacia",
+    "ar": "مكاتب محاماة"
+  },
+  "חנויות / אופנה": {
+    "en": "Stores / fashion",
+    "es": "Tiendas / moda",
+    "pt-BR": "Lojas / moda",
+    "ar": "متاجر / أزياء"
+  },
+  "טכנולוגיה": {
+    "en": "Technology",
+    "es": "Tecnología",
+    "pt-BR": "Tecnologia",
+    "ar": "تكنولوجيا"
+  },
+  "פיננסים וחשבונאות": {
+    "en": "Finance and accounting",
+    "es": "Finanzas y contabilidad",
+    "pt-BR": "Finanças e contabilidade",
+    "ar": "مالية ومحاسبة"
+  },
+  "תרבות ואמנות": {
+    "en": "Culture and art",
+    "es": "Cultura y arte",
+    "pt-BR": "Cultura e arte",
+    "ar": "ثقافة وفن"
+  },
+  "שירותים מקצועיים": {
+    "en": "Professional services",
+    "es": "Servicios profesionales",
+    "pt-BR": "Serviços profissionais",
+    "ar": "خدمات مهنية"
+  },
+  "חנות ואיקומרס": {
+    "en": "Store and ecommerce",
+    "es": "Tienda y comercio",
+    "pt-BR": "Loja e e-commerce",
+    "ar": "متجر وتجارة إلكترونية"
+  },
+  "תיק עבודות": {
+    "en": "Portfolio",
+    "es": "Portafolio",
+    "pt-BR": "Portfólio",
+    "ar": "معرض أعمال"
+  },
+  "נדל״ן יוקרה": {
+    "en": "Luxury real estate",
+    "es": "Inmobiliaria de lujo",
+    "pt-BR": "Imobiliário de luxo",
+    "ar": "عقارات فاخرة"
+  },
+  "פורטפolio וצילום": {
+    "en": "Portfolio and photography",
+    "es": "Portafolio y fotografía",
+    "pt-BR": "Portfólio e fotografia",
+    "ar": "معرض وتصوير"
+  },
+  "מנהלת מקצועית": {
+    "en": "Professional manager",
+    "es": "Directora profesional",
+    "pt-BR": "Gerente profissional",
+    "ar": "مديرة مهنية"
+  },
+  "הטקס שלנו": {
+    "en": "Our ritual",
+    "es": "Nuestro ritual",
+    "pt-BR": "Nosso ritual",
+    "ar": "طقوسنا"
+  },
+  "רגעים מהסטודיו": {
+    "en": "Moments from the studio",
+    "es": "Momentos del estudio",
+    "pt-BR": "Momentos do estúdio",
+    "ar": "لحظات من الاستوديو"
+  },
+  "מה הלקוחות מספרות": {
+    "en": "What clients say",
+    "es": "Lo que cuentan las clientas",
+    "pt-BR": "O que as clientes contam",
+    "ar": "ماذا تقول العميلات"
+  },
+  "מוכנות לתור הבא?": {
+    "en": "Ready for the next appointment?",
+    "es": "¿Listas para la próxima cita?",
+    "pt-BR": "Prontas para o próximo horário?",
+    "ar": "جاهزات للموعد التالي؟"
+  },
+  "מאיפה הכל התחיל": {
+    "en": "Where it all started",
+    "es": "Dónde empezó todo",
+    "pt-BR": "Onde tudo começou",
+    "ar": "من أين بدأ كل شيء"
+  },
+  "סיור בחלל": {
+    "en": "A tour of the space",
+    "es": "Recorrido por el espacio",
+    "pt-BR": "Tour pelo espaço",
+    "ar": "جولة في المكان"
+  },
+  "החלל בנוי כשביל חוויה: קבלת פנים שקטה, אזורי טיפול מוארים נכון, עמדות עבודה סטריליות ופינת סיום עם מראה, מוצרים והסבר אישי.": {
+    "en": "The space is built as a journey: a quiet welcome, well-lit treatment areas, sterile work stations, and a finishing corner with a mirror, products, and a personal recap.",
+    "es": "El espacio es un recorrido: bienvenida silenciosa, zonas de tratamiento bien iluminadas, puestos estériles y un rincón final con espejo, productos y explicación personal.",
+    "pt-BR": "O espaço é um percurso: recepção silenciosa, áreas de tratamento bem iluminadas, estações estéreis e um canto final com espelho, produtos e explicação pessoal.",
+    "ar": "المكان مبني كمسار تجربة: ترحيب هادئ، مناطق علاج بإضاءة صحيحة، محطات عمل معقمة وركن ختام بمرآة ومنتجات وشرح شخصي."
+  },
+  "הערכים שמנחים אותנו": {
+    "en": "The values that guide us",
+    "es": "Los valores que nos guían",
+    "pt-BR": "Os valores que nos guiam",
+    "ar": "القيم التي توجهنا"
+  },
+  "דיוק, היגיינה, שקיפות ורוגע הם לא סיסמאות אצלנו — הם מופיעים בלוח התורים, בבחירת החומרים, בקצב העבודה ובשיחה שאחרי הטיפול.": {
+    "en": "Precision, hygiene, transparency, and calm are not slogans here — they show up in the booking board, the materials we choose, the pace of the work, and the conversation after treatment.",
+    "es": "La precisión, la higiene, la transparencia y la calma no son eslóganes: aparecen en la agenda, en los materiales, en el ritmo y en la conversación después del tratamiento.",
+    "pt-BR": "Precisão, higiene, transparência e calma não são slogans: aparecem na agenda, nos materiais, no ritmo e na conversa depois do tratamento.",
+    "ar": "الدقة والنظافة والشفافية والهدوء ليست شعارات لدينا — تظهر في لوحة المواعيد واختيار المواد وإيقاع العمل والحديث بعد العلاج."
+  },
+  "המומחיות שלנו": {
+    "en": "Our expertise",
+    "es": "Nuestra especialidad",
+    "pt-BR": "Nossa especialidade",
+    "ar": "خبرتنا"
+  },
+  "מאחורי כל טיפול עומדת מומחית עם הכשרה, תיק עבודות ותהליך עבודה ברור. אנחנו מחלקות תפקידים לפי ניסיון, רגישות וסוג התוצאה המבוקשת.": {
+    "en": "Behind every treatment is a specialist with training, a portfolio, and a clear process. We assign roles by experience, sensitivity, and the result you want.",
+    "es": "Detrás de cada tratamiento hay una especialista con formación, portafolio y un proceso claro. Repartimos roles según experiencia, sensibilidad y el resultado deseado.",
+    "pt-BR": "Por trás de cada tratamento há uma especialista com formação, portfólio e um processo claro. Dividimos papéis por experiência, sensibilidade e o resultado desejado.",
+    "ar": "خلف كل علاج تقف مختصة بتدريب ومعرض أعمال وعملية واضحة. نوزّع الأدوار حسب الخبرة والحساسية ونوع النتيجة المطلوبة."
+  },
+  "הסמכות והכשרות": {
+    "en": "Certifications and training",
+    "es": "Certificaciones y formación",
+    "pt-BR": "Certificações e formação",
+    "ar": "اعتمادات وتدريب"
+  },
+  "הצוות עובר רענון חיטוי, הכשרות מוצר והדרכות בטיחות לאורך השנה, כדי לשמור על תוצאה עקבית ועל סביבת טיפול בטוחה.": {
+    "en": "The team refreshes sanitation, product training, and safety briefings throughout the year so results stay consistent and the treatment space stays safe.",
+    "es": "El equipo actualiza higiene, formación de producto y seguridad a lo largo del año para mantener un resultado constante y un espacio seguro.",
+    "pt-BR": "A equipe atualiza higiene, treino de produto e segurança ao longo do ano para manter resultado consistente e um espaço seguro.",
+    "ar": "يمرّ الفريق بتحديث تعقيم وتدريب منتجات وإرشادات سلامة على مدار السنة للحفاظ على نتيجة ثابتة وبيئة علاج آمنة."
+  },
+  "ציר הזמן": {
+    "en": "Timeline",
+    "es": "Línea de tiempo",
+    "pt-BR": "Linha do tempo",
+    "ar": "الجدول الزمني"
+  },
+  "מה כותבים עלינו": {
+    "en": "What people write about us",
+    "es": "Qué escriben sobre nosotras",
+    "pt-BR": "O que escrevem sobre nós",
+    "ar": "ماذا يُكتب عنا"
+  },
+  "לקוחות ועורכות יופי מתארות בעיקר את השילוב בין שקט, סדר, דיוק ותוצאה שנראית טבעית גם אחרי כמה ימים.": {
+    "en": "Clients and beauty editors mostly describe the mix of quiet, order, precision, and a result that still looks natural days later.",
+    "es": "Clientas y editoras de belleza destacan la mezcla de calma, orden, precisión y un resultado que sigue viéndose natural días después.",
+    "pt-BR": "Clientes e editoras de beleza descrevem a mistura de silêncio, ordem, precisão e um resultado que continua natural dias depois.",
+    "ar": "تصف العميلات ومحررات الجمال أساساً المزج بين الهدوء والترتيب والدقة ونتيجة تبدو طبيعية حتى بعد عدة أيام."
+  },
+  "בואו להכיר מקרוב": {
+    "en": "Come meet us up close",
+    "es": "Ven a conocernos de cerca",
+    "pt-BR": "Venha nos conhecer de perto",
+    "ar": "تعالوا للتعرّف عن قرب"
+  },
+  "קטלוג טיפולים": {
+    "en": "Treatment catalog",
+    "es": "Catálogo de tratamientos",
+    "pt-BR": "Catálogo de tratamentos",
+    "ar": "كتالوج علاجات"
+  },
+  "כל השירותים": {
+    "en": "All services",
+    "es": "Todos los servicios",
+    "pt-BR": "Todos os serviços",
+    "ar": "كل الخدمات"
+  },
+  "כל שירות מוצג עם משך, הכנה, תוצאה צפויה ותוספות אפשריות כדי לעזור לכן לבחור נכון עוד לפני התור.": {
+    "en": "Every service shows duration, prep, the expected result, and optional add-ons so you can choose well before the appointment.",
+    "es": "Cada servicio muestra duración, preparación, resultado esperado y extras para elegir bien antes de la cita.",
+    "pt-BR": "Cada serviço mostra duração, preparo, resultado esperado e extras para escolher bem antes do horário.",
+    "ar": "يُعرض كل خدمة مع المدة والتحضير والنتيجة المتوقعة والإضافات الممكنة لمساعدتكم على الاختيار قبل الموعد."
+  },
+  "טיפול הדגל": {
+    "en": "Signature treatment",
+    "es": "Tratamiento estrella",
+    "pt-BR": "Tratamento destaque",
+    "ar": "العلاج المميز"
+  },
+  "טיפול הדגל משלב אבחון אישי, הכנת אזור מדויקת, עבודה בשכבות וסיום שמותאם לשגרת הבית. הוא מתאים למי שרוצה תוצאה מורגשת בלי לוותר על תחושה טבעית.": {
+    "en": "The signature treatment combines a personal assessment, precise area prep, layered work, and a finish fitted to your home routine. It is for anyone who wants a visible result without losing a natural feel.",
+    "es": "El tratamiento estrella combina diagnóstico personal, preparación precisa, trabajo por capas y un cierre adaptado a tu rutina. Para quien quiere un resultado visible sin perder naturalidad.",
+    "pt-BR": "O tratamento destaque combina diagnóstico pessoal, preparo preciso, trabalho em camadas e um acabamento adaptado à rotina. Para quem quer resultado visível sem perder a naturalidade.",
+    "ar": "يجمع العلاج المميز بين تشخيص شخصي وتحضير دقيق للمنطقة وعمل بطبقات وختام يناسب روتين المنزل. يناسب من يريد نتيجة ملموسة دون التخلي عن الإحساس الطبيعي."
+  },
+  "מדריך משך טיפול": {
+    "en": "Treatment duration guide",
+    "es": "Guía de duración",
+    "pt-BR": "Guia de duração",
+    "ar": "دليل مدة العلاج"
+  },
+  "משך הטיפול כולל זמן התאמה, הכנה וסיכום. אנחנו משאירות מרווחים בין תורים כדי לאפשר עבודה רגועה ולא לדחוס לקוחות.": {
+    "en": "Treatment time includes fitting, prep, and a wrap-up. We leave gaps between appointments so the work stays calm and we never rush clients.",
+    "es": "La duración incluye ajuste, preparación y cierre. Dejamos huecos entre citas para trabajar con calma y no apretar a las clientas.",
+    "pt-BR": "A duração inclui ajuste, preparo e encerramento. Deixamos intervalos entre horários para trabalhar com calma e não apressar clientes.",
+    "ar": "تشمل مدة العلاج وقت الملاءمة والتحضير والخلاصة. نترك فجوات بين المواعيد لعمل هادئ دون حشر العميلات."
+  },
+  "תוספות מומלצות": {
+    "en": "Recommended add-ons",
+    "es": "Extras recomendados",
+    "pt-BR": "Extras recomendados",
+    "ar": "إضافات موصى بها"
+  },
+  "תוספות קטנות יכולות לשנות את החוויה: מסכה מרגיעה, עיסוי קצר, אמפולה ממוקדת או צילום תוצאה לתיעוד אישי.": {
+    "en": "Small add-ons can change the experience: a calming mask, a short massage, a targeted ampoule, or a result photo for your own record.",
+    "es": "Los extras pequeños cambian la experiencia: mascarilla calmante, masaje breve, ampolla puntual o foto del resultado.",
+    "pt-BR": "Extras pequenos mudam a experiência: máscara calmante, massagem curta, ampola pontual ou foto do resultado.",
+    "ar": "إضافات صغيرة قد تغيّر التجربة: قناع مهدئ، تدليك قصير، أمبولة مركّزة أو تصوير النتيجة للتوثيق الشخصي."
+  },
+  "ההשוואה מציגה שינוי אמיתי ועדין: ניקיון, סימטריה, ברק או מרקם טוב יותר — בלי הבטחות מוגזמות ועם הסבר איך לשמור על התוצאה.": {
+    "en": "The comparison shows a real, subtle change: cleanliness, symmetry, glow, or a better texture — no exaggerated promises, with a note on how to keep the result.",
+    "es": "La comparación muestra un cambio real y sutil: limpieza, simetría, brillo o mejor textura, sin promesas exageradas y con cómo cuidar el resultado.",
+    "pt-BR": "A comparação mostra uma mudança real e sutil: limpeza, simetria, brilho ou melhor textura, sem promessas exageradas e com como manter o resultado.",
+    "ar": "تعرض المقارنة تغييراً حقيقياً ولطيفاً: نظافة وتناسق ولمعان أو ملمساً أفضل — بلا وعود مبالغ فيها ومع شرح لكيفية الحفاظ على النتيجة."
+  },
+  "מחירון שקוף": {
+    "en": "Transparent pricing",
+    "es": "Precios transparentes",
+    "pt-BR": "Preços transparentes",
+    "ar": "أسعار شفافة"
+  },
+  "המחירים כוללים את זמן הייעוץ, חומרי העבודה והנחיות ההמשך. לפני כל תוספת תקבלו הסבר ואישור.": {
+    "en": "Prices include consultation time, working materials, and aftercare notes. Before any add-on you get an explanation and approval.",
+    "es": "Los precios incluyen la consulta, los materiales y las indicaciones. Antes de cada extra recibirás explicación y confirmación.",
+    "pt-BR": "Os preços incluem a consulta, os materiais e as orientações. Antes de cada extra você recebe explicação e confirmação.",
+    "ar": "تشمل الأسعار وقت الاستشارة ومواد العمل وإرشادات المتابعة. قبل أي إضافة ستحصلون على شرح وموافقة."
+  },
+  "שאלות על טיפולים": {
+    "en": "Questions about treatments",
+    "es": "Preguntas sobre tratamientos",
+    "pt-BR": "Perguntas sobre tratamentos",
+    "ar": "أسئلة عن العلاجات"
+  },
+  "רוצות לקבוע?": {
+    "en": "Want to book?",
+    "es": "¿Quieren reservar?",
+    "pt-BR": "Querem agendar?",
+    "ar": "تريدون الحجز؟"
+  },
+  "בחרו יום ושעה": {
+    "en": "Choose a day and time",
+    "es": "Elige día y hora",
+    "pt-BR": "Escolha dia e horário",
+    "ar": "اختاروا يوماً ووقتاً"
+  },
+  "בחירת טיפול": {
+    "en": "Choose a treatment",
+    "es": "Elegir tratamiento",
+    "pt-BR": "Escolher tratamento",
+    "ar": "اختيار علاج"
+  },
+  "בחירת מומחית": {
+    "en": "Choose a specialist",
+    "es": "Elegir especialista",
+    "pt-BR": "Escolher especialista",
+    "ar": "اختيار مختصة"
+  },
+  "מדיניות ביטולים": {
+    "en": "Cancellation policy",
+    "es": "Política de cancelación",
+    "pt-BR": "Política de cancelamento",
+    "ar": "سياسة الإلغاء"
+  },
+  "פרטי יצירת קשר": {
+    "en": "Contact details",
+    "es": "Datos de contacto",
+    "pt-BR": "Dados de contato",
+    "ar": "بيانات التواصل"
+  },
+  "איך מגיעים": {
+    "en": "How to get here",
+    "es": "Cómo llegar",
+    "pt-BR": "Como chegar",
+    "ar": "كيف تصلون"
+  },
+  "שאלות על תורים": {
+    "en": "Questions about appointments",
+    "es": "Preguntas sobre citas",
+    "pt-BR": "Perguntas sobre horários",
+    "ar": "أسئلة عن المواعيد"
+  },
+  "מומחית טיפולים": {
+    "en": "Treatment specialist",
+    "es": "Especialista en tratamientos",
+    "pt-BR": "Especialista em tratamentos",
+    "ar": "مختصة علاجات"
+  },
+  "אחראית חוויית לקוחה": {
+    "en": "Client experience lead",
+    "es": "Responsable de experiencia",
+    "pt-BR": "Responsável pela experiência",
+    "ar": "مسؤولة تجربة العميلة"
+  },
+  "יצאתי עם תחושה שנדיר למצוא — מקצועיות אמיתית ואווירה שנשארת איתך.": {
+    "en": "I left with a feeling that is rare to find — real professionalism and an atmosphere that stays with you.",
+    "es": "Salí con una sensación difícil de encontrar: profesionalidad real y un ambiente que se queda contigo.",
+    "pt-BR": "Saí com uma sensação rara: profissionalismo de verdade e uma atmosfera que fica com você.",
+    "ar": "خرجت بشعور نادر — احتراف حقيقي وأجواء تبقى معك."
+  },
+  "התיאום היה פשוט, הטיפול מדויק, והתוצאה בדיוק כמו שרציתי.": {
+    "en": "Booking was simple, the treatment was precise, and the result was exactly what I wanted.",
+    "es": "La reserva fue sencilla, el tratamiento preciso y el resultado exactamente como quería.",
+    "pt-BR": "O agendamento foi simples, o tratamento preciso e o resultado exatamente o que eu queria.",
+    "ar": "كان التنسيق بسيطاً والعلاج دقيقاً والنتيجة تماماً كما أردت."
+  },
+  "מקום שנעים לחזור אליו. מרגישות שמקשיבים באמת.": {
+    "en": "A place you are glad to come back to. You feel truly listened to.",
+    "es": "Un lugar al que apetece volver. Se siente que de verdad escuchan.",
+    "pt-BR": "Um lugar a que dá gosto voltar. Dá para sentir que escutam de verdade.",
+    "ar": "مكان يسرّ الرجوع إليه. تشعران أن الإصغاء حقيقي."
+  },
+  "לקוחה": {
+    "en": "Client",
+    "es": "Clienta",
+    "pt-BR": "Cliente",
+    "ar": "عميلة"
+  },
+  "כמה זמן מראש כדאי לקבוע?": {
+    "en": "How far ahead should I book?",
+    "es": "¿Con cuánta antelación conviene reservar?",
+    "pt-BR": "Com quanta antecedência devo agendar?",
+    "ar": "كم مسبقاً يُفضّل الحجز؟"
+  },
+  "מומלץ שבוע–שבועיים מראש, ובסופי שבוע אפילו קצת יותר.": {
+    "en": "A week or two ahead is best, and a bit more for weekends.",
+    "es": "Conviene una o dos semanas, y un poco más los fines de semana.",
+    "pt-BR": "O ideal é uma ou duas semanas, e um pouco mais nos fins de semana.",
+    "ar": "يُفضّل أسبوع إلى أسبوعين مسبقاً، وفي عطلة نهاية الأسبوع أكثر قليلاً."
+  },
+  "מה מדיניות הביטול?": {
+    "en": "What is the cancellation policy?",
+    "es": "¿Cuál es la política de cancelación?",
+    "pt-BR": "Qual é a política de cancelamento?",
+    "ar": "ما سياسة الإلغاء؟"
+  },
+  "ניתן לבטל או לשנות עד 24 שעות לפני התור ללא חיוב.": {
+    "en": "You can cancel or change up to 24 hours before the appointment at no charge.",
+    "es": "Puedes cancelar o cambiar hasta 24 horas antes sin cargo.",
+    "pt-BR": "Pode cancelar ou alterar até 24 horas antes sem cobrança.",
+    "ar": "يمكن الإلغاء أو التغيير حتى 24 ساعة قبل الموعد دون رسوم."
+  },
+  "כן — חניון קרוב או חניה ברחוב לפי המיקום. נפרט בהודעת האישור.": {
+    "en": "Yes — nearby parking or street parking depending on the location. We will include details in the confirmation.",
+    "es": "Sí: parking cercano o en la calle según la ubicación. Lo detallamos en la confirmación.",
+    "pt-BR": "Sim — estacionamento perto ou na rua, conforme o local. Detalhamos na confirmação.",
+    "ar": "نعم — موقف قريب أو وقوف في الشارع حسب الموقع. سنفصّل ذلك في رسالة التأكيد."
+  },
+  "השאירו פרטים": {
+    "en": "Leave your details",
+    "es": "Deja tus datos",
+    "pt-BR": "Deixe seus dados",
+    "ar": "اتركوا بياناتكم"
+  },
+  "נחזור אליכן לאישור התור בהקדם.": {
+    "en": "We will get back to you soon to confirm the appointment.",
+    "es": "Volveremos pronto para confirmar la cita.",
+    "pt-BR": "Voltaremos em breve para confirmar o horário.",
+    "ar": "سنعود إليكن قريباً لتأكيد الموعد."
+  },
+  "א׳–ה׳ 09:00–20:00 · ו׳ 09:00–14:00": {
+    "en": "Sun–Thu 09:00–20:00 · Fri 09:00–14:00",
+    "es": "Dom–jue 09:00–20:00 · vie 09:00–14:00",
+    "pt-BR": "Dom–qui 09:00–20:00 · sex 09:00–14:00",
+    "ar": "الأحد–الخميس 09:00–20:00 · الجمعة 09:00–14:00"
+  },
+  "הרגע שלכן מתחיל כאן.": {
+    "en": "Your moment starts here.",
+    "es": "Vuestro momento empieza aquí.",
+    "pt-BR": "O momento de vocês começa aqui.",
+    "ar": "لحظتكن تبدأ هنا."
+  },
+  "בחרו טיפול, יום ושעה — ואנחנו נדאג לשאר.": {
+    "en": "Choose a treatment, day, and time — we will take care of the rest.",
+    "es": "Elige tratamiento, día y hora; nosotras nos ocupamos del resto.",
+    "pt-BR": "Escolha tratamento, dia e horário — nós cuidamos do resto.",
+    "ar": "اخترن علاجاً ويوماً ووقتاً — وسنتولى الباقي."
+  },
+  "חבילת Soft": {
+    "en": "Soft package",
+    "es": "Paquete Soft",
+    "pt-BR": "Pacote Soft",
+    "ar": "باقة Soft"
+  },
+  "טיפול יחיד עם ייעוץ פתיחה, התאמת חומרי עבודה וסיכום כתוב להמשך בבית.": {
+    "en": "A single treatment with an opening consult, product matching, and written notes for home care.",
+    "es": "Un tratamiento con consulta inicial, ajuste de materiales y un resumen escrito para casa.",
+    "pt-BR": "Um tratamento com consulta inicial, ajuste de materiais e um resumo escrito para casa.",
+    "ar": "علاج واحد مع استشارة افتتاح وملاءمة مواد وملخص مكتوب للمتابعة في المنزل."
+  },
+  "חבילת Glow": {
+    "en": "Glow package",
+    "es": "Paquete Glow",
+    "pt-BR": "Pacote Glow",
+    "ar": "باقة Glow"
+  },
+  "שלושה טיפולים מתוכננים מראש, מעקב תוצאה בין ביקורים ותזכורות לשמירה על רצף.": {
+    "en": "Three planned treatments, result follow-up between visits, and reminders to keep the rhythm.",
+    "es": "Tres tratamientos planificados, seguimiento entre visitas y recordatorios para no romper el ritmo.",
+    "pt-BR": "Três tratamentos planejados, acompanhamento entre visitas e lembretes para manter o ritmo.",
+    "ar": "ثلاثة علاجات مخططة مسبقاً ومتابعة النتيجة بين الزيارات وتذكيرات للحفاظ على التسلسل."
+  },
+  "חבילת Ritual": {
+    "en": "Ritual package",
+    "es": "Paquete Ritual",
+    "pt-BR": "Pacote Ritual",
+    "ar": "باقة Ritual"
+  },
+  "יום טיפוח מלא עם תוספות, הפסקת שתייה, צילום תוצאה ותיאום תור המשך לפי הצורך.": {
+    "en": "A full care day with add-ons, a drink break, a result photo, and a follow-up booking if you need one.",
+    "es": "Un día de cuidado completo con extras, pausa para beber, foto del resultado y cita de seguimiento si hace falta.",
+    "pt-BR": "Um dia completo de cuidado com extras, pausa para bebida, foto do resultado e horário de continuidade se precisar.",
+    "ar": "يوم عناية كامل مع إضافات واستراحة مشروب وتصوير النتيجة وتنسيق موعد متابعة عند الحاجة."
+  },
+  "ביטול עד 24 שעות · איחור מעל 15 דק׳ עלול לקצר את הטיפול · בריאות מעל הכל.": {
+    "en": "Cancel up to 24 hours · arriving more than 15 minutes late may shorten the treatment · health comes first.",
+    "es": "Cancelación hasta 24 h · un retraso de más de 15 min puede acortar el tratamiento · la salud es lo primero.",
+    "pt-BR": "Cancelamento até 24 h · atraso acima de 15 min pode encurtar o tratamento · saúde em primeiro lugar.",
+    "ar": "إلغاء حتى 24 ساعة · التأخير أكثر من 15 د قد يقصّر العلاج · الصحة أولاً."
+  },
+  "הזמינו עכשיו": {
+    "en": "Order now",
+    "es": "Pedir ahora",
+    "pt-BR": "Pedir agora",
+    "ar": "اطلبوا الآن"
+  },
+  "לכל המוצרים": {
+    "en": "All products",
+    "es": "Todos los productos",
+    "pt-BR": "Todos os produtos",
+    "ar": "كل المنتجات"
+  },
+  "בחרו קטגוריה ועברו ישירות לסינון חי בחנות.": {
+    "en": "Pick a category and jump straight into live filtering in the store.",
+    "es": "Elige una categoría y pasa al filtro en vivo de la tienda.",
+    "pt-BR": "Escolha uma categoria e vá direto ao filtro ao vivo da loja.",
+    "ar": "اختاروا فئة وانتقلوا مباشرة إلى التصفية الحية في المتجر."
+  },
+  "אוספים שנבנו סביב חוויית קנייה אמיתית.": {
+    "en": "Collections built around a real shopping experience.",
+    "es": "Colecciones pensadas para una compra real.",
+    "pt-BR": "Coleções feitas para uma experiência de compra real.",
+    "ar": "مجموعات بُنيت حول تجربة تسوق حقيقية."
+  },
+  "כל קולקציה מובילה למוצרים שמגיעים מתוסף החנות.": {
+    "en": "Every collection leads to products that come from the store plugin.",
+    "es": "Cada colección lleva a productos del plugin de la tienda.",
+    "pt-BR": "Cada coleção leva a produtos do plugin da loja.",
+    "ar": "كل مجموعة تؤدي إلى منتجات تأتي من إضافة المتجر."
+  },
+  "אביזרים": {
+    "en": "Accessories",
+    "es": "Accesorios",
+    "pt-BR": "Acessórios",
+    "ar": "إكسسوارات"
+  },
+  "אקססוריז": {
+    "en": "Accessories",
+    "es": "Accesorios",
+    "pt-BR": "Acessórios",
+    "ar": "إكسسوارات"
+  },
+  "מוצרים שנבחרו לתצוגה עשירה.": {
+    "en": "Products chosen for a rich display.",
+    "es": "Productos elegidos para una vitrina rica.",
+    "pt-BR": "Produtos escolhidos para uma vitrine rica.",
+    "ar": "منتجات اختيرت لعرض غني."
+  },
+  "הקטלוג נטען מתוסף החנות — עם דמו עד שתמלאו מוצרים אמיתיים.": {
+    "en": "The catalog loads from the store plugin — with demo items until you add real products.",
+    "es": "El catálogo se carga del plugin de la tienda, con demo hasta que añadas productos reales.",
+    "pt-BR": "O catálogo vem do plugin da loja — com demo até você cadastrar produtos reais.",
+    "ar": "يُحمَّل الكتالوج من إضافة المتجر — مع محتوى تجريبي حتى تملأوا منتجات حقيقية."
+  },
+  "בחירה מדויקת": {
+    "en": "A precise choice",
+    "es": "Una elección precisa",
+    "pt-BR": "Uma escolha precisa",
+    "ar": "اختيار دقيق"
+  },
+  "כל מוצר מוצג עם קטגוריה, מחיר ותיאור ברור.": {
+    "en": "Every product shows a category, price, and a clear description.",
+    "es": "Cada producto muestra categoría, precio y una descripción clara.",
+    "pt-BR": "Cada produto mostra categoria, preço e uma descrição clara.",
+    "ar": "يُعرض كل منتج مع فئة وسعر ووصف واضح."
+  },
+  "חוויית קנייה מלאה": {
+    "en": "A full shopping experience",
+    "es": "Una experiencia de compra completa",
+    "pt-BR": "Uma experiência de compra completa",
+    "ar": "تجربة تسوق كاملة"
+  },
+  "11 עמודים עם סינון, סל, גלריה, אודות ומשלוחים.": {
+    "en": "11 pages with filtering, cart, gallery, about, and shipping.",
+    "es": "11 páginas con filtro, carrito, galería, acerca de y envíos.",
+    "pt-BR": "11 páginas com filtro, carrinho, galeria, sobre e entregas.",
+    "ar": "11 صفحة مع تصفية وسلة ومعرض وحول وشحن."
+  },
+  "עיצוב ייחודי": {
+    "en": "Distinctive design",
+    "es": "Diseño único",
+    "pt-BR": "Design exclusivo",
+    "ar": "تصميم مميز"
+  },
+  "תמונות שמספרות את האווירה של המותג.": {
+    "en": "Photos that tell the brand’s atmosphere.",
+    "es": "Fotos que cuentan el ambiente de la marca.",
+    "pt-BR": "Fotos que contam a atmosfera da marca.",
+    "ar": "صور تروي أجواء العلامة."
+  },
+  "גלריה עשירה עם סצנות מוצר ואטמוספירה.": {
+    "en": "A rich gallery with product scenes and atmosphere.",
+    "es": "Una galería rica con escenas de producto y ambiente.",
+    "pt-BR": "Uma galeria rica com cenas de produto e atmosfera.",
+    "ar": "معرض غني بمشاهد المنتج والأجواء."
+  },
+  "מה אומרים מי שכבר קנו.": {
+    "en": "What people who already bought say.",
+    "es": "Lo que dicen quienes ya compraron.",
+    "pt-BR": "O que dizem quem já comprou.",
+    "ar": "ماذا يقول من اشترى بالفعل."
+  },
+  "האתר מרגיש כמו חנות אמיתית — עשיר, יפה ומדויק.": {
+    "en": "The site feels like a real store — rich, beautiful, and precise.",
+    "es": "El sitio se siente como una tienda real: rico, bello y preciso.",
+    "pt-BR": "O site parece uma loja de verdade — rico, bonito e preciso.",
+    "ar": "الموقع يشعر كمتجر حقيقي — غني وجميل ودقيق."
+  },
+  "הסינון והעמודים הפנימיים חוסכים זמן ומעלים אמון.": {
+    "en": "Filtering and inner pages save time and build trust.",
+    "es": "El filtro y las páginas internas ahorran tiempo y generan confianza.",
+    "pt-BR": "O filtro e as páginas internas poupam tempo e geram confiança.",
+    "ar": "التصفية والصفحات الداخلية تختصر الوقت وتعزّز الثقة."
+  },
+  "כל עמוד מרגיש מלא — לא רק דף בית יפה.": {
+    "en": "Every page feels complete — not just a pretty home page.",
+    "es": "Cada página se siente completa, no solo una home bonita.",
+    "pt-BR": "Cada página parece completa — não só uma home bonita.",
+    "ar": "كل صفحة تبدو مكتملة — وليست مجرد صفحة رئيسية جميلة."
+  },
+  "השראה, מדריכים ובחירות מערכת.": {
+    "en": "Inspiration, guides, and editorial picks.",
+    "es": "Inspiración, guías y selecciones de la redacción.",
+    "pt-BR": "Inspiração, guias e escolhas da equipe.",
+    "ar": "إلهام وأدلة واختيارات تحريرية."
+  },
+  "תוכן שמלווה את הקנייה ומחזק את המותג.": {
+    "en": "Content that walks with the purchase and strengthens the brand.",
+    "es": "Contenido que acompaña la compra y refuerza la marca.",
+    "pt-BR": "Conteúdo que acompanha a compra e fortalece a marca.",
+    "ar": "محتوى يرافق الشراء ويعزّز العلامة."
+  },
+  "איך לבחור נכון בפעם הראשונה": {
+    "en": "How to choose well the first time",
+    "es": "Cómo elegir bien a la primera",
+    "pt-BR": "Como escolher bem na primeira vez",
+    "ar": "كيف تختارون صح من أول مرة"
+  },
+  "טיפים קצרים להתאמה מהירה לצרכים שלכם.": {
+    "en": "Short tips for a fast match to your needs.",
+    "es": "Consejos cortos para adaptarlo rápido a lo que necesitas.",
+    "pt-BR": "Dicas curtas para adaptar rápido às suas necessidades.",
+    "ar": "نصائح قصيرة لملاءمة سريعة لاحتياجاتكم."
+  },
+  "מאחורי הקלעים של הקולקציה": {
+    "en": "Behind the scenes of the collection",
+    "es": "Entre bastidores de la colección",
+    "pt-BR": "Bastidores da coleção",
+    "ar": "خلف كواليس المجموعة"
+  },
+  "סיפור קצר על בחירת מוצרים וחומרים.": {
+    "en": "A short story about choosing products and materials.",
+    "es": "Una historia breve sobre la elección de productos y materiales.",
+    "pt-BR": "Uma história curta sobre a escolha de produtos e materiais.",
+    "ar": "قصة قصيرة عن اختيار المنتجات والمواد."
+  },
+  "שילובים שעובדים תמיד": {
+    "en": "Combinations that always work",
+    "es": "Combinaciones que siempre funcionan",
+    "pt-BR": "Combinações que sempre funcionam",
+    "ar": "تركيبات تنجح دائماً"
+  },
+  "המלצות שמעלות את חוויית השימוש.": {
+    "en": "Recommendations that raise the experience of using it.",
+    "es": "Recomendaciones que mejoran el uso.",
+    "pt-BR": "Recomendações que elevam a experiência de uso.",
+    "ar": "توصيات ترفع تجربة الاستخدام."
+  },
+  "היו הראשונים לדעת על הגעות חדשות.": {
+    "en": "Be the first to know about new arrivals.",
+    "es": "Sé el primero en saber de las novedades.",
+    "pt-BR": "Seja o primeiro a saber das novidades.",
+    "ar": "كونوا أول من يعرف الوصولات الجديدة."
+  },
+  "היו ראשונים לדעת על הגעות חדשות.": {
+    "en": "Be first to know about new arrivals.",
+    "es": "Sé el primero en enterarte de las novedades.",
+    "pt-BR": "Seja o primeiro a saber das novidades.",
+    "ar": "كونوا أول من يعلم بالوصولات الجديدة."
+  },
+  "חיפוש, סינון לפי קטגוריה ומיון — המוצרים מתוסף החנות.": {
+    "en": "Search, filter by category, and sort — products come from the store plugin.",
+    "es": "Busca, filtro por categoría y orden: los productos vienen del plugin de la tienda.",
+    "pt-BR": "Busca, filtro por categoria e ordenação — os produtos vêm do plugin da loja.",
+    "ar": "بحث وتصفية حسب الفئة وفرز — المنتجات من إضافة المتجر."
+  },
+  "המוצרים בתצוגה הם דמו עד שתגדירו את הקטלוג האמיתי בניהול החנות.": {
+    "en": "Products on display are demo until you set the real catalog in store management.",
+    "es": "Los productos en vitrina son demo hasta que definas el catálogo real.",
+    "pt-BR": "Os produtos em exibição são demo até você definir o catálogo real.",
+    "ar": "المنتجات المعروضة تجريبية حتى تحدّدوا الكتالوج الحقيقي في إدارة المتجر."
+  },
+  "תיאור המוצר יופיע כאן מתוך תוסף החנות.": {
+    "en": "The product description will appear here from the store plugin.",
+    "es": "La descripción del producto aparecerá aquí desde el plugin de la tienda.",
+    "pt-BR": "A descrição do produto aparecerá aqui a partir do plugin da loja.",
+    "ar": "سيظهر وصف المنتج هنا من إضافة المتجر."
+  },
+  "פרטי מוצר ברורים: שימוש, התאמה ותועלת.": {
+    "en": "Clear product details: use, fit, and benefit.",
+    "es": "Detalles claros: uso, encaje y beneficio.",
+    "pt-BR": "Detalhes claros: uso, adequação e benefício.",
+    "ar": "تفاصيل منتج واضحة: الاستخدام والملاءمة والفائدة."
+  },
+  "מידע על משלוח, החזרה ושירות מופיע בכל עמוד רלוונטי.": {
+    "en": "Shipping, returns, and service info appear on every relevant page.",
+    "es": "La info de envío, devolución y servicio aparece en cada página relevante.",
+    "pt-BR": "Informações de entrega, devolução e serviço aparecem em cada página relevante.",
+    "ar": "معلومات الشحن والإرجاع والخدمة تظهر في كل صفحة ذات صلة."
+  },
+  "אפשר להתייעץ לפני רכישה דרך עמוד יצירת הקשר.": {
+    "en": "You can ask before buying through the contact page.",
+    "es": "Puedes consultar antes de comprar en la página de contacto.",
+    "pt-BR": "Dá para consultar antes de comprar pela página de contato.",
+    "ar": "يمكن الاستشارة قبل الشراء عبر صفحة التواصل."
+  },
+  "מאיפה מגיעים המוצרים?": {
+    "en": "Where do the products come from?",
+    "es": "¿De dónde vienen los productos?",
+    "pt-BR": "De onde vêm os produtos?",
+    "ar": "من أين تأتي المنتجات؟"
+  },
+  "המוצרים נטענים מתוסף החנות ברגע שתגדירו אותם בניהול.": {
+    "en": "Products load from the store plugin as soon as you set them in management.",
+    "es": "Los productos se cargan del plugin en cuanto los definas en la gestión.",
+    "pt-BR": "Os produtos carregam do plugin assim que você os definir na gestão.",
+    "ar": "تُحمَّل المنتجات من إضافة المتجر فور تعريفها في الإدارة."
+  },
+  "כן — בעמוד החנות יש חיפוש, קטגוריות ומיון.": {
+    "en": "Yes — the store page has search, categories, and sorting.",
+    "es": "Sí: la tienda tiene búsqueda, categorías y orden.",
+    "pt-BR": "Sim — a página da loja tem busca, categorias e ordenação.",
+    "ar": "نعم — في صفحة المتجر بحث وفئات وفرز."
+  },
+  "כמה זמן לוקח משלוח?": {
+    "en": "How long does shipping take?",
+    "es": "¿Cuánto tarda el envío?",
+    "pt-BR": "Quanto tempo leva a entrega?",
+    "ar": "كم يستغرق الشحن؟"
+  },
+  "בדרך כלל 1–3 ימי עסקים, לפי אזור ושירות שנבחר.": {
+    "en": "Usually 1–3 business days, depending on area and the service you choose.",
+    "es": "Normalmente 1–3 días laborables, según zona y servicio.",
+    "pt-BR": "Geralmente 1–3 dias úteis, conforme a região e o serviço.",
+    "ar": "عادة 1–3 أيام عمل حسب المنطقة والخدمة المختارة."
+  },
+  "איך יוצרים קשר?": {
+    "en": "How do I get in touch?",
+    "es": "¿Cómo contacto?",
+    "pt-BR": "Como falo com vocês?",
+    "ar": "كيف أتواصل؟"
+  },
+  "דרך עמוד צור קשר, טלפון או אימייל שמופיעים באתר.": {
+    "en": "Through the contact page, phone, or email shown on the site.",
+    "es": "Por la página de contacto, teléfono o email del sitio.",
+    "pt-BR": "Pela página de contato, telefone ou e-mail do site.",
+    "ar": "عبر صفحة التواصل أو الهاتف أو البريد الظاهر في الموقع."
+  },
+  "אפשר להחזיר מוצר?": {
+    "en": "Can I return a product?",
+    "es": "¿Se puede devolver un producto?",
+    "pt-BR": "Posso devolver um produto?",
+    "ar": "هل يمكن إرجاع منتج؟"
+  },
+  "כן, לפי מדיניות ההחזרות בעמוד המשלוחים.": {
+    "en": "Yes, according to the returns policy on the shipping page.",
+    "es": "Sí, según la política de devoluciones de la página de envíos.",
+    "pt-BR": "Sim, conforme a política de devoluções na página de entregas.",
+    "ar": "نعم، وفق سياسة الإرجاع في صفحة الشحن."
+  },
+  "שקיפות מלאה על זמנים, עלויות ומדיניות.": {
+    "en": "Full transparency on timing, costs, and policy.",
+    "es": "Transparencia total en plazos, costes y política.",
+    "pt-BR": "Transparência total sobre prazos, custos e política.",
+    "ar": "شفافية كاملة حول الأوقات والتكاليف والسياسة."
+  },
+  "שילוח לכל הארץ עם מעקב.": {
+    "en": "Nationwide shipping with tracking.",
+    "es": "Envío a todo el país con seguimiento.",
+    "pt-BR": "Envio para todo o país com rastreio.",
+    "ar": "شحن لكل أنحاء البلاد مع تتبع."
+  },
+  "אריזה בטוחה": {
+    "en": "Secure packaging",
+    "es": "Embalaje seguro",
+    "pt-BR": "Embalagem segura",
+    "ar": "تغليف آمن"
+  },
+  "אריזה שמותאמת לסוג המוצר.": {
+    "en": "Packaging matched to the product type.",
+    "es": "Embalaje adaptado al tipo de producto.",
+    "pt-BR": "Embalagem adequada ao tipo de produto.",
+    "ar": "تغليف يناسب نوع المنتج."
+  },
+  "החזרות פשוטות": {
+    "en": "Simple returns",
+    "es": "Devoluciones sencillas",
+    "pt-BR": "Devoluções simples",
+    "ar": "إرجاع بسيط"
+  },
+  "תהליך החזרה ברור תוך 14 יום.": {
+    "en": "A clear return process within 14 days.",
+    "es": "Un proceso de devolución claro en 14 días.",
+    "pt-BR": "Um processo de devolução claro em 14 dias.",
+    "ar": "عملية إرجاع واضحة خلال 14 يوماً."
+  },
+  "אפשר לתאם איסוף לפי זמינות.": {
+    "en": "Pickup can be arranged by availability.",
+    "es": "Se puede coordinar recogida según disponibilidad.",
+    "pt-BR": "Dá para combinar retirada conforme a disponibilidade.",
+    "ar": "يمكن تنسيق الاستلام حسب التوفر."
+  },
+  "עברו לחנות או כתבו לנו להכוונה אישית.": {
+    "en": "Go to the store or write to us for personal guidance.",
+    "es": "Pasa a la tienda o escríbenos para una orientación personal.",
+    "pt-BR": "Vá à loja ou escreva para uma orientação pessoal.",
+    "ar": "انتقلوا إلى المتجر أو اكتبوا لنا لتوجيه شخصي."
+  },
+  "המוצרים מתעדכנים אוטומטית מתוסף החנות.": {
+    "en": "Products update automatically from the store plugin.",
+    "es": "Los productos se actualizan solos desde el plugin de la tienda.",
+    "pt-BR": "Os produtos atualizam automaticamente pelo plugin da loja.",
+    "ar": "تتحدّث المنتجات تلقائياً من إضافة المتجر."
+  },
+  "ישראל": {
+    "en": "Israel",
+    "es": "Israel",
+    "pt-BR": "Israel",
+    "ar": "إسرائيل"
+  },
+  "הכנה": {
+    "en": "Prep",
+    "es": "Preparación",
+    "pt-BR": "Preparo",
+    "ar": "تحضير"
+  },
+  "ספרו כמה אתם ומתי — נשמור לכם מקום.": {
+    "en": "Tell us how many you are and when — we will hold a table.",
+    "es": "Dinos cuántos sois y cuándo: os guardamos sitio.",
+    "pt-BR": "Digam quantos são e quando — reservamos um lugar.",
+    "ar": "أخبرونا بعددكم والوقت — وسنحجز لكم مكاناً."
+  },
+  "תכנון": {
+    "en": "Planning",
+    "es": "Planificación",
+    "pt-BR": "Planejamento",
+    "ar": "تخطيط"
+  },
+  "מדידה": {
+    "en": "Measurement",
+    "es": "Medición",
+    "pt-BR": "Medição",
+    "ar": "قياس"
+  },
+  "מנות חתימה": {
+    "en": "Signature dishes",
+    "es": "Platos firma",
+    "pt-BR": "Pratos assinatura",
+    "ar": "أطباق مميزة"
+  },
+  "קורסים": {
+    "en": "Courses",
+    "es": "Cursos",
+    "pt-BR": "Cursos",
+    "ar": "دورات"
+  },
+  "ביצוע": {
+    "en": "Delivery",
+    "es": "Ejecución",
+    "pt-BR": "Execução",
+    "ar": "تنفيذ"
+  },
+  "בואו נבנה את השלב הבא.": {
+    "en": "Let’s build the next step.",
+    "es": "Construyamos el siguiente paso.",
+    "pt-BR": "Vamos construir o próximo passo.",
+    "ar": "لنبنِ الخطوة التالية."
+  },
+  "שיחת היכרות": {
+    "en": "Intro call",
+    "es": "Llamada de presentación",
+    "pt-BR": "Chamada de apresentação",
+    "ar": "مكالمة تعارف"
+  },
+  "הפקה": {
+    "en": "Production",
+    "es": "Producción",
+    "pt-BR": "Produção",
+    "ar": "إنتاج"
+  },
+  "תפריט": {
+    "en": "Menu",
+    "es": "Menú",
+    "pt-BR": "Cardápio",
+    "ar": "قائمة"
+  },
+  "שביעות רצון": {
+    "en": "Satisfaction",
+    "es": "Satisfacción",
+    "pt-BR": "Satisfação",
+    "ar": "رضا"
+  },
+  "אסטרטגיה": {
+    "en": "Strategy",
+    "es": "Estrategia",
+    "pt-BR": "Estratégia",
+    "ar": "استراتيجية"
+  },
+  "נכסים": {
+    "en": "Properties",
+    "es": "Propiedades",
+    "pt-BR": "Imóveis",
+    "ar": "عقارات"
+  },
+  "צפו בעבודות": {
+    "en": "View the work",
+    "es": "Ver trabajos",
+    "pt-BR": "Ver trabalhos",
+    "ar": "شاهدوا الأعمال"
+  },
+  "אנחנו בונים מערכות עבודה שמחברות אסטרטגיה, קריאייטיב וביצוע. כל פרויקט מתחיל באבחון חד ומסתיים בנכסים שאפשר להפעיל מיד.": {
+    "en": "We build working systems that connect strategy, creative, and delivery. Every project starts with a sharp assessment and ends with assets you can run immediately.",
+    "es": "Construimos sistemas que unen estrategia, creativo y ejecución. Cada proyecto empieza con un diagnóstico nítido y termina en activos listos para usar.",
+    "pt-BR": "Construímos sistemas que ligam estratégia, criativo e execução. Cada projeto começa com um diagnóstico nítido e termina em ativos prontos para usar.",
+    "ar": "نبني أنظمة عمل تربط الاستراتيجية والإبداع والتنفيذ. كل مشروع يبدأ بتشخيص حاد وينتهي بأصول يمكن تشغيلها فوراً."
+  },
+  "מה אנחנו מפעילים עבורכם.": {
+    "en": "What we run for you.",
+    "es": "Lo que activamos para vosotros.",
+    "pt-BR": "O que operamos para vocês.",
+    "ar": "ما نشغّله لكم."
+  },
+  "קייסים": {
+    "en": "Case studies",
+    "es": "Casos",
+    "pt-BR": "Cases",
+    "ar": "حالات"
+  },
+  "עבודות שמראות את השיטה.": {
+    "en": "Work that shows the method.",
+    "es": "Trabajos que muestran el método.",
+    "pt-BR": "Trabalhos que mostram o método.",
+    "ar": "أعمال تُظهر المنهج."
+  },
+  "אנשים שמחזיקים מקצוע וקצב.": {
+    "en": "People who hold both craft and pace.",
+    "es": "Personas que sostienen oficio y ritmo.",
+    "pt-BR": "Pessoas que sustentam ofício e ritmo.",
+    "ar": "أشخاص يجمعون المهنة والإيقاع."
+  },
+  "פריימים מתוך תהליך העבודה.": {
+    "en": "Frames from the working process.",
+    "es": "Fotogramas del proceso.",
+    "pt-BR": "Frames do processo de trabalho.",
+    "ar": "لقطات من عملية العمل."
+  },
+  "היתרונות שמורגשים בשטח.": {
+    "en": "Advantages you feel in the field.",
+    "es": "Ventajas que se notan en el terreno.",
+    "pt-BR": "Vantagens sentidas no campo.",
+    "ar": "مزايا تُلمس في الميدان."
+  },
+  "מה משתנה אחרי העבודה.": {
+    "en": "What changes after the work.",
+    "es": "Qué cambia después del trabajo.",
+    "pt-BR": "O que muda depois do trabalho.",
+    "ar": "ما الذي يتغيّر بعد العمل."
+  },
+  "מחשבות מהסטודיו.": {
+    "en": "Thoughts from the studio.",
+    "es": "Pensamientos del estudio.",
+    "pt-BR": "Pensamentos do estúdio.",
+    "ar": "أفكار من الاستوديو."
+  },
+  "איך מתקדמים בלי לאבד חדות.": {
+    "en": "How to move forward without losing sharpness.",
+    "es": "Cómo avanzar sin perder nitidez.",
+    "pt-BR": "Como avançar sem perder nitidez.",
+    "ar": "كيف تتقدمون دون فقدان الحدة."
+  },
+  "מגדירים קהל, יעד ומגבלות פעולה.": {
+    "en": "We define audience, goal, and operating constraints.",
+    "es": "Definimos audiencia, objetivo y límites de acción.",
+    "pt-BR": "Definimos público, meta e limites de ação.",
+    "ar": "نحدّد الجمهور والهدف وحدود العمل."
+  },
+  "ארכיטקטורה": {
+    "en": "Architecture",
+    "es": "Arquitectura",
+    "pt-BR": "Arquitetura",
+    "ar": "عمارة"
+  },
+  "בונים שיטה, נכסים ולוחות זמנים.": {
+    "en": "We build a method, assets, and timelines.",
+    "es": "Construimos método, activos y calendarios.",
+    "pt-BR": "Construímos método, ativos e cronogramas.",
+    "ar": "نبني منهجاً وأصولاً وجداول زمنية."
+  },
+  "מוציאים לפועל בקצב מדוד ושקוף.": {
+    "en": "We execute at a measured, transparent pace.",
+    "es": "Ejecutamos a un ritmo medido y transparente.",
+    "pt-BR": "Executamos num ritmo medido e transparente.",
+    "ar": "ننفّذ بإيقاع موزون وشفاف."
+  },
+  "כיול": {
+    "en": "Calibration",
+    "es": "Calibrado",
+    "pt-BR": "Calibragem",
+    "ar": "معايرة"
+  },
+  "מודדים, משפרים ומרחיבים את מה שעובד.": {
+    "en": "We measure, improve, and expand what works.",
+    "es": "Medimos, mejoramos y ampliamos lo que funciona.",
+    "pt-BR": "Medimos, melhoramos e ampliamos o que funciona.",
+    "ar": "نقيس ونحسّن ونوسّع ما ينجح."
+  },
+  "אפשר להתחיל ממוקד או לבנות מערכת.": {
+    "en": "You can start focused or build a full system.",
+    "es": "Puedes empezar puntual o construir un sistema.",
+    "pt-BR": "Dá para começar pontual ou construir um sistema.",
+    "ar": "يمكن البدء بتركيز أو بناء نظام."
+  },
+  "לפני שמתחילים.": {
+    "en": "Before you start.",
+    "es": "Antes de empezar.",
+    "pt-BR": "Antes de começar.",
+    "ar": "قبل أن تبدأوا."
+  },
+  "כמה מהר אפשר לצאת לדרך?": {
+    "en": "How quickly can we get started?",
+    "es": "¿Qué tan rápido se puede empezar?",
+    "pt-BR": "Quão rápido dá para começar?",
+    "ar": "كم بسرعة يمكن الانطلاق؟"
+  },
+  "ברוב המקרים מתחילים באבחון תוך שבוע ומציגים תוכנית פעולה ראשונה עד שבועיים.": {
+    "en": "In most cases we start with an assessment within a week and present a first action plan within two.",
+    "es": "En la mayoría de casos empezamos el diagnóstico en una semana y presentamos un primer plan en dos.",
+    "pt-BR": "Na maioria dos casos começamos o diagnóstico em uma semana e apresentamos um primeiro plano em duas.",
+    "ar": "في معظم الحالات نبدأ بالتشخيص خلال أسبوع ونعرض خطة عمل أولى خلال أسبوعين."
+  },
+  "האם אפשר לערוך את כל התוכן באתר?": {
+    "en": "Can all the site content be edited?",
+    "es": "¿Se puede editar todo el contenido del sitio?",
+    "pt-BR": "Dá para editar todo o conteúdo do site?",
+    "ar": "هل يمكن تحرير كل محتوى الموقع؟"
+  },
+  "כן. כל הכותרות, התמונות, השירותים, הצוות והפרטים בנויים כשדות עריכה.": {
+    "en": "Yes. Headlines, images, services, team, and details are all built as editable fields.",
+    "es": "Sí. Títulos, fotos, servicios, equipo y datos son campos editables.",
+    "pt-BR": "Sim. Títulos, fotos, serviços, equipe e dados são campos editáveis.",
+    "ar": "نعم. كل العناوين والصور والخدمات والفريق والتفاصيل مبنية كحقول قابلة للتحرير."
+  },
+  "האם אתם עובדים עם צוות פנימי?": {
+    "en": "Do you work with an in-house team?",
+    "es": "¿Trabajáis con un equipo interno?",
+    "pt-BR": "Vocês trabalham com equipe interna?",
+    "ar": "هل تعملون مع فريق داخلي؟"
+  },
+  "כן. אנחנו משתלבים עם שיווק, מוצר, מכירות או הנהלה לפי אופי הפרויקט.": {
+    "en": "Yes. We plug into marketing, product, sales, or leadership depending on the project.",
+    "es": "Sí. Nos integramos con marketing, producto, ventas o dirección según el proyecto.",
+    "pt-BR": "Sim. Entramos com marketing, produto, vendas ou direção conforme o projeto.",
+    "ar": "نعم. نندمج مع التسويق أو المنتج أو المبيعات أو الإدارة حسب طبيعة المشروع."
+  },
+  "בואו נבנה את המהלך הבא.": {
+    "en": "Let’s build the next move.",
+    "es": "Construyamos el siguiente movimiento.",
+    "pt-BR": "Vamos construir o próximo movimento.",
+    "ar": "لنبنِ الخطوة التالية."
+  },
+  "רוצים לראות איך זה יכול לעבוד אצלכם?": {
+    "en": "Want to see how this could work for you?",
+    "es": "¿Quieres ver cómo puede funcionar en tu caso?",
+    "pt-BR": "Quer ver como isso pode funcionar com vocês?",
+    "ar": "تريدون رؤية كيف يمكن أن يعمل لديكم؟"
+  },
+  "שיחה קצרה תספיק כדי להבין אם יש התאמה ומה הצעד הראשון.": {
+    "en": "A short call is enough to see if there is a fit and what the first step is.",
+    "es": "Una llamada breve basta para ver si hay encaje y cuál es el primer paso.",
+    "pt-BR": "Uma chamada curta basta para ver se há encaixe e qual é o primeiro passo.",
+    "ar": "مكالمة قصيرة تكفي لفهم إن كان هناك توافق وما هي الخطوة الأولى."
+  },
+  "אתר מלא לסוכנות עם 8 עמודים, תנועה ותוכן עריך.": {
+    "en": "A full agency site with 8 pages, motion, and editable content.",
+    "es": "Un sitio de agencia completo con 8 páginas, movimiento y contenido editable.",
+    "pt-BR": "Um site de agência completo com 8 páginas, movimento e conteúdo editável.",
+    "ar": "موقع وكالة كامل بـ 8 صفحات وحركة ومحتوى قابل للتحرير."
+  },
+  "שליחה": {
+    "en": "Send",
+    "es": "Enviar",
+    "pt-BR": "Enviar",
+    "ar": "إرسال"
+  },
+  "קלאסיקה": {
+    "en": "Classics",
+    "es": "Clásicos",
+    "pt-BR": "Clássicos",
+    "ar": "كلاسيكيات"
+  },
+  "שוק": {
+    "en": "Market",
+    "es": "Mercado",
+    "pt-BR": "Mercado",
+    "ar": "سوق"
+  },
+  "מדריך": {
+    "en": "Guide",
+    "es": "Guía",
+    "pt-BR": "Guia",
+    "ar": "دليل"
+  },
+  "מה אומרים האורחים": {
+    "en": "What guests say",
+    "es": "Lo que dicen los huéspedes",
+    "pt-BR": "O que os hóspedes dizem",
+    "ar": "ماذا يقول الضيوف"
+  },
+  "הסיפור המלא": {
+    "en": "The full story",
+    "es": "La historia completa",
+    "pt-BR": "A história completa",
+    "ar": "القصة الكاملة"
+  },
+  "איך הגענו לכאן": {
+    "en": "How we got here",
+    "es": "Cómo llegamos aquí",
+    "pt-BR": "Como chegamos aqui",
+    "ar": "كيف وصلنا إلى هنا"
+  },
+  "אורח קבוע": {
+    "en": "Regular guest",
+    "es": "Huésped habitual",
+    "pt-BR": "Hóspede frequente",
+    "ar": "ضيف دائم"
+  },
+  "דיוק": {
+    "en": "Precision",
+    "es": "Precisión",
+    "pt-BR": "Precisão",
+    "ar": "دقة"
+  },
+  "הליווי היה מדויק, שקוף ומהיר — מצאנו נכס מעולה תוך שבועיים.": {
+    "en": "The guidance was precise, transparent, and fast — we found an excellent property in two weeks.",
+    "es": "El acompañamiento fue preciso, transparente y rápido: encontramos un gran inmueble en dos semanas.",
+    "pt-BR": "O acompanhamento foi preciso, transparente e rápido — achamos um ótimo imóvel em duas semanas.",
+    "ar": "كان المرافقة دقيقة وشفافة وسريعة — وجدنا عقاراً ممتازاً خلال أسبوعين."
+  },
+  "צוות מקצועי שמבין גם את השוק וגם את האנשים מאחורי העסקה.": {
+    "en": "A professional team that understands both the market and the people behind the deal.",
+    "es": "Un equipo profesional que entiende el mercado y a las personas detrás de la operación.",
+    "pt-BR": "Uma equipe profissional que entende o mercado e as pessoas por trás do negócio.",
+    "ar": "فريق محترف يفهم السوق والناس خلف الصفقة."
+  },
+  "מוכנים לצעד הבא?": {
+    "en": "Ready for the next step?",
+    "es": "¿Listos para el siguiente paso?",
+    "pt-BR": "Prontos para o próximo passo?",
+    "ar": "مستعدون للخطوة التالية؟"
+  },
+  "השאירו פרטים ונחזור עם התאמות מדויקות לדרישות שלכם — בלי רעש, בלי לחץ.": {
+    "en": "Leave your details and we will come back with precise matches for your brief — no noise, no pressure.",
+    "es": "Deja tus datos y volveremos con encajes precisos, sin ruido ni presión.",
+    "pt-BR": "Deixe seus dados e voltaremos com encaixes precisos — sem ruído, sem pressão.",
+    "ar": "اتركوا بياناتكم وسنعود بملاءمات دقيقة لمتطلباتكم — بلا ضجيج وبلا ضغط."
+  },
+  "בואו לפגוש אותנו": {
+    "en": "Come meet us",
+    "es": "Ven a conocernos",
+    "pt-BR": "Venha nos encontrar",
+    "ar": "تعالوا للقائنا"
+  },
+  "המשרד שלנו פתוח לפגישות, סיורים וייעוץ — בתיאום מראש ובאווירה נעימה.": {
+    "en": "Our office is open for meetings, tours, and advice — by appointment, in a calm atmosphere.",
+    "es": "Nuestra oficina está abierta para reuniones, visitas y consejo, con cita y en un ambiente agradable.",
+    "pt-BR": "Nosso escritório está aberto para reuniões, tours e consultoria — com horário e em clima agradável.",
+    "ar": "مكتبنا مفتوح للاجتماعات والجولات والاستشارة — بتنسيق مسبق وأجواء لطيفة."
+  },
+  "מיפוי דרישות": {
+    "en": "Requirements mapping",
+    "es": "Mapeo de requisitos",
+    "pt-BR": "Mapeamento de requisitos",
+    "ar": "رسم المتطلبات"
+  },
+  "מבינים תקציב, אזור, סגנון חיים ומטרות השקעה.": {
+    "en": "We understand budget, area, lifestyle, and investment goals.",
+    "es": "Entendemos presupuesto, zona, estilo de vida y objetivos de inversión.",
+    "pt-BR": "Entendemos orçamento, região, estilo de vida e metas de investimento.",
+    "ar": "نفهم الميزانية والمنطقة ونمط الحياة وأهداف الاستثمار."
+  },
+  "סינון חכם": {
+    "en": "Smart filtering",
+    "es": "Filtro inteligente",
+    "pt-BR": "Filtro inteligente",
+    "ar": "تصفية ذكية"
+  },
+  "מציגים רק נכסים שעוברים את הסינון שלנו — איכות לפני כמות.": {
+    "en": "We only show properties that pass our filter — quality before quantity.",
+    "es": "Mostramos solo inmuebles que pasan nuestro filtro: calidad antes que cantidad.",
+    "pt-BR": "Mostramos só imóveis que passam no nosso filtro — qualidade antes de quantidade.",
+    "ar": "نعرض فقط العقارات التي تتجاوز تصفيتنا — الجودة قبل الكمية."
+  },
+  "סיורים ממוקדים": {
+    "en": "Focused tours",
+    "es": "Visitas enfocadas",
+    "pt-BR": "Tours focados",
+    "ar": "جولات مركّزة"
+  },
+  "יוצאים לשטח עם ליווי מלא, תמונות ונתונים בזמן אמת.": {
+    "en": "We go on site with full guidance, photos, and live data.",
+    "es": "Salimos al terreno con acompañamiento, fotos y datos en tiempo real.",
+    "pt-BR": "Vamos a campo com acompanhamento, fotos e dados em tempo real.",
+    "ar": "نخرج إلى الميدان بمرافقة كاملة وصور وبيانات لحظية."
+  },
+  "סגירה מקצועית": {
+    "en": "Professional closing",
+    "es": "Cierre profesional",
+    "pt-BR": "Fechamento profissional",
+    "ar": "إغلاق احترافي"
+  },
+  "מלווים במו״מ, בדיקות, משכנתא וחתימה — עד המפתח.": {
+    "en": "We stay with you through negotiation, checks, mortgage, and signing — until the keys.",
+    "es": "Acompañamos negociación, revisiones, hipoteca y firma, hasta las llaves.",
+    "pt-BR": "Acompanhamos negociação, vistorias, financiamento e assinatura — até a chave.",
+    "ar": "نرافق التفاوض والفحوصات والرهن والتوقيع — حتى المفتاح."
+  },
+  "איך מתחילים לעבוד יחד?": {
+    "en": "How do we start working together?",
+    "es": "¿Cómo empezamos a trabajar juntos?",
+    "pt-BR": "Como começamos a trabalhar juntos?",
+    "ar": "كيف نبدأ العمل معاً؟"
+  },
+  "משאירים פרטים בטופס — נחזור תוך 24 שעות עם 3 התאמות ראשוניות.": {
+    "en": "Leave details in the form — we reply within 24 hours with 3 first matches.",
+    "es": "Deja datos en el formulario: respondemos en 24 horas con 3 primeras opciones.",
+    "pt-BR": "Deixe dados no formulário — respondemos em 24 horas com 3 primeiras opções.",
+    "ar": "اتركوا البيانات في النموذج — نعود خلال 24 ساعة بـ 3 ملاءمات أولى."
+  },
+  "מה העמלה?": {
+    "en": "What is the commission?",
+    "es": "¿Cuál es la comisión?",
+    "pt-BR": "Qual é a comissão?",
+    "ar": "ما العمولة؟"
+  },
+  "שקופה ומוסכמת מראש — בלי הפתעות ובלי אותיות קטנות.": {
+    "en": "Transparent and agreed in advance — no surprises and no fine print.",
+    "es": "Transparente y acordada de antemano, sin sorpresas ni letra pequeña.",
+    "pt-BR": "Transparente e combinada antes — sem surpresas e sem letras miúdas.",
+    "ar": "شفافة ومتفق عليها مسبقاً — بلا مفاجآت وبلا حروف صغيرة."
+  },
+  "כמה זמן לוקחת עסקה?": {
+    "en": "How long does a deal take?",
+    "es": "¿Cuánto tarda una operación?",
+    "pt-BR": "Quanto tempo leva um negócio?",
+    "ar": "كم تستغرق الصفقة؟"
+  },
+  "בממוצע 30–45 יום מרגע מציאת הנכס, תלוי במורכבות.": {
+    "en": "On average 30–45 days from finding the property, depending on complexity.",
+    "es": "De media 30–45 días desde encontrar el inmueble, según la complejidad.",
+    "pt-BR": "Em média 30–45 dias a partir de achar o imóvel, conforme a complexidade.",
+    "ar": "في المتوسط 30–45 يوماً من إيجاد العقار، حسب التعقيد."
+  },
+  "האם אתם עובדים עם משקיעים?": {
+    "en": "Do you work with investors?",
+    "es": "¿Trabajáis con inversores?",
+    "pt-BR": "Vocês trabalham com investidores?",
+    "ar": "هل تعملون مع مستثمرين؟"
+  },
+  "כן — יש ליווי מלא לתשואה, שיפוץ, השכרה וניהול נכס.": {
+    "en": "Yes — full guidance for yield, renovation, rental, and property management.",
+    "es": "Sí: acompañamiento completo para rentabilidad, reforma, alquiler y gestión.",
+    "pt-BR": "Sim — acompanhamento completo para rendimento, reforma, aluguel e gestão.",
+    "ar": "نعم — مرافقة كاملة للعائد والتجديد والتأجير وإدارة العقار."
+  },
+  "מגמות מחירים ברבעון": {
+    "en": "Quarterly price trends",
+    "es": "Tendencias de precios del trimestre",
+    "pt-BR": "Tendências de preço do trimestre",
+    "ar": "اتجاهات الأسعار في الربع"
+  },
+  "ניתוח עדכני של עליות, ירידות ונקודות כניסה מומלצות לשוק.": {
+    "en": "An up-to-date read of rises, dips, and recommended entry points.",
+    "es": "Un análisis actual de subidas, bajadas y puntos de entrada.",
+    "pt-BR": "Uma leitura atual de altas, quedas e pontos de entrada.",
+    "ar": "تحليل محدّث للصعود والهبوط ونقاط الدخول الموصى بها."
+  },
+  "שכונות עולות": {
+    "en": "Rising neighborhoods",
+    "es": "Barrios al alza",
+    "pt-BR": "Bairros em alta",
+    "ar": "أحياء صاعدة"
+  },
+  "אילו אזורים מציגים ביקוש גבוה, תשתיות חדשות ופוטנציאל עליית ערך.": {
+    "en": "Which areas show strong demand, new infrastructure, and room for value to rise.",
+    "es": "Qué zonas muestran alta demanda, nueva infraestructura y potencial de revalorización.",
+    "pt-BR": "Quais áreas mostram alta demanda, nova infraestrutura e potencial de valorização.",
+    "ar": "أي مناطق تظهر طلباً عالياً وبنية تحتية جديدة وإمكانية ارتفاع القيمة."
+  },
+  "טיפים לקונים ראשונים": {
+    "en": "Tips for first-time buyers",
+    "es": "Consejos para compradores primerizos",
+    "pt-BR": "Dicas para primeiros compradores",
+    "ar": "نصائح للمشترين لأول مرة"
+  },
+  "מה לבדוק לפני חתימה — משכנתא, בדק, חלוקה ותכנון עתידי.": {
+    "en": "What to check before signing — mortgage, inspection, layout, and future plans.",
+    "es": "Qué revisar antes de firmar: hipoteca, inspección, distribución y plan futuro.",
+    "pt-BR": "O que checar antes de assinar — financiamento, vistoria, divisão e plano futuro.",
+    "ar": "ما الذي تفحصونه قبل التوقيع — الرهن والفحص والتقسيم والتخطيط المستقبلي."
+  },
+  "סוכנות מובילה 2025": {
+    "en": "Leading agency 2025",
+    "es": "Agencia líder 2025",
+    "pt-BR": "Agência líder 2025",
+    "ar": "وكالة رائدة 2025"
+  },
+  "שקיפות מלאה": {
+    "en": "Full transparency",
+    "es": "Transparencia total",
+    "pt-BR": "Transparência total",
+    "ar": "شفافية كاملة"
+  },
+  "ליווי VIP": {
+    "en": "VIP guidance",
+    "es": "Acompañamiento VIP",
+    "pt-BR": "Acompanhamento VIP",
+    "ar": "مرافقة VIP"
+  },
+  "98% שביעות רצון": {
+    "en": "98% satisfaction",
+    "es": "98% de satisfacción",
+    "pt-BR": "98% de satisfação",
+    "ar": "رضا 98%"
+  },
+  "מכירות פרימיום": {
+    "en": "Premium sales",
+    "es": "Ventas premium",
+    "pt-BR": "Vendas premium",
+    "ar": "مبيعات فاخرة"
+  },
+  "127 עסקאות": {
+    "en": "127 deals",
+    "es": "127 operaciones",
+    "pt-BR": "127 negócios",
+    "ar": "127 صفقة"
+  },
+  "השקעות וייעוץ": {
+    "en": "Investments and advice",
+    "es": "Inversiones y asesoría",
+    "pt-BR": "Investimentos e consultoria",
+    "ar": "استثمارات واستشارة"
+  },
+  "89 עסקאות": {
+    "en": "89 deals",
+    "es": "89 operaciones",
+    "pt-BR": "89 negócios",
+    "ar": "89 صفقة"
+  },
+  "64 עסקאות": {
+    "en": "64 deals",
+    "es": "64 operaciones",
+    "pt-BR": "64 negócios",
+    "ar": "64 صفقة"
+  },
+  "השכרה וניהול": {
+    "en": "Rentals and management",
+    "es": "Alquiler y gestión",
+    "pt-BR": "Aluguel e gestão",
+    "ar": "تأجير وإدارة"
+  },
+  "112 עסקאות": {
+    "en": "112 deals",
+    "es": "112 operaciones",
+    "pt-BR": "112 negócios",
+    "ar": "112 صفقة"
+  },
+  "זיווגים מומלצים": {
+    "en": "Recommended pairings",
+    "es": "Maridajes recomendados",
+    "pt-BR": "Harmonizações recomendadas",
+    "ar": "توافيق موصى بها"
+  },
+  "חומרי הגלם": {
+    "en": "Ingredients",
+    "es": "Materias primas",
+    "pt-BR": "Matérias-primas",
+    "ar": "المواد الخام"
+  },
+  "טעם עמוק": {
+    "en": "Deep flavor",
+    "es": "Sabor profundo",
+    "pt-BR": "Sabor profundo",
+    "ar": "طعم عميق"
+  },
+  "אפשר להזמין מראש?": {
+    "en": "Can I book ahead?",
+    "es": "¿Se puede reservar con antelación?",
+    "pt-BR": "Posso reservar com antecedência?",
+    "ar": "هل يمكن الحجز مسبقاً؟"
+  },
+  "צדדים": {
+    "en": "Sides",
+    "es": "Acompañamientos",
+    "pt-BR": "Acompanhamentos",
+    "ar": "أطباق جانبية"
+  },
+  "בחירת השף": {
+    "en": "Chef's choice",
+    "es": "Elección del chef",
+    "pt-BR": "Escolha do chef",
+    "ar": "اختيار الشيف"
+  },
+  "תהליך העבודה": {
+    "en": "The working process",
+    "es": "El proceso de trabajo",
+    "pt-BR": "O processo de trabalho",
+    "ar": "عملية العمل"
+  },
+  "מקומות מוגבלים": {
+    "en": "Limited seats",
+    "es": "Plazas limitadas",
+    "pt-BR": "Lugares limitados",
+    "ar": "أماكن محدودة"
+  },
+  "השף / המארח": {
+    "en": "The chef / host",
+    "es": "El chef / anfitrión",
+    "pt-BR": "O chef / anfitrião",
+    "ar": "الشيف / المضيف"
+  },
+  "אירוח": {
+    "en": "Hospitality",
+    "es": "Hospitalidad",
+    "pt-BR": "Hospitalidade",
+    "ar": "ضيافة"
+  },
+  "ליווי": {
+    "en": "Guidance",
+    "es": "Acompañamiento",
+    "pt-BR": "Acompanhamento",
+    "ar": "مرافقة"
+  },
+  "לתיק עבודות": {
+    "en": "To the portfolio",
+    "es": "Al portafolio",
+    "pt-BR": "Para o portfólio",
+    "ar": "إلى معرض الأعمال"
+  },
+  "יישום": {
+    "en": "Implementation",
+    "es": "Implementación",
+    "pt-BR": "Implementação",
+    "ar": "تطبيق"
+  },
+  "ביקור": {
+    "en": "Visit",
+    "es": "Visita",
+    "pt-BR": "Visita",
+    "ar": "زيارة"
+  },
+  "שישי": {
+    "en": "Friday",
+    "es": "Viernes",
+    "pt-BR": "Sexta",
+    "ar": "الجمعة"
+  },
+  "לקולקציה": {
+    "en": "To the collection",
+    "es": "A la colección",
+    "pt-BR": "Para a coleção",
+    "ar": "إلى المجموعة"
+  },
+  "החתימות שלנו": {
+    "en": "Our signatures",
+    "es": "Nuestras firmas",
+    "pt-BR": "Nossas assinaturas",
+    "ar": "توقيعاتنا"
+  },
+  "מהמטבח עד אליכם": {
+    "en": "From the kitchen to you",
+    "es": "De la cocina a vuestra mesa",
+    "pt-BR": "Da cozinha até vocês",
+    "ar": "من المطبخ إليكم"
+  },
+  "בחירה": {
+    "en": "Choice",
+    "es": "Elección",
+    "pt-BR": "Escolha",
+    "ar": "اختيار"
+  },
+  "חומרי גלם טריים בלבד.": {
+    "en": "Fresh ingredients only.",
+    "es": "Solo materia prima fresca.",
+    "pt-BR": "Só matéria-prima fresca.",
+    "ar": "مواد خام طازجة فقط."
+  },
+  "טכניקה מדויקת בלי קיצורי דרך.": {
+    "en": "Precise technique with no shortcuts.",
+    "es": "Técnica precisa, sin atajos.",
+    "pt-BR": "Técnica precisa, sem atalhos.",
+    "ar": "تقنية دقيقة بلا اختصارات."
+  },
+  "חמים, יפים, בזמן.": {
+    "en": "Hot, beautiful, on time.",
+    "es": "Calientes, hermosos, a tiempo.",
+    "pt-BR": "Quentes, bonitos, no tempo.",
+    "ar": "ساخنة وجميلة وفي الوقت."
+  },
+  "רגעים מהמטבח": {
+    "en": "Moments from the kitchen",
+    "es": "Momentos de la cocina",
+    "pt-BR": "Momentos da cozinha",
+    "ar": "لحظات من المطبخ"
+  },
+  "בלוגרית": {
+    "en": "Blogger",
+    "es": "Blogger",
+    "pt-BR": "Blogueira",
+    "ar": "مدوّنة"
+  },
+  "שירות חם, מנות מדויקות, אווירה מדויקת.": {
+    "en": "Warm service, precise dishes, the right atmosphere.",
+    "es": "Servicio cálido, platos precisos, ambiente justo.",
+    "pt-BR": "Serviço caloroso, pratos precisos, atmosfera certa.",
+    "ar": "خدمة دافئة وأطباق دقيقة وأجواء مناسبة."
+  },
+  "חוגג": {
+    "en": "Celebrating",
+    "es": "De celebración",
+    "pt-BR": "Comemorando",
+    "ar": "محتفل"
+  },
+  "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00": {
+    "en": "Sun–Thu 11:00–22:00 · Fri 10:00–15:00 · Sat 18:00–22:00",
+    "es": "Dom–jue 11:00–22:00 · vie 10:00–15:00 · sáb 18:00–22:00",
+    "pt-BR": "Dom–qui 11:00–22:00 · sex 10:00–15:00 · sáb 18:00–22:00",
+    "ar": "الأحد–الخميس 11:00–22:00 · الجمعة 10:00–15:00 · السبت 18:00–22:00"
+  },
+  "מוכנים להזמין?": {
+    "en": "Ready to order?",
+    "es": "¿Listos para pedir?",
+    "pt-BR": "Prontos para pedir?",
+    "ar": "مستعدون للطلب؟"
+  },
+  "כל המנות": {
+    "en": "All dishes",
+    "es": "Todos los platos",
+    "pt-BR": "Todos os pratos",
+    "ar": "كل الأطباق"
+  },
+  "חתימה": {
+    "en": "Signature",
+    "es": "Firma",
+    "pt-BR": "Assinatura",
+    "ar": "توقيع"
+  },
+  "המנות המובילות": {
+    "en": "Leading dishes",
+    "es": "Platos destacados",
+    "pt-BR": "Pratos em destaque",
+    "ar": "الأطباق الرائدة"
+  },
+  "טעמים שחוזרים": {
+    "en": "Flavors that return",
+    "es": "Sabores que vuelven",
+    "pt-BR": "Sabores que voltam",
+    "ar": "نكهات تعود"
+  },
+  "עונתי": {
+    "en": "Seasonal",
+    "es": "De temporada",
+    "pt-BR": "Sazonal",
+    "ar": "موسمي"
+  },
+  "לפי השוק": {
+    "en": "According to the market",
+    "es": "Según el mercado",
+    "pt-BR": "Conforme o mercado",
+    "ar": "حسب السوق"
+  },
+  "השלמות מושלמות": {
+    "en": "Perfect pairings",
+    "es": "Complementos perfectos",
+    "pt-BR": "Complementos perfeitos",
+    "ar": "تكميلات مثالية"
+  },
+  "מנה + שתייה": {
+    "en": "Dish + drink",
+    "es": "Plato + bebida",
+    "pt-BR": "Prato + bebida",
+    "ar": "طبق + مشروب"
+  },
+  "איזון מושלם": {
+    "en": "Perfect balance",
+    "es": "Equilibrio perfecto",
+    "pt-BR": "Equilíbrio perfeito",
+    "ar": "توازن مثالي"
+  },
+  "חריף + רענון": {
+    "en": "Spicy + fresh",
+    "es": "Picante + fresco",
+    "pt-BR": "Picante + fresco",
+    "ar": "حار + منعش"
+  },
+  "חום מול קרירות": {
+    "en": "Heat versus cool",
+    "es": "Calor frente a frescor",
+    "pt-BR": "Calor versus frescor",
+    "ar": "حرارة مقابل برودة"
+  },
+  "מתוק + מלוח": {
+    "en": "Sweet + salty",
+    "es": "Dulce + salado",
+    "pt-BR": "Doce + salgado",
+    "ar": "حلو + مالح"
+  },
+  "ניגוד שעובד": {
+    "en": "A contrast that works",
+    "es": "Un contraste que funciona",
+    "pt-BR": "Um contraste que funciona",
+    "ar": "تباين ينجح"
+  },
+  "מיז-אן-פלאס מסודר.": {
+    "en": "A tidy mise en place.",
+    "es": "Mise en place ordenada.",
+    "pt-BR": "Mise en place organizada.",
+    "ar": "تحضير منظّم قبل الخدمة."
+  },
+  "בישול": {
+    "en": "Cooking",
+    "es": "Cocción",
+    "pt-BR": "Cocção",
+    "ar": "طبخ"
+  },
+  "חום נכון בזמן הנכון.": {
+    "en": "The right heat at the right time.",
+    "es": "El calor justo en el momento justo.",
+    "pt-BR": "O calor certo na hora certa.",
+    "ar": "الحرارة الصحيحة في الوقت الصحيح."
+  },
+  "טעימה": {
+    "en": "Tasting",
+    "es": "Cata",
+    "pt-BR": "Degustação",
+    "ar": "تذوّق"
+  },
+  "כוונון אחרון.": {
+    "en": "A last adjustment.",
+    "es": "El último ajuste.",
+    "pt-BR": "O último ajuste.",
+    "ar": "ضبط أخير."
+  },
+  "צלחת נקייה ומדויקת.": {
+    "en": "A clean, precise plate.",
+    "es": "Un plato limpio y preciso.",
+    "pt-BR": "Um prato limpo e preciso.",
+    "ar": "طبق نظيف ودقيق."
+  },
+  "חומר ראשי": {
+    "en": "Main ingredient",
+    "es": "Ingrediente principal",
+    "pt-BR": "Ingrediente principal",
+    "ar": "المادة الرئيسية"
+  },
+  "מקור איכותי": {
+    "en": "A quality source",
+    "es": "Un origen de calidad",
+    "pt-BR": "Uma origem de qualidade",
+    "ar": "مصدر جودة"
+  },
+  "תבלין בית": {
+    "en": "House spice",
+    "es": "Especia de la casa",
+    "pt-BR": "Tempero da casa",
+    "ar": "بهار البيت"
+  },
+  "תערובת שלנו": {
+    "en": "Our blend",
+    "es": "Nuestra mezcla",
+    "pt-BR": "Nossa mistura",
+    "ar": "خليطنا"
+  },
+  "שמן/חמאה": {
+    "en": "Oil/butter",
+    "es": "Aceite/mantequilla",
+    "pt-BR": "Óleo/manteiga",
+    "ar": "زيت/زبدة"
+  },
+  "אירועים מיוחדים": {
+    "en": "Special events",
+    "es": "Eventos especiales",
+    "pt-BR": "Eventos especiais",
+    "ar": "مناسبات خاصة"
+  },
+  "ערבי שיתוף ותפריטים עונתיים.": {
+    "en": "Shared evenings and seasonal menus.",
+    "es": "Noches compartidas y menús de temporada.",
+    "pt-BR": "Noites compartilhadas e cardápios sazonais.",
+    "ar": "أمسيات مشتركة وقوائم موسمية."
+  },
+  "הניסויים הראשונים.": {
+    "en": "The first experiments.",
+    "es": "Los primeros ensayos.",
+    "pt-BR": "Os primeiros ensaios.",
+    "ar": "التجارب الأولى."
+  },
+  "תפריט חתימה מחודש.": {
+    "en": "A renewed signature menu.",
+    "es": "Un menú firma renovado.",
+    "pt-BR": "Um cardápio assinatura renovado.",
+    "ar": "قائمة توقيع متجددة."
+  },
+  "טריות": {
+    "en": "Freshness",
+    "es": "Frescura",
+    "pt-BR": "Frescor",
+    "ar": "طزاجة"
+  },
+  "כל יום מחדש.": {
+    "en": "Every day, anew.",
+    "es": "Cada día de nuevo.",
+    "pt-BR": "Todo dia de novo.",
+    "ar": "كل يوم من جديد."
+  },
+  "בלי פשרות.": {
+    "en": "No compromises.",
+    "es": "Sin compromisos.",
+    "pt-BR": "Sem concessões.",
+    "ar": "بلا تنازلات."
+  },
+  "אורחים במרכז.": {
+    "en": "Guests at the center.",
+    "es": "Los huéspedes en el centro.",
+    "pt-BR": "Os hóspedes no centro.",
+    "ar": "الضيوف في المركز."
+  },
+  "מתי נתראה?": {
+    "en": "When shall we meet?",
+    "es": "¿Cuándo nos vemos?",
+    "pt-BR": "Quando nos vemos?",
+    "ar": "متى نلتقي؟"
+  },
+  "יש אפשרויות טבעוניות?": {
+    "en": "Are there vegan options?",
+    "es": "¿Hay opciones veganas?",
+    "pt-BR": "Há opções veganas?",
+    "ar": "هل هناك خيارات نباتية؟"
+  },
+  "כן — בדקו בתפריט המסומן.": {
+    "en": "Yes — check the marked menu.",
+    "es": "Sí: consulta el menú marcado.",
+    "pt-BR": "Sim — veja o cardápio marcado.",
+    "ar": "نعم — راجعوا القائمة المعلّمة."
+  },
+  "בהחלט דרך טופס ההזמנה.": {
+    "en": "Absolutely, through the reservation form.",
+    "es": "Por supuesto, con el formulario de reserva.",
+    "pt-BR": "Com certeza, pelo formulário de reserva.",
+    "ar": "بالتأكيد عبر نموذج الحجز."
+  },
+  "חניון קרוב במרחק הליכה קצרה.": {
+    "en": "Nearby parking a short walk away.",
+    "es": "Parking cercano a pocos minutos a pie.",
+    "pt-BR": "Estacionamento perto, a uma caminhada curta.",
+    "ar": "موقف قريب على مسافة مشي قصيرة."
+  },
+  "₪28 · קלאסי": {
+    "en": "₪28 · Classic",
+    "es": "₪28 · Clásico",
+    "pt-BR": "₪28 · Clássico",
+    "ar": "₪28 · كلاسيكي"
+  },
+  "₪32 · מומלץ": {
+    "en": "₪32 · Recommended",
+    "es": "₪32 · Recomendado",
+    "pt-BR": "₪32 · Recomendado",
+    "ar": "₪32 · موصى به"
+  },
+  "₪36 · שף": {
+    "en": "₪36 · Chef",
+    "es": "₪36 · Chef",
+    "pt-BR": "₪36 · Chef",
+    "ar": "₪36 · شيف"
+  },
+  "₪40 · עונתי": {
+    "en": "₪40 · Seasonal",
+    "es": "₪40 · De temporada",
+    "pt-BR": "₪40 · Sazonal",
+    "ar": "₪40 · موسمي"
+  },
+  "₪24 · ביתי": {
+    "en": "₪24 · Homestyle",
+    "es": "₪24 · Casero",
+    "pt-BR": "₪24 · Caseiro",
+    "ar": "₪24 · بيتي"
+  },
+  "₪30 · מיוחד": {
+    "en": "₪30 · Special",
+    "es": "₪30 · Especial",
+    "pt-BR": "₪30 · Especial",
+    "ar": "₪30 · خاص"
+  },
+  "דירוג ממוצע": {
+    "en": "Average rating",
+    "es": "Valoración media",
+    "pt-BR": "Avaliação média",
+    "ar": "تقييم متوسط"
+  },
+  "השיטה": {
+    "en": "The method",
+    "es": "El método",
+    "pt-BR": "O método",
+    "ar": "المنهج"
+  },
+  "זמינות": {
+    "en": "Availability",
+    "es": "Disponibilidad",
+    "pt-BR": "Disponibilidade",
+    "ar": "التوفر"
+  },
+  "לתיאום שיחה": {
+    "en": "To book a call",
+    "es": "Para coordinar una llamada",
+    "pt-BR": "Para agendar uma chamada",
+    "ar": "لتنسيق مكالمة"
+  },
+  "מחירון": {
+    "en": "Price list",
+    "es": "Lista de precios",
+    "pt-BR": "Lista de preços",
+    "ar": "قائمة أسعار"
+  },
+  "הזמינו שולחן": {
+    "en": "Reserve a table",
+    "es": "Reservar mesa",
+    "pt-BR": "Reservar mesa",
+    "ar": "احجزوا طاولة"
+  },
+  "אירועים": {
+    "en": "Events",
+    "es": "Eventos",
+    "pt-BR": "Eventos",
+    "ar": "فعاليات"
+  },
+  "ידע, ניתוח ותובנות": {
+    "en": "Knowledge, analysis, and insight",
+    "es": "Conocimiento, análisis e ideas",
+    "pt-BR": "Conhecimento, análise e insights",
+    "ar": "معرفة وتحليل ورؤى"
+  },
+  "מגמות 2026": {
+    "en": "2026 trends",
+    "es": "Tendencias 2026",
+    "pt-BR": "Tendências 2026",
+    "ar": "اتجاهات 2026"
+  },
+  "מה משתנה בשוק ואיך להתכונן מראש.": {
+    "en": "What is changing in the market and how to prepare.",
+    "es": "Qué cambia en el mercado y cómo prepararse.",
+    "pt-BR": "O que muda no mercado e como se preparar.",
+    "ar": "ما الذي يتغيّر في السوق وكيف تستعدون."
+  },
+  "מסגרת עבודה": {
+    "en": "Working framework",
+    "es": "Marco de trabajo",
+    "pt-BR": "Quadro de trabalho",
+    "ar": "إطار عمل"
+  },
+  "תהליך בן 4 שלבים שמייצר תוצאות עקביות.": {
+    "en": "A 4-step process that produces consistent results.",
+    "es": "Un proceso de 4 pasos que genera resultados constantes.",
+    "pt-BR": "Um processo de 4 etapas que gera resultados consistentes.",
+    "ar": "عملية من 4 خطوات تنتج نتائج ثابتة."
+  },
+  "טיפוח": {
+    "en": "Care",
+    "es": "Cuidado",
+    "pt-BR": "Cuidado",
+    "ar": "عناية"
+  },
+  "דקור": {
+    "en": "Decor",
+    "es": "Decoración",
+    "pt-BR": "Decoração",
+    "ar": "ديكور"
+  },
+  "מאמרים": {
+    "en": "Articles",
+    "es": "Artículos",
+    "pt-BR": "Artigos",
+    "ar": "مقالات"
+  },
+  "גלו נכסים": {
+    "en": "Discover properties",
+    "es": "Descubrir inmuebles",
+    "pt-BR": "Descobrir imóveis",
+    "ar": "اكتشفوا العقارات"
+  },
+  "ביגוד": {
+    "en": "Apparel",
+    "es": "Ropa",
+    "pt-BR": "Roupas",
+    "ar": "ملابس"
+  },
+  "צעצועים": {
+    "en": "Toys",
+    "es": "Juguetes",
+    "pt-BR": "Brinquedos",
+    "ar": "ألعاب"
+  },
+  "טיולים": {
+    "en": "Trips",
+    "es": "Viajes",
+    "pt-BR": "Passeios",
+    "ar": "رحلات"
+  },
+  "שכבות": {
+    "en": "Layers",
+    "es": "Capas",
+    "pt-BR": "Camadas",
+    "ar": "طبقات"
+  },
+  "/לחודש": {
+    "en": "/month",
+    "es": "/mes",
+    "pt-BR": "/mês",
+    "ar": "/شهر"
+  },
+  "טבעות": {
+    "en": "Rings",
+    "es": "Anillos",
+    "pt-BR": "Anéis",
+    "ar": "خواتم"
+  },
+  "שרשראות": {
+    "en": "Necklaces",
+    "es": "Collares",
+    "pt-BR": "Colares",
+    "ar": "قلائد"
+  },
+  "עגילים": {
+    "en": "Earrings",
+    "es": "Pendientes",
+    "pt-BR": "Brincos",
+    "ar": "أقراط"
+  },
+  "מארזים": {
+    "en": "Sets",
+    "es": "Estuches",
+    "pt-BR": "Kits",
+    "ar": "علب"
+  },
+  "ספורט": {
+    "en": "Sport",
+    "es": "Deporte",
+    "pt-BR": "Esporte",
+    "ar": "رياضة"
+  },
+  "איך זה עובד": {
+    "en": "How it works",
+    "es": "Cómo funciona",
+    "pt-BR": "Como funciona",
+    "ar": "كيف يعمل"
+  },
+  "מחירים": {
+    "en": "Prices",
+    "es": "Precios",
+    "pt-BR": "Preços",
+    "ar": "أسعار"
+  },
+  "לפני": {
+    "en": "Before",
+    "es": "Antes",
+    "pt-BR": "Antes",
+    "ar": "قبل"
+  },
+  "אחרי": {
+    "en": "After",
+    "es": "Después",
+    "pt-BR": "Depois",
+    "ar": "بعد"
+  },
+  "לתפריט": {
+    "en": "To the menu",
+    "es": "Al menú",
+    "pt-BR": "Para o cardápio",
+    "ar": "إلى القائمة"
+  },
+  "לטיפולים": {
+    "en": "To treatments",
+    "es": "A los tratamientos",
+    "pt-BR": "Para os tratamentos",
+    "ar": "إلى العلاجات"
+  },
+  "שיער": {
+    "en": "Hair",
+    "es": "Cabello",
+    "pt-BR": "Cabelo",
+    "ar": "شعر"
+  },
+  "תאורה": {
+    "en": "Lighting",
+    "es": "Iluminación",
+    "pt-BR": "Iluminação",
+    "ar": "إضاءة"
+  },
+  "שעונים": {
+    "en": "Watches",
+    "es": "Relojes",
+    "pt-BR": "Relógios",
+    "ar": "ساعات"
+  },
+  "תחומי התמחות": {
+    "en": "Practice areas",
+    "es": "Áreas de especialidad",
+    "pt-BR": "Áreas de atuação",
+    "ar": "مجالات التخصص"
+  },
+  "סניקרס": {
+    "en": "Sneakers",
+    "es": "Zapatillas",
+    "pt-BR": "Tênis",
+    "ar": "سنيكرز"
+  },
+  "לקוחות מספרים": {
+    "en": "Clients tell",
+    "es": "Los clientes cuentan",
+    "pt-BR": "Clientes contam",
+    "ar": "العملاء يروون"
+  },
+  "מגדלים": {
+    "en": "Towers",
+    "es": "Torres",
+    "pt-BR": "Torres",
+    "ar": "أبراج"
+  },
+  "שליחת פרטים": {
+    "en": "Send details",
+    "es": "Enviar datos",
+    "pt-BR": "Enviar dados",
+    "ar": "إرسال البيانات"
+  },
+  "בלוג": {
+    "en": "Blog",
+    "es": "Blog",
+    "pt-BR": "Blog",
+    "ar": "مدونة"
+  },
+  "מיתוג": {
+    "en": "Branding",
+    "es": "Branding",
+    "pt-BR": "Branding",
+    "ar": "هوية"
+  },
+  "עיצוב אתר": {
+    "en": "Website design",
+    "es": "Diseño web",
+    "pt-BR": "Design de site",
+    "ar": "تصميم موقع"
+  },
+  "פיתוח צד לקוח": {
+    "en": "Front-end development",
+    "es": "Desarrollo front-end",
+    "pt-BR": "Desenvolvimento front-end",
+    "ar": "تطوير الواجهة"
+  },
+  "פיתוח אפליקציה": {
+    "en": "App development",
+    "es": "Desarrollo de apps",
+    "pt-BR": "Desenvolvimento de app",
+    "ar": "تطوير تطبيق"
+  },
+  "שליחת הודעה": {
+    "en": "Send a message",
+    "es": "Enviar mensaje",
+    "pt-BR": "Enviar mensagem",
+    "ar": "إرسال رسالة"
+  },
+  "הזמנת שולחן": {
+    "en": "Table reservation",
+    "es": "Reserva de mesa",
+    "pt-BR": "Reserva de mesa",
+    "ar": "حجز طاولة"
+  },
+  "אפייה": {
+    "en": "Baking",
+    "es": "Repostería",
+    "pt-BR": "Confeitaria",
+    "ar": "خبز"
+  },
+  "תיאום סיור": {
+    "en": "Book a tour",
+    "es": "Coordinar visita",
+    "pt-BR": "Agendar tour",
+    "ar": "تنسيق جولة"
+  },
+  "הגשת מועמדות": {
+    "en": "Apply",
+    "es": "Enviar candidatura",
+    "pt-BR": "Enviar candidatura",
+    "ar": "تقديم طلب"
+  },
+  "תמחור": {
+    "en": "Pricing",
+    "es": "Precios",
+    "pt-BR": "Preços",
+    "ar": "تسعير"
+  },
+  "חשמל": {
+    "en": "Electrical",
+    "es": "Electricidad",
+    "pt-BR": "Elétrica",
+    "ar": "كهرباء"
+  },
+  "לגלריה": {
+    "en": "To the gallery",
+    "es": "A la galería",
+    "pt-BR": "Para a galeria",
+    "ar": "إلى المعرض"
+  },
+  "יצירה": {
+    "en": "Craft",
+    "es": "Creación",
+    "pt-BR": "Criação",
+    "ar": "إبداع"
+  },
+  "סטים": {
+    "en": "Sets",
+    "es": "Sets",
+    "pt-BR": "Sets",
+    "ar": "أطقم"
+  },
+  "שירות": {
+    "en": "Service",
+    "es": "Servicio",
+    "pt-BR": "Serviço",
+    "ar": "خدمة"
+  },
+  "מנות": {
+    "en": "Dishes",
+    "es": "Platos",
+    "pt-BR": "Pratos",
+    "ar": "أطباق"
+  },
+  "נעליים": {
+    "en": "Shoes",
+    "es": "Zapatos",
+    "pt-BR": "Sapatos",
+    "ar": "أحذية"
+  },
+  "ליווי אישי": {
+    "en": "Personal guidance",
+    "es": "Acompañamiento personal",
+    "pt-BR": "Acompanhamento pessoal",
+    "ar": "مرافقة شخصية"
+  },
+  "האווירה": {
+    "en": "The atmosphere",
+    "es": "El ambiente",
+    "pt-BR": "A atmosfera",
+    "ar": "الأجواء"
+  },
+  "להתחיל עכשיו": {
+    "en": "Start now",
+    "es": "Empezar ahora",
+    "pt-BR": "Começar agora",
+    "ar": "ابدأوا الآن"
+  },
+  "פיתוח": {
+    "en": "Development",
+    "es": "Desarrollo",
+    "pt-BR": "Desenvolvimento",
+    "ar": "تطوير"
+  },
+  "מנכ״ל": {
+    "en": "CEO",
+    "es": "CEO",
+    "pt-BR": "CEO",
+    "ar": "الرئيس التنفيذي"
+  },
+  "זרימה": {
+    "en": "Flow",
+    "es": "Flujo",
+    "pt-BR": "Fluxo",
+    "ar": "تدفق"
+  },
+  "סטודיו": {
+    "en": "Studio",
+    "es": "Estudio",
+    "pt-BR": "Estúdio",
+    "ar": "استوديو"
+  },
+  "מותגים": {
+    "en": "Brands",
+    "es": "Marcas",
+    "pt-BR": "Marcas",
+    "ar": "علامات"
+  },
+  "ביצועים": {
+    "en": "Performance",
+    "es": "Rendimiento",
+    "pt-BR": "Desempenho",
+    "ar": "أداء"
+  },
+  "להתחיל פרויקט": {
+    "en": "Start a project",
+    "es": "Empezar un proyecto",
+    "pt-BR": "Começar um projeto",
+    "ar": "بدء مشروع"
+  },
+  "ארגונים": {
+    "en": "Organizations",
+    "es": "Organizaciones",
+    "pt-BR": "Organizações",
+    "ar": "مؤسسات"
+  },
+  "תיאום פגישה": {
+    "en": "Book a meeting",
+    "es": "Coordinar reunión",
+    "pt-BR": "Agendar reunião",
+    "ar": "تنسيق اجتماع"
+  },
+  "אוזניות": {
+    "en": "Headphones",
+    "es": "Auriculares",
+    "pt-BR": "Fones",
+    "ar": "سماعات"
+  },
+  "רמקולים": {
+    "en": "Speakers",
+    "es": "Altavoces",
+    "pt-BR": "Caixas de som",
+    "ar": "مكبرات"
+  },
+  "סאונדבר": {
+    "en": "Soundbar",
+    "es": "Barra de sonido",
+    "pt-BR": "Soundbar",
+    "ar": "شريط صوت"
+  },
+  "החוויה": {
+    "en": "The experience",
+    "es": "La experiencia",
+    "pt-BR": "A experiência",
+    "ar": "التجربة"
+  },
+  "נכסים פעילים": {
+    "en": "Active listings",
+    "es": "Inmuebles activos",
+    "pt-BR": "Imóveis ativos",
+    "ar": "عقارات نشطة"
+  },
+  "חדר": {
+    "en": "Room",
+    "es": "Habitación",
+    "pt-BR": "Quarto",
+    "ar": "غرفة"
+  },
+  "תיקי צד": {
+    "en": "Shoulder bags",
+    "es": "Bolsos de hombro",
+    "pt-BR": "Bolsas de ombro",
+    "ar": "حقائب كتف"
+  },
+  "תיקי גב": {
+    "en": "Backpacks",
+    "es": "Mochilas",
+    "pt-BR": "Mochilas",
+    "ar": "حقائب ظهر"
+  },
+  "נסיעות": {
+    "en": "Travel",
+    "es": "Viajes",
+    "pt-BR": "Viagens",
+    "ar": "سفر"
+  },
+  "ארנקים": {
+    "en": "Wallets",
+    "es": "Carteras",
+    "pt-BR": "Carteiras",
+    "ar": "محافظ"
+  },
+  "פרקים": {
+    "en": "Episodes",
+    "es": "Episodios",
+    "pt-BR": "Episódios",
+    "ar": "حلقات"
+  },
+  "ספרות": {
+    "en": "Literature",
+    "es": "Literatura",
+    "pt-BR": "Literatura",
+    "ar": "أدب"
+  },
+  "ילדים": {
+    "en": "Kids",
+    "es": "Niños",
+    "pt-BR": "Crianças",
+    "ar": "أطفال"
+  },
+  "מחברות": {
+    "en": "Notebooks",
+    "es": "Cuadernos",
+    "pt-BR": "Cadernos",
+    "ar": "دفاتر"
+  },
+  "כתיבה": {
+    "en": "Writing",
+    "es": "Escritura",
+    "pt-BR": "Escrita",
+    "ar": "كتابة"
+  },
+  "פולי קפה": {
+    "en": "Coffee beans",
+    "es": "Granos de café",
+    "pt-BR": "Grãos de café",
+    "ar": "حبوب قهوة"
+  },
+  "ציוד בריסטה": {
+    "en": "Barista gear",
+    "es": "Equipo de barista",
+    "pt-BR": "Equipamento de barista",
+    "ar": "معدات باريستا"
+  },
+  "כוסות": {
+    "en": "Cups",
+    "es": "Tazas",
+    "pt-BR": "Xícaras",
+    "ar": "أكواب"
+  },
+  "מארזי מתנה": {
+    "en": "Gift sets",
+    "es": "Estuches de regalo",
+    "pt-BR": "Kits de presente",
+    "ar": "علب هدايا"
+  },
+  "לנכסים": {
+    "en": "To listings",
+    "es": "A los inmuebles",
+    "pt-BR": "Para os imóveis",
+    "ar": "إلى العقارات"
+  },
+  "עיצוב גבות": {
+    "en": "Brow design",
+    "es": "Diseño de cejas",
+    "pt-BR": "Design de sobrancelhas",
+    "ar": "تصميم حواجب"
+  },
+  "לחמנייה, בשר, גבינה — בלי פילוסופיה.": {
+    "en": "Bun, meat, cheese — no philosophy.",
+    "es": "Pan, carne, queso: sin filosofía.",
+    "pt-BR": "Pão, carne, queijo — sem filosofia.",
+    "ar": "خبزة ولحم وجبن — بلا فلسفة."
+  },
+  "פרימיום": {
+    "en": "Premium",
+    "es": "Premium",
+    "pt-BR": "Premium",
+    "ar": "فاخر"
+  },
+  "אבחון אקנה": {
+    "en": "Acne assessment",
+    "es": "Diagnóstico de acné",
+    "pt-BR": "Diagnóstico de acne",
+    "ar": "تشخيص حب الشباب"
+  },
+  "חולצות": {
+    "en": "Shirts",
+    "es": "Camisas",
+    "pt-BR": "Camisas",
+    "ar": "قمصان"
+  },
+  "שמלות": {
+    "en": "Dresses",
+    "es": "Vestidos",
+    "pt-BR": "Vestidos",
+    "ar": "فساتين"
+  },
+  "מכנסיים": {
+    "en": "Pants",
+    "es": "Pantalones",
+    "pt-BR": "Calças",
+    "ar": "بناطيل"
+  },
+  "להרשמה לסדנה": {
+    "en": "Workshop signup",
+    "es": "Inscripción al taller",
+    "pt-BR": "Inscrição na oficina",
+    "ar": "التسجيل في الورشة"
+  },
+  "₪18,000/חודש": {
+    "en": "₪18,000/month",
+    "es": "₪18,000/mes",
+    "pt-BR": "₪18,000/mês",
+    "ar": "₪18,000/شهر"
+  },
+  "ג׳ינס": {
+    "en": "Jeans",
+    "es": "Vaqueros",
+    "pt-BR": "Jeans",
+    "ar": "جينز"
+  },
+  "ג׳קטים": {
+    "en": "Jackets",
+    "es": "Chaquetas",
+    "pt-BR": "Jaquetas",
+    "ar": "سترات"
+  },
+  "טישרטים": {
+    "en": "T-shirts",
+    "es": "Camisetas",
+    "pt-BR": "Camisetas",
+    "ar": "تيشيرتات"
+  },
+  "סוכר כחומר גלם — לא רק מתיקות.": {
+    "en": "Sugar as an ingredient — not only sweetness.",
+    "es": "El azúcar como materia: no solo dulzor.",
+    "pt-BR": "Açúcar como matéria — não só doçura.",
+    "ar": "السكر كمادة خام — ليس حلاوة فقط."
+  },
+  "הקיטור מרים — הסל יורד לשולחן.": {
+    "en": "Steam rises — the basket lands on the table.",
+    "es": "El vapor sube: la cesta baja a la mesa.",
+    "pt-BR": "O vapor sobe — a cesta desce à mesa.",
+    "ar": "البخار يرتفع — والسلة تصل إلى الطاولة."
+  },
+  "עיצוב אישי": {
+    "en": "Personal design",
+    "es": "Diseño personal",
+    "pt-BR": "Design pessoal",
+    "ar": "تصميم شخصي"
+  },
+  "5 חדרים": {
+    "en": "5 rooms",
+    "es": "5 habitaciones",
+    "pt-BR": "5 quartos",
+    "ar": "5 غرف"
+  },
+  "בלעדי": {
+    "en": "Exclusive",
+    "es": "Exclusivo",
+    "pt-BR": "Exclusivo",
+    "ar": "حصري"
+  },
+  "לקביעת שיחה": {
+    "en": "To book a call",
+    "es": "Para reservar una llamada",
+    "pt-BR": "Para agendar uma chamada",
+    "ar": "لحجز مكالمة"
+  },
+  "השף": {
+    "en": "The chef",
+    "es": "El chef",
+    "pt-BR": "O chef",
+    "ar": "الشيف"
+  },
+  "בקשת גישה": {
+    "en": "Access request",
+    "es": "Solicitud de acceso",
+    "pt-BR": "Pedido de acesso",
+    "ar": "طلب وصول"
+  },
+  "צמחי בית": {
+    "en": "Houseplants",
+    "es": "Plantas de interior",
+    "pt-BR": "Plantas de interior",
+    "ar": "نباتات منزلية"
+  },
+  "סוקולנטים": {
+    "en": "Succulents",
+    "es": "Suculentas",
+    "pt-BR": "Suculentas",
+    "ar": "عصاريات"
+  },
+  "עציצים": {
+    "en": "Pots",
+    "es": "Macetas",
+    "pt-BR": "Vasos",
+    "ar": "أصص"
+  },
+  "טיפול": {
+    "en": "Treatment",
+    "es": "Tratamiento",
+    "pt-BR": "Tratamento",
+    "ar": "علاج"
+  },
+  "קהילה": {
+    "en": "Community",
+    "es": "Comunidad",
+    "pt-BR": "Comunidade",
+    "ar": "مجتمع"
+  },
+  "סטודיו צילום": {
+    "en": "Photo studio",
+    "es": "Estudio fotográfico",
+    "pt-BR": "Estúdio fotográfico",
+    "ar": "استوديو تصوير"
+  },
+  "ההמסה היא חלק מהחוויה.": {
+    "en": "The melt is part of the experience.",
+    "es": "La fusión es parte de la experiencia.",
+    "pt-BR": "O derretimento faz parte da experiência.",
+    "ar": "الذوبان جزء من التجربة."
+  },
+  "צמידים": {
+    "en": "Bracelets",
+    "es": "Pulseras",
+    "pt-BR": "Pulseiras",
+    "ar": "أساور"
+  },
+  "הזמנת תור": {
+    "en": "Book an appointment",
+    "es": "Reservar cita",
+    "pt-BR": "Agendar horário",
+    "ar": "حجز موعد"
+  },
+  "איפור": {
+    "en": "Makeup",
+    "es": "Maquillaje",
+    "pt-BR": "Maquiagem",
+    "ar": "مكياج"
+  },
+  "ירקות": {
+    "en": "Vegetables",
+    "es": "Verduras",
+    "pt-BR": "Vegetais",
+    "ar": "خضار"
+  },
+  "פירות": {
+    "en": "Fruit",
+    "es": "Fruta",
+    "pt-BR": "Frutas",
+    "ar": "فاكهة"
+  },
+  "דגנים": {
+    "en": "Grains",
+    "es": "Cereales",
+    "pt-BR": "Cereais",
+    "ar": "حبوب"
+  },
+  "ממרחים": {
+    "en": "Spreads",
+    "es": "Untables",
+    "pt-BR": "Pasta",
+    "ar": "دهون"
+  },
+  "לשירותים": {
+    "en": "To services",
+    "es": "A los servicios",
+    "pt-BR": "Para os serviços",
+    "ar": "إلى الخدمات"
+  },
+  "שיפוצים": {
+    "en": "Renovations",
+    "es": "Reformas",
+    "pt-BR": "Reformas",
+    "ar": "تجديدات"
+  },
+  "טקסטיל": {
+    "en": "Textiles",
+    "es": "Textiles",
+    "pt-BR": "Têxteis",
+    "ar": "منسوجات"
+  },
+  "רהיטים": {
+    "en": "Furniture",
+    "es": "Muebles",
+    "pt-BR": "Móveis",
+    "ar": "أثاث"
+  },
+  "סחוט עכשיו — נשתייה מיד.": {
+    "en": "Squeeze now — we drink it right away.",
+    "es": "Exprime ahora: lo bebemos al momento.",
+    "pt-BR": "Esprema agora — bebemos na hora.",
+    "ar": "اعصروا الآن — نشرب فوراً."
+  },
+  "הודים": {
+    "en": "Indian",
+    "es": "Indio",
+    "pt-BR": "Indiano",
+    "ar": "هندي"
+  },
+  "כובעים": {
+    "en": "Hats",
+    "es": "Sombreros",
+    "pt-BR": "Chapéus",
+    "ar": "قبعات"
+  },
+  "ייעוץ": {
+    "en": "Consulting",
+    "es": "Consultoría",
+    "pt-BR": "Consultoria",
+    "ar": "استشارة"
+  },
+  "לקוחות חוזרים": {
+    "en": "Returning clients",
+    "es": "Clientes que vuelven",
+    "pt-BR": "Clientes que voltam",
+    "ar": "عملاء عائدون"
+  },
+  "מצעים": {
+    "en": "Bedding",
+    "es": "Ropa de cama",
+    "pt-BR": "Roupa de cama",
+    "ar": "مفروشات"
+  },
+  "מגבות": {
+    "en": "Towels",
+    "es": "Toallas",
+    "pt-BR": "Toalhas",
+    "ar": "مناشف"
+  },
+  "כריות": {
+    "en": "Pillows",
+    "es": "Almohadas",
+    "pt-BR": "Travesseiros",
+    "ar": "وسائد"
+  },
+  "וילונות": {
+    "en": "Curtains",
+    "es": "Cortinas",
+    "pt-BR": "Cortinas",
+    "ar": "ستائر"
+  },
+  "פיג׳מות": {
+    "en": "Pajamas",
+    "es": "Pijamas",
+    "pt-BR": "Pijamas",
+    "ar": "بيجامات"
+  },
+  "חלוקים": {
+    "en": "Robes",
+    "es": "Albornoces",
+    "pt-BR": "Roupões",
+    "ar": "أردية"
+  },
+  "אודיו": {
+    "en": "Audio",
+    "es": "Audio",
+    "pt-BR": "Áudio",
+    "ar": "صوت"
+  },
+  "סמארט הום": {
+    "en": "Smart home",
+    "es": "Hogar inteligente",
+    "pt-BR": "Casa inteligente",
+    "ar": "منزل ذكي"
+  },
+  "בקשת הזמנה": {
+    "en": "Order request",
+    "es": "Solicitud de pedido",
+    "pt-BR": "Pedido de encomenda",
+    "ar": "طلب طلبية"
+  },
+  "למסלולים": {
+    "en": "To the plans",
+    "es": "A los planes",
+    "pt-BR": "Para os planos",
+    "ar": "إلى المسارات"
+  },
+  "ארגון": {
+    "en": "Organization",
+    "es": "Organización",
+    "pt-BR": "Organização",
+    "ar": "تنظيم"
+  },
+  "מטבח": {
+    "en": "Kitchen",
+    "es": "Cocina",
+    "pt-BR": "Cozinha",
+    "ar": "مطبخ"
+  },
+  "קערות": {
+    "en": "Bowls",
+    "es": "Cuencos",
+    "pt-BR": "Tigelas",
+    "ar": "أطباق عميقة"
+  },
+  "בואו נדבר": {
+    "en": "Let’s talk",
+    "es": "Hablemos",
+    "pt-BR": "Vamos conversar",
+    "ar": "لنتحدث"
+  },
+  "סירים": {
+    "en": "Pots",
+    "es": "Ollas",
+    "pt-BR": "Panelas",
+    "ar": "قدور"
+  },
+  "סכינים": {
+    "en": "Knives",
+    "es": "Cuchillos",
+    "pt-BR": "Facas",
+    "ar": "سكاكين"
+  },
+  "הבצק טרי — הרטב מספר סיפור.": {
+    "en": "The dough is fresh — the sauce tells a story.",
+    "es": "La masa está fresca: la salsa cuenta una historia.",
+    "pt-BR": "A massa está fresca — o molho conta uma história.",
+    "ar": "العجين طازج — والصلصة تروي قصة."
+  },
+  "מזון": {
+    "en": "Food",
+    "es": "Alimentos",
+    "pt-BR": "Alimentos",
+    "ar": "غذاء"
+  },
+  "מיטות": {
+    "en": "Beds",
+    "es": "Camas",
+    "pt-BR": "Camas",
+    "ar": "أسرّة"
+  },
+  "היגיינה": {
+    "en": "Hygiene",
+    "es": "Higiene",
+    "pt-BR": "Higiene",
+    "ar": "نظافة"
+  },
+  "עזרה ראשונה": {
+    "en": "First aid",
+    "es": "Primeros auxilios",
+    "pt-BR": "Primeiros socorros",
+    "ar": "إسعاف أولي"
+  },
+  "תוספים": {
+    "en": "Supplements",
+    "es": "Complementos",
+    "pt-BR": "Suplementos",
+    "ar": "مكملات"
+  },
+  "מהאדמה לצלחת — בלי פשרות על טעם.": {
+    "en": "From soil to plate — no compromise on flavor.",
+    "es": "De la tierra al plato, sin renunciar al sabor.",
+    "pt-BR": "Da terra ao prato — sem abrir mão do sabor.",
+    "ar": "من الأرض إلى الطبق — بلا تنازل عن الطعم."
+  },
+  "משחקי קופסה": {
+    "en": "Board games",
+    "es": "Juegos de mesa",
+    "pt-BR": "Jogos de tabuleiro",
+    "ar": "ألعاب طاولة"
+  },
+  "דמויות": {
+    "en": "Figures",
+    "es": "Figuras",
+    "pt-BR": "Bonecos",
+    "ar": "شخصيات"
+  },
+  "חוץ": {
+    "en": "Outdoor",
+    "es": "Exterior",
+    "pt-BR": "Exterior",
+    "ar": "خارج"
+  },
+  "כל קערה היא מסלול טעמים.": {
+    "en": "Every bowl is a flavor path.",
+    "es": "Cada cuenco es un recorrido de sabores.",
+    "pt-BR": "Cada tigela é um percurso de sabores.",
+    "ar": "كل وعاء مسار نكهات."
+  },
+  "נרות": {
+    "en": "Candles",
+    "es": "Velas",
+    "pt-BR": "Velas",
+    "ar": "شموع"
+  },
+  "דיפיוזרים": {
+    "en": "Diffusers",
+    "es": "Difusores",
+    "pt-BR": "Difusores",
+    "ar": "موزّعات"
+  },
+  "שמנים": {
+    "en": "Oils",
+    "es": "Aceites",
+    "pt-BR": "Óleos",
+    "ar": "زيوت"
+  },
+  "סלון": {
+    "en": "Living room",
+    "es": "Salón",
+    "pt-BR": "Sala",
+    "ar": "صالة"
+  },
+  "הים מגיע לצלחת — בלי עיכובים.": {
+    "en": "The sea reaches the plate — without delay.",
+    "es": "El mar llega al plato, sin demoras.",
+    "pt-BR": "O mar chega ao prato — sem atrasos.",
+    "ar": "البحر يصل إلى الطبق — بلا تأخير."
+  },
+  "השיפוד מסתובב — הטעם נשאר.": {
+    "en": "The spit turns — the flavor stays.",
+    "es": "El asador gira: el sabor se queda.",
+    "pt-BR": "O espeto gira — o sabor fica.",
+    "ar": "السيخ يدور — والطعم يبقى."
+  },
+  "11 ביוני 2024": {
+    "en": "June 11, 2024",
+    "es": "11 de junio de 2024",
+    "pt-BR": "11 de junho de 2024",
+    "ar": "11 يونيو 2024"
+  },
+  "עשן נמוך, חום ארוך, טעם עמוק.": {
+    "en": "Low smoke, long heat, deep flavor.",
+    "es": "Humo bajo, calor largo, sabor profundo.",
+    "pt-BR": "Fumaça baixa, calor longo, sabor profundo.",
+    "ar": "دخان منخفض وحرارة طويلة وطعم عميق."
+  },
+  "לייפסטייל": {
+    "en": "Lifestyle",
+    "es": "Estilo de vida",
+    "pt-BR": "Lifestyle",
+    "ar": "أسلوب حياة"
+  },
+  "ריצה": {
+    "en": "Running",
+    "es": "Running",
+    "pt-BR": "Corrida",
+    "ar": "جري"
+  },
+  "קולאב": {
+    "en": "Collab",
+    "es": "Colab",
+    "pt-BR": "Collab",
+    "ar": "تعاون"
+  },
+  "אלגנט": {
+    "en": "Elegant",
+    "es": "Elegante",
+    "pt-BR": "Elegante",
+    "ar": "أنيق"
+  },
+  "יומיום": {
+    "en": "Everyday",
+    "es": "Día a día",
+    "pt-BR": "Dia a dia",
+    "ar": "يومي"
+  },
+  "ידניים": {
+    "en": "Manual",
+    "es": "Manuales",
+    "pt-BR": "Manuais",
+    "ar": "يدوي"
+  },
+  "אחסון": {
+    "en": "Storage",
+    "es": "Almacenaje",
+    "pt-BR": "Armazenamento",
+    "ar": "تخزين"
+  },
+  "בטיחות": {
+    "en": "Safety",
+    "es": "Seguridad",
+    "pt-BR": "Segurança",
+    "ar": "سلامة"
+  },
+  "אוהלים": {
+    "en": "Tents",
+    "es": "Tiendas",
+    "pt-BR": "Barracas",
+    "ar": "خيام"
+  },
+  "תרמילים": {
+    "en": "Packs",
+    "es": "Mochilas",
+    "pt-BR": "Mochilas",
+    "ar": "حقائب"
+  },
+  "בישול שטח": {
+    "en": "Camp cooking",
+    "es": "Cocina de campo",
+    "pt-BR": "Cozinha de campo",
+    "ar": "طبخ ميداني"
+  },
+  "אדומים": {
+    "en": "Reds",
+    "es": "Tintos",
+    "pt-BR": "Tintos",
+    "ar": "حمراء"
+  },
+  "לבנים": {
+    "en": "Whites",
+    "es": "Blancos",
+    "pt-BR": "Brancos",
+    "ar": "بيضاء"
+  },
+  "מבעבעים": {
+    "en": "Sparkling",
+    "es": "Espumosos",
+    "pt-BR": "Espumantes",
+    "ar": "فوارة"
+  },
+  "ויטמינים": {
+    "en": "Vitamins",
+    "es": "Vitaminas",
+    "pt-BR": "Vitaminas",
+    "ar": "فيتامينات"
+  },
+  "מינרלים": {
+    "en": "Minerals",
+    "es": "Minerales",
+    "pt-BR": "Minerais",
+    "ar": "معادن"
+  },
+  "חלבון": {
+    "en": "Protein",
+    "es": "Proteína",
+    "pt-BR": "Proteína",
+    "ar": "بروتين"
+  },
+  "שינה": {
+    "en": "Sleep",
+    "es": "Sueño",
+    "pt-BR": "Sono",
+    "ar": "نوم"
+  },
+  "סמארט": {
+    "en": "Smart",
+    "es": "Smart",
+    "pt-BR": "Smart",
+    "ar": "ذكي"
+  },
+  "כביש": {
+    "en": "Road",
+    "es": "Carretera",
+    "pt-BR": "Estrada",
+    "ar": "طريق"
+  },
+  "שטח": {
+    "en": "Off-road",
+    "es": "Campo",
+    "pt-BR": "Off-road",
+    "ar": "أراضٍ"
+  },
+  "5 כוכבים": {
+    "en": "5 stars",
+    "es": "5 estrellas",
+    "pt-BR": "5 estrelas",
+    "ar": "5 نجوم"
+  },
+  "אבטחה": {
+    "en": "Security",
+    "es": "Seguridad",
+    "pt-BR": "Segurança",
+    "ar": "أمن"
+  },
+  "אגודל למעלה": {
+    "en": "Thumbs up",
+    "es": "Pulgar arriba",
+    "pt-BR": "Joinha",
+    "ar": "إعجاب"
+  },
+  "אדום": {
+    "en": "Red",
+    "es": "Rojo",
+    "pt-BR": "Vermelho",
+    "ar": "أحمر"
+  },
+  "אופקי: מדיה משמאל ותוכן מימין": {
+    "en": "Horizontal: media on the left, content on the right",
+    "es": "Horizontal: media a la izquierda y contenido a la derecha",
+    "pt-BR": "Horizontal: mídia à esquerda e conteúdo à direita",
+    "ar": "أفقي: وسائط يساراً ومحتوى يميناً"
+  },
+  "אזור אישי": {
+    "en": "Personal area",
+    "es": "Área personal",
+    "pt-BR": "Área pessoal",
+    "ar": "منطقة شخصية"
+  },
+  "אייקון, כותרת וטקסט קצר": {
+    "en": "Icon, heading, and short text",
+    "es": "Icono, título y texto corto",
+    "pt-BR": "Ícone, título e texto curto",
+    "ar": "أيقونة وعنوان ونص قصير"
+  },
+  "אימייל": {
+    "en": "Email",
+    "es": "Email",
+    "pt-BR": "E-mail",
+    "ar": "بريد"
+  },
+  "אנימציית אישור ירוקה": {
+    "en": "Green confirmation animation",
+    "es": "Animación de confirmación verde",
+    "pt-BR": "Animação de confirmação verde",
+    "ar": "حركة تأكيد خضراء"
+  },
+  "אנימציית חנות": {
+    "en": "Store animation",
+    "es": "Animación de tienda",
+    "pt-BR": "Animação de loja",
+    "ar": "حركة متجر"
+  },
+  "באנר קריאה לפעולה": {
+    "en": "Call-to-action banner",
+    "es": "Banner de llamada a la acción",
+    "pt-BR": "Banner de chamada",
+    "ar": "لافتة دعوة للإجراء"
+  },
+  "בועת שיחה": {
+    "en": "Chat bubble",
+    "es": "Burbuja de chat",
+    "pt-BR": "Bolha de chat",
+    "ar": "فقاعة دردشة"
+  },
+  "בינוני": {
+    "en": "Medium",
+    "es": "Medio",
+    "pt-BR": "Médio",
+    "ar": "متوسط"
+  },
+  "בלוק ריק ליצירת אוויר בין אלמנטים": {
+    "en": "Empty block to add air between elements",
+    "es": "Bloque vacío para aire entre elementos",
+    "pt-BR": "Bloco vazio para ar entre elementos",
+    "ar": "كتلة فارغة لخلق فراغ بين العناصر"
+  },
+  "במה אפשר לעזור?": {
+    "en": "How can we help?",
+    "es": "¿En qué podemos ayudar?",
+    "pt-BR": "Como podemos ajudar?",
+    "ar": "كيف يمكن المساعدة؟"
+  },
+  "ברכה אישית — אחרי התחברות מוצג שם הלקוח מהאזור האישי / CRM": {
+    "en": "Personal greeting — after sign-in the client name from the portal / CRM is shown",
+    "es": "Saludo personal: tras entrar se muestra el nombre del cliente del área / CRM",
+    "pt-BR": "Saudação pessoal — após o login aparece o nome do cliente da área / CRM",
+    "ar": "تحية شخصية — بعد تسجيل الدخول يظهر اسم العميل من المنطقة الشخصية / CRM"
+  },
+  "גלגל שיניים": {
+    "en": "Gear",
+    "es": "Engranaje",
+    "pt-BR": "Engrenagem",
+    "ar": "ترس"
+  },
+  "גלובוס": {
+    "en": "Globe",
+    "es": "Globo",
+    "pt-BR": "Globo",
+    "ar": "كرة أرضية"
+  },
+  "גרף עולה": {
+    "en": "Rising chart",
+    "es": "Gráfico al alza",
+    "pt-BR": "Gráfico em alta",
+    "ar": "رسم بياني صاعد"
+  },
+  "דירוג כוכבים": {
+    "en": "Star rating",
+    "es": "Valoración de estrellas",
+    "pt-BR": "Avaliação em estrelas",
+    "ar": "تقييم نجوم"
+  },
+  "הגדרות": {
+    "en": "Settings",
+    "es": "Ajustes",
+    "pt-BR": "Configurações",
+    "ar": "إعدادات"
+  },
+  "הודעה": {
+    "en": "Message",
+    "es": "Mensaje",
+    "pt-BR": "Mensagem",
+    "ar": "رسالة"
+  },
+  "הזמנות": {
+    "en": "Orders",
+    "es": "Pedidos",
+    "pt-BR": "Pedidos",
+    "ar": "طلبات"
+  },
+  "הנתונים שלי": {
+    "en": "My data",
+    "es": "Mis datos",
+    "pt-BR": "Meus dados",
+    "ar": "بياناتي"
+  },
+  "העלאה לענן": {
+    "en": "Upload to the cloud",
+    "es": "Subir a la nube",
+    "pt-BR": "Enviar à nuvem",
+    "ar": "رفع إلى السحابة"
+  },
+  "הפגישה הבאה": {
+    "en": "Next appointment",
+    "es": "Próxima cita",
+    "pt-BR": "Próximo horário",
+    "ar": "الموعد التالي"
+  },
+  "הפגישה הבאה - מהיומן": {
+    "en": "Next appointment — from the calendar",
+    "es": "Próxima cita — del calendario",
+    "pt-BR": "Próximo horário — da agenda",
+    "ar": "الموعد التالي — من التقويم"
+  },
+  "השקה וצמיחה": {
+    "en": "Launch and growth",
+    "es": "Lanzamiento y crecimiento",
+    "pt-BR": "Lançamento e crescimento",
+    "ar": "إطلاق ونمو"
+  },
+  "התראה": {
+    "en": "Alert",
+    "es": "Alerta",
+    "pt-BR": "Alerta",
+    "ar": "تنبيه"
+  },
+  "וי הצלחה": {
+    "en": "Success check",
+    "es": "Check de éxito",
+    "pt-BR": "Check de sucesso",
+    "ar": "علامة نجاح"
+  },
+  "ורוד": {
+    "en": "Pink",
+    "es": "Rosa",
+    "pt-BR": "Rosa",
+    "ar": "وردي"
+  },
+  "זכוכית מגדלת": {
+    "en": "Magnifying glass",
+    "es": "Lupa",
+    "pt-BR": "Lupa",
+    "ar": "عدسة مكبرة"
+  },
+  "חגיגת הצלחה": {
+    "en": "Success celebration",
+    "es": "Celebración de éxito",
+    "pt-BR": "Celebração de sucesso",
+    "ar": "احتفال نجاح"
+  },
+  "חיפוש": {
+    "en": "Search",
+    "es": "Buscar",
+    "pt-BR": "Busca",
+    "ar": "بحث"
+  },
+  "טבלה": {
+    "en": "Table",
+    "es": "Tabla",
+    "pt-BR": "Tabela",
+    "ar": "جدول"
+  },
+  "טבלה ניתנת לעריכה עם כותרות ושורות": {
+    "en": "Editable table with headings and rows",
+    "es": "Tabla editable con títulos y filas",
+    "pt-BR": "Tabela editável com títulos e linhas",
+    "ar": "جدول قابل للتحرير بعناوين وصفوف"
+  },
+  "טבלה פשוטה": {
+    "en": "Simple table",
+    "es": "Tabla simple",
+    "pt-BR": "Tabela simples",
+    "ar": "جدول بسيط"
+  },
+  "טבלת מחירים": {
+    "en": "Price table",
+    "es": "Tabla de precios",
+    "pt-BR": "Tabela de preços",
+    "ar": "جدول أسعار"
+  },
+  "טבלת נתונים נקייה עם 3 עמודות": {
+    "en": "Clean data table with 3 columns",
+    "es": "Tabla de datos limpia con 3 columnas",
+    "pt-BR": "Tabela de dados limpa com 3 colunas",
+    "ar": "جدول بيانات نظيف بـ 3 أعمدة"
+  },
+  "טורקיז": {
+    "en": "Turquoise",
+    "es": "Turquesa",
+    "pt-BR": "Turquesa",
+    "ar": "فيروزي"
+  },
+  "טיל שיגור": {
+    "en": "Launch rocket",
+    "es": "Cohete",
+    "pt-BR": "Foguete",
+    "ar": "صاروخ إطلاق"
+  },
+  "טלפון": {
+    "en": "Phone",
+    "es": "Teléfono",
+    "pt-BR": "Telefone",
+    "ar": "هاتف"
+  },
+  "טלפון הלקוח מה-CRM": {
+    "en": "Client phone from the CRM",
+    "es": "Teléfono del cliente del CRM",
+    "pt-BR": "Telefone do cliente do CRM",
+    "ar": "هاتف العميل من CRM"
+  },
+  "טלפון לקוח": {
+    "en": "Client phone",
+    "es": "Teléfono del cliente",
+    "pt-BR": "Telefone do cliente",
+    "ar": "هاتف العميل"
+  },
+  "טעינה": {
+    "en": "Loading",
+    "es": "Carga",
+    "pt-BR": "Carregamento",
+    "ar": "تحميل"
+  },
+  "יומן": {
+    "en": "Calendar",
+    "es": "Calendario",
+    "pt-BR": "Agenda",
+    "ar": "تقويم"
+  },
+  "ירוק": {
+    "en": "Green",
+    "es": "Verde",
+    "pt-BR": "Verde",
+    "ar": "أخضر"
+  },
+  "יתרה": {
+    "en": "Balance",
+    "es": "Saldo",
+    "pt-BR": "Saldo",
+    "ar": "رصيد"
+  },
+  "יתרה - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Balance — value from the signed-in client's CRM",
+    "es": "Saldo — valor del CRM del cliente conectado",
+    "pt-BR": "Saldo — valor do CRM do cliente conectado",
+    "ar": "رصيد — قيمة من CRM للعميل المتصل"
+  },
+  "כוס קפה מעוררת": {
+    "en": "A waking coffee cup",
+    "es": "Taza de café que despierta",
+    "pt-BR": "Xícara de café que acorda",
+    "ar": "فنجان قهوة منعش"
+  },
+  "כחול": {
+    "en": "Blue",
+    "es": "Azul",
+    "pt-BR": "Azul",
+    "ar": "أزرق"
+  },
+  "כמות טיפולים": {
+    "en": "Number of treatments",
+    "es": "Cantidad de tratamientos",
+    "pt-BR": "Quantidade de tratamentos",
+    "ar": "عدد العلاجات"
+  },
+  "כמות טיפולים - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Number of treatments — value from the signed-in client's CRM",
+    "es": "Cantidad de tratamientos — valor del CRM del cliente conectado",
+    "pt-BR": "Quantidade de tratamentos — valor do CRM do cliente conectado",
+    "ar": "عدد العلاجات — قيمة من CRM للعميل المتصل"
+  },
+  "כפתור הפעלה": {
+    "en": "Play button",
+    "es": "Botón de reproducción",
+    "pt-BR": "Botão de reprodução",
+    "ar": "زر تشغيل"
+  },
+  "כרטיס אופקי": {
+    "en": "Horizontal card",
+    "es": "Tarjeta horizontal",
+    "pt-BR": "Cartão horizontal",
+    "ar": "بطاقة أفقية"
+  },
+  "כרטיס אנכי מעוגל": {
+    "en": "Rounded vertical card",
+    "es": "Tarjeta vertical redondeada",
+    "pt-BR": "Cartão vertical arredondado",
+    "ar": "بطاقة عمودية مستديرة"
+  },
+  "כרטיס בהיר עם צל עדין ופינות גדולות": {
+    "en": "Light card with a soft shadow and large corners",
+    "es": "Tarjeta clara con sombra suave y esquinas grandes",
+    "pt-BR": "Cartão claro com sombra suave e cantos grandes",
+    "ar": "بطاقة فاتحة بظل لطيف وزوايا كبيرة"
+  },
+  "כרטיס גבוה עם פינות מעוגלות": {
+    "en": "Tall card with rounded corners",
+    "es": "Tarjeta alta con esquinas redondeadas",
+    "pt-BR": "Cartão alto com cantos arredondados",
+    "ar": "بطاقة طويلة بزوايا مستديرة"
+  },
+  "כרטיס המלצה": {
+    "en": "Testimonial card",
+    "es": "Tarjeta de testimonio",
+    "pt-BR": "Cartão de depoimento",
+    "ar": "بطاقة توصية"
+  },
+  "כרטיס כהה": {
+    "en": "Dark card",
+    "es": "Tarjeta oscura",
+    "pt-BR": "Cartão escuro",
+    "ar": "بطاقة داكنة"
+  },
+  "כרטיס כהה בולט למידע חשוב": {
+    "en": "Bold dark card for important information",
+    "es": "Tarjeta oscura destacada para información importante",
+    "pt-BR": "Cartão escuro em destaque para informação importante",
+    "ar": "بطاقة داكنة بارزة لمعلومة مهمة"
+  },
+  "כרטיס כמוסה": {
+    "en": "Capsule card",
+    "es": "Tarjeta cápsula",
+    "pt-BR": "Cartão cápsula",
+    "ar": "بطاقة كبسولة"
+  },
+  "כרטיס מחיר": {
+    "en": "Price card",
+    "es": "Tarjeta de precio",
+    "pt-BR": "Cartão de preço",
+    "ar": "بطاقة سعر"
+  },
+  "כרטיס מסגרת": {
+    "en": "Framed card",
+    "es": "Tarjeta con marco",
+    "pt-BR": "Cartão com moldura",
+    "ar": "بطاقة بإطار"
+  },
+  "כרטיס מספר": {
+    "en": "Number card",
+    "es": "Tarjeta de número",
+    "pt-BR": "Cartão de número",
+    "ar": "بطاقة رقم"
+  },
+  "כרטיס מרובע": {
+    "en": "Square card",
+    "es": "Tarjeta cuadrada",
+    "pt-BR": "Cartão quadrado",
+    "ar": "بطاقة مربعة"
+  },
+  "כרטיס עם אייקון": {
+    "en": "Card with icon",
+    "es": "Tarjeta con icono",
+    "pt-BR": "Cartão com ícone",
+    "ar": "بطاقة بأيقونة"
+  },
+  "כרטיס עם כותרת, טקסט וכפתור — הכל ניתן לעריכה": {
+    "en": "Card with heading, text, and button — all editable",
+    "es": "Tarjeta con título, texto y botón: todo editable",
+    "pt-BR": "Cartão com título, texto e botão — tudo editável",
+    "ar": "بطاقة بعنوان ونص وزر — الكل قابل للتحرير"
+  },
+  "כרטיס צל רך": {
+    "en": "Soft-shadow card",
+    "es": "Tarjeta de sombra suave",
+    "pt-BR": "Cartão de sombra suave",
+    "ar": "بطاقة ظل ناعم"
+  },
+  "כרטיס רחב לרוחב עם כותרת וטקסט בצד": {
+    "en": "Wide card with heading and text on the side",
+    "es": "Tarjeta ancha con título y texto al lado",
+    "pt-BR": "Cartão largo com título e texto ao lado",
+    "ar": "بطاقة عريضة بعنوان ونص جانبي"
+  },
+  "כרטיס ריבועי עם פינות חדות יחסית": {
+    "en": "Square card with relatively sharp corners",
+    "es": "Tarjeta cuadrada con esquinas más vivas",
+    "pt-BR": "Cartão quadrado com cantos mais vivos",
+    "ar": "بطاقة مربعة بزوايا حادة نسبياً"
+  },
+  "כרטיס שקוף עם מסגרת עבה": {
+    "en": "Transparent card with a thick frame",
+    "es": "Tarjeta transparente con marco grueso",
+    "pt-BR": "Cartão transparente com moldura grossa",
+    "ar": "بطاقة شفافة بإطار سميك"
+  },
+  "כרטיס תמונה בצד": {
+    "en": "Card with side image",
+    "es": "Tarjeta con imagen al lado",
+    "pt-BR": "Cartão com imagem ao lado",
+    "ar": "بطاقة بصورة جانبية"
+  },
+  "כרטיס תמחור עם מחיר וכפתור": {
+    "en": "Pricing card with a price and button",
+    "es": "Tarjeta de precios con precio y botón",
+    "pt-BR": "Cartão de preço com valor e botão",
+    "ar": "بطاقة تسعير بسعر وزر"
+  },
+  "כרטיסיית פיצ׳ר": {
+    "en": "Feature card",
+    "es": "Tarjeta de función",
+    "pt-BR": "Cartão de recurso",
+    "ar": "بطاقة ميزة"
+  },
+  "כתובת המייל של הלקוח מה-CRM": {
+    "en": "Client email from the CRM",
+    "es": "Email del cliente del CRM",
+    "pt-BR": "E-mail do cliente do CRM",
+    "ar": "بريد العميل من CRM"
+  },
+  "כתום": {
+    "en": "Orange",
+    "es": "Naranja",
+    "pt-BR": "Laranja",
+    "ar": "برتقالي"
+  },
+  "לב פועם": {
+    "en": "Beating heart",
+    "es": "Corazón latiente",
+    "pt-BR": "Coração batendo",
+    "ar": "قلب نابض"
+  },
+  "לבן": {
+    "en": "White",
+    "es": "Blanco",
+    "pt-BR": "Branco",
+    "ar": "أبيض"
+  },
+  "לייק": {
+    "en": "Like",
+    "es": "Me gusta",
+    "pt-BR": "Curtida",
+    "ar": "إعجاب"
+  },
+  "לייק לב": {
+    "en": "Heart like",
+    "es": "Me gusta corazón",
+    "pt-BR": "Curtida coração",
+    "ar": "إعجاب قلب"
+  },
+  "מוזיקה": {
+    "en": "Music",
+    "es": "Música",
+    "pt-BR": "Música",
+    "ar": "موسيقى"
+  },
+  "מוסיף טקסט בפורמט ״שם - ערך״ בכל מקום בעמוד — בלי כרטיסייה": {
+    "en": "Adds text in a “name - value” format anywhere on the page — without a card",
+    "es": "Añade texto en formato «nombre - valor» en cualquier parte, sin tarjeta",
+    "pt-BR": "Adiciona texto no formato “nome - valor” em qualquer lugar — sem cartão",
+    "ar": "يضيف نصاً بصيغة «اسم - قيمة» في أي مكان بالصفحة — بلا بطاقة"
+  },
+  "מייל לקוח": {
+    "en": "Client email",
+    "es": "Email del cliente",
+    "pt-BR": "E-mail do cliente",
+    "ar": "بريد العميل"
+  },
+  "מנעול מאובטח": {
+    "en": "Secure lock",
+    "es": "Candado seguro",
+    "pt-BR": "Cadeado seguro",
+    "ar": "قفل آمن"
+  },
+  "מסגרת סגול": {
+    "en": "Purple frame",
+    "es": "Marco morado",
+    "pt-BR": "Moldura roxa",
+    "ar": "إطار بنفسجي"
+  },
+  "מספר גדול עם כותרת משנה — אידיאלי לסטטיסטיקות": {
+    "en": "Large number with a subtitle — ideal for stats",
+    "es": "Número grande con subtítulo: ideal para estadísticas",
+    "pt-BR": "Número grande com subtítulo — ideal para estatísticas",
+    "ar": "رقم كبير مع عنوان فرعي — مثالي للإحصاءات"
+  },
+  "מעטפה נשלחת": {
+    "en": "Sending envelope",
+    "es": "Sobre enviándose",
+    "pt-BR": "Envelope sendo enviado",
+    "ar": "ظرف يُرسل"
+  },
+  "מפגשים שבוצעו": {
+    "en": "Completed sessions",
+    "es": "Sesiones realizadas",
+    "pt-BR": "Sessões realizadas",
+    "ar": "جلسات منفّذة"
+  },
+  "מפגשים שבוצעו - ערך מה-CRM של הלקוח המחובר": {
+    "en": "Completed sessions — value from the signed-in client's CRM",
+    "es": "Sesiones realizadas — valor del CRM del cliente conectado",
+    "pt-BR": "Sessões realizadas — valor do CRM do cliente conectado",
+    "ar": "جلسات منفّذة — قيمة من CRM للعميل المتصل"
+  },
+  "מצלמה": {
+    "en": "Camera",
+    "es": "Cámara",
+    "pt-BR": "Câmera",
+    "ar": "كاميرا"
+  },
+  "מרובע": {
+    "en": "Square",
+    "es": "Cuadrado",
+    "pt-BR": "Quadrado",
+    "ar": "مربع"
+  },
+  "מרווח": {
+    "en": "Spacer",
+    "es": "Espacio",
+    "pt-BR": "Espaço",
+    "ar": "مسافة"
+  },
+  "משאית משלוחים": {
+    "en": "Delivery truck",
+    "es": "Camión de envíos",
+    "pt-BR": "Caminhão de entregas",
+    "ar": "شاحنة توصيل"
+  },
+  "משלוח": {
+    "en": "Shipping",
+    "es": "Envío",
+    "pt-BR": "Entrega",
+    "ar": "شحن"
+  },
+  "משקל": {
+    "en": "Weight",
+    "es": "Peso",
+    "pt-BR": "Peso",
+    "ar": "وزن"
+  },
+  "משקל אחרון ממעקב CRM (תאריך/שעה/ערך) של הלקוח המחובר": {
+    "en": "Latest weight from CRM tracking (date/time/value) for the signed-in client",
+    "es": "Último peso del seguimiento CRM (fecha/hora/valor) del cliente conectado",
+    "pt-BR": "Último peso do acompanhamento CRM (data/hora/valor) do cliente conectado",
+    "ar": "آخر وزن من متابعة CRM (تاريخ/وقت/قيمة) للعميل المتصل"
+  },
+  "משתמש": {
+    "en": "User",
+    "es": "Usuario",
+    "pt-BR": "Usuário",
+    "ar": "مستخدم"
+  },
+  "מתנה": {
+    "en": "Gift",
+    "es": "Regalo",
+    "pt-BR": "Presente",
+    "ar": "هدية"
+  },
+  "נגן וידאו": {
+    "en": "Video player",
+    "es": "Reproductor de vídeo",
+    "pt-BR": "Player de vídeo",
+    "ar": "مشغّل فيديو"
+  },
+  "נורה ורעיון": {
+    "en": "Bulb and idea",
+    "es": "Bombilla e idea",
+    "pt-BR": "Lâmpada e ideia",
+    "ar": "مصباح وفكرة"
+  },
+  "נתון CRM": {
+    "en": "CRM stat",
+    "es": "Dato CRM",
+    "pt-BR": "Dado CRM",
+    "ar": "بيان CRM"
+  },
+  "נתון משתנה מה-CRM": {
+    "en": "A live CRM value",
+    "es": "Un valor variable del CRM",
+    "pt-BR": "Um valor variável do CRM",
+    "ar": "قيمة متغيرة من CRM"
+  },
+  "סגול": {
+    "en": "Purple",
+    "es": "Morado",
+    "pt-BR": "Roxo",
+    "ar": "بنفسجي"
+  },
+  "סיכום": {
+    "en": "Summary",
+    "es": "Resumen",
+    "pt-BR": "Resumo",
+    "ar": "ملخص"
+  },
+  "סיכום - ערך מהתיק ב-CRM": {
+    "en": "Summary — value from the CRM file",
+    "es": "Resumen — valor del expediente CRM",
+    "pt-BR": "Resumo — valor do prontuário CRM",
+    "ar": "ملخص — قيمة من ملف CRM"
+  },
+  "סימון מפה": {
+    "en": "Map pin",
+    "es": "Marca de mapa",
+    "pt-BR": "Pino de mapa",
+    "ar": "دبوس خريطة"
+  },
+  "סנכרון ענן": {
+    "en": "Cloud sync",
+    "es": "Sincronización en la nube",
+    "pt-BR": "Sincronização na nuvem",
+    "ar": "مزامنة سحابية"
+  },
+  "ספינר טעינה מקצועי": {
+    "en": "Professional loading spinner",
+    "es": "Spinner de carga profesional",
+    "pt-BR": "Spinner de carregamento profissional",
+    "ar": "دوّارة تحميل احترافية"
+  },
+  "עבודת צוות": {
+    "en": "Teamwork",
+    "es": "Trabajo en equipo",
+    "pt-BR": "Trabalho em equipe",
+    "ar": "عمل جماعي"
+  },
+  "עגול": {
+    "en": "Round",
+    "es": "Redondo",
+    "pt-BR": "Redondo",
+    "ar": "دائري"
+  },
+  "עולם ורשת": {
+    "en": "World and web",
+    "es": "Mundo y red",
+    "pt-BR": "Mundo e rede",
+    "ar": "عالم وشبكة"
+  },
+  "עט וכתיבה": {
+    "en": "Pen and writing",
+    "es": "Pluma y escritura",
+    "pt-BR": "Caneta e escrita",
+    "ar": "قلم وكتابة"
+  },
+  "פעמון התראות": {
+    "en": "Notification bell",
+    "es": "Campana de avisos",
+    "pt-BR": "Sino de alertas",
+    "ar": "جرس تنبيهات"
+  },
+  "פרופיל": {
+    "en": "Profile",
+    "es": "Perfil",
+    "pt-BR": "Perfil",
+    "ar": "ملف"
+  },
+  "צ'אט": {
+    "en": "Chat",
+    "es": "Chat",
+    "pt-BR": "Chat",
+    "ar": "دردشة"
+  },
+  "צורת כמוסה מעוגלת מאוד": {
+    "en": "A very rounded capsule shape",
+    "es": "Forma cápsula muy redondeada",
+    "pt-BR": "Forma cápsula bem arredondada",
+    "ar": "شكل كبسولة مستدير جداً"
+  },
+  "ציטוט לקוח עם שם ותפקיד": {
+    "en": "Client quote with name and role",
+    "es": "Cita de cliente con nombre y cargo",
+    "pt-BR": "Citação de cliente com nome e cargo",
+    "ar": "اقتباس عميل مع الاسم والدور"
+  },
+  "צילום תמונה": {
+    "en": "Take a photo",
+    "es": "Hacer una foto",
+    "pt-BR": "Tirar uma foto",
+    "ar": "التقاط صورة"
+  },
+  "צמיחה כספית": {
+    "en": "Financial growth",
+    "es": "Crecimiento financiero",
+    "pt-BR": "Crescimento financeiro",
+    "ar": "نمو مالي"
+  },
+  "קו מפריד": {
+    "en": "Divider",
+    "es": "Separador",
+    "pt-BR": "Divisor",
+    "ar": "فاصل"
+  },
+  "קונפטי": {
+    "en": "Confetti",
+    "es": "Confeti",
+    "pt-BR": "Confete",
+    "ar": "قصاصات"
+  },
+  "קופסת מתנה": {
+    "en": "Gift box",
+    "es": "Caja de regalo",
+    "pt-BR": "Caixa de presente",
+    "ar": "علبة هدية"
+  },
+  "קפה": {
+    "en": "Coffee",
+    "es": "Café",
+    "pt-BR": "Café",
+    "ar": "قهوة"
+  },
+  "רך": {
+    "en": "Soft",
+    "es": "Suave",
+    "pt-BR": "Suave",
+    "ar": "ناعم"
+  },
+  "רעיון": {
+    "en": "Idea",
+    "es": "Idea",
+    "pt-BR": "Ideia",
+    "ar": "فكرة"
+  },
+  "רצועת CTA עם כותרת וכפתור": {
+    "en": "CTA strip with heading and button",
+    "es": "Franja CTA con título y botón",
+    "pt-BR": "Faixa CTA com título e botão",
+    "ar": "شريط دعوة بعنوان وزر"
+  },
+  "שאלה ותשובה ניתנות לעריכה מלאה": {
+    "en": "Fully editable question and answer",
+    "es": "Pregunta y respuesta totalmente editables",
+    "pt-BR": "Pergunta e resposta totalmente editáveis",
+    "ar": "سؤال وجواب قابلان للتحرير بالكامل"
+  },
+  "שאלת FAQ": {
+    "en": "FAQ question",
+    "es": "Pregunta FAQ",
+    "pt-BR": "Pergunta FAQ",
+    "ar": "سؤال شائع"
+  },
+  "שורת 3 מדדים": {
+    "en": "Row of 3 metrics",
+    "es": "Fila de 3 métricas",
+    "pt-BR": "Linha de 3 métricas",
+    "ar": "صف من 3 مؤشرات"
+  },
+  "שחור": {
+    "en": "Black",
+    "es": "Negro",
+    "pt-BR": "Preto",
+    "ar": "أسود"
+  },
+  "שירות רצוי": {
+    "en": "Preferred service",
+    "es": "Servicio deseado",
+    "pt-BR": "Serviço desejado",
+    "ar": "الخدمة المطلوبة"
+  },
+  "שיתוף פעולה": {
+    "en": "Collaboration",
+    "es": "Colaboración",
+    "pt-BR": "Colaboração",
+    "ar": "تعاون"
+  },
+  "שלום, שם לקוח": {
+    "en": "Hello, client name",
+    "es": "Hola, nombre de cliente",
+    "pt-BR": "Olá, nome do cliente",
+    "ar": "مرحباً، اسم العميل"
+  },
+  "שלושה כרטיסי מספר אופקיים": {
+    "en": "Three horizontal number cards",
+    "es": "Tres tarjetas de número horizontales",
+    "pt-BR": "Três cartões de número horizontais",
+    "ar": "ثلاث بطاقات رقم أفقية"
+  },
+  "שליחת מייל": {
+    "en": "Send email",
+    "es": "Enviar email",
+    "pt-BR": "Enviar e-mail",
+    "ar": "إرسال بريد"
+  },
+  "שם הלקוח מהאזור האישי / CRM": {
+    "en": "Client name from the portal / CRM",
+    "es": "Nombre del cliente del área / CRM",
+    "pt-BR": "Nome do cliente da área / CRM",
+    "ar": "اسم العميل من المنطقة الشخصية / CRM"
+  },
+  "שם לקוח": {
+    "en": "Client name",
+    "es": "Nombre de cliente",
+    "pt-BR": "Nome do cliente",
+    "ar": "اسم العميل"
+  },
+  "שם מלא": {
+    "en": "Full name",
+    "es": "Nombre completo",
+    "pt-BR": "Nome completo",
+    "ar": "الاسم الكامل"
+  },
+  "שקית קניות": {
+    "en": "Shopping bag",
+    "es": "Bolsa de compra",
+    "pt-BR": "Sacola de compras",
+    "ar": "كيس تسوق"
+  },
+  "תאריך מועדף": {
+    "en": "Preferred date",
+    "es": "Fecha preferida",
+    "pt-BR": "Data preferida",
+    "ar": "التاريخ المفضّل"
+  },
+  "תג הנחה": {
+    "en": "Discount tag",
+    "es": "Etiqueta de descuento",
+    "pt-BR": "Etiqueta de desconto",
+    "ar": "وسم خصم"
+  },
+  "תגית תווית": {
+    "en": "Label tag",
+    "es": "Etiqueta",
+    "pt-BR": "Etiqueta",
+    "ar": "وسم تسمية"
+  },
+  "תו מוזיקלי": {
+    "en": "Music note",
+    "es": "Nota musical",
+    "pt-BR": "Nota musical",
+    "ar": "نوتة موسيقية"
+  },
+  "תווית קטנה להדגשת יתרון או מבצע": {
+    "en": "Small label to highlight a benefit or promo",
+    "es": "Etiqueta pequeña para destacar una ventaja o promo",
+    "pt-BR": "Etiqueta pequena para destacar vantagem ou promoção",
+    "ar": "وسم صغير لإبراز ميزة أو عرض"
+  },
+  "תוכנית המשך": {
+    "en": "Follow-up plan",
+    "es": "Plan de continuidad",
+    "pt-BR": "Plano de continuidade",
+    "ar": "خطة متابعة"
+  },
+  "תוכנית המשך - מה-CRM": {
+    "en": "Follow-up plan — from the CRM",
+    "es": "Plan de continuidad — del CRM",
+    "pt-BR": "Plano de continuidade — do CRM",
+    "ar": "خطة متابعة — من CRM"
+  },
+  "תוכנית טיפול": {
+    "en": "Care plan",
+    "es": "Plan de tratamiento",
+    "pt-BR": "Plano de tratamento",
+    "ar": "خطة علاج"
+  },
+  "תזמון ופגישות": {
+    "en": "Scheduling and meetings",
+    "es": "Agenda y reuniones",
+    "pt-BR": "Agenda e reuniões",
+    "ar": "جدولة واجتماعات"
+  },
+  "תכנית טיפול": {
+    "en": "Treatment plan",
+    "es": "Plan de tratamiento",
+    "pt-BR": "Plano de tratamento",
+    "ar": "خطة علاج"
+  },
+  "תכנית טיפול - מה-CRM": {
+    "en": "Treatment plan — from the CRM",
+    "es": "Plan de tratamiento — del CRM",
+    "pt-BR": "Plano de tratamento — do CRM",
+    "ar": "خطة علاج — من CRM"
+  },
+  "תכנית מעקב": {
+    "en": "Follow-up program",
+    "es": "Plan de seguimiento",
+    "pt-BR": "Plano de acompanhamento",
+    "ar": "خطة متابعة"
+  },
+  "תכנית מעקב - מה-CRM": {
+    "en": "Follow-up program — from the CRM",
+    "es": "Plan de seguimiento — del CRM",
+    "pt-BR": "Plano de acompanhamento — do CRM",
+    "ar": "خطة متابعة — من CRM"
+  },
+  "תמונת גיבור": {
+    "en": "Hero image",
+    "es": "Imagen hero",
+    "pt-BR": "Imagem hero",
+    "ar": "صورة البطل"
+  },
+  "ברוכים הבאים": {
+    "en": "Welcome",
+    "es": "Bienvenidos",
+    "pt-BR": "Bem-vindos",
+    "ar": "أهلاً وسهلاً"
+  },
+  "כותרת": {
+    "en": "Heading",
+    "es": "Título",
+    "pt-BR": "Título",
+    "ar": "عنوان"
+  }
+}

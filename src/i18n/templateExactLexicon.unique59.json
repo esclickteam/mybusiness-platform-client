@@ -1,0 +1,290 @@
+{
+  "אדריכלות נוף": {
+    "en": "Landscape architecture",
+    "es": "Arquitectura del paisaje",
+    "pt-BR": "Arquitetura da paisagem",
+    "ar": "عمارة مناظر"
+  },
+  "צפו בפרויקטים": {
+    "en": "See the projects",
+    "es": "Ved los proyectos",
+    "pt-BR": "Veja os projetos",
+    "ar": "شاهدوا المشاريع"
+  },
+  "חצר רמת השרון": {
+    "en": "Ramat Hasharon courtyard",
+    "es": "Patio en Ramat Hasharon",
+    "pt-BR": "Pátio em Ramat Hasharon",
+    "ar": "فناء رمات هشارون"
+  },
+  "מגורים": {
+    "en": "Homes",
+    "es": "Viviendas",
+    "pt-BR": "Residências",
+    "ar": "سكن"
+  },
+  "גג תל אביב": {
+    "en": "Tel Aviv roof",
+    "es": "Azotea en Tel Aviv",
+    "pt-BR": "Terraço em Tel Aviv",
+    "ar": "سطح تل أبيب"
+  },
+  "פארק שכונתי": {
+    "en": "A neighborhood park",
+    "es": "Parque de barrio",
+    "pt-BR": "Parque de bairro",
+    "ar": "حديقة حي"
+  },
+  "תבנית Arbora · Bizuply Studio": {
+    "en": "Arbora template · Bizuply Studio",
+    "es": "Plantilla Arbora · Bizuply Studio",
+    "pt-BR": "Modelo Arbora · Bizuply Studio",
+    "ar": "قالب Arbora · Bizuply Studio"
+  },
+  "הפקת אירועים": {
+    "en": "Event production",
+    "es": "Producción de eventos",
+    "pt-BR": "Produção de eventos",
+    "ar": "إنتاج مناسبات"
+  },
+  "סולן": {
+    "en": "Solenne",
+    "es": "Solenne",
+    "pt-BR": "Solenne",
+    "ar": "Solenne"
+  },
+  "שקט ביום הגדול": {
+    "en": "Quiet on the big day",
+    "es": "Quietud el día grande",
+    "pt-BR": "Silêncio no dia grande",
+    "ar": "هدوء في اليوم الكبير"
+  },
+  "בואו נדבר על האירוע": {
+    "en": "Let's talk about the event",
+    "es": "Hablemos del evento",
+    "pt-BR": "Vamos falar sobre o evento",
+    "ar": "لنتحدث عن المناسبة"
+  },
+  "עיצוב, ספקים וניהול יום האירוע.": {
+    "en": "Design, vendors, and day-of management.",
+    "es": "Diseño, proveedores y gestión el día del evento.",
+    "pt-BR": "Design, fornecedores e gestão no dia do evento.",
+    "ar": "تصميم وموردون وإدارة يوم المناسبة."
+  },
+  "אירוע פרטי": {
+    "en": "A private event",
+    "es": "Un evento privado",
+    "pt-BR": "Um evento privado",
+    "ar": "مناسبة خاصة"
+  },
+  "ייעוץ עיצובי": {
+    "en": "Design consulting",
+    "es": "Consultoría de diseño",
+    "pt-BR": "Consultoria de design",
+    "ar": "استشارة تصميم"
+  },
+  "כיוון עיצובי ותקציב מדויק.": {
+    "en": "A design direction and a precise budget.",
+    "es": "Una dirección de diseño y un presupuesto preciso.",
+    "pt-BR": "Uma direção de design e um orçamento preciso.",
+    "ar": "اتجاه تصميم وميزانية دقيقة."
+  },
+  "תבנית Solenne · Bizuply Studio": {
+    "en": "Solenne template · Bizuply Studio",
+    "es": "Plantilla Solenne · Bizuply Studio",
+    "pt-BR": "Modelo Solenne · Bizuply Studio",
+    "ar": "قالب Solenne · Bizuply Studio"
+  },
+  "פורטיבה": {
+    "en": "Fortiva",
+    "es": "Fortiva",
+    "pt-BR": "Fortiva",
+    "ar": "Fortiva"
+  },
+  "זמינות אמיתית": {
+    "en": "Real availability",
+    "es": "Disponibilidad real",
+    "pt-BR": "Disponibilidade real",
+    "ar": "توافر حقيقي"
+  },
+  "פגישת אבחון": {
+    "en": "A diagnostic meeting",
+    "es": "Una reunión de diagnóstico",
+    "pt-BR": "Uma reunião de diagnóstico",
+    "ar": "اجتماع تشخيص"
+  },
+  "ליווי וביצוע": {
+    "en": "Guidance and execution",
+    "es": "Acompañamiento y ejecución",
+    "pt-BR": "Acompanhamento e execução",
+    "ar": "مرافقة وتنفيذ"
+  },
+  "מיסוי": {
+    "en": "Tax",
+    "es": "Fiscalidad",
+    "pt-BR": "Tributação",
+    "ar": "ضرائب"
+  },
+  "א׳–ה׳ 09:00–19:00": {
+    "en": "Sun–Thu 09:00–19:00",
+    "es": "Dom–jue 09:00–19:00",
+    "pt-BR": "Dom–qui 09:00–19:00",
+    "ar": "الأحد–الخميس 09:00–19:00"
+  },
+  "החלטות גדולות מתחילות בייעוץ נכון.": {
+    "en": "Big decisions start with the right advice.",
+    "es": "Las decisiones grandes empiezan con un consejo correcto.",
+    "pt-BR": "Decisões grandes começam com o conselho certo.",
+    "ar": "قرارات كبيرة تبدأ باستشارة صحيحة."
+  },
+  "פגישת ייעוץ דיסקרטית.": {
+    "en": "A discreet consultation.",
+    "es": "Una consulta discreta.",
+    "pt-BR": "Uma consulta discreta.",
+    "ar": "استشارة سرية."
+  },
+  "תחום הפנייה": {
+    "en": "Inquiry field",
+    "es": "Área de la consulta",
+    "pt-BR": "Área do contato",
+    "ar": "مجال الطلب"
+  },
+  "שנות מצוינות": {
+    "en": "Years of excellence",
+    "es": "Años de excelencia",
+    "pt-BR": "Anos de excelência",
+    "ar": "سنوات تميّز"
+  },
+  "צוות רב-תחומי של עורכי דין ויועצים": {
+    "en": "A multidisciplinary team of lawyers and advisors",
+    "es": "Un equipo multidisciplinar de abogados y asesores",
+    "pt-BR": "Uma equipe multidisciplinar de advogados e consultores",
+    "ar": "فريق متعدد التخصصات من محامين ومستشارين"
+  },
+  "ליווי אישי מהפגישה הראשונה ועד לתוצאה": {
+    "en": "Personal guidance from the first meeting through the result",
+    "es": "Acompañamiento personal desde la primera reunión hasta el resultado",
+    "pt-BR": "Acompanhamento pessoal da primeira reunião até o resultado",
+    "ar": "مرافقة شخصية من الاجتماع الأول حتى النتيجة"
+  },
+  "ניסיון מוכח מול הרשויות ובתי המשפט": {
+    "en": "Proven experience with authorities and courts",
+    "es": "Experiencia demostrada ante autoridades y tribunales",
+    "pt-BR": "Experiência comprovada perante autoridades e tribunais",
+    "ar": "خبرة مثبتة أمام السلطات والمحاكم"
+  },
+  "קרא עוד ←": {
+    "en": "Read more ←",
+    "es": "Leer más ←",
+    "pt-BR": "Ler mais ←",
+    "ar": "اقرأ المزيد ←"
+  },
+  "תבנית Fortiva · Bizuply Studio": {
+    "en": "Fortiva template · Bizuply Studio",
+    "es": "Plantilla Fortiva · Bizuply Studio",
+    "pt-BR": "Modelo Fortiva · Bizuply Studio",
+    "ar": "قالب Fortiva · Bizuply Studio"
+  },
+  "ויטליס": {
+    "en": "Vitalis",
+    "es": "Vitalis",
+    "pt-BR": "Vitalis",
+    "ar": "Vitalis"
+  },
+  "ציוד דיגיטלי מתקדם": {
+    "en": "Advanced digital equipment",
+    "es": "Equipo digital avanzado",
+    "pt-BR": "Equipamento digital avançado",
+    "ar": "معدات رقمية متقدمة"
+  },
+  "הטיפולים": {
+    "en": "The treatments",
+    "es": "Los tratamientos",
+    "pt-BR": "Os tratamentos",
+    "ar": "العلاجات"
+  },
+  "טיפולי ילדים": {
+    "en": "Children's treatments",
+    "es": "Tratamientos infantiles",
+    "pt-BR": "Tratamentos infantis",
+    "ar": "علاجات أطفال"
+  },
+  "אבחון וייעוץ": {
+    "en": "Diagnosis and consulting",
+    "es": "Diagnóstico y consulta",
+    "pt-BR": "Diagnóstico e consulta",
+    "ar": "تشخيص واستشارة"
+  },
+  "טיפול ומעקב": {
+    "en": "Treatment and follow-up",
+    "es": "Tratamiento y seguimiento",
+    "pt-BR": "Tratamento e acompanhamento",
+    "ar": "علاج ومتابعة"
+  },
+  "כל מה שחשוב לדעת לפני הביקור.": {
+    "en": "Everything that matters to know before the visit.",
+    "es": "Todo lo importante que hay que saber antes de la visita.",
+    "pt-BR": "Tudo o que importa saber antes da visita.",
+    "ar": "كل ما يهم معرفته قبل الزيارة."
+  },
+  "האם אתם עובדים עם ביטוחים?": {
+    "en": "Do you work with insurance?",
+    "es": "¿Trabajáis con seguros?",
+    "pt-BR": "Vocês trabalham com convênios?",
+    "ar": "هل تعملون مع التأمين؟"
+  },
+  "א׳–ה׳ 08:00–20:00 · ו׳ 08:00–13:00": {
+    "en": "Sun–Thu 08:00–20:00 · Fri 08:00–13:00",
+    "es": "Dom–jue 08:00–20:00 · Vie 08:00–13:00",
+    "pt-BR": "Dom–qui 08:00–20:00 · Sex 08:00–13:00",
+    "ar": "الأحد–الخميس 08:00–20:00 · الجمعة 08:00–13:00"
+  },
+  "סוג הטיפול": {
+    "en": "Treatment type",
+    "es": "Tipo de tratamiento",
+    "pt-BR": "Tipo de tratamento",
+    "ar": "نوع العلاج"
+  },
+  "בדיקה כללית": {
+    "en": "A general exam",
+    "es": "Revisión general",
+    "pt-BR": "Exame geral",
+    "ar": "فحص عام"
+  },
+  "השתלות": {
+    "en": "Implants",
+    "es": "Implantes",
+    "pt-BR": "Implantes",
+    "ar": "زراعة"
+  },
+  "טיפול חירום": {
+    "en": "Emergency care",
+    "es": "Tratamiento de urgencia",
+    "pt-BR": "Tratamento de emergência",
+    "ar": "علاج طارئ"
+  },
+  "סביבה נקייה, מודרנית ורגועה": {
+    "en": "A clean, modern, calm setting",
+    "es": "Un entorno limpio, moderno y calmo",
+    "pt-BR": "Um ambiente limpo, moderno e calmo",
+    "ar": "بيئة نظيفة وحديثة وهادئة"
+  },
+  "הסבר מלא לכל שלב בטיפול": {
+    "en": "A full explanation for every treatment step",
+    "es": "Una explicación completa en cada etapa del tratamiento",
+    "pt-BR": "Uma explicação completa em cada etapa do tratamento",
+    "ar": "شرح كامل لكل مرحلة في العلاج"
+  },
+  "צוות שמקשיב ומלווה באמת": {
+    "en": "A team that actually listens and stays with you",
+    "es": "Un equipo que escucha de verdad y acompaña",
+    "pt-BR": "Uma equipe que escuta de verdade e acompanha",
+    "ar": "فريق يستمع ويرافق حقاً"
+  },
+  "תבנית Vitalis · Bizuply Studio": {
+    "en": "Vitalis template · Bizuply Studio",
+    "es": "Plantilla Vitalis · Bizuply Studio",
+    "pt-BR": "Modelo Vitalis · Bizuply Studio",
+    "ar": "قالب Vitalis · Bizuply Studio"
+  }
+}

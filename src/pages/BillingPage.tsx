@@ -12,12 +12,14 @@ import {
   resumeSubscription,
   type BillingOverview,
 } from "../api/billingApi";
+import { getIntlLocale } from "../i18n/localeUtils";
 import {
   formatBillingDate,
-  formatIls,
+  formatBillingMoney,
   MONTHLY_SERVICE_KEYS,
   statusBadgeClass,
 } from "../components/billing/billingFormat";
+import { localizeBillingLabel } from "../components/billing/billingCopy";
 import {
   createDomainRenewalCheckout,
   retryDomainRenewal,
@@ -120,7 +122,7 @@ function Field({
 export default function BillingPage() {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
-  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
+  const dateLocale = getIntlLocale(i18n.language);
   const navigate = useNavigate();
   const { businessId: urlBusinessId } = useParams();
   const { user, refreshUser, setUser } = useAuth() as {
@@ -188,6 +190,12 @@ export default function BillingPage() {
       };
       return map[billingType] || billingType;
     },
+    [t]
+  );
+
+  const chargeLabel = useCallback(
+    (item: Parameters<typeof localizeBillingLabel>[1]) =>
+      localizeBillingLabel(t, item),
     [t]
   );
 
@@ -381,9 +389,11 @@ export default function BillingPage() {
                   className="flex flex-col gap-3 rounded-2xl bg-white/80 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="font-black text-slate-800">{fp.description}</p>
+                    <p className="font-black text-slate-800">
+                      {chargeLabel(fp)}
+                    </p>
                     <p className="mt-1 text-sm text-slate-600">
-                      {formatIls(fp.amount, dateLocale)} ·{" "}
+                      {formatBillingMoney(fp.amount, dateLocale, fp.currency)} ·{" "}
                       {formatBillingDate(fp.date, dateLocale)} ·{" "}
                       {t("billing.failed.attempts", {
                         count: fp.attemptCount || 1,
@@ -441,7 +451,12 @@ export default function BillingPage() {
                 <StatChip
                   label={t("billing.summary.planName")}
                   value={
-                    summary?.primaryPlanName || t("billing.summary.noActivePlan")
+                    summary?.primaryPlanName
+                      ? chargeLabel({
+                          sku: overview?.primaryPlan?.sku,
+                          name: summary.primaryPlanName,
+                        })
+                      : t("billing.summary.noActivePlan")
                   }
                 />
                 <StatChip
@@ -452,13 +467,13 @@ export default function BillingPage() {
                   label={t("billing.summary.nextCharge")}
                   value={
                     summary?.nextChargeAmount != null
-                      ? `${formatIls(summary.nextChargeAmount, dateLocale)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
+                      ? `${formatBillingMoney(summary.nextChargeAmount, dateLocale, summary.currency)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
                       : "—"
                   }
                 />
                 <StatChip
                   label={t("billing.totalPaid")}
-                  value={formatIls(summary?.totalPaid, dateLocale)}
+                  value={formatBillingMoney(summary?.totalPaid, dateLocale, summary?.currency)}
                 />
                 <StatChip
                   label={t("billing.summary.activeSubscriptions")}
@@ -501,10 +516,19 @@ export default function BillingPage() {
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <Field label={t("billing.plan")}>
-                  <p className="text-xl font-black">{primaryPlan.name}</p>
+                  <p className="text-xl font-black">
+                    {chargeLabel({
+                      sku: primaryPlan.sku,
+                      name: primaryPlan.name,
+                    })}
+                  </p>
                 </Field>
                 <Field label={t("billing.amount")}>
-                  {formatIls(primaryPlan.priceIls, dateLocale)}
+                  {formatBillingMoney(
+                    primaryPlan.priceIls,
+                    dateLocale,
+                    primaryPlan.currency
+                  )}
                 </Field>
                 <Field label={t("billing.billingType")}>
                   {billingTypeLabel(primaryPlan.billingType)}
@@ -570,7 +594,12 @@ export default function BillingPage() {
                       .filter((li) => li.kind === "upsell")
                       .map((li) => (
                         <li key={li.sku}>
-                          {li.name} · {formatIls(li.amountIls, dateLocale)}
+                          {chargeLabel({ sku: li.sku, name: li.name })} ·{" "}
+                          {formatBillingMoney(
+                            li.amountIls,
+                            dateLocale,
+                            primaryPlan.currency
+                          )}
                         </li>
                       ))}
                   </ul>
@@ -737,7 +766,7 @@ export default function BillingPage() {
                       <p className="mt-1 text-xs font-bold text-slate-500">
                         {t("billing.domains.renewalStatus")}: {dom.renewalStatus}
                         {dom.lastRenewalPrice
-                          ? ` · ${formatIls(dom.lastRenewalPrice, dateLocale)}`
+                          ? ` · ${formatBillingMoney(dom.lastRenewalPrice, dateLocale, "ils")}`
                           : ""}
                       </p>
                     </div>
@@ -784,14 +813,14 @@ export default function BillingPage() {
                     <p className="text-xs font-black uppercase text-slate-400">
                       {t("billing.plan")}
                     </p>
-                    <p className="mt-1 font-black">{c.name}</p>
+                    <p className="mt-1 font-black">{chargeLabel(c)}</p>
                   </div>
                   <div>
                     <p className="text-xs font-black uppercase text-slate-400">
                       {t("billing.amount")}
                     </p>
                     <p className="mt-1 font-black">
-                      {formatIls(c.amount, dateLocale)}
+                      {formatBillingMoney(c.amount, dateLocale, c.currency)}
                     </p>
                   </div>
                   <div>
@@ -895,10 +924,10 @@ export default function BillingPage() {
                         <td className="px-4 py-3 font-mono text-xs">
                           {row.transactionId}
                         </td>
-                        <td className="px-4 py-3 font-black">{row.description}</td>
+                        <td className="px-4 py-3 font-black">{chargeLabel(row)}</td>
                         <td className="px-4 py-3">{typeLabel(row.type)}</td>
                         <td className="px-4 py-3 font-black">
-                          {formatIls(row.amount, dateLocale)}
+                          {formatBillingMoney(row.amount, dateLocale, row.currency)}
                         </td>
                         <td className="px-4 py-3">
                           <span
@@ -923,7 +952,7 @@ export default function BillingPage() {
                     className="rounded-[1.25rem] border border-slate-100 bg-white p-4 shadow-sm"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="font-black text-slate-800">{row.description}</p>
+                      <p className="font-black text-slate-800">{chargeLabel(row)}</p>
                       <span
                         className={[
                           "inline-flex rounded-full px-3 py-1 text-xs font-black",
@@ -938,7 +967,7 @@ export default function BillingPage() {
                       {typeLabel(row.type)}
                     </p>
                     <p className="mt-1 text-base font-black">
-                      {formatIls(row.amount, dateLocale)}
+                      {formatBillingMoney(row.amount, dateLocale, row.currency)}
                     </p>
                     <p className="mt-1 font-mono text-xs text-slate-400">
                       {row.transactionId}
@@ -974,9 +1003,13 @@ export default function BillingPage() {
                   key={r.id}
                   className="rounded-[1.25rem] border border-slate-100 bg-white p-4"
                 >
-                  <p className="font-black">{r.description}</p>
+                  <p className="font-black">{chargeLabel(r)}</p>
                   <p className="mt-1 text-sm text-slate-600">
-                    {formatIls(r.refundedAmount || r.amount, dateLocale)} ·{" "}
+                    {formatBillingMoney(
+                      r.refundedAmount || r.amount,
+                      dateLocale,
+                      r.currency
+                    )} ·{" "}
                     {formatBillingDate(r.date, dateLocale)} ·{" "}
                     {r.refundKind === "partial"
                       ? t("billing.refunds.partial")
@@ -1018,7 +1051,7 @@ function ServiceOrderCard({
         <div>
           <p className="text-base font-black text-slate-800">{so.serviceName}</p>
           <p className="mt-1 text-sm text-slate-600">
-            {formatIls(so.pricePaidIls, dateLocale)} ·{" "}
+            {formatBillingMoney(so.pricePaidIls, dateLocale, so.currency)} ·{" "}
             {billingTypeLabel(so.billingType)}
           </p>
           <p className="mt-1 text-xs font-bold text-slate-500">

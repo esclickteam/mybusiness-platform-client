@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import { Loader2, X } from "lucide-react";
 import {
   getWhatsAppBillingUsage,
@@ -32,7 +33,7 @@ export default function WhatsAppCheckoutProcessing({
   onDone,
   onClose,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<"polling" | "success" | "timeout">(
@@ -105,7 +106,7 @@ export default function WhatsAppCheckoutProcessing({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        dir="rtl"
+        dir={getTextDirection(i18n.language)}
       >
         <button
           type="button"

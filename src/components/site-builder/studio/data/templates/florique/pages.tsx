@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { floriqueDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -160,7 +162,7 @@ function Occasions({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#3b1028]/78 via-[#3b1028]/15 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-7 text-white">
                   <p className="florique-script text-2xl md:text-5xl leading-none">{title}</p>
-                  <p className="mt-3 text-sm font-semibold leading-7 text-white/82">{text}</p>
+                  <p className="mt-3 text-sm font-semibold leading-7 text-white/82">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -197,10 +199,10 @@ function BouquetMosaic({ data }: { data: Record<string, any> }) {
               <article className={`florique-card group relative flex flex-col justify-end overflow-hidden bg-[#fff7fb] ${index === 0 ? "aspect-[16/10] lg:aspect-[16/11]" : "aspect-square"}`}>
                 <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-white/48 to-transparent" />
-                <div className="relative z-10 p-7 text-right">
+                <div className="relative z-10 p-7 text-start">
                   <div className="mb-4 inline-flex bg-[var(--p)] px-4 py-2 text-sm font-black text-white">{price}</div>
                   <h3 className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</h3>
-                  <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -235,7 +237,7 @@ function Process({ data }: { data: Record<string, any> }) {
                   0{index + 1}
                 </div>
                 <h3 className="mt-7 text-2xl font-bold text-[var(--text)]">{title}</h3>
-                <p className="mt-3 text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm font-semibold leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -335,7 +337,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="flex aspect-square flex-col justify-between border border-[var(--line)] bg-white p-7 shadow-[0_24px_60px_rgba(225,29,140,0.10)]">
-                <p className="text-xl font-semibold leading-9 text-[var(--text)]">"{text}"</p>
+                <p className="text-xl font-semibold leading-9 text-[var(--text)]">"{tx(text)}"</p>
                 <footer>
                   <p className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</p>
                   <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)]">{role}</p>
@@ -364,14 +366,14 @@ function OrderForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="florique-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="florique-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-[var(--line)] bg-white px-5 py-4 text-start outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-[var(--line)] bg-white px-5 py-4 text-start outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="אירוע או סיבה למשלוח"  name="other" data-bizuply-form-field-id="other" />
-            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="תקציב וגוונים מועדפים"  name="other_2" data-bizuply-form-field-id="other_2" />
-            <textarea className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="ברכה, כתובת ושעה רצויה"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+            <input className="border border-[var(--line)] bg-white px-5 py-4 text-start outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder={tx("אירוע או סיבה למשלוח")}  name="other" data-bizuply-form-field-id="other" />
+            <input className="border border-[var(--line)] bg-white px-5 py-4 text-start outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder={tx("תקציב וגוונים מועדפים")}  name="other_2" data-bizuply-form-field-id="other_2" />
+            <textarea className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-start outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder={tx("ברכה, כתובת ושעה רצויה")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
             <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>
@@ -430,7 +432,7 @@ export default function FloriquePages(props: FloriquePagesProps) {
   );
 
   return (
-    <div dir="rtl" data-template-id="florique" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="florique" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: floriqueEditorCss }} />
       <Header data={mergedData} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: <HomePage data={mergedData} /> }]} />

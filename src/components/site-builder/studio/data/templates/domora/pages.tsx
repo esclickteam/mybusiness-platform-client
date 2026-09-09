@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { domoraDefaultData, type DomoraDefaultData } from "./defaultData";
 
@@ -185,7 +187,7 @@ function SectionIntro({
     <div
       className={cx(
         "mb-12",
-        center ? "mx-auto max-w-4xl text-center" : "max-w-4xl text-right",
+        center ? "mx-auto max-w-4xl text-center" : "max-w-4xl text-start",
       )}
     >
       {eyebrow && (
@@ -216,7 +218,7 @@ function SectionIntro({
             dark ? "text-white/62" : "text-[#6d7378]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       )}
     </div>
@@ -240,7 +242,7 @@ function Shell({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="domora-cetfar-inspired"
       className={cx(
         "min-h-screen bg-[#f5f5f2] text-[#151d20]",
@@ -294,7 +296,7 @@ function Header({
                   : "text-white/72 hover:bg-white/10 hover:text-white",
               )}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -303,9 +305,7 @@ function Header({
           type="button"
           onClick={() => setPage("contact")}
           className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-[#151d20] transition hover:bg-[#e9e2d2]"
-        >
-          יצירת קשר
-        </button>
+        >{tx("יצירת קשר")}</button>
       </div>
     </header>
   );
@@ -390,7 +390,7 @@ function Essence({ data }: { data: DomoraData }) {
           {cards.map((card, index) => (
             <article
               key={`${card.title}-${index}`}
-              className="rounded-[2rem] bg-white p-7 text-right shadow-xl shadow-black/[0.04] transition duration-300 hover:-translate-y-1"
+              className="rounded-[2rem] bg-white p-7 text-start shadow-xl shadow-black/[0.04] transition duration-300 hover:-translate-y-1"
             >
               <div className="mb-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#151d20] text-sm text-white">
                 {String(index + 1).padStart(2, "0")}
@@ -427,9 +427,7 @@ function Properties({
           />
 
           <div className="mb-12 flex justify-start lg:justify-end">
-            <Button variant="dark" onClick={() => setPage("contact")}>
-              לתיאום שיחה
-            </Button>
+            <Button variant="dark" onClick={() => setPage("contact")}>{tx("לתיאום שיחה")}</Button>
           </div>
         </div>
 
@@ -453,7 +451,7 @@ function Properties({
                   {item.tag}
                 </div>
 
-                <div className="absolute bottom-5 right-5 text-right text-white">
+                <div className="absolute bottom-5 right-5 text-start text-white">
                   <h3 className="text-3xl font-light tracking-[-0.05em]">
                     {item.title}
                   </h3>
@@ -550,7 +548,7 @@ function Articles({ data }: { data: DomoraData }) {
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                 />
               </div>
-              <div className="p-7 text-right">
+              <div className="p-7 text-start">
                 <div className="mb-5 flex items-center justify-between text-sm text-[#85898d]">
                   <span>{article.date}</span>
                   <span>{article.category}</span>
@@ -587,7 +585,7 @@ function Testimonials({ data }: { data: DomoraData }) {
           {testimonials.map((item, index) => (
             <article
               key={`${item.name}-${index}`}
-              className="rounded-[2rem] bg-white p-8 text-right shadow-xl shadow-black/[0.04]"
+              className="rounded-[2rem] bg-white p-8 text-start shadow-xl shadow-black/[0.04]"
             >
               <div className="mb-4 text-xl text-[#ff8a1f]">{item.rating}</div>
               <p className="text-xl leading-9 text-[#5f666b]">{item.quote}</p>
@@ -622,13 +620,13 @@ function Faq({ data }: { data: DomoraData }) {
               className="group border-b border-black/5 px-4 py-5 last:border-b-0"
               open={index === 0}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-right text-xl font-light tracking-[-0.03em]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-start text-xl font-light tracking-[-0.03em]">
                 <span>{item.q}</span>
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f1f1ee] transition group-open:rotate-45">
                   +
                 </span>
               </summary>
-              <p className="mt-4 text-right leading-8 text-[#6d7378]">
+              <p className="mt-4 text-start leading-8 text-[#6d7378]">
                 {item.a}
               </p>
             </details>
@@ -649,7 +647,7 @@ function Cta({
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1450px] overflow-hidden rounded-[3rem] bg-[#151d20] text-white lg:grid-cols-[0.85fr_1fr]">
-        <div className="p-8 text-right sm:p-12 lg:p-16">
+        <div className="p-8 text-start sm:p-12 lg:p-16">
           <div className="mb-5 text-white/55">{data.cta.eyebrow}</div>
           <h2 className="text-[clamp(2.6rem,5vw,5.8rem)] font-light leading-[1] tracking-[-0.065em]">
             {data.cta.title}
@@ -679,7 +677,7 @@ function ContactPage({ data }: { data: DomoraData }) {
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1450px] gap-8 lg:grid-cols-[0.8fr_0.7fr]">
-        <div className="text-right">
+        <div className="text-start">
           <div className="mb-5 text-[#85898d]">{data.contact.eyebrow}</div>
           <h1 className="text-[clamp(3rem,6vw,6.8rem)] font-light leading-[0.95] tracking-[-0.07em]">
             {data.contact.title}
@@ -690,8 +688,8 @@ function ContactPage({ data }: { data: DomoraData }) {
         </div>
 
         <form
-          dir="rtl"
-          className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="domora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          dir={templateDir()}
+          className="rounded-[2rem] bg-white p-6 text-start shadow-xl shadow-black/[0.04]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="domora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             ["שם", "השם שלך"],
             ["טלפון", "050-0000000"],
@@ -707,10 +705,10 @@ function ContactPage({ data }: { data: DomoraData }) {
           ))}
 
           <label className="block">
-            <span className="mb-2 block text-sm text-[#85898d]">הודעה</span>
+            <span className="mb-2 block text-sm text-[#85898d]">{tx("הודעה")}</span>
             <textarea
               rows={5}
-              placeholder="ספרו בקצרה מה אתם מחפשים..."
+              placeholder={tx("ספרו בקצרה מה אתם מחפשים...")}
               className="w-full resize-none rounded-2xl border border-black/5 bg-[#f5f5f2] px-5 py-4 outline-none transition placeholder:text-[#9a9fa3] focus:border-[#151d20]"
              name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
@@ -760,7 +758,7 @@ function Footer({
   return (
     <footer className="border-t border-black/5 bg-white px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1450px] flex-col justify-between gap-8 lg:flex-row lg:items-end">
-        <div className="text-right">
+        <div className="text-start">
           <button
             type="button"
             onClick={() => setPage("home")}
@@ -780,7 +778,7 @@ function Footer({
               onClick={() => setPage(item.id as DomoraPageId)}
               className="rounded-full border border-black/5 px-4 py-2 text-sm text-[#6d7378] transition hover:bg-[#151d20] hover:text-white"
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </div>

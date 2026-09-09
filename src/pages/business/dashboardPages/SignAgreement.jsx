@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function PartnershipAgreement({ agreementId, userBusinessId, onSigned }) {
+  const { t } = useTranslation();
   const [agreement, setAgreement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -26,7 +28,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch {
-        setError("Error loading agreement");
+        setError(t("leftover.collab.signPage.loadError"));
       } finally {
         setLoading(false);
       }
@@ -42,7 +44,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
   const saveSignature = async () => {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      alert("Please sign first");
+      alert(t("leftover.collab.signPage.signFirst"));
       return;
     }
     setSaving(true);
@@ -51,7 +53,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     try {
       await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl, side });
 
-      alert("Agreement signed successfully!");
+      alert(t("leftover.collab.signPage.signedSuccess"));
       setAgreement(prev => ({
         ...prev,
         signatures: {
@@ -70,22 +72,22 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       clearSignature();
       if (typeof onSigned === "function") onSigned();
     } catch {
-      alert("Error saving signature");
+      alert(t("leftover.collab.signPage.saveError"));
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
+  if (loading) return <BizuplyLoader fullScreen label={t("leftover.collab.signPage.loading")} />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!agreement) return <p>Agreement not found.</p>;
-  if (!side) return <p>You do not have permission to view or sign this agreement.</p>;
+  if (!agreement) return <p>{t("leftover.collab.signPage.notFound")}</p>;
+  if (!side) return <p>{t("leftover.collab.signPage.noPermission")}</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>{agreement.title}</h2>
-      <p><strong>Description:</strong> {agreement.description || "-"}</p>
-      <p><strong>Agreement Terms:</strong></p>
+      <p><strong>{t("leftover.collab.signPage.description")}</strong> {agreement.description || "-"}</p>
+      <p><strong>{t("leftover.collab.signPage.terms")}</strong></p>
       <pre
         style={{
           whiteSpace: "pre-wrap",
@@ -97,19 +99,19 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       >
         {agreement.terms || "-"}
       </pre>
-      <p><strong>Payment Details:</strong> {agreement.paymentDetails || "-"}</p>
-      <p><strong>Agreement Status:</strong> {agreement.status}</p>
+      <p><strong>{t("leftover.collab.signPage.payment")}</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>{t("leftover.collab.signPage.status")}</strong> {agreement.status}</p>
 
       <hr />
 
-      <h3>Your Signature ({side === "createdBy" ? "Agreement Creator" : "Invited Business"})</h3>
+      <h3>{side === "createdBy" ? t("leftover.collab.signPage.yourSigCreator") : t("leftover.collab.signPage.yourSigInvited")}</h3>
 
       {hasSigned ? (
         <div>
-          <p>Already signed on {new Date(agreement.signatures[side].signedAt).toLocaleDateString()}</p>
+          <p>{t("leftover.collab.signPage.alreadySignedOn", { date: new Date(agreement.signatures[side].signedAt).toLocaleDateString() })}</p>
           <img
             src={agreement.signatures[side].signatureDataUrl}
-            alt="Signature"
+            alt={t("leftover.collab.signPage.signatureAlt")}
             style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
           />
         </div>
@@ -122,10 +124,10 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
           />
           <div style={{ marginTop: 10 }}>
             <button onClick={clearSignature} disabled={saving} style={{ marginRight: 10 }}>
-              Clear Signature
+              {t("leftover.collab.signPage.clearSig")}
             </button>
             <button onClick={saveSignature} disabled={saving}>
-              {saving ? "Saving..." : "Sign and Submit"}
+              {saving ? t("leftover.collab.signPage.saving") : t("leftover.collab.signPage.signSubmit")}
             </button>
           </div>
         </>
@@ -133,25 +135,28 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
       <hr />
 
-      <h3>Other Party's Signature</h3>
+      <h3>{t("leftover.collab.signPage.otherSig")}</h3>
       {(() => {
         const otherSide = side === "createdBy" ? "invitedBusiness" : "createdBy";
         if (agreement.signatures?.[otherSide]?.signed) {
           return (
             <div>
               <p>
-                Other party signed on{" "}
-                {new Date(agreement.signatures[otherSide].signedAt).toLocaleDateString()}
+                {t("leftover.collab.signPage.otherSignedOn", {
+                  date: new Date(
+                    agreement.signatures[otherSide].signedAt
+                  ).toLocaleDateString(),
+                })}
               </p>
               <img
                 src={agreement.signatures[otherSide].signatureDataUrl}
-                alt="Other Party's Signature"
+                alt={t("leftover.collab.signPage.otherAlt")}
                 style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
               />
             </div>
           );
         }
-        return <p>The other party has not signed yet.</p>;
+        return <p>{t("leftover.collab.signPage.otherNotSigned")}</p>;
       })()}
     </div>
   );

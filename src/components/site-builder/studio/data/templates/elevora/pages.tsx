@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -86,7 +88,7 @@ function MediaElement({
         "data-visual-edit-type": "image",
         "data-visual-type": "image",
         "data-visual-editable": "true",
-        "data-visual-edit-label": alt || "תמונה",
+        "data-visual-edit-label": alt || tx("תמונה"),
         "data-visual-media-type": mediaType,
         "data-resource-type": mediaType,
         "data-visual-current-src": cleanSrc,
@@ -204,7 +206,7 @@ export default function ElevoraPages({
       <style>{elevoraEditorCss}</style>
 
       <main
-        dir="rtl"
+        dir={templateDir()}
         data-template-id="elevora"
         data-template-mode={mode}
         data-template-page-id={currentPage}
@@ -265,7 +267,7 @@ function Header({
             type="button"
             className="elevora-brand"
             onClick={() => onNavigate("home")}
-            aria-label="חזרה לדף הבית"
+            aria-label={tx("חזרה לדף הבית")}
           >
             <span className="elevora-brand-mark">E</span>
             <span>
@@ -278,7 +280,7 @@ function Header({
             </span>
           </button>
 
-          <nav className="elevora-nav" aria-label="ניווט ראשי">
+          <nav className="elevora-nav" aria-label={tx("ניווט ראשי")}>
             {data.nav.map((item, index) => {
               const label = resolveNavLabelFromSitePages(
                 item,
@@ -381,9 +383,7 @@ function Header({
             className="elevora-btn elevora-btn-primary elevora-header-cta"
             onClick={() => onNavigate("contact")}
             data-editable="button"
-          >
-            דברו איתנו
-          </button>
+          >{tx("דברו איתנו")}</button>
         </div>
       </div>
     </header>
@@ -448,9 +448,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                   <span className="elevora-avatar" />
                   <span className="elevora-avatar" />
                 </span>
-                <span data-editable="text">
-                  עסקים שמחפשים תהליך ברור, מקצועי וממיר.
-                </span>
+                <span data-editable="text">{tx("עסקים שמחפשים תהליך ברור, מקצועי וממיר.")}</span>
               </div>
             </div>
 
@@ -469,7 +467,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
               >
                 <MediaElement
                   src={data.hero.image}
-                  alt="פגישה עסקית מקצועית"
+                  alt={tx("פגישה עסקית מקצועית")}
                   className="elevora-media-image"
                   field="hero.image"
                 />
@@ -682,18 +680,11 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
-            <span className="elevora-eyebrow" data-editable="text">
-              שירותים
-            </span>
-            <h2 className="elevora-section-title" data-editable="text">
-              כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.
-            </h2>
+            <span className="elevora-eyebrow" data-editable="text">{tx("שירותים")}</span>
+            <h2 className="elevora-section-title" data-editable="text">{tx("כל מה שעסק צריך כדי להיראות מקצועי ולסגור יותר לקוחות.")}</h2>
           </div>
 
-          <p className="elevora-section-text" data-editable="text">
-            מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות
-            וטופס ליד שמוביל לפעולה.
-          </p>
+          <p className="elevora-section-text" data-editable="text">{tx("מבנה שמתאים לעסקים נותני שירות — עם שירותים ברורים, אמון, המלצות\nוטופס ליד שמוביל לפעולה.")}</p>
         </div>
 
         <div className="elevora-services-grid">
@@ -718,9 +709,7 @@ function ServicesSection({ data, onNavigate }: SharedProps & NavigateProps) {
                 className="elevora-btn elevora-btn-outline"
                 onClick={() => onNavigate("contact")}
                 data-editable="button"
-              >
-                קבלו פרטים
-              </button>
+              >{tx("קבלו פרטים")}</button>
             </article>
           ))}
         </div>
@@ -742,7 +731,7 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
           >
             <MediaElement
               src={data.about.image}
-              alt="צוות ייעוץ עסקי"
+              alt={tx("צוות ייעוץ עסקי")}
               className="elevora-about-media"
               field="about.image"
             />
@@ -789,9 +778,7 @@ function AboutPreviewSection({ data, onNavigate }: SharedProps & NavigateProps) 
                 className="elevora-btn elevora-btn-gold"
                 onClick={() => onNavigate("about")}
                 data-editable="button"
-              >
-                קראו עוד עלינו
-              </button>
+              >{tx("קראו עוד עלינו")}</button>
             </div>
           </div>
         </div>
@@ -806,12 +793,8 @@ function ProcessSection({ data }: SharedProps) {
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
-            <span className="elevora-eyebrow" data-editable="text">
-              תהליך עבודה
-            </span>
-            <h2 className="elevora-section-title" data-editable="text">
-              תהליך קצר, ברור וממוקד תוצאות.
-            </h2>
+            <span className="elevora-eyebrow" data-editable="text">{tx("תהליך עבודה")}</span>
+            <h2 className="elevora-section-title" data-editable="text">{tx("תהליך קצר, ברור וממוקד תוצאות.")}</h2>
           </div>
         </div>
 
@@ -845,12 +828,8 @@ function TestimonialsSection({ data }: SharedProps) {
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
-            <span className="elevora-eyebrow" data-editable="text">
-              לקוחות מספרים
-            </span>
-            <h2 className="elevora-section-title" data-editable="text">
-              אתר עסקי צריך להיראות טוב — אבל גם לבנות אמון.
-            </h2>
+            <span className="elevora-eyebrow" data-editable="text">{tx("לקוחות מספרים")}</span>
+            <h2 className="elevora-section-title" data-editable="text">{tx("אתר עסקי צריך להיראות טוב — אבל גם לבנות אמון.")}</h2>
           </div>
         </div>
 
@@ -891,12 +870,8 @@ function FaqSection({ data }: SharedProps) {
       <div className="elevora-shell">
         <div className="elevora-section-head">
           <div>
-            <span className="elevora-eyebrow" data-editable="text">
-              שאלות נפוצות
-            </span>
-            <h2 className="elevora-section-title" data-editable="text">
-              כל מה שצריך לדעת לפני שמתחילים.
-            </h2>
+            <span className="elevora-eyebrow" data-editable="text">{tx("שאלות נפוצות")}</span>
+            <h2 className="elevora-section-title" data-editable="text">{tx("כל מה שצריך לדעת לפני שמתחילים.")}</h2>
           </div>
         </div>
 
@@ -958,9 +933,9 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
   return (
     <>
       <PageHero
-        eyebrow="השירותים שלנו"
-        title="פתרונות עסקיים לאתר מקצועי, לידים ותהליך מכירה ברור."
-        text="עמוד שירותים שמתאים לעסקים שרוצים להסביר במה הם עוזרים, למה לבחור בהם ואיך להשאיר פרטים."
+        eyebrow={tx("השירותים שלנו")}
+        title={tx("פתרונות עסקיים לאתר מקצועי, לידים ותהליך מכירה ברור.")}
+        text={tx("עמוד שירותים שמתאים לעסקים שרוצים להסביר במה הם עוזרים, למה לבחור בהם ואיך להשאיר פרטים.")}
       />
 
       <ServicesSection data={data} onNavigate={onNavigate} />
@@ -984,35 +959,28 @@ function ContactPage({ data }: SharedProps) {
         <div className="elevora-shell">
           <div className="elevora-contact-grid">
             <div className="elevora-contact-panel elevora-reveal">
-              <span className="elevora-eyebrow" data-editable="text">
-                יצירת קשר
-              </span>
-              <h2 className="elevora-section-title" data-editable="text">
-                בואו נדבר על הצעד הבא של העסק.
-              </h2>
-              <p className="elevora-section-text" data-editable="text">
-                אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס
-                למערכת הלידים.
-              </p>
+              <span className="elevora-eyebrow" data-editable="text">{tx("יצירת קשר")}</span>
+              <h2 className="elevora-section-title" data-editable="text">{tx("בואו נדבר על הצעד הבא של העסק.")}</h2>
+              <p className="elevora-section-text" data-editable="text">{tx("אפשר להחליף כאן טקסט, טלפון, כתובת, שעות פעילות ולחבר את הטופס\nלמערכת הלידים.")}</p>
 
               <div className="elevora-contact-info">
                 <div className="elevora-info-line">
-                  <span>טלפון</span>
+                  <span>{tx("טלפון")}</span>
                   <strong data-editable="text">{data.brand.phone}</strong>
                 </div>
 
                 <div className="elevora-info-line">
-                  <span>מייל</span>
+                  <span>{tx("מייל")}</span>
                   <strong data-editable="text">{data.brand.email}</strong>
                 </div>
 
                 <div className="elevora-info-line">
-                  <span>כתובת</span>
+                  <span>{tx("כתובת")}</span>
                   <strong data-editable="text">{data.contact.address}</strong>
                 </div>
 
                 <div className="elevora-info-line">
-                  <span>שעות פעילות</span>
+                  <span>{tx("שעות פעילות")}</span>
                   <strong data-editable="text">{data.contact.hours}</strong>
                 </div>
               </div>
@@ -1021,21 +989,21 @@ function ContactPage({ data }: SharedProps) {
             <div className="elevora-form-card elevora-reveal elevora-delay-2">
               <form
                 className="elevora-form"
-                data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+                data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="elevora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
               >
                 <div className="elevora-field">
-                  <label htmlFor="elevora-name">שם מלא</label>
+                  <label htmlFor="elevora-name">{tx("שם מלא")}</label>
                   <input
                     id="elevora-name"
                     name="name"
                     type="text"
-                    placeholder="השם שלך"
+                    placeholder={tx("השם שלך")}
                     data-editable="input"
                    data-bizuply-form-field-id="name" autoComplete="name" />
                 </div>
 
                 <div className="elevora-field">
-                  <label htmlFor="elevora-phone">טלפון</label>
+                  <label htmlFor="elevora-phone">{tx("טלפון")}</label>
                   <input
                     id="elevora-phone"
                     name="phone"
@@ -1046,7 +1014,7 @@ function ContactPage({ data }: SharedProps) {
                 </div>
 
                 <div className="elevora-field">
-                  <label htmlFor="elevora-email">אימייל</label>
+                  <label htmlFor="elevora-email">{tx("אימייל")}</label>
                   <input
                     id="elevora-email"
                     name="email"
@@ -1057,11 +1025,11 @@ function ContactPage({ data }: SharedProps) {
                 </div>
 
                 <div className="elevora-field">
-                  <label htmlFor="elevora-message">איך אפשר לעזור?</label>
+                  <label htmlFor="elevora-message">{tx("איך אפשר לעזור?")}</label>
                   <textarea
                     id="elevora-message"
                     name="message"
-                    placeholder="ספרו לנו בקצרה על העסק והמטרה שלכם"
+                    placeholder={tx("ספרו לנו בקצרה על העסק והמטרה שלכם")}
                     data-editable="textarea"
                    data-bizuply-form-field-id="message"></textarea>
                 </div>
@@ -1070,9 +1038,7 @@ function ContactPage({ data }: SharedProps) {
                   type="submit"
                   className="elevora-btn elevora-btn-primary"
                   data-editable="button"
-                >
-                  שליחת פנייה
-                </button>
+                >{tx("שליחת פנייה")}</button>
               </form>
             </div>
           </div>
@@ -1102,7 +1068,7 @@ function PageHero({
             {title}
           </h1>
           <p className="elevora-page-text" data-editable="text">
-            {text}
+            {tx(text)}
           </p>
         </div>
       </div>
@@ -1116,7 +1082,7 @@ function Footer({ data, onNavigate }: SharedProps & NavigateProps) {
       <div className="elevora-shell">
         <div className="elevora-footer-inner">
           <div>
-            © {new Date().getFullYear()} {data.brand.name}. כל הזכויות שמורות.
+            © {new Date().getFullYear()} {data.brand.name}. {tx("כל הזכויות שמורות.")}
           </div>
 
           <div className="elevora-nav">

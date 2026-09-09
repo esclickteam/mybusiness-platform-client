@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { tapasoraDefaultData } from "./defaultData";
 import { tapasoraEditorCss } from "./editorCss";
@@ -32,7 +34,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = tapasoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = tapasoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#080410f0", borderColor: "rgba(248,238,248,0.14)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -44,7 +46,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
           ))}
         </nav>
         <button type="button" onClick={() => { setNavOpen(false); onCta(); }} className="px-5 py-2.5 text-sm font-bold" style={{ background: "#ff2d95", color: "#12081a" }}>{v(data, "heroPrimary")}</button>
-        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
           <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
         </button>
       </div>
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <nav className="border-t px-5 py-4 lg:hidden" style={{ borderColor: "rgba(0,0,0,0.08)", background: "var(--surface, #fff)" }}>
           <div className="mx-auto grid max-w-7xl gap-2">
             {nav.map(([id, label]) => (
-              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </nav>
@@ -92,7 +94,7 @@ function BentoTapas({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">בנטו לילה</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("בנטו לילה")}</h2></Reveal>
         <div className="mt-10 grid gap-3 md:grid-cols-4 md:grid-rows-2">
           {cards.map(([title, meta, text, img], i) => (
             <Reveal key={title} delayMs={i * 80} variant="up" className={i === 0 ? "md:col-span-2 md:row-span-2" : ""}>
@@ -101,7 +103,7 @@ function BentoTapas({ data }: { data: Record<string, any> }) {
                 <div className="p-4">
                   <p className="text-xs font-semibold" style={{ color: "#ff2d95" }}>{meta}</p>
                   <h3 className="tpl-display mt-1 text-xl font-bold">{title}</h3>
-                  <p className="mt-1 text-sm" style={{ color: "#b89bc4" }}>{text}</p>
+                  <p className="mt-1 text-sm" style={{ color: "#b89bc4" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -361,8 +363,8 @@ function Insights({ data }: { data: Record<string, any> }) {
               <div className="journal-card-media relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                 <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
-              <div className="flex flex-col justify-center p-6 text-right sm:p-8 lg:p-10">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
+              <div className="flex flex-col justify-center p-6 text-start sm:p-8 lg:p-10">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(featured.tag)}</p>
                 <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
                 <p className="mt-3 text-base leading-7" style={{ color: "#b89bc4" }}>{featured.text}</p>
               </div>
@@ -374,8 +376,8 @@ function Insights({ data }: { data: Record<string, any> }) {
                 <div className="journal-card-media relative aspect-[16/10] overflow-hidden">
                   <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-5 text-right sm:p-6">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
+                <div className="p-5 text-start sm:p-6">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{tx(post.tag)}</p>
                   <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{post.text}</p>
                 </div>
@@ -424,10 +426,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <div className="flex justify-between text-xs" style={{ color: "#b89bc4" }}><span>TAB #042</span><span>OPEN</span></div>
           <h2 className="tpl-display mt-4 text-3xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-sm" style={{ color: "#b89bc4" }}>{v(data, "contactText")}</p>
-          <form className="mt-6 grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="tapasora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="w-full border bg-transparent px-3 py-2 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <div className="mt-2 flex justify-between border-t pt-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.14)" }}><span>TOTAL</span><span style={{ color: "#ff2d95" }}>שמירת מקום</span></div>
+          <form className="mt-6 grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="tapasora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2 text-start text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="w-full border bg-transparent px-3 py-2 text-start text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <div className="mt-2 flex justify-between border-t pt-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.14)" }}><span>TOTAL</span><span style={{ color: "#ff2d95" }}>{tx("שמירת מקום")}</span></div>
             <button type="submit" className="mt-2 px-4 py-3 text-sm font-bold" style={{ background: "#ff2d95", color: "#12081a" }}>{v(data, "cta")}</button>
           </form>
         </div>
@@ -507,7 +509,7 @@ function JournalPage({ data, onCta }: { data: Record<string, any>; onCta: () => 
           <img src={posts[0]?.image || v(data, "gallery2Image") || v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20" />
-        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-start text-white lg:px-8 lg:py-24">
           <SectionKicker label={v(data, "insightsKicker")} />
           <h1 className="tpl-display mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">{v(data, "insightsTitle")}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">{v(data, "pageHeroText")}</p>
@@ -562,7 +564,7 @@ export default function TapasoraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="tapasora" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="tapasora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#12081a", color: "#f8eef8" }}>
       <style dangerouslySetInnerHTML={{ __html: tapasoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

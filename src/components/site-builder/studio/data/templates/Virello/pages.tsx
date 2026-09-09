@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { virelloDefaultData } from "./defaultData";
@@ -179,7 +181,7 @@ function VisualText({
       data-gjs-type="text"
       className={className}
     >
-      {text}
+      {tx(text)}
     </TextTag>
   );
 }
@@ -352,7 +354,7 @@ function Header({
               )}
             >
               <VisualText id={`nav.${index}.number`} fallback={item.number} className="mr-2 text-xs opacity-55" />
-              <VisualText id={`nav.${index}.label`} fallback={item.label} />
+              <VisualText id={`nav.${index}.label`} fallback={tx(item.label)} />
             </button>
           ))}
         </nav>
@@ -360,9 +362,9 @@ function Header({
         <div className="hidden items-center gap-3 xl:flex">
           {base.brand.socialLinks.map((item, index) => (
             <VisualText
-              key={`${item}-${index}`}
+              key={`${tx(item)}-${index}`}
               id={`brand.socialLinks.${index}`}
-              fallback={item}
+              fallback={tx(item)}
               className="text-sm font-black text-[#301b12]/55 transition hover:text-[#301b12]"
             />
           ))}
@@ -451,7 +453,7 @@ function Hero({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
 
                 <div className="flex gap-4 text-sm font-black text-[#301b12]/45">
                   {base.brand.socialLinks.map((item, index) => (
-                    <VisualText key={`${item}-${index}`} id={`brand.socialLinks.${index}`} fallback={`${item} /`} />
+                    <VisualText key={`${tx(item)}-${index}`} id={`brand.socialLinks.${index}`} fallback={`${tx(item)} /`} />
                   ))}
                 </div>
               </div>
@@ -981,7 +983,7 @@ function FaqSection() {
               <button
                 type="button"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-5 p-6 text-right text-xl font-black tracking-[-.03em] text-[#301b12]"
+                className="flex w-full items-center justify-between gap-5 p-6 text-start text-xl font-black tracking-[-.03em] text-[#301b12]"
               >
                 <VisualText id={`faq.${index}.question`} fallback={faq.question} />
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#301b12] text-white">{openIndex === index ? "−" : "+"}</span>
@@ -1086,7 +1088,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {base.nav.map((item, index) => (
             <button key={item.id} type="button" onClick={() => onNavigate(item.id as VirelloPageId)} className="w-fit text-sm font-black text-[#301b12]/55 hover:text-[#301b12]">
-              <VisualText id={`nav.${index}.number`} fallback={`(${item.number})`} /> <VisualText id={`nav.${index}.label`} fallback={item.label} />
+              <VisualText id={`nav.${index}.number`} fallback={`(${item.number})`} /> <VisualText id={`nav.${index}.label`} fallback={tx(item.label)} />
             </button>
           ))}
         </div>
@@ -1095,7 +1097,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
           <VisualText id="footer.newsletterLabel" fallback="הצטרפו לעדכונים" as="label" className="mb-3 block text-sm font-black text-[#301b12]" />
 
           <div className="flex gap-2">
-            <input type="email" placeholder="כתובת אימייל" className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
+            <input type="email" placeholder={tx("כתובת אימייל")} className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
 
             <button className="rounded-full bg-[#301b12] px-5 py-3 text-sm font-black text-white">
               <VisualText id="footer.newsletterButton" fallback="הצטרפות" />
@@ -1105,11 +1107,11 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
       </div>
 
       <div className="mx-auto mt-10 flex max-w-[1520px] flex-col justify-between gap-4 border-t border-[#301b12]/10 pt-6 text-sm font-bold text-[#301b12]/45 md:flex-row">
-        <VisualText id="footer.copyright" fallback={`© 2026 ${base.brand.name}. כל הזכויות שמורות`} as="p" />
+        <VisualText id="footer.copyright" fallback={`© 2026 ${base.brand.name}. ${tx("כל הזכויות שמורות")}`} as="p" />
 
         <div className="flex gap-4">
           {base.brand.socialLinks.map((item, index) => (
-            <VisualText key={`${item}-${index}`} id={`brand.socialLinks.${index}`} fallback={item} />
+            <VisualText key={`${tx(item)}-${index}`} id={`brand.socialLinks.${index}`} fallback={tx(item)} />
           ))}
         </div>
       </div>
@@ -1226,14 +1228,14 @@ function ContactPage() {
           <VisualText id="contact.description" fallback={base.contact.description} as="p" className="mt-8 max-w-xl text-xl font-bold leading-9 text-[#301b12]/62" />
         </div>
 
-        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="virello-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם." className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
+        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="virello-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")} className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
           <div className="grid gap-4 md:grid-cols-2">
-            <input placeholder="שם מלא" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input placeholder="טלפון" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input placeholder={tx("שם מלא")} className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input placeholder={tx("טלפון")} className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           </div>
 
-          <input placeholder="אימייל" className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-          <textarea placeholder="ספרו לנו על הפרויקט" className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <input placeholder={tx("אימייל")} className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+          <textarea placeholder={tx("ספרו לנו על הפרויקט")} className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none"  name="message" data-bizuply-form-field-id="message"></textarea>
 
           <button className="mt-4 w-full rounded-full bg-[#301b12] px-6 py-5 text-sm font-black text-white" type="submit">
             <VisualText id="contact.button" fallback={base.contact.button} />
@@ -1278,7 +1280,7 @@ export default function VirelloPages(props: VirelloPagesProps) {
         data-template-id="virello"
         data-visual-template="virello"
         data-active-page-id={activePage}
-        dir="rtl"
+        dir={templateDir()}
         className="min-h-screen overflow-hidden bg-[#fff8f0] text-[#301b12]"
       >
         <VirelloEffects />

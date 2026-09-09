@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import { createSocket } from "../socket";
 
 export default function CollabPartnersChat() {
+  const { t } = useTranslation();
   const { getValidAccessToken, logout, user } = useAuth();
   const [partners, setPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
@@ -49,7 +51,7 @@ export default function CollabPartnersChat() {
       setMessages(historyRes.data.messages || []);
     } catch (e) {
       console.error(e);
-      alert("Error opening chat, please try again.");
+      alert(t("leftover.collab.openChatError"));
     }
   }, []);
 
@@ -77,7 +79,7 @@ export default function CollabPartnersChat() {
 
     const fromBusinessId = user?.businessId || user?.business?._id || null;
     if (!fromBusinessId) {
-      alert("Something went wrong, please log in again.");
+      alert(t("leftover.collab.loginAgain"));
       return;
     }
 
@@ -97,7 +99,7 @@ export default function CollabPartnersChat() {
         setMessages(prev => [...prev, ack.message]);
         setInput("");
       } else {
-        alert("Failed to send message: " + (ack.error || "Unknown error"));
+        alert(t("leftover.collab.sendFailed", { detail: ack.error || t("leftover.collab.unknownError") }));
       }
     });
   };

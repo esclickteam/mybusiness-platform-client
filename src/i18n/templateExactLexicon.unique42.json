@@ -1,0 +1,686 @@
+{
+  "חופשות בוטיק בהתאמה אישית": {
+    "en": "Boutique trips, tailored for you",
+    "es": "Viajes boutique a tu medida",
+    "pt-BR": "Viagens boutique sob medida",
+    "ar": "رحلات بوتيك مفصلة لكم"
+  },
+  "חופשה שמרגישה כאילו נתפרה רק בשבילך": {
+    "en": "A trip that feels tailored just for you",
+    "es": "Un viaje que se siente hecho solo para ti",
+    "pt-BR": "Uma viagem que parece feita só para você",
+    "ar": "إجازة تشعر كأنها فُصّلت لكم وحدكم"
+  },
+  "תכנון נסיעות יוקרתי, חכם ומדויק — מטיסות ומלונות ועד מסלולים, חוויות, אטרקציות וליווי אישי.": {
+    "en": "Luxury, smart, precise travel planning — from flights and hotels to itineraries, experiences, attractions, and personal support.",
+    "es": "Planificación de viajes de lujo, inteligente y precisa — de vuelos y hoteles a itinerarios, experiencias, atracciones y acompañamiento personal.",
+    "pt-BR": "Planejamento de viagens de luxo, inteligente e preciso — de voos e hotéis a roteiros, experiências, atrações e acompanhamento pessoal.",
+    "ar": "تخطيط سفر فاخر وذكي ودقيق — من الطيران والفنادق حتى المسارات والتجارب والمعالم والمرافقة الشخصية."
+  },
+  "בואו נבנה מסלול": {
+    "en": "Let's build an itinerary",
+    "es": "Construyamos un itinerario",
+    "pt-BR": "Vamos montar um roteiro",
+    "ar": "لنبنِ مساراً"
+  },
+  "לראות יעדים": {
+    "en": "See destinations",
+    "es": "Ver destinos",
+    "pt-BR": "Ver destinos",
+    "ar": "رؤية الوجهات"
+  },
+  "נסיעות שמתחילות ברעיון ומסתיימות בחוויה בלתי נשכחת": {
+    "en": "Trips that start as an idea and end as an unforgettable experience",
+    "es": "Viajes que empiezan como una idea y terminan en una experiencia inolvidable",
+    "pt-BR": "Viagens que começam como ideia e terminam em uma experiência inesquecível",
+    "ar": "رحلات تبدأ كفكرة وتنتهي كتجربة لا تُنسى"
+  },
+  "חבילות נבחרות, יעדים טרנדיים, שירות אישי ונראות יוקרתית שמתאימה לסוכנות נסיעות מודרנית.": {
+    "en": "Selected packages, trending destinations, personal service, and a luxury look that fits a modern travel agency.",
+    "es": "Paquetes seleccionados, destinos de tendencia, servicio personal y una imagen de lujo que encaja en una agencia moderna.",
+    "pt-BR": "Pacotes selecionados, destinos em alta, serviço pessoal e um visual de luxo que cabe em uma agência moderna.",
+    "ar": "باقات مختارة ووجهات رائجة وخدمة شخصية ومظهر فاخر يناسب وكالة سفر حديثة."
+  },
+  "יעדים בעולם": {
+    "en": "Destinations worldwide",
+    "es": "Destinos en el mundo",
+    "pt-BR": "Destinos no mundo",
+    "ar": "وجهات حول العالم"
+  },
+  "מטיילים מרוצים": {
+    "en": "Happy travelers",
+    "es": "Viajeros satisfechos",
+    "pt-BR": "Viajantes satisfeitos",
+    "ar": "مسافرون راضون"
+  },
+  "חופשות פרימיום": {
+    "en": "Premium trips",
+    "es": "Viajes premium",
+    "pt-BR": "Viagens premium",
+    "ar": "رحلات فاخرة"
+  },
+  "ירח דבש": {
+    "en": "Honeymoon",
+    "es": "Luna de miel",
+    "pt-BR": "Lua de mel",
+    "ar": "شهر عسل"
+  },
+  "טיולים משפחתיים": {
+    "en": "Family trips",
+    "es": "Viajes familiares",
+    "pt-BR": "Viagens em família",
+    "ar": "رحلات عائلية"
+  },
+  "יעדים אקזוטיים": {
+    "en": "Exotic destinations",
+    "es": "Destinos exóticos",
+    "pt-BR": "Destinos exóticos",
+    "ar": "وجهات استوائية"
+  },
+  "מסלולים מותאמים אישית": {
+    "en": "Custom itineraries",
+    "es": "Itinerarios a medida",
+    "pt-BR": "Roteiros sob medida",
+    "ar": "مسارات مفصلة"
+  },
+  "יעדים נבחרים": {
+    "en": "Selected destinations",
+    "es": "Destinos seleccionados",
+    "pt-BR": "Destinos selecionados",
+    "ar": "وجهات مختارة"
+  },
+  "מקומות שמתחילים בתמונה ומסתיימים בזיכרון": {
+    "en": "Places that start as a photo and end as a memory",
+    "es": "Lugares que empiezan en una foto y terminan en un recuerdo",
+    "pt-BR": "Lugares que começam numa foto e terminam numa memória",
+    "ar": "أماكن تبدأ بصورة وتنتهي كذكرى"
+  },
+  "מבחר יעדים אהובים במיוחד עם התאמה לזוגות, משפחות, חופשות יוקרה, נופש רגוע או חוויה מלאה באקשן.": {
+    "en": "A mix of especially loved destinations, matched for couples, families, luxury trips, a calm getaway, or a full action experience.",
+    "es": "Una selección de destinos especialmente queridos, adaptada a parejas, familias, viajes de lujo, un descanso sereno o una experiencia llena de acción.",
+    "pt-BR": "Uma seleção de destinos especialmente queridos, adaptada a casais, famílias, viagens de luxo, um descanso sereno ou uma experiência cheia de ação.",
+    "ar": "مجموعة وجهات محبوبة جداً مع ملاءمة للأزواج والعائلات ورحلات الفخامة واستجمام هادئ أو تجربة مليئة بالحركة."
+  },
+  "רומנטי": {
+    "en": "Romantic",
+    "es": "Romántico",
+    "pt-BR": "Romântico",
+    "ar": "رومانسي"
+  },
+  "טרופי": {
+    "en": "Tropical",
+    "es": "Tropical",
+    "pt-BR": "Tropical",
+    "ar": "استوائي"
+  },
+  "חבילות מומלצות": {
+    "en": "Recommended packages",
+    "es": "Paquetes recomendados",
+    "pt-BR": "Pacotes recomendados",
+    "ar": "باقات موصى بها"
+  },
+  "תכנון חכם. חוויה מלאה.": {
+    "en": "Smart planning. Full experience.",
+    "es": "Planificación inteligente. Experiencia completa.",
+    "pt-BR": "Planejamento inteligente. Experiência completa.",
+    "ar": "تخطيط ذكي. تجربة كاملة."
+  },
+  "חבילות לדוגמה שממחישות את איכות השירות, רמת התכנון והנראות המקצועית של סוכנות הנסיעות שלך.": {
+    "en": "Sample packages that show the service quality, planning level, and professional look of your travel agency.",
+    "es": "Paquetes de ejemplo que muestran la calidad del servicio, el nivel de planificación y la imagen profesional de tu agencia.",
+    "pt-BR": "Pacotes de exemplo que mostram a qualidade do serviço, o nível de planejamento e a imagem profissional da sua agência.",
+    "ar": "باقات نموذجية توضح جودة الخدمة ومستوى التخطيط والمظهر المهني لوكالة السفر الخاصة بك."
+  },
+  "חופשה זוגית חלומית": {
+    "en": "Dream couples trip",
+    "es": "Viaje de pareja soñado",
+    "pt-BR": "Viagem de casal dos sonhos",
+    "ar": "إجازة زوجية حالمة"
+  },
+  "מלונות בוטיק": {
+    "en": "Boutique hotels",
+    "es": "Hoteles boutique",
+    "pt-BR": "Hotéis boutique",
+    "ar": "فنادق بوتيك"
+  },
+  "מסלול מותאם אישית": {
+    "en": "Custom itinerary",
+    "es": "Itinerario a medida",
+    "pt-BR": "Roteiro sob medida",
+    "ar": "مسار مفصل"
+  },
+  "ליווי לפני הטיסה": {
+    "en": "Pre-flight support",
+    "es": "Acompañamiento antes del vuelo",
+    "pt-BR": "Acompanhamento antes do voo",
+    "ar": "مرافقة قبل الرحلة"
+  },
+  "טיול משפחתי מאורגן": {
+    "en": "Organized family trip",
+    "es": "Viaje familiar organizado",
+    "pt-BR": "Viagem familiar organizada",
+    "ar": "رحلة عائلية منظمة"
+  },
+  "אטרקציות לילדים": {
+    "en": "Attractions for kids",
+    "es": "Atracciones para niños",
+    "pt-BR": "Atrações para crianças",
+    "ar": "معالم للأطفال"
+  },
+  "טיסות ומלונות": {
+    "en": "Flights and hotels",
+    "es": "Vuelos y hoteles",
+    "pt-BR": "Voos e hotéis",
+    "ar": "طيران وفنادق"
+  },
+  "תכנון מלא": {
+    "en": "Full planning",
+    "es": "Planificación completa",
+    "pt-BR": "Planejamento completo",
+    "ar": "تخطيط كامل"
+  },
+  "מסע אקזוטי": {
+    "en": "Exotic journey",
+    "es": "Viaje exótico",
+    "pt-BR": "Jornada exótica",
+    "ar": "رحلة استوائية"
+  },
+  "חופים פרטיים": {
+    "en": "Private beaches",
+    "es": "Playas privadas",
+    "pt-BR": "Praias privativas",
+    "ar": "شواطئ خاصة"
+  },
+  "חוויות מקומיות": {
+    "en": "Local experiences",
+    "es": "Experiencias locales",
+    "pt-BR": "Experiências locais",
+    "ar": "تجارب محلية"
+  },
+  "העברות ונציגות": {
+    "en": "Transfers and local desk",
+    "es": "Traslados y representación",
+    "pt-BR": "Transfers e representação",
+    "ar": "تنقلات وتمثيل محلي"
+  },
+  "תהליך פשוט שנראה ומרגיש פרימיום": {
+    "en": "A simple process that looks and feels premium",
+    "es": "Un proceso simple que se ve y se siente premium",
+    "pt-BR": "Um processo simples que parece e se sente premium",
+    "ar": "عملية بسيطة تبدو وتشعر بالفخامة"
+  },
+  "המטרה היא לתת לעסק תבנית יוקרתית ומקצועית, שנראית מעולה ומובילה לפניות, השארת פרטים ותכנון חופשה.": {
+    "en": "The goal is to give the business a luxury, professional template that looks excellent and leads to inquiries, details, and trip planning.",
+    "es": "El objetivo es dar al negocio una plantilla de lujo y profesional, que se vea excelente y lleve a consultas, datos y planificación de viaje.",
+    "pt-BR": "O objetivo é dar ao negócio um modelo de luxo e profissional, que pareça excelente e leve a consultas, dados e planejamento de viagem.",
+    "ar": "الهدف إعطاء العمل قالباً فاخراً ومهنياً يبدو ممتازاً ويؤدي إلى استفسارات وترك تفاصيل وتخطيط إجازة."
+  },
+  "שיחת התאמה": {
+    "en": "Fit call",
+    "es": "Llamada de encaje",
+    "pt-BR": "Chamada de encaixe",
+    "ar": "مكالمة ملاءمة"
+  },
+  "מבינים את התקציב, הסגנון, היעד והחוויה שהלקוח רוצה לקבל.": {
+    "en": "We understand the budget, style, destination, and experience the client wants.",
+    "es": "Entendemos el presupuesto, el estilo, el destino y la experiencia que el cliente quiere.",
+    "pt-BR": "Entendemos o orçamento, o estilo, o destino e a experiência que o cliente quer.",
+    "ar": "نفهم الميزانية والأسلوب والوجهة والتجربة التي يريدها الزبون."
+  },
+  "בניית מסלול": {
+    "en": "Build the itinerary",
+    "es": "Construir el itinerario",
+    "pt-BR": "Montar o roteiro",
+    "ar": "بناء المسار"
+  },
+  "יוצרים תכנון חכם עם מלונות, טיסות, יעדים, המלצות וחוויות.": {
+    "en": "We create smart planning with hotels, flights, destinations, recommendations, and experiences.",
+    "es": "Creamos una planificación inteligente con hoteles, vuelos, destinos, recomendaciones y experiencias.",
+    "pt-BR": "Criamos um planejamento inteligente com hotéis, voos, destinos, recomendações e experiências.",
+    "ar": "نصنع تخطيطاً ذكياً مع فنادق وطيران ووجهات وتوصيات وتجارب."
+  },
+  "סגירה וליווי": {
+    "en": "Close and support",
+    "es": "Cierre y acompañamiento",
+    "pt-BR": "Fechamento e acompanhamento",
+    "ar": "إغلاق ومرافقة"
+  },
+  "מרכזים את כל הפרטים במקום אחד ומלווים את הלקוח עד החזרה.": {
+    "en": "We gather every detail in one place and support the client until they return.",
+    "es": "Reunimos todos los detalles en un lugar y acompañamos al cliente hasta el regreso.",
+    "pt-BR": "Reunimos todos os detalhes em um lugar e acompanhamos o cliente até a volta.",
+    "ar": "نجمع كل التفاصيل في مكان واحد ونرافق الزبون حتى العودة."
+  },
+  "לקוחות אוהבים חוויות שמרגישות מדויקות": {
+    "en": "Clients love experiences that feel precise",
+    "es": "Los clientes aman experiencias que se sienten precisas",
+    "pt-BR": "Os clientes amam experiências que parecem precisas",
+    "ar": "الزبائن يحبون تجارب تشعر بالدقة"
+  },
+  "הכול היה מתוקתק, רגוע ומדויק. הרגשנו שמישהו באמת תכנן לנו את החופשה כאילו זו החופשה שלו.": {
+    "en": "Everything was tight, calm, and precise. We felt someone really planned the trip as if it were their own.",
+    "es": "Todo estuvo ordenado, sereno y preciso. Sentimos que alguien realmente planificó el viaje como si fuera el suyo.",
+    "pt-BR": "Tudo esteve arrumado, sereno e preciso. Sentimos que alguém realmente planejou a viagem como se fosse a dele.",
+    "ar": "كان كل شيء مرتباً وهادئاً ودقيقاً. شعرنا أن أحداً خطط الإجازة حقاً وكأنها إجازته."
+  },
+  "פעם ראשונה שלא היינו צריכים לרדוף אחרי מלונות, טיסות ואטרקציות. הכול היה במקום אחד.": {
+    "en": "The first time we did not have to chase hotels, flights, and attractions. Everything was in one place.",
+    "es": "La primera vez que no tuvimos que perseguir hoteles, vuelos y atracciones. Todo estaba en un lugar.",
+    "pt-BR": "A primeira vez que não precisamos correr atrás de hotéis, voos e atrações. Tudo estava em um lugar.",
+    "ar": "أول مرة لم نحتج فيها لملاحقة الفنادق والطيران والمعالم. كان كل شيء في مكان واحد."
+  },
+  "מתחילים מכאן": {
+    "en": "Start here",
+    "es": "Empieza aquí",
+    "pt-BR": "Comece aqui",
+    "ar": "ابدأوا من هنا"
+  },
+  "בואו נתכנן את החופשה הבאה שלכם": {
+    "en": "Let's plan your next trip",
+    "es": "Planifiquemos tu próximo viaje",
+    "pt-BR": "Vamos planejar a próxima viagem de vocês",
+    "ar": "لنخطط إجازتكم القادمة"
+  },
+  "אזור השארת פרטים שמתאים להמרה — עם מקום לשם, טלפון, יעד מבוקש והודעה חופשית.": {
+    "en": "A details area built for conversion — with room for name, phone, desired destination, and a free message.",
+    "es": "Un área de datos pensada para convertir — con espacio para nombre, teléfono, destino deseado y un mensaje libre.",
+    "pt-BR": "Uma área de dados pensada para converter — com espaço para nome, telefone, destino desejado e uma mensagem livre.",
+    "ar": "منطقة لترك التفاصيل مناسبة للتحويل — مع مكان للاسم والهاتف والوجهة المطلوبة ورسالة حرّة."
+  },
+  "ליווי לפני, במהלך ואחרי": {
+    "en": "Support before, during, and after",
+    "es": "Acompañamiento antes, durante y después",
+    "pt-BR": "Acompanhamento antes, durante e depois",
+    "ar": "مرافقة قبل وأثناء وبعد"
+  },
+  "התאמה לפי תקציב, סגנון ויעד": {
+    "en": "Matched by budget, style, and destination",
+    "es": "Ajuste según presupuesto, estilo y destino",
+    "pt-BR": "Ajuste conforme orçamento, estilo e destino",
+    "ar": "ملاءمة حسب الميزانية والأسلوب والوجهة"
+  },
+  "תבנית תיירות יוקרתית לביזאפלי": {
+    "en": "A luxury travel template for BizUply",
+    "es": "Una plantilla de turismo de lujo para BizUply",
+    "pt-BR": "Um modelo de turismo de luxo para o BizUply",
+    "ar": "قالب سياحة فاخر لبيزابلي"
+  },
+  "משרד עורכי דין": {
+    "en": "Law firm",
+    "es": "Despacho de abogados",
+    "pt-BR": "Escritório de advocacia",
+    "ar": "مكتب محاماة"
+  },
+  "ייעוץ משפטי אסטרטגי": {
+    "en": "Strategic legal advice",
+    "es": "Asesoría jurídica estratégica",
+    "pt-BR": "Consultoria jurídica estratégica",
+    "ar": "استشارة قانونية استراتيجية"
+  },
+  "סטנדרט גבוה יותר לליווי משפטי": {
+    "en": "A higher standard of legal support",
+    "es": "Un estándar más alto de acompañamiento jurídico",
+    "pt-BR": "Um padrão mais alto de acompanhamento jurídico",
+    "ar": "معيار أعلى للمرافقة القانونية"
+  },
+  "משרד עורכי דין מודרני המשלב דיוק משפטי, חשיבה עסקית וליווי אישי בתיקים מסחריים, מקרקעין, חוזים וליטיגציה.": {
+    "en": "A modern law firm that combines legal precision, business thinking, and personal support in commercial cases, real estate, contracts, and litigation.",
+    "es": "Un despacho moderno que combina precisión jurídica, pensamiento de negocio y acompañamiento personal en casos comerciales, inmobiliario, contratos y litigación.",
+    "pt-BR": "Um escritório moderno que combina precisão jurídica, pensamento de negócio e acompanhamento pessoal em casos comerciais, imóveis, contratos e litigância.",
+    "ar": "مكتب محاماة حديث يجمع الدقة القانونية والتفكير التجاري والمرافقة الشخصية في القضايا التجارية والعقارات والعقود والتقاضي."
+  },
+  "קביעת ייעוץ": {
+    "en": "Book a consultation",
+    "es": "Reservar una consulta",
+    "pt-BR": "Marcar uma consulta",
+    "ar": "حجز استشارة"
+  },
+  "תיקים שטופלו": {
+    "en": "Cases handled",
+    "es": "Casos tratados",
+    "pt-BR": "Casos tratados",
+    "ar": "قضايا عولجت"
+  },
+  "משפט, אסטרטגיה ודיוק עסקי תחת קורת גג אחת": {
+    "en": "Law, strategy, and business precision under one roof",
+    "es": "Derecho, estrategia y precisión de negocio bajo un mismo techo",
+    "pt-BR": "Direito, estratégia e precisão de negócio sob o mesmo teto",
+    "ar": "قانون واستراتيجية ودقة أعمال تحت سقف واحد"
+  },
+  "אנחנו מלווים לקוחות פרטיים, חברות ויזמים בהחלטות משפטיות מורכבות — מהשלב הראשוני ועד סגירת ההליך בצורה ברורה, מסודרת ומקצועית.": {
+    "en": "We support private clients, companies, and founders through complex legal decisions — from the first step to closing the matter clearly, in order, and professionally.",
+    "es": "Acompañamos a clientes particulares, empresas y emprendedores en decisiones jurídicas complejas — desde el primer paso hasta el cierre del procedimiento de forma clara, ordenada y profesional.",
+    "pt-BR": "Acompanhamos clientes particulares, empresas e empreendedores em decisões jurídicas complexas — do primeiro passo até o fechamento do processo de forma clara, organizada e profissional.",
+    "ar": "نرافق الزبائن الخاصين والشركات وروّاد الأعمال في قرارات قانونية معقّدة — من المرحلة الأولى حتى إغلاق الإجراء بوضوح وترتيب ومهنية."
+  },
+  "שירותים משפטיים לעולם עסקי משתנה": {
+    "en": "Legal services for a changing business world",
+    "es": "Servicios jurídicos para un mundo de negocios que cambia",
+    "pt-BR": "Serviços jurídicos para um mundo de negócios em mudança",
+    "ar": "خدمات قانونية لعالم أعمال متغيّر"
+  },
+  "ייעוץ וליווי משפטי ללקוחות שצריכים בהירות, זמינות, אחריות ופתרונות מעשיים.": {
+    "en": "Legal advice and support for clients who need clarity, availability, responsibility, and practical solutions.",
+    "es": "Asesoría y acompañamiento jurídico para clientes que necesitan claridad, disponibilidad, responsabilidad y soluciones prácticas.",
+    "pt-BR": "Consultoria e acompanhamento jurídico para clientes que precisam de clareza, disponibilidade, responsabilidade e soluções práticas.",
+    "ar": "استشارة ومرافقة قانونية لزبائن يحتاجون وضوحاً وتوفراً ومسؤولية وحلولاً عملية."
+  },
+  "משפט מסחרי וחוזים": {
+    "en": "Commercial law and contracts",
+    "es": "Derecho comercial y contratos",
+    "pt-BR": "Direito comercial e contratos",
+    "ar": "قانون تجاري وعقود"
+  },
+  "ניסוח, בדיקה וניהול משא ומתן בהסכמים מסחריים, שותפויות, ספקים ולקוחות.": {
+    "en": "Drafting, review, and negotiation of commercial agreements, partnerships, suppliers, and clients.",
+    "es": "Redacción, revisión y negociación de acuerdos comerciales, sociedades, proveedores y clientes.",
+    "pt-BR": "Redação, revisão e negociação de acordos comerciais, sociedades, fornecedores e clientes.",
+    "ar": "صياغة ومراجعة وإدارة تفاوض في اتفاقيات تجارية وشراكات ومورّدين وزبائن."
+  },
+  "160+ הסכמים": {
+    "en": "160+ agreements",
+    "es": "160+ acuerdos",
+    "pt-BR": "160+ acordos",
+    "ar": "160+ اتفاقية"
+  },
+  "מקרקעין ונדל״ן": {
+    "en": "Real estate",
+    "es": "Inmobiliario",
+    "pt-BR": "Imóveis",
+    "ar": "عقارات"
+  },
+  "ליווי עסקאות רכישה, מכירה, שכירות, בדיקות משפטיות וניהול סיכונים.": {
+    "en": "Support for purchase, sale, and lease deals, legal checks, and risk management.",
+    "es": "Acompañamiento en compras, ventas, alquileres, revisiones jurídicas y gestión de riesgos.",
+    "pt-BR": "Acompanhamento em compras, vendas, locações, revisões jurídicas e gestão de riscos.",
+    "ar": "مرافقة صفقات شراء وبيع وإيجار وفحوصات قانونية وإدارة مخاطر."
+  },
+  "90+ עסקאות": {
+    "en": "90+ deals",
+    "es": "90+ operaciones",
+    "pt-BR": "90+ negócios",
+    "ar": "90+ صفقة"
+  },
+  "ליטיגציה ויישוב סכסוכים": {
+    "en": "Litigation and dispute resolution",
+    "es": "Litigación y resolución de conflictos",
+    "pt-BR": "Litigância e resolução de conflitos",
+    "ar": "تقاضي وتسوية نزاعات"
+  },
+  "ייצוג בהליכים משפטיים, מכתבי התראה, משא ומתן והסכמי פשרה.": {
+    "en": "Representation in legal proceedings, demand letters, negotiation, and settlement agreements.",
+    "es": "Representación en procedimientos, cartas de requerimiento, negociación y acuerdos de conciliación.",
+    "pt-BR": "Representação em procedimentos, cartas de notificação, negociação e acordos de conciliação.",
+    "ar": "تمثيل في إجراءات قانونية ورسائل إنذار وتفاوض واتفاقيات تسوية."
+  },
+  "120+ הליכים": {
+    "en": "120+ matters",
+    "es": "120+ procedimientos",
+    "pt-BR": "120+ processos",
+    "ar": "120+ إجراء"
+  },
+  "ליווי חברות ויזמים": {
+    "en": "Support for companies and founders",
+    "es": "Acompañamiento a empresas y emprendedores",
+    "pt-BR": "Acompanhamento a empresas e empreendedores",
+    "ar": "مرافقة شركات وروّاد أعمال"
+  },
+  "ייעוץ שוטף לחברות, הקמה, מסמכי מדיניות, שותפויות והסכמי השקעה.": {
+    "en": "Ongoing advice for companies, formation, policy documents, partnerships, and investment agreements.",
+    "es": "Asesoría continua a empresas, constitución, documentos de política, sociedades y acuerdos de inversión.",
+    "pt-BR": "Consultoria contínua a empresas, constituição, documentos de política, sociedades e acordos de investimento.",
+    "ar": "استشارة مستمرة للشركات والتأسيس ووثائق السياسة والشراكات واتفاقيات الاستثمار."
+  },
+  "75+ חברות": {
+    "en": "75+ companies",
+    "es": "75+ empresas",
+    "pt-BR": "75+ empresas",
+    "ar": "75+ شركة"
+  },
+  "תוצאות שנבנו מתוך אסטרטגיה משפטית מדויקת": {
+    "en": "Results built from a precise legal strategy",
+    "es": "Resultados construidos desde una estrategia jurídica precisa",
+    "pt-BR": "Resultados construídos a partir de uma estratégia jurídica precisa",
+    "ar": "نتائج بُنيت من استراتيجية قانونية دقيقة"
+  },
+  "דוגמאות לתחומי טיפול, תהליכים ותוצאות שממחישים את אופי העבודה של המשרד.": {
+    "en": "Examples of practice areas, processes, and results that show how the firm works.",
+    "es": "Ejemplos de áreas de tratamiento, procesos y resultados que muestran el carácter del despacho.",
+    "pt-BR": "Exemplos de áreas de atuação, processos e resultados que mostram o jeito do escritório.",
+    "ar": "أمثلة لمجالات المعالجة والعمليات والنتائج التي توضح طبيعة عمل المكتب."
+  },
+  "ליווי עסקת נדל״ן מורכבת": {
+    "en": "Support on a complex real-estate deal",
+    "es": "Acompañamiento de una operación inmobiliaria compleja",
+    "pt-BR": "Acompanhamento de um negócio imobiliário complexo",
+    "ar": "مرافقة صفقة عقارية معقّدة"
+  },
+  "מקרקעין": {
+    "en": "Real estate",
+    "es": "Inmobiliario",
+    "pt-BR": "Imóveis",
+    "ar": "عقارات"
+  },
+  "11 שבועות": {
+    "en": "11 weeks",
+    "es": "11 semanas",
+    "pt-BR": "11 semanas",
+    "ar": "11 أسبوعاً"
+  },
+  "העסקה הושלמה": {
+    "en": "Deal completed",
+    "es": "Operación completada",
+    "pt-BR": "Negócio concluído",
+    "ar": "أُنجزت الصفقة"
+  },
+  "בדיקות משפטיות, ניהול משא ומתן והשלמת עסקה מסחרית תחת לוחות זמנים צפופים.": {
+    "en": "Legal checks, negotiation, and completing a commercial deal under tight timelines.",
+    "es": "Revisiones jurídicas, negociación y cierre de una operación comercial bajo plazos ajustados.",
+    "pt-BR": "Revisões jurídicas, negociação e conclusão de um negócio comercial sob prazos apertados.",
+    "ar": "فحوصات قانونية وإدارة تفاوض وإتمام صفقة تجارية تحت جداول زمنية ضيقة."
+  },
+  "הסכם שותפים לחברת שירותים": {
+    "en": "A partners agreement for a services company",
+    "es": "Un acuerdo de socios para una empresa de servicios",
+    "pt-BR": "Um acordo de sócios para uma empresa de serviços",
+    "ar": "اتفاق شركاء لشركة خدمات"
+  },
+  "מסחרי": {
+    "en": "Commercial",
+    "es": "Comercial",
+    "pt-BR": "Comercial",
+    "ar": "تجاري"
+  },
+  "4 שבועות": {
+    "en": "4 weeks",
+    "es": "4 semanas",
+    "pt-BR": "4 semanas",
+    "ar": "4 أسابيع"
+  },
+  "הסכם נחתם": {
+    "en": "Agreement signed",
+    "es": "Acuerdo firmado",
+    "pt-BR": "Acordo assinado",
+    "ar": "وُقّع الاتفاق"
+  },
+  "בניית מנגנוני הגנה, חלוקת אחריות, סודיות, יציאה מהשותפות ומניעת מחלוקות עתידיות.": {
+    "en": "Building protection mechanisms, splitting responsibility, confidentiality, exit terms, and preventing future disputes.",
+    "es": "Construir mecanismos de protección, reparto de responsabilidad, confidencialidad, salida de la sociedad y prevención de conflictos futuros.",
+    "pt-BR": "Construir mecanismos de proteção, divisão de responsabilidade, confidencialidade, saída da sociedade e prevenção de conflitos futuros.",
+    "ar": "بناء آليات حماية وتقسيم مسؤولية وسرية وخروج من الشراكة ومنع خلافات مستقبلية."
+  },
+  "סכסוך עסקי שהסתיים בפשרה": {
+    "en": "A business dispute that ended in settlement",
+    "es": "Un conflicto empresarial que terminó en conciliación",
+    "pt-BR": "Um conflito empresarial que terminou em acordo",
+    "ar": "نزاع تجاري انتهى بتسوية"
+  },
+  "ליטיגציה": {
+    "en": "Litigation",
+    "es": "Litigación",
+    "pt-BR": "Litigância",
+    "ar": "تقاضي"
+  },
+  "8 שבועות": {
+    "en": "8 weeks",
+    "es": "8 semanas",
+    "pt-BR": "8 semanas",
+    "ar": "8 أسابيع"
+  },
+  "פשרה מאושרת": {
+    "en": "Settlement approved",
+    "es": "Conciliación aprobada",
+    "pt-BR": "Acordo aprovado",
+    "ar": "تسوية معتمدة"
+  },
+  "ניתוח משפטי, בניית טקטיקת משא ומתן והגעה לפתרון שחסך הליך ממושך.": {
+    "en": "Legal analysis, a negotiation tactic, and reaching a solution that avoided a long proceeding.",
+    "es": "Análisis jurídico, una táctica de negociación y llegar a una solución que evitó un procedimiento largo.",
+    "pt-BR": "Análise jurídica, uma tática de negociação e chegar a uma solução que evitou um processo longo.",
+    "ar": "تحليل قانوني وبناء تكتيك تفاوض والوصول إلى حل وفّر إجراءً طويلاً."
+  },
+  "בהירות, סדר ואסטרטגיה מהרגע הראשון": {
+    "en": "Clarity, order, and strategy from the first moment",
+    "es": "Claridad, orden y estrategia desde el primer momento",
+    "pt-BR": "Clareza, ordem e estratégia desde o primeiro momento",
+    "ar": "وضوح وترتيب واستراتيجية من اللحظة الأولى"
+  },
+  "כל תיק מתחיל באבחון משפטי ברור, ממשיך בתכנון מסודר ומסתיים בפעולה מדויקת מול הצד השני, הרשות או בית המשפט.": {
+    "en": "Every case starts with a clear legal diagnosis, continues with organized planning, and ends in precise action toward the other party, the authority, or the court.",
+    "es": "Cada caso empieza con un diagnóstico jurídico claro, sigue con planificación ordenada y termina en una acción precisa frente a la otra parte, la autoridad o el tribunal.",
+    "pt-BR": "Cada caso começa com um diagnóstico jurídico claro, segue com planejamento organizado e termina em uma ação precisa diante da outra parte, da autoridade ou do tribunal.",
+    "ar": "كل قضية تبدأ بتشخيص قانوني واضح، تستمر بتخطيط مرتّب وتنتهي بفعل دقيق أمام الطرف الآخر أو السلطة أو المحكمة."
+  },
+  "אבחון משפטי": {
+    "en": "Legal diagnosis",
+    "es": "Diagnóstico jurídico",
+    "pt-BR": "Diagnóstico jurídico",
+    "ar": "تشخيص قانوني"
+  },
+  "מבינים את המצב, המסמכים, הסיכונים והיעד הרצוי.": {
+    "en": "We understand the situation, the documents, the risks, and the desired outcome.",
+    "es": "Entendemos la situación, los documentos, los riesgos y el objetivo deseado.",
+    "pt-BR": "Entendemos a situação, os documentos, os riscos e o objetivo desejado.",
+    "ar": "نفهم الوضع والمستندات والمخاطر والهدف المطلوب."
+  },
+  "בניית אסטרטגיה": {
+    "en": "Build the strategy",
+    "es": "Construir la estrategia",
+    "pt-BR": "Construir a estratégia",
+    "ar": "بناء الاستراتيجية"
+  },
+  "מגדירים דרך פעולה, לוחות זמנים, חלופות משפטיות וסיכויי הצלחה.": {
+    "en": "We define a course of action, timelines, legal alternatives, and chances of success.",
+    "es": "Definimos una vía de acción, plazos, alternativas jurídicas y chances de éxito.",
+    "pt-BR": "Definimos um caminho de ação, prazos, alternativas jurídicas e chances de sucesso.",
+    "ar": "نحدد مسار عمل وجداول زمنية وبدائل قانونية وفرص نجاح."
+  },
+  "ביצוע וליווי": {
+    "en": "Execution and support",
+    "es": "Ejecución y acompañamiento",
+    "pt-BR": "Execução e acompanhamento",
+    "ar": "تنفيذ ومرافقة"
+  },
+  "מטפלים בהתכתבויות, חוזים, משא ומתן או ייצוג — עם עדכונים שוטפים.": {
+    "en": "We handle correspondence, contracts, negotiation, or representation — with ongoing updates.",
+    "es": "Tratamos correspondencia, contratos, negociación o representación — con actualizaciones constantes.",
+    "pt-BR": "Cuidamos de correspondência, contratos, negociação ou representação — com atualizações contínuas.",
+    "ar": "نعالج المراسلات والعقود والتفاوض أو التمثيل — مع تحديثات مستمرة."
+  },
+  "הצוות": {
+    "en": "The team",
+    "es": "El equipo",
+    "pt-BR": "A equipe",
+    "ar": "الفريق"
+  },
+  "אנשי מקצוע שמדברים משפטית וחושבים עסקית": {
+    "en": "Professionals who speak legally and think commercially",
+    "es": "Profesionales que hablan en jurídico y piensan en negocio",
+    "pt-BR": "Profissionais que falam juridicamente e pensam em negócio",
+    "ar": "محترفون يتحدثون قانونياً ويفكرون تجارياً"
+  },
+  "הגישה שלנו משלבת מקצועיות משפטית, זמינות גבוהה ויכולת להסביר ללקוח את המצב בצורה פשוטה וברורה.": {
+    "en": "Our approach combines legal professionalism, high availability, and the ability to explain the situation to the client in a simple, clear way.",
+    "es": "Nuestra aproximación combina profesionalidad jurídica, alta disponibilidad y la capacidad de explicar al cliente la situación de forma simple y clara.",
+    "pt-BR": "Nossa abordagem combina profissionalismo jurídico, alta disponibilidade e a capacidade de explicar ao cliente a situação de forma simples e clara.",
+    "ar": "نهجنا يجمع المهنية القانونية والتوفر العالي والقدرة على شرح الوضع للزبون بشكل بسيط وواضح."
+  },
+  "שותף מייסד": {
+    "en": "Founding partner",
+    "es": "Socio fundador",
+    "pt-BR": "Sócio fundador",
+    "ar": "شريك مؤسس"
+  },
+  "איך מתחילים טיפול משפטי?": {
+    "en": "How do you start a legal matter?",
+    "es": "¿Cómo se empieza un asunto jurídico?",
+    "pt-BR": "Como se começa um assunto jurídico?",
+    "ar": "كيف تبدأون معالجة قانونية؟"
+  },
+  "מתחילים בפגישת ייעוץ שבה בודקים את המסמכים, מגדירים את הבעיה ומחליטים על דרך פעולה.": {
+    "en": "We start with a consultation where we review the documents, define the problem, and decide on a course of action.",
+    "es": "Empezamos con una reunión de consulta en la que revisamos los documentos, definimos el problema y decidimos una vía de acción.",
+    "pt-BR": "Começamos com uma reunião de consulta em que revisamos os documentos, definimos o problema e decidimos um caminho de ação.",
+    "ar": "نبدأ بجلسة استشارة نراجع فيها المستندات ونحدّد المشكلة ونقرر مسار العمل."
+  },
+  "האם ניתן לקבל ליווי שוטף לעסק?": {
+    "en": "Can a business get ongoing support?",
+    "es": "¿Se puede recibir acompañamiento continuo para el negocio?",
+    "pt-BR": "Dá para receber acompanhamento contínuo para o negócio?",
+    "ar": "هل يمكن الحصول على مرافقة مستمرة للعمل؟"
+  },
+  "כן. המשרד מעניק ליווי משפטי שוטף לחברות, עצמאים ויזמים לפי צורך חודשי או לפי פרויקט.": {
+    "en": "Yes. The firm provides ongoing legal support for companies, independents, and founders on a monthly or project basis.",
+    "es": "Sí. El despacho ofrece acompañamiento jurídico continuo a empresas, autónomos y emprendedores según necesidad mensual o por proyecto.",
+    "pt-BR": "Sim. O escritório oferece acompanhamento jurídico contínuo a empresas, autônomos e empreendedores conforme necessidade mensal ou por projeto.",
+    "ar": "نعم. يقدّم المكتب مرافقة قانونية مستمرة للشركات والمستقلين وروّاد الأعمال حسب حاجة شهرية أو حسب مشروع."
+  },
+  "כמה זמן נמשך תהליך משפטי?": {
+    "en": "How long does a legal process take?",
+    "es": "¿Cuánto dura un proceso jurídico?",
+    "pt-BR": "Quanto tempo dura um processo jurídico?",
+    "ar": "كم يستغرق إجراء قانوني؟"
+  },
+  "זה תלוי בתחום ובמורכבות. לאחר אבחון ראשוני ניתן לקבל הערכת זמן ריאלית וברורה.": {
+    "en": "It depends on the area and the complexity. After an initial diagnosis you can get a realistic, clear time estimate.",
+    "es": "Depende del área y de la complejidad. Tras un diagnóstico inicial se puede obtener una estimación de tiempo realista y clara.",
+    "pt-BR": "Depende da área e da complexidade. Após um diagnóstico inicial dá para obter uma estimativa de tempo realista e clara.",
+    "ar": "يعتمد على المجال والتعقيد. بعد تشخيص أولي يمكن الحصول على تقدير زمني واقعي وواضح."
+  },
+  "האם הפגישה הראשונית מחייבת?": {
+    "en": "Is the first meeting binding?",
+    "es": "¿La primera reunión es vinculante?",
+    "pt-BR": "A primeira reunião é vinculante?",
+    "ar": "هل الاجتماع الأول مُلزم؟"
+  },
+  "לא. מטרת הפגישה היא להבין את המצב, להסביר אפשרויות ולתת כיוון ראשוני.": {
+    "en": "No. The meeting is meant to understand the situation, explain options, and give an initial direction.",
+    "es": "No. El objetivo de la reunión es entender la situación, explicar opciones y dar una dirección inicial.",
+    "pt-BR": "Não. O objetivo da reunião é entender a situação, explicar opções e dar uma direção inicial.",
+    "ar": "لا. هدف الاجتماع فهم الوضع وشرح الخيارات وإعطاء اتجاه أولي."
+  },
+  "ייעוץ ראשוני": {
+    "en": "Initial consultation",
+    "es": "Consulta inicial",
+    "pt-BR": "Consulta inicial",
+    "ar": "استشارة أولية"
+  },
+  "צריכים החלטה משפטית ברורה?": {
+    "en": "Need a clear legal decision?",
+    "es": "¿Necesitas una decisión jurídica clara?",
+    "pt-BR": "Precisa de uma decisão jurídica clara?",
+    "ar": "تحتاجون قراراً قانونياً واضحاً؟"
+  },
+  "השאירו פרטים ונחזור אליכם לתיאום פגישת ייעוץ עם עורך דין מתאים מהמשרד.": {
+    "en": "Leave your details and we will get back to you to book a consultation with the right attorney from the firm.",
+    "es": "Deja tus datos y te responderemos para coordinar una reunión de consulta con un abogado adecuado del despacho.",
+    "pt-BR": "Deixe seus dados e voltaremos para agendar uma reunião de consulta com um advogado adequado do escritório.",
+    "ar": "اتركوا التفاصيل وسنعود إليكم لتنسيق اجتماع استشارة مع محامٍ مناسب من المكتب."
+  },
+  "תבנית משפטית יוקרתית בעברית לביזאפלי": {
+    "en": "A luxury legal template for BizUply",
+    "es": "Una plantilla jurídica de lujo para BizUply",
+    "pt-BR": "Um modelo jurídico de luxo para o BizUply",
+    "ar": "قالب قانوني فاخر لبيزابلي"
+  }
+}

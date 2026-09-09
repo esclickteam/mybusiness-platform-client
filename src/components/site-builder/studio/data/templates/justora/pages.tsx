@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { justoraDefaultData } from "./defaultData";
 import {
   resolveTemplatePageId,
@@ -138,7 +140,7 @@ function getHebrewValue(data: Record<string, any>, key: string, fallback: string
   const value = String(getValue(data, key) || "").trim();
 
   if (!value || hasEnglish(value)) {
-    return fallback;
+    return tx(fallback);
   }
 
   return value;
@@ -173,7 +175,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 
@@ -183,7 +185,7 @@ function sectionProps(id: string, label: string, kind?: string) {
     "data-visual-edit-type": "section",
     "data-visual-type": "section",
     "data-visual-editable": "true",
-    "data-visual-edit-label": label,
+    "data-visual-edit-label": tx(label),
     "data-template-section-id": id,
     "data-section-kind": kind || id,
     "data-section-title": label,
@@ -303,7 +305,7 @@ function SectionTitle({
   light?: boolean;
 }) {
   return (
-    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-right")}>
+    <div className={cx("max-w-3xl", center ? "mx-auto text-center" : "text-start")}>
       <p
         className={cx(
           "mb-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold",
@@ -312,7 +314,7 @@ function SectionTitle({
             : "border border-[#2b1b1d]/12 bg-white/70 text-[#b45c3a]",
         )}
       >
-        {eyebrow}
+        {tx(eyebrow)}
       </p>
 
       <h2
@@ -331,7 +333,7 @@ function SectionTitle({
             light ? "!text-[#fff6e9]/70" : "text-[#6d5f55]",
           )}
         >
-          {text}
+          {tx(text)}
         </p>
       ) : null}
     </div>
@@ -510,7 +512,7 @@ function Header({
         className={cx(
           "inline-flex items-center gap-1.5",
           mobile
-            ? "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition"
+            ? "rounded-2xl px-4 py-3 text-start text-sm font-semibold transition"
             : "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
           isActive
             ? mobile
@@ -524,7 +526,7 @@ function Header({
         aria-expanded={hasSubpages ? "false" : undefined}
         data-site-page-id={item.id}
       >
-        <span>{item.label}</span>
+        <span>{tx(item.label)}</span>
         {hasSubpages ? <NavSubmenuChevron /> : null}
       </a>
     );
@@ -603,7 +605,7 @@ function Header({
             event.preventDefault();
             handleNavigate("home");
           }}
-          className="group flex items-center gap-3 text-right"
+          className="group flex items-center gap-3 text-start"
         >
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#b45c3a] text-lg font-semibold !text-white shadow-lg shadow-[#b45c3a]/25 transition duration-300 group-hover:scale-105">
             {getValue(data, "logoText")}
@@ -623,9 +625,7 @@ function Header({
             type="button"
             onClick={openConsultation}
             className="hidden bg-[#b45c3a] px-5 py-3 text-sm font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45] sm:inline-flex"
-          >
-            לקביעת ייעוץ
-          </button>
+          >{tx("לקביעת ייעוץ")}</button>
 
           <button
             type="button"
@@ -649,9 +649,7 @@ function Header({
                 openConsultation();
               }}
               className="rounded-2xl bg-[#b45c3a] px-4 py-3 text-sm font-semibold !text-white"
-            >
-              לקביעת ייעוץ
-            </button>
+            >{tx("לקביעת ייעוץ")}</button>
           </div>
         </div>
       ) : null}
@@ -687,26 +685,20 @@ function ConsultationModal({
             <div className="absolute bottom-8 right-8 h-52 w-52 rounded-full bg-[#8b744f]/18 blur-3xl" />
 
             <div className="relative z-10">
-              <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                בדיקת תיק ראשונית
-              </p>
+              <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("בדיקת תיק ראשונית")}</p>
 
-              <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">
-                השאירו פרטים ונחזור עם כיוון פעולה ברור.
-              </h3>
+              <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">{tx("השאירו פרטים ונחזור עם כיוון פעולה ברור.")}</h3>
 
-              <p className="mt-5 text-base leading-7 !text-[#fff6e9]">
-                טופס ייעוץ קצר, דיסקרטי וברור שמוריד חיכוך ומוביל לפנייה איכותית.
-              </p>
+              <p className="mt-5 text-base leading-7 !text-[#fff6e9]">{tx("טופס ייעוץ קצר, דיסקרטי וברור שמוריד חיכוך ומוביל לפנייה איכותית.")}</p>
 
               <div className="mt-9 grid gap-3">
                 {["בדיקת התאמה", "שיחת ייעוץ ראשונית", "בניית כיוון משפטי"].map(
                   (item) => (
                     <div
-                      key={item}
+                      key={tx(item)}
                       className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold backdrop-blur"
                     >
-                      ✓ {item}
+                      ✓ {tx(item)}
                     </div>
                   ),
                 )}
@@ -716,36 +708,34 @@ function ConsultationModal({
 
           <form
             className="p-6 lg:p-10"
-            data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+            data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
           >
             <div className="grid gap-4">
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
+                placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
+                placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input
-                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-              <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]">
-                <option>תחום משפטי</option>
-                <option>דיני משפחה</option>
-                <option>משפט מסחרי</option>
-                <option>נדל״ן ומקרקעין</option>
-                <option>ליטיגציה וייצוג</option>
+                className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
+                placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]">
+                <option>{tx("תחום משפטי")}</option>
+                <option>{tx("דיני משפחה")}</option>
+                <option>{tx("משפט מסחרי")}</option>
+                <option>{tx("נדל״ן ומקרקעין")}</option>
+                <option>{tx("ליטיגציה וייצוג")}</option>
               </select>
               <textarea
-                className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="כמה מילים על המקרה"
+                className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-start outline-none transition focus:border-[#b45c3a]"
+                placeholder={tx("כמה מילים על המקרה")}
                name="other" data-bizuply-form-field-id="other"></textarea>
 
               <button
                 type="submit"
                 className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition hover:-translate-y-0.5 hover:bg-[#c66a45]"
-              >
-                שליחת פרטים
-              </button>
+              >{tx("שליחת פרטים")}</button>
             </div>
           </form>
         </div>
@@ -779,10 +769,8 @@ function Hero({
       <div className="absolute right-[18%] top-[12%] h-80 w-80 rounded-full bg-[#8b744f]/18 blur-3xl" />
 
       <div className="relative mx-auto grid min-h-[760px] max-w-[1380px] items-end gap-8 px-5 pt-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pt-20 lg:[direction:ltr]">
-        <div className="relative z-30 pb-48 text-right lg:pb-64 lg:[direction:rtl]">
-          <p className="mb-7 text-xs font-semibold tracking-[0.18em] text-[#d8b88f]">
-            המשרד המשפטי שלך
-          </p>
+        <div className="relative z-30 pb-48 text-start lg:pb-64" style={{ direction: templateDir() }}>
+          <p className="mb-7 text-xs font-semibold tracking-[0.18em] text-[#d8b88f]">{tx("המשרד המשפטי שלך")}</p>
 
           <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-0.065em] !text-white md:text-7xl lg:text-[78px]">
             {getHebrewValue(data, "heroTitle", "מומחיות משפטית שאפשר לסמוך עליה.")}
@@ -801,17 +789,13 @@ function Hero({
               type="button"
               onClick={openConsultation}
               className="bg-[#b45c3a] px-8 py-4 text-sm font-semibold !text-white shadow-xl shadow-[#b45c3a]/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#c66a45]"
-            >
-              לקביעת ייעוץ
-            </button>
+            >{tx("לקביעת ייעוץ")}</button>
 
             <button
               type="button"
               onClick={() => goTo("practice")}
               className="border border-white/45 px-8 py-4 text-sm font-semibold !text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:!text-[#2b1b1d]"
-            >
-              תחומי התמחות
-            </button>
+            >{tx("תחומי התמחות")}</button>
           </div>
         </div>
 
@@ -845,7 +829,7 @@ function Hero({
                 {num}
               </div>
               <div className="mt-3 text-sm font-semibold tracking-[0.08em] !text-[#fff6e9]">
-                {label}
+                {tx(label)}
               </div>
             </div>
           ))}
@@ -923,8 +907,8 @@ function PracticeAreasSection({
       ),
     },
     {
-      title: "דיני עבודה",
-      text: "ייעוץ וליווי בסכסוכי עבודה, חוזים, פיטורין, זכויות עובדים ומעסיקים.",
+      title: tx("דיני עבודה"),
+      text: tx("ייעוץ וליווי בסכסוכי עבודה, חוזים, פיטורין, זכויות עובדים ומעסיקים."),
       tag: "עבודה",
       icon: (
         <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
@@ -935,8 +919,8 @@ function PracticeAreasSection({
       ),
     },
     {
-      title: "נזקי גוף",
-      text: "ייצוג וליווי בתביעות נזיקין, תאונות, רשלנות ופגיעות משמעותיות.",
+      title: tx("נזקי גוף"),
+      text: tx("ייצוג וליווי בתביעות נזיקין, תאונות, רשלנות ופגיעות משמעותיות."),
       tag: "נזיקין",
       icon: (
         <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none">
@@ -979,7 +963,7 @@ function PracticeAreasSection({
           <div>
             <div className="mb-3 flex items-center justify-between gap-4">
               <span className="text-sm font-semibold text-[#b45c3a]">
-                {item.tag}
+                {tx(item.tag)}
               </span>
 
               <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2b1b1d] text-xs font-semibold !text-white">
@@ -1007,32 +991,25 @@ function PracticeAreasSection({
     >
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div className="text-right">
-            <p className="mb-6 text-sm font-semibold text-[#b45c3a]">
-              תחומי התמחות
-            </p>
+          <div className="text-start">
+            <p className="mb-6 text-sm font-semibold text-[#b45c3a]">{tx("תחומי התמחות")}</p>
 
-            <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] !text-[#2b1b1d] md:text-7xl">
-              מגוון רחב של תחומי התמחות משפטיים
-            </h2>
+            <h2 className="max-w-2xl text-5xl font-semibold leading-[1.05] tracking-[-0.065em] !text-[#2b1b1d] md:text-7xl">{tx("מגוון רחב של תחומי התמחות משפטיים")}</h2>
           </div>
 
-          <p className="max-w-xl text-lg leading-8 text-[#6d5f55] lg:mr-auto">
-            כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר
-            האם המשרד מתאים למקרה שלו וימשיך לפעולה.
-          </p>
+          <p className="max-w-xl text-lg leading-8 text-[#6d5f55] lg:mr-auto">{tx("כל תחום מוצג בצורה ברורה, מסודרת ונגישה — כדי שהלקוח יבין מהר\nהאם המשרד מתאים למקרה שלו וימשיך לפעולה.")}</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
           <div className="grid gap-6">
             {rightColumn.map((item, index) => (
-              <PracticeCard key={item.title} item={item} index={index * 2} />
+              <PracticeCard key={item.title} item={tx(item)} index={index * 2} />
             ))}
           </div>
 
           <div className="grid gap-6 lg:pt-20">
             {leftColumn.map((item, index) => (
-              <PracticeCard key={item.title} item={item} index={index * 2 + 1} />
+              <PracticeCard key={item.title} item={tx(item)} index={index * 2 + 1} />
             ))}
           </div>
         </div>
@@ -1042,9 +1019,7 @@ function PracticeAreasSection({
             type="button"
             onClick={openConsultation}
             className="border border-[#2b1b1d] bg-transparent px-10 py-4 text-sm font-semibold !text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#2b1b1d] hover:!text-white"
-          >
-            לקביעת ייעוץ
-          </button>
+          >{tx("לקביעת ייעוץ")}</button>
 
           <a
             href={getJustoraHref("practice")}
@@ -1054,9 +1029,7 @@ function PracticeAreasSection({
               goTo("practice");
             }}
             className="bg-[#2b1b1d] px-10 py-4 text-sm font-semibold !text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a2628]"
-          >
-            לכל תחומי ההתמחות
-          </a>
+          >{tx("לכל תחומי ההתמחות")}</a>
         </div>
       </div>
     </section>
@@ -1090,25 +1063,17 @@ function BookNowSection({
           <div className="absolute left-10 top-10 h-40 w-40 rounded-full bg-[#b45c3a]/20 blur-3xl" />
 
           <div className="relative z-10">
-            <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              קביעת פגישה
-            </p>
+            <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("קביעת פגישה")}</p>
 
-            <h2 className="max-w-3xl text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-6xl">
-              קבעו פגישה פרונטלית או ייעוץ משפטי אונליין.
-            </h2>
+            <h2 className="max-w-3xl text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-6xl">{tx("קבעו פגישה פרונטלית או ייעוץ משפטי אונליין.")}</h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 !text-[#fff6e9]">
-              בלוק ברור שמוביל לפעולה אחת — קביעת ייעוץ בלי הסחות דעת.
-            </p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 !text-[#fff6e9]">{tx("בלוק ברור שמוביל לפעולה אחת — קביעת ייעוץ בלי הסחות דעת.")}</p>
 
             <button
               type="button"
               onClick={openConsultation}
               className="mt-9 bg-white px-8 py-4 text-base font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
-            >
-              לקביעת ייעוץ
-            </button>
+            >{tx("לקביעת ייעוץ")}</button>
           </div>
         </div>
       </div>
@@ -1140,9 +1105,9 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <SectionTitle
-              eyebrow="הצוות המשפטי"
-              title="עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר."
-              text="שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין."
+              eyebrow={tx("הצוות המשפטי")}
+              title={tx("עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר.")}
+              text={tx("שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין.")}
             />
 
             <div className="mt-10 grid gap-4">
@@ -1154,7 +1119,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b1b1d] text-sm font-semibold !text-white">
                     {index + 1}
                   </span>
-                  <p className="font-semibold leading-7 text-[#5d5048]">{point}</p>
+                  <p className="font-semibold leading-7 text-[#5d5048]">{tx(point)}</p>
                 </div>
               ))}
             </div>
@@ -1214,9 +1179,9 @@ function CasesSection({
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="תיקים והצלחות"
-            title="סיפורי הצלחה משפטיים"
-            text="כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס."
+            eyebrow={tx("תיקים והצלחות")}
+            title={tx("סיפורי הצלחה משפטיים")}
+            text={tx("כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס.")}
           />
 
           <a
@@ -1227,9 +1192,7 @@ function CasesSection({
               onViewAllCases();
             }}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
-          >
-            כל התיקים
-          </a>
+          >{tx("כל התיקים")}</a>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -1245,14 +1208,14 @@ function CasesSection({
                   <div className="relative z-10 flex h-full flex-col justify-between">
                     <div>
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                        {item.tag}
+                        {tx(item.tag)}
                       </span>
                       <div className="mt-10 text-3xl md:text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                         {item.amount}
                       </div>
                     </div>
 
-                    <p className="text-sm !text-[#ead9c5]">תיק {item.number}</p>
+                    <p className="text-sm !text-[#ead9c5]">{tx(`תיק ${item.number}`)}</p>
                   </div>
                 </div>
 
@@ -1271,9 +1234,7 @@ function CasesSection({
                     }}
                     className="mt-8 inline-flex bg-[#2b1b1d] px-6 py-4 text-sm font-semibold !text-[#fff6e9] transition hover:-translate-y-0.5"
                     style={{ color: "#fff6e9" }}
-                  >
-                    קריאת מקרה
-                  </a>
+                  >{tx("קריאת מקרה")}</a>
                 </div>
               </div>
             </article>
@@ -1306,14 +1267,12 @@ function CaseDetailPage({
             type="button"
             onClick={onBack}
             className="mb-8 rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-3 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
-          >
-            חזרה לתיקים
-          </button>
+          >{tx("חזרה לתיקים")}</button>
 
           <div className="grid gap-8 lg:grid-cols-[1fr_0.72fr]">
             <div className="rounded-[46px] border border-[#2b1b1d]/10 bg-white/74 p-8 shadow-2xl shadow-[#2b1b1d]/10 lg:p-12">
               <p className="mb-5 inline-flex rounded-full bg-[#b45c3a]/12 px-4 py-2 text-sm font-semibold text-[#b45c3a]">
-                {item.tag} · תיק {item.number}
+                {tx(item.tag)} · {tx(`תיק ${item.number}`)}
               </p>
 
               <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.07em] !text-[#2b1b1d] md:text-7xl">
@@ -1335,9 +1294,9 @@ function CaseDetailPage({
                     className="rounded-[30px] border border-[#2b1b1d]/10 bg-[#fbf3e8] p-6"
                   >
                     <h3 className="text-xl font-semibold !text-[#2b1b1d]">
-                      {title}
+                      {tx(title)}
                     </h3>
-                    <p className="mt-4 leading-8 text-[#6d5f55]">{text}</p>
+                    <p className="mt-4 leading-8 text-[#6d5f55]">{tx(text)}</p>
                   </article>
                 ))}
               </div>
@@ -1346,27 +1305,20 @@ function CaseDetailPage({
             <aside className="relative overflow-hidden rounded-[46px] bg-[#2b1b1d] p-8 !text-white shadow-2xl shadow-[#2b1b1d]/20 lg:p-10">
               <div className="relative z-10 flex h-full min-h-[420px] flex-col justify-between">
                 <div>
-                  <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                    סכום / ערך תיק
-                  </span>
+                  <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("סכום / ערך תיק")}</span>
 
                   <div className="mt-10 text-3xl md:text-7xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                     {item.amount}
                   </div>
 
-                  <p className="mt-5 text-lg leading-8 !text-[#f4e6d8]">
-                    פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה
-                    המשפטית והערך שהמשרד יודע לייצר.
-                  </p>
+                  <p className="mt-5 text-lg leading-8 !text-[#f4e6d8]">{tx("פירוט מקרה לדוגמה שמציג ללקוח את דרך העבודה, החשיבה\nהמשפטית והערך שהמשרד יודע לייצר.")}</p>
                 </div>
 
                 <button
                   type="button"
                   onClick={openConsultation}
                   className="mt-10 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
-                >
-                  לבדוק מקרה דומה
-                </button>
+                >{tx("לבדוק מקרה דומה")}</button>
               </div>
             </aside>
           </div>
@@ -1406,9 +1358,9 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-[1380px] gap-12 lg:grid-cols-[0.86fr_1.14fr]">
         <div className="h-fit lg:sticky lg:top-28">
           <SectionTitle
-            eyebrow="לקוחות מספרים"
-            title="מה לקוחות אומרים?"
-            text="המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה."
+            eyebrow={tx("לקוחות מספרים")}
+            title={tx("מה לקוחות אומרים?")}
+            text={tx("המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה.")}
           />
         </div>
 
@@ -1421,9 +1373,9 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <h3 className="text-2xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
-                    “{title}”
+                    “{tx(title)}”
                   </h3>
-                  <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{text}"</p>
+                  <p className="mt-4 text-lg leading-8 text-[#6d5f55]">"{tx(text)}"</p>
                 </div>
 
                 <div className="hidden rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white sm:block">
@@ -1457,35 +1409,27 @@ function FreeReviewSection({
       <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#2b1b1d] p-7 !text-white shadow-2xl shadow-[#2b1b1d]/25 lg:p-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              בדיקת תיק ראשונית
-            </p>
+            <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("בדיקת תיק ראשונית")}</p>
 
-            <h2 className="max-w-4xl text-4xl font-semibold leading-[1.03] tracking-[-0.055em] md:text-6xl">
-              קבלו בדיקת תיק ראשונית לפני שמקבלים החלטה משפטית.
-            </h2>
+            <h2 className="max-w-4xl text-4xl font-semibold leading-[1.03] tracking-[-0.055em] md:text-6xl">{tx("קבלו בדיקת תיק ראשונית לפני שמקבלים החלטה משפטית.")}</h2>
 
-            <p className="mt-5 max-w-3xl text-lg leading-8 !text-[#fff6e9]">
-              בלוק פעולה גדול, ממוקד וברור שמוביל לפנייה בלי עומס ובלי בלבול.
-            </p>
+            <p className="mt-5 max-w-3xl text-lg leading-8 !text-[#fff6e9]">{tx("בלוק פעולה גדול, ממוקד וברור שמוביל לפנייה בלי עומס ובלי בלבול.")}</p>
 
             <button
               type="button"
               onClick={openConsultation}
               className="mt-9 bg-white px-8 py-4 text-base font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
-            >
-              לקביעת ייעוץ
-            </button>
+            >{tx("לקביעת ייעוץ")}</button>
           </div>
 
           <div className="grid gap-4">
             {["בדיקת סיכונים", "איסוף פרטים", "כיוון פעולה", "הערכת המשך טיפול"].map(
               (item, index) => (
                 <div
-                  key={item}
+                  key={tx(item)}
                   className="flex items-center justify-between rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:bg-white/10"
                 >
-                  <span className="font-semibold">{item}</span>
+                  <span className="font-semibold">{tx(item)}</span>
                   <span className="text-[#d8b88f]">0{index + 1}</span>
                 </div>
               ),
@@ -1517,9 +1461,9 @@ function BlogSection({
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
-            eyebrow="מאמרים"
-            title="ידע משפטי שמחזק אמון לפני שיחת הייעוץ."
-            text="שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור."
+            eyebrow={tx("מאמרים")}
+            title={tx("ידע משפטי שמחזק אמון לפני שיחת הייעוץ.")}
+            text={tx("שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור.")}
           />
 
           <a
@@ -1530,9 +1474,7 @@ function BlogSection({
               goTo("blog");
             }}
             className="w-fit rounded-full border border-[#2b1b1d]/15 bg-white/70 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-white"
-          >
-            כל המאמרים
-          </a>
+          >{tx("כל המאמרים")}</a>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -1543,16 +1485,16 @@ function BlogSection({
             >
               <div className="mb-10 flex items-center justify-between">
                 <span className="rounded-full bg-[#2b1b1d] px-4 py-2 text-sm font-semibold !text-white">
-                  {tag}
+                  {tx(tag)}
                 </span>
-                <span className="text-sm font-semibold text-[#b45c3a]">{date}</span>
+                <span className="text-sm font-semibold text-[#b45c3a]">{tx(date)}</span>
               </div>
 
               <h3 className="max-w-xl text-3xl font-semibold leading-tight tracking-[-0.05em] !text-[#2b1b1d]">
                 {title}
               </h3>
 
-              <p className="mt-4 max-w-xl leading-8 text-[#6d5f55]">{text}</p>
+              <p className="mt-4 max-w-xl leading-8 text-[#6d5f55]">{tx(text)}</p>
 
               <a
                 href={getJustoraHref("blog")}
@@ -1562,9 +1504,7 @@ function BlogSection({
                   goTo("blog");
                 }}
                 className="mt-9 inline-flex rounded-full border border-[#2b1b1d]/15 px-6 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:bg-[#2b1b1d] hover:!text-white"
-              >
-                לקריאה
-              </a>
+              >{tx("לקריאה")}</a>
 
               <div className="mt-8 h-1.5 w-full overflow-hidden rounded-full bg-[#2b1b1d]/10">
                 <div
@@ -1602,9 +1542,9 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-[1380px]">
         <SectionTitle
           center
-          eyebrow="גלריית משרד"
-          title="תמונות שמייצרות אמון ותחושת משרד פעיל."
-          text="אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית."
+          eyebrow={tx("גלריית משרד")}
+          title={tx("תמונות שמייצרות אמון ותחושת משרד פעיל.")}
+          text={tx("אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית.")}
         />
 
         <div className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -1650,9 +1590,9 @@ function FaqSection({ data }: { data: Record<string, any> }) {
     >
       <div className="mx-auto grid max-w-[1380px] gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <SectionTitle
-          eyebrow="שאלות נפוצות"
+          eyebrow={tx("שאלות נפוצות")}
           title={getHebrewValue(data, "faqTitle", "לפני שקובעים ייעוץ — כל מה שחשוב לדעת.")}
-          text="שאלות נפוצות לפני שיחת ייעוץ ראשונית."
+          text={tx("שאלות נפוצות לפני שיחת ייעוץ ראשונית.")}
         />
 
         <div className="space-y-4">
@@ -1667,7 +1607,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-6 p-6 text-right"
+                  className="flex w-full items-center justify-between gap-6 p-6 text-start"
                 >
                   <span className="text-xl font-semibold tracking-[-0.04em] !text-[#2b1b1d]">
                     {question}
@@ -1721,9 +1661,7 @@ function ContactSection({
           <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-[#b45c3a]/20 blur-2xl" />
 
           <div className="relative z-10">
-            <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              יצירת קשר
-            </p>
+            <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("יצירת קשר")}</p>
 
             <h2 className="text-4xl font-semibold leading-[1.06] tracking-[-0.055em] md:text-6xl">
               {getHebrewValue(data, "contactTitle", "צריכים ייעוץ משפטי? נשמח לבדוק איך אפשר לעזור.")}
@@ -1739,7 +1677,7 @@ function ContactSection({
                   key={label}
                   className="rounded-[26px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm transition duration-300 hover:bg-white/10"
                 >
-                  <div className="text-xs font-semibold !text-[#ead9c5]">{label}</div>
+                  <div className="text-xs font-semibold !text-[#ead9c5]">{tx(label)}</div>
                   <div className="mt-1 text-base font-semibold !text-white">
                     {value}
                   </div>
@@ -1751,37 +1689,33 @@ function ContactSection({
               type="button"
               onClick={openConsultation}
               className="mt-8 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition duration-300 hover:-translate-y-0.5"
-            >
-              לפתיחת חלון ייעוץ מהיר
-            </button>
+            >{tx("לפתיחת חלון ייעוץ מהיר")}</button>
           </div>
         </div>
 
         <form
           className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7"
-          data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
         >
           <div className="grid gap-4">
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
-              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
-              className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="מה תרצו לשאול?"
+              className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-start outline-none transition duration-300 focus:border-[#b45c3a]"
+              placeholder={tx("מה תרצו לשאול?")}
              name="other" data-bizuply-form-field-id="other"></textarea>
 
             <button
               type="submit"
               className="bg-[#b45c3a] px-7 py-4 text-base font-semibold !text-white shadow-lg shadow-[#b45c3a]/20 transition duration-300 hover:-translate-y-0.5"
-            >
-              שליחת פרטים
-            </button>
+            >{tx("שליחת פרטים")}</button>
           </div>
         </form>
       </div>
@@ -1830,13 +1764,11 @@ function Footer({
               type="button"
               onClick={openConsultation}
               className="mt-7 bg-white px-7 py-4 text-sm font-semibold !text-[#2b1b1d] transition hover:-translate-y-0.5"
-            >
-              לקביעת ייעוץ
-            </button>
+            >{tx("לקביעת ייעוץ")}</button>
           </div>
 
           <div>
-            <h4 className="mb-5 text-lg font-semibold">ניווט</h4>
+            <h4 className="mb-5 text-lg font-semibold">{tx("ניווט")}</h4>
             <div className="grid gap-3">
               {nav.map(([id, label]) => (
                 <a
@@ -1856,18 +1788,18 @@ function Footer({
           </div>
 
           <div>
-            <h4 className="mb-5 text-lg font-semibold">עמודים</h4>
+            <h4 className="mb-5 text-lg font-semibold">{tx("עמודים")}</h4>
             <div className="grid gap-3 text-sm font-semibold !text-[#f4e6d8]">
-              <span>מאמרים</span>
-              <span>עמוד מאמר</span>
-              <span>תחומי התמחות</span>
-              <span>עורכי דין</span>
-              <span>תיקים</span>
+              <span>{tx("מאמרים")}</span>
+              <span>{tx("עמוד מאמר")}</span>
+              <span>{tx("תחומי התמחות")}</span>
+              <span>{tx("עורכי דין")}</span>
+              <span>{tx("תיקים")}</span>
             </div>
           </div>
 
           <div>
-            <h4 className="mb-5 text-lg font-semibold">יצירת קשר</h4>
+            <h4 className="mb-5 text-lg font-semibold">{tx("יצירת קשר")}</h4>
             <div className="grid gap-4 text-sm font-semibold !text-[#f4e6d8]">
               <span>{getValue(data, "address")}</span>
               <span>{getValue(data, "email")}</span>
@@ -2120,7 +2052,7 @@ export default function JustoraPages({
 
   return (
     <div
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="justora"
       data-template-page-id={
         isLibraryPage ? libraryPage?.rawPageId || currentPage : currentPage

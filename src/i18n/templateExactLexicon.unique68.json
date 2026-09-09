@@ -1,0 +1,122 @@
+{
+  "פרינט": {
+    "en": "Print",
+    "es": "Print",
+    "pt-BR": "Print",
+    "ar": "طباعة"
+  },
+  "נובה": {
+    "en": "Nova",
+    "es": "Nova",
+    "pt-BR": "Nova",
+    "ar": "نوفا"
+  },
+  "פיקסל": {
+    "en": "Pixel",
+    "es": "Pixel",
+    "pt-BR": "Pixel",
+    "ar": "بكسل"
+  },
+  "מפתח": {
+    "en": "Developer",
+    "es": "Desarrollador",
+    "pt-BR": "Desenvolvedor",
+    "ar": "مطوّر"
+  },
+  "מעצב": {
+    "en": "Designer",
+    "es": "Diseñador",
+    "pt-BR": "Designer",
+    "ar": "مصمم"
+  },
+  "שנתי": {
+    "en": "Yearly",
+    "es": "Anual",
+    "pt-BR": "Anual",
+    "ar": "سنوي"
+  },
+  "מורות": {
+    "en": "Teachers",
+    "es": "Profesoras",
+    "pt-BR": "Professoras",
+    "ar": "معلمات"
+  },
+  "מורים": {
+    "en": "Teachers",
+    "es": "Profesores",
+    "pt-BR": "Professores",
+    "ar": "معلمون"
+  },
+  "שמאים": {
+    "en": "Appraisers",
+    "es": "Tasadores",
+    "pt-BR": "Avaliadores",
+    "ar": "مثمّنون"
+  },
+  "מוארת": {
+    "en": "Bright",
+    "es": "Luminosa",
+    "pt-BR": "Iluminada",
+    "ar": "مضيئة"
+  },
+  "קונה": {
+    "en": "Buyer",
+    "es": "Comprador",
+    "pt-BR": "Comprador",
+    "ar": "مشترٍ"
+  },
+  "נדיר": {
+    "en": "Rare",
+    "es": "Raro",
+    "pt-BR": "Raro",
+    "ar": "نادر"
+  },
+  "סטייל": {
+    "en": "Style",
+    "es": "Estilo",
+    "pt-BR": "Estilo",
+    "ar": "ستايل"
+  },
+  "לקוח, לונדון": {
+    "en": "Customer, London",
+    "es": "Cliente, Londres",
+    "pt-BR": "Cliente, Londres",
+    "ar": "زبون، لندن"
+  },
+  "לקוחה, פריז": {
+    "en": "Customer, Paris",
+    "es": "Clienta, París",
+    "pt-BR": "Cliente, Paris",
+    "ar": "زبونة، باريس"
+  },
+  "לקוח, מילאנו": {
+    "en": "Customer, Milan",
+    "es": "Cliente, Milán",
+    "pt-BR": "Cliente, Milão",
+    "ar": "زبون، ميلانو"
+  },
+  "מסאז׳ עם שמנים טропיים.": {
+    "en": "A massage with tropical oils.",
+    "es": "Un masaje con aceites tropicales.",
+    "pt-BR": "Uma massagem com óleos tropicais.",
+    "ar": "مساج بزيوت استوائية."
+  },
+  "גובה שמשנה פרспектיבה.": {
+    "en": "Height that changes perspective.",
+    "es": "Una altura que cambia la perspectiva.",
+    "pt-BR": "Uma altura que muda a perspectiva.",
+    "ar": "ارتفاع يغيّر المنظور."
+  },
+  "UI/UX · מובייל": {
+    "en": "UI/UX · Mobile",
+    "es": "UI/UX · Móvil",
+    "pt-BR": "UI/UX · Mobile",
+    "ar": "UI/UX · موبايل"
+  },
+  "מייסד, Pulse": {
+    "en": "Founder, Pulse",
+    "es": "Fundador, Pulse",
+    "pt-BR": "Fundador, Pulse",
+    "ar": "مؤسس، Pulse"
+  }
+}

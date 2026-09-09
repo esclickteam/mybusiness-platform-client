@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { pokelineDefaultData } from "./defaultData";
 import { pokelineEditorCss } from "./editorCss";
@@ -27,7 +29,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = pokelinePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = pokelinePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#071a1f", borderColor: "rgba(232,247,246,0.12)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-2.5 lg:px-8">
@@ -141,7 +143,7 @@ function OrbitHomeReviews({ data }: { data: Record<string, any> }) {
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
               <blockquote className="border-r-4 pr-5" style={{ borderColor: "#2dd4bf" }}>
-                <p className="text-lg leading-8">״{text}״</p>
+                <p className="text-lg leading-8">״{tx(text)}״</p>
                 <footer className="mt-3 text-sm font-bold" style={{ color: "#7eb8b4" }}>{name} · {role}</footer>
               </blockquote>
             </Reveal>
@@ -159,7 +161,7 @@ function OrbitHomeStats({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 70} variant="up">
-            <div className="text-center md:text-right">
+            <div className="text-center md:text-start">
               <div className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#2dd4bf" }}>{n}</div>
               <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{l}</p>
             </div>
@@ -237,7 +239,7 @@ function OrbitFullMenuBoard({ data }: { data: Record<string, any> }) {
                     <h3 className="tpl-display text-xl font-bold">{title}</h3>
                     <span className="text-xs font-bold" style={{ color: "#2dd4bf" }}>{meta}</span>
                   </div>
-                  <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{text}</p>
+                  <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -377,7 +379,7 @@ function OrbitAboutTimeline({ data }: { data: Record<string, any> }) {
               <div className="relative grid gap-2 pb-10 pr-12">
                 <div className="absolute right-1.5 top-1 h-3 w-3 rounded-full border-2" style={{ borderColor: "#2dd4bf", background: "#071a1f" }} />
                 <p className="text-xs tracking-[0.2em]" style={{ color: "#2dd4bf" }}>{year}</p>
-                <p className="text-sm leading-7">{text}</p>
+                <p className="text-sm leading-7">{tx(text)}</p>
               </div>
             </Reveal>
           ))}
@@ -437,10 +439,10 @@ function OrbitReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
       <div className="mx-auto max-w-xl text-center">
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 leading-8" style={{ color: "#7eb8b4" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#2dd4bf", background: "#0d262c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pokeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
+        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-start" style={{ borderColor: "#2dd4bf", background: "#0d262c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pokeline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
           <button type="submit" className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#2dd4bf", color: "#2dd4bfText" }}>{v(data, "cta")}</button>
         </form>
         <p className="mt-6 text-sm" style={{ color: "#7eb8b4" }}>{v(data, "phone")} · {v(data, "email")}</p>
@@ -579,7 +581,7 @@ export default function PokelinePages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id="pokeline" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="pokeline" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#071a1f", color: "#e8f7f6" }}>
       <style dangerouslySetInnerHTML={{ __html: pokelineEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import API from '@api'; // axios instance with withCredentials: true and baseURL set to /api/business
 import { useBusinessServices } from '@context/BusinessServicesContext';
 import './ShopTab.css';
 
 const ShopTab = () => {
+  const { t } = useTranslation();
   const { products, setProducts } = useBusinessServices();
   const [categories, setCategories] = useState(['General']);
   const [newCategory, setNewCategory] = useState('');
@@ -40,7 +42,7 @@ const ShopTab = () => {
         setCoupons(couponRes.data || []);
       } catch (err) {
         console.error('Error loading data:', err);
-        alert('Error loading data');
+        alert(t('leftover.shop.loadError'));
       }
     };
     fetchData();
@@ -92,19 +94,19 @@ const ShopTab = () => {
       setImagePreview(null);
     } catch (err) {
       console.error('Error adding product:', err);
-      alert('Error adding product');
+      alert(t('leftover.shop.addProductError'));
     }
   };
 
   // --- Delete product ---
   const handleDeleteProduct = async productId => {
-    if (!productId || !window.confirm('Delete this product?')) return;
+    if (!productId || !window.confirm(t('leftover.shopChrome.deleteProductConfirm'))) return;
     try {
       await API.delete(`/business/my/products/${productId}`);
       setProducts(prev => prev.filter(p => (p._id || p.id) !== productId));
     } catch (err) {
       console.error('Error deleting product:', err);
-      alert('Error deleting product');
+      alert(t('leftover.shop.deleteProductError'));
     }
   };
 
@@ -124,36 +126,36 @@ const ShopTab = () => {
       setCoupon({ code: '', discount: '', start: '', expiry: '' });
     } catch (err) {
       console.error('Error creating coupon:', err);
-      alert('Error creating coupon');
+      alert(t('leftover.shop.createCouponError'));
     }
   };
 
   const handleDeleteCoupon = async id => {
-    if (!window.confirm('Delete this coupon?')) return;
+    if (!window.confirm(t('leftover.shopChrome.deleteCouponConfirm'))) return;
     try {
       await API.delete(`/business/my/coupons/${id}`);
       setCoupons(prev => prev.filter(c => c.id !== id && c._id !== id));
     } catch (err) {
       console.error('Error deleting coupon:', err);
-      alert('Error deleting coupon');
+      alert(t('leftover.shop.deleteCouponError'));
     }
   };
 
   return (
     <div className="shop-editor">
-      <h2 className="title">🔧 Manage Your Store</h2>
+      <h2 className="title">🔧 {t("leftover.shopChrome.manageTitle")}</h2>
 
       {/* Categories */}
       <div className="category-section">
-        <label>📁 Categories</label>
+        <label>📁 {t("leftover.shopChrome.categories")}</label>
         <form className="category-manager" onSubmit={handleAddCategory}>
           <input
             type="text"
             value={newCategory}
             onChange={e => setNewCategory(e.target.value)}
-            placeholder="New category name"
+            placeholder={t("leftover.shopChrome.newCategoryPh")}
           />
-          <button type="submit">Add</button>
+          <button type="submit">{t("leftover.shopChrome.add")}</button>
         </form>
         <div className="category-list">
           {categories.map((cat, i) => (
@@ -167,21 +169,21 @@ const ShopTab = () => {
 
       {/* Add Product Form */}
       <form className="product-form" onSubmit={handleAddProduct}>
-        <input name="name" value={formData.name} onChange={handleFormChange} placeholder="Product name" required />
-        <textarea name="description" value={formData.description} onChange={handleFormChange} placeholder="Description..." rows={2} />
-        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="Price $" required />
+        <input name="name" value={formData.name} onChange={handleFormChange} placeholder={t("leftover.shopChrome.productNamePh")} required />
+        <textarea name="description" value={formData.description} onChange={handleFormChange} placeholder={t("leftover.shopChrome.descriptionPh")} rows={2} />
+        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder={t("leftover.shopChrome.pricePh")} required />
         <select name="category" value={formData.category} onChange={handleFormChange}>
           {categories.map((cat, i) => (<option key={i} value={cat}>{cat}</option>))}
         </select>
         <input type="file" name="image" accept="image/*" onChange={handleFormChange} />
-        {imagePreview && <img src={imagePreview} alt="Product preview" className="preview-image" />}
-        <button type="submit">💾 Save</button>
+        {imagePreview && <img src={imagePreview} alt={t("leftover.shopChrome.productPreviewAlt")} className="preview-image" />}
+        <button type="submit">💾 {t("leftover.shopChrome.save")}</button>
       </form>
 
       {/* Product List */}
       {products.length > 0 && (
         <div className="preview-products-list">
-          <h3>📦 Existing Products</h3>
+          <h3>📦 {t("leftover.shopChrome.existingProducts")}</h3>
           <div className="product-cards-list">
             {products.map((p, i) => {
               const pid = p._id || p.id;
@@ -208,13 +210,13 @@ const ShopTab = () => {
 
       {/* Payment Settings */}
       <div className="payment-settings">
-        <h4>💳 Payment Setup for Business</h4>
+        <h4>💳 {t("leftover.shopChrome.paymentSetup")}</h4>
         <select
           value={selectedProvider || ""}
           onChange={handleProviderSelect}
           className="provider-select"
         >
-          <option value="" disabled>Select Payment Provider</option>
+          <option value="" disabled>{t("leftover.paymentFormChrome.selectPaymentProvider")}</option>
           {allProviders.map(provider => (
             <option key={provider} value={provider}>
               {provider}
@@ -225,40 +227,40 @@ const ShopTab = () => {
           <div className="payment-inputs">
             <input
               type="text"
-              placeholder={`Key for ${selectedProvider}`}
+              placeholder={t('leftover.shopChrome.keyFor', { provider: selectedProvider })}
               value={paymentKeys[selectedProvider] || ''}
               onChange={handleKeyChange}
             />
-            <p className="payment-info">Save this key for payment authentication.</p>
+            <p className="payment-info">{t('leftover.shopChrome.savePaymentKey')}</p>
           </div>
         )}
       </div>
 
       {/* Payment Methods */}
       <div className="payment-methods">
-        <h4>⚙️ Payment Options for Customers</h4>
+        <h4>⚙️ {t('leftover.shopChrome.paymentOptions')}</h4>
         <select
           className="select-input"
           value={paymentMethod}
           onChange={e => setPaymentMethod(e.target.value)}
         >
-          <option value="online">Online Payment Only</option>
-          <option value="phone">Phone Payment Only</option>
-          <option value="both">Both</option>
+          <option value="online">{t('leftover.shopChrome.onlineOnly')}</option>
+          <option value="phone">{t('leftover.shopChrome.phoneOnly')}</option>
+          <option value="both">{t('leftover.shopChrome.both')}</option>
         </select>
       </div>
 
       {/* Shipping Settings */}
       <div className="shipping-settings">
-        <h4>🚚 Shipping Options</h4>
-        <p className="note">Shipping cost will be added to the final order price.</p>
+        <h4>🚚 {t("leftover.shopChrome.shippingOptions")}</h4>
+        <p className="note">{t("leftover.shopChrome.shippingNote")}</p>
         <select
           className="select-input"
           value={shippingType}
           onChange={e => setShippingType(e.target.value)}
         >
-          <option value="free">Free Shipping</option>
-          <option value="paid">Paid Shipping</option>
+          <option value="free">{t("leftover.paymentFormChrome.freeShipping")}</option>
+          <option value="paid">{t("leftover.paymentFormChrome.paidShipping")}</option>
         </select>
         {shippingType === 'paid' && (
           <input
@@ -266,7 +268,7 @@ const ShopTab = () => {
             className="shipping-cost-input"
             value={shippingCost}
             onChange={e => setShippingCost(Number(e.target.value))}
-            placeholder="Amount $"
+            placeholder={t("leftover.shopChrome.amountPh")}
             min="0"
           />
         )}
@@ -274,20 +276,20 @@ const ShopTab = () => {
 
       {/* Coupons */}
       <form className="coupon-section" onSubmit={handleAddCoupon}>
-        <h4>🎟️ Create Discount Coupon</h4>
-        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder="Coupon Code (SUMMER10)" required />
-        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder="Discount Percentage (10)" required />
+        <h4>🎟️ {t('leftover.couponChrome.createTitle')}</h4>
+        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder={t('leftover.couponChrome.codePh')} required />
+        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder={t('leftover.couponChrome.discountPh')} required />
         <input type="date" value={coupon.start} onChange={e => setCoupon(prev => ({ ...prev, start: e.target.value }))} />
         <input type="date" value={coupon.expiry} onChange={e => setCoupon(prev => ({ ...prev, expiry: e.target.value }))} />
-        <button type="submit">➕ Add Coupon</button>
+        <button type="submit">➕ {t('leftover.couponChrome.addCoupon')}</button>
       </form>
 
       {coupons.length > 0 && (
         <div className="coupons-table">
-          <h4>🧾 Existing Coupons</h4>
+          <h4>🧾 {t('leftover.couponChrome.existingCoupons')}</h4>
           <table>
             <thead>
-              <tr><th>Code</th><th>Discount</th><th>From</th><th>Until</th><th>Delete</th></tr>
+              <tr><th>{t('leftover.couponChrome.code')}</th><th>{t('leftover.couponChrome.discount')}</th><th>{t('leftover.couponChrome.from')}</th><th>{t('leftover.couponChrome.until')}</th><th>{t('leftover.couponChrome.delete')}</th></tr>
             </thead>
             <tbody>
               {coupons.map((c, i) => (

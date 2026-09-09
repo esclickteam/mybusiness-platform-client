@@ -4,6 +4,7 @@ import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi
 import { formatIls, quotePreviewComponents, skuAllowsRecurringMarkup } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
 
 export default function PartnerPricing() {
   const { t } = useTranslation();
@@ -128,8 +129,8 @@ function PriceRow({
         : t("partner.billing.oneTime");
   const recurringToggleLabel =
     item.billing === "recurring_year"
-      ? t("partner.pricing.addYearly", { defaultValue: "הוסף עמלה שנתית מתחדשת" })
-      : t("partner.pricing.addMonthly", { defaultValue: "הוסף עמלה חודשית מתחדשת" });
+      ? t("partner.pricing.addYearly")
+      : t("partner.pricing.addMonthly");
   const recurringAmountLabel =
     item.billing === "recurring_year" ? t("partner.pricing.yearlyPrefix") : t("partner.pricing.monthlyPrefix");
 
@@ -137,9 +138,11 @@ function PriceRow({
     <article className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-black">{item.nameHe || item.sku}</h3>
-          {item.descriptionHe ? (
-            <p className="mt-1 max-w-2xl text-sm font-bold text-slate-500">{item.descriptionHe}</p>
+          <h3 className="text-lg font-black">{catalogProductName(t, item)}</h3>
+          {item.descriptionHe || item.descriptionEn ? (
+            <p className="mt-1 max-w-2xl text-sm font-bold text-slate-500">
+              {catalogProductDescription(t, item)}
+            </p>
           ) : null}
           {item.category === "human_service" ? (
             <p className="mt-1 text-xs font-black text-amber-700">
@@ -159,9 +162,7 @@ function PriceRow({
       </div>
 
       <p className="mt-4 text-sm font-black text-slate-800">
-        {t("partner.pricing.bizuplyPriceLine", {
-          defaultValue: "מחיר Bizuply: {{amount}} {{billing}}",
-          amount: formatIls(bizuplyAmount),
+        {t("partner.pricing.bizuplyPriceLine", { amount: formatIls(bizuplyAmount),
           billing: catalogBilling,
         })}
       </p>
@@ -175,7 +176,7 @@ function PriceRow({
               onChange={(e) => setOneTimeEnabled(e.target.checked)}
               className="accent-violet-700"
             />
-            {t("partner.pricing.addOneTime", { defaultValue: "הוסף עמלה חד-פעמית" })}
+            {t("partner.pricing.addOneTime")}
           </label>
           {oneTimeEnabled ? (
             <label className="mt-3 block text-sm font-black text-violet-900">
@@ -191,7 +192,7 @@ function PriceRow({
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
-              <dt>{t("partner.pricing.basePrice", { defaultValue: "מחיר בסיס" })}</dt>
+              <dt>{t("partner.pricing.basePrice")}</dt>
               <dd>{formatIls(quoted.oneTimeBase)}</dd>
             </div>
             <div className="flex justify-between gap-3">

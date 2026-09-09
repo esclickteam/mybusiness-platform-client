@@ -11,7 +11,7 @@ export const narrativaEditorCss = `
   font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
-  text-align: right;
+  text-align: start;
 }
 [data-template-id="narrativa"] .text-center,
 [data-template-id="narrativa"] .text-center { text-align: center; }

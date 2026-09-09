@@ -3,6 +3,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { Link } from "react-router-dom";
 
 import { Reveal, Stagger, StaggerItem } from "./product-marketing";
@@ -19,7 +20,7 @@ type Feature = {
 
 /** Compact why section — header + three wow cards (no middle dashboard panel). */
 export default function WhyBizuply() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [lit, setLit] = useState(0);
 
   useEffect(() => {
@@ -119,7 +120,7 @@ export default function WhyBizuply() {
   return (
     <section
       className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-16 text-slate-800 sm:py-24"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />

@@ -298,7 +298,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   }, [profileData]);
 
   if (loading || !profileData) {
-    return <BizuplyLoadingState label="Loading profile..." />;
+    return <BizuplyLoadingState label={t("leftover.collab.profile.loading")} />;
   }
 
   const safeProfile: SafeProfile = {
@@ -668,7 +668,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               <FormField
                 label={t(
                   "leftover.collabProfile.waNotify",
-                  "WhatsApp notification number (E.164)"
+                  t("leftover.collab.profile.waNotifyPh")
                 )}
               >
                 <div dir="ltr" className="text-left">

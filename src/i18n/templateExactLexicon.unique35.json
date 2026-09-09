@@ -1,0 +1,128 @@
+{
+  "השאירו פרטים ונחזור אליכם.": {
+    "en": "Leave your details and we will get back to you.",
+    "es": "Dejad vuestros datos y os responderemos.",
+    "pt-BR": "Deixem os dados e retornaremos o contato.",
+    "ar": "اتركوا بياناتكم وسنعود إليكم."
+  },
+  "השאירו פרטים ונחזור אליכם": {
+    "en": "Leave your details and we will get back to you",
+    "es": "Dejad vuestros datos y os responderemos",
+    "pt-BR": "Deixem os dados e retornaremos o contato",
+    "ar": "اتركوا بياناتكم وسنعود إليكم"
+  },
+  "נחזור אליכם עם כל הפרטים.": {
+    "en": "We will get back to you with all the details.",
+    "es": "Os responderemos con todos los detalles.",
+    "pt-BR": "Retornaremos com todos os detalhes.",
+    "ar": "سنعود إليكم بكل التفاصيل."
+  },
+  "מלאו פרטים ונחזור אליכם.": {
+    "en": "Fill in your details and we will get back to you.",
+    "es": "Rellenad los datos y os responderemos.",
+    "pt-BR": "Preencha os dados e retornaremos o contato.",
+    "ar": "املأوا البيانات وسنعود إليكم."
+  },
+  "נחזור אליכם עם כל המידע.": {
+    "en": "We will get back to you with all the information.",
+    "es": "Os responderemos con toda la información.",
+    "pt-BR": "Retornaremos com todas as informações.",
+    "ar": "سنعود إليكم بكل المعلومات."
+  },
+  "ללא ספאם. אפשר להסיר הרשמה בכל רגע.": {
+    "en": "No spam. You can unsubscribe at any time.",
+    "es": "Sin spam. Podéis daros de baja en cualquier momento.",
+    "pt-BR": "Sem spam. Dá para cancelar a inscrição a qualquer momento.",
+    "ar": "بدون رسائل مزعجة. يمكن إلغاء الاشتراك في أي لحظة."
+  },
+  "כותרת חזקה מעל תמונת רקע": {
+    "en": "A strong headline over a background image",
+    "es": "Un titular fuerte sobre una imagen de fondo",
+    "pt-BR": "Um título forte sobre uma imagem de fundo",
+    "ar": "عنوان قوي فوق صورة خلفية"
+  },
+  "אפשר להחליף לסרטון / תמונת קאבר": {
+    "en": "You can switch this to a video / cover image",
+    "es": "Podéis cambiarlo a vídeo / imagen de portada",
+    "pt-BR": "Dá para trocar por vídeo / imagem de capa",
+    "ar": "يمكن استبداله بفيديو / صورة غلاف"
+  },
+  "תיאור קצר של המוצר, יתרון מרכזי ולמה כדאי לרכוש.": {
+    "en": "A short product description, a key benefit, and why it is worth buying.",
+    "es": "Una descripción breve del producto, un beneficio clave y por qué conviene comprarlo.",
+    "pt-BR": "Uma descrição curta do produto, um benefício principal e por que vale a pena comprar.",
+    "ar": "وصف قصير للمنتج وميزة أساسية ولماذا يستحق الشراء."
+  },
+  "תיאור קצר של המוצר.": {
+    "en": "A short product description.",
+    "es": "Una descripción breve del producto.",
+    "pt-BR": "Uma descrição curta do produto.",
+    "ar": "وصف قصير للمنتج."
+  },
+  "תיאור קצר של המוצר או הקולקציה.": {
+    "en": "A short description of the product or collection.",
+    "es": "Una descripción breve del producto o la colección.",
+    "pt-BR": "Uma descrição curta do produto ou da coleção.",
+    "ar": "وصف قصير للمنتج أو المجموعة."
+  },
+  "לחצי כדי להחליף, להוסיף או לערוך מדיה.": {
+    "en": "Click to replace, add, or edit media.",
+    "es": "Haced clic para reemplazar, añadir o editar medios.",
+    "pt-BR": "Clique para trocar, adicionar ou editar mídia.",
+    "ar": "انقروا لاستبدال الوسائط أو إضافتها أو تعديلها."
+  },
+  "קבלת פרטים": {
+    "en": "Get details",
+    "es": "Recibir datos",
+    "pt-BR": "Receber dados",
+    "ar": "الحصول على التفاصيل"
+  },
+  "מסר מרכזי": {
+    "en": "Key message",
+    "es": "Mensaje clave",
+    "pt-BR": "Mensagem principal",
+    "ar": "رسالة رئيسية"
+  },
+  "איך זה עובד?": {
+    "en": "How it works?",
+    "es": "¿Cómo funciona?",
+    "pt-BR": "Como funciona?",
+    "ar": "كيف يعمل؟"
+  },
+  "אמון במספרים": {
+    "en": "Trust in numbers",
+    "es": "Confianza en cifras",
+    "pt-BR": "Confiança em números",
+    "ar": "ثقة بالأرقام"
+  },
+  "הטבה לנרשמים": {
+    "en": "Offer for subscribers",
+    "es": "Oferta para inscritos",
+    "pt-BR": "Oferta para inscritos",
+    "ar": "عرض للمسجّلين"
+  },
+  "אזור וידאו": {
+    "en": "Video area",
+    "es": "Zona de vídeo",
+    "pt-BR": "Área de vídeo",
+    "ar": "منطقة فيديو"
+  },
+  "אמון מוכח": {
+    "en": "Proven trust",
+    "es": "Confianza demostrada",
+    "pt-BR": "Confiança comprovada",
+    "ar": "ثقة مثبتة"
+  },
+  "שיחה ראשונית קצרה": {
+    "en": "A short intro call",
+    "es": "Una llamada inicial breve",
+    "pt-BR": "Uma chamada inicial curta",
+    "ar": "مكالمة تعارف قصيرة"
+  },
+  "שם מוצר": {
+    "en": "Product name",
+    "es": "Nombre del producto",
+    "pt-BR": "Nome do produto",
+    "ar": "اسم المنتج"
+  }
+}

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { pawhausDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -148,7 +150,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">0{index + 1}</p>
                   <h3 className="t-serif mt-4 text-3xl font-black tracking-[-0.04em] text-[var(--dark)]">{title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <p className="border-t border-[var(--p)]/20 pt-4 text-sm font-black text-[var(--p)]">{meta}</p>
               </article>
@@ -190,7 +192,7 @@ function DaycareMosaic({ data }: { data: Record<string, any> }) {
               <Reveal key={title} delayMs={index * 110}>
                 <article className="h-full bg-[var(--p)] p-6 text-white">
                   <h3 className="text-2xl font-black">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-white/80">{text}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/80">{tx(text)}</p>
                 </article>
               </Reveal>
             ))}
@@ -324,7 +326,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="h-full bg-[var(--bg)] p-7 shadow-[0_16px_48px_rgba(69,45,12,0.06)]">
                 <p className="t-serif text-3xl md:text-6xl font-black leading-none text-[var(--p)]">"</p>
-                <p className="mt-2 text-lg font-bold leading-8 text-[var(--dark)]">{text}</p>
+                <p className="mt-2 text-lg font-bold leading-8 text-[var(--dark)]">{tx(text)}</p>
                 <footer className="mt-8 border-t border-[var(--p)]/20 pt-5">
                   <p className="font-black text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>
@@ -353,16 +355,16 @@ function BookingForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pawhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pawhaus-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input aria-label={tx("שם מלא")} className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input aria-label={tx("טלפון")} className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם החיה" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם החיה"  name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
-              <input aria-label="סוג וגיל" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="כלב / חתול וגיל"  name="other" data-bizuply-form-field-id="other" />
+              <input aria-label={tx("שם החיה")} className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder={tx("שם החיה")}  name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
+              <input aria-label={tx("סוג וגיל")} className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder={tx("כלב / חתול וגיל")}  name="other" data-bizuply-form-field-id="other" />
             </div>
-            <textarea aria-label="מה חשוב לדעת" className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="מה חשוב לנו לדעת לפני ההגעה?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <textarea aria-label={tx("מה חשוב לדעת")} className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder={tx("מה חשוב לנו לדעת לפני ההגעה?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
               {getValue(data, "contactButton")}
             </button>
@@ -397,7 +399,7 @@ export default function PawhausPages({ initialPage = "home", mode = "preview", d
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="pawhaus" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="pawhaus" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: pawhausEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

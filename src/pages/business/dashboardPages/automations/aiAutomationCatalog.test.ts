@@ -58,8 +58,9 @@ describe("AI automation catalog", () => {
 
     const scoring = getAiTemplateByKey("ai_lead_scoring")!;
     const scoringGraph = buildAiTemplateGraph(scoring);
-    expect(scoringGraph.nodes[0].data.label).toBe("\u05dc\u05d9\u05d3 \u05d7\u05d3\u05e9");
-    expect(String(scoringGraph.nodes[1].data.label || "")).toContain("\u05d3\u05d9\u05e8\u05d5\u05d2");
+    expect(scoringGraph.nodes[0].data.label).toBeTruthy();
+    expect(String(scoringGraph.nodes[0].data.label || "")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(String(scoringGraph.nodes[1].data.label || "")).toMatch(/AI/i);
     expect(scoringGraph.edges.find((e) => e.id === "ai-notify")?.sourceHandle).toBe("out");
   });
 

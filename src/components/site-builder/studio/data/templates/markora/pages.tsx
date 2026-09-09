@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { markoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -40,7 +42,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         <a href="#" className="grid h-10 w-10 place-items-center border border-[var(--p)] bg-[var(--p)] text-sm font-black text-white" aria-label={getValue(data, "brandName")}>
           {getValue(data, "logoText")}
         </a>
-        <nav className="hidden items-center gap-7 text-sm font-bold text-white/70 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-7 text-sm font-bold text-white/70 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="m-nav-link">
               {label}
@@ -61,7 +63,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
       <div className="m-hero-grid absolute inset-0 opacity-40" />
       <div className="m-diagonal absolute -left-28 top-12 h-[120vh] w-24 bg-[var(--p)] opacity-90" />
       <div dir="ltr" className="relative z-10 mx-auto grid min-h-[calc(100svh-5rem)] max-w-7xl gap-10 px-5 py-12 lg:grid-cols-2 lg:items-center lg:px-8">
-        <div dir="rtl" className="lg:col-start-1 lg:row-start-1">
+        <div dir={templateDir()} className="lg:col-start-1 lg:row-start-1">
           <p className="m-hero-in text-xs font-black uppercase tracking-[0.36em] text-[var(--p)]">{getValue(data, "heroEyebrow")}</p>
           <p className="t-display m-chaos m-hero-in m-d1 mt-4 text-[18vw] font-black uppercase leading-[0.75] tracking-[-0.12em] text-white md:text-[9rem] lg:text-[10.5rem]">
             {getValue(data, "brandName")}
@@ -79,7 +81,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
             </a>
           </div>
         </div>
-        <div dir="rtl" className="m-hero-image-wrap relative lg:col-start-2 lg:row-start-1">
+        <div dir={templateDir()} className="m-hero-image-wrap relative lg:col-start-2 lg:row-start-1">
           <div className="absolute -right-5 -top-5 h-full w-full border border-[var(--p)]" />
           <div className="relative h-[520px] overflow-hidden border border-white/15 bg-[var(--surface)] lg:h-[680px]">
             <img src={getValue(data, "heroImage")} alt="" className="m-ken h-full w-full object-cover" />
@@ -111,7 +113,7 @@ function Services({ data }: { data: Record<string, any> }) {
               <article className="m-service-row grid gap-5 border-b border-white/12 bg-[var(--bg)] px-2 py-8 last:border-b-0 md:grid-cols-[120px_1fr_0.85fr] md:items-center">
                 <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display text-3xl font-black tracking-[-0.03em] md:text-5xl">{title}</h3>
-                <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -193,7 +195,7 @@ function Process({ data }: { data: Record<string, any> }) {
               <article className="m-step-block min-h-[270px] border border-[var(--p)]/50 bg-[var(--surface)] p-7">
                 <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">{num}</span>
                 <h3 className="t-display mt-8 text-3xl font-black leading-none">{title}</h3>
-                <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -253,7 +255,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={160 + index * 110} variant="left">
               <blockquote className="m-quote-bar grid gap-5 border-r-8 border-[var(--p)] bg-[var(--surface)] p-6 md:grid-cols-[1fr_240px] md:items-center md:p-8">
-                <p className="text-xl font-bold leading-9 text-white md:text-3xl">"{text}"</p>
+                <p className="text-xl font-bold leading-9 text-white md:text-3xl">"{tx(text)}"</p>
                 <footer className="border-t border-white/10 pt-5 md:border-r md:border-t-0 md:pr-6 md:pt-0">
                   <p className="font-black text-[var(--p)]">{name}</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{role}</p>
@@ -272,11 +274,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
     <section id="contact" data-template-section-type="contact" className="bg-[var(--surface)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl border border-white/10 lg:grid-cols-2">
         <Reveal className="bg-[var(--bg)] p-8 lg:p-12" delayMs={170} variant="left">
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="markora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-36 border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="מה אתם רוצים לשווק?"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="markora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-36 border border-white/15 bg-transparent px-5 py-4 text-start outline-none transition focus:border-[var(--p)]" placeholder={tx("מה אתם רוצים לשווק?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black text-white transition hover:bg-white hover:text-[var(--bg)]">
               {getValue(data, "contactButton")}
             </button>
@@ -321,14 +323,14 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
   return (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/80 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md border border-[var(--p)] bg-[var(--bg)] p-8 text-[var(--text)]">
-        <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]" aria-label="סגירה">
+        <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]" aria-label={tx("סגירה")}>
           ×
         </button>
         <p className="text-sm font-black uppercase tracking-[0.35em] text-[var(--p)]">{getValue(data, "brandName")}</p>
         <h3 className="t-display mt-3 text-2xl sm:text-4xl font-black leading-none">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="markora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="markora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/15 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/15 bg-transparent px-5 py-4 text-start outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>
@@ -362,7 +364,7 @@ export default function MarkoraPages(props: MarkoraPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id="markora" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="markora" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: markoraEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

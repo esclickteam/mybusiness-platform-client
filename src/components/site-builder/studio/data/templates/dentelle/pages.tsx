@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { dentelleDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -194,10 +196,10 @@ function Treatments({ data }: { data: Record<string, any> }) {
               <article className="grid gap-4 border-t border-slate-200 px-5 py-7 first:border-t-0 md:grid-cols-[0.65fr_1fr_0.5fr] md:items-center md:px-8">
                 <h3 className="text-2xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{title}</h3>
                 <div className="grid gap-3 md:grid-cols-[1fr_0.28fr] md:items-center">
-                  <p className="text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   <span className="de-dot-leader hidden h-4 md:block" />
                 </div>
-                <strong className="text-right text-lg font-black text-[var(--p)] md:text-xl">{price}</strong>
+                <strong className="text-start text-lg font-black text-[var(--p)] md:text-xl">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -311,7 +313,7 @@ function ComfortTech({ data }: { data: Record<string, any> }) {
                 <div className="p-4 md:p-8">
                   <span className="block h-1 w-24 bg-[var(--p)]" />
                   <h3 className="de-display mt-7 text-4xl font-semibold tracking-[-0.05em] text-[var(--dark)] md:text-6xl">{title}</h3>
-                  <p className="mt-5 text-base leading-8 text-[var(--muted)]">{text}</p>
+                  <p className="mt-5 text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
                 </div>
               </article>
             </Reveal>
@@ -341,7 +343,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 110} variant="scale">
               <article className="de-quote flex aspect-square flex-col justify-between border border-[var(--p)]/35 bg-white p-7">
                 <span className="de-display text-3xl md:text-7xl leading-none text-[var(--p)]">“</span>
-                <p className="text-base font-semibold leading-8 text-[var(--dark)]">{text}</p>
+                <p className="text-base font-semibold leading-8 text-[var(--dark)]">{tx(text)}</p>
                 <strong className="text-sm font-black text-[var(--p)]">{name}</strong>
               </article>
             </Reveal>
@@ -367,14 +369,14 @@ function Appointment({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={140}>
-          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dentelle-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dentelle-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div>
               <h3 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{getValue(data, "contactText")}</h3>
               <div className="mt-8 grid gap-4">
-                <input className="de-field px-4 py-4" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-                <input className="de-field px-4 py-4" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-                <input className="de-field px-4 py-4" placeholder="טיפול שמעניין אתכם"  name="other" data-bizuply-form-field-id="other" />
-                <textarea className="de-field min-h-[130px] px-4 py-4" placeholder="מה חשוב לנו לדעת לפני השיחה?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+                <input className="de-field px-4 py-4" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                <input className="de-field px-4 py-4" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                <input className="de-field px-4 py-4" placeholder={tx("טיפול שמעניין אתכם")}  name="other" data-bizuply-form-field-id="other" />
+                <textarea className="de-field min-h-[130px] px-4 py-4" placeholder={tx("מה חשוב לנו לדעת לפני השיחה?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               </div>
             </div>
             <button type="submit" className="mt-6 bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
@@ -413,7 +415,7 @@ export default function DentellePages({ initialPage = "home", mode = "preview", 
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="dentelle" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="dentelle" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: dentelleEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

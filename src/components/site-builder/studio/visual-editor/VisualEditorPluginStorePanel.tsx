@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { Puzzle, X } from "lucide-react";
 
 import {
@@ -38,7 +39,7 @@ export default function VisualEditorPluginStorePanel({
   onClose,
   onInstalled,
 }: VisualEditorPluginStorePanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
@@ -172,7 +173,7 @@ export default function VisualEditorPluginStorePanel({
   return (
     <div
       className="pointer-events-auto fixed bottom-4 right-[80px] top-[64px] z-[2147483200] flex w-[min(920px,calc(100vw-112px))] max-w-[calc(100vw-112px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       data-visual-editor-plugin-store="true"
     >
       <div className="flex min-h-0 w-full flex-col">

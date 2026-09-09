@@ -107,6 +107,9 @@ export type BillingOverview = {
     cancelScheduled: boolean;
     kind: string;
     note?: string;
+    sku?: string | null;
+    productKey?: string;
+    domainName?: string | null;
   }>;
   paymentHistory: Array<{
     id: string;
@@ -114,6 +117,9 @@ export type BillingOverview = {
     date: string | null;
     transactionId: string;
     description: string;
+    sku?: string | null;
+    domainName?: string | null;
+    productKey?: string | null;
     type: string;
     amount: number;
     currency: string;
@@ -131,6 +137,9 @@ export type BillingOverview = {
   failedPayments: Array<{
     id: string;
     description: string;
+    sku?: string | null;
+    productKey?: string | null;
+    domainName?: string | null;
     amount: number;
     currency: string;
     date: string | null;
@@ -143,6 +152,9 @@ export type BillingOverview = {
   refunds: Array<{
     id: string;
     description: string;
+    sku?: string | null;
+    productKey?: string | null;
+    domainName?: string | null;
     amount: number;
     currency: string;
     date: string | null;

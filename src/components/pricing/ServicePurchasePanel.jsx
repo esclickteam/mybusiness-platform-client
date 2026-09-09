@@ -17,20 +17,13 @@ import {
 } from "../../utils/pendingPurchaseIntent";
 import { WEBSITE_ADDON } from "../../data/pricingPackagesData";
 import { getIntlLocale } from "../../i18n/localeUtils";
+import { useBillingMarket } from "../../billing/useBillingMarket";
+import { formatMarketMoney, planAmount } from "../../billing/billingMarkets";
 
-const PLAN_OPTIONS = [
-  { key: "website", amount: 600, billing: "year" },
-  { key: "monthly", amount: 149, billing: "month" },
-  { key: "yearly", amount: 1490, billing: "year" },
-];
 const LAUNCH_MARKER_KEY = "bizuply_service_checkout_launch";
 
-function money(value, locale) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
+function money(value, locale, currency = "ILS") {
+  return formatMarketMoney(Number(value || 0), currency, locale);
 }
 
 function SelectionCard({ selected, onClick, title, text }) {
@@ -69,6 +62,13 @@ export default function ServicePurchasePanel({
 }) {
   const { t, i18n } = useTranslation();
   const locale = getIntlLocale(i18n.language);
+  const billingMarket = useBillingMarket();
+  const planOptions = [
+    { key: "website", amount: billingMarket.prices.websiteAnnual, billing: "year" },
+    { key: "monthly", amount: billingMarket.prices.businessMonthly, billing: "month" },
+    { key: "yearly", amount: planAmount("yearly", billingMarket), billing: "year" },
+  ];
+  const israelBilling = billingMarket.id === "israel";
   const navigate = useNavigate();
   const planName = (key) =>
     key === "website"
@@ -144,6 +144,7 @@ export default function ServicePurchasePanel({
             : selectedPlanKey
           : null,
       includeWebsiteAddon:
+        israelBilling &&
         purchaseMode === "bundle" &&
         !activePlan &&
         (selectedPlanKey === "monthly" || selectedPlanKey === "yearly") &&
@@ -162,6 +163,7 @@ export default function ServicePurchasePanel({
     [
       activePlan,
       includeWebsiteAddon,
+      israelBilling,
       purchaseMode,
       quantities,
       selectedAddOnOptions,
@@ -175,7 +177,7 @@ export default function ServicePurchasePanel({
       sum + option.amountIls * (quantities[option.addOnKey] || 1),
     0
   );
-  const plan = PLAN_OPTIONS.find(
+  const plan = planOptions.find(
     (option) => option.key === (activePlan?.key || selectedPlanKey)
   );
   const isNewPlan = purchaseMode === "bundle" && !activePlan;
@@ -191,22 +193,19 @@ export default function ServicePurchasePanel({
       purchaseMode === "bundle" &&
       !activePlan
   );
+  const planInIlsTotal = israelBilling && isNewPlan ? plan?.amount || 0 : 0;
   const paymentToday =
-    baseAmount +
-    addOnTotal +
-    websiteAddonAmount +
-    (isNewPlan && plan?.key !== "monthly" ? plan?.amount || 0 : 0) +
-    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+    baseAmount + addOnTotal + websiteAddonAmount + planInIlsTotal;
   const monthlyTotal =
     (serviceBilling === "recurring_month" ? baseAmount : 0) +
-    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+    (israelBilling && isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
   const yearlyTotal =
-    isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
+    israelBilling && isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
   const oneTimeTotal =
     (serviceBilling === "one_time" ? baseAmount : 0) +
     addOnTotal +
     websiteAddonAmount +
-    (isNewPlan && plan?.key === "website" ? plan.amount : 0);
+    (israelBilling && isNewPlan && plan?.key === "website" ? plan.amount : 0);
 
   const goToContact = () => {
     onClose();
@@ -458,12 +457,12 @@ export default function ServicePurchasePanel({
 
           {step === "plan" ? (
             <div className="grid gap-3">
-              {PLAN_OPTIONS.map((option) => (
+              {planOptions.map((option) => (
                 <SelectionCard
                   key={option.key}
                   selected={selectedPlanKey === option.key}
                   onClick={() => selectPlan(option.key)}
-                  title={`${planName(option.key)} · ${money(option.amount, locale)}${planPeriod(option.billing)}`}
+                  title={`${planName(option.key)} · ${money(option.amount, locale, billingMarket.currency)}${planPeriod(option.billing)}`}
                   text={
                     option.key === "website"
                       ? t("billing.purchase.websiteYearHint")
@@ -471,7 +470,8 @@ export default function ServicePurchasePanel({
                   }
                 />
               ))}
-              {selectedPlanKey === "monthly" || selectedPlanKey === "yearly" ? (
+              {israelBilling &&
+              (selectedPlanKey === "monthly" || selectedPlanKey === "yearly") ? (
                 <label
                   data-testid="website-addon-toggle"
                   className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
@@ -488,7 +488,9 @@ export default function ServicePurchasePanel({
                   />
                   <span className="min-w-0">
                     <span className="block text-sm font-black leading-5 text-slate-900">
-                      {t("pricing.websiteAddon.label")}
+                      {t("pricing.websiteAddon.label", {
+                        price: money(WEBSITE_ADDON.price, locale, "ILS"),
+                      })}
                     </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
                       {t("pricing.websiteAddon.hint")}

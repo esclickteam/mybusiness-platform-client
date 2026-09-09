@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function AiCommandPanel({ businessId, token, profile }) {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Error sending the command");
+      if (!res.ok) throw new Error(data.error || t("leftover.aiPartnerChrome.sendFailed"));
 
       setResponse(data);
       setPrompt("");
@@ -46,7 +48,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         textAlign: "left",
       }}
     >
-      <h2>AI Partner – Request an Action or Answer</h2>
+      <h2>{t("leftover.aiPartnerChrome.title")}</h2>
 
       <textarea
         rows={4}
@@ -58,11 +60,11 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           border: "1px solid #ccc",
           resize: "vertical",
         }}
-        placeholder="Write your request for the AI partner here..."
+        placeholder={t("leftover.aiPartnerChrome.placeholder")}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         disabled={loading}
-        aria-label="AI Partner Request"
+        aria-label={t("leftover.aiPartnerChrome.ariaRequest")}
       />
 
       <button
@@ -82,12 +84,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         aria-disabled={loading || !prompt.trim()}
         aria-busy={loading}
       >
-        {loading ? "Sending..." : "Send"}
+        {loading ? t("leftover.aiPartnerChrome.sending") : t("leftover.aiPartnerChrome.send")}
       </button>
 
       {error && (
         <p style={{ color: "red", marginTop: 10 }} role="alert" aria-live="assertive">
-          Error: {error}
+          {t("leftover.aiPartnerChrome.errorPrefix", { detail: error })}
         </p>
       )}
 
@@ -104,12 +106,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           }}
           aria-live="polite"
         >
-          <h3>AI Response:</h3>
+          <h3>{t("leftover.aiPartnerChrome.response")}</h3>
           <p>{response.answer}</p>
 
           {response.action && (
             <>
-              <h4>Recommended Action:</h4>
+              <h4>{t("leftover.aiPartnerChrome.recommendedAction")}</h4>
               <pre
                 style={{
                   backgroundColor: "#ddd",

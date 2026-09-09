@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MonitorSmartphone, Zap } from "lucide-react";
 
@@ -58,7 +59,7 @@ export default function PulsecorePreview({
                 rounded-full border border-white/10 bg-white/10 text-white
                 transition hover:bg-white/15
               "
-              aria-label="חזרה לתבניות"
+              aria-label={tx("חזרה לתבניות")}
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -88,9 +89,7 @@ export default function PulsecorePreview({
               transition hover:-translate-y-1
               hover:shadow-[0_18px_45px_rgba(215,255,54,0.35)]
             "
-          >
-            השתמשי בתבנית
-            <ArrowLeft className="h-4 w-4" />
+          >{tx("השתמשי בתבנית")}<ArrowLeft className="h-4 w-4" />
           </button>
         </header>
 

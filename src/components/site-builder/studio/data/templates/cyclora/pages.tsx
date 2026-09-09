@@ -1,4 +1,6 @@
 import React from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import {
   cycloraDefaultData,
@@ -101,10 +103,10 @@ const AVATAR_ORBIT_LAYOUTS = [
 ];
 
 const SOCIAL_LINKS = [
-  { short: "אי", label: "אינסטגרם" },
-  { short: "לין", label: "לינקדאין" },
-  { short: "אקס", label: "אקס" },
-  { short: "פי", label: "פייסבוק" },
+  { short: "IG", label: "אינסטגרם" },
+  { short: "in", label: "לינקדאין" },
+  { short: "X", label: "אקס" },
+  { short: "Fb", label: "פייסבוק" },
 ] as const;
 
 const CTA_ORBIT_LAYOUTS = [
@@ -140,7 +142,7 @@ function visualProps(
     "data-visual-edit-type": type,
     "data-visual-type": type,
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 
@@ -153,7 +155,7 @@ function sectionProps(
     ...visualProps(id, "section", label),
     "data-template-section-id": id,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
     "data-bizuply-block": "section",
   };
 }
@@ -545,7 +547,7 @@ export default function CycloraPages({
     <main
       ref={rootRef}
       id="top"
-      dir="rtl"
+      dir={templateDir()}
       data-template-id="cyclora"
       data-template-mode={mode}
       data-template-page-id={pageId}
@@ -609,7 +611,7 @@ function Header({ data }: SharedProps) {
 
       <nav
         className="hidden items-center gap-7 text-xs font-semibold uppercase tracking-[0.16em] md:flex"
-        aria-label="ניווט ראשי"
+        aria-label={tx("ניווט ראשי")}
       >
         {safeArray(data.nav).map((item, index) => (
           <a
@@ -623,7 +625,7 @@ function Header({ data }: SharedProps) {
               `קישור ניווט ${index + 1}`,
             )}
           >
-            <span data-editable="text">{item.label}</span>
+            <span data-editable="text">{tx(item.label)}</span>
           </a>
         ))}
       </nav>
@@ -638,9 +640,7 @@ function Header({ data }: SharedProps) {
           className={buttonLabelClass("dark")}
           data-editable="text"
           {...visualProps("global.header.cta", "text", "טקסט כפתור יצירת קשר")}
-        >
-          בואו נדבר
-        </span>
+        >{tx("בואו נדבר")}</span>
       </a>
     </header>
   );
@@ -701,7 +701,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           <div
             className={`${orbitShellClass(mode)} z-30`}
             data-visual-editor-layer="orbit"
-            aria-label="גלריית מדיה מרחפת"
+            aria-label={tx("גלריית מדיה מרחפת")}
             style={{ opacity: orbitOpacity }}
           >
             {safeArray(data.hero.orbitMedia).map((item, index) => {
@@ -728,7 +728,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                   )}
                 >
                   <MediaElement
-                    value={item}
+                    value={tx(item)}
                     fallback={cycloraDefaultData.hero.orbitMedia[index]}
                     field={`hero.orbitMedia.${index}`}
                     alt={`מדיה מרחפת ${index + 1}`}
@@ -809,16 +809,16 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
 
               <div
                 className="hidden items-center justify-center gap-2 md:flex"
-                aria-label="רשתות חברתיות"
+                aria-label={tx("רשתות חברתיות")}
               >
                 {SOCIAL_LINKS.map((link) => (
                   <a
                     key={link.label}
                     href="#contact"
-                    aria-label={link.label}
+                    aria-label={tx(link.label)}
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[10px] font-black text-white transition-colors duration-300 hover:bg-white hover:text-black"
                   >
-                    {link.short}
+                    {tx(link.short)}
                   </a>
                 ))}
               </div>
@@ -1326,7 +1326,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
                   `כרטיס המלצה ${realIndex + 1}`,
                 )}
               >
-                <div className="text-sm tracking-[0.25em]" aria-label="5 כוכבים">
+                <div className="text-sm tracking-[0.25em]" aria-label={tx("5 כוכבים")}>
                   ★★★★★
                 </div>
 
@@ -1383,7 +1383,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(-1)}
-            aria-label="המלצה קודמת"
+            aria-label={tx("המלצה קודמת")}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
             {...visualProps("home.testimonials.previous", "button", "הקודם")}
           >
@@ -1392,7 +1392,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(1)}
-            aria-label="המלצה הבאה"
+            aria-label={tx("המלצה הבאה")}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
             {...visualProps("home.testimonials.next", "button", "הבא")}
           >
@@ -1505,9 +1505,7 @@ function PricingSection({ data }: SharedProps) {
                 className={`text-[10px] font-black uppercase tracking-[0.18em] ${
                   plan.featured ? "text-black/40" : "text-white/40"
                 }`}
-              >
-                כולל:
-              </small>
+              >{tx("כולל:")}</small>
 
               <ul className="mt-5 space-y-3">
                 {safeArray(plan.features).map((feature, featureIndex) => (
@@ -1594,7 +1592,7 @@ function FaqSection({ data }: SharedProps) {
                   type="button"
                   onClick={() => setOpen(isOpen ? null : index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-start justify-between gap-5 py-6 text-right sm:py-8"
+                  className="flex w-full items-start justify-between gap-5 py-6 text-start sm:py-8"
                   {...visualProps(
                     `faq.${index}.question.button`,
                     "button",
@@ -1677,7 +1675,7 @@ function CtaSection({ data, mode }: SharedProps) {
               style={{ transform: `rotate(${layout.rotate}deg)` }}
             >
               <MediaElement
-                value={item}
+                value={tx(item)}
                 fallback={cycloraDefaultData.cta.orbitMedia[index]}
                 field={`cta.orbitMedia.${index}`}
                 alt={`מדיה קריאה לפעולה ${index + 1}`}
@@ -1805,7 +1803,7 @@ function Footer({ data }: SharedProps) {
 
           <nav
             className="grid grid-cols-2 gap-x-7 gap-y-4 text-sm lg:grid-cols-1"
-            aria-label="ניווט תחתון"
+            aria-label={tx("ניווט תחתון")}
           >
             {safeArray(data.footer.links).map((item, index) => (
               <a
@@ -1819,7 +1817,7 @@ function Footer({ data }: SharedProps) {
                   `קישור תחתון ${index + 1}`,
                 )}
               >
-                <span data-editable="text">{item.label}</span>
+                <span data-editable="text">{tx(item.label)}</span>
               </a>
             ))}
           </nav>

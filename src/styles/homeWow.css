@@ -65,7 +65,6 @@
     0 2px 8px rgba(15, 23, 42, 0.04);
   padding: 1.35rem 1.25rem 1.4rem;
   text-align: center;
-  direction: rtl;
 }
 
 @media (min-width: 640px) {
@@ -177,7 +176,6 @@
   --wb-stage-glow-soft: #c4b5fd;
   --wb-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
-  direction: rtl;
   width: 100%;
   max-width: 52rem;
   margin-inline: auto;

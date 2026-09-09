@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { estateoDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +28,7 @@ function v(data: Record<string, any>, key: string) {
 
 function EstateoCenteredHeader({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = estateoPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = estateoPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   const leftNav = nav.slice(0, 2);
   const rightNav = nav.slice(2);
   return (
@@ -53,7 +55,7 @@ function EstateoCenteredHeader({ data, currentPage, goTo, onCta }: { data: Recor
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(244,236,223,0.14)", background: "#100e0c" }}>
           <div className="grid gap-1 pt-3">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-start text-sm font-semibold">{label}</button>
             ))}
           </div>
         </div>
@@ -139,10 +141,10 @@ function EstateoInvitationContact({ data, onCta }: { data: Record<string, any>; 
         <p className="text-xs font-semibold tracking-[0.34em]" style={{ color: "#d4af6a" }}>INVITATION</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold leading-tight md:text-7xl">{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-8" style={{ color: "#a89880" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-5" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="estateo-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טלפון פרטי" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טווח רכישה" name="other" data-bizuply-form-field-id="other" />
+        <form className="mt-10 grid gap-5" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="estateo-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder={tx("טלפון פרטי")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder={tx("טווח רכישה")} name="other" data-bizuply-form-field-id="other" />
           <button type="submit" className="tpl-sweep mt-4 px-7 py-4 text-sm font-bold" style={{ background: "#d4af6a", color: "#100e0c" }}>{v(data, "cta")}</button>
         </form>
         <div className="mt-10 text-sm leading-7" style={{ color: "#a89880" }}>{v(data, "email")} · {v(data, "phone")}</div>
@@ -210,7 +212,7 @@ export default function EstateoPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id="estateo" className="min-h-screen w-full overflow-x-hidden"
+    <div dir={templateDir()} data-template-id="estateo" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#100e0c", color: "#f4ecdf" }}>
       <EstateoCenteredHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

@@ -2,6 +2,7 @@ import type {
   AutomationFlowEdge,
   AutomationFlowNode,
 } from "../../../../api/automationWorkflowApi";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 
 export type AiConfigFieldDef = {
   key: string;
@@ -248,7 +249,22 @@ function blueprint({
       label: "המשך",
     },
   ];
-  return { nodes, edges };
+  return {
+    nodes: nodes.map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        ...(typeof node.data.label === "string"
+          ? { label: localizeBuiltInText(node.data.label) }
+          : {}),
+      },
+    })),
+    edges: edges.map((edge) =>
+      typeof edge.label === "string"
+        ? { ...edge, label: localizeBuiltInText(edge.label) }
+        : edge
+    ),
+  };
 }
 
 function explanationFor(

@@ -4,7 +4,7 @@ export const soundlineEditorCss = `
 [data-template-id="soundline"],
 [data-template-id="soundline"] {
   /* wow-rtl-align */
-  text-align: right;
+  text-align: start;
 
   --p: #FF4D6D;
   --bg: #060609;

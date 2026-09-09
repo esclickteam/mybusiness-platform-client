@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -52,7 +54,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" className={`sticky top-0 z-50 border-b border-black/10 bg-[var(--surface)]/90 text-[var(--text)] backdrop-blur-xl`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="text-right">
+        <button type="button" onClick={() => goTo("home")} className="text-start">
           <div className="flex items-center gap-3">
             <span className="ag-pulse grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-black text-white">{getValue(data, "logoText")}</span>
             <div>
@@ -75,7 +77,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
         <div className={`border-t border-black/10 px-5 py-4 lg:hidden`}>
           <div className="grid gap-2">
             {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-right text-sm font-bold">{label}</button>
+              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="py-2 text-start text-sm font-bold">{label}</button>
             ))}
           </div>
         </div>
@@ -96,7 +98,7 @@ function About({ data }: { data: Record<string, any> }) {
           <div className="absolute bottom-3 left-3 top-3 w-2 bg-[var(--p)]" />
           <img src={getValue(data, "aboutImage")} alt="" className="aspect-[21/9] w-full object-cover" />
         </Reveal>
-        <Reveal variant="up" delayMs={160} className="mx-auto mt-8 max-w-3xl text-right">
+        <Reveal variant="up" delayMs={160} className="mx-auto mt-8 max-w-3xl text-start">
           <p className="text-base leading-8 text-[var(--muted)]">{getValue(data, "aboutText")}</p>
         </Reveal>
       </div>
@@ -123,10 +125,10 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           <div className="absolute bottom-0 right-6 top-0 w-px bg-[var(--p)]/40" />
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*100} variant="left">
-              <article className="relative mr-12 border border-black/10 bg-[var(--surface)] p-6 text-right">
+              <article className="relative mr-12 border border-black/10 bg-[var(--surface)] p-6 text-start">
                 <span className="absolute -right-12 top-6 grid h-10 w-10 place-items-center rounded-full bg-[var(--p)] text-sm font-black text-white">{i+1}</span>
                 <h3 className="text-2xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -152,13 +154,13 @@ function Cases({ data }: { data: Record<string, any> }) {
         <div className="mt-12 space-y-5">
           {items.map(([title, text, image], i) => (
             <Reveal key={title} delayMs={i * 90} variant="left">
-              <article className="ag-card relative flex flex-col gap-5 border border-black/10 bg-[var(--surface)] p-4 text-right md:flex-row md:items-center md:p-5">
+              <article className="ag-card relative flex flex-col gap-5 border border-black/10 bg-[var(--surface)] p-4 text-start md:flex-row md:items-center md:p-5">
                 <div className="shrink-0 overflow-hidden border border-black/10 md:w-64">
                   <img src={image} alt="" className="aspect-[4/3] w-full object-cover transition duration-700 hover:scale-105" />
                 </div>
                 <div className="flex-1 px-1 md:px-4">
                   <h3 className="text-2xl font-bold md:text-3xl">{title}</h3>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{text}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                 </div>
                 <span className="grid h-16 w-14 shrink-0 place-items-center bg-[var(--p)] text-sm font-black text-white [clip-path:polygon(50%_0,100%_18%,100%_72%,50%_100%,0_72%,0_18%)]">0{i + 1}</span>
               </article>
@@ -195,7 +197,7 @@ function Team({ data }: { data: Record<string, any> }) {
           ))}
         </div>
         <Reveal delayMs={220} className="mx-auto mt-8 max-w-2xl border border-black/10 bg-[var(--bg)] p-6 text-center">
-          <p className="text-sm font-bold leading-7 text-[var(--muted)]">צוות אמון שמכיר פוליסות, תביעות ואנשים — ומחזיק את התיק עד שיש תשובה ברורה.</p>
+          <p className="text-sm font-bold leading-7 text-[var(--muted)]">{tx("צוות אמון שמכיר פוליסות, תביעות ואנשים — ומחזיק את התיק עד שיש תשובה ברורה.")}</p>
         </Reveal>
       </div>
     </section>
@@ -214,15 +216,15 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
     <section className="px-5 py-16 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-8 text-center">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || "מבט לסוכנות"}</p>
-          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || "מרחבי שירות וביטחון"}</h2>
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow") || tx("מבט לסוכנות")}</p>
+          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle") || tx("מרחבי שירות וביטחון")}</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-2">
           {images.map((src, i) => (
             <Reveal key={src} delayMs={i * 70} variant="scale">
               <div className="overflow-hidden border border-black/10 bg-[var(--surface)]">
                 <img src={src} alt="" className="aspect-[4/3] w-full object-cover" />
-                <p className="border-t border-black/10 px-5 py-4 text-right text-sm font-bold text-[var(--muted)]">{captions[i]}</p>
+                <p className="border-t border-black/10 px-5 py-4 text-start text-sm font-bold text-[var(--muted)]">{captions[i]}</p>
               </div>
             </Reveal>
           ))}
@@ -248,15 +250,15 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
         <div className="mt-12">
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
-              <article className="border-b border-black/10 py-7 text-right">
+              <article className="border-b border-black/10 py-7 text-start">
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h3 className="text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/10 text-xs font-black text-[var(--p)]">?</span>
                 </div>
-                <button type="button" onClick={() => goTo("contact")} className="mt-4 text-sm font-black text-[var(--p)]">שאלו אותנו</button>
+                <button type="button" onClick={() => goTo("contact")} className="mt-4 text-sm font-black text-[var(--p)]">{tx("שאלו אותנו")}</button>
               </article>
             </Reveal>
           ))}
@@ -286,20 +288,20 @@ function Process({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={i * 80} variant={i % 2 === 0 ? "right" : "left"}>
               <div className="relative grid gap-5 pb-10 md:grid-cols-[1fr_56px_1fr] md:items-start">
                 {i % 2 === 0 ? (
-                  <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-right md:mr-0">
-                    <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
+                  <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
+                    <p className="text-sm font-black text-[var(--p)]">{tx(`שלב 0${i + 1}`)}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>
                 ) : (
                   <div className="hidden md:block" />
                 )}
                 <span className="absolute right-0 top-0 z-10 grid h-12 w-12 place-items-center rounded-full border border-black/10 bg-[var(--surface)] text-sm font-black text-[var(--p)] md:static md:h-14 md:w-14">0{i + 1}</span>
                 {i % 2 === 1 ? (
-                  <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-right md:mr-0">
-                    <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
+                  <article className="ag-card mr-16 border border-black/10 bg-[var(--bg)] p-6 text-start md:mr-0">
+                    <p className="text-sm font-black text-[var(--p)]">{tx(`שלב 0${i + 1}`)}</p>
                     <h3 className="mt-3 text-xl font-bold">{title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{tx(text)}</p>
                   </article>
                 ) : (
                   <div className="hidden md:block" />
@@ -328,11 +330,11 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="up" delayMs={100} className="mx-auto mt-10 max-w-xl">
-          <form className="grid gap-3 border border-black/10 bg-[var(--surface)] p-5 md:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="insureva-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-32 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <form className="grid gap-3 border border-black/10 bg-[var(--surface)] p-5 md:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="insureva-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("חברה / תחום")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-32 border border-black/10 bg-[var(--bg)] px-4 py-4 text-start outline-none" placeholder={tx("במה נוכל לעזור?")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -354,7 +356,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>
@@ -476,7 +478,7 @@ export default function InsurevaPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id="insureva" className="min-h-screen w-full overflow-x-hidden">
+    <div dir={templateDir()} data-template-id="insureva" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: insurevaEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

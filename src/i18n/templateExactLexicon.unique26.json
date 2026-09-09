@@ -1,0 +1,800 @@
+{
+  "יום השקה בלי פאניקה": {
+    "en": "A launch day without panic",
+    "es": "Un día de lanzamiento sin pánico",
+    "pt-BR": "Um dia de lançamento sem pânico",
+    "ar": "يوم إطلاق بلا هلع"
+  },
+  "כמה זמן נמשך תהליך?": {
+    "en": "How long does a process last?",
+    "es": "¿Cuánto dura un proceso?",
+    "pt-BR": "Quanto dura um processo?",
+    "ar": "كم يستغرق مسار؟"
+  },
+  "למה זו לא עוד הרצאה": {
+    "en": "Why this is not another lecture",
+    "es": "Por qué esto no es otra conferencia",
+    "pt-BR": "Por que isso não é mais uma palestra",
+    "ar": "لماذا هذا ليس محاضرة أخرى"
+  },
+  "מאידאה למוצר ולשוק.": {
+    "en": "From idea to product and market.",
+    "es": "De la idea al producto y al mercado.",
+    "pt-BR": "Da ideia ao produto e ao mercado.",
+    "ar": "من الفكرة إلى المنتج والسوق."
+  },
+  "מגדל חדש, ממ״ד ונוף": {
+    "en": "A new tower, a safe room, and a view",
+    "es": "Torre nueva, refugio y vista",
+    "pt-BR": "Torre nova, abrigo e vista",
+    "ar": "برج جديد وغرفة محصّنة وإطلالة"
+  },
+  "מה יוצא בסוף המסלול": {
+    "en": "What you leave with at the end of the track",
+    "es": "Qué sale al final del recorrido",
+    "pt-BR": "O que sai no fim do percurso",
+    "ar": "ماذا يخرج في نهاية المسار"
+  },
+  "מה יש על הדלפק היום": {
+    "en": "What is on the counter today",
+    "es": "Qué hay en el mostrador hoy",
+    "pt-BR": "O que tem no balcão hoje",
+    "ar": "ماذا على المنضدة اليوم"
+  },
+  "מחברת שמזמינה כתיבה": {
+    "en": "A notebook that invites writing",
+    "es": "Un cuaderno que invita a escribir",
+    "pt-BR": "Um caderno que convida a escrever",
+    "ar": "دفتر يدعو إلى الكتابة"
+  },
+  "מילוי איבריקו קרמי.": {
+    "en": "A creamy ibérico filling.",
+    "es": "Un relleno cremoso de ibérico.",
+    "pt-BR": "Um recheio cremoso de ibérico.",
+    "ar": "حشوة إيبيريكو كريمية."
+  },
+  "מיפוי צווארי בקבוק.": {
+    "en": "Mapping bottlenecks.",
+    "es": "Mapear cuellos de botella.",
+    "pt-BR": "Mapear gargalos.",
+    "ar": "رسم اختناقات."
+  },
+  "מיצוב ומסרים למוצר.": {
+    "en": "Positioning and product messages.",
+    "es": "Posicionamiento y mensajes de producto.",
+    "pt-BR": "Posicionamento e mensagens de produto.",
+    "ar": "تموضع ورسائل للمنتج."
+  },
+  "מיצוב לפני דף נחיתה": {
+    "en": "Positioning before a landing page",
+    "es": "Posicionamiento antes de una landing",
+    "pt-BR": "Posicionamento antes de uma landing",
+    "ar": "تموضع قبل صفحة هبوط"
+  },
+  "מלח מעושן על גחלים.": {
+    "en": "Smoked salt on embers.",
+    "es": "Sal ahumada sobre brasas.",
+    "pt-BR": "Sal defumado sobre brasas.",
+    "ar": "ملح مدخّن على جمر."
+  },
+  "ממרחים שמרימים כריך": {
+    "en": "Spreads that lift a sandwich",
+    "es": "Untables que elevan un sándwich",
+    "pt-BR": "Cremes que elevam um sanduíche",
+    "ar": "مدهونات ترفع شطيرة"
+  },
+  "מנה שיתופית לשקיעה.": {
+    "en": "A sharing dish for sunset.",
+    "es": "Un plato para compartir al atardecer.",
+    "pt-BR": "Um prato para compartilhar no pôr do sol.",
+    "ar": "طبق مشاركة للغروب."
+  },
+  "מסלולים עם קצה ורוד": {
+    "en": "Tracks with a pink edge",
+    "es": "Rutas con un borde rosa",
+    "pt-BR": "Trilhas com uma borda rosa",
+    "ar": "مسارات بحافة وردية"
+  },
+  "מסע שפה בארבע תחנות": {
+    "en": "A language journey in four stations",
+    "es": "Un viaje de idioma en cuatro estaciones",
+    "pt-BR": "Uma jornada de idioma em quatro estações",
+    "ar": "رحلة لغة في أربع محطات"
+  },
+  "מפת דרכים מלאה ל־AI": {
+    "en": "A full AI roadmap",
+    "es": "Una hoja de ruta completa de IA",
+    "pt-BR": "Um roadmap completo de IA",
+    "ar": "خارطة طريق كاملة للذكاء"
+  },
+  "נדל״ן מבוסס נתונים.": {
+    "en": "Data-based real estate.",
+    "es": "Inmobiliaria basada en datos.",
+    "pt-BR": "Imobiliário baseado em dados.",
+    "ar": "عقارات مبنية على بيانات."
+  },
+  "נדל״ן שמתחיל מהחלל.": {
+    "en": "Real estate that starts from the space.",
+    "es": "Inmobiliaria que empieza desde el espacio.",
+    "pt-BR": "Imobiliário que começa pelo espaço.",
+    "ar": "عقارات تبدأ من الفراغ."
+  },
+  "נדל״ן שמתחיל מהמפה.": {
+    "en": "Real estate that starts from the map.",
+    "es": "Inmobiliaria que empieza desde el mapa.",
+    "pt-BR": "Imobiliário que começa pelo mapa.",
+    "ar": "عقارات تبدأ من الخريطة."
+  },
+  "נולדנו מאהבה לפולים": {
+    "en": "We were born from a love of beans",
+    "es": "Nacimos de un amor por los granos",
+    "pt-BR": "Nascemos de um amor pelos grãos",
+    "ar": "وُلدنا من حب للحبوب"
+  },
+  "נכנס עייף, יוצא חד.": {
+    "en": "Walk in tired, walk out sharp.",
+    "es": "Entra cansado, sale nítido.",
+    "pt-BR": "Entra cansado, sai nítido.",
+    "ar": "يدخل متعبًا، يخرج حادًا."
+  },
+  "נכסים שנבחרו בקפידה": {
+    "en": "Assets chosen with care",
+    "es": "Activos elegidos con cuidado",
+    "pt-BR": "Ativos escolhidos com cuidado",
+    "ar": "أصول اختيرت بعناية"
+  },
+  "נשמח ללוות גם אתכם.": {
+    "en": "We would be glad to support you too.",
+    "es": "Nos alegrará acompañarles también.",
+    "pt-BR": "Vamos adorar acompanhar vocês também.",
+    "ar": "يسعدنا مرافقتكم أيضًا."
+  },
+  "סימולציה לפני ראיון": {
+    "en": "A simulation before an interview",
+    "es": "Una simulación antes de una entrevista",
+    "pt-BR": "Uma simulação antes de uma entrevista",
+    "ar": "محاكاة قبل مقابلة"
+  },
+  "עור ואסתטיקה רפואית": {
+    "en": "Skin and medical aesthetics",
+    "es": "Piel y estética médica",
+    "pt-BR": "Pele e estética médica",
+    "ar": "جلد وجمال طبي"
+  },
+  "עיצוב פנים אינטגרלי": {
+    "en": "Integral interior design",
+    "es": "Diseño interior integral",
+    "pt-BR": "Design de interiores integral",
+    "ar": "تصميم داخلي متكامل"
+  },
+  "פיד שלא עומד במקום.": {
+    "en": "A feed that does not stand still.",
+    "es": "Un feed que no se queda quieto.",
+    "pt-BR": "Um feed que não fica parado.",
+    "ar": "فيد لا يقف في مكانه."
+  },
+  "קוראים שסימנו עמוד.": {
+    "en": "Readers who bookmarked a page.",
+    "es": "Lectores que marcaron una página.",
+    "pt-BR": "Leitores que marcaram uma página.",
+    "ar": "قرّاء علّموا صفحة."
+  },
+  "קרום פריך, פנים רך.": {
+    "en": "A crispy crust, a soft inside.",
+    "es": "Corteza crujiente, interior suave.",
+    "pt-BR": "Crosta crocante, interior macio.",
+    "ar": "قشرة مقرمشة وداخل ناعم."
+  },
+  "רוצים להירשם לסיור?": {
+    "en": "Want to sign up for a tour?",
+    "es": "¿Quieren inscribirse a un recorrido?",
+    "pt-BR": "Querem se inscrever num passeio?",
+    "ar": "تريدون التسجيل لجولة؟"
+  },
+  "רילס, צילום וקהילה.": {
+    "en": "Reels, photography, and community.",
+    "es": "Reels, fotografía y comunidad.",
+    "pt-BR": "Reels, fotografia e comunidade.",
+    "ar": "ريلز وتصوير ومجتمع."
+  },
+  "ריפים, טכניקה ובמה.": {
+    "en": "Riffs, technique, and a stage.",
+    "es": "Riffs, técnica y escenario.",
+    "pt-BR": "Riffs, técnica e palco.",
+    "ar": "ريفات وتقنية ومنصة."
+  },
+  "שביעות רצון מטופלים": {
+    "en": "Patient satisfaction",
+    "es": "Satisfacción de pacientes",
+    "pt-BR": "Satisfação de pacientes",
+    "ar": "رضا المرضى"
+  },
+  "שותף אינו ערוץ מדיה": {
+    "en": "A partner is not a media channel",
+    "es": "Un socio no es un canal de media",
+    "pt-BR": "Um parceiro não é um canal de mídia",
+    "ar": "الشريك ليس قناة إعلام"
+  },
+  "שיחה מהשיעור הראשון": {
+    "en": "Conversation from the first class",
+    "es": "Conversación desde la primera clase",
+    "pt-BR": "Conversa desde a primeira aula",
+    "ar": "حديث من الدرس الأول"
+  },
+  "שלושה יינות + הסבר.": {
+    "en": "Three wines + an explanation.",
+    "es": "Tres vinos + una explicación.",
+    "pt-BR": "Três vinhos + uma explicação.",
+    "ar": "ثلاثة أنواع نبيذ + شرح."
+  },
+  "שנות מומחיות קלינית": {
+    "en": "Years of clinical expertise",
+    "es": "Años de pericia clínica",
+    "pt-BR": "Anos de perícia clínica",
+    "ar": "سنوات خبرة سريرية"
+  },
+  "שני טיפולים משולבים": {
+    "en": "Two combined treatments",
+    "es": "Dos tratamientos combinados",
+    "pt-BR": "Dois tratamentos combinados",
+    "ar": "علاجان مدمجان"
+  },
+  "שקיעה ופריים מושלם.": {
+    "en": "Sunset and a perfect frame.",
+    "es": "Atardecer y un fotograma perfecto.",
+    "pt-BR": "Pôr do sol e um frame perfeito.",
+    "ar": "غروب وإطار مثالي."
+  },
+  "תהליך בנוי בריבועים": {
+    "en": "A process built in squares",
+    "es": "Un proceso construido en cuadrados",
+    "pt-BR": "Um processo construído em quadrados",
+    "ar": "مسار مبني بالمربعات"
+  },
+  "תוכן ארוך בעידן קצר": {
+    "en": "Long content in a short era",
+    "es": "Contenido largo en una era corta",
+    "pt-BR": "Conteúdo longo numa era curta",
+    "ar": "محتوى طويل في عصر قصير"
+  },
+  "תכנון · ביצוע · גמר": {
+    "en": "Plan · build · finish",
+    "es": "Planificar · ejecutar · acabar",
+    "pt-BR": "Planejar · executar · acabar",
+    "ar": "تخطيط · تنفيذ · تشطيب"
+  },
+  "תכנון שמתחיל מהאדמה": {
+    "en": "Planning that starts from the soil",
+    "es": "Planificación que empieza desde la tierra",
+    "pt-BR": "Planejamento que começa da terra",
+    "ar": "تخطيط يبدأ من التربة"
+  },
+  "תלמידים פעילים בשנה": {
+    "en": "Active students this year",
+    "es": "Alumnos activos en el año",
+    "pt-BR": "Alunos ativos no ano",
+    "ar": "طلاب نشطون في السنة"
+  },
+  "תסריט ערב וקצב במה.": {
+    "en": "An evening script and stage pace.",
+    "es": "Un guion de noche y un ritmo de escenario.",
+    "pt-BR": "Um roteiro de noite e um ritmo de palco.",
+    "ar": "سيناريو مساء وإيقاع منصة."
+  },
+  "תקרה גבוהה · סטודיו": {
+    "en": "High ceiling · studio",
+    "es": "Techo alto · estudio",
+    "pt-BR": "Teto alto · estúdio",
+    "ar": "سقف عالٍ · استوديو"
+  },
+  "CI/CD, Docker וענן.": {
+    "en": "CI/CD, Docker, and cloud.",
+    "es": "CI/CD, Docker y nube.",
+    "pt-BR": "CI/CD, Docker e nuvem.",
+    "ar": "CI/CD وDocker وسحابة."
+  },
+  "React, Node ופריסה.": {
+    "en": "React, Node, and deploy.",
+    "es": "React, Node y despliegue.",
+    "pt-BR": "React, Node e deploy.",
+    "ar": "React وNode ونشر."
+  },
+  "118 מ״ר · 2 מרפסות": {
+    "en": "118 m² · 2 balconies",
+    "es": "118 m² · 2 balcones",
+    "pt-BR": "118 m² · 2 varandas",
+    "ar": "118 م² · شرفتان"
+  },
+  "5 חד׳ · גינה פרטית": {
+    "en": "5 rooms · private garden",
+    "es": "5 hab. · jardín privado",
+    "pt-BR": "5 cômodos · jardim privado",
+    "ar": "5 غرف · حديقة خاصة"
+  },
+  "8 דק׳ קריאה · היום": {
+    "en": "8 min read · today",
+    "es": "8 min de lectura · hoy",
+    "pt-BR": "8 min de leitura · hoje",
+    "ar": "8 د قراءة · اليوم"
+  },
+  "איך מעודדים סקרנות": {
+    "en": "How to encourage curiosity",
+    "es": "Cómo fomentar la curiosidad",
+    "pt-BR": "Como incentivar a curiosidade",
+    "ar": "كيف تشجّعون الفضول"
+  },
+  "אינטגרציות מותאמות": {
+    "en": "Tailored integrations",
+    "es": "Integraciones a medida",
+    "pt-BR": "Integrações sob medida",
+    "ar": "تكاملات مخصصة"
+  },
+  "אירוע שמרגיש כמוכם": {
+    "en": "An event that feels like you",
+    "es": "Un evento que se siente como ustedes",
+    "pt-BR": "Um evento que parece vocês",
+    "ar": "مناسبة تشعر بكم"
+  },
+  "אמון שנמדד במספרים": {
+    "en": "Trust measured in numbers",
+    "es": "Confianza medida en números",
+    "pt-BR": "Confiança medida em números",
+    "ar": "ثقة تُقاس بالأرقام"
+  },
+  "אסאדה + בירה בהירה": {
+    "en": "Asada + a light beer",
+    "es": "Asada + una cerveza clara",
+    "pt-BR": "Asada + uma cerveja clara",
+    "ar": "أسادا + بيرة فاتحة"
+  },
+  "ארבע שכבות בסטודיו": {
+    "en": "Four layers in the studio",
+    "es": "Cuatro capas en el estudio",
+    "pt-BR": "Quatro camadas no estúdio",
+    "ar": "أربع طبقات في الاستوديو"
+  },
+  "ארבעה פרקים למסטרי": {
+    "en": "Four episodes to mastery",
+    "es": "Cuatro capítulos hacia el dominio",
+    "pt-BR": "Quatro episódios até o domínio",
+    "ar": "أربع حلقات للإتقان"
+  },
+  "בוחרים תחומי עניין": {
+    "en": "Choose areas of interest",
+    "es": "Eligen áreas de interés",
+    "pt-BR": "Escolhem áreas de interesse",
+    "ar": "تختارون مجالات اهتمام"
+  },
+  "ביקורת מוכנות ל־AI": {
+    "en": "An AI-readiness review",
+    "es": "Una revisión de preparación para IA",
+    "pt-BR": "Uma revisão de prontidão para IA",
+    "ar": "مراجعة جاهزية للذكاء"
+  },
+  "בכירים בדיסקרטיות.": {
+    "en": "Executives in discretion.",
+    "es": "Directivos con discreción.",
+    "pt-BR": "Executivos com discrição.",
+    "ar": "كبار بتكتم."
+  },
+  "גלו את מאמרי המשרד": {
+    "en": "Discover the firm's articles",
+    "es": "Descubran los artículos del despacho",
+    "pt-BR": "Descubram os artigos do escritório",
+    "ar": "اكتشفوا مقالات المكتب"
+  },
+  "דיני חברות והשקעות": {
+    "en": "Corporate law and investments",
+    "es": "Derecho societario e inversiones",
+    "pt-BR": "Direito societário e investimentos",
+    "ar": "قانون شركات واستثمارات"
+  },
+  "האם הסיורים בחינם?": {
+    "en": "Are the tours free?",
+    "es": "¿Los recorridos son gratis?",
+    "pt-BR": "Os passeios são de graça?",
+    "ar": "هل الجولات مجانية؟"
+  },
+  "האם Fluxora בחינם?": {
+    "en": "Is Fluxora free?",
+    "es": "¿Fluxora es gratis?",
+    "pt-BR": "A Fluxora é de graça?",
+    "ar": "هل Fluxora مجانية؟"
+  },
+  "הבנה ודיבור מהשטח.": {
+    "en": "Understanding and speaking from the field.",
+    "es": "Comprensión y habla desde el terreno.",
+    "pt-BR": "Compreensão e fala do campo.",
+    "ar": "فهم وكلام من الميدان."
+  },
+  "המשפט הראשון במשבר": {
+    "en": "The first sentence in a crisis",
+    "es": "La primera frase en una crisis",
+    "pt-BR": "A primeira frase numa crise",
+    "ar": "الجملة الأولى في أزمة"
+  },
+  "העיתון של Masterly": {
+    "en": "The Masterly newspaper",
+    "es": "El periódico de Masterly",
+    "pt-BR": "O jornal da Masterly",
+    "ar": "صحيفة Masterly"
+  },
+  "ויירפריים לפני צבע": {
+    "en": "Wireframe before color",
+    "es": "Wireframe antes del color",
+    "pt-BR": "Wireframe antes da cor",
+    "ar": "إطار سلكي قبل اللون"
+  },
+  "וילת אדריכל צפונית": {
+    "en": "A northern architect villa",
+    "es": "Una villa de arquitecto al norte",
+    "pt-BR": "Uma villa de arquiteto no norte",
+    "ar": "فيلا مهندس في الشمال"
+  },
+  "זמן משוער — 3 ימים": {
+    "en": "Estimated time — 3 days",
+    "es": "Tiempo estimado — 3 días",
+    "pt-BR": "Tempo estimado — 3 dias",
+    "ar": "وقت تقديري — 3 أيام"
+  },
+  "זרקו לנו את האתגר.": {
+    "en": "Throw us the challenge.",
+    "es": "Láncennos el reto.",
+    "pt-BR": "Joguem o desafio para nós.",
+    "ar": "ارموا لنا التحدي."
+  },
+  "חיסכון מס של 2.3M₪": {
+    "en": "2.3M₪ in tax savings",
+    "es": "Ahorro fiscal de 2,3M₪",
+    "pt-BR": "Economia fiscal de 2,3M₪",
+    "ar": "توفير ضريبي 2.3M₪"
+  },
+  "טיפול שמעניין אותי": {
+    "en": "A treatment that interests me",
+    "es": "Un tratamiento que me interesa",
+    "pt-BR": "Um tratamento que me interessa",
+    "ar": "علاج يهمني"
+  },
+  "יאכתה עם צוות מלא.": {
+    "en": "A yacht with a full crew.",
+    "es": "Un yate con tripulación completa.",
+    "pt-BR": "Um iate com tripulação completa.",
+    "ar": "يخت بطاقم كامل."
+  },
+  "יוגורט שום ועשבים.": {
+    "en": "Garlic yogurt and herbs.",
+    "es": "Yogur de ajo y hierbas.",
+    "pt-BR": "Iogurte de alho e ervas.",
+    "ar": "زبادي ثوم وأعشاب."
+  },
+  "ייעוץ וחדשנות חכמה": {
+    "en": "Consulting and smart innovation",
+    "es": "Consultoría e innovación inteligente",
+    "pt-BR": "Consultoria e inovação inteligente",
+    "ar": "استشارة وابتكار ذكي"
+  },
+  "יישור שקוף דיגיטלי": {
+    "en": "Digital clear aligners",
+    "es": "Alineadores transparentes digitales",
+    "pt-BR": "Alinhadores transparentes digitais",
+    "ar": "تقويم شفاف رقمي"
+  },
+  "יש לכם נכס לשיפוץ?": {
+    "en": "Do you have a property to renovate?",
+    "es": "¿Tienen un inmueble para reformar?",
+    "pt-BR": "Vocês têm um imóvel para reformar?",
+    "ar": "لديكم عقار للتجديد؟"
+  },
+  "כרטיסים לערב הקרוב": {
+    "en": "Tickets for the coming evening",
+    "es": "Entradas para la noche próxima",
+    "pt-BR": "Ingressos para a noite próxima",
+    "ar": "تذاكر للمساء القريب"
+  },
+  "לא mirage. מציאות.": {
+    "en": "Not a mirage. Reality.",
+    "es": "No es un mirage. Realidad.",
+    "pt-BR": "Não é um mirage. Realidade.",
+    "ar": "ليس سرابًا. واقع."
+  },
+  "להקשיב כמו מוזיקאי": {
+    "en": "Listen like a musician",
+    "es": "Escuchar como un músico",
+    "pt-BR": "Ouvir como um músico",
+    "ar": "الاستماع كموسيقي"
+  },
+  "ליווי ציבורي שוטף.": {
+    "en": "Ongoing public affairs support.",
+    "es": "Acompañamiento público continuo.",
+    "pt-BR": "Acompanhamento público contínuo.",
+    "ar": "مرافقة عامة جارية."
+  },
+  "למה שקף הבעיה נכשל": {
+    "en": "Why the problem slide fails",
+    "es": "Por qué falla la diapositiva del problema",
+    "pt-BR": "Por que o slide do problema falha",
+    "ar": "لماذا تفشل شريحة المشكلة"
+  },
+  "לקוחות שלוו בהצלחה": {
+    "en": "Customers supported successfully",
+    "es": "Clientes acompañados con éxito",
+    "pt-BR": "Clientes acompanhados com sucesso",
+    "ar": "عملاء رُفقوا بنجاح"
+  },
+  "לשמור מקום בריטריט": {
+    "en": "Hold a place on the retreat",
+    "es": "Reservar un lugar en el retiro",
+    "pt-BR": "Guardar um lugar no retiro",
+    "ar": "حجز مكان في الخلوة"
+  },
+  "מאסטרו לוקה ג׳לאטו": {
+    "en": "Maestro Luca gelato",
+    "es": "Maestro Luca gelato",
+    "pt-BR": "Maestro Luca gelato",
+    "ar": "مايسترو لوكا جيلاتو"
+  },
+  "מבנה ארגוני שעובד.": {
+    "en": "An org structure that works.",
+    "es": "Una estructura organizativa que funciona.",
+    "pt-BR": "Uma estrutura organizacional que funciona.",
+    "ar": "هيكل تنظيمي يعمل."
+  },
+  "מדדים שמרגיעים קרן": {
+    "en": "Metrics that calm a fund",
+    "es": "Métricas que calman a un fondo",
+    "pt-BR": "Métricas que acalmam um fundo",
+    "ar": "مؤشرات تهدّئ صندوقًا"
+  },
+  "מה נכנס לארגז חורף": {
+    "en": "What goes into a winter crate",
+    "es": "Qué entra en una caja de invierno",
+    "pt-BR": "O que entra numa caixa de inverno",
+    "ar": "ماذا يدخل صندوق شتاء"
+  },
+  "מה נשאר אחרי הסדנה": {
+    "en": "What remains after the workshop",
+    "es": "Qué queda después del taller",
+    "pt-BR": "O que fica depois da oficina",
+    "ar": "ماذا يبقى بعد الورشة"
+  },
+  "מיטה שמתאימה לשינה": {
+    "en": "A bed that fits sleep",
+    "es": "Una cama que encaja con el sueño",
+    "pt-BR": "Uma cama que combina com o sono",
+    "ar": "سرير يناسب النوم"
+  },
+  "מיפוי תהליכי עבודה": {
+    "en": "Mapping work processes",
+    "es": "Mapear procesos de trabajo",
+    "pt-BR": "Mapear processos de trabalho",
+    "ar": "رسم سير العمل"
+  },
+  "מיצוב, קהל והבטחה.": {
+    "en": "Positioning, audience, and promise.",
+    "es": "Posicionamiento, audiencia y promesa.",
+    "pt-BR": "Posicionamento, público e promessa.",
+    "ar": "تموضع وجمهور ووعد."
+  },
+  "מנהלי סניפים ארצי.": {
+    "en": "National branch managers.",
+    "es": "Gerentes de sucursal a nivel nacional.",
+    "pt-BR": "Gerentes de filial em nível nacional.",
+    "ar": "مديرو فروع على مستوى البلاد."
+  },
+  "מערכת רכיבים מלאה.": {
+    "en": "A full component system.",
+    "es": "Un sistema de componentes completo.",
+    "pt-BR": "Um sistema de componentes completo.",
+    "ar": "نظام مكوّنات كامل."
+  },
+  "מקומות פנסיון בלבד": {
+    "en": "Boarding spots only",
+    "es": "Plazas de pensión solamente",
+    "pt-BR": "Vagas de pensão somente",
+    "ar": "أماكن إقامة فقط"
+  },
+  "נדל״ן בזווית אחרת.": {
+    "en": "Real estate from another angle.",
+    "es": "Inmobiliaria desde otro ángulo.",
+    "pt-BR": "Imobiliário de outro ângulo.",
+    "ar": "عقارات من زاوية أخرى."
+  },
+  "נדל״ן שמדבר בגדול.": {
+    "en": "Real estate that speaks at scale.",
+    "es": "Inmobiliaria que habla en grande.",
+    "pt-BR": "Imobiliário que fala em grande.",
+    "ar": "عقارات تتكلم بكبر."
+  },
+  "נולדנו לסופי שבוע.": {
+    "en": "We were born for weekends.",
+    "es": "Nacimos para los fines de semana.",
+    "pt-BR": "Nascemos para os fins de semana.",
+    "ar": "وُلدنا لنهايات الأسبوع."
+  },
+  "נוף · 4 חד׳ · חניה": {
+    "en": "View · 4 rooms · parking",
+    "es": "Vista · 4 hab. · parking",
+    "pt-BR": "Vista · 4 cômodos · vaga",
+    "ar": "إطلالة · 4 غرف · موقف"
+  },
+  "נפתח תיק וילות שקט": {
+    "en": "Opening a quiet villas file",
+    "es": "Abrimos un expediente silencioso de villas",
+    "pt-BR": "Abrimos um dossiê silencioso de villas",
+    "ar": "نفتح ملف فيلات هادئ"
+  },
+  "סגירת חודש בלי לחץ": {
+    "en": "Month-end close without pressure",
+    "es": "Cierre de mes sin presión",
+    "pt-BR": "Fechamento do mês sem pressão",
+    "ar": "إغلاق شهر بلا ضغط"
+  },
+  "סוויטת אירוח במדבר": {
+    "en": "A desert hospitality suite",
+    "es": "Una suite de hospitalidad en el desierto",
+    "pt-BR": "Uma suíte de hospitalidade no deserto",
+    "ar": "جناح ضيافة في الصحراء"
+  },
+  "סיור וירטואלי 360°": {
+    "en": "A 360° virtual tour",
+    "es": "Un recorrido virtual 360°",
+    "pt-BR": "Um passeio virtual 360°",
+    "ar": "جولة افتراضية 360°"
+  },
+  "סריקה במקום מטבעות": {
+    "en": "A scan instead of impressions",
+    "es": "Un escaneo en lugar de moldes",
+    "pt-BR": "Uma varredura no lugar de moldes",
+    "ar": "مسح بدل طبعات"
+  },
+  "עגלת טאקוס ראשונה.": {
+    "en": "A first taco cart.",
+    "es": "Un primer carrito de tacos.",
+    "pt-BR": "Um primeiro carrinho de tacos.",
+    "ar": "عربة تاكو أولى."
+  },
+  "פנטהאוזים עירוניים": {
+    "en": "Urban penthouses",
+    "es": "Áticos urbanos",
+    "pt-BR": "Coberturas urbanas",
+    "ar": "بنتهاوس حضري"
+  },
+  "פרוטוקול לפני משבר": {
+    "en": "A protocol before a crisis",
+    "es": "Un protocolo antes de una crisis",
+    "pt-BR": "Um protocolo antes de uma crise",
+    "ar": "بروتوكول قبل أزمة"
+  },
+  "קורסים שרצים עכשיו": {
+    "en": "Courses running now",
+    "es": "Cursos que corren ahora",
+    "pt-BR": "Cursos que estão no ar agora",
+    "ar": "دورات تعمل الآن"
+  },
+  "קרואסון + קפה שחור": {
+    "en": "Croissant + black coffee",
+    "es": "Cruasán + café negro",
+    "pt-BR": "Croissant + café preto",
+    "ar": "كرواسون + قهوة سوداء"
+  },
+  "רפואת שיניים כללית": {
+    "en": "General dentistry",
+    "es": "Odontología general",
+    "pt-BR": "Odontologia geral",
+    "ar": "طب أسنان عام"
+  },
+  "שולחן לבראנץ׳ הבא?": {
+    "en": "A table for the next brunch?",
+    "es": "¿Una mesa para el siguiente brunch?",
+    "pt-BR": "Uma mesa para o próximo brunch?",
+    "ar": "طاولة للبرانش التالي؟"
+  },
+  "שולחן לשקיעה הבאה?": {
+    "en": "A table for the next sunset?",
+    "es": "¿Una mesa para el siguiente atardecer?",
+    "pt-BR": "Uma mesa para o próximo pôr do sol?",
+    "ar": "طاولة للغروب التالي؟"
+  },
+  "שייט שקיעה עם יין.": {
+    "en": "A sunset sail with wine.",
+    "es": "Un paseo al atardecer con vino.",
+    "pt-BR": "Um passeio ao pôr do sol com vinho.",
+    "ar": "إبحار غروب مع نبيذ."
+  },
+  "שיקום על גבי שתלים": {
+    "en": "Rehabilitation on implants",
+    "es": "Rehabilitación sobre implantes",
+    "pt-BR": "Reabilitação sobre implantes",
+    "ar": "إعادة تأهيل على زراعات"
+  },
+  "שמן צ'ילי ופרגיות.": {
+    "en": "Chili oil and poussin.",
+    "es": "Aceite de chile y pollitos.",
+    "pt-BR": "Óleo de pimenta e franguinhos.",
+    "ar": "زيت فلفل وفراخ."
+  },
+  "שנות פעילות באולפן": {
+    "en": "Years of activity in the studio",
+    "es": "Años de actividad en el estudio",
+    "pt-BR": "Anos de atividade no estúdio",
+    "ar": "سنوات نشاط في الاستوديو"
+  },
+  "שף מסדר מנה במסעדה": {
+    "en": "A chef plating in a restaurant",
+    "es": "Un chef emplata en un restaurante",
+    "pt-BR": "Um chef emplata num restaurante",
+    "ar": "شيف يرتّب طبقًا في مطعم"
+  },
+  "שקיפות שמורידה לחץ": {
+    "en": "Transparency that lowers pressure",
+    "es": "Transparencia que baja la presión",
+    "pt-BR": "Transparência que baixa a pressão",
+    "ar": "شفافية تخفّض الضغط"
+  },
+  "תוכן קצר שמכר קורס": {
+    "en": "Short content that sold a course",
+    "es": "Contenido corto que vendió un curso",
+    "pt-BR": "Conteúdo curto que vendeu um curso",
+    "ar": "محتوى قصير باع دورة"
+  },
+  "תוסף דפדפן ומובייל": {
+    "en": "A browser and mobile add-on",
+    "es": "Un complemento de navegador y móvil",
+    "pt-BR": "Um complemento de navegador e mobile",
+    "ar": "إضافة متصفح وجوال"
+  },
+  "תכנון רישוי וביצוע": {
+    "en": "Permit planning and execution",
+    "es": "Planificación de licencias y ejecución",
+    "pt-BR": "Planejamento de licenças e execução",
+    "ar": "تخطيط ترخيص وتنفيذ"
+  },
+  "תסריט לפרסומת קצרה": {
+    "en": "A script for a short ad",
+    "es": "Un guion para un anuncio corto",
+    "pt-BR": "Um roteiro para um anúncio curto",
+    "ar": "سيناريو لإعلان قصير"
+  },
+  "GTM שלא נשאר במצגת": {
+    "en": "GTM that does not stay in a deck",
+    "es": "Un GTM que no se queda en una presentación",
+    "pt-BR": "Um GTM que não fica numa apresentação",
+    "ar": "GTM لا يبقى في عرض"
+  },
+  "SEO לאתר מסחר צומח": {
+    "en": "SEO for a growing commerce site",
+    "es": "SEO para un sitio de comercio en crecimiento",
+    "pt-BR": "SEO para um site de comércio em crescimento",
+    "ar": "SEO لموقع تجارة نامٍ"
+  },
+  "5 חדרים · גג פרטי": {
+    "en": "5 rooms · private roof",
+    "es": "5 habitaciones · azotea privada",
+    "pt-BR": "5 quartos · terraço privado",
+    "ar": "5 غرف · سطح خاص"
+  },
+  "6 אורחים · ג'קוזי": {
+    "en": "6 guests · jacuzzi",
+    "es": "6 huéspedes · jacuzzi",
+    "pt-BR": "6 hóspedes · jacuzzi",
+    "ar": "6 ضيوف · جاكوزي"
+  },
+  "אהבה בארבע רגליים": {
+    "en": "Love on four legs",
+    "es": "Amor en cuatro patas",
+    "pt-BR": "Amor em quatro patas",
+    "ar": "حب على أربع أرجل"
+  },
+  "איך בונים מיומנות": {
+    "en": "How to build a skill",
+    "es": "Cómo construir una habilidad",
+    "pt-BR": "Como construir uma habilidade",
+    "ar": "كيف تبنون مهارة"
+  },
+  "אינטגרציות מוכנות": {
+    "en": "Ready integrations",
+    "es": "Integraciones listas",
+    "pt-BR": "Integrações prontas",
+    "ar": "تكاملات جاهزة"
+  }
+}

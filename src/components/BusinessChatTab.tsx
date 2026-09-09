@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import API from "../api";
 import BizuplyLoader from "./ui/BizuplyLoader";
 import { useSocket } from "../context/socketContext";
+import { useTranslation } from "react-i18next";
 import { useNotifications } from "../context/NotificationsContext";
 
 /* =====================================================
@@ -160,6 +161,7 @@ export default function BusinessChatTab({
   customerName,
   conversationType = "user-business",
 }: BusinessChatTabProps) {
+  const { t } = useTranslation();
   const socket = useSocket() as any;
   const { addNotification } = useNotifications() as any;
 
@@ -350,8 +352,8 @@ export default function BusinessChatTab({
         if (!ok && addNotification) {
           addNotification({
             type: "error",
-            title: "Message failed",
-            message: "Could not send the message. Please try again.",
+            title: t("leftover.bizChatChrome.sendFailedTitle"),
+            message: t("leftover.bizChatChrome.sendFailedBody"),
           });
         }
       }
@@ -389,7 +391,7 @@ export default function BusinessChatTab({
   ===================================================== */
 
   if (!businessId) {
-    return <BizuplyLoader fullScreen label="Loading chat..." />;
+    return <BizuplyLoader fullScreen label={t("leftover.bizChatChrome.loadingChat")} />;
   }
 
   /* =====================================================
@@ -440,7 +442,7 @@ export default function BusinessChatTab({
       >
         {isLoadingHistory ? (
           <div className="flex h-full min-h-[45vh] flex-col items-center justify-center text-center">
-            <BizuplyLoader size="lg" label="Loading messages..." />
+            <BizuplyLoader size="lg" label={t("leftover.bizChatChrome.loadingMessages")} />
           </div>
         ) : sorted.length > 0 ? (
           sorted.map((message, index) => {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { Reveal } from "./product-marketing";
@@ -20,7 +21,7 @@ type FaqItem = {
 };
 
 export default function FAQMini() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -84,7 +85,7 @@ export default function FAQMini() {
   return (
     <section
       className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24"
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />

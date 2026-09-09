@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { templateDir } from "../../../../../../i18n/templateDir";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aurayogaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -66,7 +68,7 @@ function Header({ data }: { data: Record<string, any> }) {
           <span className="grid h-11 w-11 place-items-center border border-[var(--p)]/50 bg-white/8 text-sm font-bold text-[var(--p)]">{getValue(data, "logoText")}</span>
           <span className="t-display text-3xl font-semibold tracking-wide text-white">{getValue(data, "brandName")}</span>
         </a>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-white/72 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-white/72 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="aura-nav-link">
               {label}
@@ -136,7 +138,7 @@ function Classes({ data }: { data: Record<string, any> }) {
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--p)]">{meta}</p>
                     <h3 className="t-display mt-4 text-3xl font-semibold leading-tight text-white">{title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{text}</p>
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{tx(text)}</p>
                   </div>
                 </div>
               </article>
@@ -192,7 +194,7 @@ function Benefits({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 110} variant={index % 2 ? "left" : "right"}>
               <article className="aura-floating-band border border-white/10 bg-[var(--surface)]/80 p-7 shadow-2xl shadow-black/20 backdrop-blur-md md:p-9" style={{ marginInlineStart: `${index * 7}%` }}>
                 <h3 className="t-display text-2xl sm:text-4xl font-semibold text-white">{title}</h3>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">{text}</p>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">{tx(text)}</p>
               </article>
             </Reveal>
           ))}
@@ -310,7 +312,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 120} variant="up">
               <blockquote className="aura-review min-h-[320px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-sm">
                 <p className="t-display text-3xl md:text-7xl font-semibold leading-none text-[var(--p)]">”</p>
-                <p className="mt-8 text-2xl font-light leading-10 text-white">{text}</p>
+                <p className="mt-8 text-2xl font-light leading-10 text-white">{tx(text)}</p>
                 <footer className="mt-10 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">{name}</footer>
               </blockquote>
             </Reveal>
@@ -336,11 +338,11 @@ function JoinForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input aria-label="שם מלא" placeholder="שם מלא" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input aria-label="טלפון" placeholder="טלפון" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input aria-label="אימייל" placeholder="אימייל" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea aria-label="מה תרצו לתרגל" placeholder="מה תרצו לתרגל?" rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input aria-label={tx("שם מלא")} placeholder={tx("שם מלא")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input aria-label={tx("טלפון")} placeholder={tx("טלפון")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input aria-label={tx("אימייל")} placeholder={tx("אימייל")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea aria-label={tx("מה תרצו לתרגל")} placeholder={tx("מה תרצו לתרגל?")} rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)] transition hover:bg-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -399,7 +401,7 @@ export default function AurayogaPages({
   );
 
   return (
-    <div dir="rtl" data-template-id="aurayoga" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir={templateDir()} data-template-id="aurayoga" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: aurayogaEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: pageContent }]} />
     </div>

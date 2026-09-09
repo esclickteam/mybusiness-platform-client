@@ -1,8 +1,8 @@
 export const idoEditorCss = `
 [data-template-id="ido"] {
   position: relative;
-  direction: rtl;
-  text-align: right;
+  
+  text-align: start;
 }
 
 [data-template-id="ido"] .text-center,
@@ -13,13 +13,13 @@ export const idoEditorCss = `
 [data-template-id="ido"] input,
 [data-template-id="ido"] textarea,
 [data-template-id="ido"] select {
-  text-align: right;
-  direction: rtl;
+  text-align: start;
+  
 }
 
 [data-template-id="ido"] input::placeholder,
 [data-template-id="ido"] textarea::placeholder {
-  text-align: right;
+  text-align: start;
 }
 
 /*
