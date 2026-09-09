@@ -16529,6 +16529,111 @@
     "poweredBy": "Con tecnología de Bizuply",
     "money": {
       "oneTimePlusRecurring": "{{oneTime}} + {{recurring}}"
+    },
+    "demo": {
+      "prefix": {
+        "demo": "[Demo]",
+        "stagingDemo": "[Demo Staging]"
+      },
+      "persona": {
+        "studio-noa": {
+          "businessName": "Estudio Noa",
+          "contactName": "Noa Levi",
+          "contactNotes": "Estudio de fotografía. El partner gestiona la cuenta y gana un 15% en cada venta.",
+          "contactNotesAlt": "Estudio de fotografía y diseño. El partner gestiona por completo la cuenta de Bizuply."
+        },
+        "cohen-solutions": {
+          "businessName": "Cohen Soluciones Empresariales",
+          "contactName": "Yossi Cohen",
+          "contactNotes": "Consultoría. Gestión compartida — comisión porcentual en cada renovación.",
+          "contactNotesAlt": "Consultoría. Gestión compartida — el partner hace el alta, el cliente el día a día."
+        },
+        "bloom-beauty": {
+          "businessName": "Bloom Beauty",
+          "contactName": "Michal Perach",
+          "contactNotes": "Centro de belleza. La clienta gestiona sola tras la configuración.",
+          "contactNotesAlt": "Centro de belleza. La clienta dirige el negocio ella misma tras la configuración."
+        },
+        "alon-digital": {
+          "businessName": "Alon Digital",
+          "contactName": "Alon Mizrahi",
+          "contactNotes": "Cuenta activa — acceso de gestión completa con CRM, leads y campañas.",
+          "contactNotesAlt": "Esperando el pago del cliente antes de la activación."
+        },
+        "maya-events": {
+          "businessName": "Maya Events",
+          "contactName": "Maya Sharon",
+          "contactNotes": "Cuenta activa para gestión completa — CRM, leads, calendario y campañas.",
+          "contactNotesAlt": "Nuevo lead de un evento de networking. Aún sin productos."
+        },
+        "green-office": {
+          "businessName": "Green Office",
+          "contactName": "Dani Green",
+          "contactNotes": "Pago fallido. Los permisos permanecen desactivados hasta resolverlo."
+        },
+        "urban-studio": {
+          "businessName": "Urban Studio",
+          "contactName": "Roi Urban",
+          "contactNotes": "Suspendido tras un retraso prolongado en el pago."
+        },
+        "premium-client": {
+          "businessName": "Demo Premium Media",
+          "contactName": "Shira Golan",
+          "contactNotes": "Cliente con cesta amplia: plan, web, configuración de automatizaciones y Growth."
+        }
+      },
+      "task": {
+        "onboardingCall": "Llamada de incorporación",
+        "followUpClient": "Seguimiento del cliente",
+        "followUpClientF": "Seguimiento de la clienta",
+        "renewalCheck": "Revisar renovación de suscripción",
+        "satisfactionCall": "Llamada de satisfacción",
+        "productTour": "Recorrido de productos",
+        "sendQuote": "Enviar presupuesto",
+        "paymentIssue": "Resolver problema de pago",
+        "uploadWebsiteContent": "Subir contenido al sitio",
+        "clientFollowUp": "Seguimiento del cliente"
+      },
+      "note": {
+        "quoteSent": "Presupuesto enviado",
+        "monthlyApprovedF": "La clienta aprobó un paquete mensual",
+        "onboardingScheduled": "Llamada de incorporación programada",
+        "websiteAddonAdded": "Añadimos el complemento de sitio web",
+        "commissionVisible": "El cliente ve la comisión esperada en el panel",
+        "setupComplete": "Configuración completada",
+        "paidAndActivated": "El cliente pagó y la cuenta se activó",
+        "activatedForDemo": "Cuenta activada para mostrar la gestión completa",
+        "requestedWebsite": "El cliente pidió añadir un sitio web",
+        "websiteAddonOnPlan": "Añadimos el complemento web al plan existente",
+        "finalPriceApproved": "El cliente aprobó el precio final",
+        "setupDoneSolo": "Configuración completada. La clienta continúa sola",
+        "websiteQuoteSent": "Presupuesto de sitio web enviado",
+        "introCall": "Llamada inicial de presentación",
+        "paymentFailed": "Pago fallido",
+        "collectionReminder": "Recordatorio de cobro enviado",
+        "accountSuspended": "Cuenta suspendida",
+        "keepInTouch": "Mantener el contacto por si vuelven",
+        "premiumBasketApproved": "Cesta premium aprobada",
+        "automationsOnboarding": "Llamada de incorporación de automatizaciones programada"
+      },
+      "product": {
+        "monthlyBizuply": "Plan mensual Bizuply",
+        "websiteAddon": "Complemento de sitio web",
+        "websiteOnly": "Solo sitio web",
+        "systemLicense": "Licencia de uso del sistema",
+        "percentOnly": "Solo porcentaje",
+        "websitePlusPlan": "Sitio web + suscripción",
+        "automationsGrowth": "Automatizaciones Growth"
+      },
+      "agency": {
+        "percentOnlyName": "Agencia demo — solo porcentaje",
+        "freePartnerName": "Partner demo gratuito",
+        "teamLia": "Lia Cohen",
+        "referralDana": "Dana Shemesh",
+        "referralBusiness": "Shemesh Digital",
+        "customerStudio": "Estudio demo para clientes",
+        "freeCustomer": "Cliente demo gratuito"
+      }
     }
   },
   "storeManager": {

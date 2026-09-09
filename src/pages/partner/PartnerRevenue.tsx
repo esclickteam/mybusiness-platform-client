@@ -6,6 +6,8 @@ import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import { PartnerCard } from "../../components/partner/partnerUi";
 import { getIntlLocale } from "../../i18n/localeUtils";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
+import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
+import { localizePartnerDemoText } from "../../i18n/partnerDemoCopy";
 
 function ils(value?: number, locale?: string) {
   return `₪${Number(value || 0).toLocaleString(locale || "en-US")}`;
@@ -55,7 +57,11 @@ export default function PartnerRevenue() {
             {t("partner.revenue.myPartnerPlan")}
           </p>
           <p className="mt-2 text-2xl font-black">
-            {due?.partnerSubscription?.planName || t("partner.planNames.partner_basic")}
+            {partnerPlanDisplayName(t, {
+              planKey: due?.partnerSubscription?.planKey,
+            }) ||
+              localizePartnerDemoText(t, due?.partnerSubscription?.planName) ||
+              t("partner.planNames.partner_basic")}
           </p>
           <p className="mt-1 font-bold text-slate-700">
             {t("partner.dashboard.perMonthPlain", {

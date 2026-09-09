@@ -5,8 +5,10 @@ export type PartnerWorkItem = {
   clientId: string;
   clientName: string;
   contactName: string;
+  personaKey?: string;
   taskId: string;
   title: string;
+  titleKey?: string;
   dueAt?: string | null;
   done?: boolean;
 };
@@ -19,8 +21,10 @@ export function flattenPartnerTasks(clients: PartnerClient[] = []): PartnerWorkI
         clientId: client._id,
         clientName: client.contact?.businessName || client.contact?.contactName || "—",
         contactName: client.contact?.contactName || "",
+        personaKey: client.personaKey,
         taskId: String(task._id || `${client._id}-${task.title}`),
         title: task.title,
+        titleKey: task.titleKey,
         dueAt: task.dueAt || null,
         done: Boolean(task.done),
       });
@@ -82,6 +86,7 @@ export function formatPartnerDateTime(value?: string | null, locale = "en-US"): 
 export function eventTypeLabel(client: PartnerClient, t?: TranslateFn): string {
   const sku = client.selectedSkus?.[0];
   if (!sku) return "—";
-  if (t) return catalogProductName(t, sku);
-  return sku.displayNameHe || sku.nameHe || sku.sku || "—";
+  // When t exists, never fall back to displayNameHe — catalog keys only
+  if (t) return catalogProductName(t, { sku: sku.sku, nameEn: sku.nameEn });
+  return sku.nameEn || sku.sku || "—";
 }

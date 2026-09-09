@@ -6,6 +6,7 @@ import {
   submitPartnerReferral,
 } from "../../lib/partnerApi";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
+import { localizePartnerDemoText } from "../../i18n/partnerDemoCopy";
 import { formatIls } from "../../lib/partnerMoney";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
@@ -104,7 +105,9 @@ export default function PartnerReferrals() {
             {awaitingPaid.map((row) => (
               <li key={row._id} className="text-sm font-black text-slate-800">
                 {t("partner.referrals.awaitingPaidItem", {
-                  name: row.referredName || t("partner.referrals.referred"),
+                  name:
+                    localizePartnerDemoText(t, row.referredName) ||
+                    t("partner.referrals.referred"),
                 })}
               </li>
             ))}
@@ -119,7 +122,9 @@ export default function PartnerReferrals() {
           <ul className="space-y-2">
             {qualifying.map((row) => (
               <li key={row._id} className="text-sm font-black text-slate-800">
-                {row.referredName || t("partner.referrals.referred")} —{" "}
+                {localizePartnerDemoText(t, row.referredName) ||
+                  t("partner.referrals.referred")}{" "}
+                —{" "}
                 {t("partner.dashboard.referralDay", {
                   current: row.daysActive ?? 0,
                   total: row.qualificationDays || 40,
@@ -148,8 +153,10 @@ export default function PartnerReferrals() {
             {items.map((row) => (
               <tr key={row._id} className="border-t">
                 <td className="px-3 py-3 font-bold">
-                  {row.referredName}
-                  <span className="block text-xs text-slate-500">{row.referredBusinessName}</span>
+                  {localizePartnerDemoText(t, row.referredName)}
+                  <span className="block text-xs text-slate-500">
+                    {localizePartnerDemoText(t, row.referredBusinessName)}
+                  </span>
                 </td>
                 <td className="px-3 py-3">{formatPartnerDate(row.createdAt, locale)}</td>
                 <td className="px-3 py-3">

@@ -17,6 +17,10 @@ import {
   upcomingReminders,
   type PartnerWorkItem,
 } from "../../lib/partnerWork";
+import {
+  localizePartnerDemoName,
+  partnerDemoTaskTitle,
+} from "../../i18n/partnerDemoCopy";
 
 export default function PartnerWorkboard() {
   const { t, i18n } = useTranslation();
@@ -127,7 +131,10 @@ export default function PartnerWorkboard() {
               <option value="">{t("partner.workboard.chooseClient")}</option>
               {clients.map((client) => (
                 <option key={client._id} value={client._id}>
-                  {client.contact?.businessName}
+                  {localizePartnerDemoName(t, client.contact?.businessName, {
+                    personaKey: client.personaKey,
+                    field: "businessName",
+                  })}
                 </option>
               ))}
             </select>
@@ -190,10 +197,20 @@ export default function PartnerWorkboard() {
                   {isReminders ? <Bell className="h-4 w-4" /> : <CalendarCheck className="h-4 w-4" />}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate font-black text-slate-900">{item.title}</p>
+                  <p className="truncate font-black text-slate-900">
+                    {partnerDemoTaskTitle(t, item)}
+                  </p>
                   <p className="truncate text-xs font-bold text-slate-500">
-                    {item.clientName}
-                    {item.contactName ? ` · ${item.contactName}` : ""}
+                    {localizePartnerDemoName(t, item.clientName, {
+                      personaKey: item.personaKey,
+                      field: "businessName",
+                    })}
+                    {item.contactName
+                      ? ` · ${localizePartnerDemoName(t, item.contactName, {
+                          personaKey: item.personaKey,
+                          field: "contactName",
+                        })}`
+                      : ""}
                   </p>
                 </div>
               </div>

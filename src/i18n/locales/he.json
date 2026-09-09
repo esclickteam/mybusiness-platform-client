@@ -16518,6 +16518,111 @@
     "poweredBy": "מופעל על ידי Bizuply",
     "money": {
       "oneTimePlusRecurring": "{{oneTime}} + {{recurring}}"
+    },
+    "demo": {
+      "prefix": {
+        "demo": "[Demo]",
+        "stagingDemo": "[Staging Demo]"
+      },
+      "persona": {
+        "studio-noa": {
+          "businessName": "סטודיו נועה",
+          "contactName": "נועה לוי",
+          "contactNotes": "סטודיו לצילום. הפרטנר מנהל את החשבון ומרוויח 15% מכל עסקה.",
+          "contactNotesAlt": "סטודיו לצילום ועיצוב. הפרטנר מנהל את חשבון Bizuply במלואו."
+        },
+        "cohen-solutions": {
+          "businessName": "כהן פתרונות לעסקים",
+          "contactName": "יוסי כהן",
+          "contactNotes": "משרד ייעוץ. ניהול משותף — עמלה באחוזים מכל חידוש.",
+          "contactNotesAlt": "משרד ייעוץ. ניהול משותף — הפרטנר על הקמה, הלקוח על יום-יום."
+        },
+        "bloom-beauty": {
+          "businessName": "Bloom Beauty",
+          "contactName": "מיכל פרח",
+          "contactNotes": "מכון יופי. הלקוחה מנהלת לבד אחרי ההקמה.",
+          "contactNotesAlt": "מכון יופי. הלקוחה מנהלת את העסק בעצמה אחרי ההקמה."
+        },
+        "alon-digital": {
+          "businessName": "אלון דיגיטל",
+          "contactName": "אלון מזרחי",
+          "contactNotes": "חשבון פעיל — כניסה לניהול מלא עם CRM, לידים וקמפיינים.",
+          "contactNotesAlt": "ממתין לתשלום הלקוח לפני הפעלה."
+        },
+        "maya-events": {
+          "businessName": "Maya Events",
+          "contactName": "מאיה שרון",
+          "contactNotes": "חשבון פעיל לניהול מלא — CRM, לידים, יומן וקמפיינים.",
+          "contactNotesAlt": "ליד חדש מאירוע נטוורקינג. עדיין בלי מוצרים."
+        },
+        "green-office": {
+          "businessName": "Green Office",
+          "contactName": "דני ירוק",
+          "contactNotes": "התשלום נכשל. לא מפעילים הרשאות עד להסדרה."
+        },
+        "urban-studio": {
+          "businessName": "Urban Studio",
+          "contactName": "רועי עירוני",
+          "contactNotes": "הושעה אחרי פיגור ממושך."
+        },
+        "premium-client": {
+          "businessName": "דמו פרימיום מדיה",
+          "contactName": "שירה גולן",
+          "contactNotes": "לקוח עם סל רחב: מנוי, אתר, הקמת אוטומציות ומסלול אוטומציות Growth."
+        }
+      },
+      "task": {
+        "onboardingCall": "שיחת הדרכה",
+        "followUpClient": "מעקב אחרי הלקוח",
+        "followUpClientF": "מעקב אחרי הלקוחה",
+        "renewalCheck": "בדיקת חידוש מנוי",
+        "satisfactionCall": "שיחת שביעות רצון",
+        "productTour": "סיור במוצרים",
+        "sendQuote": "לשלוח הצעת מחיר",
+        "paymentIssue": "טיפול בבעיית תשלום",
+        "uploadWebsiteContent": "העלאת תכנים לאתר",
+        "clientFollowUp": "מעקב אחרי הלקוח"
+      },
+      "note": {
+        "quoteSent": "נשלחה הצעת מחיר",
+        "monthlyApprovedF": "הלקוחה אישרה חבילה חודשית",
+        "onboardingScheduled": "נקבעה שיחת הדרכה",
+        "websiteAddonAdded": "הוספנו תוסף אתר",
+        "commissionVisible": "הלקוח רואה את העמלה הצפויה בדשבורד",
+        "setupComplete": "הושלמה הקמה",
+        "paidAndActivated": "הלקוח שילם והחשבון הופעל",
+        "activatedForDemo": "החשבון הופעל להצגת ניהול מלא",
+        "requestedWebsite": "הלקוח ביקש להוסיף אתר",
+        "websiteAddonOnPlan": "הוספנו תוסף אתר למנוי הקיים",
+        "finalPriceApproved": "הלקוח אישר את המחיר הסופי",
+        "setupDoneSolo": "הושלמה הקמה. הלקוחה ממשיכה לבד",
+        "websiteQuoteSent": "נשלחה הצעת מחיר לאתר",
+        "introCall": "שיחת היכרות ראשונית",
+        "paymentFailed": "תשלום נכשל",
+        "collectionReminder": "נשלחה תזכורת גבייה",
+        "accountSuspended": "החשבון הושהה",
+        "keepInTouch": "יש לשמור על הקשר למקרה שיחזרו",
+        "premiumBasketApproved": "אושר סל פרימיום",
+        "automationsOnboarding": "נקבעה שיחת הדרכה לאוטומציות"
+      },
+      "product": {
+        "monthlyBizuply": "מנוי Bizuply חודשי",
+        "websiteAddon": "תוסף אתר",
+        "websiteOnly": "אתר בלבד",
+        "systemLicense": "רישיון שימוש במערכת",
+        "percentOnly": "אחוזים בלבד",
+        "websitePlusPlan": "אתר + מנוי",
+        "automationsGrowth": "אוטומציות Growth"
+      },
+      "agency": {
+        "percentOnlyName": "סוכנות דמו — אחוזים בלבד",
+        "freePartnerName": "פרטנר דמו חינמי",
+        "teamLia": "ליה כהן",
+        "referralDana": "דנה שמש",
+        "referralBusiness": "שמש דיגיטל",
+        "customerStudio": "סטודיו דמו ללקוחות",
+        "freeCustomer": "לקוח דמו חינמי"
+      }
     }
   },
   "storeManager": {
