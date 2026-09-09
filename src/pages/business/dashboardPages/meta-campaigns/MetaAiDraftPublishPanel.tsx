@@ -117,7 +117,9 @@ export default function MetaAiDraftPublishPanel({
               <dt className="text-[11px] font-black uppercase text-emerald-800">
                 {t("metaCampaigns.ai.draft.statusLabel")}
               </dt>
-              <dd className="text-sm font-semibold">ACTIVE</dd>
+              <dd className="text-sm font-semibold">
+                {t("metaCampaigns.status.active")}
+              </dd>
             </div>
             <div>
               <dt className="text-[11px] font-black uppercase text-emerald-800">

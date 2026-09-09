@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Info, Plus, Trash2, X } from "lucide-react";
 import {
   LEAD_FORM_CONTACT_FIELDS,
@@ -40,11 +41,13 @@ type Props = {
   }) => void;
 };
 
-const TABS: Array<{ id: SettingsTab; label: string }> = [
-  { id: "configuration", label: "Form configuration" },
-  { id: "fieldNames", label: "Field names" },
-  { id: "tracking", label: "Tracking parameters" },
-];
+const TAB_KEYS: Record<SettingsTab, string> = {
+  configuration: "formConfiguration",
+  fieldNames: "fieldNames",
+  tracking: "trackingParameters",
+};
+
+const TAB_IDS: SettingsTab[] = ["configuration", "fieldNames", "tracking"];
 
 function newTrackingRow(): FormTrackingParam {
   return {
@@ -65,6 +68,16 @@ export default function AdsManagerFormSettingsModal({
   onClose,
   onDone,
 }: Props) {
+  const { t } = useTranslation();
+  const cc = React.useCallback(
+    (key: string, opts?: Record<string, unknown>) =>
+      t(`metaCampaigns.adsManager.chrome.${key}`, opts as never),
+    [t]
+  );
+  const TABS = useMemo(
+    () => TAB_IDS.map((id) => ({ id, label: cc(TAB_KEYS[id]) })),
+    [cc]
+  );
   const [tab, setTab] = useState<SettingsTab>("configuration");
   const [draftLocale, setDraftLocale] = useState(locale);
   const [draftSharing, setDraftSharing] = useState<FormSharing>(sharing);
@@ -156,7 +169,8 @@ export default function AdsManagerFormSettingsModal({
     }
 
     draftQuestions.forEach((question, qIndex) => {
-      const label = question.label.trim() || `Question ${qIndex + 1}`;
+      const label =
+        question.label.trim() || cc("questionFallback", { n: qIndex + 1 });
       if (!question.label.trim()) return;
       rows.push({
         id: `custom:${question.id}`,
@@ -198,7 +212,7 @@ export default function AdsManagerFormSettingsModal({
     });
 
     return rows;
-  }, [contactTypes, draftContactKeys, draftLocale, draftQuestions]);
+  }, [contactTypes, draftContactKeys, draftLocale, draftQuestions, cc]);
 
   if (!open) return null;
 
@@ -215,13 +229,13 @@ export default function AdsManagerFormSettingsModal({
             id="form-settings-title"
             className="text-[17px] font-bold text-[#050505]"
           >
-            Form settings
+            {cc("formSettingsTitle")}
           </h3>
           <button
             type="button"
             className="rounded-md p-1.5 text-[#65676B] hover:bg-[#F0F2F5]"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={cc("close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -255,7 +269,7 @@ export default function AdsManagerFormSettingsModal({
                 <div>
                   <div className="mb-1.5 flex items-center gap-1.5">
                     <span className="text-[13px] font-bold text-[#050505]">
-                      Language
+                      {cc("language")}
                     </span>
                     <Info className="h-3.5 w-3.5 text-[#65676B]" />
                   </div>
@@ -311,7 +325,7 @@ export default function AdsManagerFormSettingsModal({
                 <div>
                   <div className="mb-2 flex items-center gap-1.5">
                     <span className="text-[13px] font-bold text-[#050505]">
-                      Sharing
+                      {cc("sharing")}
                     </span>
                     <Info className="h-3.5 w-3.5 text-[#65676B]" />
                   </div>
@@ -320,15 +334,13 @@ export default function AdsManagerFormSettingsModal({
                       [
                         {
                           id: "restricted" as const,
-                          title: "Restricted",
-                          description:
-                            "Only people who are delivered your ad directly can submit this form.",
+                          title: cc("sharingRestricted"),
+                          description: cc("sharingRestrictedDetail"),
                         },
                         {
                           id: "open" as const,
-                          title: "Open",
-                          description:
-                            "Your ad can be shared and anyone can submit this form.",
+                          title: cc("sharingOpen"),
+                          description: cc("sharingOpenDetail"),
                         },
                       ] as const
                     ).map((option) => {
@@ -363,7 +375,7 @@ export default function AdsManagerFormSettingsModal({
             {tab === "fieldNames" ? (
               <div className="space-y-4">
                 <p className="text-[13px] text-[#65676B]">
-                  Change how your field names appear when you export files.
+                  {cc("fieldNamesHint")}
                 </p>
                 {fieldRows.length ? (
                   <div className="space-y-4">
@@ -383,8 +395,7 @@ export default function AdsManagerFormSettingsModal({
                   </div>
                 ) : (
                   <p className="text-[13px] text-[#65676B]">
-                    Add contact fields or questions first, then set export
-                    names here.
+                    {cc("fieldNamesEmpty")}
                   </p>
                 )}
               </div>
@@ -393,14 +404,14 @@ export default function AdsManagerFormSettingsModal({
             {tab === "tracking" ? (
               <div className="space-y-4">
                 <p className="text-[13px] text-[#65676B]">
-                  Add parameters to track where leads come from in your exports.
+                  {cc("trackingHint")}
                 </p>
                 <div className="space-y-3">
                   {draftTracking.map((row) => (
                     <div key={row.id} className="flex items-start gap-2">
                       <input
                         className={metaInputClass}
-                        placeholder="Parameter"
+                        placeholder={cc("parameterPlaceholder")}
                         value={row.key}
                         onChange={(e) =>
                           setDraftTracking((prev) =>
@@ -414,7 +425,7 @@ export default function AdsManagerFormSettingsModal({
                       />
                       <input
                         className={metaInputClass}
-                        placeholder="Value"
+                        placeholder={cc("valuePlaceholder")}
                         value={row.value}
                         onChange={(e) =>
                           setDraftTracking((prev) =>
@@ -434,7 +445,7 @@ export default function AdsManagerFormSettingsModal({
                             prev.filter((item) => item.id !== row.id)
                           )
                         }
-                        aria-label="Remove parameter"
+                        aria-label={cc("removeParameter")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -449,7 +460,7 @@ export default function AdsManagerFormSettingsModal({
                   }
                 >
                   <Plus className="h-4 w-4" />
-                  Add parameter
+                  {cc("addParameter")}
                 </button>
               </div>
             ) : null}
@@ -472,7 +483,7 @@ export default function AdsManagerFormSettingsModal({
               })
             }
           >
-            Done
+            {cc("done")}
           </button>
         </footer>
       </div>

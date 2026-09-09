@@ -568,7 +568,9 @@ export default function MetaCampaignsOverviewTab() {
               >
                 {adAccounts.map((account) => (
                   <option key={account.id} value={account.id}>
-                    {formatAdAccountLabel(account)}
+                    {formatAdAccountLabel(account, {
+                      fallbackName: t("metaCampaigns.overview.account"),
+                    })}
                   </option>
                 ))}
               </select>
@@ -1196,15 +1198,15 @@ export default function MetaCampaignsOverviewTab() {
                 </div>
               ) : null}
               <DetailRow
-                label="Campaign name"
+                label={t("metaCampaigns.table.name")}
                 value={detailsCampaign.name || "—"}
               />
               <DetailRow
-                label="Campaign ID"
+                label={t("metaCampaigns.table.campaignId")}
                 value={detailsCampaign.id || "—"}
               />
               <DetailRow
-                label="Status"
+                label={t("metaCampaigns.table.status")}
                 value={t(
                   `metaCampaigns.status.${metaDeliveryStatusKey(
                     detailsCampaign.deliveryStatus ||
@@ -1222,25 +1224,25 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Objective"
+                label={t("metaCampaigns.form.objective")}
                 value={detailsCampaign.objective || "—"}
               />
               <DetailRow
-                label="Buying type"
+                label={t("metaCampaigns.adsManager.buyingType")}
                 value={detailsCampaign.buyingType || "—"}
               />
               <DetailRow
-                label="Daily/Lifetime budget"
+                label={t("metaCampaigns.table.budget")}
                 value={
                   detailsCampaign.dailyBudget
-                    ? `${formatCurrency(detailsCampaign.dailyBudget, currency)} (daily)`
+                    ? `${formatCurrency(detailsCampaign.dailyBudget, currency)} (${t("metaCampaigns.table.budgetDaily")})`
                     : detailsCampaign.lifetimeBudget
-                      ? `${formatCurrency(detailsCampaign.lifetimeBudget, currency)} (lifetime)`
+                      ? `${formatCurrency(detailsCampaign.lifetimeBudget, currency)} (${t("metaCampaigns.table.budgetLifetime")})`
                       : "—"
                 }
               />
               <DetailRow
-                label="Spend"
+                label={t("metaCampaigns.table.spend")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.spend,
                   (n) => formatCurrency(n, currency),
@@ -1248,7 +1250,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Impressions"
+                label={t("metaCampaigns.table.impressions")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.impressions,
                   formatNumber,
@@ -1256,7 +1258,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Reach"
+                label={t("metaCampaigns.table.reach")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.reach,
                   formatNumber,
@@ -1264,7 +1266,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Clicks"
+                label={t("metaCampaigns.table.clicks")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.clicks,
                   formatNumber,
@@ -1272,7 +1274,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="CTR"
+                label={t("metaCampaigns.table.ctr")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.ctr,
                   (n) => formatPercent(n),
@@ -1280,7 +1282,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Leads"
+                label={t("metaCampaigns.table.leads")}
                 value={formatMetricOrDash(
                   detailsCampaign.metrics?.leads,
                   formatNumber,
@@ -1288,7 +1290,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Cost per lead"
+                label={t("metaCampaigns.table.cpl")}
                 value={formatMetricOrDash(
                   (detailsCampaign.metrics?.leads || 0) > 0
                     ? detailsCampaign.metrics?.costPerLead
@@ -1297,7 +1299,7 @@ export default function MetaCampaignsOverviewTab() {
                 )}
               />
               <DetailRow
-                label="Start date"
+                label={t("metaCampaigns.table.start")}
                 value={formatDateHe(detailsCampaign.startTime, locale)}
               />
               <DetailRow

@@ -5,10 +5,10 @@ import { fetchPublicStorefront } from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { getIntlLocale } from "../../i18n/localeUtils";
-import { catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
 
-function ils(value?: number, locale = "he-IL") {
-  return `₪${Number(value || 0).toLocaleString(locale)}`;
+function ils(value?: number, locale?: string) {
+  return `₪${Number(value || 0).toLocaleString(locale || "en-US")}`;
 }
 
 function plansHref(slug: string | undefined, data: any) {
@@ -80,8 +80,12 @@ export default function PartnerStorefront() {
             <h2 className="text-lg font-black">
               {catalogProductName(t, product) || product.name}
             </h2>
-            <p className="text-sm text-slate-600">{product.description}</p>
-            <p className="mt-3 text-2xl font-black">{formatPublicCustomerPrice(product)}</p>
+            <p className="text-sm text-slate-600">
+              {catalogProductDescription(t, product) || product.description}
+            </p>
+            <p className="mt-3 text-2xl font-black">
+              {formatPublicCustomerPrice(product, t, locale)}
+            </p>
             {product.retailComparisonPrice ? (
               <p className="text-xs text-slate-500">
                 {t("partner.public.retailCompare", { amount: ils(product.retailComparisonPrice, locale) })}

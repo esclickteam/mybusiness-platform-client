@@ -39,6 +39,8 @@ type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
   const { t } = useTranslation();
+  const c = (key: string, opts?: Record<string, unknown>) =>
+    t(`metaCampaigns.adsManager.chrome.${key}`, opts);
   const navigate = useNavigate();
   const location = useLocation();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -391,7 +393,7 @@ export default function MetaAdsManagerPage() {
       toast.error(
         err.response?.data?.error ||
           err.message ||
-          "Publish to Meta failed"
+          t("metaCampaigns.adsToasts.publishFailed")
       );
     } finally {
       setPublishing(false);
@@ -405,12 +407,14 @@ export default function MetaAdsManagerPage() {
       const data = await syncMetaPublish(businessId, publishResult.id);
       setPublishResult(data.publish);
       toast.success(
-        `Synced from Meta · ${data.effectiveStatus || data.publish.displayStatus}`
+        t("metaCampaigns.adsToasts.syncSuccess", {
+          status: data.effectiveStatus || data.publish.displayStatus,
+        })
       );
     } catch (error: unknown) {
       toast.error(
         (error as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || "Sync from Meta failed"
+          ?.error || t("metaCampaigns.adsToasts.syncFailed")
       );
     } finally {
       setSyncing(false);
@@ -433,7 +437,9 @@ export default function MetaAdsManagerPage() {
       if (err.response?.data?.publish) {
         setPublishResult(err.response.data.publish);
       }
-      toast.error(err.response?.data?.error || "Retry failed");
+      toast.error(
+        err.response?.data?.error || t("metaCampaigns.adsToasts.retryFailed")
+      );
     } finally {
       setPublishing(false);
     }
@@ -491,19 +497,20 @@ export default function MetaAdsManagerPage() {
     >
       {!connected ? (
         <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-[13px] font-semibold text-amber-900">
-          Connect Meta Ads and select an Ad Account + Page before publishing.{" "}
+          {c("connectBanner")}{" "}
           <Link
             to="../settings"
             className="font-bold text-[#1877F2] underline"
           >
-            Open Meta connection
+            {c("openMetaConnection")}
           </Link>
         </div>
       ) : (
         <div className="border-b border-[#E4E6EB] bg-[#E7F3FF] px-4 py-2 text-[12px] font-semibold text-[#050505]">
-          Ad account: {connection?.selectedAdAccount?.name || "—"} · Page:{" "}
-          {connection?.selectedPage?.pageName || "not selected"} · Publish
-          calls Meta Marketing API for real
+          {c("accountBanner", {
+            account: connection?.selectedAdAccount?.name || "—",
+            page: connection?.selectedPage?.pageName || c("pageNotSelected"),
+          })}
         </div>
       )}
 
@@ -516,9 +523,9 @@ export default function MetaAdsManagerPage() {
               : "border-amber-200 bg-amber-50 text-amber-900",
           ].join(" ")}
         >
-          <span className="font-bold">Meta Ad Account billing: </span>
+          <span className="font-bold">{c("billingLabel")} </span>
           {connection.adAccountBillingHealth.issues?.[0] ||
-            "This ad account needs billing attention before ads can deliver."}
+            c("billingDefaultIssue")}
           {connection.adAccountBillingHealth.actionUrl ? (
             <>
               {" "}
@@ -529,12 +536,12 @@ export default function MetaAdsManagerPage() {
                 className="font-bold underline"
               >
                 {connection.adAccountBillingHealth.actionLabel ||
-                  "Open Meta Billing"}
+                  c("openMetaBilling")}
               </a>
             </>
           ) : null}
           <span className="mt-1 block text-[11px] font-semibold opacity-80">
-            Ad spend billing is separate from WhatsApp Business message fees.
+            {c("billingWhatsappNote")}
           </span>
         </div>
       ) : null}
@@ -556,7 +563,7 @@ export default function MetaAdsManagerPage() {
                     : "text-[#1877F2] hover:underline",
                 ].join(" ")}
               >
-                {crumb.label || "Untitled"}
+                {crumb.label || c("untitled")}
               </button>
             </React.Fragment>
           ))}
@@ -570,7 +577,7 @@ export default function MetaAdsManagerPage() {
             }
             onClick={() => setMode("edit")}
           >
-            Edit
+            {c("edit")}
           </button>
           <button
             type="button"
@@ -579,7 +586,7 @@ export default function MetaAdsManagerPage() {
             }
             onClick={() => setMode("review")}
           >
-            Review
+            {c("review")}
           </button>
           <button
             type="button"
@@ -587,17 +594,17 @@ export default function MetaAdsManagerPage() {
             disabled={publishing || !canPublish || !connected}
             title={
               !connected
-                ? "Connect Meta first"
+                ? c("connectMetaFirst")
                 : canPublish
-                  ? "Publish to Meta Marketing API"
-                  : "Resolve validation issues before publishing"
+                  ? c("publishTitleReady")
+                  : c("publishTitleBlocked")
             }
             onClick={() => void handlePublish()}
           >
             {publishing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : null}
-            {publishing ? "Publishing…" : "Publish"}
+            {publishing ? c("publishing") : c("publish")}
           </button>
         </div>
       </div>
@@ -615,81 +622,82 @@ export default function MetaAdsManagerPage() {
         <main className="min-w-0 overflow-y-auto border-r border-[#CED0D4] bg-[#F0F2F5] px-3 py-4 sm:px-5">
           {state.mode === "review" ? (
             <div className="mx-auto max-w-[760px] rounded-lg border border-[#E4E6EB] bg-white p-5 shadow-sm">
-              <h2 className="text-[20px] font-bold text-[#050505]">Review</h2>
+              <h2 className="text-[20px] font-bold text-[#050505]">
+                {c("reviewTitle")}
+              </h2>
               <p className="mt-1 text-[14px] text-[#65676B]">
-                Confirm settings across Campaign, Ad set and Ad before
-                publishing to Meta.
+                {c("reviewSubtitle")}
               </p>
               <dl className="mt-5 space-y-3 text-[14px]">
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Campaign</dt>
+                  <dt className="text-[#65676B]">{c("reviewCampaign")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {state.campaign.name}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Objective</dt>
+                  <dt className="text-[#65676B]">{c("reviewObjective")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {state.campaign.objective.replace("OUTCOME_", "")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Daily budget</dt>
+                  <dt className="text-[#65676B]">{c("reviewDailyBudget")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {state.campaign.currency} {state.campaign.budgetAmount}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Ad set</dt>
+                  <dt className="text-[#65676B]">{c("reviewAdSet")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {selectedAdSet?.name}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Locations</dt>
+                  <dt className="text-[#65676B]">{c("reviewLocations")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {selectedAdSet?.locationsSummary || "Not set"}
+                    {selectedAdSet?.locationsSummary || c("notSet")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Age</dt>
+                  <dt className="text-[#65676B]">{c("reviewAge")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {selectedAdSet
                       ? `${selectedAdSet.ageMin} - ${
                           selectedAdSet.ageMax >= 65
-                            ? "65+"
+                            ? c("age65Plus")
                             : selectedAdSet.ageMax
                         }`
                       : "—"}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Gender</dt>
+                  <dt className="text-[#65676B]">{c("reviewGender")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {selectedAdSet?.gender === "male"
-                      ? "Men"
+                      ? c("genderMen")
                       : selectedAdSet?.gender === "female"
-                        ? "Women"
-                        : "All genders"}
+                        ? c("genderWomen")
+                        : c("genderAll")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
-                  <dt className="text-[#65676B]">Ad</dt>
+                  <dt className="text-[#65676B]">{c("reviewAd")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {selectedAd?.name}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#65676B]">Instant form</dt>
+                  <dt className="text-[#65676B]">{c("reviewInstantForm")}</dt>
                   <dd className="font-semibold text-[#050505]">
                     {liveForms.find((f) => f.id === selectedAd?.instantFormId)
-                      ?.name || "Not selected"}
+                      ?.name || c("notSelected")}
                   </dd>
                 </div>
               </dl>
               {!canPublish ? (
                 <p className="mt-4 rounded-md border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[13px]">
-                  Publishing is blocked until required fields are completed.
+                  {c("reviewBlocked")}
                 </p>
               ) : null}
             </div>
@@ -783,18 +791,15 @@ export default function MetaAdsManagerPage() {
           {state.saveStatus === "saved" ? (
             <>
               <Check className="h-3.5 w-3.5 text-[#31A24C]" />
-              Draft edits saved locally
+              {c("draftSaved")}
             </>
           ) : state.saveStatus === "saving" ? (
-            "Saving draft…"
+            c("draftSaving")
           ) : (
-            "Couldn’t save draft"
+            c("draftFailed")
           )}
         </div>
-        <span>
-          Publish creates real Meta objects · never shows Published without
-          metaAdId
-        </span>
+        <span>{c("publishFooterNote")}</span>
       </div>
 
       <PublishResultModal

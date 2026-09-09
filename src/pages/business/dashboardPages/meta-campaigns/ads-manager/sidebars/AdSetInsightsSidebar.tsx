@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Info, LineChart } from "lucide-react";
 import type { AdsManagerGender, AdsManagerState } from "../adsManagerTypes";
 import { MetaSidebarCard } from "../metaAdsUi";
@@ -12,12 +13,6 @@ type Props = {
   gender: AdsManagerGender;
   estimateLoading?: boolean;
 };
-
-function genderLabel(gender: AdsManagerGender) {
-  if (gender === "male") return "Men";
-  if (gender === "female") return "Women";
-  return "All genders";
-}
 
 function ageLabel(ageMin: number, ageMax: number) {
   return `${ageMin} - ${ageMax >= 65 ? "65+" : ageMax}`;
@@ -36,35 +31,44 @@ export default function AdSetInsightsSidebar({
   gender,
   estimateLoading = false,
 }: Props) {
+  const { t } = useTranslation();
+  const cc = (key: string, opts?: Record<string, unknown>) =>
+    t(`metaCampaigns.adsManager.chrome.${key}`, opts as never);
+  const genderLabel =
+    gender === "male"
+      ? cc("genderMen")
+      : gender === "female"
+        ? cc("genderWomen")
+        : cc("genderAll");
   const spectrum = Math.min(0.98, Math.max(0.02, estimate.spectrum || 0.5));
   const band =
     spectrum >= 0.66 ? "broad" : spectrum >= 0.33 ? "mid" : "narrow";
 
   return (
     <div className="space-y-3">
-      <MetaSidebarCard title="Audience definition">
+      <MetaSidebarCard title={cc("audienceDefinition")}>
         <div className="space-y-3 text-[13px]">
           <div>
-            <p className="font-semibold text-[#65676B]">Locations</p>
+            <p className="font-semibold text-[#65676B]">{cc("locations")}</p>
             <p className="mt-0.5 font-bold text-[#050505]">
-              {locationsSummary || "Not set"}
+              {locationsSummary || cc("notSet")}
             </p>
           </div>
           <div>
-            <p className="font-semibold text-[#65676B]">Age</p>
+            <p className="font-semibold text-[#65676B]">{cc("age")}</p>
             <p className="mt-0.5 font-bold text-[#050505]">
               {ageLabel(ageMin, ageMax)}
               {advantageAudience ? (
                 <span className="ml-2 rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[10px] font-semibold text-[#65676B]">
-                  Suggestion
+                  {cc("suggestion")}
                 </span>
               ) : null}
             </p>
           </div>
           <div>
-            <p className="font-semibold text-[#65676B]">Gender</p>
+            <p className="font-semibold text-[#65676B]">{cc("gender")}</p>
             <p className="mt-0.5 font-bold text-[#050505]">
-              {genderLabel(gender)}
+              {genderLabel}
             </p>
           </div>
         </div>
@@ -74,10 +78,10 @@ export default function AdSetInsightsSidebar({
       <div className="rounded-lg border border-[#E4E6EB] bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <p className="text-[13px] leading-snug text-[#050505]">
           {band === "broad"
-            ? "Broad audiences can improve performance and reach more people likely to respond."
+            ? cc("audienceBroadMsg")
             : band === "mid"
-              ? "Your audience size looks balanced for learning and delivery."
-              : "Your audience may be too narrow. Consider broadening age, gender or locations."}
+              ? cc("audienceMidMsg")
+              : cc("audienceNarrowMsg")}
         </p>
 
         <div className="mt-3">
@@ -93,16 +97,18 @@ export default function AdSetInsightsSidebar({
             />
           </div>
           <div className="mt-1.5 flex justify-between text-[12px] font-semibold text-[#65676B]">
-            <span>Narrow</span>
-            <span>Broad</span>
+            <span>{cc("narrow")}</span>
+            <span>{cc("broad")}</span>
           </div>
         </div>
 
         <div className="mt-3 border-t border-[#E4E6EB] pt-3">
           <p className="flex flex-wrap items-center gap-1 text-[13px] font-bold text-[#050505]">
-            Estimated audience size:{" "}
+            {cc("estimatedAudienceSize")}{" "}
             {estimateLoading ? (
-              <span className="font-semibold text-[#65676B]">Updating…</span>
+              <span className="font-semibold text-[#65676B]">
+                {cc("updating")}
+              </span>
             ) : (
               <span>
                 {formatAudience(estimate.lower)} -{" "}
@@ -113,8 +119,7 @@ export default function AdSetInsightsSidebar({
           </p>
           <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-snug text-[#65676B]">
             <LineChart className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            Estimates don&apos;t include Advantage+ audience options and may
-            vary significantly over time.
+            {cc("estimateDisclaimer")}
           </p>
         </div>
       </div>

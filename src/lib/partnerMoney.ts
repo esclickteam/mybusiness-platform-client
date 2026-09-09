@@ -1,7 +1,13 @@
-export function formatIls(value?: number) {
+import i18n from "../i18n/i18n";
+import { getIntlLocale } from "../i18n/localeUtils";
+
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
+export function formatIls(value?: number, locale?: string) {
   const n = Number(value || 0);
   const fractionDigits = Number.isInteger(n) ? 0 : 3;
-  return `₪${n.toLocaleString("he-IL", {
+  const resolved = locale || getIntlLocale(i18n.language);
+  return `₪${n.toLocaleString(resolved, {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: 3,
   })}`;
@@ -122,38 +128,65 @@ export function quotePreviewComponents(item: {
   };
 }
 
-export function recurringIntervalLabel(billing?: string) {
-  return billing === "recurring_year" ? "לשנה" : "לחודש";
+export function recurringIntervalLabel(billing?: string, t?: TranslateFn) {
+  const yearly = billing === "recurring_year";
+  const key = yearly ? "partner.pricing.perYearShort" : "partner.pricing.perMonthShort";
+  const fallback = yearly ? "per year" : "per month";
+  return t ? t(key) : fallback;
 }
 
-export function catalogBillingLabel(billing?: string) {
-  if (billing === "recurring_year") return "לשנה";
-  if (billing === "recurring_month") return "לחודש";
-  return "חד-פעמי";
+export function catalogBillingLabel(billing?: string, t?: TranslateFn) {
+  if (billing === "recurring_year") {
+    return t ? t("partner.pricing.perYearShort") : "per year";
+  }
+  if (billing === "recurring_month") {
+    return t ? t("partner.pricing.perMonthShort") : "per month";
+  }
+  return t ? t("partner.billing.oneTime") : "One-time";
 }
 
 export function skuAllowsRecurringMarkup(billing?: string) {
   return String(billing || "").startsWith("recurring_");
 }
 
-export function formatPublicCustomerPrice(product: {
-  billing?: string;
-  customerFinalPrice?: number;
-  customerOneTimeAmount?: number;
-  customerRecurringAmount?: number;
-}) {
+export function formatPublicCustomerPrice(
+  product: {
+    billing?: string;
+    customerFinalPrice?: number;
+    customerOneTimeAmount?: number;
+    customerRecurringAmount?: number;
+  },
+  t?: TranslateFn,
+  locale?: string
+) {
+  const money = (value: number) => formatIls(value, locale);
   const oneTime = Number(product.customerOneTimeAmount) || 0;
   const recurring = Number(product.customerRecurringAmount) || 0;
-  const interval = recurringIntervalLabel(product.billing);
+  const yearly = product.billing === "recurring_year";
+  const interval = recurringIntervalLabel(product.billing, t);
+  const oneTimePart = (amount: number) =>
+    t
+      ? t("partner.dossier.oneTimeAmount", { amount: money(amount) })
+      : `${money(amount)} one-time`;
+  const recurringPart = (amount: number) =>
+    t
+      ? t(yearly ? "partner.perYear" : "partner.perMonth", { amount: money(amount) })
+      : `${money(amount)} ${interval}`;
+
   if (oneTime > 0 && recurring > 0) {
-    return `${formatIls(oneTime)} חד-פעמי + ${formatIls(recurring)} ${interval}`;
+    return t
+      ? t("partner.money.oneTimePlusRecurring", {
+          oneTime: oneTimePart(oneTime),
+          recurring: recurringPart(recurring),
+        })
+      : `${oneTimePart(oneTime)} + ${recurringPart(recurring)}`;
   }
-  if (recurring > 0) return `${formatIls(recurring)} ${interval}`;
-  if (oneTime > 0) return `${formatIls(oneTime)} חד-פעמי`;
+  if (recurring > 0) return recurringPart(recurring);
+  if (oneTime > 0) return oneTimePart(oneTime);
   const fallback = Number(product.customerFinalPrice) || 0;
   if (fallback > 0 && String(product.billing || "").startsWith("recurring_")) {
-    return `${formatIls(fallback)} ${interval}`;
+    return recurringPart(fallback);
   }
-  if (fallback > 0) return `${formatIls(fallback)} חד-פעמי`;
-  return formatIls(0);
+  if (fallback > 0) return oneTimePart(fallback);
+  return money(0);
 }

@@ -493,7 +493,7 @@ export default function MetaCampaignEditorPage() {
     form.ctaCustom.trim() ||
     callToActions.find((item) => item.value === form.callToAction)?.label ||
     form.callToAction ||
-    (isLeads ? "Sign up" : "Learn more");
+    (isLeads ? t("metaCampaigns.cta.signUp") : t("metaCampaigns.cta.learnMore"));
 
   const buildFullPayload = () => {
     const dailyBudget = form.dailyBudget ? Number(form.dailyBudget) : null;

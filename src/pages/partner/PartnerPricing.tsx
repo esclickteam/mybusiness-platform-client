@@ -5,9 +5,11 @@ import { formatIls, quotePreviewComponents, skuAllowsRecurringMarkup } from "../
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import { catalogProductDescription, catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 export default function PartnerPricing() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const [items, setItems] = useState<PartnerPriceLine[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState<string>("");
@@ -69,7 +71,13 @@ export default function PartnerPricing() {
       ) : null}
       <div className="space-y-4">
         {items.map((item) => (
-          <PriceRow key={item.sku} item={item} saving={saving === item.sku} onSave={save} />
+          <PriceRow
+            key={item.sku}
+            item={item}
+            saving={saving === item.sku}
+            onSave={save}
+            locale={locale}
+          />
         ))}
         {!items.length ? (
           <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm font-bold text-slate-400">
@@ -85,9 +93,11 @@ function PriceRow({
   item,
   saving,
   onSave,
+  locale,
 }: {
   item: PartnerPriceLine;
   saving: boolean;
+  locale: string;
   onSave: (
     item: PartnerPriceLine,
     payload: {
@@ -162,7 +172,7 @@ function PriceRow({
       </div>
 
       <p className="mt-4 text-sm font-black text-slate-800">
-        {t("partner.pricing.bizuplyPriceLine", { amount: formatIls(bizuplyAmount),
+        {t("partner.pricing.bizuplyPriceLine", { amount: formatIls(bizuplyAmount, locale),
           billing: catalogBilling,
         })}
       </p>
@@ -193,15 +203,15 @@ function PriceRow({
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
               <dt>{t("partner.pricing.basePrice")}</dt>
-              <dd>{formatIls(quoted.oneTimeBase)}</dd>
+              <dd>{formatIls(quoted.oneTimeBase, locale)}</dd>
             </div>
             <div className="flex justify-between gap-3">
               <dt>{t("partner.pricing.yourCommission")}</dt>
-              <dd>{formatIls(quoted.oneTimeMarkup)}</dd>
+              <dd>{formatIls(quoted.oneTimeMarkup, locale)}</dd>
             </div>
             <div className="flex justify-between gap-3 font-black text-slate-900">
               <dt>{t("partner.pricing.customerPrice")}</dt>
-              <dd>{formatIls(quoted.customerOneTimeAmount)}</dd>
+              <dd>{formatIls(quoted.customerOneTimeAmount, locale)}</dd>
             </div>
           </dl>
         </section>
@@ -234,19 +244,19 @@ function PriceRow({
             <div className="flex justify-between gap-3">
               <dt>{t("partner.pricing.basePrice")}</dt>
               <dd>
-                {formatIls(quoted.recurringBase)} {intervalLabel}
+                {formatIls(quoted.recurringBase, locale)} {intervalLabel}
               </dd>
             </div>
             <div className="flex justify-between gap-3">
               <dt>{t("partner.pricing.yourCommission")}</dt>
               <dd>
-                {formatIls(quoted.recurringMarkup)} {intervalLabel}
+                {formatIls(quoted.recurringMarkup, locale)} {intervalLabel}
               </dd>
             </div>
             <div className="flex justify-between gap-3 font-black text-slate-900">
               <dt>{t("partner.pricing.customerPrice")}</dt>
               <dd>
-                {formatIls(quoted.customerRecurringAmount)} {intervalLabel}
+                {formatIls(quoted.customerRecurringAmount, locale)} {intervalLabel}
               </dd>
             </div>
           </dl>

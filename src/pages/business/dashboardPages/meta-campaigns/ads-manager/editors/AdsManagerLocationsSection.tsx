@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   ChevronDown,
@@ -43,13 +44,20 @@ function milesToKm(miles: number) {
   return Math.round(miles * MI_TO_KM * 10) / 10;
 }
 
-function locationLabel(loc: AdsManagerLocation) {
+function locationLabel(
+  loc: AdsManagerLocation,
+  t: (key: string) => string
+) {
   const base = [loc.name, loc.region].filter(Boolean).join(", ");
   if (!isCityType(loc.type)) return base || loc.name;
   if (loc.cityOnly === true || loc.radiusMiles == null) {
-    return loc.cityOnly === true ? `${base} · city only` : base;
+    return loc.cityOnly === true
+      ? `${base} · ${t("metaCampaigns.adsManager.chrome.cityOnlySuffix")}`
+      : base;
   }
-  return `${base} + ${loc.radiusMiles}mi`;
+  return `${base} + ${loc.radiusMiles}${t(
+    "metaCampaigns.adsManager.chrome.milesAbbrev"
+  )}`;
 }
 
 function toMapLocation(loc: AdsManagerLocation): MetaLocationTarget {
@@ -80,6 +88,7 @@ export default function AdsManagerLocationsSection({
   onExpandedChange,
   onLocationsChange,
 }: Props) {
+  const { t } = useTranslation();
   const [includeMode, setIncludeMode] = useState<"include" | "exclude">(
     "include"
   );
@@ -129,7 +138,7 @@ export default function AdsManagerLocationsSection({
     if (!businessId) {
       setResults([]);
       setOpen(false);
-      setError("Connect Meta Ads to search locations.");
+      setError(t("metaCampaigns.adsManager.chrome.connectToSearchLocations"));
       return;
     }
 
@@ -158,7 +167,7 @@ export default function AdsManagerLocationsSection({
         setResults(rows);
         setOpen(true);
         if (!rows.length) {
-          setError("No locations found. Try another city name.");
+          setError(t("metaCampaigns.adsManager.chrome.noLocationsFound"));
         }
       } catch (err: unknown) {
         if (id !== reqId.current) return;
@@ -167,7 +176,7 @@ export default function AdsManagerLocationsSection({
         setOpen(false);
         setError(
           e?.response?.data?.error ||
-            "Location search failed. Check Meta connection."
+            t("metaCampaigns.adsManager.chrome.locationSearchFailed")
         );
       } finally {
         if (id === reqId.current) setBusy(false);
@@ -175,7 +184,7 @@ export default function AdsManagerLocationsSection({
     }, 280);
 
     return () => window.clearTimeout(timer);
-  }, [query, businessId]);
+  }, [query, businessId, t]);
 
   const commitLocations = (next: AdsManagerLocation[], focus?: string) => {
     onLocationsChange(next);
@@ -291,7 +300,7 @@ export default function AdsManagerLocationsSection({
         onClick={() => onExpandedChange(!expanded)}
       >
         <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
-          Locations
+          {t("metaCampaigns.adsManager.chrome.locations")}
           <Info className="h-3.5 w-3.5 text-[#65676B]" />
         </span>
         {expanded ? (
@@ -316,7 +325,9 @@ export default function AdsManagerLocationsSection({
                       <span className="inline-flex items-center gap-1.5 rounded-md border border-[#CED0D4] bg-[#F7F8FA] px-2 py-1 text-[12px] font-semibold text-[#050505]">
                         <MapPin className="h-3.5 w-3.5 text-[#31A24C]" />
                         {loc.include === false ? (
-                          <span className="text-[#65676B]">Exclude ·</span>
+                          <span className="text-[#65676B]">
+                            {t("metaCampaigns.adsManager.chrome.excludePrefix")}
+                          </span>
                         ) : null}
                         {isCity ? (
                           <button
@@ -327,7 +338,7 @@ export default function AdsManagerLocationsSection({
                               setFocusKey(id);
                             }}
                           >
-                            {locationLabel(loc)}
+                            {locationLabel(loc, t)}
                             <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
                           </button>
                         ) : (
@@ -343,7 +354,9 @@ export default function AdsManagerLocationsSection({
                           type="button"
                           className="ml-1 text-[#65676B] hover:text-[#FA383E]"
                           onClick={() => removeLocation(id)}
-                          aria-label="Remove location"
+                          aria-label={t(
+                            "metaCampaigns.adsManager.chrome.removeLocation"
+                          )}
                         >
                           ×
                         </button>
@@ -362,7 +375,7 @@ export default function AdsManagerLocationsSection({
                               <Check className="h-3.5 w-3.5 text-[#1877F2]" />
                             ) : null}
                           </span>
-                          Current city only
+                          {t("metaCampaigns.adsManager.chrome.currentCityOnly")}
                         </button>
                         <button
                           type="button"
@@ -379,7 +392,7 @@ export default function AdsManagerLocationsSection({
                               <Check className="h-3.5 w-3.5 text-[#1877F2]" />
                             ) : null}
                           </span>
-                          Cities within radius
+                          {t("metaCampaigns.adsManager.chrome.citiesWithinRadius")}
                           <Info className="h-3.5 w-3.5 text-[#8A8D91]" />
                         </button>
                         {!loc.cityOnly && loc.radiusMiles != null ? (
@@ -411,7 +424,7 @@ export default function AdsManagerLocationsSection({
                               className="w-12 rounded border border-[#CED0D4] px-1 py-0.5 text-center text-[12px] font-semibold"
                             />
                             <span className="text-[12px] font-semibold text-[#65676B]">
-                              mi
+                              {t("metaCampaigns.adsManager.chrome.milesAbbrev")}
                             </span>
                           </div>
                         ) : null}
@@ -423,7 +436,7 @@ export default function AdsManagerLocationsSection({
             </div>
           ) : (
             <p className="text-[13px] text-[#65676B]">
-              No locations selected yet. Search for a city to add it.
+              {t("metaCampaigns.adsManager.chrome.noLocationsYet")}
             </p>
           )}
 
@@ -444,17 +457,19 @@ export default function AdsManagerLocationsSection({
                       setBrowseOpen(false);
                     }}
                   >
-                    {includeMode === "include" ? "Include" : "Exclude"}
+                    {includeMode === "include"
+                      ? t("metaCampaigns.adsManager.chrome.include")
+                      : t("metaCampaigns.adsManager.chrome.exclude")}
                     <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
                   </button>
                   {includeOpen ? (
                     <div className="absolute left-0 top-full z-[1210] mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
                       {(
                         [
-                          ["include", "Include"],
-                          ["exclude", "Exclude"],
+                          ["include", "include"],
+                          ["exclude", "exclude"],
                         ] as const
-                      ).map(([value, label]) => (
+                      ).map(([value, labelKey]) => (
                         <button
                           key={value}
                           type="button"
@@ -469,7 +484,7 @@ export default function AdsManagerLocationsSection({
                               <Check className="h-3.5 w-3.5 text-[#1877F2]" />
                             ) : null}
                           </span>
-                          {label}
+                          {t(`metaCampaigns.adsManager.chrome.${labelKey}`)}
                         </button>
                       ))}
                     </div>
@@ -480,7 +495,9 @@ export default function AdsManagerLocationsSection({
                   <Search className="pointer-events-none absolute left-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
                   <input
                     className="h-full w-full border-0 bg-transparent py-0 pl-9 pr-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
-                    placeholder="Search locations"
+                    placeholder={t(
+                      "metaCampaigns.adsManager.chrome.searchLocations"
+                    )}
                     value={query}
                     autoComplete="off"
                     onChange={(e) => {
@@ -512,18 +529,18 @@ export default function AdsManagerLocationsSection({
                       setOpen(false);
                     }}
                   >
-                    Browse
+                    {t("metaCampaigns.adsManager.chrome.browse")}
                     <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
                   </button>
                   {browseOpen ? (
                     <div className="absolute right-0 top-full z-[1210] mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
                       {[
-                        { label: "Countries", q: "Israel" },
-                        { label: "Regions", q: "Haifa" },
-                        { label: "Cities", q: "Tel Aviv" },
+                        { labelKey: "browseCountries", q: "Israel" },
+                        { labelKey: "browseRegions", q: "Haifa" },
+                        { labelKey: "browseCities", q: "Tel Aviv" },
                       ].map((item) => (
                         <button
-                          key={item.label}
+                          key={item.labelKey}
                           type="button"
                           className="block w-full px-3 py-2.5 text-left text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
                           onClick={() => {
@@ -532,7 +549,7 @@ export default function AdsManagerLocationsSection({
                             setOpen(true);
                           }}
                         >
-                          {item.label}
+                          {t(`metaCampaigns.adsManager.chrome.${item.labelKey}`)}
                         </button>
                       ))}
                     </div>
@@ -544,7 +561,7 @@ export default function AdsManagerLocationsSection({
                 <div className="absolute left-0 right-0 top-full z-[1220] mt-1 max-h-60 overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
                   {busy && !results.length ? (
                     <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                      Searching…
+                      {t("metaCampaigns.adsManager.chrome.searching")}
                     </p>
                   ) : (
                     results.map((item) => {
@@ -575,7 +592,9 @@ export default function AdsManagerLocationsSection({
                             </span>
                           </span>
                           <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
-                            {selected ? "Added" : "Add"}
+                            {selected
+                              ? t("metaCampaigns.adsManager.chrome.added")
+                              : t("metaCampaigns.adsManager.chrome.add")}
                           </span>
                         </button>
                       );
@@ -591,8 +610,7 @@ export default function AdsManagerLocationsSection({
               </p>
             ) : (
               <p className="relative z-0 mt-2 text-[12px] leading-snug text-[#65676B]">
-                You can type countries, regions, cities or postal codes. For
-                cities, choose current city only or a radius — just like Meta.
+                {t("metaCampaigns.adsManager.chrome.locationSearchHint")}
               </p>
             )}
 
@@ -601,7 +619,7 @@ export default function AdsManagerLocationsSection({
                 locations={mapLocations}
                 focusKey={focusKey}
                 onSelectLocation={setFocusKey}
-                hint="Pins and radius circles match your selected cities from Meta location search."
+                hint={t("metaCampaigns.adsManager.chrome.mapHint")}
               />
             </div>
           </div>
@@ -615,11 +633,10 @@ export default function AdsManagerLocationsSection({
             />
             <span>
               <span className="font-semibold">
-                Reach more people likely to respond
+                {t("metaCampaigns.adsManager.chrome.reachMoreTitle")}
               </span>
               <span className="mt-0.5 block text-[12px] text-[#65676B]">
-                We&apos;ll also reach people interested in your selected cities
-                and regions, in those countries.
+                {t("metaCampaigns.adsManager.chrome.reachMoreBody")}
               </span>
             </span>
           </label>

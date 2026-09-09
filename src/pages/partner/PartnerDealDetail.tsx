@@ -18,9 +18,12 @@ import { absoluteCustomerUrl } from "../../lib/partnerBranding";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
+import { catalogProductName } from "../../i18n/partnerCatalogCopy";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 export default function PartnerDealDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const { dealId } = useParams();
   const [params] = useSearchParams();
   const [deal, setDeal] = useState<PartnerDeal | null>(null);
@@ -70,7 +73,12 @@ export default function PartnerDealDetail() {
         const names: Record<string, string> = {};
         for (const line of data.deal.lines || []) {
           if (isCommissionSku(line.sku)) continue;
-          names[line.sku] = publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe || line.sku, t);
+          const localized = catalogProductName(t, line);
+          names[line.sku] = publicPackageLabel(
+            String(line.displayNameHe || "").trim() || localized,
+            localized || line.sku,
+            t
+          );
         }
         setLineNames(names);
       }
@@ -453,9 +461,9 @@ export default function PartnerDealDetail() {
           {stripeItems.map((item) => (
             <li key={item.sku} className="flex justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
               <span>
-                {item.nameEn} · {billingLabel(item.billing, t)}
+                {catalogProductName(t, item)} · {billingLabel(item.billing, t)}
               </span>
-              <span className="font-black">{formatIls(item.amountIls)}</span>
+              <span className="font-black">{formatIls(item.amountIls, locale)}</span>
             </li>
           ))}
         </ul>

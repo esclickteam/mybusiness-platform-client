@@ -2,31 +2,41 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./XrayTab.css";
 
-const generalQuestions = [
-  "How clear are you about who your target audience is?",
-  "How profitable is your business compared to its expenses?",
-  "How much control do you have over your business’s daily operations?",
-  "Do you have a defined marketing plan?",
-  "How often do you check customer satisfaction?"
+const GENERAL_QUESTION_IDS = [
+  "general.q1",
+  "general.q2",
+  "general.q3",
+  "general.q4",
+  "general.q5",
 ];
 
-const businessTypes = {
-  "Services": [
-    "How do you acquire new clients?",
-    "What do you do to retain existing clients?"
-  ],
-  "Commerce": [
-    "How much traffic does your website or store receive?",
-    "What are your biggest challenges in sales?"
-  ],
-  "Restaurant / Café": [
-    "How do you attract new customers?",
-    "Do you have a plan for retaining regular customers?"
-  ],
-  "Studio / Clinic": [
-    "How do clients hear about you for the first time?",
-    "What do you do to improve your service?"
-  ]
+const BUSINESS_TYPES = [
+  {
+    id: "services",
+    typeLabelKey: "leftover.xrayChrome.typeServices",
+    questionIds: ["types.services.q1", "types.services.q2"],
+  },
+  {
+    id: "commerce",
+    typeLabelKey: "leftover.xrayChrome.typeCommerce",
+    questionIds: ["types.commerce.q1", "types.commerce.q2"],
+  },
+  {
+    id: "restaurant",
+    typeLabelKey: "leftover.xrayChrome.typeRestaurant",
+    questionIds: ["types.restaurant.q1", "types.restaurant.q2"],
+  },
+  {
+    id: "studio",
+    typeLabelKey: "leftover.xrayChrome.typeStudio",
+    questionIds: ["types.studio.q1", "types.studio.q2"],
+  },
+];
+
+const questionTKey = (questionId) => {
+  // general.q1 -> leftover.xrayChrome.questions.general.q1
+  // types.services.q1 -> leftover.xrayChrome.questions.types.services.q1
+  return `leftover.xrayChrome.questions.${questionId}`;
 };
 
 const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
@@ -34,17 +44,57 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
   const [answers, setAnswers] = useState({});
   const [businessType, setBusinessType] = useState("");
 
-  const handleInputChange = (question, value) => {
-    setAnswers((prev) => ({ ...prev, [question]: value }));
+  const selectedType = BUSINESS_TYPES.find((type) => type.id === businessType);
+
+  const handleInputChange = (questionKey, value) => {
+    setAnswers((prev) => ({ ...prev, [questionKey]: value }));
+  };
+
+  const handleBusinessTypeChange = (nextType) => {
+    setBusinessType(nextType);
+    setAnswers((prev) => {
+      const next = { ...prev };
+      BUSINESS_TYPES.forEach((type) => {
+        type.questionIds.forEach((qid) => {
+          delete next[qid];
+        });
+      });
+      return next;
+    });
   };
 
   const handleSubmit = () => {
-    if (!businessType || Object.keys(answers).length < 5) {
+    const generalFilled = GENERAL_QUESTION_IDS.every(
+      (qid) => answers[qid] !== undefined && answers[qid] !== ""
+    );
+    if (!businessType || !generalFilled) {
       alert(t("leftover.xray.fillAll"));
       return;
     }
-    // Sends businessId and conversationId along with the answers
-    onSubmit({ answers, businessType, businessId, conversationId });
+
+    const payloadAnswers = {};
+    GENERAL_QUESTION_IDS.forEach((questionKey) => {
+      payloadAnswers[questionKey] = {
+        questionKey,
+        value: answers[questionKey],
+      };
+    });
+    selectedType?.questionIds.forEach((questionKey) => {
+      const value = answers[questionKey];
+      if (value !== undefined && String(value).trim() !== "") {
+        payloadAnswers[questionKey] = {
+          questionKey,
+          value,
+        };
+      }
+    });
+
+    onSubmit({
+      answers: payloadAnswers,
+      businessType,
+      businessId,
+      conversationId,
+    });
   };
 
   return (
@@ -60,12 +110,13 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
         className="xray-form"
       >
         <h3>{t("leftover.xrayChrome.generalQuestions")}</h3>
-        {generalQuestions.map((q, idx) => (
-          <div key={idx} className="form-group">
-            <label>{q}</label>
+        {GENERAL_QUESTION_IDS.map((questionKey) => (
+          <div key={questionKey} className="form-group">
+            <label htmlFor={questionKey}>{t(questionTKey(questionKey))}</label>
             <select
-              onChange={(e) => handleInputChange(q, e.target.value)}
-              defaultValue=""
+              id={questionKey}
+              value={answers[questionKey] ?? ""}
+              onChange={(e) => handleInputChange(questionKey, e.target.value)}
               required
             >
               <option value="" disabled>
@@ -83,31 +134,34 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
         <h3>{t("leftover.xrayChrome.businessTypeQ")}</h3>
         <div className="form-group">
           <select
-            onChange={(e) => setBusinessType(e.target.value)}
-            defaultValue=""
+            value={businessType}
+            onChange={(e) => handleBusinessTypeChange(e.target.value)}
             required
           >
             <option value="" disabled>
               {t("leftover.xrayChrome.selectType")}
             </option>
-            {Object.keys(businessTypes).map((type) => (
-              <option key={type} value={type}>
-                {t(`leftover.xrayChrome.type${type === "Services" ? "Services" : type === "Commerce" ? "Commerce" : type === "Restaurant / Café" ? "Restaurant" : "Studio"}`)}
+            {BUSINESS_TYPES.map((type) => (
+              <option key={type.id} value={type.id}>
+                {t(type.typeLabelKey)}
               </option>
             ))}
           </select>
         </div>
 
-        {businessType && (
+        {selectedType && (
           <>
             <h4>{t("leftover.xrayChrome.openByType")}</h4>
-            {businessTypes[businessType].map((q, idx) => (
-              <div key={idx} className="form-group">
-                <label>{q}</label>
+            {selectedType.questionIds.map((questionKey) => (
+              <div key={questionKey} className="form-group">
+                <label htmlFor={questionKey}>{t(questionTKey(questionKey))}</label>
                 <textarea
+                  id={questionKey}
                   rows={3}
-                  onChange={(e) => handleInputChange(q, e.target.value)}
-                ></textarea>
+                  value={answers[questionKey] ?? ""}
+                  placeholder={t("leftover.xrayChrome.openAnswerPh")}
+                  onChange={(e) => handleInputChange(questionKey, e.target.value)}
+                />
               </div>
             ))}
           </>

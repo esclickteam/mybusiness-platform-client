@@ -5,9 +5,10 @@ import type { AmountDue } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import { PartnerCard } from "../../components/partner/partnerUi";
 import { getIntlLocale } from "../../i18n/localeUtils";
+import { partnerStatusLabel } from "../../lib/partnerLabels";
 
-function ils(value?: number, locale = "he-IL") {
-  return `₪${Number(value || 0).toLocaleString(locale)}`;
+function ils(value?: number, locale?: string) {
+  return `₪${Number(value || 0).toLocaleString(locale || "en-US")}`;
 }
 
 export default function PartnerRevenue() {
@@ -105,7 +106,7 @@ export default function PartnerRevenue() {
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
               <th className="px-4 py-3">{t("partner.revenue.type")}</th>
-              <th className="px-4 py-3">SKU</th>
+              <th className="px-4 py-3">{t("partner.revenue.sku")}</th>
               <th className="px-4 py-3">{t("partner.revenue.amount")}</th>
               <th className="px-4 py-3">{t("partner.revenue.description")}</th>
             </tr>
@@ -113,7 +114,9 @@ export default function PartnerRevenue() {
           <tbody>
             {items.map((row) => (
               <tr key={row._id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-bold">{row.entryType}</td>
+                <td className="px-4 py-3 font-bold">
+                  {partnerStatusLabel(row.entryType, t)}
+                </td>
                 <td className="px-4 py-3">{row.sku}</td>
                 <td className="px-4 py-3">{ils(row.amountIls, locale)}</td>
                 <td className="px-4 py-3">{row.description}</td>
