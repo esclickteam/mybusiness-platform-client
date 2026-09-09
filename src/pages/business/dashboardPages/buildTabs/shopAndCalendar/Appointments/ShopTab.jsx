@@ -227,26 +227,26 @@ const ShopTab = () => {
           <div className="payment-inputs">
             <input
               type="text"
-              placeholder={`Key for ${selectedProvider}`}
+              placeholder={t('leftover.shopChrome.keyFor', { provider: selectedProvider })}
               value={paymentKeys[selectedProvider] || ''}
               onChange={handleKeyChange}
             />
-            <p className="payment-info">Save this key for payment authentication.</p>
+            <p className="payment-info">{t('leftover.shopChrome.savePaymentKey')}</p>
           </div>
         )}
       </div>
 
       {/* Payment Methods */}
       <div className="payment-methods">
-        <h4>⚙️ Payment Options for Customers</h4>
+        <h4>⚙️ {t('leftover.shopChrome.paymentOptions')}</h4>
         <select
           className="select-input"
           value={paymentMethod}
           onChange={e => setPaymentMethod(e.target.value)}
         >
-          <option value="online">Online Payment Only</option>
-          <option value="phone">Phone Payment Only</option>
-          <option value="both">Both</option>
+          <option value="online">{t('leftover.shopChrome.onlineOnly')}</option>
+          <option value="phone">{t('leftover.shopChrome.phoneOnly')}</option>
+          <option value="both">{t('leftover.shopChrome.both')}</option>
         </select>
       </div>
 

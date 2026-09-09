@@ -1107,6 +1107,53 @@ const APPOINTMENTS_MAIN = {
   setCalendar: row("Set calendar", "הגדרת יומן", "Configurar calendario", "Definir agenda", "ضبط التقويم"),
 };
 
+
+const CHATBOT_EXTRA = {
+  supportViewConversation: row("View conversation", "צפייה בשיחה", "Ver conversación", "Ver conversa", "عرض المحادثة"),
+  supportStatusClosed: row("Conversation closed · view only", "שיחה סגורה · צפייה בלבד", "Conversación cerrada · solo lectura", "Conversa fechada · somente leitura", "المحادثة مغلقة · للعرض فقط"),
+  supportResumeChat: row("Continue this conversation", "המשך שיחה זו", "Continuar esta conversación", "Continuar esta conversa", "متابعة هذه المحادثة"),
+  supportEmptyTranscript: row("No messages in this conversation", "אין הודעות בשיחה זו", "No hay mensajes en esta conversación", "Não há mensagens nesta conversa", "لا توجد رسائل في هذه المحادثة"),
+  supportStatusClosedShort: row("Closed", "נסגרה", "Cerrada", "Fechada", "مغلقة"),
+};
+
+const PROFILE_EDIT = {
+  title: row("Edit Profile", "עריכת פרופיל", "Editar perfil", "Editar perfil", "تعديل الملف الشخصي"),
+  businessName: row("Business Name:", "שם העסק:", "Nombre del negocio:", "Nome do negócio:", "اسم العمل:"),
+  businessNamePh: row("Enter business name", "הזינו שם עסק", "Introduce el nombre del negocio", "Informe o nome do negócio", "أدخلوا اسم العمل"),
+  email: row("Email:", "אימייל:", "Email:", "E-mail:", "البريد:"),
+  emailPh: row("Enter email", "הזינו אימייל", "Introduce el email", "Informe o e-mail", "أدخلوا البريد"),
+  phone: row("Phone:", "טלפון:", "Teléfono:", "Telefone:", "الهاتف:"),
+  phonePh: row("Enter phone", "הזינו טלפון", "Introduce el teléfono", "Informe o telefone", "أدخلوا الهاتف"),
+  city: row("City:", "עיר:", "Ciudad:", "Cidade:", "المدينة:"),
+  cityPh: row("Enter city", "הזינו עיר", "Introduce la ciudad", "Informe a cidade", "أدخلوا المدينة"),
+  save: row("Save", "שמירה", "Guardar", "Salvar", "حفظ"),
+  savedOk: row("Profile saved successfully ✅", "הפרופיל נשמר בהצלחה ✅", "Perfil guardado correctamente ✅", "Perfil salvo com sucesso ✅", "تم حفظ الملف الشخصي بنجاح ✅"),
+};
+
+const BIZ_CHAT_CHROME = {
+  sendFailedTitle: row("Message failed", "ההודעה נכשלה", "Mensaje fallido", "Falha na mensagem", "فشل الرسالة"),
+  sendFailedBody: row("Could not send the message. Please try again.", "לא הצלחנו לשלוח את ההודעה. נסו שוב.", "No se pudo enviar el mensaje. Inténtalo de nuevo.", "Não foi possível enviar a mensagem. Tente de novo.", "تعذّر إرسال الرسالة. حاولوا مرة أخرى."),
+  loadingChat: row("Loading chat...", "טוען צ׳אט...", "Cargando chat...", "Carregando chat...", "جارٍ تحميل المحادثة..."),
+  loadingMessages: row("Loading messages...", "טוען הודעות...", "Cargando mensajes...", "Carregando mensagens...", "جارٍ تحميل الرسائل..."),
+  loadingChatData: row("Loading chat data...", "טוען נתוני צ׳אט...", "Cargando datos del chat...", "Carregando dados do chat...", "جارٍ تحميل بيانات المحادثة..."),
+};
+
+const LOADING_CHROME = {
+  appointments: row("Loading appointments...", "טוען תורים...", "Cargando citas...", "Carregando agendamentos...", "جارٍ تحميل المواعيد..."),
+  slots: row("Loading available slots…", "טוען שעות פנויות…", "Cargando horarios disponibles…", "Carregando horários disponíveis…", "جارٍ تحميل الأوقات المتاحة…"),
+  bankDetails: row("Loading bank details...", "טוען פרטי בנק...", "Cargando datos bancarios...", "Carregando dados bancários...", "جارٍ تحميل بيانات البنك..."),
+};
+
+const SHOP_CHROME = {
+  savePaymentKey: row("Save this key for payment authentication.", "שמרו את המפתח לאימות תשלום.", "Guarda esta clave para autenticar pagos.", "Salve esta chave para autenticação de pagamento.", "احفظوا هذا المفتاح لمصادقة الدفع."),
+  paymentOptions: row("Payment Options for Customers", "אפשרויות תשלום ללקוחות", "Opciones de pago para clientes", "Opções de pagamento para clientes", "خيارات الدفع للعملاء"),
+  onlineOnly: row("Online Payment Only", "תשלום אונליין בלבד", "Solo pago online", "Somente pagamento online", "الدفع عبر الإنترنت فقط"),
+  phoneOnly: row("Phone Payment Only", "תשלום טלפוני בלבד", "Solo pago por teléfono", "Somente pagamento por telefone", "الدفع عبر الهاتف فقط"),
+  both: row("Both", "שניהם", "Ambos", "Ambos", "كلاهما"),
+  keyFor: row("Key for {{provider}}", "מפתח עבור {{provider}}", "Clave para {{provider}}", "Chave para {{provider}}", "مفتاح لـ {{provider}}"),
+};
+
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -1153,6 +1200,11 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       upload: pickLocaleMap(UPLOAD_ALERTS, locale),
       xray: pickLocaleMap(XRAY_ALERTS, locale),
       misc: pickLocaleMap(MISC_ALERTS, locale),
+      profileEdit: pickLocaleMap(PROFILE_EDIT, locale),
+      bizChatChrome: pickLocaleMap(BIZ_CHAT_CHROME, locale),
+      loading: pickLocaleMap(LOADING_CHROME, locale),
+      shopChrome: pickLocaleMap(SHOP_CHROME, locale),
     },
+    chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };
 }

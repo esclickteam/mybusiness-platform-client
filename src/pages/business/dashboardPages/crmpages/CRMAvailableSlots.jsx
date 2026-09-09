@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CRMAvailableSlots.css";
@@ -9,6 +10,7 @@ const CRMAvailableSlots = ({
   duration = 30,     // ⏱️ משך פגישה בדקות (דינמי)
   token,
 }) => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -70,7 +72,7 @@ const CRMAvailableSlots = ({
             }`}
       </div>
 
-      {loading && <p>Loading available slots…</p>}
+      {loading && <p>{t('leftover.loading.slots')}</p>}
 
       {error && <p className="error">Error: {error}</p>}
 

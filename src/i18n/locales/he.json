@@ -4315,7 +4315,12 @@
     "humanActive": "מחוברים לנציג בזמן אמת",
     "humanError": "לא הצלחנו לחבר לנציג כרגע. נסו שוב בעוד רגע.",
     "humanPlaceholder": "כתבו הודעה לנציג...",
-    "agentLabel": "נציג שירות"
+    "agentLabel": "נציג שירות",
+    "supportViewConversation": "צפייה בשיחה",
+    "supportStatusClosed": "שיחה סגורה · צפייה בלבד",
+    "supportResumeChat": "המשך שיחה זו",
+    "supportEmptyTranscript": "אין הודעות בשיחה זו",
+    "supportStatusClosedShort": "נסגרה"
   },
   "aiInsights": {
     "loadingAria": "טוען המלצות",
@@ -19676,6 +19681,39 @@
       "weeklyHoursSaved": "שעות הפעילות השבועיות נשמרו!",
       "approveRecError": "שגיאה באישור ההמלצה: {{detail}}",
       "messageSendFailed": "שליחת ההודעה נכשלה: {{detail}}"
+    },
+    "profileEdit": {
+      "title": "עריכת פרופיל",
+      "businessName": "שם העסק:",
+      "businessNamePh": "הזינו שם עסק",
+      "email": "אימייל:",
+      "emailPh": "הזינו אימייל",
+      "phone": "טלפון:",
+      "phonePh": "הזינו טלפון",
+      "city": "עיר:",
+      "cityPh": "הזינו עיר",
+      "save": "שמירה",
+      "savedOk": "הפרופיל נשמר בהצלחה ✅"
+    },
+    "bizChatChrome": {
+      "sendFailedTitle": "ההודעה נכשלה",
+      "sendFailedBody": "לא הצלחנו לשלוח את ההודעה. נסו שוב.",
+      "loadingChat": "טוען צ׳אט...",
+      "loadingMessages": "טוען הודעות...",
+      "loadingChatData": "טוען נתוני צ׳אט..."
+    },
+    "loading": {
+      "appointments": "טוען תורים...",
+      "slots": "טוען שעות פנויות…",
+      "bankDetails": "טוען פרטי בנק..."
+    },
+    "shopChrome": {
+      "savePaymentKey": "שמרו את המפתח לאימות תשלום.",
+      "paymentOptions": "אפשרויות תשלום ללקוחות",
+      "onlineOnly": "תשלום אונליין בלבד",
+      "phoneOnly": "תשלום טלפוני בלבד",
+      "both": "שניהם",
+      "keyFor": "מפתח עבור {{provider}}"
     }
   }
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api";
 import "./MarketerBankDetailsForm.css";
 
 export default function MarketerBankDetailsForm({ onSubmit }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [form, setForm] = useState({
@@ -85,7 +87,7 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
   };
 
   if (loadingInitial) {
-    return <p>Loading bank details...</p>;
+    return <p>{t('leftover.loading.bankDetails')}</p>;
   }
 
   return (

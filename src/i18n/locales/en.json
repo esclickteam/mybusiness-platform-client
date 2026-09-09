@@ -4315,7 +4315,12 @@
     "humanActive": "Connected to a live agent",
     "humanError": "Couldn't connect to an agent right now. Please try again shortly.",
     "humanPlaceholder": "Write a message to the agent...",
-    "agentLabel": "Support agent"
+    "agentLabel": "Support agent",
+    "supportViewConversation": "View conversation",
+    "supportStatusClosed": "Conversation closed · view only",
+    "supportResumeChat": "Continue this conversation",
+    "supportEmptyTranscript": "No messages in this conversation",
+    "supportStatusClosedShort": "Closed"
   },
   "aiInsights": {
     "loadingAria": "Loading recommendations",
@@ -19687,6 +19692,39 @@
       "weeklyHoursSaved": "Weekly business hours have been saved!",
       "approveRecError": "Error approving the recommendation: {{detail}}",
       "messageSendFailed": "Message sending failed: {{detail}}"
+    },
+    "profileEdit": {
+      "title": "Edit Profile",
+      "businessName": "Business Name:",
+      "businessNamePh": "Enter business name",
+      "email": "Email:",
+      "emailPh": "Enter email",
+      "phone": "Phone:",
+      "phonePh": "Enter phone",
+      "city": "City:",
+      "cityPh": "Enter city",
+      "save": "Save",
+      "savedOk": "Profile saved successfully ✅"
+    },
+    "bizChatChrome": {
+      "sendFailedTitle": "Message failed",
+      "sendFailedBody": "Could not send the message. Please try again.",
+      "loadingChat": "Loading chat...",
+      "loadingMessages": "Loading messages...",
+      "loadingChatData": "Loading chat data..."
+    },
+    "loading": {
+      "appointments": "Loading appointments...",
+      "slots": "Loading available slots…",
+      "bankDetails": "Loading bank details..."
+    },
+    "shopChrome": {
+      "savePaymentKey": "Save this key for payment authentication.",
+      "paymentOptions": "Payment Options for Customers",
+      "onlineOnly": "Online Payment Only",
+      "phoneOnly": "Phone Payment Only",
+      "both": "Both",
+      "keyFor": "Key for {{provider}}"
     }
   }
 }

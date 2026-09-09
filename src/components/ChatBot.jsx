@@ -168,19 +168,11 @@ export default function ChatBot({
   const sendingRef = useRef(false);
   const businessIdRef = useRef(user?.businessId || null);
 
-  const historyTitle = t("chatbot.supportHistoryTitle", {
-    defaultValue: "היסטוריית שיחות",
-  });
-  const backAria = t("chatbot.supportBackAria", { defaultValue: "חזרה" });
-  const historyAria = t("chatbot.supportHistoryAria", {
-    defaultValue: "היסטוריה",
-  });
-  const emptyHistory = t("chatbot.supportEmptyHistory", {
-    defaultValue: "אין שיחות קודמות",
-  });
-  const openHistoryLabel = t("chatbot.supportOpenHistory", {
-    defaultValue: "צפייה בהיסטוריה",
-  });
+  const historyTitle = t("chatbot.supportHistoryTitle");
+  const backAria = t("chatbot.supportBackAria");
+  const historyAria = t("chatbot.supportHistoryAria");
+  const emptyHistory = t("chatbot.supportEmptyHistory");
+  const openHistoryLabel = t("chatbot.supportOpenHistory");
 
   const quickPrompts = useMemo(() => {
     if (user?.businessId) {
@@ -553,10 +545,7 @@ export default function ChatBot({
             ...msgs,
             {
               sender: "bot",
-              text: t("chatbot.sessionExpired", {
-                defaultValue:
-                  "פג תוקף החיבור. התחברו מחדש כדי שהעוזר יוכל לקרוא את נתוני החשבון.",
-              }),
+              text: t("chatbot.sessionExpired"),
               canRetry: true,
             },
           ]);
@@ -932,9 +921,7 @@ export default function ChatBot({
       ? t("chatbot.humanTitle")
       : mode === "history"
         ? historyViewItem
-          ? t("chatbot.supportViewConversation", {
-              defaultValue: "צפייה בשיחה",
-            })
+          ? t("chatbot.supportViewConversation")
           : historyTitle
         : t("chatbot.title");
 
@@ -1040,9 +1027,7 @@ export default function ChatBot({
                 </div>
                 <p className="mt-1 text-[11px] font-medium text-slate-500">
                   {historyViewItem.status === "closed"
-                    ? t("chatbot.supportStatusClosed", {
-                        defaultValue: "שיחה סגורה · צפייה בלבד",
-                      })
+                    ? t("chatbot.supportStatusClosed")
                     : historyViewItem.status === "active"
                       ? t("chatbot.humanActive")
                       : historyViewItem.status === "waiting"
@@ -1055,9 +1040,7 @@ export default function ChatBot({
                     onClick={() => resumeHistoryConversation(historyViewItem)}
                     className="mt-2 w-full rounded-lg bg-violet-700 px-3 py-1.5 text-[11px] font-bold text-white"
                   >
-                    {t("chatbot.supportResumeChat", {
-                      defaultValue: "המשך שיחה זו",
-                    })}
+                    {t("chatbot.supportResumeChat")}
                   </button>
                 )}
               </div>
@@ -1072,9 +1055,7 @@ export default function ChatBot({
                 </div>
               ) : historyViewMessages.length === 0 ? (
                 <p className="py-8 text-center text-sm font-medium text-slate-500">
-                  {t("chatbot.supportEmptyTranscript", {
-                    defaultValue: "אין הודעות בשיחה זו",
-                  })}
+                  {t("chatbot.supportEmptyTranscript")}
                 </p>
               ) : (
                 historyViewMessages.map((msg, i) => (
@@ -1160,9 +1141,7 @@ export default function ChatBot({
                       </p>
                       <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
                         {item.status === "closed"
-                          ? t("chatbot.supportStatusClosedShort", {
-                              defaultValue: "נסגרה",
-                            })
+                          ? t("chatbot.supportStatusClosedShort")
                           : item.status === "active"
                             ? t("chatbot.humanActive")
                             : item.status === "waiting"
@@ -1214,7 +1193,7 @@ export default function ChatBot({
                 type="tel"
                 value={humanPhone}
                 onChange={(e) => setHumanPhone(e.target.value)}
-                placeholder={t("chatbot.humanPhone", { defaultValue: "טלפון (מומלץ ל-WhatsApp)" })}
+                placeholder={t("chatbot.humanPhone")}
                 className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-violet-300"
               />
               <textarea
@@ -1371,7 +1350,7 @@ export default function ChatBot({
                         disabled={isLoading}
                         className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-800 transition hover:bg-violet-100 disabled:opacity-50"
                       >
-                        {t("chatbot.retry", { defaultValue: "נסו שוב" })}
+                        {t("chatbot.retry")}
                       </button>
                     </div>
                   )}
@@ -1406,9 +1385,7 @@ export default function ChatBot({
                   <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:300ms]" />
                   {isLoading && mode === "bot" && (
                     <span className="text-[11px] font-medium text-slate-500">
-                      {t("chatbot.toolLoading", {
-                        defaultValue: "קורא מהמערכת...",
-                      })}
+                      {t("chatbot.toolLoading")}
                     </span>
                   )}
                 </div>

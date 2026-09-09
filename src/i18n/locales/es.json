@@ -4315,7 +4315,12 @@
     "humanActive": "Conectado a un agente en vivo",
     "humanError": "No pude conectarme con un agente ahora mismo. Por favor, inténtelo de nuevo más tarde.",
     "humanPlaceholder": "Escribe un mensaje al agente...",
-    "agentLabel": "Agente de apoyo"
+    "agentLabel": "Agente de apoyo",
+    "supportViewConversation": "Ver conversación",
+    "supportStatusClosed": "Conversación cerrada · solo lectura",
+    "supportResumeChat": "Continuar esta conversación",
+    "supportEmptyTranscript": "No hay mensajes en esta conversación",
+    "supportStatusClosedShort": "Cerrada"
   },
   "aiInsights": {
     "loadingAria": "Cargando recomendaciones",
@@ -19687,6 +19692,39 @@
       "weeklyHoursSaved": "¡El horario semanal se ha guardado!",
       "approveRecError": "Error al aprobar la recomendación: {{detail}}",
       "messageSendFailed": "Error al enviar el mensaje: {{detail}}"
+    },
+    "profileEdit": {
+      "title": "Editar perfil",
+      "businessName": "Nombre del negocio:",
+      "businessNamePh": "Introduce el nombre del negocio",
+      "email": "Email:",
+      "emailPh": "Introduce el email",
+      "phone": "Teléfono:",
+      "phonePh": "Introduce el teléfono",
+      "city": "Ciudad:",
+      "cityPh": "Introduce la ciudad",
+      "save": "Guardar",
+      "savedOk": "Perfil guardado correctamente ✅"
+    },
+    "bizChatChrome": {
+      "sendFailedTitle": "Mensaje fallido",
+      "sendFailedBody": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+      "loadingChat": "Cargando chat...",
+      "loadingMessages": "Cargando mensajes...",
+      "loadingChatData": "Cargando datos del chat..."
+    },
+    "loading": {
+      "appointments": "Cargando citas...",
+      "slots": "Cargando horarios disponibles…",
+      "bankDetails": "Cargando datos bancarios..."
+    },
+    "shopChrome": {
+      "savePaymentKey": "Guarda esta clave para autenticar pagos.",
+      "paymentOptions": "Opciones de pago para clientes",
+      "onlineOnly": "Solo pago online",
+      "phoneOnly": "Solo pago por teléfono",
+      "both": "Ambos",
+      "keyFor": "Clave para {{provider}}"
     }
   }
 }

@@ -1,5 +1,6 @@
 // src/pages/business/dashboardPages/build/buildTabs/ChatTab.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 // General build page styles
 import '../build/Build.css';
 // Specific styles for the chat tab
@@ -10,9 +11,10 @@ import CustomerChatPreview from './CustomerChatPreview';
 import { v4 as uuidv4 } from 'uuid';
 
 const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  if (!businessDetails) return <p>Loading chat data...</p>;
+  if (!businessDetails) return <p>{t('leftover.bizChatChrome.loadingChatData')}</p>;
 
   const messages = businessDetails?.messages ?? [];
 

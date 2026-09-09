@@ -4315,7 +4315,12 @@
     "humanActive": "متصل بوكيل مباشر",
     "humanError": "لا يمكن الاتصال بعميل الآن يرجى المحاولة مرة أخرى قريبا.",
     "humanPlaceholder": "اكتب رسالة إلى الوكيل...",
-    "agentLabel": "وكيل الدعم"
+    "agentLabel": "وكيل الدعم",
+    "supportViewConversation": "عرض المحادثة",
+    "supportStatusClosed": "المحادثة مغلقة · للعرض فقط",
+    "supportResumeChat": "متابعة هذه المحادثة",
+    "supportEmptyTranscript": "لا توجد رسائل في هذه المحادثة",
+    "supportStatusClosedShort": "مغلقة"
   },
   "aiInsights": {
     "loadingAria": "تحميل التوصيات",
@@ -19687,6 +19692,39 @@
       "weeklyHoursSaved": "تم حفظ ساعات العمل الأسبوعية!",
       "approveRecError": "خطأ في الموافقة على التوصية: {{detail}}",
       "messageSendFailed": "فشل إرسال الرسالة: {{detail}}"
+    },
+    "profileEdit": {
+      "title": "تعديل الملف الشخصي",
+      "businessName": "اسم العمل:",
+      "businessNamePh": "أدخلوا اسم العمل",
+      "email": "البريد:",
+      "emailPh": "أدخلوا البريد",
+      "phone": "الهاتف:",
+      "phonePh": "أدخلوا الهاتف",
+      "city": "المدينة:",
+      "cityPh": "أدخلوا المدينة",
+      "save": "حفظ",
+      "savedOk": "تم حفظ الملف الشخصي بنجاح ✅"
+    },
+    "bizChatChrome": {
+      "sendFailedTitle": "فشل الرسالة",
+      "sendFailedBody": "تعذّر إرسال الرسالة. حاولوا مرة أخرى.",
+      "loadingChat": "جارٍ تحميل المحادثة...",
+      "loadingMessages": "جارٍ تحميل الرسائل...",
+      "loadingChatData": "جارٍ تحميل بيانات المحادثة..."
+    },
+    "loading": {
+      "appointments": "جارٍ تحميل المواعيد...",
+      "slots": "جارٍ تحميل الأوقات المتاحة…",
+      "bankDetails": "جارٍ تحميل بيانات البنك..."
+    },
+    "shopChrome": {
+      "savePaymentKey": "احفظوا هذا المفتاح لمصادقة الدفع.",
+      "paymentOptions": "خيارات الدفع للعملاء",
+      "onlineOnly": "الدفع عبر الإنترنت فقط",
+      "phoneOnly": "الدفع عبر الهاتف فقط",
+      "both": "كلاهما",
+      "keyFor": "مفتاح لـ {{provider}}"
     }
   }
 }

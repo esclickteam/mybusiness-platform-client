@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import API from "@api";
 
 const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
@@ -10,6 +11,7 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
     if (!businessId || (!email && !phone)) return;
 
     async function fetchAppointments() {
+  const { t } = useTranslation();
       setLoading(true);
       setError(null);
       try {
@@ -61,7 +63,7 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
       </button>
       <h3>Appointment History</h3>
 
-      {loading && <p>Loading appointments...</p>}
+      {loading && <p>{t('leftover.loading.appointments')}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && appointments.length === 0 && <p>No appointments to display</p>}

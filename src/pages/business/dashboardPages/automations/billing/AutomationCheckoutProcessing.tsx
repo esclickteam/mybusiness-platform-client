@@ -161,13 +161,10 @@ export default function AutomationCheckoutProcessing({
               <Loader2 size={28} className="ax-billing-spin" />
             </div>
             <h2 id={titleId}>
-              {t("automations.billing.checkout.received", "התשלום התקבל")}
+              {t("automations.billing.checkout.received")}
             </h2>
             <p>
-              {t(
-                "automations.billing.checkout.updating",
-                "מעדכנים את חבילת האוטומציות..."
-              )}
+              {t("automations.billing.checkout.updating")}
             </p>
           </>
         ) : null}
@@ -177,14 +174,10 @@ export default function AutomationCheckoutProcessing({
             <h2 id={titleId}>
               {t("automations.billing.checkout.activated", {
                 plan: planName,
-                defaultValue: "חבילת {{plan}} הופעלה בהצלחה",
               })}
             </h2>
             <p>
-              {t(
-                "automations.billing.checkout.continueHint",
-                "אפשר לחזור ולהמשיך לעבוד עם האוטומציות."
-              )}
+              {t("automations.billing.checkout.continueHint")}
             </p>
             <button type="button" className="ax-btn ax-btn--primary" onClick={onClose}>
               {t("automations.runs.backToAutomations")}
@@ -195,16 +188,10 @@ export default function AutomationCheckoutProcessing({
         {phase === "timeout" ? (
           <>
             <h2 id={titleId}>
-              {t(
-                "automations.billing.checkout.timeoutTitle",
-                "התשלום התקבל והעדכון עדיין מתבצע."
-              )}
+              {t("automations.billing.checkout.timeoutTitle")}
             </h2>
             <p>
-              {t(
-                "automations.billing.checkout.timeoutHint",
-                "רוב העדכונים מסתיימים תוך זמן קצר."
-              )}
+              {t("automations.billing.checkout.timeoutHint")}
             </p>
             <button type="button" className="ax-btn ax-btn--primary" onClick={onClose}>
               {t("automations.runs.backToAutomations")}
