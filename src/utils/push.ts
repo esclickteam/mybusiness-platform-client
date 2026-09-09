@@ -1,5 +1,9 @@
 import API from "@api";
 import {
+  canUseBusinessPushContext,
+  readStoredPushAuthUser,
+} from "./pushBusinessContext";
+import {
   SW_SCOPE,
   SW_URL,
   isCurrentSwScript,
@@ -206,6 +210,7 @@ export type SubscribeResult = {
     | "ios-install"
     | "entitlement-required"
     | "preference-off"
+    | "no-business-context"
     | "no-subscription"
     | "error";
   detail?: string;
@@ -243,6 +248,9 @@ export async function subscribeToPush(
   options: { forceRebind?: boolean } = {}
 ): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
+  if (!canUseBusinessPushContext(readStoredPushAuthUser())) {
+    return { ok: false, reason: "no-business-context" };
+  }
 
   // iOS only delivers Web Push from an installed Home Screen PWA.
   if (isIos() && !isStandalone()) {
@@ -339,6 +347,9 @@ async function saveExistingPushSubscription(
  */
 export async function bindExistingPushSubscription(): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
+  if (!canUseBusinessPushContext(readStoredPushAuthUser())) {
+    return { ok: false, reason: "no-business-context" };
+  }
   if (Notification.permission !== "granted") {
     return {
       ok: false,
@@ -393,6 +404,9 @@ export async function ensurePushSubscription(
   options: { forceRebind?: boolean; ignorePreference?: boolean } = {}
 ): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
+  if (!canUseBusinessPushContext(readStoredPushAuthUser())) {
+    return { ok: false, reason: "no-business-context" };
+  }
   if (Notification.permission !== "granted") {
     return { ok: false, reason: Notification.permission as "denied" | "default" };
   }

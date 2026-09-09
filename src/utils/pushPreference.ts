@@ -1,5 +1,9 @@
 import API from "@api";
 import type { PushPermission } from "./push";
+import {
+  canUseBusinessPushContext,
+  readStoredPushAuthUser,
+} from "./pushBusinessContext";
 
 export const PUSH_PREF_TOGGLE_SOURCE = "user-toggle";
 
@@ -67,6 +71,10 @@ export function peekPushEnabledPreference(): boolean | null {
 }
 
 export async function getPushEnabledPreference(): Promise<boolean> {
+  if (!canUseBusinessPushContext(readStoredPushAuthUser())) {
+    return false;
+  }
+
   if (cached && Date.now() - cached.fetchedAt < CACHE_MS) {
     return cached.enabled;
   }
@@ -109,6 +117,10 @@ export async function persistPushEnabledPreference(
   enabled: boolean,
   current: PushPreferenceSettings
 ): Promise<PushPreferenceSettings | null> {
+  if (!canUseBusinessPushContext(readStoredPushAuthUser())) {
+    return null;
+  }
+
   rememberPushEnabledPreference(enabled);
   const payload = buildNotificationSettingsWrite({
     settings: { ...current, master: enabled, pushEnabled: enabled },

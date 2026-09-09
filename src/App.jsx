@@ -31,6 +31,7 @@ import {
   listenForPushSubscriptionChange,
   registerServiceWorker,
 } from "./utils/push";
+import { canUseBusinessPushContext } from "./utils/pushBusinessContext";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 import { LoginFormSkeleton } from "./components/auth/LoginFormSkeleton";
 const AdminWithdrawalsPage = lazy(() =>
@@ -887,6 +888,9 @@ export default function App() {
 
   useEffect(() => {
     if (isMiniSiteHost || !user) return;
+    // Partner (and other non-tenant) sessions have no businessId — skip the
+    // business notification-settings / push/subscribe bootstrap entirely.
+    if (!canUseBusinessPushContext(user)) return;
     void ensurePushSubscription();
   }, [isMiniSiteHost, user]);
 
