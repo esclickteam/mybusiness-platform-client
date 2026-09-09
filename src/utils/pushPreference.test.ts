@@ -1,8 +1,20 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+const apiGet = vi.fn();
+const apiPut = vi.fn();
+
+vi.mock("@api", () => ({
+  default: {
+    get: (...args: unknown[]) => apiGet(...args),
+    put: (...args: unknown[]) => apiPut(...args),
+  },
+}));
+
 import {
   PUSH_PREF_TOGGLE_SOURCE,
   buildNotificationSettingsWrite,
   clearPushEnabledPreferenceCache,
+  getPushEnabledPreference,
   isPushEnabledPreference,
   peekPushEnabledPreference,
   rememberPushEnabledPreference,
@@ -13,6 +25,9 @@ import {
 describe("push preference source of truth", () => {
   afterEach(() => {
     clearPushEnabledPreferenceCache();
+    localStorage.clear();
+    apiGet.mockReset();
+    apiPut.mockReset();
   });
 
   it("defaults missing preference to ON", () => {
@@ -94,5 +109,32 @@ describe("push preference source of truth", () => {
     expect(peekPushEnabledPreference()).toBe(true);
     rememberPushEnabledPreference(true);
     expect(peekPushEnabledPreference()).toBe(true);
+  });
+
+  it("does not fetch notification-settings for pure Partner sessions", async () => {
+    localStorage.setItem(
+      "businessDetails",
+      JSON.stringify({
+        role: "partner",
+        email: "partner-free-demo@bizuply.test",
+      })
+    );
+    await expect(getPushEnabledPreference()).resolves.toBe(false);
+    expect(apiGet).not.toHaveBeenCalled();
+  });
+
+  it("fetches notification-settings for business sessions with businessId", async () => {
+    localStorage.setItem(
+      "businessDetails",
+      JSON.stringify({
+        role: "business",
+        businessId: "64f000000000000000000001",
+      })
+    );
+    apiGet.mockResolvedValue({
+      data: { ok: true, settings: { master: true } },
+    });
+    await expect(getPushEnabledPreference()).resolves.toBe(true);
+    expect(apiGet).toHaveBeenCalledWith("/business/my/notification-settings");
   });
 });
