@@ -21156,6 +21156,29 @@
       "yourBusiness": "Seu negócio",
       "agencyAccount": "Conta de agência",
       "advantageReachLimit": "Não alcançaremos pessoas além destas configurações, mesmo com Advantage+ ativado."
+    },
+    "metaAdChrome": {
+      "adName": "Nome do anúncio",
+      "partnershipAd": "Anúncio de parceria",
+      "partnershipAdDesc": "Exibam anúncios com a identidade de um parceiro pela sua conta.",
+      "identity": "Identidade",
+      "facebookPage": "Página do Facebook",
+      "destination": "Destino",
+      "websiteUrl": "URL do site",
+      "displayLink": "Link de exibição",
+      "displayLinkHint": "Aparece no anúncio no lugar da URL completa do site.",
+      "searchFormsPh": "Pesquisem nos seus formulários",
+      "adCreative": "Criativo do anúncio",
+      "videoAd": "Anúncio de vídeo",
+      "imageAd": "Anúncio de imagem",
+      "media": "Mídia",
+      "videoUploaded": "Vídeo enviado",
+      "imageUploaded": "Imagem enviada",
+      "chooseMedia": "Escolham a mídia para este anúncio.",
+      "primaryText": "Texto principal",
+      "headline": "Título",
+      "description": "Descrição",
+      "adCreativeAlt": "Criativo do anúncio"
     }
   },
   "businessChat": {

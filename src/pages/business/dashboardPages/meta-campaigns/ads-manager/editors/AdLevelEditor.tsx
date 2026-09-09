@@ -101,7 +101,7 @@ export default function AdLevelEditor({
           videoId: result.videoId || "",
           imageHash: "",
           imagePreviewUrl: "",
-          mediaLabel: file.name || "Video uploaded",
+          mediaLabel: file.name || t("leftover.metaAdChrome.videoUploaded"),
         });
       } else {
         onChange({
@@ -109,7 +109,7 @@ export default function AdLevelEditor({
           imageHash: result.imageHash || "",
           imagePreviewUrl: result.url || "",
           videoId: "",
-          mediaLabel: file.name || "Image uploaded",
+          mediaLabel: file.name || t("leftover.metaAdChrome.imageUploaded"),
         });
       }
       toast.success(isVideo ? t("metaCampaigns.adsToasts.videoUploaded") : t("metaCampaigns.adsToasts.imageUploaded"));
@@ -125,14 +125,14 @@ export default function AdLevelEditor({
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
       <MetaSection
-        title="Ad name"
+        title={t("leftover.metaAdChrome.adName")}
         action={
           <button type="button" className={metaBtnSecondary}>
             Create template
           </button>
         }
       >
-        <MetaField label="Ad name">
+        <MetaField label={t("leftover.metaAdChrome.adName")}>
           <input
             className={metaInputClass}
             value={ad.name}
@@ -141,17 +141,17 @@ export default function AdLevelEditor({
         </MetaField>
       </MetaSection>
 
-      <MetaSection title="Partnership ad">
+      <MetaSection title={t("leftover.metaAdChrome.partnershipAd")}>
         <MetaToggle
           checked={ad.partnershipAd}
           onChange={(partnershipAd) => onChange({ partnershipAd })}
-          label="Partnership ad"
-          description="Run ads from a partner’s identity with your account."
+          label={t("leftover.metaAdChrome.partnershipAd")}
+          description={t("leftover.metaAdChrome.partnershipAdDesc")}
         />
       </MetaSection>
 
-      <MetaSection title="Identity">
-        <MetaField label="Facebook Page">
+      <MetaSection title={t("leftover.metaAdChrome.identity")}>
+        <MetaField label={t("leftover.metaAdChrome.facebookPage")}>
           <select
             className={metaSelectClass}
             value={ad.facebookPageId}
@@ -178,14 +178,14 @@ export default function AdLevelEditor({
       </MetaSection>
 
       <MetaSection
-        title="Destination"
+        title={t("leftover.metaAdChrome.destination")}
         status={ad.instantFormId ? "ok" : "warn"}
       >
         <div className="space-y-5">
           <div>
             <h3 className="text-[15px] font-bold text-[#050505]">Website</h3>
             <div className="mt-3 space-y-3">
-              <MetaField label="Website URL">
+              <MetaField label={t("leftover.metaAdChrome.websiteUrl")}>
                 <input
                   className={metaInputClass}
                   value={ad.websiteUrl}
@@ -194,8 +194,8 @@ export default function AdLevelEditor({
                 />
               </MetaField>
               <MetaField
-                label="Display link"
-                hint="Shown on your ad instead of the full website URL."
+                label={t("leftover.metaAdChrome.displayLink")}
+                hint={t("leftover.metaAdChrome.displayLinkHint")}
               >
                 <input
                   className={metaInputClass}
@@ -230,7 +230,7 @@ export default function AdLevelEditor({
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
               <input
                 className={`${metaInputClass} pl-9`}
-                placeholder="Search your forms"
+                placeholder={t("leftover.metaAdChrome.searchFormsPh")}
                 value={formSearch}
                 onChange={(e) => setFormSearch(e.target.value)}
               />
@@ -338,7 +338,7 @@ export default function AdLevelEditor({
         </div>
       </MetaSection>
 
-      <MetaSection title="Ad creative">
+      <MetaSection title={t("leftover.metaAdChrome.adCreative")}>
         <p className="text-[13px] text-[#65676B]">
           Select and optimize your ad text, media and enhancements.
         </p>
@@ -353,7 +353,7 @@ export default function AdLevelEditor({
             onClick={() => setMediaMenuOpen((v) => !v)}
           >
             <span className="font-semibold">
-              {ad.creativeFormat === "video" ? "Video ad" : "Image ad"}
+              {ad.creativeFormat === "video" ? t("leftover.metaAdChrome.videoAd") : t("leftover.metaAdChrome.imageAd")}
             </span>
             <Upload className="h-4 w-4 text-[#65676B]" />
           </button>
@@ -400,12 +400,12 @@ export default function AdLevelEditor({
           />
         </div>
 
-        <MetaField label="Media">
+        <MetaField label={t("leftover.metaAdChrome.media")}>
           <div className="overflow-hidden rounded-lg border border-dashed border-[#CED0D4] bg-[#F7F8FA]">
             {ad.imagePreviewUrl ? (
               <img
                 src={ad.imagePreviewUrl}
-                alt="Ad creative"
+                alt={t("leftover.metaAdChrome.adCreativeAlt")}
                 className="max-h-56 w-full object-contain"
               />
             ) : ad.videoId ? (
@@ -427,7 +427,7 @@ export default function AdLevelEditor({
                 )}
                 {uploading
                   ? "Uploading to Meta…"
-                  : ad.mediaLabel || "Choose the media to run with this ad."}
+                  : ad.mediaLabel || t("leftover.metaAdChrome.chooseMedia")}
               </button>
             )}
           </div>
@@ -438,7 +438,7 @@ export default function AdLevelEditor({
           )}
         </MetaField>
 
-        <MetaField label="Primary text">
+        <MetaField label={t("leftover.metaAdChrome.primaryText")}>
           <textarea
             className={`${metaInputClass} h-24 resize-y py-2`}
             value={ad.primaryText}
@@ -446,14 +446,14 @@ export default function AdLevelEditor({
           />
         </MetaField>
         <div className="grid gap-3 sm:grid-cols-2">
-          <MetaField label="Headline">
+          <MetaField label={t("leftover.metaAdChrome.headline")}>
             <input
               className={metaInputClass}
               value={ad.headline}
               onChange={(e) => onChange({ headline: e.target.value })}
             />
           </MetaField>
-          <MetaField label="Description">
+          <MetaField label={t("leftover.metaAdChrome.description")}>
             <input
               className={metaInputClass}
               value={ad.description}

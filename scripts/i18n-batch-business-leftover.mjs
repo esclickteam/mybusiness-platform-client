@@ -1789,6 +1789,31 @@ const META_ADSET_CHROME = {
   ),
 };
 
+
+const META_AD_CHROME = {
+  adName: row("Ad name", "שם מודעה", "Nombre del anuncio", "Nome do anúncio", "اسم الإعلان"),
+  partnershipAd: row("Partnership ad", "מודעת שותפות", "Anuncio de colaboración", "Anúncio de parceria", "إعلان شراكة"),
+  partnershipAdDesc: row("Run ads from a partner's identity with your account.", "הריצו מודעות מזהות שותף עם החשבון שלכם.", "Ejecutad anuncios con la identidad de un socio desde vuestra cuenta.", "Exibam anúncios com a identidade de um parceiro pela sua conta.", "شغّلوا إعلانات بهوية شريك عبر حسابكم."),
+  identity: row("Identity", "זהות", "Identidad", "Identidade", "الهوية"),
+  facebookPage: row("Facebook Page", "דף פייסבוק", "Página de Facebook", "Página do Facebook", "صفحة فيسبوك"),
+  destination: row("Destination", "יעד", "Destino", "Destino", "الوجهة"),
+  websiteUrl: row("Website URL", "כתובת אתר", "URL del sitio web", "URL do site", "رابط الموقع"),
+  displayLink: row("Display link", "קישור תצוגה", "Enlace visible", "Link de exibição", "رابط العرض"),
+  displayLinkHint: row("Shown on your ad instead of the full website URL.", "מוצג במודעה במקום כתובת האתר המלאה.", "Se muestra en el anuncio en lugar de la URL completa.", "Aparece no anúncio no lugar da URL completa do site.", "يظهر في الإعلان بدل رابط الموقع الكامل."),
+  searchFormsPh: row("Search your forms", "חיפוש בטפסים שלכם", "Buscad en vuestros formularios", "Pesquisem nos seus formulários", "ابحثوا في نماذجكم"),
+  adCreative: row("Ad creative", "קריאייטיב מודעה", "Creatividad del anuncio", "Criativo do anúncio", "إبداع الإعلان"),
+  videoAd: row("Video ad", "מודעת וידאו", "Anuncio de vídeo", "Anúncio de vídeo", "إعلان فيديو"),
+  imageAd: row("Image ad", "מודעת תמונה", "Anuncio de imagen", "Anúncio de imagem", "إعلان صورة"),
+  media: row("Media", "מדיה", "Medios", "Mídia", "وسائط"),
+  videoUploaded: row("Video uploaded", "הועלה וידאו", "Vídeo subido", "Vídeo enviado", "تم رفع فيديو"),
+  imageUploaded: row("Image uploaded", "הועלתה תמונה", "Imagen subida", "Imagem enviada", "تم رفع صورة"),
+  chooseMedia: row("Choose the media to run with this ad.", "בחרו את המדיה להרצה עם המודעה.", "Elegid los medios para este anuncio.", "Escolham a mídia para este anúncio.", "اختاروا الوسائط لتشغيلها مع هذا الإعلان."),
+  primaryText: row("Primary text", "טקסט ראשי", "Texto principal", "Texto principal", "النص الرئيسي"),
+  headline: row("Headline", "כותרת", "Titular", "Título", "العنوان"),
+  description: row("Description", "תיאור", "Descripción", "Descrição", "الوصف"),
+  adCreativeAlt: row("Ad creative", "קריאייטיב מודעה", "Creatividad del anuncio", "Criativo do anúncio", "إبداع الإعلان"),
+};
+
 export function extraBusinessLeftoverLocaleObject(locale) {
   return {
     crm: {
@@ -1860,6 +1885,7 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       ratingChrome: pickLocaleMap(RATING_CHROME, locale),
       appointHistoryChrome: pickLocaleMap(APPOINT_HISTORY_CHROME, locale),
       metaAdSetChrome: pickLocaleMap(META_ADSET_CHROME, locale),
+      metaAdChrome: pickLocaleMap(META_AD_CHROME, locale),
     },
     chatbot: pickLocaleMap(CHATBOT_EXTRA, locale),
   };

@@ -21145,6 +21145,29 @@
       "yourBusiness": "העסק שלכם",
       "agencyAccount": "חשבון סוכנות",
       "advantageReachLimit": "לא נגיע לאנשים מעבר להגדרות האלה, גם כש-Advantage+ פעיל."
+    },
+    "metaAdChrome": {
+      "adName": "שם מודעה",
+      "partnershipAd": "מודעת שותפות",
+      "partnershipAdDesc": "הריצו מודעות מזהות שותף עם החשבון שלכם.",
+      "identity": "זהות",
+      "facebookPage": "דף פייסבוק",
+      "destination": "יעד",
+      "websiteUrl": "כתובת אתר",
+      "displayLink": "קישור תצוגה",
+      "displayLinkHint": "מוצג במודעה במקום כתובת האתר המלאה.",
+      "searchFormsPh": "חיפוש בטפסים שלכם",
+      "adCreative": "קריאייטיב מודעה",
+      "videoAd": "מודעת וידאו",
+      "imageAd": "מודעת תמונה",
+      "media": "מדיה",
+      "videoUploaded": "הועלה וידאו",
+      "imageUploaded": "הועלתה תמונה",
+      "chooseMedia": "בחרו את המדיה להרצה עם המודעה.",
+      "primaryText": "טקסט ראשי",
+      "headline": "כותרת",
+      "description": "תיאור",
+      "adCreativeAlt": "קריאייטיב מודעה"
     }
   },
   "businessChat": {

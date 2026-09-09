@@ -21156,6 +21156,29 @@
       "yourBusiness": "Your business",
       "agencyAccount": "Agency account",
       "advantageReachLimit": "We won't reach people beyond these settings, even with Advantage+ on."
+    },
+    "metaAdChrome": {
+      "adName": "Ad name",
+      "partnershipAd": "Partnership ad",
+      "partnershipAdDesc": "Run ads from a partner's identity with your account.",
+      "identity": "Identity",
+      "facebookPage": "Facebook Page",
+      "destination": "Destination",
+      "websiteUrl": "Website URL",
+      "displayLink": "Display link",
+      "displayLinkHint": "Shown on your ad instead of the full website URL.",
+      "searchFormsPh": "Search your forms",
+      "adCreative": "Ad creative",
+      "videoAd": "Video ad",
+      "imageAd": "Image ad",
+      "media": "Media",
+      "videoUploaded": "Video uploaded",
+      "imageUploaded": "Image uploaded",
+      "chooseMedia": "Choose the media to run with this ad.",
+      "primaryText": "Primary text",
+      "headline": "Headline",
+      "description": "Description",
+      "adCreativeAlt": "Ad creative"
     }
   },
   "businessChat": {

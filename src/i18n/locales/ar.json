@@ -21156,6 +21156,29 @@
       "yourBusiness": "عملكم",
       "agencyAccount": "حساب وكالة",
       "advantageReachLimit": "لن نصل إلى أشخاص خارج هذه الإعدادات حتى مع تفعيل Advantage+."
+    },
+    "metaAdChrome": {
+      "adName": "اسم الإعلان",
+      "partnershipAd": "إعلان شراكة",
+      "partnershipAdDesc": "شغّلوا إعلانات بهوية شريك عبر حسابكم.",
+      "identity": "الهوية",
+      "facebookPage": "صفحة فيسبوك",
+      "destination": "الوجهة",
+      "websiteUrl": "رابط الموقع",
+      "displayLink": "رابط العرض",
+      "displayLinkHint": "يظهر في الإعلان بدل رابط الموقع الكامل.",
+      "searchFormsPh": "ابحثوا في نماذجكم",
+      "adCreative": "إبداع الإعلان",
+      "videoAd": "إعلان فيديو",
+      "imageAd": "إعلان صورة",
+      "media": "وسائط",
+      "videoUploaded": "تم رفع فيديو",
+      "imageUploaded": "تم رفع صورة",
+      "chooseMedia": "اختاروا الوسائط لتشغيلها مع هذا الإعلان.",
+      "primaryText": "النص الرئيسي",
+      "headline": "العنوان",
+      "description": "الوصف",
+      "adCreativeAlt": "إبداع الإعلان"
     }
   },
   "businessChat": {
