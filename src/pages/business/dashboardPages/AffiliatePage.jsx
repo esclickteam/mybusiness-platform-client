@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 const AffiliatePage = () => {
+  const { t } = useTranslation();
 
   const [affiliateId, setAffiliateId] = useState(null);
   const [referralCode, setReferralCode] = useState(null);
@@ -81,7 +83,7 @@ const AffiliatePage = () => {
   const handleCreateClient = async () => {
 
     if (!clientBusinessName || !clientName || !clientEmail || !clientPhone) {
-      return alert("Please fill all fields");
+      return alert(t("leftover.affiliate.fillAll"));
     }
 
     try {
@@ -117,11 +119,11 @@ const AffiliatePage = () => {
     const amount = Number(withdrawAmount);
 
     if (isNaN(amount) || amount < 200) {
-      return alert("Minimum withdrawal amount is $200");
+      return alert(t("leftover.affiliate.minWithdraw"));
     }
 
     if (amount > currentBalance) {
-      return alert("Withdrawal amount exceeds available balance");
+      return alert(t("leftover.affiliate.exceedBalance"));
     }
 
     try {

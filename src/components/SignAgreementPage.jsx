@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function SignAgreementPage({ currentUserBusinessId }) {
+  const { t } = useTranslation();
   const { agreementId } = useParams();
   const [agreement, setAgreement] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,17 +38,17 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
 
   const handleSign = async () => {
     if (sigPadRef.current.isEmpty()) {
-      alert("Please sign before submitting");
+      alert(t("leftover.agreements.signBeforeSubmit"));
       return;
     }
     setSending(true);
     try {
       const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
       const res = await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
-      alert("Signed successfully!");
+      alert(t("leftover.agreements.signedOk"));
       setAgreement(res.data); // Update agreement after signing
     } catch (err) {
-      alert("Error signing: " + (err.response?.data?.message || err.message));
+      alert(t("leftover.agreements.signError", { detail: err.response?.data?.message || err.message }));
     } finally {
       setSending(false);
     }

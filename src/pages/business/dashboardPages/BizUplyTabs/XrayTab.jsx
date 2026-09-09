@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./XrayTab.css";
 
 const generalQuestions = [
@@ -29,6 +30,7 @@ const businessTypes = {
 };
 
 const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState({});
   const [businessType, setBusinessType] = useState("");
 
@@ -38,7 +40,7 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
 
   const handleSubmit = () => {
     if (!businessType || Object.keys(answers).length < 5) {
-      alert("Please fill in all questions and select a business type.");
+      alert(t("leftover.xray.fillAll"));
       return;
     }
     // Sends businessId and conversationId along with the answers

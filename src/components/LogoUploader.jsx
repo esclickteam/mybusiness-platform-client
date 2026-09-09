@@ -1,8 +1,10 @@
 // src/components/LogoUploader.jsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 export default function LogoUploader({ onUploaded }) {
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -23,7 +25,7 @@ export default function LogoUploader({ onUploaded }) {
       onUploaded(res.data.logo);
     } catch (err) {
       console.error(err);
-      alert("Error uploading logo");
+      alert(t("leftover.upload.logoUploadError"));
     } finally {
       setUploading(false);
     }

@@ -19608,6 +19608,85 @@
       "availableTimes": "Horários disponíveis",
       "bookFor": "Agendar para {{date}} às {{time}}",
       "setCalendar": "Definir agenda"
+    },
+    "shop": {
+      "loadError": "Erro ao carregar os dados",
+      "addProductError": "Erro ao adicionar o produto",
+      "deleteProductError": "Erro ao excluir o produto",
+      "createCouponError": "Erro ao criar o cupom",
+      "deleteCouponError": "Erro ao excluir o cupom"
+    },
+    "services": {
+      "addError": "Erro ao adicionar o serviço",
+      "deleteError": "Erro ao excluir o serviço"
+    },
+    "payment": {
+      "fillRequired": "Preencha todos os campos obrigatórios, incluindo o e-mail.",
+      "confirmSent": "Confirmação enviada para o e-mail 🎉",
+      "emailSendError": "Ocorreu um erro ao enviar o e-mail. Verifique o console."
+    },
+    "agreements": {
+      "createdSent": "O acordo foi criado e enviado para a assinatura da outra parte!",
+      "updated": "O acordo foi atualizado com sucesso!",
+      "signBeforeSubmit": "Assine antes de enviar",
+      "signedOk": "Assinado com sucesso!",
+      "signError": "Erro ao assinar: {{detail}}",
+      "unauthorized": "Você não tem autorização para ver este acordo ou ele não foi encontrado",
+      "signFirst": "Assine primeiro",
+      "agreementSignedOk": "Acordo assinado com sucesso!",
+      "saveSignatureError": "Erro ao salvar a assinatura",
+      "senderMustSign": "O remetente deve assinar!",
+      "receiverMustSign": "O destinatário deve assinar o acordo!",
+      "selectPartner": "Você deve escolher um negócio parceiro com um ID válido",
+      "sendError": "Erro ao enviar o acordo: {{detail}}",
+      "fillRequired": "Preencha todos os campos obrigatórios.",
+      "needDatesOrCancelable": "Informe datas de início e fim ou selecione 'Pode ser cancelado a qualquer momento'.",
+      "addSenderSignature": "Adicione a assinatura do remetente.",
+      "waitingPartnerSignature": "O acordo aguarda a assinatura do negócio parceiro.",
+      "alreadyApproved": "O acordo já foi aprovado e não pode ser alterado.",
+      "updateError": "Erro ao atualizar o acordo, tente de novo.",
+      "approvalSendError": "Erro ao enviar a aprovação do acordo, tente de novo."
+    },
+    "collab": {
+      "sendProposalError": "Erro ao enviar a proposta",
+      "openChatError": "Erro ao abrir o chat, tente de novo.",
+      "loginAgain": "Algo deu errado, entre de novo.",
+      "sendFailed": "Falha ao enviar a mensagem: {{detail}}",
+      "unknownError": "Erro desconhecido",
+      "approveError": "Erro ao aprovar a proposta",
+      "rejectError": "Erro ao rejeitar a proposta",
+      "cancelOk": "Proposta cancelada com sucesso",
+      "cancelError": "Erro ao cancelar a proposta",
+      "approveShortError": "Erro ao aprovar a proposta",
+      "rejectShortError": "Erro ao rejeitar a proposta",
+      "cancelShortError": "Erro ao cancelar a proposta"
+    },
+    "affiliate": {
+      "fillAll": "Preencha todos os campos",
+      "minWithdraw": "O saque mínimo é de $200",
+      "exceedBalance": "O saque excede o saldo disponível",
+      "copyFailed": "Falha ao copiar",
+      "bankSaved": "Dados salvos com sucesso!"
+    },
+    "upload": {
+      "selectFile": "Selecione um arquivo para enviar",
+      "imageOk": "Imagem enviada com sucesso!",
+      "noImageUrl": "Erro: nenhuma URL de imagem recebida",
+      "fileUploadError": "Ocorreu um erro ao enviar o arquivo",
+      "logoOk": "Logo atualizado com sucesso!",
+      "logoUpdateError": "Erro ao atualizar o logo",
+      "logoUpdateErrorGeneric": "Ocorreu um erro ao atualizar o logo",
+      "logoUploadError": "Erro ao enviar o logo",
+      "galleryUploadError": "Erro ao enviar a galeria"
+    },
+    "xray": {
+      "fillAll": "Preencha todas as perguntas e escolha um tipo de negócio.",
+      "submitError": "Ocorreu um erro ao enviar o questionário. Tente mais tarde."
+    },
+    "misc": {
+      "weeklyHoursSaved": "O horário semanal foi salvo!",
+      "approveRecError": "Erro ao aprovar a recomendação: {{detail}}",
+      "messageSendFailed": "Falha ao enviar a mensagem: {{detail}}"
     }
   }
 }

@@ -5,12 +5,14 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "./AuthContext";
 import { useSocket } from "./socketContext";
 
 const AiContext = createContext(null);
 
 export function AiProvider({ children }) {
+  const { t } = useTranslation();
   /* ------------------------------------------------------------ */
   /*  Shared state & helpers                                      */
   /* ------------------------------------------------------------ */
@@ -94,7 +96,7 @@ export function AiProvider({ children }) {
       setActiveSuggestion(null);
     } catch (err) {
       console.error("Approve suggestion error:", err);
-      alert("Error approving the recommendation: " + err.message);
+      alert(t("leftover.misc.approveRecError", { detail: err.message }));
     } finally {
       setLoading(false);
     }

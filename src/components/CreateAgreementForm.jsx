@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import "./CreateAgreementForm.css";
 
@@ -10,6 +11,7 @@ export default function CreateAgreementForm({
   currentUserBusinessId,
   proposalId, 
 }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fromBusinessName: fromBusinessName || "",
     partnerBusinessName: partnerBusiness?.businessName || "",
@@ -104,7 +106,7 @@ export default function CreateAgreementForm({
 
       console.log("Response from create agreement API:", res.data);
 
-      alert("The agreement was created and sent for the other party’s signature!");
+      alert(t("leftover.agreements.createdSent"));
       if (onCreated) onCreated(res.data);
     } catch (err) {
       console.error("Error creating agreement:", err);

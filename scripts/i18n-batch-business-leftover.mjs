@@ -1003,6 +1003,95 @@ const BIZ_CHAT_ALERTS = {
   sendAgreement: row("Send agreement", "שליחת הסכם", "Enviar acuerdo", "Enviar acordo", "إرسال الاتفاقية"),
 };
 
+
+const SHOP_ALERTS = {
+  loadError: row("Error loading data", "שגיאה בטעינת הנתונים", "Error al cargar los datos", "Erro ao carregar os dados", "خطأ في تحميل البيانات"),
+  addProductError: row("Error adding product", "שגיאה בהוספת מוצר", "Error al añadir el producto", "Erro ao adicionar o produto", "خطأ في إضافة المنتج"),
+  deleteProductError: row("Error deleting product", "שגיאה במחיקת מוצר", "Error al eliminar el producto", "Erro ao excluir o produto", "خطأ في حذف المنتج"),
+  createCouponError: row("Error creating coupon", "שגיאה ביצירת קופון", "Error al crear el cupón", "Erro ao criar o cupom", "خطأ في إنشاء القسيمة"),
+  deleteCouponError: row("Error deleting coupon", "שגיאה במחיקת קופון", "Error al eliminar el cupón", "Erro ao excluir o cupom", "خطأ في حذف القسيمة"),
+};
+
+const SERVICE_ALERTS = {
+  addError: row("Error adding service", "שגיאה בהוספת שירות", "Error al añadir el servicio", "Erro ao adicionar o serviço", "خطأ في إضافة الخدمة"),
+  deleteError: row("Error deleting service", "שגיאה במחיקת שירות", "Error al eliminar el servicio", "Erro ao excluir o serviço", "خطأ في حذف الخدمة"),
+};
+
+const PAYMENT_ALERTS = {
+  fillRequired: row("Please fill in all required fields including email.", "נא למלא את כל השדות הנדרשים כולל אימייל.", "Completa todos los campos obligatorios, incluido el email.", "Preencha todos os campos obrigatórios, incluindo o e-mail.", "يرجى ملء جميع الحقول المطلوبة بما في ذلك البريد."),
+  confirmSent: row("Confirmation sent to email 🎉", "אישור נשלח לאימייל 🎉", "Confirmación enviada al email 🎉", "Confirmação enviada para o e-mail 🎉", "أُرسل التأكيد إلى البريد 🎉"),
+  emailSendError: row("An error occurred while sending the email. Check the console.", "אירעה שגיאה בשליחת האימייל. בדקו את הקונסול.", "Ocurrió un error al enviar el email. Revisa la consola.", "Ocorreu um erro ao enviar o e-mail. Verifique o console.", "حدث خطأ أثناء إرسال البريد. راجعوا وحدة التحكم."),
+};
+
+const AGREEMENT_ALERTS = {
+  createdSent: row("The agreement was created and sent for the other party’s signature!", "ההסכם נוצר ונשלח לחתימת הצד השני!", "¡El acuerdo se creó y se envió para la firma de la otra parte!", "O acordo foi criado e enviado para a assinatura da outra parte!", "تم إنشاء الاتفاقية وإرسالها لتوقيع الطرف الآخر!"),
+  updated: row("The agreement was successfully updated!", "ההסכם עודכן בהצלחה!", "¡El acuerdo se actualizó correctamente!", "O acordo foi atualizado com sucesso!", "تم تحديث الاتفاقية بنجاح!"),
+  signBeforeSubmit: row("Please sign before submitting", "נא לחתום לפני השליחה", "Firma antes de enviar", "Assine antes de enviar", "يرجى التوقيع قبل الإرسال"),
+  signedOk: row("Signed successfully!", "נחתם בהצלחה!", "¡Firmado correctamente!", "Assinado com sucesso!", "تم التوقيع بنجاح!"),
+  signError: row("Error signing: {{detail}}", "שגיאה בחתימה: {{detail}}", "Error al firmar: {{detail}}", "Erro ao assinar: {{detail}}", "خطأ في التوقيع: {{detail}}"),
+  unauthorized: row("You are not authorized to view this agreement or it was not found", "אין לכם הרשאה לצפות בהסכם זה או שהוא לא נמצא", "No tienes autorización para ver este acuerdo o no se encontró", "Você não tem autorização para ver este acordo ou ele não foi encontrado", "لستم مخولين بعرض هذه الاتفاقية أو لم يتم العثور عليها"),
+  signFirst: row("Please sign first", "נא לחתום קודם", "Firma primero", "Assine primeiro", "يرجى التوقيع أولاً"),
+  agreementSignedOk: row("Agreement signed successfully!", "ההסכם נחתם בהצלחה!", "¡Acuerdo firmado correctamente!", "Acordo assinado com sucesso!", "تم توقيع الاتفاقية بنجاح!"),
+  saveSignatureError: row("Error saving signature", "שגיאה בשמירת החתימה", "Error al guardar la firma", "Erro ao salvar a assinatura", "خطأ في حفظ التوقيع"),
+  senderMustSign: row("The sender must sign!", "השולח חייב לחתום!", "¡El remitente debe firmar!", "O remetente deve assinar!", "يجب أن يوقّع المرسل!"),
+  receiverMustSign: row("The receiver must sign the agreement!", "המקבל חייב לחתום על ההסכם!", "¡El receptor debe firmar el acuerdo!", "O destinatário deve assinar o acordo!", "يجب أن يوقّع المستلم الاتفاقية!"),
+  selectPartner: row("You must select a partner business with a valid ID", "יש לבחור עסק שותף עם מזהה תקין", "Debes elegir un negocio socio con un ID válido", "Você deve escolher um negócio parceiro com um ID válido", "يجب اختيار عمل شريك بمعرّف صالح"),
+  sendError: row("Error sending agreement: {{detail}}", "שגיאה בשליחת ההסכם: {{detail}}", "Error al enviar el acuerdo: {{detail}}", "Erro ao enviar o acordo: {{detail}}", "خطأ في إرسال الاتفاقية: {{detail}}"),
+  fillRequired: row("Please fill in all required fields.", "נא למלא את כל השדות הנדרשים.", "Completa todos los campos obligatorios.", "Preencha todos os campos obrigatórios.", "يرجى ملء جميع الحقول المطلوبة."),
+  needDatesOrCancelable: row("Please provide start and end dates or select 'Can be canceled at any time'.", "נא לספק תאריכי התחלה וסיום או לבחור 'ניתן לביטול בכל עת'.", "Indica fechas de inicio y fin o selecciona 'Se puede cancelar en cualquier momento'.", "Informe datas de início e fim ou selecione 'Pode ser cancelado a qualquer momento'.", "يرجى توفير تاريخي البداية والنهاية أو اختيار 'يمكن الإلغاء في أي وقت'."),
+  addSenderSignature: row("Please add the sender's signature.", "נא להוסיף את חתימת השולח.", "Añade la firma del remitente.", "Adicione a assinatura do remetente.", "يرجى إضافة توقيع المرسل."),
+  waitingPartnerSignature: row("The agreement is waiting for the partner business's signature.", "ההסכם ממתין לחתימת העסק השותף.", "El acuerdo espera la firma del negocio socio.", "O acordo aguarda a assinatura do negócio parceiro.", "الاتفاقية بانتظار توقيع العمل الشريك."),
+  alreadyApproved: row("The agreement has already been approved and cannot be changed.", "ההסכם כבר אושר ולא ניתן לשנותו.", "El acuerdo ya fue aprobado y no se puede cambiar.", "O acordo já foi aprovado e não pode ser alterado.", "تمت الموافقة على الاتفاقية ولا يمكن تغييرها."),
+  updateError: row("Error updating the agreement, please try again.", "שגיאה בעדכון ההסכם, נסו שוב.", "Error al actualizar el acuerdo, inténtalo de nuevo.", "Erro ao atualizar o acordo, tente de novo.", "خطأ في تحديث الاتفاقية، حاولوا مرة أخرى."),
+  approvalSendError: row("Error sending the agreement approval, please try again.", "שגיאה בשליחת אישור ההסכם, נסו שוב.", "Error al enviar la aprobación del acuerdo, inténtalo de nuevo.", "Erro ao enviar a aprovação do acordo, tente de novo.", "خطأ في إرسال موافقة الاتفاقية، حاولوا مرة أخرى."),
+};
+
+const COLLAB_ALERTS = {
+  sendProposalError: row("Error sending the proposal", "שגיאה בשליחת ההצעה", "Error al enviar la propuesta", "Erro ao enviar a proposta", "خطأ في إرسال العرض"),
+  openChatError: row("Error opening chat, please try again.", "שגיאה בפתיחת הצ׳אט, נסו שוב.", "Error al abrir el chat, inténtalo de nuevo.", "Erro ao abrir o chat, tente de novo.", "خطأ في فتح المحادثة، حاولوا مرة أخرى."),
+  loginAgain: row("Something went wrong, please log in again.", "משהו השתבש, התחברו מחדש.", "Algo salió mal, inicia sesión de nuevo.", "Algo deu errado, entre de novo.", "حدث خطأ ما، سجّلوا الدخول مرة أخرى."),
+  sendFailed: row("Failed to send message: {{detail}}", "שליחת ההודעה נכשלה: {{detail}}", "No se pudo enviar el mensaje: {{detail}}", "Falha ao enviar a mensagem: {{detail}}", "فشل إرسال الرسالة: {{detail}}"),
+  unknownError: row("Unknown error", "שגיאה לא ידועה", "Error desconocido", "Erro desconhecido", "خطأ غير معروف"),
+  approveError: row("Error approving the proposal", "שגיאה באישור ההצעה", "Error al aprobar la propuesta", "Erro ao aprovar a proposta", "خطأ في الموافقة على العرض"),
+  rejectError: row("Error rejecting the proposal", "שגיאה בדחיית ההצעה", "Error al rechazar la propuesta", "Erro ao rejeitar a proposta", "خطأ في رفض العرض"),
+  cancelOk: row("Proposal successfully cancelled", "ההצעה בוטלה בהצלחה", "Propuesta cancelada correctamente", "Proposta cancelada com sucesso", "تم إلغاء العرض بنجاح"),
+  cancelError: row("Error cancelling the proposal", "שגיאה בביטול ההצעה", "Error al cancelar la propuesta", "Erro ao cancelar a proposta", "خطأ في إلغاء العرض"),
+  approveShortError: row("Error approving proposal", "שגיאה באישור הצעה", "Error al aprobar la propuesta", "Erro ao aprovar a proposta", "خطأ في الموافقة على العرض"),
+  rejectShortError: row("Error rejecting proposal", "שגיאה בדחיית הצעה", "Error al rechazar la propuesta", "Erro ao rejeitar a proposta", "خطأ في رفض العرض"),
+  cancelShortError: row("Error cancelling proposal", "שגיאה בביטול הצעה", "Error al cancelar la propuesta", "Erro ao cancelar a proposta", "خطأ في إلغاء العرض"),
+};
+
+const AFFILIATE_ALERTS = {
+  fillAll: row("Please fill all fields", "נא למלא את כל השדות", "Completa todos los campos", "Preencha todos os campos", "يرجى ملء جميع الحقول"),
+  minWithdraw: row("Minimum withdrawal amount is $200", "סכום המשיכה המינימלי הוא $200", "El retiro mínimo es de $200", "O saque mínimo é de $200", "الحد الأدنى للسحب هو 200$"),
+  exceedBalance: row("Withdrawal amount exceeds available balance", "סכום המשיכה חורג מהיתרה הזמינה", "El retiro supera el saldo disponible", "O saque excede o saldo disponível", "مبلغ السحب يتجاوز الرصيد المتاح"),
+  copyFailed: row("Failed to copy", "ההעתקה נכשלה", "No se pudo copiar", "Falha ao copiar", "فشل النسخ"),
+  bankSaved: row("Details saved successfully!", "הפרטים נשמרו בהצלחה!", "¡Datos guardados correctamente!", "Dados salvos com sucesso!", "تم حفظ التفاصيل بنجاح!"),
+};
+
+const UPLOAD_ALERTS = {
+  selectFile: row("Please select a file to upload", "נא לבחור קובץ להעלאה", "Selecciona un archivo para subir", "Selecione um arquivo para enviar", "يرجى اختيار ملف للرفع"),
+  imageOk: row("Image uploaded successfully!", "התמונה הועלתה בהצלחה!", "¡Imagen subida correctamente!", "Imagem enviada com sucesso!", "تم رفع الصورة بنجاح!"),
+  noImageUrl: row("Error: No image URL received", "שגיאה: לא התקבל כתובת תמונה", "Error: no se recibió la URL de la imagen", "Erro: nenhuma URL de imagem recebida", "خطأ: لم يُستلم رابط الصورة"),
+  fileUploadError: row("There was an error uploading the file", "אירעה שגיאה בהעלאת הקובץ", "Hubo un error al subir el archivo", "Ocorreu um erro ao enviar o arquivo", "حدث خطأ أثناء رفع الملف"),
+  logoOk: row("Logo updated successfully!", "הלוגו עודכן בהצלחה!", "¡Logo actualizado correctamente!", "Logo atualizado com sucesso!", "تم تحديث الشعار بنجاح!"),
+  logoUpdateError: row("Error updating logo", "שגיאה בעדכון הלוגו", "Error al actualizar el logo", "Erro ao atualizar o logo", "خطأ في تحديث الشعار"),
+  logoUpdateErrorGeneric: row("There was an error updating the logo", "אירעה שגיאה בעדכון הלוגו", "Hubo un error al actualizar el logo", "Ocorreu um erro ao atualizar o logo", "حدث خطأ أثناء تحديث الشعار"),
+  logoUploadError: row("Error uploading logo", "שגיאה בהעלאת לוגו", "Error al subir el logo", "Erro ao enviar o logo", "خطأ في رفع الشعار"),
+  galleryUploadError: row("Error uploading gallery", "שגיאה בהעלאת גלריה", "Error al subir la galería", "Erro ao enviar a galeria", "خطأ في رفع المعرض"),
+};
+
+const XRAY_ALERTS = {
+  fillAll: row("Please fill in all questions and select a business type.", "נא למלא את כל השאלות ולבחור סוג עסק.", "Completa todas las preguntas y elige un tipo de negocio.", "Preencha todas as perguntas e escolha um tipo de negócio.", "يرجى ملء جميع الأسئلة واختيار نوع العمل."),
+  submitError: row("An error occurred while submitting the questionnaire. Please try again later.", "אירעה שגיאה בשליחת השאלון. נסו שוב מאוחר יותר.", "Ocurrió un error al enviar el cuestionario. Inténtalo más tarde.", "Ocorreu um erro ao enviar o questionário. Tente mais tarde.", "حدث خطأ أثناء إرسال الاستبيان. حاولوا لاحقاً."),
+};
+
+const MISC_ALERTS = {
+  weeklyHoursSaved: row("Weekly business hours have been saved!", "שעות הפעילות השבועיות נשמרו!", "¡El horario semanal se ha guardado!", "O horário semanal foi salvo!", "تم حفظ ساعات العمل الأسبوعية!"),
+  approveRecError: row("Error approving the recommendation: {{detail}}", "שגיאה באישור ההמלצה: {{detail}}", "Error al aprobar la recomendación: {{detail}}", "Erro ao aprovar a recomendação: {{detail}}", "خطأ في الموافقة على التوصية: {{detail}}"),
+  messageSendFailed: row("Message sending failed: {{detail}}", "שליחת ההודעה נכשלה: {{detail}}", "Error al enviar el mensaje: {{detail}}", "Falha ao enviar a mensagem: {{detail}}", "فشل إرسال الرسالة: {{detail}}"),
+};
+
 const APPOINTMENTS_MAIN = {
   title: row("Schedule appointment", "קביעת תור", "Reservar cita", "Agendar horário", "حجز موعد"),
   selectService: row("Select service", "בחירת שירות", "Elegir servicio", "Selecionar serviço", "اختيار الخدمة"),
@@ -1055,6 +1144,15 @@ export function extraBusinessLeftoverLocaleObject(locale) {
       crmFile: pickLocaleMap(CRM_FILE_ALERTS, locale),
       bizChat: pickLocaleMap(BIZ_CHAT_ALERTS, locale),
       appointmentsMain: pickLocaleMap(APPOINTMENTS_MAIN, locale),
+      shop: pickLocaleMap(SHOP_ALERTS, locale),
+      services: pickLocaleMap(SERVICE_ALERTS, locale),
+      payment: pickLocaleMap(PAYMENT_ALERTS, locale),
+      agreements: pickLocaleMap(AGREEMENT_ALERTS, locale),
+      collab: pickLocaleMap(COLLAB_ALERTS, locale),
+      affiliate: pickLocaleMap(AFFILIATE_ALERTS, locale),
+      upload: pickLocaleMap(UPLOAD_ALERTS, locale),
+      xray: pickLocaleMap(XRAY_ALERTS, locale),
+      misc: pickLocaleMap(MISC_ALERTS, locale),
     },
   };
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function PartnershipAgreement({ agreementId, userBusinessId, onSigned }) {
+  const { t } = useTranslation();
   const [agreement, setAgreement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,7 +44,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
   const saveSignature = async () => {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      alert("Please sign first");
+      alert(t("leftover.agreements.signFirst"));
       return;
     }
     setSaving(true);
@@ -51,7 +53,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     try {
       await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl, side });
 
-      alert("Agreement signed successfully!");
+      alert(t("leftover.agreements.agreementSignedOk"));
       setAgreement(prev => ({
         ...prev,
         signatures: {
@@ -70,7 +72,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       clearSignature();
       if (typeof onSigned === "function") onSigned();
     } catch {
-      alert("Error saving signature");
+      alert(t("leftover.agreements.saveSignatureError"));
     } finally {
       setSaving(false);
     }

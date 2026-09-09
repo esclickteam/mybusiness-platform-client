@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import "./CollabContractForm.css";
 
@@ -8,6 +9,7 @@ const CollabContractForm = ({
   existingContract = null,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -81,22 +83,22 @@ const CollabContractForm = ({
       !form.receiving ||
       !form.type
     ) {
-      alert("Please fill in all required fields.");
+      alert(t("leftover.agreements.fillRequired"));
       return;
     }
 
     if (!form.cancelAnytime && (!form.startDate || !form.endDate)) {
-      alert("Please provide start and end dates or select 'Can be canceled at any time'.");
+      alert(t("leftover.agreements.needDatesOrCancelable"));
       return;
     }
 
     if (!form.senderSignature) {
-      alert("Please add the sender's signature.");
+      alert(t("leftover.agreements.addSenderSignature"));
       return;
     }
 
     if (!form.receiverSignature && currentUser.businessName === form.receiver.businessName) {
-      alert("The agreement is waiting for the partner business's signature.");
+      alert(t("leftover.agreements.waitingPartnerSignature"));
       return;
     }
 

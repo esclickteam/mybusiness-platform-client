@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Building2,
   CalendarClock,
@@ -53,6 +54,7 @@ export default function CollabReceivedRequestsTab({
   refreshFlag,
   onStatusChange,
 }: CollabReceivedRequestsTabProps) {
+  const { t } = useTranslation();
   const [receivedRequests, setReceivedRequests] = useState<ReceivedProposal[]>(
     []
   );
@@ -124,7 +126,7 @@ export default function CollabReceivedRequestsTab({
       onStatusChange?.();
     } catch (err) {
       console.error("Error approving proposal:", err);
-      alert("Error approving the proposal");
+      alert(t("leftover.collab.approveError"));
     }
   };
 
@@ -147,7 +149,7 @@ export default function CollabReceivedRequestsTab({
       onStatusChange?.();
     } catch (err) {
       console.error("Error rejecting proposal:", err);
-      alert("Error rejecting the proposal");
+      alert(t("leftover.collab.rejectError"));
     }
   };
 

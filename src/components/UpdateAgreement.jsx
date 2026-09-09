@@ -1,8 +1,10 @@
 import React, { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
 
 export default function UpdateAgreement({ agreementId, onUpdated }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
@@ -32,7 +34,7 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
 
       const res = await API.patch(`/partnershipAgreements/${idStr}`, payload);
 
-      alert("The agreement was successfully updated!");
+      alert(t("leftover.agreements.updated"));
       if (onUpdated) onUpdated(res.data);
       clearSignature();
     } catch (err) {

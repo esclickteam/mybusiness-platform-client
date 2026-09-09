@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
 
@@ -21,6 +22,7 @@ const partnershipAgreementFormInitial = {
 };
 
 export default function PartnershipAgreementForm({ isSender = true, onSubmit, agreementId, token }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
   const [sending, setSending] = useState(false);
 
@@ -76,15 +78,15 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
     e.preventDefault();
 
     if (isSender && !formData.senderSignature) {
-      alert("The sender must sign!");
+      alert(t("leftover.agreements.senderMustSign"));
       return;
     }
     if (!isSender && !formData.receiverSignature) {
-      alert("The receiver must sign the agreement!");
+      alert(t("leftover.agreements.receiverMustSign"));
       return;
     }
     if (!formData.toBusinessId) {
-      alert("You must select a partner business with a valid ID");
+      alert(t("leftover.agreements.selectPartner"));
       return;
     }
 
@@ -106,7 +108,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       alert(isSender ? "Agreement sent to the receiver for signature!" : "The agreement is complete!");
       if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
     } catch (err) {
-      alert("Error sending agreement: " + (err?.response?.data?.error || err.message));
+      alert(t("leftover.agreements.sendError", { detail: err?.response?.data?.error || err.message }));
     } finally {
       setSending(false);
     }

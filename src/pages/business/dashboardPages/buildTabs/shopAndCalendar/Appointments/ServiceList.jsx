@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import API from '@api'; // Make sure API.baseURL = '/api'
 import './ServiceList.css';
 
@@ -7,6 +8,7 @@ const ServiceList = ({
   setServices,
   onNext = () => {}
 }) => {
+  const { t } = useTranslation();
   const [newService, setNewService] = useState({
     name: '',
     hours: '0',
@@ -71,7 +73,7 @@ const ServiceList = ({
       });
     } catch (err) {
       console.error('Error adding service:', err);
-      alert('Error adding service');
+      alert(t('leftover.services.addError'));
     } finally {
       setLoading(false);
     }
@@ -88,7 +90,7 @@ const ServiceList = ({
       setServices(res.data.services || []);
     } catch (err) {
       console.error('Error deleting service:', err);
-      alert('Error deleting service');
+      alert(t('leftover.services.deleteError'));
     }
   };
 

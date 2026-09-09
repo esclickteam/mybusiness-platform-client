@@ -19608,6 +19608,85 @@
       "availableTimes": "Horarios disponibles",
       "bookFor": "Reservar cita el {{date}} a las {{time}}",
       "setCalendar": "Configurar calendario"
+    },
+    "shop": {
+      "loadError": "Error al cargar los datos",
+      "addProductError": "Error al añadir el producto",
+      "deleteProductError": "Error al eliminar el producto",
+      "createCouponError": "Error al crear el cupón",
+      "deleteCouponError": "Error al eliminar el cupón"
+    },
+    "services": {
+      "addError": "Error al añadir el servicio",
+      "deleteError": "Error al eliminar el servicio"
+    },
+    "payment": {
+      "fillRequired": "Completa todos los campos obligatorios, incluido el email.",
+      "confirmSent": "Confirmación enviada al email 🎉",
+      "emailSendError": "Ocurrió un error al enviar el email. Revisa la consola."
+    },
+    "agreements": {
+      "createdSent": "¡El acuerdo se creó y se envió para la firma de la otra parte!",
+      "updated": "¡El acuerdo se actualizó correctamente!",
+      "signBeforeSubmit": "Firma antes de enviar",
+      "signedOk": "¡Firmado correctamente!",
+      "signError": "Error al firmar: {{detail}}",
+      "unauthorized": "No tienes autorización para ver este acuerdo o no se encontró",
+      "signFirst": "Firma primero",
+      "agreementSignedOk": "¡Acuerdo firmado correctamente!",
+      "saveSignatureError": "Error al guardar la firma",
+      "senderMustSign": "¡El remitente debe firmar!",
+      "receiverMustSign": "¡El receptor debe firmar el acuerdo!",
+      "selectPartner": "Debes elegir un negocio socio con un ID válido",
+      "sendError": "Error al enviar el acuerdo: {{detail}}",
+      "fillRequired": "Completa todos los campos obligatorios.",
+      "needDatesOrCancelable": "Indica fechas de inicio y fin o selecciona 'Se puede cancelar en cualquier momento'.",
+      "addSenderSignature": "Añade la firma del remitente.",
+      "waitingPartnerSignature": "El acuerdo espera la firma del negocio socio.",
+      "alreadyApproved": "El acuerdo ya fue aprobado y no se puede cambiar.",
+      "updateError": "Error al actualizar el acuerdo, inténtalo de nuevo.",
+      "approvalSendError": "Error al enviar la aprobación del acuerdo, inténtalo de nuevo."
+    },
+    "collab": {
+      "sendProposalError": "Error al enviar la propuesta",
+      "openChatError": "Error al abrir el chat, inténtalo de nuevo.",
+      "loginAgain": "Algo salió mal, inicia sesión de nuevo.",
+      "sendFailed": "No se pudo enviar el mensaje: {{detail}}",
+      "unknownError": "Error desconocido",
+      "approveError": "Error al aprobar la propuesta",
+      "rejectError": "Error al rechazar la propuesta",
+      "cancelOk": "Propuesta cancelada correctamente",
+      "cancelError": "Error al cancelar la propuesta",
+      "approveShortError": "Error al aprobar la propuesta",
+      "rejectShortError": "Error al rechazar la propuesta",
+      "cancelShortError": "Error al cancelar la propuesta"
+    },
+    "affiliate": {
+      "fillAll": "Completa todos los campos",
+      "minWithdraw": "El retiro mínimo es de $200",
+      "exceedBalance": "El retiro supera el saldo disponible",
+      "copyFailed": "No se pudo copiar",
+      "bankSaved": "¡Datos guardados correctamente!"
+    },
+    "upload": {
+      "selectFile": "Selecciona un archivo para subir",
+      "imageOk": "¡Imagen subida correctamente!",
+      "noImageUrl": "Error: no se recibió la URL de la imagen",
+      "fileUploadError": "Hubo un error al subir el archivo",
+      "logoOk": "¡Logo actualizado correctamente!",
+      "logoUpdateError": "Error al actualizar el logo",
+      "logoUpdateErrorGeneric": "Hubo un error al actualizar el logo",
+      "logoUploadError": "Error al subir el logo",
+      "galleryUploadError": "Error al subir la galería"
+    },
+    "xray": {
+      "fillAll": "Completa todas las preguntas y elige un tipo de negocio.",
+      "submitError": "Ocurrió un error al enviar el cuestionario. Inténtalo más tarde."
+    },
+    "misc": {
+      "weeklyHoursSaved": "¡El horario semanal se ha guardado!",
+      "approveRecError": "Error al aprobar la recomendación: {{detail}}",
+      "messageSendFailed": "Error al enviar el mensaje: {{detail}}"
     }
   }
 }

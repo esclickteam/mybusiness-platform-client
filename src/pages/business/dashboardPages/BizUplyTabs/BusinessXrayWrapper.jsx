@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import XrayTab from "./XrayTab";
 import BusinessXrayReport from "./BusinessXrayReport";
 import "./BusinessXrayReport.css"; // ensure there is styling for the button and report
 
 const BusinessXrayWrapper = () => {
+  const { t } = useTranslation();
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ const BusinessXrayWrapper = () => {
       setReportData(result);
     } catch (error) {
       console.error("Error submitting questionnaire:", error);
-      alert("An error occurred while submitting the questionnaire. Please try again later.");
+      alert(t("leftover.xray.submitError"));
     } finally {
       setLoading(false);
     }

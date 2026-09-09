@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import emailjs from '@emailjs/browser';
 import './PaymentSection.css';
 
 const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
+  const { t } = useTranslation();
   const [selectedMethod, setSelectedMethod] = useState(paymentMethod !== 'both' ? paymentMethod : null);
   const [submitted, setSubmitted] = useState(false);
   const [customer, setCustomer] = useState({
@@ -38,7 +40,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
 
   const handleSendEmail = async () => {
     if (!customer.name || !customer.phone || !customer.email) {
-      alert('Please fill in all required fields including email.');
+      alert(t('leftover.payment.fillRequired'));
       return;
     }
 

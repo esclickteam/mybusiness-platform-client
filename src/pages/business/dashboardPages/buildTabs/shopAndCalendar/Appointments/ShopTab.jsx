@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import API from '@api'; // axios instance with withCredentials: true and baseURL set to /api/business
 import { useBusinessServices } from '@context/BusinessServicesContext';
 import './ShopTab.css';
 
 const ShopTab = () => {
+  const { t } = useTranslation();
   const { products, setProducts } = useBusinessServices();
   const [categories, setCategories] = useState(['General']);
   const [newCategory, setNewCategory] = useState('');
@@ -40,7 +42,7 @@ const ShopTab = () => {
         setCoupons(couponRes.data || []);
       } catch (err) {
         console.error('Error loading data:', err);
-        alert('Error loading data');
+        alert(t('leftover.shop.loadError'));
       }
     };
     fetchData();
@@ -92,7 +94,7 @@ const ShopTab = () => {
       setImagePreview(null);
     } catch (err) {
       console.error('Error adding product:', err);
-      alert('Error adding product');
+      alert(t('leftover.shop.addProductError'));
     }
   };
 
@@ -104,7 +106,7 @@ const ShopTab = () => {
       setProducts(prev => prev.filter(p => (p._id || p.id) !== productId));
     } catch (err) {
       console.error('Error deleting product:', err);
-      alert('Error deleting product');
+      alert(t('leftover.shop.deleteProductError'));
     }
   };
 
@@ -124,7 +126,7 @@ const ShopTab = () => {
       setCoupon({ code: '', discount: '', start: '', expiry: '' });
     } catch (err) {
       console.error('Error creating coupon:', err);
-      alert('Error creating coupon');
+      alert(t('leftover.shop.createCouponError'));
     }
   };
 
@@ -135,7 +137,7 @@ const ShopTab = () => {
       setCoupons(prev => prev.filter(c => c.id !== id && c._id !== id));
     } catch (err) {
       console.error('Error deleting coupon:', err);
-      alert('Error deleting coupon');
+      alert(t('leftover.shop.deleteCouponError'));
     }
   };
 

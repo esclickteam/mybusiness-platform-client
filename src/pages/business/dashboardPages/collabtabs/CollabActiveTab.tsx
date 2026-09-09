@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -51,6 +52,7 @@ type CollabActiveTabProps = {
 export default function CollabActiveTab({
   userBusinessId,
 }: CollabActiveTabProps) {
+  const { t } = useTranslation();
   const [view, setView] = useState<ProposalView>("active");
   const [activeProposals, setActiveProposals] = useState<ProposalItem[]>([]);
   const [sentProposals, setSentProposals] = useState<ProposalItem[]>([]);
@@ -149,7 +151,7 @@ export default function CollabActiveTab({
       updateStatus(id, "accepted");
     } catch (acceptError) {
       console.error("Error approving proposal:", acceptError);
-      alert("Error approving proposal");
+      alert(t("leftover.collab.approveShortError"));
     }
   };
 
@@ -164,7 +166,7 @@ export default function CollabActiveTab({
       updateStatus(id, "rejected");
     } catch (rejectError) {
       console.error("Error rejecting proposal:", rejectError);
-      alert("Error rejecting proposal");
+      alert(t("leftover.collab.rejectShortError"));
     }
   };
 
@@ -180,7 +182,7 @@ export default function CollabActiveTab({
       removeProposal(id);
     } catch (cancelError) {
       console.error("Error cancelling proposal:", cancelError);
-      alert("Error cancelling proposal");
+      alert(t("leftover.collab.cancelShortError"));
     }
   };
 

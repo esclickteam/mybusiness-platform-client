@@ -19597,6 +19597,85 @@
       "availableTimes": "שעות פנויות",
       "bookFor": "קביעת תור ל־{{date}} בשעה {{time}}",
       "setCalendar": "הגדרת יומן"
+    },
+    "shop": {
+      "loadError": "שגיאה בטעינת הנתונים",
+      "addProductError": "שגיאה בהוספת מוצר",
+      "deleteProductError": "שגיאה במחיקת מוצר",
+      "createCouponError": "שגיאה ביצירת קופון",
+      "deleteCouponError": "שגיאה במחיקת קופון"
+    },
+    "services": {
+      "addError": "שגיאה בהוספת שירות",
+      "deleteError": "שגיאה במחיקת שירות"
+    },
+    "payment": {
+      "fillRequired": "נא למלא את כל השדות הנדרשים כולל אימייל.",
+      "confirmSent": "אישור נשלח לאימייל 🎉",
+      "emailSendError": "אירעה שגיאה בשליחת האימייל. בדקו את הקונסול."
+    },
+    "agreements": {
+      "createdSent": "ההסכם נוצר ונשלח לחתימת הצד השני!",
+      "updated": "ההסכם עודכן בהצלחה!",
+      "signBeforeSubmit": "נא לחתום לפני השליחה",
+      "signedOk": "נחתם בהצלחה!",
+      "signError": "שגיאה בחתימה: {{detail}}",
+      "unauthorized": "אין לכם הרשאה לצפות בהסכם זה או שהוא לא נמצא",
+      "signFirst": "נא לחתום קודם",
+      "agreementSignedOk": "ההסכם נחתם בהצלחה!",
+      "saveSignatureError": "שגיאה בשמירת החתימה",
+      "senderMustSign": "השולח חייב לחתום!",
+      "receiverMustSign": "המקבל חייב לחתום על ההסכם!",
+      "selectPartner": "יש לבחור עסק שותף עם מזהה תקין",
+      "sendError": "שגיאה בשליחת ההסכם: {{detail}}",
+      "fillRequired": "נא למלא את כל השדות הנדרשים.",
+      "needDatesOrCancelable": "נא לספק תאריכי התחלה וסיום או לבחור 'ניתן לביטול בכל עת'.",
+      "addSenderSignature": "נא להוסיף את חתימת השולח.",
+      "waitingPartnerSignature": "ההסכם ממתין לחתימת העסק השותף.",
+      "alreadyApproved": "ההסכם כבר אושר ולא ניתן לשנותו.",
+      "updateError": "שגיאה בעדכון ההסכם, נסו שוב.",
+      "approvalSendError": "שגיאה בשליחת אישור ההסכם, נסו שוב."
+    },
+    "collab": {
+      "sendProposalError": "שגיאה בשליחת ההצעה",
+      "openChatError": "שגיאה בפתיחת הצ׳אט, נסו שוב.",
+      "loginAgain": "משהו השתבש, התחברו מחדש.",
+      "sendFailed": "שליחת ההודעה נכשלה: {{detail}}",
+      "unknownError": "שגיאה לא ידועה",
+      "approveError": "שגיאה באישור ההצעה",
+      "rejectError": "שגיאה בדחיית ההצעה",
+      "cancelOk": "ההצעה בוטלה בהצלחה",
+      "cancelError": "שגיאה בביטול ההצעה",
+      "approveShortError": "שגיאה באישור הצעה",
+      "rejectShortError": "שגיאה בדחיית הצעה",
+      "cancelShortError": "שגיאה בביטול הצעה"
+    },
+    "affiliate": {
+      "fillAll": "נא למלא את כל השדות",
+      "minWithdraw": "סכום המשיכה המינימלי הוא $200",
+      "exceedBalance": "סכום המשיכה חורג מהיתרה הזמינה",
+      "copyFailed": "ההעתקה נכשלה",
+      "bankSaved": "הפרטים נשמרו בהצלחה!"
+    },
+    "upload": {
+      "selectFile": "נא לבחור קובץ להעלאה",
+      "imageOk": "התמונה הועלתה בהצלחה!",
+      "noImageUrl": "שגיאה: לא התקבל כתובת תמונה",
+      "fileUploadError": "אירעה שגיאה בהעלאת הקובץ",
+      "logoOk": "הלוגו עודכן בהצלחה!",
+      "logoUpdateError": "שגיאה בעדכון הלוגו",
+      "logoUpdateErrorGeneric": "אירעה שגיאה בעדכון הלוגו",
+      "logoUploadError": "שגיאה בהעלאת לוגו",
+      "galleryUploadError": "שגיאה בהעלאת גלריה"
+    },
+    "xray": {
+      "fillAll": "נא למלא את כל השאלות ולבחור סוג עסק.",
+      "submitError": "אירעה שגיאה בשליחת השאלון. נסו שוב מאוחר יותר."
+    },
+    "misc": {
+      "weeklyHoursSaved": "שעות הפעילות השבועיות נשמרו!",
+      "approveRecError": "שגיאה באישור ההמלצה: {{detail}}",
+      "messageSendFailed": "שליחת ההודעה נכשלה: {{detail}}"
     }
   }
 }

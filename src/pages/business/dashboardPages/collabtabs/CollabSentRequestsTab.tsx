@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Building2,
   CalendarClock,
@@ -47,6 +48,7 @@ type CollabSentRequestsTabProps = {
 export default function CollabSentRequestsTab({
   refreshFlag,
 }: CollabSentRequestsTabProps) {
+  const { t } = useTranslation();
   const [sentRequests, setSentRequests] = useState<SentProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,10 +98,10 @@ export default function CollabSentRequestsTab({
         prev.filter((proposal) => getProposalId(proposal) !== proposalId)
       );
 
-      alert("Proposal successfully cancelled");
+      alert(t("leftover.collab.cancelOk"));
     } catch (err) {
       console.error("Error cancelling proposal:", err);
-      alert("Error cancelling the proposal");
+      alert(t("leftover.collab.cancelError"));
     }
   };
 

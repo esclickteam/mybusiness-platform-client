@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api"; // Make sure this is the correct path based on file location
 import "./CollabContractView.css";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
+  const { t } = useTranslation();
   // Hooks must run unconditionally on every render, so they are declared
   // before the "no contract" early return below.
   const receiverSigRef = useRef();
@@ -56,12 +58,12 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 
   const handleApprove = async () => {
     if (!localReceiverSig) {
-      alert("Please sign first.");
+      alert(t("leftover.agreements.signFirst"));
       return;
     }
 
     if (status === "approved") {
-      alert("The agreement has already been approved and cannot be changed.");
+      alert(t("leftover.agreements.alreadyApproved"));
       return;
     }
 
@@ -81,7 +83,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       });
 
       if (!res.data) {
-        alert("Error updating the agreement, please try again.");
+        alert(t("leftover.agreements.updateError"));
         setIsApproving(false);
         return;
       }
@@ -96,7 +98,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       onApprove(updatedContract);
     } catch (err) {
       console.error("❌ Error sending contract approval to server:", err);
-      alert("Error sending the agreement approval, please try again.");
+      alert(t("leftover.agreements.approvalSendError"));
     } finally {
       setIsApproving(false);
     }

@@ -19608,6 +19608,85 @@
       "availableTimes": "Available times",
       "bookFor": "Book appointment for {{date}} at {{time}}",
       "setCalendar": "Set calendar"
+    },
+    "shop": {
+      "loadError": "Error loading data",
+      "addProductError": "Error adding product",
+      "deleteProductError": "Error deleting product",
+      "createCouponError": "Error creating coupon",
+      "deleteCouponError": "Error deleting coupon"
+    },
+    "services": {
+      "addError": "Error adding service",
+      "deleteError": "Error deleting service"
+    },
+    "payment": {
+      "fillRequired": "Please fill in all required fields including email.",
+      "confirmSent": "Confirmation sent to email 🎉",
+      "emailSendError": "An error occurred while sending the email. Check the console."
+    },
+    "agreements": {
+      "createdSent": "The agreement was created and sent for the other party’s signature!",
+      "updated": "The agreement was successfully updated!",
+      "signBeforeSubmit": "Please sign before submitting",
+      "signedOk": "Signed successfully!",
+      "signError": "Error signing: {{detail}}",
+      "unauthorized": "You are not authorized to view this agreement or it was not found",
+      "signFirst": "Please sign first",
+      "agreementSignedOk": "Agreement signed successfully!",
+      "saveSignatureError": "Error saving signature",
+      "senderMustSign": "The sender must sign!",
+      "receiverMustSign": "The receiver must sign the agreement!",
+      "selectPartner": "You must select a partner business with a valid ID",
+      "sendError": "Error sending agreement: {{detail}}",
+      "fillRequired": "Please fill in all required fields.",
+      "needDatesOrCancelable": "Please provide start and end dates or select 'Can be canceled at any time'.",
+      "addSenderSignature": "Please add the sender's signature.",
+      "waitingPartnerSignature": "The agreement is waiting for the partner business's signature.",
+      "alreadyApproved": "The agreement has already been approved and cannot be changed.",
+      "updateError": "Error updating the agreement, please try again.",
+      "approvalSendError": "Error sending the agreement approval, please try again."
+    },
+    "collab": {
+      "sendProposalError": "Error sending the proposal",
+      "openChatError": "Error opening chat, please try again.",
+      "loginAgain": "Something went wrong, please log in again.",
+      "sendFailed": "Failed to send message: {{detail}}",
+      "unknownError": "Unknown error",
+      "approveError": "Error approving the proposal",
+      "rejectError": "Error rejecting the proposal",
+      "cancelOk": "Proposal successfully cancelled",
+      "cancelError": "Error cancelling the proposal",
+      "approveShortError": "Error approving proposal",
+      "rejectShortError": "Error rejecting proposal",
+      "cancelShortError": "Error cancelling proposal"
+    },
+    "affiliate": {
+      "fillAll": "Please fill all fields",
+      "minWithdraw": "Minimum withdrawal amount is $200",
+      "exceedBalance": "Withdrawal amount exceeds available balance",
+      "copyFailed": "Failed to copy",
+      "bankSaved": "Details saved successfully!"
+    },
+    "upload": {
+      "selectFile": "Please select a file to upload",
+      "imageOk": "Image uploaded successfully!",
+      "noImageUrl": "Error: No image URL received",
+      "fileUploadError": "There was an error uploading the file",
+      "logoOk": "Logo updated successfully!",
+      "logoUpdateError": "Error updating logo",
+      "logoUpdateErrorGeneric": "There was an error updating the logo",
+      "logoUploadError": "Error uploading logo",
+      "galleryUploadError": "Error uploading gallery"
+    },
+    "xray": {
+      "fillAll": "Please fill in all questions and select a business type.",
+      "submitError": "An error occurred while submitting the questionnaire. Please try again later."
+    },
+    "misc": {
+      "weeklyHoursSaved": "Weekly business hours have been saved!",
+      "approveRecError": "Error approving the recommendation: {{detail}}",
+      "messageSendFailed": "Message sending failed: {{detail}}"
     }
   }
 }

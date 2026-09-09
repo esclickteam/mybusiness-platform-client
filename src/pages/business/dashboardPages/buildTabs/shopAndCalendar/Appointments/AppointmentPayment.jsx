@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./AppointmentPayment.css";
 import emailjs from "emailjs-com";
 
 const AppointmentPayment = ({ onBack, onSubmit }) => {
+  const { t } = useTranslation();
   const [method, setMethod] = useState(null);
   const [showCreditForm, setShowCreditForm] = useState(false);
   const [showPhoneForm, setShowPhoneForm] = useState(false);
@@ -147,12 +149,12 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                 )
                 .then((res) => {
                   console.log("✅ Email sent:", res.text);
-                  alert("Confirmation sent to email 🎉");
+                  alert(t("leftover.payment.confirmSent"));
                   if (onSubmit) onSubmit(data);
                 })
                 .catch((err) => {
                   console.error("❌ Email sending error:", err);
-                  alert("An error occurred while sending the email. Check the console.");
+                  alert(t("leftover.payment.emailSendError"));
                 });
             }}
           >

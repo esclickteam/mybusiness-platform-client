@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import API from "@api";
@@ -7,6 +8,7 @@ import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function AffiliateDashboardPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
@@ -56,7 +58,7 @@ export default function AffiliateDashboardPage() {
       showCopyStatus(successMessage);
     } catch (err) {
       console.error("Copy failed:", err);
-      alert("Failed to copy");
+      alert(t("leftover.affiliate.copyFailed"));
     }
   };
 

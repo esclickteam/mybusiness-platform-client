@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // Days Sunday–Saturday in English, Sunday=0
 const DAYS_EN = [
@@ -23,6 +24,7 @@ const DEFAULT_HOURS = {
 };
 
 export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave }) {
+  const { t } = useTranslation();
   const [weeklyHours, setWeeklyHours] = useState(initialHours);
 
   const handleChange = (day, field, value) => {
@@ -44,7 +46,7 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
 
   const handleSave = () => {
     if (onSave) onSave(weeklyHours);
-    alert("Weekly business hours have been saved!");
+    alert(t("leftover.misc.weeklyHoursSaved"));
   };
 
   return (

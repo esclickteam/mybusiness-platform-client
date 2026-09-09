@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api"; // Assume API is configured with axios
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [form, setForm] = useState({
@@ -61,7 +63,7 @@ const BankDetailsForm = () => {
         throw new Error("Error saving details");
       }
 
-      alert("Details saved successfully!");
+      alert(t("leftover.affiliate.bankSaved"));
     } catch (err) {
       setError(err.message);
     } finally {

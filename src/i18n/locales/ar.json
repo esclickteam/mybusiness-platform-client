@@ -19608,6 +19608,85 @@
       "availableTimes": "أوقات متاحة",
       "bookFor": "حجز موعد في {{date}} الساعة {{time}}",
       "setCalendar": "ضبط التقويم"
+    },
+    "shop": {
+      "loadError": "خطأ في تحميل البيانات",
+      "addProductError": "خطأ في إضافة المنتج",
+      "deleteProductError": "خطأ في حذف المنتج",
+      "createCouponError": "خطأ في إنشاء القسيمة",
+      "deleteCouponError": "خطأ في حذف القسيمة"
+    },
+    "services": {
+      "addError": "خطأ في إضافة الخدمة",
+      "deleteError": "خطأ في حذف الخدمة"
+    },
+    "payment": {
+      "fillRequired": "يرجى ملء جميع الحقول المطلوبة بما في ذلك البريد.",
+      "confirmSent": "أُرسل التأكيد إلى البريد 🎉",
+      "emailSendError": "حدث خطأ أثناء إرسال البريد. راجعوا وحدة التحكم."
+    },
+    "agreements": {
+      "createdSent": "تم إنشاء الاتفاقية وإرسالها لتوقيع الطرف الآخر!",
+      "updated": "تم تحديث الاتفاقية بنجاح!",
+      "signBeforeSubmit": "يرجى التوقيع قبل الإرسال",
+      "signedOk": "تم التوقيع بنجاح!",
+      "signError": "خطأ في التوقيع: {{detail}}",
+      "unauthorized": "لستم مخولين بعرض هذه الاتفاقية أو لم يتم العثور عليها",
+      "signFirst": "يرجى التوقيع أولاً",
+      "agreementSignedOk": "تم توقيع الاتفاقية بنجاح!",
+      "saveSignatureError": "خطأ في حفظ التوقيع",
+      "senderMustSign": "يجب أن يوقّع المرسل!",
+      "receiverMustSign": "يجب أن يوقّع المستلم الاتفاقية!",
+      "selectPartner": "يجب اختيار عمل شريك بمعرّف صالح",
+      "sendError": "خطأ في إرسال الاتفاقية: {{detail}}",
+      "fillRequired": "يرجى ملء جميع الحقول المطلوبة.",
+      "needDatesOrCancelable": "يرجى توفير تاريخي البداية والنهاية أو اختيار 'يمكن الإلغاء في أي وقت'.",
+      "addSenderSignature": "يرجى إضافة توقيع المرسل.",
+      "waitingPartnerSignature": "الاتفاقية بانتظار توقيع العمل الشريك.",
+      "alreadyApproved": "تمت الموافقة على الاتفاقية ولا يمكن تغييرها.",
+      "updateError": "خطأ في تحديث الاتفاقية، حاولوا مرة أخرى.",
+      "approvalSendError": "خطأ في إرسال موافقة الاتفاقية، حاولوا مرة أخرى."
+    },
+    "collab": {
+      "sendProposalError": "خطأ في إرسال العرض",
+      "openChatError": "خطأ في فتح المحادثة، حاولوا مرة أخرى.",
+      "loginAgain": "حدث خطأ ما، سجّلوا الدخول مرة أخرى.",
+      "sendFailed": "فشل إرسال الرسالة: {{detail}}",
+      "unknownError": "خطأ غير معروف",
+      "approveError": "خطأ في الموافقة على العرض",
+      "rejectError": "خطأ في رفض العرض",
+      "cancelOk": "تم إلغاء العرض بنجاح",
+      "cancelError": "خطأ في إلغاء العرض",
+      "approveShortError": "خطأ في الموافقة على العرض",
+      "rejectShortError": "خطأ في رفض العرض",
+      "cancelShortError": "خطأ في إلغاء العرض"
+    },
+    "affiliate": {
+      "fillAll": "يرجى ملء جميع الحقول",
+      "minWithdraw": "الحد الأدنى للسحب هو 200$",
+      "exceedBalance": "مبلغ السحب يتجاوز الرصيد المتاح",
+      "copyFailed": "فشل النسخ",
+      "bankSaved": "تم حفظ التفاصيل بنجاح!"
+    },
+    "upload": {
+      "selectFile": "يرجى اختيار ملف للرفع",
+      "imageOk": "تم رفع الصورة بنجاح!",
+      "noImageUrl": "خطأ: لم يُستلم رابط الصورة",
+      "fileUploadError": "حدث خطأ أثناء رفع الملف",
+      "logoOk": "تم تحديث الشعار بنجاح!",
+      "logoUpdateError": "خطأ في تحديث الشعار",
+      "logoUpdateErrorGeneric": "حدث خطأ أثناء تحديث الشعار",
+      "logoUploadError": "خطأ في رفع الشعار",
+      "galleryUploadError": "خطأ في رفع المعرض"
+    },
+    "xray": {
+      "fillAll": "يرجى ملء جميع الأسئلة واختيار نوع العمل.",
+      "submitError": "حدث خطأ أثناء إرسال الاستبيان. حاولوا لاحقاً."
+    },
+    "misc": {
+      "weeklyHoursSaved": "تم حفظ ساعات العمل الأسبوعية!",
+      "approveRecError": "خطأ في الموافقة على التوصية: {{detail}}",
+      "messageSendFailed": "فشل إرسال الرسالة: {{detail}}"
     }
   }
 }
