@@ -19,6 +19,10 @@ import {
   type ManagedWhatsAppConnectionSummary,
 } from "../../api/adminManagedWhatsAppApi";
 import { splitE164ForMetaPrefill } from "../business/dashboardPages/whatsapp/embeddedSignupEnteredPhone";
+import {
+  extractEmbeddedSignupSessionAssets,
+  embeddedSignupAssetsLogFields,
+} from "../business/dashboardPages/whatsapp/embeddedSignupSessionAssets";
 import { loadFacebookSdk } from "../../utils/loadFacebookSdk";
 import {
   getAdminWhatsAppBillingMargin,
@@ -417,13 +421,25 @@ export default function AdminManagedWhatsApp() {
         const data =
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
         if (data?.type !== "WA_EMBEDDED_SIGNUP") return;
-        if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA") {
-          const phoneNumberId = String(data?.data?.phone_number_id || "").trim();
-          const wabaId = String(data?.data?.waba_id || "").trim();
-          const metaBusinessId = String(data?.data?.business_id || "").trim();
-          if (phoneNumberId && wabaId) {
-            embeddedSessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
-          }
+        const assets = extractEmbeddedSignupSessionAssets(data);
+        console.info(
+          "[admin-managed-whatsapp] Embedded Signup session event",
+          embeddedSignupAssetsLogFields(
+            assets,
+            typeof data?.event === "string" ? data.event : undefined
+          )
+        );
+        if (assets?.phoneNumberId && assets?.wabaId) {
+          embeddedSessionRef.current = {
+            phoneNumberId: assets.phoneNumberId,
+            wabaId: assets.wabaId,
+            metaBusinessId: assets.metaBusinessId,
+          };
+        } else if (
+          typeof data?.event === "string" &&
+          data.event === "FINISH_OBO_MIGRATION"
+        ) {
+          embeddedSessionRef.current = null;
         }
       } catch {
         // Ignore non-JSON postMessages from the popup.

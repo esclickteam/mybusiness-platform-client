@@ -728,6 +728,7 @@ export async function completeWhatsAppEmbeddedSignup(
     phoneNumberId: string;
     wabaId: string;
     metaBusinessId?: string;
+    metaEventType?: string;
     pin?: string;
   }
 ) {
@@ -744,18 +745,41 @@ export async function completeWhatsAppEmbeddedSignup(
   } & WhatsAppConnection;
 }
 
+export type WhatsAppPendingChecklist = {
+  embeddedSignupCompleted?: boolean;
+  tokenValid?: boolean;
+  phoneWabaVerified?: boolean;
+  registration?: {
+    status?: string;
+    registered?: boolean;
+    required?: boolean;
+    failed?: boolean;
+  };
+  webhook?: { subscribed?: boolean; failed?: boolean };
+  templates?: { synced?: boolean; warning?: boolean; count?: number };
+  validationReady?: boolean;
+  validationFailed?: boolean;
+  activationPerformed?: boolean;
+};
+
 export type WhatsAppPendingConnection = {
   id?: string;
   status?: string;
   phoneNumberId?: string;
   wabaId?: string;
+  metaBusinessId?: string;
   displayPhoneNumber?: string;
   verifiedName?: string;
   wabaName?: string;
   webhookSubscribed?: boolean;
   phoneRegistered?: boolean;
   registrationStatus?: string;
+  registrationRequired?: boolean;
+  registrationPinRequired?: boolean;
+  registrationPinLocked?: boolean;
+  embeddedSignupEvent?: string;
   validation?: Record<string, unknown>;
+  checklist?: WhatsAppPendingChecklist;
   templateSync?: {
     success?: boolean;
     templateCount?: number;
@@ -792,6 +816,12 @@ export type WhatsAppStagingStatus = {
     hasBlockingIssues?: boolean;
   } | null;
   liveRemainsActiveUntilActivation?: boolean;
+  activationPerformed?: boolean;
+  operatorInventoryChecklist?: Array<{
+    key: string;
+    label: string;
+    secret?: boolean;
+  }>;
 };
 
 export async function getWhatsAppStagingStatus(businessId: string) {
@@ -801,19 +831,44 @@ export async function getWhatsAppStagingStatus(businessId: string) {
   return data as WhatsAppStagingStatus;
 }
 
-export async function validateWhatsAppStaging(
-  businessId: string,
-  pin?: string
-) {
+export async function validateWhatsAppStaging(businessId: string) {
   const { data } = await API.post("/whatsapp/connection/staging/validate", {
     businessId,
-    pin,
   });
   return data as {
     success: boolean;
     liveUnchanged?: boolean;
     pending?: WhatsAppPendingConnection;
     readyToActivate?: boolean;
+  };
+}
+
+export async function registerPendingWhatsAppPhone(
+  businessId: string,
+  pin: string
+) {
+  const { data } = await API.post("/whatsapp/connection/staging/register", {
+    businessId,
+    pin,
+  });
+  return data as {
+    success: boolean;
+    registered?: boolean;
+    liveUnchanged?: boolean;
+    activated?: boolean;
+    pending?: WhatsAppPendingConnection;
+  };
+}
+
+export async function retryPendingWhatsAppWebhook(businessId: string) {
+  const { data } = await API.post("/whatsapp/connection/staging/retry-webhook", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    webhookSubscribed?: boolean;
+    liveUnchanged?: boolean;
+    pending?: WhatsAppPendingConnection;
   };
 }
 
