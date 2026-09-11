@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket";
 import {
@@ -44,6 +45,7 @@ import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { syncLanguageOnLogin } from "../i18n/persistLanguage";
 import i18n from "../i18n/i18n";
+import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
 
 /* ===========================
    🧩 Normalize User
@@ -232,6 +234,7 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -436,6 +439,8 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
       syncLanguageOnLogin(normalizedUser);
+      // Heal sticky logout/boot loading so ProtectedRoute can mount immediately.
+      setLoading(false);
 
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
@@ -608,51 +613,81 @@ export function AuthProvider({ children }) {
   =========================== */
   const logout = async ({ callServer = true, redirect = true } = {}) => {
     setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
 
-    // Tear down Telnyx/Twilio softphone before/while server revoke runs.
     try {
-      const { disconnectSoftphoneVoip } = await import(
-        "../components/AdminSoftphone"
-      );
-      disconnectSoftphoneVoip();
-    } catch {
-      /* softphone module optional */
-    }
-
-    if (callServer) {
+      // Tear down Telnyx/Twilio softphone before/while server revoke runs.
       try {
-        await API.post("/auth/logout", {}, { withCredentials: true });
-      } catch (err) {
-        console.warn("Logout server call failed:", err?.message || err);
+        const { disconnectSoftphoneVoip } = await import(
+          "../components/AdminSoftphone"
+        );
+        disconnectSoftphoneVoip();
+      } catch {
+        /* softphone module optional */
       }
-    }
 
-    if (typeof window !== "undefined") {
-      Object.keys(sessionStorage).forEach((key) => {
-        if (key.startsWith("bizuplyEarlyBirdDismissed")) {
-          sessionStorage.removeItem(key);
+      if (callServer) {
+        try {
+          await API.post("/auth/logout", {}, { withCredentials: true });
+        } catch (err) {
+          console.warn("Logout server call failed:", err?.message || err);
         }
-      });
-    }
+      }
 
-    // Explicit logout → next login lands on role home, not a stale deep-link
-    clearLocalAuth({ clearDashboardRoute: true });
-    clearPostLoginRedirect();
-    clearPushEnabledPreferenceCache();
-    markRefreshDead();
+      // Explicit logout → next login lands on role home, not a stale deep-link
+      try {
+        clearLocalAuth({ clearDashboardRoute: true });
+      } catch (err) {
+        console.warn("clearLocalAuth failed:", err?.message || err);
+      }
 
-    setToken(null);
-    setUser(null);
+      try {
+        clearPostLoginRedirect();
+      } catch (err) {
+        console.warn("clearPostLoginRedirect failed:", err?.message || err);
+      }
 
-    if (socket) {
-      socket.disconnect();
-      setSocket(null);
-    }
+      // Secondary cleanup — must never abort logout / leave loading stuck.
+      try {
+        clearPushEnabledPreferenceCache();
+      } catch (err) {
+        console.warn(
+          "clearPushEnabledPreferenceCache failed:",
+          err?.message || err
+        );
+      }
 
-    setLoading(false);
+      try {
+        markRefreshDead();
+      } catch (err) {
+        console.warn("markRefreshDead failed:", err?.message || err);
+      }
 
-    if (redirect) {
-      navigate("/login", { replace: true });
+      try {
+        queryClient.clear();
+      } catch (err) {
+        console.warn("queryClient.clear failed:", err?.message || err);
+      }
+
+      setToken(null);
+      setUser(null);
+      setAuthToken(null);
+
+      if (socket) {
+        try {
+          socket.disconnect();
+        } catch {
+          /* ignore disconnect errors */
+        }
+        setSocket(null);
+      }
+    } finally {
+      setLoading(false);
+
+      if (redirect) {
+        navigate("/login", { replace: true });
+      }
     }
   };
 
