@@ -14,6 +14,7 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
@@ -1274,6 +1275,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["business", "admin"]}>
                               <BusinessDashboardRoutes />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/invistimo/admin"
+                          element={
+                            <ProtectedRoute roles={["business", "admin"]}>
+                              <InvistimoAdminRedirect />
                             </ProtectedRoute>
                           }
                         />

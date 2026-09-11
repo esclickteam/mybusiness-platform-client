@@ -33,6 +33,11 @@ import {
   partnerFacingLogo,
   partnerFacingName,
 } from "../../lib/partnerBranding";
+import {
+  INVISTIMO_ADMIN_LABEL,
+  isInvistimoAdminBusiness,
+  workspaceDisplayName,
+} from "../../utils/invistimoAdmin";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -209,6 +214,14 @@ export default function BusinessDashboardLayout() {
   const partnerLogo = partnerFacingLogo(partnerBranding, host);
   const partnerName = partnerFacingName(partnerBranding, host);
   const hideBizuplyChrome = hidesBizuplyChrome(partnerBranding, host);
+  const isInvistimoAdmin = isInvistimoAdminBusiness(
+    businessId || user?.businessId
+  );
+  const workspaceLabel = workspaceDisplayName({
+    businessId: businessId || user?.businessId,
+    businessName: user?.businessName,
+    fallbackName: user?.name,
+  });
 
   useEffect(() => {
     applyPartnerFavicon(
@@ -654,6 +667,16 @@ export default function BusinessDashboardLayout() {
                     <span className="text-lg font-black tracking-tight text-slate-900">
                       {partnerName}
                     </span>
+                  ) : isInvistimoAdmin ? (
+                    <span
+                      className={`font-black tracking-tight text-slate-900 ${
+                        sidebarCollapsed && !isMobile
+                          ? "text-[10px] leading-tight text-center"
+                          : "text-base"
+                      }`}
+                    >
+                      {INVISTIMO_ADMIN_LABEL}
+                    </span>
                   ) : hideBizuplyChrome ? null : (
                     <img
                       src="/bizuply logo.png"
@@ -716,7 +739,7 @@ export default function BusinessDashboardLayout() {
               {isMobile && (
                 <div className="border-t border-violet-100/70 bg-white/30 p-4 backdrop-blur-sm">
                   <div className="mb-3 truncate text-sm font-semibold text-slate-800">
-                    {user?.businessName || user?.name}
+                    {workspaceLabel || user?.businessName || user?.name}
                   </div>
 
                   <button
@@ -793,9 +816,11 @@ export default function BusinessDashboardLayout() {
 
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
                   <span className="font-black text-slate-800">
-                    {t("common.hello", {
-                      name: user?.businessName || user?.name || "",
-                    })}
+                    {isInvistimoAdmin
+                      ? INVISTIMO_ADMIN_LABEL
+                      : t("common.hello", {
+                          name: user?.businessName || user?.name || "",
+                        })}
                   </span>
                   {isAdmin && (
                     <span className="ms-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
