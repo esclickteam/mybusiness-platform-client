@@ -23,8 +23,10 @@ import {
   getWhatsAppStagingStatus,
   getWhatsAppStatus,
   listWhatsAppTemplates,
+  registerPendingWhatsAppPhone,
   registerWhatsAppPhone,
   requestWhatsAppVoiceVerificationCode,
+  retryPendingWhatsAppWebhook,
   sendWhatsAppTest,
   startWhatsAppVoiceVerification,
   submitWhatsAppVoiceVerificationCode,
@@ -51,6 +53,10 @@ import {
   splitE164ForMetaPrefill,
 } from "./embeddedSignupEnteredPhone";
 import {
+  extractEmbeddedSignupSessionAssets,
+  embeddedSignupAssetsLogFields,
+} from "./embeddedSignupSessionAssets";
+import {
   btnPrimary,
   btnSecondary,
   cardBase,
@@ -63,6 +69,7 @@ type SessionAssets = {
   phoneNumberId: string;
   wabaId: string;
   metaBusinessId?: string;
+  event?: string;
 };
 
 function voiceSessionStatusLabel(
@@ -152,6 +159,10 @@ export default function WhatsAppSettingsTab() {
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [staging, setStaging] = useState<WhatsAppStagingStatus | null>(null);
   const [stagingBusy, setStagingBusy] = useState(false);
+  const [pendingRegisterPin, setPendingRegisterPin] = useState("");
+  const [inventoryNotes, setInventoryNotes] = useState<Record<string, string>>(
+    {}
+  );
   const [adAccountBilling, setAdAccountBilling] =
     useState<MetaAdAccountBillingHealth | null>(null);
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
@@ -223,6 +234,31 @@ export default function WhatsAppSettingsTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  useEffect(() => {
+    if (!businessId || typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(
+        `wa-migration-inventory:${businessId}`
+      );
+      if (raw) setInventoryNotes(JSON.parse(raw));
+    } catch {
+      /* ignore */
+    }
+  }, [businessId]);
+
+  const persistInventoryNotes = (next: Record<string, string>) => {
+    setInventoryNotes(next);
+    if (!businessId || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(
+        `wa-migration-inventory:${businessId}`,
+        JSON.stringify(next)
+      );
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     if (!businessId) return;
@@ -298,13 +334,30 @@ export default function WhatsAppSettingsTab() {
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
         if (data?.type !== "WA_EMBEDDED_SIGNUP") return;
 
-        if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA") {
-          const phoneNumberId = String(data?.data?.phone_number_id || "").trim();
-          const wabaId = String(data?.data?.waba_id || "").trim();
-          const metaBusinessId = String(data?.data?.business_id || "").trim();
-          if (phoneNumberId && wabaId) {
-            sessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
-          }
+        const assets = extractEmbeddedSignupSessionAssets(data);
+        console.info(
+          "[whatsapp] Embedded Signup session event",
+          embeddedSignupAssetsLogFields(
+            assets,
+            typeof data?.event === "string" ? data.event : undefined
+          )
+        );
+        if (assets?.phoneNumberId && assets?.wabaId) {
+          sessionRef.current = {
+            phoneNumberId: assets.phoneNumberId,
+            wabaId: assets.wabaId,
+            metaBusinessId: assets.metaBusinessId,
+            event: assets.event,
+          };
+        } else if (
+          typeof data?.event === "string" &&
+          data.event === "FINISH_OBO_MIGRATION"
+        ) {
+          // Fail closed: do not keep partial/malformed migration assets.
+          sessionRef.current = null;
+          console.warn(
+            "[whatsapp] Malformed FINISH_OBO_MIGRATION ignored (fail closed)"
+          );
         }
 
         const eventPhone = extractEmbeddedSignupEnteredPhone(data);
@@ -483,6 +536,7 @@ export default function WhatsAppSettingsTab() {
                       phoneNumberId: assets.phoneNumberId,
                       wabaId: assets.wabaId,
                       metaBusinessId: assets.metaBusinessId,
+                      metaEventType: assets.event,
                     }
                   );
 
@@ -743,10 +797,7 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     try {
       setStagingBusy(true);
-      const result = await validateWhatsAppStaging(
-        businessId,
-        registerPin.trim() || undefined
-      );
+      const result = await validateWhatsAppStaging(businessId);
       setStaging((prev) =>
         prev
           ? {
@@ -765,6 +816,48 @@ export default function WhatsAppSettingsTab() {
       toast.error(
         error?.response?.data?.error ||
           t("whatsapp.settings.stagingValidateFailed")
+      );
+    } finally {
+      setStagingBusy(false);
+    }
+  };
+
+  const handleRegisterPendingPin = async () => {
+    if (!businessId) return;
+    const pin = pendingRegisterPin.replace(/\D/g, "").slice(0, 6);
+    if (pin.length !== 6) {
+      toast.error(t("whatsapp.settings.pinRequired"));
+      return;
+    }
+    try {
+      setStagingBusy(true);
+      await registerPendingWhatsAppPhone(businessId, pin);
+      setPendingRegisterPin("");
+      toast.success(t("whatsapp.settings.stagingRegisterSuccess"));
+      await load();
+    } catch (error: any) {
+      setPendingRegisterPin("");
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.stagingRegisterFailed")
+      );
+      await load();
+    } finally {
+      setStagingBusy(false);
+    }
+  };
+
+  const handleRetryPendingWebhook = async () => {
+    if (!businessId) return;
+    try {
+      setStagingBusy(true);
+      await retryPendingWhatsAppWebhook(businessId);
+      toast.success(t("whatsapp.settings.stagingWebhookRetrySuccess"));
+      await load();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.stagingWebhookRetryFailed")
       );
     } finally {
       setStagingBusy(false);
@@ -1057,21 +1150,113 @@ export default function WhatsAppSettingsTab() {
                       {t("whatsapp.settings.stagingPendingLabel")}
                     </dt>
                     <dd className="font-bold text-slate-900" dir="ltr">
-                      {staging.pending.displayPhoneNumber || "—"}
-                    </dd>
-                  </div>
-                  <div className="flex flex-wrap justify-between gap-2">
-                    <dt className="font-semibold text-slate-500">
-                      {t("whatsapp.settings.stagingStatusLabel")}
-                    </dt>
-                    <dd className="font-bold text-slate-900" dir="ltr">
-                      {staging.pending.status || "—"}
+                      {staging.pending.displayPhoneNumber ||
+                        staging.pending.phoneNumberId ||
+                        "—"}
                     </dd>
                   </div>
                 </dl>
+                <ul className="mt-3 space-y-1 text-xs font-medium text-slate-800">
+                  <li>
+                    {t("whatsapp.settings.stagingCheckEs")}:{" "}
+                    {staging.pending.checklist?.embeddedSignupCompleted
+                      ? t("whatsapp.settings.stagingCheckOk")
+                      : t("whatsapp.settings.stagingCheckPending")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckToken")}:{" "}
+                    {staging.pending.checklist?.tokenValid
+                      ? t("whatsapp.settings.stagingCheckOk")
+                      : t("whatsapp.settings.stagingCheckPending")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckPhoneWaba")}:{" "}
+                    {staging.pending.checklist?.phoneWabaVerified
+                      ? t("whatsapp.settings.stagingCheckOk")
+                      : t("whatsapp.settings.stagingCheckPending")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckRegistration")}:{" "}
+                    {staging.pending.checklist?.registration?.registered
+                      ? t("whatsapp.settings.stagingCheckRegistered")
+                      : staging.pending.checklist?.registration?.failed
+                        ? t("whatsapp.settings.stagingCheckFailed")
+                        : t("whatsapp.settings.stagingCheckRequired")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckWebhook")}:{" "}
+                    {staging.pending.checklist?.webhook?.subscribed
+                      ? t("whatsapp.settings.stagingCheckOk")
+                      : t("whatsapp.settings.stagingCheckFailed")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckTemplates")}:{" "}
+                    {staging.pending.checklist?.templates?.synced
+                      ? t("whatsapp.settings.stagingCheckOk")
+                      : staging.pending.checklist?.templates?.warning
+                        ? t("whatsapp.settings.stagingCheckWarning")
+                        : t("whatsapp.settings.stagingCheckPending")}
+                  </li>
+                  <li>
+                    {t("whatsapp.settings.stagingCheckValidation")}:{" "}
+                    {staging.pending.checklist?.validationReady
+                      ? t("whatsapp.settings.stagingCheckReady")
+                      : staging.pending.checklist?.validationFailed
+                        ? t("whatsapp.settings.stagingCheckFailed")
+                        : t("whatsapp.settings.stagingCheckPending")}
+                  </li>
+                  <li className="font-black text-amber-900">
+                    {t("whatsapp.settings.stagingCheckActivation")}:{" "}
+                    {t("whatsapp.settings.stagingCheckNotPerformed")}
+                  </li>
+                </ul>
                 <p className="mt-2 text-xs font-semibold text-sky-900">
                   {t("whatsapp.settings.stagingRemainsActive")}
                 </p>
+
+                {staging.pending.registrationPinRequired ? (
+                  <div className="mt-3 rounded-lg border border-amber-200 bg-white px-3 py-3">
+                    <p className="text-sm font-black text-amber-950">
+                      {t("whatsapp.settings.stagingPinRequiredTitle")}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-slate-600">
+                      {t("whatsapp.settings.stagingPinRequiredHint")}
+                    </p>
+                    <input
+                      className={`${inputBase} mt-2 tracking-[0.35em]`}
+                      type="password"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      value={pendingRegisterPin}
+                      disabled={
+                        stagingBusy || Boolean(staging.pending.registrationPinLocked)
+                      }
+                      onChange={(e) =>
+                        setPendingRegisterPin(
+                          e.target.value.replace(/\D/g, "").slice(0, 6)
+                        )
+                      }
+                      placeholder="••••••"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      className={`${btnPrimary} mt-2`}
+                      disabled={
+                        stagingBusy ||
+                        pendingRegisterPin.length !== 6 ||
+                        Boolean(staging.pending.registrationPinLocked)
+                      }
+                      onClick={() => {
+                        void handleRegisterPendingPin();
+                      }}
+                    >
+                      {t("whatsapp.settings.stagingRegisterCta")}
+                    </button>
+                  </div>
+                ) : null}
+
                 {Number(staging.templateImpact?.atRiskAutomationCount || 0) >
                 0 ? (
                   <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
@@ -1101,15 +1286,24 @@ export default function WhatsAppSettingsTab() {
                       ? t("whatsapp.settings.stagingValidating")
                       : t("whatsapp.settings.stagingValidate")}
                   </button>
+                  {!staging.pending.webhookSubscribed ? (
+                    <button
+                      type="button"
+                      className={btnSecondary}
+                      disabled={stagingBusy}
+                      onClick={() => {
+                        void handleRetryPendingWebhook();
+                      }}
+                    >
+                      {t("whatsapp.settings.stagingRetryWebhook")}
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     className={btnPrimary}
                     disabled={
                       stagingBusy ||
-                      !(
-                        staging.pending.status === "ready_to_activate" ||
-                        staging.pending.status === "validated"
-                      )
+                      staging.pending.status !== "ready_to_activate"
                     }
                     onClick={() => {
                       void handleActivateStaging();
@@ -1130,6 +1324,80 @@ export default function WhatsAppSettingsTab() {
                     {t("whatsapp.settings.stagingDiscard")}
                   </button>
                 </div>
+              </div>
+            ) : null}
+
+            {linked ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                <p className="text-sm font-black text-slate-900">
+                  {t("whatsapp.settings.inventoryTitle")}
+                </p>
+                <p className="mt-1 text-xs font-medium text-slate-600">
+                  {t("whatsapp.settings.inventoryHint")}
+                </p>
+                <div className="mt-3 space-y-2">
+                  {(
+                    staging?.operatorInventoryChecklist || [
+                      { key: "channelId", label: "360dialog Channel ID" },
+                      { key: "wabaId", label: "Current WABA ID" },
+                      {
+                        key: "metaPortfolioId",
+                        label: "Meta Business Portfolio ID",
+                      },
+                      {
+                        key: "displayName",
+                        label: "Display name + approval status",
+                      },
+                      { key: "phoneStatus", label: "Phone status" },
+                      { key: "qualityRating", label: "Quality rating" },
+                      {
+                        key: "twoStepEnabled",
+                        label: "Two-step verification enabled/disabled",
+                      },
+                      {
+                        key: "pinKnown",
+                        label: "Whether PIN is known (yes/no only)",
+                      },
+                      {
+                        key: "templates",
+                        label: "Approved templates + languages",
+                      },
+                      {
+                        key: "webhookConfig",
+                        label: "Existing webhook configuration (URL only)",
+                      },
+                      { key: "hostingType", label: "Hosting type" },
+                      { key: "channelApiStatus", label: "Channel/API status" },
+                      {
+                        key: "billingStatus",
+                        label: "Billing/subscription status",
+                      },
+                      {
+                        key: "openRequests",
+                        label: "Open migration/name-change requests",
+                      },
+                    ]
+                  ).map((item) => (
+                    <label key={item.key} className="block text-xs font-semibold text-slate-700">
+                      {item.label}
+                      <input
+                        className={`${inputBase} mt-1 text-sm font-medium`}
+                        value={inventoryNotes[item.key] || ""}
+                        onChange={(e) =>
+                          persistInventoryNotes({
+                            ...inventoryNotes,
+                            [item.key]: e.target.value.slice(0, 500),
+                          })
+                        }
+                        placeholder={t("whatsapp.settings.inventoryPlaceholder")}
+                        dir="ltr"
+                      />
+                    </label>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] font-medium text-slate-500">
+                  {t("whatsapp.settings.inventoryNoSecrets")}
+                </p>
               </div>
             ) : null}
 
