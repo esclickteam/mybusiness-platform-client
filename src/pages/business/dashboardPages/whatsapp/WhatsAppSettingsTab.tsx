@@ -13,11 +13,14 @@ import {
   Unplug,
 } from "lucide-react";
 import {
+  activateWhatsAppStaging,
   completeWhatsAppEmbeddedSignup,
   consumeWhatsAppVoiceOtp,
+  discardWhatsAppStaging,
   getWhatsAppVoiceVerificationStatus,
   disconnectWhatsApp,
   getWhatsAppEmbeddedSignupConfig,
+  getWhatsAppStagingStatus,
   getWhatsAppStatus,
   listWhatsAppTemplates,
   registerWhatsAppPhone,
@@ -25,7 +28,9 @@ import {
   sendWhatsAppTest,
   startWhatsAppVoiceVerification,
   submitWhatsAppVoiceVerificationCode,
+  validateWhatsAppStaging,
   type WhatsAppConnection,
+  type WhatsAppStagingStatus,
   type WhatsAppTemplate,
   type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
@@ -145,6 +150,8 @@ export default function WhatsAppSettingsTab() {
     useState<WhatsAppVoiceVerificationSession | null>(null);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
+  const [staging, setStaging] = useState<WhatsAppStagingStatus | null>(null);
+  const [stagingBusy, setStagingBusy] = useState(false);
   const [adAccountBilling, setAdAccountBilling] =
     useState<MetaAdAccountBillingHealth | null>(null);
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
@@ -185,11 +192,13 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [status, metaStatus] = await Promise.all([
+      const [status, metaStatus, stagingStatus] = await Promise.all([
         getWhatsAppStatus(businessId, { enrichPayment: true }),
         getMetaCampaignsStatus(businessId).catch(() => null),
+        getWhatsAppStagingStatus(businessId).catch(() => null),
       ]);
       setConnection(status);
+      setStaging(stagingStatus);
       setAdAccountBilling(metaStatus?.adAccountBillingHealth || null);
       if (status.connected) {
         const templates = await listWhatsAppTemplates(businessId, {
@@ -477,6 +486,17 @@ export default function WhatsAppSettingsTab() {
                     }
                   );
 
+                  if (status.staged) {
+                    setActionInfo("");
+                    toast.success(
+                      status.message ||
+                        t("whatsapp.settings.stagedPendingSuccess")
+                    );
+                    await load();
+                    settleResolve();
+                    return;
+                  }
+
                   if (!status.connected) {
                     settleReject(
                       new Error(
@@ -719,6 +739,105 @@ export default function WhatsAppSettingsTab() {
     }
   };
 
+  const handleValidateStaging = async () => {
+    if (!businessId) return;
+    try {
+      setStagingBusy(true);
+      const result = await validateWhatsAppStaging(
+        businessId,
+        registerPin.trim() || undefined
+      );
+      setStaging((prev) =>
+        prev
+          ? {
+              ...prev,
+              pending: result.pending || prev.pending,
+            }
+          : prev
+      );
+      if (result.readyToActivate || result.success) {
+        toast.success(t("whatsapp.settings.stagingValidateSuccess"));
+        await load();
+      } else {
+        toast.error(t("whatsapp.settings.stagingValidateFailed"));
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.stagingValidateFailed")
+      );
+    } finally {
+      setStagingBusy(false);
+    }
+  };
+
+  const handleActivateStaging = async () => {
+    if (!businessId || !staging?.pending) return;
+    const pendingPhone = staging.pending.displayPhoneNumber || "";
+    const livePhone =
+      staging.live?.displayPhoneNumber || connection?.displayPhoneNumber || "";
+    if (
+      !window.confirm(t("whatsapp.settings.stagingActivateConfirm"))
+    ) {
+      return;
+    }
+    const typed = window.prompt(
+      t("whatsapp.settings.stagingActivatePhonePrompt"),
+      ""
+    );
+    const typedDigits = String(typed || "").replace(/\D/g, "");
+    const pendingDigits = String(pendingPhone || "").replace(/\D/g, "");
+    if (!typedDigits || typedDigits !== pendingDigits) {
+      toast.error(t("whatsapp.settings.stagingActivateBlocked"));
+      return;
+    }
+    const liveDigits = String(livePhone || "").replace(/\D/g, "");
+    const samePhone =
+      liveDigits &&
+      pendingDigits &&
+      (liveDigits === pendingDigits ||
+        (liveDigits.length >= 10 &&
+          pendingDigits.length >= 10 &&
+          liveDigits.slice(-10) === pendingDigits.slice(-10)));
+    const atRisk = Number(staging.templateImpact?.atRiskAutomationCount || 0);
+    try {
+      setStagingBusy(true);
+      await activateWhatsAppStaging(businessId, {
+        confirmLivePhone: livePhone,
+        confirmPendingPhone: pendingPhone,
+        confirmPhoneChange: !samePhone,
+        confirmSamePhone: Boolean(samePhone),
+        confirmTemplateImpact: atRisk > 0,
+      });
+      toast.success(t("whatsapp.settings.stagingActivateSuccess"));
+      await load();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.stagingActivateBlocked")
+      );
+    } finally {
+      setStagingBusy(false);
+    }
+  };
+
+  const handleDiscardStaging = async () => {
+    if (!businessId) return;
+    if (!window.confirm(t("whatsapp.settings.stagingDiscardConfirm"))) {
+      return;
+    }
+    try {
+      setStagingBusy(true);
+      await discardWhatsAppStaging(businessId);
+      toast.success(t("whatsapp.settings.stagingDiscardSuccess"));
+      await load();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || t("whatsapp.errors.loadSettings"));
+    } finally {
+      setStagingBusy(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={`${cardBase} flex items-center justify-center gap-2 p-10`}>
@@ -913,6 +1032,106 @@ export default function WhatsAppSettingsTab() {
                 </div>
               </dl>
             </div>
+
+            {staging?.pending ? (
+              <div className="rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3">
+                <p className="text-sm font-black text-sky-950">
+                  {t("whatsapp.settings.stagingTitle")}
+                </p>
+                <p className="mt-1 text-xs font-medium text-sky-800">
+                  {t("whatsapp.settings.stagingSubtitle")}
+                </p>
+                <dl className="mt-3 grid gap-2 text-sm">
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <dt className="font-semibold text-slate-500">
+                      {t("whatsapp.settings.stagingLiveLabel")}
+                    </dt>
+                    <dd className="font-bold text-slate-900" dir="ltr">
+                      {staging.live?.displayPhoneNumber ||
+                        connection?.displayPhoneNumber ||
+                        "—"}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <dt className="font-semibold text-slate-500">
+                      {t("whatsapp.settings.stagingPendingLabel")}
+                    </dt>
+                    <dd className="font-bold text-slate-900" dir="ltr">
+                      {staging.pending.displayPhoneNumber || "—"}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <dt className="font-semibold text-slate-500">
+                      {t("whatsapp.settings.stagingStatusLabel")}
+                    </dt>
+                    <dd className="font-bold text-slate-900" dir="ltr">
+                      {staging.pending.status || "—"}
+                    </dd>
+                  </div>
+                </dl>
+                <p className="mt-2 text-xs font-semibold text-sky-900">
+                  {t("whatsapp.settings.stagingRemainsActive")}
+                </p>
+                {Number(staging.templateImpact?.atRiskAutomationCount || 0) >
+                0 ? (
+                  <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
+                    <p>
+                      {t("whatsapp.settings.stagingTemplateImpact", {
+                        count: staging.templateImpact?.atRiskAutomationCount,
+                      })}
+                    </p>
+                    <p className="mt-1">
+                      {t("whatsapp.settings.stagingTemplateImpactHint")}
+                    </p>
+                  </div>
+                ) : null}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className={btnPrimary}
+                    disabled={stagingBusy}
+                    onClick={() => {
+                      void handleValidateStaging();
+                    }}
+                  >
+                    {stagingBusy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : null}
+                    {stagingBusy
+                      ? t("whatsapp.settings.stagingValidating")
+                      : t("whatsapp.settings.stagingValidate")}
+                  </button>
+                  <button
+                    type="button"
+                    className={btnPrimary}
+                    disabled={
+                      stagingBusy ||
+                      !(
+                        staging.pending.status === "ready_to_activate" ||
+                        staging.pending.status === "validated"
+                      )
+                    }
+                    onClick={() => {
+                      void handleActivateStaging();
+                    }}
+                  >
+                    {stagingBusy
+                      ? t("whatsapp.settings.stagingActivating")
+                      : t("whatsapp.settings.stagingActivate")}
+                  </button>
+                  <button
+                    type="button"
+                    className={btnSecondary}
+                    disabled={stagingBusy}
+                    onClick={() => {
+                      void handleDiscardStaging();
+                    }}
+                  >
+                    {t("whatsapp.settings.stagingDiscard")}
+                  </button>
+                </div>
+              </div>
+            ) : null}
 
             {needsRegistration && (
               <>
