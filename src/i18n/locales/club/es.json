@@ -21,6 +21,7 @@
     "title": "Conecta. Colabora. Crece.",
     "description": "Una comunidad global para dueños de negocios y emprendedores que buscan conexiones internacionales, intercambiar ideas, recibir feedback, descubrir oportunidades y construir colaboraciones digitales.",
     "cta": "Solicitar unirse",
+    "secondaryCta": "Conoce más sobre el Club",
     "pendingTitle": "Tu solicitud ha sido recibida.",
     "pendingBody": "El equipo de Bizuply revisará tu solicitud.",
     "suspended": "Tu membresía del Club está suspendida. Contacta al equipo de Bizuply si necesitas una revisión.",
@@ -79,10 +80,13 @@
     "activityFeed": "Actividad global",
     "stats": {
       "activeMembers": "Miembros activos",
+      "communityMembers": "Miembros de la comunidad",
       "countries": "Países representados",
       "collaborations": "Colaboraciones abiertas",
       "opportunities": "Nuevas oportunidades",
-      "discussions": "Debates esta semana"
+      "openOpportunities": "Oportunidades abiertas",
+      "discussions": "Debates esta semana",
+      "activePolls": "Encuestas activas"
     },
     "spotlight": "Miembro destacado",
     "lookingFor": "Busca: {{value}}",
@@ -91,7 +95,16 @@
     "noSuggestions": "Las sugerencias aparecen cuando más miembros completan su perfil.",
     "thisWeek": "Esta semana en el Club",
     "noActivity": "Aún no hay actividad programada del Club.",
-    "openFeed": "Abrir las publicaciones del Club"
+    "openFeed": "Abrir las publicaciones del Club",
+    "createPost": "Crear publicación",
+    "exploreClub": "Explorar el Club",
+    "welcomeName": "Bienvenido, {{name}}",
+    "completeProfile": "Completar perfil global",
+    "questionOfDay": "Pregunta del día",
+    "voteNow": "Votar ahora",
+    "votes": "{{count}} votos",
+    "upcomingEvents": "Próximos eventos",
+    "communityFeed": "Feed de la comunidad"
   },
   "feed": {
     "title": "Publicaciones del Club",
@@ -99,6 +112,8 @@
     "saved": "Guardado",
     "save": "Guardar",
     "all": "Todo",
+    "updates": "Novedades",
+    "questions": "Preguntas",
     "composerTitle": "¿Qué te gustaría publicar?",
     "lookingFor": "¿Qué estás buscando?",
     "countryMarket": "País/mercado",
@@ -452,7 +467,54 @@
     "Switzerland": "Suiza",
     "United Arab Emirates": "Emiratos Árabes Unidos",
     "United Kingdom": "Reino Unido",
-    "United States": "Estados Unidos"
+    "United States": "Estados Unidos",
+    "Bulgaria": "Bulgaria"
+  },
+  "demo": {
+    "globeLine1": "A Global Community",
+    "globeLine2": "A Brighter Tomorrow",
+    "globeCaption": "Los grandes negocios empiezan con conexiones pequeñas",
+    "quote": "Una comunidad global no es solo una red de contactos: es un motor de crecimiento real.",
+    "today": {
+      "title": "Pregunta del día",
+      "question": "¿Cuál es el mayor desafío de tu negocio ahora mismo?",
+      "a": "Conseguir nuevos clientes",
+      "b": "Expandirse a mercados internacionales",
+      "c": "Construir un equipo sólido",
+      "d": "Financiación e inversión"
+    },
+    "members": {
+      "sarah": { "name": "Sarah Cohen", "business": "Innovative Beauty", "bio": "Marca de belleza que busca socios de importación y retail." },
+      "marco": { "name": "Marco Rossi", "business": "Rossi Consulting", "bio": "Ayuda a pymes europeas a crecer más allá de sus fronteras." },
+      "dana": { "name": "Dana Levy", "business": "Grow Digital", "bio": "Estudio de crecimiento digital para marcas internacionales." },
+      "ahmed": { "name": "Ahmed Al Mansoori", "business": "Emirates Trade", "bio": "Comercio y distribución en el Golfo." },
+      "maria": { "name": "Maria Gonzalez", "business": "Studio Norte", "bio": "Estudio de diseño digital en España." },
+      "david": { "name": "David Kim", "business": "Seoul Labs", "bio": "Estudio de producto y tecnología en Seúl." }
+    },
+    "posts": {
+      "sarah": "Busco un importador israelí y un socio retail para lanzar una línea premium de belleza. Ya vendemos en Europa y queremos un socio local de confianza.",
+      "marco": "Después de 12 años asesorando pymes en Milán, abro una vía de colaboración para quienes quieran entrar en Italia con un consultor local.",
+      "dana": "¿Cómo precias un producto digital al entrar en un país nuevo? Quiero ejemplos prácticos de miembros que ya lo hicieron."
+    },
+    "opportunities": {
+      "canada": { "title": "Looking for reseller in Canada", "text": "Buscamos un socio retail o e-commerce para introducir una línea premium en Canadá." },
+      "us": { "title": "Socio de marketing internacional en Estados Unidos", "text": "Buscamos un socio de performance marketing para una marca tech asiática que entra a EE. UU." },
+      "bulgaria": { "title": "Busco socio de distribución en Bulgaria", "text": "Necesitamos un distribuidor local que ya trabaje con cadenas retail en Europa del Este." }
+    },
+    "events": {
+      "may": "May",
+      "june": "Jun",
+      "scale": {
+        "title": "SCALE Global — conferencia de negocios",
+        "time": "19:30 – 21:00",
+        "text": "Una sesión para dueños que quieren crecer con alianzas internacionales."
+      },
+      "ai": {
+        "title": "IA en el negocio",
+        "time": "18:00 – 19:30",
+        "text": "Los miembros comparten flujos de IA que realmente usan en operaciones."
+      }
+    }
   },
   "errors": {
     "generic": "Algo salió mal. Inténtalo de nuevo.",

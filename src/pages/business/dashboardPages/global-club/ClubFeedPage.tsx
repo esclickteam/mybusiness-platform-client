@@ -4,6 +4,7 @@ import { ClubPost, clubError, clubGet, clubSend, uploadClubImage } from "./clubA
 import { useClub } from "./GlobalBusinessClubPage";
 import { ClubCard, ClubSectionTitle, EmptyState, Field, GhostButton, POST_TYPE_KEYS, PrimaryButton, clubChipClass, fieldClass } from "./clubUi";
 import { ClubPostCard } from "./clubCards";
+import { demoPosts, mergeLive } from "./clubDemo";
 
 const COMPOSER = ["question", "collaboration", "feedback", "opportunity", "market", "advice", "general"] as const;
 
@@ -53,10 +54,18 @@ export default function ClubFeedPage() {
       </div>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       {open ? <Composer onClose={() => setOpen(false)} onCreated={() => { setOpen(false); void load(); }} /> : null}
-      {posts.length === 0 ? <EmptyState title={t("club.feed.emptyTitle")} text={t("club.feed.emptyText")} /> : null}
-      {posts.map((post) => (
-        <ClubPostCard key={post._id} post={post} base={base} onChange={load} />
-      ))}
+      {(() => {
+        const demo = savedOnly ? [] : demoPosts(t).filter((post) => type === "all" || post.postType === type);
+        const visible = mergeLive(posts, demo, type === "all" && !savedOnly ? 3 : posts.length);
+        return (
+          <>
+            {visible.length === 0 ? <EmptyState title={t("club.feed.emptyTitle")} text={t("club.feed.emptyText")} /> : null}
+            {visible.map((post) => (
+              <ClubPostCard key={post._id} post={post} base={base} onChange={load} />
+            ))}
+          </>
+        );
+      })()}
     </div>
   );
 }

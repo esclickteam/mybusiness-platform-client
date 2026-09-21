@@ -1,12 +1,43 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useClub } from "./GlobalBusinessClubPage";
+import { useClub, ClubNav } from "./GlobalBusinessClubPage";
 import { ClubPost, ClubProfile, clubError, clubGet, clubSend } from "./clubApi";
-import { ClubAvatar, ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, PrimaryButton, countryFlag, formatCount } from "./clubUi";
-import { ClubOpportunityCard, ClubPersonCard, ClubPostCard } from "./clubCards";
+import {
+  ClubAvatar,
+  ClubCard,
+  EmptyState,
+  GhostButton,
+  PrimaryButton,
+  StatusBadge,
+  clubChipClass,
+  countryFlag,
+  formatCount,
+  formatWhenRelative,
+} from "./clubUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Globe2, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  BarChart3,
+  Briefcase,
+  Check,
+  Crown,
+  Heart,
+  MessageCircle,
+  MessagesSquare,
+  Sun,
+  Users,
+} from "lucide-react";
+import {
+  DEMO_EVENTS,
+  DEMO_MEMBER_META,
+  DEMO_STATS,
+  DEMO_TODAY,
+  demoOpportunities,
+  demoPosts,
+  isDemoId,
+  localizeDemoMember,
+  mergeLive,
+} from "./clubDemo";
 
 const BENEFIT_KEYS = [
   "connections",
@@ -60,37 +91,39 @@ export default function ClubHomePage() {
   const { me, base, isMember } = useClub();
   if (!me) return null;
   if (!isMember) return <Landing status={me.status} base={base} />;
-  return <Dashboard base={base} />;
+  return <MemberHome base={base} />;
 }
 
 function Landing({ status, base }: { status: string; base: string }) {
   const { t } = useTranslation();
   return (
-    <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#1e1b4b_0%,#4c1d95_48%,#7C4DFF_100%)] px-6 py-10 text-white sm:px-10 sm:py-14">
-        <Globe2 className="pointer-events-none absolute -end-8 -top-8 h-56 w-56 text-white/10" />
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-100">{t("club.landing.kicker")}</p>
-        <h2 className="mt-3 max-w-xl text-4xl font-black tracking-tight sm:text-5xl">{t("club.landing.title")}</h2>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-violet-100 sm:text-base">{t("club.landing.description")}</p>
-        <div className="mt-6">
-          {status === "pending" ? (
-            <div className="max-w-xl rounded-2xl bg-white/10 px-4 py-3 text-sm">
-              <p className="font-semibold">{t("club.landing.pendingTitle")}</p>
-              <p>{t("club.landing.pendingBody")}</p>
-            </div>
-          ) : null}
-          {status === "suspended" ? <p className="max-w-xl rounded-2xl bg-amber-400/20 px-4 py-3 text-sm">{t("club.landing.suspended")}</p> : null}
-          {status === "expired" ? <p className="max-w-xl rounded-2xl bg-white/10 px-4 py-3 text-sm">{t("club.landing.expired")}</p> : null}
-          {status === "not_member" || status === "expired" ? (
+    <div className="space-y-8">
+      <PremiumHero
+        primary={
+          status === "not_member" || status === "expired" ? (
             <Link to={`${base}/join`}>
-              <PrimaryButton className="mt-2 bg-white text-[#4c1d95] shadow-none hover:bg-violet-50" data-testid="club-request-join">
+              <PrimaryButton className="rounded-full px-6 py-3 text-sm" data-testid="club-request-join">
                 {t("club.landing.cta")}
               </PrimaryButton>
             </Link>
-          ) : null}
-        </div>
-      </section>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          ) : null
+        }
+        secondary={
+          <a href="#club-benefits">
+            <GhostButton type="button" className="rounded-full px-6 py-3">{t("club.landing.secondaryCta")}</GhostButton>
+          </a>
+        }
+      >
+        {status === "pending" ? (
+          <div className="mt-4 max-w-xl rounded-2xl bg-violet-50 px-4 py-3 text-sm text-slate-700">
+            <p className="font-semibold">{t("club.landing.pendingTitle")}</p>
+            <p>{t("club.landing.pendingBody")}</p>
+          </div>
+        ) : null}
+        {status === "suspended" ? <p className="mt-4 max-w-xl rounded-2xl bg-amber-50 px-4 py-3 text-sm">{t("club.landing.suspended")}</p> : null}
+        {status === "expired" ? <p className="mt-4 max-w-xl rounded-2xl bg-violet-50 px-4 py-3 text-sm">{t("club.landing.expired")}</p> : null}
+      </PremiumHero>
+      <div id="club-benefits" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {BENEFIT_KEYS.map((benefit) => (
           <ClubCard key={benefit} className="py-5">
             <p className="text-sm font-bold text-slate-800">{t(`club.landing.benefits.${benefit}`)}</p>
@@ -101,7 +134,7 @@ function Landing({ status, base }: { status: string; base: string }) {
   );
 }
 
-function Dashboard({ base }: { base: string }) {
+function MemberHome({ base }: { base: string }) {
   const { t, i18n } = useTranslation();
   const locale = getIntlLocale(i18n.language);
   const { me } = useClub();
@@ -110,6 +143,9 @@ function Dashboard({ base }: { base: string }) {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [error, setError] = useState("");
+  const [feedFilter, setFeedFilter] = useState("all");
+  const [liked, setLiked] = useState<Record<string, number>>({});
+  const [todayVote, setTodayVote] = useState<string | null>(null);
 
   function load() {
     Promise.all([
@@ -131,179 +167,400 @@ function Dashboard({ base }: { base: string }) {
     load();
   }, [t]);
 
-  const today = useMemo(() => {
-    const openPoll = polls.find((poll) => poll.status === "open");
-    if (openPoll) return { kind: "poll" as const, poll: openPoll };
-    const question = posts.find((post) => post.postType === "question" || post.postType === "advice" || post.postType === "market");
-    if (question) return { kind: "question" as const, post: question };
-    const activity = data?.activities?.[0];
-    if (activity) return { kind: "activity" as const, activity };
-    const collaboration = posts.find((post) => post.postType === "collaboration");
-    if (collaboration) return { kind: "question" as const, post: collaboration };
-    return null;
-  }, [polls, posts, data]);
+  const seededPosts = useMemo(() => mergeLive(posts, demoPosts(t), 3), [posts, t]);
+  const seededPeople = useMemo(
+    () => mergeLive(data?.suggestions || [], DEMO_MEMBER_META.map((member) => localizeDemoMember(member, t)), 3),
+    [data, t]
+  );
+  const seededOpps = useMemo(() => mergeLive(opportunities, demoOpportunities(t), 3), [opportunities, t]);
+  const visiblePosts = feedFilter === "all" ? seededPosts : seededPosts.filter((post) => post.postType === feedFilter);
+  const livePoll = polls.find((poll) => poll.status === "open");
 
-  if (error) return <p className="text-sm text-rose-600">{error}</p>;
-  if (!data) return <p className="text-sm text-slate-500">{t("club.dashboard.loading")}</p>;
+  if (!data && !error) return <p className="text-sm text-slate-500">{t("club.dashboard.loading")}</p>;
 
-  const profile = me?.profile;
   const stats = [
-    ["club.dashboard.stats.activeMembers", data.stats.activeMembers],
-    ["club.dashboard.stats.countries", data.stats.countriesRepresented],
-    ["club.dashboard.stats.collaborations", data.stats.openCollaborations],
-    ["club.dashboard.stats.opportunities", data.stats.newOpportunities],
-    ["club.dashboard.stats.discussions", data.stats.discussionsThisWeek],
-  ] as const;
+    { icon: Users, value: Math.max(data?.stats.activeMembers || 0, DEMO_STATS.activeMembers), label: t("club.dashboard.stats.communityMembers") },
+    { icon: MessagesSquare, value: Math.max(data?.stats.discussionsThisWeek || 0, DEMO_STATS.discussionsThisWeek), label: t("club.dashboard.stats.discussions") },
+    { icon: Briefcase, value: Math.max(data?.stats.newOpportunities || 0, DEMO_STATS.newOpportunities), label: t("club.dashboard.stats.openOpportunities") },
+    { icon: BarChart3, value: Math.max(polls.filter((poll) => poll.status === "open").length, DEMO_STATS.openPolls), label: t("club.dashboard.stats.activePolls") },
+  ];
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#1e1b4b_0%,#4c1d95_46%,#7C4DFF_100%)] p-6 text-white shadow-[0_30px_80px_rgba(76,29,149,0.28)] sm:p-8">
-        <div className="pointer-events-none absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.35), transparent 32%), radial-gradient(circle at 10% 90%, rgba(20,184,166,0.35), transparent 28%)" }} />
-        <Globe2 className="pointer-events-none absolute -end-10 bottom-0 h-48 w-48 text-white/10" />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center">
-          <ClubAvatar name={profile?.fullName} photoUrl={profile?.photoUrl} logoUrl={profile?.logoUrl} size="lg" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-200">{t("club.name")}</p>
-            <h2 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{t("club.dashboard.heroWelcome", { name: profile?.fullName || t("club.common.memberFallback") })}</h2>
-            <p className="mt-2 text-sm text-violet-100">{t("club.dashboard.subtitle")}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-violet-50">
-              {profile?.businessName ? <span className="rounded-full bg-white/10 px-3 py-1 font-semibold">{profile.businessName}</span> : null}
-              {profile?.country ? <span className="rounded-full bg-white/10 px-3 py-1">{countryFlag(profile.country)} {t(`club.countries.${profile.country}`, { defaultValue: profile.country })}</span> : null}
-              {profile?.businessCategory ? <span className="rounded-full bg-white/10 px-3 py-1">{t(`club.categories.${profile.businessCategory}`, { defaultValue: profile.businessCategory })}</span> : null}
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-3 py-1 font-bold text-emerald-100">
-                <Sparkles className="h-3.5 w-3.5" />
-                {t(me?.membership?.billingStatus === "active" ? "club.dashboard.paidMember" : "club.dashboard.activeMember")}
+      <PremiumHero
+        member={me?.profile}
+        primary={
+          <Link to={`${base}/feed`}>
+            <PrimaryButton className="rounded-full px-6 py-3 text-sm">{t("club.dashboard.createPost")}</PrimaryButton>
+          </Link>
+        }
+        secondary={
+          <Link to={`${base}/directory`}>
+            <GhostButton type="button" className="rounded-full px-6 py-3">{t("club.dashboard.exploreClub")}</GhostButton>
+          </Link>
+        }
+      />
+
+      <ClubNav base={base} isMember isAdmin={Boolean(me?.isAdmin)} />
+      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_minmax(240px,0.9fr)]">
+        {stats.map((stat) => (
+          <div key={stat.label} className="flex items-center gap-3 rounded-full bg-white px-4 py-3 shadow-[0_10px_30px_rgba(76,29,149,0.06)] ring-1 ring-violet-100/80">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#F3EEFF] text-[#7C4DFF]">
+              <stat.icon className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-2xl font-black tracking-tight text-slate-900">{formatCount(stat.value, locale)}</p>
+              <p className="text-xs font-medium text-slate-500">{stat.label}</p>
+            </div>
+          </div>
+        ))}
+        <div className="rounded-[24px] bg-white px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_10px_30px_rgba(76,29,149,0.06)] ring-1 ring-violet-100/80">
+          <span className="text-lg leading-none text-[#7C4DFF]">“</span>
+          {t("club.demo.quote")}
+          <span className="mt-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</span>
+        </div>
+      </div>
+
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(270px,0.86fr)_minmax(0,1.35fr)_minmax(270px,0.86fr)]">
+        <div className="space-y-5">
+          <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(76,29,149,0.07)] ring-1 ring-violet-100/80">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <h2 className="text-lg font-black text-slate-900">{t("club.dashboard.todayTitle")}</h2>
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E8] px-2.5 py-1 text-[11px] font-bold text-amber-700">
+                <Sun className="h-3.5 w-3.5" />
+                {t("club.dashboard.questionOfDay")}
               </span>
             </div>
-          </div>
-        </div>
-        <div className="relative mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
-          {stats.map(([label, value]) => (
-            <div key={label} className="rounded-2xl bg-white/10 px-3 py-3 backdrop-blur-sm">
-              <p className="text-2xl font-black">{formatCount(Number(value), locale)}</p>
-              <p className="text-[11px] font-medium text-violet-100">{t(label)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <ClubCard className="border-[#7C4DFF]/20 bg-[linear-gradient(180deg,#ffffff_0%,#F8F5FF_100%)]">
-        <ClubSectionTitle kicker={t("club.dashboard.todayKicker")} title={t("club.dashboard.todayTitle")} />
-        {!today ? <EmptyState title={t("club.dashboard.todayEmptyTitle")} text={t("club.dashboard.todayEmptyText")} /> : null}
-        {today?.kind === "poll" ? <TodayPoll poll={today.poll} onVoted={load} /> : null}
-        {today?.kind === "question" ? (
-          <div>
-            <ClubPostCard post={today.post} base={base} compact onChange={load} />
-            <Link to={`${base}/ask`} className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#5B2CFF]">
-              {t("club.dashboard.participate")} <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
-        ) : null}
-        {today?.kind === "activity" ? (
-          <div className="rounded-2xl bg-white p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-[#7C4DFF]">{t(`club.activities.${today.activity.kind}`, { defaultValue: today.activity.kind })}</p>
-            <ClubMemberText className="mt-1 text-xl font-black" text={today.activity.title} />
-            <ClubMemberText className="mt-2 text-sm text-slate-600" text={today.activity.description} />
-            <Link to={`${base}/feed`} className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#5B2CFF]">
-              {t("club.dashboard.participate")} <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
-        ) : null}
-      </ClubCard>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.9fr)]">
-        <div>
-          <ClubSectionTitle
-            kicker={t("club.dashboard.feedKicker")}
-            title={t("club.dashboard.activityFeed")}
-            action={<Link to={`${base}/feed`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>}
-          />
-          <div className="space-y-4">
-            {posts.length === 0 ? <EmptyState title={t("club.feed.emptyTitle")} text={t("club.feed.emptyText")} /> : null}
-            {posts.slice(0, 5).map((post) => (
-              <ClubPostCard key={post._id} post={post} base={base} compact onChange={load} />
-            ))}
-          </div>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <ClubSectionTitle
-              title={t("club.opportunities.title")}
-              action={<Link to={`${base}/opportunities`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>}
-            />
-            <div className="space-y-3">
-              {opportunities.length === 0 ? <p className="text-sm text-slate-500">{t("club.opportunities.emptyText")}</p> : null}
-              {opportunities.slice(0, 3).map((row) => <ClubOpportunityCard key={row._id} row={row} base={base} />)}
-            </div>
-          </div>
-          {data.spotlight ? (
-            <ClubCard>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.dashboard.spotlight")}</p>
-              <div className="mt-3 flex items-center gap-3">
-                <ClubAvatar name={data.spotlight.fullName} photoUrl={data.spotlight.photoUrl} logoUrl={data.spotlight.logoUrl} />
-                <div className="min-w-0">
-                  <h3 className="font-black">{data.spotlight.businessName}</h3>
-                  <p className="text-sm text-slate-500">{data.spotlight.fullName} · {countryFlag(data.spotlight.country)} {t(`club.countries.${data.spotlight.country}`, { defaultValue: data.spotlight.country })}</p>
+            {livePoll ? (
+              <LiveTodayPoll poll={livePoll} onVoted={load} />
+            ) : (
+              <>
+                <p className="text-base font-black leading-6 text-slate-900">{t(DEMO_TODAY.questionKey)}</p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {DEMO_TODAY.options.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setTodayVote(option.id)}
+                      className={`rounded-2xl border px-3 py-3 text-start text-sm font-semibold transition ${
+                        todayVote === option.id
+                          ? "border-[#7C4DFF] bg-[#F3EEFF] text-[#5B2CFF]"
+                          : "border-violet-100 bg-[#FBF9FF] text-slate-700 hover:border-[#7C4DFF]/40"
+                      }`}
+                    >
+                      {t(option.labelKey)}
+                    </button>
+                  ))}
                 </div>
-              </div>
-              <ClubMemberText className="mt-3 line-clamp-3 text-sm text-slate-700" text={data.spotlight.description} />
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Link to={`${base}/members/${data.spotlight.userId}`} className="rounded-2xl border border-violet-100 px-3 py-2 text-sm font-semibold">{t("club.common.viewProfile")}</Link>
-                <PrimaryButton type="button" className="px-3 py-2" onClick={() => clubSend("post", "/club/connections", { userId: data.spotlight?.userId })}>{t("club.common.connect")}</PrimaryButton>
-              </div>
-            </ClubCard>
-          ) : null}
-          <ClubCard>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-lg font-black">{t("club.dashboard.peopleToMeet")}</h3>
-              <Link to={`${base}/connections`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>
+                <PrimaryButton type="button" className="mt-4 w-full rounded-full">{t("club.dashboard.voteNow")}</PrimaryButton>
+                <p className="mt-2 text-center text-xs font-semibold text-slate-400">
+                  {t("club.dashboard.votes", { count: DEMO_TODAY.votes })}
+                </p>
+              </>
+            )}
+          </section>
+
+          <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(76,29,149,0.07)] ring-1 ring-violet-100/80">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-black text-slate-900">{t("club.dashboard.upcomingEvents")}</h2>
+              <Link to={`${base}/hot-seat`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>
             </div>
             <div className="space-y-3">
-              {data.suggestions.length === 0 ? <p className="text-sm text-slate-500">{t("club.dashboard.noSuggestions")}</p> : null}
-              {data.suggestions.slice(0, 4).map((member) => (
-                <ClubPersonCard
-                  key={member.userId}
-                  member={member}
-                  base={base}
-                  extra={member.matchReasons?.[0] ? t(`club.matchReasons.${member.matchReasons[0]}`, { defaultValue: member.matchReasons[0] }) : undefined}
-                  onConnect={() => clubSend("post", "/club/connections", { userId: member.userId }).then(load)}
-                />
+              {DEMO_EVENTS.map((event) => (
+                <div key={event.id} className="flex gap-3 rounded-2xl bg-[#FBF9FF] p-3">
+                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white text-center shadow-sm ring-1 ring-violet-100">
+                    <span className="text-lg font-black text-slate-900">{event.day}</span>
+                    <span className="text-[10px] font-bold uppercase text-[#7C4DFF]">{t(event.monthKey)}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-black text-slate-900">{t(event.titleKey)}</p>
+                    <p className="text-xs font-semibold text-slate-500">{t(event.timeKey)}</p>
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{t(event.textKey)}</p>
+                  </div>
+                </div>
               ))}
             </div>
-          </ClubCard>
+          </section>
+        </div>
+
+        <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(76,29,149,0.07)] ring-1 ring-violet-100/80">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-black text-slate-900">{t("club.dashboard.communityFeed")}</h2>
+            <Link to={`${base}/feed`}>
+              <PrimaryButton className="rounded-full px-4 py-2 text-xs">{t("club.feed.create")}</PrimaryButton>
+            </Link>
+          </div>
+          <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+            {[
+              ["all", "club.feed.all"],
+              ["general", "club.feed.updates"],
+              ["collaboration", "club.postTypes.collaboration"],
+              ["question", "club.feed.questions"],
+            ].map(([id, key]) => (
+              <button key={id} type="button" onClick={() => setFeedFilter(id)} className={clubChipClass(feedFilter === id)}>
+                {t(key)}
+              </button>
+            ))}
+          </div>
+          <div className="space-y-4">
+            {visiblePosts.length === 0 ? <EmptyState title={t("club.feed.emptyTitle")} text={t("club.feed.emptyText")} /> : null}
+            {visiblePosts.slice(0, 4).map((post) => (
+              <CommunityPost
+                key={post._id}
+                post={post}
+                base={base}
+                locale={locale}
+                extraLikes={liked[post._id] || 0}
+                onLike={() => {
+                  if (isDemoId(post._id)) {
+                    setLiked((current) => ({ ...current, [post._id]: (current[post._id] || 0) + 1 }));
+                    return;
+                  }
+                  void clubSend("post", `/club/posts/${post._id}/react`).then(load);
+                }}
+              />
+            ))}
+          </div>
+        </section>
+
+        <div className="space-y-5">
+          <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(76,29,149,0.07)] ring-1 ring-violet-100/80">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-black text-slate-900">{t("club.dashboard.peopleToMeet")}</h2>
+              <Link to={`${base}/directory`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>
+            </div>
+            <div className="space-y-3">
+              {seededPeople.slice(0, 3).map((member) => (
+                <article key={member.userId} className="rounded-[22px] bg-[#FBF9FF] p-4">
+                  <div className="flex items-center gap-3">
+                    <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} />
+                    <div className="min-w-0">
+                      <p className="truncate font-black text-slate-900">{member.fullName}</p>
+                      <p className="truncate text-xs text-slate-500">{member.businessName}</p>
+                      <p className="truncate text-xs text-slate-500">
+                        {countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <StatusBadge>{t(`club.categories.${member.businessCategory}`, { defaultValue: member.businessCategory || "" })}</StatusBadge>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Link to={isDemoId(member.userId) ? `${base}/directory` : `${base}/members/${member.userId}`} className="flex-1">
+                      <GhostButton type="button" className="w-full rounded-full py-2 text-xs">{t("club.common.viewProfile")}</GhostButton>
+                    </Link>
+                    <PrimaryButton
+                      type="button"
+                      className="flex-1 rounded-full py-2 text-xs"
+                      onClick={() => {
+                        if (!isDemoId(member.userId)) void clubSend("post", "/club/connections", { userId: member.userId }).then(load);
+                      }}
+                    >
+                      {t("club.common.connect")}
+                    </PrimaryButton>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(76,29,149,0.07)] ring-1 ring-violet-100/80">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-black text-slate-900">{t("club.opportunities.title")}</h2>
+              <Link to={`${base}/opportunities`} className="text-sm font-bold text-[#5B2CFF]">{t("club.dashboard.seeAll")}</Link>
+            </div>
+            <div className="space-y-3">
+              {seededOpps.slice(0, 3).map((row) => (
+                <article key={row._id} className="rounded-[22px] bg-[#FBF9FF] p-4">
+                  <p className="font-black text-slate-900">{row.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {countryFlag(row.country)} {t(`club.countries.${row.country}`, { defaultValue: row.country || "" })}
+                    {row.industry ? ` · ${t(`club.categories.${row.industry}`, { defaultValue: row.industry })}` : ""}
+                  </p>
+                  <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-600">{row.description}</p>
+                </article>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
     </div>
   );
 }
 
-function TodayPoll({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
+function PremiumHero({
+  children,
+  primary,
+  secondary,
+  member,
+}: {
+  children?: ReactNode;
+  primary: ReactNode;
+  secondary: ReactNode;
+  member?: ClubProfile | null;
+}) {
+  const { t } = useTranslation();
+  const { me, base } = useClub();
+  const avatars = DEMO_MEMBER_META.slice(0, 6);
+  return (
+    <section className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#ffffff_0%,#f4edff_48%,#ece4ff_100%)] px-5 py-7 shadow-[0_24px_70px_rgba(76,29,149,0.10)] ring-1 ring-white sm:px-8 sm:py-9">
+      <div className="pointer-events-none absolute -start-16 top-8 h-64 w-64 rounded-full bg-[#7C4DFF]/10 blur-3xl" />
+      <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(240px,0.85fr)_minmax(240px,280px)]">
+        <div className="order-2 lg:order-1">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF] shadow-sm">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-[#7C4DFF] text-[10px] text-white">B</span>
+            {t("club.brand")} · {t("club.name")}
+          </div>
+          <h2 className="max-w-xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">{t("club.landing.title")}</h2>
+          <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">{t("club.landing.description")}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            {primary}
+            {secondary}
+          </div>
+          {children}
+        </div>
+        <div className="order-1 flex justify-center lg:order-2">
+          <ClubGlobe avatars={avatars} />
+        </div>
+        {member ? (
+          <aside className="order-3 rounded-[28px] bg-white p-5 text-center shadow-[0_18px_40px_rgba(76,29,149,0.12)] ring-1 ring-violet-100">
+            <div className="relative mx-auto w-fit">
+              <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} size="lg" />
+              <span className="absolute -end-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-[#7C4DFF] text-white shadow-md">
+                <Crown className="h-3.5 w-3.5" />
+              </span>
+            </div>
+            <p className="mt-4 text-lg font-black text-slate-900">{t("club.dashboard.welcomeName", { name: member.fullName || t("club.common.memberFallback") })}</p>
+            <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
+              <Check className="h-3.5 w-3.5" />
+              {t(me?.membership?.billingStatus === "active" ? "club.dashboard.paidMember" : "club.dashboard.activeMember")}
+            </p>
+            {member.country ? (
+              <p className="mt-2 text-sm text-slate-500">
+                {countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}
+              </p>
+            ) : null}
+            <Link to={`${base}/members/${member.userId || ""}`} className="mt-4 block">
+              <GhostButton type="button" className="w-full rounded-full">{t("club.dashboard.completeProfile")}</GhostButton>
+            </Link>
+          </aside>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function ClubGlobe({ avatars }: { avatars: DemoMemberLike[] }) {
+  const { t } = useTranslation();
+  const spots = [
+    "start-2 top-10",
+    "end-4 top-6",
+    "start-0 top-1/2",
+    "end-0 top-1/2",
+    "start-8 bottom-8",
+    "end-6 bottom-6",
+  ];
+  return (
+    <div className="relative h-[270px] w-[270px]">
+      <div className="absolute inset-5 rounded-full bg-[radial-gradient(circle_at_32%_28%,#ffffff_0%,#efe7ff_42%,#d9c8ff_100%)] shadow-[inset_0_0_40px_rgba(124,77,255,0.12)]" />
+      <svg viewBox="0 0 270 270" className="absolute inset-0 h-full w-full">
+        <ellipse cx="135" cy="135" rx="78" ry="78" fill="none" stroke="#7C4DFF" strokeOpacity="0.22" strokeWidth="1.5" />
+        <ellipse cx="135" cy="135" rx="52" ry="78" fill="none" stroke="#7C4DFF" strokeOpacity="0.16" />
+        <ellipse cx="135" cy="135" rx="78" ry="28" fill="none" stroke="#7C4DFF" strokeOpacity="0.16" />
+        <ellipse cx="135" cy="135" rx="78" ry="52" fill="none" stroke="#7C4DFF" strokeOpacity="0.12" />
+        <line x1="57" y1="135" x2="213" y2="135" stroke="#7C4DFF" strokeOpacity="0.12" />
+        <line x1="135" y1="57" x2="135" y2="213" stroke="#7C4DFF" strokeOpacity="0.12" />
+      </svg>
+      {avatars.map((member, index) => (
+        <span key={member.userId} className={`absolute ${spots[index]} rounded-full ring-2 ring-white shadow-md`}>
+          <ClubAvatar name={member.fullName || member.userId} photoUrl={member.photoUrl} size="sm" />
+        </span>
+      ))}
+      <div className="absolute inset-0 grid place-items-center px-10 text-center">
+        <div>
+          <p className="text-sm font-black leading-5 text-[#4c1d95]">{t("club.demo.globeLine1")}</p>
+          <p className="text-sm font-black leading-5 text-[#4c1d95]">{t("club.demo.globeLine2")}</p>
+        </div>
+      </div>
+      <p className="absolute bottom-1 left-1/2 w-max -translate-x-1/2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm">
+        {t("club.demo.globeCaption")}
+      </p>
+    </div>
+  );
+}
+
+type DemoMemberLike = { userId: string; fullName?: string; photoUrl?: string };
+
+function CommunityPost({
+  post,
+  base,
+  locale,
+  extraLikes,
+  onLike,
+}: {
+  post: ClubPost;
+  base: string;
+  locale: string;
+  extraLikes: number;
+  onLike: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <article className="rounded-[24px] border border-violet-100/70 bg-[#FCFBFF] p-4">
+      <div className="flex items-start gap-3">
+        <ClubAvatar name={post.author.fullName} photoUrl={post.author.photoUrl} logoUrl={post.author.logoUrl} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="font-black text-slate-900">{post.author.fullName}</p>
+              <p className="text-xs text-slate-500">
+                {post.author.businessName}
+                {post.author.country ? ` · ${countryFlag(post.author.country)} ${t(`club.countries.${post.author.country}`, { defaultValue: post.author.country })}` : ""}
+              </p>
+            </div>
+            <StatusBadge>{t(`club.postTypes.${post.postType}`, { defaultValue: post.postType })}</StatusBadge>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">{formatWhenRelative(post.createdAt, locale)}</p>
+        </div>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-slate-700">{post.text}</p>
+      <div className="mt-3 flex items-center gap-4 text-sm font-semibold text-slate-500">
+        <button type="button" onClick={onLike} className="inline-flex items-center gap-1.5 hover:text-[#7C4DFF]">
+          <Heart className={`h-4 w-4 ${post.likedByMe || extraLikes ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
+          {post.likeCount + extraLikes}
+        </button>
+        <Link to={`${base}/feed`} className="inline-flex items-center gap-1.5 hover:text-[#7C4DFF]">
+          <MessageCircle className="h-4 w-4" />
+          {post.commentCount || post.comments.length}
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function LiveTodayPoll({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
   const { t } = useTranslation();
   const total = poll.options.reduce((sum, option) => sum + (option.votes || 0), 0);
   return (
     <div>
-      <ClubMemberText className="text-xl font-black text-slate-900" text={poll.title} />
-      <ClubMemberText className="mt-1 text-sm text-slate-600" text={poll.question} />
-      <div className="mt-4 space-y-2">
-        {poll.options.map((option) => {
-          const width = option.votes == null || total === 0 ? 0 : Math.round((option.votes / total) * 100);
-          return (
-            <button
-              key={option._id}
-              type="button"
-              disabled={poll.voted || poll.status !== "open"}
-              onClick={() => clubSend("post", `/club/polls/${poll._id}/vote`, { optionId: option._id }).then(onVoted)}
-              className="relative w-full overflow-hidden rounded-2xl border border-violet-100 bg-white px-3 py-3 text-start text-sm disabled:cursor-default"
-            >
-              {option.votes != null ? <span className="absolute inset-y-0 start-0 bg-[#F3EEFF]" style={{ width: `${width}%` }} /> : null}
-              <span className="relative flex items-center justify-between gap-3">
-                <span className={poll.myOptionId === option._id ? "font-black text-[#5B2CFF]" : "font-medium"}>{option.label}</span>
-                {option.votes != null ? <span className="text-xs font-bold text-slate-500">{width}%</span> : <span className="text-xs font-semibold text-[#7C4DFF]">{t("club.dashboard.participate")}</span>}
-              </span>
-            </button>
-          );
-        })}
+      <p className="text-base font-black leading-6 text-slate-900">{poll.question || poll.title}</p>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {poll.options.map((option) => (
+          <button
+            key={option._id}
+            type="button"
+            disabled={poll.voted || poll.status !== "open"}
+            onClick={() => clubSend("post", `/club/polls/${poll._id}/vote`, { optionId: option._id }).then(onVoted)}
+            className="rounded-2xl border border-violet-100 bg-[#FBF9FF] px-3 py-3 text-start text-sm font-semibold disabled:opacity-70"
+          >
+            {option.label}
+            {option.votes != null && total > 0 ? <span className="mt-1 block text-xs text-slate-400">{Math.round((option.votes / total) * 100)}%</span> : null}
+          </button>
+        ))}
       </div>
+      <PrimaryButton type="button" className="mt-4 w-full rounded-full" disabled>{t("club.dashboard.voteNow")}</PrimaryButton>
     </div>
   );
 }

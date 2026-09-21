@@ -21,6 +21,7 @@ const COUNTRY_CODES: Record<string, string> = {
   Poland: "PL", Portugal: "PT", Singapore: "SG", "South Africa": "ZA",
   "South Korea": "KR", Spain: "ES", Sweden: "SE", Switzerland: "CH",
   "United Arab Emirates": "AE", "United Kingdom": "GB", "United States": "US",
+  Bulgaria: "BG",
 };
 
 export const CATEGORIES = [
