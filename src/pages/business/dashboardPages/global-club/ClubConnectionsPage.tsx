@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ClubAuthor, ClubProfile, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
 import { ClubAvatar, ClubCard, EmptyState, GhostButton, PrimaryButton, countryFlag } from "./clubUi";
@@ -12,6 +13,7 @@ type ConnectionRow = {
 };
 
 export default function ClubConnectionsPage() {
+  const { t } = useTranslation();
   const { base, isMember } = useClub();
   const [connections, setConnections] = useState<ConnectionRow[]>([]);
   const [pending, setPending] = useState<ConnectionRow[]>([]);
@@ -26,45 +28,55 @@ export default function ClubConnectionsPage() {
       setConnections(links.connections || []);
       setPending(links.pending || []);
       setSuggestions(ideas.suggestions || []);
-    }).catch((err) => setError(clubError(err)));
+    }).catch((err) => setError(clubError(err, t)));
   }
 
   useEffect(() => {
     if (isMember) load();
-  }, [isMember]);
+  }, [isMember, t]);
 
-  if (!isMember) return <EmptyState title="Members only" text="Connections are private to active Club members." />;
+  if (!isMember) return <EmptyState title={t("club.connections.membersOnlyTitle")} text={t("club.connections.membersOnlyText")} />;
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Connections</h2>
+      <h2 className="text-xl font-bold">{t("club.connections.title")}</h2>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-      <Section title="Pending Requests">
-        {pending.length === 0 ? <p className="text-sm text-slate-500">No pending requests.</p> : null}
+      <Section title={t("club.connections.pending")}>
+        {pending.length === 0 ? <p className="text-sm text-slate-500">{t("club.connections.nonePending")}</p> : null}
         {pending.map((row) => (
-          <Row key={row._id} member={row.member} base={base} extra={row.direction === "incoming" ? "Wants to connect" : "Pending"}>
+          <Row
+            key={row._id}
+            member={row.member}
+            base={base}
+            extra={row.direction === "incoming" ? t("club.connections.wantsToConnect") : t("club.common.pending")}
+          >
             {row.direction === "incoming" ? (
               <>
-                <PrimaryButton type="button" onClick={() => clubSend("post", `/club/connections/${row._id}/accept`).then(load)}>Accept</PrimaryButton>
-                <GhostButton type="button" onClick={() => clubSend("post", `/club/connections/${row._id}/decline`).then(load)}>Decline</GhostButton>
+                <PrimaryButton type="button" onClick={() => clubSend("post", `/club/connections/${row._id}/accept`).then(load)}>{t("club.connections.accept")}</PrimaryButton>
+                <GhostButton type="button" onClick={() => clubSend("post", `/club/connections/${row._id}/decline`).then(load)}>{t("club.connections.decline")}</GhostButton>
               </>
-            ) : <GhostButton type="button" disabled>Pending</GhostButton>}
+            ) : <GhostButton type="button" disabled>{t("club.common.pending")}</GhostButton>}
           </Row>
         ))}
       </Section>
-      <Section title="My Connections">
-        {connections.length === 0 ? <p className="text-sm text-slate-500">You have not connected with anyone yet.</p> : null}
+      <Section title={t("club.connections.mine")}>
+        {connections.length === 0 ? <p className="text-sm text-slate-500">{t("club.connections.noneMine")}</p> : null}
         {connections.map((row) => (
           <Row key={row._id} member={row.member} base={base}>
-            <GhostButton type="button" disabled>Connected</GhostButton>
+            <GhostButton type="button" disabled>{t("club.common.connected")}</GhostButton>
           </Row>
         ))}
       </Section>
-      <Section title="Suggested Connections">
-        {suggestions.length === 0 ? <p className="text-sm text-slate-500">Suggestions use industry, markets, and what members offer.</p> : null}
+      <Section title={t("club.connections.suggested")}>
+        {suggestions.length === 0 ? <p className="text-sm text-slate-500">{t("club.connections.noneSuggested")}</p> : null}
         {suggestions.map((member) => (
-          <Row key={member.userId} member={member} base={base} extra={member.matchReasons?.[0]}>
-            <PrimaryButton type="button" onClick={() => clubSend("post", "/club/connections", { userId: member.userId }).then(load)}>Connect</PrimaryButton>
+          <Row
+            key={member.userId}
+            member={member}
+            base={base}
+            extra={member.matchReasons?.[0] ? t(`club.matchReasons.${member.matchReasons[0]}`, { defaultValue: member.matchReasons[0] }) : undefined}
+          >
+            <PrimaryButton type="button" onClick={() => clubSend("post", "/club/connections", { userId: member.userId }).then(load)}>{t("club.common.connect")}</PrimaryButton>
           </Row>
         ))}
       </Section>
@@ -92,16 +104,19 @@ function Row({
   extra?: string;
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-center">
       <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} size="sm" />
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{member.fullName}</p>
-        <p className="text-sm text-slate-500">{member.businessName} · {countryFlag(member.country)} {member.country}</p>
+        <p className="text-sm text-slate-500">
+          {member.businessName} · {countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}
+        </p>
         {extra ? <p className="text-xs text-indigo-600">{extra}</p> : null}
       </div>
       <div className="flex flex-wrap gap-2">
-        <Link to={`${base}/members/${member.userId}`}><GhostButton type="button">View Profile</GhostButton></Link>
+        <Link to={`${base}/members/${member.userId}`}><GhostButton type="button">{t("club.common.viewProfile")}</GhostButton></Link>
         {children}
       </div>
     </div>

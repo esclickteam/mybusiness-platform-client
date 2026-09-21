@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { clubSend } from "./clubApi";
 
 export const COUNTRIES = [
   "Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Chile",
@@ -26,15 +29,7 @@ export const CATEGORIES = [
   "Creative", "Consulting", "E-commerce", "Other",
 ];
 
-export const POST_LABELS: Record<string, string> = {
-  general: "General Discussion",
-  collaboration: "Looking for Collaboration",
-  question: "Business Question",
-  advice: "Need Advice",
-  opportunity: "Opportunity",
-  market: "Market Question",
-  feedback: "Feedback Request",
-};
+export const POST_TYPE_KEYS = ["general", "collaboration", "question", "advice", "opportunity", "market", "feedback"] as const;
 
 export function countryFlag(country?: string) {
   const code = COUNTRY_CODES[country || ""];
@@ -42,15 +37,19 @@ export function countryFlag(country?: string) {
   return String.fromCodePoint(...[...code].map((char) => 127397 + char.charCodeAt(0)));
 }
 
-export function formatWhen(value?: string | null) {
+export function formatWhen(value?: string | null, locale?: string) {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale || undefined, {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).format(date);
+}
+
+export function formatCount(value: number, locale?: string) {
+  return Number(value || 0).toLocaleString(locale || undefined);
 }
 
 export function initials(name?: string) {
@@ -150,6 +149,49 @@ export function EmptyState({ title, text }: { title: string; text: string }) {
     <div className="rounded-2xl border border-dashed border-violet-200 bg-white/70 px-4 py-10 text-center">
       <p className="text-base font-semibold text-slate-800">{title}</p>
       <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">{text}</p>
+    </div>
+  );
+}
+
+export function ClubMemberText({
+  text,
+  className = "",
+}: {
+  text?: string;
+  className?: string;
+}) {
+  const { t, i18n } = useTranslation();
+  const [translated, setTranslated] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  if (!text) return null;
+  return (
+    <div>
+      <p className={className}>{translated ?? text}</p>
+      <button
+        type="button"
+        className="mt-1 text-xs font-semibold text-indigo-600"
+        disabled={busy}
+        onClick={async () => {
+          if (translated) {
+            setTranslated(null);
+            return;
+          }
+          setBusy(true);
+          try {
+            const data = await clubSend<{ text: string }>("post", "/club/translate", {
+              text,
+              target: getIntlLocale(i18n.language),
+            });
+            setTranslated(data.text || text);
+          } catch {
+            setTranslated(text);
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy ? t("club.common.translating") : translated ? t("club.common.showOriginal") : t("club.common.translate")}
+      </button>
     </div>
   );
 }

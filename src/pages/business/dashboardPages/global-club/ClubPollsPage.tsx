@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, EmptyState, Field, PrimaryButton, fieldClass, formatWhen } from "./clubUi";
+import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, fieldClass, formatWhen } from "./clubUi";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type PollOption = { _id: string; label: string; votes: number | null };
 type Poll = {
@@ -17,6 +19,7 @@ type Poll = {
 type Comment = { _id: string; text: string; createdAt: string; author: ClubAuthor };
 
 export default function ClubPollsPage() {
+  const { t } = useTranslation();
   const { isMember } = useClub();
   const [polls, setPolls] = useState<Poll[]>([]);
   const [error, setError] = useState("");
@@ -24,29 +27,31 @@ export default function ClubPollsPage() {
   function load() {
     clubGet<{ polls: Poll[] }>("/club/polls")
       .then((data) => setPolls(data.polls || []))
-      .catch((err) => setError(clubError(err)));
+      .catch((err) => setError(clubError(err, t)));
   }
 
   useEffect(() => {
     if (isMember) load();
-  }, [isMember]);
+  }, [isMember, t]);
 
-  if (!isMember) return <EmptyState title="Members only" text="Polls are published for active Club members." />;
+  if (!isMember) return <EmptyState title={t("club.polls.membersOnlyTitle")} text={t("club.polls.membersOnlyText")} />;
 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Business Polls</h2>
-        <p className="text-sm text-slate-500">The Bizuply team publishes short business polls for the Club. Results appear after you vote.</p>
+        <h2 className="text-xl font-bold">{t("club.polls.title")}</h2>
+        <p className="text-sm text-slate-500">{t("club.polls.subtitle")}</p>
       </div>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-      {polls.length === 0 ? <EmptyState title="No polls yet" text="A new poll is prepared twice a week from the admin desk." /> : null}
+      {polls.length === 0 ? <EmptyState title={t("club.polls.emptyTitle")} text={t("club.polls.emptyText")} /> : null}
       {polls.map((poll) => <PollCard key={poll._id} poll={poll} onVoted={load} />)}
     </div>
   );
 }
 
 function PollCard({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const [comments, setComments] = useState<Comment[]>([]);
   const [text, setText] = useState("");
   const total = poll.options.reduce((sum, option) => sum + (option.votes || 0), 0);
@@ -57,9 +62,9 @@ function PollCard({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
 
   return (
     <ClubCard>
-      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">{formatWhen(poll.createdAt)}</p>
-      <h3 className="mt-1 text-lg font-bold">{poll.title}</h3>
-      <p className="mt-1 text-sm text-slate-600">{poll.question}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">{formatWhen(poll.createdAt, locale)}</p>
+      <ClubMemberText className="mt-1 text-lg font-bold" text={poll.title} />
+      <ClubMemberText className="mt-1 text-sm text-slate-600" text={poll.question} />
       <div className="mt-4 space-y-2">
         {poll.options.map((option) => {
           const width = option.votes == null || total === 0 ? 0 : Math.round((option.votes / total) * 100);
@@ -87,14 +92,17 @@ function PollCard({ poll, onVoted }: { poll: Poll; onVoted: () => void }) {
           return clubGet<{ comments: Comment[] }>(`/club/polls/${poll._id}/comments`);
         }).then((data) => setComments(data.comments || []));
       }}>
-        <Field label="Comment">
+        <Field label={t("club.polls.comment")}>
           <input className={fieldClass} value={text} onChange={(e) => setText(e.target.value)} />
         </Field>
-        <PrimaryButton type="submit" className="sm:self-end">Comment</PrimaryButton>
+        <PrimaryButton type="submit" className="sm:self-end">{t("club.polls.comment")}</PrimaryButton>
       </form>
       <div className="mt-3 space-y-2">
         {comments.map((comment) => (
-          <p key={comment._id} className="text-sm text-slate-600"><span className="font-semibold text-slate-800">{comment.author.fullName}: </span>{comment.text}</p>
+          <div key={comment._id} className="text-sm text-slate-600">
+            <span className="font-semibold text-slate-800">{comment.author.fullName}: </span>
+            <ClubMemberText className="inline" text={comment.text} />
+          </div>
         ))}
       </div>
     </ClubCard>

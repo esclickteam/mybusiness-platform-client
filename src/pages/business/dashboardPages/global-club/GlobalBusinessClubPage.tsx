@@ -36,21 +36,21 @@ export function useClub() {
 }
 
 const MEMBER_LINKS = [
-  ["", "Dashboard"],
-  ["feed", "Feed"],
-  ["directory", "Members"],
-  ["collaborations", "Collaborations"],
-  ["ask", "Ask the Community"],
-  ["polls", "Polls"],
-  ["hot-seat", "Hot Seat"],
-  ["opportunities", "Opportunities"],
-  ["connections", "Connections"],
-  ["messages", "Messages"],
+  ["", "club.nav.dashboard"],
+  ["feed", "club.nav.feed"],
+  ["directory", "club.nav.directory"],
+  ["collaborations", "club.nav.collaborations"],
+  ["ask", "club.nav.ask"],
+  ["polls", "club.nav.polls"],
+  ["hot-seat", "club.nav.hotSeat"],
+  ["opportunities", "club.nav.opportunities"],
+  ["connections", "club.nav.connections"],
+  ["messages", "club.nav.messages"],
 ];
 
 export default function GlobalBusinessClubPage() {
   const { businessId } = useParams();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dir = getTextDirection(i18n.language);
   const base = `/business/${businessId}/dashboard/global-club`;
   const [me, setMe] = useState<ClubMe | null>(null);
@@ -63,7 +63,7 @@ export default function GlobalBusinessClubPage() {
       setMe(data);
       setError("");
     } catch (err) {
-      setError(clubError(err));
+      setError(clubError(err, t));
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function GlobalBusinessClubPage() {
 
   useEffect(() => {
     void refresh();
-  }, []);
+  }, [i18n.language]);
 
   const value = useMemo<ClubContextValue>(
     () => ({
@@ -98,8 +98,8 @@ export default function GlobalBusinessClubPage() {
                 <Globe2 className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-500">Bizuply</p>
-                <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Global Business Club</h1>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-500">{t("club.brand")}</p>
+                <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("club.name")}</h1>
               </div>
             </div>
             {me?.status === "active" ? <ClubNotifications base={base} initialUnread={me.unreadNotifications} /> : null}
@@ -136,17 +136,18 @@ export default function GlobalBusinessClubPage() {
 }
 
 function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: boolean; isAdmin: boolean }) {
+  const { t } = useTranslation();
   const links = isMember
     ? MEMBER_LINKS
     : [
-        ["", "Overview"],
-        ["join", "Request to Join"],
+        ["", "club.nav.overview"],
+        ["join", "club.nav.join"],
       ];
   return (
     <nav className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {links.map(([path, label]) => (
+      {links.map(([path, labelKey]) => (
         <NavLink
-          key={label}
+          key={labelKey}
           to={path ? `${base}/${path}` : base}
           end={path === ""}
           className={({ isActive }) =>
@@ -155,34 +156,57 @@ function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: boolean
             }`
           }
         >
-          {label}
+          {t(labelKey)}
         </NavLink>
       ))}
       {isAdmin ? (
         <a href="/admin/club" className="shrink-0 rounded-full bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 ring-1 ring-violet-100">
-          Admin
+          {t("club.nav.admin")}
         </a>
       ) : null}
     </nav>
   );
 }
 
+type ClubNotice = {
+  _id: string;
+  type?: string;
+  title: string;
+  text: string;
+  link?: string;
+  read: boolean;
+  createdAt: string;
+};
+
 function ClubNotifications({ base, initialUnread }: { base: string; initialUnread: number }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(initialUnread);
-  const [items, setItems] = useState<Array<{ _id: string; title: string; text: string; link?: string; read: boolean; createdAt: string }>>([]);
+  const [items, setItems] = useState<ClubNotice[]>([]);
 
   async function load() {
-    const data = await clubGet<{ notifications: typeof items }>("/club/notifications");
+    const data = await clubGet<{ notifications: ClubNotice[] }>("/club/notifications");
     setItems(data.notifications || []);
     setUnread((data.notifications || []).filter((item) => !item.read).length);
+  }
+
+  function copy(item: ClubNotice) {
+    if (!item.type) return { title: item.title, text: item.text };
+    const titleKey = `club.notifications.types.${item.type}.title`;
+    const textKey = `club.notifications.types.${item.type}.text`;
+    const title = t(titleKey);
+    const text = t(textKey);
+    return {
+      title: title === titleKey ? item.title : title,
+      text: item.type === "message" ? item.text : text === textKey ? item.text : text,
+    };
   }
 
   return (
     <div className="relative">
       <button
         type="button"
-        aria-label="Club notifications"
+        aria-label={t("club.notifications.aria")}
         onClick={() => {
           setOpen((value) => !value);
           void load();
@@ -199,7 +223,7 @@ function ClubNotifications({ base, initialUnread }: { base: string; initialUnrea
       {open ? (
         <div className="absolute end-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-violet-100 bg-white p-2 shadow-xl">
           <div className="flex items-center justify-between px-2 py-1">
-            <p className="text-sm font-semibold">Club updates</p>
+            <p className="text-sm font-semibold">{t("club.notifications.title")}</p>
             <button
               type="button"
               className="text-xs font-semibold text-indigo-600"
@@ -207,24 +231,27 @@ function ClubNotifications({ base, initialUnread }: { base: string; initialUnrea
                 void clubSend("put", "/club/notifications/read-all").then(() => setUnread(0));
               }}
             >
-              Mark all read
+              {t("club.notifications.markAll")}
             </button>
           </div>
           <div className="max-h-80 space-y-1 overflow-y-auto">
-            {items.length === 0 ? <p className="px-2 py-4 text-sm text-slate-500">No Club notifications yet.</p> : null}
-            {items.map((item) => (
-              <a
-                key={item._id}
-                href={item.link ? `${base.split("/global-club")[0]}/${item.link}` : base}
-                className={`block rounded-xl px-2 py-2 text-start text-sm ${item.read ? "text-slate-500" : "bg-indigo-50/70 text-slate-800"}`}
-                onClick={() => {
-                  void clubSend("put", `/club/notifications/${item._id}/read`);
-                }}
-              >
-                <span className="block font-semibold">{item.title}</span>
-                <span className="block text-xs">{item.text}</span>
-              </a>
-            ))}
+            {items.length === 0 ? <p className="px-2 py-4 text-sm text-slate-500">{t("club.notifications.empty")}</p> : null}
+            {items.map((item) => {
+              const notice = copy(item);
+              return (
+                <a
+                  key={item._id}
+                  href={item.link ? `${base.split("/global-club")[0]}/${item.link}` : base}
+                  className={`block rounded-xl px-2 py-2 text-start text-sm ${item.read ? "text-slate-500" : "bg-indigo-50/70 text-slate-800"}`}
+                  onClick={() => {
+                    void clubSend("put", `/club/notifications/${item._id}/read`);
+                  }}
+                >
+                  <span className="block font-semibold">{notice.title}</span>
+                  <span className="block text-xs">{notice.text}</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       ) : null}

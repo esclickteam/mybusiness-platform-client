@@ -1,4 +1,5 @@
 import API from "../../../../api";
+import type { TFunction } from "i18next";
 
 export type ClubStatus = "not_member" | "pending" | "active" | "expired" | "suspended";
 
@@ -71,9 +72,27 @@ export type ClubPost = {
   comments: ClubComment[];
 };
 
-export function clubError(error: unknown) {
-  const err = error as { response?: { data?: { error?: string } } };
-  return err?.response?.data?.error || "Something went wrong. Please try again.";
+const ERROR_CODES: Record<string, string> = {
+  "You already have a request waiting for review.": "JOIN_ALREADY_PENDING",
+  "You are already a Club member.": "JOIN_ALREADY_MEMBER",
+  "Your Club membership is suspended.": "JOIN_SUSPENDED",
+  "Please complete the required application fields.": "JOIN_FIELDS_REQUIRED",
+  "Login required.": "LOGIN_REQUIRED",
+  "Club member not found.": "MEMBER_NOT_FOUND",
+  "Post not found.": "POST_NOT_FOUND",
+  "Club request failed.": "FAILED",
+  "Active Global Business Club membership is required.": "CLUB_MEMBERSHIP_REQUIRED",
+};
+
+export function clubError(error: unknown, t?: TFunction) {
+  const data = (error as { response?: { data?: { error?: string; code?: string } } })?.response?.data;
+  const code = data?.code || (data?.error ? ERROR_CODES[data.error] : undefined);
+  if (t && code) {
+    const translated = t(`club.errors.${code}`);
+    if (translated !== `club.errors.${code}`) return translated;
+  }
+  if (t) return t("club.errors.generic");
+  return data?.error || "Something went wrong. Please try again.";
 }
 
 export async function clubGet<T>(path: string, params?: Record<string, string>) {
