@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { NavLink, Route, Routes, useParams } from "react-router-dom";
+import { NavLink, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Bell, Globe2 } from "lucide-react";
 import { getTextDirection } from "../../../../i18n/localeUtils";
@@ -50,12 +50,14 @@ const MEMBER_LINKS = [
 
 export default function GlobalBusinessClubPage() {
   const { businessId } = useParams();
+  const location = useLocation();
   const { t, i18n } = useTranslation();
   const dir = getTextDirection(i18n.language);
   const base = `/business/${businessId}/dashboard/global-club`;
   const [me, setMe] = useState<ClubMe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const isClubHome = /\/global-club\/?$/.test(location.pathname);
 
   async function refresh() {
     try {
@@ -89,22 +91,29 @@ export default function GlobalBusinessClubPage() {
     <ClubContext.Provider value={value}>
       <div
         dir={dir}
-        className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_32%,#f6f7fb_68%,#ffffff_100%)] text-slate-800"
+        className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,#efe8ff_0,#f7f4ff_28%,#f6f7fb_62%,#ffffff_100%)] text-slate-800"
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-3 py-4 sm:px-5 sm:py-6">
-          <header className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_18px_50px_rgba(76,29,149,0.08)] backdrop-blur-md sm:px-5">
-            <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#4c1d95,#7C4DFF)] text-white shadow-[0_12px_24px_rgba(124,77,255,0.35)]">
-                <Globe2 className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</p>
-                <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">{t("club.name")}</h1>
-              </div>
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-3 py-4 sm:px-5 sm:py-6">
+          {me?.status === "active" ? (
+            <div className="flex justify-end">
+              <ClubNotifications base={base} initialUnread={me.unreadNotifications} />
             </div>
-            {me?.status === "active" ? <ClubNotifications base={base} initialUnread={me.unreadNotifications} /> : null}
-          </header>
-          <ClubNav base={base} isMember={me?.status === "active"} isAdmin={Boolean(me?.isAdmin)} />
+          ) : (
+            <header className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#4c1d95,#7C4DFF)] text-white shadow-[0_12px_24px_rgba(124,77,255,0.35)]">
+                  <Globe2 className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</p>
+                  <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">{t("club.name")}</h1>
+                </div>
+              </div>
+            </header>
+          )}
+          {!(me?.status === "active" && isClubHome) ? (
+            <ClubNav base={base} isMember={me?.status === "active"} isAdmin={Boolean(me?.isAdmin)} />
+          ) : null}
           {loading ? (
             <div className="grid min-h-64 place-items-center">
               <BizuplyLoader />
@@ -135,7 +144,7 @@ export default function GlobalBusinessClubPage() {
   );
 }
 
-function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: boolean; isAdmin: boolean }) {
+export function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: boolean; isAdmin: boolean }) {
   const { t } = useTranslation();
   const links = isMember
     ? MEMBER_LINKS

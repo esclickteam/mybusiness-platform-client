@@ -21,6 +21,7 @@
     "title": "Connect. Collaborate. Grow.",
     "description": "A global community for business owners and entrepreneurs to create international connections, exchange ideas, receive feedback, discover opportunities and build digital collaborations.",
     "cta": "Request to Join",
+    "secondaryCta": "Learn more about the Club",
     "pendingTitle": "Your request has been received.",
     "pendingBody": "The Bizuply team will review your application.",
     "suspended": "Your Club membership is suspended. Contact the Bizuply team if you need this reviewed.",
@@ -79,10 +80,13 @@
     "activityFeed": "Global Activity Feed",
     "stats": {
       "activeMembers": "Active members",
+      "communityMembers": "Community members",
       "countries": "Countries represented",
       "collaborations": "Open collaborations",
       "opportunities": "New opportunities",
-      "discussions": "Discussions this week"
+      "openOpportunities": "Open opportunities",
+      "discussions": "Discussions this week",
+      "activePolls": "Active polls"
     },
     "spotlight": "Member Spotlight",
     "lookingFor": "Looking for: {{value}}",
@@ -91,7 +95,16 @@
     "noSuggestions": "Suggestions appear as more members complete their profiles.",
     "thisWeek": "This week in the Club",
     "noActivity": "No scheduled Club activity yet.",
-    "openFeed": "Open the Club feed"
+    "openFeed": "Open the Club feed",
+    "createPost": "Create a post",
+    "exploreClub": "Explore the Club",
+    "welcomeName": "Welcome, {{name}}",
+    "completeProfile": "Complete global profile",
+    "questionOfDay": "Question of the day",
+    "voteNow": "Vote now",
+    "votes": "{{count}} votes",
+    "upcomingEvents": "Upcoming events",
+    "communityFeed": "Community feed"
   },
   "feed": {
     "title": "Club feed",
@@ -99,6 +112,8 @@
     "saved": "Saved",
     "save": "Save",
     "all": "All",
+    "updates": "Updates",
+    "questions": "Questions",
     "composerTitle": "What would you like to post?",
     "lookingFor": "What are you looking for?",
     "countryMarket": "Country/market",
@@ -452,7 +467,54 @@
     "Switzerland": "Switzerland",
     "United Arab Emirates": "United Arab Emirates",
     "United Kingdom": "United Kingdom",
-    "United States": "United States"
+    "United States": "United States",
+    "Bulgaria": "Bulgaria"
+  },
+  "demo": {
+    "globeLine1": "A Global Community",
+    "globeLine2": "A Brighter Tomorrow",
+    "globeCaption": "Big businesses begin with small connections",
+    "quote": "A global community is not just a network of contacts — it is an engine for real growth.",
+    "today": {
+      "title": "Question of the day",
+      "question": "What is the biggest challenge in your business right now?",
+      "a": "Finding new customers",
+      "b": "Expanding into international markets",
+      "c": "Building a strong team",
+      "d": "Funding and investment"
+    },
+    "members": {
+      "sarah": { "name": "Sarah Cohen", "business": "Innovative Beauty", "bio": "Beauty brand looking for import and retail partners." },
+      "marco": { "name": "Marco Rossi", "business": "Rossi Consulting", "bio": "Helps European SMEs grow across borders." },
+      "dana": { "name": "Dana Levy", "business": "Grow Digital", "bio": "Digital growth studio for international brands." },
+      "ahmed": { "name": "Ahmed Al Mansoori", "business": "Emirates Trade", "bio": "Trade and distribution across the Gulf." },
+      "maria": { "name": "Maria Gonzalez", "business": "Studio Norte", "bio": "Digital design studio based in Spain." },
+      "david": { "name": "David Kim", "business": "Seoul Labs", "bio": "Product and technology studio in Seoul." }
+    },
+    "posts": {
+      "sarah": "Looking for an Israeli importer and a retail partner to launch a premium beauty line. We already sell in Europe and want a trusted local partner.",
+      "marco": "After 12 years advising SMEs in Milan, I am opening a collaboration track for operators who want to enter the Italian market with a local consultant.",
+      "dana": "How do you price a digital product when you enter a new country? I would love practical examples from members who already did this."
+    },
+    "opportunities": {
+      "canada": { "title": "Looking for reseller in Canada", "text": "Seeking a retail or e-commerce partner to introduce a premium line to the Canadian market." },
+      "us": { "title": "International marketing partner in the United States", "text": "Looking for a performance marketing partner to help an Asian tech brand enter the US." },
+      "bulgaria": { "title": "Looking for a distribution partner in Bulgaria", "text": "Need a local distributor who already works with retail chains in Eastern Europe." }
+    },
+    "events": {
+      "may": "May",
+      "june": "Jun",
+      "scale": {
+        "title": "SCALE Global — business conference",
+        "time": "19:30 – 21:00",
+        "text": "A live session for owners who want to grow through international partnerships."
+      },
+      "ai": {
+        "title": "AI in business",
+        "time": "18:00 – 19:30",
+        "text": "Members share practical AI workflows they actually use in operations."
+      }
+    }
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

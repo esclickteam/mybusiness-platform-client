@@ -5,6 +5,7 @@ import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import { ClubAuthor, ClubComment, ClubPost, ClubProfile, clubSend } from "./clubApi";
 import { ClubAvatar, ClubMemberText, GhostButton, PrimaryButton, StatusBadge, countryFlag, fieldClass, formatWhenRelative } from "./clubUi";
+import { isDemoId } from "./clubDemo";
 
 export function ClubMeta({
   author,
@@ -63,7 +64,10 @@ export function ClubPostCard({
       {post.lookingFor ? <p className="mt-2 text-sm text-slate-600">{t("club.feed.lookingForLabel", { value: post.lookingFor })}</p> : null}
       {post.imageUrl && !compact ? <img src={post.imageUrl} alt="" className="mt-3 max-h-80 w-full rounded-2xl object-cover" /> : null}
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <GhostButton type="button" className="gap-1.5 px-3 py-2" onClick={() => clubSend("post", `/club/posts/${post._id}/react`).then(refresh)}>
+        <GhostButton type="button" className="gap-1.5 px-3 py-2" onClick={() => {
+          if (isDemoId(post._id)) return;
+          void clubSend("post", `/club/posts/${post._id}/react`).then(refresh);
+        }}>
           <Heart className={`h-4 w-4 ${post.likedByMe ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
           {t("club.feed.like", { count: post.likeCount })}
         </GhostButton>
@@ -71,7 +75,10 @@ export function ClubPostCard({
           <MessageCircle className="h-4 w-4" />
           {t("club.feed.comments", { count: post.commentCount || post.comments.length })}
         </span>
-        <GhostButton type="button" className="gap-1.5 px-3 py-2" onClick={() => clubSend("post", `/club/posts/${post._id}/save`).then(refresh)}>
+        <GhostButton type="button" className="gap-1.5 px-3 py-2" onClick={() => {
+          if (isDemoId(post._id)) return;
+          void clubSend("post", `/club/posts/${post._id}/save`).then(refresh);
+        }}>
           <Bookmark className={`h-4 w-4 ${post.savedByMe ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
           {post.savedByMe ? t("club.feed.saved") : t("club.feed.save")}
         </GhostButton>
@@ -90,7 +97,10 @@ export function ClubPostCard({
           {copied ? t("club.common.copied") : t("club.common.share")}
         </GhostButton>
         <Link to={`${base}/members/${post.author.userId}`} className="ms-auto text-sm font-semibold text-[#5B2CFF]">{t("club.common.viewProfile")}</Link>
-        <PrimaryButton type="button" className="px-3 py-2 text-sm" onClick={() => clubSend("post", "/club/connections", { userId: post.author.userId })}>{t("club.common.connect")}</PrimaryButton>
+          <PrimaryButton type="button" className="px-3 py-2 text-sm" onClick={() => {
+            if (isDemoId(post.author.userId)) return;
+            void clubSend("post", "/club/connections", { userId: post.author.userId });
+          }}>{t("club.common.connect")}</PrimaryButton>
       </div>
       {!compact ? (
         <div className="mt-4 space-y-2">

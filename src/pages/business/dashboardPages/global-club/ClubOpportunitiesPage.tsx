@@ -4,6 +4,7 @@ import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
 import { ClubCard, ClubSectionTitle, EmptyState, Field, PrimaryButton, fieldClass } from "./clubUi";
 import { ClubOpportunityCard } from "./clubCards";
+import { demoOpportunities, mergeLive } from "./clubDemo";
 
 const TYPES = ["client", "project", "partnership", "supplier", "expansion", "referral", "collaboration"] as const;
 
@@ -79,10 +80,18 @@ export default function ClubOpportunitiesPage() {
         </form>
       </ClubCard>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-      {rows.length === 0 ? <EmptyState title={t("club.opportunities.emptyTitle")} text={t("club.opportunities.emptyText")} /> : null}
-      {rows.map((row) => (
-        <ClubOpportunityCard key={row._id} row={row} base={base} />
-      ))}
+      {(() => {
+        const hasFilters = Object.values(filters).some(Boolean);
+        const visible = mergeLive(rows, hasFilters ? [] : demoOpportunities(t), 3);
+        return (
+          <>
+            {visible.length === 0 ? <EmptyState title={t("club.opportunities.emptyTitle")} text={t("club.opportunities.emptyText")} /> : null}
+            {visible.map((row) => (
+              <ClubOpportunityCard key={row._id} row={row} base={base} />
+            ))}
+          </>
+        );
+      })()}
     </div>
   );
 }

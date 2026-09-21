@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ClubProfile, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
 import { CATEGORIES, COUNTRIES, ClubAvatar, ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, GhostButton, PrimaryButton, StatusBadge, countryFlag, fieldClass } from "./clubUi";
+import { DEMO_MEMBER_META, localizeDemoMember, mergeLive } from "./clubDemo";
 
 export default function ClubDirectoryPage() {
   const { t } = useTranslation();
@@ -50,32 +51,35 @@ export default function ClubDirectoryPage() {
         </div>
       </ClubCard>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-      {members.length === 0 ? <EmptyState title={t("club.directory.emptyTitle")} text={t("club.directory.emptyText")} /> : null}
-      <div className="grid gap-4 md:grid-cols-2">
-        {members.map((member) => (
-          <ClubCard key={member.userId} className="bg-[linear-gradient(180deg,#ffffff_0%,#FBF9FF_100%)]">
-            <div className="flex gap-3">
-              <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} />
-              <div className="min-w-0 flex-1">
-                <p className="font-black text-slate-900">{member.fullName}</p>
-                <p className="text-sm font-semibold text-slate-600">{member.businessName}</p>
-                <p className="mt-1 text-sm text-slate-500">{countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}</p>
-                {member.businessCategory ? <StatusBadge>{t(`club.categories.${member.businessCategory}`, { defaultValue: member.businessCategory })}</StatusBadge> : null}
-              </div>
+      {(() => {
+        const hasFilters = Object.values(filters).some(Boolean);
+        const visible = mergeLive(members, hasFilters ? [] : DEMO_MEMBER_META.map((member) => localizeDemoMember(member, t)), 6);
+        return (
+          <>
+            {visible.length === 0 ? <EmptyState title={t("club.directory.emptyTitle")} text={t("club.directory.emptyText")} /> : null}
+            <div className="grid gap-4 md:grid-cols-2">
+              {visible.map((member) => (
+                <ClubCard key={member.userId} className="bg-[linear-gradient(180deg,#ffffff_0%,#FBF9FF_100%)]">
+                  <div className="flex gap-3">
+                    <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-black text-slate-900">{member.fullName}</p>
+                      <p className="text-sm font-semibold text-slate-600">{member.businessName}</p>
+                      <p className="mt-1 text-sm text-slate-500">{countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}</p>
+                      {member.businessCategory ? <StatusBadge>{t(`club.categories.${member.businessCategory}`, { defaultValue: member.businessCategory })}</StatusBadge> : null}
+                    </div>
+                  </div>
+                  <ClubMemberText className="mt-3 line-clamp-3 text-sm text-slate-700" text={member.description} />
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link to={`${base}/members/${member.userId}`}><GhostButton type="button">{t("club.common.viewProfile")}</GhostButton></Link>
+                    <PrimaryButton type="button" onClick={() => clubSend("post", "/club/connections", { userId: member.userId })}>{t("club.common.connect")}</PrimaryButton>
+                  </div>
+                </ClubCard>
+              ))}
             </div>
-            <ClubMemberText className="mt-3 line-clamp-3 text-sm text-slate-700" text={member.description} />
-            <p className="mt-2 text-sm"><span className="font-semibold">{t("club.directory.offers")}</span>{member.offer}</p>
-            <p className="text-sm"><span className="font-semibold">{t("club.directory.lookingForLabel")}</span>{member.lookingFor}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link to={`${base}/members/${member.userId}`}><GhostButton type="button">{t("club.common.viewProfile")}</GhostButton></Link>
-              <PrimaryButton type="button" onClick={() => clubSend("post", "/club/connections", { userId: member.userId })}>{t("club.common.connect")}</PrimaryButton>
-              <Link to={`${base}/messages`} onClick={() => { void clubSend("post", "/club/messages", { userId: member.userId }); }}>
-                <GhostButton type="button">{t("club.common.message")}</GhostButton>
-              </Link>
-            </div>
-          </ClubCard>
-        ))}
-      </div>
+          </>
+        );
+      })()}
     </div>
   );
 }
