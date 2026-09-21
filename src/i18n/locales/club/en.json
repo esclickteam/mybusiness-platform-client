@@ -67,6 +67,16 @@
     "subtitle": "A private room for owners building across borders.",
     "loading": "Loading the Club…",
     "loadError": "The Club dashboard could not be loaded.",
+    "heroWelcome": "Welcome back, {{name}}",
+    "paidMember": "Active paid member",
+    "activeMember": "Club member",
+    "todayKicker": "Today",
+    "todayTitle": "Today in the Club",
+    "todayEmptyTitle": "Nothing scheduled today",
+    "todayEmptyText": "Check the feed for new conversations, polls, and opportunities.",
+    "participate": "Participate",
+    "feedKicker": "Network",
+    "activityFeed": "Global Activity Feed",
     "stats": {
       "activeMembers": "Active members",
       "countries": "Countries represented",
@@ -106,6 +116,7 @@
     "reportPlaceholder": "Why are you reporting this?",
     "commentPlaceholder": "Write a comment",
     "comment": "Comment",
+    "comments": "{{count}} comments",
     "lookingForLabel": "Looking for: {{value}}",
     "emptyTitle": "No posts yet",
     "emptyText": "Start a discussion, ask for advice, or share an opportunity.",
@@ -291,6 +302,11 @@
     "emptyText": "Client work, partnerships, suppliers, and referrals will show up here.",
     "membersOnlyTitle": "Members only",
     "membersOnlyText": "Opportunities are shared with active Club members.",
+    "intent": {
+      "looking": "Looking",
+      "offering": "Offering",
+      "partnership": "Partnership"
+    },
     "types": {
       "client": "Client opportunities",
       "project": "Projects",
@@ -360,7 +376,9 @@
     "translate": "Translate",
     "translating": "Translating…",
     "showOriginal": "Show original",
-    "memberFallback": "Club member"
+    "memberFallback": "Club member",
+    "share": "Share",
+    "copied": "Copied"
   },
   "activities": {
     "poll": "Business Poll",

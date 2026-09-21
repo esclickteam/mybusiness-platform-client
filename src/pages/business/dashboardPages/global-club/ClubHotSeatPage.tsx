@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, countryFlag, fieldClass, formatWhen } from "./clubUi";
+import { ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, PrimaryButton, countryFlag, fieldClass, formatWhen } from "./clubUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type Seat = {
@@ -49,10 +49,7 @@ function HotSeatList({ base }: { base: string }) {
   }, [t]);
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">{t("club.hotSeat.title")}</h2>
-        <p className="text-sm text-slate-500">{t("club.hotSeat.subtitle")}</p>
-      </div>
+      <ClubSectionTitle title={t("club.hotSeat.title")} subtitle={t("club.hotSeat.subtitle")} />
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       {seats.length === 0 ? <EmptyState title={t("club.hotSeat.emptyTitle")} text={t("club.hotSeat.emptyText")} /> : null}
       {seats.map((seat) => (

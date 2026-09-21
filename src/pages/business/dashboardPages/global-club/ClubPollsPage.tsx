@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, fieldClass, formatWhen } from "./clubUi";
+import { ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, PrimaryButton, fieldClass, formatWhen } from "./clubUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type PollOption = { _id: string; label: string; votes: number | null };
@@ -38,10 +38,7 @@ export default function ClubPollsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">{t("club.polls.title")}</h2>
-        <p className="text-sm text-slate-500">{t("club.polls.subtitle")}</p>
-      </div>
+      <ClubSectionTitle title={t("club.polls.title")} subtitle={t("club.polls.subtitle")} />
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       {polls.length === 0 ? <EmptyState title={t("club.polls.emptyTitle")} text={t("club.polls.emptyText")} /> : null}
       {polls.map((poll) => <PollCard key={poll._id} poll={poll} onVoted={load} />)}

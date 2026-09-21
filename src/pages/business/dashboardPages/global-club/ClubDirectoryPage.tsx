@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ClubProfile, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { CATEGORIES, COUNTRIES, ClubAvatar, ClubCard, ClubMemberText, EmptyState, Field, GhostButton, PrimaryButton, countryFlag, fieldClass } from "./clubUi";
+import { CATEGORIES, COUNTRIES, ClubAvatar, ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, GhostButton, PrimaryButton, StatusBadge, countryFlag, fieldClass } from "./clubUi";
 
 export default function ClubDirectoryPage() {
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ export default function ClubDirectoryPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{t("club.directory.title")}</h2>
+      <ClubSectionTitle title={t("club.directory.title")} />
       <ClubCard>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Field label={t("club.directory.search")}><input className={fieldClass} value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder={t("club.directory.searchPlaceholder")} /></Field>
@@ -51,15 +51,16 @@ export default function ClubDirectoryPage() {
       </ClubCard>
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       {members.length === 0 ? <EmptyState title={t("club.directory.emptyTitle")} text={t("club.directory.emptyText")} /> : null}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         {members.map((member) => (
-          <ClubCard key={member.userId}>
+          <ClubCard key={member.userId} className="bg-[linear-gradient(180deg,#ffffff_0%,#FBF9FF_100%)]">
             <div className="flex gap-3">
               <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} />
-              <div className="min-w-0">
-                <p className="font-bold">{member.fullName}</p>
-                <p className="text-sm text-slate-600">{member.businessName}</p>
-                <p className="text-sm text-slate-500">{countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })} · {t(`club.categories.${member.businessCategory}`, { defaultValue: member.businessCategory })}</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-black text-slate-900">{member.fullName}</p>
+                <p className="text-sm font-semibold text-slate-600">{member.businessName}</p>
+                <p className="mt-1 text-sm text-slate-500">{countryFlag(member.country)} {t(`club.countries.${member.country}`, { defaultValue: member.country })}</p>
+                {member.businessCategory ? <StatusBadge>{t(`club.categories.${member.businessCategory}`, { defaultValue: member.businessCategory })}</StatusBadge> : null}
               </div>
             </div>
             <ClubMemberText className="mt-3 line-clamp-3 text-sm text-slate-700" text={member.description} />

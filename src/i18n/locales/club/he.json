@@ -67,6 +67,16 @@
     "subtitle": "חדר פרטי לבעלי עסקים שבונים מעבר לגבולות.",
     "loading": "טוענים את המועדון…",
     "loadError": "לא ניתן לטעון את לוח המועדון.",
+    "heroWelcome": "ברוך שובך, {{name}}",
+    "paidMember": "חבר משלם פעיל",
+    "activeMember": "חבר במועדון",
+    "todayKicker": "היום",
+    "todayTitle": "היום במועדון",
+    "todayEmptyTitle": "אין פעילות מתוכננת להיום",
+    "todayEmptyText": "בדקו את הפיד לשיחות, סקרים והזדמנויות חדשות.",
+    "participate": "השתתפו",
+    "feedKicker": "הרשת",
+    "activityFeed": "פיד פעילות גלובלי",
     "stats": {
       "activeMembers": "חברים פעילים",
       "countries": "מדינות מיוצגות",
@@ -106,6 +116,7 @@
     "reportPlaceholder": "למה אתם מדווחים על זה?",
     "commentPlaceholder": "כתבו תגובה",
     "comment": "תגובה",
+    "comments": "{{count}} תגובות",
     "lookingForLabel": "מחפש/ת: {{value}}",
     "emptyTitle": "אין פוסטים עדיין",
     "emptyText": "התחילו דיון, בקשו ייעוץ או שתפו הזדמנות.",
@@ -291,6 +302,11 @@
     "emptyText": "עבודת לקוחות, שותפויות, ספקים והפניות יופיעו כאן.",
     "membersOnlyTitle": "לחברים בלבד",
     "membersOnlyText": "הזדמנויות משותפות עם חברי מועדון פעילים.",
+    "intent": {
+      "looking": "מחפש",
+      "offering": "מציע",
+      "partnership": "שותפות"
+    },
     "types": {
       "client": "הזדמנויות לקוח",
       "project": "פרויקטים",
@@ -360,7 +376,9 @@
     "translate": "תרגום",
     "translating": "מתרגמים…",
     "showOriginal": "הצג מקור",
-    "memberFallback": "חבר במועדון"
+    "memberFallback": "חבר במועדון",
+    "share": "שיתוף",
+    "copied": "הועתק"
   },
   "activities": {
     "poll": "סקר עסקי",

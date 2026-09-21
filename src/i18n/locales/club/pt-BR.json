@@ -67,6 +67,16 @@
     "subtitle": "Um espaço privado para donos que constroem além das fronteiras.",
     "loading": "Carregando o Clube…",
     "loadError": "Não foi possível carregar o painel do Clube.",
+    "heroWelcome": "Bem-vindo de volta, {{name}}",
+    "paidMember": "Membro pago ativo",
+    "activeMember": "Membro do Clube",
+    "todayKicker": "Hoje",
+    "todayTitle": "Hoje no Clube",
+    "todayEmptyTitle": "Nada programado para hoje",
+    "todayEmptyText": "Veja as publicações para novas conversas, enquetes e oportunidades.",
+    "participate": "Participar",
+    "feedKicker": "Rede",
+    "activityFeed": "Feed de atividade global",
     "stats": {
       "activeMembers": "Membros ativos",
       "countries": "Países representados",
@@ -106,6 +116,7 @@
     "reportPlaceholder": "Por que você está denunciando isto?",
     "commentPlaceholder": "Escreva um comentário",
     "comment": "Comentar",
+    "comments": "{{count}} comentários",
     "lookingForLabel": "Procura: {{value}}",
     "emptyTitle": "Ainda não há posts",
     "emptyText": "Comece uma discussão, peça conselho ou compartilhe uma oportunidade.",
@@ -291,6 +302,11 @@
     "emptyText": "Trabalho de clientes, parcerias, fornecedores e indicações aparecem aqui.",
     "membersOnlyTitle": "Só para membros",
     "membersOnlyText": "As oportunidades são compartilhadas com membros ativos do Clube.",
+    "intent": {
+      "looking": "Procura",
+      "offering": "Oferece",
+      "partnership": "Parceria"
+    },
     "types": {
       "client": "Oportunidades de cliente",
       "project": "Projetos",
@@ -360,7 +376,9 @@
     "translate": "Traduzir",
     "translating": "Traduzindo…",
     "showOriginal": "Mostrar original",
-    "memberFallback": "Membro do Clube"
+    "memberFallback": "Membro do Clube",
+    "share": "Compartilhar",
+    "copied": "Copiado"
   },
   "activities": {
     "poll": "Enquete de negócios",

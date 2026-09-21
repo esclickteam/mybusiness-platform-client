@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ClubAuthor, ClubProfile, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubAvatar, ClubCard, EmptyState, GhostButton, PrimaryButton, countryFlag } from "./clubUi";
+import { ClubAvatar, ClubCard, ClubSectionTitle, EmptyState, GhostButton, PrimaryButton, countryFlag } from "./clubUi";
 
 type ConnectionRow = {
   _id: string;
@@ -39,7 +39,7 @@ export default function ClubConnectionsPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{t("club.connections.title")}</h2>
+      <ClubSectionTitle title={t("club.connections.title")} />
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       <Section title={t("club.connections.pending")}>
         {pending.length === 0 ? <p className="text-sm text-slate-500">{t("club.connections.nonePending")}</p> : null}

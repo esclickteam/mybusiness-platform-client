@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ClubPost, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, StatusBadge, fieldClass, formatWhen } from "./clubUi";
+import { ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, PrimaryButton, StatusBadge, fieldClass, formatWhen } from "./clubUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 const TOPICS = ["Marketing", "Sales", "Pricing", "Websites", "CRM", "Automations", "AI", "International markets", "Business strategy", "Operations", "Technology"];
@@ -43,10 +43,7 @@ export default function ClubAskPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">{t("club.ask.title")}</h2>
-        <p className="text-sm text-slate-500">{t("club.ask.subtitle")}</p>
-      </div>
+      <ClubSectionTitle title={t("club.ask.title")} subtitle={t("club.ask.subtitle")} />
       <ClubCard>
         <form onSubmit={onSubmit} className="grid gap-3">
           <Field label={t("club.ask.topic")}>

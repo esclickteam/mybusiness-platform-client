@@ -91,15 +91,15 @@ export default function GlobalBusinessClubPage() {
         dir={dir}
         className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_32%,#f6f7fb_68%,#ffffff_100%)] text-slate-800"
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6">
-          <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-3 py-4 sm:px-5 sm:py-6">
+          <header className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_18px_50px_rgba(76,29,149,0.08)] backdrop-blur-md sm:px-5">
             <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-indigo-500 text-white shadow-md shadow-indigo-200">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#4c1d95,#7C4DFF)] text-white shadow-[0_12px_24px_rgba(124,77,255,0.35)]">
                 <Globe2 className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-500">{t("club.brand")}</p>
-                <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("club.name")}</h1>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</p>
+                <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">{t("club.name")}</h1>
               </div>
             </div>
             {me?.status === "active" ? <ClubNotifications base={base} initialUnread={me.unreadNotifications} /> : null}
@@ -152,7 +152,7 @@ function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: boolean
           end={path === ""}
           className={({ isActive }) =>
             `shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold ${
-              isActive ? "bg-indigo-500 text-white" : "bg-white text-slate-600 ring-1 ring-violet-100"
+              isActive ? "bg-[#7C4DFF] text-white shadow-[0_10px_20px_rgba(124,77,255,0.28)]" : "bg-white/90 text-slate-600 ring-1 ring-violet-100"
             }`
           }
         >
@@ -211,11 +211,11 @@ function ClubNotifications({ base, initialUnread }: { base: string; initialUnrea
           setOpen((value) => !value);
           void load();
         }}
-        className="relative grid h-11 w-11 place-items-center rounded-2xl bg-white text-slate-700 ring-1 ring-violet-100"
+        className="relative grid h-11 w-11 place-items-center rounded-2xl bg-white text-slate-700 shadow-sm ring-1 ring-violet-100"
       >
         <Bell className="h-5 w-5" />
         {unread > 0 ? (
-          <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-indigo-500 px-1 text-[10px] font-bold text-white">
+          <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#7C4DFF] px-1 text-[10px] font-bold text-white">
             {unread > 9 ? "9+" : unread}
           </span>
         ) : null}
