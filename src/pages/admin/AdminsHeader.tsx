@@ -6,6 +6,7 @@ import AdminNotifications from "../../components/AdminNotifications";
 import AdminSoftphoneLauncher from "../../components/AdminSoftphoneLauncher";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../api";
+import { useTranslation } from "react-i18next";
 
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
 ] as const;
 
 function AdminHeader() {
+  const { t } = useTranslation();
   const { user, logout, socket } = useAuth() as {
     user: { name?: string; email?: string } | null;
     logout: (opts?: { callServer?: boolean; redirect?: boolean }) => Promise<void>;
@@ -141,7 +143,7 @@ function AdminHeader() {
                 : "text-slate-500 hover:text-slate-800",
           ].join(" ")}
         >
-          {item.label}
+          {item.path === "/admin/club" ? t("club.name") : item.label}
           {isSupport && supportBadge > 0 && (
             <span
               data-testid="admin-support-unread-badge"

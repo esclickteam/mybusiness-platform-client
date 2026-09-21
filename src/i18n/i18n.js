@@ -7,6 +7,11 @@ import he from "./locales/he.json";
 import es from "./locales/es.json";
 import ptBR from "./locales/pt-BR.json";
 import ar from "./locales/ar.json";
+import clubEn from "./locales/club/en.json";
+import clubHe from "./locales/club/he.json";
+import clubEs from "./locales/club/es.json";
+import clubPtBR from "./locales/club/pt-BR.json";
+import clubAr from "./locales/club/ar.json";
 import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
@@ -39,11 +44,11 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: en },
-      he: { translation: he },
-      es: { translation: es },
-      "pt-BR": { translation: ptBR },
-      ar: { translation: ar },
+      en: { translation: { ...en, club: clubEn } },
+      he: { translation: { ...he, club: clubHe } },
+      es: { translation: { ...es, club: clubEs } },
+      "pt-BR": { translation: { ...ptBR, club: clubPtBR } },
+      ar: { translation: { ...ar, club: clubAr } },
     },
 
     fallbackLng: FALLBACK_LANGUAGE,
