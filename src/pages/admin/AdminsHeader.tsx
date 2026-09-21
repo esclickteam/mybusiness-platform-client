@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { path: "/admin/marketers", label: "משווקים" },
   { path: "/admin/withdrawals", label: "משיכות" },
   { path: "/admin/support-chat", label: "צ'אט תמיכה" },
+  { path: "/admin/club", label: "מועדון עסקים" },
 ] as const;
 
 function AdminHeader() {
