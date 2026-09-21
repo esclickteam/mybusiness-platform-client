@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useClub } from "./GlobalBusinessClubPage";
 import { clubError, clubSend } from "./clubApi";
@@ -29,7 +29,7 @@ export default function ClubJoinPage() {
   const [saving, setSaving] = useState(false);
 
   if (me?.status === "active") {
-    return <p className="text-sm text-slate-600">{t("club.join.alreadyMember")}</p>;
+    return <Navigate to={base} replace />;
   }
   if (me?.status === "pending") {
     return (

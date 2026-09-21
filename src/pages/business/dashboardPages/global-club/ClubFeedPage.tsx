@@ -1,28 +1,15 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ClubComment, ClubPost, clubError, clubGet, clubSend, uploadClubImage } from "./clubApi";
+import { ClubPost, clubError, clubGet, clubSend, uploadClubImage } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import {
-  ClubAvatar,
-  ClubCard,
-  ClubMemberText,
-  EmptyState,
-  Field,
-  GhostButton,
-  POST_TYPE_KEYS,
-  PrimaryButton,
-  StatusBadge,
-  countryFlag,
-  fieldClass,
-  formatWhen,
-} from "./clubUi";
-import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { ClubCard, ClubSectionTitle, EmptyState, Field, GhostButton, POST_TYPE_KEYS, PrimaryButton, clubChipClass, fieldClass } from "./clubUi";
+import { ClubPostCard } from "./clubCards";
 
 const COMPOSER = ["question", "collaboration", "feedback", "opportunity", "market", "advice", "general"] as const;
 
 export default function ClubFeedPage() {
   const { t } = useTranslation();
-  const { isMember } = useClub();
+  const { isMember, base } = useClub();
   const [type, setType] = useState("all");
   const [savedOnly, setSavedOnly] = useState(false);
   const [posts, setPosts] = useState<ClubPost[]>([]);
@@ -46,20 +33,21 @@ export default function ClubFeedPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-bold">{t("club.feed.title")}</h2>
-        <PrimaryButton type="button" onClick={() => setOpen(true)}>{t("club.feed.create")}</PrimaryButton>
-      </div>
+      <ClubSectionTitle
+        kicker={t("club.dashboard.feedKicker")}
+        title={t("club.feed.title")}
+        action={<PrimaryButton type="button" onClick={() => setOpen(true)}>{t("club.feed.create")}</PrimaryButton>}
+      />
       <div className="flex gap-2 overflow-x-auto pb-1">
-        <button type="button" onClick={() => setType("all")} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${type === "all" ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}>
+        <button type="button" onClick={() => setType("all")} className={clubChipClass(type === "all")}>
           {t("club.feed.all")}
         </button>
         {POST_TYPE_KEYS.map((id) => (
-          <button key={id} type="button" onClick={() => setType(id)} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${type === id ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}>
+          <button key={id} type="button" onClick={() => setType(id)} className={clubChipClass(type === id)}>
             {t(`club.postTypes.${id}`)}
           </button>
         ))}
-        <button type="button" onClick={() => setSavedOnly((value) => !value)} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${savedOnly ? "bg-indigo-500 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}>
+        <button type="button" onClick={() => setSavedOnly((value) => !value)} className={clubChipClass(savedOnly)}>
           {t("club.feed.saved")}
         </button>
       </div>
@@ -67,7 +55,7 @@ export default function ClubFeedPage() {
       {open ? <Composer onClose={() => setOpen(false)} onCreated={() => { setOpen(false); void load(); }} /> : null}
       {posts.length === 0 ? <EmptyState title={t("club.feed.emptyTitle")} text={t("club.feed.emptyText")} /> : null}
       {posts.map((post) => (
-        <PostCard key={post._id} post={post} onChange={load} />
+        <ClubPostCard key={post._id} post={post} base={base} onChange={load} />
       ))}
     </div>
   );
@@ -101,12 +89,12 @@ function Composer({ onClose, onCreated }: { onClose: () => void; onCreated: () =
   return (
     <ClubCard>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-lg font-bold">{t("club.feed.composerTitle")}</h3>
+        <h3 className="text-lg font-black">{t("club.feed.composerTitle")}</h3>
         <GhostButton type="button" onClick={onClose}>{t("club.common.close")}</GhostButton>
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         {COMPOSER.map((option) => (
-          <button key={option} type="button" onClick={() => setPostType(option)} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${postType === option ? "bg-indigo-500 text-white" : "bg-slate-50 text-slate-600"}`}>
+          <button key={option} type="button" onClick={() => setPostType(option)} className={clubChipClass(postType === option)}>
             {t(`club.composer.${option}`)}
           </button>
         ))}
@@ -138,68 +126,6 @@ function Composer({ onClose, onCreated }: { onClose: () => void; onCreated: () =
         {error ? <p className="text-sm text-rose-600">{error}</p> : null}
         <PrimaryButton type="submit" disabled={saving}>{saving ? t("club.feed.publishing") : t("club.feed.publish")}</PrimaryButton>
       </form>
-    </ClubCard>
-  );
-}
-
-function PostCard({ post, onChange }: { post: ClubPost; onChange: () => Promise<void> }) {
-  const { t, i18n } = useTranslation();
-  const locale = getIntlLocale(i18n.language);
-  const [text, setText] = useState("");
-  const [reporting, setReporting] = useState(false);
-
-  return (
-    <ClubCard>
-      <div className="flex items-start gap-3">
-        <ClubAvatar name={post.author.fullName} photoUrl={post.author.photoUrl} logoUrl={post.author.logoUrl} />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold">{post.author.fullName}</p>
-            <StatusBadge>{t(`club.postTypes.${post.postType}`, { defaultValue: post.postType })}</StatusBadge>
-          </div>
-          <p className="text-sm text-slate-500">
-            {post.author.businessName} · {countryFlag(post.author.country)} {t(`club.countries.${post.author.country}`, { defaultValue: post.author.country })} · {formatWhen(post.createdAt, locale)}
-          </p>
-        </div>
-      </div>
-      {post.title ? <ClubMemberText className="mt-3 text-lg font-bold" text={post.title} /> : null}
-      <ClubMemberText className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700" text={post.text} />
-      {post.lookingFor ? <p className="mt-2 text-sm text-slate-600">{t("club.feed.lookingForLabel", { value: post.lookingFor })}</p> : null}
-      {post.imageUrl ? <img src={post.imageUrl} alt="" className="mt-3 max-h-80 w-full rounded-2xl object-cover" /> : null}
-      <div className="mt-3 flex flex-wrap gap-2">
-        <GhostButton type="button" onClick={() => clubSend("post", `/club/posts/${post._id}/react`).then(onChange)}>{t("club.feed.like", { count: post.likeCount })}</GhostButton>
-        <GhostButton type="button" onClick={() => clubSend("post", `/club/posts/${post._id}/save`).then(onChange)}>{post.savedByMe ? t("club.feed.saved") : t("club.feed.save")}</GhostButton>
-        <GhostButton type="button" onClick={() => setReporting((value) => !value)}>{t("club.feed.report")}</GhostButton>
-      </div>
-      {reporting ? (
-        <form className="mt-2 flex gap-2" onSubmit={(event) => {
-          event.preventDefault();
-          const reason = new FormData(event.currentTarget).get("reason");
-          void clubSend("post", `/club/posts/${post._id}/report`, { reason }).then(() => setReporting(false));
-        }}>
-          <input name="reason" className={fieldClass} placeholder={t("club.feed.reportPlaceholder")} required />
-          <PrimaryButton type="submit">{t("club.common.send")}</PrimaryButton>
-        </form>
-      ) : null}
-      <div className="mt-4 space-y-2">
-        {post.comments.map((comment: ClubComment) => (
-          <div key={comment._id} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
-            <span className="font-semibold">{comment.author.fullName}</span>
-            <span className="text-slate-500"> · {comment.author.businessName}</span>
-            <ClubMemberText className="mt-1 text-slate-700" text={comment.text} />
-          </div>
-        ))}
-        <form className="flex gap-2" onSubmit={(event) => {
-          event.preventDefault();
-          void clubSend("post", `/club/posts/${post._id}/comments`, { text }).then(() => {
-            setText("");
-            return onChange();
-          });
-        }}>
-          <input className={fieldClass} value={text} onChange={(e) => setText(e.target.value)} placeholder={t("club.feed.commentPlaceholder")} />
-          <PrimaryButton type="submit">{t("club.feed.comment")}</PrimaryButton>
-        </form>
-      </div>
     </ClubCard>
   );
 }

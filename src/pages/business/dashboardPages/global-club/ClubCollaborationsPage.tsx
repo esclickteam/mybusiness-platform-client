@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, StatusBadge, fieldClass, formatWhen } from "./clubUi";
+import { ClubCard, ClubMemberText, ClubSectionTitle, EmptyState, Field, PrimaryButton, StatusBadge, fieldClass, formatWhen } from "./clubUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type Collaboration = {
@@ -46,7 +46,7 @@ export default function ClubCollaborationsPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{t("club.collaborations.title")}</h2>
+      <ClubSectionTitle title={t("club.collaborations.title")} />
       <ClubCard>
         <h3 className="font-semibold">{t("club.collaborations.publishTitle")}</h3>
         <form onSubmit={onSubmit} className="mt-3 grid gap-3 sm:grid-cols-2">

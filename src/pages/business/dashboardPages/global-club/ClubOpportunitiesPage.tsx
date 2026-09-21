@@ -2,8 +2,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ClubAuthor, clubError, clubGet, clubSend } from "./clubApi";
 import { useClub } from "./GlobalBusinessClubPage";
-import { ClubCard, ClubMemberText, EmptyState, Field, PrimaryButton, StatusBadge, fieldClass, formatWhen } from "./clubUi";
-import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { ClubCard, ClubSectionTitle, EmptyState, Field, PrimaryButton, fieldClass } from "./clubUi";
+import { ClubOpportunityCard } from "./clubCards";
 
 const TYPES = ["client", "project", "partnership", "supplier", "expansion", "referral", "collaboration"] as const;
 
@@ -19,9 +19,8 @@ type Opportunity = {
 };
 
 export default function ClubOpportunitiesPage() {
-  const { t, i18n } = useTranslation();
-  const locale = getIntlLocale(i18n.language);
-  const { isMember } = useClub();
+  const { t } = useTranslation();
+  const { isMember, base } = useClub();
   const [rows, setRows] = useState<Opportunity[]>([]);
   const [filters, setFilters] = useState({ country: "", industry: "", type: "", from: "", to: "" });
   const [form, setForm] = useState({ title: "", description: "", country: "", industry: "", opportunityType: "partnership" });
@@ -49,7 +48,7 @@ export default function ClubOpportunitiesPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{t("club.opportunities.title")}</h2>
+      <ClubSectionTitle title={t("club.opportunities.title")} />
       <ClubCard>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <Field label={t("club.opportunities.country")}><input className={fieldClass} value={filters.country} onChange={(e) => setFilters({ ...filters, country: e.target.value })} /></Field>
@@ -82,16 +81,7 @@ export default function ClubOpportunitiesPage() {
       {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       {rows.length === 0 ? <EmptyState title={t("club.opportunities.emptyTitle")} text={t("club.opportunities.emptyText")} /> : null}
       {rows.map((row) => (
-        <ClubCard key={row._id}>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <ClubMemberText className="text-lg font-bold" text={row.title} />
-            <StatusBadge>{t(`club.opportunities.types.${row.opportunityType}`, { defaultValue: row.opportunityType })}</StatusBadge>
-          </div>
-          <p className="mt-1 text-sm text-slate-500">
-            {row.author.fullName} · {t(`club.countries.${row.country}`, { defaultValue: row.country })} · {row.industry} · {formatWhen(row.createdAt, locale)}
-          </p>
-          <ClubMemberText className="mt-2 text-sm text-slate-700" text={row.description} />
-        </ClubCard>
+        <ClubOpportunityCard key={row._id} row={row} base={base} />
       ))}
     </div>
   );

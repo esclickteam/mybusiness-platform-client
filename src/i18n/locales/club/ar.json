@@ -67,6 +67,16 @@
     "subtitle": "غرفة خاصة لأصحاب الأعمال الذين يبنون عبر الحدود.",
     "loading": "جارٍ تحميل النادي…",
     "loadError": "تعذر تحميل لوحة النادي.",
+    "heroWelcome": "مرحباً بعودتك، {{name}}",
+    "paidMember": "عضو مدفوع نشط",
+    "activeMember": "عضو في النادي",
+    "todayKicker": "اليوم",
+    "todayTitle": "اليوم في النادي",
+    "todayEmptyTitle": "لا يوجد نشاط مجدول اليوم",
+    "todayEmptyText": "راجع الخلاصة للمحادثات والاستطلاعات والفرص الجديدة.",
+    "participate": "شارك",
+    "feedKicker": "الشبكة",
+    "activityFeed": "خلاصة النشاط العالمي",
     "stats": {
       "activeMembers": "الأعضاء النشطون",
       "countries": "الدول الممثلة",
@@ -106,6 +116,7 @@
     "reportPlaceholder": "لماذا تُبلغ عن هذا؟",
     "commentPlaceholder": "اكتب تعليقاً",
     "comment": "تعليق",
+    "comments": "{{count}} تعليقات",
     "lookingForLabel": "يبحث عن: {{value}}",
     "emptyTitle": "لا منشورات بعد",
     "emptyText": "ابدأ نقاشاً أو اطلب نصيحة أو شارك فرصة.",
@@ -291,6 +302,11 @@
     "emptyText": "عمل العملاء والشراكات والمورّدون والإحالات ستظهر هنا.",
     "membersOnlyTitle": "للأعضاء فقط",
     "membersOnlyText": "تُشارك الفرص مع أعضاء النادي النشطين.",
+    "intent": {
+      "looking": "يبحث",
+      "offering": "يعرض",
+      "partnership": "شراكة"
+    },
     "types": {
       "client": "فرص عملاء",
       "project": "مشاريع",
@@ -360,7 +376,9 @@
     "translate": "ترجمة",
     "translating": "جارٍ الترجمة…",
     "showOriginal": "عرض الأصل",
-    "memberFallback": "عضو في النادي"
+    "memberFallback": "عضو في النادي",
+    "share": "مشاركة",
+    "copied": "تم النسخ"
   },
   "activities": {
     "poll": "استطلاع أعمال",
