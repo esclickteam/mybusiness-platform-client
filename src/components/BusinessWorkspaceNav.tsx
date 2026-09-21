@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   CircleUserRound,
   Handshake,
+  Globe2,
   Sparkles,
   PencilLine,
   UserRound,
@@ -271,6 +272,14 @@ export default function BusinessWorkspaceNav({
       icon: Handshake,
       moduleKey: "collab",
       demoTarget: "nav-collab",
+    },
+    {
+      labelKey: "businessNav.globalBusinessClub",
+      fallback: "Global Business Club",
+      to: `${basePath}/dashboard/global-club`,
+      icon: Globe2,
+      moduleKey: null,
+      demoTarget: "nav-global-club",
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",

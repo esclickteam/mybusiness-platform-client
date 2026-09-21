@@ -71,7 +71,9 @@ export function isDashboardPathAllowed(pathname, enabledModules) {
 
   const moduleKey = NAV_PATH_MODULE_MAP[segment] || segment;
   // Soft utility pages stay reachable for plan-limited business accounts.
-  const alwaysAllowed = new Set(["help-center"]);
+  // Help Center and the Club landing stay reachable for plan-limited accounts.
+  // Club content itself is gated by Club membership on the API.
+  const alwaysAllowed = new Set(["help-center", "global-club"]);
   if (alwaysAllowed.has(segment)) return true;
 
   return isModuleEnabled(enabledModules, moduleKey);

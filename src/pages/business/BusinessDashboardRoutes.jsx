@@ -59,6 +59,9 @@ const CollabMessagesTab = lazy(() =>
 const CollabMarketTab = lazy(() =>
   import("./dashboardPages/collabtabs/CollabMarketTab")
 );
+const GlobalBusinessClubPage = lazy(() =>
+  import("./dashboardPages/global-club/GlobalBusinessClubPage")
+);
 
 const Upgrade = lazy(() => import("./dashboardPages/Upgrade"));
 const CartPage = lazy(() =>
@@ -405,6 +408,8 @@ const BusinessDashboardRoutes = () => {
 
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
+
+          <Route path="global-club/*" element={<GlobalBusinessClubPage />} />
 
           {/* Business public profile builder */}
           <Route path="edit" element={<BuildBusinessPage />} />
