@@ -204,10 +204,46 @@ export default function WhatsAppHistoryTab() {
                         })}
                       </span>
                     )}
+                    {log.source === "external_api" ? (
+                      <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-black text-sky-700">
+                        {t("whatsapp.history.sourceExternalApi", {
+                          defaultValue: "External API",
+                        })}
+                      </span>
+                    ) : null}
                   </div>
                   <p className="mt-1 text-xs font-semibold text-slate-500" dir="ltr">
                     {log.recipientPhone}
                   </p>
+                  {log.source === "external_api" ? (
+                    <div className="mt-1 space-y-0.5 text-xs font-semibold text-slate-500" dir="ltr">
+                      {log.externalId ? (
+                        <p>
+                          {t("whatsapp.history.externalId", {
+                            defaultValue: "externalId",
+                          })}
+                          : {log.externalId}
+                        </p>
+                      ) : null}
+                      {log.publicMessageId ? (
+                        <p>
+                          {t("whatsapp.history.messageId", {
+                            defaultValue: "messageId",
+                          })}
+                          : {log.publicMessageId}
+                        </p>
+                      ) : null}
+                      {log.apiKeyName ? (
+                        <p>
+                          {t("whatsapp.history.apiKey", {
+                            defaultValue: "API key",
+                          })}
+                          : {log.apiKeyName}
+                          {log.apiKeyPrefix ? ` (${log.apiKeyPrefix}…)` : ""}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
                   <p
                     className="mt-1 line-clamp-3 text-sm font-medium text-slate-600 whitespace-pre-wrap"
                     dir={
@@ -269,10 +305,38 @@ export default function WhatsAppHistoryTab() {
                       ? new Date(log.sentAt || log.createdAt || "").toLocaleString()
                       : ""}
                   </p>
+                  {log.deliveredAt ? (
+                    <p className="mt-1">
+                      {t("whatsapp.history.deliveredAt", {
+                        defaultValue: "Delivered",
+                      })}
+                      : {new Date(log.deliveredAt).toLocaleString()}
+                    </p>
+                  ) : null}
+                  {log.readAt ? (
+                    <p className="mt-1">
+                      {t("whatsapp.history.readAt", {
+                        defaultValue: "Read",
+                      })}
+                      : {new Date(log.readAt).toLocaleString()}
+                    </p>
+                  ) : null}
+                  {log.failedAt ? (
+                    <p className="mt-1 text-rose-500">
+                      {t("whatsapp.history.failedAt", {
+                        defaultValue: "Failed",
+                      })}
+                      : {new Date(log.failedAt).toLocaleString()}
+                    </p>
+                  ) : null}
                   <p className="mt-1">
-                    {t(`whatsapp.history.source.${log.source || "manual"}`, {
-                      defaultValue: log.source || "manual",
-                    })}
+                    {log.source === "external_api"
+                      ? t("whatsapp.history.sourceExternalApi", {
+                          defaultValue: "External API",
+                        })
+                      : t(`whatsapp.history.source.${log.source || "manual"}`, {
+                          defaultValue: log.source || "manual",
+                        })}
                   </p>
                 </div>
               </div>

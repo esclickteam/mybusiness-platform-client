@@ -494,6 +494,12 @@ export type WhatsAppMessageLog = {
   direction?: "outbound" | "inbound";
   status: string;
   source?: string;
+  sourceLabel?: string;
+  externalId?: string;
+  publicMessageId?: string;
+  apiKeyId?: string | null;
+  apiKeyName?: string;
+  apiKeyPrefix?: string;
   error?: string;
   providerMessageId?: string;
   leadId?: string | null;
@@ -1496,6 +1502,8 @@ export type WhatsAppExternalWebhookSettings = {
   status: string;
   lastDeliveryAt?: string | null;
   lastDeliveryStatus?: string;
+  lastDeliveryHttpStatus?: number | null;
+  lastDeliveryDurationMs?: number | null;
   lastDeliveryError?: string;
   consecutiveFailures?: number;
   events?: string[];
@@ -1503,10 +1511,17 @@ export type WhatsAppExternalWebhookSettings = {
 
 export type WhatsAppExternalApiSettings = {
   apiBaseUrl: string;
+  docsUrl?: string;
+  openApiUrl?: string;
   apiKey: WhatsAppExternalApiKeySummary | null;
   keys: WhatsAppExternalApiKeySummary[];
   webhook: WhatsAppExternalWebhookSettings;
   status: string;
+  rateLimit?: {
+    limit: number;
+    windowMs: number;
+    backend: string;
+  };
 };
 
 export async function getWhatsAppExternalApiSettings(businessId: string) {
@@ -1601,6 +1616,7 @@ export async function testWhatsAppExternalWebhook(businessId: string) {
     deliveryId?: string;
     status?: string;
     statusCode?: number | null;
+    durationMs?: number | null;
     error?: string;
   };
 }
