@@ -62,7 +62,6 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
-import WhatsAppExternalApiSettingsCard from "./WhatsAppExternalApiSettingsCard";
 
 type OutletCtx = { businessId: string | null };
 
@@ -1329,10 +1328,9 @@ export default function WhatsAppSettingsTab() {
             ) : null}
 
             {linked && businessId ? (
-              <WhatsAppExternalApiSettingsCard
-                businessId={businessId}
-                linked={linked}
-              />
+              <div className="rounded-xl border border-sky-100 bg-sky-50/70 px-4 py-3 text-sm font-semibold text-sky-900">
+                {t("whatsapp.hub.apiMovedHint")}
+              </div>
             ) : null}
 
             {linked ? (
