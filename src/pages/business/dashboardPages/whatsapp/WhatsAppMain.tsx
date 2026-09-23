@@ -8,19 +8,18 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTextDirection } from "../../../../i18n/localeUtils";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   Activity,
   BarChart3,
   Code2,
-  History,
   Inbox,
-  ListChecks,
   Loader2,
   MessageCircle,
+  MessagesSquare,
+  PlugZap,
   RefreshCw,
-  Send,
   Settings2,
   UserRound,
   Wallet,
@@ -46,31 +45,33 @@ import {
   qualityBadgeClass,
   toneBadgeClass,
 } from "./hubFormat";
+import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 
 type WhatsAppTab = {
   path: string;
   labelKey: string;
   icon: React.ElementType;
+  end?: boolean;
 };
 
-const tabs: WhatsAppTab[] = [
+const MAIN_TABS: WhatsAppTab[] = [
   { path: "overview", labelKey: "whatsapp.nav.overview", icon: Activity },
   { path: "profile", labelKey: "whatsapp.nav.profile", icon: UserRound },
   { path: "templates", labelKey: "whatsapp.nav.templates", icon: MessageCircle },
-  { path: "compose", labelKey: "whatsapp.nav.compose", icon: Send },
-  { path: "lists", labelKey: "whatsapp.nav.lists", icon: ListChecks },
+  { path: "messages", labelKey: "whatsapp.nav.messages", icon: MessagesSquare },
   { path: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
-  { path: "history", labelKey: "whatsapp.nav.history", icon: History },
   { path: "insights", labelKey: "whatsapp.nav.insights", icon: BarChart3 },
   { path: "developers", labelKey: "whatsapp.nav.developers", icon: Code2 },
   { path: "billing", labelKey: "whatsapp.nav.billing", icon: Wallet },
-  { path: "connection", labelKey: "whatsapp.nav.connection", icon: Settings2 },
 ];
 
 const LEGACY_TAB_REDIRECT: Record<string, string> = {
   automations: "overview",
   health: "insights",
   settings: "connection",
+  compose: "messages/compose",
+  lists: "messages/lists",
+  history: "messages/history",
 };
 
 function readWaBillingFlag(searchParams: URLSearchParams) {
@@ -106,14 +107,18 @@ export default function WhatsAppMain() {
     normalizeBusinessId(urlBusinessId) ||
     normalizeBusinessId(user?.businessId) ||
     null;
+  const locale = getIntlLocale(i18n.language);
 
+  const visualQa = useWhatsAppVisualQaOverride();
   const [setupModalOpen, setSetupModalOpen] = useState(false);
   const [setupModalMode, setSetupModalMode] = useState<"setup" | "manage">(
     "setup"
   );
   const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
-  const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
-  const [connectionLoading, setConnectionLoading] = useState(true);
+  const [connection, setConnection] = useState<WhatsAppConnection | null>(
+    visualQa?.connection || null
+  );
+  const [connectionLoading, setConnectionLoading] = useState(!visualQa);
   const [syncing, setSyncing] = useState(false);
 
   const {
@@ -124,15 +129,29 @@ export default function WhatsAppMain() {
     setUsage: setBillingUsage,
   } = useWhatsAppBilling(businessId);
 
-  const currentTab = useMemo(() => {
+  const pathAfterWhatsapp = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
-    return parts[parts.length - 1] || "overview";
+    const idx = parts.lastIndexOf("whatsapp");
+    return parts.slice(idx + 1);
   }, [location.pathname]);
 
-  const isKnownTab = useMemo(
-    () => tabs.some((tab) => tab.path === currentTab),
-    [currentTab]
-  );
+  const topSegment = pathAfterWhatsapp[0] || "overview";
+  const isConnected = Boolean(connection?.connected);
+
+  const visibleTabs = useMemo(() => {
+    if (connectionLoading) return MAIN_TABS;
+    if (!isConnected) {
+      return [
+        ...MAIN_TABS,
+        {
+          path: "connection",
+          labelKey: "whatsapp.nav.connection",
+          icon: Settings2,
+        },
+      ];
+    }
+    return MAIN_TABS;
+  }, [connectionLoading, isConnected]);
 
   useEffect(() => {
     const cleanPath = location.pathname.replace(/\/+$/, "");
@@ -147,14 +166,40 @@ export default function WhatsAppMain() {
       return;
     }
 
-    if (!isRoot && isKnownTab) return;
+    if (isRoot) {
+      navigate(`${cleanPath}/overview`, { replace: true });
+      return;
+    }
 
-    const basePath = isRoot
-      ? cleanPath
-      : cleanPath.replace(new RegExp(`/${currentTab}$`), "");
+    const known =
+      visibleTabs.some((tab) => tab.path === topSegment) ||
+      topSegment === "connection" ||
+      topSegment === "messages";
 
-    navigate(`${basePath}/overview`, { replace: true });
-  }, [currentTab, isKnownTab, location.pathname, navigate]);
+    if (!known) {
+      const waIdx = pathParts.lastIndexOf("whatsapp");
+      const base = "/" + pathParts.slice(0, waIdx + 1).join("/");
+      navigate(`${base}/overview`, { replace: true });
+    }
+  }, [location.pathname, navigate, topSegment, visibleTabs]);
+
+  useEffect(() => {
+    if (visualQa) return;
+    if (connectionLoading) return;
+    if (!isConnected && topSegment !== "connection") {
+      const parts = location.pathname.split("/").filter(Boolean);
+      const waIdx = parts.lastIndexOf("whatsapp");
+      const base = "/" + parts.slice(0, waIdx + 1).join("/");
+      navigate(`${base}/connection`, { replace: true });
+    }
+  }, [
+    visualQa,
+    connectionLoading,
+    isConnected,
+    topSegment,
+    location.pathname,
+    navigate,
+  ]);
 
   useEffect(() => {
     const flag = readWaBillingFlag(searchParams);
@@ -172,6 +217,11 @@ export default function WhatsAppMain() {
   }, [searchParams, setSearchParams, t]);
 
   const refreshConnection = useCallback(async () => {
+    if (visualQa?.connection) {
+      setConnection(visualQa.connection);
+      setConnectionLoading(false);
+      return;
+    }
     if (!businessId) {
       setConnection(null);
       setConnectionLoading(false);
@@ -186,7 +236,7 @@ export default function WhatsAppMain() {
     } finally {
       setConnectionLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, visualQa]);
 
   useEffect(() => {
     void refreshConnection();
@@ -224,6 +274,9 @@ export default function WhatsAppMain() {
     connection?.verifiedName ||
     connection?.wabaName ||
     t("whatsapp.hub.unnamed");
+  const lastSync = connection?.lastMetaSyncAt
+    ? new Date(connection.lastMetaSyncAt).toLocaleString(locale)
+    : null;
 
   const outletContext: WhatsAppHubOutletContext = {
     businessId,
@@ -242,163 +295,163 @@ export default function WhatsAppMain() {
   return (
     <section
       dir={getTextDirection(i18n.language)}
-      className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
+      className="min-h-[calc(100vh-72px)] bg-[#F5F7FB] px-3 py-3 text-start text-slate-900 sm:px-4 sm:py-4 lg:px-5"
     >
-      <div className="mx-auto w-full max-w-[1920px]">
-        <header className="mb-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-          <div className="relative overflow-hidden border-b border-slate-100">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-l from-emerald-50/70 via-sky-50/40 to-white"
-            />
-            <div className="relative flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between">
-              <div className="min-w-0 flex items-start gap-3">
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-700">
-                  <MessageCircle className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-700">
-                    {t("whatsapp.hub.product")}
-                  </p>
-                  <h1 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-                    {t("whatsapp.hub.title")}
+      <div className="mx-auto w-full max-w-[1600px]">
+        <header className="mb-3 overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_4px_16px_rgba(15,23,42,0.04)]">
+          <div className="flex flex-col gap-2.5 border-b border-slate-100 px-3 py-2.5 sm:px-4 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                <MessageCircle className="h-4.5 w-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <h1 className="truncate text-base font-black tracking-tight text-slate-900 sm:text-lg">
+                    {connectionLoading ? "…" : displayName}
                   </h1>
-                  <p className="mt-1 truncate text-sm font-semibold text-slate-600" dir="ltr">
+                  <span
+                    className="truncate text-sm font-semibold text-slate-500"
+                    dir="ltr"
+                  >
                     {connectionLoading
-                      ? "…"
+                      ? ""
                       : connection?.displayPhoneNumber ||
                         t("whatsapp.hub.noPhone")}
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  </span>
+                  <span
+                    className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${toneBadgeClass(
+                      connection?.connected ? "ok" : "neutral"
+                    )}`}
+                  >
+                    {connection?.connected
+                      ? t("whatsapp.hub.connected")
+                      : t("whatsapp.hub.disconnected")}
+                  </span>
+                  {connection?.connected ? (
                     <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${toneBadgeClass(
-                        connection?.connected ? "ok" : "neutral"
-                      )}`}
-                    >
-                      {connection?.connected
-                        ? t("whatsapp.hub.connected")
-                        : t("whatsapp.hub.disconnected")}
-                    </span>
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${toneBadgeClass(
+                      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${toneBadgeClass(
                         ready.tone
                       )}`}
                     >
                       {ready.tone === "ok"
                         ? t("whatsapp.hub.ready")
-                        : ready.tone === "neutral"
-                          ? t("whatsapp.hub.disconnected")
-                          : t("whatsapp.hub.issue")}
+                        : t("whatsapp.hub.issue")}
                     </span>
-                    {connection?.verifiedName ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-slate-100 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700">
-                        {t("whatsapp.hub.displayName")}: {displayName}
-                        {nameStatusLabel ? (
-                          <span
-                            className={`ms-1 rounded-full border px-1.5 py-0 text-[10px] ${nameStatusBadgeClass(
-                              connection.nameStatus
-                            )}`}
-                          >
-                            {nameStatusLabel}
-                          </span>
-                        ) : null}
-                      </span>
-                    ) : null}
-                    {qualityLabel ? (
+                  ) : null}
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-semibold text-slate-500">
+                  {qualityLabel ? (
+                    <span className="inline-flex items-center gap-1">
+                      {t("whatsapp.hub.quality")}:
                       <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${qualityBadgeClass(
+                        className={`rounded border px-1.5 py-0 text-[10px] font-bold ${qualityBadgeClass(
                           connection?.qualityRating
                         )}`}
                       >
-                        {t("whatsapp.hub.quality")}: {qualityLabel}
+                        {qualityLabel}
                       </span>
-                    ) : null}
-                    {limitLabel ? (
-                      <span className="inline-flex items-center rounded-full border border-sky-100 bg-sky-50 px-2.5 py-0.5 text-[11px] font-bold text-sky-800">
-                        {t("whatsapp.hub.messagingLimit")}: {limitLabel}
+                    </span>
+                  ) : null}
+                  {limitLabel ? (
+                    <span>
+                      {t("whatsapp.hub.messagingLimit")}:{" "}
+                      <span className="text-slate-700">{limitLabel}</span>
+                    </span>
+                  ) : null}
+                  {nameStatusLabel ? (
+                    <span className="inline-flex items-center gap-1">
+                      {t("whatsapp.hub.displayName")}:
+                      <span
+                        className={`rounded border px-1.5 py-0 text-[10px] font-bold ${nameStatusBadgeClass(
+                          connection?.nameStatus
+                        )}`}
+                      >
+                        {nameStatusLabel}
                       </span>
-                    ) : null}
-                  </div>
+                    </span>
+                  ) : null}
+                  <span>
+                    {t("whatsapp.hub.cards.lastSync")}:{" "}
+                    <span className="text-slate-700">
+                      {lastSync || t("whatsapp.hub.neverSynced")}
+                    </span>
+                  </span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                <GuidedDemoSandboxButton
-                  target="whatsapp-demo-send"
-                  className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-900"
+            <div className="flex flex-wrap items-center gap-1.5 lg:justify-end">
+              <GuidedDemoSandboxButton
+                target="whatsapp-demo-send"
+                className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-black text-amber-900"
+              >
+                {t("whatsapp.shell.demoSend", "Demo")}
+              </GuidedDemoSandboxButton>
+              {isConnected ? (
+                <NavLink
+                  to="connection"
+                  className={`${btnSecondary} !px-2.5 !py-1.5 text-[11px]`}
                 >
-                  {t(
-                    "whatsapp.shell.demoSend",
-                    "Send a demo message — not sent to a real customer"
-                  )}
-                </GuidedDemoSandboxButton>
-                <button
-                  type="button"
-                  className={btnSecondary}
-                  disabled={!businessId || syncing || !connection?.connected}
-                  onClick={() => void syncWithMeta()}
+                  <Settings2 className="h-3.5 w-3.5" />
+                  {t("whatsapp.hub.manageConnection")}
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="connection"
+                  className={`${btnSecondary} !px-2.5 !py-1.5 text-[11px]`}
                 >
-                  {syncing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4" />
-                  )}
-                  {t("whatsapp.hub.syncWithMeta")}
-                </button>
-              </div>
+                  <PlugZap className="h-3.5 w-3.5" />
+                  {t("whatsapp.hub.connectCta")}
+                </NavLink>
+              )}
+              <button
+                type="button"
+                className={`${btnSecondary} !px-2.5 !py-1.5 text-[11px]`}
+                disabled={!businessId || syncing || !isConnected}
+                onClick={() => void syncWithMeta()}
+              >
+                {syncing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3.5 w-3.5" />
+                )}
+                {t("whatsapp.hub.syncWithMeta")}
+              </button>
             </div>
           </div>
 
-          <nav
-            aria-label={t("whatsapp.hub.title")}
-            className="px-2 sm:px-3"
-          >
-            <div
-              className={[
-                "flex items-stretch gap-0.5 overflow-x-auto",
-                "[scrollbar-width:none] [-ms-overflow-style:none]",
-                "[&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:bg-transparent",
-              ].join(" ")}
-            >
-              {tabs.map((tab) => {
+          <nav aria-label={t("whatsapp.hub.title")} className="px-1.5 sm:px-2">
+            <div className="flex flex-wrap items-stretch gap-0.5">
+              {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
+                const active =
+                  tab.path === "messages"
+                    ? topSegment === "messages"
+                    : topSegment === tab.path;
                 return (
                   <NavLink
                     key={tab.path}
                     to={tab.path}
-                    className={({ isActive }) =>
-                      [
-                        "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",
-                        "focus:outline-none focus-visible:bg-emerald-50",
-                        isActive
-                          ? "text-emerald-700"
-                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-                      ].join(" ")
-                    }
+                    className={[
+                      "group relative flex shrink-0 items-center gap-1.5 px-2.5 py-2.5 text-[13px] font-bold transition-colors",
+                      active
+                        ? "text-emerald-700"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
+                    ].join(" ")}
                   >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          className={[
-                            "h-4 w-4 shrink-0",
-                            isActive
-                              ? "text-emerald-600"
-                              : "text-slate-400 group-hover:text-slate-600",
-                          ].join(" ")}
-                        />
-                        <span className="whitespace-nowrap">
-                          {t(tab.labelKey)}
-                        </span>
-                        <span
-                          className={[
-                            "absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-opacity",
-                            isActive
-                              ? "bg-emerald-500 opacity-100"
-                              : "opacity-0",
-                          ].join(" ")}
-                        />
-                      </>
-                    )}
+                    <Icon
+                      className={[
+                        "h-3.5 w-3.5 shrink-0",
+                        active ? "text-emerald-600" : "text-slate-400",
+                      ].join(" ")}
+                    />
+                    <span className="whitespace-nowrap">{t(tab.labelKey)}</span>
+                    <span
+                      className={[
+                        "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
+                        active ? "bg-emerald-500 opacity-100" : "opacity-0",
+                      ].join(" ")}
+                    />
                   </NavLink>
                 );
               })}

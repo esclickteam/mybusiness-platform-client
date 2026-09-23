@@ -166,6 +166,9 @@ const WhatsAppDevelopersTab = lazy(() =>
 const WhatsAppBillingTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppBillingTab")
 );
+const WhatsAppMessagesLayout = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppMessagesLayout")
+);
 
 /* Meta Ads campaign management */
 const MetaCampaignsMain = lazy(() =>
@@ -551,16 +554,21 @@ const BusinessDashboardRoutes = () => {
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<WhatsAppOverviewTab />} />
             <Route path="profile" element={<WhatsAppProfileTab />} />
-            <Route path="compose" element={<WhatsAppComposeTab />} />
             <Route path="templates" element={<WhatsAppTemplatesTab />} />
-            <Route path="lists" element={<WhatsAppListsTab />} />
+            <Route path="messages" element={<WhatsAppMessagesLayout />}>
+              <Route index element={<Navigate to="compose" replace />} />
+              <Route path="compose" element={<WhatsAppComposeTab />} />
+              <Route path="lists" element={<WhatsAppListsTab />} />
+              <Route path="history" element={<WhatsAppHistoryTab />} />
+            </Route>
             <Route path="inbox" element={<WhatsAppInboxTab />} />
-            <Route path="history" element={<WhatsAppHistoryTab />} />
             <Route path="insights" element={<WhatsAppInsightsTab />} />
             <Route path="developers" element={<WhatsAppDevelopersTab />} />
             <Route path="billing" element={<WhatsAppBillingTab />} />
             <Route path="connection" element={<WhatsAppSettingsTab />} />
-            {/* Legacy redirects handled in WhatsAppMain */}
+            <Route path="compose" element={<Navigate to="../messages/compose" replace />} />
+            <Route path="lists" element={<Navigate to="../messages/lists" replace />} />
+            <Route path="history" element={<Navigate to="../messages/history" replace />} />
             <Route path="automations" element={<Navigate to="../overview" replace />} />
             <Route path="health" element={<Navigate to="../insights" replace />} />
             <Route path="settings" element={<Navigate to="../connection" replace />} />

@@ -19,7 +19,8 @@ describe("whatsapp hubFormat", () => {
   });
 
   it("formats messaging limits", () => {
-    expect(formatMessagingLimit("TIER_10K")).toMatch(/10/);
+    expect(formatMessagingLimit("TIER_10K")).toBe("\u200E10,000 / 24h");
+    expect(formatMessagingLimit("TIER_1000")).toBe("\u200E1,000 / 24h");
     expect(formatMessagingLimit("UNLIMITED")).toBe("Unlimited");
   });
 
