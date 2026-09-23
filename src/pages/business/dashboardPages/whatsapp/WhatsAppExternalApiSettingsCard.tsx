@@ -283,14 +283,16 @@ export default function WhatsAppExternalApiSettingsCard({
     ? revealedSecret
     : settings?.webhook?.maskedSecret ||
       t("whatsapp.settings.apiSettingsNoSecret");
-  const apiBaseUrl = settings?.apiBaseUrl || "https://api.bizuply.com/v1";
-  const docsUrl = (() => {
-    try {
-      return `${new URL(apiBaseUrl, window.location.origin).origin}/api/v1/whatsapp/docs`;
-    } catch {
-      return "/api/v1/whatsapp/docs";
-    }
-  })();
+  const apiBaseUrl = settings?.apiBaseUrl || "https://api.bizuply.com/api/v1/whatsapp";
+  const docsUrl =
+    settings?.docsUrl ||
+    (() => {
+      try {
+        return `${apiBaseUrl.replace(/\/$/, "")}/docs`;
+      } catch {
+        return "https://api.bizuply.com/api/v1/whatsapp/docs";
+      }
+    })();
   const deliverySucceeded = ["delivered", "sent", "success"].includes(
     String(settings?.webhook?.lastDeliveryStatus || "").toLowerCase()
   );
