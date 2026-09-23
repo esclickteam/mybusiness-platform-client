@@ -62,6 +62,7 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import WhatsAppExternalApiSettingsCard from "./WhatsAppExternalApiSettingsCard";
 
 type OutletCtx = { businessId: string | null };
 
@@ -1325,6 +1326,13 @@ export default function WhatsAppSettingsTab() {
                   </button>
                 </div>
               </div>
+            ) : null}
+
+            {linked && businessId ? (
+              <WhatsAppExternalApiSettingsCard
+                businessId={businessId}
+                linked={linked}
+              />
             ) : null}
 
             {linked ? (
