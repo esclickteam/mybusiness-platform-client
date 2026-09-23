@@ -53,6 +53,7 @@ export type WhatsAppConnection = {
   readyToSend?: boolean;
   integrationId?: string;
   lastTemplatesSyncAt?: string | null;
+  lastMetaSyncAt?: string | null;
   readiness?: WhatsAppReadiness;
   readinessLabel?: string;
   registrationStatus?: WhatsAppRegistrationStatus;
@@ -67,6 +68,9 @@ export type WhatsAppConnection = {
   wabaName?: string;
   displayPhoneNumber: string;
   verifiedName: string;
+  nameStatus?: string;
+  qualityRating?: string;
+  messagingLimitTier?: string;
   metaBusinessId?: string;
   connectionSource?: string;
   senderType?: string;
@@ -348,6 +352,7 @@ export type WhatsAppTemplate = {
   metaQualityScore?: string;
   metaStatusLabelHe?: string;
   metaCategory?: string;
+  rejectionReason?: string;
   source?: "local" | "meta";
   lastSyncedAt?: string | null;
   status: "draft" | "active" | "archived";
@@ -1087,7 +1092,87 @@ export async function syncWhatsAppAccountHealth(businessId: string) {
   });
   return data as WhatsAppAccountHealth & {
     templateSync?: { synced: number; totalFromMeta: number };
+    profileSync?: { ok?: boolean; error?: string; code?: string };
   };
+}
+
+export type WhatsAppBusinessProfile = {
+  displayName: string;
+  nameStatus: string;
+  phoneNumber: string;
+  phoneNumberId: string;
+  wabaId: string;
+  about: string;
+  address: string;
+  description: string;
+  email: string;
+  profilePictureUrl: string;
+  websites: string[];
+  vertical: string;
+  syncedAt: string | null;
+  lastMetaSyncAt?: string | null;
+  editableFields: string[];
+  readOnlyFields: string[];
+};
+
+export async function getWhatsAppBusinessProfile(businessId: string) {
+  const { data } = await API.get("/whatsapp/profile", withBusiness(businessId));
+  return data as {
+    success?: boolean;
+    connection: WhatsAppConnection;
+    profile: WhatsAppBusinessProfile;
+  };
+}
+
+export async function syncWhatsAppBusinessProfile(businessId: string) {
+  const { data } = await API.post("/whatsapp/profile/sync", { businessId });
+  return data as {
+    success?: boolean;
+    ok?: boolean;
+    profile: WhatsAppBusinessProfile;
+  };
+}
+
+export async function updateWhatsAppBusinessProfile(
+  businessId: string,
+  payload: Partial<{
+    about: string;
+    address: string;
+    description: string;
+    email: string;
+    vertical: string;
+    websites: string[];
+  }>
+) {
+  const { data } = await API.put("/whatsapp/profile", {
+    businessId,
+    ...payload,
+  });
+  return data as {
+    success?: boolean;
+    ok?: boolean;
+    profile: WhatsAppBusinessProfile;
+  };
+}
+
+export type WhatsAppHubActivityEvent = {
+  id: string;
+  type: string;
+  at: string;
+  title: string;
+  detail?: string;
+  meta?: Record<string, unknown>;
+};
+
+export async function getWhatsAppHubActivity(
+  businessId: string,
+  opts?: { limit?: number }
+) {
+  const { data } = await API.get(
+    "/whatsapp/activity",
+    withBusiness(businessId, { limit: opts?.limit })
+  );
+  return data as { success?: boolean; events: WhatsAppHubActivityEvent[] };
 }
 
 export async function syncWhatsAppTemplates(businessId: string) {

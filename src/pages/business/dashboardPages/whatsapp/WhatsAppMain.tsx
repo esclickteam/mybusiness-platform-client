@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   NavLink,
   Outlet,
@@ -12,23 +12,40 @@ import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   Activity,
+  BarChart3,
+  Code2,
   History,
   Inbox,
   ListChecks,
+  Loader2,
   MessageCircle,
+  RefreshCw,
   Send,
   Settings2,
-  Sparkles,
-  Workflow,
+  UserRound,
+  Wallet,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
-import { reactivateWhatsAppBilling } from "../../../../api/whatsappBillingApi";
+import {
+  getWhatsAppStatus,
+  syncWhatsAppAccountHealth,
+  type WhatsAppConnection,
+} from "../../../../api/whatsappApi";
 import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
-import WhatsAppUsageCard from "./billing/WhatsAppUsageCard";
 import WhatsAppBillingSetupModal from "./billing/WhatsAppBillingSetupModal";
 import WhatsAppCheckoutProcessing from "./billing/WhatsAppCheckoutProcessing";
 import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
+import { btnSecondary } from "../../../../styles/bizuplyUi";
+import {
+  connectionReadyLabel,
+  formatMessagingLimit,
+  formatNameStatus,
+  formatQualityRating,
+  nameStatusBadgeClass,
+  qualityBadgeClass,
+  toneBadgeClass,
+} from "./hubFormat";
 
 type WhatsAppTab = {
   path: string;
@@ -37,15 +54,24 @@ type WhatsAppTab = {
 };
 
 const tabs: WhatsAppTab[] = [
-  { path: "compose", labelKey: "whatsapp.nav.compose", icon: Send },
+  { path: "overview", labelKey: "whatsapp.nav.overview", icon: Activity },
+  { path: "profile", labelKey: "whatsapp.nav.profile", icon: UserRound },
   { path: "templates", labelKey: "whatsapp.nav.templates", icon: MessageCircle },
+  { path: "compose", labelKey: "whatsapp.nav.compose", icon: Send },
   { path: "lists", labelKey: "whatsapp.nav.lists", icon: ListChecks },
-  { path: "automations", labelKey: "whatsapp.nav.automations", icon: Workflow },
   { path: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
   { path: "history", labelKey: "whatsapp.nav.history", icon: History },
-  { path: "health", labelKey: "whatsapp.nav.health", icon: Activity },
-  { path: "settings", labelKey: "whatsapp.nav.settings", icon: Settings2 },
+  { path: "insights", labelKey: "whatsapp.nav.insights", icon: BarChart3 },
+  { path: "developers", labelKey: "whatsapp.nav.developers", icon: Code2 },
+  { path: "billing", labelKey: "whatsapp.nav.billing", icon: Wallet },
+  { path: "connection", labelKey: "whatsapp.nav.connection", icon: Settings2 },
 ];
+
+const LEGACY_TAB_REDIRECT: Record<string, string> = {
+  automations: "overview",
+  health: "insights",
+  settings: "connection",
+};
 
 function readWaBillingFlag(searchParams: URLSearchParams) {
   return (
@@ -54,6 +80,20 @@ function readWaBillingFlag(searchParams: URLSearchParams) {
     null
   );
 }
+
+export type WhatsAppHubOutletContext = {
+  businessId: string | null;
+  connection: WhatsAppConnection | null;
+  connectionLoading: boolean;
+  refreshConnection: () => Promise<void>;
+  syncWithMeta: () => Promise<void>;
+  syncing: boolean;
+  openBillingSetup: (mode: "setup" | "manage") => void;
+  billingUsage: ReturnType<typeof useWhatsAppBilling>["usage"];
+  billingLoading: boolean;
+  billingError: string | null;
+  refreshBilling: () => Promise<void>;
+};
 
 export default function WhatsAppMain() {
   const { t, i18n } = useTranslation();
@@ -72,6 +112,9 @@ export default function WhatsAppMain() {
     "setup"
   );
   const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
+  const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
+  const [connectionLoading, setConnectionLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   const {
     usage: billingUsage,
@@ -83,7 +126,7 @@ export default function WhatsAppMain() {
 
   const currentTab = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
-    return parts[parts.length - 1] || "compose";
+    return parts[parts.length - 1] || "overview";
   }, [location.pathname]);
 
   const isKnownTab = useMemo(
@@ -96,6 +139,13 @@ export default function WhatsAppMain() {
     const pathParts = cleanPath.split("/").filter(Boolean);
     const lastPart = pathParts[pathParts.length - 1];
     const isRoot = lastPart === "whatsapp";
+    const legacyTarget = LEGACY_TAB_REDIRECT[lastPart];
+
+    if (legacyTarget) {
+      const basePath = cleanPath.replace(new RegExp(`/${lastPart}$`), "");
+      navigate(`${basePath}/${legacyTarget}`, { replace: true });
+      return;
+    }
 
     if (!isRoot && isKnownTab) return;
 
@@ -103,7 +153,7 @@ export default function WhatsAppMain() {
       ? cleanPath
       : cleanPath.replace(new RegExp(`/${currentTab}$`), "");
 
-    navigate(`${basePath}/compose`, { replace: true });
+    navigate(`${basePath}/overview`, { replace: true });
   }, [currentTab, isKnownTab, location.pathname, navigate]);
 
   useEffect(() => {
@@ -121,20 +171,72 @@ export default function WhatsAppMain() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams, t]);
 
+  const refreshConnection = useCallback(async () => {
+    if (!businessId) {
+      setConnection(null);
+      setConnectionLoading(false);
+      return;
+    }
+    setConnectionLoading(true);
+    try {
+      const status = await getWhatsAppStatus(businessId);
+      setConnection(status);
+    } catch {
+      setConnection(null);
+    } finally {
+      setConnectionLoading(false);
+    }
+  }, [businessId]);
+
+  useEffect(() => {
+    void refreshConnection();
+  }, [refreshConnection]);
+
+  const syncWithMeta = useCallback(async () => {
+    if (!businessId) return;
+    setSyncing(true);
+    try {
+      const result = await syncWhatsAppAccountHealth(businessId);
+      if (result?.connection) setConnection(result.connection);
+      else await refreshConnection();
+      toast.success(t("whatsapp.hub.syncSuccess"));
+    } catch {
+      toast.error(t("whatsapp.hub.syncError"));
+    } finally {
+      setSyncing(false);
+    }
+  }, [businessId, refreshConnection, t]);
+
   const openSetupModal = (mode: "setup" | "manage") => {
     setSetupModalMode(mode);
     setSetupModalOpen(true);
   };
 
-  const handleReactivate = async () => {
-    if (!businessId) return;
-    try {
-      await reactivateWhatsAppBilling(businessId);
-      toast.success(t("automations.toasts.waReactivated"));
-      await refreshBilling();
-    } catch {
-      toast.error(t("automations.toasts.waReactivateError"));
-    }
+  const ready = connectionReadyLabel(
+    Boolean(connection?.connected),
+    connection?.readyToSend,
+    connection?.readiness
+  );
+  const qualityLabel = formatQualityRating(connection?.qualityRating);
+  const nameStatusLabel = formatNameStatus(connection?.nameStatus);
+  const limitLabel = formatMessagingLimit(connection?.messagingLimitTier);
+  const displayName =
+    connection?.verifiedName ||
+    connection?.wabaName ||
+    t("whatsapp.hub.unnamed");
+
+  const outletContext: WhatsAppHubOutletContext = {
+    businessId,
+    connection,
+    connectionLoading,
+    refreshConnection,
+    syncWithMeta,
+    syncing,
+    openBillingSetup: openSetupModal,
+    billingUsage,
+    billingLoading,
+    billingError,
+    refreshBilling,
   };
 
   return (
@@ -144,48 +246,112 @@ export default function WhatsAppMain() {
     >
       <div className="mx-auto w-full max-w-[1920px]">
         <header className="mb-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden border-b border-slate-100">
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-l from-emerald-50/80 via-sky-50/50 to-violet-50/40"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-l from-emerald-50/70 via-sky-50/40 to-white"
             />
-            <div className="relative flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-              <div className="min-w-0">
-                <p className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t("whatsapp.shell.badge")}
-                </p>
-                <h1 className="mt-1 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-                  {t("whatsapp.shell.title")}
-                </h1>
-                <p className="mt-0.5 max-w-2xl text-sm font-semibold text-slate-500">
-                  {t("whatsapp.shell.subtitle")}
-                </p>
+            <div className="relative flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0 flex items-start gap-3">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-700">
+                  <MessageCircle className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-700">
+                    {t("whatsapp.hub.product")}
+                  </p>
+                  <h1 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+                    {t("whatsapp.hub.title")}
+                  </h1>
+                  <p className="mt-1 truncate text-sm font-semibold text-slate-600" dir="ltr">
+                    {connectionLoading
+                      ? "…"
+                      : connection?.displayPhoneNumber ||
+                        t("whatsapp.hub.noPhone")}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${toneBadgeClass(
+                        connection?.connected ? "ok" : "neutral"
+                      )}`}
+                    >
+                      {connection?.connected
+                        ? t("whatsapp.hub.connected")
+                        : t("whatsapp.hub.disconnected")}
+                    </span>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${toneBadgeClass(
+                        ready.tone
+                      )}`}
+                    >
+                      {ready.tone === "ok"
+                        ? t("whatsapp.hub.ready")
+                        : ready.tone === "neutral"
+                          ? t("whatsapp.hub.disconnected")
+                          : t("whatsapp.hub.issue")}
+                    </span>
+                    {connection?.verifiedName ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-slate-100 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700">
+                        {t("whatsapp.hub.displayName")}: {displayName}
+                        {nameStatusLabel ? (
+                          <span
+                            className={`ms-1 rounded-full border px-1.5 py-0 text-[10px] ${nameStatusBadgeClass(
+                              connection.nameStatus
+                            )}`}
+                          >
+                            {nameStatusLabel}
+                          </span>
+                        ) : null}
+                      </span>
+                    ) : null}
+                    {qualityLabel ? (
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${qualityBadgeClass(
+                          connection?.qualityRating
+                        )}`}
+                      >
+                        {t("whatsapp.hub.quality")}: {qualityLabel}
+                      </span>
+                    ) : null}
+                    {limitLabel ? (
+                      <span className="inline-flex items-center rounded-full border border-sky-100 bg-sky-50 px-2.5 py-0.5 text-[11px] font-bold text-sky-800">
+                        {t("whatsapp.hub.messagingLimit")}: {limitLabel}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                 <GuidedDemoSandboxButton
                   target="whatsapp-demo-send"
-                  className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
+                  className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-900"
                 >
                   {t(
                     "whatsapp.shell.demoSend",
                     "Send a demo message — not sent to a real customer"
                   )}
                 </GuidedDemoSandboxButton>
-                <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
-                  <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="text-xs font-black text-emerald-700">
-                    {t("whatsapp.shell.channel")}
-                  </span>
-                </div>
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  disabled={!businessId || syncing || !connection?.connected}
+                  onClick={() => void syncWithMeta()}
+                >
+                  {syncing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  {t("whatsapp.hub.syncWithMeta")}
+                </button>
               </div>
             </div>
           </div>
 
           <nav
-            aria-label={t("whatsapp.shell.title")}
-            className="border-t border-slate-100 px-2 sm:px-3"
+            aria-label={t("whatsapp.hub.title")}
+            className="px-2 sm:px-3"
           >
             <div
               className={[
@@ -240,21 +406,8 @@ export default function WhatsAppMain() {
           </nav>
         </header>
 
-        {businessId ? (
-          <WhatsAppUsageCard
-            businessId={businessId}
-            usage={billingUsage}
-            loading={billingLoading}
-            error={billingError}
-            onRetry={() => void refreshBilling()}
-            onOpenSetup={() => openSetupModal("setup")}
-            onOpenManage={() => openSetupModal("manage")}
-            onReactivate={() => void handleReactivate()}
-          />
-        ) : null}
-
         <main className="w-full min-w-0">
-          <Outlet context={{ businessId }} />
+          <Outlet context={outletContext} />
         </main>
       </div>
 

@@ -173,12 +173,40 @@ export default function WhatsAppTemplatesTab() {
   const [showForm, setShowForm] = useState(false);
   const [mappingTemplate, setMappingTemplate] =
     useState<WhatsAppTemplate | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const previousMetaStatus = useRef<Record<string, string>>({});
 
   const bodyVariables = useMemo(
     () => extractMetaVariables(form.body),
     [form.body]
   );
+
+  const filteredTemplates = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return templates.filter((tpl) => {
+      const st = String(tpl.metaStatus || "").toUpperCase();
+      if (statusFilter === "approved" && st !== "APPROVED") return false;
+      if (statusFilter === "pending" && st !== "PENDING" && st !== "IN_APPEAL") {
+        return false;
+      }
+      if (statusFilter === "rejected" && st !== "REJECTED") return false;
+      if (
+        statusFilter === "paused" &&
+        st !== "PAUSED" &&
+        st !== "DISABLED"
+      ) {
+        return false;
+      }
+      if (!q) return true;
+      return (
+        tpl.name.toLowerCase().includes(q) ||
+        String(tpl.metaTemplateName || "").toLowerCase().includes(q) ||
+        String(tpl.language || "").toLowerCase().includes(q) ||
+        String(tpl.category || "").toLowerCase().includes(q)
+      );
+    });
+  }, [templates, statusFilter, searchQuery]);
 
   useEffect(() => {
     if (searchParams.get("create") === "1") {
@@ -456,6 +484,40 @@ export default function WhatsAppTemplatesTab() {
         {t("whatsapp.templates.metaOnlyHint")}
       </p>
 
+      <div className="flex flex-wrap items-center gap-2">
+        {(
+          [
+            ["all", t("whatsapp.hub.total")],
+            ["approved", t("whatsapp.hub.approved")],
+            ["pending", t("whatsapp.hub.pending")],
+            ["rejected", t("whatsapp.hub.rejected")],
+            ["paused", "Paused"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={[
+              "rounded-full border px-3 py-1 text-xs font-black transition",
+              statusFilter === key
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+            ].join(" ")}
+            onClick={() => setStatusFilter(key)}
+          >
+            {label}
+          </button>
+        ))}
+        <input
+          className={`${inputBase} ms-auto max-w-xs`}
+          placeholder={t("whatsapp.templates.searchPlaceholder", {
+            defaultValue: "Search templates…",
+          })}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {showForm && !editingId && businessId && (
         <WhatsAppCreateTemplateWizard
           businessId={businessId}
@@ -555,7 +617,7 @@ export default function WhatsAppTemplatesTab() {
       )}
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {templates.map((tpl) => {
+        {filteredTemplates.map((tpl) => {
           const isApproved = tpl.metaStatus === "APPROVED";
           const isPending =
             String(tpl.metaStatus || "").toUpperCase() === "PENDING" ||
@@ -586,7 +648,15 @@ export default function WhatsAppTemplatesTab() {
                     {tpl.source === "meta"
                       ? t("whatsapp.templates.sourceMeta")
                       : t("whatsapp.templates.sourceLocal")}
+                    {(tpl.variables || []).length
+                      ? ` · {{${(tpl.variables || []).length}}}`
+                      : ""}
                   </p>
+                  {tpl.rejectionReason ? (
+                    <p className="mt-1 text-xs font-semibold text-rose-600">
+                      {tpl.rejectionReason}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   {(() => {

@@ -133,6 +133,12 @@ const IntegrationsMain = lazy(() =>
 const WhatsAppMain = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppMain")
 );
+const WhatsAppOverviewTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppOverviewTab")
+);
+const WhatsAppProfileTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppProfileTab")
+);
 const WhatsAppComposeTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppComposeTab")
 );
@@ -141,9 +147,6 @@ const WhatsAppTemplatesTab = lazy(() =>
 );
 const WhatsAppListsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppListsTab")
-);
-const WhatsAppAutomationsTab = lazy(() =>
-  import("./dashboardPages/whatsapp/WhatsAppAutomationsTab")
 );
 const WhatsAppHistoryTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppHistoryTab")
@@ -154,8 +157,14 @@ const WhatsAppInboxTab = lazy(() =>
 const WhatsAppSettingsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
 );
-const WhatsAppHealthTab = lazy(() =>
-  import("./dashboardPages/whatsapp/WhatsAppHealthTab")
+const WhatsAppInsightsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInsightsTab")
+);
+const WhatsAppDevelopersTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppDevelopersTab")
+);
+const WhatsAppBillingTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppBillingTab")
 );
 
 /* Meta Ads campaign management */
@@ -539,16 +548,23 @@ const BusinessDashboardRoutes = () => {
               </FeatureAccessGuard>
             }
           >
-            <Route index element={<Navigate to="compose" replace />} />
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<WhatsAppOverviewTab />} />
+            <Route path="profile" element={<WhatsAppProfileTab />} />
             <Route path="compose" element={<WhatsAppComposeTab />} />
             <Route path="templates" element={<WhatsAppTemplatesTab />} />
             <Route path="lists" element={<WhatsAppListsTab />} />
-            <Route path="automations" element={<WhatsAppAutomationsTab />} />
             <Route path="inbox" element={<WhatsAppInboxTab />} />
             <Route path="history" element={<WhatsAppHistoryTab />} />
-            <Route path="health" element={<WhatsAppHealthTab />} />
-            <Route path="settings" element={<WhatsAppSettingsTab />} />
-            <Route path="*" element={<Navigate to="compose" replace />} />
+            <Route path="insights" element={<WhatsAppInsightsTab />} />
+            <Route path="developers" element={<WhatsAppDevelopersTab />} />
+            <Route path="billing" element={<WhatsAppBillingTab />} />
+            <Route path="connection" element={<WhatsAppSettingsTab />} />
+            {/* Legacy redirects handled in WhatsAppMain */}
+            <Route path="automations" element={<Navigate to="../overview" replace />} />
+            <Route path="health" element={<Navigate to="../insights" replace />} />
+            <Route path="settings" element={<Navigate to="../connection" replace />} />
+            <Route path="*" element={<Navigate to="overview" replace />} />
           </Route>
 
           {/* Meta Ads campaign management — test user only */}
