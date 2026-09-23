@@ -1473,3 +1473,134 @@ export async function sendWhatsAppTest(
   });
   return data;
 }
+
+/* ---- External Bizuply WhatsApp API Settings (360dialog-style) ---- */
+
+export type WhatsAppExternalApiKeySummary = {
+  id: string;
+  name: string;
+  maskedKey: string;
+  keyPrefix: string;
+  scopes: string[];
+  lastUsedAt?: string | null;
+  createdAt?: string | null;
+  status: "active" | "revoked" | "expired" | string;
+};
+
+export type WhatsAppExternalWebhookSettings = {
+  url: string;
+  secretPrefix?: string;
+  maskedSecret?: string;
+  webhookSecret?: string;
+  enabled: boolean;
+  status: string;
+  lastDeliveryAt?: string | null;
+  lastDeliveryStatus?: string;
+  lastDeliveryError?: string;
+  consecutiveFailures?: number;
+  events?: string[];
+};
+
+export type WhatsAppExternalApiSettings = {
+  apiBaseUrl: string;
+  apiKey: WhatsAppExternalApiKeySummary | null;
+  keys: WhatsAppExternalApiKeySummary[];
+  webhook: WhatsAppExternalWebhookSettings;
+  status: string;
+};
+
+export async function getWhatsAppExternalApiSettings(businessId: string) {
+  const { data } = await API.get("/whatsapp/api-settings", {
+    params: { businessId },
+  });
+  return data as WhatsAppExternalApiSettings & { success: boolean };
+}
+
+export async function createWhatsAppExternalApiKey(
+  businessId: string,
+  name = "Default"
+) {
+  const { data } = await API.post("/whatsapp/api-settings/api-keys", {
+    businessId,
+    name,
+  });
+  return data as {
+    success: boolean;
+    id: string;
+    apiKey: string;
+    maskedKey: string;
+    keyPrefix: string;
+    name: string;
+    scopes: string[];
+  };
+}
+
+export async function regenerateWhatsAppExternalApiKey(
+  businessId: string,
+  apiKeyId?: string
+) {
+  const { data } = await API.post(
+    "/whatsapp/api-settings/api-keys/regenerate",
+    { businessId, apiKeyId }
+  );
+  return data as {
+    success: boolean;
+    id: string;
+    apiKey: string;
+    maskedKey: string;
+    keyPrefix: string;
+  };
+}
+
+export async function revokeWhatsAppExternalApiKey(
+  businessId: string,
+  apiKeyId: string
+) {
+  const { data } = await API.post(
+    `/whatsapp/api-settings/api-keys/${apiKeyId}/revoke`,
+    { businessId }
+  );
+  return data;
+}
+
+export async function updateWhatsAppExternalWebhookUrl(
+  businessId: string,
+  url: string
+) {
+  const { data } = await API.put("/whatsapp/api-settings/webhook", {
+    businessId,
+    url,
+  });
+  return data as { success: boolean; webhook: WhatsAppExternalWebhookSettings };
+}
+
+export async function regenerateWhatsAppExternalWebhookSecret(
+  businessId: string
+) {
+  const { data } = await API.post(
+    "/whatsapp/api-settings/webhook/regenerate-secret",
+    { businessId }
+  );
+  return data as { success: boolean; webhook: WhatsAppExternalWebhookSettings };
+}
+
+export async function revealWhatsAppExternalWebhookSecret(businessId: string) {
+  const { data } = await API.post(
+    "/whatsapp/api-settings/webhook/reveal-secret",
+    { businessId }
+  );
+  return data as { success: boolean; webhook: WhatsAppExternalWebhookSettings };
+}
+
+export async function testWhatsAppExternalWebhook(businessId: string) {
+  const { data } = await API.post("/whatsapp/api-settings/webhook/test", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    deliveryId?: string;
+    status?: string;
+    statusCode?: number | null;
+    error?: string;
+  };
+}
