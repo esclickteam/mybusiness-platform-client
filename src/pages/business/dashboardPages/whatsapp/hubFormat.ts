@@ -49,10 +49,20 @@ export function formatMessagingLimit(raw?: string | null): string {
   if (!v) return "";
   const upper = v.toUpperCase();
   if (upper.includes("UNLIMITED") || upper === "TIER_UNLIMITED") return "Unlimited";
-  const match = v.match(/(\d[\d,]*)/);
+  const tierMatch = upper.match(/TIER_(\d+)\s*([KM])?/);
+  if (tierMatch) {
+    let n = Number(tierMatch[1]);
+    if (tierMatch[2] === "K") n *= 1000;
+    if (tierMatch[2] === "M") n *= 1_000_000;
+    return `\u200E${n.toLocaleString()} / 24h`;
+  }
+  const match = upper.match(/(\d[\d,]*)\s*([KM])?/);
   if (match) {
-    const n = match[1].replace(/,/g, "");
-    return `${Number(n).toLocaleString()} / 24h`;
+    let n = Number(match[1].replace(/,/g, ""));
+    if (match[2] === "K") n *= 1000;
+    if (match[2] === "M") n *= 1_000_000;
+    // Keep "10,000 / 24h" LTR so RTL pages don't reverse the slash order.
+    return `\u200E${n.toLocaleString()} / 24h`;
   }
   return v.replace(/^TIER_/, "").replace(/_/g, " ");
 }

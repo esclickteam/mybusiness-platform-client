@@ -121,6 +121,9 @@ const Login = lazy(() => import("./pages/Login"));
 const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
   : null;
+const WhatsAppHubVisualQaPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/dev/WhatsAppHubVisualQaPage"))
+  : null;
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
@@ -821,6 +824,8 @@ export default function App() {
 
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  // Dev-only visual QA pages — no public chrome so screenshots stay clean.
+  const isDevVisualRoute = location.pathname.startsWith("/dev/");
   // Hidden private offers (e.g. /offer/crm) are clean landing pages: no
   // Header, no Footer, no public chrome — reachable only via a direct link.
   const isHiddenOffer = location.pathname.startsWith("/offer/");
@@ -955,6 +960,7 @@ export default function App() {
       <div className="app-layout" dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
+          !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
           !isStaffRoute &&
@@ -1011,11 +1017,15 @@ export default function App() {
                   >
                     <motion.div
                       key={location.pathname}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={
+                        isDevVisualRoute ? false : { opacity: 0, y: 10 }
+                      }
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      exit={
+                        isDevVisualRoute ? undefined : { opacity: 0, y: -10 }
+                      }
                       transition={{
-                        duration: 0.35,
+                        duration: isDevVisualRoute ? 0 : 0.35,
                         ease: "easeInOut",
                       }}
                     >
@@ -1144,6 +1154,12 @@ export default function App() {
                           <Route
                             path="/dev/ai-automation-templates-visual"
                             element={<AiAutomationTemplatesVisualPage />}
+                          />
+                        ) : null}
+                        {import.meta.env.DEV && WhatsAppHubVisualQaPage ? (
+                          <Route
+                            path="/dev/whatsapp-hub-qa"
+                            element={<WhatsAppHubVisualQaPage />}
                           />
                         ) : null}
                         <Route
@@ -1704,6 +1720,7 @@ export default function App() {
         {!isDashboardRoute &&
           !isPublicBusinessProfile &&
           !isEarlyAccessLanding &&
+          !isDevVisualRoute &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
@@ -1714,7 +1731,7 @@ export default function App() {
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
+      {!user && !isEarlyAccessLanding && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
         <PreLoginBot />
       )}
 
@@ -1725,6 +1742,7 @@ export default function App() {
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
+        !isDevVisualRoute &&
         !isBusinessChatRoute &&
         !isHiddenOffer &&
         !isAdminRoute &&
@@ -1743,6 +1761,7 @@ export default function App() {
       {!isDashboardRoute &&
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
+        !isDevVisualRoute &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPublicPartnerDeal &&
