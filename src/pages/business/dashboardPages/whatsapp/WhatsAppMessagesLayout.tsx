@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { NavLink, Outlet, useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { History, ListChecks, Send } from "lucide-react";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { cardBase } from "../../../../styles/bizuplyUi";
 import type { WhatsAppHubOutletContext } from "./WhatsAppMain";
+import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
 
 const SUB_TABS = [
   { path: "compose", labelKey: "whatsapp.nav.compose", icon: Send },
@@ -55,7 +56,9 @@ export default function WhatsAppMessagesLayout() {
           </nav>
         </div>
         <div className="p-3 sm:p-4">
-          <Outlet context={ctx} />
+          <Suspense fallback={<WhatsAppTabSuspenseFallback />}>
+            <Outlet context={ctx} />
+          </Suspense>
         </div>
       </div>
     </div>
