@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   NavLink,
   Outlet,
@@ -45,34 +52,49 @@ import {
   qualityBadgeClass,
   toneBadgeClass,
 } from "./hubFormat";
+import {
+  pathSegmentsAfterWhatsapp,
+  resolveWhatsAppHubRedirect,
+  whatsappBasePath,
+} from "./hubNavigation";
+import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 
 type WhatsAppTab = {
   path: string;
+  /** Where the tab NavLink should navigate (may differ from path for nested defaults). */
+  to: string;
   labelKey: string;
   icon: React.ElementType;
   end?: boolean;
 };
 
 const MAIN_TABS: WhatsAppTab[] = [
-  { path: "overview", labelKey: "whatsapp.nav.overview", icon: Activity },
-  { path: "profile", labelKey: "whatsapp.nav.profile", icon: UserRound },
-  { path: "templates", labelKey: "whatsapp.nav.templates", icon: MessageCircle },
-  { path: "messages", labelKey: "whatsapp.nav.messages", icon: MessagesSquare },
-  { path: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
-  { path: "insights", labelKey: "whatsapp.nav.insights", icon: BarChart3 },
-  { path: "developers", labelKey: "whatsapp.nav.developers", icon: Code2 },
-  { path: "billing", labelKey: "whatsapp.nav.billing", icon: Wallet },
+  { path: "overview", to: "overview", labelKey: "whatsapp.nav.overview", icon: Activity },
+  { path: "profile", to: "profile", labelKey: "whatsapp.nav.profile", icon: UserRound },
+  {
+    path: "templates",
+    to: "templates",
+    labelKey: "whatsapp.nav.templates",
+    icon: MessageCircle,
+  },
+  // Link straight to the default child so we skip /messages → /messages/compose hop.
+  {
+    path: "messages",
+    to: "messages/compose",
+    labelKey: "whatsapp.nav.messages",
+    icon: MessagesSquare,
+  },
+  { path: "inbox", to: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
+  { path: "insights", to: "insights", labelKey: "whatsapp.nav.insights", icon: BarChart3 },
+  {
+    path: "developers",
+    to: "developers",
+    labelKey: "whatsapp.nav.developers",
+    icon: Code2,
+  },
+  { path: "billing", to: "billing", labelKey: "whatsapp.nav.billing", icon: Wallet },
 ];
-
-const LEGACY_TAB_REDIRECT: Record<string, string> = {
-  automations: "overview",
-  health: "insights",
-  settings: "connection",
-  compose: "messages/compose",
-  lists: "messages/lists",
-  history: "messages/history",
-};
 
 function readWaBillingFlag(searchParams: URLSearchParams) {
   return (
@@ -129,14 +151,14 @@ export default function WhatsAppMain() {
     setUsage: setBillingUsage,
   } = useWhatsAppBilling(businessId);
 
-  const pathAfterWhatsapp = useMemo(() => {
-    const parts = location.pathname.split("/").filter(Boolean);
-    const idx = parts.lastIndexOf("whatsapp");
-    return parts.slice(idx + 1);
-  }, [location.pathname]);
+  const pathAfterWhatsapp = useMemo(
+    () => pathSegmentsAfterWhatsapp(location.pathname),
+    [location.pathname]
+  );
 
   const topSegment = pathAfterWhatsapp[0] || "overview";
   const isConnected = Boolean(connection?.connected);
+  const hasLoadedConnectionRef = useRef(Boolean(visualQa?.connection));
 
   const visibleTabs = useMemo(() => {
     if (connectionLoading) return MAIN_TABS;
@@ -145,6 +167,7 @@ export default function WhatsAppMain() {
         ...MAIN_TABS,
         {
           path: "connection",
+          to: "connection",
           labelKey: "whatsapp.nav.connection",
           icon: Settings2,
         },
@@ -154,43 +177,19 @@ export default function WhatsAppMain() {
   }, [connectionLoading, isConnected]);
 
   useEffect(() => {
-    const cleanPath = location.pathname.replace(/\/+$/, "");
-    const pathParts = cleanPath.split("/").filter(Boolean);
-    const lastPart = pathParts[pathParts.length - 1];
-    const isRoot = lastPart === "whatsapp";
-    const legacyTarget = LEGACY_TAB_REDIRECT[lastPart];
-
-    if (legacyTarget) {
-      const basePath = cleanPath.replace(new RegExp(`/${lastPart}$`), "");
-      navigate(`${basePath}/${legacyTarget}`, { replace: true });
-      return;
+    const target = resolveWhatsAppHubRedirect(location.pathname);
+    if (target && target !== location.pathname.replace(/\/+$/, "")) {
+      navigate(target, { replace: true });
     }
-
-    if (isRoot) {
-      navigate(`${cleanPath}/overview`, { replace: true });
-      return;
-    }
-
-    const known =
-      visibleTabs.some((tab) => tab.path === topSegment) ||
-      topSegment === "connection" ||
-      topSegment === "messages";
-
-    if (!known) {
-      const waIdx = pathParts.lastIndexOf("whatsapp");
-      const base = "/" + pathParts.slice(0, waIdx + 1).join("/");
-      navigate(`${base}/overview`, { replace: true });
-    }
-  }, [location.pathname, navigate, topSegment, visibleTabs]);
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     if (visualQa) return;
     if (connectionLoading) return;
     if (!isConnected && topSegment !== "connection") {
-      const parts = location.pathname.split("/").filter(Boolean);
-      const waIdx = parts.lastIndexOf("whatsapp");
-      const base = "/" + parts.slice(0, waIdx + 1).join("/");
-      navigate(`${base}/connection`, { replace: true });
+      navigate(`${whatsappBasePath(location.pathname)}/connection`, {
+        replace: true,
+      });
     }
   }, [
     visualQa,
@@ -220,6 +219,7 @@ export default function WhatsAppMain() {
     if (visualQa?.connection) {
       setConnection(visualQa.connection);
       setConnectionLoading(false);
+      hasLoadedConnectionRef.current = true;
       return;
     }
     if (!businessId) {
@@ -227,12 +227,16 @@ export default function WhatsAppMain() {
       setConnectionLoading(false);
       return;
     }
-    setConnectionLoading(true);
+    // Keep hub chrome mounted with existing data; only skeleton on first load.
+    if (!hasLoadedConnectionRef.current) {
+      setConnectionLoading(true);
+    }
     try {
       const status = await getWhatsAppStatus(businessId);
       setConnection(status);
+      hasLoadedConnectionRef.current = true;
     } catch {
-      setConnection(null);
+      if (!hasLoadedConnectionRef.current) setConnection(null);
     } finally {
       setConnectionLoading(false);
     }
@@ -257,10 +261,10 @@ export default function WhatsAppMain() {
     }
   }, [businessId, refreshConnection, t]);
 
-  const openSetupModal = (mode: "setup" | "manage") => {
+  const openSetupModal = useCallback((mode: "setup" | "manage") => {
     setSetupModalMode(mode);
     setSetupModalOpen(true);
-  };
+  }, []);
 
   const ready = connectionReadyLabel(
     Boolean(connection?.connected),
@@ -277,20 +281,36 @@ export default function WhatsAppMain() {
   const lastSync = connection?.lastMetaSyncAt
     ? new Date(connection.lastMetaSyncAt).toLocaleString(locale)
     : null;
+  const showConnectionPlaceholder = connectionLoading && !connection;
 
-  const outletContext: WhatsAppHubOutletContext = {
-    businessId,
-    connection,
-    connectionLoading,
-    refreshConnection,
-    syncWithMeta,
-    syncing,
-    openBillingSetup: openSetupModal,
-    billingUsage,
-    billingLoading,
-    billingError,
-    refreshBilling,
-  };
+  const outletContext = useMemo<WhatsAppHubOutletContext>(
+    () => ({
+      businessId,
+      connection,
+      connectionLoading,
+      refreshConnection,
+      syncWithMeta,
+      syncing,
+      openBillingSetup: openSetupModal,
+      billingUsage,
+      billingLoading,
+      billingError,
+      refreshBilling,
+    }),
+    [
+      businessId,
+      connection,
+      connectionLoading,
+      refreshConnection,
+      syncWithMeta,
+      syncing,
+      openSetupModal,
+      billingUsage,
+      billingLoading,
+      billingError,
+      refreshBilling,
+    ]
+  );
 
   return (
     <section
@@ -307,13 +327,13 @@ export default function WhatsAppMain() {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <h1 className="truncate text-base font-black tracking-tight text-slate-900 sm:text-lg">
-                    {connectionLoading ? "…" : displayName}
+                    {showConnectionPlaceholder ? "…" : displayName}
                   </h1>
                   <span
                     className="truncate text-sm font-semibold text-slate-500"
                     dir="ltr"
                   >
-                    {connectionLoading
+                    {showConnectionPlaceholder
                       ? ""
                       : connection?.displayPhoneNumber ||
                         t("whatsapp.hub.noPhone")}
@@ -431,7 +451,7 @@ export default function WhatsAppMain() {
                 return (
                   <NavLink
                     key={tab.path}
-                    to={tab.path}
+                    to={tab.to}
                     className={[
                       "group relative flex shrink-0 items-center gap-1.5 px-2.5 py-2.5 text-[13px] font-bold transition-colors",
                       active
@@ -460,7 +480,10 @@ export default function WhatsAppMain() {
         </header>
 
         <main className="w-full min-w-0">
-          <Outlet context={outletContext} />
+          {/* Nested Suspense keeps hub chrome mounted while lazy tab chunks load. */}
+          <Suspense fallback={<WhatsAppTabSuspenseFallback />}>
+            <Outlet context={outletContext} />
+          </Suspense>
         </main>
       </div>
 

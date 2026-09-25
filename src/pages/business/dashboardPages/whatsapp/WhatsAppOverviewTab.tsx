@@ -161,7 +161,7 @@ export default function WhatsAppOverviewTab() {
       health?.connection?.messagingLimitTier
   );
 
-  const busy = connectionLoading || loading;
+  const busy = (connectionLoading && !connection) || loading;
 
   return (
     <div dir={getTextDirection(i18n.language)} className="space-y-3">
