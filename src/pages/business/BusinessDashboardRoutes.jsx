@@ -663,8 +663,8 @@ const BusinessDashboardRoutes = () => {
               <Navigate
                 to={
                   normalizeEnabledModules(enabledModules)
-                    ? "crm"
-                    : "dashboard"
+                    ? `/business/${businessId}/dashboard/crm`
+                    : `/business/${businessId}/dashboard/dashboard`
                 }
                 replace
               />

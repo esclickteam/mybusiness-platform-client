@@ -186,7 +186,10 @@ export default function WhatsAppMain() {
   useEffect(() => {
     if (visualQa) return;
     if (connectionLoading) return;
-    if (!isConnected && topSegment !== "connection") {
+    // Funds / billing (and developers) must stay reachable without a connected
+    // WABA — prepaid wallet and API keys are independent of Meta connection.
+    const allowWhenDisconnected = new Set(["connection", "billing", "developers"]);
+    if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
       navigate(`${whatsappBasePath(location.pathname)}/connection`, {
         replace: true,
       });

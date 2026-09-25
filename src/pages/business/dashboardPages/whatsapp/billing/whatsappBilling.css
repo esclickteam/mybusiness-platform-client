@@ -372,6 +372,107 @@
   margin-top: 20px;
 }
 
+.wa-billing-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+
+.wa-billing-modal-root .wa-billing-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.wa-billing-modal-root .wa-billing-modal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.wa-billing-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.wa-billing-modal__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.wa-billing-modal__sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.wa-billing-modal__body {
+  margin-top: 8px;
+}
+
+.wa-billing-btn--ghost {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.wa-billing-banner {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.wa-billing-banner--warn {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.wa-billing-banner--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.wa-billing-link {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.wa-billing-card__error {
+  margin: 8px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wa-billing-card__hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
 .wa-billing-spin {
   animation: wa-billing-spin 0.8s linear infinite;
 }
