@@ -76,9 +76,13 @@ export type WhatsAppInboxConnection = {
   connectionCountry?: string;
   connectionFlag?: string;
   businessDisplayPhone?: string;
+  businessPhoneNumber?: string;
   displayPhoneMasked?: string;
   expectedDisplayPhone?: string;
   sendFromLabel?: string;
+  phoneNumberId?: string;
+  phoneNumberLabel?: string;
+  wabaId?: string;
   ready?: boolean;
   sendReady?: boolean;
   enabled?: boolean;

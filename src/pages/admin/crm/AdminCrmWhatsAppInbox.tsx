@@ -50,6 +50,7 @@ export default function AdminCrmWhatsAppInbox() {
   const [unresolvedOnly, setUnresolvedOnly] = useState(false);
   const [query, setQuery] = useState("");
   const [connectionFilter, setConnectionFilter] = useState<ConnectionFilter>("");
+  const [phoneNumberFilter, setPhoneNumberFilter] = useState("");
   const [connections, setConnections] = useState<WhatsAppInboxConnection[]>(
     FALLBACK_INBOX_CONNECTIONS
   );
@@ -64,7 +65,8 @@ export default function AdminCrmWhatsAppInbox() {
     async (
       nextUnresolved = unresolvedOnly,
       q = query,
-      nextConnection: ConnectionFilter = connectionFilter
+      nextConnection: ConnectionFilter = connectionFilter,
+      nextPhoneNumberId = phoneNumberFilter
     ) => {
       setLoading(true);
       setError("");
@@ -77,6 +79,7 @@ export default function AdminCrmWhatsAppInbox() {
           q: q || undefined,
           limit: 500,
           managedConnectionId,
+          phoneNumberId: nextPhoneNumberId || undefined,
         });
         const nextItems = data.items || [];
         setItems(nextItems);
@@ -101,7 +104,7 @@ export default function AdminCrmWhatsAppInbox() {
         setLoading(false);
       }
     },
-    [query, unresolvedOnly, connectionFilter, searchParams]
+    [query, unresolvedOnly, connectionFilter, phoneNumberFilter, searchParams]
   );
 
   React.useEffect(() => {
@@ -122,7 +125,7 @@ export default function AdminCrmWhatsAppInbox() {
   useAdminCrmWhatsAppRealtime({
     onMessage: (payload) => {
       if (!payload.thread?.id) {
-        void load(unresolvedOnly, query, connectionFilter);
+        void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
         return;
       }
       const eventConn = normalizeManagedConnectionId(
@@ -130,6 +133,13 @@ export default function AdminCrmWhatsAppInbox() {
       );
       const filterConn = normalizeManagedConnectionId(connectionFilter);
       if (filterConn && eventConn && filterConn !== eventConn) {
+        return;
+      }
+      if (
+        phoneNumberFilter &&
+        payload.thread.phoneNumberId &&
+        String(payload.thread.phoneNumberId) !== phoneNumberFilter
+      ) {
         return;
       }
       setItems((prev) => {
@@ -174,6 +184,13 @@ export default function AdminCrmWhatsAppInbox() {
       if (filterConn && eventConn && filterConn !== eventConn) {
         return;
       }
+      if (
+        phoneNumberFilter &&
+        payload.thread.phoneNumberId &&
+        String(payload.thread.phoneNumberId) !== phoneNumberFilter
+      ) {
+        return;
+      }
       setItems((prev) => {
         const existing = prev.find(
           (row) => threadRowKey(row) === threadRowKey(payload.thread!)
@@ -200,7 +217,7 @@ export default function AdminCrmWhatsAppInbox() {
       });
     },
     onReconnect: () => {
-      void load(unresolvedOnly, query, connectionFilter);
+      void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
     },
   });
 
@@ -232,8 +249,20 @@ export default function AdminCrmWhatsAppInbox() {
     setConnectionFilter(next);
     setSelected(null);
     setMobileChat(false);
-    void load(unresolvedOnly, query, next);
+    void load(unresolvedOnly, query, next, phoneNumberFilter);
   }
+
+  function selectPhoneNumber(nextPhoneNumberId: string) {
+    setPhoneNumberFilter(nextPhoneNumberId);
+    setSelected(null);
+    setMobileChat(false);
+    void load(unresolvedOnly, query, connectionFilter, nextPhoneNumberId);
+  }
+
+  const phoneNumberOptions = useMemo(
+    () => connections.filter((c) => Boolean(c.phoneNumberId)),
+    [connections]
+  );
 
   const filtered = useMemo(() => items, [items]);
   const selectedKey = selected ? threadRowKey(selected) : "";
@@ -300,13 +329,36 @@ export default function AdminCrmWhatsAppInbox() {
                 );
               })}
             </div>
+            {phoneNumberOptions.length ? (
+              <label className="mb-2 block text-[10px] font-bold text-[#667781]" dir="ltr">
+                WhatsApp number
+                <select
+                  className="mt-1 min-h-9 w-full rounded-lg border-none bg-white px-2 text-[12px] font-bold text-[#111b21] outline-none"
+                  value={phoneNumberFilter}
+                  onChange={(e) => selectPhoneNumber(e.target.value)}
+                >
+                  <option value="">All numbers</option>
+                  {phoneNumberOptions.map((opt) => (
+                    <option key={opt.phoneNumberId} value={opt.phoneNumberId || ""}>
+                      {opt.phoneNumberLabel ||
+                        `${connectionBadgeLabel(opt)} ${
+                          opt.businessPhoneNumber ||
+                          opt.businessDisplayPhone ||
+                          opt.phoneNumberId
+                        }`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <input
               className="min-h-10 w-full rounded-lg border-none bg-white px-3 text-sm outline-none"
               placeholder="חיפוש או מספר טלפון"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") void load(unresolvedOnly, query, connectionFilter);
+                if (e.key === "Enter")
+                  void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
               }}
             />
             <div className="mt-2 flex gap-2">
@@ -315,14 +367,16 @@ export default function AdminCrmWhatsAppInbox() {
                 onClick={() => {
                   const next = !unresolvedOnly;
                   setUnresolvedOnly(next);
-                  void load(next, query, connectionFilter);
+                  void load(next, query, connectionFilter, phoneNumberFilter);
                 }}
               >
                 {unresolvedOnly ? "כל השיחות" : "לא משויכות"}
               </SecondaryButton>
               <SecondaryButton
                 className="!min-h-9 !rounded-lg !px-3 !text-xs"
-                onClick={() => void load(unresolvedOnly, query, connectionFilter)}
+                onClick={() =>
+                  void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter)
+                }
               >
                 חיפוש
               </SecondaryButton>
