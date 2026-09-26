@@ -6,6 +6,9 @@ import {
   isOutboundSupportBubble,
   splitMessageSegments,
   supportConnectionBadge,
+  supportConversationViaLabel,
+  supportSendingFromLabel,
+  supportSentViaLabel,
 } from "./adminSupportChatDisplay";
 
 describe("admin support chat display", () => {
@@ -54,6 +57,27 @@ describe("admin support chat display", () => {
         connectionCountry: "IL",
       })
     ).toBe("IL");
+  });
+
+  it("builds Bizuply US/IL conversation and send labels from managedConnectionId", () => {
+    expect(
+      supportConversationViaLabel({
+        managedConnectionId: "US_MANAGED",
+        businessDisplayPhone: "+1 210 944 4809",
+      })
+    ).toBe("Bizuply US · +1 210 944 4809 · US_MANAGED");
+    expect(
+      supportSendingFromLabel({
+        managedConnectionId: "IL_MANAGED",
+        businessDisplayPhone: "+972 51-557-3699",
+      })
+    ).toBe("Bizuply IL (+972 51-557-3699)");
+    expect(
+      supportSentViaLabel(
+        { metadata: { managedConnectionId: "US_MANAGED", businessDisplayPhone: "+1 210 944 4809" } },
+        { managedConnectionId: "IL_MANAGED", businessDisplayPhone: "+972 51-557-3699" }
+      )
+    ).toBe("Sent via US_MANAGED · +1 210 944 4809");
   });
 
   it("filters US connection to WhatsApp US only (hides web/bot)", () => {

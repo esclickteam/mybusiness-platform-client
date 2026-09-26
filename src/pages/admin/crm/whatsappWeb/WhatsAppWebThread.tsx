@@ -13,10 +13,12 @@ import {
   applyStatusPatch,
   buildMessageFeed,
   connectionBadgeLabel,
+  conversationViaDetailLabel,
   formatClock,
   inboundEventMatches,
   mergeMessages,
   normalizeManagedConnectionId,
+  outboundSentViaLabel,
   sendFromPhoneLabel,
   type PublicWhatsAppMessage,
   type PublicWhatsAppThread,
@@ -238,6 +240,7 @@ export default function WhatsAppWebThread({
     (data?.thread as ThreadConnectionMeta | undefined) ||
     null;
   const conversationViaLabel =
+    conversationViaDetailLabel(headerConnection) ||
     headerConnection?.connectionLabel ||
     headerConnection?.sendFromLabel ||
     connectionBadgeLabel(headerConnection) ||
@@ -719,22 +722,13 @@ export default function WhatsAppWebThread({
             {matchPhone || ""}
             {sessionOpen ? " · חלון 24 שעות פתוח" : " · נדרשת תבנית"}
           </p>
-          {conversationViaLabel || headerConnection?.businessDisplayPhone ? (
-            <p className="mt-0.5 truncate text-[11px] font-bold text-[#54656f]" dir="ltr">
-              Conversation via{" "}
-              {headerConnection?.connectionFlag
-                ? `${headerConnection.connectionFlag} `
-                : ""}
-              {conversationViaLabel}
-              {headerConnection?.businessDisplayPhone
-                ? ` · ${headerConnection.businessDisplayPhone}`
-                : ""}
-              {headerConnection?.managedConnectionId
-                ? ` · ${headerConnection.managedConnectionId}`
-                : ""}
-              {headerConnection?.connectionCountry
-                ? ` · ${headerConnection.connectionCountry}`
-                : ""}
+          {conversationViaLabel ? (
+            <p
+              className="mt-0.5 truncate text-[11px] font-bold text-[#54656f]"
+              dir="ltr"
+              data-testid="whatsapp-conversation-via"
+            >
+              Conversation via: {conversationViaLabel}
             </p>
           ) : null}
           {data?.bizuplyManaged?.conversation?.active ? (
@@ -800,6 +794,9 @@ export default function WhatsAppWebThread({
             }
             const outbound = item.message.direction !== "inbound";
             const receivedOn = !outbound ? inboundReceivedOnLabel(item.message) : "";
+            const sentVia = outbound
+              ? outboundSentViaLabel(item.message, headerConnection)
+              : "";
             return (
               <div
                 key={item.key}
@@ -825,6 +822,15 @@ export default function WhatsAppWebThread({
                   {receivedOn ? (
                     <p className="mt-1 text-[11px] font-bold text-[#667781]">
                       Received on: {receivedOn}
+                    </p>
+                  ) : null}
+                  {sentVia ? (
+                    <p
+                      className="mt-1 text-[10px] font-bold text-[#667781]"
+                      dir="ltr"
+                      data-testid="whatsapp-sent-via"
+                    >
+                      {sentVia}
                     </p>
                   ) : null}
                   {item.message.templateName ? (
@@ -894,7 +900,11 @@ export default function WhatsAppWebThread({
 
         <div className="mb-2 flex flex-wrap items-center gap-2 px-1">
           <span className="text-xs font-bold text-[#667781]">Sending from:</span>
-          <span className="text-xs font-black text-[#111b21]" dir="ltr">
+          <span
+            className="text-xs font-black text-[#111b21]"
+            dir="ltr"
+            data-testid="whatsapp-sending-from"
+          >
             {sendFromLine || effectiveSendFromId || "—"}
           </span>
           {customerId && canSend ? (

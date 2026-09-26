@@ -20,6 +20,9 @@ import {
   isOutboundSupportBubble,
   splitMessageSegments,
   supportConnectionBadge,
+  supportConversationViaLabel,
+  supportSendingFromLabel,
+  supportSentViaLabel,
   type SupportChatMessage,
 } from "./adminSupportChatDisplay";
 
@@ -220,9 +223,11 @@ function ChatMessageBody({
 function ChatBubble({
   msg,
   contactName,
+  conversation,
 }: {
   msg: SupportMessage;
   contactName?: string;
+  conversation?: SupportConversation | null;
 }) {
   if (msg.senderType === "system") {
     return (
@@ -239,6 +244,10 @@ function ChatBubble({
   const status = deliveryStatusLabel(msg.deliveryStatus);
   const failureDetail =
     msg.deliveryStatus === "failed" ? deliveryFailureDetail(msg) : "";
+  const sentVia =
+    mine && conversation?.channel === "whatsapp"
+      ? supportSentViaLabel(msg, conversation)
+      : "";
   return (
     <div
       data-testid={mine ? "support-bubble-outbound" : "support-bubble-inbound"}
@@ -277,6 +286,17 @@ function ChatBubble({
           >
             דמו מודרך
           </Link>
+        ) : null}
+        {sentVia ? (
+          <p
+            className={`mt-1 text-[10px] font-bold ${
+              mine ? "text-white/85" : "text-slate-500"
+            }`}
+            dir="ltr"
+            data-testid="support-sent-via"
+          >
+            {sentVia}
+          </p>
         ) : null}
         <p className="mt-1.5 text-[10px] font-semibold opacity-70">
           {formatTime(msg.createdAt)}
@@ -1103,6 +1123,16 @@ export default function AdminSupportChat() {
                           {statusLabel(selected.status)}
                         </span>
                       </p>
+                      {selected.channel === "whatsapp" &&
+                      supportConversationViaLabel(selected) ? (
+                        <p
+                          className="mt-1 truncate text-[11px] font-bold text-slate-600"
+                          dir="ltr"
+                          data-testid="support-conversation-via"
+                        >
+                          Conversation via: {supportConversationViaLabel(selected)}
+                        </p>
+                      ) : null}
                       {(selected.sourceLeadId || selected.sourceCustomerId) && (
                         <p className="mt-1 flex flex-wrap gap-2 text-[11px] font-bold">
                           {selected.sourceLeadId ? (
@@ -1287,6 +1317,7 @@ export default function AdminSupportChat() {
                             key={msg._id}
                             msg={msg}
                             contactName={selected.name}
+                            conversation={selected}
                           />
                         ))
                       )}
@@ -1305,6 +1336,7 @@ export default function AdminSupportChat() {
                             key={msg._id}
                             msg={msg}
                             contactName={selected.name}
+                            conversation={selected}
                           />
                         ))
                       )}
@@ -1315,6 +1347,16 @@ export default function AdminSupportChat() {
 
                 {!historyPreviewId && (
                   <footer className="sticky bottom-0 z-10 border-t border-slate-100 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                    {selected.channel === "whatsapp" &&
+                    supportSendingFromLabel(selected) ? (
+                      <p
+                        className="mb-2 px-1 text-[11px] font-bold text-slate-600"
+                        dir="ltr"
+                        data-testid="support-sending-from"
+                      >
+                        Sending from: {supportSendingFromLabel(selected)}
+                      </p>
+                    ) : null}
                     <div className="flex items-end gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
                       <textarea
                         data-testid="support-chat-composer"

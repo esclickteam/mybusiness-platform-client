@@ -30,6 +30,10 @@ export type PublicWhatsAppMessage = {
   /** Temporary client-only preview while upload/send is in flight */
   localPreviewUrl?: string;
   managedConnectionId?: string;
+  businessDisplayPhone?: string;
+  businessPhoneNumber?: string;
+  phoneNumberId?: string;
+  wabaId?: string;
   receivedOnLabel?: string;
   sendFromLabel?: string;
 };
@@ -174,19 +178,76 @@ export function sendFromPhoneLabel(
     managedConnectionId?: string | null;
   } | null
 ) {
-  const flag = String(meta?.connectionFlag || "").trim();
+  const id = normalizeManagedConnectionId(meta?.managedConnectionId);
+  const brand =
+    id === "US_MANAGED"
+      ? "Bizuply US"
+      : id === "IL_MANAGED"
+        ? "Bizuply IL"
+        : id.endsWith("_MANAGED")
+          ? `Bizuply ${id.replace(/_MANAGED$/, "")}`
+          : String(meta?.connectionLabel || meta?.sendFromLabel || "").trim();
   const phone = String(
     meta?.businessDisplayPhone ||
       meta?.displayPhoneMasked ||
       meta?.expectedDisplayPhone ||
       ""
   ).trim();
-  if (phone) return `${flag} ${phone}`.trim();
+  if (brand && phone) return `${brand} (${phone})`;
+  if (brand) return brand;
   if (meta?.sendFromLabel) return String(meta.sendFromLabel).trim();
-  const label = String(meta?.connectionLabel || "").trim();
-  if (label) return `${flag} ${label}`.trim();
-  const badge = connectionBadgeLabel(meta);
-  return `${flag} ${badge}`.trim();
+  const flag = String(meta?.connectionFlag || "").trim();
+  if (phone) return `${flag} ${phone}`.trim();
+  return id || "";
+}
+
+/** Conversation via: Bizuply US · +1 … · US_MANAGED */
+export function conversationViaDetailLabel(
+  meta?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+    connectionLabel?: string | null;
+    connectionFlag?: string | null;
+    sendFromLabel?: string | null;
+  } | null
+) {
+  const id = normalizeManagedConnectionId(meta?.managedConnectionId);
+  if (!id) return "";
+  const brand =
+    id === "US_MANAGED"
+      ? "Bizuply US"
+      : id === "IL_MANAGED"
+        ? "Bizuply IL"
+        : String(meta?.connectionLabel || meta?.sendFromLabel || "").trim() ||
+          id;
+  const phone = String(meta?.businessDisplayPhone || "").trim();
+  const flag = String(meta?.connectionFlag || "").trim();
+  return [flag, brand, phone, id].filter(Boolean).join(" · ");
+}
+
+/** Sent via US_MANAGED · +1 … for outbound bubbles */
+export function outboundSentViaLabel(
+  message?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+    businessPhoneNumber?: string | null;
+  } | null,
+  threadFallback?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+  } | null
+) {
+  const id =
+    normalizeManagedConnectionId(message?.managedConnectionId) ||
+    normalizeManagedConnectionId(threadFallback?.managedConnectionId);
+  if (!id) return "";
+  const phone = String(
+    message?.businessPhoneNumber ||
+      message?.businessDisplayPhone ||
+      threadFallback?.businessDisplayPhone ||
+      ""
+  ).trim();
+  return phone ? `Sent via ${id} · ${phone}` : `Sent via ${id}`;
 }
 
 export function threadRowKey(
