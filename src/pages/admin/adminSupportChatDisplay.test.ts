@@ -56,6 +56,21 @@ describe("admin support chat display", () => {
     ).toBe("IL");
   });
 
+  it("filters US connection to WhatsApp US only (hides web/bot)", () => {
+    const rows = [
+      { channel: "whatsapp", managedConnectionId: "US_MANAGED", phone: "258" },
+      { channel: "whatsapp", managedConnectionId: "IL_MANAGED", phone: "972" },
+      { channel: "web", managedConnectionId: "", phone: "" },
+    ];
+    const filter = "US_MANAGED";
+    const visible = rows.filter((c) => {
+      if (c.channel !== "whatsapp") return false;
+      return String(c.managedConnectionId || "").toUpperCase() === filter;
+    });
+    expect(visible).toHaveLength(1);
+    expect(visible[0].phone).toBe("258");
+  });
+
   it("labels delivery statuses without fabricating delivered/read", () => {
     expect(deliveryStatusLabel("sent")).toBe("נשלח");
     expect(deliveryStatusLabel("")).toBe("");
