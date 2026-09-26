@@ -14,6 +14,7 @@ import { useAuth } from "../../context/AuthContext";
 import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
 import {
+  deliveryFailureDetail,
   deliveryStatusLabel,
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
@@ -229,6 +230,8 @@ function ChatBubble({
 
   const mine = isOutboundSupportBubble(msg);
   const status = deliveryStatusLabel(msg.deliveryStatus);
+  const failureDetail =
+    msg.deliveryStatus === "failed" ? deliveryFailureDetail(msg) : "";
   return (
     <div
       data-testid={mine ? "support-bubble-outbound" : "support-bubble-inbound"}
@@ -272,6 +275,15 @@ function ChatBubble({
           {formatTime(msg.createdAt)}
           {status ? ` · ${status}` : ""}
         </p>
+        {failureDetail ? (
+          <p
+            data-testid="support-bubble-failure-detail"
+            className="mt-1 break-words text-[10px] font-semibold leading-snug opacity-90"
+            title={failureDetail}
+          >
+            {failureDetail}
+          </p>
+        ) : null}
       </div>
     </div>
   );

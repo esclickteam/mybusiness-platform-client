@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  deliveryFailureDetail,
   deliveryStatusLabel,
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
@@ -46,5 +47,24 @@ describe("admin support chat display", () => {
     expect(deliveryStatusLabel("sent")).toBe("נשלח");
     expect(deliveryStatusLabel("")).toBe("");
     expect(deliveryStatusLabel("failed")).toBe("נכשל");
+  });
+
+  it("surfaces Meta failure detail for admins", () => {
+    expect(
+      deliveryFailureDetail({
+        _id: "1",
+        deliveryStatus: "failed",
+        metadata: {
+          error: "Re-engagement message — code 131047 — fbtrace abc",
+        },
+      })
+    ).toContain("Re-engagement message");
+    expect(
+      deliveryFailureDetail({
+        _id: "2",
+        deliveryStatus: "failed",
+        metadata: { graphCode: 131047, fbtraceId: "xyz" },
+      })
+    ).toBe("code 131047 — fbtrace xyz");
   });
 });
