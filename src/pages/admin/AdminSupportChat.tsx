@@ -19,6 +19,7 @@ import {
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
   splitMessageSegments,
+  supportConnectionBadge,
   type SupportChatMessage,
 } from "./adminSupportChatDisplay";
 
@@ -29,6 +30,12 @@ type SupportConversation = {
   email?: string;
   phone?: string;
   channel?: "web" | "whatsapp" | string;
+  managedConnectionId?: string;
+  phoneNumberId?: string;
+  businessDisplayPhone?: string;
+  connectionLabel?: string;
+  connectionCountry?: string;
+  connectionFlag?: string;
   sourceLeadId?: string;
   sourceCustomerId?: string;
   visitorId?: string;
@@ -332,6 +339,9 @@ export default function AdminSupportChat() {
   const [filter, setFilter] = useState<
     "open" | "all" | "waiting" | "active" | "closed"
   >("open");
+  const [connectionFilter, setConnectionFilter] = useState<"" | "IL_MANAGED" | "US_MANAGED">(
+    ""
+  );
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
@@ -841,6 +851,18 @@ export default function AdminSupportChat() {
   }
 
   const waitingCount = conversations.filter((c) => c.status === "waiting").length;
+  const hasWhatsAppConnections = conversations.some(
+    (c) => c.channel === "whatsapp" && c.managedConnectionId
+  );
+  const visibleConversations = useMemo(() => {
+    if (!connectionFilter) return conversations;
+    return conversations.filter((c) => {
+      if (c.channel !== "whatsapp") return true;
+      return (
+        String(c.managedConnectionId || "").toUpperCase() === connectionFilter
+      );
+    });
+  }, [conversations, connectionFilter]);
 
   return (
     <div
@@ -926,18 +948,47 @@ export default function AdminSupportChat() {
                 </button>
               ))}
             </div>
+            {hasWhatsAppConnections ? (
+              <div className="flex flex-wrap gap-1.5 border-b border-slate-100 px-3 py-2" dir="ltr">
+                {(
+                  [
+                    ["", "All WA"],
+                    ["IL_MANAGED", "IL"],
+                    ["US_MANAGED", "US"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <button
+                    key={key || "all-wa"}
+                    type="button"
+                    onClick={() => setConnectionFilter(key)}
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-black transition ${
+                      connectionFilter === key
+                        ? "bg-[#111b21] text-white"
+                        : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
 
             <div className="max-h-[60vh] overflow-y-auto overscroll-contain lg:max-h-[calc(72vh-64px)]">
               {loadingList ? (
                 <p className="p-5 text-sm font-semibold text-slate-500">
                   טוען שיחות...
                 </p>
-              ) : conversations.length === 0 ? (
+              ) : visibleConversations.length === 0 ? (
                 <p className="p-5 text-sm font-semibold text-slate-500">
                   אין שיחות להצגה
                 </p>
               ) : (
-                conversations.map((c) => (
+                visibleConversations.map((c) => {
+                  const waBadge =
+                    c.channel === "whatsapp"
+                      ? supportConnectionBadge(c)
+                      : "";
+                  return (
                   <button
                     key={c._id}
                     type="button"
@@ -960,6 +1011,15 @@ export default function AdminSupportChat() {
                           <div className="min-w-0">
                             <p className="truncate text-sm font-black text-slate-900">
                               {c.name || "אורח"}
+                              {waBadge ? (
+                                <span
+                                  className="ms-1.5 inline-flex align-middle rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-black tracking-wide text-slate-700"
+                                  dir="ltr"
+                                >
+                                  {c.connectionFlag ? `${c.connectionFlag} ` : ""}
+                                  {waBadge}
+                                </span>
+                              ) : null}
                             </p>
                             <p className="truncate text-[11px] font-semibold text-slate-500">
                               {conversationListSubtitle(c)}
@@ -989,7 +1049,8 @@ export default function AdminSupportChat() {
                       </div>
                     </div>
                   </button>
-                ))
+                  );
+                })
               )}
             </div>
           </aside>

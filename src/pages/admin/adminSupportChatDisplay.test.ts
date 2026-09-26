@@ -5,6 +5,7 @@ import {
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
   splitMessageSegments,
+  supportConnectionBadge,
 } from "./adminSupportChatDisplay";
 
 describe("admin support chat display", () => {
@@ -41,6 +42,18 @@ describe("admin support chat display", () => {
 
   it("formats israeli whatsapp digits for display", () => {
     expect(formatWhatsAppPhoneDisplay("972501234567")).toBe("0501234567");
+  });
+
+  it("maps managed connection ids to US/IL badges", () => {
+    expect(supportConnectionBadge({ managedConnectionId: "US_MANAGED" })).toBe(
+      "US"
+    );
+    expect(
+      supportConnectionBadge({
+        managedConnectionId: "IL_MANAGED",
+        connectionCountry: "IL",
+      })
+    ).toBe("IL");
   });
 
   it("labels delivery statuses without fabricating delivered/read", () => {
