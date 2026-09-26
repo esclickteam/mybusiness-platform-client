@@ -148,10 +148,12 @@ export default function WhatsAppManageFundsModal({
 
   return (
     <div className="wa-billing-modal-root" role="presentation">
+      {/* Backdrop must paint under the dialog (see .wa-billing-modal-root CSS). */}
       <button
         type="button"
         className="wa-billing-modal-backdrop"
         aria-label="Close"
+        tabIndex={-1}
         disabled={busy}
         onClick={() => !busy && onClose()}
       />
@@ -162,6 +164,7 @@ export default function WhatsAppManageFundsModal({
         aria-labelledby={titleId}
         className="wa-billing-modal"
         style={{ maxWidth: 480 }}
+        onClick={(e) => e.stopPropagation()}
       >
         <header className="wa-billing-modal__header">
           <div>
