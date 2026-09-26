@@ -11,13 +11,18 @@ import {
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { preferredLocaleFromConnectionCountry } from "../../guidedDemo/adminSendForm";
 import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
+import AdminSendGuidedDemoModal, {
+  AdminSendDemoButton,
+} from "./AdminSendGuidedDemoModal";
 import {
   deliveryFailureDetail,
   deliveryStatusLabel,
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
+  resolveManagedConnectionId,
   splitMessageSegments,
   supportConnectionBadge,
   supportConversationViaLabel,
@@ -365,6 +370,7 @@ export default function AdminSupportChat() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
+  const [demoOpen, setDemoOpen] = useState(false);
   const [customerHistoryOpen, setCustomerHistoryOpen] = useState(false);
   const [customerHistoryLoading, setCustomerHistoryLoading] = useState(false);
   const [customerHistoryItems, setCustomerHistoryItems] = useState<
@@ -1164,6 +1170,12 @@ export default function AdminSupportChat() {
                         פתיחת הפנייה
                       </Link>
                     ) : null}
+                    {selected.channel === "whatsapp" ? (
+                      <AdminSendDemoButton
+                        onClick={() => setDemoOpen(true)}
+                        className="!min-h-0 rounded-2xl px-3.5 py-2 text-xs shadow-md shadow-[#6D28D9]/20"
+                      />
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}
@@ -1400,6 +1412,30 @@ export default function AdminSupportChat() {
           </section>
         </div>
       </main>
+
+      <AdminSendGuidedDemoModal
+        open={demoOpen}
+        onClose={() => setDemoOpen(false)}
+        context={{
+          customerName: selected?.name || "",
+          phone:
+            formatWhatsAppPhoneDisplay(selected?.phone) || selected?.phone || "",
+          businessName: selected?.businessName || "",
+          sourceType: selected?.sourceLeadId
+            ? "early_access"
+            : selected?.sourceCustomerId
+              ? "customer"
+              : "manual",
+          sourceLeadId: selected?.sourceLeadId || "",
+          sourceCustomerId: selected?.sourceCustomerId || "",
+          managedConnectionId:
+            resolveManagedConnectionId(selected?.managedConnectionId) ||
+            undefined,
+          preferredLocale:
+            preferredLocaleFromConnectionCountry(selected?.connectionCountry) ||
+            undefined,
+        }}
+      />
     </div>
   );
 }
