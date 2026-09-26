@@ -6,6 +6,16 @@
     <script>
       (function () {
         try {
+          var earlyHost = String(location.hostname || "").toLowerCase();
+          if (
+            earlyHost === "travel.bizuply.com" ||
+            earlyHost === "www.travel.bizuply.com"
+          ) {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+            return;
+          }
+
           function normalize(raw) {
             if (!raw) return null;
             var value = String(raw).trim().replace(/_/g, "-");
@@ -60,6 +70,12 @@
       (function () {
         try {
           var host = String(location.hostname || "").toLowerCase();
+          if (
+            host === "travel.bizuply.com" ||
+            host === "www.travel.bizuply.com"
+          ) {
+            return;
+          }
           var publicDomain = "sites.bizuply.com";
           var marketing = {
             "bizuply.com": 1,
@@ -165,6 +181,16 @@
     <!-- ⚡ Neutral first paint on published customer sites (no Bizuply splash) -->
     <script>
       (function () {
+        var host = String(location.hostname || "").toLowerCase();
+        if (
+          host === "travel.bizuply.com" ||
+          host === "www.travel.bizuply.com"
+        ) {
+          document.documentElement.style.background = "#f4f7fb";
+          if (document.body) document.body.style.backgroundColor = "#f4f7fb";
+          document.title = "Bizuply Travel | Travel Technology Platform";
+          return;
+        }
         if (window.__BIZUPLY_PUBLIC_SITE__) {
           document.documentElement.style.background = "#ffffff";
           if (document.body) document.body.style.backgroundColor = "#ffffff";

@@ -36,6 +36,7 @@ export default defineConfig({
 
   server: {
     port: 3000,
+    allowedHosts: ["travel.bizuply.com", "www.travel.bizuply.com"],
 
     proxy: {
       "/api": {

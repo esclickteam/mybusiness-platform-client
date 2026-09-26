@@ -8,6 +8,8 @@ test("partner white-label host helper matches Premium subdomains only", () => {
   assert.equal(isPartnerWhiteLabelHostname("www.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("app.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("api.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("travel.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("www.travel.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("shop.sites.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("demo.sites-staging.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("foo.bar.bizuply.com"), false);
