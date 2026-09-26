@@ -41,6 +41,9 @@ describe("publicSiteHost", () => {
     expect(isPublicCustomerSiteHost("demo.sites.bizuply.com")).toBe(true);
     expect(isPublicCustomerSiteHost("demo.sites-staging.bizuply.com")).toBe(true);
     expect(isPublicCustomerSiteHost("www.bizuply.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("travel.bizuply.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("www.travel.bizuply.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("acme.bizuply.com")).toBe(true);
     expect(isPublicCustomerSiteHost("mybusiness-platform-client-staging.vercel.app")).toBe(false);
   });
 });

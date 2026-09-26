@@ -18,6 +18,7 @@ const PARTNER_HOST_BLOCKLIST = new Set([
   "assets",
   "status",
   "docs",
+  "travel",
 ]);
 
 export function isPartnerWhiteLabelHostname(hostname) {

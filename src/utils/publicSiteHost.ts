@@ -6,6 +6,8 @@
  * Production client must resolve to sites.bizuply.com.
  */
 
+import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
+
 export const PRODUCTION_PUBLIC_SITE_DOMAIN = "sites.bizuply.com";
 export const STAGING_PUBLIC_SITE_DOMAIN = "sites-staging.bizuply.com";
 export const LEGACY_PUBLIC_SITE_DOMAIN = "bizuply.com";
@@ -79,6 +81,7 @@ export function buildPublicSiteUrl(slug: string, hostname?: string | null): stri
 export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
   const host = normalizeHostname(hostname ?? getBrowserHostname());
   if (!host) return false;
+  if (isBizuplyTravelHost(host)) return false;
 
   const publicDomain = getPublicSiteDomain(host);
   if (host === publicDomain) return false;

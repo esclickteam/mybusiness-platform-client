@@ -21,11 +21,19 @@ import {
   hasManualLanguageChoice,
   resolvePreferredLanguage,
 } from "./localeUtils";
+import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { SUPPORTED_LANGUAGES } from "./languages";
 
 const browserGeoDetector = {
   name: "browserGeo",
   lookup() {
+    if (
+      typeof window !== "undefined" &&
+      isBizuplyTravelHost(window.location.hostname)
+    ) {
+      return "en";
+    }
+
     const fromUrl = applyLanguageFromUrl();
     if (fromUrl) return fromUrl;
 
@@ -78,7 +86,8 @@ applyDocumentLocale(i18n.language);
 if (
   typeof window !== "undefined" &&
   import.meta.env.MODE !== "test" &&
-  !hasManualLanguageChoice()
+  !hasManualLanguageChoice() &&
+  !isBizuplyTravelHost(window.location.hostname)
 ) {
   void fetchGeoLanguage().then((geoLanguage) => {
     if (!geoLanguage || hasManualLanguageChoice()) return;
