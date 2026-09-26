@@ -1,7 +1,7 @@
 import i18n from "../i18n/i18n";
 
 export const SW_SCOPE = "/";
-export const SW_SCRIPT_VERSION = 11;
+export const SW_SCRIPT_VERSION = 12;
 export const SW_URL = `/service-worker.js?v=${SW_SCRIPT_VERSION}`;
 export const LEGACY_GENERIC_TAG = "bizuply-notification";
 export const LEGACY_GENERIC_BODY = i18n.t("leftover.errors.newPush");

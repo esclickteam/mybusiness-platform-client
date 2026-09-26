@@ -22,8 +22,8 @@ describe("push SW message handling", () => {
   });
 
   it("cache-busts the service worker script", () => {
-    expect(SW_SCRIPT_VERSION).toBe(11);
-    expect(SW_URL).toBe("/service-worker.js?v=11");
+    expect(SW_SCRIPT_VERSION).toBe(12);
+    expect(SW_URL).toBe("/service-worker.js?v=12");
   });
 
   it("picks the registration that already has a push subscription", () => {
@@ -32,7 +32,7 @@ describe("push SW message handling", () => {
       pickPushRegistrationIndex(
         [
           { scriptURLs: [`${origin}/service-worker.js`], hasSubscription: false },
-          { scriptURLs: [`${origin}/service-worker.js?v=11`], hasSubscription: true },
+          { scriptURLs: [`${origin}/service-worker.js?v=12`], hasSubscription: true },
         ],
         origin
       )
@@ -41,7 +41,7 @@ describe("push SW message handling", () => {
       pickPushRegistrationIndex(
         [
           { scriptURLs: [`${origin}/service-worker.js`], hasSubscription: true },
-          { scriptURLs: [`${origin}/service-worker.js?v=11`], hasSubscription: false },
+          { scriptURLs: [`${origin}/service-worker.js?v=12`], hasSubscription: false },
         ],
         origin
       )
@@ -50,7 +50,7 @@ describe("push SW message handling", () => {
 
   it("treats only the current query-busted SW URL as the live registration", () => {
     expect(
-      isCurrentSwScript("https://bizuply.com/service-worker.js?v=11", "https://bizuply.com")
+      isCurrentSwScript("https://bizuply.com/service-worker.js?v=12", "https://bizuply.com")
     ).toBe(true);
     expect(
       isCurrentSwScript("https://bizuply.com/service-worker.js", "https://bizuply.com")
@@ -90,8 +90,9 @@ describe("push SW message handling", () => {
 
   it("does not paint the generic Hebrew fallback from empty payloads", () => {
     const sw = readFileSync(join(process.cwd(), "public/service-worker.js"), "utf8");
-    expect(sw).toContain("bizuply-sw-delivery-ack-v11");
+    expect(sw).toContain("bizuply-sw-delivery-ack-v12");
     expect(sw).toContain("if (!title || !body)");
+    expect(sw).toContain("renotify = Boolean(leadId)");
     expect(sw).not.toMatch(/body:\s*payload\.body\s*\|\|\s*"/);
     expect(sw).not.toMatch(/data\.body\s*\|\|\s*"/);
   });
