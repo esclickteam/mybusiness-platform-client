@@ -98,6 +98,10 @@ export const adminCrmApi = {
     API.get(`/admin/crm/whatsapp/templates${qs(params)}`),
   whatsappInbox: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/whatsapp/inbox${qs(params)}`),
+  whatsappInboxConnections: () =>
+    API.get("/admin/crm/whatsapp/inbox/connections"),
+  whatsappFailedMessages: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/whatsapp/failed-messages${qs(params)}`),
   whatsappSync: () =>
     API.post("/admin/crm/whatsapp/sync", {}, { timeout: 180000 }),
   whatsappThreadMessages: (threadId: string, params: AdminCrmListQuery = {}) =>

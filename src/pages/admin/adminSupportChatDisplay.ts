@@ -92,3 +92,24 @@ export function formatWhatsAppPhoneDisplay(phone?: string) {
   if (digits.startsWith("0")) return digits;
   return `+${digits}`;
 }
+
+/** Compact US / IL badge for WhatsApp support conversations. */
+export function supportConnectionBadge(
+  conversation?: {
+    managedConnectionId?: string | null;
+    connectionCountry?: string | null;
+    connectionLabel?: string | null;
+  } | null
+) {
+  const country = String(conversation?.connectionCountry || "")
+    .trim()
+    .toUpperCase();
+  if (country) return country;
+  const id = String(conversation?.managedConnectionId || "")
+    .trim()
+    .toUpperCase();
+  if (id === "US_MANAGED") return "US";
+  if (id === "IL_MANAGED") return "IL";
+  if (id.endsWith("_MANAGED")) return id.replace(/_MANAGED$/, "");
+  return id.slice(0, 3);
+}

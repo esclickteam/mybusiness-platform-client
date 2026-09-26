@@ -57,7 +57,139 @@ export type PublicWhatsAppThread = {
   leadSource?: string;
   handoffAckStatus?: string;
   handoffAckError?: string;
+  managedConnectionId?: string;
+  phoneNumberId?: string;
+  businessDisplayPhone?: string;
+  connectionLabel?: string;
+  connectionCountry?: string;
+  connectionFlag?: string;
+  connectionBadge?: string;
+  wabaId?: string;
+  receivedOnLabel?: string;
+  sendFromLabel?: string;
 };
+
+export type WhatsAppInboxConnection = {
+  managedConnectionId: string;
+  connectionBadge?: string;
+  connectionLabel?: string;
+  connectionCountry?: string;
+  connectionFlag?: string;
+  businessDisplayPhone?: string;
+  displayPhoneMasked?: string;
+  expectedDisplayPhone?: string;
+  sendFromLabel?: string;
+  ready?: boolean;
+  sendReady?: boolean;
+  enabled?: boolean;
+  isDefault?: boolean;
+};
+
+/** Fallback chips when GET /inbox/connections is empty. */
+export const FALLBACK_INBOX_CONNECTIONS: WhatsAppInboxConnection[] = [
+  {
+    managedConnectionId: "IL_MANAGED",
+    connectionBadge: "IL",
+    connectionFlag: "🇮🇱",
+    connectionLabel: "Israel",
+    connectionCountry: "IL",
+    businessDisplayPhone: "",
+  },
+  {
+    managedConnectionId: "US_MANAGED",
+    connectionBadge: "US",
+    connectionFlag: "🇺🇸",
+    connectionLabel: "USA",
+    connectionCountry: "US",
+    businessDisplayPhone: "+1 210 944 4809",
+  },
+];
+
+export function normalizeManagedConnectionId(value?: string | null) {
+  return String(value || "")
+    .trim()
+    .toUpperCase();
+}
+
+/** Compact US / IL badge for list chips. */
+export function connectionBadgeLabel(
+  meta?: {
+    connectionBadge?: string | null;
+    managedConnectionId?: string | null;
+    connectionCountry?: string | null;
+  } | null
+) {
+  const badge = String(meta?.connectionBadge || "")
+    .trim()
+    .toUpperCase();
+  if (badge) return badge;
+  const country = String(meta?.connectionCountry || "")
+    .trim()
+    .toUpperCase();
+  if (country) return country;
+  const id = normalizeManagedConnectionId(meta?.managedConnectionId);
+  if (id === "US_MANAGED") return "US";
+  if (id === "IL_MANAGED") return "IL";
+  if (id.endsWith("_MANAGED")) return id.replace(/_MANAGED$/, "");
+  return id.slice(0, 3);
+}
+
+/** Switcher / card line: flag + badge + business phone. */
+export function connectionChipLabel(
+  meta?: {
+    connectionFlag?: string | null;
+    connectionBadge?: string | null;
+    managedConnectionId?: string | null;
+    connectionCountry?: string | null;
+    connectionLabel?: string | null;
+    businessDisplayPhone?: string | null;
+    displayPhoneMasked?: string | null;
+    expectedDisplayPhone?: string | null;
+  } | null
+) {
+  const flag = String(meta?.connectionFlag || "").trim();
+  const badge = connectionBadgeLabel(meta);
+  const phone = String(
+    meta?.businessDisplayPhone ||
+      meta?.displayPhoneMasked ||
+      meta?.expectedDisplayPhone ||
+      ""
+  ).trim();
+  const label = String(meta?.connectionLabel || "").trim();
+  return [flag, badge, phone || label].filter(Boolean).join(" ").trim();
+}
+
+export function sendFromPhoneLabel(
+  meta?: {
+    connectionFlag?: string | null;
+    businessDisplayPhone?: string | null;
+    displayPhoneMasked?: string | null;
+    expectedDisplayPhone?: string | null;
+    sendFromLabel?: string | null;
+    connectionLabel?: string | null;
+    managedConnectionId?: string | null;
+  } | null
+) {
+  const flag = String(meta?.connectionFlag || "").trim();
+  const phone = String(
+    meta?.businessDisplayPhone ||
+      meta?.displayPhoneMasked ||
+      meta?.expectedDisplayPhone ||
+      ""
+  ).trim();
+  if (phone) return `${flag} ${phone}`.trim();
+  if (meta?.sendFromLabel) return String(meta.sendFromLabel).trim();
+  const label = String(meta?.connectionLabel || "").trim();
+  if (label) return `${flag} ${label}`.trim();
+  const badge = connectionBadgeLabel(meta);
+  return `${flag} ${badge}`.trim();
+}
+
+export function threadRowKey(
+  thread?: { id?: string | null; threadId?: string | null } | null
+) {
+  return String(thread?.threadId || thread?.id || "");
+}
 
 export function messageKey(msg: PublicWhatsAppMessage) {
   const wamid = String(msg.providerMessageId || "").trim();
@@ -176,20 +308,11 @@ export function bumpThreadList(
   extras: Partial<PublicWhatsAppThread> = {}
 ) {
   const merged = { ...thread, ...extras };
+  // Threads are unique per phone+managedConnectionId — match by row id only.
+  const mergedKey = threadRowKey(merged);
   const rest = items.filter((row) => {
-    if (row.id && merged.id && String(row.id) === String(merged.id)) return false;
-    if (
-      row.adminCustomerId &&
-      merged.adminCustomerId &&
-      String(row.adminCustomerId) === String(merged.adminCustomerId)
-    ) {
-      return false;
-    }
-    const a = normalizeWaPhone(row.phone);
-    const b = normalizeWaPhone(merged.phone);
-    if (a && b && a === b && !row.adminCustomerId && !merged.adminCustomerId) {
-      return false;
-    }
+    const rowKey = threadRowKey(row);
+    if (rowKey && mergedKey && rowKey === mergedKey) return false;
     return true;
   });
   return [merged, ...rest];
@@ -201,15 +324,21 @@ export function inboundEventMatches(
     thread?: PublicWhatsAppThread | null;
   } | null
   | undefined,
-  ctx: { customerId?: string | null; threadId?: string | null; phone?: string | null }
+  ctx: {
+    customerId?: string | null;
+    threadId?: string | null;
+    phone?: string | null;
+    managedConnectionId?: string | null;
+  }
 ) {
   if (!payload) return false;
-  if (
-    ctx.threadId &&
-    payload.thread?.id &&
-    String(payload.thread.id) === String(ctx.threadId)
-  ) {
-    return true;
+  // When a specific inbox thread is open, never merge by customer/phone alone
+  // (same customer can have IL + US rows).
+  if (ctx.threadId) {
+    return Boolean(
+      payload.thread?.id &&
+        String(payload.thread.id) === String(ctx.threadId)
+    );
   }
   const payloadCustomer =
     payload.adminCustomerId || payload.thread?.adminCustomerId || null;
@@ -218,11 +347,22 @@ export function inboundEventMatches(
     payloadCustomer &&
     String(payloadCustomer) === String(ctx.customerId)
   ) {
+    const ctxConn = normalizeManagedConnectionId(ctx.managedConnectionId);
+    const eventConn = normalizeManagedConnectionId(
+      payload.thread?.managedConnectionId
+    );
+    if (ctxConn && eventConn && ctxConn !== eventConn) return false;
     return true;
   }
   const eventPhone = normalizeWaPhone(payload.thread?.phone);
   const localPhone = normalizeWaPhone(ctx.phone);
-  return Boolean(eventPhone && localPhone && eventPhone === localPhone);
+  if (!(eventPhone && localPhone && eventPhone === localPhone)) return false;
+  const ctxConn = normalizeManagedConnectionId(ctx.managedConnectionId);
+  const eventConn = normalizeManagedConnectionId(
+    payload.thread?.managedConnectionId
+  );
+  if (ctxConn && eventConn && ctxConn !== eventConn) return false;
+  return true;
 }
 
 export function formatClock(value?: string | Date | null) {

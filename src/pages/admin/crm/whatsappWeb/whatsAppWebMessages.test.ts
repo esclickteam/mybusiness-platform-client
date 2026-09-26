@@ -2,10 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   applyStatusPatch,
   buildMessageFeed,
+  bumpThreadList,
+  connectionBadgeLabel,
+  connectionChipLabel,
   dateSeparatorLabel,
   inboundEventMatches,
   mergeMessages,
   messageKey,
+  sendFromPhoneLabel,
 } from "./whatsAppWebMessages";
 
 describe("whatsAppWebMessages", () => {
@@ -55,6 +59,85 @@ describe("whatsAppWebMessages", () => {
         { phone: "0501234567", customerId: "nope" }
       )
     ).toBe(false);
+  });
+
+  it("does not merge IL/US threads when a specific threadId is open", () => {
+    expect(
+      inboundEventMatches(
+        {
+          adminCustomerId: "c1",
+          thread: {
+            id: "us-thread",
+            managedConnectionId: "US_MANAGED",
+          } as any,
+        },
+        { threadId: "il-thread", customerId: "c1" }
+      )
+    ).toBe(false);
+    expect(
+      inboundEventMatches(
+        {
+          adminCustomerId: "c1",
+          thread: {
+            id: "il-thread",
+            managedConnectionId: "IL_MANAGED",
+          } as any,
+        },
+        { threadId: "il-thread", customerId: "c1" }
+      )
+    ).toBe(true);
+  });
+
+  it("bumps inbox rows by thread id only (keeps IL + US for same customer)", () => {
+    const items = [
+      {
+        id: "il-1",
+        adminCustomerId: "c1",
+        managedConnectionId: "IL_MANAGED",
+        phone: "0501111111",
+        lastMessage: "il",
+      },
+      {
+        id: "us-1",
+        adminCustomerId: "c1",
+        managedConnectionId: "US_MANAGED",
+        phone: "0501111111",
+        lastMessage: "us",
+      },
+    ];
+    const next = bumpThreadList(items as any, {
+      id: "us-1",
+      adminCustomerId: "c1",
+      managedConnectionId: "US_MANAGED",
+      phone: "0501111111",
+      lastMessage: "us-new",
+    } as any);
+    expect(next).toHaveLength(2);
+    expect(next[0].id).toBe("us-1");
+    expect(next[0].lastMessage).toBe("us-new");
+    expect(next[1].id).toBe("il-1");
+  });
+
+  it("formats connection badges and send-from phone labels", () => {
+    expect(
+      connectionBadgeLabel({
+        managedConnectionId: "US_MANAGED",
+        connectionBadge: "US",
+      })
+    ).toBe("US");
+    expect(
+      connectionChipLabel({
+        connectionFlag: "🇺🇸",
+        connectionBadge: "US",
+        businessDisplayPhone: "+1 210 944 4809",
+      })
+    ).toBe("🇺🇸 US +1 210 944 4809");
+    expect(
+      sendFromPhoneLabel({
+        connectionFlag: "🇮🇱",
+        businessDisplayPhone: "+972 50 000 0000",
+      })
+    ).toBe("🇮🇱 +972 50 000 0000");
   });
 
   it("replaces an optimistic outbound with the confirmed log", () => {

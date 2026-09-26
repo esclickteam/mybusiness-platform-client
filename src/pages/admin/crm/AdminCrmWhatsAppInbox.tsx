@@ -9,12 +9,19 @@ import {
   waitingTimeLabel,
 } from "./adminCrmLabels";
 import { ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
+import WhatsAppFailedMessagesPanel from "./WhatsAppFailedMessagesPanel";
 import WhatsAppWebThread from "./whatsappWeb/WhatsAppWebThread";
 import { useAdminCrmWhatsAppRealtime } from "./whatsappWeb/useAdminCrmWhatsAppRealtime";
 import {
   bumpThreadList,
+  connectionBadgeLabel,
+  connectionChipLabel,
+  FALLBACK_INBOX_CONNECTIONS,
   listTimeLabel,
+  normalizeManagedConnectionId,
+  threadRowKey,
   type PublicWhatsAppThread,
+  type WhatsAppInboxConnection,
 } from "./whatsappWeb/whatsAppWebMessages";
 
 type InboxItem = PublicWhatsAppThread & {
@@ -29,6 +36,9 @@ type WhatsAppSyncSummary = {
   failed?: number;
 };
 
+/** Empty string = All connections. */
+type ConnectionFilter = "" | string;
+
 export default function AdminCrmWhatsAppInbox() {
   const [searchParams] = useSearchParams();
   const [perms, setPerms] = useState<any>({});
@@ -39,6 +49,10 @@ export default function AdminCrmWhatsAppInbox() {
   const [error, setError] = useState("");
   const [unresolvedOnly, setUnresolvedOnly] = useState(false);
   const [query, setQuery] = useState("");
+  const [connectionFilter, setConnectionFilter] = useState<ConnectionFilter>("");
+  const [connections, setConnections] = useState<WhatsAppInboxConnection[]>(
+    FALLBACK_INBOX_CONNECTIONS
+  );
   const [selected, setSelected] = useState<InboxItem | null>(null);
   const [banner, setBanner] = useState("");
   const [mobileChat, setMobileChat] = useState(false);
@@ -47,14 +61,22 @@ export default function AdminCrmWhatsAppInbox() {
   const [syncSummary, setSyncSummary] = useState<WhatsAppSyncSummary | null>(null);
 
   const load = useCallback(
-    async (nextUnresolved = unresolvedOnly, q = query) => {
+    async (
+      nextUnresolved = unresolvedOnly,
+      q = query,
+      nextConnection: ConnectionFilter = connectionFilter
+    ) => {
       setLoading(true);
       setError("");
       try {
+        const managedConnectionId = nextConnection
+          ? normalizeManagedConnectionId(nextConnection)
+          : undefined;
         const { data } = await adminCrmApi.whatsappInbox({
           unresolved: nextUnresolved ? "true" : undefined,
           q: q || undefined,
           limit: 500,
+          managedConnectionId,
         });
         const nextItems = data.items || [];
         setItems(nextItems);
@@ -65,7 +87,7 @@ export default function AdminCrmWhatsAppInbox() {
         if ((wantedCustomer || wantedThread) && nextItems.length) {
           const match = nextItems.find((row) =>
             wantedThread
-              ? row.id === wantedThread
+              ? threadRowKey(row) === wantedThread || row.id === wantedThread
               : row.adminCustomerId === wantedCustomer
           );
           if (match) {
@@ -79,28 +101,41 @@ export default function AdminCrmWhatsAppInbox() {
         setLoading(false);
       }
     },
-    [query, unresolvedOnly, searchParams]
+    [query, unresolvedOnly, connectionFilter, searchParams]
   );
 
   React.useEffect(() => {
     load();
-    adminCrmApi.meta().then(({ data }) => setPerms(data.permissions || {})).catch(() => null);
+    adminCrmApi
+      .meta()
+      .then(({ data }) => setPerms(data.permissions || {}))
+      .catch(() => null);
+    adminCrmApi
+      .whatsappInboxConnections()
+      .then(({ data }) => {
+        const rows = (data.connections || []) as WhatsAppInboxConnection[];
+        if (rows.length) setConnections(rows);
+      })
+      .catch(() => null);
   }, []);
 
   useAdminCrmWhatsAppRealtime({
     onMessage: (payload) => {
       if (!payload.thread?.id) {
-        void load(unresolvedOnly, query);
+        void load(unresolvedOnly, query, connectionFilter);
+        return;
+      }
+      const eventConn = normalizeManagedConnectionId(
+        payload.thread.managedConnectionId
+      );
+      const filterConn = normalizeManagedConnectionId(connectionFilter);
+      if (filterConn && eventConn && filterConn !== eventConn) {
         return;
       }
       setItems((prev) => {
-        const existing =
-          prev.find((row) => row.id === payload.thread!.id) ||
-          prev.find(
-            (row) =>
-              payload.adminCustomerId &&
-              row.adminCustomerId === payload.adminCustomerId
-          );
+        const existing = prev.find(
+          (row) => threadRowKey(row) === threadRowKey(payload.thread!)
+        );
         return bumpThreadList(prev, {
           ...(existing || {}),
           ...payload.thread,
@@ -110,30 +145,39 @@ export default function AdminCrmWhatsAppInbox() {
             existing?.adminCustomerId ||
             payload.adminCustomerId ||
             payload.thread.adminCustomerId,
+          managedConnectionId:
+            existing?.managedConnectionId ||
+            payload.thread.managedConnectionId ||
+            "",
           hasConversation: true,
           lastMessage: payload.message?.bodyPreview || payload.thread.lastMessage,
           lastMessageAt: payload.message?.timestamp || payload.thread.lastMessageAt,
           unreadCount:
-            selected?.id === payload.thread.id ||
-            selected?.adminCustomerId === payload.adminCustomerId
+            selected && threadRowKey(selected) === threadRowKey(payload.thread)
               ? 0
               : payload.thread.unreadCount ?? existing?.unreadCount ?? 0,
         });
       });
-      if (payload.message?.direction === "inbound" && selected?.id !== payload.thread.id) {
+      if (
+        payload.message?.direction === "inbound" &&
+        (!selected || threadRowKey(selected) !== threadRowKey(payload.thread))
+      ) {
         setUnreadTotal((n) => n + 1);
       }
     },
     onThread: (payload) => {
       if (!payload.thread?.id) return;
+      const eventConn = normalizeManagedConnectionId(
+        payload.thread.managedConnectionId
+      );
+      const filterConn = normalizeManagedConnectionId(connectionFilter);
+      if (filterConn && eventConn && filterConn !== eventConn) {
+        return;
+      }
       setItems((prev) => {
-        const existing =
-          prev.find((row) => row.id === payload.thread!.id) ||
-          prev.find(
-            (row) =>
-              payload.adminCustomerId &&
-              row.adminCustomerId === payload.adminCustomerId
-          );
+        const existing = prev.find(
+          (row) => threadRowKey(row) === threadRowKey(payload.thread!)
+        );
         return bumpThreadList(prev, {
           ...(existing || {}),
           ...payload.thread,
@@ -143,6 +187,10 @@ export default function AdminCrmWhatsAppInbox() {
             existing?.adminCustomerId ||
             payload.adminCustomerId ||
             payload.thread.adminCustomerId,
+          managedConnectionId:
+            existing?.managedConnectionId ||
+            payload.thread.managedConnectionId ||
+            "",
           hasConversation: Boolean(
             payload.thread.lastMessageAt ||
               payload.thread.lastMessage ||
@@ -152,7 +200,7 @@ export default function AdminCrmWhatsAppInbox() {
       });
     },
     onReconnect: () => {
-      void load(unresolvedOnly, query);
+      void load(unresolvedOnly, query, connectionFilter);
     },
   });
 
@@ -172,7 +220,7 @@ export default function AdminCrmWhatsAppInbox() {
           ? `הסנכרון הושלם — ${conversations} שיחות, ${created} הודעות נוספו, ${skipped} כבר היו קיימות. נכשלו ${failed}.`
           : `הסנכרון הושלם — ${conversations} שיחות, ${created} הודעות נוספו, ${skipped} כבר היו קיימות.`
       );
-      await load(unresolvedOnly, query);
+      await load(unresolvedOnly, query, connectionFilter);
     } catch (err: any) {
       setError(err?.response?.data?.error || "סנכרון שיחות WhatsApp נכשל");
     } finally {
@@ -180,7 +228,15 @@ export default function AdminCrmWhatsAppInbox() {
     }
   }
 
+  function selectConnection(next: ConnectionFilter) {
+    setConnectionFilter(next);
+    setSelected(null);
+    setMobileChat(false);
+    void load(unresolvedOnly, query, next);
+  }
+
   const filtered = useMemo(() => items, [items]);
+  const selectedKey = selected ? threadRowKey(selected) : "";
 
   if (loading && !items.length) return <LoadingState />;
   if (error && !items.length) return <ErrorState message={error} onRetry={() => load()} />;
@@ -210,13 +266,47 @@ export default function AdminCrmWhatsAppInbox() {
                 <span className="rounded-full bg-amber-50 px-2 py-1 text-amber-800">{unresolvedTotal}</span>
               </div>
             </div>
+            <div className="mb-2 flex flex-wrap gap-1.5" dir="ltr">
+              <button
+                type="button"
+                onClick={() => selectConnection("")}
+                className={[
+                  "rounded-full px-2.5 py-1 text-[11px] font-black transition",
+                  !connectionFilter
+                    ? "bg-[#111b21] text-white"
+                    : "bg-white text-[#54656f] ring-1 ring-[#d1d7db] hover:bg-[#f5f6f6]",
+                ].join(" ")}
+              >
+                All
+              </button>
+              {connections.map((conn) => {
+                const id = normalizeManagedConnectionId(conn.managedConnectionId);
+                const active = connectionFilter === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => selectConnection(id)}
+                    className={[
+                      "rounded-full px-2.5 py-1 text-[11px] font-black transition",
+                      active
+                        ? "bg-[#111b21] text-white"
+                        : "bg-white text-[#54656f] ring-1 ring-[#d1d7db] hover:bg-[#f5f6f6]",
+                    ].join(" ")}
+                    title={conn.connectionLabel || id}
+                  >
+                    {connectionChipLabel(conn) || connectionBadgeLabel(conn)}
+                  </button>
+                );
+              })}
+            </div>
             <input
               className="min-h-10 w-full rounded-lg border-none bg-white px-3 text-sm outline-none"
               placeholder="חיפוש או מספר טלפון"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") void load(unresolvedOnly, query);
+                if (e.key === "Enter") void load(unresolvedOnly, query, connectionFilter);
               }}
             />
             <div className="mt-2 flex gap-2">
@@ -225,14 +315,14 @@ export default function AdminCrmWhatsAppInbox() {
                 onClick={() => {
                   const next = !unresolvedOnly;
                   setUnresolvedOnly(next);
-                  void load(next, query);
+                  void load(next, query, connectionFilter);
                 }}
               >
                 {unresolvedOnly ? "כל השיחות" : "לא משויכות"}
               </SecondaryButton>
               <SecondaryButton
                 className="!min-h-9 !rounded-lg !px-3 !text-xs"
-                onClick={() => void load(unresolvedOnly, query)}
+                onClick={() => void load(unresolvedOnly, query, connectionFilter)}
               >
                 חיפוש
               </SecondaryButton>
@@ -262,22 +352,19 @@ export default function AdminCrmWhatsAppInbox() {
                 ) : null}
               </div>
             ) : null}
+            <WhatsAppFailedMessagesPanel managedConnectionId={connectionFilter} />
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {!filtered.length ? (
               <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">אין לקוחות עם מספר טלפון</p>
             ) : (
               filtered.map((row) => {
-                const active =
-                  selected?.id === row.id ||
-                  Boolean(
-                    selected?.adminCustomerId &&
-                      row.adminCustomerId &&
-                      selected.adminCustomerId === row.adminCustomerId
-                  );
+                const rowKey = threadRowKey(row);
+                const active = Boolean(selectedKey && rowKey && selectedKey === rowKey);
+                const badge = connectionBadgeLabel(row);
                 return (
                   <button
-                    key={row.adminCustomerId || row.id}
+                    key={rowKey || row.id}
                     type="button"
                     className={[
                       "flex w-full items-center gap-3 border-b border-[#e9edef] px-3 py-3 text-right",
@@ -288,9 +375,7 @@ export default function AdminCrmWhatsAppInbox() {
                       setMobileChat(true);
                       setItems((prev) =>
                         prev.map((item) =>
-                          item.id === row.id ||
-                          (row.adminCustomerId &&
-                            item.adminCustomerId === row.adminCustomerId)
+                          threadRowKey(item) === rowKey
                             ? { ...item, unreadCount: 0 }
                             : item
                         )
@@ -308,6 +393,26 @@ export default function AdminCrmWhatsAppInbox() {
                         </span>
                       </div>
                       <div className="mt-0.5 flex flex-wrap items-center gap-1">
+                        {badge ? (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-md bg-[#e9edef] px-1.5 py-0.5 text-[10px] font-black tracking-wide text-[#111b21]"
+                            dir="ltr"
+                            title={row.connectionLabel || badge}
+                          >
+                            {row.connectionFlag ? (
+                              <span aria-hidden>{row.connectionFlag}</span>
+                            ) : null}
+                            {badge}
+                          </span>
+                        ) : null}
+                        {row.businessDisplayPhone || row.connectionLabel ? (
+                          <span
+                            className="truncate text-[11px] font-bold text-[#667781]"
+                            dir="ltr"
+                          >
+                            {row.businessDisplayPhone || row.connectionLabel}
+                          </span>
+                        ) : null}
                         {row.inboxStatus ? (
                           <Badge
                             tone={
@@ -378,6 +483,19 @@ export default function AdminCrmWhatsAppInbox() {
               }
               phone={selected.phone}
               contactName={selected.name}
+              initialManagedConnectionId={selected.managedConnectionId || null}
+              threadConnection={{
+                managedConnectionId: selected.managedConnectionId,
+                phoneNumberId: selected.phoneNumberId,
+                businessDisplayPhone: selected.businessDisplayPhone,
+                connectionLabel: selected.connectionLabel,
+                connectionCountry: selected.connectionCountry,
+                connectionFlag: selected.connectionFlag,
+                connectionBadge: selected.connectionBadge,
+                wabaId: selected.wabaId,
+                sendFromLabel: selected.sendFromLabel,
+                receivedOnLabel: selected.receivedOnLabel,
+              }}
               canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
               canTemplates={Boolean(perms.whatsappTemplates)}
               canDemo={perms.demoSend !== false}
