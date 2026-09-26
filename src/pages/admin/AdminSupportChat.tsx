@@ -857,7 +857,8 @@ export default function AdminSupportChat() {
   const visibleConversations = useMemo(() => {
     if (!connectionFilter) return conversations;
     return conversations.filter((c) => {
-      if (c.channel !== "whatsapp") return true;
+      // When filtering by a WhatsApp number, hide non-WhatsApp threads.
+      if (c.channel !== "whatsapp") return false;
       return (
         String(c.managedConnectionId || "").toUpperCase() === connectionFilter
       );
