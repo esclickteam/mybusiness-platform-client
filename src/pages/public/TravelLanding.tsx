@@ -8,27 +8,35 @@ import {
   Car,
   ClipboardList,
   Compass,
+  GitBranch,
   Layers,
-  Mail,
+  Menu,
+  Music,
   Plane,
   Plug,
-  RotateCcw,
+  Radio,
+  RefreshCw,
   Search,
+  Server,
   Shield,
+  ShieldCheck,
   Smartphone,
   Ticket,
-  Music,
   Users,
   UtensilsCrossed,
-  Workflow,
   Webhook,
+  Workflow,
+  X,
 } from "lucide-react";
 import {
   TRAVEL_SEO_DESCRIPTION,
   TRAVEL_SEO_TITLE,
 } from "../../lib/travelHost.mjs";
+import "./travelLanding.css";
 
-const CTA_LABEL = "Partnership & API Inquiries";
+const INQUIRY_LABEL = "API & Partnership Inquiries";
+const EXPLORE_LABEL = "Explore the Platform";
+const PARTNER_LABEL = "Become a Partner";
 
 const PARTNERSHIP_TYPES = [
   "API Provider",
@@ -39,77 +47,163 @@ const PARTNERSHIP_TYPES = [
   "Other",
 ] as const;
 
-const SERVICES: Array<{
-  title: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  text: string;
-}> = [
+const NAV = [
+  ["Platform", "#platform"],
+  ["Solutions", "#solutions"],
+  ["Partners", "#partners"],
+  ["Technology", "#technology"],
+  ["About", "#about"],
+  ["Contact", "#contact"],
+] as const;
+
+type IconType = React.ComponentType<{ className?: string; strokeWidth?: number }>;
+
+const SERVICES: Array<{ title: string; icon: IconType; text: string }> = [
   {
     title: "Flights",
     icon: Plane,
-    text: "Designed to connect with flight API providers and commercial partners for search, availability, and booking.",
+    text: "Air search and booking, designed to connect with flight API partners.",
   },
   {
     title: "Hotels",
     icon: Building2,
-    text: "Designed to connect with hotel API providers and commercial partners for availability, pricing, and reservations.",
+    text: "Stay availability and reservations, designed to connect with hotel partners.",
   },
   {
     title: "Car Rentals",
     icon: Car,
-    text: "Designed to connect with car rental API providers and commercial partners.",
+    text: "Vehicle rental flows, designed to connect with mobility API partners.",
   },
   {
     title: "Tours & Activities",
     icon: Compass,
-    text: "Designed to connect with tour and activity API providers and commercial partners.",
+    text: "Experience inventory, designed to connect with activity partners.",
   },
   {
     title: "Sports & Football Tickets",
     icon: Ticket,
-    text: "Designed to connect with sports and football ticket API providers and commercial partners.",
+    text: "Match and sports ticketing, designed to connect with ticket partners.",
   },
   {
     title: "Concerts & Events",
     icon: Music,
-    text: "Designed to connect with concert and event ticket API providers and commercial partners.",
+    text: "Live event inventory, designed to connect with event partners.",
   },
   {
     title: "Restaurants",
     icon: UtensilsCrossed,
-    text: "Designed to connect with restaurant API providers and commercial partners.",
+    text: "Dining reservations, designed to connect with restaurant partners.",
   },
   {
     title: "Travel Insurance",
     icon: Shield,
-    text: "Designed to connect with travel insurance API providers and commercial partners.",
+    text: "Policy options, designed to connect with insurance partners.",
   },
   {
     title: "eSIM",
     icon: Smartphone,
-    text: "Designed to connect with eSIM API providers and commercial partners.",
+    text: "Connectivity plans, designed to connect with eSIM partners.",
   },
   {
     title: "Airport Transfers",
     icon: Bus,
-    text: "Designed to connect with airport transfer API providers and commercial partners.",
+    text: "Ground arrival services, designed to connect with transfer partners.",
   },
 ];
 
-const CAPABILITIES: Array<{
-  title: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-}> = [
-  { title: "Search & Availability", icon: Search },
-  { title: "Real-time Pricing", icon: BadgeDollarSign },
-  { title: "Booking & Reservations", icon: CalendarCheck },
-  { title: "Cancellations", icon: RotateCcw },
-  { title: "Order Management", icon: ClipboardList },
-  { title: "Customer Management", icon: Users },
-  { title: "Supplier Integrations", icon: Plug },
-  { title: "API & Webhook Infrastructure", icon: Webhook },
-  { title: "B2B & B2C Workflows", icon: Workflow },
-  { title: "White-label Capabilities", icon: Layers },
+const FEATURES: Array<{ title: string; icon: IconType; text: string }> = [
+  { title: "Real-Time Search", icon: Search, text: "Query many travel categories from one search surface." },
+  { title: "Live Availability", icon: Radio, text: "Surface current inventory as partners expose it." },
+  { title: "Dynamic Pricing", icon: BadgeDollarSign, text: "Present partner pricing inside one comparison view." },
+  { title: "Booking & Reservations", icon: CalendarCheck, text: "Carry a traveler from selection into a reservation." },
+  { title: "Cancellations & Changes", icon: RefreshCw, text: "Support post-booking changes through partner rules." },
+  { title: "Order Management", icon: ClipboardList, text: "Keep every reservation in one order record." },
+  { title: "Customer Profiles", icon: Users, text: "Hold traveler and account details across bookings." },
+  { title: "Supplier Integrations", icon: Plug, text: "Connect each category through a partner API." },
+  { title: "Webhooks & APIs", icon: Webhook, text: "Exchange booking events with partner systems." },
+  { title: "B2B & B2C Workflows", icon: Workflow, text: "Serve travel businesses and their customers." },
+  { title: "White-Label Ready", icon: Layers, text: "Shape the same platform for a partner brand." },
+];
+
+const STEPS = [
+  ["01", "Search", "Look across flights, stays, cars, events, and more from one place."],
+  ["02", "Compare", "Review availability and pricing side by side."],
+  ["03", "Book", "Create the reservation through the partner flow."],
+  ["04", "Manage", "Track, change, or cancel the order afterward."],
+] as const;
+
+const TECH: Array<{ title: string; icon: IconType; text: string; viz: React.ReactNode }> = [
+  {
+    title: "Multi-provider architecture",
+    icon: GitBranch,
+    text: "Each travel category can connect to its own provider without changing the traveler experience.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <path d="M20 18h50M20 37h50M20 56h50M70 18c30 0 30 19 60 19M70 37h60M70 56c30 0 30-19 60-19" fill="none" stroke="#0f766e" strokeWidth="2" />
+        <circle cx="150" cy="37" r="10" fill="#5eead4" />
+      </svg>
+    ),
+  },
+  {
+    title: "Secure API integrations",
+    icon: ShieldCheck,
+    text: "Partner credentials and booking calls stay on a controlled integration path.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <rect x="78" y="14" width="64" height="46" rx="10" fill="none" stroke="#0f766e" strokeWidth="2" />
+        <path d="M96 36h28M110 28v16" stroke="#0f766e" strokeWidth="2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Webhook infrastructure",
+    icon: Webhook,
+    text: "Booking, change, and cancellation events can move back to partner systems.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <circle cx="40" cy="37" r="8" fill="#0f766e" />
+        <circle cx="110" cy="20" r="8" fill="#5eead4" />
+        <circle cx="110" cy="54" r="8" fill="#5eead4" />
+        <circle cx="180" cy="37" r="8" fill="#0f766e" />
+        <path d="M48 37h54M118 24l54 10M118 50l54-10" stroke="#0f766e" strokeWidth="2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Scalable booking workflows",
+    icon: Workflow,
+    text: "Search, reserve, and manage steps share one order path as volume grows.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <rect x="16" y="24" width="40" height="26" rx="8" fill="#d8f6f2" />
+        <rect x="90" y="24" width="40" height="26" rx="8" fill="#d8f6f2" />
+        <rect x="164" y="24" width="40" height="26" rx="8" fill="#0f766e" />
+        <path d="M56 37h34M130 37h34" stroke="#0f766e" strokeWidth="2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Partner-ready backend",
+    icon: Server,
+    text: "The platform is being built so suppliers can offer sandbox and production access.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <rect x="60" y="10" width="100" height="16" rx="5" fill="#0f766e" />
+        <rect x="60" y="30" width="100" height="16" rx="5" fill="#5eead4" />
+        <rect x="60" y="50" width="100" height="16" rx="5" fill="#d8f6f2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Future-ready provider switching",
+    icon: RefreshCw,
+    text: "A category can move between providers while the product surface stays the same.",
+    viz: (
+      <svg viewBox="0 0 220 74" aria-hidden="true">
+        <path d="M70 24h80M150 24l-12-8M150 24l-12 8M150 50H70M70 50l12-8M70 50l12 8" fill="none" stroke="#0f766e" strokeWidth="2" />
+      </svg>
+    ),
+  },
 ];
 
 type FormState = {
@@ -128,31 +222,64 @@ const EMPTY_FORM: FormState = {
   message: "",
 };
 
-function scrollToContact() {
-  document.getElementById("contact")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function FieldLabel({
-  htmlFor,
-  children,
-}: {
-  htmlFor: string;
-  children: React.ReactNode;
-}) {
+function WorldMap() {
   return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-semibold text-[#163044]">
-      {children}
-    </label>
+    <svg className="tl-map" viewBox="0 0 1200 680" aria-hidden="true">
+      <defs>
+        <pattern id="tl-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1.2" fill="rgba(255,255,255,0.16)" />
+        </pattern>
+      </defs>
+      <rect width="1200" height="680" fill="url(#tl-dots)" />
+      <ellipse cx="430" cy="300" rx="250" ry="150" fill="none" stroke="rgba(255,255,255,0.08)" />
+      <ellipse cx="820" cy="340" rx="210" ry="120" fill="none" stroke="rgba(255,255,255,0.08)" />
+      <path className="tl-flight" d="M180 420C320 180 520 160 690 250" />
+      <path className="tl-flight" d="M260 220C480 80 760 140 980 300" />
+      <path className="tl-flight" d="M520 460C700 360 860 390 1080 300" />
+      <circle className="tl-node" cx="180" cy="420" r="4" />
+      <circle className="tl-node" cx="690" cy="250" r="4" />
+      <circle className="tl-node" cx="260" cy="220" r="4" />
+      <circle className="tl-node" cx="980" cy="300" r="4" />
+      <circle className="tl-node" cx="1080" cy="300" r="4" />
+    </svg>
   );
 }
 
-const inputClass =
-  "w-full rounded-xl border border-[#d5e0e8] bg-white px-3.5 py-3 text-base text-[#142433] outline-none transition placeholder:text-[#8aa0b0] focus:border-[#0f6e78] focus:ring-4 focus:ring-[#0f6e78]/15";
+function SearchPreview() {
+  return (
+    <div className="tl-panel tl-search">
+      <p className="tl-panel-label">Interface preview · Search</p>
+      <div className="tl-route">
+        <span>NYC</span>
+        <span>→</span>
+        <span>LON</span>
+        <span>12 Oct</span>
+      </div>
+      <div className="tl-search-row">
+        <strong>08:40</strong>
+        <span>Nonstop</span>
+        <em>$640</em>
+      </div>
+      <div className="tl-search-row is-hot">
+        <strong>11:15</strong>
+        <span>1 stop</span>
+        <em>$512</em>
+      </div>
+      <div className="tl-search-row">
+        <strong>18:05</strong>
+        <span>Nonstop</span>
+        <em>$705</em>
+      </div>
+    </div>
+  );
+}
 
 export default function TravelLanding() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -166,6 +293,25 @@ export default function TravelLanding() {
     if (pathname !== "/") {
       window.history.replaceState(null, "", `/${hash || ""}`);
     }
+
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".tl-reveal"));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      nodes.forEach((node) => node.classList.add("is-in"));
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16 },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
   }, []);
 
   function update(name: keyof FormState, value: string) {
@@ -175,7 +321,6 @@ export default function TravelLanding() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-
     const payload = {
       name: form.name.trim(),
       company: form.company.trim(),
@@ -183,16 +328,14 @@ export default function TravelLanding() {
       partnershipType: form.partnershipType.trim(),
       message: form.message.trim(),
     };
-
     if (!payload.name || !payload.company || !payload.email || !payload.partnershipType || !payload.message) {
       setError("Please complete every field.");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
-      setError("Enter a valid email address.");
+      setError("Enter a valid business email.");
       return;
     }
-
     setSubmitting(true);
     try {
       const response = await fetch("/api/support/travel-partnership", {
@@ -215,12 +358,7 @@ export default function TravelLanding() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-[#f4f7fb] text-[#142433]"
-      dir="ltr"
-      lang="en"
-      style={{ fontFamily: "Inter, system-ui, sans-serif" }}
-    >
+    <div className="travel-landing" dir="ltr" lang="en">
       <Helmet>
         <html lang="en" dir="ltr" />
         <title>{TRAVEL_SEO_TITLE}</title>
@@ -232,365 +370,348 @@ export default function TravelLanding() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://travel.bizuply.com/" />
         <meta property="og:locale" content="en_US" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={TRAVEL_SEO_TITLE} />
-        <meta name="twitter:description" content={TRAVEL_SEO_DESCRIPTION} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Bizuply LLC",
-            url: "https://bizuply.com",
-            email: "support@bizuply.com",
-            brand: {
-              "@type": "Brand",
-              name: "Bizuply Travel",
-              url: "https://travel.bizuply.com/",
-            },
-          })}
-        </script>
       </Helmet>
 
-      <header className="sticky top-0 z-40 border-b border-[#e4edf3] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <a href="#top" className="flex min-w-0 items-center gap-2.5">
-            <img
-              src="/bizuply%20logo.webp"
-              alt="Bizuply"
-              className="h-8 w-auto"
-            />
-            <span className="text-[11px] font-semibold tracking-[0.16em] text-[#0f6e78] sm:text-xs">
-              TRAVEL
-            </span>
-          </a>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-[#3e5568] lg:flex">
-            <a className="hover:text-[#0f6e78]" href="#about">About</a>
-            <a className="hover:text-[#0f6e78]" href="#services">Services</a>
-            <a className="hover:text-[#0f6e78]" href="#platform">Platform</a>
-            <a className="hover:text-[#0f6e78]" href="#partners">Partners</a>
-            <a className="hover:text-[#0f6e78]" href="#contact">Contact</a>
-          </nav>
+      <header className="tl-nav">
+        <a className="tl-brand" href="#top">
+          <img src="/bizuply%20logo.webp" alt="Bizuply" />
+          <span>TRAVEL</span>
+        </a>
+        <nav className={menuOpen ? "tl-nav-links is-open" : "tl-nav-links"}>
+          {NAV.map(([label, href]) => (
+            <a key={label} href={href} onClick={() => setMenuOpen(false)}>
+              {label}
+            </a>
+          ))}
           <button
             type="button"
-            onClick={scrollToContact}
-            className="shrink-0 rounded-full bg-[#0f6e78] px-3 py-2 text-center text-[11px] font-semibold leading-tight text-white transition hover:bg-[#0c5961] sm:px-4 sm:text-sm"
+            className="tl-btn tl-btn-solid tl-mobile-cta"
+            onClick={() => {
+              setMenuOpen(false);
+              scrollTo("contact");
+            }}
           >
-            {CTA_LABEL}
+            {INQUIRY_LABEL}
           </button>
-        </div>
-        <nav className="flex flex-wrap gap-x-4 gap-y-1 border-t border-[#eef3f6] px-4 py-2 text-sm text-[#3e5568] lg:hidden">
-          <a href="#about">About</a>
-          <a href="#services">Services</a>
-          <a href="#platform">Platform</a>
-          <a href="#partners">Partners</a>
-          <a href="#contact">Contact</a>
         </nav>
+        <button type="button" className="tl-btn tl-btn-solid tl-desktop-cta" onClick={() => scrollTo("contact")}>
+          {INQUIRY_LABEL}
+        </button>
+        <button
+          type="button"
+          className="tl-menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden bg-[#0e1c2f] text-white">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(15,110,120,0.45),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.06),transparent_36%)]" />
-          <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:py-24">
+        <section className="tl-hero">
+          <WorldMap />
+          <div className="tl-hero-grid">
             <div>
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-[#d7f3f5] sm:text-sm">
-                Currently expanding our API and distribution partnerships.
+              <p className="tl-kicker">
+                <i />
+                Currently expanding our global API partner network
               </p>
-              <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
-                Travel Technology Infrastructure for Modern Travel Businesses
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[#d5e2ec] sm:text-lg">
-                Bizuply Travel is a travel technology platform being developed by Bizuply LLC to connect travel businesses and customers with flights, hotels, cars, activities, event tickets, restaurants, travel insurance, eSIM and airport transfer services through one unified platform.
+              <h1>One Platform. Every Travel Experience.</h1>
+              <p className="tl-lead">
+                Bizuply Travel is building a unified travel technology platform connecting flights, stays, cars, activities, events, restaurants, insurance, eSIM and transfers through one powerful ecosystem.
               </p>
-              <div className="mt-8">
-                <button
-                  type="button"
-                  onClick={scrollToContact}
-                  className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0e1c2f] transition hover:bg-[#e7f4f5] sm:text-base"
-                >
-                  {CTA_LABEL}
+              <div className="tl-hero-actions">
+                <button type="button" className="tl-btn tl-btn-light" onClick={() => scrollTo("platform")}>
+                  {EXPLORE_LABEL}
+                </button>
+                <button type="button" className="tl-btn tl-btn-ghost" onClick={() => scrollTo("contact")}>
+                  {INQUIRY_LABEL}
                 </button>
               </div>
             </div>
-            <aside className="rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl shadow-black/20 backdrop-blur sm:p-7">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#9fd4d8]">
-                For travel suppliers
-              </p>
-              <ul className="mt-5 space-y-4 text-sm leading-6 text-[#e7eef4] sm:text-base">
-                <li>
-                  <span className="block font-semibold text-white">Who</span>
-                  Bizuply LLC, a U.S.-based SaaS technology company.
-                </li>
-                <li>
-                  <span className="block font-semibold text-white">What</span>
-                  Bizuply Travel, a unified booking and management platform in development.
-                </li>
-                <li>
-                  <span className="block font-semibold text-white">Why API access</span>
-                  To connect travel businesses and customers with supplier search, pricing, booking, and order workflows.
-                </li>
-                <li>
-                  <span className="block font-semibold text-white">Contact</span>
-                  <a className="text-[#b7e6e9] underline decoration-white/30 underline-offset-4" href="mailto:support@bizuply.com">
-                    support@bizuply.com
-                  </a>
-                </li>
-              </ul>
-            </aside>
-          </div>
-        </section>
-
-        <section id="about" className="scroll-mt-28 mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0f6e78]">About</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10263a] sm:text-4xl">
-              Built by Bizuply LLC
-            </h2>
-            <p className="mt-5 text-base leading-7 text-[#3e5568] sm:text-lg">
-              Bizuply LLC is a U.S.-based SaaS technology company developing software platforms for businesses. Bizuply Travel is our travel technology initiative focused on creating a unified booking and management experience for travel-related products and services.
-            </p>
-          </div>
-        </section>
-
-        <section id="services" className="scroll-mt-28 border-y border-[#e4edf3] bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0f6e78]">Travel Services</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10263a] sm:text-4xl">
-                One platform for travel products
-              </h2>
-              <p className="mt-4 text-base leading-7 text-[#3e5568]">
-                Each service is a category the platform is being designed to connect through API providers and commercial partners.
-              </p>
+            <div className="tl-stage">
+              <SearchPreview />
+              <div className="tl-float-row">
+                <div className="tl-panel tl-book">
+                  <p className="tl-panel-label">Booking preview</p>
+                  <div className="tl-book-row">
+                    <span>Stay · 3 nights</span>
+                    <em>Hold</em>
+                  </div>
+                  <div className="tl-book-row">
+                    <span>Airport transfer</span>
+                    <em>Queued</em>
+                  </div>
+                </div>
+                <div className="tl-panel tl-nodes">
+                  <p className="tl-panel-label">Integration layer</p>
+                  <ul>
+                    <li>Air <b>API</b></li>
+                    <li>Stay <b>API</b></li>
+                    <li>Events <b>API</b></li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {SERVICES.map((service) => {
-                const Icon = service.icon;
+          </div>
+        </section>
+
+        <section id="platform" className="tl-section tl-reveal">
+          <p className="tl-eyebrow">Platform</p>
+          <h2>One Unified Travel Ecosystem</h2>
+          <p className="tl-intro">
+            Ten travel categories, planned as connections to API providers and commercial partners. The product surface stays one platform.
+          </p>
+          <div className="tl-services">
+            {SERVICES.map((service) => {
+              const Icon = service.icon;
+              return (
+                <article key={service.title} className="tl-service">
+                  <div className="tl-icon">
+                    <Icon strokeWidth={1.75} />
+                  </div>
+                  <h3>{service.title}</h3>
+                  <p>{service.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section id="solutions" className="tl-section tl-reveal" style={{ paddingTop: 0 }}>
+          <p className="tl-eyebrow">Solutions</p>
+          <h2>Built for Travel Businesses</h2>
+          <p className="tl-intro">
+            Capabilities the platform is being built to support for agencies, operators, and their customers.
+          </p>
+          <div className="tl-bento">
+            <div className="tl-console">
+              <div className="tl-console-top">
+                <span>Dashboard preview</span>
+                <span>Bizuply Travel</span>
+              </div>
+              <div className="tl-console-grid">
+                <div className="tl-mini">
+                  <strong>Orders today</strong>
+                  <div className="tl-bar"><span style={{ width: "72%" }} /></div>
+                  <div className="tl-bar"><span style={{ width: "48%" }} /></div>
+                  <div className="tl-bar"><span style={{ width: "63%" }} /></div>
+                </div>
+                <div className="tl-mini">
+                  <strong>Categories</strong>
+                  <p>Flights, stays, ground, events, and protection in one workspace.</p>
+                </div>
+              </div>
+            </div>
+            <div className="tl-features">
+              {FEATURES.map((feature) => {
+                const Icon = feature.icon;
                 return (
-                  <article key={service.title} className="rounded-2xl border border-[#e4edf3] bg-[#f8fbfc] p-5">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e7f4f5] text-[#0f6e78]">
-                      <Icon className="h-5 w-5" strokeWidth={1.75} />
+                  <article key={feature.title} className="tl-feature">
+                    <div className="tl-icon">
+                      <Icon strokeWidth={1.75} />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#10263a]">{service.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[#3e5568]">{service.text}</p>
+                    <h3>{feature.title}</h3>
+                    <p>{feature.text}</p>
                   </article>
                 );
               })}
             </div>
           </div>
-        </section>
 
-        <section id="platform" className="scroll-mt-28 mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0f6e78]">Platform Capabilities</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10263a] sm:text-4xl">
-              Built for supplier and customer workflows
-            </h2>
-            <p className="mt-4 text-base leading-7 text-[#3e5568]">
-              Bizuply Travel is being built to support these capabilities through supplier and partner APIs.
+          <div id="how-it-works" style={{ marginTop: 72 }}>
+            <p className="tl-eyebrow">How it works</p>
+            <h2>Search, compare, book, manage</h2>
+            <div className="tl-flow">
+              {STEPS.map(([num, title, text], index) => (
+                <React.Fragment key={title}>
+                  <article className="tl-step-card">
+                    <div className="tl-step-no">{num}</div>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </article>
+                  {index < STEPS.length - 1 ? <div className="tl-arrow" aria-hidden="true">→</div> : null}
+                </React.Fragment>
+              ))}
+            </div>
+            <p className="tl-note">
+              Powered by multiple travel, ticketing and service providers through a unified integration layer.
             </p>
           </div>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-            {CAPABILITIES.map((item) => {
-              const Icon = item.icon;
-              return (
-                <li key={item.title} className="flex items-center gap-3 rounded-2xl border border-[#e4edf3] bg-white px-4 py-4">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0e1c2f] text-white">
-                    <Icon className="h-4 w-4" strokeWidth={1.75} />
-                  </span>
-                  <span className="font-medium text-[#163044]">{item.title}</span>
-                </li>
-              );
-            })}
-          </ul>
         </section>
 
-        <section id="partners" className="scroll-mt-28 bg-[#0e1c2f] text-white">
-          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
+        <section id="partners" className="tl-band">
+          <div className="tl-band-inner tl-reveal">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#9fd4d8]">
-                For API &amp; Distribution Partners
+              <p className="tl-eyebrow">Built for API Partnerships</p>
+              <h2>Supplier and distribution access</h2>
+              <p>
+                We are actively expanding our supplier and distribution network.
               </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                Partnerships we are seeking
-              </h2>
-              <div className="mt-5 space-y-4 text-base leading-7 text-[#d5e2ec] sm:text-lg">
-                <p>
-                  We are currently expanding our supplier and distribution network and are interested in commercial API, affiliate, reseller, white-label and technology partnerships with travel and leisure providers.
-                </p>
-                <p>
-                  We are seeking sandbox and production access for search, availability, pricing, booking, cancellation, order management and related partner APIs.
-                </p>
+              <p>
+                Bizuply Travel is currently onboarding API, distribution, affiliate, reseller and white-label partners across travel, mobility, events and leisure.
+              </p>
+              <div style={{ marginTop: 24 }}>
+                <button type="button" className="tl-btn tl-btn-light" onClick={() => scrollTo("contact")}>
+                  {PARTNER_LABEL}
+                </button>
               </div>
             </div>
-            <div id="company" className="scroll-mt-28 rounded-3xl bg-white p-6 text-[#142433] sm:p-8">
-              <h2 className="text-xl font-semibold text-[#10263a]">Company Details</h2>
-              <dl className="mt-5 space-y-4 text-sm sm:text-base">
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[#6b8192]">Company</dt>
-                  <dd className="mt-1 font-medium">Bizuply LLC</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[#6b8192]">Website</dt>
-                  <dd className="mt-1">
-                    <a className="font-medium text-[#0f6e78] underline decoration-[#0f6e78]/30 underline-offset-4" href="https://bizuply.com">
-                      bizuply.com
-                    </a>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[#6b8192]">Travel Platform</dt>
-                  <dd className="mt-1">
-                    <a className="font-medium text-[#0f6e78] underline decoration-[#0f6e78]/30 underline-offset-4" href="https://travel.bizuply.com">
-                      travel.bizuply.com
-                    </a>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[#6b8192]">Email</dt>
-                  <dd className="mt-1">
-                    <a className="inline-flex items-center gap-2 font-medium text-[#0f6e78] underline decoration-[#0f6e78]/30 underline-offset-4" href="mailto:support@bizuply.com">
-                      <Mail className="h-4 w-4" aria-hidden="true" />
-                      support@bizuply.com
-                    </a>
-                  </dd>
-                </div>
-              </dl>
+            <div className="tl-layer" aria-hidden="true">
+              <div className="tl-layer-row">
+                <div className="tl-chip">Air</div>
+                <div className="tl-chip">Stay</div>
+                <div className="tl-chip">Ground</div>
+                <div className="tl-chip">Events</div>
+              </div>
+              <div className="tl-layer-row">
+                <div className="tl-chip">Activities</div>
+                <div className="tl-chip">Insurance</div>
+                <div className="tl-chip">eSIM</div>
+              </div>
+              <div className="tl-hub">Unified integration layer</div>
+              <div className="tl-hub">Bizuply Travel</div>
             </div>
           </div>
         </section>
 
-        <section id="contact" className="scroll-mt-28 mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0f6e78]">Contact</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10263a] sm:text-4xl">
-                {CTA_LABEL}
-              </h2>
-              <p className="mt-4 text-base leading-7 text-[#3e5568]">
-                Tell us who you are and which partnership you want to discuss. This form is sent to support@bizuply.com. No account is required.
-              </p>
-            </div>
+        <section id="technology" className="tl-section tl-reveal">
+          <p className="tl-eyebrow">Technology</p>
+          <h2>Infrastructure for travel products</h2>
+          <p className="tl-intro">
+            A partner-ready architecture for search, booking, and order events. Provider connections are added as commercial access is granted.
+          </p>
+          <div className="tl-tech-grid">
+            {TECH.map((item) => (
+              <article key={item.title} className="tl-tech-card">
+                <div className="tl-viz">{item.viz}</div>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-            <div className="rounded-3xl border border-[#e4edf3] bg-white p-5 shadow-sm sm:p-7">
-              {sent ? (
-                <div role="status" className="rounded-2xl bg-[#e7f4f5] px-5 py-6 text-[#0e1c2f]">
-                  <h3 className="text-lg font-semibold">Inquiry sent</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#24545a]">
-                    Thank you. Your partnership inquiry was sent to support@bizuply.com. We will reply to the email address you provided.
-                  </p>
-                  <button
-                    type="button"
-                    className="mt-4 text-sm font-semibold text-[#0f6e78] underline underline-offset-4"
-                    onClick={() => setSent(false)}
-                  >
-                    Send another inquiry
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={onSubmit} noValidate className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <FieldLabel htmlFor="travel-name">Name</FieldLabel>
-                      <input
-                        id="travel-name"
-                        name="name"
-                        autoComplete="name"
-                        required
-                        maxLength={120}
-                        value={form.name}
-                        onChange={(event) => update("name", event.target.value)}
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <FieldLabel htmlFor="travel-company">Company</FieldLabel>
-                      <input
-                        id="travel-company"
-                        name="company"
-                        autoComplete="organization"
-                        required
-                        maxLength={160}
-                        value={form.company}
-                        onChange={(event) => update("company", event.target.value)}
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <FieldLabel htmlFor="travel-email">Email</FieldLabel>
-                      <input
-                        id="travel-email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        maxLength={200}
-                        value={form.email}
-                        onChange={(event) => update("email", event.target.value)}
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <FieldLabel htmlFor="travel-partnership-type">Partnership Type</FieldLabel>
-                      <select
-                        id="travel-partnership-type"
-                        name="partnershipType"
-                        required
-                        value={form.partnershipType}
-                        onChange={(event) => update("partnershipType", event.target.value)}
-                        className={inputClass}
-                      >
-                        <option value="">Select partnership type</option>
-                        {PARTNERSHIP_TYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+        <section id="about" className="tl-section tl-reveal" style={{ paddingTop: 0 }}>
+          <div className="tl-split">
+            <div className="tl-contact-copy" id="contact-intro">
+              <p className="tl-eyebrow">Company</p>
+              <h2>Bizuply LLC</h2>
+              <p>
+                Bizuply Travel is a product initiative by Bizuply LLC, a U.S.-based SaaS technology company building digital infrastructure for businesses.
+              </p>
+              <div className="tl-company" style={{ marginTop: 22 }}>
+                <dl>
+                  <div>
+                    <dt>Company</dt>
+                    <dd>Bizuply LLC</dd>
                   </div>
                   <div>
-                    <FieldLabel htmlFor="travel-message">Message</FieldLabel>
-                    <textarea
-                      id="travel-message"
-                      name="message"
-                      required
-                      rows={6}
-                      maxLength={4000}
-                      value={form.message}
-                      onChange={(event) => update("message", event.target.value)}
-                      className={inputClass}
-                    />
+                    <dt>Main Website</dt>
+                    <dd><a href="https://bizuply.com">bizuply.com</a></dd>
                   </div>
-                  {error ? (
-                    <p role="alert" className="text-sm font-medium text-[#9f2d2d]">
-                      {error}
+                  <div>
+                    <dt>Travel Platform</dt>
+                    <dd><a href="https://travel.bizuply.com">travel.bizuply.com</a></dd>
+                  </div>
+                  <div>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:support@bizuply.com">support@bizuply.com</a></dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <div id="contact">
+              <p className="tl-eyebrow">Contact</p>
+              <h2 style={{ marginBottom: 16 }}>Talk with our team</h2>
+              <div className="tl-form">
+                {sent ? (
+                  <div className="tl-success" role="status">
+                    <h3>Inquiry sent</h3>
+                    <p>
+                      Thank you. Your partnership inquiry was sent to support@bizuply.com. We will reply to the business email you provided.
                     </p>
-                  ) : null}
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full rounded-full bg-[#0f6e78] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0c5961] disabled:cursor-wait disabled:opacity-70 sm:w-auto"
-                  >
-                    {submitting ? "Sending..." : "Send inquiry"}
-                  </button>
-                </form>
-              )}
+                    <button type="button" className="tl-btn tl-btn-solid" style={{ marginTop: 16 }} onClick={() => setSent(false)}>
+                      Send another inquiry
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={onSubmit} noValidate>
+                    <div className="tl-fields">
+                      <div className="tl-field">
+                        <label htmlFor="travel-name">Name</label>
+                        <input id="travel-name" name="name" autoComplete="name" required maxLength={120} value={form.name} onChange={(event) => update("name", event.target.value)} />
+                      </div>
+                      <div className="tl-field">
+                        <label htmlFor="travel-company">Company</label>
+                        <input id="travel-company" name="company" autoComplete="organization" required maxLength={160} value={form.company} onChange={(event) => update("company", event.target.value)} />
+                      </div>
+                      <div className="tl-field">
+                        <label htmlFor="travel-email">Business Email</label>
+                        <input id="travel-email" name="email" type="email" autoComplete="email" required maxLength={200} value={form.email} onChange={(event) => update("email", event.target.value)} />
+                      </div>
+                      <div className="tl-field">
+                        <label htmlFor="travel-partnership-type">Partnership Type</label>
+                        <select id="travel-partnership-type" name="partnershipType" required value={form.partnershipType} onChange={(event) => update("partnershipType", event.target.value)}>
+                          <option value="">Select partnership type</option>
+                          {PARTNERSHIP_TYPES.map((type) => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="tl-field full">
+                        <label htmlFor="travel-message">Message</label>
+                        <textarea id="travel-message" name="message" required rows={5} maxLength={4000} value={form.message} onChange={(event) => update("message", event.target.value)} />
+                      </div>
+                    </div>
+                    {error ? <p className="tl-error" role="alert">{error}</p> : null}
+                    <button type="submit" className="tl-btn tl-btn-solid" disabled={submitting}>
+                      {submitting ? "Sending..." : "Send inquiry"}
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-[#e4edf3] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-[#5c7386] sm:px-6 lg:px-8">
-          <p>© Bizuply LLC. All rights reserved.</p>
-          <p>
-            <a className="underline decoration-[#5c7386]/40 underline-offset-4" href="mailto:support@bizuply.com">
-              support@bizuply.com
-            </a>
-          </p>
+      <footer className="tl-footer">
+        <div className="tl-footer-grid">
+          <div>
+            <h2>Bizuply Travel</h2>
+            <p>
+              Travel technology infrastructure by Bizuply LLC. A unified platform in development for flights, stays, mobility, events, and related services.
+            </p>
+          </div>
+          <div>
+            <h3>Platform</h3>
+            <ul>
+              <li><a href="#platform">Ecosystem</a></li>
+              <li><a href="#solutions">Solutions</a></li>
+              <li><a href="#how-it-works">How it works</a></li>
+              <li><a href="#technology">Technology</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Partners</h3>
+            <ul>
+              <li><a href="#partners">API partnerships</a></li>
+              <li><a href="#contact">Become a partner</a></li>
+              <li><a href="mailto:support@bizuply.com">support@bizuply.com</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Company</h3>
+            <ul>
+              <li><a href="#about">About Bizuply LLC</a></li>
+              <li><a href="https://bizuply.com">bizuply.com</a></li>
+              <li><a href="https://travel.bizuply.com">travel.bizuply.com</a></li>
+            </ul>
+          </div>
         </div>
+        <div className="tl-footer-base">© Bizuply LLC. All rights reserved.</div>
       </footer>
     </div>
   );

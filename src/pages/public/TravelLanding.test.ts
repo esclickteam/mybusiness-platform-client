@@ -8,17 +8,14 @@ const source = readFileSync(
 );
 
 describe("Bizuply Travel landing copy", () => {
-  it("states the company, product, and partnership request without invented credentials", () => {
-    expect(source).toContain(
-      "Travel Technology Infrastructure for Modern Travel Businesses",
-    );
-    expect(source).toContain("Built by Bizuply LLC");
-    expect(source).toContain(
-      "Currently expanding our API and distribution partnerships.",
-    );
+  it("presents the product and partnership request without invented credentials", () => {
+    expect(source).toContain("One Platform. Every Travel Experience.");
+    expect(source).toContain("Currently expanding our global API partner network");
+    expect(source).toContain("API & Partnership Inquiries");
+    expect(source).toContain("Become a Partner");
     expect(source).toContain("support@bizuply.com");
-    expect(source).toContain("Partnership & API Inquiries");
-    expect(source).not.toMatch(/IATA|Amadeus|Expedia|Duffel|Ticketmaster/i);
+    expect(source).toContain("Bizuply LLC");
+    expect(source).not.toMatch(/IATA|Amadeus|Expedia|Duffel|Ticketmaster|Travelport|CarTrawler/i);
     expect(source).not.toMatch(/\bARC\b|\bGDS\b|accredit/i);
   });
 });
