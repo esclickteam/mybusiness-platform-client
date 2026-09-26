@@ -20,6 +20,7 @@ import { registerServiceWorkerNotificationBridge } from "./utils/notificationNav
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
+import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
 import App from "./App.jsx";
 
@@ -57,8 +58,17 @@ if (import.meta.env.PROD) {
 ========================================================== */
 
 const onPublicCustomerSite = isPublicCustomerSiteHost();
+const onTravelHost = isBizuplyTravelHost(
+  typeof window !== "undefined" ? window.location.hostname : ""
+);
 
-if (onPublicCustomerSite) {
+if (onTravelHost) {
+  document.body.style.background = "#f4f7fb";
+  document.documentElement.style.background = "#f4f7fb";
+  document.body.setAttribute("data-theme", "light");
+  document.documentElement.lang = "en";
+  document.documentElement.dir = "ltr";
+} else if (onPublicCustomerSite) {
   // Neutral first paint — no Bizuply platform theme on published sites.
   document.body.style.background = "#ffffff";
   document.documentElement.style.background = "#ffffff";
@@ -99,6 +109,9 @@ const queryClient = new QueryClient({
 ========================================================== */
 
 function AppLoader() {
+  if (isBizuplyTravelHost(window.location.hostname)) {
+    return <div className="min-h-screen bg-[#f4f7fb]" />;
+  }
   if (isPublicCustomerSiteHost()) {
     return <PublicSiteLoader fullScreen label="Loading" />;
   }

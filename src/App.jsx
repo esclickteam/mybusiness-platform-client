@@ -16,6 +16,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
+import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
@@ -215,6 +216,7 @@ const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
 const PartnerHostHome = lazy(() => import("./pages/public/PartnerHostHome"));
+const TravelLanding = lazy(() => import("./pages/public/TravelLanding"));
 const PartnerCheckoutSuccess = lazy(() => import("./pages/public/PartnerCheckoutSuccess"));
 const PartnerMyPage = lazy(() => import("./pages/partner/PartnerMyPage"));
 const PartnerReferrals = lazy(() => import("./pages/partner/PartnerReferrals"));
@@ -823,6 +825,7 @@ export default function App() {
   const appLang = getHtmlLang(i18n.language);
 
   const isMiniSiteHost = isPublicMiniSiteHost();
+  const travelHost = isBizuplyTravelHost(getCurrentHostname());
   const isEarlyAccessLanding = location.pathname === "/early-access";
   // Dev-only visual QA pages — no public chrome so screenshots stay clean.
   const isDevVisualRoute = location.pathname.startsWith("/dev/");
@@ -884,27 +887,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (isMiniSiteHost) return;
+    if (isMiniSiteHost || travelHost) return;
     void registerServiceWorker();
-  }, [isMiniSiteHost]);
+  }, [isMiniSiteHost, travelHost]);
 
   useEffect(() => {
-    if (isMiniSiteHost) return undefined;
+    if (isMiniSiteHost || travelHost) return undefined;
     return listenForPushSubscriptionChange();
-  }, [isMiniSiteHost]);
+  }, [isMiniSiteHost, travelHost]);
 
   useEffect(() => {
-    if (isMiniSiteHost || !user) return;
+    if (isMiniSiteHost || travelHost || !user) return;
     // Partner (and other non-tenant) sessions have no businessId — skip the
     // business notification-settings / push/subscribe bootstrap entirely.
     if (!canUseBusinessPushContext(user)) return;
     void ensurePushSubscription();
-  }, [isMiniSiteHost, user]);
+  }, [isMiniSiteHost, travelHost, user]);
 
   useEffect(() => {
-    if (isMiniSiteHost) return;
+    if (isMiniSiteHost || travelHost) return;
     preloadDashboardComponents();
-  }, [isMiniSiteHost]);
+  }, [isMiniSiteHost, travelHost]);
+
+  if (travelHost) {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[#f4f7fb]" />}>
+        <TravelLanding />
+      </Suspense>
+    );
+  }
 
   if (isMiniSiteHost) {
     return <PublicMiniSitePage />;

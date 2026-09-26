@@ -336,6 +336,7 @@ export default function WhatsAppManageFundsModal({
 
   return (
     <div className="wa-billing-modal-root" role="presentation" dir={dir}>
+      {/* Backdrop must paint under the dialog (see .wa-billing-modal-root CSS). */}
       <button
         type="button"
         className="wa-billing-modal-backdrop"

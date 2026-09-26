@@ -12,6 +12,12 @@
  * Optional narrow: BIZUPLY_SEO_EDGE_ALLOWLIST=host1,host2 (omit or "*" = 100%)
  */
 
+import {
+  TRAVEL_SEO_DESCRIPTION,
+  TRAVEL_SEO_TITLE,
+  isBizuplyTravelHost,
+} from "./src/lib/travelHost.mjs";
+
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 const STAGING_PUBLIC_SITE_DOMAIN = "sites-staging.bizuply.com";
@@ -111,6 +117,7 @@ function getHost(request) {
 
 function isCustomerSiteHost(host) {
   if (!host) return false;
+  if (isBizuplyTravelHost(host)) return false;
   if (host === PUBLIC_SITE_DOMAIN || host === STAGING_PUBLIC_SITE_DOMAIN) return false;
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
@@ -402,8 +409,64 @@ async function handleGoogleHtmlVerification(request, fileName) {
   }
 }
 
+function travelHeadHtml() {
+  return [
+    `<title>${TRAVEL_SEO_TITLE}</title>`,
+    `<meta name="description" content="${TRAVEL_SEO_DESCRIPTION}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="https://travel.bizuply.com/" />`,
+    `<meta property="og:title" content="${TRAVEL_SEO_TITLE}" />`,
+    `<meta property="og:description" content="${TRAVEL_SEO_DESCRIPTION}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:url" content="https://travel.bizuply.com/" />`,
+    `<meta property="og:locale" content="en_US" />`,
+  ].join("\n");
+}
+
+function travelSeoFile(pathname) {
+  const isRobots = pathname === "/robots.txt";
+  const body = isRobots
+    ? "User-agent: *\nAllow: /\n\nSitemap: https://travel.bizuply.com/sitemap.xml\n"
+    : `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://travel.bizuply.com/</loc></url>\n</urlset>\n`;
+  return seoResponse(body, { isRobots, status: 200, source: "travel" });
+}
+
+async function handleTravelDocument(request) {
+  if (!isDocumentNavigation(request)) return passThrough();
+
+  try {
+    const htmlRes = await fetch(new URL("/index.html", request.url), {
+      headers: {
+        accept: "text/html",
+        "x-bizuply-seo-middleware": "1",
+      },
+    });
+    if (!htmlRes.ok) return passThrough();
+    const html = await htmlRes.text();
+    if (!html || !/<html[\s>]/i.test(html)) return passThrough();
+    return new Response(injectSeoHead(html, travelHeadHtml()), {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-seo-edge": "travel",
+      },
+    });
+  } catch {
+    return passThrough();
+  }
+}
+
 export default async function middleware(request) {
+  const host = getHost(request);
   const pathname = getPathname(request);
+
+  if (isBizuplyTravelHost(host)) {
+    if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+      return travelSeoFile(pathname);
+    }
+    return handleTravelDocument(request);
+  }
 
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     return handleRobotsOrSitemap(request, pathname);
