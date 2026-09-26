@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when push delivery / ack behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-delivery-ack-v11";
+const SW_VERSION = "bizuply-sw-delivery-ack-v12";
 const LEGACY_GENERIC_TAG = "bizuply-notification";
 const LEGACY_GENERIC_BODY = "יש לך התראה חדשה";
 
@@ -121,6 +121,7 @@ async function ackPushDelivery(payload, shown) {
       body: JSON.stringify({
         claimKey,
         correlationId,
+        leadId: payload.leadId || null,
         notificationId: payload.tag || claimKey || "",
         swVersion: SW_VERSION,
         shown: Boolean(shown),
@@ -177,7 +178,8 @@ async function showPushNotification(title, options) {
         body: options.body,
         tag: options.tag,
         data: options.data,
-        renotify: false,
+        // iOS still honors renotify for same-tag re-alerts when true.
+        renotify: options.renotify === true,
       }
     : options;
 
@@ -234,6 +236,13 @@ self.addEventListener("push", (event) => {
   // Data-only Web Push has no top-level title/body. A leftover SW, or an
   // empty iOS push event, used to paint "BizUply / יש לך התראה חדשה".
   if (!title || !body) {
+    console.warn("[sw] PUSH dropped: missing title/body", {
+      leadId: payload.leadId || null,
+      claimKey: payload.claimKey || null,
+      correlationId: payload.correlationId || null,
+      hasTitle: Boolean(title),
+      hasBody: Boolean(body),
+    });
     return;
   }
   const targetUrl = payload.url || "/";
@@ -278,12 +287,17 @@ self.addEventListener("push", (event) => {
         ? "bizuply-" + String(claimKey).slice(-24)
         : "bizuply-" + Date.now());
 
+  // Lead tags are unique per leadId (`bizuply-lead-<id>`). Still set
+  // renotify:true so a re-delivery for the same lead alerts again instead of
+  // silently replacing a dismissed banner.
+  const renotify = Boolean(leadId) || isSoftphone;
+
   const options = {
     body,
     icon: absoluteAsset(payload.icon || "/android-chrome-192x192.png"),
     badge: absoluteAsset(payload.badge || "/favicon-v2.png"),
     tag: uniqueTag,
-    renotify: false,
+    renotify,
     requireInteraction: isSoftphone,
     data: {
       url: softphoneUrl,
