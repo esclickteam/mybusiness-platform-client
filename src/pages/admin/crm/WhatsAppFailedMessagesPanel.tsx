@@ -4,6 +4,7 @@ import { SecondaryButton } from "./AdminCrmUi";
 import {
   connectionBadgeLabel,
   normalizeManagedConnectionId,
+  type WhatsAppInboxConnection,
 } from "./whatsappWeb/whatsAppWebMessages";
 
 export type FailedWhatsAppRow = {
@@ -16,6 +17,10 @@ export type FailedWhatsAppRow = {
   connectionBadge?: string;
   connectionFlag?: string;
   managedConnectionId?: string;
+  phoneNumberId?: string;
+  phoneNumberLabel?: string;
+  businessPhoneNumber?: string;
+  wabaId?: string;
   metaError?: string;
   bodyPreview?: string;
   failedAt?: string | Date | null;
@@ -45,6 +50,30 @@ export default function WhatsAppFailedMessagesPanel({
   const [error, setError] = useState("");
   const [items, setItems] = useState<FailedWhatsAppRow[]>([]);
   const [direction, setDirection] = useState<"" | "inbound" | "outbound">("");
+  const [phoneNumberId, setPhoneNumberId] = useState("");
+  const [phoneOptions, setPhoneOptions] = useState<WhatsAppInboxConnection[]>(
+    []
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await adminCrmApi.whatsappInboxConnections();
+        if (cancelled) return;
+        setPhoneOptions(
+          (data.connections || []).filter((c: WhatsAppInboxConnection) =>
+            Boolean(c.phoneNumberId)
+          )
+        );
+      } catch {
+        if (!cancelled) setPhoneOptions([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -54,6 +83,7 @@ export default function WhatsAppFailedMessagesPanel({
         managedConnectionId: managedConnectionId
           ? normalizeManagedConnectionId(managedConnectionId)
           : undefined,
+        phoneNumberId: phoneNumberId || undefined,
         direction: direction || undefined,
         limit: 40,
       });
@@ -63,7 +93,7 @@ export default function WhatsAppFailedMessagesPanel({
     } finally {
       setLoading(false);
     }
-  }, [direction, managedConnectionId]);
+  }, [direction, managedConnectionId, phoneNumberId]);
 
   useEffect(() => {
     if (!open) return;
@@ -81,7 +111,7 @@ export default function WhatsAppFailedMessagesPanel({
           {open ? "הסתר Failed Messages" : "Failed Messages"}
         </button>
         {open ? (
-          <div className="flex gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             {(["", "outbound", "inbound"] as const).map((dir) => (
               <button
                 key={dir || "all"}
@@ -108,54 +138,91 @@ export default function WhatsAppFailedMessagesPanel({
         ) : null}
       </div>
       {open ? (
-        <div className="mt-2 max-h-56 space-y-2 overflow-y-auto">
-          {loading ? (
-            <p className="text-[11px] font-bold text-rose-700">טוען…</p>
+        <div className="mt-2 space-y-2">
+          {phoneOptions.length ? (
+            <label className="block text-[10px] font-bold text-rose-800" dir="ltr">
+              WhatsApp number
+              <select
+                className="mt-1 min-h-8 w-full rounded-lg border border-rose-200 bg-white px-2 text-[11px] font-bold text-[#111b21]"
+                value={phoneNumberId}
+                onChange={(e) => setPhoneNumberId(e.target.value)}
+              >
+                <option value="">All numbers</option>
+                {phoneOptions.map((opt) => (
+                  <option
+                    key={opt.phoneNumberId}
+                    value={opt.phoneNumberId || ""}
+                  >
+                    {opt.phoneNumberLabel ||
+                      `${connectionBadgeLabel(opt)} ${
+                        opt.businessPhoneNumber ||
+                        opt.businessDisplayPhone ||
+                        opt.phoneNumberId
+                      }`}
+                  </option>
+                ))}
+              </select>
+            </label>
           ) : null}
-          {error ? (
-            <p className="text-[11px] font-bold text-rose-700">{error}</p>
-          ) : null}
-          {!loading && !items.length ? (
-            <p className="text-[11px] font-bold text-rose-700/80">
-              אין הודעות שנכשלו בסינון הנוכחי
-            </p>
-          ) : null}
-          {items.map((row) => (
-            <div
-              key={row.id}
-              className="rounded-lg border border-rose-100 bg-white px-2.5 py-2 text-[11px] text-[#111b21]"
-              dir="ltr"
-            >
-              <div className="flex flex-wrap items-center gap-1.5 font-black">
-                <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                  {row.connectionFlag || ""}{" "}
-                  {connectionBadgeLabel({
-                    connectionBadge: row.connectionBadge,
-                    managedConnectionId: row.managedConnectionId,
-                  }) || row.connection || "—"}
-                </span>
-                <span className="text-[#667781]">{formatWhen(row.failedAt)}</span>
+          <div className="max-h-56 space-y-2 overflow-y-auto">
+            {loading ? (
+              <p className="text-[11px] font-bold text-rose-700">טוען…</p>
+            ) : null}
+            {error ? (
+              <p className="text-[11px] font-bold text-rose-700">{error}</p>
+            ) : null}
+            {!loading && !items.length ? (
+              <p className="text-[11px] font-bold text-rose-700/80">
+                אין הודעות שנכשלו בסינון הנוכחי
+              </p>
+            ) : null}
+            {items.map((row) => (
+              <div
+                key={row.id}
+                className="rounded-lg border border-rose-100 bg-white px-2.5 py-2 text-[11px] text-[#111b21]"
+                dir="ltr"
+              >
+                <div className="flex flex-wrap items-center gap-1.5 font-black">
+                  <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                    {row.connectionFlag || ""}{" "}
+                    {connectionBadgeLabel({
+                      connectionBadge: row.connectionBadge,
+                      managedConnectionId: row.managedConnectionId,
+                    }) || row.connection || "—"}
+                  </span>
+                  <span className="text-[#667781]">
+                    {formatWhen(row.failedAt)}
+                  </span>
+                </div>
+                <p className="mt-1">
+                  <span className="font-bold text-[#667781]">Sent from:</span>{" "}
+                  {row.sentFrom || row.businessPhoneNumber || "—"}
+                </p>
+                <p>
+                  <span className="font-bold text-[#667781]">Customer:</span>{" "}
+                  {row.customerName || "—"} {row.customerPhone || ""}
+                </p>
+                <p>
+                  <span className="font-bold text-[#667781]">Connection:</span>{" "}
+                  {row.connection || row.managedConnectionId || "—"}
+                </p>
+                {row.phoneNumberLabel || row.phoneNumberId ? (
+                  <p>
+                    <span className="font-bold text-[#667781]">Number:</span>{" "}
+                    {row.phoneNumberLabel || row.phoneNumberId}
+                  </p>
+                ) : null}
+                <p className="mt-1 break-words font-bold text-rose-700">
+                  Meta error: {row.metaError || "failed"}
+                </p>
+                {row.bodyPreview ? (
+                  <p className="mt-1 line-clamp-2 text-[#54656f]">
+                    {row.bodyPreview}
+                  </p>
+                ) : null}
               </div>
-              <p className="mt-1">
-                <span className="font-bold text-[#667781]">Sent from:</span>{" "}
-                {row.sentFrom || "—"}
-              </p>
-              <p>
-                <span className="font-bold text-[#667781]">Customer:</span>{" "}
-                {row.customerName || "—"} {row.customerPhone || ""}
-              </p>
-              <p>
-                <span className="font-bold text-[#667781]">Connection:</span>{" "}
-                {row.connection || row.managedConnectionId || "—"}
-              </p>
-              <p className="mt-1 break-words font-bold text-rose-700">
-                Meta error: {row.metaError || "failed"}
-              </p>
-              {row.bodyPreview ? (
-                <p className="mt-1 line-clamp-2 text-[#54656f]">{row.bodyPreview}</p>
-              ) : null}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : null}
     </div>
