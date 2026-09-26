@@ -124,6 +124,11 @@ export default function AdminCrmCustomer360() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [demoPrefill, setDemoPrefill] = useState<{
+    managedConnectionId?: string | null;
+    phone?: string | null;
+    contactName?: string | null;
+  } | null>(null);
   const [proposalOpen, setProposalOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
   const [activitySummaryView, setActivitySummaryView] = useState<any>(null);
@@ -280,6 +285,7 @@ export default function AdminCrmCustomer360() {
 
   function openCommunication(intent: "message" | "follow_up" | "demo" | "payment" = "message") {
     if (intent === "demo") {
+      setDemoPrefill(null);
       setDemoOpen(true);
       setWaIntent("message");
     } else {
@@ -384,7 +390,10 @@ export default function AdminCrmCustomer360() {
             ) : null}
             {perms.demoSend !== false ? (
               <AdminSendDemoButton
-                onClick={() => setDemoOpen(true)}
+                onClick={() => {
+                  setDemoPrefill(null);
+                  setDemoOpen(true);
+                }}
                 className="min-h-11 w-full px-3 py-2 text-sm"
               />
             ) : null}
@@ -896,7 +905,10 @@ export default function AdminCrmCustomer360() {
             canDemo={Boolean(perms.demoSend)}
             onBanner={setBanner}
             initialIntent={waIntent}
-            onOpenSendDemo={() => setDemoOpen(true)}
+            onOpenSendDemo={(prefill) => {
+              setDemoPrefill(prefill || null);
+              setDemoOpen(true);
+            }}
           />
         </div>
       )}
@@ -1117,13 +1129,23 @@ export default function AdminCrmCustomer360() {
 
       <AdminSendGuidedDemoModal
         open={demoOpen}
-        onClose={() => setDemoOpen(false)}
+        onClose={() => {
+          setDemoOpen(false);
+          setDemoPrefill(null);
+        }}
         context={{
-          customerName: customer.contactName || customer.companyName || "",
-          phone: customer.phone || "",
+          customerName:
+            demoPrefill?.contactName ||
+            customer.contactName ||
+            customer.companyName ||
+            "",
+          phone: demoPrefill?.phone || customer.phone || "",
           businessName: customer.companyName || "",
           sourceType: "manual",
           sourceCustomerId: customer.adminCustomerId || id || "",
+          managedConnectionId: demoPrefill?.managedConnectionId
+            ? String(demoPrefill.managedConnectionId).trim().toUpperCase()
+            : undefined,
         }}
       />
 

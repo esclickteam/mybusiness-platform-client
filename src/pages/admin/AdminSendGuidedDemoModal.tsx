@@ -67,6 +67,8 @@ export type SendDemoContext = {
   sourceCustomerId?: string;
   sourceUserId?: string;
   needCandidates?: string[];
+  /** When opened from a WhatsApp thread — send via that managed connection. */
+  managedConnectionId?: string;
 };
 
 type UiMode = "form" | "created" | "failure";
@@ -123,7 +125,11 @@ export default function AdminSendGuidedDemoModal({
   const submitLockRef = useRef(false);
 
   const load = useCallback(async () => {
-    const cat = await fetchGuidedDemoCatalog();
+    const catalogParams: Record<string, string> = {};
+    if (context.managedConnectionId) {
+      catalogParams.managedConnectionId = context.managedConnectionId;
+    }
+    const cat = await fetchGuidedDemoCatalog(catalogParams);
     setCatalog(cat.catalog);
     setDelivery(cat.delivery);
     const params: Record<string, string> = { limit: "20" };
@@ -135,7 +141,7 @@ export default function AdminSendGuidedDemoModal({
     } else {
       setHistory([]);
     }
-  }, [context.sourceLeadId, context.sourceCustomerId]);
+  }, [context.sourceLeadId, context.sourceCustomerId, context.managedConnectionId]);
 
   useEffect(() => {
     if (!open) return;
@@ -270,6 +276,9 @@ export default function AdminSendGuidedDemoModal({
         sourceCustomerId: context.sourceCustomerId || "",
         sourceUserId: context.sourceUserId || "",
         approvedNeedLabel,
+        ...(context.managedConnectionId
+          ? { managedConnectionId: context.managedConnectionId }
+          : {}),
       };
       const fingerprint = payloadFingerprint({
         customerName: payload.customerName,

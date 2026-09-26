@@ -5,8 +5,8 @@ export async function fetchGuidedDemoAdminStatus() {
   return data;
 }
 
-export async function fetchGuidedDemoCatalog() {
-  const { data } = await API.get("/admin/guided-demos/catalog");
+export async function fetchGuidedDemoCatalog(params = {}) {
+  const { data } = await API.get("/admin/guided-demos/catalog", { params });
   return data;
 }
 

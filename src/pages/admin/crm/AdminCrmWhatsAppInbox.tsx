@@ -58,6 +58,11 @@ export default function AdminCrmWhatsAppInbox() {
   const [banner, setBanner] = useState("");
   const [mobileChat, setMobileChat] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [demoPrefill, setDemoPrefill] = useState<{
+    managedConnectionId?: string | null;
+    phone?: string | null;
+    contactName?: string | null;
+  } | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncSummary, setSyncSummary] = useState<WhatsAppSyncSummary | null>(null);
 
@@ -555,7 +560,10 @@ export default function AdminCrmWhatsAppInbox() {
               canDemo={perms.demoSend !== false}
               onBanner={setBanner}
               onBack={() => setMobileChat(false)}
-              onOpenSendDemo={() => setDemoOpen(true)}
+              onOpenSendDemo={(prefill) => {
+                setDemoPrefill(prefill || null);
+                setDemoOpen(true);
+              }}
             />
           ) : (
             <div className="flex h-full min-h-0 w-full flex-1 flex-col items-center justify-center bg-[#f0f2f5] text-center">
@@ -572,12 +580,20 @@ export default function AdminCrmWhatsAppInbox() {
 
       <AdminSendGuidedDemoModal
         open={demoOpen}
-        onClose={() => setDemoOpen(false)}
+        onClose={() => {
+          setDemoOpen(false);
+          setDemoPrefill(null);
+        }}
         context={{
-          customerName: selected?.name || "",
-          phone: selected?.phone || "",
+          customerName:
+            demoPrefill?.contactName || selected?.name || "",
+          phone: demoPrefill?.phone || selected?.phone || "",
           sourceType: "manual",
           sourceCustomerId: selected?.adminCustomerId || "",
+          managedConnectionId:
+            normalizeManagedConnectionId(
+              demoPrefill?.managedConnectionId || selected?.managedConnectionId
+            ) || undefined,
         }}
       />
     </div>
