@@ -8418,7 +8418,7 @@
       "apiSettingsKeyCreated": "API key created — copy it now",
       "apiSettingsKeyRegenerated": "API key regenerated — copy it now",
       "apiSettingsKeyError": "Could not create or regenerate API key",
-      "apiSettingsKeyOnce": "This full key is shown once. Store it securely — Bizuply only keeps a hash.",
+      "apiSettingsKeyOnce": "Copy this API key now. For security reasons, it will not be shown again.",
       "apiSettingsNoKey": "No API key yet",
       "apiSettingsApiKey": "API Key",
       "apiSettingsBaseUrl": "API Base URL",
@@ -8445,7 +8445,6 @@
       "apiSettingsScopes": "Scopes",
       "apiSettingsCreatedAt": "Created",
       "apiSettingsKeyModalTitle": "Your new API key",
-      "apiSettingsKeyOnce": "Copy this API key now. For security reasons, it will not be shown again.",
       "apiSettingsTestResult": "Last test result",
       "testTitle": "Send a test template message",
       "testSubtitle": "Sends a real Meta-approved template message to one phone number.",
@@ -9061,6 +9060,56 @@
       "continue": "Continue",
       "timeoutTitle": "Payment received and the update is still in progress.",
       "timeoutHint": "Most updates finish shortly."
+    },
+    "funds": {
+      "tabTitle": "Funds",
+      "tabSubtitle": "Prepaid WhatsApp balance · Manual top-up · Auto-recharge",
+      "manageTitle": "Manage funds",
+      "manageCta": "Manage Funds",
+      "prepaidBalance": "WhatsApp prepaid balance",
+      "currentBalance": "Current balance",
+      "perMessage": "{{price}} per billable message",
+      "loading": "Loading balance…",
+      "insufficientBalance": "Insufficient balance — cannot send messages.",
+      "balanceLow": "Your balance is low.",
+      "autoRecharge": "Auto-recharge",
+      "autoRechargeDesc": "Automatically top up on a recurring schedule via Lemon Squeezy, and alert when balance falls below the threshold.",
+      "balanceThreshold": "Balance threshold",
+      "rechargeAmount": "Recharge amount",
+      "saveThreshold": "Save threshold",
+      "enableAutoRecharge": "Enable Auto-recharge",
+      "addFunds": "Add funds",
+      "back": "Back",
+      "close": "Close",
+      "amountToAdd": "Amount to add",
+      "balanceAfter": "Balance after top-up: {{amount}}",
+      "minTopupHint": "Minimum {{amount}}. Balance is credited only after Lemon Squeezy confirms payment.",
+      "continueCheckout": "Continue to checkout",
+      "nextAutoTopup": "Next automatic top-up scheduled for {{date}}",
+      "nextAutoTopupLabel": "Next automatic top-up",
+      "autoFailed": "Automatic top-up failed. Update your payment method or add funds manually.",
+      "autoOnSummary": "On · {{amount}}/mo",
+      "off": "Off",
+      "reserved": "Reserved: {{amount}}",
+      "validation": {
+        "required": "Enter an amount",
+        "notNumeric": "Amount must be a number",
+        "notPositive": "Amount must be greater than zero",
+        "belowMinimum": "Minimum amount is {{amount}}",
+        "invalid": "Invalid amount",
+        "autoRequiresBoth": "Balance threshold and recharge amount are required when Auto-recharge is on"
+      },
+      "toasts": {
+        "thresholdSaved": "Balance threshold updated",
+        "autoCancelScheduled": "Auto-recharge will stop at the end of the current period"
+      },
+      "errors": {
+        "loadFailed": "Could not load funds",
+        "topupFailed": "Could not start top-up",
+        "saveFailed": "Could not save settings",
+        "autoStartFailed": "Could not start Auto-recharge",
+        "autoCancelFailed": "Could not cancel Auto-recharge"
+      }
     }
   },
   "metaCampaigns": {

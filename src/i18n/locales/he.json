@@ -8407,7 +8407,7 @@
       "apiSettingsKeyCreated": "מפתח API נוצר — העתיקו אותו עכשיו",
       "apiSettingsKeyRegenerated": "מפתח API חודש — העתיקו אותו עכשיו",
       "apiSettingsKeyError": "לא ניתן ליצור או לחדש מפתח API",
-      "apiSettingsKeyOnce": "המפתח המלא מוצג פעם אחת. שמרו אותו במקום מאובטח — Bizuply שומרת רק hash.",
+      "apiSettingsKeyOnce": "העתיקו את מפתח ה-API עכשיו. מסיבות אבטחה הוא לא יוצג שוב.",
       "apiSettingsNoKey": "עדיין אין מפתח API",
       "apiSettingsApiKey": "מפתח API",
       "apiSettingsBaseUrl": "API Base URL",
@@ -8434,7 +8434,6 @@
       "apiSettingsScopes": "Scopes",
       "apiSettingsCreatedAt": "נוצר",
       "apiSettingsKeyModalTitle": "מפתח ה-API החדש שלך",
-      "apiSettingsKeyOnce": "העתיקו את מפתח ה-API עכשיו. מסיבות אבטחה הוא לא יוצג שוב.",
       "apiSettingsTestResult": "תוצאת בדיקה אחרונה",
       "testTitle": "שליחת הודעת תבנית לבדיקה",
       "testSubtitle": "שולחת הודעת תבנית מאושרת במטא למספר טלפון אחד.",
@@ -9050,6 +9049,56 @@
       "continue": "המשך",
       "timeoutTitle": "התשלום התקבל והעדכון עדיין מתבצע.",
       "timeoutHint": "רוב העדכונים מסתיימים תוך זמן קצר."
+    },
+    "funds": {
+      "tabTitle": "יתרה",
+      "tabSubtitle": "יתרת WhatsApp בתשלום מראש · טעינה ידנית · טעינה אוטומטית",
+      "manageTitle": "ניהול יתרה",
+      "manageCta": "ניהול יתרה",
+      "prepaidBalance": "יתרת WhatsApp בתשלום מראש",
+      "currentBalance": "יתרה נוכחית",
+      "perMessage": "{{price}} להודעה לחיוב",
+      "loading": "טוען יתרה…",
+      "insufficientBalance": "יתרה לא מספיקה — לא ניתן לשלוח הודעות.",
+      "balanceLow": "היתרה שלך נמוכה.",
+      "autoRecharge": "טעינה אוטומטית",
+      "autoRechargeDesc": "טעינה חוזרת אוטומטית דרך Lemon Squeezy, והתראה כשהיתרה יורדת מתחת לסף.",
+      "balanceThreshold": "סף יתרה",
+      "rechargeAmount": "סכום טעינה",
+      "saveThreshold": "שמירת סף",
+      "enableAutoRecharge": "הפעלת טעינה אוטומטית",
+      "addFunds": "הוספת יתרה",
+      "back": "חזרה",
+      "close": "סגירה",
+      "amountToAdd": "סכום להוספה",
+      "balanceAfter": "יתרה אחרי הטעינה: {{amount}}",
+      "minTopupHint": "מינימום {{amount}}. היתרה מזוכה רק אחרי אישור התשלום ב־Lemon Squeezy.",
+      "continueCheckout": "המשך לתשלום",
+      "nextAutoTopup": "הטעינה האוטומטית הבאה מתוכננת ל־{{date}}",
+      "nextAutoTopupLabel": "טעינה אוטומטית הבאה",
+      "autoFailed": "הטעינה האוטומטית נכשלה. עדכנו אמצעי תשלום או הוסיפו יתרה ידנית.",
+      "autoOnSummary": "פעיל · {{amount}}/חודש",
+      "off": "כבוי",
+      "reserved": "שמור: {{amount}}",
+      "validation": {
+        "required": "יש להזין סכום",
+        "notNumeric": "הסכום חייב להיות מספר",
+        "notPositive": "הסכום חייב להיות גדול מאפס",
+        "belowMinimum": "הסכום המינימלי הוא {{amount}}",
+        "invalid": "סכום לא תקין",
+        "autoRequiresBoth": "כשטעינה אוטומטית פעילה חובה להגדיר סף יתרה וסכום טעינה"
+      },
+      "toasts": {
+        "thresholdSaved": "סף היתרה עודכן",
+        "autoCancelScheduled": "הטעינה האוטומטית תופסק בסוף התקופה הנוכחית"
+      },
+      "errors": {
+        "loadFailed": "לא ניתן לטעון את היתרה",
+        "topupFailed": "לא ניתן להתחיל טעינה",
+        "saveFailed": "לא ניתן לשמור את ההגדרות",
+        "autoStartFailed": "לא ניתן להפעיל טעינה אוטומטית",
+        "autoCancelFailed": "לא ניתן לבטל טעינה אוטומטית"
+      }
     }
   },
   "metaCampaigns": {

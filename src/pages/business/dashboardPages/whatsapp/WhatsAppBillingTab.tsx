@@ -46,6 +46,7 @@ export default function WhatsAppBillingTab() {
         alerts?: WhatsAppFundsOverview["alerts"];
         quickTopupAmountsMinor?: number[];
         minTopupMinor?: number;
+        minAutoFundingMinor?: number;
         autoFundingPresetsMinor?: number[];
         lowBalancePresetsMinor?: number[];
         unitPriceAgorot?: number;
@@ -81,6 +82,7 @@ export default function WhatsAppBillingTab() {
           },
           quickTopupAmountsMinor: usage.quickTopupAmountsMinor || [],
           minTopupMinor: usage.minTopupMinor || 5000,
+          minAutoFundingMinor: usage.minAutoFundingMinor || usage.minTopupMinor || 5000,
           autoFundingPresetsMinor: usage.autoFundingPresetsMinor || [],
           lowBalancePresetsMinor: usage.lowBalancePresetsMinor || [],
         } satisfies WhatsAppFundsOverview)
@@ -90,11 +92,11 @@ export default function WhatsAppBillingTab() {
     <div dir={getTextDirection(i18n.language)} className="space-y-3">
       <div>
         <h2 className="text-base font-black text-slate-900">
-          {isWallet ? "Funds" : t("whatsapp.hub.billingTitle")}
+          {isWallet ? t("whatsapp.funds.tabTitle") : t("whatsapp.hub.billingTitle")}
         </h2>
         <p className="text-xs font-semibold text-slate-500">
           {isWallet
-            ? "Prepaid WhatsApp balance · Manual top-up · Monthly Auto Funding"
+            ? t("whatsapp.funds.tabSubtitle")
             : t("whatsapp.hub.billingSubtitle")}
         </p>
       </div>

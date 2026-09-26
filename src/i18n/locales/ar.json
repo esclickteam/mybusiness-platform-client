@@ -8877,6 +8877,56 @@
       "continue": "متابعة",
       "timeoutTitle": "تم استلام الدفع وما زال التحديث جارياً.",
       "timeoutHint": "تنتهي معظم التحديثات خلال وقت قصير."
+    },
+    "funds": {
+      "tabTitle": "الرصيد",
+      "tabSubtitle": "رصيد واتساب مسبق الدفع · شحن يدوي · شحن تلقائي",
+      "manageTitle": "إدارة الرصيد",
+      "manageCta": "إدارة الرصيد",
+      "prepaidBalance": "رصيد واتساب مسبق الدفع",
+      "currentBalance": "الرصيد الحالي",
+      "perMessage": "{{price}} لكل رسالة قابلة للفوترة",
+      "loading": "جارٍ تحميل الرصيد…",
+      "insufficientBalance": "الرصيد غير كافٍ — تعذر إرسال الرسائل.",
+      "balanceLow": "رصيدك منخفض.",
+      "autoRecharge": "الشحن التلقائي",
+      "autoRechargeDesc": "شحن متكرر تلقائي عبر Lemon Squeezy مع تنبيه عند انخفاض الرصيد عن الحد.",
+      "balanceThreshold": "حد الرصيد",
+      "rechargeAmount": "مبلغ الشحن",
+      "saveThreshold": "حفظ الحد",
+      "enableAutoRecharge": "تفعيل الشحن التلقائي",
+      "addFunds": "إضافة رصيد",
+      "back": "رجوع",
+      "close": "إغلاق",
+      "amountToAdd": "المبلغ المراد إضافته",
+      "balanceAfter": "الرصيد بعد الشحن: {{amount}}",
+      "minTopupHint": "الحد الأدنى {{amount}}. يُضاف الرصيد فقط بعد تأكيد Lemon Squeezy.",
+      "continueCheckout": "المتابعة إلى الدفع",
+      "nextAutoTopup": "الشحن التلقائي التالي مجدول في {{date}}",
+      "nextAutoTopupLabel": "الشحن التلقائي التالي",
+      "autoFailed": "فشل الشحن التلقائي. حدّث طريقة الدفع أو أضف رصيدًا يدويًا.",
+      "autoOnSummary": "مفعّل · {{amount}}/شهر",
+      "off": "متوقف",
+      "reserved": "محجوز: {{amount}}",
+      "validation": {
+        "required": "أدخل مبلغًا",
+        "notNumeric": "يجب أن يكون المبلغ رقمًا",
+        "notPositive": "يجب أن يكون المبلغ أكبر من صفر",
+        "belowMinimum": "الحد الأدنى للمبلغ هو {{amount}}",
+        "invalid": "مبلغ غير صالح",
+        "autoRequiresBoth": "عند تفعيل الشحن التلقائي يجب تحديد حد الرصيد ومبلغ الشحن"
+      },
+      "toasts": {
+        "thresholdSaved": "تم تحديث حد الرصيد",
+        "autoCancelScheduled": "سيتوقف الشحن التلقائي في نهاية الفترة الحالية"
+      },
+      "errors": {
+        "loadFailed": "تعذر تحميل الرصيد",
+        "topupFailed": "تعذر بدء الشحن",
+        "saveFailed": "تعذر حفظ الإعدادات",
+        "autoStartFailed": "تعذر تفعيل الشحن التلقائي",
+        "autoCancelFailed": "تعذر إلغاء الشحن التلقائي"
+      }
     }
   },
   "metaCampaigns": {

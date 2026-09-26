@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { CreditCard, PiggyBank } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   formatIlsFromMinor,
   getWhatsAppFunds,
   type WhatsAppFundsOverview,
 } from "../../../../../api/whatsappWalletApi";
+import { useWhatsAppHubContext } from "../../../../dev/useWhatsAppHubContext";
 import WhatsAppManageFundsModal from "./WhatsAppManageFundsModal";
 import "./whatsappBilling.css";
 
@@ -18,6 +20,8 @@ export default function WhatsAppFundsCard({
   businessId,
   initialFunds = null,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const { connection } = useWhatsAppHubContext();
   const [funds, setFunds] = useState<WhatsAppFundsOverview | null>(initialFunds);
   const [loading, setLoading] = useState(!initialFunds);
   const [error, setError] = useState<string | null>(null);
@@ -34,12 +38,12 @@ export default function WhatsAppFundsCard({
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || "Could not load funds";
+          ?.error || t("whatsapp.funds.errors.loadFailed");
       setError(msg);
     } finally {
       setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, t]);
 
   useEffect(() => {
     if (initialFunds) {
@@ -52,16 +56,13 @@ export default function WhatsAppFundsCard({
 
   const f = funds?.funds;
   const available = f?.availableMinor ?? 0;
-  const warn = Boolean(funds?.alerts?.lowBalance);
+  const low = Boolean(funds?.alerts?.lowBalance);
   const blocked = Boolean(funds?.alerts?.cannotSend);
+  const phone = connection?.displayPhoneNumber || null;
 
   return (
     <>
-      <article
-        className={`wa-billing-card ${
-          blocked ? "wa-billing-card--blocked" : warn ? "wa-billing-card--warn" : ""
-        }`}
-      >
+      <article className="wa-billing-card">
         <div className="wa-billing-card__header">
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
@@ -79,9 +80,13 @@ export default function WhatsAppFundsCard({
               <PiggyBank size={16} />
             </span>
             <div>
-              <p className="wa-billing-card__title">Current Balance</p>
+              <p className="wa-billing-card__title">
+                {t("whatsapp.funds.currentBalance")}
+              </p>
               <p className="wa-billing-card__hint" style={{ margin: 0 }}>
-                {formatIlsFromMinor(f?.unitPriceMinor || 20)} per billable message
+                {t("whatsapp.funds.perMessage", {
+                  price: formatIlsFromMinor(f?.unitPriceMinor || 20),
+                })}
               </p>
             </div>
           </div>
@@ -95,12 +100,12 @@ export default function WhatsAppFundsCard({
             }}
           >
             <CreditCard size={14} />
-            Manage Funds
+            {t("whatsapp.funds.manageCta")}
           </button>
         </div>
 
         {loading ? (
-          <p className="wa-billing-card__hint">Loading balance…</p>
+          <p className="wa-billing-card__hint">{t("whatsapp.funds.loading")}</p>
         ) : error ? (
           <p className="wa-billing-card__error">{error}</p>
         ) : (
@@ -116,9 +121,9 @@ export default function WhatsAppFundsCard({
               {formatIlsFromMinor(available)}
             </p>
 
-            {funds?.alerts?.cannotSend ? (
-              <p className="wa-billing-banner wa-billing-banner--error">
-                Cannot send messages — insufficient balance.{" "}
+            {blocked ? (
+              <p className="wa-billing-banner wa-billing-banner--warn">
+                {t("whatsapp.funds.insufficientBalance")}{" "}
                 <button
                   type="button"
                   className="wa-billing-link"
@@ -127,12 +132,12 @@ export default function WhatsAppFundsCard({
                     setModalOpen(true);
                   }}
                 >
-                  Add funds
+                  {t("whatsapp.funds.addFunds")}
                 </button>
               </p>
-            ) : funds?.alerts?.lowBalance ? (
+            ) : low ? (
               <p className="wa-billing-banner wa-billing-banner--warn">
-                Your WhatsApp balance is low.{" "}
+                {t("whatsapp.funds.balanceLow")}{" "}
                 <button
                   type="button"
                   className="wa-billing-link"
@@ -141,15 +146,14 @@ export default function WhatsAppFundsCard({
                     setModalOpen(true);
                   }}
                 >
-                  Add funds
+                  {t("whatsapp.funds.addFunds")}
                 </button>
               </p>
             ) : null}
 
             {funds?.alerts?.autoFundingFailed ? (
               <p className="wa-billing-banner wa-billing-banner--error">
-                Automatic top-up failed. Update your payment method or add funds
-                manually.
+                {t("whatsapp.funds.autoFailed")}
               </p>
             ) : null}
 
@@ -164,22 +168,32 @@ export default function WhatsAppFundsCard({
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Monthly Auto Funding</span>
+                <span>{t("whatsapp.funds.autoRecharge")}</span>
                 <span>
                   {f?.autoFundingEnabled
-                    ? `On · ${formatIlsFromMinor(f.autoFundingAmountMinor || 0)}/mo`
-                    : "Off"}
+                    ? t("whatsapp.funds.autoOnSummary", {
+                        amount: formatIlsFromMinor(
+                          f.autoFundingAmountMinor || 0
+                        ),
+                      })
+                    : t("whatsapp.funds.off")}
                 </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Low Balance Alert</span>
-                <span>{formatIlsFromMinor(f?.lowBalanceThresholdMinor || 0)}</span>
+                <span>{t("whatsapp.funds.balanceThreshold")}</span>
+                <span>
+                  {formatIlsFromMinor(f?.lowBalanceThresholdMinor || 0)}
+                </span>
               </div>
               {f?.nextAutoFundingAt ? (
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span>Next automatic top-up</span>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{t("whatsapp.funds.nextAutoTopupLabel")}</span>
                   <span>
-                    {new Date(f.nextAutoFundingAt).toLocaleDateString("he-IL")}
+                    {new Date(f.nextAutoFundingAt).toLocaleDateString(
+                      i18n.language
+                    )}
                   </span>
                 </div>
               ) : null}
@@ -192,6 +206,7 @@ export default function WhatsAppFundsCard({
         open={modalOpen}
         businessId={businessId}
         funds={funds}
+        phoneNumber={phone}
         initialPanel={modalPanel}
         onClose={() => setModalOpen(false)}
         onUpdated={refresh}

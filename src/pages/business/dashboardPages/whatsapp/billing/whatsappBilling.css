@@ -14,13 +14,15 @@
 }
 
 .wa-billing-card--warn {
-  border-color: #f59e0b;
-  background: #fffbeb;
+  /* Low balance is informational — do not paint the whole card as an error. */
+  border-color: #e5e7eb;
+  background: #fff;
 }
 
 .wa-billing-card--blocked {
-  border-color: #ef4444;
-  background: #fef2f2;
+  /* Insufficient balance warning lives in the banner, not the card chrome. */
+  border-color: #e5e7eb;
+  background: #fff;
 }
 
 .wa-billing-card--setup {
@@ -505,6 +507,269 @@
   margin-bottom: 4px;
 }
 
+/* ---- Manage Funds modal (360dialog-inspired) ---- */
+
+.wa-funds-modal {
+  max-width: 480px;
+  padding: 20px 20px 18px;
+}
+
+.wa-funds-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.wa-funds-modal__heading {
+  min-width: 0;
+  padding-inline-end: 28px;
+}
+
+.wa-funds-modal__title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.wa-funds-modal__phone {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.wa-funds-modal__phone--muted {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.wa-funds-modal__progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #ccfbf1;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.wa-funds-modal__progress-fill {
+  display: block;
+  height: 100%;
+  width: 50%;
+  background: #0d9488;
+  border-radius: 999px;
+}
+
+.wa-funds-modal__progress-fill--full {
+  width: 100%;
+}
+
+.wa-funds-modal__body {
+  display: grid;
+  gap: 14px;
+}
+
+.wa-funds-section__eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.wa-funds-section__balance {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.15;
+}
+
+.wa-funds-section__balance--sm {
+  font-size: 24px;
+}
+
+.wa-funds-section__hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.wa-funds-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.wa-funds-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wa-funds-card__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.wa-funds-card__desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.wa-funds-card__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.wa-funds-amount {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.wa-funds-amount__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.wa-funds-amount__control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 10px;
+  min-height: 42px;
+}
+
+.wa-funds-amount__control:focus-within {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.wa-funds-amount__control--error {
+  border-color: #ef4444;
+}
+
+.wa-funds-amount__control--error:focus-within {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.wa-funds-amount__control input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 10px 0;
+}
+
+.wa-funds-amount__currency {
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.wa-funds-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wa-funds-preset {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+}
+
+.wa-funds-preset--active {
+  border-color: #0d9488;
+  border-width: 2px;
+  color: #0f766e;
+}
+
+.wa-funds-preset:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wa-funds-field-error {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.wa-funds-switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.wa-funds-switch--on {
+  background: #0d9488;
+}
+
+.wa-funds-switch__knob {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: inset-inline-start 0.15s ease;
+}
+
+.wa-funds-switch--on .wa-funds-switch__knob {
+  inset-inline-start: 21px;
+}
+
+.wa-funds-cta {
+  width: 100%;
+  min-height: 44px;
+  font-size: 14px;
+}
+
+.wa-funds-modal__footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
 @media (max-width: 640px) {
   .wa-billing-card--setup {
     grid-template-columns: 1fr;
@@ -519,5 +784,14 @@
   .wa-billing-card__header .wa-billing-btn,
   .wa-billing-card__cancel-note .wa-billing-btn {
     width: 100%;
+  }
+
+  .wa-funds-card__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .wa-funds-modal {
+    width: min(100%, 100vw - 24px);
+    max-height: min(92vh, 860px);
   }
 }

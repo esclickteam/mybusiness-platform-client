@@ -31,6 +31,7 @@ export type WhatsAppFundsOverview = {
   };
   quickTopupAmountsMinor: number[];
   minTopupMinor: number;
+  minAutoFundingMinor?: number;
   autoFundingPresetsMinor: number[];
   lowBalancePresetsMinor: number[];
 };

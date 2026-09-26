@@ -8877,6 +8877,56 @@
       "continue": "Continuar",
       "timeoutTitle": "Pago recibido y la actualización sigue en curso.",
       "timeoutHint": "La mayoría termina enseguida."
+    },
+    "funds": {
+      "tabTitle": "Fondos",
+      "tabSubtitle": "Saldo prepago de WhatsApp · Recarga manual · Recarga automática",
+      "manageTitle": "Gestionar fondos",
+      "manageCta": "Gestionar fondos",
+      "prepaidBalance": "Saldo prepago de WhatsApp",
+      "currentBalance": "Saldo actual",
+      "perMessage": "{{price}} por mensaje facturable",
+      "loading": "Cargando saldo…",
+      "insufficientBalance": "Saldo insuficiente: no se pueden enviar mensajes.",
+      "balanceLow": "Tu saldo es bajo.",
+      "autoRecharge": "Recarga automática",
+      "autoRechargeDesc": "Recarga periódica automática con Lemon Squeezy y aviso cuando el saldo baje del umbral.",
+      "balanceThreshold": "Umbral de saldo",
+      "rechargeAmount": "Importe de recarga",
+      "saveThreshold": "Guardar umbral",
+      "enableAutoRecharge": "Activar recarga automática",
+      "addFunds": "Añadir fondos",
+      "back": "Volver",
+      "close": "Cerrar",
+      "amountToAdd": "Importe a añadir",
+      "balanceAfter": "Saldo tras la recarga: {{amount}}",
+      "minTopupHint": "Mínimo {{amount}}. El saldo se acredita solo tras la confirmación de Lemon Squeezy.",
+      "continueCheckout": "Continuar al pago",
+      "nextAutoTopup": "Próxima recarga automática programada para {{date}}",
+      "nextAutoTopupLabel": "Próxima recarga automática",
+      "autoFailed": "Falló la recarga automática. Actualiza el método de pago o añade fondos manualmente.",
+      "autoOnSummary": "Activa · {{amount}}/mes",
+      "off": "Desactivada",
+      "reserved": "Reservado: {{amount}}",
+      "validation": {
+        "required": "Introduce un importe",
+        "notNumeric": "El importe debe ser un número",
+        "notPositive": "El importe debe ser mayor que cero",
+        "belowMinimum": "El importe mínimo es {{amount}}",
+        "invalid": "Importe no válido",
+        "autoRequiresBoth": "Con la recarga automática activada, el umbral y el importe son obligatorios"
+      },
+      "toasts": {
+        "thresholdSaved": "Umbral de saldo actualizado",
+        "autoCancelScheduled": "La recarga automática se detendrá al final del periodo actual"
+      },
+      "errors": {
+        "loadFailed": "No se pudieron cargar los fondos",
+        "topupFailed": "No se pudo iniciar la recarga",
+        "saveFailed": "No se pudieron guardar los ajustes",
+        "autoStartFailed": "No se pudo activar la recarga automática",
+        "autoCancelFailed": "No se pudo cancelar la recarga automática"
+      }
     }
   },
   "metaCampaigns": {
