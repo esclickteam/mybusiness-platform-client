@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Loader2, PiggyBank, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, PiggyBank, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
   cancelWhatsAppAutoFunding,
@@ -9,12 +10,19 @@ import {
   updateWhatsAppLowBalanceThreshold,
   type WhatsAppFundsOverview,
 } from "../../../../../api/whatsappWalletApi";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
+import {
+  minorToIlsInput,
+  validateAmountInput,
+  type AmountValidationCode,
+} from "./whatsappFundsAmount";
 import "./whatsappBilling.css";
 
 type Props = {
   open: boolean;
   businessId: string;
   funds: WhatsAppFundsOverview | null;
+  phoneNumber?: string | null;
   onClose: () => void;
   onUpdated: () => void | Promise<void>;
   initialPanel?: "manage" | "topup";
@@ -22,14 +30,86 @@ type Props = {
 
 const TEAL = "#0d9488";
 
+function AmountField({
+  id,
+  label,
+  value,
+  onChange,
+  disabled,
+  currencySymbol = "₪",
+  error,
+  presets,
+  onPreset,
+  selectedPresetMinor,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+  currencySymbol?: string;
+  error?: string | null;
+  presets?: number[];
+  onPreset?: (minor: number) => void;
+  selectedPresetMinor?: number | null;
+}) {
+  return (
+    <div className="wa-funds-amount">
+      <label className="wa-funds-amount__label" htmlFor={id}>
+        {label}
+      </label>
+      <div
+        className={`wa-funds-amount__control${
+          error ? " wa-funds-amount__control--error" : ""
+        }`}
+      >
+        <input
+          id={id}
+          type="text"
+          inputMode="decimal"
+          autoComplete="off"
+          disabled={disabled}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={Boolean(error)}
+        />
+        <span className="wa-funds-amount__currency" aria-hidden>
+          {currencySymbol}
+        </span>
+      </div>
+      {presets && presets.length > 0 && onPreset ? (
+        <div className="wa-funds-presets" role="group" aria-label={label}>
+          {presets.map((m) => (
+            <button
+              key={m}
+              type="button"
+              className={`wa-funds-preset${
+                selectedPresetMinor === m ? " wa-funds-preset--active" : ""
+              }`}
+              disabled={disabled}
+              onClick={() => onPreset(m)}
+            >
+              {formatIlsFromMinor(m)}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {error ? <p className="wa-funds-field-error">{error}</p> : null}
+    </div>
+  );
+}
+
 export default function WhatsAppManageFundsModal({
   open,
   businessId,
   funds,
+  phoneNumber,
   onClose,
   onUpdated,
   initialPanel = "manage",
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const dir = getTextDirection(i18n.language);
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [panel, setPanel] = useState<"manage" | "topup">(initialPanel);
@@ -38,27 +118,48 @@ export default function WhatsAppManageFundsModal({
   const f = funds?.funds;
   const balanceMinor = f?.balanceMinor ?? 0;
   const availableMinor = f?.availableMinor ?? 0;
+  const subscriptionActive = Boolean(
+    f?.autoFundingEnabled &&
+      ["active", "past_due", "checkout_pending"].includes(
+        String(f?.autoFundingStatus || "")
+      )
+  );
 
   const [autoEnabled, setAutoEnabled] = useState(false);
-  const [autoAmount, setAutoAmount] = useState(20000);
-  const [lowThreshold, setLowThreshold] = useState(5000);
-  const [topupAmount, setTopupAmount] = useState(10000);
-  const [customTopup, setCustomTopup] = useState("");
+  const [thresholdInput, setThresholdInput] = useState("50");
+  const [rechargeInput, setRechargeInput] = useState("200");
+  const [topupInput, setTopupInput] = useState("100");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [thresholdError, setThresholdError] = useState<string | null>(null);
+  const [rechargeError, setRechargeError] = useState<string | null>(null);
+  const [topupError, setTopupError] = useState<string | null>(null);
 
-  const quickAmounts = funds?.quickTopupAmountsMinor || [5000, 10000, 20000, 50000];
+  const quickAmounts = funds?.quickTopupAmountsMinor || [
+    5000, 10000, 20000, 50000,
+  ];
   const autoPresets = funds?.autoFundingPresetsMinor || [10000, 20000, 50000];
-  const lowPresets = funds?.lowBalancePresetsMinor || [2000, 5000, 10000];
+  const lowPresets = funds?.lowBalancePresetsMinor || [1000, 2000, 5000, 10000];
   const minTopup = funds?.minTopupMinor || 5000;
+  const minAuto = funds?.minAutoFundingMinor || minTopup;
 
   useEffect(() => {
     if (!open) return;
     setPanel(initialPanel);
     setBusy(false);
+    setFormError(null);
+    setThresholdError(null);
+    setRechargeError(null);
+    setTopupError(null);
     if (f) {
       setAutoEnabled(Boolean(f.autoFundingEnabled));
-      setAutoAmount(f.autoFundingAmountMinor || 20000);
-      setLowThreshold(f.lowBalanceThresholdMinor || 5000);
+      setThresholdInput(
+        minorToIlsInput(f.lowBalanceThresholdMinor || 5000) || "50"
+      );
+      setRechargeInput(
+        minorToIlsInput(f.autoFundingAmountMinor || 20000) || "200"
+      );
     }
+    setTopupInput(minorToIlsInput(10000) || "100");
   }, [open, initialPanel, f]);
 
   useEffect(() => {
@@ -70,89 +171,175 @@ export default function WhatsAppManageFundsModal({
     return () => document.removeEventListener("keydown", onKey);
   }, [open, busy, onClose]);
 
-  const effectiveTopup = useMemo(() => {
-    if (customTopup.trim()) {
-      const ils = Number(customTopup.replace(/[^\d.]/g, ""));
-      if (!Number.isFinite(ils)) return 0;
-      return Math.round(ils * 100);
-    }
-    return topupAmount;
-  }, [customTopup, topupAmount]);
+  const effectiveTopup = useMemo(
+    () => validateAmountInput(topupInput, { minMinor: 1 }),
+    [topupInput]
+  );
+  const balanceAfter =
+    balanceMinor +
+    (effectiveTopup.ok ? Math.max(0, effectiveTopup.minor) : 0);
 
-  const balanceAfter = balanceMinor + Math.max(0, effectiveTopup);
+  const thresholdMinorParsed = useMemo(
+    () => validateAmountInput(thresholdInput, { minMinor: 1 }),
+    [thresholdInput]
+  );
+  const rechargeMinorParsed = useMemo(
+    () => validateAmountInput(rechargeInput, { minMinor: minAuto }),
+    [rechargeInput, minAuto]
+  );
+
+  const amountErrorMessage = (code: AmountValidationCode, minMinor: number) => {
+    switch (code) {
+      case "required":
+        return t("whatsapp.funds.validation.required");
+      case "not_numeric":
+        return t("whatsapp.funds.validation.notNumeric");
+      case "not_positive":
+        return t("whatsapp.funds.validation.notPositive");
+      case "below_minimum":
+        return t("whatsapp.funds.validation.belowMinimum", {
+          amount: formatIlsFromMinor(minMinor),
+        });
+      default:
+        return t("whatsapp.funds.validation.invalid");
+    }
+  };
 
   if (!open) return null;
 
   const startTopup = async () => {
-    if (effectiveTopup < minTopup) {
-      toast.error(`Minimum top-up is ${formatIlsFromMinor(minTopup)}`);
+    setTopupError(null);
+    setFormError(null);
+    const parsed = validateAmountInput(topupInput, { minMinor: minTopup });
+    if (!parsed.ok) {
+      setTopupError(amountErrorMessage(parsed.code, minTopup));
       return;
     }
     setBusy(true);
     try {
-      const result = await createWhatsAppWalletTopup(businessId, effectiveTopup);
+      const result = await createWhatsAppWalletTopup(businessId, parsed.minor);
       const url = result.checkoutUrl || result.url;
       if (!url) throw new Error("Missing checkout URL");
       window.location.href = url;
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || "Could not start top-up";
+          ?.error || t("whatsapp.funds.errors.topupFailed");
+      setFormError(msg);
       toast.error(msg);
       setBusy(false);
     }
   };
 
-  const saveLowBalance = async () => {
+  const saveThresholdOnly = async () => {
+    setThresholdError(null);
+    setFormError(null);
+    const parsed = validateAmountInput(thresholdInput, { minMinor: 1 });
+    if (!parsed.ok) {
+      setThresholdError(amountErrorMessage(parsed.code, 1));
+      return;
+    }
     setBusy(true);
     try {
-      await updateWhatsAppLowBalanceThreshold(businessId, lowThreshold);
-      toast.success("Low balance alert updated");
+      await updateWhatsAppLowBalanceThreshold(businessId, parsed.minor);
+      toast.success(t("whatsapp.funds.toasts.thresholdSaved"));
       await onUpdated();
-    } catch {
-      toast.error("Could not update low balance alert");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || t("whatsapp.funds.errors.saveFailed");
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setBusy(false);
     }
   };
 
-  const toggleAutoFunding = async () => {
-    if (autoEnabled && f?.autoFundingEnabled) {
-      setBusy(true);
-      try {
-        await cancelWhatsAppAutoFunding(businessId);
-        toast.success("Monthly Auto Funding will stop at period end");
-        setAutoEnabled(false);
-        await onUpdated();
-      } catch {
-        toast.error("Could not cancel Monthly Auto Funding");
-      } finally {
-        setBusy(false);
-      }
+  const enableAutoRecharge = async () => {
+    setThresholdError(null);
+    setRechargeError(null);
+    setFormError(null);
+
+    const threshold = validateAmountInput(thresholdInput, { minMinor: 1 });
+    const recharge = validateAmountInput(rechargeInput, { minMinor: minAuto });
+    let valid = true;
+    if (!threshold.ok) {
+      setThresholdError(amountErrorMessage(threshold.code, 1));
+      valid = false;
+    }
+    if (!recharge.ok) {
+      setRechargeError(amountErrorMessage(recharge.code, minAuto));
+      valid = false;
+    }
+    if (!valid) {
+      setFormError(t("whatsapp.funds.validation.autoRequiresBoth"));
       return;
     }
+
     setBusy(true);
     try {
-      const result = await startWhatsAppAutoFunding(businessId, autoAmount);
+      await updateWhatsAppLowBalanceThreshold(businessId, threshold.minor);
+      const result = await startWhatsAppAutoFunding(
+        businessId,
+        recharge.minor
+      );
       const url = result.checkoutUrl || result.url;
       if (!url) throw new Error("Missing checkout URL");
       window.location.href = url;
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || "Could not start Monthly Auto Funding";
+          ?.error || t("whatsapp.funds.errors.autoStartFailed");
+      setFormError(msg);
       toast.error(msg);
       setBusy(false);
     }
   };
 
+  const disableAutoRecharge = async () => {
+    setBusy(true);
+    setFormError(null);
+    try {
+      await cancelWhatsAppAutoFunding(businessId);
+      toast.success(t("whatsapp.funds.toasts.autoCancelScheduled"));
+      setAutoEnabled(false);
+      await onUpdated();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || t("whatsapp.funds.errors.autoCancelFailed");
+      setFormError(msg);
+      toast.error(msg);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onToggleAuto = () => {
+    if (busy) return;
+    if (autoEnabled && subscriptionActive) {
+      void disableAutoRecharge();
+      return;
+    }
+    if (autoEnabled) {
+      setAutoEnabled(false);
+      setFormError(null);
+      setThresholdError(null);
+      setRechargeError(null);
+      return;
+    }
+    setAutoEnabled(true);
+  };
+
+  const BackIcon = dir === "rtl" ? ArrowRight : ArrowLeft;
+  const AddIcon = dir === "rtl" ? ArrowLeft : ArrowRight;
+
   return (
-    <div className="wa-billing-modal-root" role="presentation">
-      {/* Backdrop must paint under the dialog (see .wa-billing-modal-root CSS). */}
+    <div className="wa-billing-modal-root" role="presentation" dir={dir}>
       <button
         type="button"
         className="wa-billing-modal-backdrop"
-        aria-label="Close"
+        aria-label={t("whatsapp.funds.close")}
         tabIndex={-1}
         disabled={busy}
         onClick={() => !busy && onClose()}
@@ -162,296 +349,277 @@ export default function WhatsAppManageFundsModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="wa-billing-modal"
-        style={{ maxWidth: 480 }}
+        className="wa-billing-modal wa-funds-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="wa-billing-modal__header">
-          <div>
-            <h2 id={titleId} className="wa-billing-modal__title">
-              <PiggyBank size={18} style={{ display: "inline", marginInlineEnd: 6 }} />
-              Manage funds
+        <header className="wa-funds-modal__header">
+          <div className="wa-funds-modal__heading">
+            <h2 id={titleId} className="wa-funds-modal__title">
+              <PiggyBank size={18} aria-hidden />
+              {t("whatsapp.funds.manageTitle")}
             </h2>
-            <p className="wa-billing-modal__sub">WhatsApp prepaid balance</p>
+            {phoneNumber ? (
+              <p className="wa-funds-modal__phone">{phoneNumber}</p>
+            ) : (
+              <p className="wa-funds-modal__phone wa-funds-modal__phone--muted">
+                {t("whatsapp.funds.prepaidBalance")}
+              </p>
+            )}
           </div>
           <button
             type="button"
             className="wa-billing-modal__close"
             onClick={onClose}
             disabled={busy}
-            aria-label="Close"
+            aria-label={t("whatsapp.funds.close")}
           >
             <X size={18} />
           </button>
         </header>
 
+        <div className="wa-funds-modal__progress" aria-hidden>
+          <span
+            className={
+              panel === "manage"
+                ? "wa-funds-modal__progress-fill"
+                : "wa-funds-modal__progress-fill wa-funds-modal__progress-fill--full"
+            }
+          />
+        </div>
+
         {panel === "manage" ? (
-          <div className="wa-billing-modal__body" style={{ display: "grid", gap: 16 }}>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
-                Current Balance
+          <div className="wa-billing-modal__body wa-funds-modal__body">
+            <section className="wa-funds-section">
+              <p className="wa-funds-section__eyebrow">
+                {t("whatsapp.funds.currentBalance")}
               </p>
-              <p className="mt-1 text-3xl font-black text-slate-900">
+              <p className="wa-funds-section__balance">
                 {formatIlsFromMinor(availableMinor)}
               </p>
               {f?.reservedMinor ? (
-                <p className="mt-1 text-xs text-slate-500">
-                  Reserved: {formatIlsFromMinor(f.reservedMinor)}
+                <p className="wa-funds-section__hint">
+                  {t("whatsapp.funds.reserved", {
+                    amount: formatIlsFromMinor(f.reservedMinor),
+                  })}
                 </p>
               ) : null}
-            </div>
+            </section>
 
-            <section
-              style={{
-                border: "1px solid #e2e8f0",
-                borderRadius: 12,
-                padding: 14,
-                display: "grid",
-                gap: 12,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+            <section className="wa-funds-card">
+              <div className="wa-funds-card__head">
                 <div>
-                  <p className="text-sm font-bold text-slate-900">
-                    Monthly Auto Funding
+                  <p className="wa-funds-card__title">
+                    {t("whatsapp.funds.autoRecharge")}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    Automatically add{" "}
-                    {formatIlsFromMinor(autoAmount)} to your WhatsApp balance
-                    every month.
+                  <p className="wa-funds-card__desc">
+                    {t("whatsapp.funds.autoRechargeDesc")}
                   </p>
                 </div>
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={autoEnabled || Boolean(f?.autoFundingEnabled)}
+                  aria-checked={autoEnabled || subscriptionActive}
+                  aria-label={t("whatsapp.funds.autoRecharge")}
                   disabled={busy}
-                  onClick={() => void toggleAutoFunding()}
-                  style={{
-                    width: 44,
-                    height: 26,
-                    borderRadius: 999,
-                    border: "none",
-                    background:
-                      autoEnabled || f?.autoFundingEnabled ? TEAL : "#cbd5e1",
-                    position: "relative",
-                    cursor: "pointer",
-                    flexShrink: 0,
-                  }}
+                  onClick={onToggleAuto}
+                  className={`wa-funds-switch${
+                    autoEnabled || subscriptionActive
+                      ? " wa-funds-switch--on"
+                      : ""
+                  }`}
                 >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 3,
-                      insetInlineStart:
-                        autoEnabled || f?.autoFundingEnabled ? 22 : 3,
-                      width: 20,
-                      height: 20,
-                      borderRadius: "50%",
-                      background: "#fff",
-                      transition: "inset-inline-start 0.15s",
-                    }}
-                  />
+                  <span className="wa-funds-switch__knob" />
                 </button>
               </div>
 
-              {(autoEnabled || f?.autoFundingEnabled || true) && (
-                <label className="text-xs font-semibold text-slate-600">
-                  Top-up amount every month
-                  <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-                    {autoPresets.map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        disabled={busy || Boolean(f?.autoFundingEnabled)}
-                        onClick={() => setAutoAmount(m)}
-                        style={{
-                          padding: "6px 10px",
-                          borderRadius: 8,
-                          border:
-                            autoAmount === m
-                              ? `2px solid ${TEAL}`
-                              : "1px solid #e2e8f0",
-                          background: "#fff",
-                          fontWeight: 700,
-                          fontSize: 12,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {formatIlsFromMinor(m)}
-                      </button>
-                    ))}
-                  </div>
-                </label>
-              )}
+              <div className="wa-funds-card__fields">
+                <AmountField
+                  id="wa-funds-threshold"
+                  label={t("whatsapp.funds.balanceThreshold")}
+                  value={thresholdInput}
+                  onChange={(v) => {
+                    setThresholdInput(v);
+                    setThresholdError(null);
+                  }}
+                  disabled={busy}
+                  error={thresholdError}
+                  presets={lowPresets}
+                  selectedPresetMinor={
+                    thresholdMinorParsed.ok ? thresholdMinorParsed.minor : null
+                  }
+                  onPreset={(m) => {
+                    setThresholdInput(minorToIlsInput(m));
+                    setThresholdError(null);
+                  }}
+                />
+                <AmountField
+                  id="wa-funds-recharge"
+                  label={t("whatsapp.funds.rechargeAmount")}
+                  value={rechargeInput}
+                  onChange={(v) => {
+                    setRechargeInput(v);
+                    setRechargeError(null);
+                  }}
+                  disabled={busy || subscriptionActive}
+                  error={rechargeError}
+                  presets={autoPresets}
+                  selectedPresetMinor={
+                    rechargeMinorParsed.ok ? rechargeMinorParsed.minor : null
+                  }
+                  onPreset={(m) => {
+                    if (subscriptionActive) return;
+                    setRechargeInput(minorToIlsInput(m));
+                    setRechargeError(null);
+                  }}
+                />
+              </div>
+
+              {subscriptionActive ? (
+                <button
+                  type="button"
+                  className="wa-billing-btn wa-billing-btn--ghost"
+                  disabled={busy}
+                  onClick={() => void saveThresholdOnly()}
+                >
+                  {t("whatsapp.funds.saveThreshold")}
+                </button>
+              ) : autoEnabled ? (
+                <button
+                  type="button"
+                  className="wa-billing-btn wa-billing-btn--primary"
+                  style={{ background: TEAL, borderColor: TEAL }}
+                  disabled={busy}
+                  onClick={() => void enableAutoRecharge()}
+                >
+                  {busy ? <Loader2 className="animate-spin" size={16} /> : null}
+                  {t("whatsapp.funds.enableAutoRecharge")}
+                </button>
+              ) : null}
 
               {f?.nextAutoFundingAt ? (
-                <p className="text-xs text-slate-500">
-                  Next automatic top-up scheduled for{" "}
-                  {new Date(f.nextAutoFundingAt).toLocaleDateString("he-IL")}
+                <p className="wa-funds-section__hint">
+                  {t("whatsapp.funds.nextAutoTopup", {
+                    date: new Date(f.nextAutoFundingAt).toLocaleDateString(
+                      i18n.language
+                    ),
+                  })}
                 </p>
               ) : null}
+
               {f?.autoFundingStatus === "past_due" ||
               f?.autoFundingStatus === "failed" ? (
-                <p className="text-xs font-semibold text-red-600">
-                  Automatic top-up failed. Update your payment method or add
-                  funds manually.
+                <p className="wa-funds-field-error">
+                  {t("whatsapp.funds.autoFailed")}
                 </p>
               ) : null}
             </section>
 
-            <section
-              style={{
-                border: "1px solid #e2e8f0",
-                borderRadius: 12,
-                padding: 14,
-                display: "grid",
-                gap: 10,
+            {formError ? (
+              <p className="wa-funds-field-error" role="alert">
+                {formError}
+              </p>
+            ) : null}
+
+            <button
+              type="button"
+              className="wa-billing-btn wa-billing-btn--primary wa-funds-cta"
+              style={{ background: TEAL, borderColor: TEAL }}
+              disabled={busy}
+              onClick={() => {
+                setFormError(null);
+                setPanel("topup");
               }}
             >
-              <p className="text-sm font-bold text-slate-900">Low Balance Alert</p>
-              <p className="text-xs text-slate-500">
-                Notify when available balance falls below this amount. This does
-                not charge your card.
-              </p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {lowPresets.map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => setLowThreshold(m)}
-                    style={{
-                      padding: "6px 10px",
-                      borderRadius: 8,
-                      border:
-                        lowThreshold === m
-                          ? `2px solid ${TEAL}`
-                          : "1px solid #e2e8f0",
-                      background: "#fff",
-                      fontWeight: 700,
-                      fontSize: 12,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {formatIlsFromMinor(m)}
-                  </button>
-                ))}
-              </div>
+              <AddIcon size={16} aria-hidden />
+              {t("whatsapp.funds.addFunds")}
+            </button>
+
+            <div className="wa-funds-modal__footer">
               <button
                 type="button"
                 className="wa-billing-btn wa-billing-btn--ghost"
                 disabled={busy}
-                onClick={() => void saveLowBalance()}
+                onClick={onClose}
               >
-                Save alert threshold
+                <BackIcon size={14} aria-hidden />
+                {t("whatsapp.funds.back")}
               </button>
-            </section>
-
-            <button
-              type="button"
-              className="wa-billing-btn wa-billing-btn--primary"
-              style={{ background: TEAL, borderColor: TEAL }}
-              disabled={busy}
-              onClick={() => setPanel("topup")}
-            >
-              {busy ? <Loader2 className="animate-spin" size={16} /> : null}
-              Add funds
-            </button>
-            <button
-              type="button"
-              className="wa-billing-btn wa-billing-btn--ghost"
-              disabled={busy}
-              onClick={onClose}
-            >
-              Back
-            </button>
+            </div>
           </div>
         ) : (
-          <div className="wa-billing-modal__body" style={{ display: "grid", gap: 14 }}>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
-                Current Balance
+          <div className="wa-billing-modal__body wa-funds-modal__body">
+            <section className="wa-funds-section">
+              <p className="wa-funds-section__eyebrow">
+                {t("whatsapp.funds.currentBalance")}
               </p>
-              <p className="mt-1 text-2xl font-black text-slate-900">
+              <p className="wa-funds-section__balance wa-funds-section__balance--sm">
                 {formatIlsFromMinor(availableMinor)}
               </p>
-            </div>
+            </section>
 
-            <label className="text-xs font-semibold text-slate-600">
-              Amount to add
-              <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-                {quickAmounts.map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => {
-                      setTopupAmount(m);
-                      setCustomTopup("");
-                    }}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border:
-                        !customTopup && topupAmount === m
-                          ? `2px solid ${TEAL}`
-                          : "1px solid #e2e8f0",
-                      background: "#fff",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {formatIlsFromMinor(m)}
-                  </button>
-                ))}
-              </div>
-              <input
-                type="number"
-                min={minTopup / 100}
-                step="1"
-                placeholder="Other amount (₪)"
-                value={customTopup}
-                disabled={busy}
-                onChange={(e) => setCustomTopup(e.target.value)}
-                style={{
-                  marginTop: 10,
-                  width: "100%",
-                  padding: "10px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #e2e8f0",
-                  fontWeight: 600,
-                }}
-              />
-            </label>
+            <AmountField
+              id="wa-funds-topup"
+              label={t("whatsapp.funds.amountToAdd")}
+              value={topupInput}
+              onChange={(v) => {
+                setTopupInput(v);
+                setTopupError(null);
+              }}
+              disabled={busy}
+              error={topupError}
+              presets={quickAmounts}
+              selectedPresetMinor={
+                effectiveTopup.ok ? effectiveTopup.minor : null
+              }
+              onPreset={(m) => {
+                setTopupInput(minorToIlsInput(m));
+                setTopupError(null);
+              }}
+            />
 
-            <p className="text-sm font-semibold text-slate-700">
-              Balance after top-up:{" "}
-              <strong>{formatIlsFromMinor(balanceAfter)}</strong>
+            <p className="wa-funds-section__hint">
+              {t("whatsapp.funds.balanceAfter", {
+                amount: formatIlsFromMinor(balanceAfter),
+              })}
             </p>
-            <p className="text-xs text-slate-500">
-              Minimum {formatIlsFromMinor(minTopup)}. Balance is credited only
-              after Lemon Squeezy confirms payment (webhook).
+            <p className="wa-funds-section__hint">
+              {t("whatsapp.funds.minTopupHint", {
+                amount: formatIlsFromMinor(minTopup),
+              })}
             </p>
+
+            {formError ? (
+              <p className="wa-funds-field-error" role="alert">
+                {formError}
+              </p>
+            ) : null}
 
             <button
               type="button"
-              className="wa-billing-btn wa-billing-btn--primary"
+              className="wa-billing-btn wa-billing-btn--primary wa-funds-cta"
               style={{ background: TEAL, borderColor: TEAL }}
               disabled={busy}
               onClick={() => void startTopup()}
             >
               {busy ? <Loader2 className="animate-spin" size={16} /> : null}
-              Continue to checkout
+              {t("whatsapp.funds.continueCheckout")}
             </button>
-            <button
-              type="button"
-              className="wa-billing-btn wa-billing-btn--ghost"
-              disabled={busy}
-              onClick={() => setPanel("manage")}
-            >
-              Back
-            </button>
+
+            <div className="wa-funds-modal__footer">
+              <button
+                type="button"
+                className="wa-billing-btn wa-billing-btn--ghost"
+                disabled={busy}
+                onClick={() => {
+                  setFormError(null);
+                  setTopupError(null);
+                  setPanel("manage");
+                }}
+              >
+                <BackIcon size={14} aria-hidden />
+                {t("whatsapp.funds.back")}
+              </button>
+            </div>
           </div>
         )}
       </div>

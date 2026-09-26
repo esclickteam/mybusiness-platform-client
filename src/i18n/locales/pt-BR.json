@@ -8960,6 +8960,56 @@
       "continue": "Continuar",
       "timeoutTitle": "Pagamento recebido e a atualização ainda está em andamento.",
       "timeoutHint": "A maioria termina em pouco tempo."
+    },
+    "funds": {
+      "tabTitle": "Fundos",
+      "tabSubtitle": "Saldo pré-pago do WhatsApp · Recarga manual · Recarga automática",
+      "manageTitle": "Gerenciar fundos",
+      "manageCta": "Gerenciar fundos",
+      "prepaidBalance": "Saldo pré-pago do WhatsApp",
+      "currentBalance": "Saldo atual",
+      "perMessage": "{{price}} por mensagem faturável",
+      "loading": "Carregando saldo…",
+      "insufficientBalance": "Saldo insuficiente — não é possível enviar mensagens.",
+      "balanceLow": "Seu saldo está baixo.",
+      "autoRecharge": "Recarga automática",
+      "autoRechargeDesc": "Recarga recorrente automática via Lemon Squeezy, com alerta quando o saldo cair abaixo do limite.",
+      "balanceThreshold": "Limite de saldo",
+      "rechargeAmount": "Valor da recarga",
+      "saveThreshold": "Salvar limite",
+      "enableAutoRecharge": "Ativar recarga automática",
+      "addFunds": "Adicionar fundos",
+      "back": "Voltar",
+      "close": "Fechar",
+      "amountToAdd": "Valor a adicionar",
+      "balanceAfter": "Saldo após a recarga: {{amount}}",
+      "minTopupHint": "Mínimo {{amount}}. O saldo é creditado somente após a confirmação do Lemon Squeezy.",
+      "continueCheckout": "Continuar para o pagamento",
+      "nextAutoTopup": "Próxima recarga automática agendada para {{date}}",
+      "nextAutoTopupLabel": "Próxima recarga automática",
+      "autoFailed": "A recarga automática falhou. Atualize o método de pagamento ou adicione fundos manualmente.",
+      "autoOnSummary": "Ativa · {{amount}}/mês",
+      "off": "Desativada",
+      "reserved": "Reservado: {{amount}}",
+      "validation": {
+        "required": "Informe um valor",
+        "notNumeric": "O valor deve ser um número",
+        "notPositive": "O valor deve ser maior que zero",
+        "belowMinimum": "O valor mínimo é {{amount}}",
+        "invalid": "Valor inválido",
+        "autoRequiresBoth": "Com a recarga automática ativa, o limite e o valor são obrigatórios"
+      },
+      "toasts": {
+        "thresholdSaved": "Limite de saldo atualizado",
+        "autoCancelScheduled": "A recarga automática será encerrada no fim do período atual"
+      },
+      "errors": {
+        "loadFailed": "Não foi possível carregar os fundos",
+        "topupFailed": "Não foi possível iniciar a recarga",
+        "saveFailed": "Não foi possível salvar as configurações",
+        "autoStartFailed": "Não foi possível ativar a recarga automática",
+        "autoCancelFailed": "Não foi possível cancelar a recarga automática"
+      }
     }
   },
   "metaCampaigns": {
