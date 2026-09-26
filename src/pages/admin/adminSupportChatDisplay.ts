@@ -9,6 +9,15 @@ export type SupportChatMessage = {
   deliveryStatus?: string;
   providerMessageId?: string;
   createdAt?: string;
+  metadata?: {
+    error?: string;
+    graphCode?: number | null;
+    graphSubcode?: number | null;
+    fbtraceId?: string;
+    httpStatus?: number | null;
+    managedConnectionId?: string;
+    [key: string]: unknown;
+  };
 };
 
 export function isOutboundSupportBubble(message: SupportChatMessage | null | undefined) {
@@ -33,6 +42,20 @@ export function deliveryStatusLabel(status?: string) {
     default:
       return "";
   }
+}
+
+/** Real Meta / WhatsApp failure reason for admin bubbles (not just "נכשל"). */
+export function deliveryFailureDetail(message?: SupportChatMessage | null) {
+  const meta = message?.metadata || {};
+  const raw = String(meta.error || "").trim();
+  if (raw) return raw.slice(0, 500);
+
+  const bits: string[] = [];
+  if (meta.graphCode != null) bits.push(`code ${meta.graphCode}`);
+  if (meta.graphSubcode != null) bits.push(`subcode ${meta.graphSubcode}`);
+  if (meta.fbtraceId) bits.push(`fbtrace ${meta.fbtraceId}`);
+  if (meta.httpStatus != null) bits.push(`http ${meta.httpStatus}`);
+  return bits.join(" — ").slice(0, 500);
 }
 
 const URL_OR_PHONE =
