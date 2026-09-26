@@ -129,6 +129,8 @@ export default function WhatsAppManageFundsModal({
   const [thresholdInput, setThresholdInput] = useState("50");
   const [rechargeInput, setRechargeInput] = useState("200");
   const [topupInput, setTopupInput] = useState("100");
+  const [baselineThresholdMinor, setBaselineThresholdMinor] = useState(5000);
+  const [baselineRechargeMinor, setBaselineRechargeMinor] = useState(20000);
   const [formError, setFormError] = useState<string | null>(null);
   const [thresholdError, setThresholdError] = useState<string | null>(null);
   const [rechargeError, setRechargeError] = useState<string | null>(null);
@@ -151,13 +153,13 @@ export default function WhatsAppManageFundsModal({
     setRechargeError(null);
     setTopupError(null);
     if (f) {
+      const thresholdMinor = f.lowBalanceThresholdMinor || 5000;
+      const rechargeMinor = f.autoFundingAmountMinor || 20000;
       setAutoEnabled(Boolean(f.autoFundingEnabled));
-      setThresholdInput(
-        minorToIlsInput(f.lowBalanceThresholdMinor || 5000) || "50"
-      );
-      setRechargeInput(
-        minorToIlsInput(f.autoFundingAmountMinor || 20000) || "200"
-      );
+      setBaselineThresholdMinor(thresholdMinor);
+      setBaselineRechargeMinor(rechargeMinor);
+      setThresholdInput(minorToIlsInput(thresholdMinor) || "50");
+      setRechargeInput(minorToIlsInput(rechargeMinor) || "200");
     }
     setTopupInput(minorToIlsInput(10000) || "100");
   }, [open, initialPanel, f]);
@@ -187,6 +189,15 @@ export default function WhatsAppManageFundsModal({
     () => validateAmountInput(rechargeInput, { minMinor: minAuto }),
     [rechargeInput, minAuto]
   );
+
+  const toggleOn = autoEnabled || subscriptionActive;
+  const thresholdDirty =
+    thresholdMinorParsed.ok &&
+    thresholdMinorParsed.minor !== baselineThresholdMinor;
+  const rechargeDirty =
+    rechargeMinorParsed.ok &&
+    rechargeMinorParsed.minor !== baselineRechargeMinor;
+  const settingsDirty = thresholdDirty || rechargeDirty;
 
   const amountErrorMessage = (code: AmountValidationCode, minMinor: number) => {
     switch (code) {
@@ -242,6 +253,7 @@ export default function WhatsAppManageFundsModal({
     setBusy(true);
     try {
       await updateWhatsAppLowBalanceThreshold(businessId, parsed.minor);
+      setBaselineThresholdMinor(parsed.minor);
       toast.success(t("whatsapp.funds.toasts.thresholdSaved"));
       await onUpdated();
     } catch (err: unknown) {
@@ -293,6 +305,28 @@ export default function WhatsAppManageFundsModal({
       setFormError(msg);
       toast.error(msg);
       setBusy(false);
+    }
+  };
+
+  const saveActiveSettings = async () => {
+    setThresholdError(null);
+    setRechargeError(null);
+    setFormError(null);
+
+    if (!settingsDirty) return;
+
+    if (subscriptionActive && rechargeDirty) {
+      setRechargeError(t("whatsapp.funds.validation.amountLockedWhileActive"));
+      if (!thresholdDirty) return;
+    }
+
+    if (!subscriptionActive) {
+      await enableAutoRecharge();
+      return;
+    }
+
+    if (thresholdDirty) {
+      await saveThresholdOnly();
     }
   };
 
@@ -419,14 +453,12 @@ export default function WhatsAppManageFundsModal({
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={autoEnabled || subscriptionActive}
+                  aria-checked={toggleOn}
                   aria-label={t("whatsapp.funds.autoRecharge")}
                   disabled={busy}
                   onClick={onToggleAuto}
                   className={`wa-funds-switch${
-                    autoEnabled || subscriptionActive
-                      ? " wa-funds-switch--on"
-                      : ""
+                    toggleOn ? " wa-funds-switch--on" : ""
                   }`}
                 >
                   <span className="wa-funds-switch__knob" />
@@ -461,30 +493,31 @@ export default function WhatsAppManageFundsModal({
                     setRechargeInput(v);
                     setRechargeError(null);
                   }}
-                  disabled={busy || subscriptionActive}
+                  disabled={busy}
                   error={rechargeError}
                   presets={autoPresets}
                   selectedPresetMinor={
                     rechargeMinorParsed.ok ? rechargeMinorParsed.minor : null
                   }
                   onPreset={(m) => {
-                    if (subscriptionActive) return;
                     setRechargeInput(minorToIlsInput(m));
                     setRechargeError(null);
                   }}
                 />
               </div>
 
-              {subscriptionActive ? (
+              {toggleOn ? (
                 <button
                   type="button"
-                  className="wa-billing-btn wa-billing-btn--ghost"
-                  disabled={busy}
-                  onClick={() => void saveThresholdOnly()}
+                  className="wa-billing-btn wa-billing-btn--primary"
+                  style={{ background: TEAL, borderColor: TEAL }}
+                  disabled={busy || !settingsDirty}
+                  onClick={() => void saveActiveSettings()}
                 >
-                  {t("whatsapp.funds.saveThreshold")}
+                  {busy ? <Loader2 className="animate-spin" size={16} /> : null}
+                  {t("whatsapp.funds.saveChanges")}
                 </button>
-              ) : autoEnabled ? (
+              ) : (
                 <button
                   type="button"
                   className="wa-billing-btn wa-billing-btn--primary"
@@ -495,7 +528,7 @@ export default function WhatsAppManageFundsModal({
                   {busy ? <Loader2 className="animate-spin" size={16} /> : null}
                   {t("whatsapp.funds.enableAutoRecharge")}
                 </button>
-              ) : null}
+              )}
 
               {f?.nextAutoFundingAt ? (
                 <p className="wa-funds-section__hint">
