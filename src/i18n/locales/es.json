@@ -8894,7 +8894,7 @@
       "balanceThreshold": "Umbral de alerta de saldo bajo",
       "rechargeAmount": "Importe de recarga mensual",
       "saveThreshold": "Guardar umbral",
-      "enableAutoRecharge": "Activar financiación automática mensual",
+      "enableAutoRecharge": "Activar financiación mensual",
       "addFunds": "Añadir fondos",
       "back": "Volver",
       "close": "Cerrar",
@@ -8914,7 +8914,8 @@
         "notPositive": "El importe debe ser mayor que cero",
         "belowMinimum": "El importe mínimo es {{amount}}",
         "invalid": "Importe no válido",
-        "autoRequiresBoth": "Con la financiación automática mensual activada, el umbral de alerta y el importe mensual son obligatorios"
+        "autoRequiresBoth": "Con la financiación automática mensual activada, el umbral de alerta y el importe mensual son obligatorios",
+        "amountLockedWhileActive": "No se puede cambiar el importe mensual mientras la financiación automática mensual está activa. Cancélala primero y actívala de nuevo con un importe nuevo."
       },
       "toasts": {
         "thresholdSaved": "Umbral de saldo actualizado",
@@ -8926,7 +8927,8 @@
         "saveFailed": "No se pudieron guardar los ajustes",
         "autoStartFailed": "No se pudo activar la financiación automática mensual",
         "autoCancelFailed": "No se pudo cancelar la financiación automática mensual"
-      }
+      },
+      "saveChanges": "Guardar cambios"
     }
   },
   "metaCampaigns": {

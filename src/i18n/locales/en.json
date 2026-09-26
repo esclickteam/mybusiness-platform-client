@@ -9077,7 +9077,7 @@
       "balanceThreshold": "Low balance alert threshold",
       "rechargeAmount": "Monthly top-up amount",
       "saveThreshold": "Save threshold",
-      "enableAutoRecharge": "Enable Monthly Auto Funding",
+      "enableAutoRecharge": "Enable monthly funding",
       "addFunds": "Add funds",
       "back": "Back",
       "close": "Close",
@@ -9097,7 +9097,8 @@
         "notPositive": "Amount must be greater than zero",
         "belowMinimum": "Minimum amount is {{amount}}",
         "invalid": "Invalid amount",
-        "autoRequiresBoth": "Monthly top-up amount and low balance threshold are required when Monthly Auto Funding is on"
+        "autoRequiresBoth": "Monthly top-up amount and low balance threshold are required when Monthly Auto Funding is on",
+        "amountLockedWhileActive": "The monthly top-up amount cannot be changed while Monthly Auto Funding is active. Cancel it first, then enable again with a new amount."
       },
       "toasts": {
         "thresholdSaved": "Balance threshold updated",
@@ -9109,7 +9110,8 @@
         "saveFailed": "Could not save settings",
         "autoStartFailed": "Could not start Monthly Auto Funding",
         "autoCancelFailed": "Could not cancel Monthly Auto Funding"
-      }
+      },
+      "saveChanges": "Save changes"
     }
   },
   "metaCampaigns": {
