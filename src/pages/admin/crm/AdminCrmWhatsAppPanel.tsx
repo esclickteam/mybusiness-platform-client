@@ -16,7 +16,11 @@ export default function AdminCrmWhatsAppPanel({
   canDemo?: boolean;
   onBanner: (msg: string) => void;
   initialIntent?: "message" | "follow_up" | "demo" | "payment";
-  onOpenSendDemo?: () => void;
+  onOpenSendDemo?: (prefill?: {
+    managedConnectionId?: string | null;
+    phone?: string | null;
+    contactName?: string | null;
+  }) => void;
 }) {
   return (
     <div className="h-[min(720px,calc(100dvh-220px))] min-h-[520px] overflow-hidden rounded-[24px] border border-purple-100">

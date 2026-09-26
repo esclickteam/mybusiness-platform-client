@@ -127,7 +127,11 @@ export default function WhatsAppWebThread({
   initialIntent?: "message" | "follow_up" | "demo" | "payment";
   showConnectionCards?: boolean;
   onBack?: () => void;
-  onOpenSendDemo?: () => void;
+  onOpenSendDemo?: (prefill?: {
+    managedConnectionId?: string | null;
+    phone?: string | null;
+    contactName?: string | null;
+  }) => void;
 }) {
   const [data, setData] = useState<any>(null);
   const [messages, setMessages] = useState<PublicWhatsAppMessage[]>([]);
@@ -938,7 +942,18 @@ export default function WhatsAppWebThread({
             <SecondaryButton
               type="button"
               className="!min-h-9 !rounded-full !px-3 !text-xs"
-              onClick={() => (onOpenSendDemo ? onOpenSendDemo() : setIntent("demo"))}
+              onClick={() => {
+                if (onOpenSendDemo) {
+                  onOpenSendDemo({
+                    managedConnectionId:
+                      threadConnectionId || effectiveSendFromId || null,
+                    phone,
+                    contactName,
+                  });
+                  return;
+                }
+                setIntent("demo");
+              }}
             >
               שליחת דמו
             </SecondaryButton>

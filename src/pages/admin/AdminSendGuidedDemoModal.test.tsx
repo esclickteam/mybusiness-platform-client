@@ -196,4 +196,58 @@ describe("admin send demo button and modal", () => {
     expect(screen.getByText("WhatsApp נפתח — שלחו ידנית מהאפליקציה")).toBeTruthy();
     openSpy.mockRestore();
   });
+
+  it("passes WhatsApp thread managedConnectionId into create payload", async () => {
+    vi.mocked(createGuidedDemo).mockResolvedValueOnce({
+      invitation: {
+        id: "inv-wa",
+        customerName: "דניאל",
+        customerPhone: "0509998877",
+        selectedModules: ["crm", "website-builder", "email"],
+        expiresAt: new Date(Date.now() + 86400000).toISOString(),
+        status: "created",
+        linkAvailable: true,
+        demoLink: "https://bizuply.com/demo/wa-token",
+        managedConnectionId: "US_MANAGED",
+      },
+      demoLink: "https://bizuply.com/demo/wa-token",
+      delivery: { ok: false, skipped: true },
+    } as any);
+
+    render(
+      <MemoryRouter>
+        <AdminSendGuidedDemoModal
+          open
+          onClose={() => {}}
+          context={{
+            customerName: "דניאל",
+            phone: "0509998877",
+            sourceType: "manual",
+            sourceCustomerId: "cust-1",
+            managedConnectionId: "US_MANAGED",
+          }}
+        />
+      </MemoryRouter>
+    );
+
+    await screen.findByText("דמו מלא");
+    await waitFor(() => {
+      expect((screen.getByTestId("admin-create-demo-link") as HTMLButtonElement).disabled).toBe(
+        false
+      );
+    });
+    fireEvent.click(screen.getByTestId("admin-create-demo-link"));
+    await screen.findByTestId("admin-created-demo-url");
+    expect(createGuidedDemo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        send: false,
+        managedConnectionId: "US_MANAGED",
+        customerPhone: "0509998877",
+        customerName: "דניאל",
+      })
+    );
+    expect(fetchGuidedDemoCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({ managedConnectionId: "US_MANAGED" })
+    );
+  });
 });
