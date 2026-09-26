@@ -381,6 +381,9 @@
 .wa-billing-modal-root .wa-billing-modal-backdrop {
   position: absolute;
   inset: 0;
+  /* Must stay BELOW the dialog — the base .wa-billing-modal-backdrop rule
+     sets z-index: 70 which would otherwise cover the modal and swallow clicks. */
+  z-index: 0;
   display: block;
   padding: 0;
   border: 0;
@@ -394,6 +397,7 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
+  pointer-events: auto;
 }
 
 .wa-billing-modal__header {
