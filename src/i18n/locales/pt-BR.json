@@ -8963,7 +8963,7 @@
     },
     "funds": {
       "tabTitle": "Fundos",
-      "tabSubtitle": "Saldo pré-pago do WhatsApp · Recarga manual · Recarga automática",
+      "tabSubtitle": "Saldo pré-pago do WhatsApp · Recarga manual · Financiamento automático mensal",
       "manageTitle": "Gerenciar fundos",
       "manageCta": "Gerenciar fundos",
       "prepaidBalance": "Saldo pré-pago do WhatsApp",
@@ -8972,12 +8972,12 @@
       "loading": "Carregando saldo…",
       "insufficientBalance": "Saldo insuficiente — não é possível enviar mensagens.",
       "balanceLow": "Seu saldo está baixo.",
-      "autoRecharge": "Recarga automática",
-      "autoRechargeDesc": "Recarga recorrente automática via Lemon Squeezy, com alerta quando o saldo cair abaixo do limite.",
-      "balanceThreshold": "Limite de saldo",
-      "rechargeAmount": "Valor da recarga",
+      "autoRecharge": "Financiamento automático mensal",
+      "autoRechargeDesc": "Adiciona um valor fixo ao saldo do WhatsApp todo mês via Lemon Squeezy. O limite apenas alerta quando o saldo está baixo — não cobra o cartão.",
+      "balanceThreshold": "Limite de alerta de saldo baixo",
+      "rechargeAmount": "Valor da recarga mensal",
       "saveThreshold": "Salvar limite",
-      "enableAutoRecharge": "Ativar recarga automática",
+      "enableAutoRecharge": "Ativar financiamento automático mensal",
       "addFunds": "Adicionar fundos",
       "back": "Voltar",
       "close": "Fechar",
@@ -8997,18 +8997,18 @@
         "notPositive": "O valor deve ser maior que zero",
         "belowMinimum": "O valor mínimo é {{amount}}",
         "invalid": "Valor inválido",
-        "autoRequiresBoth": "Com a recarga automática ativa, o limite e o valor são obrigatórios"
+        "autoRequiresBoth": "Com o financiamento automático mensal ativo, o limite de alerta e o valor mensal são obrigatórios"
       },
       "toasts": {
         "thresholdSaved": "Limite de saldo atualizado",
-        "autoCancelScheduled": "A recarga automática será encerrada no fim do período atual"
+        "autoCancelScheduled": "O financiamento automático mensal será encerrado no fim do período atual"
       },
       "errors": {
         "loadFailed": "Não foi possível carregar os fundos",
         "topupFailed": "Não foi possível iniciar a recarga",
         "saveFailed": "Não foi possível salvar as configurações",
-        "autoStartFailed": "Não foi possível ativar a recarga automática",
-        "autoCancelFailed": "Não foi possível cancelar a recarga automática"
+        "autoStartFailed": "Não foi possível ativar o financiamento automático mensal",
+        "autoCancelFailed": "Não foi possível cancelar o financiamento automático mensal"
       }
     }
   },
