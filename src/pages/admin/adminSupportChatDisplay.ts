@@ -113,3 +113,88 @@ export function supportConnectionBadge(
   if (id.endsWith("_MANAGED")) return id.replace(/_MANAGED$/, "");
   return id.slice(0, 3);
 }
+
+/** Human brand for managed WhatsApp lines: Bizuply US / Bizuply IL */
+export function bizuplyConnectionBrand(managedConnectionId?: string | null) {
+  const id = String(managedConnectionId || "")
+    .trim()
+    .toUpperCase();
+  if (id === "US_MANAGED") return "Bizuply US";
+  if (id === "IL_MANAGED") return "Bizuply IL";
+  if (id.endsWith("_MANAGED")) {
+    return `Bizuply ${id.replace(/_MANAGED$/, "")}`;
+  }
+  return id ? `Bizuply ${id}` : "";
+}
+
+export function resolveManagedConnectionId(
+  ...values: Array<string | null | undefined>
+) {
+  for (const value of values) {
+    const id = String(value || "")
+      .trim()
+      .toUpperCase();
+    if (id) return id;
+  }
+  return "";
+}
+
+/** Conversation via: Bizuply US · +1 … · US_MANAGED */
+export function supportConversationViaLabel(
+  conversation?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+    connectionLabel?: string | null;
+  } | null
+) {
+  const id = resolveManagedConnectionId(conversation?.managedConnectionId);
+  if (!id) return "";
+  const brand =
+    bizuplyConnectionBrand(id) ||
+    String(conversation?.connectionLabel || "").trim() ||
+    id;
+  const phone = String(conversation?.businessDisplayPhone || "").trim();
+  return [brand, phone, id].filter(Boolean).join(" · ");
+}
+
+/** Sending from: Bizuply US (+1 …) */
+export function supportSendingFromLabel(
+  conversation?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+    connectionLabel?: string | null;
+  } | null
+) {
+  const id = resolveManagedConnectionId(conversation?.managedConnectionId);
+  if (!id) return "";
+  const brand =
+    bizuplyConnectionBrand(id) ||
+    String(conversation?.connectionLabel || "").trim() ||
+    id;
+  const phone = String(conversation?.businessDisplayPhone || "").trim();
+  return phone ? `${brand} (${phone})` : brand;
+}
+
+/**
+ * Sent via US_MANAGED · +1 …
+ * Prefer message-level managedConnectionId; fall back to conversation.
+ */
+export function supportSentViaLabel(
+  message?: SupportChatMessage | null,
+  conversation?: {
+    managedConnectionId?: string | null;
+    businessDisplayPhone?: string | null;
+  } | null
+) {
+  const id = resolveManagedConnectionId(
+    message?.metadata?.managedConnectionId as string | undefined,
+    conversation?.managedConnectionId
+  );
+  if (!id) return "";
+  const phone = String(
+    (message?.metadata?.businessDisplayPhone as string | undefined) ||
+      conversation?.businessDisplayPhone ||
+      ""
+  ).trim();
+  return phone ? `Sent via ${id} · ${phone}` : `Sent via ${id}`;
+}

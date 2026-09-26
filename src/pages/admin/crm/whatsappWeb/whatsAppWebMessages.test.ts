@@ -5,10 +5,12 @@ import {
   bumpThreadList,
   connectionBadgeLabel,
   connectionChipLabel,
+  conversationViaDetailLabel,
   dateSeparatorLabel,
   inboundEventMatches,
   mergeMessages,
   messageKey,
+  outboundSentViaLabel,
   sendFromPhoneLabel,
 } from "./whatsAppWebMessages";
 
@@ -134,10 +136,27 @@ describe("whatsAppWebMessages", () => {
     ).toBe("🇺🇸 US +1 210 944 4809");
     expect(
       sendFromPhoneLabel({
+        managedConnectionId: "IL_MANAGED",
         connectionFlag: "🇮🇱",
         businessDisplayPhone: "+972 50 000 0000",
       })
-    ).toBe("🇮🇱 +972 50 000 0000");
+    ).toBe("Bizuply IL (+972 50 000 0000)");
+    expect(
+      conversationViaDetailLabel({
+        managedConnectionId: "US_MANAGED",
+        connectionFlag: "🇺🇸",
+        businessDisplayPhone: "+1 210 944 4809",
+      })
+    ).toBe("🇺🇸 · Bizuply US · +1 210 944 4809 · US_MANAGED");
+    expect(
+      outboundSentViaLabel(
+        {
+          managedConnectionId: "US_MANAGED",
+          businessPhoneNumber: "+1 210 944 4809",
+        },
+        null
+      )
+    ).toBe("Sent via US_MANAGED · +1 210 944 4809");
   });
 
   it("replaces an optimistic outbound with the confirmed log", () => {
