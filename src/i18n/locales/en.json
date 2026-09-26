@@ -19954,7 +19954,10 @@
         "automations": "Automations",
         "collab": "Collaborations",
         "advisor": "Business advisor",
-        "website-builder": "Website builder"
+        "website-builder": "Website builder",
+        "leads": "Leads",
+        "clients": "Clients",
+        "forms": "Forms"
       },
       "steps": {
         "dash-intro": {
@@ -20228,6 +20231,42 @@
         "site-demo-card": {
           "title": "My sites",
           "instruction": "Here the site appears under \"My sites\". From here the website builder module ends."
+        },
+        "leads-intro": {
+          "title": "Lead management",
+          "instruction": "Every new inquiry lands here — from the website, WhatsApp, or manually — so you can handle it before it goes cold."
+        },
+        "leads-open-maya": {
+          "title": "Open a lead",
+          "instruction": "Click the card for \"Maya Levi\"."
+        },
+        "leads-status-interested": {
+          "title": "Mark interest",
+          "instruction": "Change the status to \"Interested\" to show progress in the pipeline."
+        },
+        "clients-intro": {
+          "title": "Clients",
+          "instruction": "A lead that becomes an active client gets a full file with history and notes — not just a name in the phone."
+        },
+        "clients-nav": {
+          "title": "Go to clients",
+          "instruction": "Click \"Clients\"."
+        },
+        "clients-open-yael": {
+          "title": "Open a client file",
+          "instruction": "Open the file for \"Yael Abraham\"."
+        },
+        "forms-intro": {
+          "title": "Smart forms",
+          "instruction": "A form on the website automatically becomes a CRM lead. In the demo you will see where that connects — without sending real inquiries."
+        },
+        "forms-open-manage": {
+          "title": "Website management",
+          "instruction": "Open the demo website."
+        },
+        "forms-wrap": {
+          "title": "Lead from the form",
+          "instruction": "Every website submission enters Leads. In the demo no messages are sent to real customers."
         }
       }
     },
