@@ -8880,7 +8880,7 @@
     },
     "funds": {
       "tabTitle": "الرصيد",
-      "tabSubtitle": "رصيد واتساب مسبق الدفع · شحن يدوي · شحن تلقائي",
+      "tabSubtitle": "رصيد واتساب مسبق الدفع · شحن يدوي · تمويل تلقائي شهري",
       "manageTitle": "إدارة الرصيد",
       "manageCta": "إدارة الرصيد",
       "prepaidBalance": "رصيد واتساب مسبق الدفع",
@@ -8889,12 +8889,12 @@
       "loading": "جارٍ تحميل الرصيد…",
       "insufficientBalance": "الرصيد غير كافٍ — تعذر إرسال الرسائل.",
       "balanceLow": "رصيدك منخفض.",
-      "autoRecharge": "الشحن التلقائي",
-      "autoRechargeDesc": "شحن متكرر تلقائي عبر Lemon Squeezy مع تنبيه عند انخفاض الرصيد عن الحد.",
-      "balanceThreshold": "حد الرصيد",
-      "rechargeAmount": "مبلغ الشحن",
+      "autoRecharge": "تمويل تلقائي شهري",
+      "autoRechargeDesc": "يضيف مبلغًا ثابتًا إلى رصيد واتساب كل شهر عبر Lemon Squeezy. حد الرصيد للتنبيه فقط عند انخفاض الرصيد — ولا يخصم من البطاقة.",
+      "balanceThreshold": "حد تنبيه الرصيد المنخفض",
+      "rechargeAmount": "مبلغ الشحن الشهري",
       "saveThreshold": "حفظ الحد",
-      "enableAutoRecharge": "تفعيل الشحن التلقائي",
+      "enableAutoRecharge": "تفعيل التمويل التلقائي الشهري",
       "addFunds": "إضافة رصيد",
       "back": "رجوع",
       "close": "إغلاق",
@@ -8914,18 +8914,18 @@
         "notPositive": "يجب أن يكون المبلغ أكبر من صفر",
         "belowMinimum": "الحد الأدنى للمبلغ هو {{amount}}",
         "invalid": "مبلغ غير صالح",
-        "autoRequiresBoth": "عند تفعيل الشحن التلقائي يجب تحديد حد الرصيد ومبلغ الشحن"
+        "autoRequiresBoth": "عند تفعيل التمويل التلقائي الشهري يجب تحديد حد التنبيه ومبلغ الشحن الشهري"
       },
       "toasts": {
         "thresholdSaved": "تم تحديث حد الرصيد",
-        "autoCancelScheduled": "سيتوقف الشحن التلقائي في نهاية الفترة الحالية"
+        "autoCancelScheduled": "سيتوقف التمويل التلقائي الشهري في نهاية الفترة الحالية"
       },
       "errors": {
         "loadFailed": "تعذر تحميل الرصيد",
         "topupFailed": "تعذر بدء الشحن",
         "saveFailed": "تعذر حفظ الإعدادات",
-        "autoStartFailed": "تعذر تفعيل الشحن التلقائي",
-        "autoCancelFailed": "تعذر إلغاء الشحن التلقائي"
+        "autoStartFailed": "تعذر تفعيل التمويل التلقائي الشهري",
+        "autoCancelFailed": "تعذر إلغاء التمويل التلقائي الشهري"
       }
     }
   },

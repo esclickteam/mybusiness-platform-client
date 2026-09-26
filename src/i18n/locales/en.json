@@ -9063,7 +9063,7 @@
     },
     "funds": {
       "tabTitle": "Funds",
-      "tabSubtitle": "Prepaid WhatsApp balance · Manual top-up · Auto-recharge",
+      "tabSubtitle": "Prepaid WhatsApp balance · Manual top-up · Monthly Auto Funding",
       "manageTitle": "Manage funds",
       "manageCta": "Manage Funds",
       "prepaidBalance": "WhatsApp prepaid balance",
@@ -9072,12 +9072,12 @@
       "loading": "Loading balance…",
       "insufficientBalance": "Insufficient balance — cannot send messages.",
       "balanceLow": "Your balance is low.",
-      "autoRecharge": "Auto-recharge",
-      "autoRechargeDesc": "Automatically top up on a recurring schedule via Lemon Squeezy, and alert when balance falls below the threshold.",
-      "balanceThreshold": "Balance threshold",
-      "rechargeAmount": "Recharge amount",
+      "autoRecharge": "Monthly Auto Funding",
+      "autoRechargeDesc": "Adds a fixed amount to your WhatsApp balance every month via Lemon Squeezy. The balance threshold only alerts you when funds are low — it does not charge your card.",
+      "balanceThreshold": "Low balance alert threshold",
+      "rechargeAmount": "Monthly top-up amount",
       "saveThreshold": "Save threshold",
-      "enableAutoRecharge": "Enable Auto-recharge",
+      "enableAutoRecharge": "Enable Monthly Auto Funding",
       "addFunds": "Add funds",
       "back": "Back",
       "close": "Close",
@@ -9097,18 +9097,18 @@
         "notPositive": "Amount must be greater than zero",
         "belowMinimum": "Minimum amount is {{amount}}",
         "invalid": "Invalid amount",
-        "autoRequiresBoth": "Balance threshold and recharge amount are required when Auto-recharge is on"
+        "autoRequiresBoth": "Monthly top-up amount and low balance threshold are required when Monthly Auto Funding is on"
       },
       "toasts": {
         "thresholdSaved": "Balance threshold updated",
-        "autoCancelScheduled": "Auto-recharge will stop at the end of the current period"
+        "autoCancelScheduled": "Monthly Auto Funding will stop at the end of the current period"
       },
       "errors": {
         "loadFailed": "Could not load funds",
         "topupFailed": "Could not start top-up",
         "saveFailed": "Could not save settings",
-        "autoStartFailed": "Could not start Auto-recharge",
-        "autoCancelFailed": "Could not cancel Auto-recharge"
+        "autoStartFailed": "Could not start Monthly Auto Funding",
+        "autoCancelFailed": "Could not cancel Monthly Auto Funding"
       }
     }
   },

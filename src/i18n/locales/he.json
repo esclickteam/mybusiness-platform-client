@@ -9052,7 +9052,7 @@
     },
     "funds": {
       "tabTitle": "יתרה",
-      "tabSubtitle": "יתרת WhatsApp בתשלום מראש · טעינה ידנית · טעינה אוטומטית",
+      "tabSubtitle": "יתרת WhatsApp בתשלום מראש · טעינה ידנית · טעינה אוטומטית חודשית",
       "manageTitle": "ניהול יתרה",
       "manageCta": "ניהול יתרה",
       "prepaidBalance": "יתרת WhatsApp בתשלום מראש",
@@ -9061,12 +9061,12 @@
       "loading": "טוען יתרה…",
       "insufficientBalance": "יתרה לא מספיקה — לא ניתן לשלוח הודעות.",
       "balanceLow": "היתרה שלך נמוכה.",
-      "autoRecharge": "טעינה אוטומטית",
-      "autoRechargeDesc": "טעינה חוזרת אוטומטית דרך Lemon Squeezy, והתראה כשהיתרה יורדת מתחת לסף.",
-      "balanceThreshold": "סף יתרה",
-      "rechargeAmount": "סכום טעינה",
+      "autoRecharge": "טעינה אוטומטית חודשית",
+      "autoRechargeDesc": "מוסיפה סכום קבוע ליתרת ה־WhatsApp בכל חודש דרך Lemon Squeezy. סף היתרה משמש להתראה בלבד כשהיתרה נמוכה — הוא לא מחייב את הכרטיס.",
+      "balanceThreshold": "סף התראת יתרה נמוכה",
+      "rechargeAmount": "סכום טעינה חודשי",
       "saveThreshold": "שמירת סף",
-      "enableAutoRecharge": "הפעלת טעינה אוטומטית",
+      "enableAutoRecharge": "הפעלת טעינה אוטומטית חודשית",
       "addFunds": "הוספת יתרה",
       "back": "חזרה",
       "close": "סגירה",
@@ -9086,18 +9086,18 @@
         "notPositive": "הסכום חייב להיות גדול מאפס",
         "belowMinimum": "הסכום המינימלי הוא {{amount}}",
         "invalid": "סכום לא תקין",
-        "autoRequiresBoth": "כשטעינה אוטומטית פעילה חובה להגדיר סף יתרה וסכום טעינה"
+        "autoRequiresBoth": "כשטעינה אוטומטית חודשית פעילה חובה להגדיר סף התראה וסכום טעינה חודשי"
       },
       "toasts": {
         "thresholdSaved": "סף היתרה עודכן",
-        "autoCancelScheduled": "הטעינה האוטומטית תופסק בסוף התקופה הנוכחית"
+        "autoCancelScheduled": "הטעינה האוטומטית החודשית תופסק בסוף התקופה הנוכחית"
       },
       "errors": {
         "loadFailed": "לא ניתן לטעון את היתרה",
         "topupFailed": "לא ניתן להתחיל טעינה",
         "saveFailed": "לא ניתן לשמור את ההגדרות",
-        "autoStartFailed": "לא ניתן להפעיל טעינה אוטומטית",
-        "autoCancelFailed": "לא ניתן לבטל טעינה אוטומטית"
+        "autoStartFailed": "לא ניתן להפעיל טעינה אוטומטית חודשית",
+        "autoCancelFailed": "לא ניתן לבטל טעינה אוטומטית חודשית"
       }
     }
   },
