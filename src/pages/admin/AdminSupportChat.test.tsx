@@ -25,6 +25,35 @@ vi.mock("./AdminsHeader", () => ({
   default: () => <div>admin-header</div>,
 }));
 
+vi.mock("./AdminSendGuidedDemoModal", () => ({
+  __esModule: true,
+  default: ({
+    open,
+    context,
+  }: {
+    open: boolean;
+    context: {
+      customerName?: string;
+      phone?: string;
+      managedConnectionId?: string;
+    };
+  }) =>
+    open ? (
+      <div data-testid="admin-send-demo-modal">
+        <span data-testid="demo-prefill-name">{context.customerName}</span>
+        <span data-testid="demo-prefill-phone">{context.phone}</span>
+        <span data-testid="demo-prefill-connection">
+          {context.managedConnectionId}
+        </span>
+      </div>
+    ) : null,
+  AdminSendDemoButton: ({ onClick }: { onClick: () => void }) => (
+    <button type="button" data-testid="admin-send-demo-button" onClick={onClick}>
+      שליחת דמו
+    </button>
+  ),
+}));
+
 vi.mock("../../utils/adminStaffAlerts", () => ({
   notifyAdminSupportEvent: vi.fn(async () => null),
 }));
@@ -34,6 +63,10 @@ const conversation = {
   name: "דניאל כהן",
   phone: "972501234567",
   channel: "whatsapp",
+  managedConnectionId: "US_MANAGED",
+  businessDisplayPhone: "+12109444809",
+  connectionCountry: "US",
+  connectionLabel: "Bizuply US",
   status: "active",
   mode: "human",
   lastMessagePreview: "היי דניאל, נעים מאוד",
@@ -122,5 +155,24 @@ describe("AdminSupportChat whatsapp", () => {
     expect(
       screen.getByTestId("support-bubble-inbound").getAttribute("data-direction")
     ).toBe("inbound");
+  });
+
+  it("opens guided demo modal from thread header with phone and US connection prefilled", async () => {
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByTestId("admin-send-demo-button")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("admin-send-demo-button"));
+    expect(await screen.findByTestId("admin-send-demo-modal")).toBeTruthy();
+    expect(screen.getByTestId("demo-prefill-name").textContent).toBe("דניאל כהן");
+    expect(screen.getByTestId("demo-prefill-phone").textContent).toBe("0501234567");
+    expect(screen.getByTestId("demo-prefill-connection").textContent).toBe(
+      "US_MANAGED"
+    );
   });
 });
