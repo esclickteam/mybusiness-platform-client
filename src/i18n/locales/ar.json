@@ -19761,7 +19761,18 @@
       "introGrowth": "أدوات النمو",
       "introGrowthHint": "شركاء ومستشار",
       "introWeb": "بناء موقع",
-      "introWebHint": "قوالب ونشر"
+      "introWebHint": "قوالب ونشر",
+      "modules": {
+        "dashboard": "Dashboard",
+        "crm": "CRM and leads",
+        "services": "Meetings and calendar",
+        "working-hours": "Meetings and calendar",
+        "calendar": "Meetings and calendar",
+        "automations": "Automations",
+        "collab": "Growth tools",
+        "advisor": "Growth tools",
+        "website-builder": "Website builder"
+      }
     },
     "guidedQ": {
       "relevantCrm": "CRM وإدارة العملاء",

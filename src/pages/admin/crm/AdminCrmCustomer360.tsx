@@ -41,6 +41,7 @@ import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
 } from "../AdminSendGuidedDemoModal";
+import { preferredLocaleFromConnectionCountry } from "../../../guidedDemo/adminSendForm";
 import {
   AdminBizuplyBookFlow,
   AppointmentDetails,
@@ -128,6 +129,7 @@ export default function AdminCrmCustomer360() {
     managedConnectionId?: string | null;
     phone?: string | null;
     contactName?: string | null;
+    connectionCountry?: string | null;
   } | null>(null);
   const [proposalOpen, setProposalOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
@@ -1146,6 +1148,9 @@ export default function AdminCrmCustomer360() {
           managedConnectionId: demoPrefill?.managedConnectionId
             ? String(demoPrefill.managedConnectionId).trim().toUpperCase()
             : undefined,
+          preferredLocale:
+            preferredLocaleFromConnectionCountry(demoPrefill?.connectionCountry) ||
+            undefined,
         }}
       />
 

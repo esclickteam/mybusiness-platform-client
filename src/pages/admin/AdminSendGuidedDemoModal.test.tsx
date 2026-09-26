@@ -50,6 +50,13 @@ vi.mock("../../api/guidedDemoApi", () => ({
   duplicateGuidedDemo: vi.fn(),
 }));
 
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, fallback?: string) => fallback || key,
+    i18n: { language: "he" },
+  }),
+}));
+
 describe("admin send demo button and modal", () => {
   it("renders the Hebrew send demo button", () => {
     const onClick = vi.fn();
@@ -248,6 +255,60 @@ describe("admin send demo button and modal", () => {
     );
     expect(fetchGuidedDemoCatalog).toHaveBeenCalledWith(
       expect.objectContaining({ managedConnectionId: "US_MANAGED" })
+    );
+  });
+
+  it("passes locale on create payload and shows native language label in summary", async () => {
+    vi.mocked(createGuidedDemo).mockResolvedValueOnce({
+      invitation: {
+        id: "inv-locale",
+        customerName: "ישראל ישראלי",
+        customerPhone: "0501234567",
+        selectedModules: ["crm", "website-builder", "email"],
+        expiresAt: new Date(Date.now() + 86400000).toISOString(),
+        status: "created",
+        locale: "en",
+        linkAvailable: true,
+        demoLink: "https://bizuply.com/demo/locale-token",
+      },
+      demoLink: "https://bizuply.com/demo/locale-token",
+      delivery: { ok: false, skipped: true },
+    } as any);
+
+    render(
+      <MemoryRouter>
+        <AdminSendGuidedDemoModal
+          open
+          onClose={() => {}}
+          context={{
+            customerName: "ישראל ישראלי",
+            phone: "0501234567",
+            sourceType: "manual",
+            preferredLocale: "en",
+          }}
+        />
+      </MemoryRouter>
+    );
+
+    await screen.findByText("דמו מלא");
+    const localeSelect = (await screen.findByTestId(
+      "admin-send-demo-locale"
+    )) as HTMLSelectElement;
+    expect(localeSelect.value).toBe("en");
+    expect(screen.getByText("שפת הדמו: English")).toBeTruthy();
+
+    await waitFor(() => {
+      expect((screen.getByTestId("admin-create-demo-link") as HTMLButtonElement).disabled).toBe(
+        false
+      );
+    });
+    fireEvent.click(screen.getByTestId("admin-create-demo-link"));
+    await screen.findByTestId("admin-created-demo-url");
+    expect(createGuidedDemo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        send: false,
+        locale: "en",
+      })
     );
   });
 });

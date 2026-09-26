@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Copy, ExternalLink, Link2, MessageCircle, Play, Sparkles, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   createGuidedDemo,
   fetchGuidedDemoCatalog,
@@ -14,6 +15,7 @@ import {
   buildManualWhatsAppUrl,
   canSubmitSendDemo,
   demoContentSummary,
+  demoLocaleNativeLabel,
   invitationIdOf,
   invitationPhone,
   isValidDemoPhone,
@@ -21,11 +23,14 @@ import {
   openExternalUrl,
   orderedPresets,
   payloadFingerprint,
+  resolveDefaultDemoLocale,
   resolveSelectedKeys,
   sourceNameForPrefill,
   sourcePhoneForPrefill,
   type GuidedDemoCatalog,
+  type GuidedDemoLocale,
 } from "../../guidedDemo/adminSendForm";
+import { LANGUAGE_META } from "../../i18n/languages";
 import AdminGuidedDemoActions from "./AdminGuidedDemoActions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -69,6 +74,8 @@ export type SendDemoContext = {
   needCandidates?: string[];
   /** When opened from a WhatsApp thread — send via that managed connection. */
   managedConnectionId?: string;
+  /** Clear preferred demo locale (e.g. from connection country). Unset = use admin UI language. */
+  preferredLocale?: string | null;
 };
 
 type UiMode = "form" | "created" | "failure";
@@ -105,11 +112,13 @@ export default function AdminSendGuidedDemoModal({
   context: SendDemoContext;
 }) {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const [catalog, setCatalog] = useState<GuidedDemoCatalog | null>(null);
   const [delivery, setDelivery] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
+  const [locale, setLocale] = useState<GuidedDemoLocale>("he");
   const [presetKey, setPresetKey] = useState("full");
   const [moduleKeys, setModuleKeys] = useState<string[]>([]);
   const [ttlHours, setTtlHours] = useState(24);
@@ -154,12 +163,18 @@ export default function AdminSendGuidedDemoModal({
     setLastFingerprint("");
     setCustomerName(sourceNameForPrefill(context.customerName));
     setPhone(sourcePhoneForPrefill(context.phone));
+    setLocale(
+      resolveDefaultDemoLocale({
+        preferredLocale: context.preferredLocale,
+        uiLanguage: i18n.language,
+      })
+    );
     setPresetKey("full");
     setModuleKeys([]);
     void load().catch((err) => {
       setError(err?.response?.data?.error || "טעינת קטלוג הדמו נכשלה");
     });
-  }, [open, context.customerName, context.phone, load]);
+  }, [open, context.customerName, context.phone, context.preferredLocale, i18n.language, load]);
 
   const selectedKeys = useMemo(
     () => resolveSelectedKeys({ catalog, presetKey, moduleKeys }),
@@ -271,6 +286,7 @@ export default function AdminSendGuidedDemoModal({
         channel: "whatsapp",
         ttlHours,
         send,
+        locale,
         sourceType: context.sourceType || "manual",
         sourceLeadId: context.sourceLeadId || "",
         sourceCustomerId: context.sourceCustomerId || "",
@@ -376,6 +392,7 @@ export default function AdminSendGuidedDemoModal({
                 <p>לקוח: {resultName}</p>
                 {resultBusiness ? <p>עסק: {resultBusiness}</p> : null}
                 <p dir="ltr">טלפון: {resultPhone}</p>
+                <p>שפת הדמו: {demoLocaleNativeLabel(result?.invitation?.locale || locale)}</p>
                 <p>הדמו יכלול: {summary}</p>
                 <p>תוקף: {formatDate(result?.invitation?.expiresAt)}</p>
                 <p>
@@ -530,6 +547,21 @@ export default function AdminSendGuidedDemoModal({
                 {phone && !isValidDemoPhone(phone) ? (
                   <p className="mt-1 text-xs font-bold text-rose-600">מספר טלפון לא תקין</p>
                 ) : null}
+                <label className="mt-3 block text-sm font-black">
+                  שפת הדמו
+                  <select
+                    className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
+                    value={locale}
+                    onChange={(e) => setLocale(e.target.value as GuidedDemoLocale)}
+                    data-testid="admin-send-demo-locale"
+                  >
+                    {LANGUAGE_META.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.nativeLabel}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </section>
 
               <section>
@@ -589,6 +621,9 @@ export default function AdminSendGuidedDemoModal({
                 </p>
                 <p className="text-sm font-bold text-slate-700" dir="ltr">
                   טלפון: {phone || "—"}
+                </p>
+                <p className="text-sm font-bold text-slate-700">
+                  שפת הדמו: {demoLocaleNativeLabel(locale)}
                 </p>
                 <p className="text-sm font-bold text-slate-700">
                   הדמו יכלול: {summary || "לא נבחרו מודולים"}

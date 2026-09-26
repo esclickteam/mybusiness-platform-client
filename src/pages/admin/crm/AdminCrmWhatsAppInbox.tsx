@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import adminCrmApi from "../../../api/adminCrmApi";
 import AdminSendGuidedDemoModal from "../AdminSendGuidedDemoModal";
+import { preferredLocaleFromConnectionCountry } from "../../../guidedDemo/adminSendForm";
 import {
   Badge,
   SOURCE_LABELS,
@@ -594,6 +595,9 @@ export default function AdminCrmWhatsAppInbox() {
             normalizeManagedConnectionId(
               demoPrefill?.managedConnectionId || selected?.managedConnectionId
             ) || undefined,
+          preferredLocale:
+            preferredLocaleFromConnectionCountry(selected?.connectionCountry) ||
+            undefined,
         }}
       />
     </div>

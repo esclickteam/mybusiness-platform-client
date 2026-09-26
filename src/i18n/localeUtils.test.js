@@ -75,7 +75,9 @@ describe("country language mapping", () => {
     expect(languageFromCountry("MX")).toBe("es");
     expect(languageFromCountry("ES")).toBe("es");
     expect(languageFromCountry("US")).toBe("en");
-    expect(languageFromCountry("DE")).toBe("en");
+    expect(languageFromCountry("GB")).toBe("en");
+    expect(languageFromCountry("IE")).toBe("en");
+    expect(languageFromCountry("DE")).toBeNull();
     expect(languageFromCountry("")).toBeNull();
     expect(languageFromCountry("XX")).toBeNull();
   });

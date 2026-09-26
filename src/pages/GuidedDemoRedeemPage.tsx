@@ -8,6 +8,8 @@ import { INTRO_CATEGORIES } from "../guidedDemo/overlayHelpers";
 import { useAuth } from "../context/AuthContext";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { getTextDirection } from "../i18n/localeUtils";
+import { applyUiLanguage } from "../i18n/persistLanguage";
+import { normalizeLanguage } from "../i18n/languages";
 
 const INTRO_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
@@ -25,7 +27,12 @@ export default function GuidedDemoRedeemPage() {
     loginWithToken: (user: unknown, token: string, opts?: { skipRedirect?: boolean }) => void;
   };
   const [state, setState] = useState<"loading" | "ready" | "expired" | "invalid" | "error">("loading");
-  const [preview, setPreview] = useState<{ customerName?: string; modules?: { title: string }[] } | null>(null);
+  const [preview, setPreview] = useState<{
+    customerName?: string;
+    modules?: { title: string }[];
+    locale?: string;
+    language?: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   const { t, i18n } = useTranslation();
   const pageDir = getTextDirection(i18n.language);
@@ -44,6 +51,10 @@ export default function GuidedDemoRedeemPage() {
         if (!data?.ok) {
           setState("expired");
           return;
+        }
+        const locale = normalizeLanguage(data.locale || data.language, { fallback: null });
+        if (locale) {
+          applyUiLanguage(locale, { persist: true });
         }
         setPreview(data);
         setState("ready");
