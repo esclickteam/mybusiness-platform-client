@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { resolveGuidedDemoModuleTitle, resolveGuidedDemoStepText } from "./resolveGuidedDemoText";
 import { demoProgress, runDemoSpecialAction, startDemoProgressBridge, stopDemoProgressBridge } from "./demoProgress";
 import { isGuidedDemoActive, readGuidedDemoSession, restorePreviousAuth, clearGuidedDemoLocal } from "./sessionStore";
 import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemoApi";
@@ -255,13 +256,16 @@ export default function GuidedDemoEngine() {
   const initialInputRef = useRef("");
 
   const step = currentStep(session);
+  const stepText = resolveGuidedDemoStepText(step, t);
   const progress = useMemo(() => moduleProgress(session), [session]);
   const currentModule = progress.find((m: any) => m.current);
+  const currentModuleTitle = resolveGuidedDemoModuleTitle(currentModule, t);
   const modSteps = useMemo(() => moduleSteps(session, currentModule?.key), [session, currentModule?.key]);
   const modStepIndex = step ? modSteps.findIndex((s: any) => s.id === step.id) : -1;
   const modStepNum = modStepIndex >= 0 ? modStepIndex + 1 : (currentModule?.done || 0) + 1;
   const modStepTotal = modSteps.length || currentModule?.total || 0;
   const nextPreview = step ? nextStepInModule(session, step) : null;
+  const nextPreviewText = resolveGuidedDemoStepText(nextPreview, t);
   const stepKind = resolveStepKind(step);
   const moduleIndex = progress.findIndex((m: any) => m.current);
   const globalStepIndex = Math.max(0, Number(session?.currentStepIndex || 0));
@@ -768,7 +772,7 @@ export default function GuidedDemoEngine() {
   const globalProgressPct = globalStepTotal ? Math.round((Math.max(0, globalStepNum - 1) / globalStepTotal) * 100) : 0;
 
   const overlay = (
-    <div dir="rtl" className="pointer-events-none fixed inset-0 z-[2147483000]">
+    <div dir={pageDir} className="pointer-events-none fixed inset-0 z-[2147483000]">
       <style>{`
         @keyframes guidedDemoHandNudge {
           0%, 100% { transform: translate(0, 0) scaleX(var(--hand-flip, 1)) rotate(var(--hand-rot, 0deg)); }
@@ -858,7 +862,7 @@ export default function GuidedDemoEngine() {
             <div className="px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[11px] font-bold text-violet-700">{currentModule?.title || "BizUply"}</p>
+                  <p className="truncate text-[11px] font-bold text-violet-700">{currentModuleTitle || "BizUply"}</p>
                   <p className="mt-0.5 text-xs font-semibold text-slate-500">
                     {isFullDemo
                       ? t("leftover.guided.stepOf", "Step {{current}} of {{total}}", {
@@ -873,7 +877,7 @@ export default function GuidedDemoEngine() {
                   {isFullDemo && modStepTotal ? (
                     <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
                       {t("leftover.guided.moduleStep", "{{title}} · step {{current}} of {{total}} in this module", {
-                        title: currentModule?.title,
+                        title: currentModuleTitle,
                         current: modStepNum,
                         total: modStepTotal,
                       })}
@@ -1062,7 +1066,7 @@ export default function GuidedDemoEngine() {
           }
         >
           <p className="text-[11px] font-bold text-violet-700">
-            {currentModule?.title || t("leftover.guided.demoFallback", "Demo")}
+            {currentModuleTitle || t("leftover.guided.demoFallback", "Demo")}
           </p>
           <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
             {t("leftover.guided.stepOf", "Step {{current}} of {{total}}", {
@@ -1070,8 +1074,8 @@ export default function GuidedDemoEngine() {
               total: modStepTotal || "—",
             })}
           </p>
-          <h3 className="mt-2 text-base font-black text-slate-900">{step?.title}</h3>
-          <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{step?.instruction}</p>
+          <h3 className="mt-2 text-base font-black text-slate-900">{stepText.title}</h3>
+          <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{stepText.instruction}</p>
           {step?.suggestedValue ? (
             <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">
               {t("leftover.guided.suggested", "Suggested text: {{value}}", { value: step.suggestedValue })}
@@ -1079,7 +1083,7 @@ export default function GuidedDemoEngine() {
           ) : null}
           {nextPreview && stepKind !== "input" ? (
             <p className="mt-2 text-[11px] font-bold text-slate-400">
-              {t("leftover.guided.next", "Next: {{title}}", { title: nextPreview.title })}
+              {t("leftover.guided.next", "Next: {{title}}", { title: nextPreviewText.title })}
             </p>
           ) : null}
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">

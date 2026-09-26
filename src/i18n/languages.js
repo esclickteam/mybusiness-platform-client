@@ -113,6 +113,9 @@ const ARABIC_COUNTRIES = new Set([
   "KM",
 ]);
 
+/** Clear English-speaking countries — never guess `en` for unknown countries. */
+const CLEAR_ENGLISH_COUNTRIES = new Set(["US", "GB", "AU", "CA", "NZ", "IE"]);
+
 const META_BY_CODE = Object.fromEntries(
   LANGUAGE_META.map((item) => [item.code, item])
 );
@@ -186,7 +189,8 @@ export function languageFromCountry(country) {
   if (code === "BR") return "pt-BR";
   if (SPANISH_COUNTRIES.has(code)) return "es";
   if (ARABIC_COUNTRIES.has(code)) return "ar";
-  return FALLBACK_LANGUAGE;
+  if (CLEAR_ENGLISH_COUNTRIES.has(code)) return "en";
+  return null;
 }
 
 export function languageFromBrowserLocale(tag) {

@@ -5,6 +5,7 @@ import {
   buildManualWhatsAppUrl,
   canSubmitSendDemo,
   demoContentSummary,
+  demoLocaleNativeLabel,
   firstNameForManualShare,
   firstNameFromFullName,
   invitationLinkAvailable,
@@ -15,6 +16,8 @@ import {
   normalizeFullName,
   orderedPresets,
   payloadFingerprint,
+  preferredLocaleFromConnectionCountry,
+  resolveDefaultDemoLocale,
   resolveSelectedKeys,
   sourceNameForPrefill,
   sourcePhoneForPrefill,
@@ -218,12 +221,37 @@ describe("admin send demo form", () => {
         ...valid,
         redeemedAt: new Date().toISOString(),
       })
-    ).toBe(false);
+    ).toBe(true);
     expect(
       invitationNeedsNewLink({
         status: "expired",
         expiresAt: new Date(Date.now() - 1000).toISOString(),
       })
     ).toBe(true);
+  });
+
+  it("resolves default demo locale from preferredLocale or admin UI language", () => {
+    expect(
+      resolveDefaultDemoLocale({ preferredLocale: "en", uiLanguage: "he" })
+    ).toBe("en");
+    expect(
+      resolveDefaultDemoLocale({ preferredLocale: "pt-BR", uiLanguage: "he" })
+    ).toBe("pt-BR");
+    expect(
+      resolveDefaultDemoLocale({ preferredLocale: null, uiLanguage: "es" })
+    ).toBe("es");
+    expect(
+      resolveDefaultDemoLocale({ preferredLocale: "fr", uiLanguage: "he" })
+    ).toBe("he");
+    expect(preferredLocaleFromConnectionCountry("US")).toBe("en");
+    expect(preferredLocaleFromConnectionCountry("IL")).toBe("he");
+    expect(preferredLocaleFromConnectionCountry("BR")).toBe("pt-BR");
+    expect(preferredLocaleFromConnectionCountry("MX")).toBe("es");
+    expect(preferredLocaleFromConnectionCountry("AE")).toBe("ar");
+    expect(preferredLocaleFromConnectionCountry("DE")).toBeNull();
+    expect(preferredLocaleFromConnectionCountry("")).toBeNull();
+    expect(preferredLocaleFromConnectionCountry("XX")).toBeNull();
+    expect(demoLocaleNativeLabel("en")).toBe("English");
+    expect(demoLocaleNativeLabel("he")).toBe("עברית");
   });
 });

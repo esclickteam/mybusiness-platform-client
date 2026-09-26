@@ -19944,7 +19944,292 @@
       "introGrowth": "Growth tools",
       "introGrowthHint": "Partners and advisor",
       "introWeb": "Website builder",
-      "introWebHint": "Templates and publish"
+      "introWebHint": "Templates and publish",
+      "modules": {
+        "dashboard": "Dashboard",
+        "crm": "CRM",
+        "services": "Services",
+        "working-hours": "Working hours",
+        "calendar": "Calendar / meetings",
+        "automations": "Automations",
+        "collab": "Collaborations",
+        "advisor": "Business advisor",
+        "website-builder": "Website builder"
+      },
+      "steps": {
+        "dash-intro": {
+          "title": "Command center",
+          "instruction": "This is your business command center. The dashboard gives an instant snapshot — leads, meetings, and activity — without hunting across screens."
+        },
+        "dash-kpis": {
+          "title": "Performance metrics",
+          "instruction": "The numbers above are your business KPIs: site visits, new leads, reviews, and shares. They help you know if the week is strong or needs action."
+        },
+        "dash-leads-activity": {
+          "title": "Recent leads",
+          "instruction": "New activity shows up here — leads that just came in. That way you do not miss an important inquiry even when you are busy."
+        },
+        "dash-appointments": {
+          "title": "Upcoming meetings",
+          "instruction": "Upcoming meetings appear on the side. It helps you prepare for the day without opening the calendar separately."
+        },
+        "dash-performance": {
+          "title": "Performance chart",
+          "instruction": "The chart shows the trend over time — views, leads, or meetings. That is how you see whether a campaign or site change is really working."
+        },
+        "dash-quick-action": {
+          "title": "Add a lead",
+          "instruction": "Here you can add a new lead. Every lead from the site, a form, or manual entry goes straight into CRM for follow-up. Click \"Add lead\"."
+        },
+        "crm-from-dashboard": {
+          "title": "A new lead goes straight into CRM",
+          "instruction": "Here you can add a new lead. Every lead from the site, a form, or manual entry goes straight into CRM for follow-up."
+        },
+        "crm-intro": {
+          "title": "Leads and CRM",
+          "instruction": "All inquiries in one place — status, source, owner, and recent activity. From here you manage the pipeline through to close."
+        },
+        "crm-open-daniel": {
+          "title": "Customer card",
+          "instruction": "Open the card for \"Daniel Cohen\" to see contact details, need, status, and history."
+        },
+        "crm-lead-detail": {
+          "title": "What is on the card",
+          "instruction": "The card shows everything: contact details, source, status, notes, and follow-up. Anyone who touches the lead knows what happened."
+        },
+        "crm-status-contacted": {
+          "title": "Lead status",
+          "instruction": "Here you change the lead status — new, contacted, interested, or closed. Update it to \"Contacted\"."
+        },
+        "crm-note-text": {
+          "title": "Write a note",
+          "instruction": "Write a note about the customer here. In the same place you can also choose \"Task\" instead of a note. Write a short update (for example: \"Spoke — interested in a couple photography package\") and then save."
+        },
+        "crm-add-note": {
+          "title": "Save the update",
+          "instruction": "Click \"Save\" to add the note to the card. The step finishes only after saving."
+        },
+        "crm-wrap": {
+          "title": "Moving between stages",
+          "instruction": "That is how you move a lead between pipeline stages. Next we will go to the calendar and automations."
+        },
+        "services-intro": {
+          "title": "Services",
+          "instruction": "Before booking meetings, define what the business offers — duration, price, and name. Services feed the calendar and bookings."
+        },
+        "services-add": {
+          "title": "Add a service",
+          "instruction": "Click \"Add service\" to open the form. Opening the form is not saving."
+        },
+        "services-name": {
+          "title": "Service name",
+          "instruction": "Enter a name, for example \"Initial consultation\"."
+        },
+        "services-duration": {
+          "title": "Duration",
+          "instruction": "Choose a duration for the service, for example 30 minutes."
+        },
+        "services-price": {
+          "title": "Price",
+          "instruction": "Enter a valid price for the service."
+        },
+        "services-description": {
+          "title": "Description",
+          "instruction": "You can add a short description. If you do not need one, skip ahead."
+        },
+        "services-save": {
+          "title": "Save service",
+          "instruction": "Click \"Save service\" to create the service for the calendar."
+        },
+        "services-wrap": {
+          "title": "Service ready",
+          "instruction": "Now there is a service in the catalog. Next we will make sure working hours exist — without them you cannot book a meeting."
+        },
+        "hours-intro": {
+          "title": "Working hours",
+          "instruction": "Meetings depend on business availability. Here you define which days and hours appointments can be booked."
+        },
+        "hours-toggle-day": {
+          "title": "Available day",
+          "instruction": "Mark or update one working day — that creates a safe availability window for the demo."
+        },
+        "hours-save": {
+          "title": "Save hours",
+          "instruction": "Save the working hours. After that you can book meetings in the calendar."
+        },
+        "cal-intro": {
+          "title": "Meetings and calendar",
+          "instruction": "The calendar centralizes past and future meetings — consults, intros, follow-ups, and sales — without leaving the system."
+        },
+        "cal-nav": {
+          "title": "Open the calendar",
+          "instruction": "Click \"Meetings\" if you are not there yet."
+        },
+        "cal-existing": {
+          "title": "Existing meeting",
+          "instruction": "Here you see meetings already booked in the demo — for example a consult, intro, follow-up, or sales call. This is a live calendar, not an empty list."
+        },
+        "cal-new": {
+          "title": "New meeting",
+          "instruction": "Only now will we create a new meeting. Click \"Create meeting\" to open the form. Opening the form is not booking the meeting."
+        },
+        "cal-date": {
+          "title": "Date",
+          "instruction": "Choose a date for the meeting."
+        },
+        "cal-service": {
+          "title": "Service",
+          "instruction": "Choose a service from the list. Without a service you cannot see available times."
+        },
+        "cal-time": {
+          "title": "Time",
+          "instruction": "Choose an available time from the list."
+        },
+        "cal-details": {
+          "title": "Meeting details",
+          "instruction": "Choose an existing customer or enter a name. In the demo no real notification is sent."
+        },
+        "cal-save": {
+          "title": "Save the meeting",
+          "instruction": "Click save to add the meeting to the calendar."
+        },
+        "cal-wrap": {
+          "title": "Meeting on the calendar",
+          "instruction": "The meeting was saved on the demo calendar. In the demo no real customer notifications go out."
+        },
+        "auto-intro": {
+          "title": "Automations",
+          "instruction": "Automation saves manual work: choose when it happens (trigger), then what happens next (action). We will build one clear example — a new lead, then send an email."
+        },
+        "auto-nav": {
+          "title": "Enter automations",
+          "instruction": "Click \"Automations\" in the menu to open the screen."
+        },
+        "auto-new": {
+          "title": "Create an automation",
+          "instruction": "Click \"New automation\" to start a new flow."
+        },
+        "auto-blank": {
+          "title": "Blank canvas",
+          "instruction": "Choose \"Blank automation\" — from here you build a trigger and then an action."
+        },
+        "auto-add-trigger": {
+          "title": "How to choose a trigger",
+          "instruction": "Click \"Choose trigger\". That opens the list of moments when the automation can start."
+        },
+        "auto-trigger": {
+          "title": "Trigger: new lead",
+          "instruction": "Choose the \"New lead\" trigger — that is the moment the automation wakes up."
+        },
+        "auto-trigger-explain": {
+          "title": "What a trigger is",
+          "instruction": "The trigger says when to run. \"New lead\" fits an inquiry from the site or a form — without checking manually every minute. Now we will add what happens after the trigger."
+        },
+        "auto-add-action": {
+          "title": "How to add an action",
+          "instruction": "Click \"Add step\" or \"Add result to trigger\". Without that there is no way to reach the action itself."
+        },
+        "auto-action-email": {
+          "title": "The action itself",
+          "instruction": "Choose \"Send email\". That is the action that will run after a new lead. In the demo no real email is sent."
+        },
+        "auto-configure": {
+          "title": "Configure the action",
+          "instruction": "Here you configure the chosen action — title and settings. In the demo you do not need to change details, just see where it happens."
+        },
+        "auto-save": {
+          "title": "Save",
+          "instruction": "Save the automation. After saving the flow is ready: new lead → send email."
+        },
+        "auto-wrap": {
+          "title": "It runs on its own",
+          "instruction": "When a new lead comes in, BizUply sends an email according to the automation you saved. In the demo no real email is sent and no real customer data is created."
+        },
+        "collab-intro": {
+          "title": "Collaborations",
+          "instruction": "Here you find complementary businesses — flowers, makeup, a photo location — and send a collaboration offer. In the demo no real offers are sent."
+        },
+        "collab-nav": {
+          "title": "Enter collaborations",
+          "instruction": "Click \"Collaborations\"."
+        },
+        "collab-partner": {
+          "title": "Example business",
+          "instruction": "For example \"Florist\" — a complementary business for a photography studio. Highlight only the card title, not the full height."
+        },
+        "collab-search": {
+          "title": "How to find a collaboration",
+          "instruction": "You can search by category or free text, and filter relevant businesses in the area."
+        },
+        "collab-cta": {
+          "title": "Main action",
+          "instruction": "From here you send a collaboration offer or open a conversation. In the demo the action does not go to a real business."
+        },
+        "advisor-intro": {
+          "title": "Business advisor",
+          "instruction": "The business advisor analyzes business data and helps you decide — leads, sales, and site activity."
+        },
+        "advisor-nav": {
+          "title": "Open the advisor",
+          "instruction": "Click \"Business advisor\"."
+        },
+        "advisor-question": {
+          "title": "Example chat question",
+          "instruction": "In the chat an example question appears: \"Which leads should I follow up with today?\" — so the customer sees how to ask the advisor."
+        },
+        "advisor-answer": {
+          "title": "Chat answer",
+          "instruction": "Below the question the advisor answer appears. This is an example only — nothing is really sent."
+        },
+        "advisor-action": {
+          "title": "One action",
+          "instruction": "From the chat answer comes one action. Click it to see what happens next."
+        },
+        "advisor-result": {
+          "title": "The result",
+          "instruction": "After the action you see one clear result. In the demo no real message was sent."
+        },
+        "site-intro": {
+          "title": "Website builder",
+          "instruction": "Here you build a new site in the new builder — create a site, choose a template, edit, then see it under \"My sites\"."
+        },
+        "site-nav": {
+          "title": "Enter website builder",
+          "instruction": "Click \"Website builder\"."
+        },
+        "site-create-new": {
+          "title": "Create a new site",
+          "instruction": "Click \"Create new site\" to open the template gallery."
+        },
+        "site-choose-template": {
+          "title": "Choose a template",
+          "instruction": "Choose a template that fits the business. Next click \"Preview\" and then \"Edit\" on the same template."
+        },
+        "site-preview-template": {
+          "title": "Preview the template",
+          "instruction": "Click \"Preview\" to see the template you chose before editing."
+        },
+        "site-pick-template": {
+          "title": "Edit the chosen template",
+          "instruction": "Click \"Edit\". The demo opens the editor with that same template — without going back to the gallery."
+        },
+        "site-editor-open": {
+          "title": "The editor for the site you chose",
+          "instruction": "This is the editor for the site you chose. From here you can change text, images, buttons, and content."
+        },
+        "site-headline": {
+          "title": "Change the text",
+          "instruction": "Click the highlighted large headline, change the text, then click outside the field — after that we will move on to publishing."
+        },
+        "site-publish": {
+          "title": "Publish the site",
+          "instruction": "Click \"Publish\". In the demo this is saved only in the demo environment — then we move to \"My sites\"."
+        },
+        "site-demo-card": {
+          "title": "My sites",
+          "instruction": "Here the site appears under \"My sites\". From here the website builder module ends."
+        }
+      }
     },
     "guidedQ": {
       "relevantCrm": "CRM and customer management",

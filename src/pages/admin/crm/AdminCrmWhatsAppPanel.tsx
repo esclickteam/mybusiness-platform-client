@@ -20,6 +20,7 @@ export default function AdminCrmWhatsAppPanel({
     managedConnectionId?: string | null;
     phone?: string | null;
     contactName?: string | null;
+    connectionCountry?: string | null;
   }) => void;
 }) {
   return (

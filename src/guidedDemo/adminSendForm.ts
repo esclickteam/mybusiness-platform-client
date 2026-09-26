@@ -1,3 +1,10 @@
+import {
+  coerceSupportedLanguage,
+  getLanguageMeta,
+  languageFromCountry,
+  normalizeLanguage,
+} from "../i18n/languages";
+
 export type GuidedDemoModule = {
   key: string;
   title: string;
@@ -19,6 +26,8 @@ export type GuidedDemoCatalog = {
   ttlOptionsHours?: number[];
   defaultTtlHours?: number;
 };
+
+export type GuidedDemoLocale = "en" | "he" | "es" | "pt-BR" | "ar";
 
 const PRIMARY_PRESET_ORDER = [
   "full",
@@ -272,3 +281,33 @@ export function openExternalUrl(url?: string | null) {
   if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
 }
+
+/**
+ * Clear preferred demo locale from a WhatsApp connection country.
+ * Returns null for empty/unknown countries so the admin UI language is used.
+ */
+export function preferredLocaleFromConnectionCountry(country?: string | null): GuidedDemoLocale | null {
+  const mapped = languageFromCountry(country);
+  return (mapped as GuidedDemoLocale | null) || null;
+}
+
+/**
+ * Default locale for a new guided-demo invitation:
+ * preferredLocale when clear/supported, otherwise the admin UI language.
+ */
+export function resolveDefaultDemoLocale({
+  preferredLocale,
+  uiLanguage,
+}: {
+  preferredLocale?: string | null;
+  uiLanguage?: string | null;
+}): GuidedDemoLocale {
+  const preferred = normalizeLanguage(preferredLocale, { fallback: null });
+  if (preferred) return preferred as GuidedDemoLocale;
+  return coerceSupportedLanguage(uiLanguage) as GuidedDemoLocale;
+}
+
+export function demoLocaleNativeLabel(locale?: string | null) {
+  return getLanguageMeta(coerceSupportedLanguage(locale)).nativeLabel;
+}
+

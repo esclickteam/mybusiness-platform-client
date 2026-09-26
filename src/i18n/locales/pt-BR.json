@@ -19844,7 +19844,18 @@
       "introGrowth": "Ferramentas de crescimento",
       "introGrowthHint": "Parceiros e consultor",
       "introWeb": "Criação de site",
-      "introWebHint": "Modelos e publicação"
+      "introWebHint": "Modelos e publicação",
+      "modules": {
+        "dashboard": "Dashboard",
+        "crm": "CRM and leads",
+        "services": "Meetings and calendar",
+        "working-hours": "Meetings and calendar",
+        "calendar": "Meetings and calendar",
+        "automations": "Automations",
+        "collab": "Growth tools",
+        "advisor": "Growth tools",
+        "website-builder": "Website builder"
+      }
     },
     "guidedQ": {
       "relevantCrm": "CRM e gestão de clientes",

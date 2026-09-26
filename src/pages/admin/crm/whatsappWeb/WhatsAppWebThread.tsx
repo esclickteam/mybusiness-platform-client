@@ -131,6 +131,7 @@ export default function WhatsAppWebThread({
     managedConnectionId?: string | null;
     phone?: string | null;
     contactName?: string | null;
+    connectionCountry?: string | null;
   }) => void;
 }) {
   const [data, setData] = useState<any>(null);
@@ -949,6 +950,10 @@ export default function WhatsAppWebThread({
                       threadConnectionId || effectiveSendFromId || null,
                     phone,
                     contactName,
+                    connectionCountry:
+                      headerConnection?.connectionCountry ||
+                      threadConnection?.connectionCountry ||
+                      null,
                   });
                   return;
                 }
