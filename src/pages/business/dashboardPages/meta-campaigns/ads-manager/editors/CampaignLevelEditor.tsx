@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import type { CampaignDraft } from "../adsManagerTypes";
 import i18n from "@/i18n/i18n";
-import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
+import { formatDemoMoney, getDemoCurrency } from "@/guidedDemo/demoCurrency";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import {
   MetaField,
@@ -172,11 +172,20 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
             onChange={(e) => onChange({ budgetAmount: e.target.value })}
             inputMode="decimal"
           />
-          <input
-            className={metaInputClass}
-            value={campaign.currency}
-            onChange={(e) => onChange({ currency: e.target.value })}
-          />
+          {isGuidedDemoActive() ? (
+            <div
+              className={`${metaInputClass} flex items-center justify-center font-semibold`}
+              aria-label={getDemoCurrency()?.symbol}
+            >
+              {getDemoCurrency()?.symbol}
+            </div>
+          ) : (
+            <input
+              className={metaInputClass}
+              value={campaign.currency}
+              onChange={(e) => onChange({ currency: e.target.value })}
+            />
+          )}
         </div>
         <p className="text-[13px] text-[#65676B]">
           {t("metaCampaigns.adsManager.budgetAverageMoney", {

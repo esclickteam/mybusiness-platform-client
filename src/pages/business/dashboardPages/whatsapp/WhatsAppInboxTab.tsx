@@ -147,7 +147,14 @@ export default function WhatsAppInboxTab() {
       );
       if (!result?.demoSafe) setMessages(rows);
       await loadConversations();
-      toast.success(t("whatsapp.inbox.replySent"));
+      toast.success(
+        result?.demoSafe
+          ? t(
+              "whatsapp.inbox.demoReplySent",
+              "Demo message saved. It was not sent to a real customer."
+            )
+          : t("whatsapp.inbox.replySent")
+      );
     } catch (error: any) {
       toast.error(
         error?.response?.data?.code === "DEMO_SIDE_EFFECT_BLOCKED"

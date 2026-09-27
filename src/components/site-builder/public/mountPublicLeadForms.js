@@ -1,5 +1,7 @@
+import { toast } from "react-toastify";
 import { submitPublicSiteLead, uploadPublicFormFile } from "../../../api/publicSiteLeadsApi";
 import i18n from "../../../i18n/i18n";
+import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "../../../guidedDemo/sessionStore";
 
 const t = (key, opts) => i18n.t(key, opts);
 import {
@@ -350,13 +352,64 @@ function getOrCreateSubmitKey(form) {
   return key;
 }
 
+function localizedDemoSuccess(form) {
+  const attr = safeText(form.getAttribute("data-bizuply-success-message"));
+  const fallback = t("publicWidgets.lead.thanks");
+  const locale = readGuidedDemoLocaleLock();
+  const hebrew = /[\u0590-\u05FF]/.test(attr);
+  if (locale === "he") return hebrew ? attr : fallback;
+  if (hebrew) return fallback;
+  return attr || fallback;
+}
+
 async function handleLeadFormSubmit(form, options) {
   if (form.getAttribute("data-bizuply-lead-submitting") === "true") return;
   if (form.getAttribute("data-bizuply-lead-submitted") === "true") return;
 
   const collected = collectLeadFormPayload(form);
   if (!collected.name && !collected.phone && !collected.email && !collected.message) {
-    setFormStatus(form, t("publicWidgets.lead.fillForm"), "error");
+    const message = t("publicWidgets.lead.fillForm");
+    setFormStatus(form, message, "error");
+    if (isGuidedDemoActive()) toast.error(message);
+    return;
+  }
+
+  const emailControl = form.querySelector(
+    'input[type="email"], input[name="email"], input[data-bizuply-form-field-id="email"]',
+  );
+  const emailValue = safeText(emailControl?.value);
+  if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+    const message = i18n.t("publicWidgets.lead.invalidEmail", {
+      defaultValue: "Enter a valid email address.",
+    });
+    setFormStatus(form, message, "error");
+    if (isGuidedDemoActive()) toast.error(message);
+    return;
+  }
+
+  if (isGuidedDemoActive()) {
+    const successMessage =
+      localizedDemoSuccess(form) || t("publicWidgets.lead.thanks");
+    form.setAttribute("data-bizuply-lead-submitted", "true");
+    setFormStatus(form, successMessage, "success");
+    toast.success(successMessage);
+    try {
+      sessionStorage.setItem(
+        "guidedDemo.formSubmission",
+        JSON.stringify({
+          name: collected.name,
+          email: collected.email,
+          message: collected.message,
+          at: Date.now(),
+        }),
+      );
+    } catch {
+      /* session storage is best-effort */
+    }
+    form.reset();
+    window.setTimeout(() => {
+      form.removeAttribute("data-bizuply-lead-submitted");
+    }, 2500);
     return;
   }
 

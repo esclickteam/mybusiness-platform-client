@@ -2916,12 +2916,20 @@ export default function CRMLeadsTab({
                           {t("crm.leads.drawer.paymentsTitle")}
                         </h3>
                         <p className="mt-1 text-[11px] font-bold text-slate-400">
-                          {t("crm.leads.drawer.paymentsSubtitle")}
+                          {t(
+                            isGuidedDemoActive()
+                              ? "crm.leads.drawer.paymentsSubtitleDemo"
+                              : "crm.leads.drawer.paymentsSubtitle"
+                          )}
                         </p>
                       </div>
                       <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
                         <p className="text-sm font-bold text-slate-500">
-                          {t("crm.leads.drawer.paymentsEmpty")}
+                          {t(
+                            isGuidedDemoActive()
+                              ? "crm.leads.drawer.paymentsEmptyDemo"
+                              : "crm.leads.drawer.paymentsEmpty"
+                          )}
                         </p>
                         <p className="mt-2 text-lg font-black text-slate-800">
                           {formatCrmMoney(0)}

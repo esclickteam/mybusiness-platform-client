@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { getDemoCurrency } from "@/guidedDemo/demoCurrency";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import {
   Area,
   AreaChart,
@@ -563,7 +565,11 @@ export default function MetaCampaignsOverviewTab() {
               <p className="text-base font-black text-slate-900">
                 {selectedAccount?.name || t("metaCampaigns.overview.account")}
                 {selectedAccount?.currency
-                  ? ` (${selectedAccount.currency})`
+                  ? ` (${
+                      isGuidedDemoActive()
+                        ? getDemoCurrency()?.symbol
+                        : selectedAccount.currency
+                    })`
                   : ""}
               </p>
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
@@ -584,7 +590,9 @@ export default function MetaCampaignsOverviewTab() {
             {selectedAccount?.currency ? (
               <p className="text-xs font-semibold text-slate-500">
                 {t("metaCampaigns.overview.currencyLabel", {
-                  currency: selectedAccount.currency,
+                  currency: isGuidedDemoActive()
+                    ? getDemoCurrency()?.symbol
+                    : selectedAccount.currency,
                 })}
               </p>
             ) : null}
