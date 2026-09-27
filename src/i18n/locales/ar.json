@@ -7903,7 +7903,7 @@
       "profile": "حساب تعريفي",
       "messages": "رسائل",
       "insights": "رؤى",
-      "developers": "واجهة برمجة التطبيقات / المطورين",
+      "developers": "API / المطورون",
       "billing": "الفواتير والاستخدام",
       "connection": "اتصال"
     },
@@ -9036,7 +9036,7 @@
       "unnamed": "لم يذكر اسمه",
       "connected": "متصل",
       "disconnected": "غير متصل",
-      "ready": "مستعد",
+      "ready": "جاهز",
       "issue": "مشكلة",
       "displayName": "اسم العرض",
       "quality": "جودة",
@@ -9111,7 +9111,14 @@
       "noBillingData": "لا توجد بيانات الفوترة المتاحة.",
       "activityTitle": "النشاط الأخير",
       "activityEmpty": "لا توجد أحداث نشاط حتى الآن.",
-      "apiMovedHint": "تم نقل إعدادات واجهة برمجة التطبيقات الخارجية إلى علامة التبويب API / المطورين."
+      "apiMovedHint": "تم نقل إعدادات واجهة برمجة التطبيقات الخارجية إلى علامة التبويب API / المطورين.",
+      "qualityHigh": "عالية",
+      "qualityMedium": "متوسطة",
+      "qualityLow": "منخفضة",
+      "nameExpired": "منتهية",
+      "nameAvailable": "متاح",
+      "nameNone": "لا يوجد",
+      "unlimited": "غير محدود"
     }
   },
   "metaCampaigns": {

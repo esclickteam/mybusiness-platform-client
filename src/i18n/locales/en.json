@@ -7989,7 +7989,14 @@
       "noBillingData": "No billing data available.",
       "activityTitle": "Recent activity",
       "activityEmpty": "No activity events yet.",
-      "apiMovedHint": "External API settings moved to the API / Developers tab."
+      "apiMovedHint": "External API settings moved to the API / Developers tab.",
+      "qualityHigh": "High",
+      "qualityMedium": "Medium",
+      "qualityLow": "Low",
+      "nameExpired": "Expired",
+      "nameAvailable": "Available",
+      "nameNone": "None",
+      "unlimited": "Unlimited"
     },
     "categories": {
       "appointment_reminder": "Appointment reminder",

@@ -283,11 +283,12 @@ export default function WhatsAppMain() {
   const ready = connectionReadyLabel(
     Boolean(connection?.connected),
     connection?.readyToSend,
-    connection?.readiness
+    connection?.readiness,
+    t
   );
-  const qualityLabel = formatQualityRating(connection?.qualityRating);
-  const nameStatusLabel = formatNameStatus(connection?.nameStatus);
-  const limitLabel = formatMessagingLimit(connection?.messagingLimitTier);
+  const qualityLabel = formatQualityRating(connection?.qualityRating, t);
+  const nameStatusLabel = formatNameStatus(connection?.nameStatus, t);
+  const limitLabel = formatMessagingLimit(connection?.messagingLimitTier, t);
   const displayName =
     connection?.verifiedName ||
     connection?.wabaName ||

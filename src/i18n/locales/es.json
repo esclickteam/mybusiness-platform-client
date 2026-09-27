@@ -9111,7 +9111,14 @@
       "noBillingData": "No hay datos de facturación disponibles.",
       "activityTitle": "Actividad reciente",
       "activityEmpty": "Aún no hay eventos de actividad.",
-      "apiMovedHint": "La configuración de API externa se movió a la pestaña API/Desarrolladores."
+      "apiMovedHint": "La configuración de API externa se movió a la pestaña API/Desarrolladores.",
+      "qualityHigh": "Alta",
+      "qualityMedium": "Media",
+      "qualityLow": "Baja",
+      "nameExpired": "Caducado",
+      "nameAvailable": "Disponible",
+      "nameNone": "Ninguno",
+      "unlimited": "Ilimitado"
     }
   },
   "metaCampaigns": {
@@ -20004,7 +20011,7 @@
         },
         "dash-intro": {
           "title": "Centro de control",
-          "instruction": "Este es el centro de mando de su empresa. El panel ofrece una instantánea instantánea (clientes potenciales, reuniones y actividad) sin tener que buscar entre pantallas."
+          "instruction": "Este es el centro de control de su negocio. El panel ofrece una vista inmediata — leads, reuniones y actividad — sin buscar entre pantallas."
         },
         "dash-kpis": {
           "title": "Métricas de rendimiento",

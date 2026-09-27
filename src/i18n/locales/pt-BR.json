@@ -7903,7 +7903,7 @@
       "profile": "Perfil",
       "messages": "Mensagens",
       "insights": "Percepções",
-      "developers": "API/Desenvolvedores",
+      "developers": "API / Desenvolvedores",
       "billing": "Faturamento e uso",
       "connection": "Conexão"
     },
@@ -9036,7 +9036,7 @@
       "unnamed": "Sem nome",
       "connected": "Conectado",
       "disconnected": "Desconectado",
-      "ready": "Preparar",
+      "ready": "Pronto",
       "issue": "Emitir",
       "displayName": "Nome de exibição",
       "quality": "Qualidade",
@@ -9111,7 +9111,14 @@
       "noBillingData": "Não há dados de faturamento disponíveis.",
       "activityTitle": "Atividade recente",
       "activityEmpty": "Nenhum evento de atividade ainda.",
-      "apiMovedHint": "As configurações externas da API foram movidas para a guia API/Desenvolvedores."
+      "apiMovedHint": "As configurações externas da API foram movidas para a guia API/Desenvolvedores.",
+      "qualityHigh": "Alta",
+      "qualityMedium": "Média",
+      "qualityLow": "Baixa",
+      "nameExpired": "Expirado",
+      "nameAvailable": "Disponível",
+      "nameNone": "Nenhum",
+      "unlimited": "Ilimitado"
     }
   },
   "metaCampaigns": {
@@ -20004,7 +20011,7 @@
         },
         "dash-intro": {
           "title": "Central de controle",
-          "instruction": "Este é o seu centro de comando de negócios. O painel fornece um instantâneo instantâneo – leads, reuniões e atividades – sem precisar procurar nas telas."
+          "instruction": "Este é o centro de comando do seu negócio. O painel mostra um resumo imediato — leads, reuniões e atividade — sem procurar entre telas."
         },
         "dash-kpis": {
           "title": "Métricas de desempenho",
