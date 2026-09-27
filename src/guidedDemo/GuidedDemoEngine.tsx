@@ -256,16 +256,16 @@ export default function GuidedDemoEngine() {
   const initialInputRef = useRef("");
 
   const step = currentStep(session);
-  const stepText = resolveGuidedDemoStepText(step, t);
+  const stepText = resolveGuidedDemoStepText(step, t, i18n.language);
   const progress = useMemo(() => moduleProgress(session), [session]);
   const currentModule = progress.find((m: any) => m.current);
-  const currentModuleTitle = resolveGuidedDemoModuleTitle(currentModule, t);
+  const currentModuleTitle = resolveGuidedDemoModuleTitle(currentModule, t, i18n.language);
   const modSteps = useMemo(() => moduleSteps(session, currentModule?.key), [session, currentModule?.key]);
   const modStepIndex = step ? modSteps.findIndex((s: any) => s.id === step.id) : -1;
   const modStepNum = modStepIndex >= 0 ? modStepIndex + 1 : (currentModule?.done || 0) + 1;
   const modStepTotal = modSteps.length || currentModule?.total || 0;
   const nextPreview = step ? nextStepInModule(session, step) : null;
-  const nextPreviewText = resolveGuidedDemoStepText(nextPreview, t);
+  const nextPreviewText = resolveGuidedDemoStepText(nextPreview, t, i18n.language);
   const stepKind = resolveStepKind(step);
   const moduleIndex = progress.findIndex((m: any) => m.current);
   const globalStepIndex = Math.max(0, Number(session?.currentStepIndex || 0));
@@ -358,13 +358,13 @@ export default function GuidedDemoEngine() {
   }, [businessId, location.pathname, navigate]);
 
   useEffect(() => {
-    if (!step || introOpen || isComplete) return;
+    if (!step || introOpen || isComplete || tourMinimized) return;
     if (isWebsiteEditorStayStep(step)) {
       if (!isWebsiteEditorPath(location.pathname)) openSelectedTemplateEditor();
       return;
     }
     goToStepRoute(step);
-  }, [step?.id, introOpen, isComplete, location.pathname, goToStepRoute, openSelectedTemplateEditor]);
+  }, [step?.id, introOpen, isComplete, tourMinimized, location.pathname, goToStepRoute, openSelectedTemplateEditor]);
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return;
@@ -430,7 +430,7 @@ export default function GuidedDemoEngine() {
   );
 
   useEffect(() => {
-    if (!step || introOpen || isComplete) {
+    if (!step || introOpen || isComplete || tourMinimized) {
       setHole(null);
       setHand(null);
       setOverlayReady(false);
@@ -557,7 +557,7 @@ export default function GuidedDemoEngine() {
       ro?.disconnect();
       removeScroll?.();
     };
-  }, [step?.id, step?.target, introOpen, isComplete, location.pathname, layoutCard, goToStepRoute, skipMissingTarget]);
+  }, [step?.id, step?.target, introOpen, isComplete, tourMinimized, location.pathname, layoutCard, goToStepRoute, skipMissingTarget]);
 
   useEffect(() => {
     layoutCard();
@@ -1109,6 +1109,13 @@ export default function GuidedDemoEngine() {
                   {t("leftover.guided.skipModule", "Skip this module")}
                 </button>
               ) : null}
+              <button
+                type="button"
+                onClick={() => setTourMinimized(true)}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-500"
+              >
+                {t("leftover.guided.skipTour", "Skip tour")}
+              </button>
             </div>
             {isAcknowledge(step) ? (
               <button

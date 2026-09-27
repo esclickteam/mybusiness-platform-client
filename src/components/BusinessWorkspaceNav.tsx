@@ -255,7 +255,7 @@ export default function BusinessWorkspaceNav({
       fallback: "WhatsApp Messages",
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
-      moduleKey: showRestrictedNav ? "whatsapp" : "__hidden__",
+      moduleKey: showRestrictedNav || user?.isGuidedDemo ? "whatsapp" : "__hidden__",
       demoTarget: "nav-whatsapp",
     },
     {
@@ -263,7 +263,8 @@ export default function BusinessWorkspaceNav({
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
-      moduleKey: showRestrictedNav ? "meta-campaigns" : "__hidden__",
+      moduleKey: showRestrictedNav || user?.isGuidedDemo ? "meta-campaigns" : "__hidden__",
+      demoTarget: "nav-meta-campaigns",
     },
     {
       labelKey: "businessNav.collaborations",
@@ -342,7 +343,7 @@ export default function BusinessWorkspaceNav({
       user?.isGuidedDemo &&
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
     ) {
-      return false;
+      return isModuleEnabled(enabledModules, item.moduleKey);
     }
     if (item.moduleKey === "website" && showWebsiteUpsell) return true;
     if (

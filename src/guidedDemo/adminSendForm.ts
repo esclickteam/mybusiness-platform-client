@@ -34,8 +34,39 @@ const PRIMARY_PRESET_ORDER = [
   "crm-only",
   "website-only",
   "automations-only",
+  "whatsapp-only",
+  "campaigns-only",
   "custom",
+  "crm-whatsapp",
+  "crm-campaigns",
+  "campaigns-whatsapp",
+  "marketing-suite",
 ];
+
+const SUMMARY_CHIPS: Array<{ key: string; label: string; when: (keys: Set<string>) => boolean }> = [
+  { key: "crm", label: "CRM", when: (keys) => keys.has("crm") || keys.has("leads") || keys.has("clients") },
+  { key: "whatsapp", label: "WhatsApp API", when: (keys) => keys.has("whatsapp") },
+  { key: "meta-campaigns", label: "Meta Ads", when: (keys) => keys.has("meta-campaigns") },
+  { key: "automations", label: "Automations", when: (keys) => keys.has("automations") },
+  { key: "website", label: "Website", when: (keys) => keys.has("website-builder") || keys.has("store") },
+  { key: "forms", label: "Forms", when: (keys) => keys.has("forms") },
+  {
+    key: "appointments",
+    label: "Appointments",
+    when: (keys) => keys.has("calendar") || keys.has("services") || keys.has("working-hours"),
+  },
+  { key: "dashboard", label: "Dashboard", when: (keys) => keys.has("dashboard") },
+  { key: "collab", label: "Collaborations", when: (keys) => keys.has("collab") },
+  { key: "advisor", label: "Advisor", when: (keys) => keys.has("advisor") },
+];
+
+export function demoSummaryChips(selectedKeys: string[]) {
+  const keys = new Set(selectedKeys);
+  return SUMMARY_CHIPS.filter((chip) => chip.when(keys)).map(({ key, label }) => ({
+    key,
+    label,
+  }));
+}
 
 export function digitsOnly(raw: string) {
   return String(raw || "").replace(/\D/g, "");
@@ -128,9 +159,8 @@ export function demoContentSummary({
   selectedKeys: string[];
 }) {
   if (!selectedKeys.length) return "";
-  if (presetKey === "full") {
-    return `דמו מלא — ${selectedKeys.length} מודולים`;
-  }
+  const chips = demoSummaryChips(selectedKeys);
+  if (chips.length) return chips.map((chip) => chip.label).join(" · ");
   return selectedModuleTitles(catalog, selectedKeys).join(" · ");
 }
 

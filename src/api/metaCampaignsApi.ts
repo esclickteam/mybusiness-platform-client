@@ -90,6 +90,8 @@ export type MetaCampaign = {
   callToAction?: string;
   ctaCustom?: string;
   carouselCards?: MetaCarouselCard[];
+  adSets?: MetaCampaignAdSet[];
+  audienceSummary?: string;
 };
 
 export type MetaCampaignSeriesPoint = {
@@ -98,6 +100,9 @@ export type MetaCampaignSeriesPoint = {
   spend: number;
   clicks: number;
   impressions: number;
+  sales?: number;
+  traffic?: number;
+  engagement?: number;
 };
 
 export type MetaCampaignInsight = {
@@ -109,6 +114,26 @@ export type MetaCampaignInsight = {
   bodyKey?: string;
   bodyParams?: Record<string, string | number>;
   action?: string;
+  demoData?: boolean;
+};
+
+export type MetaCampaignAd = {
+  id: string;
+  name: string;
+  status?: string;
+  headline?: string;
+  primaryText?: string;
+  imageUrl?: string;
+  results?: number;
+};
+
+export type MetaCampaignAdSet = {
+  id: string;
+  name: string;
+  status?: string;
+  dailyBudget?: number;
+  audience?: string;
+  ads?: MetaCampaignAd[];
 };
 
 export type MetaLabeledOption = {
@@ -195,6 +220,8 @@ export type MetaAdsConnectionStatus = {
   success?: boolean;
   connected: boolean;
   isConnected: boolean;
+  isGuidedDemo?: boolean;
+  demoData?: boolean;
   metaUserName?: string;
   adAccounts: MetaAdAccount[];
   businesses?: MetaBusinessPortfolio[];
@@ -245,6 +272,7 @@ export type MetaCampaignsOverview = {
   series: MetaCampaignSeriesPoint[];
   campaigns: MetaCampaign[];
   insights: MetaCampaignInsight[];
+  demoData?: boolean;
 };
 
 export type MetaCarouselCard = {
@@ -408,6 +436,7 @@ export type MetaPublishResult = {
   configuredStatus?: string;
   adsManagerUrl?: string;
   publish: MetaCampaignPublishRecord;
+  demoSafe?: boolean;
 };
 
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {

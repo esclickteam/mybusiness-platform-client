@@ -1243,6 +1243,7 @@ export async function submitWhatsAppTemplateToMeta(
   });
   return data as {
     success: boolean;
+    demoSafe?: boolean;
     template: WhatsAppTemplate;
     meta: { id: string; status: string; category: string };
   };
@@ -1535,6 +1536,7 @@ export async function replyWhatsAppConversation(
     success: boolean;
     log: WhatsAppMessageLog;
     providerMessageId?: string;
+    demoSafe?: boolean;
   };
 }
 

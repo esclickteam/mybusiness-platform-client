@@ -367,6 +367,13 @@ export default function MetaAdsManagerPage() {
       }
 
       const result = await publishMetaCampaign(businessId, payload);
+      if (result?.demoSafe) {
+        toast.success(
+          t("metaCampaigns.adsToasts.demoCreated", "Demo campaign created successfully")
+        );
+        navigate("../overview");
+        return;
+      }
       if (!result?.adId) {
         toast.error(t("metaCampaigns.adsToasts.noAdId"));
         return;

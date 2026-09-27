@@ -21,6 +21,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => key,
     i18n: { language: "he" },
   }),
+  initReactI18next: { type: "3rdParty", init: () => undefined },
 }));
 
 afterEach(() => {
@@ -179,7 +180,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(navLink(ALLOWED_BUSINESS_ID, "crm")).not.toBeNull();
   });
 
-  it("hides WhatsApp, Meta campaigns and billing in a guided demo session", async () => {
+  it("shows WhatsApp and Meta campaigns in a guided demo when those modules are selected", async () => {
     await renderNav({
       user: {
         businessId: OTHER_BUSINESS_ID,
@@ -190,8 +191,8 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
       urlBusinessId: OTHER_BUSINESS_ID,
     });
 
-    expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
-    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "billing")).toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
     expect(

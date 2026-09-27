@@ -9852,6 +9852,9 @@
       "spend": "הוצאה",
       "clicks": "קליקים",
       "impressions": "חשיפות",
+      "sales": "מכירות",
+      "traffic": "תנועה",
+      "engagement": "מעורבות",
       "empty": "אין עדיין נתוני גרף לתקופה זו"
     },
     "table": {
@@ -10533,6 +10536,7 @@
       "resolveValidation": "תקנו בעיות אימות לפני הפרסום",
       "noAdId": "Meta לא החזירה מזהה מודעה — הפרסום לא אושר",
       "campaignSubmitted": "הקמפיין נשלח ל-Meta",
+      "demoCreated": "קמפיין הדמו נוצר בהצלחה",
       "instantFormsFailed": "טעינת Instant Forms מ-Meta נכשלה",
       "retryCompleted": "הניסיון הושלם — מזהה מודעה אושר מ-Meta",
       "publishFailed": "הפרסום ל-Meta נכשל",
@@ -19908,6 +19912,7 @@
       "next": "הבא: {{title}}",
       "previous": "שלב קודם",
       "skipModule": "דלג על המודול",
+      "skipTour": "דלג על הסיור",
       "continue": "המשך",
       "skip": "דלג",
       "edit": "עריכה",
@@ -19934,6 +19939,11 @@
       "introGrowthHint": "שותפים ויועץ",
       "introWeb": "בניית אתר",
       "introWebHint": "תבניות ופרסום",
+      "introWhatsapp": "WhatsApp API",
+      "introWhatsappHint": "תיבת הודעות, תבניות ו-CRM",
+      "introCampaigns": "קמפיינים ב-Meta",
+      "introCampaignsHint": "מודעות, לידים וביצועים",
+      "demoBadge": "DEMO",
       "modules": {
         "dashboard": "דשבורד",
         "crm": "CRM",
@@ -19946,7 +19956,9 @@
         "website-builder": "בניית אתר",
         "leads": "לידים",
         "clients": "לקוחות",
-        "forms": "טפסים"
+        "forms": "טפסים",
+        "whatsapp": "WhatsApp API",
+        "meta-campaigns": "ניהול קמפיינים"
       },
       "steps": {
         "dash-intro": {
