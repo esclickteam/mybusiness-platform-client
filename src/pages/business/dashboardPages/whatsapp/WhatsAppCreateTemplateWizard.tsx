@@ -4,6 +4,7 @@ import type { TFunction } from "i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { Check, Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { demoToastSuccess } from "@/guidedDemo/demoToast";
 import { readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import {
   saveWhatsAppTemplateDraft,
@@ -284,7 +285,7 @@ export function WhatsAppCreateTemplateWizard({
         buildPayload()
       );
       if (result.demoSafe) {
-        toast.success(
+        demoToastSuccess(
           t(
             "whatsapp.wizard.demoSaved",
             "Demo template saved. It was not sent to Meta."

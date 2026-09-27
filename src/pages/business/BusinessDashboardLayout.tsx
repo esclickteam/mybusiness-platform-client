@@ -3,9 +3,12 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { useAuth } from "../../context/AuthContext";
 import { isGuidedDemoActive } from "../../guidedDemo/sessionStore";
+import { DEMO_ACTION_TOAST_CONTAINER } from "../../guidedDemo/demoToast";
 import GuidedDemoResetControl from "../../guidedDemo/GuidedDemoResetControl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { getTextDirection, isRtlLanguage } from "../../i18n/localeUtils";
@@ -890,6 +893,24 @@ export default function BusinessDashboardLayout() {
               <Outlet />
             </div>
           </main>
+          <ToastContainer
+            containerId={DEMO_ACTION_TOAST_CONTAINER}
+            position="top-center"
+            autoClose={4000}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            theme="colored"
+            style={{
+              position: "fixed",
+              top: "16px",
+              left: "50%",
+              right: "auto",
+              width: "min(480px, calc(100vw - 32px))",
+              transform: "translateX(-50%)",
+              zIndex: 2147483647,
+            }}
+          />
         </div>
       </AiProvider>
     </BusinessServicesProvider>
