@@ -48,7 +48,6 @@ export default function PublishResultModal({
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
       <div
-        dir="ltr"
         className="w-full max-w-lg overflow-hidden rounded-xl border border-[#CED0D4] bg-white shadow-2xl"
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#E4E6EB] px-4 py-3">

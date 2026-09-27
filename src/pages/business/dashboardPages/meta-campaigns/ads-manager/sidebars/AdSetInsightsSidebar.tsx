@@ -59,7 +59,7 @@ export default function AdSetInsightsSidebar({
             <p className="mt-0.5 font-bold text-[#050505]">
               {ageLabel(ageMin, ageMax)}
               {advantageAudience ? (
-                <span className="ml-2 rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[10px] font-semibold text-[#65676B]">
+                <span className="ms-2 rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[10px] font-semibold text-[#65676B]">
                   {cc("suggestion")}
                 </span>
               ) : null}

@@ -233,9 +233,9 @@ export default function AdLevelEditor({
             </div>
 
             <div className="relative mt-3">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
+              <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
               <input
-                className={`${metaInputClass} pl-9`}
+                className={`${metaInputClass} ps-9`}
                 placeholder={c("searchForms")}
                 value={formSearch}
                 onChange={(e) => setFormSearch(e.target.value)}
@@ -528,7 +528,7 @@ export default function AdLevelEditor({
                     </span>
                     {cta.label}
                     {selected ? (
-                      <Check className="ml-auto h-3.5 w-3.5 text-[#1877F2]" />
+                      <Check className="ms-auto h-3.5 w-3.5 text-[#1877F2]" />
                     ) : null}
                   </button>
                 );

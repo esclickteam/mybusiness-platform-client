@@ -352,7 +352,7 @@ export default function AdsManagerLocationsSection({
                         )}
                         <button
                           type="button"
-                          className="ml-1 text-[#65676B] hover:text-[#FA383E]"
+                          className="ms-1 text-[#65676B] hover:text-[#FA383E]"
                           onClick={() => removeLocation(id)}
                           aria-label={t(
                             "metaCampaigns.adsManager.chrome.removeLocation"
@@ -445,10 +445,9 @@ export default function AdsManagerLocationsSection({
             <div
               className="relative z-[1200] w-full"
               ref={searchBarRef}
-              dir="ltr"
             >
               <div className="flex h-10 w-full items-stretch overflow-hidden rounded-md border border-[#CED0D4] bg-white focus-within:border-[#1877F2] focus-within:shadow-[0_0_0_2px_rgba(24,119,242,0.2)]">
-                <div className="relative shrink-0 border-r border-[#CED0D4]">
+                <div className="relative shrink-0 border-e border-[#CED0D4]">
                   <button
                     type="button"
                     className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
@@ -463,7 +462,7 @@ export default function AdsManagerLocationsSection({
                     <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
                   </button>
                   {includeOpen ? (
-                    <div className="absolute left-0 top-full z-[1210] mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                    <div className="absolute start-0 top-full z-[1210] mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
                       {(
                         [
                           ["include", "include"],
@@ -492,9 +491,9 @@ export default function AdsManagerLocationsSection({
                 </div>
 
                 <label className="relative flex min-w-0 flex-1 items-center">
-                  <Search className="pointer-events-none absolute left-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
+                  <Search className="pointer-events-none absolute start-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
                   <input
-                    className="h-full w-full border-0 bg-transparent py-0 pl-9 pr-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
+                    className="h-full w-full border-0 bg-transparent py-0 ps-9 pe-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
                     placeholder={t(
                       "metaCampaigns.adsManager.chrome.searchLocations"
                     )}
@@ -513,13 +512,13 @@ export default function AdsManagerLocationsSection({
                     }}
                   />
                   {busy ? (
-                    <span className="absolute right-3 text-[11px] font-semibold text-[#65676B]">
+                    <span className="absolute end-3 text-[11px] font-semibold text-[#65676B]">
                       …
                     </span>
                   ) : null}
                 </label>
 
-                <div className="relative shrink-0 border-l border-[#CED0D4]">
+                <div className="relative shrink-0 border-s border-[#CED0D4]">
                   <button
                     type="button"
                     className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
@@ -533,7 +532,7 @@ export default function AdsManagerLocationsSection({
                     <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
                   </button>
                   {browseOpen ? (
-                    <div className="absolute right-0 top-full z-[1210] mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                    <div className="absolute end-0 top-full z-[1210] mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
                       {[
                         { labelKey: "browseCountries", q: "Israel" },
                         { labelKey: "browseRegions", q: "Haifa" },

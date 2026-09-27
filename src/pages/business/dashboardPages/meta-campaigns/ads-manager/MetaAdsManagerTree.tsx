@@ -50,12 +50,12 @@ export default function MetaAdsManagerTree({
           data-demo-target={`meta-tree-${node.level}`}
           onClick={() => onSelect(node.level, node.id)}
           className={[
-            "group flex w-full items-center gap-2 rounded-md py-1.5 pr-1 text-left transition",
+            "group flex w-full items-center gap-2 rounded-md py-1.5 pe-1 text-start transition",
             selected
               ? "bg-[#E7F3FF] text-[#1877F2]"
               : "text-[#050505] hover:bg-[#F0F2F5]",
           ].join(" ")}
-          style={{ paddingLeft: 8 + depth * 14 }}
+          style={{ paddingInlineStart: 8 + depth * 14 }}
         >
           <Icon
             className={[
@@ -96,12 +96,12 @@ export default function MetaAdsManagerTree({
           </span>
         </button>
         {menuId === node.id ? (
-          <div className="absolute right-1 top-8 z-20 min-w-[150px] rounded-md border border-[#CED0D4] bg-white py-1 shadow-lg">
+          <div className="absolute end-1 top-8 z-20 min-w-[150px] rounded-md border border-[#CED0D4] bg-white py-1 shadow-lg">
             {menuItems.map((item) => (
               <button
                 key={item.key}
                 type="button"
-                className="block w-full px-3 py-1.5 text-left text-[13px] text-[#050505] hover:bg-[#F0F2F5]"
+                className="block w-full px-3 py-1.5 text-start text-[13px] text-[#050505] hover:bg-[#F0F2F5]"
                 onClick={() => setMenuId(null)}
               >
                 {item.label}
@@ -116,7 +116,7 @@ export default function MetaAdsManagerTree({
   return (
     <nav
       aria-label={c("treeTitle")}
-      className="flex h-full flex-col border-r border-[#CED0D4] bg-[#F7F8FA]"
+      className="flex h-full flex-col border-e border-[#CED0D4] bg-[#F7F8FA]"
     >
       <div className="border-b border-[#E4E6EB] px-3 py-2.5">
         <p className="text-[12px] font-bold uppercase tracking-wide text-[#65676B]">

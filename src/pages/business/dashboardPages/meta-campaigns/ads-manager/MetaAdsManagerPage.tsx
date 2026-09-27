@@ -29,7 +29,8 @@ import {
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
-import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
+import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
 import type { AiProposalHandoff } from "./adsManagerFromAiProposal";
 import {
@@ -491,6 +492,8 @@ export default function MetaAdsManagerPage() {
   ]);
 
   const connected = Boolean(connection?.connected || connection?.isConnected);
+  const demoLocale = readGuidedDemoLocaleLock();
+  const shellDir = demoLocale ? getTextDirection(demoLocale) : "ltr";
 
   if (!campaignStarted) {
     return (
@@ -511,7 +514,7 @@ export default function MetaAdsManagerPage() {
 
   return (
     <div
-      dir="ltr"
+      dir={shellDir}
       className="overflow-hidden rounded-xl border border-[#CED0D4] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
       style={{ background: metaPageBg }}
     >
@@ -571,7 +574,7 @@ export default function MetaAdsManagerPage() {
           {crumbs.map((crumb, index) => (
             <React.Fragment key={crumb.id}>
               {index > 0 ? (
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8A8D91] rtl:rotate-180" />
               ) : null}
               <button
                 type="button"
@@ -632,7 +635,7 @@ export default function MetaAdsManagerPage() {
 
       {/* Meta-style: fixed-height columns — center scrolls; right insights stay put */}
       <div className="grid min-h-[720px] grid-cols-1 lg:h-[calc(100vh-8.5rem)] lg:grid-cols-[240px_minmax(0,1fr)_320px] lg:overflow-hidden">
-        <div className="min-h-[220px] overflow-y-auto border-r border-[#CED0D4] lg:min-h-0">
+        <div className="min-h-[220px] overflow-y-auto border-e border-[#CED0D4] lg:min-h-0">
           <MetaAdsManagerTree
             nodes={tree}
             selectedId={state.selectedId}
@@ -640,7 +643,7 @@ export default function MetaAdsManagerPage() {
           />
         </div>
 
-        <main className="min-w-0 overflow-y-auto border-r border-[#CED0D4] bg-[#F0F2F5] px-3 py-4 sm:px-5">
+        <main className="min-w-0 overflow-y-auto border-e border-[#CED0D4] bg-[#F0F2F5] px-3 py-4 sm:px-5">
           {state.mode === "review" ? (
             <div className="mx-auto max-w-[760px] rounded-lg border border-[#E4E6EB] bg-white p-5 shadow-sm">
               <h2 className="text-[20px] font-bold text-[#050505]">
