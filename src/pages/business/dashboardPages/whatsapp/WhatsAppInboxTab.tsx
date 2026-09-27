@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
@@ -19,6 +19,7 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
+import { isGuidedDemoActive } from "../../../../guidedDemo/sessionStore";
 
 type OutletCtx = { businessId: string | null };
 
@@ -56,8 +57,11 @@ export default function WhatsAppInboxTab() {
         setSelectedPhone(rows[0].phone);
       }
     } catch (error: any) {
+      const code = error?.response?.data?.code;
       toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.loadInbox")
+        code === "DEMO_SIDE_EFFECT_BLOCKED"
+          ? t("leftover.guided.actionBlocked", "This action is not available in the demo.")
+          : t("whatsapp.errors.loadInbox")
       );
     } finally {
       setLoading(false);
@@ -146,7 +150,9 @@ export default function WhatsAppInboxTab() {
       toast.success(t("whatsapp.inbox.replySent"));
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.replyFailed")
+        error?.response?.data?.code === "DEMO_SIDE_EFFECT_BLOCKED"
+          ? t("leftover.guided.actionBlocked", "This action is not available in the demo.")
+          : t("whatsapp.errors.replyFailed")
       );
     } finally {
       setSending(false);
@@ -249,8 +255,24 @@ export default function WhatsAppInboxTab() {
                 {selectedPhone}
               </p>
             )}
+            {selectedPhone && businessId && isGuidedDemoActive() ? (
+              <Link
+                to={`/business/${businessId}/dashboard/crm/leads?${
+                  conversations.find((c) => c.phone === selectedPhone)?.leadId
+                    ? `leadId=${encodeURIComponent(
+                        String(
+                          conversations.find((c) => c.phone === selectedPhone)?.leadId
+                        )
+                      )}`
+                    : "lead=sarah"
+                }`}
+                className="mt-1 inline-flex text-xs font-black text-violet-700 hover:underline"
+              >
+                {t("whatsapp.inbox.openCrm", "Open in CRM")}
+              </Link>
+            ) : null}
           </div>
-          {selectedPhone && (
+          {selectedPhone && !isGuidedDemoActive() && (
             <button
               type="button"
               className={btnSecondary}

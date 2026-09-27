@@ -100,6 +100,11 @@ export async function triggerGuidedDemoAutomation() {
   return data;
 }
 
+export async function resetGuidedDemoSession() {
+  const { data } = await API.post("/guided-demo/session/reset");
+  return data;
+}
+
 export async function exitGuidedDemoSession() {
   const { data } = await API.post("/guided-demo/session/exit");
   return data;

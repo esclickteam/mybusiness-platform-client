@@ -47,6 +47,18 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
       instruction:
         "Meta campaign, then lead, CRM, WhatsApp, appointment or task, then automation — one Bizuply flow.",
     },
+    "crm-open-daniel": {
+      title: "Customer card",
+      instruction: "Open Daniel Cohen’s card to see contact details, need, status, and history.",
+    },
+    "leads-open-maya": {
+      title: "Open a lead",
+      instruction: "Open Maya Levi’s card.",
+    },
+    "clients-open-yael": {
+      title: "Open a client file",
+      instruction: "Open Emma Brooks’s file.",
+    },
   },
   he: {
     "wa-overview": {
@@ -131,6 +143,18 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
       instruction:
         "Campaña de Meta, lead, CRM, WhatsApp, cita o tarea y automatización: un solo flujo en Bizuply.",
     },
+    "crm-open-daniel": {
+      title: "Ficha del cliente",
+      instruction: "Abrir la ficha de Daniel Cohen para ver contacto, necesidad, estado e historial.",
+    },
+    "leads-open-maya": {
+      title: "Abrir un lead",
+      instruction: "Abrir la ficha de Maya Levi.",
+    },
+    "clients-open-yael": {
+      title: "Abrir un expediente",
+      instruction: "Abrir el expediente de Emma Brooks.",
+    },
   },
   "pt-BR": {
     "wa-overview": {
@@ -173,6 +197,18 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
       instruction:
         "Campanha da Meta, lead, CRM, WhatsApp, compromisso ou tarefa e automação — um fluxo só no Bizuply.",
     },
+    "crm-open-daniel": {
+      title: "Ficha do cliente",
+      instruction: "Abra a ficha de Daniel Cohen para ver contato, necessidade, status e histórico.",
+    },
+    "leads-open-maya": {
+      title: "Abrir um lead",
+      instruction: "Abra a ficha de Maya Levi.",
+    },
+    "clients-open-yael": {
+      title: "Abrir um prontuário",
+      instruction: "Abra o prontuário de Emma Brooks.",
+    },
   },
   ar: {
     "wa-overview": {
@@ -214,6 +250,18 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
       title: "تتبعوا العميل من أول نقرة حتى البيع.",
       instruction:
         "حملة Meta ثم عميل ثم CRM ثم WhatsApp ثم موعد أو مهمة ثم أتمتة — مسار واحد في Bizuply.",
+    },
+    "crm-open-daniel": {
+      title: "بطاقة العميل",
+      instruction: "افتحوا بطاقة دانيال كوهين لرؤية التواصل والحاجة والحالة والسجل.",
+    },
+    "leads-open-maya": {
+      title: "فتح عميل محتمل",
+      instruction: "افتحوا بطاقة مايا ليفي.",
+    },
+    "clients-open-yael": {
+      title: "فتح ملف عميلة",
+      instruction: "افتحوا ملف إيما بروكس.",
     },
   },
 };

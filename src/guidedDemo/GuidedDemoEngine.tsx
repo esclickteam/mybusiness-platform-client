@@ -245,7 +245,23 @@ export default function GuidedDemoEngine() {
   const [cardPos, setCardPos] = useState<CardPos | null>(null);
   const [toast, setToast] = useState<ToastState>(null);
   const [introOpen, setIntroOpen] = useState(false);
-  const [tourMinimized, setTourMinimized] = useState(false);
+  const [tourMinimized, setTourMinimized] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = sessionStorage.getItem("guidedDemo.session");
+      const stored = raw ? JSON.parse(raw) : null;
+      const id = stored?.sessionId || stored?._id || stored?.id;
+      return Boolean(id && sessionStorage.getItem(`guidedDemo.tourMinimized.${id}`) === "1");
+    } catch {
+      return false;
+    }
+  });
+  const tourSessionId = String(
+    (session as { _id?: string; id?: string; sessionId?: string } | null)?._id ||
+      (session as { _id?: string; id?: string; sessionId?: string } | null)?.id ||
+      (session as { sessionId?: string } | null)?.sessionId ||
+      ""
+  );
   const [finishConfirm, setFinishConfirm] = useState(false);
   const [inputReady, setInputReady] = useState(false);
   const [overlayReady, setOverlayReady] = useState(false);
@@ -254,6 +270,19 @@ export default function GuidedDemoEngine() {
   const retryRef = useRef(0);
   const skipLockRef = useRef(false);
   const initialInputRef = useRef("");
+
+  useEffect(() => {
+    if (!tourSessionId || typeof window === "undefined") return;
+    const key = `guidedDemo.tourMinimized.${tourSessionId}`;
+    if (sessionStorage.getItem(key) === "1") setTourMinimized(true);
+  }, [tourSessionId]);
+
+  useEffect(() => {
+    if (!tourSessionId || typeof window === "undefined") return;
+    const key = `guidedDemo.tourMinimized.${tourSessionId}`;
+    if (!tourMinimized && sessionStorage.getItem(key) === "1") return;
+    sessionStorage.setItem(key, tourMinimized ? "1" : "0");
+  }, [tourMinimized, tourSessionId]);
 
   const step = currentStep(session);
   const stepText = resolveGuidedDemoStepText(step, t, i18n.language);

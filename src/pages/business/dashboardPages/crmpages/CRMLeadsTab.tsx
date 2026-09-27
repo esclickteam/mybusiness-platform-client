@@ -902,6 +902,7 @@ export default function CRMLeadsTab({
     searchParams.get("google_connected") === "1" ||
     Boolean(searchParams.get("google_error"));
   const deepLinkLeadId = searchParams.get("leadId") || "";
+  const demoLeadKey = searchParams.get("lead") || "";
   const navigate = useNavigate();
 
   const AUTO_CONVERT_KEY = "bizuply_auto_convert_lead_on_take";
@@ -1219,6 +1220,16 @@ export default function CRMLeadsTab({
       }
     })();
   }, [deepLinkLeadId, showMetaSetup, showGoogleSetup, leads.length]);
+
+  useEffect(() => {
+    if (demoLeadKey !== "sarah" || showMetaSetup || showGoogleSetup || !leads.length) return;
+    const match = leads.find((lead) => (lead.tags || []).includes("demo:sarah"));
+    if (!match) return;
+    openLeadDrawer(match, "full");
+    const next = new URLSearchParams(searchParams);
+    next.delete("lead");
+    setSearchParams(next, { replace: true });
+  }, [demoLeadKey, showMetaSetup, showGoogleSetup, leads.length]);
 
   useEffect(() => {
     if (businessId && isAdminUser()) {

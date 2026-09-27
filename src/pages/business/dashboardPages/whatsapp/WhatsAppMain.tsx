@@ -142,6 +142,7 @@ export default function WhatsAppMain() {
   );
   const [connectionLoading, setConnectionLoading] = useState(!visualQa);
   const [syncing, setSyncing] = useState(false);
+  const guidedDemo = Boolean(user?.isGuidedDemo);
 
   const {
     usage: billingUsage,
@@ -149,7 +150,7 @@ export default function WhatsAppMain() {
     error: billingError,
     refresh: refreshBilling,
     setUsage: setBillingUsage,
-  } = useWhatsAppBilling(businessId);
+  } = useWhatsAppBilling(guidedDemo ? null : businessId);
 
   const pathAfterWhatsapp = useMemo(
     () => pathSegmentsAfterWhatsapp(location.pathname),
@@ -161,10 +162,13 @@ export default function WhatsAppMain() {
   const hasLoadedConnectionRef = useRef(Boolean(visualQa?.connection));
 
   const visibleTabs = useMemo(() => {
-    if (connectionLoading) return MAIN_TABS;
+    const base = guidedDemo
+      ? MAIN_TABS.filter((tab) => tab.path !== "billing")
+      : MAIN_TABS;
+    if (connectionLoading) return base;
     if (!isConnected) {
       return [
-        ...MAIN_TABS,
+        ...base,
         {
           path: "connection",
           to: "connection",
@@ -173,8 +177,8 @@ export default function WhatsAppMain() {
         },
       ];
     }
-    return MAIN_TABS;
-  }, [connectionLoading, isConnected]);
+    return base;
+  }, [connectionLoading, isConnected, guidedDemo]);
 
   useEffect(() => {
     const target = resolveWhatsAppHubRedirect(location.pathname);
@@ -188,6 +192,12 @@ export default function WhatsAppMain() {
     if (connectionLoading) return;
     // Funds / billing (and developers) must stay reachable without a connected
     // WABA — prepaid wallet and API keys are independent of Meta connection.
+    if (guidedDemo && topSegment === "billing") {
+      navigate(`${whatsappBasePath(location.pathname)}/overview`, {
+        replace: true,
+      });
+      return;
+    }
     const allowWhenDisconnected = new Set(["connection", "billing", "developers"]);
     if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
       navigate(`${whatsappBasePath(location.pathname)}/connection`, {
@@ -201,6 +211,7 @@ export default function WhatsAppMain() {
     topSegment,
     location.pathname,
     navigate,
+    guidedDemo,
   ]);
 
   useEffect(() => {
