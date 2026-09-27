@@ -197,6 +197,66 @@ describe("AdminSupportChat whatsapp", () => {
     expect(screen.getByTestId("interactive-demo-create")).toBeTruthy();
     expect(await screen.findByText("צרו דמו חדש לפני השליחה.")).toBeTruthy();
     expect(screen.getByTestId("interactive-demo-send")).toHaveProperty("disabled", true);
+    expect(screen.getByTestId("interactive-demo-send").textContent).toContain(
+      "שלח דמו עם תבנית"
+    );
+    expect(screen.getByTestId("interactive-demo-mode-direct")).toHaveProperty(
+      "disabled",
+      true
+    );
+    expect(modal.textContent).toContain("זמין רק בתוך חלון 24 השעות של WhatsApp");
+    expect(screen.getByTestId("interactive-demo-button-preview").textContent).toContain(
+      "View interactive demo"
+    );
+  });
+
+  it("enables demo-only inside the 24h window and switches the preview", async () => {
+    getMock.mockImplementation((url: string) => {
+      if (String(url).includes("/admin/conversations")) {
+        return Promise.resolve({
+          data: { conversations: [conversation], onlineAgents: [] },
+        });
+      }
+      if (String(url).includes("/messages")) {
+        return Promise.resolve({
+          data: { messages: [inbound], conversation },
+        });
+      }
+      if (String(url).includes("/admin/guided-demos/catalog")) {
+        return Promise.resolve({
+          data: {
+            catalog: { presets: [] },
+            delivery: {
+              whatsapp: { available: true },
+              usSessionWindow: { open: true },
+            },
+          },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    fireEvent.click(await screen.findByTestId("admin-send-demo-button"));
+    await waitFor(() => {
+      expect(screen.getByTestId("interactive-demo-mode-direct")).toHaveProperty(
+        "disabled",
+        false
+      );
+    });
+    fireEvent.click(screen.getByTestId("interactive-demo-mode-direct"));
+    expect(screen.getByTestId("interactive-demo-send").textContent).toContain("שלח דמו");
+    expect(screen.getByTestId("interactive-demo-send").textContent).not.toContain("תבנית");
+    expect(screen.getByTestId("interactive-demo-direct-preview").textContent).toContain(
+      "https://bizuply.com/demo/"
+    );
+    expect(screen.queryByTestId("interactive-demo-button-preview")).toBeNull();
+    expect(screen.getByTestId("interactive-demo-send")).toHaveProperty("disabled", true);
   });
 
   it("renders an interactive demo card instead of the raw URL", async () => {
@@ -226,6 +286,51 @@ describe("AdminSupportChat whatsapp", () => {
     expect(card.textContent).toContain("View interactive demo");
     expect(card.textContent).toContain("Bizuply US");
     expect(card.textContent).toContain("Delivered");
+    expect(card.textContent).not.toContain("SHOULD_NOT_RENDER");
+    expect(screen.getByTestId("interactive-demo-open").getAttribute("href")).toBe(
+      "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo"
+    );
+  });
+
+  it("renders a direct interactive demo card without the raw URL", async () => {
+    const directCard = {
+      ...demoCard,
+      _id: "m-direct",
+      text: "https://bizuply.com/demo/SHOULD_NOT_RENDER",
+      deliveryStatus: "read",
+      metadata: {
+        interactiveDemoCard: true,
+        interactiveDemoKind: "direct",
+        senderLabel: "Bizuply US · +1 210-944-4809",
+        demoLink: "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo",
+      },
+    };
+    getMock.mockImplementation((url: string) => {
+      if (String(url).includes("/admin/conversations")) {
+        return Promise.resolve({
+          data: { conversations: [conversation], onlineAgents: [] },
+        });
+      }
+      if (String(url).includes("/messages")) {
+        return Promise.resolve({
+          data: { messages: [directCard], conversation },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const card = await screen.findByTestId("interactive-demo-thread-card");
+    expect(card.textContent).toContain("Interactive demo sent");
+    expect(card.textContent).toContain("Type: Direct message");
+    expect(card.textContent).toContain("Bizuply US");
+    expect(card.textContent).toContain("Read");
+    expect(card.textContent).not.toContain("interactive_demo_followup_v2");
     expect(card.textContent).not.toContain("SHOULD_NOT_RENDER");
     expect(screen.getByTestId("interactive-demo-open").getAttribute("href")).toBe(
       "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo"

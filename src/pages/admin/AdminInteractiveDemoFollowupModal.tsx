@@ -25,6 +25,15 @@ const TEMPLATE_BODY =
 const LOCALES: GuidedDemoLocale[] = ["en", "he", "es", "pt-BR", "ar"];
 
 const CREATE_BEFORE_SEND = "צרו דמו חדש לפני השליחה.";
+const DIRECT_WINDOW_CLOSED = "זמין רק בתוך חלון 24 השעות של WhatsApp";
+const TOKEN_PLACEHOLDER = "…";
+
+type SendMode = "template" | "direct";
+
+function directPreviewUrl(token: string) {
+  const value = token || TOKEN_PLACEHOLDER;
+  return `https://bizuply.com/demo/${value}`;
+}
 
 export type InteractiveDemoChatContext = {
   customerName?: string;
@@ -67,16 +76,22 @@ export default function AdminInteractiveDemoFollowupModal({
   const [creating, setCreating] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [sendMode, setSendMode] = useState<SendMode>("template");
+  const [sessionWindowOpen, setSessionWindowOpen] = useState(false);
 
   const customerName = sourceNameForPrefill(context.customerName);
   const phone = sourcePhoneForPrefill(context.phone);
 
   const load = useCallback(async () => {
-    const cat = await fetchGuidedDemoCatalog({ managedConnectionId: "US_MANAGED" });
+    const cat = await fetchGuidedDemoCatalog({
+      managedConnectionId: "US_MANAGED",
+      phone,
+    });
     setCatalog(cat.catalog);
     setWhatsappReady(Boolean(cat.delivery?.whatsapp?.available));
     setWhatsappReason(String(cat.delivery?.whatsapp?.reason || ""));
-  }, []);
+    setSessionWindowOpen(Boolean(cat.delivery?.usSessionWindow?.open));
+  }, [phone]);
 
   useEffect(() => {
     if (!open) return;
@@ -86,6 +101,8 @@ export default function AdminInteractiveDemoFollowupModal({
     setInvitationId("");
     setDemoToken("");
     setPresetKey("full");
+    setSendMode("template");
+    setSessionWindowOpen(false);
     const preferred = String(context.preferredLocale || "en") as GuidedDemoLocale;
     setLocale(LOCALES.includes(preferred) ? preferred : "en");
     void load().catch((err) => {
@@ -105,7 +122,13 @@ export default function AdminInteractiveDemoFollowupModal({
   const selectedDemoLabel = demoContentSummary({ catalog, presetKey, selectedKeys });
   const selectedLocale = demoLocaleNativeLabel(locale);
   const canCreate = formReady && !creating && !sending;
-  const canSend = Boolean(invitationId && demoToken) && whatsappReady && !creating && !sending;
+  const directAllowed = sessionWindowOpen;
+  const activeMode: SendMode = sendMode === "direct" && directAllowed ? "direct" : "template";
+  const canSend =
+    Boolean(invitationId && demoToken) &&
+    !creating &&
+    !sending &&
+    (activeMode === "direct" ? directAllowed : whatsappReady);
 
   function clearCreatedDemo() {
     setInvitationId("");
@@ -150,11 +173,14 @@ export default function AdminInteractiveDemoFollowupModal({
   }
 
   async function send() {
-    if (!invitationId || !demoToken || !whatsappReady || sending) return;
+    if (!canSend) return;
     setSending(true);
     setError("");
     try {
-      const data = await resendGuidedDemo(invitationId, { forceUsInteractiveDemo: true });
+      const data = await resendGuidedDemo(invitationId, {
+        forceUsInteractiveDemo: true,
+        sendMode: activeMode,
+      });
       if (!data?.delivery?.ok) {
         setError(data?.delivery?.error || "שליחת הדמו נכשלה");
         return;
@@ -181,7 +207,9 @@ export default function AdminInteractiveDemoFollowupModal({
           <div>
             <h2 className="text-xl font-black text-slate-900">שליחת דמו אינטראקטיבי</h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              נשלח כתבנית {INTERACTIVE_DEMO_TEMPLATE} מהמספר האמריקאי, גם בתוך חלון 24 השעות.
+              {activeMode === "direct"
+                ? "נשלח כהודעת WhatsApp רגילה מהמספר האמריקאי, רק בתוך חלון 24 השעות."
+                : `נשלח כתבנית ${INTERACTIVE_DEMO_TEMPLATE} מהמספר האמריקאי, גם מחוץ לחלון 24 השעות.`}
             </p>
           </div>
           <button type="button" onClick={onClose} aria-label="סגירה">
@@ -256,20 +284,78 @@ export default function AdminInteractiveDemoFollowupModal({
             </label>
           </div>
 
+          <section className="space-y-2" data-testid="interactive-demo-send-mode">
+            <p className="text-sm font-black text-slate-900">אופן שליחה</p>
+            <button
+              type="button"
+              data-testid="interactive-demo-mode-template"
+              aria-pressed={activeMode === "template"}
+              onClick={() => setSendMode("template")}
+              className={`w-full rounded-2xl border px-4 py-3 text-right transition ${
+                activeMode === "template"
+                  ? "border-[#6D28D9] bg-violet-50 shadow-sm"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              }`}
+            >
+              <span className="flex items-start justify-between gap-3">
+                <span>
+                  <span className="block text-sm font-black text-slate-900">
+                    {activeMode === "template" ? "✓ " : ""}עם תבנית WhatsApp
+                  </span>
+                  <span className="mt-1 block text-xs font-bold text-slate-500">
+                    מומלץ · עובד גם אחרי 24 שעות
+                  </span>
+                </span>
+              </span>
+            </button>
+            <button
+              type="button"
+              data-testid="interactive-demo-mode-direct"
+              aria-pressed={activeMode === "direct"}
+              disabled={!directAllowed}
+              onClick={() => {
+                if (directAllowed) setSendMode("direct");
+              }}
+              className={`w-full rounded-2xl border px-4 py-3 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                activeMode === "direct"
+                  ? "border-[#6D28D9] bg-violet-50 shadow-sm"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              }`}
+            >
+              <span className="block text-sm font-black text-slate-900">
+                {activeMode === "direct" ? "✓ " : ""}דמו בלבד
+              </span>
+              <span className="mt-1 block text-xs font-bold text-slate-500">
+                {directAllowed ? "זמין בתוך חלון 24 השעות" : DIRECT_WINDOW_CLOSED}
+              </span>
+            </button>
+          </section>
+
           <section
             className="rounded-2xl border border-slate-200 p-4"
             data-testid="interactive-demo-preview"
           >
             <p className="text-xs font-black text-slate-500">Preview</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-slate-800" dir="ltr">
-              {TEMPLATE_BODY}
-            </p>
-            <span
-              className="mt-3 inline-flex rounded-full bg-[#6D28D9] px-3 py-1.5 text-xs font-black text-white"
-              data-testid="interactive-demo-button-preview"
-            >
-              {INTERACTIVE_DEMO_BUTTON}
-            </span>
+            {activeMode === "direct" ? (
+              <div dir="ltr" className="mt-2 text-sm font-semibold leading-6 text-slate-800">
+                <p>Interactive demo:</p>
+                <p className="break-all text-[#6D28D9]" data-testid="interactive-demo-direct-preview">
+                  {directPreviewUrl(demoToken)}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-800" dir="ltr">
+                  {TEMPLATE_BODY}
+                </p>
+                <span
+                  className="mt-3 inline-flex rounded-full bg-[#6D28D9] px-3 py-1.5 text-xs font-black text-white"
+                  data-testid="interactive-demo-button-preview"
+                >
+                  {INTERACTIVE_DEMO_BUTTON}
+                </span>
+              </>
+            )}
             <p className="mt-3 text-xs font-bold text-slate-500">
               {selectedLocale}
               {selectedDemoLabel ? ` · ${selectedDemoLabel}` : ""}
@@ -282,7 +368,7 @@ export default function AdminInteractiveDemoFollowupModal({
               {CREATE_BEFORE_SEND}
             </p>
           ) : null}
-          {!whatsappReady && whatsappReason ? (
+          {activeMode === "template" && !whatsappReady && whatsappReason ? (
             <p className="text-sm font-bold text-amber-800">{whatsappReason}</p>
           ) : null}
           {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
@@ -305,7 +391,11 @@ export default function AdminInteractiveDemoFollowupModal({
             onClick={() => void send()}
             className="w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
           >
-            {sending ? "שולח..." : "שלח דמו ב-WhatsApp"}
+            {sending
+              ? "שולח..."
+              : activeMode === "direct"
+                ? "שלח דמו"
+                : "שלח דמו עם תבנית"}
           </button>
         </div>
       </div>

@@ -19,6 +19,7 @@ import AdminInteractiveDemoFollowupModal from "./AdminInteractiveDemoFollowupMod
 import {
   deliveryFailureDetail,
   deliveryStatusLabel,
+  interactiveDemoKind,
   interactiveDemoOpenUrl,
   interactiveDemoStatusLabel,
   isInteractiveDemoCard,
@@ -291,12 +292,18 @@ function ChatBubble({
         {isInteractiveDemoCard(msg) ? (
           <div data-testid="interactive-demo-thread-card" className="space-y-1">
             <p className="font-black">Interactive demo sent</p>
-            <p className="text-xs font-semibold opacity-90">
-              Template: {INTERACTIVE_DEMO_TEMPLATE}
-            </p>
-            <p className="text-xs font-semibold opacity-90">
-              Button: {String(msg.metadata?.buttonText || INTERACTIVE_DEMO_BUTTON)}
-            </p>
+            {interactiveDemoKind(msg) === "direct" ? (
+              <p className="text-xs font-semibold opacity-90">Type: Direct message</p>
+            ) : (
+              <>
+                <p className="text-xs font-semibold opacity-90">
+                  Template: {INTERACTIVE_DEMO_TEMPLATE}
+                </p>
+                <p className="text-xs font-semibold opacity-90">
+                  Button: {String(msg.metadata?.buttonText || INTERACTIVE_DEMO_BUTTON)}
+                </p>
+              </>
+            )}
             <p className="text-xs font-semibold opacity-90" dir="ltr">
               Sent via {String(msg.metadata?.senderLabel || INTERACTIVE_DEMO_SENDER)}
             </p>
