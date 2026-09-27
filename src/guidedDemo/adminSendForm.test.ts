@@ -136,21 +136,21 @@ describe("admin send demo form", () => {
     expect(firstNameFromFullName("undefined")).toBe("");
   });
 
-  it("summarizes full demo vs selected modules", () => {
+  it("summarizes selected modules as chips", () => {
     expect(
       demoContentSummary({
         catalog,
         presetKey: "full",
-        selectedKeys: ["crm", "website-builder", "automations", "email"],
+        selectedKeys: ["crm", "website-builder", "automations", "whatsapp", "meta-campaigns", "forms", "calendar"],
       })
-    ).toBe("דמו מלא — 4 מודולים");
+    ).toBe("CRM · WhatsApp API · Meta Ads · Automations · Website · Forms · Appointments");
     expect(
       demoContentSummary({
         catalog,
         presetKey: "custom",
         selectedKeys: ["crm", "automations", "website-builder"],
       })
-    ).toBe("CRM · בניית אתר · אוטומציות");
+    ).toBe("CRM · Automations · Website");
   });
 
   it("maps an approved need label only from catalog titles", () => {

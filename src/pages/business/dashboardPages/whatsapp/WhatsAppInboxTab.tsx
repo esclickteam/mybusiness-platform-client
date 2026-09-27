@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
@@ -27,12 +27,14 @@ function statusClass(status: string) {
     return "bg-emerald-50 text-emerald-700";
   }
   if (status === "failed") return "bg-rose-50 text-rose-700";
+  if (status === "sending") return "animate-pulse bg-amber-50 text-amber-700";
   return "bg-slate-100 text-slate-600";
 }
 
 export default function WhatsAppInboxTab() {
   const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<WhatsAppConversation[]>(
     []
@@ -61,6 +63,11 @@ export default function WhatsAppInboxTab() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const phone = searchParams.get("phone");
+    if (phone) setSelectedPhone(phone);
+  }, [searchParams]);
 
   useEffect(() => {
     loadConversations();
@@ -103,16 +110,38 @@ export default function WhatsAppInboxTab() {
         selectedPhone,
         { body: reply.trim() }
       );
-      if (!result?.providerMessageId) {
+      if (!result?.providerMessageId && !result?.demoSafe) {
         toast.error(t("whatsapp.errors.replyFailed"));
         return;
       }
       setReply("");
+      if (result?.demoSafe && result.log) {
+        const optimistic = { ...result.log, status: "sending" };
+        setMessages((prev) => [...prev, optimistic]);
+        const id = optimistic._id;
+        window.setTimeout(() => {
+          setMessages((prev) =>
+            prev.map((row) => (row._id === id ? { ...row, status: "sent" } : row))
+          );
+        }, 450);
+        window.setTimeout(() => {
+          setMessages((prev) =>
+            prev.map((row) =>
+              row._id === id ? { ...row, status: "delivered" } : row
+            )
+          );
+        }, 1000);
+        window.setTimeout(() => {
+          setMessages((prev) =>
+            prev.map((row) => (row._id === id ? { ...row, status: "read" } : row))
+          );
+        }, 1600);
+      }
       const rows = await listWhatsAppConversationMessages(
         businessId,
         selectedPhone
       );
-      setMessages(rows);
+      if (!result?.demoSafe) setMessages(rows);
       await loadConversations();
       toast.success(t("whatsapp.inbox.replySent"));
     } catch (error: any) {
@@ -157,7 +186,11 @@ export default function WhatsAppInboxTab() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]" dir={getTextDirection(i18n.language)}>
+    <div
+      className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]"
+      dir={getTextDirection(i18n.language)}
+      data-demo-target="whatsapp-inbox"
+    >
       <section className={`${cardBase} overflow-hidden`}>
         <div className="border-b border-slate-100 px-4 py-4">
           <h2 className="text-lg font-black text-slate-900">
@@ -319,6 +352,7 @@ export default function WhatsAppInboxTab() {
             <button
               type="button"
               className={btnPrimary}
+              data-demo-target="whatsapp-demo-send"
               disabled={!selectedPhone || !reply.trim() || sending}
               onClick={handleReply}
             >

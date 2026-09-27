@@ -9863,6 +9863,9 @@
       "spend": "Spend",
       "clicks": "Clicks",
       "impressions": "Impressions",
+      "sales": "Sales",
+      "traffic": "Traffic",
+      "engagement": "Engagement",
       "empty": "No chart data for this period yet"
     },
     "table": {
@@ -10544,6 +10547,7 @@
       "resolveValidation": "Resolve validation issues before publishing",
       "noAdId": "Meta did not return an Ad ID — publish not confirmed",
       "campaignSubmitted": "Campaign submitted to Meta",
+      "demoCreated": "Demo campaign created successfully",
       "instantFormsFailed": "Failed to load Instant Forms from Meta",
       "retryCompleted": "Retry completed — Ad ID confirmed from Meta",
       "publishFailed": "Publish to Meta failed",
@@ -19919,7 +19923,8 @@
       "next": "Next: {{title}}",
       "previous": "Previous step",
       "skipModule": "Skip this module",
-      "continue": "Continue",
+      "skipTour": "Skip tour",
+      "continue": "Next",
       "skip": "Skip",
       "edit": "Edit",
       "publish": "Publish",
@@ -19945,6 +19950,11 @@
       "introGrowthHint": "Partners and advisor",
       "introWeb": "Website builder",
       "introWebHint": "Templates and publish",
+      "introWhatsapp": "WhatsApp API",
+      "introWhatsappHint": "Inbox, templates, and CRM",
+      "introCampaigns": "Meta campaigns",
+      "introCampaignsHint": "Ads, leads, and performance",
+      "demoBadge": "DEMO",
       "modules": {
         "dashboard": "Dashboard",
         "crm": "CRM",
@@ -19957,7 +19967,9 @@
         "website-builder": "Website builder",
         "leads": "Leads",
         "clients": "Clients",
-        "forms": "Forms"
+        "forms": "Forms",
+        "whatsapp": "WhatsApp API",
+        "meta-campaigns": "Meta Campaigns"
       },
       "steps": {
         "dash-intro": {

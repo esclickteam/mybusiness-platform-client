@@ -15,6 +15,7 @@ import {
   buildManualWhatsAppUrl,
   canSubmitSendDemo,
   demoContentSummary,
+  demoSummaryChips,
   demoLocaleNativeLabel,
   invitationIdOf,
   invitationPhone,
@@ -181,6 +182,7 @@ export default function AdminSendGuidedDemoModal({
     [catalog, presetKey, moduleKeys]
   );
   const summary = demoContentSummary({ catalog, presetKey, selectedKeys });
+  const summaryChips = demoSummaryChips(selectedKeys);
   const waOk = Boolean(delivery?.whatsapp?.available);
   const canSubmit = canSubmitSendDemo({
     customerName,
@@ -625,9 +627,23 @@ export default function AdminSendGuidedDemoModal({
                 <p className="text-sm font-bold text-slate-700">
                   שפת הדמו: {demoLocaleNativeLabel(locale)}
                 </p>
-                <p className="text-sm font-bold text-slate-700">
-                  הדמו יכלול: {summary || "לא נבחרו מודולים"}
-                </p>
+                <div className="text-sm font-bold text-slate-700">
+                  <p>הדמו יכלול {summaryChips.length} מודולים</p>
+                  {summaryChips.length ? (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {summaryChips.map((chip) => (
+                        <span
+                          key={chip.key}
+                          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-violet-800 ring-1 ring-violet-200"
+                        >
+                          {chip.label}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-1">{summary || "לא נבחרו מודולים"}</p>
+                  )}
+                </div>
               </section>
 
               <section>
@@ -701,9 +717,16 @@ export default function AdminSendGuidedDemoModal({
                               {row.customerPhone}
                             </td>
                             <td className="px-3 py-2">
-                              {row.presetKey === "full"
-                                ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
-                                : (row.selectedModules || []).join(" · ")}
+                              <div className="flex max-w-[220px] flex-wrap gap-1">
+                                {demoSummaryChips(row.selectedModules || []).map((chip) => (
+                                  <span
+                                    key={chip.key}
+                                    className="rounded-full bg-violet-50 px-1.5 py-0.5 text-[10px] font-black text-violet-800"
+                                  >
+                                    {chip.label}
+                                  </span>
+                                ))}
+                              </div>
                             </td>
                             <td className="px-3 py-2">{formatDate(row.createdAt)}</td>
                             <td className="px-3 py-2">{formatDate(row.expiresAt)}</td>

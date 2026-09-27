@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
+import { isGuidedDemoActive } from "../../guidedDemo/sessionStore";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { getTextDirection, isRtlLanguage } from "../../i18n/localeUtils";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -814,6 +815,11 @@ export default function BusinessDashboardLayout() {
                   </button>
                 )}
 
+                {isGuidedDemoActive() ? (
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-violet-700">
+                    {t("leftover.guided.demoBadge", "DEMO")}
+                  </span>
+                ) : null}
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
                   <span className="font-black text-slate-800">
                     {isInvistimoAdmin

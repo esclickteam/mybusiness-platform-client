@@ -164,7 +164,7 @@ export default function WhatsAppOverviewTab() {
   const busy = (connectionLoading && !connection) || loading;
 
   return (
-    <div dir={getTextDirection(i18n.language)} className="space-y-3">
+    <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.hub.overviewTitle")}

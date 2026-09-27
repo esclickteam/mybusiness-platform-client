@@ -275,6 +275,17 @@ export function WhatsAppCreateTemplateWizard({
         businessId,
         buildPayload()
       );
+      if (result.demoSafe) {
+        toast.success(
+          t(
+            "whatsapp.wizard.demoSaved",
+            "Demo template saved. It was not sent to Meta."
+          )
+        );
+        onSubmitted();
+        onClose();
+        return;
+      }
       const rawStatus = String(result.meta?.status || "").toUpperCase();
       const statusKey =
         rawStatus === "PENDING"

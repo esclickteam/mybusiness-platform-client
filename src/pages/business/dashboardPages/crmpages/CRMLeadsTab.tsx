@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import {
   AlertCircle,
   CalendarDays,
@@ -160,6 +161,8 @@ type Lead = {
     pageId?: string;
     pageName?: string;
     createdTime?: string;
+    campaignId?: string;
+    campaignName?: string;
   };
 
   google?: {
@@ -466,6 +469,21 @@ function getInitials(name?: string) {
     .toUpperCase();
 
   return initials || "L";
+}
+
+function demoLeadTarget(tags?: string[]) {
+  const list = tags || [];
+  if (list.includes("demo:sarah")) return "crm-lead-card-sarah";
+  if (list.includes("demo:daniel")) return "crm-lead-card-daniel";
+  if (list.includes("demo:maya")) return "crm-lead-card-maya";
+  return undefined;
+}
+
+function crmWhatsAppHref(phone: string, businessId?: string) {
+  if (isGuidedDemoActive() && businessId) {
+    return `/business/${businessId}/dashboard/whatsapp/inbox?phone=${encodeURIComponent(phone)}`;
+  }
+  return `https://wa.me/${phone}`;
 }
 
 function normalizePhoneForWhatsApp(phone?: string) {
@@ -2218,13 +2236,7 @@ export default function CRMLeadsTab({
                               <React.Fragment key={lead._id}>
                                 <article
                                   onClick={() => openLeadDrawer(lead)}
-                                  data-demo-target={
-                                    (lead.tags || []).includes("demo:daniel")
-                                      ? "crm-lead-card-daniel"
-                                      : (lead.tags || []).includes("demo:maya")
-                                        ? "crm-lead-card-maya"
-                                        : undefined
-                                  }
+                                  data-demo-target={demoLeadTarget(lead.tags)}
                                   className={[
                                     "hidden cursor-pointer px-4 py-3.5 transition xl:grid xl:grid-cols-[1.35fr_1.15fr_0.9fr_0.8fr_1.15fr_0.85fr_0.95fr] xl:items-center xl:gap-3",
                                     selectedLead?._id === lead._id
@@ -2327,8 +2339,8 @@ export default function CRMLeadsTab({
                                   >
                                     {whatsAppPhone && (
                                       <a
-                                        href={"https://wa.me/" + whatsAppPhone}
-                                        target="_blank"
+                                        href={crmWhatsAppHref(whatsAppPhone, businessId)}
+                                        target={isGuidedDemoActive() ? undefined : "_blank"}
                                         rel="noreferrer"
                                         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-emerald-600 transition hover:bg-emerald-50"
                                         title={t("crm.common.whatsapp")}
@@ -2348,13 +2360,7 @@ export default function CRMLeadsTab({
                                     <button
                                       type="button"
                                       onClick={() => openLeadDrawer(lead)}
-                                      data-demo-target={
-                                        (lead.tags || []).includes("demo:daniel")
-                                          ? "crm-lead-card-daniel"
-                                          : (lead.tags || []).includes("demo:maya")
-                                            ? "crm-lead-card-maya"
-                                            : undefined
-                                      }
+                                      data-demo-target={demoLeadTarget(lead.tags)}
                                       className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6]"
                                     >
                                       {t("crm.common.open")}
@@ -2365,13 +2371,7 @@ export default function CRMLeadsTab({
 
                                 <article
                                   onClick={() => openLeadDrawer(lead, "form")}
-                                  data-demo-target={
-                                    (lead.tags || []).includes("demo:daniel")
-                                      ? "crm-lead-card-daniel"
-                                      : (lead.tags || []).includes("demo:maya")
-                                        ? "crm-lead-card-maya"
-                                        : undefined
-                                  }
+                                  data-demo-target={demoLeadTarget(lead.tags)}
                                   className={[
                                     "grid cursor-pointer grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] items-center gap-2 px-3 py-2.5 transition xl:hidden",
                                     selectedLead?._id === lead._id
@@ -2598,8 +2598,8 @@ export default function CRMLeadsTab({
                     <div className="mb-3 flex gap-2">
                       {selectedWhatsAppPhone && (
                         <a
-                          href={`https://wa.me/${selectedWhatsAppPhone}`}
-                          target="_blank"
+                          href={crmWhatsAppHref(selectedWhatsAppPhone, businessId)}
+                          target={isGuidedDemoActive() ? undefined : "_blank"}
                           rel="noreferrer"
                           className="flex h-12 flex-1 flex-col items-center justify-center rounded-xl bg-sky-50 text-[11px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                         >
@@ -2710,8 +2710,8 @@ export default function CRMLeadsTab({
                     <div className="mb-3 flex gap-2 sm:mb-4">
                       {selectedWhatsAppPhone && (
                         <a
-                          href={`https://wa.me/${selectedWhatsAppPhone}`}
-                          target="_blank"
+                          href={crmWhatsAppHref(selectedWhatsAppPhone, businessId)}
+                          target={isGuidedDemoActive() ? undefined : "_blank"}
                           rel="noreferrer"
                           className="flex h-12 flex-1 flex-col items-center justify-center rounded-xl bg-sky-50 text-[11px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100 sm:text-xs"
                         >
@@ -3172,6 +3172,13 @@ export default function CRMLeadsTab({
                         <DetailRow
                           label={t("crm.leads.drawer.source")}
                           value={getLeadSourceLabel(selectedLead, t)}
+                        />
+                        <DetailRow
+                          label={t("crm.leads.drawer.campaign", "Campaign")}
+                          value={
+                            selectedLead.facebook?.campaignName ||
+                            selectedLead.google?.campaignName
+                          }
                         />
                         <DetailRow
                           label={t("crm.leads.drawer.form")}

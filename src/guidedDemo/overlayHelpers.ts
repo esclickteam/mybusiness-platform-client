@@ -393,4 +393,6 @@ export const INTRO_CATEGORIES = [
   { key: "auto", title: "Automations", titleKey: "leftover.guided.introAuto", hint: "Triggers and actions", hintKey: "leftover.guided.introAutoHint", icon: "auto" },
   { key: "growth", title: "Growth tools", titleKey: "leftover.guided.introGrowth", hint: "Partners and advisor", hintKey: "leftover.guided.introGrowthHint", icon: "growth" },
   { key: "web", title: "Website builder", titleKey: "leftover.guided.introWeb", hint: "Templates and publish", hintKey: "leftover.guided.introWebHint", icon: "web" },
+  { key: "whatsapp", title: "WhatsApp API", titleKey: "leftover.guided.introWhatsapp", hint: "Inbox, templates, and CRM", hintKey: "leftover.guided.introWhatsappHint", icon: "growth" },
+  { key: "campaigns", title: "Meta campaigns", titleKey: "leftover.guided.introCampaigns", hint: "Ads, leads, and performance", hintKey: "leftover.guided.introCampaignsHint", icon: "growth" },
 ];

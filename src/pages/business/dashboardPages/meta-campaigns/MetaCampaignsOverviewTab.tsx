@@ -83,6 +83,8 @@ function KpiCard({
   trend,
   trendPositive,
   progress,
+  href,
+  demoTarget,
 }: {
   label: string;
   value: string;
@@ -90,9 +92,11 @@ function KpiCard({
   trend?: string;
   trendPositive?: boolean;
   progress?: number;
+  href?: string;
+  demoTarget?: string;
 }) {
-  return (
-    <div className={`${cardBase} relative overflow-hidden p-4`}>
+  const body = (
+    <div className={`${cardBase} relative overflow-hidden p-4`} data-demo-target={demoTarget}>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-l from-violet-50/80 via-sky-50/40 to-transparent"
@@ -134,6 +138,12 @@ function KpiCard({
       </div>
     </div>
   );
+  if (!href) return body;
+  return (
+    <Link to={href} className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300">
+      {body}
+    </Link>
+  );
 }
 
 function InsightCard({ item }: { item: MetaCampaignInsight }) {
@@ -157,6 +167,11 @@ function InsightCard({ item }: { item: MetaCampaignInsight }) {
   return (
     <div className={`rounded-xl border p-3 ${tone}`}>
       <div className="flex items-start gap-2">
+        {item.demoData ? (
+          <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-slate-500">
+            {t("metaCampaigns.insights.demoData", "Demo data")}
+          </span>
+        ) : null}
         <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 opacity-80" />
         <div className="min-w-0">
           <p className="text-sm font-black">{title}</p>
@@ -340,7 +355,10 @@ export default function MetaCampaignsOverviewTab() {
       (point.leads || 0) > 0 ||
       (point.spend || 0) > 0 ||
       (point.clicks || 0) > 0 ||
-      (point.impressions || 0) > 0
+      (point.impressions || 0) > 0 ||
+      (point.sales || 0) > 0 ||
+      (point.traffic || 0) > 0 ||
+      (point.engagement || 0) > 0
   );
 
   const showChartLeads = segment === "all" || segment === "leads";
@@ -585,7 +603,7 @@ export default function MetaCampaignsOverviewTab() {
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" data-demo-target="meta-overview">
         <KpiCard
           label={t("metaCampaigns.kpis.spend")}
           value={formatMetricOrDash(kpis?.spend, (n) =>
@@ -595,6 +613,12 @@ export default function MetaCampaignsOverviewTab() {
         />
         <KpiCard
           label={t("metaCampaigns.kpis.leads")}
+          demoTarget="meta-leads-kpi"
+          href={
+            data?.demoData || data?.connection?.isGuidedDemo
+              ? `/business/${urlBusinessId || businessId}/dashboard/crm/leads`
+              : undefined
+          }
           value={formatMetricOrDash(kpis?.leads, formatNumber, {
             treatZeroAsEmpty: !hasInsightSignal,
           })}
@@ -782,6 +806,39 @@ export default function MetaCampaignsOverviewTab() {
                         dot={false}
                       />
                     ) : null}
+                    {segment === "all" && chartSeries.some((point) => (point.sales || 0) > 0) ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="sales"
+                        name={t("metaCampaigns.chart.sales", "Sales")}
+                        stroke="#059669"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    ) : null}
+                    {segment === "all" && chartSeries.some((point) => (point.traffic || 0) > 0) ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="traffic"
+                        name={t("metaCampaigns.chart.traffic", "Traffic")}
+                        stroke="#D97706"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    ) : null}
+                    {segment === "all" && chartSeries.some((point) => (point.engagement || 0) > 0) ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="engagement"
+                        name={t("metaCampaigns.chart.engagement", "Engagement")}
+                        stroke="#DB2777"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    ) : null}
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
@@ -856,7 +913,7 @@ export default function MetaCampaignsOverviewTab() {
                 </thead>
                 <tbody>
                   {campaigns.length ? (
-                    campaigns.map((campaign) => {
+                    campaigns.map((campaign, campaignIndex) => {
                       const deliveryStatus =
                         campaign.deliveryStatus ||
                         campaign.effectiveStatus ||
@@ -879,6 +936,7 @@ export default function MetaCampaignsOverviewTab() {
                           <td className="px-4 py-3">
                             <button
                               type="button"
+                              data-demo-target={campaignIndex === 0 ? "meta-campaign-row" : undefined}
                               onClick={() => setDetailsCampaign(campaign)}
                               className="group text-start"
                             >
@@ -1289,6 +1347,37 @@ export default function MetaCampaignsOverviewTab() {
                   { treatZeroAsEmpty: true }
                 )}
               />
+              {(detailsCampaign.adSets || []).length ? (
+                <div className="mb-3 space-y-3">
+                  <p className="text-xs font-black uppercase tracking-wide text-slate-400">
+                    {t("metaCampaigns.details.adSets", "Ad sets")}
+                  </p>
+                  {detailsCampaign.adSets?.map((adSet) => (
+                    <div key={adSet.id} className="rounded-xl border border-slate-100 p-3">
+                      <p className="text-sm font-black text-slate-900">{adSet.name}</p>
+                      <p className="mt-1 text-xs font-semibold text-slate-500">
+                        {adSet.status} · {adSet.audience}
+                      </p>
+                      {(adSet.ads || []).map((ad) => (
+                        <div key={ad.id} className="mt-2 flex gap-2">
+                          {ad.imageUrl ? (
+                            <img
+                              src={ad.imageUrl}
+                              alt=""
+                              className="h-14 w-14 rounded-lg object-cover"
+                            />
+                          ) : null}
+                          <div className="min-w-0">
+                            <p className="text-xs font-black text-slate-800">{ad.name}</p>
+                            <p className="text-[11px] font-semibold text-slate-500">{ad.headline}</p>
+                            <p className="text-[11px] font-semibold text-slate-400">{ad.primaryText}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
               <DetailRow
                 label={t("metaCampaigns.table.cpl")}
                 value={formatMetricOrDash(
