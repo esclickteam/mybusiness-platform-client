@@ -57,9 +57,14 @@ export function readGuidedDemoSession() {
 
 export function writeGuidedDemoSession(session) {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session || {}));
+  const previous = readGuidedDemoSession();
+  const sameInvitation =
+    Boolean(previous?.invitationId) && previous.invitationId === session?.invitationId;
+  const lockedLocale = sameInvitation ? normalizeDemoLocale(sessionStorage.getItem(LOCALE_KEY)) : null;
+  const locale = lockedLocale || normalizeDemoLocale(session?.locale || session?.language);
+  const next = locale ? { ...(session || {}), locale, language: locale } : session || {};
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(next));
   sessionStorage.setItem(ACTIVE_KEY, "1");
-  const locale = normalizeDemoLocale(session?.locale || session?.language);
   if (locale) sessionStorage.setItem(LOCALE_KEY, locale);
 }
 
