@@ -12,6 +12,7 @@ import { useStudioTemplateRenderer } from "../components/site-builder/studio/dat
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { useTranslation } from "react-i18next";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
+import { withGuidedDemoSiteContent } from "../guidedDemo/demoSiteContent";
 import { getTextDirection } from "../i18n/localeUtils";
 import { setTemplateLanguageOverride } from "../i18n/templateDir";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
@@ -200,9 +201,12 @@ export default function WebsiteTemplatePreviewPage() {
     const Component = renderer.Component as React.ComponentType<
       Record<string, unknown>
     >;
-    const data = localizeBuiltInTemplateSeed(
-      (renderer.defaultData || {}) as Record<string, unknown>,
-      i18n.language,
+    const data = withGuidedDemoSiteContent(
+      renderer.key,
+      localizeBuiltInTemplateSeed(
+        (renderer.defaultData || {}) as Record<string, unknown>,
+        i18n.language,
+      ),
     );
     const pageId = String(previewPageId || homePageId);
     const pageSlug = String(previewPage?.slug || homePage?.slug || "/");

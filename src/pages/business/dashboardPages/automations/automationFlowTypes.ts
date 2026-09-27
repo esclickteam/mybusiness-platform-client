@@ -67,11 +67,45 @@ export function getTriggerCategoryLabels(
     subscriptions: t("automations.catalog.triggerCategories.subscriptions"),
     tasks: t("automations.catalog.triggerCategories.tasks"),
     email: t("automations.catalog.triggerCategories.email"),
+    marketing: t("automations.catalog.triggerCategories.marketing"),
   };
 }
 
 export const TRIGGER_CATEGORY_LABELS: Record<string, string> =
   getTriggerCategoryLabels();
+
+function localizeTriggerOption(
+  fieldName: string,
+  option: { value: string | number; label: string }
+) {
+  const group =
+    fieldName === "fromStatus" || fieldName === "toStatus"
+      ? "leadStatuses"
+      : fieldName === "hoursBefore"
+        ? "hoursBeforeOptions"
+        : "";
+  if (!group) return option;
+  return {
+    ...option,
+    label: i18n.t(`automations.catalog.${group}.${option.value}`, {
+      defaultValue: option.label,
+    }),
+  };
+}
+
+function localizeTriggerConfigField(
+  field: AutomationTriggerConfigField
+): AutomationTriggerConfigField {
+  return {
+    ...field,
+    label: i18n.t(`automations.catalog.triggerFields.${field.name}`, {
+      defaultValue: field.label,
+    }),
+    ...(Array.isArray(field.options)
+      ? { options: field.options.map((option) => localizeTriggerOption(field.name, option)) }
+      : {}),
+  };
+}
 
 export function triggerOptionFromCatalog(row: {
   key: string;
@@ -91,22 +125,34 @@ export function triggerOptionFromCatalog(row: {
   const isPublishable = Boolean(row.isPublishable);
   // Customer UI: never surface unsupported / coming-soon triggers.
   if (!isSupported || !isPublishable) return null;
+  const key = String(row.key);
+  // The server catalog ships Hebrew copy; the UI language wins when a key exists.
+  const label = i18n.t(`automations.catalog.triggers.${key}.label`, {
+    defaultValue: String(row.label || row.key),
+  });
+  const description = i18n.t(`automations.catalog.triggers.${key}.description`, {
+    defaultValue: String(row.description || ""),
+  });
   return {
-    key: String(row.key),
-    label: String(row.label || row.key),
-    description: String(row.description || ""),
+    key,
+    label,
+    description,
     category: String(row.category || "crm"),
     status: String(row.status || "active"),
     isSupported,
     isPublishable,
     icon: row.icon || null,
-    keywords: Array.isArray(row.keywords)
-      ? row.keywords.map((value) => String(value))
+    keywords: [
+      ...(Array.isArray(row.keywords) ? row.keywords.map((value) => String(value)) : []),
+      label,
+      description,
+    ].filter(Boolean),
+    configSchema: Array.isArray(row.configSchema)
+      ? row.configSchema.map(localizeTriggerConfigField)
       : [],
-    configSchema: Array.isArray(row.configSchema) ? row.configSchema : [],
-    billingNote:
-      row.billingSemantics?.note ||
-      i18n.t("automations.catalog.noCharge"),
+    billingNote: row.billingSemantics?.triggerBillable
+      ? row.billingSemantics?.note || i18n.t("automations.catalog.noCharge")
+      : i18n.t("automations.catalog.noCharge"),
     triggerBillable: Boolean(row.billingSemantics?.triggerBillable),
     requiredConnection: row.requiredConnection || null,
     comingSoon: false,

@@ -36,6 +36,7 @@ import AdNetworkPickerModal, {
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import API from "@api";
+import { formatCrmMoney } from "../../../../utils/crmCurrency";
 import {
   isAdminUser,
   setAdminActiveBusinessId,
@@ -2901,7 +2902,7 @@ export default function CRMLeadsTab({
                           {t("crm.leads.drawer.paymentsEmpty")}
                         </p>
                         <p className="mt-2 text-lg font-black text-slate-800">
-                          ₪0
+                          {formatCrmMoney(0)}
                         </p>
                       </div>
                     </section>

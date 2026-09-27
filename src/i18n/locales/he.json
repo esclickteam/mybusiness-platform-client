@@ -834,7 +834,8 @@
         "whatsapp": "WhatsApp",
         "subscriptions": "מנויים וחיובים",
         "tasks": "משימות וצוות",
-        "email": "אימייל"
+        "email": "אימייל",
+        "marketing": "שיווק"
       },
       "palette": {
         "resultPrefix": "תוצאה · {{label}}",
@@ -1057,6 +1058,94 @@
           "title": "נגיעה ללקוח לא פעיל",
           "reason": "נשלחת ללקוחות ללא פעילות לאחרונה."
         }
+      },
+      "triggers": {
+        "new_lead": {
+          "label": "ליד חדש ב־CRM",
+          "description": "כשליד חדש נכנס ל־CRM"
+        },
+        "lead_status_changed": {
+          "label": "שינוי סטטוס ליד",
+          "description": "כשמעדכנים סטטוס של ליד"
+        },
+        "form_submitted": {
+          "label": "טופס נשלח באתר",
+          "description": "כשנשלח טופס מהאתר"
+        },
+        "birthday": {
+          "label": "יום הולדת",
+          "description": "טריגר שנתי ליום הולדת של לקוח או ליד"
+        },
+        "referral_conversion": {
+          "label": "המרת הפניה",
+          "description": "כשחבר שהופנה משלים המרה"
+        },
+        "popup_conversion": {
+          "label": "המרת פופאפ",
+          "description": "כשפופאפ יציאה ממיר"
+        },
+        "qr_scan": {
+          "label": "סריקת QR",
+          "description": "כשסורקים QR דינמי"
+        },
+        "client_created": {
+          "label": "לקוח חדש ב־CRM",
+          "description": "כשלקוח חדש נוצר ב־CRM"
+        },
+        "client_inactive": {
+          "label": "לקוח לא פעיל",
+          "description": "לקוח ללא פעילות למשך תקופה מוגדרת"
+        },
+        "appointment_created": {
+          "label": "נקבעה פגישה",
+          "description": "כשקובעים פגישה ביומן"
+        },
+        "appointment_cancelled": {
+          "label": "פגישה בוטלה",
+          "description": "כשפגישה מבוטלת מהיומן"
+        },
+        "appointment_reminder": {
+          "label": "תזכורת לפני פגישה",
+          "description": "לפני מועד הפגישה"
+        },
+        "order_created": {
+          "label": "נוצרה הזמנה",
+          "description": "כשנוצרת הזמנה בחנות"
+        },
+        "store_order_paid": {
+          "label": "התקבלה הזמנה בחנות",
+          "description": "כשהזמנה בחנות שולמה בהצלחה"
+        },
+        "manual": {
+          "label": "הפעלה ידנית",
+          "description": "הפעלה ידנית של האוטומציה"
+        },
+        "scheduled": {
+          "label": "לפי לוח זמנים",
+          "description": "הפעלה חוזרת לפי דקות, שעות, יום או שבוע"
+        }
+      },
+      "triggerFields": {
+        "fromStatus": "מסטטוס (אופציונלי)",
+        "toStatus": "לסטטוס",
+        "inactiveDays": "ימים ללא פעילות",
+        "hoursBefore": "שעות לפני הפגישה",
+        "schedule": "הגדרות לוח זמנים"
+      },
+      "leadStatuses": {
+        "new": "חדש",
+        "contacted": "נוצר קשר",
+        "interested": "מתעניין",
+        "converted": "הפך ללקוח",
+        "lost": "אבוד",
+        "old": "ישן"
+      },
+      "hoursBeforeOptions": {
+        "1": "שעה לפני",
+        "2": "שעתיים לפני",
+        "24": "יום לפני",
+        "48": "יומיים לפני",
+        "72": "3 ימים לפני"
       }
     },
     "editor": {
@@ -1564,8 +1653,8 @@
     "flow": {
       "billedAction": "⚡ 1 פעולה",
       "aiAction": "פעולת אוטומציה",
-      "waCostTitle": "0.20 ₪ להודעת WhatsApp",
-      "waCost": "💬 0.20 ₪"
+      "waCostTitle": "{{price}} להודעת WhatsApp",
+      "waCost": "💬 {{price}}"
     },
     "emailFields": {
       "availableVars": "משתנים זמינים",
@@ -4536,6 +4625,92 @@
       "disconnectBody": "Bizuply תפסיק לייבא לידים חדשים מ-Google Ads מחשבון זה. לידים קיימים ב-CRM לא יימחקו.",
       "cancel": "ביטול",
       "disconnectConfirm": "ניתוק"
+    },
+    "clientWork": {
+      "toast": {
+        "noteUpdated": "ההערה עודכנה",
+        "noteAdded": "ההערה נוספה",
+        "noteSaveError": "שגיאה בשמירת ההערה",
+        "noteDeleted": "ההערה נמחקה",
+        "noteDeleteError": "שגיאה במחיקת ההערה",
+        "taskRequired": "יש למלא כותרת, תאריך ושעה",
+        "taskInvalidDate": "תאריך או שעה לא תקינים",
+        "taskUpdated": "המשימה עודכנה",
+        "taskAdded": "המשימה נוספה",
+        "taskSaveError": "שגיאה בשמירת המשימה",
+        "taskDeleted": "המשימה נמחקה",
+        "taskDeleteError": "שגיאה במחיקת המשימה"
+      },
+      "confirm": {
+        "deleteNote": "למחוק את ההערה?",
+        "deleteTask": "למחוק את המשימה?"
+      },
+      "status": {
+        "todo": "לביצוע",
+        "in_progress": "בתהליך",
+        "waiting": "בהמתנה",
+        "completed": "הושלמה",
+        "cancelled": "בוטלה"
+      },
+      "priority": {
+        "low": "נמוכה",
+        "normal": "רגילה",
+        "high": "גבוהה",
+        "critical": "קריטית"
+      },
+      "metrics": {
+        "notes": "הערות",
+        "openTasks": "משימות פתוחות",
+        "completed": "הושלמו"
+      },
+      "overdue": "{{count}} משימות באיחור דורשות טיפול.",
+      "notes": {
+        "badge": "הערות",
+        "title": "הערות על הלקוח",
+        "subtitle": "כל הפרטים החשובים, ההעדפות, ההיסטוריה וההערות הפנימיות במקום אחד.",
+        "loading": "טוען הערות...",
+        "emptyTitle": "עדיין אין הערות",
+        "emptyText": "שמרו כאן פרטים חשובים על הלקוח.",
+        "edit": "עריכת הערה",
+        "new": "הערה חדשה",
+        "placeholder": "כתבו הערה קצרה ולחצו Enter...",
+        "cancelEdit": "ביטול עריכה",
+        "saving": "שומר...",
+        "update": "עדכון הערה",
+        "save": "שמירת הערה",
+        "noDate": "ללא תאריך",
+        "delete": "מחיקת הערה"
+      },
+      "tasks": {
+        "badge": "משימות",
+        "title": "משימות המשך",
+        "subtitle": "צרו שיחות חוזרות, תזכורות, משימות הכנה ומעקב אחרי לקוחות.",
+        "loading": "טוען משימות...",
+        "emptyTitle": "עדיין אין משימות",
+        "emptyText": "צרו משימות למעקב, לשיחה חוזרת או להכנה לפגישות.",
+        "edit": "עריכת משימה",
+        "new": "משימה חדשה",
+        "required": "כותרת, תאריך ושעה הם שדות חובה.",
+        "cancelEdit": "ביטול עריכה",
+        "titlePlaceholder": "מה צריך לעשות?",
+        "hideAdvanced": "הסתרת אפשרויות מתקדמות",
+        "showAdvanced": "אפשרויות מתקדמות",
+        "detailsPlaceholder": "פרטים נוספים",
+        "saving": "שומר...",
+        "update": "עדכון משימה",
+        "add": "הוספת משימה",
+        "delete": "מחיקת משימה",
+        "overdue": "באיחור"
+      },
+      "reminder": {
+        "none": "ללא תזכורת",
+        "m5": "5 דקות לפני",
+        "m15": "15 דקות לפני",
+        "m30": "30 דקות לפני",
+        "h1": "שעה לפני",
+        "d1": "יום לפני",
+        "minutesBefore": "{{count}} דק׳ לפני"
+      }
     }
   },
   "notifications": {
@@ -9164,7 +9339,8 @@
     },
     "details": {
       "badge": "ads_read · קריאה בלבד",
-      "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב."
+      "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב.",
+      "viewLeadsInCrm": "צפייה בלידים ב-CRM"
     },
     "actions": {
       "create": "צור קמפיין חדש",
@@ -9845,7 +10021,8 @@
       "budget": "תקציב חודשי",
       "budgetHint": "{{spent}} מתוך {{total}} ({{percent}}%)",
       "spendHint": "סה״כ הוצאה בתקופה שנבחרה",
-      "spend": "הוצאה"
+      "spend": "הוצאה",
+      "ctrHint": "שיעור הקלקה"
     },
     "ranges": {
       "last7": "7 ימים אחרונים",

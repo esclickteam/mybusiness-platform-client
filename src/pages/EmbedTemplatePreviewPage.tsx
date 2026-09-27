@@ -6,6 +6,8 @@ import { useStudioTemplateRenderer } from "../components/site-builder/studio/dat
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import { getTextDirection } from "../i18n/localeUtils";
 import { setTemplateLanguageOverride } from "../i18n/templateDir";
+import { withGuidedDemoSiteContent } from "../guidedDemo/demoSiteContent";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 /**
  * Standalone live render of a studio template's homepage for gallery card
@@ -18,7 +20,7 @@ export default function EmbedTemplatePreviewPage() {
   const [searchParams] = useSearchParams();
   const modeParam = String(searchParams.get("mode") || "preview").toLowerCase();
   const mode = modeParam === "edit" ? "edit" : "preview";
-  const language = searchParams.get("lang") || i18n.language;
+  const language = readGuidedDemoLocaleLock() || searchParams.get("lang") || i18n.language;
   setTemplateLanguageOverride(searchParams.get("lang"));
 
   const { renderer } = useStudioTemplateRenderer(templateKey);
@@ -28,14 +30,14 @@ export default function EmbedTemplatePreviewPage() {
   }
 
   const Component = renderer.Component as React.ComponentType<Record<string, unknown>>;
-  const data = localizeBuiltInTemplateSeed(
-    (renderer.defaultData || {}) as Record<string, unknown>,
-    language,
+  const key = String(renderer.key || templateKey).toLowerCase();
+  const data = withGuidedDemoSiteContent(
+    key,
+    localizeBuiltInTemplateSeed((renderer.defaultData || {}) as Record<string, unknown>, language),
   );
   const homePage = renderer.pages?.[0];
   const pageId = homePage?.id || "home";
   const pageSlug = homePage?.slug || "/";
-  const key = String(renderer.key || templateKey).toLowerCase();
 
   return (
     <div

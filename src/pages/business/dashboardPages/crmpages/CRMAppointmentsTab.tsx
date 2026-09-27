@@ -24,6 +24,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { formatDemoMoney, getDemoCurrency } from "@/guidedDemo/demoCurrency";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
@@ -470,6 +471,7 @@ function detectCurrencyFromUser(user?: AuthUser | null): DetectedCurrency {
 }
 
 function formatMoney(value?: number, user?: AuthUser | null) {
+  if (getDemoCurrency()) return formatDemoMoney(Math.round(Number(value || 0)));
   const detected = detectCurrencyFromUser(user);
 
   // Never show USD when the business looks Israeli / unset — prefer ₪

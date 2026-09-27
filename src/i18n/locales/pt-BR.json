@@ -834,7 +834,8 @@
         "whatsapp": "WhatsApp",
         "subscriptions": "Assinaturas e cobrança",
         "tasks": "Tarefas e equipe",
-        "email": "E-mail"
+        "email": "E-mail",
+        "marketing": "Marketing"
       },
       "palette": {
         "resultPrefix": "Resultado · {{label}}",
@@ -1057,6 +1058,94 @@
           "title": "Toque para um cliente inativo",
           "reason": "É enviada a clientes sem atividade recente."
         }
+      },
+      "triggers": {
+        "new_lead": {
+          "label": "Novo lead no CRM",
+          "description": "Quando um novo lead entra no CRM"
+        },
+        "lead_status_changed": {
+          "label": "Status do lead alterado",
+          "description": "Quando o status de um lead é atualizado"
+        },
+        "form_submitted": {
+          "label": "Formulário enviado",
+          "description": "Quando um formulário do site é enviado"
+        },
+        "birthday": {
+          "label": "Aniversário",
+          "description": "Gatilho anual no aniversário de um cliente ou lead"
+        },
+        "referral_conversion": {
+          "label": "Indicação convertida",
+          "description": "Quando um amigo indicado conclui uma conversão"
+        },
+        "popup_conversion": {
+          "label": "Conversão de pop-up",
+          "description": "Quando um pop-up de saída converte"
+        },
+        "qr_scan": {
+          "label": "Leitura de QR",
+          "description": "Quando um QR dinâmico é lido"
+        },
+        "client_created": {
+          "label": "Novo cliente no CRM",
+          "description": "Quando um novo cliente é criado no CRM"
+        },
+        "client_inactive": {
+          "label": "Cliente inativo",
+          "description": "Um cliente sem atividade por um período definido"
+        },
+        "appointment_created": {
+          "label": "Compromisso agendado",
+          "description": "Quando um compromisso é agendado na agenda"
+        },
+        "appointment_cancelled": {
+          "label": "Compromisso cancelado",
+          "description": "Quando um compromisso é cancelado"
+        },
+        "appointment_reminder": {
+          "label": "Lembrete de compromisso",
+          "description": "Antes do horário do compromisso"
+        },
+        "order_created": {
+          "label": "Pedido criado",
+          "description": "Quando um pedido é criado na loja"
+        },
+        "store_order_paid": {
+          "label": "Pedido da loja pago",
+          "description": "Quando um pedido da loja é pago com sucesso"
+        },
+        "manual": {
+          "label": "Execução manual",
+          "description": "Executar a automação manualmente"
+        },
+        "scheduled": {
+          "label": "Agendado",
+          "description": "Repete a cada alguns minutos, horas, dias ou semanas"
+        }
+      },
+      "triggerFields": {
+        "fromStatus": "Do status (opcional)",
+        "toStatus": "Para o status",
+        "inactiveDays": "Dias sem atividade",
+        "hoursBefore": "Horas antes do compromisso",
+        "schedule": "Configurações de agendamento"
+      },
+      "leadStatuses": {
+        "new": "Novo",
+        "contacted": "Contatado",
+        "interested": "Interessado",
+        "converted": "Virou cliente",
+        "lost": "Perdido",
+        "old": "Antigo"
+      },
+      "hoursBeforeOptions": {
+        "1": "1 hora antes",
+        "2": "2 horas antes",
+        "24": "1 dia antes",
+        "48": "2 dias antes",
+        "72": "3 dias antes"
       }
     },
     "editor": {
@@ -1564,8 +1653,8 @@
     "flow": {
       "billedAction": "⚡ 1 ação",
       "aiAction": "Ação de automação",
-      "waCostTitle": "₪0,20 por mensagem de WhatsApp",
-      "waCost": "💬 R$ 0,20"
+      "waCostTitle": "{{price}} por mensagem de WhatsApp",
+      "waCost": "💬 {{price}}"
     },
     "emailFields": {
       "availableVars": "Variáveis disponíveis",
@@ -4536,6 +4625,92 @@
       "disconnectBody": "A Bizuply deixará de importar novos leads do Google Ads desta conta. Os leads existentes do CRM não serão excluídos.",
       "cancel": "Cancelar",
       "disconnectConfirm": "Desconectar"
+    },
+    "clientWork": {
+      "toast": {
+        "noteUpdated": "Nota atualizada",
+        "noteAdded": "Nota adicionada",
+        "noteSaveError": "Erro ao salvar a nota",
+        "noteDeleted": "Nota excluída",
+        "noteDeleteError": "Erro ao excluir a nota",
+        "taskRequired": "Preencha o título, a data e o horário",
+        "taskInvalidDate": "Data ou horário inválido",
+        "taskUpdated": "Tarefa atualizada",
+        "taskAdded": "Tarefa adicionada",
+        "taskSaveError": "Erro ao salvar a tarefa",
+        "taskDeleted": "Tarefa excluída",
+        "taskDeleteError": "Erro ao excluir a tarefa"
+      },
+      "confirm": {
+        "deleteNote": "Excluir esta nota?",
+        "deleteTask": "Excluir esta tarefa?"
+      },
+      "status": {
+        "todo": "A fazer",
+        "in_progress": "Em andamento",
+        "waiting": "Aguardando",
+        "completed": "Concluída",
+        "cancelled": "Cancelada"
+      },
+      "priority": {
+        "low": "Baixa",
+        "normal": "Normal",
+        "high": "Alta",
+        "critical": "Crítica"
+      },
+      "metrics": {
+        "notes": "Notas",
+        "openTasks": "Tarefas abertas",
+        "completed": "Concluídas"
+      },
+      "overdue": "{{count}} tarefas atrasadas precisam de atenção.",
+      "notes": {
+        "badge": "Notas",
+        "title": "Notas do cliente",
+        "subtitle": "Guarde detalhes importantes, preferências, histórico e notas internas em um só lugar.",
+        "loading": "Carregando notas...",
+        "emptyTitle": "Ainda não há notas",
+        "emptyText": "Guarde aqui os detalhes importantes deste cliente.",
+        "edit": "Editar nota",
+        "new": "Nova nota",
+        "placeholder": "Escreva uma nota rápida e pressione Enter...",
+        "cancelEdit": "Cancelar edição",
+        "saving": "Salvando...",
+        "update": "Atualizar nota",
+        "save": "Salvar nota",
+        "noDate": "Sem data",
+        "delete": "Excluir nota"
+      },
+      "tasks": {
+        "badge": "Tarefas",
+        "title": "Tarefas de acompanhamento",
+        "subtitle": "Crie retornos, lembretes, tarefas de preparação e acompanhamentos de clientes.",
+        "loading": "Carregando tarefas...",
+        "emptyTitle": "Ainda não há tarefas",
+        "emptyText": "Crie tarefas para acompanhar, retornar ligações ou preparar reuniões.",
+        "edit": "Editar tarefa",
+        "new": "Nova tarefa",
+        "required": "Título, data e horário são obrigatórios.",
+        "cancelEdit": "Cancelar edição",
+        "titlePlaceholder": "O que precisa ser feito?",
+        "hideAdvanced": "Ocultar opções avançadas",
+        "showAdvanced": "Opções avançadas",
+        "detailsPlaceholder": "Detalhes adicionais",
+        "saving": "Salvando...",
+        "update": "Atualizar tarefa",
+        "add": "Adicionar tarefa",
+        "delete": "Excluir tarefa",
+        "overdue": "Atrasada"
+      },
+      "reminder": {
+        "none": "Sem lembrete",
+        "m5": "5 minutos antes",
+        "m15": "15 minutos antes",
+        "m30": "30 minutos antes",
+        "h1": "1 hora antes",
+        "d1": "1 dia antes",
+        "minutesBefore": "{{count}} min antes"
+      }
     }
   },
   "notifications": {
@@ -9175,7 +9350,8 @@
     },
     "details": {
       "badge": "ads_read  Apenas leitura",
-      "readOnlyHint": "Os detalhes da campanha são somente leitura sem alterações de edição ou orçamento."
+      "readOnlyHint": "Os detalhes da campanha são somente leitura sem alterações de edição ou orçamento.",
+      "viewLeadsInCrm": "Ver leads no CRM"
     },
     "actions": {
       "create": "Criar nova campanha",
@@ -9856,7 +10032,8 @@
       "budget": "Orçamento mensal",
       "budgetHint": "{{spent}} de {{total}} ({{percent}}%)",
       "spendHint": "Gasto total no intervalo selecionado",
-      "spend": "Gastar"
+      "spend": "Gastar",
+      "ctrHint": "Taxa de cliques"
     },
     "ranges": {
       "last7": "Últimos 7 dias",

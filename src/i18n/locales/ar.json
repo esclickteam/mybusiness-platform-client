@@ -834,7 +834,8 @@
         "whatsapp": "واتساب",
         "subscriptions": "الاشتراكات والفوترة",
         "tasks": "المهام والفريق",
-        "email": "البريد"
+        "email": "البريد",
+        "marketing": "التسويق"
       },
       "palette": {
         "resultPrefix": "نتيجة · {{label}}",
@@ -1057,6 +1058,94 @@
           "title": "تذكير لطيف لعميل غير نشط",
           "reason": "تُرسل للعملاء دون نشاط أخير."
         }
+      },
+      "triggers": {
+        "new_lead": {
+          "label": "عميل محتمل جديد في CRM",
+          "description": "عند دخول عميل محتمل جديد إلى CRM"
+        },
+        "lead_status_changed": {
+          "label": "تغيّر حالة العميل المحتمل",
+          "description": "عند تحديث حالة عميل محتمل"
+        },
+        "form_submitted": {
+          "label": "تم إرسال نموذج",
+          "description": "عند إرسال نموذج من الموقع"
+        },
+        "birthday": {
+          "label": "عيد ميلاد",
+          "description": "مشغل سنوي في عيد ميلاد العميل أو العميل المحتمل"
+        },
+        "referral_conversion": {
+          "label": "تحويل إحالة",
+          "description": "عندما يكمل صديق تمت إحالته عملية تحويل"
+        },
+        "popup_conversion": {
+          "label": "تحويل نافذة منبثقة",
+          "description": "عندما تحقق نافذة الخروج المنبثقة تحويلًا"
+        },
+        "qr_scan": {
+          "label": "مسح رمز QR",
+          "description": "عند مسح رمز QR ديناميكي"
+        },
+        "client_created": {
+          "label": "عميل جديد في CRM",
+          "description": "عند إنشاء عميل جديد في CRM"
+        },
+        "client_inactive": {
+          "label": "عميل غير نشط",
+          "description": "عميل بلا نشاط لفترة محددة"
+        },
+        "appointment_created": {
+          "label": "تم حجز موعد",
+          "description": "عند حجز موعد في التقويم"
+        },
+        "appointment_cancelled": {
+          "label": "تم إلغاء موعد",
+          "description": "عند إلغاء موعد"
+        },
+        "appointment_reminder": {
+          "label": "تذكير بالموعد",
+          "description": "قبل وقت الموعد"
+        },
+        "order_created": {
+          "label": "تم إنشاء طلب",
+          "description": "عند إنشاء طلب في المتجر"
+        },
+        "store_order_paid": {
+          "label": "تم دفع طلب المتجر",
+          "description": "عند دفع طلب المتجر بنجاح"
+        },
+        "manual": {
+          "label": "تشغيل يدوي",
+          "description": "تشغيل الأتمتة يدويًا"
+        },
+        "scheduled": {
+          "label": "حسب جدول زمني",
+          "description": "تكرار كل بضع دقائق أو ساعات أو أيام أو أسابيع"
+        }
+      },
+      "triggerFields": {
+        "fromStatus": "من الحالة (اختياري)",
+        "toStatus": "إلى الحالة",
+        "inactiveDays": "أيام بلا نشاط",
+        "hoursBefore": "ساعات قبل الموعد",
+        "schedule": "إعدادات الجدول الزمني"
+      },
+      "leadStatuses": {
+        "new": "جديد",
+        "contacted": "تم التواصل",
+        "interested": "مهتم",
+        "converted": "أصبح عميلًا",
+        "lost": "مفقود",
+        "old": "قديم"
+      },
+      "hoursBeforeOptions": {
+        "1": "قبل ساعة",
+        "2": "قبل ساعتين",
+        "24": "قبل يوم",
+        "48": "قبل يومين",
+        "72": "قبل 3 أيام"
       }
     },
     "editor": {
@@ -1491,7 +1580,7 @@
       "backToAutomations": "العودة إلى الأتمتة",
       "started": "البدء",
       "duration": "المدة",
-      "trigger": "محفّז",
+      "trigger": "محفّز",
       "steps": "خطوات",
       "actions": "إجراءات",
       "openDetails": "فتح التفاصيل",
@@ -1564,8 +1653,8 @@
     "flow": {
       "billedAction": "⚡ إجراء واحد",
       "aiAction": "إجراء أتمتة",
-      "waCostTitle": "0.20 ₪ لكل رسالة واتساب",
-      "waCost": "💬 0.20 ₪"
+      "waCostTitle": "{{price}} لكل رسالة واتساب",
+      "waCost": "💬 {{price}}"
     },
     "emailFields": {
       "availableVars": "المتغيرات المتاحة",
@@ -4536,6 +4625,92 @@
       "disconnectBody": "ستتوقف Bizuply عن استيراد عملاء Google Ads المحتملين الجدد من هذا الحساب. لن تُحذف العملاء المحتملون الحاليون في CRM.",
       "cancel": "إلغاء",
       "disconnectConfirm": "قطع الاتصال"
+    },
+    "clientWork": {
+      "toast": {
+        "noteUpdated": "تم تحديث الملاحظة",
+        "noteAdded": "تمت إضافة الملاحظة",
+        "noteSaveError": "حدث خطأ أثناء حفظ الملاحظة",
+        "noteDeleted": "تم حذف الملاحظة",
+        "noteDeleteError": "حدث خطأ أثناء حذف الملاحظة",
+        "taskRequired": "يرجى تعبئة العنوان والتاريخ والوقت",
+        "taskInvalidDate": "التاريخ أو الوقت غير صالح",
+        "taskUpdated": "تم تحديث المهمة",
+        "taskAdded": "تمت إضافة المهمة",
+        "taskSaveError": "حدث خطأ أثناء حفظ المهمة",
+        "taskDeleted": "تم حذف المهمة",
+        "taskDeleteError": "حدث خطأ أثناء حذف المهمة"
+      },
+      "confirm": {
+        "deleteNote": "هل تريد حذف هذه الملاحظة؟",
+        "deleteTask": "هل تريد حذف هذه المهمة؟"
+      },
+      "status": {
+        "todo": "للتنفيذ",
+        "in_progress": "قيد التنفيذ",
+        "waiting": "قيد الانتظار",
+        "completed": "مكتملة",
+        "cancelled": "ملغاة"
+      },
+      "priority": {
+        "low": "منخفضة",
+        "normal": "عادية",
+        "high": "عالية",
+        "critical": "حرجة"
+      },
+      "metrics": {
+        "notes": "الملاحظات",
+        "openTasks": "المهام المفتوحة",
+        "completed": "المكتملة"
+      },
+      "overdue": "{{count}} مهام متأخرة تحتاج إلى متابعة.",
+      "notes": {
+        "badge": "الملاحظات",
+        "title": "ملاحظات العميل",
+        "subtitle": "احتفظ بالتفاصيل المهمة والتفضيلات والسجل والملاحظات الداخلية في مكان واحد.",
+        "loading": "جارٍ تحميل الملاحظات...",
+        "emptyTitle": "لا توجد ملاحظات بعد",
+        "emptyText": "احتفظ هنا بالتفاصيل المهمة عن هذا العميل.",
+        "edit": "تعديل الملاحظة",
+        "new": "ملاحظة جديدة",
+        "placeholder": "اكتب ملاحظة سريعة واضغط Enter...",
+        "cancelEdit": "إلغاء التعديل",
+        "saving": "جارٍ الحفظ...",
+        "update": "تحديث الملاحظة",
+        "save": "حفظ الملاحظة",
+        "noDate": "بدون تاريخ",
+        "delete": "حذف الملاحظة"
+      },
+      "tasks": {
+        "badge": "المهام",
+        "title": "مهام المتابعة",
+        "subtitle": "أنشئ مكالمات متابعة وتذكيرات ومهام تحضير ومتابعات للعملاء.",
+        "loading": "جارٍ تحميل المهام...",
+        "emptyTitle": "لا توجد مهام بعد",
+        "emptyText": "أنشئ مهام للمتابعة أو معاودة الاتصال أو التحضير للاجتماعات.",
+        "edit": "تعديل المهمة",
+        "new": "مهمة جديدة",
+        "required": "العنوان والتاريخ والوقت حقول مطلوبة.",
+        "cancelEdit": "إلغاء التعديل",
+        "titlePlaceholder": "ما الذي يجب القيام به؟",
+        "hideAdvanced": "إخفاء الخيارات المتقدمة",
+        "showAdvanced": "خيارات متقدمة",
+        "detailsPlaceholder": "تفاصيل إضافية",
+        "saving": "جارٍ الحفظ...",
+        "update": "تحديث المهمة",
+        "add": "إضافة مهمة",
+        "delete": "حذف المهمة",
+        "overdue": "متأخرة"
+      },
+      "reminder": {
+        "none": "بدون تذكير",
+        "m5": "قبل 5 دقائق",
+        "m15": "قبل 15 دقيقة",
+        "m30": "قبل 30 دقيقة",
+        "h1": "قبل ساعة",
+        "d1": "قبل يوم",
+        "minutesBefore": "قبل {{count}} دقيقة"
+      }
     }
   },
   "notifications": {
@@ -9175,7 +9350,8 @@
     },
     "details": {
       "badge": "ads_read  قراءة فقط",
-      "readOnlyHint": "تفاصيل الحملة للقراءة فقط - لا تعديل أو تغييرات في الميزانية."
+      "readOnlyHint": "تفاصيل الحملة للقراءة فقط - لا تعديل أو تغييرات في الميزانية.",
+      "viewLeadsInCrm": "عرض العملاء في CRM"
     },
     "actions": {
       "create": "إنشاء حملة جديدة",
@@ -9856,7 +10032,8 @@
       "budget": "الميزانية الشهرية",
       "budgetHint": "{{spent}} من {{total}} ({{percent}}%)",
       "spendHint": "إجمالي الإنفاق في النطاق المحدد",
-      "spend": "انفق"
+      "spend": "انفق",
+      "ctrHint": "نسبة النقر"
     },
     "ranges": {
       "last7": "آخر 7 أيام",
@@ -14483,7 +14660,7 @@
       "subject": "الموضوع",
       "subjectPlaceholder": "موضوع الرسالة",
       "body": "نص الرسالة",
-      "phone": "رقم الهاتף",
+      "phone": "رقم الهاتف",
       "phoneHint": "على الجوال يفتح الرقم مباشرة في الاتصال.",
       "address": "عنوان العمل",
       "addressPlaceholder": "شارع، مدينة، بلد",
@@ -14741,7 +14918,7 @@
         "label": "خريطة + تواصل"
       },
       "countdown": {
-        "label": "عد تنازלי",
+        "label": "عد تنازلي",
         "description": "مؤقت حي — أضفه من الإضافات"
       }
     },
@@ -15300,7 +15477,7 @@
       "slugHint": "أحرف إنجليزية صغيرة وأرقام وشرطات فقط. مثال: hadar-beauty",
       "savedAt": "حُفظ بنجاح في {{time}} · {{url}}",
       "clearConfirm": "حذف التصميم الحالي؟",
-      "templates": "قوالב",
+      "templates": "قوالب",
       "templatesHint": "اختاري هيكل موقع جاهز وابدئي التحرير",
       "addElements": "إضافة عناصر",
       "addElementsHint": "اسحبي العناصر أو انقري لإضافتها",
@@ -19027,7 +19204,7 @@
       "formHint": "املأ التفاصيل وسنعود إليك برد واضح.",
       "fullName": "الاسم الكامل",
       "namePlaceholder": "أدخل اسمك الكامل",
-      "phone": "الهاتף",
+      "phone": "الهاتف",
       "email": "البريد الإلكتروني",
       "emailPlaceholder": "أدخل عنوان بريدك",
       "message": "الرسالة",
@@ -19176,7 +19353,7 @@
       "adTitle": "حساب إعلانات ميتا",
       "adSubtitle": "إنفاق حملات فيسبوك / إنستغرام",
       "noAdAccount": "لم يُحدد حساب إعلانات ميتا لمساحة العمل هذه.",
-      "openAdSettings": "فتح إعدادات إعلانات ميتא",
+      "openAdSettings": "فتح إعدادات إعلانات ميتا",
       "adAccountFallback": "حساب إعلانات",
       "accountStatus": "حالة الحساب: {{status}}",
       "paymentSaved": "وسيلة دفع محفوظة",

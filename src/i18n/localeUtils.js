@@ -18,6 +18,7 @@ import {
   languageFromCountry,
   normalizeLanguage,
 } from "./languages";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 export {
   FALLBACK_LANGUAGE,
@@ -184,6 +185,8 @@ export function languageFromUrl() {
 }
 
 export function applyLanguageFromUrl() {
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) return demoLocale;
   const lang = languageFromUrl();
   if (!lang) return null;
   setSessionLanguageOverride(lang);

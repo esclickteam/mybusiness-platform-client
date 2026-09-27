@@ -1,5 +1,6 @@
 import i18n from "./i18n";
 import { getTextDirection } from "./localeUtils";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 let languageOverride: string | undefined;
 
@@ -13,7 +14,7 @@ export function getTemplateLanguageOverride(): string | undefined {
 }
 
 export function resolveTemplateLanguage(language?: string): string {
-  return language || languageOverride || i18n.language;
+  return readGuidedDemoLocaleLock() || language || languageOverride || i18n.language;
 }
 
 /** Direction for bundled template chrome. Follows dashboard/embed language, not saved site copy. */

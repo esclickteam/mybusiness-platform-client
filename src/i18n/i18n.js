@@ -23,10 +23,14 @@ import {
 } from "./localeUtils";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { SUPPORTED_LANGUAGES } from "./languages";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 const browserGeoDetector = {
   name: "browserGeo",
   lookup() {
+    const demoLocale = readGuidedDemoLocaleLock();
+    if (demoLocale) return demoLocale;
+
     if (
       typeof window !== "undefined" &&
       isBizuplyTravelHost(window.location.hostname)
@@ -92,19 +96,31 @@ i18n
   });
 
 i18n.on("languageChanged", (lng) => {
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale && lng !== demoLocale) {
+    // eslint-disable-next-line no-console
+    console.warn(`[guided-demo-i18n] blocked language change ${lng} → demo locale ${demoLocale}`);
+    void i18n.changeLanguage(demoLocale);
+    return;
+  }
   applyDocumentLocale(lng);
 });
 
-applyDocumentLocale(i18n.language);
+{
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale && i18n.language !== demoLocale) void i18n.changeLanguage(demoLocale);
+  else applyDocumentLocale(i18n.language);
+}
 
 if (
   typeof window !== "undefined" &&
   import.meta.env.MODE !== "test" &&
   !hasManualLanguageChoice() &&
+  !readGuidedDemoLocaleLock() &&
   !isBizuplyTravelHost(window.location.hostname)
 ) {
   void fetchGeoLanguage().then((geoLanguage) => {
-    if (!geoLanguage || hasManualLanguageChoice()) return;
+    if (!geoLanguage || hasManualLanguageChoice() || readGuidedDemoLocaleLock()) return;
     if (getManualLanguageChoice()) return;
     if (i18n.language === geoLanguage) return;
     void i18n.changeLanguage(geoLanguage);

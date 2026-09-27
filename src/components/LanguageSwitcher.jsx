@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
 import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
 import { changeAppLanguage } from "../i18n/persistLanguage";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 export default function LanguageSwitcher({
   compact = true,
@@ -46,6 +47,8 @@ export default function LanguageSwitcher({
     align === "start"
       ? "inset-inline-start-0"
       : "inset-inline-end-0";
+
+  if (readGuidedDemoLocaleLock()) return null;
 
   return (
     <div ref={wrapperRef} className={`relative ${className}`} dir={dir}>

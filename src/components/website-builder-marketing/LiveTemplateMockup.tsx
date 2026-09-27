@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { localizeBuiltInTemplateSeed } from "../../i18n/localizeBuiltInTemplateSeed";
+import { withGuidedDemoSiteContent } from "../../guidedDemo/demoSiteContent";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { useStudioTemplateRenderer } from "../site-builder/studio/data/templates/useStudioTemplateRenderer";
 
@@ -76,9 +77,12 @@ export default function LiveTemplateMockup({
   const Component = renderer?.Component as
     | React.ComponentType<Record<string, unknown>>
     | undefined;
-  const data = localizeBuiltInTemplateSeed(
-    (renderer?.defaultData || {}) as Record<string, unknown>,
-    i18n.language,
+  const data = withGuidedDemoSiteContent(
+    renderer?.key,
+    localizeBuiltInTemplateSeed(
+      (renderer?.defaultData || {}) as Record<string, unknown>,
+      i18n.language,
+    ),
   );
   const pageId = renderer?.pages?.[0]?.id || "home";
   const pageSlug = renderer?.pages?.[0]?.slug || "/";

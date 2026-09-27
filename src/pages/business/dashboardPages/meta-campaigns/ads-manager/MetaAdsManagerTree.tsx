@@ -47,6 +47,7 @@ export default function MetaAdsManagerTree({
       <div key={node.id} className="relative">
         <button
           type="button"
+          data-demo-target={`meta-tree-${node.level}`}
           onClick={() => onSelect(node.level, node.id)}
           className={[
             "group flex w-full items-center gap-2 rounded-md py-1.5 pr-1 text-left transition",

@@ -68,6 +68,7 @@ import {
   resolveAdAccountId,
   resolveMetaAccountStatus,
   resolveMetaDateRangeQuery,
+  resolveCampaignCurrency,
   SEGMENT_OPTIONS,
   statusTone,
   todayIso,
@@ -253,7 +254,7 @@ export default function MetaCampaignsOverviewTab() {
   const [pendingStatusCampaign, setPendingStatusCampaign] =
     useState<MetaCampaign | null>(null);
 
-  const currency = data?.connection?.selectedAdAccount?.currency || "ILS";
+  const currency = resolveCampaignCurrency(data?.connection?.selectedAdAccount?.currency);
   const selectedAccount = data?.connection?.selectedAdAccount || null;
   const adAccounts = data?.connection?.adAccounts || [];
   const selectedAccountId = selectedAccount?.id || "";
@@ -341,6 +342,7 @@ export default function MetaCampaignsOverviewTab() {
   }, [queryCampaignId, data?.campaigns]);
 
   const kpis = data?.kpis;
+  const isDemoOverview = Boolean(data?.demoData || data?.connection?.isGuidedDemo);
   const hasInsightSignal = Boolean(
     (kpis?.spend || 0) > 0 ||
       (kpis?.leads || 0) > 0 ||
@@ -609,7 +611,7 @@ export default function MetaCampaignsOverviewTab() {
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" data-demo-target="meta-overview">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-demo-target="meta-overview">
         <KpiCard
           label={t("metaCampaigns.kpis.spend")}
           value={formatMetricOrDash(kpis?.spend, (n) =>
@@ -621,7 +623,7 @@ export default function MetaCampaignsOverviewTab() {
           label={t("metaCampaigns.kpis.leads")}
           demoTarget="meta-leads-kpi"
           href={
-            data?.demoData || data?.connection?.isGuidedDemo
+            isDemoOverview
               ? `/business/${urlBusinessId || businessId}/dashboard/crm/leads?lead=sarah`
               : undefined
           }
@@ -637,6 +639,13 @@ export default function MetaCampaignsOverviewTab() {
             (n) => formatCurrency(n, currency)
           )}
           hint={t("metaCampaigns.kpis.cplHint")}
+        />
+        <KpiCard
+          label={t("metaCampaigns.table.ctr")}
+          value={formatMetricOrDash(kpis?.ctr, (n) => formatPercent(n), {
+            treatZeroAsEmpty: true,
+          })}
+          hint={t("metaCampaigns.kpis.ctrHint")}
         />
         <KpiCard
           label={t("metaCampaigns.kpis.roas")}
@@ -1224,7 +1233,7 @@ export default function MetaCampaignsOverviewTab() {
       {detailsCampaign ? (
         <div
           data-testid="campaign-details-drawer"
-          className="fixed inset-0 z-[2147483010] flex justify-end bg-slate-900/40 p-0 sm:p-4"
+          className="fixed inset-0 z-[2147482990] flex justify-end bg-slate-900/40 p-0 sm:p-4"
           onClick={() => setDetailsCampaign(null)}
         >
           <aside
@@ -1252,6 +1261,16 @@ export default function MetaCampaignsOverviewTab() {
               </button>
             </div>
             <dl className="flex-1 overflow-y-auto px-4 py-2">
+              {isDemoOverview ? (
+                <Link
+                  to={`/business/${urlBusinessId || businessId}/dashboard/crm/leads?lead=sarah`}
+                  data-demo-target="meta-drawer-leads"
+                  className="mb-3 flex items-center justify-between rounded-xl border border-violet-100 bg-violet-50 px-3 py-2.5 text-sm font-black text-violet-800 hover:bg-violet-100"
+                >
+                  <span>{t("metaCampaigns.details.viewLeadsInCrm")}</span>
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              ) : null}
               {businessId || urlBusinessId ? (
                 <div className="mb-3">
                   <MetaCampaignHealthPanel
@@ -1363,7 +1382,10 @@ export default function MetaCampaignsOverviewTab() {
                     <div key={adSet.id} className="rounded-xl border border-slate-100 p-3">
                       <p className="text-sm font-black text-slate-900">{adSet.name}</p>
                       <p className="mt-1 text-xs font-semibold text-slate-500">
-                        {adSet.status} · {adSet.audience}
+                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(adSet.status || "")}`, {
+                          defaultValue: adSet.status,
+                        })}
+                        {adSet.audience ? ` · ${adSet.audience}` : ""}
                       </p>
                       {(adSet.ads || []).map((ad) => (
                         <div key={ad.id} className="mt-2 flex gap-2">

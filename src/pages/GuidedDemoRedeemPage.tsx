@@ -54,7 +54,7 @@ export default function GuidedDemoRedeemPage() {
         }
         const locale = normalizeLanguage(data.locale || data.language, { fallback: null });
         if (locale) {
-          applyUiLanguage(locale, { persist: true });
+          applyUiLanguage(locale);
         }
         setPreview(data);
         setState("ready");

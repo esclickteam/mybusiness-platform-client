@@ -16,6 +16,7 @@ import {
 import API from "@api";
 import { BizuplyLoader } from "../ui/BizuplyLoader";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -68,7 +69,6 @@ type ClientTasksAndNotesProps = {
 };
 
 type LabelConfig = {
-  text: string;
   className: string;
 };
 
@@ -84,50 +84,44 @@ const emptyTask: NewTaskState = {
 
 const statusLabels: Record<TaskStatus, LabelConfig> = {
   todo: {
-    text: "To Do",
     className: "bg-slate-50 text-slate-700 border-slate-200",
   },
   in_progress: {
-    text: "In Progress",
     className: "bg-violet-50 text-violet-700 border-violet-100",
   },
   waiting: {
-    text: "Waiting",
     className: "bg-amber-50 text-amber-700 border-amber-100",
   },
   completed: {
-    text: "Completed",
     className: "bg-emerald-50 text-emerald-700 border-emerald-100",
   },
   cancelled: {
-    text: "Cancelled",
     className: "bg-rose-50 text-rose-700 border-rose-100",
   },
 };
 
 const priorityLabels: Record<TaskPriority, LabelConfig> = {
   low: {
-    text: "Low",
     className: "bg-slate-50 text-slate-600 border-slate-200",
   },
   normal: {
-    text: "Normal",
     className: "bg-blue-50 text-blue-700 border-blue-100",
   },
   high: {
-    text: "High",
     className: "bg-amber-50 text-amber-700 border-amber-100",
   },
   critical: {
-    text: "Critical",
     className: "bg-rose-50 text-rose-700 border-rose-100",
   },
 };
+
+const K = "crm.clientWork";
 
 export default function ClientTasksAndNotes({
   clientId,
   businessId,
 }: ClientTasksAndNotesProps) {
+  const { t } = useTranslation();
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
 
@@ -240,7 +234,7 @@ export default function ClientTasksAndNotes({
         );
 
         setEditNoteId(null);
-        showToast("Note updated");
+        showToast(t(`${K}.toast.noteUpdated`));
       } else {
         const res = await API.post("/crm-extras/notes", {
           clientId,
@@ -249,13 +243,13 @@ export default function ClientTasksAndNotes({
         });
 
         setNotes((prev) => [res.data, ...prev]);
-        showToast("Note added");
+        showToast(t(`${K}.toast.noteAdded`));
       }
 
       setNewNote("");
     } catch (err) {
       console.error("Save note error:", err);
-      showToast("Error saving note");
+      showToast(t(`${K}.toast.noteSaveError`));
     } finally {
       setSavingNote(false);
     }
@@ -272,21 +266,21 @@ export default function ClientTasksAndNotes({
   };
 
   const handleDeleteNote = async (noteId: string) => {
-    if (!window.confirm("Delete this note?")) return;
+    if (!window.confirm(t(`${K}.confirm.deleteNote`))) return;
 
     try {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((note) => note._id !== noteId));
-      showToast("Note deleted");
+      showToast(t(`${K}.toast.noteDeleted`));
     } catch (err) {
       console.error("Delete note error:", err);
-      showToast("Error deleting note");
+      showToast(t(`${K}.toast.noteDeleteError`));
     }
   };
 
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
-      showToast("Please fill title, date and time");
+      showToast(t(`${K}.toast.taskRequired`));
       return;
     }
 
@@ -299,7 +293,7 @@ export default function ClientTasksAndNotes({
     );
 
     if (!parsed.isValid()) {
-      showToast("Invalid date or time");
+      showToast(t(`${K}.toast.taskInvalidDate`));
       return;
     }
 
@@ -323,7 +317,7 @@ export default function ClientTasksAndNotes({
         );
 
         setEditTaskId(null);
-        showToast("Task updated");
+        showToast(t(`${K}.toast.taskUpdated`));
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -337,14 +331,14 @@ export default function ClientTasksAndNotes({
         });
 
         setTasks((prev) => [res.data, ...prev]);
-        showToast("Task added");
+        showToast(t(`${K}.toast.taskAdded`));
       }
 
       setNewTask(emptyTask);
       setShowAdvanced(false);
     } catch (err) {
       console.error("Save task error:", err);
-      showToast("Error saving task");
+      showToast(t(`${K}.toast.taskSaveError`));
     } finally {
       setSavingTask(false);
     }
@@ -378,15 +372,15 @@ export default function ClientTasksAndNotes({
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    if (!window.confirm("Delete this task?")) return;
+    if (!window.confirm(t(`${K}.confirm.deleteTask`))) return;
 
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((task) => task._id !== taskId));
-      showToast("Task deleted");
+      showToast(t(`${K}.toast.taskDeleted`));
     } catch (err) {
       console.error("Delete task error:", err);
-      showToast("Error deleting task");
+      showToast(t(`${K}.toast.taskDeleteError`));
     }
   };
 
@@ -405,19 +399,19 @@ export default function ClientTasksAndNotes({
 
       <section className="grid gap-3 md:grid-cols-3">
         <MiniMetric
-          label="Notes"
+          label={t(`${K}.metrics.notes`)}
           value={notes.length}
           icon={StickyNote}
           tone="violet"
         />
         <MiniMetric
-          label="Open tasks"
+          label={t(`${K}.metrics.openTasks`)}
           value={openTasks}
           icon={Clock3}
           tone="amber"
         />
         <MiniMetric
-          label="Completed"
+          label={t(`${K}.metrics.completed`)}
           value={completedTasks}
           icon={CheckCircle2}
           tone="emerald"
@@ -426,7 +420,7 @@ export default function ClientTasksAndNotes({
 
       {overdueTasks > 0 && (
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-4 text-sm font-bold text-rose-700">
-          {overdueTasks} overdue task{overdueTasks > 1 ? "s" : ""} need attention.
+          {t(`${K}.overdue`, { count: overdueTasks })}
         </div>
       )}
 
@@ -436,27 +430,26 @@ export default function ClientTasksAndNotes({
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-violet-700">
                 <StickyNote className="h-4 w-4" />
-                Notes
+                {t(`${K}.notes.badge`)}
               </div>
 
               <h3 className="mt-3 text-2xl font-black text-slate-800">
-                Client notes
+                {t(`${K}.notes.title`)}
               </h3>
 
               <p className="mt-1 text-sm leading-6 text-slate-500">
-                Keep important details, preferences, history and internal notes
-                in one place.
+                {t(`${K}.notes.subtitle`)}
               </p>
             </div>
           </div>
 
           {loadingNotes ? (
-            <LoadingBox text="Loading notes..." />
+            <LoadingBox text={t(`${K}.notes.loading`)} />
           ) : notes.length === 0 ? (
             <EmptyBox
               icon={FileText}
-              title="No notes yet"
-              text="Keep important details about this client here."
+              title={t(`${K}.notes.emptyTitle`)}
+              text={t(`${K}.notes.emptyText`)}
             />
           ) : (
             <div className="space-y-3">
@@ -474,11 +467,11 @@ export default function ClientTasksAndNotes({
 
           <div className="mt-5 rounded-[1.5rem] border border-slate-100 bg-slate-50 p-4">
             <label className="mb-2 block text-sm font-black text-slate-800">
-              {editNoteId ? "Edit note" : "New note"}
+              {editNoteId ? t(`${K}.notes.edit`) : t(`${K}.notes.new`)}
             </label>
 
             <textarea
-              placeholder="Write a quick note and press Enter..."
+              placeholder={t(`${K}.notes.placeholder`)}
               value={newNote}
               onChange={(event) => setNewNote(event.target.value)}
               onKeyDown={(event) => {
@@ -499,7 +492,7 @@ export default function ClientTasksAndNotes({
                   className="crm-secondary-btn"
                   disabled={savingNote}
                 >
-                  Cancel edit
+                  {t(`${K}.notes.cancelEdit`)}
                 </button>
               )}
 
@@ -510,10 +503,10 @@ export default function ClientTasksAndNotes({
                 className="crm-primary-btn"
               >
                 {savingNote
-                  ? "Saving..."
+                  ? t(`${K}.notes.saving`)
                   : editNoteId
-                    ? "Update Note"
-                    : "Save Note"}
+                    ? t(`${K}.notes.update`)
+                    : t(`${K}.notes.save`)}
               </button>
             </div>
           </div>
@@ -523,26 +516,25 @@ export default function ClientTasksAndNotes({
           <div className="mb-5">
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-emerald-700">
               <CheckCircle2 className="h-4 w-4" />
-              Tasks
+              {t(`${K}.tasks.badge`)}
             </div>
 
             <h3 className="mt-3 text-2xl font-black text-slate-800">
-              Follow-up tasks
+              {t(`${K}.tasks.title`)}
             </h3>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              Create callbacks, reminders, preparation tasks and client
-              follow-ups.
+              {t(`${K}.tasks.subtitle`)}
             </p>
           </div>
 
           {loadingTasks ? (
-            <LoadingBox text="Loading tasks..." />
+            <LoadingBox text={t(`${K}.tasks.loading`)} />
           ) : sortedTasks.length === 0 ? (
             <EmptyBox
               icon={CheckCircle2}
-              title="No tasks yet"
-              text="Create tasks to follow up, call back or prepare meetings."
+              title={t(`${K}.tasks.emptyTitle`)}
+              text={t(`${K}.tasks.emptyText`)}
             />
           ) : (
             <div className="space-y-3">
@@ -562,10 +554,10 @@ export default function ClientTasksAndNotes({
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-black text-slate-800">
-                  {editTaskId ? "Edit task" : "New task"}
+                  {editTaskId ? t(`${K}.tasks.edit`) : t(`${K}.tasks.new`)}
                 </p>
                 <p className="text-xs font-semibold text-slate-500">
-                  Title, date and time are required.
+                  {t(`${K}.tasks.required`)}
                 </p>
               </div>
 
@@ -575,14 +567,14 @@ export default function ClientTasksAndNotes({
                   onClick={handleCancelEditTask}
                   className="rounded-xl bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm hover:bg-slate-100"
                 >
-                  Cancel edit
+                  {t(`${K}.tasks.cancelEdit`)}
                 </button>
               )}
             </div>
 
             <div className="grid gap-3">
               <input
-                placeholder="What needs to be done?"
+                placeholder={t(`${K}.tasks.titlePlaceholder`)}
                 value={newTask.title}
                 onChange={(event) =>
                   setNewTask((prev) => ({
@@ -630,13 +622,13 @@ export default function ClientTasksAndNotes({
                     showAdvanced ? "rotate-180" : "",
                   ].join(" ")}
                 />
-                {showAdvanced ? "Hide advanced options" : "Advanced options"}
+                {showAdvanced ? t(`${K}.tasks.hideAdvanced`) : t(`${K}.tasks.showAdvanced`)}
               </button>
 
               {showAdvanced && (
                 <div className="grid gap-3">
                   <textarea
-                    placeholder="Additional details"
+                    placeholder={t(`${K}.tasks.detailsPlaceholder`)}
                     value={newTask.description}
                     onChange={(event) =>
                       setNewTask((prev) => ({
@@ -662,7 +654,7 @@ export default function ClientTasksAndNotes({
                       {(Object.keys(statusLabels) as TaskStatus[]).map(
                         (key) => (
                           <option key={key} value={key}>
-                            {statusLabels[key].text}
+                            {t(`${K}.status.${key}`)}
                           </option>
                         )
                       )}
@@ -681,7 +673,7 @@ export default function ClientTasksAndNotes({
                       {(Object.keys(priorityLabels) as TaskPriority[]).map(
                         (key) => (
                           <option key={key} value={key}>
-                            {priorityLabels[key].text}
+                            {t(`${K}.priority.${key}`)}
                           </option>
                         )
                       )}
@@ -698,12 +690,12 @@ export default function ClientTasksAndNotes({
                     }
                     className="select-base"
                   >
-                    <option value={0}>No reminder</option>
-                    <option value={5}>5 minutes before</option>
-                    <option value={15}>15 minutes before</option>
-                    <option value={30}>30 minutes before</option>
-                    <option value={60}>1 hour before</option>
-                    <option value={1440}>1 day before</option>
+                    <option value={0}>{t(`${K}.reminder.none`)}</option>
+                    <option value={5}>{t(`${K}.reminder.m5`)}</option>
+                    <option value={15}>{t(`${K}.reminder.m15`)}</option>
+                    <option value={30}>{t(`${K}.reminder.m30`)}</option>
+                    <option value={60}>{t(`${K}.reminder.h1`)}</option>
+                    <option value={1440}>{t(`${K}.reminder.d1`)}</option>
                   </select>
                 </div>
               )}
@@ -716,10 +708,10 @@ export default function ClientTasksAndNotes({
               >
                 <Plus className="h-4 w-4" />
                 {savingTask
-                  ? "Saving..."
+                  ? t(`${K}.tasks.saving`)
                   : editTaskId
-                    ? "Update Task"
-                    : "Add Task"}
+                    ? t(`${K}.tasks.update`)
+                    : t(`${K}.tasks.add`)}
               </button>
             </div>
           </div>
@@ -740,6 +732,7 @@ function NoteCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const createdAt = note.createdAt
     ? dayjs(note.createdAt).tz(timezoneName)
     : null;
@@ -754,13 +747,13 @@ function NoteCard({
         <p className="text-xs font-bold text-slate-400">
           {createdAt?.isValid()
             ? createdAt.format("DD/MM/YYYY HH:mm")
-            : "No date"}
+            : t(`${K}.notes.noDate`)}
         </p>
 
         <div className="flex gap-2">
-          <IconButton title="Edit note" onClick={onEdit} icon={Edit3} />
+          <IconButton title={t(`${K}.notes.edit`)} onClick={onEdit} icon={Edit3} />
           <IconButton
-            title="Delete note"
+            title={t(`${K}.notes.delete`)}
             onClick={onDelete}
             icon={Trash2}
             danger
@@ -782,6 +775,7 @@ function TaskCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const dueDate = task.dueDate ? dayjs(task.dueDate).tz(timezoneName) : null;
   const isOverdue =
     dueDate?.isValid() &&
@@ -815,9 +809,9 @@ function TaskCard({
         </div>
 
         <div className="flex gap-2">
-          <IconButton title="Edit task" onClick={onEdit} icon={Edit3} />
+          <IconButton title={t(`${K}.tasks.edit`)} onClick={onEdit} icon={Edit3} />
           <IconButton
-            title="Delete task"
+            title={t(`${K}.tasks.delete`)}
             onClick={onDelete}
             icon={Trash2}
             danger
@@ -836,8 +830,8 @@ function TaskCard({
 
         <TaskMeta icon={Bell}>
           {task.reminderMinutes && task.reminderMinutes > 0
-            ? `${task.reminderMinutes} min before`
-            : "No reminder"}
+            ? t(`${K}.reminder.minutesBefore`, { count: task.reminderMinutes })
+            : t(`${K}.reminder.none`)}
         </TaskMeta>
       </div>
 
@@ -846,20 +840,20 @@ function TaskCard({
           className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-black ${status.className}`}
         >
           <CheckCircle2 className="h-3.5 w-3.5" />
-          {status.text}
+          {t(`${K}.status.${task.status in statusLabels ? task.status : "todo"}`)}
         </span>
 
         <span
           className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-black ${priority.className}`}
         >
           <Flag className="h-3.5 w-3.5" />
-          {priority.text}
+          {t(`${K}.priority.${task.priority in priorityLabels ? task.priority : "normal"}`)}
         </span>
 
         {isOverdue && (
           <span className="inline-flex items-center gap-1 rounded-full border border-rose-100 bg-white px-3 py-1.5 text-xs font-black text-rose-700">
             <XCircle className="h-3.5 w-3.5" />
-            Overdue
+            {t(`${K}.tasks.overdue`)}
           </span>
         )}
       </div>

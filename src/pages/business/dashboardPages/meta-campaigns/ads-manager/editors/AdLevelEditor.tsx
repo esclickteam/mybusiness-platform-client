@@ -449,28 +449,30 @@ export default function AdLevelEditor({
           )}
         </MetaField>
 
-        <MetaField label={c("primaryText")}>
-          <textarea
-            className={`${metaInputClass} h-24 resize-y py-2`}
-            value={ad.primaryText}
-            onChange={(e) => onChange({ primaryText: e.target.value })}
-          />
-        </MetaField>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <MetaField label={c("headline")}>
-            <input
-              className={metaInputClass}
-              value={ad.headline}
-              onChange={(e) => onChange({ headline: e.target.value })}
+        <div className="space-y-4" data-demo-target="meta-creative">
+          <MetaField label={c("primaryText")}>
+            <textarea
+              className={`${metaInputClass} h-24 resize-y py-2`}
+              value={ad.primaryText}
+              onChange={(e) => onChange({ primaryText: e.target.value })}
             />
           </MetaField>
-          <MetaField label={c("description")}>
-            <input
-              className={metaInputClass}
-              value={ad.description}
-              onChange={(e) => onChange({ description: e.target.value })}
-            />
-          </MetaField>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MetaField label={c("headline")}>
+              <input
+                className={metaInputClass}
+                value={ad.headline}
+                onChange={(e) => onChange({ headline: e.target.value })}
+              />
+            </MetaField>
+            <MetaField label={c("description")}>
+              <input
+                className={metaInputClass}
+                value={ad.description}
+                onChange={(e) => onChange({ description: e.target.value })}
+              />
+            </MetaField>
+          </div>
         </div>
         <div className="relative" ref={ctaRef}>
           <p className="mb-1.5 flex items-center gap-1 text-[13px] font-semibold text-[#65676B]">

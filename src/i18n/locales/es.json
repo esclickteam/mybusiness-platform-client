@@ -834,7 +834,8 @@
         "whatsapp": "WhatsApp",
         "subscriptions": "Suscripciones y facturación",
         "tasks": "Tareas y equipo",
-        "email": "Correo"
+        "email": "Correo",
+        "marketing": "Marketing"
       },
       "palette": {
         "resultPrefix": "Resultado · {{label}}",
@@ -1057,6 +1058,94 @@
           "title": "Recordatorio para un cliente inactivo",
           "reason": "Se envía a clientes sin actividad reciente."
         }
+      },
+      "triggers": {
+        "new_lead": {
+          "label": "Nuevo lead en el CRM",
+          "description": "Cuando entra un lead nuevo al CRM"
+        },
+        "lead_status_changed": {
+          "label": "Cambio de estado del lead",
+          "description": "Cuando se actualiza el estado de un lead"
+        },
+        "form_submitted": {
+          "label": "Formulario enviado",
+          "description": "Cuando se envía un formulario del sitio"
+        },
+        "birthday": {
+          "label": "Cumpleaños",
+          "description": "Disparador anual en el cumpleaños de un cliente o lead"
+        },
+        "referral_conversion": {
+          "label": "Referido convertido",
+          "description": "Cuando un amigo referido completa una conversión"
+        },
+        "popup_conversion": {
+          "label": "Conversión de popup",
+          "description": "Cuando un popup de salida convierte"
+        },
+        "qr_scan": {
+          "label": "Escaneo de QR",
+          "description": "Cuando se escanea un QR dinámico"
+        },
+        "client_created": {
+          "label": "Nuevo cliente en el CRM",
+          "description": "Cuando se crea un cliente nuevo en el CRM"
+        },
+        "client_inactive": {
+          "label": "Cliente inactivo",
+          "description": "Un cliente sin actividad durante un período definido"
+        },
+        "appointment_created": {
+          "label": "Cita agendada",
+          "description": "Cuando se agenda una cita en el calendario"
+        },
+        "appointment_cancelled": {
+          "label": "Cita cancelada",
+          "description": "Cuando se cancela una cita"
+        },
+        "appointment_reminder": {
+          "label": "Recordatorio de cita",
+          "description": "Antes de la hora de la cita"
+        },
+        "order_created": {
+          "label": "Pedido creado",
+          "description": "Cuando se crea un pedido en la tienda"
+        },
+        "store_order_paid": {
+          "label": "Pedido de tienda pagado",
+          "description": "Cuando un pedido de la tienda se paga correctamente"
+        },
+        "manual": {
+          "label": "Ejecución manual",
+          "description": "Ejecutar la automatización manualmente"
+        },
+        "scheduled": {
+          "label": "Programado",
+          "description": "Se repite cada ciertos minutos, horas, días o semanas"
+        }
+      },
+      "triggerFields": {
+        "fromStatus": "Desde el estado (opcional)",
+        "toStatus": "Al estado",
+        "inactiveDays": "Días sin actividad",
+        "hoursBefore": "Horas antes de la cita",
+        "schedule": "Configuración de la programación"
+      },
+      "leadStatuses": {
+        "new": "Nuevo",
+        "contacted": "Contactado",
+        "interested": "Interesado",
+        "converted": "Se convirtió en cliente",
+        "lost": "Perdido",
+        "old": "Antiguo"
+      },
+      "hoursBeforeOptions": {
+        "1": "1 hora antes",
+        "2": "2 horas antes",
+        "24": "1 día antes",
+        "48": "2 días antes",
+        "72": "3 días antes"
       }
     },
     "editor": {
@@ -1564,8 +1653,8 @@
     "flow": {
       "billedAction": "⚡ 1 acción",
       "aiAction": "Acción de automatización",
-      "waCostTitle": "₪0.20 por mensaje de WhatsApp",
-      "waCost": "💬 ₪0.20"
+      "waCostTitle": "{{price}} por mensaje de WhatsApp",
+      "waCost": "💬 {{price}}"
     },
     "emailFields": {
       "availableVars": "Variables disponibles",
@@ -4536,6 +4625,92 @@
       "disconnectBody": "Bizuply dejará de importar nuevos leads de Google Ads de esta cuenta. Los leads existentes del CRM no se eliminarán.",
       "cancel": "Cancelar",
       "disconnectConfirm": "Desconectar"
+    },
+    "clientWork": {
+      "toast": {
+        "noteUpdated": "Nota actualizada",
+        "noteAdded": "Nota agregada",
+        "noteSaveError": "Error al guardar la nota",
+        "noteDeleted": "Nota eliminada",
+        "noteDeleteError": "Error al eliminar la nota",
+        "taskRequired": "Completa el título, la fecha y la hora",
+        "taskInvalidDate": "Fecha u hora no válida",
+        "taskUpdated": "Tarea actualizada",
+        "taskAdded": "Tarea agregada",
+        "taskSaveError": "Error al guardar la tarea",
+        "taskDeleted": "Tarea eliminada",
+        "taskDeleteError": "Error al eliminar la tarea"
+      },
+      "confirm": {
+        "deleteNote": "¿Eliminar esta nota?",
+        "deleteTask": "¿Eliminar esta tarea?"
+      },
+      "status": {
+        "todo": "Por hacer",
+        "in_progress": "En curso",
+        "waiting": "En espera",
+        "completed": "Completada",
+        "cancelled": "Cancelada"
+      },
+      "priority": {
+        "low": "Baja",
+        "normal": "Normal",
+        "high": "Alta",
+        "critical": "Crítica"
+      },
+      "metrics": {
+        "notes": "Notas",
+        "openTasks": "Tareas abiertas",
+        "completed": "Completadas"
+      },
+      "overdue": "{{count}} tareas vencidas requieren atención.",
+      "notes": {
+        "badge": "Notas",
+        "title": "Notas del cliente",
+        "subtitle": "Guarda detalles importantes, preferencias, historial y notas internas en un solo lugar.",
+        "loading": "Cargando notas...",
+        "emptyTitle": "Aún no hay notas",
+        "emptyText": "Guarda aquí los detalles importantes de este cliente.",
+        "edit": "Editar nota",
+        "new": "Nueva nota",
+        "placeholder": "Escribe una nota rápida y pulsa Enter...",
+        "cancelEdit": "Cancelar edición",
+        "saving": "Guardando...",
+        "update": "Actualizar nota",
+        "save": "Guardar nota",
+        "noDate": "Sin fecha",
+        "delete": "Eliminar nota"
+      },
+      "tasks": {
+        "badge": "Tareas",
+        "title": "Tareas de seguimiento",
+        "subtitle": "Crea llamadas de seguimiento, recordatorios, tareas de preparación y seguimientos de clientes.",
+        "loading": "Cargando tareas...",
+        "emptyTitle": "Aún no hay tareas",
+        "emptyText": "Crea tareas para hacer seguimiento, devolver llamadas o preparar reuniones.",
+        "edit": "Editar tarea",
+        "new": "Nueva tarea",
+        "required": "El título, la fecha y la hora son obligatorios.",
+        "cancelEdit": "Cancelar edición",
+        "titlePlaceholder": "¿Qué hay que hacer?",
+        "hideAdvanced": "Ocultar opciones avanzadas",
+        "showAdvanced": "Opciones avanzadas",
+        "detailsPlaceholder": "Detalles adicionales",
+        "saving": "Guardando...",
+        "update": "Actualizar tarea",
+        "add": "Agregar tarea",
+        "delete": "Eliminar tarea",
+        "overdue": "Vencida"
+      },
+      "reminder": {
+        "none": "Sin recordatorio",
+        "m5": "5 minutos antes",
+        "m15": "15 minutos antes",
+        "m30": "30 minutos antes",
+        "h1": "1 hora antes",
+        "d1": "1 día antes",
+        "minutesBefore": "{{count}} min antes"
+      }
     }
   },
   "notifications": {
@@ -9175,7 +9350,8 @@
     },
     "details": {
       "badge": "ads_read · Solo lectura",
-      "readOnlyHint": "Los detalles de la campaña son de solo lectura, sin cambios de edición ni de presupuesto."
+      "readOnlyHint": "Los detalles de la campaña son de solo lectura, sin cambios de edición ni de presupuesto.",
+      "viewLeadsInCrm": "Ver leads en el CRM"
     },
     "actions": {
       "create": "Crear nueva campaña",
@@ -9856,7 +10032,8 @@
       "budget": "Presupuesto mensual",
       "budgetHint": "{{spent}} de {{total}} ({{percent}}%)",
       "spendHint": "Gasto total en el rango seleccionado",
-      "spend": "Gaste"
+      "spend": "Gaste",
+      "ctrHint": "Porcentaje de clics"
     },
     "ranges": {
       "last7": "Últimos 7 días",

@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useLocaleDir } from "../../../../../hooks/useLocaleDir";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import type { BuyingType, CampaignObjective } from "./adsManagerTypes";
 import { metaBtnPrimary, metaBtnSecondary, metaSelectClass } from "./metaAdsUi";
 
@@ -53,7 +54,9 @@ export default function CreateCampaignObjectiveModal({
   const dir = useLocaleDir();
   const [tab, setTab] = useState<"campaign" | "adset">("campaign");
   const [buyingType, setBuyingType] = useState<BuyingType>("auction");
-  const [objective, setObjective] = useState<CampaignObjective | "">("");
+  const [objective, setObjective] = useState<CampaignObjective | "">(() =>
+    isGuidedDemoActive() ? "OUTCOME_LEADS" : ""
+  );
   const [hovered, setHovered] = useState<CampaignObjective | "">("");
 
   if (!open) return null;
@@ -158,7 +161,7 @@ export default function CreateCampaignObjectiveModal({
                 <h3 className="mt-6 text-[15px] font-bold text-[#050505]">
                   {t("metaCampaigns.adsManager.chooseObjective")}
                 </h3>
-                <div className="mt-3 space-y-1">
+                <div className="mt-3 space-y-1" data-demo-target="meta-objective-list">
                   {OBJECTIVE_IDS.map((id) => {
                     const Icon = OBJECTIVE_ICONS[id];
                     const selected = objective === id;
@@ -232,6 +235,7 @@ export default function CreateCampaignObjectiveModal({
                 <button
                   type="button"
                   className={metaBtnPrimary}
+                  data-demo-target="meta-objective-continue"
                   disabled={!objective}
                   onClick={() => {
                     if (!objective) return;

@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer
 } from "recharts";
+import { formatCrmMoney } from "../../utils/crmCurrency";
 
 const COLORS = ["#6a5acd", "#ffa07a", "#90ee90", "#f7c6ff"];
 
@@ -58,7 +59,7 @@ const PieChartComponent = ({ data }) => {
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => value.toLocaleString('he-IL', { style: 'currency', currency: 'ILS' })} />
+          <Tooltip formatter={(value) => formatCrmMoney(value)} />
           <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>

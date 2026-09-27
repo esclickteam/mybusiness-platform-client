@@ -9,6 +9,7 @@ import type {
   AiCampaignSessionResponse,
   AiUnresolvedLocation,
 } from "../../../../api/metaAiCampaignApi";
+import { formatDemoMoney, getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
 
 const STAGE_KEYS: Record<string, string> = {
   validating: "stageValidating",
@@ -127,7 +128,9 @@ export default function MetaAiDraftPublishPanel({
               </dt>
               <dd className="text-sm font-semibold">
                 {amount != null
-                  ? `${amount} ${t("metaCampaigns.ai.draft.perDay")}`
+                  ? getDemoCurrency()
+                    ? formatDemoMoney(amount, { per: "day" })
+                    : `${amount} ${t("metaCampaigns.ai.draft.perDay")}`
                   : budgetLabel}
               </dd>
             </div>
@@ -168,7 +171,9 @@ export default function MetaAiDraftPublishPanel({
               </dt>
               <dd className="text-sm font-semibold" data-testid="meta-ai-draft-budget">
                 {amount != null
-                  ? `${amount} ${t("metaCampaigns.ai.draft.perDay")}`
+                  ? getDemoCurrency()
+                    ? formatDemoMoney(amount, { per: "day" })
+                    : `${amount} ${t("metaCampaigns.ai.draft.perDay")}`
                   : budgetLabel}
               </dd>
             </div>
@@ -225,7 +230,7 @@ export default function MetaAiDraftPublishPanel({
                     {t("metaCampaigns.ai.publish.dailyBudget")}
                   </dt>
                   <dd className="text-sm font-semibold" data-testid="meta-ai-publish-budget">
-                    {amount != null ? `${amount} ₪` : budgetLabel}
+                    {amount != null ? (getDemoCurrency() ? formatDemoMoney(amount) : `${amount} ₪`) : budgetLabel}
                   </dd>
                 </div>
                 <div>

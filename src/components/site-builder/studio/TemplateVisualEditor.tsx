@@ -16,6 +16,7 @@ import {
 import { stripStoreBoundVisualImageOverrides } from "./data/templates/shared/storeCatalogSync";
 import i18n from "../../../i18n/i18n";
 import { localizeBuiltInTemplateSeed } from "../../../i18n/localizeBuiltInTemplateSeed";
+import { withGuidedDemoSiteContent } from "../../../guidedDemo/demoSiteContent";
 
 type VisualSavePayload = {
   templateKey: string;
@@ -280,9 +281,12 @@ export default function TemplateVisualEditor({
   siteId,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
-    const defaultData = localizeBuiltInTemplateSeed(
-      cloneData(renderer.defaultData || {}) as Record<string, any>,
-      i18n.language,
+    const defaultData = withGuidedDemoSiteContent(
+      renderer.key,
+      localizeBuiltInTemplateSeed(
+        cloneData(renderer.defaultData || {}) as Record<string, any>,
+        i18n.language,
+      ),
     );
 
     const savedVisualData = extractVisualDataFromInitialData(
