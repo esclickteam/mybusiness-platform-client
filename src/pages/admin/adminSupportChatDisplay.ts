@@ -65,10 +65,22 @@ export const INTERACTIVE_DEMO_TEMPLATE = "interactive_demo_followup_v2";
 export const INTERACTIVE_DEMO_BUTTON = "View interactive demo";
 export const INTERACTIVE_DEMO_SENDER = "Bizuply US · +1 210-944-4809";
 
-export function isInteractiveDemoCard(message?: SupportChatMessage | null) {
+export type InteractiveDemoKind = "template" | "direct";
+
+export function interactiveDemoKind(
+  message?: SupportChatMessage | null
+): InteractiveDemoKind | "" {
   const meta = message?.metadata || {};
+  if (meta.interactiveDemoKind === "direct") return "direct";
   const template = String(meta.templateName || meta.template || "").trim();
-  return meta.interactiveDemoCard === true || template === INTERACTIVE_DEMO_TEMPLATE;
+  if (meta.interactiveDemoCard === true || template === INTERACTIVE_DEMO_TEMPLATE) {
+    return "template";
+  }
+  return "";
+}
+
+export function isInteractiveDemoCard(message?: SupportChatMessage | null) {
+  return Boolean(interactiveDemoKind(message));
 }
 
 export function interactiveDemoStatusLabel(status?: string) {
