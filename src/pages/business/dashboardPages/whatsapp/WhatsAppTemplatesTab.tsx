@@ -37,6 +37,7 @@ import { WhatsAppMetaTemplateContent } from "./WhatsAppMetaTemplateContent";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
 import WhatsAppTemplateDrawer from "./WhatsAppTemplateDrawer";
 import { formatWhatsAppTemplateCategory } from "../automations/whatsAppTemplateSelectFormat";
+import { formatQualityRating } from "./hubFormat";
 import {
   metaTemplateStatusKey,
   metaTemplateStatusLabel,
@@ -494,7 +495,7 @@ export default function WhatsAppTemplatesTab() {
             ["approved", t("whatsapp.hub.approved")],
             ["pending", t("whatsapp.hub.pending")],
             ["rejected", t("whatsapp.hub.rejected")],
-            ["paused", "Paused"],
+            ["paused", t("whatsapp.templates.metaStatus.paused")],
           ] as const
         ).map(([key, label]) => (
           <button
@@ -626,20 +627,20 @@ export default function WhatsAppTemplatesTab() {
               <tr>
                 <th className="px-3 py-2.5 font-black">{t("whatsapp.templates.name")}</th>
                 <th className="hidden px-3 py-2.5 font-black lg:table-cell">
-                  Preview
+                  {t("whatsapp.templates.columns.preview", "Preview")}
                 </th>
-                <th className="px-3 py-2.5 font-black">Lang</th>
+                <th className="px-3 py-2.5 font-black">{t("whatsapp.templates.columns.language", "Lang")}</th>
                 <th className="hidden px-3 py-2.5 font-black md:table-cell">
-                  Category
+                  {t("whatsapp.templates.columns.category", "Category")}
                 </th>
-                <th className="px-3 py-2.5 font-black">Status</th>
+                <th className="px-3 py-2.5 font-black">{t("whatsapp.templates.columns.status", "Status")}</th>
                 <th className="hidden px-3 py-2.5 font-black xl:table-cell">
-                  Quality
+                  {t("whatsapp.templates.columns.quality", "Quality")}
                 </th>
                 <th className="hidden px-3 py-2.5 font-black sm:table-cell">
-                  Updated
+                  {t("whatsapp.templates.columns.updated", "Updated")}
                 </th>
-                <th className="px-3 py-2.5 font-black">Actions</th>
+                <th className="px-3 py-2.5 font-black">{t("whatsapp.templates.columns.actions", "Actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -700,11 +701,11 @@ export default function WhatsAppTemplatesTab() {
                         </span>
                       </td>
                       <td className="hidden px-3 py-2.5 text-xs font-bold text-slate-600 xl:table-cell">
-                        {tpl.metaQualityScore || "—"}
+                        {formatQualityRating(tpl.metaQualityScore, t) || "—"}
                       </td>
                       <td className="hidden px-3 py-2.5 text-xs font-semibold text-slate-500 sm:table-cell">
                         {updated
-                          ? new Date(updated).toLocaleDateString()
+                          ? new Date(updated).toLocaleDateString(i18n.language)
                           : "—"}
                       </td>
                       <td

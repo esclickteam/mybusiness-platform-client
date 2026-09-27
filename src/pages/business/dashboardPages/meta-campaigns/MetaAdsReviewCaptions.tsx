@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 const CAPTIONS_STORAGE_KEY = "bizuply_meta_ads_review_captions_hidden";
 
@@ -44,7 +45,8 @@ export default function MetaAdsReviewCaptions({
     return () => window.clearInterval(timer);
   }, [captions.length, show]);
 
-  if (!show) return null;
+  // App Review screencast captions describe live Meta permissions; a guided demo never uses them.
+  if (!show || isGuidedDemoActive()) return null;
 
   const hide = () => {
     setShow(false);

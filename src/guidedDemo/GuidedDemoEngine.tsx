@@ -576,6 +576,9 @@ export default function GuidedDemoEngine() {
       } else {
         lastKey = "";
         stableHits = 0;
+        // Never leave the previous step's highlight on screen while this target is missing.
+        setHole(null);
+        setHand(null);
       }
 
       const loadingGrace = isDemoPageLoading() ? TARGET_WAIT_MS : 0;

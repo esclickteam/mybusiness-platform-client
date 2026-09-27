@@ -248,20 +248,20 @@ export default function CollabFindPartnerTab({
     setError(null);
 
     try {
+      // The public partner directory holds real businesses in every language; a demo shows only its own fixtures.
+      if (isGuidedDemoActive()) {
+        setMyBusinessId(await fetchMyBusinessId());
+        setPartners(getDemoCollabPartners() as BusinessPartner[]);
+        return;
+      }
+
       const [businessId, partnersRes] = await Promise.all([
         fetchMyBusinessId(),
         API.get("/business/findPartners"),
       ]);
 
       setMyBusinessId(businessId);
-      const loaded = (partnersRes.data.relevant || []) as BusinessPartner[];
-      if (isGuidedDemoActive()) {
-        const existingIds = new Set(loaded.map((partner) => String(partner._id)));
-        const extras = getDemoCollabPartners().filter((partner) => !existingIds.has(partner._id));
-        setPartners([...extras, ...loaded]);
-      } else {
-        setPartners(loaded);
-      }
+      setPartners((partnersRes.data.relevant || []) as BusinessPartner[]);
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
       if (isGuidedDemoActive()) {

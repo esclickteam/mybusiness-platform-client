@@ -1580,7 +1580,7 @@
       "backToAutomations": "חזרה לאוטומציות",
       "started": "התחלה",
       "duration": "משך",
-      "trigger": "Trigger",
+      "trigger": "טריגר",
       "steps": "Steps",
       "actions": "פעולות",
       "openDetails": "פתח פרטי הרצה",
@@ -2160,7 +2160,9 @@
     "metricCollaborations": "שיתופי פעולה",
     "confirmed": "מאושר",
     "pending": "ממתין",
-    "loadingDashboard": "טוען לוח בקרה..."
+    "loadingDashboard": "טוען לוח בקרה...",
+    "selectRange": "בחירת טווח",
+    "leadSourceOther": "אחר"
   },
   "dashboard": {
     "live": "פעיל",
@@ -4030,8 +4032,10 @@
         "gclid": "GCLID",
         "handlingStatus": "סטטוס טיפול",
         "activities": "פעילויות",
-        "openTasks": "משימות פתוחות"
-      }
+        "openTasks": "משימות פתוחות",
+        "campaign": "קמפיין"
+      },
+      "activityStatusChanged": "סטטוס הליד עודכן ל: {{status}}"
     },
     "clients": {
       "badge": "לקוחות CRM",
@@ -4711,6 +4715,17 @@
         "d1": "יום לפני",
         "minutesBefore": "{{count}} דק׳ לפני"
       }
+    },
+    "slots": {
+      "loadError": "לא הצלחנו לטעון שעות פנויות",
+      "selectDateFirst": "בחרו תאריך קודם",
+      "selectServiceFirst": "בחרו שירות כדי לראות שעות פנויות",
+      "dayClosed": "היום הזה סגור",
+      "loading": "טוען שעות פנויות...",
+      "none": "אין שעות פנויות בתאריך הזה",
+      "selected": "השעה שנבחרה",
+      "change": "שינוי שעה",
+      "placeholder": "בחרו שעה"
     }
   },
   "notifications": {
@@ -5383,7 +5398,9 @@
       "food": "אוכל ומסעדות",
       "education": "חינוך וקורסים",
       "beauty": "יופי וטיפוח"
-    }
+    },
+    "newBadge": "חדש",
+    "premiumBadge": "פרימיום"
   },
   "buildPage": {
     "tabs": {
@@ -8167,14 +8184,17 @@
         "message_received": "הודעה התקבלה",
         "message_failed": "הודעה נכשלה",
         "message_sent": "הודעה נשלחה",
-        "template_sent": "תבנית נשלחה"
+        "template_sent": "תבנית נשלחה",
+        "template_approved": "תבנית אושרה",
+        "meta_sync": "סנכרון עם מטא"
       },
       "verificationStatus": {
         "verified": "מאומת",
         "unverified": "לא מאומת",
         "pending": "ממתין",
         "unknown": "לא ידוע"
-      }
+      },
+      "phoneNumberId": "מזהה מספר טלפון"
     },
     "categories": {
       "appointment_reminder": "תזכורת לתור",
@@ -8346,7 +8366,26 @@
       "created": "התבנית נוצרה",
       "updated": "התבנית עודכנה",
       "deleted": "התבנית נמחקה",
-      "confirmDelete": "למחוק את התבנית?"
+      "confirmDelete": "למחוק את התבנית?",
+      "columns": {
+        "preview": "תצוגה מקדימה",
+        "language": "שפה",
+        "category": "קטגוריה",
+        "status": "סטטוס",
+        "quality": "איכות",
+        "updated": "עודכן",
+        "actions": "פעולות"
+      },
+      "drawer": {
+        "metaStatus": "סטטוס במטא",
+        "header": "כותרת",
+        "footer": "כותרת תחתונה",
+        "variables": "משתנים",
+        "buttons": "לחצנים",
+        "rejectionReason": "סיבת דחייה"
+      },
+      "searchPlaceholder": "חיפוש תבניות…",
+      "empty": "לא נמצאו תבניות"
     },
     "lists": {
       "title": "רשימות תפוצה",
@@ -8483,7 +8522,14 @@
         "test": "בדיקה",
         "inbound": "נכנסת",
         "reply": "תשובה"
-      }
+      },
+      "sourceExternalApi": "API חיצוני",
+      "externalId": "מזהה חיצוני",
+      "messageId": "מזהה הודעה",
+      "apiKey": "מפתח API",
+      "deliveredAt": "נמסרה",
+      "readAt": "נקראה",
+      "failedAt": "נכשלה"
     },
     "inbox": {
       "title": "תיבת דואר נכנס",
@@ -8498,7 +8544,8 @@
       "clearConversation": "ניקוי שיחה",
       "clearing": "מנקה…",
       "confirmClear": "לנקות את השיחה מ-BizUply? היסטוריית ההודעות המקומית של הצ'אט תימחק. הודעות בוואטסאפ לא יימחקו.",
-      "cleared": "השיחה נוקתה"
+      "cleared": "השיחה נוקתה",
+      "openCrm": "פתיחה ב-CRM"
     },
     "settings": {
       "title": "חיבור וואטסאפ עסקי",
@@ -8687,7 +8734,18 @@
       "enteredPhoneLabel": "המספר שתזינו לאימות ב-מטא",
       "enteredPhoneHint": "הזינו בדיוק את המספר שתקלידו ב-Embedded Signup. BizUply שומרת אותו על ה-session של העסק — בלי לבחור מספר אוטומטית.",
       "enteredPhoneRequired": "יש להזין את מספר הטלפון שתאמתו ב-מטא לפני החיבור.",
-      "verificationDidMissing": "אין מספר Telnyx לאימות קולי לעסק הזה. אי אפשר להמשיך בחיבור עד שממפים Verification DID."
+      "verificationDidMissing": "אין מספר Telnyx לאימות קולי לעסק הזה. אי אפשר להמשיך בחיבור עד שממפים Verification DID.",
+      "apiSettingsDeliverySuccess": "הצליח",
+      "apiSettingsDeliveryFailed": "נכשל",
+      "apiSettingsTimestamp": "חותמת זמן",
+      "apiSettingsHttpStatus": "סטטוס HTTP",
+      "apiSettingsDuration": "משך",
+      "apiSettingsTestSent": "נשלח",
+      "apiSettingsTestFailed": "נכשל",
+      "apiSettingsResponseTime": "זמן תגובה",
+      "apiSettingsKeyReady": "מפתח ה-API שלך מוכן",
+      "apiSettingsKeyCopyWarning": "העתיקו את מפתח ה-API עכשיו. מטעמי אבטחה הוא לא יוצג שוב.",
+      "apiSettingsDone": "העתקתי את המפתח"
     },
     "errors": {
       "loadCompose": "טעינת נתוני השליחה נכשלה",
@@ -9113,7 +9171,8 @@
         "video": "וידאו",
         "document": "מסמך",
         "location": "מיקום"
-      }
+      },
+      "demoSaved": "תבנית הדמו נשמרה. היא לא נשלחה ל-Meta."
     },
     "metaEditor": {
       "content": "תוכן",
@@ -9340,7 +9399,8 @@
     "details": {
       "badge": "ads_read · קריאה בלבד",
       "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב.",
-      "viewLeadsInCrm": "צפייה בלידים ב-CRM"
+      "viewLeadsInCrm": "צפייה בלידים ב-CRM",
+      "adSets": "קבוצות מודעות"
     },
     "actions": {
       "create": "צור קמפיין חדש",
@@ -9830,8 +9890,11 @@
         "previewTabAd": "מודעה",
         "previewTabDestination": "יעד",
         "publishOkBody": "Meta החזירה מזהה מודעה אמיתי. הסטטוס למטה מגיע מ-Meta, לא מהדמיה מקומית.",
-        "publishFailBody": "שלב יצירה אחד או יותר ב-Meta נכשל. אפשר לנסות שוב מהשלב שנכשל."
-      }
+        "publishFailBody": "שלב יצירה אחד או יותר ב-Meta נכשל. אפשר לנסות שוב מהשלב שנכשל.",
+        "accountBannerDemo": "חשבון מודעות: {{account}} · עמוד: {{page}} · מצב דמו — שום דבר לא נשלח ל-Meta",
+        "publishFooterNoteDemo": "מצב דמו · הפרסום יוצר קמפיין דמו בלבד ולא נשלח ל-Meta"
+      },
+      "budgetAverageMoney": "תוציאו בממוצע {{money}} ליום. ההוצאה היומית בפועל עשויה להשתנות."
     },
     "ai": {
       "badge": "BizUply AI",
@@ -10059,7 +10122,7 @@
       "title": "קמפיינים",
       "subtitle": "{{count}} קמפיינים",
       "name": "שם הקמפיין",
-      "campaignId": "Campaign ID",
+      "campaignId": "מזהה קמפיין",
       "platform": "פלטפורמה",
       "status": "סטטוס",
       "budget": "תקציב",
@@ -10117,7 +10180,8 @@
       "financial": "מוצרים פיננסיים"
     },
     "insights": {
-      "title": "תובנות חכמות"
+      "title": "תובנות חכמות",
+      "demoData": "נתוני דמו"
     },
     "automations": {
       "title": "אוטומציות אחרי ליד",
@@ -20468,7 +20532,12 @@
           "instruction": "כל שליחה מהאתר נכנסת ללידים. בדמו לא נשלחות הודעות ללקוחות אמיתיים."
         }
       },
-      "actionUnavailable": "פעולה זו אינה זמינה בדמו"
+      "actionUnavailable": "פעולה זו אינה זמינה בדמו",
+      "actionBlocked": "הפעולה הזו לא זמינה בדמו.",
+      "resetFailed": "לא הצלחנו לאפס את הדמו. החשבון האמיתי שלך לא השתנה.",
+      "demoControls": "פקדי הדמו",
+      "resetting": "מאפס…",
+      "resetDemo": "איפוס נתוני הדמו"
     },
     "guidedQ": {
       "relevantCrm": "CRM וניהול לקוחות",

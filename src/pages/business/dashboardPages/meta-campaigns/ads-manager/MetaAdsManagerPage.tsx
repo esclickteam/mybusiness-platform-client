@@ -530,7 +530,7 @@ export default function MetaAdsManagerPage() {
         </div>
       ) : (
         <div className="border-b border-[#E4E6EB] bg-[#E7F3FF] px-4 py-2 text-[12px] font-semibold text-[#050505]">
-          {c("accountBanner", {
+          {c(isGuidedDemoActive() ? "accountBannerDemo" : "accountBanner", {
             account: connection?.selectedAdAccount?.name || "—",
             page: connection?.selectedPage?.pageName || c("pageNotSelected"),
           })}
@@ -662,7 +662,9 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewObjective")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {state.campaign.objective.replace("OUTCOME_", "")}
+                    {t(`metaCampaigns.adsManager.objectives.${state.campaign.objective}`, {
+                      defaultValue: state.campaign.objective.replace("OUTCOME_", ""),
+                    })}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
@@ -825,7 +827,7 @@ export default function MetaAdsManagerPage() {
             c("draftFailed")
           )}
         </div>
-        <span>{c("publishFooterNote")}</span>
+        <span>{c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}</span>
       </div>
 
       <PublishResultModal

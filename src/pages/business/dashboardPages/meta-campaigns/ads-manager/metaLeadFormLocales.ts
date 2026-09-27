@@ -1,4 +1,19 @@
 import i18n from "../../../../../i18n/i18n";
+import { readGuidedDemoLocaleLock } from "../../../../../guidedDemo/sessionStore";
+
+const APP_LNG_TO_FORM_LOCALE: Record<string, string> = {
+  he: "he_IL",
+  ar: "ar_AR",
+  es: "es_LA",
+  "pt-BR": "pt_BR",
+  en: "en_US",
+};
+
+/** Default Instant Form locale: the demo locale when a guided demo runs, else the app language. */
+export function defaultLeadFormLocale() {
+  const lng = readGuidedDemoLocaleLock() || String(i18n.language || "he");
+  return APP_LNG_TO_FORM_LOCALE[lng] || APP_LNG_TO_FORM_LOCALE[lng.split("-")[0]] || "en_US";
+}
 
 /** Meta Instant Form `locale` values (Graph API enum). */
 export const META_LEAD_FORM_LOCALES = [

@@ -2160,7 +2160,9 @@
     "metricCollaborations": "Colaboraciones",
     "confirmed": "Confirmado",
     "pending": "Pendiente",
-    "loadingDashboard": "Cargando panel..."
+    "loadingDashboard": "Cargando panel...",
+    "selectRange": "Elegir rango",
+    "leadSourceOther": "Otro"
   },
   "dashboard": {
     "live": "Vivo",
@@ -4030,8 +4032,10 @@
         "gclid": "GCLID",
         "handlingStatus": "Estado de manejo",
         "activities": "Actividades",
-        "openTasks": "Abrir tareas"
-      }
+        "openTasks": "Abrir tareas",
+        "campaign": "Campaña"
+      },
+      "activityStatusChanged": "Estado del lead actualizado a: {{status}}"
     },
     "clients": {
       "badge": "Clientes CRM",
@@ -4711,6 +4715,17 @@
         "d1": "1 día antes",
         "minutesBefore": "{{count}} min antes"
       }
+    },
+    "slots": {
+      "loadError": "No se pudieron cargar los horarios disponibles",
+      "selectDateFirst": "Primero elige una fecha",
+      "selectServiceFirst": "Elige un servicio para ver los horarios disponibles",
+      "dayClosed": "Este día está cerrado",
+      "loading": "Cargando horarios disponibles...",
+      "none": "No hay horarios disponibles en esta fecha",
+      "selected": "Hora seleccionada",
+      "change": "Cambiar hora",
+      "placeholder": "Elige una hora"
     }
   },
   "notifications": {
@@ -5383,7 +5398,9 @@
       "food": "Comida & restaurantes",
       "education": "Educación y cursos",
       "beauty": "Belleza y cuidado"
-    }
+    },
+    "newBadge": "Nuevo",
+    "premiumBadge": "Premium"
   },
   "buildPage": {
     "tabs": {
@@ -8252,7 +8269,26 @@
       "created": "Plantilla creada",
       "updated": "Plantilla actualizada",
       "deleted": "Plantilla eliminada",
-      "confirmDelete": "¿Eliminar esta plantilla?"
+      "confirmDelete": "¿Eliminar esta plantilla?",
+      "columns": {
+        "preview": "Vista previa",
+        "language": "Idioma",
+        "category": "Categoría",
+        "status": "Estado",
+        "quality": "Calidad",
+        "updated": "Actualizada",
+        "actions": "Acciones"
+      },
+      "drawer": {
+        "metaStatus": "Estado en Meta",
+        "header": "Encabezado",
+        "footer": "Pie de página",
+        "variables": "Variables",
+        "buttons": "Botones",
+        "rejectionReason": "Motivo del rechazo"
+      },
+      "searchPlaceholder": "Buscar plantillas…",
+      "empty": "No se encontraron plantillas"
     },
     "lists": {
       "title": "Listas de correo",
@@ -8389,7 +8425,14 @@
         "test": "Ensayo",
         "inbound": "Entrada",
         "reply": "Respuesta"
-      }
+      },
+      "sourceExternalApi": "API externa",
+      "externalId": "ID externo",
+      "messageId": "ID del mensaje",
+      "apiKey": "Clave de API",
+      "deliveredAt": "Entregado",
+      "readAt": "Leído",
+      "failedAt": "Fallido"
     },
     "inbox": {
       "title": "Bandeja de entrada",
@@ -8404,7 +8447,8 @@
       "clearConversation": "Conversación clara",
       "clearing": "Despejado...",
       "confirmClear": "¿Borrar esta conversación de BizUply? Esto elimina el historial de mensajes locales para este chat. Los mensajes en WhatsApp no se eliminan.",
-      "cleared": "Conversación borrada"
+      "cleared": "Conversación borrada",
+      "openCrm": "Abrir en CRM"
     },
     "settings": {
       "title": "Conexión WhatsApp Business",
@@ -8593,7 +8637,18 @@
       "apiSettingsScopes": "Alcances",
       "apiSettingsCreatedAt": "Creado",
       "apiSettingsKeyModalTitle": "Tu nueva clave API",
-      "apiSettingsTestResult": "último resultado de la prueba"
+      "apiSettingsTestResult": "último resultado de la prueba",
+      "apiSettingsDeliverySuccess": "Correcto",
+      "apiSettingsDeliveryFailed": "Fallido",
+      "apiSettingsTimestamp": "Fecha y hora",
+      "apiSettingsHttpStatus": "Estado HTTP",
+      "apiSettingsDuration": "Duración",
+      "apiSettingsTestSent": "Enviado",
+      "apiSettingsTestFailed": "Fallido",
+      "apiSettingsResponseTime": "Tiempo de respuesta",
+      "apiSettingsKeyReady": "Tu clave de API está lista",
+      "apiSettingsKeyCopyWarning": "Copia esta clave de API ahora. Por seguridad, no se volverá a mostrar.",
+      "apiSettingsDone": "Ya copié la clave"
     },
     "errors": {
       "loadCompose": "No se pudo cargar los datos de redacción de WhatsApp",
@@ -9019,7 +9074,8 @@
         "video": "Vídeo",
         "document": "Documento",
         "location": "Ubicación"
-      }
+      },
+      "demoSaved": "Plantilla de demostración guardada. No se envió a Meta."
     },
     "metaEditor": {
       "content": "Contenido",
@@ -9300,14 +9356,17 @@
         "message_received": "Mensaje recibido",
         "message_failed": "Mensaje fallido",
         "message_sent": "Mensaje enviado",
-        "template_sent": "Plantilla enviada"
+        "template_sent": "Plantilla enviada",
+        "template_approved": "Plantilla aprobada",
+        "meta_sync": "Sincronización con Meta"
       },
       "verificationStatus": {
         "verified": "Verificado",
         "unverified": "No verificado",
         "pending": "Pendiente",
         "unknown": "Desconocido"
-      }
+      },
+      "phoneNumberId": "ID del número de teléfono"
     }
   },
   "metaCampaigns": {
@@ -9351,7 +9410,8 @@
     "details": {
       "badge": "ads_read · Solo lectura",
       "readOnlyHint": "Los detalles de la campaña son de solo lectura, sin cambios de edición ni de presupuesto.",
-      "viewLeadsInCrm": "Ver leads en el CRM"
+      "viewLeadsInCrm": "Ver leads en el CRM",
+      "adSets": "Conjuntos de anuncios"
     },
     "actions": {
       "create": "Crear nueva campaña",
@@ -9841,8 +9901,11 @@
         "previewTabAd": "Anuncio",
         "previewTabDestination": "Destino",
         "publishOkBody": "Meta devolvió un ID de anuncio real. El estado de abajo es de Meta, no un mock local.",
-        "publishFailBody": "Uno o más pasos de creación en Meta fallaron. Puedes reintentar desde la etapa fallida."
-      }
+        "publishFailBody": "Uno o más pasos de creación en Meta fallaron. Puedes reintentar desde la etapa fallida.",
+        "accountBannerDemo": "Cuenta publicitaria: {{account}} · Página: {{page}} · Modo demo — no se envía nada a Meta",
+        "publishFooterNoteDemo": "Modo demo · Publicar crea solo una campaña de demo y no envía nada a Meta"
+      },
+      "budgetAverageMoney": "Gastarás un promedio de {{money}} por día. El gasto diario real puede variar."
     },
     "ai": {
       "badge": "BizUply AI",
@@ -10128,7 +10191,8 @@
       "financial": "Productos financieros"
     },
     "insights": {
-      "title": "Conocimientos inteligentes"
+      "title": "Conocimientos inteligentes",
+      "demoData": "Datos de demo"
     },
     "automations": {
       "title": "Automatizaciones post-lead",
@@ -20479,7 +20543,12 @@
       "introCampaigns": "Campañas de Meta",
       "introCampaignsHint": "Anuncios, resultados y rendimiento",
       "demoBadge": "DEMO",
-      "actionUnavailable": "Esta acción no está disponible en la demo."
+      "actionUnavailable": "Esta acción no está disponible en la demo.",
+      "actionBlocked": "Esta acción no está disponible en la demostración.",
+      "resetFailed": "No se pudo restablecer la demostración. Tu cuenta real no cambió.",
+      "demoControls": "Controles de la demostración",
+      "resetting": "Restableciendo…",
+      "resetDemo": "Restablecer datos de la demostración"
     },
     "guidedQ": {
       "relevantCrm": "CRM y gestión de clientes",

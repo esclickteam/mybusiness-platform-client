@@ -5,7 +5,11 @@ import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../i18n/i18n";
 import { getIntlLocale } from "../../../i18n/localeUtils";
-import { localizeBuiltInText } from "../../../i18n/localizeBuiltInTemplateSeed";
+import {
+  localizeBuiltInTemplateSeed,
+  localizeBuiltInText,
+} from "../../../i18n/localizeBuiltInTemplateSeed";
+import { withGuidedDemoSiteContent } from "../../../guidedDemo/demoSiteContent";
 
 import type {
   DeviceMode,
@@ -9145,7 +9149,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     */
     ...stripChromeFromVisualData(
       mergeVisualRootData(
-        selectedTemplateRenderer.defaultData as Record<string, any>,
+        withGuidedDemoSiteContent(
+          selectedTemplateRenderer.key,
+          localizeBuiltInTemplateSeed(
+            { ...(selectedTemplateRenderer.defaultData as Record<string, any>) },
+            i18n.language,
+          ),
+        ),
         extractVisualDataFromPayload({
           data: (selectedTemplateSeed as any)?.data,
           templateData: (selectedTemplateSeed as any)?.templateData,

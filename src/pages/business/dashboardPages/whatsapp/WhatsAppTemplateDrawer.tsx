@@ -9,6 +9,7 @@ import {
 } from "../../../../i18n/whatsappMappingCopy";
 import { formatWhatsAppTemplateCategory } from "../automations/whatsAppTemplateSelectFormat";
 import { btnSecondary } from "../../../../styles/bizuplyUi";
+import { formatQualityRating } from "./hubFormat";
 
 type Props = {
   template: WhatsAppTemplate | null;
@@ -160,18 +161,18 @@ export default function WhatsAppTemplateDrawer({
           </section>
 
           <section className="grid gap-2 text-sm">
-            <DetailRow label="Language" value={template.language} />
+            <DetailRow label={t("whatsapp.templates.columns.language", "Language")} value={template.language} />
             <DetailRow
-              label="Category"
+              label={t("whatsapp.templates.category", "Category")}
               value={formatWhatsAppTemplateCategory(template)}
             />
-            <DetailRow label="Meta status" value={statusLabel} />
+            <DetailRow label={t("whatsapp.templates.drawer.metaStatus", "Meta status")} value={statusLabel} />
             <DetailRow
-              label="Quality"
-              value={template.metaQualityScore || "—"}
+              label={t("whatsapp.templates.columns.quality", "Quality")}
+              value={formatQualityRating(template.metaQualityScore, t) || "—"}
             />
             <DetailRow
-              label="Header"
+              label={t("whatsapp.templates.drawer.header", "Header")}
               value={
                 template.headerType && template.headerType !== "none"
                   ? `${template.headerType}${
@@ -180,10 +181,10 @@ export default function WhatsAppTemplateDrawer({
                   : "—"
               }
             />
-            <DetailRow label="Body" value={previewBody(template.body, 280)} />
-            <DetailRow label="Footer" value={template.footer || "—"} />
+            <DetailRow label={t("whatsapp.templates.body", "Body")} value={previewBody(template.body, 280)} />
+            <DetailRow label={t("whatsapp.templates.drawer.footer", "Footer")} value={template.footer || "—"} />
             <DetailRow
-              label="Variables"
+              label={t("whatsapp.templates.drawer.variables", "Variables")}
               value={
                 (template.variables || []).length
                   ? (template.variables || []).map((v) => `{{${v}}}`).join(", ")
@@ -191,7 +192,7 @@ export default function WhatsAppTemplateDrawer({
               }
             />
             <DetailRow
-              label="Buttons"
+              label={t("whatsapp.templates.drawer.buttons", "Buttons")}
               value={
                 (template.buttons || []).length
                   ? (template.buttons || [])
@@ -202,7 +203,7 @@ export default function WhatsAppTemplateDrawer({
             />
             {template.rejectionReason ? (
               <DetailRow
-                label="Rejection reason"
+                label={t("whatsapp.templates.drawer.rejectionReason", "Rejection reason")}
                 value={template.rejectionReason}
                 danger
               />

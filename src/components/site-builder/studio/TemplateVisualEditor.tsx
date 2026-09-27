@@ -117,9 +117,10 @@ function cloneData<T>(value: T): T {
 }
 
 function normalizeSlug(value: unknown) {
-  const clean = String(value || "").trim();
+  if (typeof value !== "string") return "";
+  const clean = value.trim();
 
-  if (!clean || clean === "/") return "";
+  if (!clean || clean === "/" || clean === "[object Object]") return "";
 
   return clean.replace(/^\//, "").replace(/\/$/, "");
 }

@@ -2160,7 +2160,9 @@
     "metricCollaborations": "Collaborations",
     "confirmed": "Confirmed",
     "pending": "Pending",
-    "loadingDashboard": "Loading dashboard..."
+    "loadingDashboard": "Loading dashboard...",
+    "selectRange": "Select range",
+    "leadSourceOther": "Other"
   },
   "dashboard": {
     "live": "Live",
@@ -4030,8 +4032,10 @@
         "gclid": "GCLID",
         "handlingStatus": "Handling Status",
         "activities": "Activities",
-        "openTasks": "Open Tasks"
-      }
+        "openTasks": "Open Tasks",
+        "campaign": "Campaign"
+      },
+      "activityStatusChanged": "Lead status updated to: {{status}}"
     },
     "clients": {
       "badge": "CRM Clients",
@@ -4711,6 +4715,17 @@
         "d1": "1 day before",
         "minutesBefore": "{{count}} min before"
       }
+    },
+    "slots": {
+      "loadError": "Unable to load available times",
+      "selectDateFirst": "Please select a date first",
+      "selectServiceFirst": "Select a service first to see available times",
+      "dayClosed": "This day is closed",
+      "loading": "Loading available times...",
+      "none": "No available slots for this date",
+      "selected": "Selected time",
+      "change": "Change time",
+      "placeholder": "Select a time"
     }
   },
   "notifications": {
@@ -5383,7 +5398,9 @@
       "food": "Food & restaurants",
       "education": "Education & courses",
       "beauty": "Beauty & care"
-    }
+    },
+    "newBadge": "New",
+    "premiumBadge": "Premium"
   },
   "buildPage": {
     "tabs": {
@@ -8178,14 +8195,17 @@
         "message_received": "Message received",
         "message_failed": "Message failed",
         "message_sent": "Message sent",
-        "template_sent": "Template sent"
+        "template_sent": "Template sent",
+        "template_approved": "Template approved",
+        "meta_sync": "Meta sync"
       },
       "verificationStatus": {
         "verified": "Verified",
         "unverified": "Unverified",
         "pending": "Pending",
         "unknown": "Unknown"
-      }
+      },
+      "phoneNumberId": "Phone number ID"
     },
     "categories": {
       "appointment_reminder": "Appointment reminder",
@@ -8357,7 +8377,26 @@
       "created": "Template created",
       "updated": "Template updated",
       "deleted": "Template deleted",
-      "confirmDelete": "Delete this template?"
+      "confirmDelete": "Delete this template?",
+      "columns": {
+        "preview": "Preview",
+        "language": "Language",
+        "category": "Category",
+        "status": "Status",
+        "quality": "Quality",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "drawer": {
+        "metaStatus": "Meta status",
+        "header": "Header",
+        "footer": "Footer",
+        "variables": "Variables",
+        "buttons": "Buttons",
+        "rejectionReason": "Rejection reason"
+      },
+      "searchPlaceholder": "Search templates…",
+      "empty": "No templates found"
     },
     "lists": {
       "title": "Mailing lists",
@@ -8494,7 +8533,14 @@
         "test": "Test",
         "inbound": "Inbound",
         "reply": "Reply"
-      }
+      },
+      "sourceExternalApi": "External API",
+      "externalId": "External ID",
+      "messageId": "Message ID",
+      "apiKey": "API key",
+      "deliveredAt": "Delivered",
+      "readAt": "Read",
+      "failedAt": "Failed"
     },
     "inbox": {
       "title": "Inbox",
@@ -8509,7 +8555,8 @@
       "clearConversation": "Clear conversation",
       "clearing": "Clearing…",
       "confirmClear": "Clear this conversation from BizUply? This deletes local message history for this chat. Messages on WhatsApp are not deleted.",
-      "cleared": "Conversation cleared"
+      "cleared": "Conversation cleared",
+      "openCrm": "Open in CRM"
     },
     "settings": {
       "title": "WhatsApp Business connection",
@@ -8698,7 +8745,18 @@
       "voiceCopied": "Verification code copied",
       "voiceCopyFailed": "Could not copy the verification code",
       "voiceCodeSubmitted": "Verification code sent to Meta",
-      "voiceCodeSubmitFailed": "Could not send the verification code to Meta"
+      "voiceCodeSubmitFailed": "Could not send the verification code to Meta",
+      "apiSettingsDeliverySuccess": "Success",
+      "apiSettingsDeliveryFailed": "Failed",
+      "apiSettingsTimestamp": "Timestamp",
+      "apiSettingsHttpStatus": "HTTP Status",
+      "apiSettingsDuration": "Duration",
+      "apiSettingsTestSent": "Sent",
+      "apiSettingsTestFailed": "Failed",
+      "apiSettingsResponseTime": "Response time",
+      "apiSettingsKeyReady": "Your API key is ready",
+      "apiSettingsKeyCopyWarning": "Copy this API key now. For security reasons, it will not be shown again.",
+      "apiSettingsDone": "I have copied the key"
     },
     "errors": {
       "loadCompose": "Failed to load WhatsApp compose data",
@@ -9124,7 +9182,8 @@
         "video": "Video",
         "document": "Document",
         "location": "Location"
-      }
+      },
+      "demoSaved": "Demo template saved. It was not sent to Meta."
     },
     "metaEditor": {
       "content": "Content",
@@ -9351,7 +9410,8 @@
     "details": {
       "badge": "ads_read · Read only",
       "readOnlyHint": "Campaign details are read-only — no edit or budget changes.",
-      "viewLeadsInCrm": "View leads in CRM"
+      "viewLeadsInCrm": "View leads in CRM",
+      "adSets": "Ad sets"
     },
     "actions": {
       "create": "Create new campaign",
@@ -9841,8 +9901,11 @@
         "previewTabAd": "Ad",
         "previewTabDestination": "Destination",
         "publishOkBody": "Meta returned a real Ad ID. Status below is from Meta, not a local mock.",
-        "publishFailBody": "One or more Meta create steps failed. You can retry from the failed stage."
-      }
+        "publishFailBody": "One or more Meta create steps failed. You can retry from the failed stage.",
+        "accountBannerDemo": "Ad account: {{account}} · Page: {{page}} · Demo mode — nothing is sent to Meta",
+        "publishFooterNoteDemo": "Demo mode · Publishing creates a demo campaign only and sends nothing to Meta"
+      },
+      "budgetAverageMoney": "You’ll spend an average of {{money}} per day. Actual daily spend may vary."
     },
     "ai": {
       "badge": "BizUply AI",
@@ -10128,7 +10191,8 @@
       "financial": "Financial products"
     },
     "insights": {
-      "title": "Smart insights"
+      "title": "Smart insights",
+      "demoData": "Demo data"
     },
     "automations": {
       "title": "Post-lead automations",
@@ -20479,7 +20543,12 @@
           "instruction": "Every website submission enters Leads. In the demo no messages are sent to real customers."
         }
       },
-      "actionUnavailable": "This action is not available in the demo."
+      "actionUnavailable": "This action is not available in the demo.",
+      "actionBlocked": "This action is not available in the demo.",
+      "resetFailed": "Could not reset the demo. Your live account was not changed.",
+      "demoControls": "Demo controls",
+      "resetting": "Resetting…",
+      "resetDemo": "Reset demo data"
     },
     "guidedQ": {
       "relevantCrm": "CRM and customer management",

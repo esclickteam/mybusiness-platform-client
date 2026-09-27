@@ -41,6 +41,7 @@ import { resolveMySiteCardUrls } from "../components/site-builder/studio/utils/c
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { ensureSiteCardScreenshots } from "../utils/captureSiteScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import { getIntlLocale } from "../i18n/localeUtils";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 
 type MenuState = {
@@ -136,7 +137,7 @@ export default function MySitesPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
-  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
+  const dateLocale = getIntlLocale(i18n.language);
 
   const [sites, setSites] = useState<MySiteSummary[]>([]);
   const [folders, setFolders] = useState<SiteFolder[]>([]);

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 
 type ScheduleDay = {
@@ -43,6 +44,7 @@ export default function SelectTimeFromSlots({
   excludeAppointmentId = null,
   demoTarget,
 }: SelectTimeFromSlotsProps) {
+  const { t } = useTranslation();
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [localSelectedTime, setLocalSelectedTime] = useState(selectedTime || "");
@@ -128,7 +130,7 @@ export default function SelectTimeFromSlots({
         setError(
           apiErr?.response?.data?.message ||
             apiErr.message ||
-            "Unable to load available times"
+            t("crm.slots.loadError", "Unable to load available times")
         );
       } finally {
         setLoading(false);
@@ -152,7 +154,7 @@ export default function SelectTimeFromSlots({
   if (!date) {
     return (
       <div data-demo-target={demoTarget} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
-        Please select a date first
+        {t("crm.slots.selectDateFirst", "Please select a date first")}
       </div>
     );
   }
@@ -160,7 +162,7 @@ export default function SelectTimeFromSlots({
   if (!serviceId) {
     return (
       <div data-demo-target={demoTarget} className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
-        Select a service first to see available times
+        {t("crm.slots.selectServiceFirst", "Select a service first to see available times")}
       </div>
     );
   }
@@ -168,7 +170,7 @@ export default function SelectTimeFromSlots({
   if (!isDayValid) {
     return (
       <div data-demo-target={demoTarget} className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
-        This day is closed
+        {t("crm.slots.dayClosed", "This day is closed")}
       </div>
     );
   }
@@ -176,7 +178,7 @@ export default function SelectTimeFromSlots({
   if (loading) {
     return (
       <div data-demo-target={demoTarget} className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-4 text-sm font-bold text-violet-700">
-        Loading available times...
+        {t("crm.slots.loading", "Loading available times...")}
       </div>
     );
   }
@@ -192,7 +194,7 @@ export default function SelectTimeFromSlots({
   if (availableSlots.length === 0) {
     return (
       <div data-demo-target={demoTarget} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
-        No available slots for this date
+        {t("crm.slots.none", "No available slots for this date")}
       </div>
     );
   }
@@ -203,7 +205,7 @@ export default function SelectTimeFromSlots({
         <div className="flex flex-col gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-600">
-              Selected time
+              {t("crm.slots.selected", "Selected time")}
             </p>
             <p className="mt-1 text-lg font-black text-emerald-800">
               {localSelectedTime}
@@ -215,7 +217,7 @@ export default function SelectTimeFromSlots({
             onClick={handleClearTime}
             className="rounded-xl bg-white px-4 py-2 text-sm font-black text-emerald-700 shadow-sm transition hover:bg-emerald-100"
           >
-            Change time
+            {t("crm.slots.change", "Change time")}
           </button>
         </div>
       ) : (
@@ -226,7 +228,7 @@ export default function SelectTimeFromSlots({
             onChange={(event) => handleSelectTime(event.target.value)}
             className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
           >
-            <option value="">Select a time</option>
+            <option value="">{t("crm.slots.placeholder", "Select a time")}</option>
 
             {availableSlots.map((time) => (
               <option key={time} value={time}>

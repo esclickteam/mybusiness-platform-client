@@ -2160,7 +2160,9 @@
     "metricCollaborations": "التعاون",
     "confirmed": "تم التأكيد",
     "pending": "معلق",
-    "loadingDashboard": "جارٍ تحميل لوحة التحكم..."
+    "loadingDashboard": "جارٍ تحميل لوحة التحكم...",
+    "selectRange": "اختيار الفترة",
+    "leadSourceOther": "أخرى"
   },
   "dashboard": {
     "live": "مباشر",
@@ -4030,8 +4032,10 @@
         "gclid": "غكلايد",
         "handlingStatus": "حالة المناولة",
         "activities": "الأنشطة",
-        "openTasks": "افتح المهام"
-      }
+        "openTasks": "افتح المهام",
+        "campaign": "الحملة"
+      },
+      "activityStatusChanged": "تم تحديث حالة العميل المحتمل إلى: {{status}}"
     },
     "clients": {
       "badge": "عملاء CRM",
@@ -4711,6 +4715,17 @@
         "d1": "قبل يوم",
         "minutesBefore": "قبل {{count}} دقيقة"
       }
+    },
+    "slots": {
+      "loadError": "تعذّر تحميل الأوقات المتاحة",
+      "selectDateFirst": "اختر تاريخًا أولًا",
+      "selectServiceFirst": "اختر خدمة لعرض الأوقات المتاحة",
+      "dayClosed": "هذا اليوم مغلق",
+      "loading": "جارٍ تحميل الأوقات المتاحة...",
+      "none": "لا توجد أوقات متاحة في هذا التاريخ",
+      "selected": "الوقت المختار",
+      "change": "تغيير الوقت",
+      "placeholder": "اختر وقتًا"
     }
   },
   "notifications": {
@@ -4902,7 +4917,7 @@
     "refresh": "تحديث",
     "defaultConversationTitle": "دردشة استشارية",
     "chatTitle": "الدردشة مع مستشار الأعمال",
-    "chatSubtitle": "يوصي المستشار والمسودات - الإجراءات التلقائية في علامة التبويب AI Automations.",
+    "chatSubtitle": "يوصي المستشار والمسودات - الإجراءات التلقائية في علامة التبويب أتمتة الذكاء الاصطناعي.",
     "messagesCount": "{{count}} رسائل",
     "limitReached": "لقد وصلت إلى الحد الأقصى للأسئلة الشهرية.",
     "inputPlaceholder": "على سبيل المثال: ماذا أفعل اليوم؟ ما هي النتائج التي تحتاج إلى اهتمام؟",
@@ -4911,8 +4926,8 @@
     "quickActionsTitle": "نصائح سريعة",
     "quickActionsSubtitle": "مسح ذكي لعملك - توصيات فقط.",
     "tipTitle": "فصل مهم",
-    "tipBody": "يقدم مستشار الأعمال التحليل والتوصيات والمسودات. لا ينشئ مهام أو يقوم بتحديث العملاء المتوقعين أو تشغيل الإجراءات. للتنفيذ التلقائي - انتقل إلى AI Automations.",
-    "welcome": "مرحبا  أنا مستشار الأعمال الخاص بك **.\n\nأقوم بتحليل بيانات النظام والتوصية بما يجب القيام به - العملاء المحتملون إلى التعامل مع المسودات ومتابعتها وتحسينات الحملة وأداء الممثلين والمزيد.\n\nأنا ** لا تنفيذ الإجراءات ** في النظام. الإجراءات التلقائية المتقدمة موجودة في علامة التبويب ** AI Automations **.",
+    "tipBody": "يقدم مستشار الأعمال التحليل والتوصيات والمسودات. لا ينشئ مهام أو يقوم بتحديث العملاء المتوقعين أو تشغيل الإجراءات. للتنفيذ التلقائي - انتقل إلى أتمتة الذكاء الاصطناعي.",
+    "welcome": "مرحبا  أنا مستشار الأعمال الخاص بك **.\n\nأقوم بتحليل بيانات النظام والتوصية بما يجب القيام به - العملاء المحتملون إلى التعامل مع المسودات ومتابعتها وتحسينات الحملة وأداء الممثلين والمزيد.\n\nأنا ** لا تنفيذ الإجراءات ** في النظام. الإجراءات التلقائية المتقدمة موجودة في علامة التبويب ** أتمتة الذكاء الاصطناعي **.",
     "capabilityPills": {
       "advice": "نصائح",
       "leads": "العملاء المحتملون",
@@ -4930,7 +4945,7 @@
       "sales_drop": "لماذا انخفضت المبيعات",
       "followup_message": "صياغة رسالة متابعة",
       "campaign_improve": "أفكار تحسين الحملة",
-      "reps_performance": "تحليل الأداء Reps",
+      "reps_performance": "تحليل أداء الموظفين",
       "build_automation": "بناء الأتمتة من الدردشة",
       "find_business_partner": "البحث عن شريك تجاري",
       "weekly_plan": "الخطة الأسبوعية",
@@ -5014,7 +5029,7 @@
       "invalidConversationId": "معرف المحادثة غير صالح ولا يمكن فتحه.",
       "actionFailed": "فشل الملاحة",
       "actionRetry": "لم أتمكن من فتح الشاشة. حاولي مجدداً",
-      "actionsAreAutomations": "المستشار هو المشورة فقط. الإجراءات التلقائية متوفرة في علامة التبويب AI Automations."
+      "actionsAreAutomations": "المستشار هو المشورة فقط. الإجراءات التلقائية متوفرة في علامة التبويب أتمتة الذكاء الاصطناعي."
     },
     "confirmTitle": "شاشة مفتوحة؟",
     "confirmSubtitle": "انتقل إلى شاشة BizUply",
@@ -5055,7 +5070,7 @@
       "OPEN_CLIENTS": "الذهاب إلى العملاء",
       "OPEN_COLLABORATIONS": "اذهب إلى التعاون",
       "OPEN_APPOINTMENTS": "اذهب إلى التقويم",
-      "OPEN_AUTOMATIONS": "اذهب إلى AI Automations",
+      "OPEN_AUTOMATIONS": "اذهب إلى أتمتة الذكاء الاصطناعي",
       "OPEN_META_CAMPAIGNS": "اذهب إلى الحملات",
       "CUSTOM": "الخطوة التالية المقترحة",
       "fallback": "انقر لفتح"
@@ -5074,7 +5089,7 @@
       "automationsBody": "وصفات الذكاء الاصطناعي والإجراءات داخل أداة إنشاء الأتمتة - كإضافة مدفوعة.",
       "paidTag": "منظمة العفو الدولية المدفوعة",
       "ctaTitle": "هل تحتاج إلى تنفيذ تلقائي؟",
-      "ctaBody": "انتقل إلى AI Automations - ثم قم ببنائها في أداة إنشاء الأتمتة.",
+      "ctaBody": "انتقل إلى أتمتة الذكاء الاصطناعي - ثم قم ببنائها في أداة إنشاء الأتمتة.",
       "features": {
         "rankLeads": {
           "title": "الترتيب التلقائي عميل محتمل",
@@ -5383,7 +5398,9 @@
       "food": "المطاعم والطعام",
       "education": "التعليم والدورات",
       "beauty": "الجمال والرعاية"
-    }
+    },
+    "newBadge": "جديد",
+    "premiumBadge": "مميز"
   },
   "buildPage": {
     "tabs": {
@@ -8252,7 +8269,26 @@
       "created": "قالب إنشاء",
       "updated": "تم تحديث القالب",
       "deleted": "حُذف القالب",
-      "confirmDelete": "احذف هذا القالب?"
+      "confirmDelete": "احذف هذا القالب?",
+      "columns": {
+        "preview": "معاينة",
+        "language": "اللغة",
+        "category": "الفئة",
+        "status": "الحالة",
+        "quality": "الجودة",
+        "updated": "آخر تحديث",
+        "actions": "الإجراءات"
+      },
+      "drawer": {
+        "metaStatus": "الحالة في Meta",
+        "header": "الرأس",
+        "footer": "التذييل",
+        "variables": "المتغيرات",
+        "buttons": "الأزرار",
+        "rejectionReason": "سبب الرفض"
+      },
+      "searchPlaceholder": "ابحث في القوالب…",
+      "empty": "لم يتم العثور على قوالب"
     },
     "lists": {
       "title": "القوائم البريدية",
@@ -8389,7 +8425,14 @@
         "test": "اختبار",
         "inbound": "الواردة",
         "reply": "الرد"
-      }
+      },
+      "sourceExternalApi": "API خارجي",
+      "externalId": "المعرّف الخارجي",
+      "messageId": "معرّف الرسالة",
+      "apiKey": "مفتاح API",
+      "deliveredAt": "تم التسليم",
+      "readAt": "تمت القراءة",
+      "failedAt": "فشل"
     },
     "inbox": {
       "title": "صندوق الوارد",
@@ -8404,7 +8447,8 @@
       "clearConversation": "محادثة واضحة",
       "clearing": "...التطهير",
       "confirmClear": "هل فهمت هذه المحادثة من (BizUply)؟ هذا يحذف سجل الرسائل المحلي لهذه الدردشة. لا يتم حذف الرسائل على WhatsApp.",
-      "cleared": "تم مسح المحادثة"
+      "cleared": "تم مسح المحادثة",
+      "openCrm": "فتح في CRM"
     },
     "settings": {
       "title": "اتصال WhatsApp الأعمال",
@@ -8593,7 +8637,18 @@
       "apiSettingsScopes": "النطاقات",
       "apiSettingsCreatedAt": "مخلوق",
       "apiSettingsKeyModalTitle": "مفتاح API الجديد الخاص بك",
-      "apiSettingsTestResult": "نتيجة الاختبار الأخير"
+      "apiSettingsTestResult": "نتيجة الاختبار الأخير",
+      "apiSettingsDeliverySuccess": "نجح",
+      "apiSettingsDeliveryFailed": "فشل",
+      "apiSettingsTimestamp": "الطابع الزمني",
+      "apiSettingsHttpStatus": "حالة HTTP",
+      "apiSettingsDuration": "المدة",
+      "apiSettingsTestSent": "تم الإرسال",
+      "apiSettingsTestFailed": "فشل",
+      "apiSettingsResponseTime": "زمن الاستجابة",
+      "apiSettingsKeyReady": "مفتاح API الخاص بك جاهز",
+      "apiSettingsKeyCopyWarning": "انسخ مفتاح API الآن. لأسباب أمنية لن يظهر مرة أخرى.",
+      "apiSettingsDone": "لقد نسخت المفتاح"
     },
     "errors": {
       "loadCompose": "فشل في تحميل بيانات WhatsApp",
@@ -9019,7 +9074,8 @@
         "video": "فيديو",
         "document": "مستند",
         "location": "موقع"
-      }
+      },
+      "demoSaved": "تم حفظ القالب التجريبي. لم يتم إرساله إلى Meta."
     },
     "metaEditor": {
       "content": "المحتوى",
@@ -9300,14 +9356,17 @@
         "message_received": "تم استلام الرسالة",
         "message_failed": "فشلت الرسالة",
         "message_sent": "تم إرسال الرسالة",
-        "template_sent": "تم إرسال القالب"
+        "template_sent": "تم إرسال القالب",
+        "template_approved": "تمت الموافقة على القالب",
+        "meta_sync": "مزامنة مع Meta"
       },
       "verificationStatus": {
         "verified": "موثّق",
         "unverified": "غير موثّق",
         "pending": "قيد الانتظار",
         "unknown": "غير معروف"
-      }
+      },
+      "phoneNumberId": "معرّف رقم الهاتف"
     }
   },
   "metaCampaigns": {
@@ -9351,7 +9410,8 @@
     "details": {
       "badge": "ads_read  قراءة فقط",
       "readOnlyHint": "تفاصيل الحملة للقراءة فقط - لا تعديل أو تغييرات في الميزانية.",
-      "viewLeadsInCrm": "عرض العملاء في CRM"
+      "viewLeadsInCrm": "عرض العملاء في CRM",
+      "adSets": "مجموعات الإعلانات"
     },
     "actions": {
       "create": "إنشاء حملة جديدة",
@@ -9841,8 +9901,11 @@
         "previewTabAd": "إعلان",
         "previewTabDestination": "وجهة",
         "publishOkBody": "أرجع Meta معرّف إعلان حقيقي. الحالة أدناه من Meta وليست محاكاة محلية.",
-        "publishFailBody": "فشلت خطوة إنشاء واحدة أو أكثر في Meta. يمكنك إعادة المحاولة من المرحلة الفاشلة."
-      }
+        "publishFailBody": "فشلت خطوة إنشاء واحدة أو أكثر في Meta. يمكنك إعادة المحاولة من المرحلة الفاشلة.",
+        "accountBannerDemo": "حساب الإعلانات: {{account}} · الصفحة: {{page}} · الوضع التجريبي — لا يُرسل أي شيء إلى Meta",
+        "publishFooterNoteDemo": "الوضع التجريبي · النشر ينشئ حملة تجريبية فقط ولا يرسل أي شيء إلى Meta"
+      },
+      "budgetAverageMoney": "ستنفق في المتوسط {{money}} يوميًا. قد يختلف الإنفاق اليومي الفعلي."
     },
     "ai": {
       "badge": "BizUply منظمة العفو الدولية",
@@ -10070,7 +10133,7 @@
       "title": "الحملات",
       "subtitle": "{{count}} حملات",
       "name": "اسم الحملة",
-      "campaignId": "هوية الحملة",
+      "campaignId": "معرّف الحملة",
       "platform": "المنصة",
       "status": "الحالة",
       "budget": "الميزانية",
@@ -10128,7 +10191,8 @@
       "financial": "المنتجات المالية"
     },
     "insights": {
-      "title": "رؤى ذكية"
+      "title": "رؤى ذكية",
+      "demoData": "بيانات تجريبية"
     },
     "automations": {
       "title": "أتمتة ما بعد عميل محتمل",
@@ -20479,7 +20543,12 @@
       "introCampaigns": "حملات Meta",
       "introCampaignsHint": "الإعلانات والنتائج والأداء",
       "demoBadge": "DEMO",
-      "actionUnavailable": "هذا الإجراء غير متاح في العرض التجريبي."
+      "actionUnavailable": "هذا الإجراء غير متاح في العرض التجريبي.",
+      "actionBlocked": "هذا الإجراء غير متاح في العرض التجريبي.",
+      "resetFailed": "تعذّرت إعادة تعيين العرض التجريبي. لم يتغير حسابك الحقيقي.",
+      "demoControls": "عناصر التحكم في العرض التجريبي",
+      "resetting": "جارٍ إعادة التعيين…",
+      "resetDemo": "إعادة تعيين بيانات العرض التجريبي"
     },
     "guidedQ": {
       "relevantCrm": "CRM وإدارة العملاء",

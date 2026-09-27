@@ -8,6 +8,7 @@ import type {
 import { LEAD_FORM_CONTACT_FIELDS } from "../metaCampaignUtils";
 import i18n from "../../../../../i18n/i18n";
 import {
+  defaultLeadFormLocale,
   formLocaleToAppLng,
   isRtlLeadFormLocale,
   leadFormContactLabel,
@@ -103,7 +104,7 @@ export default function InstantFormFlowPreview({
     setIndex(0);
   }, [form?.id]);
 
-  const locale = form?.locale || "he_IL";
+  const locale = form?.locale || defaultLeadFormLocale();
   const dir = isRtlLeadFormLocale(locale) ? "rtl" : "ltr";
   const screen = screens[index] || null;
   const total = Math.max(screens.length, 1);
