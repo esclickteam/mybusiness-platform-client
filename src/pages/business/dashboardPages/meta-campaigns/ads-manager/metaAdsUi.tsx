@@ -9,7 +9,7 @@ export const metaCardBorder = "#E4E6EB";
 export const metaInputClass =
   "h-9 w-full rounded-md border border-[#CED0D4] bg-white px-3 text-[15px] text-[#050505] outline-none transition focus:border-[#1877F2] focus:shadow-[0_0_0_2px_rgba(24,119,242,0.2)]";
 
-export const metaSelectClass = `${metaInputClass} appearance-none bg-[length:12px] bg-[right_12px_center] bg-no-repeat pr-9`;
+export const metaSelectClass = `${metaInputClass} appearance-none bg-[length:12px] bg-[right_12px_center] rtl:bg-[left_12px_center] bg-no-repeat pe-9`;
 
 export const metaBtnPrimary =
   "inline-flex h-9 items-center justify-center gap-1.5 rounded-md bg-[#1877F2] px-3.5 text-[15px] font-semibold text-white transition hover:bg-[#166FE5] disabled:cursor-not-allowed disabled:opacity-50";
@@ -109,7 +109,7 @@ export function MetaToggle({
         <span
           className={[
             "absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition",
-            checked ? "left-4" : "left-0.5",
+            checked ? "start-4" : "start-0.5",
           ].join(" ")}
         />
       </button>

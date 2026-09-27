@@ -205,9 +205,9 @@ export default function AdSetLevelEditor({
             {pageMenuOpen ? (
               <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-lg">
                 <div className="relative border-b border-[#E4E6EB] p-2">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
+                  <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
                   <input
-                    className={`${metaInputClass} border-0 bg-[#F0F2F5] pl-9 shadow-none focus:shadow-none`}
+                    className={`${metaInputClass} border-0 bg-[#F0F2F5] ps-9 shadow-none focus:shadow-none`}
                     placeholder={t(
                       "metaCampaigns.adsManager.chrome.searchPagePlaceholder"
                     )}
