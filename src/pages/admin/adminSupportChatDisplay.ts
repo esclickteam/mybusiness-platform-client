@@ -61,6 +61,39 @@ export function deliveryFailureDetail(message?: SupportChatMessage | null) {
 const URL_OR_PHONE =
   /(https?:\/\/[^\s]+)|(\+?\d[\d\- ]{7,}\d)/g;
 
+export const INTERACTIVE_DEMO_TEMPLATE = "interactive_demo_followup_v2";
+export const INTERACTIVE_DEMO_BUTTON = "View interactive demo";
+export const INTERACTIVE_DEMO_SENDER = "Bizuply US · +1 210-944-4809";
+
+export function isInteractiveDemoCard(message?: SupportChatMessage | null) {
+  const meta = message?.metadata || {};
+  const template = String(meta.templateName || meta.template || "").trim();
+  return meta.interactiveDemoCard === true || template === INTERACTIVE_DEMO_TEMPLATE;
+}
+
+export function interactiveDemoStatusLabel(status?: string) {
+  switch (String(status || "")) {
+    case "delivered":
+      return "Delivered";
+    case "read":
+      return "Read";
+    case "failed":
+      return "Failed";
+    case "sending":
+    case "queued":
+      return "Sending";
+    default:
+      return "Sent";
+  }
+}
+
+/** Open-demo href. Rejects anything that is not https://bizuply.com/demo/<token>. */
+export function interactiveDemoOpenUrl(demoLink?: unknown) {
+  const value = String(demoLink || "").trim();
+  if (!/^https:\/\/bizuply\.com\/demo\/[^/?#\s%]+$/.test(value)) return "";
+  return value;
+}
+
 export function splitMessageSegments(text: string) {
   const value = String(text || "");
   const parts: Array<{ type: "text" | "url" | "phone"; value: string }> = [];

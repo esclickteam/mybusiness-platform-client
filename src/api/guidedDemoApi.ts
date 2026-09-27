@@ -30,8 +30,8 @@ export async function createGuidedDemo(payload) {
   return data;
 }
 
-export async function resendGuidedDemo(id) {
-  const { data } = await API.post(`/admin/guided-demos/${id}/resend`);
+export async function resendGuidedDemo(id, payload = {}) {
+  const { data } = await API.post(`/admin/guided-demos/${id}/resend`, payload);
   return data;
 }
 

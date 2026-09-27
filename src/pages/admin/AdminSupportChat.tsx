@@ -14,15 +14,19 @@ import { useAuth } from "../../context/AuthContext";
 import { preferredLocaleFromConnectionCountry } from "../../guidedDemo/adminSendForm";
 import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
-import AdminSendGuidedDemoModal, {
-  AdminSendDemoButton,
-} from "./AdminSendGuidedDemoModal";
+import { AdminSendDemoButton } from "./AdminSendGuidedDemoModal";
+import AdminInteractiveDemoFollowupModal from "./AdminInteractiveDemoFollowupModal";
 import {
   deliveryFailureDetail,
   deliveryStatusLabel,
+  interactiveDemoOpenUrl,
+  interactiveDemoStatusLabel,
+  isInteractiveDemoCard,
+  INTERACTIVE_DEMO_BUTTON,
+  INTERACTIVE_DEMO_SENDER,
+  INTERACTIVE_DEMO_TEMPLATE,
   formatWhatsAppPhoneDisplay,
   isOutboundSupportBubble,
-  resolveManagedConnectionId,
   splitMessageSegments,
   supportConnectionBadge,
   supportConversationViaLabel,
@@ -63,7 +67,12 @@ type SupportMessage = SupportChatMessage & {
     invitationId?: string;
     sourceLeadId?: string;
     template?: string;
+    templateName?: string;
     businessName?: string;
+    interactiveDemoCard?: boolean;
+    buttonText?: string;
+    demoLink?: string;
+    senderLabel?: string;
   };
 };
 
@@ -279,8 +288,39 @@ function ChatBubble({
               ? "בוט"
               : contactName || msg.senderName || "לקוח"}
         </p>
-        <ChatMessageBody text={msg.text || ""} mine={mine} />
-        {msg.metadata?.source === "guided_demo" && msg.metadata?.invitationId ? (
+        {isInteractiveDemoCard(msg) ? (
+          <div data-testid="interactive-demo-thread-card" className="space-y-1">
+            <p className="font-black">Interactive demo sent</p>
+            <p className="text-xs font-semibold opacity-90">
+              Template: {INTERACTIVE_DEMO_TEMPLATE}
+            </p>
+            <p className="text-xs font-semibold opacity-90">
+              Button: {String(msg.metadata?.buttonText || INTERACTIVE_DEMO_BUTTON)}
+            </p>
+            <p className="text-xs font-semibold opacity-90" dir="ltr">
+              Sent via {String(msg.metadata?.senderLabel || INTERACTIVE_DEMO_SENDER)}
+            </p>
+            <p className="text-xs font-semibold opacity-90">
+              Status: {interactiveDemoStatusLabel(msg.deliveryStatus)}
+            </p>
+            {interactiveDemoOpenUrl(msg.metadata?.demoLink) ? (
+              <a
+                href={interactiveDemoOpenUrl(msg.metadata?.demoLink)}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-black text-[#6D28D9]"
+                data-testid="interactive-demo-open"
+              >
+                Open demo
+              </a>
+            ) : null}
+          </div>
+        ) : (
+          <ChatMessageBody text={msg.text || ""} mine={mine} />
+        )}
+        {!isInteractiveDemoCard(msg) &&
+        msg.metadata?.source === "guided_demo" &&
+        msg.metadata?.invitationId ? (
           <Link
             to={`/admin/guided-demos/${msg.metadata.invitationId}`}
             className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
@@ -292,7 +332,7 @@ function ChatBubble({
             דמו מודרך
           </Link>
         ) : null}
-        {sentVia ? (
+        {sentVia && !isInteractiveDemoCard(msg) ? (
           <p
             className={`mt-1 text-[10px] font-bold ${
               mine ? "text-white/85" : "text-slate-500"
@@ -305,7 +345,7 @@ function ChatBubble({
         ) : null}
         <p className="mt-1.5 text-[10px] font-semibold opacity-70">
           {formatTime(msg.createdAt)}
-          {status ? ` · ${status}` : ""}
+          {status && !isInteractiveDemoCard(msg) ? ` · ${status}` : ""}
         </p>
         {failureDetail ? (
           <p
@@ -1413,9 +1453,12 @@ export default function AdminSupportChat() {
         </div>
       </main>
 
-      <AdminSendGuidedDemoModal
+      <AdminInteractiveDemoFollowupModal
         open={demoOpen}
         onClose={() => setDemoOpen(false)}
+        onSent={() => {
+          if (selected?._id) void reloadConversationMessages(selected._id);
+        }}
         context={{
           customerName: selected?.name || "",
           phone:
@@ -1428,9 +1471,6 @@ export default function AdminSupportChat() {
               : "manual",
           sourceLeadId: selected?.sourceLeadId || "",
           sourceCustomerId: selected?.sourceCustomerId || "",
-          managedConnectionId:
-            resolveManagedConnectionId(selected?.managedConnectionId) ||
-            undefined,
           preferredLocale:
             preferredLocaleFromConnectionCountry(selected?.connectionCountry) ||
             undefined,

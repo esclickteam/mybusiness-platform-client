@@ -75,6 +75,23 @@ const conversation = {
   sourceLeadId: "lead1",
 };
 
+const demoCard = {
+  _id: "m-demo",
+  senderType: "agent",
+  senderName: "Bizuply",
+  direction: "outbound",
+  text: "https://bizuply.com/demo/SHOULD_NOT_RENDER",
+  deliveryStatus: "delivered",
+  createdAt: new Date().toISOString(),
+  metadata: {
+    interactiveDemoCard: true,
+    templateName: "interactive_demo_followup_v2",
+    buttonText: "View interactive demo",
+    senderLabel: "Bizuply US · +1 210-944-4809",
+    demoLink: "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo",
+  },
+};
+
 const outbound = {
   _id: "m1",
   senderType: "agent",
@@ -168,11 +185,47 @@ describe("AdminSupportChat whatsapp", () => {
 
     expect(await screen.findByTestId("admin-send-demo-button")).toBeTruthy();
     fireEvent.click(screen.getByTestId("admin-send-demo-button"));
-    expect(await screen.findByTestId("admin-send-demo-modal")).toBeTruthy();
-    expect(screen.getByTestId("demo-prefill-name").textContent).toBe("דניאל כהן");
-    expect(screen.getByTestId("demo-prefill-phone").textContent).toBe("0501234567");
-    expect(screen.getByTestId("demo-prefill-connection").textContent).toBe(
-      "US_MANAGED"
+    const modal = await screen.findByTestId("interactive-demo-send-modal");
+    expect(modal.textContent).toContain("שליחת דמו אינטראקטיבי");
+    expect(modal.textContent).toContain("דניאל כהן");
+    expect(screen.getByTestId("interactive-demo-sender").textContent).toContain(
+      "+1 210-944-4809"
+    );
+    expect(screen.getByTestId("interactive-demo-send")).toBeTruthy();
+    expect(await screen.findByTestId("interactive-demo-missing")).toBeTruthy();
+    expect(screen.getByTestId("interactive-demo-send")).toHaveProperty("disabled", true);
+  });
+
+  it("renders an interactive demo card instead of the raw URL", async () => {
+    getMock.mockImplementation((url: string) => {
+      if (String(url).includes("/admin/conversations")) {
+        return Promise.resolve({
+          data: { conversations: [conversation], onlineAgents: [] },
+        });
+      }
+      if (String(url).includes("/messages")) {
+        return Promise.resolve({
+          data: { messages: [demoCard], conversation },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const card = await screen.findByTestId("interactive-demo-thread-card");
+    expect(card.textContent).toContain("Interactive demo sent");
+    expect(card.textContent).toContain("interactive_demo_followup_v2");
+    expect(card.textContent).toContain("View interactive demo");
+    expect(card.textContent).toContain("Bizuply US");
+    expect(card.textContent).toContain("Delivered");
+    expect(card.textContent).not.toContain("SHOULD_NOT_RENDER");
+    expect(screen.getByTestId("interactive-demo-open").getAttribute("href")).toBe(
+      "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo"
     );
   });
 });
