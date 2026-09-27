@@ -994,10 +994,14 @@ export default function WebsiteTemplatesPage() {
                           template.category ||
                           t("websiteTemplates.templateFallback");
 
-                        const badge =
-                          template.badge ||
-                          (template.isNew ? "NEW" : "") ||
-                          (template.isFeatured ? t("websiteTemplates.featuredBadge") : "");
+                        const rawBadge = String(template.badge || "").trim();
+                        const badge = /^(new|חדש|جديد|nuevo|novo)$/i.test(rawBadge) ||
+                          (!rawBadge && template.isNew)
+                          ? t("websiteTemplates.newBadge", "New")
+                          : /^premium$/i.test(rawBadge)
+                            ? t("websiteTemplates.premiumBadge", "Premium")
+                            : rawBadge ||
+                              (template.isFeatured ? t("websiteTemplates.featuredBadge") : "");
 
                         return (
                           <article key={template.key} className="group">

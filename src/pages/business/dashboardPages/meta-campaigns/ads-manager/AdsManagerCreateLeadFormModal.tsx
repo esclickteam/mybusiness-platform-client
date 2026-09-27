@@ -18,7 +18,7 @@ import AdsManagerFormSettingsModal, {
   type FormSharing,
   type FormTrackingParam,
 } from "./AdsManagerFormSettingsModal";
-import { formLocaleToAppLng, isRtlLeadFormLocale } from "./metaLeadFormLocales";
+import { defaultLeadFormLocale, formLocaleToAppLng, isRtlLeadFormLocale } from "./metaLeadFormLocales";
 import i18n from "../../../../../i18n/i18n";
 import { metaBtnPrimary, metaBtnSecondary, metaInputClass } from "./metaAdsUi";
 
@@ -134,7 +134,7 @@ export default function AdsManagerCreateLeadFormModal({
     "facebook" | "instagram"
   >("facebook");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [locale, setLocale] = useState("he_IL");
+  const [locale, setLocale] = useState(defaultLeadFormLocale);
   const [sharing, setSharing] = useState<FormSharing>("restricted");
   const [contactFieldKeys, setContactFieldKeys] = useState<
     Record<string, string>

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import i18n from "@/i18n/i18n";
 
 import type { DatePreset, DashboardFilters } from "./dashboardOverviewTypes";
 
@@ -107,31 +108,30 @@ export function formatNextAppointmentLabel(
 }
 
 export function formatLeadSource(source?: string): string {
+  const key = String(source || "").toLowerCase();
+  const translated: Record<string, string> = {
+    meta_lead_ads: "crm.leads.sources.metaLeadAds",
+    facebook_lead_ads: "crm.leads.sources.metaLeadAds",
+    google_ads: "crm.leads.sources.googleAds",
+    website: "crm.leads.sources.website",
+    manual: "crm.leads.sources.manual",
+  };
+  if (translated[key]) return String(i18n.t(translated[key]));
+
   const map: Record<string, string> = {
-    meta_lead_ads: "Meta Lead Ads",
     facebook: "Facebook",
     instagram: "Instagram",
-    website: "Website",
     whatsapp: "WhatsApp",
-    manual: "Manual",
     make: "Integration",
-    other: "Other",
   };
 
-  return map[String(source || "").toLowerCase()] || source || "Other";
+  return map[key] || source || String(i18n.t("overview.leadSourceOther", "Other"));
 }
 
 export function formatLeadStatus(status?: string): string {
-  const map: Record<string, string> = {
-    new: "New",
-    contacted: "Contacted",
-    interested: "Interested",
-    converted: "Converted",
-    lost: "Lost",
-    old: "Old lead",
-  };
-
-  return map[String(status || "new").toLowerCase()] || "New";
+  const key = String(status || "new").toLowerCase();
+  const known = ["new", "contacted", "interested", "converted", "lost", "old"];
+  return String(i18n.t(`crm.leads.statuses.${known.includes(key) ? key : "new"}`));
 }
 
 export function getPresetRange(preset: DatePreset) {
@@ -195,26 +195,24 @@ export function formatAppointmentBadge(date?: string) {
   }
 
   return {
-    month: parsed.format("MMM").toUpperCase(),
+    month: new Intl.DateTimeFormat(uiLocale(), { month: "short" }).format(parsed.toDate()).toUpperCase(),
     day: parsed.format("D"),
   };
+}
+
+function uiLocale() {
+  return String(i18n.language || "en");
 }
 
 export function formatDateRangeLabel(startDate: string, endDate: string) {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
 
-  if (!start.isValid() || !end.isValid()) return "Select range";
+  if (!start.isValid() || !end.isValid()) return String(i18n.t("overview.selectRange", "Select range"));
 
-  if (start.isSame(end, "day")) {
-    return start.format("MMM D, YYYY");
-  }
-
-  if (start.isSame(end, "year")) {
-    return `${start.format("MMM D")} – ${end.format("MMM D, YYYY")}`;
-  }
-
-  return `${start.format("MMM D, YYYY")} – ${end.format("MMM D, YYYY")}`;
+  const full = new Intl.DateTimeFormat(uiLocale(), { month: "short", day: "numeric", year: "numeric" });
+  if (start.isSame(end, "day")) return full.format(start.toDate());
+  return `${full.format(start.toDate())} – ${full.format(end.toDate())}`;
 }
 
 export function getComparisonRange(startDate: string, endDate: string) {

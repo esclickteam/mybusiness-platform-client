@@ -195,6 +195,26 @@ function getStatusLabel(status: LeadStatus, t: TFunction) {
   return t(`crm.leads.statuses.${status}`);
 }
 
+// The server writes status-change activities as Hebrew text; show them in the viewer's language.
+const HEBREW_STATUS_ACTIVITY = /^סטטוס הליד עודכן ל[:\-]\s*(.+)$/;
+const HEBREW_STATUS_LABELS: Record<string, LeadStatus> = {
+  "חדש": "new",
+  "נוצר קשר": "contacted",
+  "מתעניין": "interested",
+  "נסגר": "converted",
+  "אבד": "lost",
+  "ליד ישן": "old",
+};
+
+function getActivityText(activity: { type?: string; text?: string }, t: TFunction) {
+  const text = String(activity?.text || "");
+  if (activity?.type !== "status") return text;
+  const match = HEBREW_STATUS_ACTIVITY.exec(text.trim());
+  const status = match ? HEBREW_STATUS_LABELS[match[1].trim()] : undefined;
+  if (!status) return text;
+  return t("crm.leads.activityStatusChanged", { status: getStatusLabel(status, t) });
+}
+
 const statusBadgeClasses: Record<LeadStatus, string> = {
   new: "border-sky-200 bg-sky-100 text-sky-700",
   contacted: "border-amber-200 bg-amber-100 text-amber-800",
@@ -537,7 +557,9 @@ function getLeadSourceLabel(lead: Lead, t: TFunction) {
   if (isMetaLead(lead)) return t("crm.leads.sources.metaLeadAds");
   if (isWebsiteLead(lead)) return t("crm.leads.sources.website");
 
-  return lead.source || lead.provider || t("crm.leads.sources.manual");
+  const raw = lead.source || lead.provider || "";
+  if (!raw || String(raw).toLowerCase() === "manual") return t("crm.leads.sources.manual");
+  return raw;
 }
 
 function getLeadFormName(lead: Lead, t: TFunction) {
@@ -3098,7 +3120,7 @@ export default function CRMLeadsTab({
                                       : "text-slate-700",
                                   ].join(" ")}
                                 >
-                                  {activity.text}
+                                  {getActivityText(activity, t)}
                                 </p>
 
                                 {isTask && (

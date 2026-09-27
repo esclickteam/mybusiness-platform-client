@@ -282,7 +282,7 @@ export default function WhatsAppOverviewTab() {
           <dl className="mt-3 grid gap-x-4 gap-y-2.5 sm:grid-cols-2">
             {[
               ["WABA ID", connection?.wabaId || "—", true],
-              ["Phone Number ID", connection?.phoneNumberId || "—", true],
+              [t("whatsapp.hub.phoneNumberId", "Phone Number ID"), connection?.phoneNumberId || "—", true],
               [
                 t("whatsapp.hub.phone"),
                 connection?.displayPhoneNumber || "—",

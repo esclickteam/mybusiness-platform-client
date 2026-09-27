@@ -1,6 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import type { CampaignDraft } from "../adsManagerTypes";
+import i18n from "@/i18n/i18n";
+import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import {
   MetaField,
   MetaLinkButton,
@@ -24,6 +27,20 @@ type Props = {
   campaign: CampaignDraft;
   onChange: (patch: Partial<CampaignDraft>) => void;
 };
+
+function formatBudgetMoney(campaign: CampaignDraft) {
+  if (isGuidedDemoActive()) return formatDemoMoney(campaign.budgetAmount);
+  const amount = Number(campaign.budgetAmount || 0);
+  try {
+    return new Intl.NumberFormat(i18n.language || "en", {
+      style: "currency",
+      currency: campaign.currency || "USD",
+      maximumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    }).format(Number.isFinite(amount) ? amount : 0);
+  } catch {
+    return `${campaign.currency} ${campaign.budgetAmount}`;
+  }
+}
 
 export default function CampaignLevelEditor({ campaign, onChange }: Props) {
   const { t } = useTranslation();
@@ -162,9 +179,8 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
           />
         </div>
         <p className="text-[13px] text-[#65676B]">
-          {t("metaCampaigns.adsManager.budgetAverage", {
-            currency: campaign.currency,
-            amount: campaign.budgetAmount,
+          {t("metaCampaigns.adsManager.budgetAverageMoney", {
+            money: formatBudgetMoney(campaign),
           })}
         </p>
 

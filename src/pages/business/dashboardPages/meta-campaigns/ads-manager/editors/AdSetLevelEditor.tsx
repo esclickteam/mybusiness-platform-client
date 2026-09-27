@@ -349,8 +349,9 @@ export default function AdSetLevelEditor({
             {t("metaCampaigns.adsManager.chrome.costPerResultGoal")}
           </p>
           <p className="mt-1 text-[14px] font-semibold text-[#050505]">
-            {adSet.costPerResultGoal ||
-              t("metaCampaigns.adsManager.chrome.none")}
+            {adSet.costPerResultGoal && adSet.costPerResultGoal !== "None"
+              ? adSet.costPerResultGoal
+              : t("metaCampaigns.adsManager.chrome.none")}
           </p>
         </div>
 

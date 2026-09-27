@@ -77,6 +77,15 @@ import {
 
 type OutletCtx = { businessId: string | null };
 
+function objectiveKey(objective?: string | null) {
+  const value = String(objective || "").toLowerCase();
+  if (value.includes("sale")) return "sales";
+  if (value.includes("traffic")) return "traffic";
+  if (value.includes("aware")) return "awareness";
+  if (value.includes("engage")) return "engagement";
+  return "leads";
+}
+
 function KpiCard({
   label,
   value,
@@ -959,31 +968,7 @@ export default function MetaCampaignsOverviewTab() {
                                 {campaign.name}
                               </p>
                               <p className="mt-0.5 text-xs font-semibold text-slate-400">
-                                {t(
-                                  `metaCampaigns.objectives.${
-                                    campaign.objective
-                                      ?.toLowerCase()
-                                      .includes("lead")
-                                      ? "leads"
-                                      : campaign.objective
-                                            ?.toLowerCase()
-                                            .includes("sale")
-                                        ? "sales"
-                                        : campaign.objective
-                                              ?.toLowerCase()
-                                              .includes("traffic")
-                                          ? "traffic"
-                                          : campaign.objective
-                                                ?.toLowerCase()
-                                                .includes("aware")
-                                            ? "awareness"
-                                            : campaign.objective
-                                                  ?.toLowerCase()
-                                                  .includes("engage")
-                                              ? "engagement"
-                                              : "leads"
-                                  }`
-                                )}
+                                {t(`metaCampaigns.objectives.${objectiveKey(campaign.objective)}`)}
                               </p>
                             </button>
                           </td>
@@ -1309,7 +1294,11 @@ export default function MetaCampaignsOverviewTab() {
               />
               <DetailRow
                 label={t("metaCampaigns.form.objective")}
-                value={detailsCampaign.objective || "—"}
+                value={
+                  detailsCampaign.objective
+                    ? t(`metaCampaigns.objectives.${objectiveKey(detailsCampaign.objective)}`)
+                    : "—"
+                }
               />
               <DetailRow
                 label={t("metaCampaigns.adsManager.buyingType")}

@@ -2160,7 +2160,9 @@
     "metricCollaborations": "Colaborações",
     "confirmed": "Confirmado",
     "pending": "Pendente",
-    "loadingDashboard": "Carregando painel..."
+    "loadingDashboard": "Carregando painel...",
+    "selectRange": "Escolher período",
+    "leadSourceOther": "Outro"
   },
   "dashboard": {
     "live": "Viva",
@@ -4030,8 +4032,10 @@
         "gclid": "GCLID",
         "handlingStatus": "Manuseio de status",
         "activities": "Atividades",
-        "openTasks": "Abrir tarefas"
-      }
+        "openTasks": "Abrir tarefas",
+        "campaign": "Campanha"
+      },
+      "activityStatusChanged": "Status do lead atualizado para: {{status}}"
     },
     "clients": {
       "badge": "Clientes CRM",
@@ -4711,6 +4715,17 @@
         "d1": "1 dia antes",
         "minutesBefore": "{{count}} min antes"
       }
+    },
+    "slots": {
+      "loadError": "Não foi possível carregar os horários disponíveis",
+      "selectDateFirst": "Escolha uma data primeiro",
+      "selectServiceFirst": "Escolha um serviço para ver os horários disponíveis",
+      "dayClosed": "Este dia está fechado",
+      "loading": "Carregando horários disponíveis...",
+      "none": "Não há horários disponíveis nesta data",
+      "selected": "Horário selecionado",
+      "change": "Trocar horário",
+      "placeholder": "Escolha um horário"
     }
   },
   "notifications": {
@@ -5383,7 +5398,9 @@
       "food": "Comida e restaurantes",
       "education": "Educação e cursos",
       "beauty": "Beleza e cuidado"
-    }
+    },
+    "newBadge": "Novo",
+    "premiumBadge": "Premium"
   },
   "buildPage": {
     "tabs": {
@@ -8252,7 +8269,26 @@
       "created": "Modelo criado",
       "updated": "Modelo atualizado",
       "deleted": "Modelo excluído",
-      "confirmDelete": "Apagar este modelo?"
+      "confirmDelete": "Apagar este modelo?",
+      "columns": {
+        "preview": "Prévia",
+        "language": "Idioma",
+        "category": "Categoria",
+        "status": "Status",
+        "quality": "Qualidade",
+        "updated": "Atualizado",
+        "actions": "Ações"
+      },
+      "drawer": {
+        "metaStatus": "Status na Meta",
+        "header": "Cabeçalho",
+        "footer": "Rodapé",
+        "variables": "Variáveis",
+        "buttons": "Botões",
+        "rejectionReason": "Motivo da rejeição"
+      },
+      "searchPlaceholder": "Buscar modelos…",
+      "empty": "Nenhum modelo encontrado"
     },
     "lists": {
       "title": "Listas de correio",
@@ -8389,7 +8425,14 @@
         "test": "Teste",
         "inbound": "Entrada",
         "reply": "Responder"
-      }
+      },
+      "sourceExternalApi": "API externa",
+      "externalId": "ID externo",
+      "messageId": "ID da mensagem",
+      "apiKey": "Chave de API",
+      "deliveredAt": "Entregue",
+      "readAt": "Lida",
+      "failedAt": "Falhou"
     },
     "inbox": {
       "title": "Caixa de entrada",
@@ -8404,7 +8447,8 @@
       "clearConversation": "Conversa clara",
       "clearing": "Limpando...",
       "confirmClear": "Limpar essa conversa do BizUply? Isso exclui o histórico de mensagens locais para esse bate-papo. As mensagens no WhatsApp não são excluídas.",
-      "cleared": "Conversa livre"
+      "cleared": "Conversa livre",
+      "openCrm": "Abrir no CRM"
     },
     "settings": {
       "title": "Conexão WhatsApp Business",
@@ -8593,7 +8637,18 @@
       "apiSettingsScopes": "Escopos",
       "apiSettingsCreatedAt": "Criado",
       "apiSettingsKeyModalTitle": "Sua nova chave de API",
-      "apiSettingsTestResult": "Resultado do último teste"
+      "apiSettingsTestResult": "Resultado do último teste",
+      "apiSettingsDeliverySuccess": "Sucesso",
+      "apiSettingsDeliveryFailed": "Falhou",
+      "apiSettingsTimestamp": "Data e hora",
+      "apiSettingsHttpStatus": "Status HTTP",
+      "apiSettingsDuration": "Duração",
+      "apiSettingsTestSent": "Enviado",
+      "apiSettingsTestFailed": "Falhou",
+      "apiSettingsResponseTime": "Tempo de resposta",
+      "apiSettingsKeyReady": "Sua chave de API está pronta",
+      "apiSettingsKeyCopyWarning": "Copie esta chave de API agora. Por segurança, ela não será exibida novamente.",
+      "apiSettingsDone": "Já copiei a chave"
     },
     "errors": {
       "loadCompose": "Falha ao carregar dados de composição do WhatsApp",
@@ -9019,7 +9074,8 @@
         "video": "Vídeo",
         "document": "Documento",
         "location": "Localização"
-      }
+      },
+      "demoSaved": "Modelo de demonstração salvo. Ele não foi enviado à Meta."
     },
     "metaEditor": {
       "content": "Conteúdo",
@@ -9300,14 +9356,17 @@
         "message_received": "Mensagem recebida",
         "message_failed": "Mensagem falhou",
         "message_sent": "Mensagem enviada",
-        "template_sent": "Modelo enviado"
+        "template_sent": "Modelo enviado",
+        "template_approved": "Modelo aprovado",
+        "meta_sync": "Sincronização com a Meta"
       },
       "verificationStatus": {
         "verified": "Verificado",
         "unverified": "Não verificado",
         "pending": "Pendente",
         "unknown": "Desconhecido"
-      }
+      },
+      "phoneNumberId": "ID do número de telefone"
     }
   },
   "metaCampaigns": {
@@ -9351,7 +9410,8 @@
     "details": {
       "badge": "ads_read  Apenas leitura",
       "readOnlyHint": "Os detalhes da campanha são somente leitura sem alterações de edição ou orçamento.",
-      "viewLeadsInCrm": "Ver leads no CRM"
+      "viewLeadsInCrm": "Ver leads no CRM",
+      "adSets": "Conjuntos de anúncios"
     },
     "actions": {
       "create": "Criar nova campanha",
@@ -9841,8 +9901,11 @@
         "previewTabAd": "Anúncio",
         "previewTabDestination": "Destino",
         "publishOkBody": "O Meta retornou um ID de anúncio real. O status abaixo vem do Meta, não de um mock local.",
-        "publishFailBody": "Uma ou mais etapas de criação no Meta falharam. Você pode tentar novamente a partir da etapa com falha."
-      }
+        "publishFailBody": "Uma ou mais etapas de criação no Meta falharam. Você pode tentar novamente a partir da etapa com falha.",
+        "accountBannerDemo": "Conta de anúncios: {{account}} · Página: {{page}} · Modo demo — nada é enviado à Meta",
+        "publishFooterNoteDemo": "Modo demo · Publicar cria apenas uma campanha de demo e não envia nada à Meta"
+      },
+      "budgetAverageMoney": "Você vai gastar em média {{money}} por dia. O gasto diário real pode variar."
     },
     "ai": {
       "badge": "BizUply AI",
@@ -10128,7 +10191,8 @@
       "financial": "Produtos financeiros"
     },
     "insights": {
-      "title": "Análises inteligentes"
+      "title": "Análises inteligentes",
+      "demoData": "Dados de demo"
     },
     "automations": {
       "title": "Automações pós-lead",
@@ -20479,7 +20543,12 @@
       "introCampaigns": "Campanhas da Meta",
       "introCampaignsHint": "Anúncios, resultados e desempenho",
       "demoBadge": "DEMO",
-      "actionUnavailable": "Esta ação não está disponível na demo."
+      "actionUnavailable": "Esta ação não está disponível na demo.",
+      "actionBlocked": "Esta ação não está disponível na demonstração.",
+      "resetFailed": "Não foi possível redefinir a demonstração. Sua conta real não foi alterada.",
+      "demoControls": "Controles da demonstração",
+      "resetting": "Redefinindo…",
+      "resetDemo": "Redefinir dados da demonstração"
     },
     "guidedQ": {
       "relevantCrm": "CRM e gestão de clientes",
