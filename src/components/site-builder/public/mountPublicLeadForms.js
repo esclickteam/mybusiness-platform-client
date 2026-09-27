@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { demoToastError, demoToastSuccess } from "../../../guidedDemo/demoToast";
 import { submitPublicSiteLead, uploadPublicFormFile } from "../../../api/publicSiteLeadsApi";
 import i18n from "../../../i18n/i18n";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "../../../guidedDemo/sessionStore";
@@ -370,7 +370,7 @@ async function handleLeadFormSubmit(form, options) {
   if (!collected.name && !collected.phone && !collected.email && !collected.message) {
     const message = t("publicWidgets.lead.fillForm");
     setFormStatus(form, message, "error");
-    if (isGuidedDemoActive()) toast.error(message);
+    if (isGuidedDemoActive()) demoToastError(message);
     return;
   }
 
@@ -383,7 +383,7 @@ async function handleLeadFormSubmit(form, options) {
       defaultValue: "Enter a valid email address.",
     });
     setFormStatus(form, message, "error");
-    if (isGuidedDemoActive()) toast.error(message);
+    if (isGuidedDemoActive()) demoToastError(message);
     return;
   }
 
@@ -392,7 +392,7 @@ async function handleLeadFormSubmit(form, options) {
       localizedDemoSuccess(form) || t("publicWidgets.lead.thanks");
     form.setAttribute("data-bizuply-lead-submitted", "true");
     setFormStatus(form, successMessage, "success");
-    toast.success(successMessage);
+    demoToastSuccess(successMessage);
     try {
       sessionStorage.setItem(
         "guidedDemo.formSubmission",

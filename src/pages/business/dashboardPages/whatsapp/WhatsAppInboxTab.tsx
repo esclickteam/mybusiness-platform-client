@@ -3,6 +3,7 @@ import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
+import { demoToastSuccess } from "../../../../guidedDemo/demoToast";
 import { Loader2, Send, Trash2 } from "lucide-react";
 import {
   clearWhatsAppConversation,
@@ -147,14 +148,14 @@ export default function WhatsAppInboxTab() {
       );
       if (!result?.demoSafe) setMessages(rows);
       await loadConversations();
-      toast.success(
-        result?.demoSafe
-          ? t(
-              "whatsapp.inbox.demoReplySent",
-              "Demo message saved. It was not sent to a real customer."
-            )
-          : t("whatsapp.inbox.replySent")
-      );
+      const replyMessage = result?.demoSafe
+        ? t(
+            "whatsapp.inbox.demoReplySent",
+            "Demo message saved. It was not sent to a real customer."
+          )
+        : t("whatsapp.inbox.replySent");
+      if (result?.demoSafe) demoToastSuccess(replyMessage);
+      else toast.success(replyMessage);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.code === "DEMO_SIDE_EFFECT_BLOCKED"

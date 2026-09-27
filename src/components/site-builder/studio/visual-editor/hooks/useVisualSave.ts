@@ -1,7 +1,7 @@
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
 import i18n from "../../../../../i18n/i18n";
+import { demoToastSuccess } from "../../../../../guidedDemo/demoToast";
 
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 
@@ -1369,7 +1369,7 @@ export function useVisualSave({
 
         setLastSavedAt(new Date().toISOString());
         if (!options?.autosave) {
-          toast.success(
+          demoToastSuccess(
             i18n.t("studio.savedToast", {
               defaultValue: "Website saved successfully",
             }),
