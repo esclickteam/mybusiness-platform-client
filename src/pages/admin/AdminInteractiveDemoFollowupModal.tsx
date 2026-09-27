@@ -1,14 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-import {
-  createGuidedDemo,
-  fetchGuidedDemoCatalog,
-  listGuidedDemos,
-  resendGuidedDemo,
-} from "../../api/guidedDemoApi";
+import { createGuidedDemo, fetchGuidedDemoCatalog, resendGuidedDemo } from "../../api/guidedDemoApi";
 import {
   demoContentSummary,
   demoLocaleNativeLabel,
+  invitationIdOf,
   normalizeFullName,
   orderedPresets,
   resolveSelectedKeys,
@@ -28,7 +24,7 @@ const TEMPLATE_BODY =
 
 const LOCALES: GuidedDemoLocale[] = ["en", "he", "es", "pt-BR", "ar"];
 
-const MISSING_DEMO = "Create or select a demo before sending.";
+const CREATE_BEFORE_SEND = "צרו דמו חדש לפני השליחה.";
 
 export type InteractiveDemoChatContext = {
   customerName?: string;
@@ -40,20 +36,14 @@ export type InteractiveDemoChatContext = {
   preferredLocale?: string | null;
 };
 
-type HistoryRow = {
-  _id?: string;
-  id?: string;
-  customerName?: string;
-  locale?: string;
-  presetKey?: string;
-  selectedModules?: string[];
-  status?: string;
-  linkAvailable?: boolean;
-  demoLink?: string;
-};
-
-function rowId(row: HistoryRow) {
-  return String(row._id || row.id || "");
+function tokenFromDemoLink(demoLink?: string) {
+  const match = String(demoLink || "").trim().match(/\/demo\/([^/?#]+)$/i);
+  if (!match) return "";
+  const token = decodeURIComponent(match[1]);
+  if (!token || /[/?#\s%]/.test(token) || token.includes("{{") || /^https?:/i.test(token)) {
+    return "";
+  }
+  return token;
 }
 
 export default function AdminInteractiveDemoFollowupModal({
@@ -70,13 +60,12 @@ export default function AdminInteractiveDemoFollowupModal({
   const [catalog, setCatalog] = useState<GuidedDemoCatalog | null>(null);
   const [whatsappReady, setWhatsappReady] = useState(false);
   const [whatsappReason, setWhatsappReason] = useState("");
-  const [history, setHistory] = useState<HistoryRow[]>([]);
-  const [mode, setMode] = useState<"existing" | "new">("new");
-  const [selectedId, setSelectedId] = useState("");
   const [locale, setLocale] = useState<GuidedDemoLocale>("en");
   const [presetKey, setPresetKey] = useState("full");
-  const [submitting, setSubmitting] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const [invitationId, setInvitationId] = useState("");
+  const [demoToken, setDemoToken] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
   const customerName = sourceNameForPrefill(context.customerName);
@@ -87,36 +76,19 @@ export default function AdminInteractiveDemoFollowupModal({
     setCatalog(cat.catalog);
     setWhatsappReady(Boolean(cat.delivery?.whatsapp?.available));
     setWhatsappReason(String(cat.delivery?.whatsapp?.reason || ""));
-    const params: Record<string, string> = { limit: "20" };
-    if (context.sourceLeadId) params.sourceLeadId = context.sourceLeadId;
-    else if (context.sourceCustomerId) params.sourceCustomerId = context.sourceCustomerId;
-    else if (phone) params.customerPhone = phone;
-    const list =
-      params.sourceLeadId || params.sourceCustomerId || params.customerPhone
-        ? await listGuidedDemos(params).catch(() => ({ items: [] }))
-        : { items: [] };
-    const items = (list.items || []) as HistoryRow[];
-    setHistory(items);
-    const usable = items.find((row) => row.linkAvailable && rowId(row));
-    if (usable) {
-      setMode("existing");
-      setSelectedId(rowId(usable));
-    }
-    setLoaded(true);
-  }, [context.sourceLeadId, context.sourceCustomerId, phone]);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
     setError("");
-    setLoaded(false);
-    setSubmitting(false);
-    setMode("new");
-    setSelectedId("");
+    setCreating(false);
+    setSending(false);
+    setInvitationId("");
+    setDemoToken("");
     setPresetKey("full");
     const preferred = String(context.preferredLocale || "en") as GuidedDemoLocale;
     setLocale(LOCALES.includes(preferred) ? preferred : "en");
     void load().catch((err) => {
-      setLoaded(true);
       setError(err?.response?.data?.error || "טעינת הדמו נכשלה");
     });
   }, [open, context.preferredLocale, load]);
@@ -126,60 +98,63 @@ export default function AdminInteractiveDemoFollowupModal({
     () => resolveSelectedKeys({ catalog, presetKey, moduleKeys: [] }),
     [catalog, presetKey]
   );
-  const selectedRow = history.find((row) => rowId(row) === selectedId) || null;
   const phoneDigits = phone.replace(/\D/g, "");
   const phoneOk = phoneDigits.length >= 8 && phoneDigits.length <= 15;
-  const newDemoReady =
+  const formReady =
     Boolean(normalizeFullName(customerName)) && phoneOk && selectedKeys.length > 0;
-  const existingReady = Boolean(selectedRow?.linkAvailable && rowId(selectedRow));
-  const demoReady = mode === "existing" ? existingReady : newDemoReady;
-  const canSend = demoReady && whatsappReady && !submitting;
+  const selectedDemoLabel = demoContentSummary({ catalog, presetKey, selectedKeys });
+  const selectedLocale = demoLocaleNativeLabel(locale);
+  const canCreate = formReady && !creating && !sending;
+  const canSend = Boolean(invitationId && demoToken) && whatsappReady && !creating && !sending;
 
-  const selectedDemoLabel =
-    mode === "existing"
-      ? selectedRow
-        ? demoContentSummary({
-            catalog,
-            presetKey: selectedRow.presetKey || "custom",
-            selectedKeys: selectedRow.selectedModules || [],
-          }) || selectedRow.customerName || "דמו קיים"
-        : ""
-      : demoContentSummary({ catalog, presetKey, selectedKeys });
-  const selectedLocale =
-    mode === "existing"
-      ? demoLocaleNativeLabel(selectedRow?.locale || locale)
-      : demoLocaleNativeLabel(locale);
+  function clearCreatedDemo() {
+    setInvitationId("");
+    setDemoToken("");
+  }
+
+  async function createDemo() {
+    if (!canCreate) return;
+    setCreating(true);
+    setError("");
+    clearCreatedDemo();
+    try {
+      const data = await createGuidedDemo({
+        customerName: normalizeFullName(customerName),
+        customerPhone: phone.trim(),
+        businessName: context.businessName || "",
+        presetKey,
+        moduleKeys: selectedKeys,
+        channel: "whatsapp",
+        ttlHours: catalog?.defaultTtlHours || 24,
+        send: false,
+        locale,
+        sourceType: context.sourceType || "manual",
+        sourceLeadId: context.sourceLeadId || "",
+        sourceCustomerId: context.sourceCustomerId || "",
+        managedConnectionId: "US_MANAGED",
+        forceUsInteractiveDemo: true,
+      });
+      const id = invitationIdOf(data?.invitation);
+      const token = tokenFromDemoLink(data?.demoLink);
+      if (!id || !token) {
+        setError("יצירת הדמו נכשלה — לא התקבל token");
+        return;
+      }
+      setInvitationId(id);
+      setDemoToken(token);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "יצירת הדמו נכשלה");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function send() {
-    if (!demoReady) {
-      setError(MISSING_DEMO);
-      return;
-    }
-    if (!whatsappReady || submitting) return;
-    setSubmitting(true);
+    if (!invitationId || !demoToken || !whatsappReady || sending) return;
+    setSending(true);
     setError("");
     try {
-      const data =
-        mode === "existing" && selectedRow
-          ? await resendGuidedDemo(rowId(selectedRow), {
-              forceUsInteractiveDemo: true,
-            })
-          : await createGuidedDemo({
-              customerName: normalizeFullName(customerName),
-              customerPhone: phone.trim(),
-              businessName: context.businessName || "",
-              presetKey,
-              moduleKeys: selectedKeys,
-              channel: "whatsapp",
-              ttlHours: catalog?.defaultTtlHours || 24,
-              send: true,
-              locale,
-              sourceType: context.sourceType || "manual",
-              sourceLeadId: context.sourceLeadId || "",
-              sourceCustomerId: context.sourceCustomerId || "",
-              managedConnectionId: "US_MANAGED",
-              forceUsInteractiveDemo: true,
-            });
+      const data = await resendGuidedDemo(invitationId, { forceUsInteractiveDemo: true });
       if (!data?.delivery?.ok) {
         setError(data?.delivery?.error || "שליחת הדמו נכשלה");
         return;
@@ -189,7 +164,7 @@ export default function AdminInteractiveDemoFollowupModal({
     } catch (err: any) {
       setError(err?.response?.data?.error || "שליחת הדמו נכשלה");
     } finally {
-      setSubmitting(false);
+      setSending(false);
     }
   }
 
@@ -236,96 +211,50 @@ export default function AdminInteractiveDemoFollowupModal({
             </div>
             <div className="flex justify-between gap-3">
               <dt>שפת הדמו</dt>
-              <dd>{demoReady ? selectedLocale : "—"}</dd>
+              <dd>{selectedLocale}</dd>
             </div>
           </dl>
 
-          <div className="flex gap-2">
-            <button
-              type="button"
-              data-testid="interactive-demo-tab-existing"
-              onClick={() => setMode("existing")}
-              className={`rounded-full px-3 py-2 text-xs font-black ${
-                mode === "existing" ? "bg-[#6D28D9] text-white" : "bg-slate-100 text-slate-700"
-              }`}
-            >
-              בחירת דמו קיים
-            </button>
-            <button
-              type="button"
-              data-testid="interactive-demo-tab-new"
-              onClick={() => setMode("new")}
-              className={`rounded-full px-3 py-2 text-xs font-black ${
-                mode === "new" ? "bg-[#6D28D9] text-white" : "bg-slate-100 text-slate-700"
-              }`}
-            >
-              יצירת דמו חדש
-            </button>
-          </div>
-
-          {mode === "existing" ? (
-            <div className="space-y-2" data-testid="interactive-demo-existing-list">
-              {history.length ? (
-                history.map((row) => {
-                  const id = rowId(row);
-                  const active = id && id === selectedId;
-                  return (
-                    <button
-                      key={id || row.customerName}
-                      type="button"
-                      disabled={!row.linkAvailable}
-                      onClick={() => setSelectedId(id)}
-                      className={`block w-full rounded-2xl border px-3 py-2 text-right text-sm font-bold disabled:opacity-40 ${
-                        active ? "border-[#6D28D9] bg-violet-50" : "border-slate-200"
-                      }`}
-                    >
-                      <span>{demoLocaleNativeLabel(row.locale)} · {row.status || "דמו"}</span>
-                      {!row.linkAvailable ? (
-                        <span className="mt-1 block text-xs text-amber-700">{MISSING_DEMO}</span>
-                      ) : null}
-                    </button>
-                  );
-                })
-              ) : (
-                <p className="text-sm font-bold text-slate-500">{MISSING_DEMO}</p>
-              )}
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-sm font-black">
-                שפת הדמו
-                <select
-                  className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                  value={locale}
-                  onChange={(e) => setLocale(e.target.value as GuidedDemoLocale)}
-                  data-testid="interactive-demo-locale"
-                >
-                  {LOCALES.map((code) => (
-                    <option key={code} value={code}>
-                      {demoLocaleNativeLabel(code)}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-black">
+              שפת הדמו
+              <select
+                className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
+                value={locale}
+                onChange={(e) => {
+                  setLocale(e.target.value as GuidedDemoLocale);
+                  clearCreatedDemo();
+                }}
+                data-testid="interactive-demo-locale"
+              >
+                {LOCALES.map((code) => (
+                  <option key={code} value={code}>
+                    {demoLocaleNativeLabel(code)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm font-black">
+              סוג הדמו
+              <select
+                className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
+                value={presetKey}
+                onChange={(e) => {
+                  setPresetKey(e.target.value);
+                  clearCreatedDemo();
+                }}
+                data-testid="interactive-demo-preset"
+              >
+                {(presets.length ? presets : [{ key: "full", title: "דמו מלא", moduleKeys: [] }]).map(
+                  (preset) => (
+                    <option key={preset.key} value={preset.key}>
+                      {preset.title}
                     </option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-sm font-black">
-                הדמו
-                <select
-                  className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                  value={presetKey}
-                  onChange={(e) => setPresetKey(e.target.value)}
-                  data-testid="interactive-demo-preset"
-                >
-                  {(presets.length ? presets : [{ key: "full", title: "דמו מלא", moduleKeys: [] }]).map(
-                    (preset) => (
-                      <option key={preset.key} value={preset.key}>
-                        {preset.title}
-                      </option>
-                    )
-                  )}
-                </select>
-              </label>
-            </div>
-          )}
+                  )
+                )}
+              </select>
+            </label>
+          </div>
 
           <section
             className="rounded-2xl border border-slate-200 p-4"
@@ -341,11 +270,16 @@ export default function AdminInteractiveDemoFollowupModal({
             >
               {INTERACTIVE_DEMO_BUTTON}
             </span>
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              {selectedLocale}
+              {selectedDemoLabel ? ` · ${selectedDemoLabel}` : ""}
+              {demoToken ? " · הדמו מוכן לשליחה" : ""}
+            </p>
           </section>
 
-          {loaded && !demoReady ? (
+          {!demoToken ? (
             <p className="text-sm font-bold text-amber-800" data-testid="interactive-demo-missing">
-              {MISSING_DEMO}
+              {CREATE_BEFORE_SEND}
             </p>
           ) : null}
           {!whatsappReady && whatsappReason ? (
@@ -354,7 +288,16 @@ export default function AdminInteractiveDemoFollowupModal({
           {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
         </div>
 
-        <div className="border-t border-slate-100 px-5 py-4">
+        <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4">
+          <button
+            type="button"
+            data-testid="interactive-demo-create"
+            disabled={!canCreate}
+            onClick={() => void createDemo()}
+            className="w-full rounded-2xl border border-[#6D28D9] px-4 py-3 text-sm font-black text-[#6D28D9] disabled:opacity-40"
+          >
+            {creating ? "יוצר דמו..." : "יצירת דמו חדש"}
+          </button>
           <button
             type="button"
             data-testid="interactive-demo-send"
@@ -362,7 +305,7 @@ export default function AdminInteractiveDemoFollowupModal({
             onClick={() => void send()}
             className="w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
           >
-            {submitting ? "שולח..." : "שלח דמו ב-WhatsApp"}
+            {sending ? "שולח..." : "שלח דמו ב-WhatsApp"}
           </button>
         </div>
       </div>
