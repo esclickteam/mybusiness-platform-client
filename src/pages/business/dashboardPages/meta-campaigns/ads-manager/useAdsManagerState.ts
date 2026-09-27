@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { createDefaultAdsManagerState } from "./adsManagerDefaults";
+import { applyGuidedDemoCampaignDraft } from "./guidedDemoAdsDraft";
 import {
   adsManagerStateFromAiProposal,
   type AiProposalHandoff,
@@ -203,7 +205,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
       setState((prev) => {
         const adSetId = prev.adSets[0]?.id || "adset_1";
         const adId = prev.ads[0]?.id || "ad_1";
-        return {
+        const next: AdsManagerState = {
           ...prev,
           selectedLevel: "campaign",
           selectedId: prev.campaign.id,
@@ -244,6 +246,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
           saveStatus: "saved",
           lastSavedAt: new Date().toISOString(),
         };
+        return isGuidedDemoActive() ? applyGuidedDemoCampaignDraft(next) : next;
       });
     },
     [t]

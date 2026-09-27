@@ -1,6 +1,8 @@
 /**
  * CRM money formatting — Israeli businesses display Shekels (₪ / ILS).
+ * A guided demo always uses its demo currency (ILS for he, USD otherwise).
  */
+import { formatDemoMoney, getDemoCurrency } from "../guidedDemo/demoCurrency";
 
 export type CrmMoneyFormat = {
   currency: string;
@@ -28,6 +30,9 @@ export function detectCrmCurrency(user?: {
   locale?: string;
   phone?: string;
 } | null): CrmMoneyFormat {
+  const demo = getDemoCurrency();
+  if (demo) return { currency: demo.code, locale: demo.code === "ILS" ? "he-IL" : "en-US" };
+
   const currency = String(
     user?.business?.currency || user?.currency || ""
   ).toUpperCase();
@@ -67,6 +72,7 @@ export function formatCrmMoney(
   value?: number | null,
   user?: Parameters<typeof detectCrmCurrency>[0]
 ) {
+  if (getDemoCurrency()) return formatDemoMoney(value);
   const detected = detectCrmCurrency(user);
   const amount = Number(value || 0);
 
@@ -85,4 +91,19 @@ export function formatCrmMoney(
 
 export function formatShekels(value?: number | null) {
   return formatCrmMoney(value, null);
+}
+
+/** Currency mark for input prefixes and icons. */
+export function crmCurrencySymbol(user?: Parameters<typeof detectCrmCurrency>[0]) {
+  const demo = getDemoCurrency();
+  if (demo) return demo.symbol;
+  const { currency, locale } = detectCrmCurrency(user);
+  try {
+    const part = new Intl.NumberFormat(locale, { style: "currency", currency })
+      .formatToParts(0)
+      .find((p) => p.type === "currency");
+    return part?.value || currency;
+  } catch {
+    return "₪";
+  }
 }

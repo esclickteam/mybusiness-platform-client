@@ -132,7 +132,7 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-[140px_1fr_90px] gap-2">
+        <div className="grid grid-cols-[140px_1fr_90px] gap-2" data-demo-target="meta-budget">
           <select
             className={metaSelectClass}
             value={campaign.budgetType}

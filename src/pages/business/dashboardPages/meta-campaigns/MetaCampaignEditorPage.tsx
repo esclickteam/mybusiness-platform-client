@@ -93,6 +93,7 @@ import {
   META_PREVIEW_FORMATS,
   OBJECTIVE_OPTIONS,
   resolveAdAccountId,
+  resolveCampaignCurrency,
   resolvePreviewFormatsForPlacements,
   statusTone,
   validateLeadFormBuilder,
@@ -183,7 +184,7 @@ export default function MetaCampaignEditorPage() {
     LeadFormCustomQuestionDraft[]
   >([]);
 
-  const currency = connection?.selectedAdAccount?.currency || "ILS";
+  const currency = resolveCampaignCurrency(connection?.selectedAdAccount?.currency);
   const accountIdLabel = resolveAdAccountId(connection?.selectedAdAccount);
   const isLeads = form.objective.includes("LEAD");
 

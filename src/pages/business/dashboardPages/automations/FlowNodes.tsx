@@ -28,6 +28,13 @@ import {
 } from "./automationFlowTypes";
 import { getAutomationActionCost } from "./automationActionCost";
 import { MixedBidiText } from "./automation-builder/bidiText";
+import { formatDemoMoney, getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
+
+function whatsappMessagePrice() {
+  const demo = getDemoCurrency();
+  if (!demo) return "₪0.20";
+  return formatDemoMoney(demo.code === "ILS" ? 0.2 : 0.06);
+}
 
 const ICONS = {
   trigger: Play,
@@ -135,7 +142,7 @@ function FlowNodeShell({
   data: Record<string, unknown>;
   selected?: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const meta = TYPE_META[type];
   const triggerKey = String(data.triggerKey || "");
   const TriggerIcon =
@@ -145,7 +152,15 @@ function FlowNodeShell({
         Play
       : ICONS[type];
   const Icon = type === "trigger" ? TriggerIcon : (type === "action" && String(data.actionKey || "").startsWith("ai_") ? Sparkles : ICONS[type]);
-  const title = String(data.label || meta.title);
+  const rawTitle = String(data.label || meta.title);
+  // Saved trigger labels may carry the Hebrew server catalog copy.
+  const title =
+    type === "trigger" &&
+    triggerKey &&
+    /[\u0590-\u05FF]/.test(rawTitle) &&
+    !String(i18n?.language || "").startsWith("he")
+      ? t(`automations.catalog.triggers.${triggerKey}.label`, { defaultValue: rawTitle })
+      : rawTitle;
   const summary = nodeSummary(data, type);
   const routeCount = clampRouteCount(data.routeCount, 1);
   const router = type === "router" ? ensureRouterPaths(data) : null;
@@ -213,12 +228,11 @@ function FlowNodeShell({
       {isWhatsAppAction ? (
         <span
           className="af-node__wa-cost"
-          title={t(
-            "automations.flow.waCostTitle",
-            "₪0.20 per WhatsApp message"
-          )}
+          title={t("automations.flow.waCostTitle", "{{price}} per WhatsApp message", {
+            price: whatsappMessagePrice(),
+          })}
         >
-          {t("automations.flow.waCost", "💬 ₪0.20")}
+          {t("automations.flow.waCost", "💬 {{price}}", { price: whatsappMessagePrice() })}
         </span>
       ) : null}
       <MixedBidiText as="strong" className="af-node__title" text={title} />

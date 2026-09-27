@@ -10,6 +10,7 @@ import {
   readGuidedDemoSession,
   writeGuidedDemoSession,
 } from "./sessionStore";
+import { demoStepSuccess } from "./demoLocale";
 
 type Listener = (session: any) => void;
 
@@ -29,7 +30,8 @@ function getCurrentStep(session: any) {
 function maybeDispatchSuccessToast(prevSession: any, nextSession: any) {
   if (!prevSession || !nextSession) return;
   const prevStep = getCurrentStep(prevSession);
-  if (!prevStep?.successFeedback) return;
+  const message = prevStep ? demoStepSuccess(prevStep.id, prevStep.successFeedback) : "";
+  if (!message) return;
   const prevId = prevStep.id;
   const completed = nextSession.completedStepIds || [];
   const advanced =
@@ -40,7 +42,7 @@ function maybeDispatchSuccessToast(prevSession: any, nextSession: any) {
   if (advanced || (prevId && completed.includes(prevId) && nextSession.status === "completed")) {
     window.dispatchEvent(
       new CustomEvent("guided-demo:toast", {
-        detail: { message: prevStep.successFeedback },
+        detail: { message },
       })
     );
   }

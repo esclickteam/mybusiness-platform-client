@@ -5,6 +5,339 @@
 
 type StepCopy = { title: string; instruction: string };
 
+const CAMPAIGN_TOUR: Record<string, Record<string, StepCopy>> = {
+  en: {
+    "meta-create": {
+      title: "Create a campaign",
+      instruction: "Click the create campaign button to open Ads Manager. Nothing is sent to Meta in the demo.",
+    },
+    "meta-objective": {
+      title: "Choose an objective",
+      instruction: "Awareness, Traffic, Engagement, Leads, or Sales. Leads is selected for this photography studio.",
+    },
+    "meta-objective-continue": {
+      title: "Continue",
+      instruction: "Click Continue to build the campaign.",
+    },
+    "meta-budget": {
+      title: "Daily budget",
+      instruction: "The budget is set at campaign level. The demo starts you at $25/day.",
+    },
+    "meta-open-adset": {
+      title: "Open the ad set",
+      instruction: "Click the ad set to choose who sees the ad.",
+    },
+    "meta-audience": {
+      title: "Audience",
+      instruction: "Location, ages 25–45, interests, and a custom audience of recent website visitors.",
+    },
+    "meta-open-ad": {
+      title: "Open the ad",
+      instruction: "Click the ad to set up the creative.",
+    },
+    "meta-creative": {
+      title: "Creative",
+      instruction: "Media, primary text, headline, and call to action. Leads arrive through a quick instant form.",
+    },
+    "meta-publish": {
+      title: "Review & publish",
+      instruction: "Click Publish. In the demo the campaign is created locally — nothing is sent to Meta.",
+    },
+    "meta-metrics": {
+      title: "Campaign metrics",
+      instruction: "Spend, leads, CPL, CTR, and ROAS. These figures are demo data, not a live Meta account.",
+    },
+    "meta-open-campaign": {
+      title: "Your new campaign",
+      instruction: "Your campaign is at the top of the list. Click it to open the details.",
+    },
+    "meta-open-leads": {
+      title: "Leads go to the CRM",
+      instruction: "Click View leads in CRM to see the people who came from the campaign.",
+    },
+  },
+  he: {
+    "meta-create": {
+      title: "יצירת קמפיין",
+      instruction: "לחצו על כפתור יצירת הקמפיין כדי לפתוח את מנהל המודעות. בדמו שום דבר לא נשלח ל-Meta.",
+    },
+    "meta-objective": {
+      title: "בחירת מטרה",
+      instruction: "מודעוּת, תנועה, מעורבות, לידים או מכירות. לסטודיו הצילום נבחרה המטרה לידים.",
+    },
+    "meta-objective-continue": {
+      title: "המשך",
+      instruction: "לחצו על «המשך» כדי לבנות את הקמפיין.",
+    },
+    "meta-budget": {
+      title: "תקציב יומי",
+      instruction: "התקציב נקבע ברמת הקמפיין. בדמו מתחילים ב-₪90 ליום.",
+    },
+    "meta-open-adset": {
+      title: "פתיחת סט המודעות",
+      instruction: "לחצו על סט המודעות כדי לבחור מי יראה את המודעה.",
+    },
+    "meta-audience": {
+      title: "קהל יעד",
+      instruction: "מיקום, גילאי 25–45, תחומי עניין וקהל מותאם של מבקרי האתר האחרונים.",
+    },
+    "meta-open-ad": {
+      title: "פתיחת המודעה",
+      instruction: "לחצו על המודעה כדי להגדיר את הקריאייטיב.",
+    },
+    "meta-creative": {
+      title: "קריאייטיב",
+      instruction: "מדיה, טקסט ראשי, כותרת וקריאה לפעולה. הלידים מגיעים דרך טופס מהיר.",
+    },
+    "meta-publish": {
+      title: "סקירה ופרסום",
+      instruction: "לחצו על «פרסום». בדמו הקמפיין נוצר מקומית — שום דבר לא נשלח ל-Meta.",
+    },
+    "meta-metrics": {
+      title: "ביצועי הקמפיין",
+      instruction: "הוצאה, לידים, CPL, CTR ו-ROAS. הנתונים הם נתוני דמו ולא חשבון Meta חי.",
+    },
+    "meta-open-campaign": {
+      title: "הקמפיין החדש שלכם",
+      instruction: "הקמפיין שלכם מופיע ראשון ברשימה. לחצו עליו כדי לפתוח את הפרטים.",
+    },
+    "meta-open-leads": {
+      title: "הלידים עוברים ל-CRM",
+      instruction: "לחצו על «צפייה בלידים ב-CRM» כדי לראות מי הגיע מהקמפיין.",
+    },
+  },
+  es: {
+    "meta-create": {
+      title: "Crear una campaña",
+      instruction: "Haga clic en el botón de crear campaña para abrir el Administrador de anuncios. En la demo no se envía nada a Meta.",
+    },
+    "meta-objective": {
+      title: "Elegir un objetivo",
+      instruction: "Reconocimiento, Tráfico, Interacción, Leads o Ventas. Para este estudio de fotografía está seleccionado Leads.",
+    },
+    "meta-objective-continue": {
+      title: "Continuar",
+      instruction: "Haga clic en Continuar para crear la campaña.",
+    },
+    "meta-budget": {
+      title: "Presupuesto diario",
+      instruction: "El presupuesto se define a nivel de campaña. La demo empieza con $25/día.",
+    },
+    "meta-open-adset": {
+      title: "Abrir el conjunto de anuncios",
+      instruction: "Haga clic en el conjunto de anuncios para elegir quién ve el anuncio.",
+    },
+    "meta-audience": {
+      title: "Audiencia",
+      instruction: "Ubicación, edades de 25 a 45, intereses y una audiencia personalizada de visitantes recientes del sitio.",
+    },
+    "meta-open-ad": {
+      title: "Abrir el anuncio",
+      instruction: "Haga clic en el anuncio para configurar la creatividad.",
+    },
+    "meta-creative": {
+      title: "Creatividad",
+      instruction: "Imagen, texto principal, título y llamada a la acción. Los leads llegan con un formulario instantáneo.",
+    },
+    "meta-publish": {
+      title: "Revisar y publicar",
+      instruction: "Haga clic en Publicar. En la demo la campaña se crea localmente y no se envía nada a Meta.",
+    },
+    "meta-metrics": {
+      title: "Métricas de la campaña",
+      instruction: "Gasto, leads, CPL, CTR y ROAS. Son datos demo, no una cuenta real de Meta.",
+    },
+    "meta-open-campaign": {
+      title: "Su nueva campaña",
+      instruction: "Su campaña aparece primera en la lista. Haga clic para abrir los detalles.",
+    },
+    "meta-open-leads": {
+      title: "Los leads llegan al CRM",
+      instruction: "Haga clic en Ver leads en el CRM para ver quién llegó desde la campaña.",
+    },
+  },
+  "pt-BR": {
+    "meta-create": {
+      title: "Criar uma campanha",
+      instruction: "Clique no botão de criar campanha para abrir o Gerenciador de anúncios. Na demo nada é enviado à Meta.",
+    },
+    "meta-objective": {
+      title: "Escolher um objetivo",
+      instruction: "Reconhecimento, Tráfego, Engajamento, Leads ou Vendas. Para este estúdio de fotografia, Leads está selecionado.",
+    },
+    "meta-objective-continue": {
+      title: "Continuar",
+      instruction: "Clique em Continuar para montar a campanha.",
+    },
+    "meta-budget": {
+      title: "Orçamento diário",
+      instruction: "O orçamento é definido no nível da campanha. A demo começa com $25/dia.",
+    },
+    "meta-open-adset": {
+      title: "Abrir o conjunto de anúncios",
+      instruction: "Clique no conjunto de anúncios para escolher quem vê o anúncio.",
+    },
+    "meta-audience": {
+      title: "Público",
+      instruction: "Localização, idades de 25 a 45, interesses e um público personalizado de visitantes recentes do site.",
+    },
+    "meta-open-ad": {
+      title: "Abrir o anúncio",
+      instruction: "Clique no anúncio para configurar o criativo.",
+    },
+    "meta-creative": {
+      title: "Criativo",
+      instruction: "Mídia, texto principal, título e chamada para ação. Os leads chegam por um formulário instantâneo.",
+    },
+    "meta-publish": {
+      title: "Revisar e publicar",
+      instruction: "Clique em Publicar. Na demo a campanha é criada localmente e nada é enviado à Meta.",
+    },
+    "meta-metrics": {
+      title: "Métricas da campanha",
+      instruction: "Gasto, leads, CPL, CTR e ROAS. São dados demo, não uma conta real da Meta.",
+    },
+    "meta-open-campaign": {
+      title: "Sua nova campanha",
+      instruction: "Sua campanha aparece no topo da lista. Clique nela para abrir os detalhes.",
+    },
+    "meta-open-leads": {
+      title: "Os leads vão para o CRM",
+      instruction: "Clique em Ver leads no CRM para ver quem veio da campanha.",
+    },
+  },
+  ar: {
+    "meta-create": {
+      title: "إنشاء حملة",
+      instruction: "انقروا على زر إنشاء حملة لفتح مدير الإعلانات. في العرض التجريبي لا يُرسل أي شيء إلى Meta.",
+    },
+    "meta-objective": {
+      title: "اختيار الهدف",
+      instruction: "الوعي أو الزيارات أو التفاعل أو العملاء المحتملون أو المبيعات. تم اختيار العملاء المحتملين لاستوديو التصوير.",
+    },
+    "meta-objective-continue": {
+      title: "متابعة",
+      instruction: "انقروا على «متابعة» لبناء الحملة.",
+    },
+    "meta-budget": {
+      title: "الميزانية اليومية",
+      instruction: "تُحدد الميزانية على مستوى الحملة. يبدأ العرض التجريبي بـ $25 / يوم.",
+    },
+    "meta-open-adset": {
+      title: "فتح المجموعة الإعلانية",
+      instruction: "انقروا على المجموعة الإعلانية لاختيار من يرى الإعلان.",
+    },
+    "meta-audience": {
+      title: "الجمهور",
+      instruction: "الموقع والأعمار من 25 إلى 45 والاهتمامات وجمهور مخصص من زوار الموقع مؤخرًا.",
+    },
+    "meta-open-ad": {
+      title: "فتح الإعلان",
+      instruction: "انقروا على الإعلان لإعداد المحتوى الإبداعي.",
+    },
+    "meta-creative": {
+      title: "المحتوى الإبداعي",
+      instruction: "الوسائط والنص الأساسي والعنوان وزر الدعوة لاتخاذ إجراء. يصل العملاء عبر نموذج فوري.",
+    },
+    "meta-publish": {
+      title: "المراجعة والنشر",
+      instruction: "انقروا على «نشر». في العرض التجريبي تُنشأ الحملة محليًا ولا يُرسل أي شيء إلى Meta.",
+    },
+    "meta-metrics": {
+      title: "مقاييس الحملة",
+      instruction: "الإنفاق والعملاء وCPL وCTR وROAS. هذه بيانات تجريبية وليست حساب Meta حقيقيًا.",
+    },
+    "meta-open-campaign": {
+      title: "حملتكم الجديدة",
+      instruction: "حملتكم في أعلى القائمة. انقروا عليها لفتح التفاصيل.",
+    },
+    "meta-open-leads": {
+      title: "العملاء ينتقلون إلى CRM",
+      instruction: "انقروا على «عرض العملاء في CRM» لرؤية من وصل من الحملة.",
+    },
+  },
+};
+
+/** Module steps whose catalog copy is Hebrew only; Hebrew demos use the catalog. */
+const MODULE_TOUR: Record<string, Record<string, StepCopy>> = {
+  en: {
+    "msg-intro": { title: "Messages", instruction: "Customer conversations live here. In the demo we only send an internal sample message." },
+    "msg-demo-send": { title: "Send a sample", instruction: "Click the sample message button. It appears in the thread marked as not sent to a real customer." },
+    "email-intro": { title: "Email", instruction: "Connecting Gmail or Outlook lets automations send email. The live connection is blocked in the demo — you'll see how it works without OAuth." },
+    "email-blocked": { title: "Nothing goes out", instruction: "The demo doesn't connect a real account or send email. With a real account you connect once and you're set." },
+    "push-intro": { title: "Notification center", instruction: "Alerts about leads, appointments, and important activity show up here. The demo creates sample alerts only — no real push to a device." },
+    "push-unread": { title: "Unread badge", instruction: "The unread indicator helps you never miss a new inquiry. In the demo it's a sample only." },
+    "push-wrap": { title: "No real noise", instruction: "The demo sends no push to real devices. In a live business the same alerts arrive in real time." },
+    "store-intro": { title: "Store and orders", instruction: "You can sell from your website. The demo shows a sample catalog — no real payment." },
+    "store-open-site": { title: "Open the site", instruction: "Open the studio website to get to the store." },
+    "portal-intro": { title: "Client portal", instruction: "Clients can see their file, appointments, and documents. The demo has no real orders and no charges." },
+    "plugins-intro": { title: "Add-ons", instruction: "Add-ons connect forms, a store, accessibility, and more. In the demo you can view details — with no charge." },
+    "plugins-open": { title: "Demo site", instruction: "Open the website to get to the add-ons." },
+    "build-intro": { title: "Business page", instruction: "This is the public Bizuply profile page — name, description, gallery, and reviews. It's different from a full website." },
+    "build-nav": { title: "Edit the business page", instruction: "Click Business page in the menu." },
+    "build-details": { title: "Editing details", instruction: "Update the name, description, phone, and category here. Changes show up in the preview right away." },
+    "build-preview": { title: "What customers see", instruction: "The side panel previews the public page. You can also open the profile the way a customer sees it." },
+    "build-view-public": { title: "View as a customer", instruction: "Click View profile to see the page the way a customer does." },
+  },
+  es: {
+    "msg-intro": { title: "Mensajes", instruction: "Aquí se reúnen las conversaciones con clientes. En la demo solo enviamos un mensaje de muestra interno." },
+    "msg-demo-send": { title: "Enviar una muestra", instruction: "Haga clic en el botón de mensaje de muestra. Aparece en la conversación marcado como no enviado a un cliente real." },
+    "email-intro": { title: "Correo electrónico", instruction: "Conectar Gmail u Outlook permite enviar correos desde automatizaciones. En la demo la conexión real está bloqueada: verá cómo funciona sin OAuth." },
+    "email-blocked": { title: "No sale nada", instruction: "La demo no conecta una cuenta real ni envía correos. Con una cuenta real se conecta una sola vez y listo." },
+    "push-intro": { title: "Centro de notificaciones", instruction: "Aquí aparecen avisos de leads, citas y actividad importante. La demo solo crea avisos de muestra, sin push real al dispositivo." },
+    "push-unread": { title: "Indicador de no leídos", instruction: "El indicador de no leídos le ayuda a no perder una consulta nueva. En la demo es solo una muestra." },
+    "push-wrap": { title: "Sin ruido real", instruction: "La demo no envía push a dispositivos reales. En un negocio activo, los mismos avisos llegan en tiempo real." },
+    "store-intro": { title: "Tienda y pedidos", instruction: "Puede vender desde su sitio. La demo muestra un catálogo de ejemplo, sin pagos reales." },
+    "store-open-site": { title: "Abrir el sitio", instruction: "Abra el sitio del estudio para llegar a la tienda." },
+    "portal-intro": { title: "Portal de clientes", instruction: "Los clientes pueden ver su expediente, citas y archivos. La demo no tiene pedidos reales ni cobros." },
+    "plugins-intro": { title: "Complementos", instruction: "Los complementos conectan formularios, tienda, accesibilidad y más. En la demo puede ver los detalles sin costo." },
+    "plugins-open": { title: "Sitio demo", instruction: "Abra el sitio para llegar a los complementos." },
+    "build-intro": { title: "Página del negocio", instruction: "Esta es la página de perfil pública en Bizuply: nombre, descripción, galería y reseñas. Es distinta de un sitio completo." },
+    "build-nav": { title: "Editar la página del negocio", instruction: "Haga clic en Página del negocio en el menú." },
+    "build-details": { title: "Editar los datos", instruction: "Aquí actualiza el nombre, la descripción, el teléfono y la categoría. Los cambios aparecen al instante en la vista previa." },
+    "build-preview": { title: "Lo que ve el cliente", instruction: "El panel lateral muestra la vista previa de la página pública. También puede abrir el perfil como lo ve un cliente." },
+    "build-view-public": { title: "Ver como cliente", instruction: "Haga clic en Ver perfil para ver la página como la ve un cliente." },
+  },
+  "pt-BR": {
+    "msg-intro": { title: "Mensagens", instruction: "As conversas com clientes ficam aqui. Na demo enviamos apenas uma mensagem de exemplo interna." },
+    "msg-demo-send": { title: "Enviar um exemplo", instruction: "Clique no botão de mensagem de exemplo. Ela aparece na conversa marcada como não enviada a um cliente real." },
+    "email-intro": { title: "E-mail", instruction: "Conectar Gmail ou Outlook permite enviar e-mails pelas automações. Na demo a conexão real fica bloqueada — você vê como funciona sem OAuth." },
+    "email-blocked": { title: "Nada é enviado", instruction: "A demo não conecta uma conta real nem envia e-mails. Com uma conta real você conecta uma vez e pronto." },
+    "push-intro": { title: "Central de notificações", instruction: "Aqui aparecem alertas de leads, compromissos e atividades importantes. A demo cria apenas alertas de exemplo, sem push real no dispositivo." },
+    "push-unread": { title: "Indicador de não lidas", instruction: "O indicador de não lidas ajuda a não perder um novo contato. Na demo é só um exemplo." },
+    "push-wrap": { title: "Sem barulho real", instruction: "A demo não envia push para dispositivos reais. Em um negócio ativo, os mesmos alertas chegam em tempo real." },
+    "store-intro": { title: "Loja e pedidos", instruction: "Você pode vender pelo site. A demo mostra um catálogo de exemplo, sem pagamento real." },
+    "store-open-site": { title: "Abrir o site", instruction: "Abra o site do estúdio para chegar à loja." },
+    "portal-intro": { title: "Portal do cliente", instruction: "Os clientes podem ver a ficha, os compromissos e os arquivos. A demo não tem pedidos reais nem cobranças." },
+    "plugins-intro": { title: "Complementos", instruction: "Os complementos conectam formulários, loja, acessibilidade e mais. Na demo você pode ver os detalhes sem custo." },
+    "plugins-open": { title: "Site demo", instruction: "Abra o site para chegar aos complementos." },
+    "build-intro": { title: "Página do negócio", instruction: "Esta é a página de perfil pública no Bizuply — nome, descrição, galeria e avaliações. É diferente de um site completo." },
+    "build-nav": { title: "Editar a página do negócio", instruction: "Clique em Página do negócio no menu." },
+    "build-details": { title: "Editar os dados", instruction: "Aqui você atualiza nome, descrição, telefone e categoria. As mudanças aparecem na hora na prévia." },
+    "build-preview": { title: "O que o cliente vê", instruction: "O painel lateral mostra a prévia da página pública. Você também pode abrir o perfil como o cliente vê." },
+    "build-view-public": { title: "Ver como cliente", instruction: "Clique em Ver perfil para ver a página como o cliente vê." },
+  },
+  ar: {
+    "msg-intro": { title: "الرسائل", instruction: "تتجمع هنا المحادثات مع العملاء. في العرض التجريبي نرسل رسالة تجريبية داخلية فقط." },
+    "msg-demo-send": { title: "إرسال رسالة تجريبية", instruction: "انقروا على زر الرسالة التجريبية. ستظهر في المحادثة مع إشارة أنها لم تُرسل إلى عميل حقيقي." },
+    "email-intro": { title: "البريد الإلكتروني", instruction: "ربط Gmail أو Outlook يتيح الإرسال من الأتمتة. في العرض التجريبي الاتصال الحقيقي محظور — سترون كيف يعمل دون OAuth." },
+    "email-blocked": { title: "لا يُرسل شيء", instruction: "العرض التجريبي لا يربط حسابًا حقيقيًا ولا يرسل بريدًا. مع حساب حقيقي تربطون مرة واحدة وتتابعون." },
+    "push-intro": { title: "مركز الإشعارات", instruction: "تظهر هنا تنبيهات العملاء المحتملين والمواعيد والنشاط المهم. العرض التجريبي ينشئ تنبيهات تجريبية فقط دون إشعار حقيقي للجهاز." },
+    "push-unread": { title: "مؤشر غير المقروء", instruction: "مؤشر الإشعارات غير المقروءة يساعدكم على عدم تفويت أي طلب جديد. في العرض التجريبي هذا للتوضيح فقط." },
+    "push-wrap": { title: "بلا إزعاج حقيقي", instruction: "العرض التجريبي لا يرسل إشعارات لأجهزة حقيقية. في نشاط حقيقي تصل التنبيهات نفسها فورًا." },
+    "store-intro": { title: "المتجر والطلبات", instruction: "يمكنكم البيع من الموقع. يعرض العرض التجريبي كتالوجًا نموذجيًا دون دفع حقيقي." },
+    "store-open-site": { title: "افتحوا الموقع", instruction: "افتحوا موقع الاستوديو للوصول إلى المتجر." },
+    "portal-intro": { title: "بوابة العملاء", instruction: "يمكن للعملاء رؤية ملفهم ومواعيدهم ومستنداتهم. لا توجد في العرض التجريبي طلبات حقيقية ولا رسوم." },
+    "plugins-intro": { title: "الإضافات", instruction: "تربط الإضافات النماذج والمتجر وإمكانية الوصول وغيرها. في العرض التجريبي يمكنكم رؤية التفاصيل دون رسوم." },
+    "plugins-open": { title: "موقع العرض", instruction: "افتحوا الموقع للوصول إلى الإضافات." },
+    "build-intro": { title: "صفحة النشاط التجاري", instruction: "هذه صفحة الملف العام في Bizuply — الاسم والوصف والمعرض والتقييمات. وهي تختلف عن موقع كامل." },
+    "build-nav": { title: "تعديل صفحة النشاط التجاري", instruction: "انقروا على صفحة النشاط التجاري في القائمة." },
+    "build-details": { title: "تعديل التفاصيل", instruction: "هنا تحدّثون الاسم والوصف والهاتف والفئة. تظهر التغييرات فورًا في المعاينة." },
+    "build-preview": { title: "ما يراه العميل", instruction: "تعرض اللوحة الجانبية معاينة للصفحة العامة. ويمكنكم أيضًا فتح الملف كما يراه العميل." },
+    "build-view-public": { title: "العرض كعميل", instruction: "انقروا على عرض الملف لرؤية الصفحة كما يراها العميل." },
+  },
+};
+
 const STEPS: Record<string, Record<string, StepCopy>> = {
   en: {
     "wa-overview": {
@@ -285,7 +618,14 @@ function localeBucket(language?: string) {
 
 export function tourStepText(stepId: string, language?: string) {
   const bucket = localeBucket(language);
-  return STEPS[bucket]?.[stepId] || STEPS.en[stepId] || null;
+  const own =
+    CAMPAIGN_TOUR[bucket]?.[stepId] ||
+    MODULE_TOUR[bucket]?.[stepId] ||
+    STEPS[bucket]?.[stepId];
+  if (own) return own;
+  // Catalog copy is Hebrew, so a Hebrew demo must not fall back to English.
+  if (bucket === "he") return null;
+  return CAMPAIGN_TOUR.en[stepId] || MODULE_TOUR.en[stepId] || STEPS.en[stepId] || null;
 }
 
 export function tourModuleTitle(moduleKey: string, language?: string) {

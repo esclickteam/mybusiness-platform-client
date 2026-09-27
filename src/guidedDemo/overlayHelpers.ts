@@ -90,10 +90,35 @@ export function targetLayoutKey(el: Element) {
   return `${Math.round(rect.top)}:${Math.round(rect.left)}:${Math.round(rect.width)}:${Math.round(rect.height)}`;
 }
 
+const MEDIA_OR_FIELD = "input, textarea, select, img, video, canvas, svg, iframe, picture";
+
+function isStyleVisible(el: Element) {
+  if (typeof window === "undefined") return true;
+  const style = window.getComputedStyle(el);
+  if (style.visibility === "hidden" || style.display === "none") return false;
+  return Number(style.opacity) !== 0;
+}
+
+/**
+ * A tour target must show something: text, a label, a form control or media.
+ * Empty wrappers produce the blank highlight rectangle users complained about.
+ */
+export function hasMeaningfulContent(el: Element | null): boolean {
+  if (!el || !el.isConnected) return false;
+  if (el.matches(MEDIA_OR_FIELD)) return true;
+  const html = el as HTMLElement;
+  const text = String(html.innerText ?? html.textContent ?? "").trim();
+  if (text) return true;
+  if (html.getAttribute("aria-label") || html.getAttribute("title")) return true;
+  return Boolean(el.querySelector(MEDIA_OR_FIELD));
+}
+
 export function isTargetReady(el: Element | null) {
   if (!el || isDemoPageLoading()) return false;
+  if (!el.isConnected) return false;
   const rect = el.getBoundingClientRect();
-  return rect.width > 2 && rect.height > 2;
+  if (!(rect.width > 2 && rect.height > 2)) return false;
+  return isStyleVisible(el) && hasMeaningfulContent(el);
 }
 
 export function scrollTargetFullyVisible(el: Element, headerOffset = DEMO_HEADER_OFFSET) {
@@ -181,18 +206,28 @@ export function calcHand(hole: Hole, vw = 1280, vh = 720): HandPos {
   };
 }
 
+function controlHasLabel(el: Element) {
+  if (el.matches("input, textarea, select")) return true;
+  const html = el as HTMLElement;
+  return Boolean(
+    String(html.innerText ?? html.textContent ?? "").trim() ||
+      html.getAttribute("aria-label") ||
+      html.getAttribute("title"),
+  );
+}
+
 function pickInnerControl(wrapper: Element): Element | null {
   const controls = Array.from(wrapper.querySelectorAll(CONTROL_SELECTOR));
   const usable = controls.filter((el) => {
     const rect = el.getBoundingClientRect();
-    return rect.width >= 20 && rect.height >= 18;
+    return rect.width >= 20 && rect.height >= 18 && isStyleVisible(el) && hasMeaningfulContent(el);
   });
   if (!usable.length) return null;
-  usable.sort((a, b) => {
-    const ar = a.getBoundingClientRect();
-    const br = b.getBoundingClientRect();
-    return ar.width * ar.height - br.width * br.height;
-  });
+  const rank = (el: Element) => {
+    const rect = el.getBoundingClientRect();
+    return rect.width * rect.height + (controlHasLabel(el) ? 0 : 1e9);
+  };
+  usable.sort((a, b) => rank(a) - rank(b));
   return usable[0];
 }
 
@@ -252,16 +287,11 @@ export function findDemoTarget(selector?: string | null, kind?: DemoStepKind): E
     if (visual) return visual;
   }
   const matches = Array.from(document.querySelectorAll(`[data-demo-target="${selector}"]`));
-  const visible = matches.filter((el) => {
+  const pool = matches.filter((el) => {
     const rect = el.getBoundingClientRect();
     if (rect.width <= 2 || rect.height <= 2) return false;
-    if (typeof window === "undefined") return true;
-    const style = window.getComputedStyle(el);
-    if (style.visibility === "hidden" || style.display === "none") return false;
-    if (Number(style.opacity) === 0) return false;
-    return true;
+    return isStyleVisible(el) && hasMeaningfulContent(el);
   });
-  const pool = visible.length ? visible : matches;
   const viewport =
     typeof window === "undefined" ? 1 : Math.max(1, window.innerWidth * window.innerHeight);
   const ranked = [...pool].sort(

@@ -834,7 +834,8 @@
         "whatsapp": "WhatsApp",
         "subscriptions": "Subscriptions and billing",
         "tasks": "Tasks and team",
-        "email": "Email"
+        "email": "Email",
+        "marketing": "Marketing"
       },
       "palette": {
         "resultPrefix": "Result · {{label}}",
@@ -1057,6 +1058,94 @@
           "title": "Nudge for an inactive client",
           "reason": "Sent to clients with no recent activity."
         }
+      },
+      "triggers": {
+        "new_lead": {
+          "label": "New lead in CRM",
+          "description": "When a new lead enters the CRM"
+        },
+        "lead_status_changed": {
+          "label": "Lead status changed",
+          "description": "When a lead's status is updated"
+        },
+        "form_submitted": {
+          "label": "Form submitted",
+          "description": "When a website form is submitted"
+        },
+        "birthday": {
+          "label": "Birthday",
+          "description": "Yearly trigger on a client's or lead's birthday"
+        },
+        "referral_conversion": {
+          "label": "Referral converted",
+          "description": "When a referred friend completes a conversion"
+        },
+        "popup_conversion": {
+          "label": "Popup conversion",
+          "description": "When an exit popup converts"
+        },
+        "qr_scan": {
+          "label": "QR scan",
+          "description": "When a dynamic QR code is scanned"
+        },
+        "client_created": {
+          "label": "New client in CRM",
+          "description": "When a new client is created in the CRM"
+        },
+        "client_inactive": {
+          "label": "Inactive client",
+          "description": "A client with no activity for a set period"
+        },
+        "appointment_created": {
+          "label": "Appointment booked",
+          "description": "When an appointment is booked in the calendar"
+        },
+        "appointment_cancelled": {
+          "label": "Appointment cancelled",
+          "description": "When an appointment is cancelled"
+        },
+        "appointment_reminder": {
+          "label": "Appointment reminder",
+          "description": "Before the appointment time"
+        },
+        "order_created": {
+          "label": "Order created",
+          "description": "When an order is created in the store"
+        },
+        "store_order_paid": {
+          "label": "Store order paid",
+          "description": "When a store order is paid successfully"
+        },
+        "manual": {
+          "label": "Manual run",
+          "description": "Run the automation manually"
+        },
+        "scheduled": {
+          "label": "On a schedule",
+          "description": "Repeat every few minutes, hours, days, or weeks"
+        }
+      },
+      "triggerFields": {
+        "fromStatus": "From status (optional)",
+        "toStatus": "To status",
+        "inactiveDays": "Days without activity",
+        "hoursBefore": "Hours before the appointment",
+        "schedule": "Schedule settings"
+      },
+      "leadStatuses": {
+        "new": "New",
+        "contacted": "Contacted",
+        "interested": "Interested",
+        "converted": "Became a client",
+        "lost": "Lost",
+        "old": "Old"
+      },
+      "hoursBeforeOptions": {
+        "1": "1 hour before",
+        "2": "2 hours before",
+        "24": "1 day before",
+        "48": "2 days before",
+        "72": "3 days before"
       }
     },
     "editor": {
@@ -1564,8 +1653,8 @@
     "flow": {
       "billedAction": "⚡ 1 action",
       "aiAction": "Automation action",
-      "waCostTitle": "₪0.20 per WhatsApp message",
-      "waCost": "💬 ₪0.20"
+      "waCostTitle": "{{price}} per WhatsApp message",
+      "waCost": "💬 {{price}}"
     },
     "emailFields": {
       "availableVars": "Available variables",
@@ -4536,6 +4625,92 @@
       "disconnectBody": "Bizuply will stop importing new Google Ads leads from this account. Existing CRM leads will not be deleted.",
       "cancel": "Cancel",
       "disconnectConfirm": "Disconnect"
+    },
+    "clientWork": {
+      "toast": {
+        "noteUpdated": "Note updated",
+        "noteAdded": "Note added",
+        "noteSaveError": "Error saving note",
+        "noteDeleted": "Note deleted",
+        "noteDeleteError": "Error deleting note",
+        "taskRequired": "Please fill in the title, date and time",
+        "taskInvalidDate": "Invalid date or time",
+        "taskUpdated": "Task updated",
+        "taskAdded": "Task added",
+        "taskSaveError": "Error saving task",
+        "taskDeleted": "Task deleted",
+        "taskDeleteError": "Error deleting task"
+      },
+      "confirm": {
+        "deleteNote": "Delete this note?",
+        "deleteTask": "Delete this task?"
+      },
+      "status": {
+        "todo": "To do",
+        "in_progress": "In progress",
+        "waiting": "Waiting",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "metrics": {
+        "notes": "Notes",
+        "openTasks": "Open tasks",
+        "completed": "Completed"
+      },
+      "overdue": "{{count}} overdue tasks need attention.",
+      "notes": {
+        "badge": "Notes",
+        "title": "Client notes",
+        "subtitle": "Keep important details, preferences, history and internal notes in one place.",
+        "loading": "Loading notes...",
+        "emptyTitle": "No notes yet",
+        "emptyText": "Keep important details about this client here.",
+        "edit": "Edit note",
+        "new": "New note",
+        "placeholder": "Write a quick note and press Enter...",
+        "cancelEdit": "Cancel edit",
+        "saving": "Saving...",
+        "update": "Update note",
+        "save": "Save note",
+        "noDate": "No date",
+        "delete": "Delete note"
+      },
+      "tasks": {
+        "badge": "Tasks",
+        "title": "Follow-up tasks",
+        "subtitle": "Create callbacks, reminders, preparation tasks and client follow-ups.",
+        "loading": "Loading tasks...",
+        "emptyTitle": "No tasks yet",
+        "emptyText": "Create tasks to follow up, call back or prepare meetings.",
+        "edit": "Edit task",
+        "new": "New task",
+        "required": "Title, date and time are required.",
+        "cancelEdit": "Cancel edit",
+        "titlePlaceholder": "What needs to be done?",
+        "hideAdvanced": "Hide advanced options",
+        "showAdvanced": "Advanced options",
+        "detailsPlaceholder": "Additional details",
+        "saving": "Saving...",
+        "update": "Update task",
+        "add": "Add task",
+        "delete": "Delete task",
+        "overdue": "Overdue"
+      },
+      "reminder": {
+        "none": "No reminder",
+        "m5": "5 minutes before",
+        "m15": "15 minutes before",
+        "m30": "30 minutes before",
+        "h1": "1 hour before",
+        "d1": "1 day before",
+        "minutesBefore": "{{count}} min before"
+      }
     }
   },
   "notifications": {
@@ -9175,7 +9350,8 @@
     },
     "details": {
       "badge": "ads_read · Read only",
-      "readOnlyHint": "Campaign details are read-only — no edit or budget changes."
+      "readOnlyHint": "Campaign details are read-only — no edit or budget changes.",
+      "viewLeadsInCrm": "View leads in CRM"
     },
     "actions": {
       "create": "Create new campaign",
@@ -9856,7 +10032,8 @@
       "budget": "Monthly budget",
       "budgetHint": "{{spent}} of {{total}} ({{percent}}%)",
       "spendHint": "Total spend in the selected range",
-      "spend": "Spend"
+      "spend": "Spend",
+      "ctrHint": "Click-through rate"
     },
     "ranges": {
       "last7": "Last 7 days",
@@ -19404,7 +19581,7 @@
       "inviteFailed": "Accepting the invite failed",
       "activating": "Activating...",
       "activateAccess": "Activate access",
-      "previewInitial": "ל"
+      "previewInitial": "C"
     },
     "lead": {
       "fillForm": "Please fill in the form details before sending",

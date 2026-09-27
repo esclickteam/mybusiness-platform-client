@@ -554,9 +554,9 @@ function ContactSection({
   openBooking: () => void;
 }) {
   const info = [
-    ["טלפון", getValue(data, "phone")],
-    ["אימייל", getValue(data, "email")],
-    ["כתובת", getValue(data, "address")],
+    [tx("טלפון"), getValue(data, "phone")],
+    [tx("אימייל"), getValue(data, "email")],
+    [tx("כתובת"), getValue(data, "address")],
   ];
 
   return (

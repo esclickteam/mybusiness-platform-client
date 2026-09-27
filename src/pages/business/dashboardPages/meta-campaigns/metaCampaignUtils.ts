@@ -1,5 +1,11 @@
 import i18n from "../../../../i18n/i18n";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { formatDemoMoney, getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
+
+/** Guided demos pin the currency to the demo locale; otherwise the ad account's. */
+export function resolveCampaignCurrency(accountCurrency?: string | null) {
+  return getDemoCurrency()?.code || accountCurrency || "ILS";
+}
 
 export function formatCurrency(
   value: number,
@@ -7,6 +13,9 @@ export function formatCurrency(
   locale = getIntlLocale(i18n.language)
 ) {
   const amount = Number(value) || 0;
+  if (getDemoCurrency()) {
+    return formatDemoMoney(amount >= 100 ? Math.round(amount) : Math.round(amount * 100) / 100);
+  }
   try {
     return new Intl.NumberFormat(locale, {
       style: "currency",

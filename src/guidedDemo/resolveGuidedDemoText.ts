@@ -5,7 +5,7 @@
 
 import i18n from "../i18n/i18n";
 import { tourModuleTitle, tourStepText } from "./tourCopy";
-import { isGuidedDemoActive } from "./sessionStore";
+import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "./sessionStore";
 
 type TranslateFn = (key: string, defaultValue?: string) => string;
 
@@ -44,6 +44,7 @@ export function resolveGuidedDemoStepText(
   t: TranslateFn,
   language?: string
 ) {
+  language = readGuidedDemoLocaleLock() || language;
   const id = String(step?.id || "").trim();
   const localized = id ? tourStepText(id, language) : null;
   if (localized) return localized;
@@ -66,6 +67,7 @@ export function resolveGuidedDemoModuleTitle(
   t: TranslateFn,
   language?: string
 ) {
+  language = readGuidedDemoLocaleLock() || language;
   const key = String(module?.key || "").trim();
   if (!key) return module?.title || "";
   const localized = tourModuleTitle(key, language);

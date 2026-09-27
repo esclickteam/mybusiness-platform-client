@@ -7,14 +7,16 @@ import {
   markManualLanguageChoice,
   normalizeLanguage,
 } from "./localeUtils";
+import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
 let persistInFlight = null;
 
 export function applyUiLanguage(lng, { persist = false } = {}) {
-  const language = coerceSupportedLanguage(lng);
+  const demoLocale = readGuidedDemoLocaleLock();
+  const language = demoLocale || coerceSupportedLanguage(lng);
   applyDocumentLocale(language);
 
-  if (persist) {
+  if (persist && !demoLocale) {
     markManualLanguageChoice(language);
   }
 
@@ -26,6 +28,8 @@ export function applyUiLanguage(lng, { persist = false } = {}) {
 }
 
 export async function persistAccountLanguage(lng) {
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) return demoLocale;
   const language = coerceSupportedLanguage(lng);
   markManualLanguageChoice(language);
   applyDocumentLocale(language);
@@ -49,6 +53,11 @@ export async function persistAccountLanguage(lng) {
 }
 
 export async function changeAppLanguage(lng) {
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) {
+    applyUiLanguage(demoLocale);
+    return demoLocale;
+  }
   const language = coerceSupportedLanguage(lng);
   markManualLanguageChoice(language);
   applyDocumentLocale(language);
@@ -65,6 +74,12 @@ export async function changeAppLanguage(lng) {
  *   explicit account preference.
  */
 export function syncLanguageOnLogin(user) {
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) {
+    applyUiLanguage(demoLocale);
+    return demoLocale;
+  }
+
   const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
   if (accountLanguage) {
     markManualLanguageChoice(accountLanguage);

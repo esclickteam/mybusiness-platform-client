@@ -17,18 +17,22 @@ import type { TFunction } from "i18next";
 
 import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import { crmCurrencySymbol, formatCrmMoney } from "../../../../utils/crmCurrency";
+import { getDemoFixture } from "../../../../guidedDemo/demoLocale";
+import { isGuidedDemoActive } from "../../../../guidedDemo/sessionStore";
+import type { DemoServiceFixture } from "../../../../guidedDemo/fixtures/demoFixtures";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
 
-/** Shekel mark used in place of DollarSign across the services CRM UI. */
+/** Currency mark used in place of DollarSign across the services CRM UI. */
 function ShekelIcon({ className = "" }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
       className={`inline-flex items-center justify-center text-[1.05em] font-black leading-none ${className}`}
     >
-      ₪
+      {crmCurrencySymbol()}
     </span>
   );
 }
@@ -185,6 +189,15 @@ export default function CRMServicesTab() {
 
   const openAdd = () => {
     resetForm();
+    const demoService = getDemoFixture<DemoServiceFixture>("service");
+    if (demoService && isGuidedDemoActive()) {
+      setForm({
+        ...emptyForm,
+        description: demoService.description,
+        duration: demoService.duration,
+        price: String(demoService.price),
+      });
+    }
     setShowForm(true);
   };
 
@@ -312,9 +325,7 @@ export default function CRMServicesTab() {
 
         <StatCard
           label={t("crm.services.statCatalogValue")}
-          value={t("crm.services.catalogValue", {
-            value: totalRevenuePotential.toLocaleString(),
-          })}
+          value={formatCrmMoney(totalRevenuePotential)}
           icon={ShekelIcon}
           helper={t("crm.services.statCatalogValueHelper")}
           tone="emerald"
@@ -640,9 +651,7 @@ function ServiceCard({
           <InfoTile
             icon={ShekelIcon}
             label={t("crm.common.price")}
-            value={t("crm.services.priceValue", {
-              value: price.toLocaleString(),
-            })}
+            value={formatCrmMoney(price)}
           />
         </div>
       </div>

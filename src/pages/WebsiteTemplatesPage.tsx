@@ -29,6 +29,7 @@ import { useLocaleDir } from "../hooks/useLocaleDir";
 import i18n from "../i18n/i18n";
 import { localizeBuiltInText } from "../i18n/localizeBuiltInTemplateSeed";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { NOA_STUDIO_TEMPLATE_KEY } from "@/guidedDemo/fixtures/noaStudioSite";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -440,6 +441,7 @@ export default function WebsiteTemplatesPage() {
 
   function isDemoHighlightedTemplate(template: WebsiteTemplate, index: number) {
     const key = String(template.key || "").trim().toLowerCase();
+    if (isGuidedDemoActive()) return key === NOA_STUDIO_TEMPLATE_KEY;
     if (selectedTemplateKey) return key === selectedTemplateKey;
     return index === 0;
   }
@@ -537,22 +539,26 @@ export default function WebsiteTemplatesPage() {
       return getTemplateSearchText(template).includes(query);
     });
 
-    if (sortValue === "name") {
-      return [...searchedTemplates].sort((a, b) =>
-        a.name.localeCompare(b.name, i18n.language || "en")
-      );
-    }
+    const sorted =
+      sortValue === "name"
+        ? [...searchedTemplates].sort((a, b) =>
+            a.name.localeCompare(b.name, i18n.language || "en")
+          )
+        : [...searchedTemplates].sort((a, b) => {
+            const orderA = Number(a.order || 0);
+            const orderB = Number(b.order || 0);
 
-    return [...searchedTemplates].sort((a, b) => {
-      const orderA = Number(a.order || 0);
-      const orderB = Number(b.order || 0);
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
 
-      if (orderA !== orderB) {
-        return orderA - orderB;
-      }
+            return String(b._id || b.key).localeCompare(String(a._id || a.key));
+          });
 
-      return String(b._id || b.key).localeCompare(String(a._id || a.key));
-    });
+    if (!isGuidedDemoActive()) return sorted;
+    const isDemoSite = (template: WebsiteTemplate) =>
+      String(template.key || "").trim().toLowerCase() === NOA_STUDIO_TEMPLATE_KEY;
+    return [...sorted.filter(isDemoSite), ...sorted.filter((t) => !isDemoSite(t))];
   }, [activeCategory, search, sortValue, localizedTemplates, i18n.language]);
 
   useEffect(() => {

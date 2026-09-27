@@ -6,6 +6,7 @@ import { getTextDirection } from "../i18n/localeUtils";
 import { resolveGuidedDemoModuleTitle, resolveGuidedDemoStepText } from "./resolveGuidedDemoText";
 import { demoProgress, runDemoSpecialAction, startDemoProgressBridge, stopDemoProgressBridge } from "./demoProgress";
 import { isGuidedDemoActive, readGuidedDemoSession, restorePreviousAuth, clearGuidedDemoLocal } from "./sessionStore";
+import { demoStepSuggestion, guardDemoText } from "./demoLocale";
 import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemoApi";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -286,6 +287,7 @@ export default function GuidedDemoEngine() {
 
   const step = currentStep(session);
   const stepText = resolveGuidedDemoStepText(step, t, i18n.language);
+  const suggestedText = step ? demoStepSuggestion(step.id, step.suggestedValue) : "";
   const progress = useMemo(() => moduleProgress(session), [session]);
   const currentModule = progress.find((m: any) => m.current);
   const currentModuleTitle = resolveGuidedDemoModuleTitle(currentModule, t, i18n.language);
@@ -317,7 +319,8 @@ export default function GuidedDemoEngine() {
     (step?.target === "website-headline" || step?.target === "website-cta") &&
     !findDemoTarget(step?.target, "acknowledge");
 
-  const pushToast = useCallback((message: string, kind: ToastState["kind"]) => {
+  const pushToast = useCallback((raw: string, kind: ToastState["kind"]) => {
+    const message = guardDemoText(raw, "tour toast");
     if (!message) return;
     setToast({ message, kind });
     window.setTimeout(() => setToast(null), kind === "success" ? 3200 : 2400);
@@ -473,9 +476,25 @@ export default function GuidedDemoEngine() {
     let lastKey = "";
     let stableHits = 0;
     let scrolled = false;
+    let reResolving = false;
 
     const sync = (el: Element) => {
       if (cancelled || token !== retryRef.current) return;
+      if (step.target && !isWebsiteEditorStayStep(step) && !isTargetReady(el)) {
+        if (isDemoPageLoading()) return;
+        // Target re-rendered away (or emptied): never keep an empty hole on screen.
+        setHole(null);
+        setHand(null);
+        if (!reResolving) {
+          reResolving = true;
+          ro?.disconnect();
+          removeScroll?.();
+          lastKey = "";
+          stableHits = 0;
+          window.setTimeout(() => poll(Date.now(), true), POLL_MS);
+        }
+        return;
+      }
       const kind = resolveStepKind(step);
       const rect = padHole(
         el.getBoundingClientRect(),
@@ -538,6 +557,7 @@ export default function GuidedDemoEngine() {
 
       const el = findDemoTarget(step.target, resolveStepKind(step));
       if (el && isTargetReady(el)) {
+        reResolving = false;
         const key = targetLayoutKey(el);
         if (key !== lastKey) {
           lastKey = key;
@@ -951,7 +971,7 @@ export default function GuidedDemoEngine() {
             onBlur={handleHeadlineBlur}
             className="mt-3 text-3xl font-black text-slate-900 outline-none focus:ring-2 focus:ring-violet-300"
           >
-            {step?.suggestedValue || t("leftover.guided.studioHeadline", "Noa Studio — moments that stay")}
+            {suggestedText || t("leftover.guided.studioHeadline", "Noa Studio — moments that stay")}
           </h1>
           <button
             type="button"
@@ -1105,9 +1125,9 @@ export default function GuidedDemoEngine() {
           </p>
           <h3 className="mt-2 text-base font-black text-slate-900">{stepText.title}</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{stepText.instruction}</p>
-          {step?.suggestedValue ? (
+          {suggestedText ? (
             <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">
-              {t("leftover.guided.suggested", "Suggested text: {{value}}", { value: step.suggestedValue })}
+              {t("leftover.guided.suggested", "Suggested text: {{value}}", { value: suggestedText })}
             </p>
           ) : null}
           {nextPreview && stepKind !== "input" ? (

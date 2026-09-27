@@ -506,7 +506,7 @@ export default function AdSetLevelEditor({
         />
 
         {/* Suggest an audience — Meta Advantage+ suggestions (age/gender) */}
-        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3" data-demo-target="meta-audience">
           <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
             {t("metaCampaigns.adsManager.chrome.suggestAudience")}
             <Info className="h-3.5 w-3.5 text-[#8A8D91]" />

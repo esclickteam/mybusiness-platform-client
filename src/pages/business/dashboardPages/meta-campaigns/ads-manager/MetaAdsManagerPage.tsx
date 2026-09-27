@@ -28,6 +28,9 @@ import {
   validateAdsManagerClient,
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
+import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
 import type { AiProposalHandoff } from "./adsManagerFromAiProposal";
 import {
   metaBtnPrimary,
@@ -127,6 +130,10 @@ export default function MetaAdsManagerPage() {
 
   /** Only real Meta Instant Forms — never fall back to local mock names. */
   const liveForms = useMemo(() => {
+    if (isGuidedDemoActive()) {
+      const demoForm = guidedDemoInstantForm();
+      if (demoForm) return [demoForm];
+    }
     return leadForms.map((form) => {
       const statusUpper = String(form.status || "").toUpperCase();
       return {
@@ -355,7 +362,10 @@ export default function MetaAdsManagerPage() {
 
     try {
       setPublishing(true);
-      const payload = buildPublishPayloadFromAdsManager(state);
+      const payload = {
+        ...buildPublishPayloadFromAdsManager(state),
+        ...(isGuidedDemoActive() ? guidedDemoPublishExtras() : {}),
+      };
       // Prefer connected page when draft still has placeholder.
       if (
         !payload.pageId ||
@@ -368,9 +378,12 @@ export default function MetaAdsManagerPage() {
 
       const result = await publishMetaCampaign(businessId, payload);
       if (result?.demoSafe) {
-        toast.success(
-          t("metaCampaigns.adsToasts.demoCreated", "Demo campaign created successfully")
-        );
+        // The guided tour shows its own localized success toast for this step.
+        if (!isGuidedDemoActive()) {
+          toast.success(
+            t("metaCampaigns.adsToasts.demoCreated", "Demo campaign created successfully")
+          );
+        }
         navigate("../overview");
         return;
       }
@@ -598,6 +611,7 @@ export default function MetaAdsManagerPage() {
           <button
             type="button"
             className={metaBtnPrimary}
+            data-demo-target="meta-publish"
             disabled={publishing || !canPublish || !connected}
             title={
               !connected
@@ -651,7 +665,9 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewDailyBudget")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {state.campaign.currency} {state.campaign.budgetAmount}
+                    {isGuidedDemoActive()
+                      ? formatDemoMoney(Number(state.campaign.budgetAmount) || 0, { per: "day" })
+                      : `${state.campaign.currency} ${state.campaign.budgetAmount}`}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
