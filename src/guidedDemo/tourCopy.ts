@@ -74,7 +74,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "wa-templates": {
       title: "תבניות",
       instruction:
-        "Welcome, Appointment Reminder, Lead Follow-up, Offer ו-Thank You הן תבניות דמו מאושרות. תבנית חדשה לא נשלחת ל-Meta.",
+        "ברוכים הבאים, תזכורת פגישה, פולואפ לליד, הצעה ותודה הן תבניות דמו מאושרות. תבנית חדשה לא נשלחת ל-Meta.",
     },
     "wa-flow": {
       title: "המשיכו טיפול אוטומטי ב-WhatsApp ובאוטומציות.",
@@ -84,7 +84,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "meta-overview": {
       title: "נהלו ועקבו אחרי קמפיינים ב-Meta.",
       instruction:
-        "הוצאה, לידים, עלות לליד ו-ROAS הם נתוני דמו של Demo Business Ads. זה לא חשבון Meta חי.",
+        "הוצאה, לידים, עלות לליד ו-ROAS הם נתוני דמו של חשבון מודעות לדוגמה. זה לא חשבון Meta חי.",
     },
     "meta-list": {
       title: "מנהל המודעות",
@@ -116,7 +116,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "wa-templates": {
       title: "Plantillas",
       instruction:
-        "Welcome, Appointment Reminder, Lead Follow-up, Offer y Thank You son plantillas demo aprobadas. Una plantilla nueva no se envía a Meta.",
+        "Bienvenida, Recordatorio de cita, Seguimiento de lead, Oferta y Gracias son plantillas demo aprobadas. Una plantilla nueva no se envía a Meta.",
     },
     "wa-flow": {
       title: "Haga seguimiento automático con WhatsApp y automatizaciones.",
@@ -126,7 +126,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "meta-overview": {
       title: "Gestione y supervise sus campañas de Meta.",
       instruction:
-        "Gasto, leads, coste por lead y ROAS son datos demo de Demo Business Ads. No es una cuenta real de Meta.",
+        "Gasto, leads, coste por lead y ROAS son datos demo de Cuenta publicitaria de demostración. No es una cuenta real de Meta.",
     },
     "meta-list": {
       title: "Administrador de anuncios",
@@ -170,17 +170,17 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "wa-templates": {
       title: "Modelos",
       instruction:
-        "Welcome, Appointment Reminder, Lead Follow-up, Offer e Thank You são modelos demo aprovados. Um modelo novo não é enviado à Meta.",
+        "Boas-vindas, Lembrete de compromisso, Acompanhamento de lead, Oferta e Obrigado são modelos demo aprovados. Um modelo novo não é enviado à Meta.",
     },
     "wa-flow": {
-      title: "Faça o follow-up automaticamente com WhatsApp e automações.",
+      title: "Faça o acompanhamento automaticamente com WhatsApp e automações.",
       instruction:
-        "Novo lead, CRM, boas-vindas no WhatsApp, follow-up e tarefa de vendas. Mensagens demo ficam no Bizuply.",
+        "Novo lead, CRM, boas-vindas no WhatsApp, acompanhamento e tarefa de vendas. Mensagens demo ficam no Bizuply.",
     },
     "meta-overview": {
       title: "Gerencie e acompanhe suas campanhas da Meta.",
       instruction:
-        "Gasto, leads, custo por lead e ROAS são dados demo de Demo Business Ads. Não é uma conta real da Meta.",
+        "Gasto, leads, custo por lead e ROAS são dados demo de Conta de anúncios de demonstração. Não é uma conta real da Meta.",
     },
     "meta-list": {
       title: "Gerenciador de anúncios",
@@ -224,7 +224,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "wa-templates": {
       title: "القوالب",
       instruction:
-        "Welcome وAppointment Reminder وLead Follow-up وOffer وThank You قوالب تجريبية معتمدة. القالب الجديد لا يُرسل إلى Meta.",
+        "مرحبا، تذكير بالموعد، متابعة عميل محتمل، عرض وشكرا قوالب تجريبية معتمدة. القالب الجديد لا يُرسل إلى Meta.",
     },
     "wa-flow": {
       title: "تابعوا تلقائيا عبر WhatsApp والأتمتة.",
@@ -234,7 +234,7 @@ const STEPS: Record<string, Record<string, StepCopy>> = {
     "meta-overview": {
       title: "أديروا وراقبوا حملات Meta.",
       instruction:
-        "الإنفاق والعملاء وتكلفة العميل وROAS بيانات تجريبية لحساب Demo Business Ads. هذا ليس حساب Meta حقيقيا.",
+        "الإنفاق والعملاء وتكلفة العميل وROAS بيانات تجريبية لحساب إعلانات تجريبي. هذا ليس حساب Meta حقيقيا.",
     },
     "meta-list": {
       title: "مدير الإعلانات",

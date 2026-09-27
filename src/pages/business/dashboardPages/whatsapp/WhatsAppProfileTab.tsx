@@ -147,7 +147,8 @@ export default function WhatsAppProfileTab() {
   };
 
   const nameStatus = formatNameStatus(
-    profile?.nameStatus || connection?.nameStatus
+    profile?.nameStatus || connection?.nameStatus,
+    t
   );
   const displayName =
     profile?.displayName || connection?.verifiedName || t("whatsapp.hub.unnamed");

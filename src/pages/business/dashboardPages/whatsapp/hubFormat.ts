@@ -1,11 +1,17 @@
 /** Shared WhatsApp Hub helpers — status badges & Meta field formatting. */
 
-export function formatQualityRating(raw?: string | null): string {
+type Translate = (key: string, defaultValue?: string) => string;
+
+function tr(t: Translate | undefined, key: string, fallback: string) {
+  return t ? t(key, fallback) : fallback;
+}
+
+export function formatQualityRating(raw?: string | null, t?: Translate): string {
   const q = String(raw || "").trim().toUpperCase();
   if (!q) return "";
-  if (q === "GREEN" || q === "HIGH") return "High";
-  if (q === "YELLOW" || q === "MEDIUM") return "Medium";
-  if (q === "RED" || q === "LOW") return "Low";
+  if (q === "GREEN" || q === "HIGH") return tr(t, "whatsapp.hub.qualityHigh", "High");
+  if (q === "YELLOW" || q === "MEDIUM") return tr(t, "whatsapp.hub.qualityMedium", "Medium");
+  if (q === "RED" || q === "LOW") return tr(t, "whatsapp.hub.qualityLow", "Low");
   return raw || "";
 }
 
@@ -17,19 +23,21 @@ export function qualityBadgeClass(raw?: string | null): string {
   return "bg-slate-50 text-slate-600 border-slate-100";
 }
 
-export function formatNameStatus(raw?: string | null): string {
+export function formatNameStatus(raw?: string | null, t?: Translate): string {
   const s = String(raw || "").trim().toUpperCase();
   if (!s) return "";
-  const map: Record<string, string> = {
-    APPROVED: "Approved",
-    PENDING_REVIEW: "Pending",
-    DECLINED: "Rejected",
-    REJECTED: "Rejected",
-    EXPIRED: "Expired",
-    AVAILABLE_WITHOUT_REVIEW: "Available",
-    NONE: "None",
+  const map: Record<string, [string, string]> = {
+    APPROVED: ["whatsapp.hub.approved", "Approved"],
+    PENDING_REVIEW: ["whatsapp.hub.pending", "Pending"],
+    DECLINED: ["whatsapp.hub.rejected", "Rejected"],
+    REJECTED: ["whatsapp.hub.rejected", "Rejected"],
+    EXPIRED: ["whatsapp.hub.nameExpired", "Expired"],
+    AVAILABLE_WITHOUT_REVIEW: ["whatsapp.hub.nameAvailable", "Available"],
+    NONE: ["whatsapp.hub.nameNone", "None"],
   };
-  return map[s] || raw || "";
+  const hit = map[s];
+  if (!hit) return raw || "";
+  return tr(t, hit[0], hit[1]);
 }
 
 export function nameStatusBadgeClass(raw?: string | null): string {
@@ -44,11 +52,13 @@ export function nameStatusBadgeClass(raw?: string | null): string {
   return "bg-slate-50 text-slate-600 border-slate-100";
 }
 
-export function formatMessagingLimit(raw?: string | null): string {
+export function formatMessagingLimit(raw?: string | null, t?: Translate): string {
   const v = String(raw || "").trim();
   if (!v) return "";
   const upper = v.toUpperCase();
-  if (upper.includes("UNLIMITED") || upper === "TIER_UNLIMITED") return "Unlimited";
+  if (upper.includes("UNLIMITED") || upper === "TIER_UNLIMITED") {
+    return tr(t, "whatsapp.hub.unlimited", "Unlimited");
+  }
   const tierMatch = upper.match(/TIER_(\d+)\s*([KM])?/);
   if (tierMatch) {
     let n = Number(tierMatch[1]);
@@ -70,14 +80,19 @@ export function formatMessagingLimit(raw?: string | null): string {
 export function connectionReadyLabel(
   connected: boolean,
   readyToSend?: boolean,
-  readiness?: string
+  readiness?: string,
+  t?: Translate
 ): { status: string; tone: "ok" | "warn" | "bad" | "neutral" } {
-  if (!connected) return { status: "Disconnected", tone: "neutral" };
-  if (readyToSend || readiness === "ready") return { status: "Ready", tone: "ok" };
-  if (readiness === "error" || readiness === "registration_failed") {
-    return { status: "Issue", tone: "bad" };
+  if (!connected) {
+    return { status: tr(t, "whatsapp.hub.disconnected", "Disconnected"), tone: "neutral" };
   }
-  return { status: "Issue", tone: "warn" };
+  if (readyToSend || readiness === "ready") {
+    return { status: tr(t, "whatsapp.hub.ready", "Ready"), tone: "ok" };
+  }
+  if (readiness === "error" || readiness === "registration_failed") {
+    return { status: tr(t, "whatsapp.hub.issue", "Issue"), tone: "bad" };
+  }
+  return { status: tr(t, "whatsapp.hub.issue", "Issue"), tone: "warn" };
 }
 
 export function toneBadgeClass(tone: "ok" | "warn" | "bad" | "neutral"): string {

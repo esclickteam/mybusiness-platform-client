@@ -7898,7 +7898,14 @@
       "inbox": "Bandeja de entrada",
       "history": "Historia",
       "health": "Uso y salud de la cuenta",
-      "settings": "Conexión API"
+      "settings": "Conexión API",
+      "overview": "Descripción general",
+      "profile": "Perfil",
+      "messages": "Mensajes",
+      "insights": "Perspectivas",
+      "developers": "API / Desarrolladores",
+      "billing": "Facturación y uso",
+      "connection": "Conexión"
     },
     "categories": {
       "appointment_reminder": "Recordatorio de nombramiento",
@@ -8319,7 +8326,99 @@
       "voiceCopied": "Código de verificación copiado",
       "voiceCopyFailed": "No se pudo copiar el código de verificación",
       "voiceCodeSubmitted": "Código de verificación enviado a Meta",
-      "voiceCodeSubmitFailed": "No se pudo enviar el código de verificación a Meta"
+      "voiceCodeSubmitFailed": "No se pudo enviar el código de verificación a Meta",
+      "stagedPendingSuccess": "Se montaron nuevas credenciales de WhatsApp. Su número activo actual permanece activo hasta que active explícitamente la transferencia.",
+      "stagingTitle": "Pendiente de transición de WhatsApp",
+      "stagingSubtitle": "Se pone en escena un nuevo número. La conexión en vivo a continuación permanece activa hasta que confirmes la activación.",
+      "stagingLiveLabel": "Actualmente en vivo (activo)",
+      "stagingPendingLabel": "Nuevo número pendiente (aún no activo)",
+      "stagingStatusLabel": "Estado de preparación",
+      "stagingRemainsActive": "El tráfico de producción continúa en el número activo hasta la activación.",
+      "stagingValidate": "Validar conexión pendiente",
+      "stagingValidating": "Validando…",
+      "stagingValidateSuccess": "Pendiente de conexión validada. Revise el impacto de la plantilla y actívela cuando esté lista.",
+      "stagingValidateFailed": "La validación pendiente falló. La conexión en vivo no fue cambiada.",
+      "stagingActivate": "Activar número pendiente",
+      "stagingActivating": "Activando…",
+      "stagingActivateConfirm": "¿Activar el número de WhatsApp pendiente y reemplazar la conexión en vivo? Esto no se puede deshacer sin una instantánea de reversión.",
+      "stagingActivatePhonePrompt": "Escriba el número de teléfono pendiente exactamente para confirmar la transferencia:",
+      "stagingActivateSuccess": "La conexión pendiente de WhatsApp ya está activa.",
+      "stagingActivateBlocked": "La conexión pendiente aún no está lista para activarse. Ejecute la validación primero.",
+      "stagingDiscard": "Descartar conexión pendiente",
+      "stagingDiscardConfirm": "¿Descartar las credenciales de WhatsApp preparadas? El número en vivo permanece sin cambios.",
+      "stagingDiscardSuccess": "Conexión pendiente de WhatsApp descartada. Conexión en vivo sin cambios.",
+      "stagingTemplateImpact": "Automatizaciones en riesgo después de la transición: {{count}}",
+      "stagingTemplateImpactHint": "Revise los nombres de las plantillas antes de activarlas. Las automatizaciones no se reescriben automáticamente.",
+      "stagingPinRequiredTitle": "Se requiere PIN de registro",
+      "stagingPinRequiredHint": "Ingrese el PIN de verificación en dos pasos de 6 dígitos solo para el número pendiente. Se utiliza una vez para el registro de la API de Meta Cloud y nunca se almacena.",
+      "stagingRegisterCta": "Registrar número pendiente",
+      "stagingRegisterSuccess": "Pendiente de número registrado. Conexión en vivo sin cambios. La activación no se realizó.",
+      "stagingRegisterFailed": "Error en el registro pendiente. La conexión en vivo no fue cambiada.",
+      "stagingRetryWebhook": "Reintentar webhook pendiente",
+      "stagingWebhookRetrySuccess": "Reintento de webhook pendiente finalizado. Conexión en vivo sin cambios.",
+      "stagingWebhookRetryFailed": "El reintento del webhook pendiente falló. La conexión en vivo no fue cambiada.",
+      "stagingCheckEs": "Registro integrado completado",
+      "stagingCheckToken": "Ficha válida",
+      "stagingCheckPhoneWaba": "Teléfono/WABA verificado",
+      "stagingCheckRegistration": "Registro",
+      "stagingCheckWebhook": "gancho web",
+      "stagingCheckTemplates": "Plantillas",
+      "stagingCheckValidation": "Validación",
+      "stagingCheckActivation": "Activación",
+      "stagingCheckOk": "DE ACUERDO",
+      "stagingCheckPending": "Pendiente",
+      "stagingCheckRequired": "Requerido",
+      "stagingCheckRegistered": "Registrado",
+      "stagingCheckFailed": "Fallido",
+      "stagingCheckWarning": "Advertencia",
+      "stagingCheckReady": "Listo",
+      "stagingCheckNotPerformed": "NO realizado",
+      "inventoryTitle": "Inventario de migración de 360dialog (manual)",
+      "inventoryHint": "Recopile estos valores del 360dialog Hub antes de migrar. Se almacena únicamente en este navegador; nunca pegue claves API ni PIN.",
+      "inventoryPlaceholder": "Nota del operador (sin secretos)",
+      "inventoryNoSecrets": "No almacene aquí claves API, tokens ni valores de PIN. BizUply nunca elimina, cancela o libera canales de 360dialog automáticamente.",
+      "apiSettingsTitle": "Configuración de API",
+      "apiSettingsHint": "Conecte su sistema externo a Bizuply WhatsApp, sin Meta tokens. Utilice su clave API de Bizuply como una clave de proveedor BSP.",
+      "apiSettingsLoadError": "No se pudo cargar la configuración de API",
+      "apiSettingsCopied": "copiado",
+      "apiSettingsCopy": "Copiar",
+      "apiSettingsEdit": "Editar",
+      "apiSettingsReveal": "Revelar",
+      "apiSettingsHide": "Esconder",
+      "apiSettingsRegenerate": "Regenerado",
+      "apiSettingsCreateKey": "Crear clave API",
+      "apiSettingsRegenerateConfirm": "¿Regenerar clave API? La clave anterior dejará de funcionar inmediatamente.",
+      "apiSettingsKeyCreated": "Clave API creada: cópiela ahora",
+      "apiSettingsKeyRegenerated": "Clave API regenerada: cópiela ahora",
+      "apiSettingsKeyError": "No se pudo crear ni regenerar la clave API",
+      "apiSettingsKeyOnce": "Copie esta clave API ahora. Por motivos de seguridad no se volverá a mostrar.",
+      "apiSettingsNoKey": "Aún no hay clave API",
+      "apiSettingsApiKey": "Clave API",
+      "apiSettingsBaseUrl": "URL básica de la API",
+      "apiSettingsWebhookUrl": "URL de webhook",
+      "apiSettingsWebhookEmpty": "No configurado",
+      "apiSettingsWebhookSaved": "URL del webhook guardada",
+      "apiSettingsWebhookError": "No se pudo guardar la URL del webhook",
+      "apiSettingsWebhookSecret": "Secreto del webhook",
+      "apiSettingsNoSecret": "Ningún webhook secreto todavía",
+      "apiSettingsSecretError": "No se pudo cargar el secreto del webhook",
+      "apiSettingsSecretRegenConfirm": "¿Regenerar el secreto del webhook? Su sistema externo debe actualizar la clave de verificación de firma.",
+      "apiSettingsSecretRegenerated": "Secreto de webhook regenerado",
+      "apiSettingsLastUsed": "Usado por última vez",
+      "apiSettingsLastDelivery": "Última entrega",
+      "apiSettingsWebhookStatus": "Estado del webhook",
+      "apiSettingsTestWebhook": "Webhook de prueba",
+      "apiSettingsWebhookTestOk": "Webhook de prueba entregado",
+      "apiSettingsWebhookTestFail": "Error del webhook de prueba",
+      "apiSettingsRevoke": "Revocar",
+      "apiSettingsRevokeConfirm": "¿Revocar esta clave API? Las solicitudes que lo utilicen dejarán de funcionar inmediatamente.",
+      "apiSettingsKeyRevoked": "Clave API revocada",
+      "apiSettingsRevokeError": "No se pudo revocar la clave API",
+      "apiSettingsDocs": "Documentos API",
+      "apiSettingsScopes": "Alcances",
+      "apiSettingsCreatedAt": "Creado",
+      "apiSettingsKeyModalTitle": "Tu nueva clave API",
+      "apiSettingsTestResult": "último resultado de la prueba"
     },
     "errors": {
       "loadCompose": "No se pudo cargar los datos de redacción de WhatsApp",
@@ -8929,6 +9028,97 @@
         "autoCancelFailed": "No se pudo cancelar la financiación automática mensual"
       },
       "saveChanges": "Guardar cambios"
+    },
+    "hub": {
+      "product": "WhatsApp Negocios",
+      "title": "Centro de gestión de WhatsApp",
+      "noPhone": "No hay teléfono conectado",
+      "unnamed": "Sin nombre",
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "ready": "Listo",
+      "issue": "Asunto",
+      "displayName": "Nombre para mostrar",
+      "quality": "Calidad",
+      "messagingLimit": "Límite de mensajes",
+      "syncWithMeta": "Sincronizar con Meta",
+      "syncSuccess": "Sincronizado con Meta exitosamente",
+      "syncError": "No se pudo sincronizar con Meta",
+      "manageConnection": "Administrar conexión",
+      "connectCta": "Conecta WhatsApp",
+      "messagesSubtitle": "Envíe campañas, administre listas y revise el historial de mensajes.",
+      "accountDetails": "Detalles de la cuenta",
+      "view": "Vista",
+      "developerDocs": "Documentos para desarrolladores",
+      "devSectionApi": "Acceso API",
+      "devSectionApiHint": "URL base, claves API, alcances y último uso.",
+      "devSectionWebhook": "gancho web",
+      "devSectionWebhookHint": "URL de entrega, secreto y herramientas de prueba.",
+      "devSectionDocs": "Documentación",
+      "devSectionDocsHint": "Referencia de OpenAPI y ejemplos para integradores.",
+      "billingPeriod": "Periodo actual",
+      "currentCharge": "Carga actual",
+      "billingModel": "Modelo de facturación",
+      "overviewTitle": "Descripción general de la cuenta",
+      "overviewSubtitle": "Estado en vivo de tu canal de WhatsApp Business, sincronizado desde Meta.",
+      "overviewLoadError": "No se pudieron cargar los datos generales",
+      "notAvailableFromMeta": "No disponible en Meta",
+      "cards": {
+        "status": "Estado de la cuenta",
+        "displayName": "Nombre para mostrar",
+        "quality": "Calificación de calidad",
+        "messagingLimit": "Límite de mensajes",
+        "verification": "Verificación comercial",
+        "templates": "Plantillas",
+        "messagesWindow": "Mensajes",
+        "lastSync": "Última sincronización"
+      },
+      "total": "Todo",
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "viewTemplates": "Ver plantillas",
+      "last7days": "últimos 7 días",
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "read": "Leer",
+      "failed": "Fallido",
+      "neverSynced": "Nunca",
+      "syncHint": "Almacenado en caché localmente. Utilice Sincronizar con Meta para una nueva actualización.",
+      "profileTitle": "Perfil empresarial",
+      "profileSubtitle": "Campos de perfil empresarial de WhatsApp de Meta Cloud API.",
+      "profileLoadError": "No se pudo cargar el perfil",
+      "profileSaved": "Perfil guardado en Meta",
+      "profileSaveError": "No se pudo guardar el perfil en Meta",
+      "syncProfile": "Perfil de sincronización",
+      "saveToMeta": "Guardar en Meta",
+      "loading": "Cargando…",
+      "noPhoto": "Sin foto",
+      "photoReadOnly": "La imagen de perfil es de solo lectura (se requiere un identificador de medios meta para actualizar).",
+      "phone": "Número de teléfono",
+      "insightsTitle": "Perspectivas",
+      "insightsSubtitle": "Métricas de entrega del historial de mensajes de BizUply.",
+      "deliveryRate": "Tasa de entrega",
+      "readRate": "Tasa de lectura",
+      "failureRate": "Porcentaje de averías",
+      "dailyBreakdown": "Desglose diario",
+      "noInsightsData": "Aún no hay métricas de mensajes para este período.",
+      "developersTitle": "API / Desarrolladores",
+      "developersSubtitle": "Claves API externas de WhatsApp, webhooks y configuraciones de desarrollador.",
+      "billingTitle": "Facturación y uso",
+      "billingSubtitle": "Uso de WhatsApp para el período de facturación actual.",
+      "billingDisabledHint": "La facturación por uso de WhatsApp no ​​está habilitada para este negocio.",
+      "noBillingData": "No hay datos de facturación disponibles.",
+      "activityTitle": "Actividad reciente",
+      "activityEmpty": "Aún no hay eventos de actividad.",
+      "apiMovedHint": "La configuración de API externa se movió a la pestaña API/Desarrolladores.",
+      "qualityHigh": "Alta",
+      "qualityMedium": "Media",
+      "qualityLow": "Baja",
+      "nameExpired": "Caducado",
+      "nameAvailable": "Disponible",
+      "nameNone": "Ninguno",
+      "unlimited": "Ilimitado"
     }
   },
   "metaCampaigns": {
@@ -9680,7 +9870,10 @@
       "spend": "Gaste",
       "clicks": "Clics",
       "impressions": "Impresiones",
-      "empty": "No hay datos de este período todavía"
+      "empty": "No hay datos de este período todavía",
+      "sales": "Ventas",
+      "traffic": "Tráfico",
+      "engagement": "Interacción"
     },
     "table": {
       "title": "Campañas",
@@ -10366,7 +10559,8 @@
       "publishFailed": "Error al publicar en Meta",
       "syncFailed": "Error al sincronizar desde Meta",
       "syncSuccess": "Sincronizado desde Meta · {{status}}",
-      "retryFailed": "Error al reintentar"
+      "retryFailed": "Error al reintentar",
+      "demoCreated": "Campaña de demostración creada"
     }
   },
   "socialSchedule": {
@@ -19763,57 +19957,338 @@
       "introWeb": "Crear un sitio",
       "introWebHint": "Plantillas y publicación",
       "modules": {
-        "dashboard": "Dashboard",
-        "crm": "CRM and leads",
-        "services": "Meetings and calendar",
-        "working-hours": "Meetings and calendar",
-        "calendar": "Meetings and calendar",
-        "automations": "Automations",
-        "collab": "Growth tools",
-        "advisor": "Growth tools",
-        "website-builder": "Website builder",
-        "leads": "Leads",
-        "clients": "Clients",
-        "forms": "Forms"
+        "dashboard": "Panel de control",
+        "crm": "CRM y prospectos",
+        "services": "Servicios",
+        "working-hours": "Horario laboral",
+        "calendar": "Calendario",
+        "automations": "Automatizaciones",
+        "collab": "Colaboraciones",
+        "advisor": "Asesor empresarial",
+        "website-builder": "Creador de sitios web",
+        "leads": "Prospectos",
+        "clients": "Clientes",
+        "forms": "Formularios",
+        "whatsapp": "WhatsApp",
+        "meta-campaigns": "Campañas de Meta"
       },
       "steps": {
         "leads-intro": {
-          "title": "Lead management",
-          "instruction": "Every new inquiry lands here — from the website, WhatsApp, or manually — so you can handle it before it goes cold."
+          "title": "Gestión de prospectos",
+          "instruction": "Cada nueva consulta llega aquí (desde el sitio web, WhatsApp o manualmente) para que puedas manejarla antes de que se enfríe."
         },
         "leads-open-maya": {
-          "title": "Open a lead",
-          "instruction": "Click the card for \"Maya Levi\"."
+          "title": "Abrir un prospecto",
+          "instruction": "Haga clic en la tarjeta de \"Maya Levi\"."
         },
         "leads-status-interested": {
-          "title": "Mark interest",
-          "instruction": "Change the status to \"Interested\" to show progress in the pipeline."
+          "title": "Marcar interés",
+          "instruction": "Cambie el estado a \"Interesado\" para mostrar el progreso del proceso."
         },
         "clients-intro": {
-          "title": "Clients",
-          "instruction": "A lead that becomes an active client gets a full file with history and notes — not just a name in the phone."
+          "title": "Clientes",
+          "instruction": "Un cliente potencial que se convierte en cliente activo obtiene un archivo completo con historial y notas, no solo un nombre en el teléfono."
         },
         "clients-nav": {
-          "title": "Go to clients",
-          "instruction": "Click \"Clients\"."
+          "title": "Ir a clientes",
+          "instruction": "Haga clic en \"Clientes\"."
         },
         "clients-open-yael": {
-          "title": "Open a client file",
-          "instruction": "Open the file for \"Yael Abraham\"."
+          "title": "Abrir una ficha de cliente",
+          "instruction": "Abra el archivo de \"Yael Abraham\"."
         },
         "forms-intro": {
-          "title": "Smart forms",
-          "instruction": "A form on the website automatically becomes a CRM lead. In the demo you will see where that connects — without sending real inquiries."
+          "title": "Formularios inteligentes",
+          "instruction": "Un formulario en el sitio web se convierte automáticamente en un cliente potencial de CRM. En la demostración verá dónde se conecta, sin enviar consultas reales."
         },
         "forms-open-manage": {
-          "title": "Website management",
-          "instruction": "Open the demo website."
+          "title": "Administración del sitio web",
+          "instruction": "Abra el sitio web de demostración."
         },
         "forms-wrap": {
-          "title": "Lead from the form",
-          "instruction": "Every website submission enters Leads. In the demo no messages are sent to real customers."
+          "title": "Prospecto desde el formulario",
+          "instruction": "Cada envío de sitio web ingresa a Leads. En la demostración no se envían mensajes a clientes reales."
+        },
+        "dash-intro": {
+          "title": "Centro de control",
+          "instruction": "Este es el centro de control de su negocio. El panel ofrece una vista inmediata — leads, reuniones y actividad — sin buscar entre pantallas."
+        },
+        "dash-kpis": {
+          "title": "Métricas de rendimiento",
+          "instruction": "Los números anteriores son los KPI de su empresa: visitas al sitio, nuevos clientes potenciales, reseñas y acciones compartidas. Te ayudan a saber si la semana es fuerte o necesita acción."
+        },
+        "dash-leads-activity": {
+          "title": "Prospectos recientes",
+          "instruction": "Aquí aparece nueva actividad: clientes potenciales que acaban de llegar. De esa manera, no se perderá una consulta importante incluso cuando esté ocupado."
+        },
+        "dash-appointments": {
+          "title": "Próximas reuniones",
+          "instruction": "Las próximas reuniones aparecen al lado. Te ayuda a prepararte para el día sin abrir el calendario por separado."
+        },
+        "dash-performance": {
+          "title": "Gráfico de rendimiento",
+          "instruction": "El gráfico muestra la tendencia a lo largo del tiempo: vistas, clientes potenciales o reuniones. Así es como se puede comprobar si una campaña o un cambio de sitio realmente está funcionando."
+        },
+        "dash-quick-action": {
+          "title": "Añadir un prospecto",
+          "instruction": "Aquí puede agregar un nuevo cliente potencial. Cada cliente potencial del sitio, un formulario o entrada manual va directamente a CRM para su seguimiento. Haga clic en \"Agregar cliente potencial\"."
+        },
+        "crm-from-dashboard": {
+          "title": "Un nuevo prospecto va directo al CRM",
+          "instruction": "Aquí puede agregar un nuevo cliente potencial. Cada cliente potencial del sitio, un formulario o entrada manual va directamente a CRM para su seguimiento."
+        },
+        "crm-intro": {
+          "title": "Prospectos y CRM",
+          "instruction": "Todas las consultas en un solo lugar: estado, fuente, propietario y actividad reciente. Desde aquí usted gestiona el proceso hasta su cierre."
+        },
+        "crm-open-daniel": {
+          "title": "Ficha del cliente",
+          "instruction": "Abra la tarjeta de \"Daniel Cohen\" para ver los detalles de contacto, la necesidad, el estado y el historial."
+        },
+        "crm-lead-detail": {
+          "title": "Qué contiene la ficha",
+          "instruction": "La tarjeta muestra todo: datos de contacto, fuente, estado, notas y seguimiento. Cualquiera que toque el cable sabe lo que pasó."
+        },
+        "crm-status-contacted": {
+          "title": "Estado del prospecto",
+          "instruction": "Aquí puede cambiar el estado del cliente potencial: nuevo, contactado, interesado o cerrado. Actualízalo a \"Contactado\"."
+        },
+        "crm-note-text": {
+          "title": "Escribir una nota",
+          "instruction": "Escriba una nota sobre el cliente aquí. En el mismo lugar también puedes elegir \"Tarea\" en lugar de una nota. Escriba una breve actualización (por ejemplo: \"Hablé: estoy interesado en un paquete de fotografía de pareja\") y luego guárdela."
+        },
+        "crm-add-note": {
+          "title": "Guardar la actualización",
+          "instruction": "Haga clic en \"Guardar\" para agregar la nota a la tarjeta. El paso finaliza sólo después de guardar."
+        },
+        "crm-wrap": {
+          "title": "Avanzar entre etapas",
+          "instruction": "Así es como se mueve un cliente potencial entre las etapas del proceso. A continuación iremos al calendario y las automatizaciones."
+        },
+        "services-intro": {
+          "title": "Servicios",
+          "instruction": "Antes de reservar reuniones, defina lo que ofrece la empresa: duración, precio y nombre. Los servicios alimentan el calendario y las reservas."
+        },
+        "services-add": {
+          "title": "Añadir un servicio",
+          "instruction": "Haga clic en \"Agregar servicio\" para abrir el formulario. Abrir el formulario no es guardar."
+        },
+        "services-name": {
+          "title": "Nombre del servicio",
+          "instruction": "Introduzca un nombre, por ejemplo \"Consulta inicial\"."
+        },
+        "services-duration": {
+          "title": "Duración",
+          "instruction": "Elija una duración para el servicio, por ejemplo 30 minutos."
+        },
+        "services-price": {
+          "title": "Precio",
+          "instruction": "Introduzca un precio válido para el servicio."
+        },
+        "services-description": {
+          "title": "Descripción",
+          "instruction": "Puedes agregar una breve descripción. Si no necesita uno, sáltelo."
+        },
+        "services-save": {
+          "title": "Guardar servicio",
+          "instruction": "Haga clic en \"Guardar servicio\" para crear el servicio para el calendario."
+        },
+        "services-wrap": {
+          "title": "Servicio listo",
+          "instruction": "Ahora hay un servicio en el catálogo. A continuación nos aseguraremos de que existan horarios de trabajo; sin ellos no se puede reservar una reunión."
+        },
+        "hours-intro": {
+          "title": "Horario laboral",
+          "instruction": "Las reuniones dependen de la disponibilidad del negocio. Aquí usted define qué días y horas se pueden reservar citas."
+        },
+        "hours-toggle-day": {
+          "title": "Día disponible",
+          "instruction": "Marque o actualice un día hábil: eso crea una ventana de disponibilidad segura para la demostración."
+        },
+        "hours-save": {
+          "title": "Guardar horarios",
+          "instruction": "Ahorra las horas de trabajo. Después de eso podrás reservar reuniones en el calendario."
+        },
+        "cal-intro": {
+          "title": "Reuniones y calendario",
+          "instruction": "El calendario centraliza reuniones pasadas y futuras (consultas, presentaciones, seguimientos y ventas) sin salir del sistema."
+        },
+        "cal-nav": {
+          "title": "Abrir el calendario",
+          "instruction": "Haga clic en \"Reuniones\" si aún no está allí."
+        },
+        "cal-existing": {
+          "title": "Reunión existente",
+          "instruction": "Aquí verá las reuniones ya reservadas en la demostración, por ejemplo, una consulta, una introducción, un seguimiento o una llamada de ventas. Este es un calendario en vivo, no una lista vacía."
+        },
+        "cal-new": {
+          "title": "Nueva reunión",
+          "instruction": "Recién ahora crearemos una nueva reunión. Haga clic en \"Crear reunión\" para abrir el formulario. Abrir el formulario no es reservar la reunión."
+        },
+        "cal-date": {
+          "title": "Fecha",
+          "instruction": "Elija una fecha para la reunión."
+        },
+        "cal-service": {
+          "title": "Servicio",
+          "instruction": "Elija un servicio de la lista. Sin un servicio no puedes ver los horarios disponibles."
+        },
+        "cal-time": {
+          "title": "Hora",
+          "instruction": "Elija un horario disponible de la lista."
+        },
+        "cal-details": {
+          "title": "Datos de la reunión",
+          "instruction": "Elija un cliente existente o ingrese un nombre. En la demostración no se envía ninguna notificación real."
+        },
+        "cal-save": {
+          "title": "Guardar la reunión",
+          "instruction": "Haga clic en guardar para agregar la reunión al calendario."
+        },
+        "cal-wrap": {
+          "title": "Reunión en el calendario",
+          "instruction": "La reunión se guardó en el calendario de demostración. En la demostración no se envían notificaciones reales a los clientes."
+        },
+        "auto-intro": {
+          "title": "Automatizaciones",
+          "instruction": "La automatización ahorra trabajo manual: elija cuándo sucede (desencadenante) y luego qué sucede a continuación (acción). Crearemos un ejemplo claro: un nuevo cliente potencial y luego enviaremos un correo electrónico."
+        },
+        "auto-nav": {
+          "title": "Entrar en automatizaciones",
+          "instruction": "Haga clic en \"Automatizaciones\" en el menú para abrir la pantalla."
+        },
+        "auto-new": {
+          "title": "Crear una automatización",
+          "instruction": "Haga clic en \"Nueva automatización\" para iniciar un nuevo flujo."
+        },
+        "auto-blank": {
+          "title": "Lienzo en blanco",
+          "instruction": "Elija \"Automatización en blanco\": desde aquí crea un disparador y luego una acción."
+        },
+        "auto-add-trigger": {
+          "title": "Cómo elegir un disparador",
+          "instruction": "Haga clic en \"Elegir disparador\". Eso abre la lista de momentos en los que puede comenzar la automatización."
+        },
+        "auto-trigger": {
+          "title": "Disparador: nuevo prospecto",
+          "instruction": "Elija el activador \"Nuevo cliente potencial\": ese es el momento en que se activa la automatización."
+        },
+        "auto-trigger-explain": {
+          "title": "Qué es un disparador",
+          "instruction": "El gatillo dice cuándo correr. \"Nuevo cliente potencial\" se adapta a una consulta del sitio o a un formulario, sin realizar comprobaciones manuales cada minuto. Ahora agregaremos lo que sucede después del desencadenante."
+        },
+        "auto-add-action": {
+          "title": "Cómo añadir una acción",
+          "instruction": "Haga clic en \"Agregar paso\" o \"Agregar resultado al activador\". Sin eso no hay manera de llegar a la acción misma."
+        },
+        "auto-action-email": {
+          "title": "La acción",
+          "instruction": "Elija \"Enviar correo electrónico\". Esa es la acción que se ejecutará tras una nueva pista. En la demostración no se envía ningún correo electrónico real."
+        },
+        "auto-configure": {
+          "title": "Configurar la acción",
+          "instruction": "Aquí configuras la acción elegida: título y configuración. En la demostración no es necesario cambiar detalles, sólo ver dónde sucede."
+        },
+        "auto-save": {
+          "title": "Guardar",
+          "instruction": "Guarde la automatización. Después de guardar, el flujo está listo: nuevo cliente potencial → enviar correo electrónico."
+        },
+        "auto-wrap": {
+          "title": "Funciona solo",
+          "instruction": "Cuando llega un nuevo cliente potencial, BizUply envía un correo electrónico de acuerdo con la automatización que guardó. En la demostración no se envía ningún correo electrónico real ni se crean datos reales del cliente."
+        },
+        "collab-intro": {
+          "title": "Colaboraciones",
+          "instruction": "Aquí encontrará negocios complementarios (flores, maquillaje, una ubicación para tomar fotografías) y enviará una oferta de colaboración. En la demostración no se envían ofertas reales."
+        },
+        "collab-nav": {
+          "title": "Entrar en colaboraciones",
+          "instruction": "Haga clic en \"Colaboraciones\"."
+        },
+        "collab-partner": {
+          "title": "Empresa de ejemplo",
+          "instruction": "Por ejemplo, \"Floristería\", un negocio complementario a un estudio de fotografía. Resalte sólo el título de la tarjeta, no toda la altura."
+        },
+        "collab-search": {
+          "title": "Cómo encontrar una colaboración",
+          "instruction": "Puede buscar por categoría o texto libre y filtrar negocios relevantes en el área."
+        },
+        "collab-cta": {
+          "title": "Acción principal",
+          "instruction": "Desde aquí envías una oferta de colaboración o abres una conversación. En la demostración la acción no se dirige a un negocio real."
+        },
+        "advisor-intro": {
+          "title": "Asesor empresarial",
+          "instruction": "El asesor comercial analiza los datos comerciales y lo ayuda a decidir: clientes potenciales, ventas y actividad del sitio."
+        },
+        "advisor-nav": {
+          "title": "Abrir el asesor",
+          "instruction": "Haga clic en \"Asesor comercial\"."
+        },
+        "advisor-question": {
+          "title": "Pregunta de ejemplo en el chat",
+          "instruction": "En el chat aparece una pregunta de ejemplo: \"¿A qué leads debo hacer seguimiento hoy?\" — para que el cliente sepa cómo preguntarle al asesor."
+        },
+        "advisor-answer": {
+          "title": "Respuesta del chat",
+          "instruction": "Debajo de la pregunta aparece la respuesta del asesor. Este es sólo un ejemplo: en realidad no se envía nada."
+        },
+        "advisor-action": {
+          "title": "Una acción",
+          "instruction": "De la respuesta del chat surge una acción. Haga clic en él para ver qué sucede a continuación."
+        },
+        "advisor-result": {
+          "title": "El resultado",
+          "instruction": "Después de la acción se ve un resultado claro. En la demostración no se envió ningún mensaje real."
+        },
+        "site-intro": {
+          "title": "Creador de sitios web",
+          "instruction": "Aquí puedes crear un nuevo sitio en el nuevo constructor: crea un sitio, elige una plantilla, edítala y luego véala en \"Mis sitios\"."
+        },
+        "site-nav": {
+          "title": "Entrar al creador de sitios",
+          "instruction": "Haga clic en \"Creador de sitios web\"."
+        },
+        "site-create-new": {
+          "title": "Crear un sitio nuevo",
+          "instruction": "Haga clic en \"Crear nuevo sitio\" para abrir la galería de plantillas."
+        },
+        "site-choose-template": {
+          "title": "Elegir una plantilla",
+          "instruction": "Elija una plantilla que se adapte al negocio. Luego haga clic en \"Vista previa\" y luego en \"Editar\" en la misma plantilla."
+        },
+        "site-preview-template": {
+          "title": "Vista previa de la plantilla",
+          "instruction": "Haga clic en \"Vista previa\" para ver la plantilla que eligió antes de editarla."
+        },
+        "site-pick-template": {
+          "title": "Editar la plantilla elegida",
+          "instruction": "Haga clic en \"Editar\". La demostración abre el editor con esa misma plantilla, sin tener que volver a la galería."
+        },
+        "site-editor-open": {
+          "title": "El editor del sitio elegido",
+          "instruction": "Este es el editor del sitio que eligió. Desde aquí puedes cambiar texto, imágenes, botones y contenido."
+        },
+        "site-headline": {
+          "title": "Cambiar el texto",
+          "instruction": "Haga clic en el título grande resaltado, cambie el texto y luego haga clic fuera del campo; luego pasaremos a la publicación."
+        },
+        "site-publish": {
+          "title": "Publicar el sitio",
+          "instruction": "Haga clic en \"Publicar\". En la demostración, esto se guarda sólo en el entorno de demostración; luego pasamos a \"Mis sitios\"."
+        },
+        "site-demo-card": {
+          "title": "Mis sitios",
+          "instruction": "Aquí el sitio aparece en \"Mis sitios\". A partir de aquí finaliza el módulo de creación de sitios web."
         }
-      }
+      },
+      "skipTour": "Saltar el recorrido",
+      "introWhatsapp": "WhatsApp API",
+      "introWhatsappHint": "Mensajes, campañas y clientes",
+      "introCampaigns": "Campañas de Meta",
+      "introCampaignsHint": "Anuncios, resultados y rendimiento",
+      "demoBadge": "DEMO",
+      "actionUnavailable": "Esta acción no está disponible en la demo."
     },
     "guidedQ": {
       "relevantCrm": "CRM y gestión de clientes",

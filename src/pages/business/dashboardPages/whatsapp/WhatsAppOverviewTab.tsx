@@ -153,12 +153,14 @@ export default function WhatsAppOverviewTab() {
   }, [health]);
 
   const quality = formatQualityRating(
-    connection?.qualityRating || health?.connection?.qualityRating
+    connection?.qualityRating || health?.connection?.qualityRating,
+    t
   );
   const limit = formatMessagingLimit(
     connection?.messagingLimitTier ||
       health?.messagingLimits?.raw ||
-      health?.connection?.messagingLimitTier
+      health?.connection?.messagingLimitTier,
+    t
   );
 
   const busy = (connectionLoading && !connection) || loading;

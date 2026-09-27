@@ -7889,8 +7889,8 @@
       "automations": "אוטומציות",
       "inbox": "תיבת דואר נכנס",
       "history": "היסטוריה",
-      "insights": "Insights",
-      "developers": "API / Developers",
+      "insights": "תובנות",
+      "developers": "API / מפתחים",
       "billing": "חיוב ושימוש",
       "connection": "חיבור",
       "health": "נתוני שימוש ובריאות החשבון",
@@ -7978,7 +7978,14 @@
       "noBillingData": "אין נתוני חיוב זמינים.",
       "activityTitle": "פעילות אחרונה",
       "activityEmpty": "אין עדיין אירועי פעילות.",
-      "apiMovedHint": "הגדרות ה-API החיצוני עברו לטאב API / Developers."
+      "apiMovedHint": "הגדרות ה-API החיצוני עברו לטאב API / Developers.",
+      "qualityHigh": "גבוה",
+      "qualityMedium": "בינוני",
+      "qualityLow": "נמוך",
+      "nameExpired": "פג תוקף",
+      "nameAvailable": "זמין",
+      "nameNone": "ללא",
+      "unlimited": "ללא הגבלה"
     },
     "categories": {
       "appointment_reminder": "תזכורת לתור",
@@ -20269,7 +20276,8 @@
           "title": "ליד מהטופס",
           "instruction": "כל שליחה מהאתר נכנסת ללידים. בדמו לא נשלחות הודעות ללקוחות אמיתיים."
         }
-      }
+      },
+      "actionUnavailable": "פעולה זו אינה זמינה בדמו"
     },
     "guidedQ": {
       "relevantCrm": "CRM וניהול לקוחות",
