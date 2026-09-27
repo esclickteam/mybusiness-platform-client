@@ -75,6 +75,20 @@ i18n
     // Keep pt-BR as a regional locale instead of collapsing to "pt".
     load: "currentOnly",
     cleanCode: false,
+
+    // Guided-demo QA: surface missing keys instead of silently looking like English.
+    missingKeyHandler: (lngs, _ns, key) => {
+      if (typeof window === "undefined") return;
+      try {
+        if (sessionStorage.getItem("guidedDemo.active") !== "1") return;
+      } catch {
+        return;
+      }
+      const lng = Array.isArray(lngs) ? lngs[0] : lngs;
+      if (!lng || String(lng).startsWith("en")) return;
+      // eslint-disable-next-line no-console
+      console.warn(`[guided-demo-i18n] missing key ${key} for locale ${lng}`);
+    },
   });
 
 i18n.on("languageChanged", (lng) => {

@@ -20280,7 +20280,8 @@
           "title": "Lead from the form",
           "instruction": "Every website submission enters Leads. In the demo no messages are sent to real customers."
         }
-      }
+      },
+      "actionUnavailable": "This action is not available in the demo."
     },
     "guidedQ": {
       "relevantCrm": "CRM and customer management",

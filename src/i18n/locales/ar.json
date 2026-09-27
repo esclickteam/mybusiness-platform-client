@@ -7898,7 +7898,14 @@
       "inbox": "صندوق الوارد",
       "history": "التاريخ",
       "health": "استخدام الحساب والصحة",
-      "settings": "اتصال API"
+      "settings": "اتصال API",
+      "overview": "ملخص",
+      "profile": "حساب تعريفي",
+      "messages": "رسائل",
+      "insights": "رؤى",
+      "developers": "واجهة برمجة التطبيقات / المطورين",
+      "billing": "الفواتير والاستخدام",
+      "connection": "اتصال"
     },
     "categories": {
       "appointment_reminder": "تذكير الموعد",
@@ -8319,7 +8326,99 @@
       "voiceCopied": "تم نسخ رمز التحقق",
       "voiceCopyFailed": "تعذر نسخ رمز التحقق",
       "voiceCodeSubmitted": "أُرسل رمز التحقق إلى ميتا",
-      "voiceCodeSubmitFailed": "تعذر إرسال رمز التحقق إلى ميتا"
+      "voiceCodeSubmitFailed": "تعذر إرسال رمز التحقق إلى ميتا",
+      "stagedPendingSuccess": "تم تنظيم بيانات اعتماد WhatsApp الجديدة. يظل رقمك المباشر الحالي نشطًا حتى تقوم بتنشيط عملية الاستبدال بشكل صريح.",
+      "stagingTitle": "في انتظار قطع WhatsApp",
+      "stagingSubtitle": "تم تنظيم رقم جديد. يظل الاتصال المباشر أدناه نشطًا حتى تقوم بتأكيد التنشيط.",
+      "stagingLiveLabel": "موجود حاليًا (نشط)",
+      "stagingPendingLabel": "في انتظار الرقم الجديد (غير مباشر بعد)",
+      "stagingStatusLabel": "حالة التدريج",
+      "stagingRemainsActive": "تستمر حركة الإنتاج على الرقم المباشر حتى التنشيط.",
+      "stagingValidate": "التحقق من صحة الاتصال المعلق",
+      "stagingValidating": "جارٍ التحقق…",
+      "stagingValidateSuccess": "تم التحقق من صحة الاتصال المعلق. قم بمراجعة تأثير القالب، ثم قم بتنشيطه عندما يصبح جاهزًا.",
+      "stagingValidateFailed": "فشل التحقق من الصحة في انتظار المراجعة. لم يتم تغيير الاتصال المباشر.",
+      "stagingActivate": "تفعيل الرقم المعلق",
+      "stagingActivating": "جارٍ التنشيط…",
+      "stagingActivateConfirm": "تفعيل رقم الواتساب المعلق واستبدال الاتصال المباشر؟ لا يمكن التراجع عن هذا بدون لقطة التراجع.",
+      "stagingActivatePhonePrompt": "اكتب رقم الهاتف المعلق بالضبط لتأكيد التحويل:",
+      "stagingActivateSuccess": "أصبح اتصال WhatsApp المعلق مباشرًا الآن.",
+      "stagingActivateBlocked": "الاتصال المعلق ليس جاهزًا للتنشيط بعد. قم بتشغيل التحقق من الصحة أولاً.",
+      "stagingDiscard": "تجاهل الاتصال المعلق",
+      "stagingDiscardConfirm": "هل تريد تجاهل بيانات اعتماد WhatsApp المرحلية؟ يبقى الرقم المباشر دون تغيير.",
+      "stagingDiscardSuccess": "تم تجاهل اتصال WhatsApp المعلق. الاتصال المباشر دون تغيير.",
+      "stagingTemplateImpact": "عمليات التشغيل الآلي المعرضة للخطر بعد الاستبدال: {{count}}",
+      "stagingTemplateImpactHint": "قم بمراجعة أسماء النماذج قبل التنشيط. لا تتم إعادة كتابة الأتمتة تلقائيًا.",
+      "stagingPinRequiredTitle": "رقم التعريف الشخصي للتسجيل مطلوب",
+      "stagingPinRequiredHint": "أدخل رقم التعريف الشخصي (PIN) للتحقق المكون من 6 أرقام للرقم المعلق فقط. يتم استخدامه مرة واحدة لتسجيل Meta Cloud API ولا يتم تخزينه أبدًا.",
+      "stagingRegisterCta": "تسجيل رقم معلق",
+      "stagingRegisterSuccess": "في انتظار الرقم المسجل. الاتصال المباشر دون تغيير. لم يتم تنفيذ التنشيط.",
+      "stagingRegisterFailed": "فشل التسجيل المعلق. لم يتم تغيير الاتصال المباشر.",
+      "stagingRetryWebhook": "أعد محاولة الرد التلقائي على الويب في انتظار المراجعة",
+      "stagingWebhookRetrySuccess": "انتهت إعادة محاولة الرد التلقائي على الويب. الاتصال المباشر دون تغيير.",
+      "stagingWebhookRetryFailed": "فشلت إعادة محاولة الرد التلقائي على الويب. لم يتم تغيير الاتصال المباشر.",
+      "stagingCheckEs": "اكتمل الاشتراك المضمن",
+      "stagingCheckToken": "رمز صالح",
+      "stagingCheckPhoneWaba": "تم التحقق من الهاتف/WABA",
+      "stagingCheckRegistration": "تسجيل",
+      "stagingCheckWebhook": "خطاف ويب",
+      "stagingCheckTemplates": "قوالب",
+      "stagingCheckValidation": "تصديق",
+      "stagingCheckActivation": "التنشيط",
+      "stagingCheckOk": "نعم",
+      "stagingCheckPending": "قيد الانتظار",
+      "stagingCheckRequired": "مطلوب",
+      "stagingCheckRegistered": "مسجل",
+      "stagingCheckFailed": "فشل",
+      "stagingCheckWarning": "تحذير",
+      "stagingCheckReady": "مستعد",
+      "stagingCheckNotPerformed": "لم يتم تنفيذها",
+      "inventoryTitle": "مخزون ترحيل 360dialog (يدويًا)",
+      "inventoryHint": "اجمع هذه القيم من 360dialog Hub قبل الترحيل. يتم تخزينها في هذا المتصفح فقط - لا تقم مطلقًا بلصق مفاتيح واجهة برمجة التطبيقات أو أرقام التعريف الشخصية.",
+      "inventoryPlaceholder": "ملاحظة المشغل (لا توجد أسرار)",
+      "inventoryNoSecrets": "لا تقم بتخزين مفاتيح API أو الرموز المميزة أو قيم PIN هنا. لا يقوم BizUply أبدًا بحذف/إلغاء/إصدار قنوات الحوار 360 تلقائيًا.",
+      "apiSettingsTitle": "إعدادات واجهة برمجة التطبيقات",
+      "apiSettingsHint": "قم بتوصيل نظامك الخارجي بـ Bizuply WhatsApp - بدون رموز Meta. استخدم مفتاح Bizuply API الخاص بك مثل مفتاح موفر BSP.",
+      "apiSettingsLoadError": "تعذر تحميل إعدادات واجهة برمجة التطبيقات",
+      "apiSettingsCopied": "منقول",
+      "apiSettingsCopy": "ينسخ",
+      "apiSettingsEdit": "يحرر",
+      "apiSettingsReveal": "يكشف",
+      "apiSettingsHide": "يخفي",
+      "apiSettingsRegenerate": "تجديد",
+      "apiSettingsCreateKey": "إنشاء مفتاح API",
+      "apiSettingsRegenerateConfirm": "هل تريد إعادة إنشاء مفتاح API؟ سيتوقف المفتاح السابق عن العمل على الفور.",
+      "apiSettingsKeyCreated": "تم إنشاء مفتاح API - انسخه الآن",
+      "apiSettingsKeyRegenerated": "تم إعادة إنشاء مفتاح واجهة برمجة التطبيقات — انسخه الآن",
+      "apiSettingsKeyError": "تعذر إنشاء مفتاح API أو إعادة إنشائه",
+      "apiSettingsKeyOnce": "انسخ مفتاح API هذا الآن. ولأسباب أمنية، لن يتم عرضه مرة أخرى.",
+      "apiSettingsNoKey": "لا يوجد مفتاح API حتى الآن",
+      "apiSettingsApiKey": "مفتاح واجهة برمجة التطبيقات",
+      "apiSettingsBaseUrl": "عنوان URL الأساسي لواجهة برمجة التطبيقات",
+      "apiSettingsWebhookUrl": "عنوان URL للويب هوك",
+      "apiSettingsWebhookEmpty": "لم يتم تكوينه",
+      "apiSettingsWebhookSaved": "تم حفظ عنوان URL للرد التلقائي على الويب",
+      "apiSettingsWebhookError": "تعذر حفظ عنوان URL للرد التلقائي على الويب",
+      "apiSettingsWebhookSecret": "سر الويب هوك",
+      "apiSettingsNoSecret": "لا يوجد سر webhook حتى الآن",
+      "apiSettingsSecretError": "تعذر تحميل webhook السري",
+      "apiSettingsSecretRegenConfirm": "هل تريد إعادة إنشاء سر الرد التلقائي على الويب؟ يجب أن يقوم نظامك الخارجي بتحديث مفتاح التحقق من التوقيع.",
+      "apiSettingsSecretRegenerated": "تم تجديد سر Webhook",
+      "apiSettingsLastUsed": "آخر استخدام",
+      "apiSettingsLastDelivery": "التسليم الأخير",
+      "apiSettingsWebhookStatus": "حالة الرد التلقائي على الويب",
+      "apiSettingsTestWebhook": "اختبار الويب هوك",
+      "apiSettingsWebhookTestOk": "تم تسليم الرد التلقائي على الويب",
+      "apiSettingsWebhookTestFail": "فشل اختبار الرد التلقائي على الويب",
+      "apiSettingsRevoke": "إبطال",
+      "apiSettingsRevokeConfirm": "هل تريد إلغاء مفتاح واجهة برمجة التطبيقات هذا؟ ستتوقف الطلبات التي تستخدمه عن العمل على الفور.",
+      "apiSettingsKeyRevoked": "تم إبطال مفتاح API",
+      "apiSettingsRevokeError": "تعذر إبطال مفتاح API",
+      "apiSettingsDocs": "مستندات API",
+      "apiSettingsScopes": "النطاقات",
+      "apiSettingsCreatedAt": "مخلوق",
+      "apiSettingsKeyModalTitle": "مفتاح API الجديد الخاص بك",
+      "apiSettingsTestResult": "نتيجة الاختبار الأخير"
     },
     "errors": {
       "loadCompose": "فشل في تحميل بيانات WhatsApp",
@@ -8929,6 +9028,90 @@
         "autoCancelFailed": "تعذر إلغاء التمويل التلقائي الشهري"
       },
       "saveChanges": "حفظ التغييرات"
+    },
+    "hub": {
+      "product": "واتساب للأعمال",
+      "title": "مركز إدارة الواتساب",
+      "noPhone": "لا يوجد هاتف متصل",
+      "unnamed": "لم يذكر اسمه",
+      "connected": "متصل",
+      "disconnected": "غير متصل",
+      "ready": "مستعد",
+      "issue": "مشكلة",
+      "displayName": "اسم العرض",
+      "quality": "جودة",
+      "messagingLimit": "حد الرسائل",
+      "syncWithMeta": "المزامنة مع ميتا",
+      "syncSuccess": "تمت المزامنة مع Meta بنجاح",
+      "syncError": "فشلت المزامنة مع Meta",
+      "manageConnection": "إدارة الاتصال",
+      "connectCta": "ربط واتس اب",
+      "messagesSubtitle": "إرسال الحملات وإدارة القوائم ومراجعة سجل الرسائل.",
+      "accountDetails": "تفاصيل الحساب",
+      "view": "منظر",
+      "developerDocs": "مستندات المطور",
+      "devSectionApi": "الوصول إلى واجهة برمجة التطبيقات",
+      "devSectionApiHint": "عنوان URL الأساسي ومفاتيح API والنطاقات وآخر استخدام.",
+      "devSectionWebhook": "خطاف ويب",
+      "devSectionWebhookHint": "عنوان URL للتسليم والسر وأدوات الاختبار.",
+      "devSectionDocs": "التوثيق",
+      "devSectionDocsHint": "مرجع OpenAPI وأمثلة للمتكاملين.",
+      "billingPeriod": "الفترة الحالية",
+      "currentCharge": "التهمة الحالية",
+      "billingModel": "نموذج الفواتير",
+      "overviewTitle": "نظرة عامة على الحساب",
+      "overviewSubtitle": "الحالة المباشرة لقناة WhatsApp Business الخاصة بك، والتي تتم مزامنتها من Meta.",
+      "overviewLoadError": "فشل تحميل بيانات النظرة العامة",
+      "notAvailableFromMeta": "غير متوفر من ميتا",
+      "cards": {
+        "status": "حالة الحساب",
+        "displayName": "اسم العرض",
+        "quality": "تصنيف الجودة",
+        "messagingLimit": "حد الرسائل",
+        "verification": "التحقق من الأعمال",
+        "templates": "قوالب",
+        "messagesWindow": "رسائل",
+        "lastSync": "آخر مزامنة"
+      },
+      "total": "الجميع",
+      "approved": "موافقة",
+      "pending": "قيد الانتظار",
+      "rejected": "مرفوض",
+      "viewTemplates": "عرض القوالب",
+      "last7days": "آخر 7 أيام",
+      "sent": "مرسل",
+      "delivered": "تم التوصيل",
+      "read": "يقرأ",
+      "failed": "فشل",
+      "neverSynced": "أبداً",
+      "syncHint": "مخبأة محليا. استخدم المزامنة مع Meta لتحديث جديد.",
+      "profileTitle": "الملف الشخصي للأعمال",
+      "profileSubtitle": "حقول ملف تعريف WhatsApp Business من Meta Cloud API.",
+      "profileLoadError": "فشل تحميل الملف الشخصي",
+      "profileSaved": "تم حفظ الملف الشخصي في Meta",
+      "profileSaveError": "فشل حفظ الملف الشخصي في Meta",
+      "syncProfile": "ملف تعريف المزامنة",
+      "saveToMeta": "حفظ إلى ميتا",
+      "loading": "تحميل…",
+      "noPhoto": "لا توجد صورة",
+      "photoReadOnly": "صورة الملف الشخصي للقراءة فقط (يلزم تحديث مقبض الوسائط التعريفية).",
+      "phone": "رقم التليفون",
+      "insightsTitle": "رؤى",
+      "insightsSubtitle": "مقاييس التسليم من سجل رسائل BizUply.",
+      "deliveryRate": "معدل التسليم",
+      "readRate": "معدل القراءة",
+      "failureRate": "معدل الفشل",
+      "dailyBreakdown": "انهيار يومي",
+      "noInsightsData": "لا توجد مقاييس للرسالة حتى الآن لهذه الفترة.",
+      "developersTitle": "واجهة برمجة التطبيقات / المطورين",
+      "developersSubtitle": "مفاتيح WhatsApp API الخارجية وخطافات الويب وإعدادات المطورين.",
+      "billingTitle": "الفواتير والاستخدام",
+      "billingSubtitle": "استخدام WhatsApp لفترة الفاتورة الحالية.",
+      "billingDisabledHint": "لم يتم تمكين فوترة استخدام WhatsApp لهذه الشركة.",
+      "noBillingData": "لا توجد بيانات الفوترة المتاحة.",
+      "activityTitle": "النشاط الأخير",
+      "activityEmpty": "لا توجد أحداث نشاط حتى الآن.",
+      "apiMovedHint": "تم نقل إعدادات واجهة برمجة التطبيقات الخارجية إلى علامة التبويب API / المطورين."
     }
   },
   "metaCampaigns": {
@@ -9680,7 +9863,10 @@
       "spend": "انفق",
       "clicks": "النقرات",
       "impressions": "انطباعات",
-      "empty": "لا توجد بيانات مخطط لهذه الفترة حتى الآن"
+      "empty": "لا توجد بيانات مخطط لهذه الفترة حتى الآن",
+      "sales": "المبيعات",
+      "traffic": "الزيارات",
+      "engagement": "التفاعل"
     },
     "table": {
       "title": "الحملات",
@@ -10366,7 +10552,8 @@
       "publishFailed": "فشل النشر إلى Meta",
       "syncFailed": "فشلت المزامنة من Meta",
       "syncSuccess": "تمت المزامنة من Meta · {{status}}",
-      "retryFailed": "فشلت إعادة المحاولة"
+      "retryFailed": "فشلت إعادة المحاولة",
+      "demoCreated": "تم إنشاء حملة تجريبية"
     }
   },
   "socialSchedule": {
@@ -19763,57 +19950,338 @@
       "introWeb": "بناء موقع",
       "introWebHint": "قوالب ونشر",
       "modules": {
-        "dashboard": "Dashboard",
-        "crm": "CRM and leads",
-        "services": "Meetings and calendar",
-        "working-hours": "Meetings and calendar",
-        "calendar": "Meetings and calendar",
-        "automations": "Automations",
-        "collab": "Growth tools",
-        "advisor": "Growth tools",
-        "website-builder": "Website builder",
-        "leads": "Leads",
-        "clients": "Clients",
-        "forms": "Forms"
+        "dashboard": "لوحة التحكم",
+        "crm": "إدارة العملاء المحتملين",
+        "services": "الخدمات",
+        "working-hours": "ساعات العمل",
+        "calendar": "التقويم",
+        "automations": "الأتمتة",
+        "collab": "التعاون",
+        "advisor": "المستشار التجاري",
+        "website-builder": "منشئ المواقع",
+        "leads": "العملاء المحتملون",
+        "clients": "العملاء",
+        "forms": "النماذج",
+        "whatsapp": "WhatsApp",
+        "meta-campaigns": "حملات Meta"
       },
       "steps": {
         "leads-intro": {
-          "title": "Lead management",
-          "instruction": "Every new inquiry lands here — from the website, WhatsApp, or manually — so you can handle it before it goes cold."
+          "title": "إدارة العملاء المحتملين",
+          "instruction": "يأتي كل استفسار جديد هنا - من موقع الويب أو WhatsApp أو يدويًا - حتى تتمكن من التعامل معه قبل أن يصبح باردًا."
         },
         "leads-open-maya": {
-          "title": "Open a lead",
-          "instruction": "Click the card for \"Maya Levi\"."
+          "title": "فتح عميل محتمل",
+          "instruction": "انقر على بطاقة \"مايا ليفي\"."
         },
         "leads-status-interested": {
-          "title": "Mark interest",
-          "instruction": "Change the status to \"Interested\" to show progress in the pipeline."
+          "title": "تحديد الاهتمام",
+          "instruction": "قم بتغيير الحالة إلى \"مهتم\" لإظهار التقدم في المسار."
         },
         "clients-intro": {
-          "title": "Clients",
-          "instruction": "A lead that becomes an active client gets a full file with history and notes — not just a name in the phone."
+          "title": "العملاء",
+          "instruction": "يحصل العميل المتوقع الذي يصبح عميلاً نشطًا على ملف كامل يحتوي على السجل والملاحظات - وليس مجرد اسم في الهاتف."
         },
         "clients-nav": {
-          "title": "Go to clients",
-          "instruction": "Click \"Clients\"."
+          "title": "الانتقال إلى العملاء",
+          "instruction": "انقر فوق \"العملاء\"."
         },
         "clients-open-yael": {
-          "title": "Open a client file",
-          "instruction": "Open the file for \"Yael Abraham\"."
+          "title": "فتح ملف عميل",
+          "instruction": "افتح ملف \"ياعيل أبراهام\"."
         },
         "forms-intro": {
-          "title": "Smart forms",
-          "instruction": "A form on the website automatically becomes a CRM lead. In the demo you will see where that connects — without sending real inquiries."
+          "title": "النماذج الذكية",
+          "instruction": "يتحول النموذج الموجود على موقع الويب تلقائيًا إلى عميل محتمل لإدارة علاقات العملاء (CRM). في العرض التوضيحي، سترى مكان الاتصال - دون إرسال استفسارات حقيقية."
         },
         "forms-open-manage": {
-          "title": "Website management",
-          "instruction": "Open the demo website."
+          "title": "إدارة الموقع",
+          "instruction": "افتح الموقع التجريبي."
         },
         "forms-wrap": {
-          "title": "Lead from the form",
-          "instruction": "Every website submission enters Leads. In the demo no messages are sent to real customers."
+          "title": "عميل محتمل من النموذج",
+          "instruction": "يدخل كل تقديم موقع على شبكة الإنترنت العملاء المحتملين. في العرض التجريبي، لا يتم إرسال أي رسائل إلى عملاء حقيقيين."
+        },
+        "dash-intro": {
+          "title": "مركز التحكم",
+          "instruction": "هذا هو مركز قيادة عملك. توفر لوحة المعلومات لقطة فورية - العملاء المحتملين والاجتماعات والنشاط - دون البحث عبر الشاشات."
+        },
+        "dash-kpis": {
+          "title": "مقاييس الأداء",
+          "instruction": "الأرقام المذكورة أعلاه هي مؤشرات الأداء الرئيسية لنشاطك التجاري: زيارات الموقع والعملاء المحتملين الجدد والمراجعات والمشاركات. إنها تساعدك على معرفة ما إذا كان الأسبوع قويًا أو يحتاج إلى اتخاذ إجراء."
+        },
+        "dash-leads-activity": {
+          "title": "العملاء المحتملون الجدد",
+          "instruction": "يظهر هنا النشاط الجديد — العملاء المحتملين الذين وصلوا للتو. وبهذه الطريقة لن يفوتك أي استفسار مهم حتى عندما تكون مشغولاً."
+        },
+        "dash-appointments": {
+          "title": "الاجتماعات القادمة",
+          "instruction": "تظهر الاجتماعات القادمة على الجانب. يساعدك على الاستعداد لليوم دون فتح التقويم بشكل منفصل."
+        },
+        "dash-performance": {
+          "title": "مخطط الأداء",
+          "instruction": "يعرض الرسم البياني الاتجاه بمرور الوقت — المشاهدات أو العملاء المتوقعين أو الاجتماعات. وهذه هي الطريقة التي ترى بها ما إذا كان تغيير الحملة أو الموقع ناجحًا بالفعل."
+        },
+        "dash-quick-action": {
+          "title": "إضافة عميل محتمل",
+          "instruction": "هنا يمكنك إضافة عميل محتمل جديد. يذهب كل عميل محتمل من الموقع أو النموذج أو الإدخال اليدوي مباشرةً إلى نظام إدارة علاقات العملاء (CRM) للمتابعة. انقر فوق \"إضافة عميل محتمل\"."
+        },
+        "crm-from-dashboard": {
+          "title": "العميل المحتمل الجديد ينتقل مباشرة إلى CRM",
+          "instruction": "هنا يمكنك إضافة عميل محتمل جديد. يذهب كل عميل محتمل من الموقع أو النموذج أو الإدخال اليدوي مباشرةً إلى نظام إدارة علاقات العملاء (CRM) للمتابعة."
+        },
+        "crm-intro": {
+          "title": "العملاء المحتملون وCRM",
+          "instruction": "جميع الاستفسارات في مكان واحد - الحالة والمصدر والمالك والنشاط الأخير. من هنا يمكنك إدارة خط الأنابيب حتى الإغلاق."
+        },
+        "crm-open-daniel": {
+          "title": "بطاقة العميل",
+          "instruction": "افتح البطاقة لـ \"دانيال كوهين\" لرؤية تفاصيل الاتصال والحاجة والحالة والتاريخ."
+        },
+        "crm-lead-detail": {
+          "title": "ما تتضمنه البطاقة",
+          "instruction": "تعرض البطاقة كل شيء: تفاصيل الاتصال والمصدر والحالة والملاحظات والمتابعة. أي شخص يلمس الرصاص يعرف ما حدث."
+        },
+        "crm-status-contacted": {
+          "title": "حالة العميل المحتمل",
+          "instruction": "يمكنك هنا تغيير حالة العميل المحتمل - جديد، أو تم الاتصال به، أو مهتم، أو مغلق. قم بتحديثه إلى \"تم الاتصال به\"."
+        },
+        "crm-note-text": {
+          "title": "كتابة ملاحظة",
+          "instruction": "اكتب ملاحظة عن العميل هنا. وفي نفس المكان يمكنك أيضًا اختيار \"مهمة\" بدلاً من الملاحظة. اكتب تحديثًا قصيرًا (على سبيل المثال: \"تحدث — مهتم بحزمة تصوير فوتوغرافي للزوجين\") ثم احفظه."
+        },
+        "crm-add-note": {
+          "title": "حفظ التحديث",
+          "instruction": "انقر على \"حفظ\" لإضافة الملاحظة إلى البطاقة. تنتهي الخطوة فقط بعد الحفظ."
+        },
+        "crm-wrap": {
+          "title": "التنقل بين المراحل",
+          "instruction": "هذه هي الطريقة التي تقوم بها بنقل العميل المحتمل بين مراحل خط الأنابيب. بعد ذلك سنذهب إلى التقويم والأتمتة."
+        },
+        "services-intro": {
+          "title": "الخدمات",
+          "instruction": "قبل حجز الاجتماعات، حدد ما يقدمه العمل - المدة والسعر والاسم. خدمات تغذي التقويم والحجوزات."
+        },
+        "services-add": {
+          "title": "إضافة خدمة",
+          "instruction": "انقر على \"إضافة خدمة\" لفتح النموذج. فتح النموذج لا يتم حفظه."
+        },
+        "services-name": {
+          "title": "اسم الخدمة",
+          "instruction": "أدخل اسمًا، على سبيل المثال \"الاستشارة الأولية\"."
+        },
+        "services-duration": {
+          "title": "المدة",
+          "instruction": "اختر مدة الخدمة، مثلاً 30 دقيقة."
+        },
+        "services-price": {
+          "title": "السعر",
+          "instruction": "أدخل سعرًا صالحًا للخدمة."
+        },
+        "services-description": {
+          "title": "الوصف",
+          "instruction": "يمكنك إضافة وصف قصير. إذا لم تكن بحاجة إلى واحد، انتقل إلى الأمام."
+        },
+        "services-save": {
+          "title": "حفظ الخدمة",
+          "instruction": "انقر على \"حفظ الخدمة\" لإنشاء الخدمة للتقويم."
+        },
+        "services-wrap": {
+          "title": "الخدمة جاهزة",
+          "instruction": "الآن هناك خدمة في الكتالوج. وبعد ذلك سوف نتأكد من وجود ساعات العمل - وبدونها لا يمكنك حجز اجتماع."
+        },
+        "hours-intro": {
+          "title": "ساعات العمل",
+          "instruction": "تعتمد الاجتماعات على توفر الأعمال. يمكنك هنا تحديد الأيام والساعات التي يمكن حجز المواعيد فيها."
+        },
+        "hours-toggle-day": {
+          "title": "يوم متاح",
+          "instruction": "حدد أو قم بتحديث يوم عمل واحد - مما يؤدي إلى إنشاء نافذة توفر آمنة للعرض التوضيحي."
+        },
+        "hours-save": {
+          "title": "حفظ الساعات",
+          "instruction": "حفظ ساعات العمل. بعد ذلك يمكنك حجز الاجتماعات في التقويم."
+        },
+        "cal-intro": {
+          "title": "الاجتماعات والتقويم",
+          "instruction": "يقوم التقويم بتجميع الاجتماعات السابقة والمستقبلية - الاستشارات والمقدمات والمتابعات والمبيعات - دون مغادرة النظام."
+        },
+        "cal-nav": {
+          "title": "فتح التقويم",
+          "instruction": "انقر فوق \"الاجتماعات\" إذا لم تكن هناك بعد."
+        },
+        "cal-existing": {
+          "title": "اجتماع قائم",
+          "instruction": "هنا ترى الاجتماعات التي تم حجزها بالفعل في العرض التوضيحي - على سبيل المثال استشارة أو مقدمة أو متابعة أو مكالمة مبيعات. هذا تقويم مباشر، وليس قائمة فارغة."
+        },
+        "cal-new": {
+          "title": "اجتماع جديد",
+          "instruction": "الآن فقط سننشئ اجتماعًا جديدًا. انقر فوق \"إنشاء اجتماع\" لفتح النموذج. لا يعني فتح النموذج حجز الاجتماع."
+        },
+        "cal-date": {
+          "title": "التاريخ",
+          "instruction": "اختر موعدًا للاجتماع."
+        },
+        "cal-service": {
+          "title": "الخدمة",
+          "instruction": "اختر خدمة من القائمة. بدون الخدمة لا يمكنك رؤية الأوقات المتاحة."
+        },
+        "cal-time": {
+          "title": "الوقت",
+          "instruction": "اختر الوقت المتاح من القائمة."
+        },
+        "cal-details": {
+          "title": "تفاصيل الاجتماع",
+          "instruction": "اختر عميلاً حاليًا أو أدخل اسمًا. في العرض التوضيحي لم يتم إرسال أي إشعار حقيقي."
+        },
+        "cal-save": {
+          "title": "حفظ الاجتماع",
+          "instruction": "انقر فوق \"حفظ\" لإضافة الاجتماع إلى التقويم."
+        },
+        "cal-wrap": {
+          "title": "الاجتماع في التقويم",
+          "instruction": "تم حفظ الاجتماع في التقويم التجريبي. في العرض التجريبي، لا تخرج أي إشعارات للعملاء الحقيقيين."
+        },
+        "auto-intro": {
+          "title": "الأتمتة",
+          "instruction": "تعمل الأتمتة على حفظ العمل اليدوي: اختر وقت حدوثه (التشغيل)، ثم ما سيحدث بعد ذلك (الإجراء). سنبني مثالًا واحدًا واضحًا - عميل محتمل جديد، ثم نرسل بريدًا إلكترونيًا."
+        },
+        "auto-nav": {
+          "title": "فتح الأتمتة",
+          "instruction": "انقر فوق \"الأتمتة\" في القائمة لفتح الشاشة."
+        },
+        "auto-new": {
+          "title": "إنشاء أتمتة",
+          "instruction": "انقر على \"أتمتة جديدة\" لبدء تدفق جديد."
+        },
+        "auto-blank": {
+          "title": "لوحة فارغة",
+          "instruction": "اختر \"أتمتة فارغة\" - من هنا يمكنك إنشاء مشغل ثم إجراء."
+        },
+        "auto-add-trigger": {
+          "title": "كيفية اختيار مشغّل",
+          "instruction": "انقر فوق \"اختيار الزناد\". يؤدي ذلك إلى فتح قائمة اللحظات التي يمكن أن تبدأ فيها الأتمتة."
+        },
+        "auto-trigger": {
+          "title": "المشغّل: عميل محتمل جديد",
+          "instruction": "اختر مشغل \"عميل محتمل جديد\" - وهي اللحظة التي تستيقظ فيها الأتمتة."
+        },
+        "auto-trigger-explain": {
+          "title": "ما هو المشغّل",
+          "instruction": "الزناد يقول متى يتم التشغيل. \"عميل محتمل جديد\" يناسب استفسارًا من الموقع أو النموذج - دون التحقق يدويًا كل دقيقة. الآن سوف نضيف ما يحدث بعد الزناد."
+        },
+        "auto-add-action": {
+          "title": "كيفية إضافة إجراء",
+          "instruction": "انقر على \"إضافة خطوة\" أو \"إضافة نتيجة للتشغيل\". وبدون ذلك لا سبيل للوصول إلى الفعل نفسه."
+        },
+        "auto-action-email": {
+          "title": "الإجراء نفسه",
+          "instruction": "اختر \"إرسال بريد إلكتروني\". هذا هو الإجراء الذي سيتم تنفيذه بعد تقدم جديد. في العرض التوضيحي لم يتم إرسال بريد إلكتروني حقيقي."
+        },
+        "auto-configure": {
+          "title": "تهيئة الإجراء",
+          "instruction": "هنا يمكنك تكوين الإجراء المختار - العنوان والإعدادات. في العرض التوضيحي، لا تحتاج إلى تغيير التفاصيل، فقط انظر أين يحدث ذلك."
+        },
+        "auto-save": {
+          "title": "حفظ",
+          "instruction": "حفظ الأتمتة. بعد حفظ التدفق جاهز: عميل محتمل جديد → إرسال بريد إلكتروني."
+        },
+        "auto-wrap": {
+          "title": "يعمل تلقائيًا",
+          "instruction": "عندما يأتي عميل محتمل جديد، يرسل BizUply بريدًا إلكترونيًا وفقًا للأتمتة التي قمت بحفظها. في العرض التجريبي، لا يتم إرسال بريد إلكتروني حقيقي ولا يتم إنشاء أي بيانات حقيقية للعملاء."
+        },
+        "collab-intro": {
+          "title": "التعاون",
+          "instruction": "ستجد هنا الأنشطة التجارية التكميلية - الزهور، والمكياج، وموقع التصوير - وإرسال عرض التعاون. في العرض التجريبي لا يتم إرسال أي عروض حقيقية."
+        },
+        "collab-nav": {
+          "title": "فتح التعاون",
+          "instruction": "انقر فوق \"التعاون\"."
+        },
+        "collab-partner": {
+          "title": "شركة مثال",
+          "instruction": "على سبيل المثال، \"بائع الزهور\" — عمل تكميلي لاستوديو التصوير الفوتوغرافي. قم بتمييز عنوان البطاقة فقط، وليس الارتفاع الكامل."
+        },
+        "collab-search": {
+          "title": "كيفية إيجاد تعاون",
+          "instruction": "يمكنك البحث حسب الفئة أو النص المجاني، وتصفية الشركات ذات الصلة في المنطقة."
+        },
+        "collab-cta": {
+          "title": "الإجراء الرئيسي",
+          "instruction": "من هنا يمكنك إرسال عرض تعاون أو فتح محادثة. في العرض التوضيحي، لا يتحول الإجراء إلى عمل حقيقي."
+        },
+        "advisor-intro": {
+          "title": "المستشار التجاري",
+          "instruction": "يقوم مستشار الأعمال بتحليل بيانات الأعمال ويساعدك على اتخاذ القرار - العملاء المحتملين والمبيعات ونشاط الموقع."
+        },
+        "advisor-nav": {
+          "title": "فتح المستشار",
+          "instruction": "انقر فوق \"مستشار الأعمال\"."
+        },
+        "advisor-question": {
+          "title": "سؤال نموذجي في الدردشة",
+          "instruction": "يظهر في الدردشة مثال لسؤال: \"ما العملاء المتوقعين الذين يجب أن أتابعهم اليوم؟\" - لذلك يرى العميل كيفية سؤال المستشار."
+        },
+        "advisor-answer": {
+          "title": "إجابة الدردشة",
+          "instruction": "أسفل السؤال تظهر إجابة المستشار. هذا مثال فقط - لم يتم إرسال أي شيء حقًا."
+        },
+        "advisor-action": {
+          "title": "إجراء واحد",
+          "instruction": "من إجابة الدردشة يأتي إجراء واحد. انقر فوقه لمعرفة ما سيحدث بعد ذلك."
+        },
+        "advisor-result": {
+          "title": "النتيجة",
+          "instruction": "بعد الإجراء ترى نتيجة واحدة واضحة. في العرض التوضيحي لم يتم إرسال أي رسالة حقيقية."
+        },
+        "site-intro": {
+          "title": "منشئ المواقع",
+          "instruction": "هنا تقوم بإنشاء موقع جديد في أداة الإنشاء الجديدة — أنشئ موقعًا، واختر قالبًا، وقم بتحريره، ثم شاهده ضمن \"مواقعي\"."
+        },
+        "site-nav": {
+          "title": "فتح منشئ المواقع",
+          "instruction": "انقر فوق \"منشئ موقع الويب\"."
+        },
+        "site-create-new": {
+          "title": "إنشاء موقع جديد",
+          "instruction": "انقر على \"إنشاء موقع جديد\" لفتح معرض النماذج."
+        },
+        "site-choose-template": {
+          "title": "اختيار قالب",
+          "instruction": "اختر القالب الذي يناسب الأعمال. بعد ذلك، انقر فوق \"معاينة\" ثم \"تحرير\" في نفس القالب."
+        },
+        "site-preview-template": {
+          "title": "معاينة القالب",
+          "instruction": "انقر على \"معاينة\" لرؤية القالب الذي اخترته قبل التعديل."
+        },
+        "site-pick-template": {
+          "title": "تحرير القالب المختار",
+          "instruction": "انقر فوق \"تحرير\". يفتح العرض التوضيحي المحرر بنفس القالب، دون الرجوع إلى المعرض."
+        },
+        "site-editor-open": {
+          "title": "محرر الموقع الذي اخترته",
+          "instruction": "هذا هو محرر الموقع الذي اخترته. من هنا يمكنك تغيير النص والصور والأزرار والمحتوى."
+        },
+        "site-headline": {
+          "title": "تغيير النص",
+          "instruction": "انقر فوق العنوان الكبير المميز، وقم بتغيير النص، ثم انقر خارج الحقل - بعد ذلك سننتقل إلى النشر."
+        },
+        "site-publish": {
+          "title": "نشر الموقع",
+          "instruction": "انقر فوق \"نشر\". في النسخة التجريبية، يتم حفظ هذا فقط في البيئة التجريبية — ثم ننتقل إلى \"مواقعي\"."
+        },
+        "site-demo-card": {
+          "title": "مواقعي",
+          "instruction": "وهنا يظهر الموقع ضمن \"مواقعي\". من هنا تنتهي وحدة منشئ موقع الويب."
         }
-      }
+      },
+      "skipTour": "تخطي الجولة",
+      "introWhatsapp": "WhatsApp API",
+      "introWhatsappHint": "الرسائل والحملات والعملاء",
+      "introCampaigns": "حملات Meta",
+      "introCampaignsHint": "الإعلانات والنتائج والأداء",
+      "demoBadge": "DEMO",
+      "actionUnavailable": "هذا الإجراء غير متاح في العرض التجريبي."
     },
     "guidedQ": {
       "relevantCrm": "CRM وإدارة العملاء",
