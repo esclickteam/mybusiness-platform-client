@@ -191,8 +191,11 @@ describe("AdminSupportChat whatsapp", () => {
     expect(screen.getByTestId("interactive-demo-sender").textContent).toContain(
       "+1 210-944-4809"
     );
-    expect(screen.getByTestId("interactive-demo-send")).toBeTruthy();
-    expect(await screen.findByTestId("interactive-demo-missing")).toBeTruthy();
+    expect(modal.textContent).not.toContain("בחירת דמו קיים");
+    expect(modal.textContent).not.toContain("completed");
+    expect(modal.textContent).not.toContain("expired");
+    expect(screen.getByTestId("interactive-demo-create")).toBeTruthy();
+    expect(await screen.findByText("צרו דמו חדש לפני השליחה.")).toBeTruthy();
     expect(screen.getByTestId("interactive-demo-send")).toHaveProperty("disabled", true);
   });
 
