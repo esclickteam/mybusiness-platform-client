@@ -7996,7 +7996,21 @@
       "nameExpired": "Expired",
       "nameAvailable": "Available",
       "nameNone": "None",
-      "unlimited": "Unlimited"
+      "unlimited": "Unlimited",
+      "activityTypes": {
+        "message_delivered": "Message delivered",
+        "message_read": "Message read",
+        "message_received": "Message received",
+        "message_failed": "Message failed",
+        "message_sent": "Message sent",
+        "template_sent": "Template sent"
+      },
+      "verificationStatus": {
+        "verified": "Verified",
+        "unverified": "Unverified",
+        "pending": "Pending",
+        "unknown": "Unknown"
+      }
     },
     "categories": {
       "appointment_reminder": "Appointment reminder",

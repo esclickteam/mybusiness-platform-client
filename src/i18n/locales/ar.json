@@ -9118,7 +9118,21 @@
       "nameExpired": "منتهية",
       "nameAvailable": "متاح",
       "nameNone": "لا يوجد",
-      "unlimited": "غير محدود"
+      "unlimited": "غير محدود",
+      "activityTypes": {
+        "message_delivered": "تم تسليم الرسالة",
+        "message_read": "تمت قراءة الرسالة",
+        "message_received": "تم استلام الرسالة",
+        "message_failed": "فشلت الرسالة",
+        "message_sent": "تم إرسال الرسالة",
+        "template_sent": "تم إرسال القالب"
+      },
+      "verificationStatus": {
+        "verified": "موثّق",
+        "unverified": "غير موثّق",
+        "pending": "قيد الانتظار",
+        "unknown": "غير معروف"
+      }
     }
   },
   "metaCampaigns": {

@@ -9118,7 +9118,21 @@
       "nameExpired": "Caducado",
       "nameAvailable": "Disponible",
       "nameNone": "Ninguno",
-      "unlimited": "Ilimitado"
+      "unlimited": "Ilimitado",
+      "activityTypes": {
+        "message_delivered": "Mensaje entregado",
+        "message_read": "Mensaje leído",
+        "message_received": "Mensaje recibido",
+        "message_failed": "Mensaje fallido",
+        "message_sent": "Mensaje enviado",
+        "template_sent": "Plantilla enviada"
+      },
+      "verificationStatus": {
+        "verified": "Verificado",
+        "unverified": "No verificado",
+        "pending": "Pendiente",
+        "unknown": "Desconocido"
+      }
     }
   },
   "metaCampaigns": {
