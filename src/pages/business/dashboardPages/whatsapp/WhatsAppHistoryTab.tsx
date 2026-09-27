@@ -139,7 +139,12 @@ export default function WhatsAppHistoryTab() {
               >
                 <div className="min-w-0">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    {event.type.replace(/_/g, " ")}
+                    {t(
+                      `whatsapp.hub.activityTypes.${String(event.type || "")
+                        .trim()
+                        .toLowerCase()}`,
+                      String(event.type || "").replace(/_/g, " ")
+                    )}
                   </p>
                   <p className="mt-0.5 text-sm font-bold text-slate-900">
                     {event.title}

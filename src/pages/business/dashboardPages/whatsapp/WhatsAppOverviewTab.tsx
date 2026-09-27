@@ -295,7 +295,16 @@ export default function WhatsAppOverviewTab() {
               ],
               [
                 t("whatsapp.hub.cards.verification"),
-                connection?.businessVerificationStatus || "—",
+                connection?.businessVerificationStatus
+                  ? t(
+                      `whatsapp.hub.verificationStatus.${String(
+                        connection.businessVerificationStatus
+                      )
+                        .trim()
+                        .toLowerCase()}`,
+                      String(connection.businessVerificationStatus)
+                    )
+                  : "—",
                 false,
               ],
               ["WABA", connection?.wabaName || "—", false],
@@ -340,7 +349,12 @@ export default function WhatsAppOverviewTab() {
                 >
                   <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">
-                      {event.type.replace(/_/g, " ")}
+                      {t(
+                        `whatsapp.hub.activityTypes.${String(event.type || "")
+                          .trim()
+                          .toLowerCase()}`,
+                        String(event.type || "").replace(/_/g, " ")
+                      )}
                     </p>
                     <p className="truncate text-xs font-bold text-slate-800">
                       {event.title}

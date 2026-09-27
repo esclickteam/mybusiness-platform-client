@@ -7985,7 +7985,21 @@
       "nameExpired": "פג תוקף",
       "nameAvailable": "זמין",
       "nameNone": "ללא",
-      "unlimited": "ללא הגבלה"
+      "unlimited": "ללא הגבלה",
+      "activityTypes": {
+        "message_delivered": "הודעה נמסרה",
+        "message_read": "הודעה נקראה",
+        "message_received": "הודעה התקבלה",
+        "message_failed": "הודעה נכשלה",
+        "message_sent": "הודעה נשלחה",
+        "template_sent": "תבנית נשלחה"
+      },
+      "verificationStatus": {
+        "verified": "מאומת",
+        "unverified": "לא מאומת",
+        "pending": "ממתין",
+        "unknown": "לא ידוע"
+      }
     },
     "categories": {
       "appointment_reminder": "תזכורת לתור",
