@@ -22,6 +22,8 @@ import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { harvestRichHtmlFromNode } from "./utils/richTextHtml";
 import { resolvePersistedVisualId } from "./utils/visualPersistId";
 import { resolveFormContext } from "./utils/visualForms";
+import { mountPublicLeadForms } from "../../public/mountPublicLeadForms";
+import { isGuidedDemoActive } from "../../../../guidedDemo/sessionStore";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
@@ -1033,6 +1035,22 @@ export default function VisualEditorCanvas({
       });
     }
   }, [bodyEndHtml, isPreviewMode]);
+
+  useEffect(() => {
+    if (!isGuidedDemoActive()) return;
+    let cancelled = false;
+    const timers = [0, 400, 1200].map((ms) =>
+      window.setTimeout(() => {
+        if (cancelled) return;
+        const root = rootRef.current;
+        if (root) mountPublicLeadForms(root, {});
+      }, ms),
+    );
+    return () => {
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [isPreviewMode, editor.activePageId]);
 
   useEffect(() => {
     const root = rootRef.current;

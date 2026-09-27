@@ -4033,7 +4033,9 @@
         "handlingStatus": "סטטוס טיפול",
         "activities": "פעילויות",
         "openTasks": "משימות פתוחות",
-        "campaign": "קמפיין"
+        "campaign": "קמפיין",
+        "paymentsSubtitleDemo": "כל הסכומים בתיק מוצגים בשקלים (₪).",
+        "paymentsEmptyDemo": "עדיין אין תשלומים לליד זה. לאחר המרה ללקוח ותיאום תורים — התשלומים יופיעו כאן בשקלים."
       },
       "activityStatusChanged": "סטטוס הליד עודכן ל: {{status}}"
     },
@@ -4188,7 +4190,10 @@
           "bit": "Bit",
           "paybox": "PayBox",
           "other": "אחר"
-        }
+        },
+        "subtitleDemo": "כל הסכומים מוצגים בשקלים (₪) לפי תורי הלקוח וסטטוס התשלום.",
+        "emptyDescriptionDemo": "כאשר ייקבעו תורים עם מחיר, הם יופיעו כאן בשקלים עם סטטוס תשלום.",
+        "colAmountDemo": "סכום (₪)"
       },
       "profile": {
         "title": "פרופיל לקוח",
@@ -8545,7 +8550,8 @@
       "clearing": "מנקה…",
       "confirmClear": "לנקות את השיחה מ-BizUply? היסטוריית ההודעות המקומית של הצ'אט תימחק. הודעות בוואטסאפ לא יימחקו.",
       "cleared": "השיחה נוקתה",
-      "openCrm": "פתיחה ב-CRM"
+      "openCrm": "פתיחה ב-CRM",
+      "demoReplySent": "הודעת הדמו נשמרה. היא לא נשלחה ללקוח אמיתי."
     },
     "settings": {
       "title": "חיבור וואטסאפ עסקי",
@@ -16000,7 +16006,8 @@
     },
     "pagesNav": "עמודים",
     "sitePagesNav": "עמודי האתר",
-    "pageChip": "עמוד"
+    "pageChip": "עמוד",
+    "savedToast": "האתר נשמר בהצלחה"
   },
   "partnerNav": {
     "brand": "Bizuply Partner",
@@ -19641,7 +19648,8 @@
       "sending": "שולחים...",
       "sendingRequest": "שולחים את הפנייה...",
       "thanks": "תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.",
-      "sendError": "שגיאה בשליחת הטופס. נסו שוב בעוד רגע."
+      "sendError": "שגיאה בשליחת הטופס. נסו שוב בעוד רגע.",
+      "invalidEmail": "הזינו כתובת אימייל תקינה."
     },
     "store": {
       "cartAndPay": "סל ותשלום",

@@ -4033,7 +4033,9 @@
         "handlingStatus": "Handling Status",
         "activities": "Activities",
         "openTasks": "Open Tasks",
-        "campaign": "Campaign"
+        "campaign": "Campaign",
+        "paymentsSubtitleDemo": "All amounts in the file are shown in dollars ($).",
+        "paymentsEmptyDemo": "No payments for this lead yet. After conversion to a client and booking appointments, payments will appear here in dollars."
       },
       "activityStatusChanged": "Lead status updated to: {{status}}"
     },
@@ -4188,7 +4190,10 @@
           "bit": "Bit",
           "paybox": "PayBox",
           "other": "Other"
-        }
+        },
+        "subtitleDemo": "All amounts are shown in dollars ($) based on this client's appointments and payment status.",
+        "emptyDescriptionDemo": "When priced appointments are booked, they will appear here in dollars with payment status.",
+        "colAmountDemo": "Amount ($)"
       },
       "profile": {
         "title": "Client Profile",
@@ -8556,7 +8561,8 @@
       "clearing": "Clearing…",
       "confirmClear": "Clear this conversation from BizUply? This deletes local message history for this chat. Messages on WhatsApp are not deleted.",
       "cleared": "Conversation cleared",
-      "openCrm": "Open in CRM"
+      "openCrm": "Open in CRM",
+      "demoReplySent": "Demo message saved. It was not sent to a real customer."
     },
     "settings": {
       "title": "WhatsApp Business connection",
@@ -16011,7 +16017,8 @@
     },
     "pagesNav": "Pages",
     "sitePagesNav": "Site pages",
-    "pageChip": "Page"
+    "pageChip": "Page",
+    "savedToast": "Website saved successfully"
   },
   "partnerNav": {
     "brand": "Bizuply Partner",
@@ -19652,7 +19659,8 @@
       "sending": "Sending...",
       "sendingRequest": "Sending your request...",
       "thanks": "Thank you! We received your request and will get back to you soon.",
-      "sendError": "Could not send the form. Try again in a moment."
+      "sendError": "Could not send the form. Try again in a moment.",
+      "invalidEmail": "Enter a valid email address."
     },
     "store": {
       "cartAndPay": "Cart and payment",

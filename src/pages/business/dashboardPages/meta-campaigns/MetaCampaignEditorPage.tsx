@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
+import { isGuidedDemoActive } from "../../../../guidedDemo/sessionStore";
 import { toast } from "react-toastify";
 import {
   AppWindow,
@@ -185,6 +187,9 @@ export default function MetaCampaignEditorPage() {
   >([]);
 
   const currency = resolveCampaignCurrency(connection?.selectedAdAccount?.currency);
+  const currencyMark = isGuidedDemoActive()
+    ? getDemoCurrency()?.symbol || currency
+    : currency;
   const accountIdLabel = resolveAdAccountId(connection?.selectedAdAccount);
   const isLeads = form.objective.includes("LEAD");
 
@@ -1414,7 +1419,7 @@ export default function MetaCampaignEditorPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.dailyBudget")} ({currency})
+                {t("metaCampaigns.form.dailyBudget")} ({currencyMark})
               </span>
               <input
                 type="number"
@@ -1426,7 +1431,7 @@ export default function MetaCampaignEditorPage() {
             </label>
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.lifetimeBudget")} ({currency})
+                {t("metaCampaigns.form.lifetimeBudget")} ({currencyMark})
               </span>
               <input
                 type="number"
@@ -2341,7 +2346,7 @@ export default function MetaCampaignEditorPage() {
                 {placementPreview}
                 <p className="mt-3 text-xs font-semibold text-slate-500">
                   {t("metaCampaigns.form.accountId", { id: accountIdLabel || "—" })} ·{" "}
-                  {currency}
+                  {currencyMark}
                 </p>
               </aside>
             ) : null}

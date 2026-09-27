@@ -4,6 +4,7 @@ import type { TFunction } from "i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { Check, Loader2, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import {
   saveWhatsAppTemplateDraft,
   submitWhatsAppTemplateToMeta,
@@ -111,9 +112,16 @@ function getSteps(t: TFunction) {
   }));
 }
 
+function demoTemplateLanguage() {
+  const lock = readGuidedDemoLocaleLock();
+  if (lock === "pt-BR") return "pt_BR";
+  if (lock === "en" || lock === "es" || lock === "ar" || lock === "he") return lock;
+  return "he";
+}
+
 const emptyForm = (): FormState => ({
   name: "",
-  language: "he",
+  language: demoTemplateLanguage(),
   metaCategory: "MARKETING",
   templateKind: "default",
   variableType: "number",

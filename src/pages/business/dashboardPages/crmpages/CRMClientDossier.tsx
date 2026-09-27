@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import type { TFunction } from "i18next";
 
 import API from "@api";
@@ -992,7 +993,11 @@ function PaymentsPanel({
           {t("crm.clients.payments.title")}
         </h3>
         <p className="mt-1 text-sm font-bold text-slate-500">
-          {t("crm.clients.payments.subtitle")}
+          {t(
+            isGuidedDemoActive()
+              ? "crm.clients.payments.subtitleDemo"
+              : "crm.clients.payments.subtitle"
+          )}
         </p>
       </div>
 
@@ -1022,7 +1027,11 @@ function PaymentsPanel({
             {t("crm.clients.payments.emptyTitle")}
           </h4>
           <p className="mt-2 text-sm font-bold text-slate-500">
-            {t("crm.clients.payments.emptyDescription")}
+            {t(
+              isGuidedDemoActive()
+                ? "crm.clients.payments.emptyDescriptionDemo"
+                : "crm.clients.payments.emptyDescription"
+            )}
           </p>
         </div>
       ) : (
@@ -1032,7 +1041,13 @@ function PaymentsPanel({
               <tr>
                 <th className="px-4 py-3">{t("crm.clients.payments.colService")}</th>
                 <th className="px-4 py-3">{t("crm.clients.payments.colDate")}</th>
-                <th className="px-4 py-3">{t("crm.clients.payments.colAmount")}</th>
+                <th className="px-4 py-3">
+                  {t(
+                    isGuidedDemoActive()
+                      ? "crm.clients.payments.colAmountDemo"
+                      : "crm.clients.payments.colAmount"
+                  )}
+                </th>
                 <th className="px-4 py-3">{t("crm.clients.payments.colMethod")}</th>
                 <th className="px-4 py-3">{t("crm.clients.payments.colStatus")}</th>
               </tr>

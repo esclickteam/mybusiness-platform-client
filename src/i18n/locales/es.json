@@ -4033,7 +4033,9 @@
         "handlingStatus": "Estado de manejo",
         "activities": "Actividades",
         "openTasks": "Abrir tareas",
-        "campaign": "Campaña"
+        "campaign": "Campaña",
+        "paymentsSubtitleDemo": "Todas las cantidades del archivo se muestran en dólares ($).",
+        "paymentsEmptyDemo": "Todavía no hay pagos para este lead. Después de convertirlo en cliente y reservar citas, los pagos aparecerán aquí en dólares."
       },
       "activityStatusChanged": "Estado del lead actualizado a: {{status}}"
     },
@@ -4188,7 +4190,10 @@
           "bit": "Bit",
           "paybox": "Caja de pago",
           "other": "Otros"
-        }
+        },
+        "subtitleDemo": "Todos los importes se muestran en dólares ($) según las citas y el estado de pago de este cliente.",
+        "emptyDescriptionDemo": "Cuando se reserven citas con precio, aparecerán aquí en dólares con estado de pago.",
+        "colAmountDemo": "Importe ($)"
       },
       "profile": {
         "title": "Perfil del cliente",
@@ -8448,7 +8453,8 @@
       "clearing": "Despejado...",
       "confirmClear": "¿Borrar esta conversación de BizUply? Esto elimina el historial de mensajes locales para este chat. Los mensajes en WhatsApp no se eliminan.",
       "cleared": "Conversación borrada",
-      "openCrm": "Abrir en CRM"
+      "openCrm": "Abrir en CRM",
+      "demoReplySent": "El mensaje de demostración se guardó. No se envió a un cliente real."
     },
     "settings": {
       "title": "Conexión WhatsApp Business",
@@ -16011,7 +16017,8 @@
     },
     "pagesNav": "Páginas",
     "sitePagesNav": "Páginas del sitio",
-    "pageChip": "Página"
+    "pageChip": "Página",
+    "savedToast": "El sitio se guardó correctamente"
   },
   "partnerNav": {
     "brand": "Socio de BizUply",
@@ -19652,7 +19659,8 @@
       "sending": "Enviando...",
       "sendingRequest": "Enviando tu consulta...",
       "thanks": "¡Gracias! Recibimos tu consulta y te responderemos pronto.",
-      "sendError": "No se pudo enviar el formulario. Inténtalo en un momento."
+      "sendError": "No se pudo enviar el formulario. Inténtalo en un momento.",
+      "invalidEmail": "Introduce un correo electrónico válido."
     },
     "store": {
       "cartAndPay": "Carrito y pago",
