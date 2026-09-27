@@ -333,19 +333,25 @@ export default function BusinessWorkspaceNav({
   ];
 
   const visibleItems = items.filter((item) => {
-    if (!item.moduleKey) return true;
+    if (!item.moduleKey) {
+      if (
+        user?.isGuidedDemo &&
+        (item.labelKey === "businessNav.globalBusinessClub" ||
+          item.labelKey === "businessNav.viewPublicProfile")
+      ) {
+        return false;
+      }
+      return true;
+    }
     if (item.moduleKey === "__hidden__") return false;
     if (item.moduleKey === "billing" && user?.isGuidedDemo) return false;
-    if (item.labelKey === "businessNav.viewPublicProfile" && user?.isGuidedDemo) {
-      return false;
-    }
     if (
       user?.isGuidedDemo &&
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
     ) {
       return isModuleEnabled(enabledModules, item.moduleKey);
     }
-    if (item.moduleKey === "website" && showWebsiteUpsell) return true;
+    if (item.moduleKey === "website" && showWebsiteUpsell && !user?.isGuidedDemo) return true;
     if (
       user?.isShowcaseDemo &&
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")

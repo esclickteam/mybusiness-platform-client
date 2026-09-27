@@ -195,9 +195,29 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "billing")).toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).toBeNull();
     expect(
       document.querySelector(`a[href="/business/${OTHER_BUSINESS_ID}"]`)
     ).toBeNull();
+  });
+
+  it("hides campaigns and website when a guided demo did not select them", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        isGuidedDemo: true,
+        enabledModules: ["dashboard", "whatsapp"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "website")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "billing")).toBeNull();
   });
 
   it("shows WhatsApp API and Campaigns on a showcase demo workspace", async () => {

@@ -236,7 +236,12 @@ export default function MetaCampaignsSettingsTab() {
     );
   }
 
-  const isLinked = Boolean(status?.isConnected && status?.hasAccessToken);
+  const demoSandbox = Boolean(
+    user?.isGuidedDemo || status?.isGuidedDemo || status?.demoData
+  );
+  const isLinked = Boolean(
+    demoSandbox || (status?.isConnected && status?.hasAccessToken)
+  );
   const hasAccount = Boolean(status?.selectedAdAccount?.id);
   const selectedAccountStatus = resolveMetaAccountStatus(
     (status?.adAccounts || []).find(
@@ -277,6 +282,11 @@ export default function MetaCampaignsSettingsTab() {
           )}
         </div>
 
+        {demoSandbox ? (
+          <p className="mt-5 text-sm font-semibold text-slate-500">
+            {t("metaCampaigns.details.readOnlyHint")}
+          </p>
+        ) : (
         <div className="mt-5 flex flex-wrap gap-2">
           <button
             type="button"
@@ -317,9 +327,12 @@ export default function MetaCampaignsSettingsTab() {
             </>
           ) : null}
         </div>
+        )}
+        {demoSandbox ? null : (
         <p className="mt-3 text-sm font-semibold text-slate-500">
           {t("metaCampaigns.settings.connectHint")}
         </p>
+        )}
         <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/70 p-3">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">
             {t("metaCampaigns.settings.permissionWhyTitle")}

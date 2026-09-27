@@ -375,9 +375,15 @@ export default function MetaCampaignsOverviewTab() {
   const showChartImpressions =
     segment === "awareness" || segment === "engagement" || segment === "traffic";
 
-  const connected = Boolean(data?.connection?.connected);
+  const demoSandbox = Boolean(
+    data?.demoData ||
+      data?.connection?.isGuidedDemo ||
+      data?.connection?.demoData
+  );
+  const connected = Boolean(data?.connection?.connected || demoSandbox);
   const tokenLinked = Boolean(
-    data?.connection?.isConnected && data?.connection?.hasAccessToken
+    demoSandbox ||
+      (data?.connection?.isConnected && data?.connection?.hasAccessToken)
   );
 
   const onAccountChange = async (nextId: string) => {
@@ -616,7 +622,7 @@ export default function MetaCampaignsOverviewTab() {
           demoTarget="meta-leads-kpi"
           href={
             data?.demoData || data?.connection?.isGuidedDemo
-              ? `/business/${urlBusinessId || businessId}/dashboard/crm/leads`
+              ? `/business/${urlBusinessId || businessId}/dashboard/crm/leads?lead=sarah`
               : undefined
           }
           value={formatMetricOrDash(kpis?.leads, formatNumber, {
@@ -1217,7 +1223,8 @@ export default function MetaCampaignsOverviewTab() {
 
       {detailsCampaign ? (
         <div
-          className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 p-0 sm:p-4"
+          data-testid="campaign-details-drawer"
+          className="fixed inset-0 z-[2147483010] flex justify-end bg-slate-900/40 p-0 sm:p-4"
           onClick={() => setDetailsCampaign(null)}
         >
           <aside

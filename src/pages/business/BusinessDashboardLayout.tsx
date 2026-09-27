@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
 import { isGuidedDemoActive } from "../../guidedDemo/sessionStore";
+import GuidedDemoResetControl from "../../guidedDemo/GuidedDemoResetControl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { getTextDirection, isRtlLanguage } from "../../i18n/localeUtils";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -820,6 +821,7 @@ export default function BusinessDashboardLayout() {
                     {t("leftover.guided.demoBadge", "DEMO")}
                   </span>
                 ) : null}
+                <GuidedDemoResetControl />
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
                   <span className="font-black text-slate-800">
                     {isInvistimoAdmin
