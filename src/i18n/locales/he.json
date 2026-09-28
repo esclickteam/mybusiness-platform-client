@@ -16094,7 +16094,8 @@
     "days90": "90 ימים",
     "videoUrlLocale": "כתובת וידאו לשפה זו",
     "expired": "פג תוקף",
-    "revoked": "בוטל"
+    "revoked": "בוטל",
+    "shareNotFound": "קישור השיתוף לא נמצא, פג תוקף או בוטל."
   },
   "adminNav": {
     "dashboard": "דשבורד",

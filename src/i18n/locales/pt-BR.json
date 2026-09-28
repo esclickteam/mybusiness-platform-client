@@ -16105,7 +16105,8 @@
     "days90": "90 dias",
     "videoUrlLocale": "URL de vídeo para este idioma",
     "expired": "Expirado",
-    "revoked": "Revogado"
+    "revoked": "Revogado",
+    "shareNotFound": "Esta ligação não foi encontrada, expirou ou foi revogada."
   },
   "adminNav": {
     "dashboard": "Painel",

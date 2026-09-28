@@ -16105,7 +16105,8 @@
     "days90": "90 days",
     "videoUrlLocale": "Video URL for this language",
     "expired": "Expired",
-    "revoked": "Revoked"
+    "revoked": "Revoked",
+    "shareNotFound": "This share link was not found, expired, or revoked."
   },
   "adminNav": {
     "dashboard": "Dashboard",

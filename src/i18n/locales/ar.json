@@ -16105,7 +16105,8 @@
     "days90": "90 يوماً",
     "videoUrlLocale": "رابط الفيديو لهذه اللغة",
     "expired": "منتهٍ",
-    "revoked": "ملغى"
+    "revoked": "ملغى",
+    "shareNotFound": "رابط المشاركة غير موجود أو منتهٍ أو ملغى."
   },
   "adminNav": {
     "dashboard": "لوحة التحكم",
