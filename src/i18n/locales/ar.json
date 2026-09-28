@@ -16107,6 +16107,10 @@
     "expired": "منتهٍ",
     "revoked": "ملغى",
     "shareNotFound": "رابط المشاركة غير موجود أو منتهٍ أو ملغى.",
+    "visibility": "الظهور",
+    "visibilityPartners": "الشركاء",
+    "visibilityHidden": "مخفي",
+    "visibilityAdmin": "المشرف فقط",
     "materialSlug": "المادة",
     "shareUser": "أنشئ بواسطة",
     "meta": {

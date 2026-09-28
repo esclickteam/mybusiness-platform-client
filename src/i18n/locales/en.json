@@ -16107,6 +16107,10 @@
     "expired": "Expired",
     "revoked": "Revoked",
     "shareNotFound": "This share link was not found, expired, or revoked.",
+    "visibility": "Visibility",
+    "visibilityPartners": "Partners",
+    "visibilityHidden": "Hidden",
+    "visibilityAdmin": "Admin only",
     "materialSlug": "Material",
     "shareUser": "Created by",
     "meta": {
