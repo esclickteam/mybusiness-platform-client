@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { fetchPublicPartnerCenterShare, type PartnerMaterial } from "../../lib/partnerCenterApi";
+import API from "@api";
 import { coerceSupportedLanguage, detectLanguageFromNavigator, getTextDirection } from "../../i18n/localeUtils";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 
@@ -52,6 +53,14 @@ export default function PublicPartnerMaterial() {
             <pre className="mt-6 whitespace-pre-wrap text-sm font-bold leading-relaxed text-slate-700">
               {item.body}
             </pre>
+            <div className="mt-6">
+              <a
+                className="inline-flex rounded-2xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white"
+                href={`${String(API.defaults.baseURL || "/api").replace(/\/$/, "")}/partner-center/share/${token}/pdf`}
+              >
+                {t("partnerCenter.download")}
+              </a>
+            </div>
           </>
         ) : null}
       </article>

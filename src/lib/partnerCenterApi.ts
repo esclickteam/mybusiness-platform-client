@@ -132,3 +132,60 @@ export async function fetchPublicPartnerCenterShare(token: string) {
   const { data } = await API.get(`/partner-center/share/${token}`);
   return data.item as PartnerMaterial;
 }
+
+function filenameFromDisposition(header: string | undefined, fallback: string) {
+  const raw = String(header || "");
+  const star = raw.match(/filename\*=UTF-8''([^;]+)/i);
+  if (star) return decodeURIComponent(star[1]);
+  const plain = raw.match(/filename="?([^";]+)"?/i);
+  return plain ? plain[1] : fallback;
+}
+
+function saveBlob(data: Blob, filename: string) {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function downloadPartnerCenterPdf(
+  id: string,
+  locale: string,
+  admin = false,
+  variant?: string
+) {
+  const path = admin ? `/admin/partner-center/materials/${id}/pdf` : `/partner-center/materials/${id}/pdf`;
+  const response = await API.get(path, {
+    params: { locale, variant },
+    responseType: "blob",
+    timeout: 120000,
+  });
+  const filename = filenameFromDisposition(
+    response.headers?.["content-disposition"],
+    `Bizuply_${id}_${String(locale).toUpperCase()}.pdf`
+  );
+  saveBlob(response.data, filename);
+}
+
+export function materialHasOriginalFile(item: PartnerMaterial) {
+  if (item.localeVideoUrl || item.videoUrl) return "video" as const;
+  const mime = String(item.mimeType || "");
+  const url = String(item.fileUrl || "");
+  if (/^image\//.test(mime) || /\.(png|jpe?g|gif|webp|svg)$/i.test(url)) return "image" as const;
+  if (/^video\//.test(mime) || /\.(mp4|mov|webm)$/i.test(url)) return "video" as const;
+  return null;
+}
+
+export function downloadPartnerCenterOriginal(item: PartnerMaterial) {
+  const url = item.localeVideoUrl || item.videoUrl || item.fileUrl;
+  if (!url) return;
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.download = item.fileName || "";
+  a.click();
+}

@@ -16,6 +16,9 @@ import { coerceSupportedLanguage, getTextDirection } from "../../i18n/localeUtil
 import { LANGUAGE_META } from "../../i18n/languages";
 import {
   archivePartnerCenterMaterial,
+  downloadPartnerCenterOriginal,
+  downloadPartnerCenterPdf,
+  materialHasOriginalFile,
   fetchPartnerCenterKpis,
   fetchPartnerCenterMaterial,
   fetchPartnerCenterMaterials,
@@ -83,16 +86,6 @@ function CreativePreview({ item, dir }: { item: PartnerMaterial; dir: string }) 
   );
 }
 
-function downloadText(name: string, text: string) {
-  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name.endsWith(".md") ? name : `${name}.md`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export default function PartnerCenterHub({
   admin = false,
 }: {
@@ -125,6 +118,7 @@ export default function PartnerCenterHub({
   const [auditRows, setAuditRows] = useState<any[]>([]);
   const [editor, setEditor] = useState<PartnerMaterial | null>(null);
   const [toast, setToast] = useState("");
+  const [downloading, setDownloading] = useState("");
   const [kpis, setKpis] = useState<any[]>([]);
   const [kpiForm, setKpiForm] = useState({
     periodStart: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10),
@@ -236,6 +230,54 @@ export default function PartnerCenterHub({
       /* clipboard may be blocked in automated/insecure contexts */
     }
     notify(t("partnerCenter.copied"));
+  }
+
+  async function onDownloadPdf(item: PartnerMaterial, variant?: string) {
+    const key = `${item.id}:${variant || "content"}`;
+    setDownloading(key);
+    try {
+      await downloadPartnerCenterPdf(item.id, locale, admin, variant);
+    } catch {
+      notify(t("partnerCenter.downloadFailed"));
+    } finally {
+      setDownloading("");
+    }
+  }
+
+  function downloadButtons(item: PartnerMaterial) {
+    const original = materialHasOriginalFile(item);
+    const isLesson = item.assetType === "video_script" || item.category === "learn_bizuply";
+    const isBrand = item.category === "brand_assets" || item.assetType === "brand_kit";
+    const pdfBusy = downloading.startsWith(`${item.id}:`);
+    return (
+      <>
+        {original ? (
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+            onClick={() => downloadPartnerCenterOriginal(item)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            {original === "video" ? t("partnerCenter.downloadVideo") : t("partnerCenter.downloadOriginal")}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          disabled={pdfBusy}
+          className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black disabled:opacity-50"
+          onClick={() => onDownloadPdf(item, isLesson ? "training" : "content")}
+        >
+          <Download className="h-3.5 w-3.5" />
+          {pdfBusy
+            ? t("partnerCenter.downloading")
+            : isLesson
+              ? t("partnerCenter.downloadTrainingPdf")
+              : isBrand && original
+                ? t("partnerCenter.downloadBrandGuide")
+                : t("partnerCenter.download")}
+        </button>
+      </>
+    );
   }
 
   async function onShare(item: PartnerMaterial) {
@@ -464,13 +506,7 @@ export default function PartnerCenterHub({
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onCopy(item)}>
                 <Copy className="h-3.5 w-3.5" /> {t("partnerCenter.copy")}
               </button>
-              <button
-                type="button"
-                className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
-                onClick={() => downloadText(item.slug || item.title, item.body || item.script || "")}
-              >
-                <Download className="h-3.5 w-3.5" /> {t("partnerCenter.download")}
-              </button>
+              {downloadButtons(item)}
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onShare(item)}>
                 <Share2 className="h-3.5 w-3.5" /> {t("partnerCenter.share")}
               </button>
@@ -740,6 +776,9 @@ export default function PartnerCenterHub({
                         : preview.body || preview.script}
               </pre>
             )}
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+              {downloadButtons(preview)}
+            </div>
             {preview.category === "learn_bizuply" ? (
               <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
                 <button
