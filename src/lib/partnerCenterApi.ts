@@ -17,6 +17,10 @@ export type PartnerMaterial = {
   fileName?: string;
   videoUrl?: string;
   thumbnailUrl?: string;
+  localeVideoUrl?: string;
+  videoReady?: boolean;
+  extra?: Record<string, any>;
+  localeVideos?: Record<string, { videoUrl?: string; thumbnailUrl?: string }>;
   createdAt?: string;
   updatedAt?: string;
   favorite?: boolean;
@@ -74,12 +78,44 @@ export async function togglePartnerCenterFavorite(id: string) {
   return data as { favorite: boolean };
 }
 
-export async function sharePartnerCenterMaterial(id: string, locale: string, admin = false) {
+export async function sharePartnerCenterMaterial(
+  id: string,
+  locale: string,
+  admin = false,
+  expiresInDays?: number
+) {
   const path = admin
     ? `/admin/partner-center/materials/${id}/share`
     : `/partner-center/materials/${id}/share`;
-  const { data } = await API.post(path, { locale });
-  return data as { token: string; locale: string };
+  const { data } = await API.post(path, { locale, expiresInDays });
+  return data as {
+    token: string;
+    locale: string;
+    expiresAt?: string | null;
+    createdAt?: string;
+    active?: boolean;
+  };
+}
+
+export async function listPartnerCenterShares(id: string, admin = false) {
+  const path = admin
+    ? `/admin/partner-center/materials/${id}/shares`
+    : `/partner-center/materials/${id}/shares`;
+  const { data } = await API.get(path);
+  return data as { items: Array<Record<string, any>> };
+}
+
+export async function listPartnerCenterShareAudit() {
+  const { data } = await API.get("/admin/partner-center/shares");
+  return data as { items: Array<Record<string, any>> };
+}
+
+export async function revokePartnerCenterShare(token: string, admin = false) {
+  const path = admin
+    ? `/admin/partner-center/shares/${token}/revoke`
+    : `/partner-center/shares/${token}/revoke`;
+  const { data } = await API.post(path);
+  return data;
 }
 
 export async function fetchPartnerCenterKpis() {
