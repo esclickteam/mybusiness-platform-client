@@ -19,7 +19,10 @@ import {
   fetchPartnerCenterKpis,
   fetchPartnerCenterMaterial,
   fetchPartnerCenterMaterials,
+  listPartnerCenterShareAudit,
+  listPartnerCenterShares,
   reseedPartnerCenter,
+  revokePartnerCenterShare,
   savePartnerCenterKpi,
   savePartnerCenterMaterial,
   sharePartnerCenterMaterial,
@@ -35,6 +38,36 @@ const HUB = [
   { id: "industry", key: "hubIndustry", categories: ["industry_kits"] },
   { id: "brand", key: "hubBrand", categories: ["brand_assets"] },
 ] as const;
+
+function CreativePreview({ item, dir }: { item: PartnerMaterial; dir: string }) {
+  const extra = item.extra || {};
+  const w = Number(extra.width || 1080);
+  const h = Number(extra.height || 1080);
+  const ratio = Math.min(1, 420 / w);
+  const width = Math.round(w * ratio);
+  const height = Math.round(h * ratio);
+  const headline = (item.title || "").split(" — ")[0];
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={item.title} className="max-w-full rounded-2xl border border-slate-200 bg-white">
+      <rect width={w} height={h} fill="#F7F8FA" />
+      <rect x={w * 0.08} y={h * 0.08} width={w * 0.84} height={h * 0.84} rx={24} fill="#FFFFFF" stroke="#E2E8F0" />
+      <rect x={w * 0.08} y={h * 0.08} width={8} height={h * 0.84} fill="#6D28D9" />
+      <text x={dir === "rtl" ? w * 0.88 : w * 0.14} y={h * 0.28} textAnchor={dir === "rtl" ? "end" : "start"} fill="#6D28D9" fontSize={Math.max(28, w / 22)} fontWeight={800}>
+        Bizuply
+      </text>
+      <text x={dir === "rtl" ? w * 0.88 : w * 0.14} y={h * 0.42} textAnchor={dir === "rtl" ? "end" : "start"} fill="#0F172A" fontSize={Math.max(36, w / 16)} fontWeight={800}>
+        {headline.slice(0, 42)}
+      </text>
+      <text x={dir === "rtl" ? w * 0.88 : w * 0.14} y={h * 0.54} textAnchor={dir === "rtl" ? "end" : "start"} fill="#64748B" fontSize={Math.max(22, w / 32)} fontWeight={700}>
+        {(item.description || "").slice(0, 64)}
+      </text>
+      <rect x={dir === "rtl" ? w * 0.5 : w * 0.14} y={h * 0.72} width={w * 0.36} height={h * 0.08} rx={16} fill="#6D28D9" />
+      <text x={dir === "rtl" ? w * 0.68 : w * 0.32} y={h * 0.775} textAnchor="middle" fill="#FFFFFF" fontSize={Math.max(20, w / 36)} fontWeight={800}>
+        CTA
+      </text>
+    </svg>
+  );
+}
 
 function downloadText(name: string, text: string) {
   const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
@@ -70,6 +103,11 @@ export default function PartnerCenterHub({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<PartnerMaterial | null>(null);
+  const [previewTab, setPreviewTab] = useState("script");
+  const [shareItem, setShareItem] = useState<PartnerMaterial | null>(null);
+  const [shareDays, setShareDays] = useState("30");
+  const [shareRows, setShareRows] = useState<any[]>([]);
+  const [auditRows, setAuditRows] = useState<any[]>([]);
   const [editor, setEditor] = useState<PartnerMaterial | null>(null);
   const [toast, setToast] = useState("");
   const [kpis, setKpis] = useState<any[]>([]);
@@ -109,6 +147,9 @@ export default function PartnerCenterHub({
       if (!admin) {
         const kpi = await fetchPartnerCenterKpis().catch(() => ({ items: [] }));
         setKpis(kpi.items || []);
+      } else {
+        const audit = await listPartnerCenterShareAudit().catch(() => ({ items: [] }));
+        setAuditRows(audit.items || []);
       }
     } catch (err: any) {
       setError(err?.response?.data?.error || err?.message || "error");
@@ -144,10 +185,24 @@ export default function PartnerCenterHub({
       notify(t("partnerCenter.shareClientOnly"));
       return;
     }
-    const share = await sharePartnerCenterMaterial(item.id, locale, admin);
+    const rows = await listPartnerCenterShares(item.id, admin).catch(() => ({ items: [] }));
+    setShareRows(rows.items || []);
+    setShareItem(item);
+  }
+
+  async function createShareLink() {
+    if (!shareItem) return;
+    const days = shareDays === "never" ? 0 : Number(shareDays);
+    const share = await sharePartnerCenterMaterial(shareItem.id, locale, admin, days);
     const url = `${window.location.origin}/partner-materials/${share.token}`;
     await navigator.clipboard.writeText(url);
     notify(t("partnerCenter.shareCopied"));
+    const rows = await listPartnerCenterShares(shareItem.id, admin);
+    setShareRows(rows.items || []);
+    if (admin) {
+      const audit = await listPartnerCenterShareAudit();
+      setAuditRows(audit.items || []);
+    }
   }
 
   async function onFavorite(item: PartnerMaterial) {
@@ -176,6 +231,13 @@ export default function PartnerCenterHub({
                 onClick={() => reseedPartnerCenter(false).then(load)}
               >
                 {t("partnerCenter.reseed")}
+              </button>
+              <button
+                type="button"
+                className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-900"
+                onClick={() => reseedPartnerCenter(true).then(load)}
+              >
+                {t("partnerCenter.forceReseed")}
               </button>
               <button
                 type="button"
@@ -305,7 +367,7 @@ export default function PartnerCenterHub({
               {item.estimatedDurationMinutes ? ` · ${t("partnerCenter.duration", { n: item.estimatedDurationMinutes })}` : ""}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => setPreview(item)}>
+              <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => { setPreviewTab("script"); setPreview(item); }}>
                 <Eye className="h-3.5 w-3.5" /> {t("partnerCenter.preview")}
               </button>
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onCopy(item)}>
@@ -321,6 +383,19 @@ export default function PartnerCenterHub({
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onShare(item)}>
                 <Share2 className="h-3.5 w-3.5" /> {t("partnerCenter.share")}
               </button>
+              {admin ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+                  onClick={async () => {
+                    await savePartnerCenterMaterial({ featured: !item.featured }, item.id);
+                    load();
+                  }}
+                >
+                  <Star className={`h-3.5 w-3.5 ${item.featured ? "fill-violet-600 text-violet-600" : ""}`} />
+                  {t("partnerCenter.featured")}
+                </button>
+              ) : null}
               {!admin ? (
                 <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onFavorite(item)}>
                   <Heart className={`h-3.5 w-3.5 ${item.favorite ? "fill-rose-500 text-rose-500" : ""}`} />
@@ -395,6 +470,51 @@ export default function PartnerCenterHub({
         </section>
       ) : null}
 
+      {admin && auditRows.length ? (
+        <section className="mt-10 rounded-[16px] border border-slate-100 bg-white p-5">
+          <h2 className="text-xl font-black">{t("partnerCenter.shareAudit")}</h2>
+          <div className="mt-3 overflow-x-auto">
+            <table className="min-w-full text-start text-sm">
+              <thead>
+                <tr className="text-xs font-black text-slate-500">
+                  <th className="p-2">slug</th>
+                  <th className="p-2">{t("partnerCenter.shareCreated")}</th>
+                  <th className="p-2">{t("partnerCenter.shareExpires")}</th>
+                  <th className="p-2">user</th>
+                  <th className="p-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {auditRows.map((row) => (
+                  <tr key={row.id || row.token} className="border-t border-slate-100 font-bold">
+                    <td className="p-2">{row.materialSlug}</td>
+                    <td className="p-2">{row.createdAt ? new Date(row.createdAt).toLocaleString(locale) : "—"}</td>
+                    <td className="p-2">
+                      {row.revokedAt ? t("partnerCenter.revoked") : row.expiresAt ? new Date(row.expiresAt).toLocaleDateString(locale) : t("partnerCenter.shareNever")}
+                    </td>
+                    <td className="p-2">{row.createdByEmail || row.createdByName || "—"}</td>
+                    <td className="p-2">
+                      {row.active ? (
+                        <button
+                          type="button"
+                          className="text-rose-700"
+                          onClick={async () => {
+                            await revokePartnerCenterShare(row.token, true);
+                            load();
+                          }}
+                        >
+                          {t("partnerCenter.shareRevoke")}
+                        </button>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
       {preview ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/40 p-0 sm:items-center sm:p-6" onClick={() => setPreview(null)}>
           <div
@@ -413,7 +533,92 @@ export default function PartnerCenterHub({
                 {t("partnerCenter.cancel")}
               </button>
             </div>
-            <pre className="whitespace-pre-wrap text-sm font-bold leading-relaxed text-slate-700">{preview.body || preview.script}</pre>
+            {["banner", "social_post", "paid_ad", "short_video"].includes(preview.assetType) ? (
+              <div className="mb-4">
+                <p className="mb-2 text-xs font-black uppercase text-slate-400">{t("partnerCenter.bannerPreview")}</p>
+                <CreativePreview item={preview} dir={dir} />
+              </div>
+            ) : null}
+            <div className="mb-4 flex flex-wrap gap-2">
+              {[
+                ["video", t("partnerCenter.tabVideo")],
+                ["script", t("partnerCenter.tabScript")],
+                ["voice", t("partnerCenter.tabVoiceOver")],
+                ["captions", t("partnerCenter.tabCaptions")],
+                ["shots", t("partnerCenter.tabShotList")],
+                ["onscreen", t("partnerCenter.tabOnScreen")],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`rounded-full px-3 py-1 text-xs font-black ${previewTab === id ? "bg-[#6D28D9] text-white" : "bg-slate-100"}`}
+                  onClick={() => setPreviewTab(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {previewTab === "video" ? (
+              preview.videoReady && preview.localeVideoUrl ? (
+                <video className="w-full rounded-2xl" controls src={preview.localeVideoUrl} />
+              ) : (
+                <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
+                  {t("partnerCenter.readyForProduction")}
+                </p>
+              )
+            ) : (
+              <pre className="whitespace-pre-wrap text-sm font-bold leading-relaxed text-slate-700">
+                {previewTab === "voice"
+                  ? preview.voiceOver || preview.script
+                  : previewTab === "captions"
+                    ? preview.captions
+                    : previewTab === "shots"
+                      ? preview.shotList
+                      : previewTab === "onscreen"
+                        ? preview.onScreenText
+                        : preview.body || preview.script}
+              </pre>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      {shareItem ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/40 p-0 sm:items-center sm:p-6" onClick={() => setShareItem(null)}>
+          <div className="w-full max-w-lg rounded-t-[28px] bg-white p-6 sm:rounded-[28px]" onClick={(e) => e.stopPropagation()} dir={dir}>
+            <h3 className="mb-3 text-xl font-black">{t("partnerCenter.share")}</h3>
+            <label className="mb-3 block text-xs font-black text-slate-500">
+              {t("partnerCenter.shareExpires")}
+              <select className="mt-1 h-11 w-full rounded-xl border px-3 text-sm font-bold" value={shareDays} onChange={(e) => setShareDays(e.target.value)}>
+                <option value="7">{t("partnerCenter.days7")}</option>
+                <option value="30">{t("partnerCenter.days30")}</option>
+                <option value="90">{t("partnerCenter.days90")}</option>
+                <option value="never">{t("partnerCenter.shareNever")}</option>
+              </select>
+            </label>
+            <button type="button" className="mb-4 rounded-2xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white" onClick={createShareLink}>
+              {t("partnerCenter.share")}
+            </button>
+            <div className="space-y-2">
+              {shareRows.map((row) => (
+                <div key={row.token} className="flex items-center justify-between gap-2 rounded-xl border border-slate-100 p-3 text-xs font-bold">
+                  <span className="truncate">{row.token.slice(0, 10)}… · {row.revokedAt ? t("partnerCenter.revoked") : row.active ? (row.expiresAt || t("partnerCenter.shareNever")) : t("partnerCenter.expired")}</span>
+                  {row.active ? (
+                    <button
+                      type="button"
+                      className="text-rose-700"
+                      onClick={async () => {
+                        await revokePartnerCenterShare(row.token, admin);
+                        const rows = await listPartnerCenterShares(shareItem.id, admin);
+                        setShareRows(rows.items || []);
+                      }}
+                    >
+                      {t("partnerCenter.shareRevoke")}
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}
@@ -478,6 +683,7 @@ function MaterialEditor({
           fileUrl: form.fileUrl,
           videoUrl: form.videoUrl,
           locales: form.locales,
+          localeVideos: form.localeVideos,
         },
         form.id || undefined
       );
@@ -500,7 +706,20 @@ function MaterialEditor({
             <option value="client_facing">{t("partnerCenter.clientFacing")}</option>
           </select>
           <input className="h-11 rounded-xl border px-3 text-sm font-bold" placeholder="file URL" value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} />
-          <input className="h-11 rounded-xl border px-3 text-sm font-bold" placeholder="video URL" value={form.videoUrl || ""} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} />
+          <input
+            className="h-11 rounded-xl border px-3 text-sm font-bold"
+            placeholder={t("partnerCenter.videoUrlLocale")}
+            value={form.localeVideos?.[tab]?.videoUrl || ""}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                localeVideos: {
+                  ...(form.localeVideos || {}),
+                  [tab]: { ...(form.localeVideos?.[tab] || {}), videoUrl: e.target.value },
+                },
+              })
+            }
+          />
         </div>
         <div className="mb-3 flex flex-wrap gap-2">
           {LANGUAGE_META.map((lng) => (
@@ -515,12 +734,14 @@ function MaterialEditor({
           ))}
         </div>
         <input
+          dir={getTextDirection(tab)}
           className="mb-2 h-11 w-full rounded-xl border px-3 text-sm font-black"
           placeholder="title"
           value={current.title || ""}
           onChange={(e) => patchLocale(tab, { title: e.target.value })}
         />
         <textarea
+          dir={getTextDirection(tab)}
           className="mb-4 min-h-[220px] w-full rounded-xl border p-3 text-sm font-bold"
           placeholder="body"
           value={current.body || current.script || ""}
