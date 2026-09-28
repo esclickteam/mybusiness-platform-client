@@ -1,3 +1,7 @@
+/**
+ * Customer WhatsApp billing: Meta invoices the connected WABA.
+ * Bizuply does not charge message usage (no wallet / per-message UI here).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, ExternalLink, ShieldAlert } from "lucide-react";

@@ -1,3 +1,6 @@
+/**
+ * Dormant Lemon/Stripe WhatsApp checkout overlay. Not mounted in customer hub.
+ */
 import React, { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../../i18n/localeUtils";

@@ -1,3 +1,6 @@
+/**
+ * Dormant Bizuply usage-subscription modal. Not mounted while Meta bills the WABA.
+ */
 import React, { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, X } from "lucide-react";

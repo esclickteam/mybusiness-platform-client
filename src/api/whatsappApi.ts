@@ -14,7 +14,7 @@ export type WhatsAppReadiness =
   | "registration_failed"
   | "error";
 
-/** WABA billing/readiness health (separate from Meta Ad Account). */
+/** WABA billing/readiness health. Meta invoices this WABA; Bizuply does not. */
 export type WhatsAppWabaBillingHealth = {
   kind: "whatsapp_waba";
   billingOwner: "whatsapp_waba";

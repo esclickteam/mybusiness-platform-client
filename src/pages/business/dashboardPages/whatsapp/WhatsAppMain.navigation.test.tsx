@@ -28,24 +28,6 @@ vi.mock("../../../../api/whatsappApi", () => ({
   syncWhatsAppAccountHealth: vi.fn(async () => ({})),
 }));
 
-vi.mock("./billing/useWhatsAppBilling", () => ({
-  useWhatsAppBilling: () => ({
-    usage: null,
-    loading: false,
-    error: null,
-    refresh: async () => {},
-    setUsage: () => {},
-  }),
-}));
-
-vi.mock("./billing/WhatsAppBillingSetupModal", () => ({
-  default: () => null,
-}));
-
-vi.mock("./billing/WhatsAppCheckoutProcessing", () => ({
-  default: () => null,
-}));
-
 vi.mock("../../../../guidedDemo/GuidedDemoSandboxButton", () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
