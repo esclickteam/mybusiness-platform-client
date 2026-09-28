@@ -7,6 +7,8 @@ import AdminSoftphoneLauncher from "../../components/AdminSoftphoneLauncher";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../api";
 import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../hooks/useLocaleDir";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
@@ -22,8 +24,9 @@ const NAV_ITEMS = [
   { path: "/admin/create-user", label: "יצירת משתמש" },
   { path: "/admin/businesses", label: "עסקים" },
   { path: "/admin/affiliates", label: "שותפים" },
-  { path: "/admin/partners", label: "פרטנרים" },
-  { path: "/admin/partners/referrals", label: "צירופי פרטנרים" },
+  { path: "/admin/partners", label: "פרטנרים", labelKey: "adminNav.partners" },
+  { path: "/admin/partner-center", label: "מרכז שותפים", labelKey: "adminNav.partnerCenter" },
+  { path: "/admin/partners/referrals", label: "צירופי פרטנרים", labelKey: "adminNav.partnerReferrals" },
   { path: "/admin/marketers", label: "משווקים" },
   { path: "/admin/withdrawals", label: "משיכות" },
   { path: "/admin/support-chat", label: "צ'אט תמיכה" },
@@ -32,6 +35,7 @@ const NAV_ITEMS = [
 
 function AdminHeader() {
   const { t } = useTranslation();
+  const headerDir = useLocaleDir();
   const { user, logout, socket } = useAuth() as {
     user: { name?: string; email?: string } | null;
     logout: (opts?: { callServer?: boolean; redirect?: boolean }) => Promise<void>;
@@ -144,7 +148,11 @@ function AdminHeader() {
                 : "text-slate-500 hover:text-slate-800",
           ].join(" ")}
         >
-          {item.path === "/admin/club" ? t("club.name") : item.label}
+          {item.path === "/admin/club"
+            ? t("club.name")
+            : "labelKey" in item && item.labelKey
+              ? t(item.labelKey)
+              : item.label}
           {isSupport && supportBadge > 0 && (
             <span
               data-testid="admin-support-unread-badge"
@@ -163,8 +171,8 @@ function AdminHeader() {
 
   return (
     <header
-      dir="rtl"
-      className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-right text-slate-800 shadow-[0_2px_16px_rgba(124,77,255,0.06)] backdrop-blur-xl sm:px-4 md:px-8"
+      dir={headerDir}
+      className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-start text-slate-800 shadow-[0_2px_16px_rgba(124,77,255,0.06)] backdrop-blur-xl sm:px-4 md:px-8"
       style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <div className="mx-auto flex max-w-[1480px] flex-col gap-3">
@@ -205,6 +213,8 @@ function AdminHeader() {
                 </small>
               </div>
             </div>
+
+            <LanguageSwitcher />
 
             <button
               type="button"

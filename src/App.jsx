@@ -195,6 +195,9 @@ const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
 const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
 const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
+const AdminPartnerCenter = lazy(() => import("./pages/admin/AdminPartnerCenter"));
+const PartnerCenterPage = lazy(() => import("./pages/partner/PartnerCenterPage"));
+const PublicPartnerMaterial = lazy(() => import("./pages/public/PublicPartnerMaterial"));
 const AdminPartnerDossier = lazy(() => import("./pages/admin/AdminPartnerDossier"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
 const MarketerDashboardPage = lazy(() =>
@@ -877,6 +880,7 @@ export default function App() {
     isAdminRoute ||
     isStaffRoute ||
     location.pathname.startsWith("/client") ||
+    location.pathname.startsWith("/partner-materials") ||
     (location.pathname.startsWith("/partner") && !isPublicPartnerDeal) ||
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
@@ -1144,6 +1148,7 @@ export default function App() {
                           }
                         />
                         <Route path="/partner/deals/:dealId" element={<PartnerPublicDeal />} />
+                        <Route path="/partner-materials/:token" element={<PublicPartnerMaterial />} />
                         <Route
                           path="/checkout"
                           element={
@@ -1640,6 +1645,14 @@ export default function App() {
                           }
                         />
                         <Route
+                          path="/admin/partner-center"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerCenter />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/admin/partners/referrals"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1714,6 +1727,7 @@ export default function App() {
                           }
                         >
                           <Route index element={<PartnerDashboard />} />
+                          <Route path="center" element={<PartnerCenterPage />} />
                           <Route path="crm" element={<PartnerClients />} />
                           <Route path="crm/:clientId" element={<PartnerClientDossier />} />
                           <Route path="clients/new" element={<PartnerClientWizard />} />

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
+import { Banknote, BadgePercent, Bell, BookOpen, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
@@ -23,6 +23,7 @@ type NavItem = {
 
 const SIDEBAR: NavItem[] = [
   { to: "/partner/dashboard", labelKey: "partnerNav.overview", icon: LayoutDashboard, end: true },
+  { to: "/partner/dashboard/center", labelKey: "partnerNav.partnerCenter", icon: BookOpen },
   { to: "/partner/dashboard/crm", labelKey: "partnerNav.customers", icon: Users },
   { to: "/partner/dashboard/clients/new", labelKey: "partnerNav.newClient", icon: UserPlus },
   { to: "/partner/dashboard/reminders", labelKey: "partnerNav.reminders", icon: Bell },
@@ -39,6 +40,7 @@ const SIDEBAR: NavItem[] = [
 
 const PILLS: NavItem[] = [
   { to: "/partner/dashboard", labelKey: "partnerNav.overview", icon: LayoutDashboard, end: true },
+  { to: "/partner/dashboard/center", labelKey: "partnerNav.partnerCenter", icon: BookOpen },
   { to: "/partner/dashboard/crm", labelKey: "partnerNav.customers", icon: Users },
   { to: "/partner/dashboard/transactions", labelKey: "partnerNav.deals", icon: Handshake },
   { to: "/partner/dashboard/withdrawals", labelKey: "partnerNav.commissionsShort", icon: Banknote },
@@ -52,6 +54,7 @@ const PILLS: NavItem[] = [
 const TITLES: Array<{ test: (path: string) => boolean; titleKey: string }> = [
   { test: (path) => path.endsWith("/clients/new"), titleKey: "partnerNav.newClient" },
   { test: (path) => /\/crm\/[^/]+$/.test(path), titleKey: "partnerNav.clientFile" },
+  { test: (path) => path.includes("/center"), titleKey: "partnerNav.partnerCenter" },
   { test: (path) => path.includes("/crm"), titleKey: "partnerNav.customers" },
   { test: (path) => path.includes("/reminders"), titleKey: "partnerNav.reminders" },
   { test: (path) => path.includes("/tasks"), titleKey: "partnerNav.tasks" },
