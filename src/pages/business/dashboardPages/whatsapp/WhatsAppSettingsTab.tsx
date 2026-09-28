@@ -36,11 +36,6 @@ import {
   type WhatsAppTemplate,
   type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
-import {
-  getMetaCampaignsStatus,
-  type MetaAdAccountBillingHealth,
-} from "../../../../api/metaCampaignsApi";
-import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import {
@@ -163,8 +158,6 @@ export default function WhatsAppSettingsTab() {
   const [inventoryNotes, setInventoryNotes] = useState<Record<string, string>>(
     {}
   );
-  const [adAccountBilling, setAdAccountBilling] =
-    useState<MetaAdAccountBillingHealth | null>(null);
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
     []
   );
@@ -203,14 +196,12 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [status, metaStatus, stagingStatus] = await Promise.all([
+      const [status, stagingStatus] = await Promise.all([
         getWhatsAppStatus(businessId, { enrichPayment: true }),
-        getMetaCampaignsStatus(businessId).catch(() => null),
         getWhatsAppStagingStatus(businessId).catch(() => null),
       ]);
       setConnection(status);
       setStaging(stagingStatus);
-      setAdAccountBilling(metaStatus?.adAccountBillingHealth || null);
       if (status.connected) {
         const templates = await listWhatsAppTemplates(businessId, {
           approvedOnly: true,
@@ -974,17 +965,6 @@ export default function WhatsAppSettingsTab() {
 
   return (
     <div className="space-y-4" dir={getTextDirection(i18n.language)}>
-      <MetaBillingAccountCards
-        adAccountBilling={adAccountBilling}
-        wabaBilling={connection?.wabaBillingHealth || null}
-        adsSettingsPath="../meta-campaigns/settings"
-        onOpenWhatsAppSettings={() => {
-          document
-            .getElementById("whatsapp-connection-settings")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
-      />
-
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       <section
         id="whatsapp-connection-settings"

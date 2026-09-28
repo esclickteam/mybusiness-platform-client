@@ -40,7 +40,7 @@ import {
   shouldIgnoreCanvasPickerClose,
 } from "./automation-builder/toolbarAddStep";
 import { toast } from "react-toastify";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Loader2,
   FlaskConical,
@@ -76,12 +76,6 @@ import {
 import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
 import { getAutomationPlanDisplayName } from "./billing/automationPlanCatalog";
-import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
-import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
-import {
-  formatHeIls,
-  resolveWhatsAppUnitPriceIls,
-} from "../whatsapp/billing/whatsappBillingFormat";
 import ScheduleTriggerFields from "./ScheduleTriggerFields";
 import AutomationUsageEstimatePanel from "./AutomationUsageEstimatePanel";
 import {
@@ -530,6 +524,7 @@ function EditorInner({
     : undefined;
   const { screenToFlowPosition, fitView } = useReactFlow();
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [name, setName] = useState(workflow.name);
   const [saving, setSaving] = useState(false);
@@ -540,11 +535,6 @@ function EditorInner({
   const [showBillingCancelModal, setShowBillingCancelModal] = useState(false);
   const [billingUsage, setBillingUsage] =
     useState<AutomationBillingUsageOverview | null>(null);
-  const [showWaBillingModal, setShowWaBillingModal] = useState(false);
-  const {
-    usage: waBillingUsage,
-    refresh: refreshWaBilling,
-  } = useWhatsAppBilling(businessId);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [testOpen, setTestOpen] = useState(false);
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
@@ -1617,8 +1607,9 @@ function EditorInner({
   };
 
   const openWhatsAppBillingGateModal = () => {
-    setShowWaBillingModal(true);
-    void refreshWaBilling();
+    if (businessId) {
+      navigate(`/business/${businessId}/dashboard/whatsapp/billing`);
+    }
   };
 
   const applyBillingGateCode = (code: string | null | undefined): boolean => {
@@ -2791,48 +2782,9 @@ function EditorInner({
                       </p>
                     </div>
 
-                    <div className="af-wa-cost" dir={dir}>
-                      <span className="af-wa-cost__badge">
-                        {t("automations.editor.wa.oneAction")}
-                      </span>
-                      <span className="af-wa-cost__badge">
-                        💬{" "}
-                        {formatHeIls(
-                          resolveWhatsAppUnitPriceIls(
-                            waBillingUsage?.unitPriceIls
-                          )
-                        )}{" "}
-                        {t("automations.editor.wa.perMessage")}
-                      </span>
-                      {(() => {
-                        const unit = resolveWhatsAppUnitPriceIls(
-                          waBillingUsage?.unitPriceIls
-                        );
-                        const triggerKey = String(
-                          nodes.find((n) => n.type === "trigger")?.data
-                            ?.triggerKey || ""
-                        ).toLowerCase();
-                        const scheduled = /schedule|cron|recurring|daily|weekly|monthly|timer/.test(
-                          triggerKey
-                        );
-                        if (scheduled) {
-                          return (
-                            <p className="af-wa-cost__estimate">
-                              {t("automations.editor.wa.estimateDaily", {
-                                amount: formatHeIls(unit * 30),
-                              })}
-                            </p>
-                          );
-                        }
-                        return (
-                          <p className="af-wa-cost__estimate">
-                            {t("automations.editor.wa.estimate100", {
-                              amount: formatHeIls(unit * 100),
-                            })}
-                          </p>
-                        );
-                      })()}
-                    </div>
+                    <p className="af-wa-cost__estimate" dir={dir}>
+                      {t("whatsapp.viaMeta.chargesByMeta")}
+                    </p>
 
                     <div className="af-wa-sender" dir={dir}>
                       <label>
@@ -4232,17 +4184,6 @@ function EditorInner({
             onCancelled={() => {
               setShowBillingCancelModal(false);
               void refreshBillingUsage();
-            }}
-          />
-          <WhatsAppBillingSetupModal
-            open={showWaBillingModal}
-            businessId={businessId}
-            usage={waBillingUsage}
-            initialMode="setup"
-            returnTo="automations"
-            onClose={() => setShowWaBillingModal(false)}
-            onUsageUpdated={async () => {
-              await refreshWaBilling();
             }}
           />
         </>
