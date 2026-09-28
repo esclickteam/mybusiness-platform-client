@@ -831,7 +831,8 @@ export function AuthProvider({ children }) {
           freshUser.role === "admin" &&
           !isImpersonating &&
           !location.pathname.startsWith("/admin") &&
-          !location.pathname.startsWith("/business/")
+          !location.pathname.startsWith("/business/") &&
+          !location.pathname.startsWith("/partner-materials")
         ) {
           const adminSocket = await createSocket(
             getValidAccessToken,
@@ -848,7 +849,9 @@ export function AuthProvider({ children }) {
         if (freshUser.role === "partner" && !isImpersonating) {
           const path = location.pathname;
           const onPartnerArea =
-            path === "/partner" || path.startsWith("/partner/");
+            path === "/partner" ||
+            path.startsWith("/partner/") ||
+            path.startsWith("/partner-materials");
           const grantedManagedId = String(
             freshUser.managedBusinessId || ""
           ).trim();

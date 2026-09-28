@@ -63,7 +63,7 @@ function CreativePreview({ item, dir }: { item: PartnerMaterial; dir: string }) 
       </text>
       <rect x={dir === "rtl" ? w * 0.5 : w * 0.14} y={h * 0.72} width={w * 0.36} height={h * 0.08} rx={16} fill="#6D28D9" />
       <text x={dir === "rtl" ? w * 0.68 : w * 0.32} y={h * 0.775} textAnchor="middle" fill="#FFFFFF" fontSize={Math.max(20, w / 36)} fontWeight={800}>
-        CTA
+        {item.extra?.cta || "Bizuply"}
       </text>
     </svg>
   );
@@ -176,7 +176,12 @@ export default function PartnerCenterHub({
   }
 
   async function onCopy(item: PartnerMaterial) {
-    await navigator.clipboard.writeText(item.body || item.script || item.title);
+    const text = item.body || item.script || item.title;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      /* clipboard may be blocked in automated/insecure contexts */
+    }
     notify(t("partnerCenter.copied"));
   }
 
@@ -195,7 +200,11 @@ export default function PartnerCenterHub({
     const days = shareDays === "never" ? 0 : Number(shareDays);
     const share = await sharePartnerCenterMaterial(shareItem.id, locale, admin, days);
     const url = `${window.location.origin}/partner-materials/${share.token}`;
-    await navigator.clipboard.writeText(url);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      /* clipboard may be blocked in automated/insecure contexts */
+    }
     notify(t("partnerCenter.shareCopied"));
     const rows = await listPartnerCenterShares(shareItem.id, admin);
     setShareRows(rows.items || []);
@@ -321,7 +330,7 @@ export default function PartnerCenterHub({
               <option value="">{t(`partnerCenter.${key}`)} — {t("partnerCenter.all")}</option>
               {(options || []).map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt}
+                  {t(`partnerCenter.meta.${opt}`, { defaultValue: opt })}
                 </option>
               ))}
             </select>
@@ -357,8 +366,8 @@ export default function PartnerCenterHub({
                   <Star className="h-3 w-3" /> {t("partnerCenter.featured")}
                 </span>
               ) : null}
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{item.category}</span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{item.assetType}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{t(`partnerCenter.meta.${item.category}`, { defaultValue: item.category })}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{t(`partnerCenter.meta.${item.assetType}`, { defaultValue: item.assetType })}</span>
             </div>
             <h2 className="text-lg font-black text-slate-900">{item.title}</h2>
             <p className="mt-1 line-clamp-3 text-sm font-bold text-slate-500">{item.description}</p>
@@ -430,7 +439,7 @@ export default function PartnerCenterHub({
           >
             {Object.entries(kpiForm).map(([key, value]) => (
               <label key={key} className="text-xs font-black text-slate-500">
-                {key}
+                {t(`partnerCenter.kpiFields.${key}`, { defaultValue: key })}
                 <input
                   className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold text-slate-900"
                   type={key.startsWith("period") ? "date" : "number"}
@@ -447,11 +456,11 @@ export default function PartnerCenterHub({
             <table className="min-w-full text-start text-sm">
               <thead>
                 <tr className="text-xs font-black text-slate-500">
-                  <th className="p-2">period</th>
-                  <th className="p-2">reply%</th>
-                  <th className="p-2">qualify%</th>
-                  <th className="p-2">show%</th>
-                  <th className="p-2">close%</th>
+                  <th className="p-2">{t("partnerCenter.kpiFields.period")}</th>
+                  <th className="p-2">{t("partnerCenter.kpiFields.replyRate")}</th>
+                  <th className="p-2">{t("partnerCenter.kpiFields.qualifyRate")}</th>
+                  <th className="p-2">{t("partnerCenter.kpiFields.showRate")}</th>
+                  <th className="p-2">{t("partnerCenter.kpiFields.closeRate")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -477,10 +486,10 @@ export default function PartnerCenterHub({
             <table className="min-w-full text-start text-sm">
               <thead>
                 <tr className="text-xs font-black text-slate-500">
-                  <th className="p-2">slug</th>
+                  <th className="p-2">{t("partnerCenter.materialSlug")}</th>
                   <th className="p-2">{t("partnerCenter.shareCreated")}</th>
                   <th className="p-2">{t("partnerCenter.shareExpires")}</th>
-                  <th className="p-2">user</th>
+                  <th className="p-2">{t("partnerCenter.shareUser")}</th>
                   <th className="p-2" />
                 </tr>
               </thead>
