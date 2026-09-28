@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { saasMarketCopy } from "../i18n/saasMarketplace";
 import {
   EXAMPLE_PLANS,
   REVENUE_DISCLAIMER,
@@ -8,6 +9,7 @@ import {
   findTractionClaims,
   formatUsd,
   illustrativeMrr,
+  partnerEntryUsd,
   whatsappHref,
 } from "./logic";
 
@@ -36,6 +38,11 @@ describe("marketplace filters and calculator", () => {
     );
   });
 
+  it("uses half the reference price as the partner entry", () => {
+    expect(partnerEntryUsd(14900)).toBe(7450);
+    expect(partnerEntryUsd(8900)).toBe(4450);
+  });
+
   it("builds a WhatsApp link with the prefilled message", () => {
     const href = whatsappHref(
       "+972 50-000-0000",
@@ -49,6 +56,27 @@ describe("marketplace filters and calculator", () => {
   it("does not describe the platforms as an operating business", () => {
     expect(findTractionClaims("Ready-to-launch SaaS platform")).toEqual([]);
     expect(findTractionClaims("existing customers and current MRR")).not.toEqual([]);
+  });
+});
+
+describe("marketplace translations", () => {
+  function paths(value: unknown, prefix = ""): string[] {
+    if (Array.isArray(value)) return value.flatMap((item, index) => paths(item, `${prefix}.${index}`));
+    if (value && typeof value === "object") {
+      return Object.keys(value)
+        .sort()
+        .flatMap((key) => paths((value as Record<string, unknown>)[key], `${prefix}.${key}`));
+    }
+    return [prefix];
+  }
+
+  it("keeps the same keys in every language", () => {
+    const base = paths(saasMarketCopy.en);
+    for (const lang of ["he", "es", "pt-BR", "ar"] as const) {
+      expect(paths(saasMarketCopy[lang]), lang).toEqual(base);
+      expect(saasMarketCopy[lang].hero.title).not.toBe(saasMarketCopy.en.hero.title);
+      expect(findTractionClaims(JSON.stringify(saasMarketCopy[lang]))).toEqual([]);
+    }
   });
 });
 
@@ -66,6 +94,20 @@ describe("marketplace stays unlisted", () => {
     "public/marketing-sitemap.xml",
     "public/marketing-robots.txt",
   ];
+
+  it("does not offer checkout from the public marketplace UI", () => {
+    const ui = [
+      "src/pages/saas/SaasMarketplacePage.tsx",
+      "src/pages/saas/SaasProductPage.tsx",
+      "src/saas/sections.tsx",
+      "src/saas/chrome.tsx",
+      "src/saas/SaasWidgets.tsx",
+    ];
+    for (const file of ui) {
+      const source = readFileSync(resolve(root, file), "utf8");
+      expect(source, file).not.toMatch(/Buy Now|startSaasCheckout|Purchase directly/);
+    }
+  });
 
   it("does not link /saas from the main site, sitemap, or robots allow-list pages", () => {
     for (const file of files) {

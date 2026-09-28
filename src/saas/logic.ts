@@ -101,6 +101,18 @@ export function illustrativeMrr(customers: number, monthlyPrice: number) {
   return Math.round(count * price);
 }
 
+export const SAAS_MODELS = ["partner", "white_label", "exclusive_country"] as const;
+export type SaasModelId = (typeof SAAS_MODELS)[number];
+
+export function partnerEntryUsd(priceUsd: number) {
+  const price = Number(priceUsd) || 0;
+  return Math.round(price / 2);
+}
+
+export function isSaasModel(value: string): value is SaasModelId {
+  return (SAAS_MODELS as readonly string[]).includes(value);
+}
+
 export function whatsappHref(e164: string, message: string) {
   const digits = String(e164 || "").replace(/\D/g, "");
   if (!digits) return "";

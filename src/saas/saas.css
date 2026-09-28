@@ -1,42 +1,99 @@
 .saas-market {
-  font-family: Inter, Assistant, ui-sans-serif, system-ui, sans-serif;
-  color: #0f172a;
+  --saas-ink: #0b1020;
+  --saas-violet: #6d4aff;
+  --saas-blue: #3b82f6;
+  font-family: Inter, Assistant, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  color: var(--saas-ink);
   background:
-    radial-gradient(1200px 480px at 85% -10%, rgba(124, 77, 255, 0.16), transparent 60%),
-    radial-gradient(900px 420px at -10% 8%, rgba(56, 189, 248, 0.14), transparent 55%),
-    #f7f8fc;
+    radial-gradient(900px 420px at 100% -10%, rgba(109, 74, 255, 0.18), transparent 55%),
+    radial-gradient(760px 380px at -10% 20%, rgba(56, 189, 248, 0.16), transparent 50%),
+    linear-gradient(180deg, #f8f7ff 0%, #f4f7fb 42%, #eef2ff 100%);
+  overflow-x: hidden;
 }
 
-.saas-rise {
-  animation: saas-rise 0.7s ease both;
+.saas-orb {
+  position: absolute;
+  z-index: 0;
+  width: 280px;
+  height: 280px;
+  border-radius: 999px;
+  filter: blur(28px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: saas-drift 16s ease-in-out infinite;
+}
+
+.saas-glass {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 50px rgba(47, 36, 112, 0.08);
+  backdrop-filter: blur(16px);
 }
 
 .saas-card {
-  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, border-color 0.45s ease;
 }
 
 .saas-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 60px rgba(79, 70, 229, 0.14);
+}
+
+.saas-model {
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.saas-model.is-on {
   transform: translateY(-6px);
-  box-shadow: 0 24px 50px rgba(79, 70, 229, 0.12);
+  border-color: rgba(109, 74, 255, 0.55);
+  box-shadow: 0 24px 60px rgba(109, 74, 255, 0.18);
+}
+
+.saas-reveal {
+  animation: saas-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+
+.saas-reveal.is-in {
+  animation-play-state: running;
+}
+
+.saas-float {
+  animation: saas-float 7s ease-in-out infinite;
+}
+
+.saas-hero-title {
+  background: linear-gradient(115deg, #140b33 10%, #4c1d95 45%, #2563eb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @keyframes saas-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes saas-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, 24px, 0) scale(1.06); }
+}
+
+@keyframes saas-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .saas-rise,
+  .saas-orb,
+  .saas-float,
+  .saas-reveal,
   .saas-card,
-  .saas-card:hover {
-    animation: none;
-    transition: none;
-    transform: none;
+  .saas-model {
+    animation: none !important;
+    transition: none !important;
   }
+  .saas-reveal { opacity: 1; transform: none; }
+  .saas-card:hover,
+  .saas-model.is-on { transform: none; }
 }

@@ -12,6 +12,7 @@ import clubHe from "./locales/club/he.json";
 import clubEs from "./locales/club/es.json";
 import clubPtBR from "./locales/club/pt-BR.json";
 import clubAr from "./locales/club/ar.json";
+import { saasMarketCopy } from "./saasMarketplace";
 import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
@@ -56,11 +57,11 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: { ...en, club: clubEn } },
-      he: { translation: { ...he, club: clubHe } },
-      es: { translation: { ...es, club: clubEs } },
-      "pt-BR": { translation: { ...ptBR, club: clubPtBR } },
-      ar: { translation: { ...ar, club: clubAr } },
+      en: { translation: { ...en, club: clubEn, saasMarket: saasMarketCopy.en } },
+      he: { translation: { ...he, club: clubHe, saasMarket: saasMarketCopy.he } },
+      es: { translation: { ...es, club: clubEs, saasMarket: saasMarketCopy.es } },
+      "pt-BR": { translation: { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] } },
+      ar: { translation: { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar } },
     },
 
     fallbackLng: FALLBACK_LANGUAGE,

@@ -6,6 +6,7 @@ type Props = {
   accentSecondary?: string;
   productName?: string;
   framed?: boolean;
+  caption?: string;
 };
 
 const NAV = ["Home", "Work", "People", "Calendar", "Billing"];
@@ -160,6 +161,7 @@ export default function SaasScreenMock({
   accentSecondary = "#38BDF8",
   productName = "Platform",
   framed = true,
+  caption = "Interface preview",
 }: Props) {
   const mobile = screen.key === "mobile";
   const body = (
@@ -179,7 +181,7 @@ export default function SaasScreenMock({
         <div className="mb-3 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-              Interface preview
+              {caption}
             </p>
             <p className="text-sm font-black text-slate-900">{screen.label}</p>
           </div>

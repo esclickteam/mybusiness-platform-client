@@ -411,8 +411,8 @@ async function handleGoogleHtmlVerification(request, fileName) {
 
 function saasMarketplaceHeadHtml() {
   return [
-    `<title>Ready-to-Launch SaaS Platforms | Bizuply</title>`,
-    `<meta name="description" content="Launch your own software business with a fully developed, white-label, multi-tenant SaaS platform. Source code included." />`,
+    `<title>Launch Your Own SaaS Business | White Label Marketplace | Bizuply</title>`,
+    `<meta name="description" content="Choose a ready-to-launch SaaS platform, preview the demo, and talk with Bizuply about partnership, white-label licensing, or an exclusive country license. No checkout on this page." />`,
     `<meta name="robots" content="noindex, follow" />`,
     `<meta name="googlebot" content="noindex, follow" />`,
   ].join("\n");

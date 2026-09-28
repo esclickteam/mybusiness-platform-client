@@ -1,0 +1,206 @@
+import { useEffect, useState, type ReactNode } from "react";
+import "../i18n/i18n";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { getHtmlLang, getTextDirection } from "../i18n/localeUtils";
+import { whatsappHref } from "./logic";
+
+export function SaasSeo({ title, description }: { title: string; description: string }) {
+  useEffect(() => {
+    document.title = title;
+    let robots = document.querySelector('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      document.head.appendChild(robots);
+    }
+    robots.setAttribute("content", "noindex, follow");
+  }, [title]);
+
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="robots" content="noindex, follow" />
+      <meta name="googlebot" content="noindex, follow" />
+    </Helmet>
+  );
+}
+
+export function useSaasLocale() {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage || i18n.language || "en";
+  return { t, i18n, lang, dir: getTextDirection(lang), htmlLang: getHtmlLang(lang) };
+}
+
+export function Reveal({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const [node, setNode] = useState<HTMLDivElement | null>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (!node || shown) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) setShown(true);
+      },
+      { threshold: 0.14 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [node, shown]);
+  return (
+    <div ref={setNode} className={`saas-reveal ${shown ? "is-in" : ""} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function PrimaryButton({
+  children,
+  href,
+  onClick,
+  type = "button",
+}: {
+  children: ReactNode;
+  href?: string;
+  onClick?: () => void;
+  type?: "button" | "submit";
+}) {
+  const className =
+    "inline-flex items-center justify-center rounded-full bg-[#24124d] px-5 py-3 text-sm font-black text-white shadow-[0_12px_30px_rgba(36,18,77,0.25)] transition hover:-translate-y-0.5 hover:bg-[#3b1d86]";
+  if (href) {
+    return (
+      <a className={className} href={href}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button className={className} type={type} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+export function GhostButton({
+  children,
+  href,
+  onClick,
+}: {
+  children: ReactNode;
+  href?: string;
+  onClick?: () => void;
+}) {
+  const className =
+    "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 px-5 py-3 text-sm font-black text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-[#c4b5fd]";
+  if (href) {
+    return (
+      <a className={className} href={href}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button className={className} type="button" onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+export function SaasHeader({ onTalk }: { onTalk: () => void }) {
+  const { t } = useSaasLocale();
+  const links = [
+    ["#platforms", t("saasMarket.nav.platforms")],
+    ["#what-is-saas", t("saasMarket.nav.saas")],
+    ["#models", t("saasMarket.nav.models")],
+    ["#exclusive", t("saasMarket.nav.exclusive")],
+    ["#faq", t("saasMarket.nav.faq")],
+  ];
+  return (
+    <header className="sticky top-0 z-30 border-b border-white/70 bg-white/75 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <Link to="/" className="text-lg font-black tracking-tight text-slate-950">
+          Bizuply
+        </Link>
+        <nav className="hidden items-center gap-5 text-sm font-bold text-slate-600 lg:flex">
+          {links.map(([href, label]) => (
+            <a key={href} href={href} className="hover:text-[#5b3df5]">
+              {label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            type="button"
+            onClick={onTalk}
+            className="rounded-full bg-[#24124d] px-4 py-2 text-sm font-black text-white"
+          >
+            {t("saasMarket.nav.talk")}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export function SaasFooter() {
+  const { t } = useSaasLocale();
+  return (
+    <footer className="border-t border-white/80 px-4 py-10 text-center text-sm font-semibold text-slate-500">
+      {t("saasMarket.footer")}
+    </footer>
+  );
+}
+
+export function WhatsAppDock({ href }: { href: string }) {
+  const { t } = useSaasLocale();
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="fixed bottom-24 end-4 z-40 inline-flex items-center gap-2 rounded-full bg-[#128C7E] px-4 py-3 text-sm font-black text-white shadow-xl lg:bottom-6"
+    >
+      {t("saasMarket.whatsapp.button")}
+    </a>
+  );
+}
+
+export function buildWhatsappLink(e164: string, message: string) {
+  return whatsappHref(e164, message);
+}
+
+export function StickyActions({
+  items,
+}: {
+  items: { label: string; href?: string; onClick?: () => void }[];
+}) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-1 border-t border-slate-200 bg-white/95 p-2 backdrop-blur lg:hidden">
+      {items.map((item) =>
+        item.href ? (
+          <a
+            key={item.label}
+            href={item.href}
+            className="rounded-2xl bg-slate-950 px-1 py-2 text-center text-[11px] font-black text-white"
+          >
+            {item.label}
+          </a>
+        ) : (
+          <button
+            key={item.label}
+            type="button"
+            onClick={item.onClick}
+            className="rounded-2xl bg-slate-100 px-1 py-2 text-center text-[11px] font-black text-slate-900"
+          >
+            {item.label}
+          </button>
+        )
+      )}
+    </div>
+  );
+}
