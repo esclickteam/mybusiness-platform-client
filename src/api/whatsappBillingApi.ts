@@ -1,3 +1,8 @@
+/**
+ * GET /whatsapp/billing/usage — under production meta_direct this is status
+ * only (canSend, billingModel). Checkout helpers stay for a future
+ * Bizuply-managed WhatsApp product; the server rejects new usage charges.
+ */
 import API from "../api";
 import { assertAutomationWritesAllowed } from "./automationPreviewGuard";
 

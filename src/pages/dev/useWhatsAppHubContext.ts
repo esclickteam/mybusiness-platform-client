@@ -14,11 +14,6 @@ export function useWhatsAppHubContext(): WhatsAppHubOutletContext {
       refreshConnection: async () => undefined,
       syncWithMeta: async () => undefined,
       syncing: false,
-      openBillingSetup: () => undefined,
-      billingUsage: null,
-      billingLoading: false,
-      billingError: null,
-      refreshBilling: async () => undefined,
       ...(visual.outlet || {}),
     };
   }

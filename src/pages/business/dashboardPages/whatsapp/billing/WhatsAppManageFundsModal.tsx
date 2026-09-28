@@ -1,3 +1,6 @@
+/**
+ * Dormant prepaid-wallet modal. Not mounted in the customer WhatsApp flow.
+ */
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2, PiggyBank, X } from "lucide-react";
 import { useTranslation } from "react-i18next";

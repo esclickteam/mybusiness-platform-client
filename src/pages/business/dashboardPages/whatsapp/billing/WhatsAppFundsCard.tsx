@@ -1,3 +1,8 @@
+/**
+ * Dormant prepaid-wallet UI. Not mounted while Meta bills the customer-owned
+ * WABA. Keep for a future Bizuply-managed WhatsApp product; do not import from
+ * customer WhatsApp routes.
+ */
 import React, { useCallback, useEffect, useState } from "react";
 import { CreditCard, PiggyBank } from "lucide-react";
 import { useTranslation } from "react-i18next";

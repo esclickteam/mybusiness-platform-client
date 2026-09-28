@@ -1,3 +1,7 @@
+/**
+ * Legacy prepaid-wallet HTTP helpers. Customer hub does not call these while
+ * Meta bills the WABA. Server mutations return 403 under meta_direct.
+ */
 import API from "../api";
 import { assertAutomationWritesAllowed } from "./automationPreviewGuard";
 

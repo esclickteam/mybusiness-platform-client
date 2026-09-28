@@ -1,3 +1,7 @@
+/**
+ * Legacy usage-subscription query. The WhatsApp hub no longer mounts this.
+ * Automations still share query keys; keep until Bizuply-managed billing returns.
+ */
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

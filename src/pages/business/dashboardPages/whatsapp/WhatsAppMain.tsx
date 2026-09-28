@@ -38,7 +38,6 @@ import {
   syncWhatsAppAccountHealth,
   type WhatsAppConnection,
 } from "../../../../api/whatsappApi";
-import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
 import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 import { btnSecondary } from "../../../../styles/bizuplyUi";
 import {
@@ -109,11 +108,6 @@ export type WhatsAppHubOutletContext = {
   refreshConnection: () => Promise<void>;
   syncWithMeta: () => Promise<void>;
   syncing: boolean;
-  openBillingSetup: (mode: "setup" | "manage") => void;
-  billingUsage: ReturnType<typeof useWhatsAppBilling>["usage"];
-  billingLoading: boolean;
-  billingError: string | null;
-  refreshBilling: () => Promise<void>;
 };
 
 export default function WhatsAppMain() {
@@ -136,13 +130,6 @@ export default function WhatsAppMain() {
   const [connectionLoading, setConnectionLoading] = useState(!visualQa);
   const [syncing, setSyncing] = useState(false);
   const guidedDemo = Boolean(user?.isGuidedDemo);
-
-  const {
-    usage: billingUsage,
-    loading: billingLoading,
-    error: billingError,
-    refresh: refreshBilling,
-  } = useWhatsAppBilling(guidedDemo ? null : businessId);
 
   const pathAfterWhatsapp = useMemo(
     () => pathSegmentsAfterWhatsapp(location.pathname),
@@ -182,8 +169,8 @@ export default function WhatsAppMain() {
   useEffect(() => {
     if (visualQa) return;
     if (connectionLoading) return;
-    // Funds / billing (and developers) must stay reachable without a connected
-    // WABA — prepaid wallet and API keys are independent of Meta connection.
+    // Billing tab stays reachable disconnected so customers can open Meta
+    // account settings before Embedded Signup finishes.
     if (guidedDemo && topSegment === "billing") {
       navigate(`${whatsappBasePath(location.pathname)}/overview`, {
         replace: true,
@@ -261,8 +248,6 @@ export default function WhatsAppMain() {
     }
   }, [businessId, refreshConnection, t]);
 
-  const openSetupModal = useCallback((_mode: "setup" | "manage") => {}, []);
-
   const ready = connectionReadyLabel(
     Boolean(connection?.connected),
     connection?.readyToSend,
@@ -289,11 +274,6 @@ export default function WhatsAppMain() {
       refreshConnection,
       syncWithMeta,
       syncing,
-      openBillingSetup: openSetupModal,
-      billingUsage,
-      billingLoading,
-      billingError,
-      refreshBilling,
     }),
     [
       businessId,
@@ -302,11 +282,6 @@ export default function WhatsAppMain() {
       refreshConnection,
       syncWithMeta,
       syncing,
-      openSetupModal,
-      billingUsage,
-      billingLoading,
-      billingError,
-      refreshBilling,
     ]
   );
 
