@@ -710,9 +710,29 @@ function MaterialEditor({
         <h3 className="mb-4 text-xl font-black">{form.id ? t("partnerCenter.edit") : t("partnerCenter.create")}</h3>
         <div className="mb-4 grid gap-3 sm:grid-cols-2">
           <input className="h-11 rounded-xl border px-3 text-sm font-bold" placeholder="slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
-          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.audience} onChange={(e) => setForm({ ...form, audience: e.target.value as any })}>
+          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} aria-label={t("partnerCenter.category")}>
+            {["learn_bizuply", "sales_training", "marketing_materials", "demo_presentation", "industry_kits", "customer_onboarding", "scripts_templates", "videos", "brand_assets"].map((opt) => (
+              <option key={opt} value={opt}>{t(`partnerCenter.meta.${opt}`, { defaultValue: opt })}</option>
+            ))}
+          </select>
+          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.assetType} onChange={(e) => setForm({ ...form, assetType: e.target.value })} aria-label={t("partnerCenter.assetType")}>
+            {["video_script", "playbook", "document", "whatsapp_template", "email_template", "social_post", "paid_ad", "short_video", "banner", "presentation", "demo_script", "industry_kit", "faq", "brand_kit", "kpi_tracker", "checklist"].map((opt) => (
+              <option key={opt} value={opt}>{t(`partnerCenter.meta.${opt}`, { defaultValue: opt })}</option>
+            ))}
+          </select>
+          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.audience} onChange={(e) => setForm({ ...form, audience: e.target.value as any })} aria-label={t("partnerCenter.audience")}>
             <option value="internal_partner_training">{t("partnerCenter.internal")}</option>
             <option value="client_facing">{t("partnerCenter.clientFacing")}</option>
+          </select>
+          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.visibility || "partners"} onChange={(e) => setForm({ ...form, visibility: e.target.value })} aria-label={t("partnerCenter.visibility")}>
+            <option value="partners">{t("partnerCenter.visibilityPartners")}</option>
+            <option value="hidden">{t("partnerCenter.visibilityHidden")}</option>
+            <option value="admin_only">{t("partnerCenter.visibilityAdmin")}</option>
+          </select>
+          <select className="h-11 rounded-xl border px-3 text-sm font-bold" value={form.status || "draft"} onChange={(e) => setForm({ ...form, status: e.target.value })} aria-label={t("partnerCenter.status")}>
+            <option value="draft">{t("partnerCenter.meta.draft")}</option>
+            <option value="published">{t("partnerCenter.meta.published")}</option>
+            <option value="archived">{t("partnerCenter.meta.archived")}</option>
           </select>
           <input className="h-11 rounded-xl border px-3 text-sm font-bold" placeholder="file URL" value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} />
           <input

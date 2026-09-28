@@ -16107,6 +16107,10 @@
     "expired": "Caducado",
     "revoked": "Revocado",
     "shareNotFound": "Este enlace no se encontró, caducó o fue revocado.",
+    "visibility": "Visibilidad",
+    "visibilityPartners": "Partners",
+    "visibilityHidden": "Oculto",
+    "visibilityAdmin": "Solo admin",
     "materialSlug": "Material",
     "shareUser": "Creado por",
     "meta": {

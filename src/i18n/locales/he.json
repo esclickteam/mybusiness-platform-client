@@ -16096,6 +16096,10 @@
     "expired": "פג תוקף",
     "revoked": "בוטל",
     "shareNotFound": "קישור השיתוף לא נמצא, פג תוקף או בוטל.",
+    "visibility": "נראות",
+    "visibilityPartners": "שותפים",
+    "visibilityHidden": "מוסתר",
+    "visibilityAdmin": "אדמין בלבד",
     "materialSlug": "חומר",
     "shareUser": "נוצר על ידי",
     "meta": {
