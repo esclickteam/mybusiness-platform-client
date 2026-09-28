@@ -858,6 +858,7 @@ export default function App() {
     location.pathname.includes("/chat");
 
   const isPublicPartnerDeal = location.pathname.startsWith("/partner/deals/");
+  const isPublicPartnerMaterial = location.pathname.startsWith("/partner-materials");
   const {
     ready: partnerHostReady,
     whiteLabelEnabled: isPartnerHost,
@@ -880,8 +881,8 @@ export default function App() {
     isAdminRoute ||
     isStaffRoute ||
     location.pathname.startsWith("/client") ||
-    location.pathname.startsWith("/partner-materials") ||
-    (location.pathname.startsWith("/partner") && !isPublicPartnerDeal) ||
+    isPublicPartnerMaterial ||
+    (location.pathname.startsWith("/partner") && !isPublicPartnerDeal && !isPublicPartnerMaterial) ||
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
     location.pathname === "/checkout/success" ||
