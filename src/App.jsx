@@ -132,6 +132,8 @@ const GuidedDemoRedeemPage = lazy(() => import("./pages/GuidedDemoRedeemPage"));
 const PublicSalesProposalPage = lazy(() => import("./pages/PublicSalesProposalPage"));
 const Register = lazy(() => import("./pages/Register"));
 const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
+const SaasMarketplacePage = lazy(() => import("./pages/saas/SaasMarketplacePage"));
+const SaasProductPage = lazy(() => import("./pages/saas/SaasProductPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -157,6 +159,7 @@ const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminClubPage = lazy(() => import("./pages/admin/AdminClubPage"));
 const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
+const AdminSaasMarketplace = lazy(() => import("./pages/admin/AdminSaasMarketplace"));
 const AdminManagedWhatsApp = lazy(
   () => import("./pages/admin/AdminManagedWhatsApp")
 );
@@ -827,6 +830,8 @@ export default function App() {
   const isMiniSiteHost = isPublicMiniSiteHost();
   const travelHost = isBizuplyTravelHost(getCurrentHostname());
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  const isSaasMarketplaceRoute =
+    location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   // Dev-only visual QA pages — no public chrome so screenshots stay clean.
   const isDevVisualRoute = location.pathname.startsWith("/dev/");
   // Hidden private offers (e.g. /offer/crm) are clean landing pages: no
@@ -971,6 +976,7 @@ export default function App() {
       <div className="app-layout" dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
+          !isSaasMarketplaceRoute &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
@@ -1073,6 +1079,8 @@ export default function App() {
                           path="/early-access"
                           element={<BizuplyEarlyAccessLanding />}
                         />
+                        <Route path="/saas" element={<SaasMarketplacePage />} />
+                        <Route path="/saas/:slug" element={<SaasProductPage />} />
 
                         <Route path="/about" element={<About />} />
                         <Route path="/crm" element={<CrmProductPage />} />
@@ -1434,6 +1442,14 @@ export default function App() {
                             </ProtectedRoute>
                           }
                         />
+                        <Route
+                          path="/admin/saas-marketplace"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSaasMarketplace />
+                            </ProtectedRoute>
+                          }
+                        />
 
                         <Route
                           path="/admin/managed-whatsapp"
@@ -1731,6 +1747,7 @@ export default function App() {
         {!isDashboardRoute &&
           !isPublicBusinessProfile &&
           !isEarlyAccessLanding &&
+          !isSaasMarketplaceRoute &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
@@ -1742,7 +1759,7 @@ export default function App() {
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
         <PreLoginBot />
       )}
 
@@ -1753,6 +1770,7 @@ export default function App() {
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
+        !isSaasMarketplaceRoute &&
         !isDevVisualRoute &&
         !isBusinessChatRoute &&
         !isHiddenOffer &&
@@ -1772,6 +1790,7 @@ export default function App() {
       {!isDashboardRoute &&
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
+        !isSaasMarketplaceRoute &&
         !isDevVisualRoute &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&

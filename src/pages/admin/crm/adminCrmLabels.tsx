@@ -37,6 +37,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   early_access: "הרשמה מוקדמת",
   partner_referral: "שותף",
   whatsapp: "WhatsApp",
+  saas_marketplace: "SaaS Marketplace",
   other: "אחר",
 };
 
