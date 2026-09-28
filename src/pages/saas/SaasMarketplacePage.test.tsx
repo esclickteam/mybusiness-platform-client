@@ -9,6 +9,7 @@ vi.mock("../../saas/api", () => ({
 }));
 
 import { fetchMarketplace } from "../../saas/api";
+import i18n from "../../i18n/i18n";
 
 const products = [
   {
@@ -76,7 +77,8 @@ function renderPage() {
 }
 
 describe("SaaS marketplace page", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("en");
     vi.mocked(fetchMarketplace).mockResolvedValue({
       success: true,
       categories: [],
@@ -93,8 +95,11 @@ describe("SaaS marketplace page", () => {
   it("shows the hero and filters platforms", async () => {
     renderPage();
     expect(
-      await screen.findByRole("heading", { name: "Ready-to-Launch SaaS Platforms" })
+      await screen.findByRole("heading", { name: "Launch Your Own SaaS Business" })
     ).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Choose Your Model" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "What is SaaS?" })).toBeTruthy();
+    expect(document.body.textContent || "").not.toMatch(/Buy Now/i);
     expect(screen.getByRole("heading", { name: "ServiceFlow" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "SalonFlow" })).toBeTruthy();
     expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe(

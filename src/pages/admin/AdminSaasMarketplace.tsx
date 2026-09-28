@@ -76,13 +76,18 @@ export default function AdminSaasMarketplace() {
   const [draft, setDraft] = useState<Product | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [licenses, setLicenses] = useState<{ id: string; productSlug: string; countryLabel: string }[]>([]);
+  const [licenseSlug, setLicenseSlug] = useState("");
+  const [licenseCountry, setLicenseCountry] = useState("");
 
   async function load() {
-    const [list, meta] = await Promise.all([
+    const [list, meta, countryLicenses] = await Promise.all([
       API.get("/admin/saas-marketplace"),
       API.get("/admin/saas-marketplace/meta"),
+      API.get("/admin/saas-marketplace/country-licenses"),
     ]);
     setProducts(list.data.products || []);
+    setLicenses(countryLicenses.data.licenses || []);
     setScreens(meta.data.screens || []);
     setSettings({
       whatsappE164: meta.data.settings?.whatsappE164 || "",
@@ -95,10 +100,12 @@ export default function AdminSaasMarketplace() {
     Promise.all([
       API.get("/admin/saas-marketplace"),
       API.get("/admin/saas-marketplace/meta"),
+      API.get("/admin/saas-marketplace/country-licenses"),
     ])
-      .then(([list, meta]) => {
+      .then(([list, meta, countryLicenses]) => {
         if (!active) return;
         setProducts(list.data.products || []);
+        setLicenses(countryLicenses.data.licenses || []);
         setScreens(meta.data.screens || []);
         setSettings({
           whatsappE164: meta.data.settings?.whatsappE164 || "",
@@ -223,6 +230,64 @@ export default function AdminSaasMarketplace() {
           <button className="self-end rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white" type="submit">
             שמירת הגדרות
           </button>
+        </form>
+
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            setError("");
+            try {
+              await API.post("/admin/saas-marketplace/country-licenses", {
+                slug: licenseSlug,
+                country: licenseCountry,
+              });
+              setLicenseCountry("");
+              setNotice("המדינה סומנה כמוקצית לרישיון בלעדי");
+              await load();
+            } catch {
+              setError("לא הצלחנו לשמור את הקצאת המדינה");
+            }
+          }}
+          className="mt-4 rounded-3xl bg-white p-4 shadow-sm"
+        >
+          <h2 className="text-lg font-black">רישיון בלעדי למדינה</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-500">
+            מדינה שמופיעה כאן כבר הוקצתה. בדיקה ציבורית תחזיר שהרישיון תפוס, ולא “זמין” אוטומטית.
+          </p>
+          <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+            <select value={licenseSlug} onChange={(event) => setLicenseSlug(event.target.value)} className="rounded-2xl border px-3 py-3">
+              <option value="">בחרו מערכת</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.slug}>{product.name}</option>
+              ))}
+            </select>
+            <input
+              value={licenseCountry}
+              onChange={(event) => setLicenseCountry(event.target.value)}
+              placeholder="שם המדינה כפי שהלקוח יקליד"
+              className="rounded-2xl border px-3 py-3"
+            />
+            <button type="submit" className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white">
+              סימון כמוקצה
+            </button>
+          </div>
+          <ul className="mt-4 space-y-2 text-sm font-bold">
+            {licenses.map((license) => (
+              <li key={license.id} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
+                <span>{license.productSlug} · {license.countryLabel}</span>
+                <button
+                  type="button"
+                  className="text-rose-600"
+                  onClick={async () => {
+                    await API.delete(`/admin/saas-marketplace/country-licenses/${license.id}`);
+                    await load();
+                  }}
+                >
+                  הסרה
+                </button>
+              </li>
+            ))}
+          </ul>
         </form>
 
         <div className="mt-6 overflow-x-auto rounded-3xl bg-white shadow-sm">

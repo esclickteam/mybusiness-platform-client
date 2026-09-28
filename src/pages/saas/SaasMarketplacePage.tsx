@@ -1,34 +1,44 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { fetchMarketplace } from "../../saas/api";
-import SaasScreenMock from "../../saas/SaasScreenMock";
 import {
-  filterProducts,
-  formatUsd,
-  MARKETPLACE_CATEGORIES,
-  type SaasProduct,
-} from "../../saas/logic";
-import {
+  buildWhatsappLink,
   GhostButton,
   PrimaryButton,
+  Reveal,
   SaasFooter,
   SaasHeader,
   SaasSeo,
-} from "../../saas/SaasWidgets";
+  StickyActions,
+  useSaasLocale,
+  WhatsAppDock,
+} from "../../saas/chrome";
+import { filterProducts, MARKETPLACE_CATEGORIES, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import SaasScreenMock from "../../saas/SaasScreenMock";
+import {
+  CountryCheck,
+  DemoTheater,
+  FaqList,
+  LeadDialog,
+  messageFor,
+  ModelBoard,
+  PlatformCard,
+  type LeadSeed,
+} from "../../saas/sections";
 import "../../saas/saas.css";
 
-const TRUST = [
-  ["Fully Built & Tested", "Ready to launch"],
-  ["White Label", "Your brand, your business"],
-  ["Save on Development", "Skip months of custom development"],
-];
-
 export default function SaasMarketplacePage() {
+  const { t, dir, htmlLang } = useSaasLocale();
   const [params, setParams] = useSearchParams();
   const category = params.get("category") || "all";
   const [products, setProducts] = useState<SaasProduct[]>([]);
+  const [whatsapp, setWhatsapp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [lead, setLead] = useState<LeadSeed | null>(null);
+  const [demo, setDemo] = useState<SaasProduct | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -36,10 +46,11 @@ export default function SaasMarketplacePage() {
       .then((data) => {
         if (!active) return;
         setProducts(data.products || []);
+        setWhatsapp(data.settings?.whatsappE164 || "");
         setError("");
       })
       .catch(() => {
-        if (active) setError("The marketplace could not be loaded. Refresh and try again.");
+        if (active) setError(t("saasMarket.platforms.error"));
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -47,10 +58,19 @@ export default function SaasMarketplacePage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
+
+  useEffect(() => {
+    if (paused || products.length < 2) return;
+    const timer = window.setInterval(() => {
+      setHeroIndex((index) => (index + 1) % products.length);
+    }, 4600);
+    return () => window.clearInterval(timer);
+  }, [paused, products.length]);
 
   const visible = useMemo(() => filterProducts(products, category), [products, category]);
-  const hero = products.find((item) => item.slug === "serviceflow") || products[0];
+  const hero = products[heroIndex] || products[0];
+  const wa = buildWhatsappLink(whatsapp, messageFor(t, hero?.name || "Bizuply", "partner"));
 
   function setCategory(next: string) {
     const query = new URLSearchParams(params);
@@ -59,169 +79,224 @@ export default function SaasMarketplacePage() {
     setParams(query, { replace: true });
   }
 
+  function openLead(seed: Partial<LeadSeed> & { ctaSource: string }) {
+    const model = (seed.model || "partner") as SaasModelId;
+    setLead({
+      slug: seed.slug || hero?.slug || products[0]?.slug || "",
+      model,
+      ctaSource: seed.ctaSource,
+      country: seed.country,
+    });
+  }
+
+  const saasPoints = t("saasMarket.saas.points", { returnObjects: true }) as { title: string; text: string }[];
+  const monthly = t("saasMarket.monthly.points", { returnObjects: true }) as { title: string; text: string }[];
+  const steps = t("saasMarket.how.steps", { returnObjects: true }) as { title: string; text: string }[];
+  const trust = t("saasMarket.trust", { returnObjects: true }) as { title: string; text: string }[];
+  const chips = t("saasMarket.hero.chips", { returnObjects: true }) as string[];
+
   return (
-    <div className="saas-market min-h-screen" dir="ltr" lang="en">
-      <SaasSeo
-        title="Ready-to-Launch SaaS Platforms | Bizuply"
-        description="Launch your own software business without spending months and tens of thousands of dollars on custom development."
-      />
-      <SaasHeader />
+    <div className="saas-market min-h-screen pb-24 lg:pb-0" dir={dir} lang={htmlLang}>
+      <SaasSeo title={t("saasMarket.seoTitle")} description={t("saasMarket.seoDescription")} />
+      <SaasHeader onTalk={() => openLead({ ctaSource: "talk_to_us" })} />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
-          <div className="saas-rise">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6D4AFF]">SaaS Marketplace</p>
-            <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 sm:text-6xl sm:leading-[1.05]">
-              Ready-to-Launch SaaS Platforms
+        <section
+          className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-20"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <span className="saas-orb -start-10 top-10 bg-[#c4b5fd]" />
+          <span className="saas-orb end-0 top-24 bg-[#93c5fd]" />
+          <div className="relative z-[1]">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6d4aff]">{t("saasMarket.hero.eyebrow")}</p>
+            <h1 className="saas-hero-title mt-4 text-4xl font-black tracking-tight sm:text-6xl sm:leading-[1.02]">
+              {t("saasMarket.hero.title")}
             </h1>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-              Launch your own software business without spending months and tens of thousands of dollars on custom development.
-            </p>
-            <p className="mt-4 text-base font-semibold text-slate-800">
-              Fully built. White-label. Multi-tenant. Ready to sell.
-            </p>
+            <p className="mt-5 max-w-xl text-lg font-medium leading-8 text-slate-600">{t("saasMarket.hero.subtitle")}</p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {chips.map((chip) => (
+                <span key={chip} className="rounded-full bg-white/80 px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-white">
+                  {chip}
+                </span>
+              ))}
+            </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <PrimaryButton href="#platforms">Browse SaaS Platforms</PrimaryButton>
-              <GhostButton href="#how-it-works">How It Works</GhostButton>
+              <PrimaryButton href="#platforms">{t("saasMarket.hero.viewPlatforms")}</PrimaryButton>
+              <GhostButton onClick={() => hero && setDemo(hero)}>{t("saasMarket.hero.watchDemo")}</GhostButton>
+              <GhostButton href="#models">{t("saasMarket.hero.exploreModels")}</GhostButton>
             </div>
           </div>
-          <div className="saas-rise relative">
+          <div className="relative z-[1]">
             {hero ? (
-              <SaasScreenMock
-                screen={{ key: "dashboard", label: "Dashboard", imageUrl: hero.mainImageUrl }}
-                accent={hero.accent}
-                accentSecondary={hero.accentSecondary}
-                productName={hero.name}
-              />
-            ) : (
-              <div className="h-72 rounded-[28px] bg-white shadow-sm" />
-            )}
+              <div className="saas-float">
+                <SaasScreenMock
+                  caption={t("saasMarket.previewCaption")}
+                  screen={{ key: "dashboard", label: hero.name, imageUrl: hero.mainImageUrl }}
+                  accent={hero.accent}
+                  accentSecondary={hero.accentSecondary}
+                  productName={hero.name}
+                />
+              </div>
+            ) : null}
+            <div className="mt-4 flex gap-2 overflow-x-auto">
+              {products.map((product, index) => (
+                <button
+                  key={product.slug}
+                  type="button"
+                  onClick={() => setHeroIndex(index)}
+                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-black ${index === heroIndex ? "bg-[#24124d] text-white" : "bg-white text-slate-700"}`}
+                >
+                  {product.name}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-6xl gap-4 px-4 sm:grid-cols-3 sm:px-6">
-          {TRUST.map(([title, text]) => (
-            <article key={title} className="rounded-3xl border border-white bg-white px-5 py-6 shadow-sm">
-              <h2 className="text-lg font-black">{title}</h2>
-              <p className="mt-2 text-sm font-semibold text-slate-500">{text}</p>
-            </article>
-          ))}
+        <section id="what-is-saas" className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <Reveal>
+            <div className="saas-glass rounded-[32px] p-6 sm:p-10">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.saas.eyebrow")}</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t("saasMarket.saas.title")}</h2>
+              <p className="mt-4 max-w-3xl text-base font-medium leading-8 text-slate-600">{t("saasMarket.saas.body")}</p>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                {saasPoints.map((point) => (
+                  <article key={point.title} className="rounded-3xl bg-white/80 p-4">
+                    <h3 className="font-black">{point.title}</h3>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{point.text}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </section>
 
-        <section id="platforms" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <div className="flex flex-wrap gap-2">
+        <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+          <Reveal>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.monthly.eyebrow")}</p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">{t("saasMarket.monthly.title")}</h2>
+            <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-slate-600">{t("saasMarket.monthly.intro")}</p>
+            <ol className="mt-8 grid gap-3 md:grid-cols-3">
+              {monthly.map((point, index) => (
+                <li key={point.title} className="saas-glass rounded-[28px] p-5">
+                  <span className="text-xs font-black text-[#6d4aff]">{String(index + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-3 font-black">{point.title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{point.text}</p>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        </section>
+
+        <section id="platforms" className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.platforms.eyebrow")}</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t("saasMarket.platforms.title")}</h2>
+          <p className="mt-4 max-w-3xl text-base font-medium leading-7 text-slate-600">{t("saasMarket.platforms.subtitle")}</p>
+          <div className="mt-6 flex flex-wrap gap-2">
             <FilterChip active={category === "all"} onClick={() => setCategory("all")}>
-              All Systems
+              {t("saasMarket.platforms.all")}
             </FilterChip>
             {MARKETPLACE_CATEGORIES.map((item) => (
-              <FilterChip
-                key={item.id}
-                active={category === item.id}
-                onClick={() => setCategory(item.id)}
-              >
-                {item.label}
+              <FilterChip key={item.id} active={category === item.id} onClick={() => setCategory(item.id)}>
+                {t(`saasMarket.categories.${item.id}`, { defaultValue: item.label })}
               </FilterChip>
             ))}
           </div>
-
-          {error ? <p className="mt-8 text-sm font-semibold text-rose-600">{error}</p> : null}
-          {loading ? <p className="mt-8 text-sm font-semibold text-slate-500">Loading platforms…</p> : null}
+          {error ? <p className="mt-6 text-sm font-bold text-rose-600">{error}</p> : null}
+          {loading ? <p className="mt-6 text-sm font-bold text-slate-500">{t("saasMarket.platforms.loading")}</p> : null}
           {!loading && !error && visible.length === 0 ? (
-            <p className="mt-8 text-sm font-semibold text-slate-500">No platforms in this category yet.</p>
+            <p className="mt-6 text-sm font-bold text-slate-500">{t("saasMarket.platforms.empty")}</p>
           ) : null}
-
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {visible.map((product) => (
-              <article key={product.slug} className="saas-card overflow-hidden rounded-[28px] border border-white bg-white shadow-sm">
-                <div className="relative h-56 bg-slate-50">
-                  <SaasScreenMock
-                    framed={false}
-                    screen={{
-                      key: "dashboard",
-                      label: "Dashboard",
-                      imageUrl: product.mainImageUrl || product.screenshots?.[0]?.imageUrl,
-                    }}
-                    accent={product.accent}
-                    accentSecondary={product.accentSecondary}
-                    productName={product.name}
-                  />
-                  {product.badge ? (
-                    <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-800 shadow">
-                      {product.badge}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="p-5">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6D4AFF]">{product.categoryLabel}</p>
-                  <h3 className="mt-2 text-2xl font-black">{product.name}</h3>
-                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">{product.shortDescription}</p>
-                  <div className="mt-4 flex items-end justify-between gap-3">
-                    <div>
-                      <p className="text-2xl font-black">{formatUsd(product.priceUsd)}</p>
-                      <p className="text-xs font-semibold text-slate-500">
-                        Estimated custom development: {product.estimatedDevCostLabel}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    <Link to={`/saas/${product.slug}`} className="inline-flex min-h-11 items-center rounded-full bg-slate-950 px-4 text-sm font-bold text-white">
-                      View Platform
-                    </Link>
-                    <a
-                      href={product.demoUrl || `/saas/${product.slug}#gallery`}
-                      className="inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 text-sm font-bold text-slate-800"
-                      {...(product.demoUrl ? { target: "_blank", rel: "noreferrer" } : {})}
-                    >
-                      Live Demo
-                    </a>
-                  </div>
-                </div>
+              <PlatformCard
+                key={product.slug}
+                product={product}
+                onDemo={setDemo}
+                onModel={(item) => openLead({ slug: item.slug, model: "partner", ctaSource: "explore_models" })}
+              />
+            ))}
+          </div>
+        </section>
+
+        <ModelBoard onApply={(model, cta) => openLead({ model, ctaSource: cta, slug: hero?.slug })} />
+
+        <section id="how" className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.how.eyebrow")}</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">{t("saasMarket.how.title")}</h2>
+          <ol className="mt-8 grid gap-4 md:grid-cols-4">
+            {steps.map((step, index) => (
+              <li key={step.title} className="saas-glass rounded-[28px] p-5">
+                <span className="text-3xl font-black text-[#c4b5fd]">{index + 1}</span>
+                <h3 className="mt-3 font-black">{step.title}</h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <CountryCheck
+          products={products}
+          initialSlug={hero?.slug}
+          onRequest={(seed) => setLead(seed)}
+        />
+
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <h2 className="text-3xl font-black tracking-tight">{t("saasMarket.trustTitle")}</h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {trust.map((item) => (
+              <article key={item.title} className="rounded-[28px] bg-white/80 p-5 shadow-sm">
+                <h3 className="font-black">{item.title}</h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{item.text}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section id="how-it-works" className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-          <h2 className="text-3xl font-black tracking-tight">How It Works</h2>
-          <ol className="mt-6 grid gap-4 md:grid-cols-4">
-            {[
-              ["1", "Choose a platform", "Pick a ready-to-launch SaaS that matches the market you want to serve."],
-              ["2", "Make it yours", "Apply your logo, colors, domain, and subscription prices."],
-              ["3", "Get the codebase", "Source code, super admin, and documentation come with the platform."],
-              ["4", "Start selling", "Offer the software to businesses under your own brand."],
-            ].map(([step, title, text]) => (
-              <li key={step} className="rounded-3xl bg-white p-5 shadow-sm">
-                <span className="text-sm font-black text-[#6D4AFF]">{step}</span>
-                <h3 className="mt-2 font-black">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
-              </li>
-            ))}
-          </ol>
+        <FaqList />
+
+        <section id="contact" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+          <div className="overflow-hidden rounded-[36px] bg-[#160b33] px-6 py-12 text-white sm:px-10">
+            <h2 className="text-3xl font-black sm:text-5xl">{t("saasMarket.closing.title")}</h2>
+            <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-white/80">{t("saasMarket.closing.subtitle")}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button type="button" onClick={() => openLead({ ctaSource: "talk_to_us" })} className="rounded-full bg-white px-5 py-3 text-sm font-black text-slate-950">
+                {t("saasMarket.closing.talk")}
+              </button>
+              <button type="button" onClick={() => openLead({ ctaSource: "book_call" })} className="rounded-full border border-white/30 px-5 py-3 text-sm font-black text-white">
+                {t("saasMarket.closing.book")}
+              </button>
+              {wa ? (
+                <a href={wa} target="_blank" rel="noreferrer" className="rounded-full bg-[#128C7E] px-5 py-3 text-sm font-black text-white">
+                  {t("saasMarket.closing.whatsapp")}
+                </a>
+              ) : null}
+            </div>
+          </div>
         </section>
       </main>
       <SaasFooter />
+      <WhatsAppDock href={wa} />
+      <StickyActions
+        items={[
+          { label: t("saasMarket.sticky.platforms"), href: "#platforms" },
+          { label: t("saasMarket.sticky.models"), href: "#models" },
+          { label: t("saasMarket.sticky.demo"), onClick: () => hero && setDemo(hero) },
+          { label: t("saasMarket.sticky.talk"), onClick: () => openLead({ ctaSource: "talk_to_us" }) },
+        ]}
+      />
+      <LeadDialog seed={lead} products={products} onClose={() => setLead(null)} />
+      <DemoTheater product={demo} onClose={() => setDemo(null)} />
     </div>
   );
 }
 
-function FilterChip({
-  active,
-  children,
-  onClick,
-}: {
-  active: boolean;
-  children: ReactNode;
-  onClick: () => void;
-}) {
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-        active
-          ? "bg-gradient-to-r from-[#5B4DFF] to-[#7C4DFF] text-white shadow"
-          : "bg-white text-slate-600 hover:text-slate-900"
-      }`}
+      className={`rounded-full px-3 py-2 text-xs font-black ${active ? "bg-[#24124d] text-white" : "bg-white text-slate-700 ring-1 ring-slate-200"}`}
     >
       {children}
     </button>

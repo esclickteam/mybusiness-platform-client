@@ -31,9 +31,12 @@ export async function fetchSaasProduct(slug: string) {
 export async function submitSaasLead(body: {
   slug: string;
   name: string;
+  businessName: string;
   email: string;
   phone: string;
   country: string;
+  model: string;
+  ctaSource: string;
   message: string;
   pageUrl: string;
 }) {
@@ -41,26 +44,8 @@ export async function submitSaasLead(body: {
   return data as { success: boolean };
 }
 
-export async function startSaasCheckout(body: {
-  slug: string;
-  paymentType: "full" | "deposit";
-  name?: string;
-  email?: string;
-}) {
-  const { data } = await API.post("/saas-marketplace/checkout", body);
-  return data as {
-    success: boolean;
-    checkoutUrl: string;
-    orderToken: string;
-  };
+export async function checkCountryAvailability(body: { slug: string; country: string }) {
+  const { data } = await API.post("/saas-marketplace/country-availability", body);
+  return data as { success: boolean; result: "review" | "assigned"; guaranteed: false };
 }
 
-export async function fetchSaasOrderStatus(token: string) {
-  const { data } = await API.get("/saas-marketplace/orders/status", {
-    params: { token },
-  });
-  return data as {
-    success: boolean;
-    order: { status: string; productName: string; paymentType: string };
-  };
-}
