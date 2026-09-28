@@ -342,7 +342,11 @@ export default function WhatsAppMain() {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <h1 className="truncate text-base font-black tracking-tight text-slate-900 sm:text-lg">
-                    {showConnectionPlaceholder ? "…" : displayName}
+                    {showConnectionPlaceholder
+                      ? "…"
+                      : connection?.connected
+                        ? displayName
+                        : t("whatsapp.viaMeta.title")}
                   </h1>
                   <span
                     className="truncate text-sm font-semibold text-slate-500"

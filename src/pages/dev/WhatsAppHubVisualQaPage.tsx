@@ -405,7 +405,7 @@ export default function WhatsAppHubVisualQaPage() {
             </QaBlock>
           ) : null}
           {show("billing") ? (
-            <QaBlock label="billing" active="חיוב ושימוש">
+            <QaBlock label="billing" active="Meta">
               <WhatsAppBillingTab />
             </QaBlock>
           ) : null}

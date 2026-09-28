@@ -471,7 +471,7 @@
     "collapseSidebar": "כיווץ תפריט צד",
     "expandSidebar": "הרחבת תפריט צד",
     "ariaLabel": "ניווט סביבת העבודה העסקית",
-    "whatsapp": "וואטסאפ API",
+    "whatsapp": "WhatsApp דרך Meta",
     "metaCampaigns": "קמפיינים",
     "socialSchedule": "תזמון פוסטים וסטוריז"
   },
@@ -8088,14 +8088,14 @@
       "history": "היסטוריה",
       "insights": "תובנות",
       "developers": "API / מפתחים",
-      "billing": "חיוב ושימוש",
+      "billing": "Meta",
       "connection": "חיבור",
       "health": "נתוני שימוש ובריאות החשבון",
       "settings": "חיבור"
     },
     "hub": {
-      "product": "WhatsApp Business",
-      "title": "מרכז ניהול WhatsApp",
+      "product": "WhatsApp דרך Meta",
+      "title": "WhatsApp דרך Meta",
       "noPhone": "אין מספר מחובר",
       "unnamed": "ללא שם",
       "connected": "מחובר",
@@ -9257,6 +9257,33 @@
           "defaultText": "העתקת קוד"
         }
       }
+    },
+    "viaMeta": {
+      "title": "WhatsApp דרך Meta",
+      "chargesByMeta": "חיוב הודעות WhatsApp מתבצע ישירות על ידי Meta.",
+      "connectHint": "חברו WhatsApp דרך Meta Embedded Signup. המספר שייך לכם ו-Meta מחייבת אתכם ישירות.",
+      "statusConnected": "מחובר",
+      "phone": "מספר טלפון",
+      "metaBusiness": "עסק Meta",
+      "verification": "אימות עסק",
+      "wabaStatus": "סטטוס WABA",
+      "paymentMethod": "אמצעי תשלום",
+      "paymentConfigured": "מוגדר",
+      "paymentMissing": "חסר",
+      "paymentUnknown": "בדקו ב-Meta",
+      "quality": "דירוג איכות",
+      "messagingLimit": "מגבלת הודעות",
+      "manageBilling": "ניהול חיוב ב-Meta",
+      "openManager": "פתחו את WhatsApp Manager",
+      "paymentRequiredTitle": "נדרש אמצעי תשלום",
+      "paymentRequiredBody": "הוסיפו אמצעי תשלום ב-Meta כדי להמשיך לשלוח הודעות WhatsApp.",
+      "verificationNeededTitle": "נדרש אימות עסק",
+      "verificationNeededBody": "השלימו אימות עסק ב-Meta כדי להמשיך לשלוח הודעות WhatsApp.",
+      "wabaRestrictedTitle": "חשבון WhatsApp מוגבל",
+      "wabaRestrictedBody": "חשבון WhatsApp Business מוגבל. פתחו את WhatsApp Manager כדי לבדוק ולטפל בבעיה.",
+      "resolveInMeta": "טפלו ב-Meta",
+      "active": "פעיל",
+      "notAvailable": "לא זמין"
     },
     "billing": {
       "loadError": "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.",

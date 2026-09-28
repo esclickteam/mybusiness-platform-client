@@ -471,7 +471,7 @@
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
     "ariaLabel": "Business workspace navigation",
-    "whatsapp": "WhatsApp API",
+    "whatsapp": "WhatsApp via Meta",
     "metaCampaigns": "Campaigns",
     "socialSchedule": "Schedule Posts & Stories"
   },
@@ -8099,14 +8099,14 @@
       "history": "History",
       "insights": "Insights",
       "developers": "API / Developers",
-      "billing": "Billing & usage",
+      "billing": "Meta",
       "connection": "Connection",
       "health": "Account usage & health",
       "settings": "API connection"
     },
     "hub": {
-      "product": "WhatsApp Business",
-      "title": "WhatsApp Management Hub",
+      "product": "WhatsApp via Meta",
+      "title": "WhatsApp via Meta",
       "noPhone": "No phone connected",
       "unnamed": "Unnamed",
       "connected": "Connected",
@@ -9268,6 +9268,33 @@
           "defaultText": "Copy code"
         }
       }
+    },
+    "viaMeta": {
+      "title": "WhatsApp via Meta",
+      "chargesByMeta": "WhatsApp messaging charges are billed directly by Meta.",
+      "connectHint": "Connect WhatsApp through Meta Embedded Signup. You own the number and Meta bills you directly.",
+      "statusConnected": "Connected",
+      "phone": "Phone number",
+      "metaBusiness": "Meta Business",
+      "verification": "Business verification",
+      "wabaStatus": "WABA status",
+      "paymentMethod": "Payment method",
+      "paymentConfigured": "Configured",
+      "paymentMissing": "Missing",
+      "paymentUnknown": "Check in Meta",
+      "quality": "Quality rating",
+      "messagingLimit": "Messaging limit",
+      "manageBilling": "Manage Billing in Meta",
+      "openManager": "Open WhatsApp Manager",
+      "paymentRequiredTitle": "Payment method required",
+      "paymentRequiredBody": "Add a payment method in Meta to continue sending WhatsApp messages.",
+      "verificationNeededTitle": "Business verification required",
+      "verificationNeededBody": "Complete business verification in Meta to keep sending WhatsApp messages.",
+      "wabaRestrictedTitle": "WhatsApp account restricted",
+      "wabaRestrictedBody": "This WhatsApp Business Account is restricted. Open WhatsApp Manager to review and resolve the issue.",
+      "resolveInMeta": "Resolve in Meta",
+      "active": "Active",
+      "notAvailable": "Not available"
     },
     "billing": {
       "loadError": "We could not load WhatsApp billing data right now.",

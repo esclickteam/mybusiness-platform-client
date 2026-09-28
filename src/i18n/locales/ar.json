@@ -471,7 +471,7 @@
     "collapseSidebar": "اطو الشريط الجانبي",
     "expandSidebar": "وسّع الشريط الجانبي",
     "ariaLabel": "الملاحة مساحة العمل",
-    "whatsapp": "واجهة برمجة تطبيقات WhatsApp",
+    "whatsapp": "WhatsApp عبر Meta",
     "metaCampaigns": "الحملات",
     "socialSchedule": "جدولة المشاركات والقصص"
   },
@@ -8101,7 +8101,7 @@
       "messages": "رسائل",
       "insights": "رؤى",
       "developers": "API / المطورون",
-      "billing": "الفواتير والاستخدام",
+      "billing": "Meta",
       "connection": "اتصال"
     },
     "categories": {
@@ -9161,6 +9161,33 @@
         }
       }
     },
+    "viaMeta": {
+      "title": "WhatsApp عبر Meta",
+      "chargesByMeta": "رسوم رسائل واتساب تُفوتر مباشرة من Meta.",
+      "connectHint": "اربط واتساب عبر Meta Embedded Signup. الرقم ملكك وMeta تُفوترك مباشرة.",
+      "statusConnected": "متصل",
+      "phone": "رقم الهاتف",
+      "metaBusiness": "حساب Meta Business",
+      "verification": "توثيق النشاط التجاري",
+      "wabaStatus": "حالة WABA",
+      "paymentMethod": "طريقة الدفع",
+      "paymentConfigured": "مضبوطة",
+      "paymentMissing": "غير موجودة",
+      "paymentUnknown": "تحقق في Meta",
+      "quality": "تقييم الجودة",
+      "messagingLimit": "حد المراسلة",
+      "manageBilling": "إدارة الفوترة في Meta",
+      "openManager": "فتح WhatsApp Manager",
+      "paymentRequiredTitle": "طريقة دفع مطلوبة",
+      "paymentRequiredBody": "أضف طريقة دفع في Meta لمتابعة إرسال رسائل واتساب.",
+      "verificationNeededTitle": "توثيق النشاط التجاري مطلوب",
+      "verificationNeededBody": "أكمل توثيق النشاط التجاري في Meta لمتابعة إرسال رسائل واتساب.",
+      "wabaRestrictedTitle": "حساب واتساب مقيّد",
+      "wabaRestrictedBody": "حساب واتساب للأعمال مقيّد. افتح WhatsApp Manager للمراجعة والمعالجة.",
+      "resolveInMeta": "المعالجة في Meta",
+      "active": "نشط",
+      "notAvailable": "غير متاح"
+    },
     "billing": {
       "loadError": "تعذّر تحميل بيانات فوترة واتساب الآن.",
       "retry": "حاول مرة أخرى",
@@ -9267,8 +9294,8 @@
       "saveChanges": "حفظ التغييرات"
     },
     "hub": {
-      "product": "واتساب للأعمال",
-      "title": "مركز إدارة الواتساب",
+      "product": "WhatsApp عبر Meta",
+      "title": "WhatsApp عبر Meta",
       "noPhone": "لا يوجد هاتف متصل",
       "unnamed": "لم يذكر اسمه",
       "connected": "متصل",

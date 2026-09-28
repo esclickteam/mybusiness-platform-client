@@ -471,7 +471,7 @@
     "collapseSidebar": "Recolher barra lateral",
     "expandSidebar": "Expandir barra lateral",
     "ariaLabel": "Navegação no espaço de trabalho comercial",
-    "whatsapp": "API do WhatsApp",
+    "whatsapp": "WhatsApp via Meta",
     "metaCampaigns": "Campanhas",
     "socialSchedule": "Agendar Posts e Histórias"
   },
@@ -8101,7 +8101,7 @@
       "messages": "Mensagens",
       "insights": "Percepções",
       "developers": "API / Desenvolvedores",
-      "billing": "Faturamento e uso",
+      "billing": "Meta",
       "connection": "Conexão"
     },
     "categories": {
@@ -9161,6 +9161,33 @@
         }
       }
     },
+    "viaMeta": {
+      "title": "WhatsApp via Meta",
+      "chargesByMeta": "As cobranças de mensagens do WhatsApp são faturadas diretamente pela Meta.",
+      "connectHint": "Conecte o WhatsApp pelo Meta Embedded Signup. O número é seu e a Meta fatura você diretamente.",
+      "statusConnected": "Conectado",
+      "phone": "Número de telefone",
+      "metaBusiness": "Meta Business",
+      "verification": "Verificação da empresa",
+      "wabaStatus": "Status do WABA",
+      "paymentMethod": "Forma de pagamento",
+      "paymentConfigured": "Configurada",
+      "paymentMissing": "Ausente",
+      "paymentUnknown": "Verificar na Meta",
+      "quality": "Qualidade",
+      "messagingLimit": "Limite de mensagens",
+      "manageBilling": "Gerenciar faturamento na Meta",
+      "openManager": "Abrir o WhatsApp Manager",
+      "paymentRequiredTitle": "Forma de pagamento obrigatória",
+      "paymentRequiredBody": "Adicione uma forma de pagamento na Meta para continuar enviando mensagens do WhatsApp.",
+      "verificationNeededTitle": "Verificação da empresa obrigatória",
+      "verificationNeededBody": "Conclua a verificação da empresa na Meta para continuar enviando mensagens do WhatsApp.",
+      "wabaRestrictedTitle": "Conta do WhatsApp restrita",
+      "wabaRestrictedBody": "Esta conta do WhatsApp Business está restrita. Abra o WhatsApp Manager para revisar e resolver o problema.",
+      "resolveInMeta": "Resolver na Meta",
+      "active": "Ativa",
+      "notAvailable": "Indisponível"
+    },
     "billing": {
       "loadError": "Não foi possível carregar os dados de cobrança do WhatsApp agora.",
       "retry": "Tentar de novo",
@@ -9267,8 +9294,8 @@
       "saveChanges": "Salvar alterações"
     },
     "hub": {
-      "product": "WhatsApp Empresarial",
-      "title": "Central de gerenciamento do WhatsApp",
+      "product": "WhatsApp via Meta",
+      "title": "WhatsApp via Meta",
       "noPhone": "Nenhum telefone conectado",
       "unnamed": "Sem nome",
       "connected": "Conectado",
