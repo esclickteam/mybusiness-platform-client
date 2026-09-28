@@ -70,4 +70,22 @@ describe("WhatsAppViaMetaCard", () => {
     );
     vi.unstubAllGlobals();
   });
+
+  it("shows Check in Meta when payment method is unknown", () => {
+    render(
+      <WhatsAppViaMetaCard
+        connection={{
+          ...connection,
+          wabaBillingHealth: {
+            ...connection.wabaBillingHealth!,
+            hasPaymentMethod: null,
+            actionRequired: false,
+            issues: [],
+          },
+        }}
+      />
+    );
+    expect(screen.getByText("whatsapp.viaMeta.paymentUnknown")).toBeTruthy();
+    expect(screen.queryByText("whatsapp.viaMeta.paymentRequiredTitle")).toBeNull();
+  });
 });

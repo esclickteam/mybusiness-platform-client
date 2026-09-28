@@ -39,8 +39,6 @@ import {
   type WhatsAppConnection,
 } from "../../../../api/whatsappApi";
 import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
-import WhatsAppBillingSetupModal from "./billing/WhatsAppBillingSetupModal";
-import WhatsAppCheckoutProcessing from "./billing/WhatsAppCheckoutProcessing";
 import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 import { btnSecondary } from "../../../../styles/bizuplyUi";
 import {
@@ -132,11 +130,6 @@ export default function WhatsAppMain() {
   const locale = getIntlLocale(i18n.language);
 
   const visualQa = useWhatsAppVisualQaOverride();
-  const [setupModalOpen, setSetupModalOpen] = useState(false);
-  const [setupModalMode, setSetupModalMode] = useState<"setup" | "manage">(
-    "setup"
-  );
-  const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(
     visualQa?.connection || null
   );
@@ -149,7 +142,6 @@ export default function WhatsAppMain() {
     loading: billingLoading,
     error: billingError,
     refresh: refreshBilling,
-    setUsage: setBillingUsage,
   } = useWhatsAppBilling(guidedDemo ? null : businessId);
 
   const pathAfterWhatsapp = useMemo(
@@ -217,17 +209,11 @@ export default function WhatsAppMain() {
   useEffect(() => {
     const flag = readWaBillingFlag(searchParams);
     if (!flag) return;
-    if (flag === "processing") {
-      setCheckoutProcessingOpen(true);
-      toast.info(t("automations.toasts.waCheckoutProcessing"));
-    } else if (flag === "cancel") {
-      toast.info(t("automations.toasts.waCheckoutCancel"));
-    }
     const next = new URLSearchParams(searchParams);
     next.delete("waBilling");
     next.delete("whatsappBilling");
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams, t]);
+  }, [searchParams, setSearchParams]);
 
   const refreshConnection = useCallback(async () => {
     if (visualQa?.connection) {
@@ -275,10 +261,7 @@ export default function WhatsAppMain() {
     }
   }, [businessId, refreshConnection, t]);
 
-  const openSetupModal = useCallback((mode: "setup" | "manage") => {
-    setSetupModalMode(mode);
-    setSetupModalOpen(true);
-  }, []);
+  const openSetupModal = useCallback((_mode: "setup" | "manage") => {}, []);
 
   const ready = connectionReadyLabel(
     Boolean(connection?.connected),
@@ -505,31 +488,6 @@ export default function WhatsAppMain() {
           </Suspense>
         </main>
       </div>
-
-      {businessId ? (
-        <>
-          <WhatsAppBillingSetupModal
-            open={setupModalOpen}
-            businessId={businessId}
-            usage={billingUsage}
-            initialMode={setupModalMode}
-            onClose={() => setSetupModalOpen(false)}
-            onUsageUpdated={async () => {
-              await refreshBilling();
-            }}
-          />
-          <WhatsAppCheckoutProcessing
-            open={checkoutProcessingOpen}
-            businessId={businessId}
-            onDone={(usage) => {
-              setBillingUsage(usage);
-              setCheckoutProcessingOpen(false);
-              void refreshBilling();
-            }}
-            onClose={() => setCheckoutProcessingOpen(false)}
-          />
-        </>
-      ) : null}
     </section>
   );
 }
