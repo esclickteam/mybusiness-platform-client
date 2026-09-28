@@ -409,6 +409,41 @@ async function handleGoogleHtmlVerification(request, fileName) {
   }
 }
 
+function saasMarketplaceHeadHtml() {
+  return [
+    `<title>Ready-to-Launch SaaS Platforms | Bizuply</title>`,
+    `<meta name="description" content="Launch your own software business with a fully developed, white-label, multi-tenant SaaS platform. Source code included." />`,
+    `<meta name="robots" content="noindex, follow" />`,
+    `<meta name="googlebot" content="noindex, follow" />`,
+  ].join("\n");
+}
+
+async function handleSaasMarketplaceDocument(request) {
+  if (!isDocumentNavigation(request)) return passThrough();
+  try {
+    const htmlRes = await fetch(new URL("/index.html", request.url), {
+      headers: {
+        accept: "text/html",
+        "x-bizuply-seo-middleware": "1",
+      },
+    });
+    if (!htmlRes.ok) return passThrough();
+    const html = await htmlRes.text();
+    if (!html || !/<html[\s>]/i.test(html)) return passThrough();
+    return new Response(injectSeoHead(html, saasMarketplaceHeadHtml()), {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-robots-tag": "noindex, follow",
+        "x-bizuply-seo-edge": "saas-unlisted",
+      },
+    });
+  } catch {
+    return passThrough();
+  }
+}
+
 function travelHeadHtml() {
   return [
     `<title>${TRAVEL_SEO_TITLE}</title>`,
@@ -470,6 +505,10 @@ export default async function middleware(request) {
 
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     return handleRobotsOrSitemap(request, pathname);
+  }
+
+  if (pathname === "/saas" || pathname.startsWith("/saas/")) {
+    return handleSaasMarketplaceDocument(request);
   }
 
   const googleFile = getGoogleHtmlVerificationFile(pathname);

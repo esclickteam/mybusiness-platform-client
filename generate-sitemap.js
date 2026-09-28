@@ -26,6 +26,7 @@ const staticPages = [
   { url: 'website-builder', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 }, // Website builder product page
   { url: 'automations', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 }, // Automations product page
   { url: 'agents', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 },    // AI agents product page
+  // /saas marketplace stays unlisted until launch. Do not add it here.
   { url: 'accessibility', lastmod: '2026-08-01', changefreq: 'yearly', priority: 0.4 }, // Accessibility statement
 ];
 

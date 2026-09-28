@@ -1,0 +1,42 @@
+.saas-market {
+  font-family: Inter, Assistant, ui-sans-serif, system-ui, sans-serif;
+  color: #0f172a;
+  background:
+    radial-gradient(1200px 480px at 85% -10%, rgba(124, 77, 255, 0.16), transparent 60%),
+    radial-gradient(900px 420px at -10% 8%, rgba(56, 189, 248, 0.14), transparent 55%),
+    #f7f8fc;
+}
+
+.saas-rise {
+  animation: saas-rise 0.7s ease both;
+}
+
+.saas-card {
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.saas-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 50px rgba(79, 70, 229, 0.12);
+}
+
+@keyframes saas-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saas-rise,
+  .saas-card,
+  .saas-card:hover {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
