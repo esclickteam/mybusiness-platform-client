@@ -31,13 +31,27 @@ import {
 } from "../../lib/partnerCenterApi";
 
 const HUB = [
-  { id: "training", key: "hubTraining", categories: ["learn_bizuply", "sales_training"] },
+  { id: "training", key: "hubTraining", categories: ["learn_bizuply"] },
   { id: "sales", key: "hubSales", categories: ["sales_training", "scripts_templates", "demo_presentation"] },
   { id: "marketing", key: "hubMarketing", categories: ["marketing_materials"] },
-  { id: "videos", key: "hubVideos", categories: ["videos", "learn_bizuply"] },
+  { id: "videos", key: "hubVideos", categories: ["videos"] },
   { id: "industry", key: "hubIndustry", categories: ["industry_kits"] },
   { id: "brand", key: "hubBrand", categories: ["brand_assets"] },
 ] as const;
+
+const TRAINING_DONE_KEY = "bizuply-partner-training-done";
+
+function splitLines(value?: string) {
+  return String(value || "")
+    .split("\n")
+    .map((row) => row.trim())
+    .filter(Boolean);
+}
+
+function moduleNumberOf(item: PartnerMaterial) {
+  const n = Number(item.extra?.moduleNumber || item.sortOrder / 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 function CreativePreview({ item, dir }: { item: PartnerMaterial; dir: string }) {
   const extra = item.extra || {};
@@ -88,7 +102,8 @@ export default function PartnerCenterHub({
   const locale = coerceSupportedLanguage(i18n.language);
   const dir = getTextDirection(locale);
   const [q, setQ] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("learn_bizuply");
+  const [doneSlugs, setDoneSlugs] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
   const [assetType, setAssetType] = useState("");
   const [audience, setAudience] = useState("");
@@ -103,7 +118,7 @@ export default function PartnerCenterHub({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<PartnerMaterial | null>(null);
-  const [previewTab, setPreviewTab] = useState("script");
+  const [previewTab, setPreviewTab] = useState("video");
   const [shareItem, setShareItem] = useState<PartnerMaterial | null>(null);
   const [shareDays, setShareDays] = useState("30");
   const [shareRows, setShareRows] = useState<any[]>([]);
@@ -159,9 +174,47 @@ export default function PartnerCenterHub({
   }
 
   useEffect(() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(TRAINING_DONE_KEY) || "[]");
+      if (Array.isArray(raw)) setDoneSlugs(raw.map(String));
+    } catch {
+      setDoneSlugs([]);
+    }
+  }, []);
+
+  useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale, category, industry, assetType, audience, status, favoritesOnly]);
+
+  const visibleItems = useMemo(() => {
+    const rows = [...items];
+    if (category === "learn_bizuply") {
+      rows.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    }
+    return rows;
+  }, [items, category]);
+
+  const trainingSeries = useMemo(
+    () =>
+      [...items]
+        .filter((row) => row.category === "learn_bizuply")
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
+    [items]
+  );
+
+  function openLesson(item: PartnerMaterial) {
+    setPreviewTab(item.category === "learn_bizuply" || item.assetType === "video_script" ? "video" : "script");
+    setPreview(item);
+  }
+
+  function toggleDone(slug: string) {
+    setDoneSlugs((prev) => {
+      const next = prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug];
+      localStorage.setItem(TRAINING_DONE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
 
   const hubCounts = useMemo(() => {
     return HUB.map((hub) => ({
@@ -291,7 +344,9 @@ export default function PartnerCenterHub({
             key={hub.id}
             type="button"
             onClick={() => setCategory(hub.categories[0])}
-            className="rounded-[16px] border border-slate-100 bg-white p-4 text-start shadow-[0_4px_20px_rgba(15,23,42,0.05)]"
+            className={`rounded-[16px] border p-4 text-start shadow-[0_4px_20px_rgba(15,23,42,0.05)] ${
+              hub.categories.includes(category) ? "border-violet-300 bg-violet-50" : "border-slate-100 bg-white"
+            }`}
           >
             <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">{t(`partnerCenter.${hub.key}`)}</p>
             <p className="mt-2 text-2xl font-black text-slate-900">{hub.count}</p>
@@ -354,10 +409,27 @@ export default function PartnerCenterHub({
       {loading ? <p className="text-sm font-bold text-slate-500">…</p> : null}
       {!loading && items.length === 0 ? <p className="text-sm font-bold text-slate-500">{t("partnerCenter.empty")}</p> : null}
 
+      {category === "learn_bizuply" ? (
+        <div className="mb-5 rounded-[16px] border border-violet-100 bg-violet-50/70 p-4">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C3AED]">{t("partnerCenter.academyKicker")}</p>
+          <h2 className="mt-1 text-xl font-black text-slate-900">{t("partnerCenter.academyTitle")}</h2>
+          <p className="mt-1 text-sm font-bold text-slate-600">{t("partnerCenter.academyHint")}</p>
+        </div>
+      ) : null}
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
+        {visibleItems.map((item) => {
+          const moduleN = moduleNumberOf(item);
+          const isTraining = item.category === "learn_bizuply";
+          const completed = doneSlugs.includes(item.slug);
+          return (
           <article key={item.id} className="flex flex-col rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
             <div className="mb-3 flex flex-wrap gap-2">
+              {isTraining && moduleN ? (
+                <span className="rounded-full bg-[#6D28D9] px-2.5 py-1 text-[11px] font-black text-white">
+                  {t("partnerCenter.moduleN", { n: moduleN })}
+                </span>
+              ) : null}
               <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${item.audience === "client_facing" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"}`}>
                 {item.audience === "client_facing" ? t("partnerCenter.clientFacing") : t("partnerCenter.internal")}
               </span>
@@ -366,17 +438,27 @@ export default function PartnerCenterHub({
                   <Star className="h-3 w-3" /> {t("partnerCenter.featured")}
                 </span>
               ) : null}
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{t(`partnerCenter.meta.${item.category}`, { defaultValue: item.category })}</span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{t(`partnerCenter.meta.${item.assetType}`, { defaultValue: item.assetType })}</span>
+              {isTraining ? (
+                <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${item.videoReady ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>
+                  {item.videoReady ? t("partnerCenter.videoReady") : t("partnerCenter.videoPending")}
+                </span>
+              ) : (
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">{t(`partnerCenter.meta.${item.category}`, { defaultValue: item.category })}</span>
+              )}
+              {completed ? (
+                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-800">{t("partnerCenter.completed")}</span>
+              ) : isTraining ? (
+                <span className="rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-black text-slate-500">{t("partnerCenter.notCompleted")}</span>
+              ) : null}
             </div>
             <h2 className="text-lg font-black text-slate-900">{item.title}</h2>
             <p className="mt-1 line-clamp-3 text-sm font-bold text-slate-500">{item.description}</p>
             <p className="mt-3 text-[11px] font-bold text-slate-400">
-              {t("partnerCenter.lastUpdated")}: {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString(locale) : "—"} · {t("partnerCenter.version")} {item.version}
-              {item.estimatedDurationMinutes ? ` · ${t("partnerCenter.duration", { n: item.estimatedDurationMinutes })}` : ""}
+              {item.estimatedDurationMinutes ? `${t("partnerCenter.duration", { n: item.estimatedDurationMinutes })} · ` : ""}
+              {t("partnerCenter.lastUpdated")}: {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString(locale) : "—"}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => { setPreviewTab("script"); setPreview(item); }}>
+              <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => openLesson(item)}>
                 <Eye className="h-3.5 w-3.5" /> {t("partnerCenter.preview")}
               </button>
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onCopy(item)}>
@@ -421,7 +503,8 @@ export default function PartnerCenterHub({
               )}
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       {!admin ? (
@@ -534,9 +617,26 @@ export default function PartnerCenterHub({
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-black text-[#7C3AED]">
-                  {preview.audience === "client_facing" ? t("partnerCenter.clientFacing") : t("partnerCenter.internal")}
+                  {preview.category === "learn_bizuply" && moduleNumberOf(preview)
+                    ? t("partnerCenter.moduleN", { n: moduleNumberOf(preview) })
+                    : preview.audience === "client_facing"
+                      ? t("partnerCenter.clientFacing")
+                      : t("partnerCenter.internal")}
                 </p>
                 <h3 className="text-2xl font-black">{preview.title}</h3>
+                <p className="mt-1 text-sm font-bold text-slate-500">{preview.description}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {preview.estimatedDurationMinutes ? (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">
+                      {t("partnerCenter.duration", { n: preview.estimatedDurationMinutes })}
+                    </span>
+                  ) : null}
+                  {preview.category === "learn_bizuply" ? (
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${preview.videoReady ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"}`}>
+                      {preview.videoReady ? t("partnerCenter.videoReady") : t("partnerCenter.videoPending")}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <button type="button" className="rounded-xl px-3 py-2 text-sm font-black" onClick={() => setPreview(null)}>
                 {t("partnerCenter.cancel")}
@@ -551,7 +651,8 @@ export default function PartnerCenterHub({
             <div className="mb-4 flex flex-wrap gap-2">
               {[
                 ["video", t("partnerCenter.tabVideo")],
-                ["script", t("partnerCenter.tabScript")],
+                ["learn", t("partnerCenter.tabLesson")],
+                ["script", t("partnerCenter.writtenSummary")],
                 ["voice", t("partnerCenter.tabVoiceOver")],
                 ["captions", t("partnerCenter.tabCaptions")],
                 ["shots", t("partnerCenter.tabShotList")],
@@ -569,12 +670,63 @@ export default function PartnerCenterHub({
             </div>
             {previewTab === "video" ? (
               preview.videoReady && preview.localeVideoUrl ? (
-                <video className="w-full rounded-2xl" controls src={preview.localeVideoUrl} />
+                <video className="w-full rounded-2xl" controls src={preview.localeVideoUrl} poster={preview.thumbnailUrl || undefined} />
               ) : (
                 <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
-                  {t("partnerCenter.readyForProduction")}
+                  {t("partnerCenter.videoPending")}
                 </p>
               )
+            ) : previewTab === "learn" ? (
+              <div className="space-y-5 text-sm font-bold leading-relaxed text-slate-700">
+                {splitLines(preview.extra?.youWillLearn).length ? (
+                  <section>
+                    <h4 className="mb-2 text-xs font-black uppercase tracking-wide text-[#7C3AED]">{t("partnerCenter.youWillLearn")}</h4>
+                    <ul className="list-disc space-y-1 ps-5">
+                      {splitLines(preview.extra?.youWillLearn).map((row) => (
+                        <li key={row}>{row}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+                {splitLines(preview.extra?.takeaways).length ? (
+                  <section>
+                    <h4 className="mb-2 text-xs font-black uppercase tracking-wide text-[#7C3AED]">{t("partnerCenter.takeaways")}</h4>
+                    <ul className="list-disc space-y-1 ps-5">
+                      {splitLines(preview.extra?.takeaways).map((row) => (
+                        <li key={row}>{row}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+                {preview.extra?.explainToCustomer ? (
+                  <section>
+                    <h4 className="mb-2 text-xs font-black uppercase tracking-wide text-[#7C3AED]">{t("partnerCenter.explainToCustomer")}</h4>
+                    <p>{preview.extra.explainToCustomer}</p>
+                  </section>
+                ) : null}
+                {Array.isArray(preview.extra?.relatedSlugs) && preview.extra.relatedSlugs.length ? (
+                  <section>
+                    <h4 className="mb-2 text-xs font-black uppercase tracking-wide text-[#7C3AED]">{t("partnerCenter.relatedModules")}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {preview.extra.relatedSlugs.map((slug: string) => {
+                        const related = trainingSeries.find((row) => row.slug === slug) || items.find((row) => row.slug === slug);
+                        if (!related) return null;
+                        return (
+                          <button
+                            key={slug}
+                            type="button"
+                            className="rounded-full border border-slate-200 px-3 py-1 text-xs font-black"
+                            onClick={() => openLesson(related)}
+                          >
+                            {moduleNumberOf(related) ? `${moduleNumberOf(related)}. ` : ""}
+                            {related.title}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ) : null}
+              </div>
             ) : (
               <pre className="whitespace-pre-wrap text-sm font-bold leading-relaxed text-slate-700">
                 {previewTab === "voice"
@@ -588,6 +740,44 @@ export default function PartnerCenterHub({
                         : preview.body || preview.script}
               </pre>
             )}
+            {preview.category === "learn_bizuply" ? (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
+                <button
+                  type="button"
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+                  onClick={() => toggleDone(preview.slug)}
+                >
+                  {doneSlugs.includes(preview.slug) ? t("partnerCenter.completed") : t("partnerCenter.markComplete")}
+                </button>
+                <div className="flex flex-wrap gap-2">
+                  {(() => {
+                    const idx = trainingSeries.findIndex((row) => row.slug === preview.slug);
+                    const prev = idx > 0 ? trainingSeries[idx - 1] : null;
+                    const next = idx >= 0 && idx < trainingSeries.length - 1 ? trainingSeries[idx + 1] : null;
+                    return (
+                      <>
+                        <button
+                          type="button"
+                          disabled={!prev}
+                          className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black disabled:opacity-40"
+                          onClick={() => prev && openLesson(prev)}
+                        >
+                          {t("partnerCenter.prevModule")}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!next}
+                          className="rounded-xl bg-[#6D28D9] px-3 py-2 text-xs font-black text-white disabled:opacity-40"
+                          onClick={() => next && openLesson(next)}
+                        >
+                          {t("partnerCenter.nextModule")}
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
