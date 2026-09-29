@@ -187,7 +187,7 @@ export function FaqList({ wide = false }: { wide?: boolean }) {
   const items = t("saasMarket.faq.items", { returnObjects: true }) as { q: string; a: string }[];
   const [open, setOpen] = useState(0);
   return (
-    <section id="faq" className={wide ? "saas-band saas-band-paper" : "mx-auto max-w-3xl px-4 py-16 sm:px-6"}>
+    <section id="faq" className={wide ? "saas-band saas-tone-ivory" : "mx-auto max-w-3xl px-4 py-16 sm:px-6"}>
       <div className={wide ? "saas-wrap" : ""}>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.faq.eyebrow")}</p>
         <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">
