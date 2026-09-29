@@ -8,11 +8,13 @@ import {
   fetchAdminWithdrawalRequest,
   partnerApiError,
 } from "../../lib/partnerApi";
+import { fetchAdminPartnerOnboarding } from "../../lib/partnerCenterApi";
 import { formatIls } from "../../lib/partnerMoney";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const TABS = [
   ["overview", "סקירה"],
+  ["onboarding", "Onboarding"],
   ["kyc", "מסמכים וחשבון בנק"],
   ["clients", "לקוחות"],
   ["deals", "עסקאות"],
@@ -27,6 +29,7 @@ export default function AdminPartnerDossier() {
   const { partnerId } = useParams();
   const [tab, setTab] = useState("overview");
   const [data, setData] = useState<any>(null);
+  const [onboarding, setOnboarding] = useState<any>(null);
   const [error, setError] = useState("");
   const [activeRequest, setActiveRequest] = useState<any>(null);
   const [feedback, setFeedback] = useState("");
@@ -39,6 +42,8 @@ export default function AdminPartnerDossier() {
     const payload = await fetchAdminPartnerDossier(partnerId);
     setData(payload);
     setKycFeedback(payload.compliance?.adminFeedback || "");
+    const progress = await fetchAdminPartnerOnboarding(partnerId).catch(() => null);
+    setOnboarding(progress);
   }
 
   useEffect(() => {
@@ -130,6 +135,38 @@ export default function AdminPartnerDossier() {
             <Kpi label="Pending withdrawals" value={formatIls(data.commissions?.totals?.pendingCommission)} />
             <Kpi label="Paid commissions" value={formatIls(data.commissions?.totals?.paidCommission)} />
             <Kpi label="מסמכים" value={data.compliance?.reviewStatus || "incomplete"} />
+          </section>
+        ) : null}
+
+        {tab === "onboarding" ? (
+          <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
+            {onboarding ? (
+              <>
+                <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Partner onboarding</p>
+                <h2 className="mt-1 text-xl font-black">{onboarding.nextAction?.title}</h2>
+                <p className="mt-1 text-sm font-bold text-slate-600">{onboarding.nextAction?.detail}</p>
+                <p className="mt-3 text-sm font-black">
+                  {onboarding.modulesCompleted} / {onboarding.modulesTotal} modules · {onboarding.percent}% · {onboarding.salesReadyStatus}
+                </p>
+                <p className="mt-2 text-sm font-bold text-slate-500">
+                  Started: {onboarding.started ? "Yes" : "No"} · Last activity: {onboarding.lastActivityAt ? new Date(onboarding.lastActivityAt).toLocaleString() : "—"} · Training completed: {onboarding.trainingCompletedAt ? new Date(onboarding.trainingCompletedAt).toLocaleString() : "—"}
+                </p>
+                {onboarding.stuckModule ? (
+                  <p className="mt-2 font-black text-amber-800">
+                    Stuck on Module {onboarding.stuckModule.n} – {onboarding.stuckModule.title}
+                  </p>
+                ) : null}
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {(onboarding.modules || []).map((mod: any) => (
+                    <li key={mod.slug} className="rounded-2xl border px-3 py-2 text-sm font-bold">
+                      Module {mod.n}. {mod.title} — {onboarding.completedModuleSlugs?.includes(mod.slug) ? "Done" : "Open"}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="font-black">No onboarding data yet.</p>
+            )}
           </section>
         ) : null}
 

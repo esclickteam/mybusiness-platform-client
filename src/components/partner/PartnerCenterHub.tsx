@@ -22,6 +22,8 @@ import {
   fetchPartnerCenterKpis,
   fetchPartnerCenterMaterial,
   fetchPartnerCenterMaterials,
+  fetchPartnerOnboarding,
+  patchPartnerOnboarding,
   listPartnerCenterShareAudit,
   listPartnerCenterShares,
   reseedPartnerCenter,
@@ -31,7 +33,10 @@ import {
   sharePartnerCenterMaterial,
   togglePartnerCenterFavorite,
   type PartnerMaterial,
+  type PartnerOnboardingSnapshot,
 } from "../../lib/partnerCenterApi";
+import PartnerOnboardingPanel from "./PartnerOnboardingPanel";
+import { partnerProductDemoUrl } from "../../lib/partnerOnboardingDemo";
 
 const HUB = [
   { id: "training", key: "hubTraining", categories: ["learn_bizuply"] },
@@ -41,8 +46,6 @@ const HUB = [
   { id: "industry", key: "hubIndustry", categories: ["industry_kits"] },
   { id: "brand", key: "hubBrand", categories: ["brand_assets"] },
 ] as const;
-
-const TRAINING_DONE_KEY = "bizuply-partner-training-done";
 
 function splitLines(value?: string) {
   return String(value || "")
@@ -97,6 +100,9 @@ export default function PartnerCenterHub({
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("learn_bizuply");
   const [doneSlugs, setDoneSlugs] = useState<string[]>([]);
+  const [onboarding, setOnboarding] = useState<PartnerOnboardingSnapshot | null>(null);
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
+  const [guideItems, setGuideItems] = useState<PartnerMaterial[]>([]);
   const [industry, setIndustry] = useState("");
   const [assetType, setAssetType] = useState("");
   const [audience, setAudience] = useState("");
@@ -154,8 +160,27 @@ export default function PartnerCenterHub({
       setMeta(data.meta || {});
       setCounts({ total: data.counts?.total || 0, byCategory: data.counts?.byCategory || {} });
       if (!admin) {
-        const kpi = await fetchPartnerCenterKpis().catch(() => ({ items: [] }));
+        const [kpi, progress, academy, kits, sales, demos, scripts] = await Promise.all([
+          fetchPartnerCenterKpis().catch(() => ({ items: [] })),
+          fetchPartnerOnboarding().catch(() => null),
+          fetchPartnerCenterMaterials({ locale, category: "learn_bizuply" }).catch(() => ({ items: [] })),
+          fetchPartnerCenterMaterials({ locale, category: "industry_kits" }).catch(() => ({ items: [] })),
+          fetchPartnerCenterMaterials({ locale, category: "sales_training" }).catch(() => ({ items: [] })),
+          fetchPartnerCenterMaterials({ locale, category: "demo_presentation" }).catch(() => ({ items: [] })),
+          fetchPartnerCenterMaterials({ locale, category: "scripts_templates" }).catch(() => ({ items: [] })),
+        ]);
         setKpis(kpi.items || []);
+        if (progress) {
+          setOnboarding(progress);
+          setDoneSlugs(progress.completedModuleSlugs || []);
+        }
+        setGuideItems([
+          ...(academy.items || []),
+          ...(kits.items || []),
+          ...(sales.items || []),
+          ...(demos.items || []),
+          ...(scripts.items || []),
+        ]);
       } else {
         const audit = await listPartnerCenterShareAudit().catch(() => ({ items: [] }));
         setAuditRows(audit.items || []);
@@ -166,15 +191,6 @@ export default function PartnerCenterHub({
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    try {
-      const raw = JSON.parse(localStorage.getItem(TRAINING_DONE_KEY) || "[]");
-      if (Array.isArray(raw)) setDoneSlugs(raw.map(String));
-    } catch {
-      setDoneSlugs([]);
-    }
-  }, []);
 
   useEffect(() => {
     load();
@@ -191,23 +207,56 @@ export default function PartnerCenterHub({
 
   const trainingSeries = useMemo(
     () =>
-      [...items]
+      [...(guideItems.length ? guideItems : items)]
         .filter((row) => row.category === "learn_bizuply")
         .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
-    [items]
+    [items, guideItems]
   );
+
+  const onboardingMaterials = useMemo(() => {
+    const map = new Map<string, PartnerMaterial>();
+    for (const row of [...guideItems, ...items]) map.set(row.slug, row);
+    return [...map.values()];
+  }, [guideItems, items]);
 
   function openLesson(item: PartnerMaterial) {
     setPreviewTab(item.category === "learn_bizuply" || item.assetType === "video_script" ? "video" : "script");
     setPreview(item);
   }
 
-  function toggleDone(slug: string) {
-    setDoneSlugs((prev) => {
-      const next = prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug];
-      localStorage.setItem(TRAINING_DONE_KEY, JSON.stringify(next));
+  async function applyOnboarding(payload: Record<string, unknown>) {
+    setOnboardingBusy(true);
+    try {
+      const next = await patchPartnerOnboarding(payload);
+      setOnboarding(next);
+      setDoneSlugs(next.completedModuleSlugs || []);
       return next;
-    });
+    } catch (err: any) {
+      notify(err?.response?.data?.error || err?.message || t("partnerCenter.downloadFailed"));
+      return onboarding;
+    } finally {
+      setOnboardingBusy(false);
+    }
+  }
+
+  async function toggleDone(slug: string) {
+    const complete = !doneSlugs.includes(slug);
+    await applyOnboarding({ action: complete ? "completeModule" : "uncompleteModule", slug });
+  }
+
+  async function openMaterialBySlug(slug: string, tab?: string) {
+    let item = onboardingMaterials.find((row) => row.slug === slug) || items.find((row) => row.slug === slug);
+    if (!item) {
+      try {
+        item = await fetchPartnerCenterMaterial(slug, locale, admin);
+      } catch {
+        item = undefined;
+      }
+    }
+    if (!item) return;
+    if (tab) setPreviewTab(tab);
+    else openLesson(item);
+    if (tab) setPreview(item);
   }
 
   const hubCounts = useMemo(() => {
@@ -380,6 +429,26 @@ export default function PartnerCenterHub({
         </div>
       </div>
 
+      {!admin && onboarding ? (
+        <PartnerOnboardingPanel
+          snapshot={onboarding}
+          materials={onboardingMaterials}
+          busy={onboardingBusy}
+          onStart={() => applyOnboarding({ action: "start" }).then((next) => next?.modules?.[0] && openMaterialBySlug(next.modules[0].slug, "video"))}
+          onOpenMaterial={(slug) => openMaterialBySlug(slug)}
+          onWatch={(slug) => openMaterialBySlug(slug, "video")}
+          onDownload={async (slug) => {
+            const item = onboardingMaterials.find((row) => row.slug === slug) || (await fetchPartnerCenterMaterial(slug, locale, admin).catch(() => null));
+            if (item) onDownloadPdf(item, "training");
+          }}
+          onToggleModule={(slug, complete) => applyOnboarding({ action: complete ? "completeModule" : "uncompleteModule", slug })}
+          onToggleCheckpoint={(id, complete) => applyOnboarding({ action: complete ? "completeCheckpoint" : "uncompleteCheckpoint", id })}
+          onToggleChecklist={(key, done) => applyOnboarding({ action: "setChecklist", key, done })}
+          onSelectKit={(slug) => applyOnboarding({ action: "selectIndustryKit", slug })}
+          onHub={(cat) => setCategory(cat)}
+        />
+      ) : null}
+
       <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {hubCounts.map((hub) => (
           <button
@@ -501,8 +570,18 @@ export default function PartnerCenterHub({
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => openLesson(item)}>
-                <Eye className="h-3.5 w-3.5" /> {t("partnerCenter.preview")}
+                <Eye className="h-3.5 w-3.5" /> {isTraining ? t("partnerCenter.tabVideo") : t("partnerCenter.preview")}
               </button>
+              {isTraining ? (
+                <a
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+                  href={partnerProductDemoUrl(onboarding?.modules.find((row) => row.slug === item.slug)?.demoKey || "dashboard")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open Demo
+                </a>
+              ) : null}
               <button type="button" className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black" onClick={() => onCopy(item)}>
                 <Copy className="h-3.5 w-3.5" /> {t("partnerCenter.copy")}
               </button>
@@ -777,10 +856,21 @@ export default function PartnerCenterHub({
               </pre>
             )}
             <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+              {preview.category === "learn_bizuply" ? (
+                <a
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+                  href={partnerProductDemoUrl(onboarding?.modules.find((row) => row.slug === preview.slug)?.demoKey || "dashboard")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open Demo
+                </a>
+              ) : null}
               {downloadButtons(preview)}
             </div>
             {preview.category === "learn_bizuply" ? (
               <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
+                {!admin ? (
                 <button
                   type="button"
                   className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
@@ -788,6 +878,7 @@ export default function PartnerCenterHub({
                 >
                   {doneSlugs.includes(preview.slug) ? t("partnerCenter.completed") : t("partnerCenter.markComplete")}
                 </button>
+                ) : <span />}
                 <div className="flex flex-wrap gap-2">
                   {(() => {
                     const idx = trainingSeries.findIndex((row) => row.slug === preview.slug);

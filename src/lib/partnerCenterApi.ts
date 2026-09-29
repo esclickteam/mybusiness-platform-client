@@ -118,6 +118,76 @@ export async function revokePartnerCenterShare(token: string, admin = false) {
   return data;
 }
 
+export type PartnerOnboardingSnapshot = {
+  started: boolean;
+  startedAt?: string | null;
+  lastActivityAt?: string | null;
+  trainingCompletedAt?: string | null;
+  salesReadyAt?: string | null;
+  salesReadyStatus: "not_ready" | "in_progress" | "sales_ready";
+  completedModuleSlugs: string[];
+  completedCheckpointIds: string[];
+  industryKitSlug: string;
+  modulesCompleted: number;
+  modulesTotal: number;
+  percent: number;
+  checklist: Record<string, boolean>;
+  nextAction: {
+    type: string;
+    key: string;
+    title: string;
+    detail?: string;
+    slug?: string;
+    category?: string;
+    module?: { n: number; slug: string; title: string; minutes: number };
+  };
+  stuckModule?: { n: number; slug: string; title: string } | null;
+  estimatedTime: string;
+  modules: Array<{ n: number; slug: string; title: string; minutes: number; demoKey: string }>;
+  checkpoints: Array<{ id: string; afterModules: number; title: string; hint: string }>;
+  checklistItems: Array<{ key: string; title: string; slug?: string; category?: string; auto?: string }>;
+  shortcuts: Record<string, string>;
+};
+
+export type AdminOnboardingRow = {
+  partnerId: string;
+  name: string;
+  slug: string;
+  status: string;
+  started: boolean;
+  percent: number;
+  modulesCompleted: number;
+  modulesTotal: number;
+  lastActivityAt?: string | null;
+  salesReadyStatus: string;
+  trainingCompletedAt?: string | null;
+  salesReadyAt?: string | null;
+  stuckModule?: { n: number; slug: string; title: string } | null;
+  nextAction?: PartnerOnboardingSnapshot["nextAction"];
+};
+
+export async function fetchPartnerOnboarding() {
+  const { data } = await API.get("/partner-center/onboarding");
+  return data as PartnerOnboardingSnapshot;
+}
+
+export async function patchPartnerOnboarding(payload: Record<string, unknown>) {
+  const { data } = await API.patch("/partner-center/onboarding", payload);
+  return data as PartnerOnboardingSnapshot;
+}
+
+export async function fetchAdminPartnerOnboardingList(q?: string) {
+  const { data } = await API.get("/admin/partner-center/onboarding", { params: q ? { q } : {} });
+  return data as { items: AdminOnboardingRow[] };
+}
+
+export async function fetchAdminPartnerOnboarding(partnerId: string) {
+  const { data } = await API.get(`/admin/partner-center/onboarding/${partnerId}`);
+  return data as PartnerOnboardingSnapshot & {
+    partner: { id: string; name: string; slug: string; status: string };
+  };
+}
+
 export async function fetchPartnerCenterKpis() {
   const { data } = await API.get("/partner-center/kpis");
   return data as { items: any[] };
