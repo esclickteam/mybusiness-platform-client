@@ -25,7 +25,14 @@ const SHOTS = [
   { id: "website-editor", path: "dashboard/website/templates", wait: "text=template", editEnglish: true },
   { id: "permissions", path: "dashboard/crm/settings", wait: "text=Settings", clickTab: /Security/, scroll: "security" },
   { id: "reports", path: "dashboard", wait: "text=Performance", scroll: "performance" },
+  { id: "wa-templates", path: "dashboard/whatsapp/templates", wait: "text=Template" },
+  { id: "wa-compose", path: "dashboard/whatsapp/messages/compose", wait: "text=Send" },
 ];
+const ONLY = (process.env.CAPTURE_ONLY || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const ACTIVE_SHOTS = ONLY.length ? SHOTS.filter((s) => ONLY.includes(s.id)) : SHOTS;
 
 if (!DEMO_URL) throw new Error("MODULE1_DEMO_URL is required");
 fs.mkdirSync(OUT, { recursive: true });
@@ -147,7 +154,7 @@ try {
   await enterDemo(page);
   const base = await businessBase(page);
 
-  for (const shot of SHOTS) {
+  for (const shot of ACTIVE_SHOTS) {
     await page.goto(`${base}/${shot.path}`, { waitUntil: "domcontentloaded", timeout: 60000 });
     await page.waitForTimeout(4000);
     await dismissTour(page);
