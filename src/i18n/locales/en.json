@@ -8166,6 +8166,7 @@
       "profileSaved": "Profile saved to Meta",
       "profileSaveError": "Failed to save profile to Meta",
       "syncProfile": "Sync profile",
+      "displayNameMetaStatus": "Meta status",
       "saveToMeta": "Save to Meta",
       "loading": "Loading…",
       "noPhoto": "No photo",

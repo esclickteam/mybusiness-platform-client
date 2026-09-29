@@ -9355,6 +9355,7 @@
       "profileSaved": "Perfil guardado en Meta",
       "profileSaveError": "No se pudo guardar el perfil en Meta",
       "syncProfile": "Sincronizar perfil",
+      "displayNameMetaStatus": "Estado de Meta",
       "saveToMeta": "Guardar en Meta",
       "loading": "Cargando…",
       "noPhoto": "Sin foto",
