@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { checkCountryAvailability, submitSaasLead } from "./api";
-import { GhostButton, PrimaryButton, Reveal, useSaasLocale } from "./chrome";
+import { GhostButton, MixedText, PrimaryButton, Reveal, useSaasLocale } from "./chrome";
 import SaasScreenMock from "./SaasScreenMock";
 import {
   demoTarget,
@@ -182,32 +182,40 @@ export function ModelBoard({
   );
 }
 
-export function FaqList() {
+export function FaqList({ wide = false }: { wide?: boolean }) {
   const { t } = useSaasLocale();
   const items = t("saasMarket.faq.items", { returnObjects: true }) as { q: string; a: string }[];
   const [open, setOpen] = useState(0);
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.faq.eyebrow")}</p>
-      <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{t("saasMarket.faq.title")}</h2>
-      <div className="mt-6 space-y-3">
-        {items.map((item, index) => {
-          const expanded = open === index;
-          return (
-            <div key={item.q} className="saas-glass rounded-3xl">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black"
-                aria-expanded={expanded}
-                onClick={() => setOpen(expanded ? -1 : index)}
-              >
-                {item.q}
-                <span className="text-[#6d4aff]">{expanded ? "–" : "+"}</span>
-              </button>
-              {expanded ? <p className="px-5 pb-5 text-sm font-semibold leading-7 text-slate-600">{item.a}</p> : null}
-            </div>
-          );
-        })}
+    <section id="faq" className={wide ? "saas-band saas-band-paper" : "mx-auto max-w-3xl px-4 py-16 sm:px-6"}>
+      <div className={wide ? "saas-wrap" : ""}>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.faq.eyebrow")}</p>
+        <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">
+          <MixedText value={t("saasMarket.faq.title")} />
+        </h2>
+        <div className={wide ? "mt-8 grid gap-3 lg:grid-cols-2" : "mt-6 space-y-3"}>
+          {items.map((item, index) => {
+            const expanded = open === index;
+            return (
+              <div key={item.q} className="saas-glass rounded-3xl">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black"
+                  aria-expanded={expanded}
+                  onClick={() => setOpen(expanded ? -1 : index)}
+                >
+                  <MixedText value={item.q} />
+                  <span className="text-[#6d4aff]">{expanded ? "–" : "+"}</span>
+                </button>
+                {expanded ? (
+                  <p className="px-5 pb-5 text-sm font-semibold leading-7 text-slate-600">
+                    <MixedText value={item.a} />
+                  </p>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
