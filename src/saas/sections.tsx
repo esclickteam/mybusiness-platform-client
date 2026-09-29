@@ -408,7 +408,7 @@ export function TemplateDemoDialog({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#6d4aff]">{product.name}</p>
-            <h3 className="text-2xl font-black">{t("saasMarket.templateDemo.title")}</h3>
+            <h3 className="text-2xl font-black">{t("saasMarket.showcase.exploreTitle", { name: product.name })}</h3>
           </div>
           <button type="button" onClick={onClose} className="rounded-full bg-white px-3 py-2 text-sm font-black">
             {t("saasMarket.form.close")}
@@ -420,15 +420,13 @@ export function TemplateDemoDialog({
         {links.length ? (
           <div className="mt-4 grid gap-2">
             {links.map((link) => (
-              <a
+              <Link
                 key={link.id}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
+                to={`/saas/${product.slug}/demo?mode=${link.id === "explore" ? "full" : link.id}`}
                 className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
               >
                 {labels[link.id]}
-              </a>
+              </Link>
             ))}
           </div>
         ) : (

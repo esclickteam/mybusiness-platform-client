@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { checkCountryAvailability } from "./api";
 import { MixedText, useSaasLocale } from "./chrome";
 import {
+  cardFilm,
   demoTarget,
   formatUsd,
   illustrativeMrr,
@@ -23,6 +24,7 @@ import {
   type SaasModelId,
   type SaasProduct,
 } from "./logic";
+import { CardFilm } from "./templateShowcase";
 import SaasScreenMock from "./SaasScreenMock";
 import { useStory, type LeadSeed } from "./sections";
 
@@ -313,6 +315,7 @@ export function ProductRow({
   const story = useStory(product);
   const live = demoTarget(product);
   const template = isSaasTemplate(product);
+  const film = template ? cardFilm(product) : [];
   const badges = template
     ? [
         product.interactiveDemoEnabled ? t("saasMarket.platforms.interactiveDemo") : "",
@@ -328,21 +331,25 @@ export function ProductRow({
       ];
   return (
     <motion.article
-      className={`saas-row ${flipped ? "is-flip" : ""}`}
+      className={`saas-row ${flipped ? "is-flip" : ""} ${film.length ? "has-film" : ""}`}
       whileHover={reduce ? undefined : { y: -4 }}
       {...rise(reduce, Math.min(index, 5) * 0.06)}
     >
       <div className="saas-row-shot">
-        <div className="saas-shot-fill">
-          <Shot product={product} screenKey="dashboard" label={t("saasMarket.screens.dashboard")} framed={false} />
-        </div>
+        {film.length ? (
+          <CardFilm product={product} />
+        ) : (
+          <div className="saas-shot-fill">
+            <Shot product={product} screenKey="dashboard" label={t("saasMarket.screens.dashboard")} framed={false} />
+          </div>
+        )}
       </div>
       <div className="saas-row-copy">
         <p className="saas-kicker">
           {t(`saasMarket.categories.${product.category}`, { defaultValue: product.categoryLabel })}
         </p>
         <h3>{product.name}</h3>
-        <p>{story.short}</p>
+        <p dir="auto">{story.short}</p>
         <div className="saas-row-badges">
           {badges.map((badge) => (
             <span key={badge}>
@@ -352,19 +359,25 @@ export function ProductRow({
         </div>
         <div className="saas-row-actions">
           {template ? (
+            <button type="button" className="is-primary" onClick={() => onDemo(product)}>
+              {t("saasMarket.platforms.watchDemo")}
+            </button>
+          ) : null}
+          {template ? (
             <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.toSystem")}</Link>
           ) : (
             <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.exploreNamed", { name: product.name })}</Link>
           )}
-          {template || !live.external ? (
+          {!template && !live.external ? (
             <button type="button" onClick={() => onDemo(product)}>
               {t("saasMarket.platforms.liveDemo")}
             </button>
-          ) : (
+          ) : null}
+          {!template && live.external ? (
             <a href={live.href} target="_blank" rel="noreferrer">
               {t("saasMarket.platforms.liveDemo")}
             </a>
-          )}
+          ) : null}
         </div>
       </div>
     </motion.article>

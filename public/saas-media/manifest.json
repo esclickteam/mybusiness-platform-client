@@ -1,0 +1,158 @@
+{
+  "beautyflow": [
+    {
+      "file": "dashboard.png",
+      "label": "Dashboard",
+      "caption": "The day at a glance for one salon workspace.",
+      "gallery": "dashboard",
+      "tab": "dashboard",
+      "audience": "admin"
+    },
+    {
+      "file": "appointments.png",
+      "label": "Appointments",
+      "caption": "The week book for chairs and treatment rooms.",
+      "gallery": "jobs",
+      "tab": "bookings",
+      "audience": "admin"
+    },
+    {
+      "file": "customers.png",
+      "label": "Customers",
+      "caption": "Client notes, formulas, and visit rhythm.",
+      "gallery": "customers",
+      "tab": "customers",
+      "audience": "admin"
+    },
+    {
+      "file": "staff.png",
+      "label": "Staff",
+      "caption": "Who is on the floor and which chair they hold.",
+      "gallery": "admin",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "services.png",
+      "label": "Services",
+      "caption": "The menu guests book from, with time and price.",
+      "gallery": "services",
+      "tab": "",
+      "audience": "both"
+    },
+    {
+      "file": "branding.png",
+      "label": "Branding",
+      "caption": "Name, colors, and the domain guests see.",
+      "gallery": "settings",
+      "tab": "branding",
+      "audience": "admin"
+    },
+    {
+      "file": "website.png",
+      "label": "Website editor",
+      "caption": "The public site, edited beside the live preview.",
+      "gallery": "admin",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "plans.png",
+      "label": "SaaS Plans",
+      "caption": "The plans this salon offers its own guests.",
+      "gallery": "admin",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "reports.png",
+      "label": "Reports",
+      "caption": "Which services filled the book this week.",
+      "gallery": "reports",
+      "tab": "reports",
+      "audience": "admin"
+    }
+  ],
+  "global-properties": [
+    {
+      "file": "marketplace.png",
+      "label": "Marketplace",
+      "caption": "Homes a guest can browse under the firm’s name.",
+      "gallery": "properties",
+      "tab": "",
+      "audience": "customer"
+    },
+    {
+      "file": "search.png",
+      "label": "Property search",
+      "caption": "Filters for city, rooms, and budget.",
+      "gallery": "properties",
+      "tab": "bookings",
+      "audience": "customer"
+    },
+    {
+      "file": "detail.png",
+      "label": "Property detail",
+      "caption": "One listing, with the facts a buyer asks first.",
+      "gallery": "properties",
+      "tab": "",
+      "audience": "customer"
+    },
+    {
+      "file": "owner.png",
+      "label": "Owner dashboard",
+      "caption": "What the firm is showing, holding, and following up.",
+      "gallery": "dashboard",
+      "tab": "dashboard",
+      "audience": "admin"
+    },
+    {
+      "file": "properties.png",
+      "label": "Properties",
+      "caption": "The inventory the team publishes and pauses.",
+      "gallery": "properties",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "leads.png",
+      "label": "Leads",
+      "caption": "Inquiries, with the listing they asked about.",
+      "gallery": "customers",
+      "tab": "customers",
+      "audience": "admin"
+    },
+    {
+      "file": "projects.png",
+      "label": "Projects",
+      "caption": "Developments the firm is releasing in phases.",
+      "gallery": "admin",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "organizations.png",
+      "label": "Organizations",
+      "caption": "The firms and owner groups on this workspace.",
+      "gallery": "admin",
+      "tab": "",
+      "audience": "admin"
+    },
+    {
+      "file": "branding.png",
+      "label": "Branding",
+      "caption": "The public name, palette, and listing domain.",
+      "gallery": "settings",
+      "tab": "branding",
+      "audience": "admin"
+    },
+    {
+      "file": "analytics.png",
+      "label": "Analytics",
+      "caption": "Which listings drew visits and inquiries.",
+      "gallery": "reports",
+      "tab": "reports",
+      "audience": "admin"
+    }
+  ]
+}

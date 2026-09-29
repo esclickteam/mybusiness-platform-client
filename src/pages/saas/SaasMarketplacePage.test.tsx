@@ -166,13 +166,14 @@ describe("SaaS marketplace page", () => {
     expect(card.getByText(named("White Label"))).toBeTruthy();
     expect(card.queryByText(named("Partner Model Available"))).toBeNull();
     expect(card.getByText(named("Country Exclusivity Possible"))).toBeTruthy();
-    fireEvent.click(card.getByRole("button", { name: "Live Demo" }));
+    fireEvent.click(card.getByRole("button", { name: "Watch the demo" }));
+    expect(screen.getByRole("heading", { name: named("Explore Northwind Desk") })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Admin / Owner Demo" }).getAttribute("href")).toBe(
-      "https://example.com/admin"
+      "/saas/northwind-desk/demo?mode=admin"
     );
     expect(screen.queryByRole("link", { name: "Customer Demo" })).toBeNull();
     expect(screen.getByRole("link", { name: "Explore Full Demo" }).getAttribute("href")).toBe(
-      "https://example.com/explore"
+      "/saas/northwind-desk/demo?mode=full"
     );
   });
 

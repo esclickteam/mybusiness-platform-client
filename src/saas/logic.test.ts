@@ -10,7 +10,11 @@ import {
   formatUsd,
   illustrativeMrr,
   partnerEntryUsd,
+  cardFilm,
+  isInAppDemo,
   templateDemoLinks,
+  templateExperienceHref,
+  templateShots,
   whatsappHref,
 } from "./logic";
 
@@ -127,6 +131,15 @@ describe("marketplace stays unlisted", () => {
         demoSelectorUrl: "/relative",
       })
     ).toEqual([]);
+    expect(templateDemoLinks({
+      supportsAdminDemo: true,
+      adminDemoUrl: "/saas/northwind-desk/demo?mode=admin",
+    }).map((link) => link.href)).toEqual(["/saas/northwind-desk/demo?mode=admin"]);
+    expect(templateExperienceHref("northwind-desk", "customer")).toBe("/saas/northwind-desk/demo?mode=customer");
+    expect(isInAppDemo("/saas/northwind-desk/demo?mode=full")).toBe(true);
+    expect(isInAppDemo("https://demo.example/admin")).toBe(false);
+    expect(cardFilm({ screenshots: [{ key: "dashboard", label: "Dashboard", imageUrl: "/saas-media/a.png" }] })).toHaveLength(1);
+    expect(templateShots({ screenshots: [{ key: "x", label: "X" }] })).toEqual([]);
   });
 
   it("does not hardcode control-center template names in the marketplace UI", () => {
@@ -135,6 +148,9 @@ describe("marketplace stays unlisted", () => {
       "src/pages/saas/SaasProductPage.tsx",
       "src/saas/stage.tsx",
       "src/saas/sections.tsx",
+      "src/saas/templateShowcase.tsx",
+      "src/pages/saas/SaasTemplateProductPage.tsx",
+      "src/pages/saas/SaasTemplateDemoPage.tsx",
     ];
     for (const file of ui) {
       const source = readFileSync(resolve(root, file), "utf8");

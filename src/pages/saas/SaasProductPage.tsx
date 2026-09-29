@@ -13,6 +13,7 @@ import {
   WhatsAppDock,
 } from "../../saas/chrome";
 import { demoTarget, isSaasTemplate, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import SaasTemplateProductPage from "./SaasTemplateProductPage";
 import SaasScreenMock from "../../saas/SaasScreenMock";
 import {
   CountryCheck,
@@ -114,6 +115,10 @@ export default function SaasProductPage() {
       ctaSource: partial.ctaSource,
       country: partial.country,
     });
+  }
+
+  if (product && isSaasTemplate(product)) {
+    return <SaasTemplateProductPage product={product} whatsapp={whatsapp} />;
   }
 
   return (
