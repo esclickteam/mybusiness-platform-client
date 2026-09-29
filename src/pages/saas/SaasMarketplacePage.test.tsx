@@ -66,6 +66,10 @@ const products = [
   },
 ];
 
+function named(expected: string) {
+  return (value: string) => value.replace(/[\u200E\u200F\u2066-\u2069]/g, "") === expected;
+}
+
 function renderPage() {
   return render(
     <HelmetProvider>
@@ -95,10 +99,11 @@ describe("SaaS marketplace page", () => {
   it("shows the hero and filters platforms", async () => {
     renderPage();
     expect(
-      await screen.findByRole("heading", { name: "Launch Your Own SaaS Business" })
+      await screen.findByRole("heading", { name: named("Launch Your Own SaaS Business") })
     ).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Choose Your Model" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "What is SaaS?" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: named("Choose How You Want to Launch") })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: named("What is SaaS?") })).toBeTruthy();
+    expect(screen.getAllByText("Illustrative example only. Revenue is not guaranteed.").length).toBeGreaterThan(0);
     expect(document.body.textContent || "").not.toMatch(/Buy Now/i);
     expect(screen.getByRole("heading", { name: "ServiceFlow" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "SalonFlow" })).toBeTruthy();
@@ -122,5 +127,14 @@ describe("SaaS marketplace page", () => {
     expect(text).not.toMatch(/active subscribers/i);
     expect(text).not.toMatch(/\bARR\b/);
     expect(text).not.toMatch(/profitable/i);
+  });
+
+  it("keeps the Hebrew SaaS question readable", async () => {
+    await i18n.changeLanguage("he");
+    renderPage();
+    const heading = await screen.findByRole("heading", { name: named("מה זה SaaS?") });
+    expect(heading.textContent?.replace(/[\u200E\u200F\u2066\u2069]/g, "")).toBe("מה זה SaaS?");
+    expect(heading.textContent).toContain("\u2066SaaS\u2069");
+    expect(document.querySelector(".saas-market")?.getAttribute("dir")).toBe("rtl");
   });
 });

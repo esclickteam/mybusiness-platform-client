@@ -29,6 +29,17 @@ export function SaasSeo({ title, description }: { title: string; description: st
   );
 }
 
+export function MixedText({ value }: { value: string }) {
+  const source = String(value || "");
+  const rtl = /[\u0590-\u08FF]/.test(source);
+  const isolated = source.replace(
+    /([A-Za-z][A-Za-z0-9+./-]*(?:[ \u00A0-][A-Za-z][A-Za-z0-9+./-]*)*)/g,
+    "\u2066$1\u2069"
+  );
+  const text = rtl ? isolated.replace(/([?؟!:])/g, "\u200F$1") : isolated;
+  return <>{text}</>;
+}
+
 export function useSaasLocale() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
@@ -109,8 +120,9 @@ export function GhostButton({
   );
 }
 
-export function SaasHeader({ onTalk }: { onTalk: () => void }) {
+export function SaasHeader({ onTalk, tone = "light" }: { onTalk: () => void; tone?: "light" | "dark" }) {
   const { t } = useSaasLocale();
+  const dark = tone === "dark";
   const links = [
     ["#platforms", t("saasMarket.nav.platforms")],
     ["#what-is-saas", t("saasMarket.nav.saas")],
@@ -119,15 +131,15 @@ export function SaasHeader({ onTalk }: { onTalk: () => void }) {
     ["#faq", t("saasMarket.nav.faq")],
   ];
   return (
-    <header className="sticky top-0 z-30 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="text-lg font-black tracking-tight text-slate-950">
+    <header className={`sticky top-0 z-30 border-b backdrop-blur-xl ${dark ? "border-white/10 bg-[#070b16]/80 text-white" : "border-white/70 bg-white/75"}`}>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <Link to="/" className={`text-lg font-black tracking-tight ${dark ? "text-white" : "text-slate-950"}`}>
           Bizuply
         </Link>
-        <nav className="hidden items-center gap-5 text-sm font-bold text-slate-600 lg:flex">
+        <nav className={`hidden items-center gap-5 text-sm font-bold lg:flex ${dark ? "text-white/75" : "text-slate-600"}`}>
           {links.map(([href, label]) => (
-            <a key={href} href={href} className="hover:text-[#5b3df5]">
-              {label}
+            <a key={href} href={href} className={dark ? "hover:text-white" : "hover:text-[#5b3df5]"}>
+              <MixedText value={label} />
             </a>
           ))}
         </nav>
@@ -146,11 +158,12 @@ export function SaasHeader({ onTalk }: { onTalk: () => void }) {
   );
 }
 
-export function SaasFooter() {
+export function SaasFooter({ tone = "light" }: { tone?: "light" | "dark" }) {
   const { t } = useSaasLocale();
+  const dark = tone === "dark";
   return (
-    <footer className="border-t border-white/80 px-4 py-10 text-center text-sm font-semibold text-slate-500">
-      {t("saasMarket.footer")}
+    <footer className={`px-4 py-10 text-center text-sm font-semibold ${dark ? "border-t border-white/10 bg-[#070b16] text-white/55" : "border-t border-white/80 text-slate-500"}`}>
+      <MixedText value={t("saasMarket.footer")} />
     </footer>
   );
 }

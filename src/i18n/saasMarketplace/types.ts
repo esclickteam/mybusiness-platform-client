@@ -45,6 +45,9 @@ export type SaasMarketCopy = {
     chips: string[];
   };
   saas: { eyebrow: string; title: string; body: string; points: SaasPoint[] };
+  story: { flow: string[]; disclaimer: string; mrrCaption: string };
+  why: { eyebrow: string; title: string; intro: string; points: SaasPoint[] };
+  preview: { eyebrow: string; title: string; subtitle: string; openDemo: string; floats: string[] };
   monthly: { eyebrow: string; title: string; intro: string; points: SaasPoint[] };
   platforms: {
     eyebrow: string;
@@ -58,6 +61,7 @@ export type SaasMarketCopy = {
     liveDemo: string;
     preview: string;
     chooseModel: string;
+    exploreNamed: string;
     entryLabel: string;
     entryNote: string;
     demoBadge: string;

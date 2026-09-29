@@ -143,14 +143,15 @@ function ScreenBody({
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-3 gap-2">
-        {["Today", "Queue", "Calendar"].map((label) => (
+        {[["Today", "18"], ["Queue", "06"], ["Calendar", "24"]].map(([label, value]) => (
           <div key={label} className="rounded-xl bg-white px-2 py-3 shadow-sm">
             <p className="text-[10px] font-bold text-slate-400">{label}</p>
-            <p className="mt-1 text-sm font-black text-slate-800">{productName.slice(0, 1)}</p>
+            <p className="mt-1 text-sm font-black text-slate-800">{value}</p>
           </div>
         ))}
       </div>
       <Bars accent={accent} />
+      <Rows accent={accent} items={["North studio", "Evening slot", "Follow-up"]} />
     </div>
   );
 }
