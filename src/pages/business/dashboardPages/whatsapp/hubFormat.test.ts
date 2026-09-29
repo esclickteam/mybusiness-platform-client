@@ -17,6 +17,7 @@ describe("whatsapp hubFormat", () => {
     expect(formatNameStatus("PENDING_REVIEW")).toBe("PENDING");
     expect(formatNameStatus("DECLINED")).toBe("REJECTED");
     expect(formatNameStatus("AVAILABLE_WITHOUT_REVIEW")).toBe("APPROVED");
+    expect(formatNameStatus("DECLINED")).toBe("REJECTED");
   });
 
   it("formats messaging limits", () => {

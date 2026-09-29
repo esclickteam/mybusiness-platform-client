@@ -97,10 +97,19 @@ export default function WhatsAppProfileTab() {
     if (visualQa) {
       const mock: WhatsAppBusinessProfile = {
         displayName: visualQa.connection.verifiedName || "Invistimo RSVP",
-        nameStatus: visualQa.connection.nameStatus || "APPROVED",
+        nameStatus: visualQa.connection.nameStatus || "AVAILABLE_WITHOUT_REVIEW",
         nameStatusDisplay: formatNameStatus(
-          visualQa.connection.nameStatus || "APPROVED"
+          visualQa.connection.nameStatus || "AVAILABLE_WITHOUT_REVIEW"
         ),
+        displayNameStatusRaw:
+          visualQa.connection.displayNameStatusRaw ||
+          visualQa.connection.nameStatus ||
+          "AVAILABLE_WITHOUT_REVIEW",
+        displayNameStatus:
+          visualQa.connection.displayNameStatus ||
+          formatNameStatus(
+            visualQa.connection.nameStatus || "AVAILABLE_WITHOUT_REVIEW"
+          ),
         phoneNumber: visualQa.connection.displayPhoneNumber || "",
         phoneNumberId: visualQa.connection.phoneNumberId || "",
         wabaId: visualQa.connection.wabaId || "",
@@ -122,7 +131,13 @@ export default function WhatsAppProfileTab() {
           "vertical",
           "profilePictureUrl",
         ],
-        readOnlyFields: ["displayName", "nameStatus", "phoneNumber"],
+        readOnlyFields: [
+          "displayName",
+          "nameStatus",
+          "displayNameStatus",
+          "displayNameStatusRaw",
+          "phoneNumber",
+        ],
       };
       applyProfile(mock);
       setLoading(false);
@@ -190,12 +205,17 @@ export default function WhatsAppProfileTab() {
     }
   };
 
-  const nameStatusRaw =
-    profile?.nameStatusDisplay ||
-    profile?.nameStatus ||
-    connection?.nameStatusDisplay ||
-    connection?.nameStatus;
-  const nameStatus = formatNameStatus(nameStatusRaw, t);
+  const metaNameStatusRaw = String(
+    profile?.displayNameStatusRaw ||
+      profile?.nameStatus ||
+      connection?.displayNameStatusRaw ||
+      connection?.nameStatus ||
+      ""
+  ).trim();
+  const nameStatus =
+    profile?.displayNameStatus ||
+    connection?.displayNameStatus ||
+    formatNameStatus(metaNameStatusRaw, t);
   const displayName =
     profile?.displayName || connection?.verifiedName || t("whatsapp.hub.unnamed");
   const phone =
@@ -266,15 +286,31 @@ export default function WhatsAppProfileTab() {
                   readOnly
                 />
                 {nameStatus ? (
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-black ${nameStatusBadgeClass(
-                      nameStatusRaw
-                    )}`}
-                  >
-                    {nameStatus === "REJECTED" ? (
-                      <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  <span className="inline-flex min-w-0 flex-col items-start gap-0.5">
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-black ${nameStatusBadgeClass(
+                        metaNameStatusRaw || nameStatus
+                      )}`}
+                      title={
+                        metaNameStatusRaw
+                          ? `${t("whatsapp.hub.displayNameMetaStatus")}: ${metaNameStatusRaw}`
+                          : nameStatus
+                      }
+                    >
+                      {nameStatus === "REJECTED" ? (
+                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                      ) : null}
+                      {nameStatus}
+                    </span>
+                    {metaNameStatusRaw ? (
+                      <span
+                        className="max-w-[220px] truncate text-[9px] font-semibold text-slate-400"
+                        dir="ltr"
+                        title={`${t("whatsapp.hub.displayNameMetaStatus")}: ${metaNameStatusRaw}`}
+                      >
+                        {t("whatsapp.hub.displayNameMetaStatus")}: {metaNameStatusRaw}
+                      </span>
                     ) : null}
-                    {nameStatus}
                   </span>
                 ) : null}
               </div>
@@ -484,14 +520,28 @@ export default function WhatsAppProfileTab() {
                 {phone || "—"}
               </p>
               {nameStatus ? (
-                <div className="mt-2 flex justify-center">
+                <div className="mt-2 flex flex-col items-center gap-0.5">
                   <span
                     className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${nameStatusBadgeClass(
-                      nameStatusRaw
+                      metaNameStatusRaw || nameStatus
                     )}`}
+                    title={
+                      metaNameStatusRaw
+                        ? `${t("whatsapp.hub.displayNameMetaStatus")}: ${metaNameStatusRaw}`
+                        : nameStatus
+                    }
                   >
                     {nameStatus}
                   </span>
+                  {metaNameStatusRaw ? (
+                    <span
+                      className="max-w-[220px] truncate text-[9px] font-semibold text-slate-400"
+                      dir="ltr"
+                      title={`${t("whatsapp.hub.displayNameMetaStatus")}: ${metaNameStatusRaw}`}
+                    >
+                      {t("whatsapp.hub.displayNameMetaStatus")}: {metaNameStatusRaw}
+                    </span>
+                  ) : null}
                 </div>
               ) : null}
               <div className="mt-4 space-y-2 rounded-xl bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 shadow-sm">

@@ -9355,6 +9355,7 @@
       "profileSaved": "تم حفظ الملف الشخصي في Meta",
       "profileSaveError": "فشل حفظ الملف الشخصي في Meta",
       "syncProfile": "مزامنة الملف الشخصي",
+      "displayNameMetaStatus": "حالة Meta",
       "saveToMeta": "حفظ إلى ميتا",
       "loading": "تحميل…",
       "noPhoto": "لا توجد صورة",

@@ -71,6 +71,8 @@ export type WhatsAppConnection = {
   verifiedName: string;
   nameStatus?: string;
   nameStatusDisplay?: string;
+  displayNameStatusRaw?: string;
+  displayNameStatus?: string;
   qualityRating?: string;
   messagingLimitTier?: string;
   metaBusinessId?: string;
@@ -1103,6 +1105,8 @@ export type WhatsAppBusinessProfile = {
   displayName: string;
   nameStatus: string;
   nameStatusDisplay?: string;
+  displayNameStatusRaw?: string;
+  displayNameStatus?: string;
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
