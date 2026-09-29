@@ -10,6 +10,7 @@ import {
   isSaasModel,
   partnerEntryUsd,
   SAAS_MODELS,
+  templateDemoLinks,
   type SaasModelId,
   type SaasProduct,
 } from "./logic";
@@ -380,6 +381,59 @@ export function DemoTheater({
             {t("saasMarket.product.demo")}
           </a>
         ) : null}
+      </div>
+    </div>
+  );
+}
+
+export function TemplateDemoDialog({
+  product,
+  onClose,
+}: {
+  product: SaasProduct | null;
+  onClose: () => void;
+}) {
+  const { t } = useSaasLocale();
+  if (!product) return null;
+  const links = templateDemoLinks(product);
+  const labels = {
+    admin: t("saasMarket.templateDemo.admin"),
+    customer: t("saasMarket.templateDemo.customer"),
+    explore: t("saasMarket.templateDemo.explore"),
+  };
+  const shot = product.screenshotUrl || product.mainImageUrl || "";
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 sm:items-center" role="dialog" aria-modal="true">
+      <div className="saas-glass max-h-[92vh] w-full max-w-xl overflow-auto rounded-[28px] p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#6d4aff]">{product.name}</p>
+            <h3 className="text-2xl font-black">{t("saasMarket.templateDemo.title")}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-full bg-white px-3 py-2 text-sm font-black">
+            {t("saasMarket.form.close")}
+          </button>
+        </div>
+        {shot ? (
+          <img src={shot} alt={product.name} className="mt-4 w-full rounded-[24px] object-cover" />
+        ) : null}
+        {links.length ? (
+          <div className="mt-4 grid gap-2">
+            {links.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
+              >
+                {labels[link.id]}
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm font-semibold leading-6 text-slate-600">{t("saasMarket.templateDemo.pending")}</p>
+        )}
       </div>
     </div>
   );

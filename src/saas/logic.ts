@@ -43,7 +43,49 @@ export type SaasProduct = {
     full: SaasQuote;
     deposit: SaasQuote;
   };
+  kind?: "catalog" | "template" | string;
+  screenshotUrl?: string;
+  interactiveDemoEnabled?: boolean;
+  supportsAdminDemo?: boolean;
+  supportsCustomerDemo?: boolean;
+  demoSelectorUrl?: string;
+  adminDemoUrl?: string;
+  customerDemoUrl?: string;
+  whiteLabel?: boolean;
+  partnerModel?: boolean;
+  exclusiveCountry?: boolean;
 };
+
+export function isSaasTemplate(product: { kind?: string } | null | undefined) {
+  return product?.kind === "template";
+}
+
+export type TemplateDemoLink = {
+  id: "admin" | "customer" | "explore";
+  href: string;
+};
+
+function httpUrl(value?: string) {
+  const url = String(value || "").trim();
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+export function templateDemoLinks(product: {
+  supportsAdminDemo?: boolean;
+  supportsCustomerDemo?: boolean;
+  demoSelectorUrl?: string;
+  adminDemoUrl?: string;
+  customerDemoUrl?: string;
+}) {
+  const links: TemplateDemoLink[] = [];
+  const admin = httpUrl(product.adminDemoUrl);
+  const customer = httpUrl(product.customerDemoUrl);
+  const explore = httpUrl(product.demoSelectorUrl);
+  if (product.supportsAdminDemo && admin) links.push({ id: "admin", href: admin });
+  if (product.supportsCustomerDemo && customer) links.push({ id: "customer", href: customer });
+  if (explore) links.push({ id: "explore", href: explore });
+  return links;
+}
 
 export type SaasCategory = { id: string; label: string };
 

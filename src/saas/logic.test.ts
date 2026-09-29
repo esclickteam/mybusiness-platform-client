@@ -10,6 +10,7 @@ import {
   formatUsd,
   illustrativeMrr,
   partnerEntryUsd,
+  templateDemoLinks,
   whatsappHref,
 } from "./logic";
 
@@ -106,6 +107,38 @@ describe("marketplace stays unlisted", () => {
     for (const file of ui) {
       const source = readFileSync(resolve(root, file), "utf8");
       expect(source, file).not.toMatch(/Buy Now|startSaasCheckout|Purchase directly/);
+    }
+  });
+
+  it("builds template demo links from the published fields", () => {
+    expect(
+      templateDemoLinks({
+        supportsAdminDemo: true,
+        supportsCustomerDemo: false,
+        adminDemoUrl: "https://demo.example/admin",
+        customerDemoUrl: "https://demo.example/customer",
+        demoSelectorUrl: "https://demo.example/explore",
+      }).map((link) => link.id)
+    ).toEqual(["admin", "explore"]);
+    expect(
+      templateDemoLinks({
+        supportsAdminDemo: true,
+        adminDemoUrl: "javascript:alert(1)",
+        demoSelectorUrl: "/relative",
+      })
+    ).toEqual([]);
+  });
+
+  it("does not hardcode control-center template names in the marketplace UI", () => {
+    const ui = [
+      "src/pages/saas/SaasMarketplacePage.tsx",
+      "src/pages/saas/SaasProductPage.tsx",
+      "src/saas/stage.tsx",
+      "src/saas/sections.tsx",
+    ];
+    for (const file of ui) {
+      const source = readFileSync(resolve(root, file), "utf8");
+      expect(source, file).not.toMatch(/BeautyFlow|Global Properties/);
     }
   });
 

@@ -69,6 +69,15 @@ export type SaasMarketCopy = {
     whiteLabelBadge: string;
     partnerBadge: string;
     countryBadge: string;
+    toSystem: string;
+    interactiveDemo: string;
+  };
+  templateDemo: {
+    title: string;
+    admin: string;
+    customer: string;
+    explore: string;
+    pending: string;
   };
   models: {
     eyebrow: string;

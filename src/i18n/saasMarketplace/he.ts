@@ -95,6 +95,15 @@ export const he: SaasMarketCopy = {
     whiteLabelBadge: "White Label",
     partnerBadge: "מודל שותפות זמין",
     countryBadge: "בלעדיות למדינה אפשרית",
+    toSystem: "למערכת",
+    interactiveDemo: "דמו אינטראקטיבי",
+  },
+  templateDemo: {
+    title: "דמו חי",
+    admin: "Admin / Owner Demo",
+    customer: "Customer Demo",
+    explore: "Explore Full Demo",
+    pending: "קישורי הדמו האינטראקטיבי של המערכת הזו עדיין לא פורסמו.",
   },
   models: {
     eyebrow: "עבודה עם Bizuply",

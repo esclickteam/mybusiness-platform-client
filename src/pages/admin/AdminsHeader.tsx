@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
   { path: "/admin/crm", label: "CRM וניהול לקוחות" },
   { path: "/admin/saas-marketplace", label: "SaaS Marketplace" },
+  { path: "/admin/saas-control-center", label: "SaaS Control Center" },
   { path: "/admin/customers", label: "לקוחות" },
   { path: "/admin/early-access", label: "הרשמה מוקדמת" },
   { path: "/admin/guided-demos", label: "דמואים מודרכים" },

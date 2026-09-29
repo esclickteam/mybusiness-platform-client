@@ -87,6 +87,15 @@ export const ar: SaasMarketCopy = {
     whiteLabelBadge: "White Label",
     partnerBadge: "نموذج الشراكة متاح",
     countryBadge: "حصرية الدولة ممكنة",
+    toSystem: "إلى النظام",
+    interactiveDemo: "عرض تفاعلي",
+  },
+  templateDemo: {
+    title: "عرض مباشر",
+    admin: "Admin / Owner Demo",
+    customer: "Customer Demo",
+    explore: "Explore Full Demo",
+    pending: "روابط العرض التفاعلي لهذه المنصة لم تُنشر بعد.",
   },
   models: {
     eyebrow: "العمل مع Bizuply",

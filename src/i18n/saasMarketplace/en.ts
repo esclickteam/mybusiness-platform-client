@@ -164,6 +164,15 @@ export const en: SaasMarketCopy = {
     whiteLabelBadge: "White Label",
     partnerBadge: "Partner Model Available",
     countryBadge: "Country Exclusivity Possible",
+    toSystem: "To the system",
+    interactiveDemo: "Interactive Demo",
+  },
+  templateDemo: {
+    title: "Live Demo",
+    admin: "Admin / Owner Demo",
+    customer: "Customer Demo",
+    explore: "Explore Full Demo",
+    pending: "Interactive demo links for this platform are not published yet.",
   },
   models: {
     eyebrow: "Work with Bizuply",
