@@ -546,6 +546,7 @@ export default function WhatsAppProfileTab() {
               ) : null}
               <div className="mt-4 space-y-2 rounded-xl bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 shadow-sm">
                 <PreviewRow label="ABOUT" value={draft.about} />
+                <PreviewRow label="DESCRIPTION" value={draft.description} />
                 <PreviewRow label="CATEGORY" value={categoryLabel} />
                 <PreviewRow label="EMAIL" value={draft.email} ltr />
                 <PreviewRow label="WEBSITE" value={draft.websites[0]} ltr />
