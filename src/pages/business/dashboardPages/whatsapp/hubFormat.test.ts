@@ -13,9 +13,10 @@ describe("whatsapp hubFormat", () => {
   });
 
   it("maps name status", () => {
-    expect(formatNameStatus("APPROVED")).toBe("Approved");
-    expect(formatNameStatus("PENDING_REVIEW")).toBe("Pending");
-    expect(formatNameStatus("DECLINED")).toBe("Rejected");
+    expect(formatNameStatus("APPROVED")).toBe("APPROVED");
+    expect(formatNameStatus("PENDING_REVIEW")).toBe("PENDING");
+    expect(formatNameStatus("DECLINED")).toBe("REJECTED");
+    expect(formatNameStatus("AVAILABLE_WITHOUT_REVIEW")).toBe("APPROVED");
   });
 
   it("formats messaging limits", () => {

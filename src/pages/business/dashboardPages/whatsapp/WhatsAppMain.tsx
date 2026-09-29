@@ -255,7 +255,10 @@ export default function WhatsAppMain() {
     t
   );
   const qualityLabel = formatQualityRating(connection?.qualityRating, t);
-  const nameStatusLabel = formatNameStatus(connection?.nameStatus, t);
+  const nameStatusLabel = formatNameStatus(
+    connection?.nameStatusDisplay || connection?.nameStatus,
+    t
+  );
   const limitLabel = formatMessagingLimit(connection?.messagingLimitTier, t);
   const displayName =
     connection?.verifiedName ||
@@ -360,7 +363,7 @@ export default function WhatsAppMain() {
                       {t("whatsapp.hub.displayName")}:
                       <span
                         className={`rounded border px-1.5 py-0 text-[10px] font-bold ${nameStatusBadgeClass(
-                          connection?.nameStatus
+                          connection?.nameStatusDisplay || connection?.nameStatus
                         )}`}
                       >
                         {nameStatusLabel}
