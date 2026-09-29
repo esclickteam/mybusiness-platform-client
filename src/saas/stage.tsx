@@ -29,9 +29,9 @@ const STEP_ICONS: LucideIcon[] = [Compass, MonitorPlay, Handshake, Palette, Stor
 function rise(reduce: boolean | null, delay = 0) {
   if (reduce || typeof IntersectionObserver === "undefined") return {};
   return {
-    initial: { opacity: 0, y: 22 },
+    initial: { opacity: 0, y: 16 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-8% 0px" },
+    viewport: { once: true, amount: 0.2 },
     transition: { duration: 0.55, delay, ease: EASE },
   };
 }
@@ -77,52 +77,55 @@ export function HeroStage({
   if (!product) {
     return <div className="saas-stage-empty" />;
   }
+  const hotspotKeys = FLOAT_KEYS.slice(0, 3);
   return (
     <div className="saas-stage">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={product.slug}
-          className="saas-browser"
-          initial={reduce ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduce ? undefined : { opacity: 0, y: -8 }}
-          transition={{ duration: 0.45, ease: EASE }}
-        >
-          <div className="saas-browser-bar">
-            <span />
-            <span />
-            <span />
-            <bdi dir="ltr">{product.name}</bdi>
-          </div>
-          <Shot product={product} screenKey="dashboard" label={product.name} framed={false} />
-        </motion.div>
-      </AnimatePresence>
-      <div className="saas-float-rail">
-        {FLOAT_KEYS.map((key, floatIndex) => (
+      <div className="saas-stage-frame">
+        <AnimatePresence mode="wait">
           <motion.div
-            key={key}
-            className="saas-float-card"
+            key={product.slug}
+            className="saas-browser"
             initial={reduce ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={reduce ? undefined : { delay: 0.08 * floatIndex, duration: 0.4 }}
+            exit={reduce ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: 0.4, ease: EASE }}
           >
-            <p>
-              <MixedText value={Array.isArray(floats) ? floats[floatIndex] || key : key} />
-            </p>
-            <div className="saas-float-shot">
-              <Shot product={product} screenKey={key} label={product.name} framed={false} />
+            <div className="saas-browser-bar">
+              <span />
+              <span />
+              <span />
+              <bdi dir="ltr">{product.name}</bdi>
+            </div>
+            <div className="saas-browser-clip">
+              <Shot product={product} screenKey="dashboard" label={product.name} framed={false} />
             </div>
           </motion.div>
+        </AnimatePresence>
+      </div>
+      <div className="saas-hotspots">
+        {hotspotKeys.map((key, hotspotIndex) => (
+          <button key={key} type="button" className={`saas-hotspot saas-hotspot-${hotspotIndex + 1}`}>
+            <span className="saas-hotspot-dot" aria-hidden="true" />
+            <span>
+              <MixedText value={Array.isArray(floats) ? floats[hotspotIndex] || key : key} />
+            </span>
+            <span className="saas-hotspot-preview" aria-hidden="true">
+              <Shot product={product} screenKey={key} label={product.name} framed={false} />
+            </span>
+          </button>
         ))}
       </div>
-      <div className="saas-stage-switch">
+      <div className="saas-stage-switch" role="tablist">
         {products.map((item, itemIndex) => (
           <button
             key={item.slug}
             type="button"
+            role="tab"
+            aria-selected={itemIndex === index}
             className={itemIndex === index ? "is-on" : ""}
             onClick={() => onSelect(itemIndex)}
           >
+            <i aria-hidden="true" />
             {item.name}
           </button>
         ))}
@@ -178,7 +181,9 @@ export function StorySection() {
   const { t } = useSaasLocale();
   const reduce = useReducedMotion();
   const flow = t("saasMarket.story.flow", { returnObjects: true }) as string[];
+  const flowItems = Array.isArray(flow) ? flow : [];
   const [step, setStep] = useState(0);
+  const [flowStep, setFlowStep] = useState(0);
   const customers = MRR_STEPS[step];
   const amount = useCount(illustrativeMrr(customers, 99), true);
 
@@ -187,6 +192,12 @@ export function StorySection() {
     const timer = window.setInterval(() => setStep((current) => (current + 1) % MRR_STEPS.length), 2800);
     return () => window.clearInterval(timer);
   }, [reduce]);
+
+  useEffect(() => {
+    if (reduce || flowItems.length < 2) return;
+    const timer = window.setInterval(() => setFlowStep((current) => (current + 1) % flowItems.length), 2400);
+    return () => window.clearInterval(timer);
+  }, [reduce, flowItems.length]);
 
   return (
     <section id="what-is-saas" className="saas-band saas-tone-white">
@@ -200,8 +211,12 @@ export function StorySection() {
             <MixedText value={t("saasMarket.saas.body")} />
           </p>
           <ol className="saas-flow">
-            {(Array.isArray(flow) ? flow : []).map((item, index) => (
-              <li key={item}>
+            {flowItems.map((item, index) => (
+              <li
+                key={item}
+                className={index === flowStep ? "is-live" : ""}
+                onMouseEnter={() => setFlowStep(index)}
+              >
                 <span>{index + 1}</span>
                 <MixedText value={item} />
               </li>
@@ -240,7 +255,7 @@ export function WhySection() {
   const reduce = useReducedMotion();
   const points = t("saasMarket.why.points", { returnObjects: true }) as { title: string; text: string }[];
   return (
-    <section className="saas-band saas-tone-lavender">
+    <section id="why" className="saas-band saas-tone-lavender">
       <div className="saas-wrap">
         <motion.div {...rise(reduce)}>
           <p className="saas-kicker">{t("saasMarket.why.eyebrow")}</p>
@@ -253,7 +268,12 @@ export function WhySection() {
         </motion.div>
         <div className="saas-why">
           {(Array.isArray(points) ? points : []).map((point, index) => (
-            <motion.article key={point.title} className={index === 0 ? "is-wide" : ""} {...rise(reduce, index * 0.04)}>
+            <motion.article
+              key={point.title}
+              className={index === 0 ? "is-wide" : ""}
+              whileHover={reduce ? undefined : { y: -4 }}
+              {...rise(reduce, index * 0.05)}
+            >
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>
                 <MixedText value={point.title} />
@@ -273,10 +293,12 @@ export function WhySection() {
 export function ProductRow({
   product,
   flipped,
+  index = 0,
   onDemo,
 }: {
   product: SaasProduct;
   flipped: boolean;
+  index?: number;
   onDemo: (product: SaasProduct) => void;
 }) {
   const { t } = useSaasLocale();
@@ -290,7 +312,11 @@ export function ProductRow({
     t("saasMarket.platforms.countryBadge"),
   ];
   return (
-    <motion.article className={`saas-row ${flipped ? "is-flip" : ""}`} {...rise(reduce)}>
+    <motion.article
+      className={`saas-row ${flipped ? "is-flip" : ""}`}
+      whileHover={reduce ? undefined : { y: -4 }}
+      {...rise(reduce, Math.min(index, 5) * 0.06)}
+    >
       <div className="saas-row-shot">
         <div className="saas-shot-fill">
           <Shot product={product} screenKey="dashboard" label={t("saasMarket.screens.dashboard")} framed={false} />
@@ -432,34 +458,48 @@ export function LaunchPicker({
             const on = selected === card.id;
             const points = t(`saasMarket.models.${card.key}.points`, { returnObjects: true }) as string[];
             return (
-              <article key={card.id} className={`is-${card.id} ${on ? "is-on" : ""}`}>
-                <button type="button" className="saas-model-hit" onClick={() => setSelected(card.id)}>
+              <motion.article
+                key={card.id}
+                className={`is-${card.id} ${on ? "is-on" : ""}`}
+                whileHover={reduce ? undefined : { y: -4 }}
+                {...rise(reduce, MODEL_CARDS.indexOf(card) * 0.08)}
+              >
+                <button type="button" className="saas-model-hit" onClick={() => setSelected(card.id)} aria-pressed={on}>
                   <h3>
                     <MixedText value={t(`saasMarket.models.${card.key}.name`)} />
                   </h3>
                   <p>{t(`saasMarket.models.${card.key}.summary`)}</p>
                 </button>
-                {on ? (
-                  <ul>
-                    {(Array.isArray(points) ? points : []).map((point) => (
-                      <li key={point}>
-                        <MixedText value={point} />
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                {on ? (
-                  card.id === "exclusive_country" ? (
-                    <a className="saas-btn" href="#exclusive">
-                      {t(`saasMarket.models.${card.key}.cta`)}
-                    </a>
-                  ) : (
-                    <button type="button" className="saas-btn" onClick={() => onApply(card.id, card.cta)}>
-                      {t(`saasMarket.models.${card.key}.cta`)}
-                    </button>
-                  )
-                ) : null}
-              </article>
+                <AnimatePresence initial={false}>
+                  {on ? (
+                    <motion.div
+                      key="detail"
+                      initial={reduce ? false : { opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={reduce ? undefined : { opacity: 0, height: 0 }}
+                      transition={{ duration: 0.28, ease: EASE }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <ul>
+                        {(Array.isArray(points) ? points : []).map((point) => (
+                          <li key={point}>
+                            <MixedText value={point} />
+                          </li>
+                        ))}
+                      </ul>
+                      {card.id === "exclusive_country" ? (
+                        <a className="saas-btn" href="#exclusive">
+                          {t(`saasMarket.models.${card.key}.cta`)}
+                        </a>
+                      ) : (
+                        <button type="button" className="saas-btn" onClick={() => onApply(card.id, card.cta)}>
+                          {t(`saasMarket.models.${card.key}.cta`)}
+                        </button>
+                      )}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </motion.article>
             );
           })}
         </div>
@@ -525,7 +565,7 @@ export function GlobeSection({
             <i />
           </div>
         </motion.div>
-        <div>
+        <motion.div {...rise(reduce, 0.08)}>
           <p className="saas-kicker saas-kicker-light">{t("saasMarket.exclusive.eyebrow")}</p>
           <h2 className="saas-title saas-title-light">
             <MixedText value={t("saasMarket.exclusive.title")} />
@@ -578,7 +618,7 @@ export function GlobeSection({
               </div>
             ) : null}
           </form>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

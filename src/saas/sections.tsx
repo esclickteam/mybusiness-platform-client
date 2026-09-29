@@ -1,4 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { checkCountryAvailability, submitSaasLead } from "./api";
 import { GhostButton, MixedText, PrimaryButton, Reveal, useSaasLocale } from "./chrome";
@@ -184,23 +185,35 @@ export function ModelBoard({
 
 export function FaqList({ wide = false }: { wide?: boolean }) {
   const { t } = useSaasLocale();
+  const reduce = useReducedMotion();
   const items = t("saasMarket.faq.items", { returnObjects: true }) as { q: string; a: string }[];
   const [open, setOpen] = useState(0);
   return (
     <section id="faq" className={wide ? "saas-band saas-tone-ivory" : "mx-auto max-w-3xl px-4 py-16 sm:px-6"}>
       <div className={wide ? "saas-wrap" : ""}>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6d4aff]">{t("saasMarket.faq.eyebrow")}</p>
-        <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">
+        <h2 className={wide ? "saas-title" : "mt-3 text-3xl font-black tracking-tight"}>
           <MixedText value={t("saasMarket.faq.title")} />
         </h2>
-        <div className={wide ? "mt-8 grid gap-3 lg:grid-cols-2" : "mt-6 space-y-3"}>
+        <div className={wide ? "saas-faq-grid" : "mt-6 space-y-3"}>
           {items.map((item, index) => {
             const expanded = open === index;
             return (
-              <div key={item.q} className="saas-glass rounded-3xl">
+              <motion.div
+                key={item.q}
+                className="saas-glass saas-faq-card rounded-2xl"
+                {...(wide && !reduce && typeof IntersectionObserver !== "undefined"
+                  ? {
+                      initial: { opacity: 0, y: 12 },
+                      whileInView: { opacity: 1, y: 0 },
+                      viewport: { once: true, amount: 0.4 },
+                      transition: { duration: 0.45, delay: Math.min(index, 5) * 0.04 },
+                    }
+                  : {})}
+              >
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black"
+                  className="flex w-full items-center justify-between gap-4 px-4 py-3 text-start text-sm font-black"
                   aria-expanded={expanded}
                   onClick={() => setOpen(expanded ? -1 : index)}
                 >
@@ -212,7 +225,7 @@ export function FaqList({ wide = false }: { wide?: boolean }) {
                     <MixedText value={item.a} />
                   </p>
                 ) : null}
-              </div>
+              </motion.div>
             );
           })}
         </div>

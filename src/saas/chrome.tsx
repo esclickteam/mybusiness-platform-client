@@ -123,33 +123,36 @@ export function GhostButton({
 export function SaasHeader({ onTalk, tone = "light" }: { onTalk: () => void; tone?: "light" | "dark" }) {
   const { t } = useSaasLocale();
   const dark = tone === "dark";
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const links = [
-    ["#platforms", t("saasMarket.nav.platforms")],
     ["#what-is-saas", t("saasMarket.nav.saas")],
+    ["#platforms", t("saasMarket.nav.platforms")],
     ["#models", t("saasMarket.nav.models")],
     ["#exclusive", t("saasMarket.nav.exclusive")],
     ["#faq", t("saasMarket.nav.faq")],
   ];
   return (
-    <header className={`sticky top-0 z-30 border-b backdrop-blur-xl ${dark ? "border-white/10 bg-[#070b16]/80 text-white" : "border-white/70 bg-white/75"}`}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className={`text-lg font-black tracking-tight ${dark ? "text-white" : "text-slate-950"}`}>
+    <header className={`saas-header sticky top-0 z-30 ${dark ? "is-dark" : ""} ${scrolled ? "is-scrolled" : ""}`}>
+      <div className="saas-header-inner">
+        <Link to="/" className="saas-logo">
           Bizuply
         </Link>
-        <nav className={`hidden items-center gap-5 text-sm font-bold lg:flex ${dark ? "text-white/75" : "text-slate-600"}`}>
+        <nav className="saas-nav">
           {links.map(([href, label]) => (
-            <a key={href} href={href} className={dark ? "hover:text-white" : "hover:text-[#5b3df5]"}>
+            <a key={href} href={href}>
               <MixedText value={label} />
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <button
-            type="button"
-            onClick={onTalk}
-            className="rounded-full bg-[#24124d] px-4 py-2 text-sm font-black text-white"
-          >
+          <button type="button" onClick={onTalk} className="saas-nav-cta">
             {t("saasMarket.nav.talk")}
           </button>
         </div>

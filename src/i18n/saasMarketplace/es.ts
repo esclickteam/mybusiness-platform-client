@@ -3,7 +3,7 @@ import type { SaasMarketCopy } from "./types";
 export const es: SaasMarketCopy = {
   seoTitle: "Lanza tu propio negocio SaaS | Marketplace White Label | Bizuply",
   seoDescription: "Elige una plataforma SaaS lista para lanzar, mira la demo y habla con Bizuply sobre partnership, licencia white label o exclusividad por país. No hay pago en esta página.",
-  nav: { platforms: "Plataformas", models: "Modelos", saas: "Qué es SaaS", exclusive: "Licencia por país", faq: "Preguntas", talk: "Hablar" },
+  nav: { platforms: "Plataformas", models: "Modelos", saas: "Qué es SaaS", exclusive: "Licencia por país", faq: "Preguntas", talk: "Hablar", progress: "En esta página" },
   hero: {
     eyebrow: "Marketplace SaaS de Bizuply",
     title: "Lanza tu propio negocio SaaS",
