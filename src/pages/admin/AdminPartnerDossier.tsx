@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import {
   adminPatchPartnerCommercial,
+  adminSendPartnerInvitation,
   adminReviewPartnerCompliance,
   adminReviewWithdrawal,
   fetchAdminPartnerDossier,
@@ -40,6 +41,7 @@ export default function AdminPartnerDossier() {
   const [kycFeedback, setKycFeedback] = useState("");
   const [commercial, setCommercial] = useState<any>({});
   const [savingCommercial, setSavingCommercial] = useState(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
 
   async function refresh() {
     if (!partnerId) return;
@@ -243,6 +245,66 @@ export default function AdminPartnerDossier() {
             >
               {savingCommercial ? "Saving..." : "Save commercial details"}
             </button>
+            {(() => {
+              const invite = data.invitation || {};
+              const status = String(invite.status || "not_sent");
+              const label =
+                status === "accepted"
+                  ? "Accepted"
+                  : status === "expired"
+                    ? "Expired"
+                    : status === "sent"
+                      ? "Sent"
+                      : "Not sent";
+              return (
+                <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Invitation</p>
+                  <p className="mt-2 text-sm font-black">Status: {label}</p>
+                  <p className="mt-1 text-sm font-bold text-slate-600">
+                    Email: {invite.email || "—"}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-600">
+                    Expires at: {invite.expiresAt ? new Date(invite.expiresAt).toLocaleString() : "—"}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-600">
+                    Accepted: {invite.acceptedAt ? new Date(invite.acceptedAt).toLocaleString() : "—"}
+                  </p>
+                  {status !== "accepted" ? (
+                    <button
+                      type="button"
+                      disabled={sendingInvite}
+                      onClick={async () => {
+                        if (!partnerId) return;
+                        setSendingInvite(true);
+                        setError("");
+                        try {
+                          const mailed = await adminSendPartnerInvitation(partnerId);
+                          setData({ ...data, invitation: mailed.invitation });
+                          if (!mailed.invitationSent) {
+                            setError(
+                              mailed.invitationError
+                                ? `Invitation not sent (${mailed.invitationError})`
+                                : "Invitation not sent. You can retry."
+                            );
+                          }
+                        } catch (err: unknown) {
+                          setError(partnerApiError(err, "לא ניתן לשלוח הזמנה"));
+                        } finally {
+                          setSendingInvite(false);
+                        }
+                      }}
+                      className="mt-3 rounded-xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
+                    >
+                      {sendingInvite
+                        ? "Sending..."
+                        : status === "sent"
+                          ? "Resend invitation"
+                          : "Send invitation"}
+                    </button>
+                  ) : null}
+                </div>
+              );
+            })()}
           </section>
         ) : null}
 
