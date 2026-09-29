@@ -97,6 +97,7 @@ export const he: SaasMarketCopy = {
     countryBadge: "בלעדיות למדינה אפשרית",
     toSystem: "למערכת",
     interactiveDemo: "דמו אינטראקטיבי",
+    demoPreparing: "דמו אינטראקטיבי — בהכנה",
     watchDemo: "צפה בדמו",
   },
   showcase: {

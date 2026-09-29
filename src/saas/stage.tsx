@@ -21,6 +21,7 @@ import {
   formatUsd,
   illustrativeMrr,
   isSaasTemplate,
+  templateDemoLinks,
   type SaasModelId,
   type SaasProduct,
 } from "./logic";
@@ -316,9 +317,10 @@ export function ProductRow({
   const live = demoTarget(product);
   const template = isSaasTemplate(product);
   const film = template ? cardFilm(product) : [];
+  const demoLinks = template ? templateDemoLinks(product) : [];
   const badges = template
     ? [
-        product.interactiveDemoEnabled ? t("saasMarket.platforms.interactiveDemo") : "",
+        demoLinks.length ? t("saasMarket.platforms.interactiveDemo") : t("saasMarket.platforms.demoPreparing"),
         product.whiteLabel ? t("saasMarket.platforms.whiteLabelBadge") : "",
         product.partnerModel ? t("saasMarket.platforms.partnerBadge") : "",
         product.exclusiveCountry ? t("saasMarket.platforms.countryBadge") : "",
@@ -338,6 +340,10 @@ export function ProductRow({
       <div className="saas-row-shot">
         {film.length ? (
           <CardFilm product={product} />
+        ) : template ? (
+          <div className="saas-template-pending">
+            <strong>{product.name}</strong>
+          </div>
         ) : (
           <div className="saas-shot-fill">
             <Shot product={product} screenKey="dashboard" label={t("saasMarket.screens.dashboard")} framed={false} />
@@ -358,7 +364,7 @@ export function ProductRow({
           ))}
         </div>
         <div className="saas-row-actions">
-          {template ? (
+          {template && demoLinks.length ? (
             <button type="button" className="is-primary" onClick={() => onDemo(product)}>
               {t("saasMarket.platforms.watchDemo")}
             </button>

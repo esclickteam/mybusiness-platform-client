@@ -35,6 +35,7 @@ type TemplateDraft = {
   demoSelectorUrl: string;
   adminDemoUrl: string;
   customerDemoUrl: string;
+  frontendUrl: string;
   whiteLabel: boolean;
   partnerModel: boolean;
   exclusiveCountry: boolean;
@@ -74,6 +75,7 @@ const EMPTY: TemplateDraft = {
   demoSelectorUrl: "",
   adminDemoUrl: "",
   customerDemoUrl: "",
+  frontendUrl: "",
   whiteLabel: true,
   partnerModel: true,
   exclusiveCountry: true,
@@ -251,6 +253,10 @@ export default function AdminSaasControlCenter() {
             <input className="mt-1 w-full rounded-2xl border px-3 py-2" value={draft.promoVideoUrl} onChange={(event) => set("promoVideoUrl", event.target.value)} />
           </label>
           <ImageField label="Video poster" value={draft.promoVideoPosterUrl} onChange={(value) => set("promoVideoPosterUrl", value)} />
+          <label className="mt-3 block text-sm font-bold">
+            Platform URL
+            <input className="mt-1 w-full rounded-2xl border px-3 py-2" value={draft.frontendUrl} onChange={(event) => set("frontendUrl", event.target.value)} placeholder="https://" />
+          </label>
           <label className="mt-3 block text-sm font-bold">
             Admin demo URL
             <input className="mt-1 w-full rounded-2xl border px-3 py-2" value={draft.adminDemoUrl} onChange={(event) => set("adminDemoUrl", event.target.value)} />

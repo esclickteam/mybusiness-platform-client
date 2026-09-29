@@ -7,6 +7,7 @@ import SaasScreenMock from "./SaasScreenMock";
 import {
   demoTarget,
   formatUsd,
+  isPublicDemoUrl,
   isSaasModel,
   partnerEntryUsd,
   SAAS_MODELS,
@@ -401,7 +402,7 @@ export function TemplateDemoDialog({
     customer: t("saasMarket.templateDemo.customer"),
     explore: t("saasMarket.templateDemo.explore"),
   };
-  const shot = product.screenshotUrl || product.mainImageUrl || "";
+  const shot = [product.screenshotUrl, product.mainImageUrl].find((item) => isPublicDemoUrl(item)) || "";
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 sm:items-center" role="dialog" aria-modal="true">
       <div className="saas-glass max-h-[92vh] w-full max-w-xl overflow-auto rounded-[28px] p-5">
@@ -430,7 +431,7 @@ export function TemplateDemoDialog({
             ))}
           </div>
         ) : (
-          <p className="mt-4 text-sm font-semibold leading-6 text-slate-600">{t("saasMarket.templateDemo.pending")}</p>
+          <p className="mt-4 text-sm font-semibold leading-6 text-slate-600">{t("saasMarket.platforms.demoPreparing")}</p>
         )}
       </div>
     </div>

@@ -61,6 +61,7 @@ export type SaasProduct = {
   demoSelectorUrl?: string;
   adminDemoUrl?: string;
   customerDemoUrl?: string;
+  frontendUrl?: string;
   whiteLabel?: boolean;
   partnerModel?: boolean;
   exclusiveCountry?: boolean;
@@ -75,11 +76,27 @@ export type TemplateDemoLink = {
   href: string;
 };
 
-function httpUrl(value?: string) {
+export function isPublicDemoUrl(value?: string) {
   const url = String(value || "").trim();
-  if (/^https?:\/\//i.test(url)) return url;
-  if (/^\/saas\/[a-z0-9][a-z0-9-]*\/demo(?:\?[a-z0-9=&_%.-]+)?$/i.test(url)) return url;
-  return "";
+  if (!/^https:\/\//i.test(url)) return false;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    if (!host || host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host === "::1" || host.endsWith(".local")) {
+      return false;
+    }
+    const path = `${parsed.pathname}${parsed.search}`;
+    if (parsed.pathname.startsWith("/saas-media/")) return false;
+    if (/^\/saas\/[a-z0-9-]+\/demo(?:\?|$)/i.test(path)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function httpUrl(value?: string) {
+  return isPublicDemoUrl(value) ? String(value).trim() : "";
 }
 
 export function templateExperienceHref(slug: string, mode: "admin" | "customer" | "full") {
@@ -87,7 +104,7 @@ export function templateExperienceHref(slug: string, mode: "admin" | "customer" 
 }
 
 export function templateShots(product: { screenshots?: SaasScreenshot[] }) {
-  return (product.screenshots || []).filter((shot) => String(shot.imageUrl || "").trim());
+  return (product.screenshots || []).filter((shot) => isPublicDemoUrl(shot.imageUrl));
 }
 
 export function cardFilm(product: {
@@ -100,7 +117,9 @@ export function cardFilm(product: {
 }) {
   const shots = templateShots(product);
   if (shots.length) return shots.slice(0, 6);
-  const image = product.cardScreenshot || product.coverImage || product.screenshotUrl || product.mainImageUrl || "";
+  const image = [product.cardScreenshot, product.coverImage, product.screenshotUrl, product.mainImageUrl].find((item) =>
+    isPublicDemoUrl(item)
+  );
   return image ? [{ key: "cover", label: product.name || "", imageUrl: image }] : [];
 }
 

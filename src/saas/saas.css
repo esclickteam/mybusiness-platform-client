@@ -1074,7 +1074,7 @@
 }
 .saas-video-play span { font-size: 12px; font-weight: 700; color: #64748b; }
 .saas-showcase-block { padding: 28px 0; }
-.saas-showcase-caption, .saas-studio p, .saas-phone figcaption { margin-top: 8px; color: #64748b; font-weight: 700; }
+.saas-showcase-caption, .saas-phone figcaption { margin-top: 8px; color: #64748b; font-weight: 700; }
 .saas-gallery-stage { display: grid; gap: 12px; }
 .saas-gallery-open { border: 0; padding: 0; border-radius: 28px; overflow: hidden; background: #0b1020; cursor: zoom-in; }
 .saas-gallery-open img { max-height: 520px; }
@@ -1121,13 +1121,13 @@
 .saas-demo-modes button.is-on { background: white; color: #1e1b4b; }
 .saas-demo-stage { flex: 1; min-height: 0; }
 .saas-demo-stage iframe { width: 100%; height: calc(100vh - 64px); border: 0; background: white; }
-.saas-studio { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
-.saas-studio aside { display: grid; align-content: start; gap: 6px; padding: 16px; background: #111827; }
-.saas-studio aside button { border: 0; border-radius: 12px; background: transparent; color: #e2e8f0; text-align: start; padding: 10px 12px; font-weight: 750; }
-.saas-studio aside button.is-on { background: white; color: #111827; }
-.saas-studio > div { padding: 18px; }
-.saas-studio img { width: 100%; border-radius: 18px; background: white; }
-.saas-studio .is-phone img { width: min(390px, 100%); margin: 0 auto; }
+.saas-demo-empty { display: grid; place-items: center; min-height: calc(100vh - 64px); padding: 32px; text-align: center; color: #e2e8f0; }
+.saas-demo-empty a { color: white; font-weight: 850; }
+.saas-template-pending {
+  display: grid; place-items: center; min-height: 220px; height: 100%; padding: 24px; text-align: center;
+  background: linear-gradient(160deg, #f8fafc, #eef2ff); color: #1e1b4b; border-radius: 28px;
+}
+.saas-template-pending strong { font-size: 22px; letter-spacing: -0.03em; }
 .saas-btn-ghost { background: white; color: #1e1b4b; box-shadow: none; border: 1px solid rgba(15,23,42,.12); }
 @media (min-width: 980px) {
   .saas-template-hero-grid { grid-template-columns: 0.9fr 1.1fr; }
@@ -1135,8 +1135,6 @@
 }
 @media (max-width: 720px) {
   .saas-row.has-film .saas-row-shot, .saas-template-stage .saas-film { height: 210px; }
-  .saas-studio { grid-template-columns: 1fr; }
-  .saas-studio aside { grid-auto-flow: column; overflow: auto; }
   .saas-sticky-cta { flex-wrap: wrap; }
 }
 
