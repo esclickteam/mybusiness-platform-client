@@ -189,7 +189,7 @@ export function StorySection() {
   }, [reduce]);
 
   return (
-    <section id="what-is-saas" className="saas-band saas-band-paper">
+    <section id="what-is-saas" className="saas-band saas-tone-white">
       <div className="saas-wrap saas-split">
         <motion.div {...rise(reduce)}>
           <p className="saas-kicker">{t("saasMarket.saas.eyebrow")}</p>
@@ -240,14 +240,14 @@ export function WhySection() {
   const reduce = useReducedMotion();
   const points = t("saasMarket.why.points", { returnObjects: true }) as { title: string; text: string }[];
   return (
-    <section className="saas-band saas-band-ink">
+    <section className="saas-band saas-tone-lavender">
       <div className="saas-wrap">
         <motion.div {...rise(reduce)}>
-          <p className="saas-kicker saas-kicker-light">{t("saasMarket.why.eyebrow")}</p>
-          <h2 className="saas-title saas-title-light">
+          <p className="saas-kicker">{t("saasMarket.why.eyebrow")}</p>
+          <h2 className="saas-title">
             <MixedText value={t("saasMarket.why.title")} />
           </h2>
-          <p className="saas-lead saas-lead-light">
+          <p className="saas-lead">
             <MixedText value={t("saasMarket.why.intro")} />
           </p>
         </motion.div>
@@ -264,7 +264,7 @@ export function WhySection() {
             </motion.article>
           ))}
         </div>
-        <p className="saas-disclaimer saas-disclaimer-light">{t("saasMarket.story.disclaimer")}</p>
+        <p className="saas-disclaimer">{t("saasMarket.story.disclaimer")}</p>
       </div>
     </section>
   );
@@ -340,14 +340,14 @@ export function PreviewDeck({
   if (!product) return null;
   const key = PREVIEW_KEYS[tab];
   return (
-    <section className="saas-band saas-band-ink" id="preview">
+    <section className="saas-band saas-tone-white" id="preview">
       <div className="saas-wrap">
         <motion.div className="saas-preview-head" {...rise(reduce)}>
-          <p className="saas-kicker saas-kicker-light">{t("saasMarket.preview.eyebrow")}</p>
-          <h2 className="saas-title saas-title-light">
+          <p className="saas-kicker">{t("saasMarket.preview.eyebrow")}</p>
+          <h2 className="saas-title">
             <MixedText value={t("saasMarket.preview.title")} />
           </h2>
-          <p className="saas-lead saas-lead-light">
+          <p className="saas-lead">
             <MixedText value={t("saasMarket.preview.subtitle")} />
           </p>
         </motion.div>
@@ -418,21 +418,21 @@ export function LaunchPicker({
   const reduce = useReducedMotion();
   const [selected, setSelected] = useState<SaasModelId>("partner");
   return (
-    <section id="models" className="saas-band saas-band-glow">
+    <section id="models" className="saas-band saas-tone-night">
       <div className="saas-wrap">
         <motion.div {...rise(reduce)}>
-          <p className="saas-kicker">{t("saasMarket.models.eyebrow")}</p>
-          <h2 className="saas-title">
+          <p className="saas-kicker saas-kicker-light">{t("saasMarket.models.eyebrow")}</p>
+          <h2 className="saas-title saas-title-light">
             <MixedText value={t("saasMarket.models.title")} />
           </h2>
-          <p className="saas-lead">{t("saasMarket.models.intro")}</p>
+          <p className="saas-lead saas-lead-light">{t("saasMarket.models.intro")}</p>
         </motion.div>
         <div className={`saas-models is-${selected}`}>
           {MODEL_CARDS.map((card) => {
             const on = selected === card.id;
             const points = t(`saasMarket.models.${card.key}.points`, { returnObjects: true }) as string[];
             return (
-              <article key={card.id} className={on ? "is-on" : ""}>
+              <article key={card.id} className={`is-${card.id} ${on ? "is-on" : ""}`}>
                 <button type="button" className="saas-model-hit" onClick={() => setSelected(card.id)}>
                   <h3>
                     <MixedText value={t(`saasMarket.models.${card.key}.name`)} />
@@ -463,7 +463,7 @@ export function LaunchPicker({
             );
           })}
         </div>
-        <p className="saas-disclaimer">{t("saasMarket.models.disclaimer")}</p>
+        <p className="saas-disclaimer saas-disclaimer-light">{t("saasMarket.models.disclaimer")}</p>
       </div>
     </section>
   );
@@ -512,7 +512,7 @@ export function GlobeSection({
 
   const platformName = products.find((item) => item.slug === selectedSlug)?.name || selectedSlug;
   return (
-    <section id="exclusive" className="saas-band saas-band-ink">
+    <section id="exclusive" className="saas-band saas-tone-aurora">
       <div className="saas-wrap saas-split saas-split-globe">
         <motion.div {...rise(reduce)}>
           <div className={`saas-globe ${reduce ? "is-still" : ""}`} aria-hidden="true">
@@ -589,7 +589,7 @@ export function PathTimeline() {
   const reduce = useReducedMotion();
   const steps = t("saasMarket.how.steps", { returnObjects: true }) as { title: string; text: string }[];
   return (
-    <section id="how" className="saas-band saas-band-paper">
+    <section id="how" className="saas-band saas-tone-day">
       <div className="saas-wrap">
         <p className="saas-kicker">{t("saasMarket.how.eyebrow")}</p>
         <h2 className="saas-title">

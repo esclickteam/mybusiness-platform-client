@@ -129,13 +129,13 @@ export default function SaasMarketplacePage() {
         <StorySection />
         <WhySection />
 
-        <section id="platforms" className="saas-band saas-band-ink">
+        <section id="platforms" className="saas-band saas-tone-mist">
           <div className="saas-wrap">
-            <p className="saas-kicker saas-kicker-light">{t("saasMarket.platforms.eyebrow")}</p>
-            <h2 className="saas-title saas-title-light">
+            <p className="saas-kicker">{t("saasMarket.platforms.eyebrow")}</p>
+            <h2 className="saas-title">
               <MixedText value={t("saasMarket.platforms.title")} />
             </h2>
-            <p className="saas-lead saas-lead-light">{t("saasMarket.platforms.subtitle")}</p>
+            <p className="saas-lead">{t("saasMarket.platforms.subtitle")}</p>
             <div className="saas-filters">
               <FilterChip active={category === "all"} onClick={() => setCategory("all")}>
                 {t("saasMarket.platforms.all")}
@@ -161,6 +161,8 @@ export default function SaasMarketplacePage() {
         <LaunchPicker onApply={(model, cta) => openLead({ model, ctaSource: cta, slug: hero?.slug })} />
         <GlobeSection products={products} initialSlug={hero?.slug} onRequest={(seed) => setLead(seed)} />
         <PathTimeline />
+
+        <FaqList wide />
 
         <section className="saas-final">
           <div className="saas-wrap">
@@ -190,7 +192,6 @@ export default function SaasMarketplacePage() {
           </div>
         </section>
 
-        <FaqList wide />
       </main>
       <SaasFooter tone="dark" />
       <WhatsAppDock href={wa} />
