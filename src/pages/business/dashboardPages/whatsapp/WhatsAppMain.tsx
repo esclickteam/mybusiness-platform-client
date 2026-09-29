@@ -40,6 +40,7 @@ import {
 } from "../../../../api/whatsappApi";
 import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 import { btnSecondary } from "../../../../styles/bizuplyUi";
+import { connectionUxEquals } from "./connectionUx";
 import {
   connectionReadyLabel,
   formatMessagingLimit,
@@ -226,7 +227,9 @@ export default function WhatsAppMain() {
         setConnectionLoading(false);
       }
       const status = await getWhatsAppStatus(businessId);
-      setConnection(status);
+      setConnection((prev) =>
+        connectionUxEquals(prev, status) ? prev : status
+      );
       hasLoadedConnectionRef.current = true;
     } catch {
       if (!hasLoadedConnectionRef.current) setConnection(null);
