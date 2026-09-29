@@ -221,6 +221,7 @@ const PartnerWorkboard = lazy(() => import("./pages/partner/PartnerWorkboard"));
 const PartnerDealDetail = lazy(() => import("./pages/partner/PartnerDealDetail"));
 const PartnerPublicDeal = lazy(() => import("./pages/partner/PartnerPublicDeal"));
 const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
+const PartnerAcceptInvite = lazy(() => import("./pages/partner/PartnerAcceptInvite"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
 const PartnerHostHome = lazy(() => import("./pages/public/PartnerHostHome"));
@@ -1151,6 +1152,7 @@ export default function App() {
                             </RedirectIfPartnerHost>
                           }
                         />
+                        <Route path="/partner/accept-invite" element={<PartnerAcceptInvite />} />
                         <Route path="/partner/deals/:dealId" element={<PartnerPublicDeal />} />
                         <Route path="/partner-materials/:token" element={<PublicPartnerMaterial />} />
                         <Route

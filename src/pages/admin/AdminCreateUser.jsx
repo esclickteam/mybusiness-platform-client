@@ -345,6 +345,7 @@ export default function AdminCreateUser() {
         payload.businessName = form.businessName.trim();
         payload.planKey = form.partnerPlanKey;
         payload.partnerStatus = form.partnerStatus;
+        delete payload.password;
         payload.commercial = {
           legalCompanyName: form.legalCompanyName.trim(),
           country: form.country.trim(),
@@ -425,7 +426,20 @@ export default function AdminCreateUser() {
               <CheckCircle2 className="h-4 w-4" />
               {result.message || "המשתמש נוצר בהצלחה"}
             </p>
-            {result.temporaryPassword ? (
+            {result.userType === "partner" ? (
+              <p className="mt-2 font-black">Partner created successfully</p>
+            ) : null}
+            {result.invitationSent ? (
+              <p className="mt-2 font-bold">
+                Invitation sent to {result.invitation?.email || result.user?.email}
+              </p>
+            ) : result.userType === "partner" ? (
+              <p className="mt-2 font-bold text-amber-800">
+                Account created. Invitation was not sent
+                {result.invitationError ? ` (${result.invitationError})` : ""}. Send it from the partner dossier.
+              </p>
+            ) : null}
+            {result.temporaryPassword && result.userType !== "partner" ? (
               <p className="mt-2 font-bold">
                 סיסמה: <code>{result.temporaryPassword}</code>
               </p>
@@ -506,6 +520,7 @@ export default function AdminCreateUser() {
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
               />
             </label>
+            {form.userType !== "partner" ? (
             <label className="block text-sm font-bold">
               סיסמה (ריק = סיסמה זמנית)
               <input
@@ -516,6 +531,7 @@ export default function AdminCreateUser() {
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
               />
             </label>
+            ) : null}
             {(form.userType === "business" ||
               form.userType === "worker" ||
               form.userType === "manager") && (
@@ -631,8 +647,8 @@ export default function AdminCreateUser() {
                 <p className="mt-1 text-xs font-bold text-slate-500">
                   שם העסק למעלה הוא שם המותג הציבורי. שם החברה המשפטי נשמר בנפרד. אפשר להשלים בהמשך בתיק הפרטנר.
                 </p>
-                <p className="mt-2 text-xs font-bold text-amber-800">
-                  Operational gap: no invite email yet. Admin still copies the temporary password.
+                <p className="mt-2 text-xs font-bold text-slate-500">
+                  After create, Bizuply emails a 72-hour invitation so the partner sets their own password. No temporary password is shown.
                 </p>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   <label className="block text-sm font-bold">
