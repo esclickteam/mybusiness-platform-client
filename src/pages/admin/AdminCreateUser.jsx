@@ -102,6 +102,20 @@ const EMPTY = {
   notes: "",
   partnerPlanKey: "partner_pro",
   partnerStatus: "pending_setup",
+  legalCompanyName: "",
+  country: "",
+  territory: "",
+  contactName: "",
+  contactEmail: "",
+  commercialPhone: "",
+  whatsapp: "",
+  commercialStatus: "",
+  exclusivity: "",
+  exclusivityTerritory: "",
+  agreementStartDate: "",
+  agreementEndDate: "",
+  customCommissionPercent: "",
+  adminNotes: "",
 };
 
 export default function AdminCreateUser() {
@@ -331,6 +345,22 @@ export default function AdminCreateUser() {
         payload.businessName = form.businessName.trim();
         payload.planKey = form.partnerPlanKey;
         payload.partnerStatus = form.partnerStatus;
+        payload.commercial = {
+          legalCompanyName: form.legalCompanyName.trim(),
+          country: form.country.trim(),
+          territory: form.territory.trim(),
+          contactName: form.contactName.trim(),
+          contactEmail: form.contactEmail.trim().toLowerCase(),
+          phone: form.commercialPhone.trim(),
+          whatsapp: form.whatsapp.trim(),
+          commercialStatus: form.commercialStatus,
+          exclusivity: form.exclusivity,
+          exclusivityTerritory: form.exclusivityTerritory.trim(),
+          agreementStartDate: form.agreementStartDate,
+          agreementEndDate: form.agreementEndDate,
+          customCommissionPercent: form.customCommissionPercent,
+          adminNotes: form.adminNotes.trim(),
+        };
       }
 
       const { data } = await API.post("/admin/users/create", payload);
@@ -593,6 +623,83 @@ export default function AdminCreateUser() {
                     <p className="mt-1 text-xs font-bold text-slate-500">
                       מפעיל דרך setup activation + חיוב חודשי TEST. בלי Stripe LIVE.
                     </p>
+                  </label>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                <h2 className="text-sm font-black">Partner Details / Commercial (optional)</h2>
+                <p className="mt-1 text-xs font-bold text-slate-500">
+                  שם העסק למעלה הוא שם המותג הציבורי. שם החברה המשפטי נשמר בנפרד. אפשר להשלים בהמשך בתיק הפרטנר.
+                </p>
+                <p className="mt-2 text-xs font-bold text-amber-800">
+                  Operational gap: no invite email yet. Admin still copies the temporary password.
+                </p>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  <label className="block text-sm font-bold">
+                    Legal company name
+                    <input name="legalCompanyName" value={form.legalCompanyName} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Country
+                    <input name="country" value={form.country} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Territory
+                    <input name="territory" value={form.territory} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Main contact name
+                    <input name="contactName" value={form.contactName} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Contact email
+                    <input type="email" name="contactEmail" value={form.contactEmail} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Phone
+                    <input name="commercialPhone" value={form.commercialPhone} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    WhatsApp
+                    <input name="whatsapp" value={form.whatsapp} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Partner commercial status
+                    <select name="commercialStatus" value={form.commercialStatus} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300">
+                      <option value="">Unset</option>
+                      <option value="pending_agreement">Pending agreement</option>
+                      <option value="active">Active</option>
+                      <option value="expired">Expired</option>
+                      <option value="terminated">Terminated</option>
+                    </select>
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Exclusive / Non-exclusive
+                    <select name="exclusivity" value={form.exclusivity} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300">
+                      <option value="">Unset</option>
+                      <option value="exclusive">Exclusive</option>
+                      <option value="non_exclusive">Non-exclusive</option>
+                    </select>
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Exclusivity territory
+                    <input name="exclusivityTerritory" value={form.exclusivityTerritory} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Agreement start date
+                    <input type="date" name="agreementStartDate" value={form.agreementStartDate} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Agreement end date
+                    <input type="date" name="agreementEndDate" value={form.agreementEndDate} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    Custom recurring commission %
+                    <input type="number" min="0" max="100" step="0.01" name="customCommissionPercent" value={form.customCommissionPercent} onChange={onChange} placeholder="Leave empty for plan default" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
+                  </label>
+                  <label className="block text-sm font-bold md:col-span-2">
+                    Internal Admin notes
+                    <textarea name="adminNotes" value={form.adminNotes} onChange={onChange} rows={3} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300" />
                   </label>
                 </div>
               </div>

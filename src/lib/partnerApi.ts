@@ -291,6 +291,11 @@ export async function fetchAdminPartnerDossier(id: string) {
   return data;
 }
 
+export async function adminPatchPartnerCommercial(id: string, payload: Record<string, unknown>) {
+  const { data } = await API.patch(`/admin/partners/${id}/commercial`, payload);
+  return data;
+}
+
 export async function fetchAdminWithdrawalRequest(partnerId: string, requestId: string) {
   const { data } = await API.get(`/admin/partners/${partnerId}/withdrawals/${requestId}`);
   return data as { request: any; commissions?: any[] };

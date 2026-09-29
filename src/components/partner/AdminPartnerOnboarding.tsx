@@ -64,7 +64,7 @@ export default function AdminPartnerOnboarding() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search partner"
+            placeholder="Name, slug, login email, contact email, legal name"
             className="h-10 rounded-xl border border-slate-200 px-3 text-sm font-bold"
           />
           <button type="submit" className="h-10 rounded-xl bg-slate-900 px-4 text-xs font-black text-white">
