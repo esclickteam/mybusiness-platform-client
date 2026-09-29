@@ -6,6 +6,7 @@ review-assets
 .cursor
 .vscode
 *.mp4
+!public/saas-media/**/*.mp4
 node_modules
 .git
 agent-transcripts
