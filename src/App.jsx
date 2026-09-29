@@ -134,6 +134,7 @@ const Register = lazy(() => import("./pages/Register"));
 const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
 const SaasMarketplacePage = lazy(() => import("./pages/saas/SaasMarketplacePage"));
 const SaasProductPage = lazy(() => import("./pages/saas/SaasProductPage"));
+const SaasTemplateDemoPage = lazy(() => import("./pages/saas/SaasTemplateDemoPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -1086,6 +1087,7 @@ export default function App() {
                           element={<BizuplyEarlyAccessLanding />}
                         />
                         <Route path="/saas" element={<SaasMarketplacePage />} />
+                        <Route path="/saas/:slug/demo" element={<SaasTemplateDemoPage />} />
                         <Route path="/saas/:slug" element={<SaasProductPage />} />
 
                         <Route path="/about" element={<About />} />

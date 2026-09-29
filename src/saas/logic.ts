@@ -2,6 +2,10 @@ export type SaasScreenshot = {
   key: string;
   label: string;
   imageUrl?: string;
+  caption?: string;
+  audience?: "admin" | "customer" | "both" | string;
+  tab?: string;
+  gallery?: string;
 };
 
 export type SaasQuote = {
@@ -20,12 +24,18 @@ export type SaasProduct = {
   category: string;
   categoryLabel: string;
   headline: string;
+  tagline?: string;
   subtitle: string;
   shortDescription: string;
   fullDescription: string;
   priceUsd: number;
   estimatedDevCostLabel: string;
   mainImageUrl?: string;
+  coverImage?: string;
+  cardScreenshot?: string;
+  mobileScreenshots?: SaasScreenshot[];
+  promoVideoUrl?: string;
+  promoVideoPosterUrl?: string;
   accent: string;
   accentSecondary: string;
   screenshots: SaasScreenshot[];
@@ -67,7 +77,36 @@ export type TemplateDemoLink = {
 
 function httpUrl(value?: string) {
   const url = String(value || "").trim();
-  return /^https?:\/\//i.test(url) ? url : "";
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^\/saas\/[a-z0-9][a-z0-9-]*\/demo(?:\?[a-z0-9=&_%.-]+)?$/i.test(url)) return url;
+  return "";
+}
+
+export function templateExperienceHref(slug: string, mode: "admin" | "customer" | "full") {
+  return `/saas/${slug}/demo?mode=${mode}`;
+}
+
+export function templateShots(product: { screenshots?: SaasScreenshot[] }) {
+  return (product.screenshots || []).filter((shot) => String(shot.imageUrl || "").trim());
+}
+
+export function cardFilm(product: {
+  name?: string;
+  screenshots?: SaasScreenshot[];
+  cardScreenshot?: string;
+  coverImage?: string;
+  screenshotUrl?: string;
+  mainImageUrl?: string;
+}) {
+  const shots = templateShots(product);
+  if (shots.length) return shots.slice(0, 6);
+  const image = product.cardScreenshot || product.coverImage || product.screenshotUrl || product.mainImageUrl || "";
+  return image ? [{ key: "cover", label: product.name || "", imageUrl: image }] : [];
+}
+
+export function isInAppDemo(url?: string) {
+  const value = String(url || "").trim();
+  return !value || value.startsWith("/saas/");
 }
 
 export function templateDemoLinks(product: {
