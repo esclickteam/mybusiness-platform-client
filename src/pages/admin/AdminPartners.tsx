@@ -175,7 +175,7 @@ export default function AdminPartners() {
           onKeyDown={(e) => {
             if (e.key === "Enter") refresh();
           }}
-          placeholder="חיפוש"
+          placeholder="חיפוש לפי שם, slug, אימייל כניסה, אימייל קשר, שם חברה משפטי"
           className="mb-4 w-full max-w-sm rounded-xl border border-slate-200 px-3 py-2"
         />
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">

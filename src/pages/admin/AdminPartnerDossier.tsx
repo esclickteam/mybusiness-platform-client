@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import {
+  adminPatchPartnerCommercial,
   adminReviewPartnerCompliance,
   adminReviewWithdrawal,
   fetchAdminPartnerDossier,
@@ -14,6 +15,7 @@ import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const TABS = [
   ["overview", "סקירה"],
+  ["commercial", "Partner Details"],
   ["onboarding", "Onboarding"],
   ["kyc", "מסמכים וחשבון בנק"],
   ["clients", "לקוחות"],
@@ -36,12 +38,15 @@ export default function AdminPartnerDossier() {
   const [paymentReference, setPaymentReference] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
   const [kycFeedback, setKycFeedback] = useState("");
+  const [commercial, setCommercial] = useState<any>({});
+  const [savingCommercial, setSavingCommercial] = useState(false);
 
   async function refresh() {
     if (!partnerId) return;
     const payload = await fetchAdminPartnerDossier(partnerId);
     setData(payload);
     setKycFeedback(payload.compliance?.adminFeedback || "");
+    setCommercial(payload.commercial || {});
     const progress = await fetchAdminPartnerOnboarding(partnerId).catch(() => null);
     setOnboarding(progress);
   }
@@ -135,6 +140,109 @@ export default function AdminPartnerDossier() {
             <Kpi label="Pending withdrawals" value={formatIls(data.commissions?.totals?.pendingCommission)} />
             <Kpi label="Paid commissions" value={formatIls(data.commissions?.totals?.paidCommission)} />
             <Kpi label="מסמכים" value={data.compliance?.reviewStatus || "incomplete"} />
+          </section>
+        ) : null}
+
+        {tab === "commercial" ? (
+          <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
+            <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Partner Details / Commercial</p>
+            <h2 className="mt-1 text-xl font-black">{partner.name}</h2>
+            <p className="mt-1 text-sm font-bold text-slate-600">
+              Public/brand name stays as Partner.name. Legal company name is stored separately and can be edited here after create.
+            </p>
+            {data.commission ? (
+              <p className="mt-3 text-sm font-black">
+                Commission: {data.commission.usesCustomCommission ? "custom override" : "plan default"} · effective{" "}
+                {Math.round(Number(data.commission.effectiveCommissionRate || 0) * 10000) / 100}% · plan{" "}
+                {Math.round(Number(data.commission.planCommissionRate || 0) * 10000) / 100}%
+              </p>
+            ) : null}
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {(
+                [
+                  ["legalCompanyName", "Legal company name", "text"],
+                  ["country", "Country", "text"],
+                  ["territory", "Territory", "text"],
+                  ["contactName", "Main contact name", "text"],
+                  ["contactEmail", "Contact email", "email"],
+                  ["phone", "Phone", "text"],
+                  ["whatsapp", "WhatsApp", "text"],
+                  ["exclusivityTerritory", "Exclusivity territory", "text"],
+                  ["agreementStartDate", "Agreement start date", "date"],
+                  ["agreementEndDate", "Agreement end date", "date"],
+                  ["customCommissionPercent", "Custom recurring commission %", "number"],
+                ] as const
+              ).map(([key, label, type]) => (
+                <label key={key} className="block text-sm font-bold">
+                  {label}
+                  <input
+                    type={type}
+                    min={type === "number" ? 0 : undefined}
+                    max={type === "number" ? 100 : undefined}
+                    step={type === "number" ? "0.01" : undefined}
+                    value={commercial[key] ?? ""}
+                    onChange={(e) => setCommercial({ ...commercial, [key]: e.target.value })}
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
+                  />
+                </label>
+              ))}
+              <label className="block text-sm font-bold">
+                Partner commercial status
+                <select
+                  value={commercial.commercialStatus || ""}
+                  onChange={(e) => setCommercial({ ...commercial, commercialStatus: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
+                >
+                  <option value="">Unset</option>
+                  <option value="pending_agreement">Pending agreement</option>
+                  <option value="active">Active</option>
+                  <option value="expired">Expired</option>
+                  <option value="terminated">Terminated</option>
+                </select>
+              </label>
+              <label className="block text-sm font-bold">
+                Exclusive / Non-exclusive
+                <select
+                  value={commercial.exclusivity || ""}
+                  onChange={(e) => setCommercial({ ...commercial, exclusivity: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
+                >
+                  <option value="">Unset</option>
+                  <option value="exclusive">Exclusive</option>
+                  <option value="non_exclusive">Non-exclusive</option>
+                </select>
+              </label>
+              <label className="block text-sm font-bold md:col-span-2">
+                Internal Admin notes
+                <textarea
+                  rows={4}
+                  value={commercial.adminNotes || ""}
+                  onChange={(e) => setCommercial({ ...commercial, adminNotes: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
+                />
+              </label>
+            </div>
+            <button
+              type="button"
+              disabled={savingCommercial}
+              onClick={async () => {
+                if (!partnerId) return;
+                setSavingCommercial(true);
+                setError("");
+                try {
+                  const saved = await adminPatchPartnerCommercial(partnerId, commercial);
+                  setCommercial(saved.commercial || commercial);
+                  setData({ ...data, commercial: saved.commercial, commission: saved.commission });
+                } catch (err: unknown) {
+                  setError(partnerApiError(err, "לא ניתן לשמור פרטים מסחריים"));
+                } finally {
+                  setSavingCommercial(false);
+                }
+              }}
+              className="mt-4 rounded-xl bg-[#7C4DFF] px-5 py-2.5 text-sm font-black text-white disabled:opacity-60"
+            >
+              {savingCommercial ? "Saving..." : "Save commercial details"}
+            </button>
           </section>
         ) : null}
 
