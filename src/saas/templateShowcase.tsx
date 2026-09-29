@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { cardFilm, templateShots, type SaasProduct, type SaasScreenshot } from "./logic";
+import { cardFilm, isPublicDemoUrl, templateShots, type SaasProduct, type SaasScreenshot } from "./logic";
 import { useSaasLocale } from "./chrome";
 
 const PREVIEW_TABS = [
@@ -201,7 +201,7 @@ export function PromoVideo({ url, poster, title }: { url?: string; poster?: stri
     <div className="saas-video">
       <video
         src={url}
-        poster={poster || undefined}
+        poster={isPublicDemoUrl(poster) ? poster : undefined}
         muted={!engaged}
         loop={!engaged}
         autoPlay={!reduce}
@@ -232,7 +232,7 @@ export function PromoVideo({ url, poster, title }: { url?: string; poster?: stri
 
 export function MobilePreview({ product }: { product: SaasProduct }) {
   const { t } = useSaasLocale();
-  const shots = (product.mobileScreenshots || []).filter((shot) => shot.imageUrl);
+  const shots = (product.mobileScreenshots || []).filter((shot) => isPublicDemoUrl(shot.imageUrl));
   if (!shots.length) return null;
   return (
     <section className="saas-showcase-block">
