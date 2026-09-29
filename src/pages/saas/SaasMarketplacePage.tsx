@@ -12,8 +12,8 @@ import {
   useSaasLocale,
   WhatsAppDock,
 } from "../../saas/chrome";
-import { filterProducts, MARKETPLACE_CATEGORIES, type SaasModelId, type SaasProduct } from "../../saas/logic";
-import { DemoTheater, FaqList, LeadDialog, messageFor, type LeadSeed } from "../../saas/sections";
+import { filterProducts, isSaasTemplate, MARKETPLACE_CATEGORIES, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import { DemoTheater, FaqList, LeadDialog, messageFor, TemplateDemoDialog, type LeadSeed } from "../../saas/sections";
 import {
   GlobeSection,
   HeroStage,
@@ -38,6 +38,13 @@ export default function SaasMarketplacePage() {
   const [paused, setPaused] = useState(false);
   const [lead, setLead] = useState<LeadSeed | null>(null);
   const [demo, setDemo] = useState<SaasProduct | null>(null);
+  const [templateDemo, setTemplateDemo] = useState<SaasProduct | null>(null);
+
+  function openDemo(product: SaasProduct | null | undefined) {
+    if (!product) return;
+    if (isSaasTemplate(product)) setTemplateDemo(product);
+    else setDemo(product);
+  }
 
   useEffect(() => {
     let active = true;
@@ -112,7 +119,7 @@ export default function SaasMarketplacePage() {
                 <a className="saas-btn" href="#platforms">
                   {t("saasMarket.hero.viewPlatforms")}
                 </a>
-                <button type="button" className="saas-btn saas-btn-ghost saas-btn-demo" onClick={() => hero && setDemo(hero)}>
+                <button type="button" className="saas-btn saas-btn-ghost saas-btn-demo" onClick={() => openDemo(hero)}>
                   {t("saasMarket.hero.watchDemo")}
                 </button>
                 <a className="saas-btn saas-btn-ghost" href="#models">
@@ -152,7 +159,7 @@ export default function SaasMarketplacePage() {
             {!loading && !error && visible.length === 0 ? <p className="saas-status">{t("saasMarket.platforms.empty")}</p> : null}
             <div className="saas-catalog">
               {visible.map((product, index) => (
-                <ProductRow key={product.slug} product={product} flipped={index % 2 === 1} index={index} onDemo={setDemo} />
+                <ProductRow key={product.slug} product={product} flipped={index % 2 === 1} index={index} onDemo={openDemo} />
               ))}
             </div>
           </div>
@@ -198,12 +205,13 @@ export default function SaasMarketplacePage() {
         items={[
           { label: t("saasMarket.sticky.platforms"), href: "#platforms" },
           { label: t("saasMarket.sticky.models"), href: "#models" },
-          { label: t("saasMarket.sticky.demo"), onClick: () => hero && setDemo(hero) },
+          { label: t("saasMarket.sticky.demo"), onClick: () => openDemo(hero) },
           { label: t("saasMarket.sticky.talk"), onClick: () => openLead({ ctaSource: "talk_to_us" }) },
         ]}
       />
       <LeadDialog seed={lead} products={products} onClose={() => setLead(null)} />
       <DemoTheater product={demo} onClose={() => setDemo(null)} />
+      <TemplateDemoDialog product={templateDemo} onClose={() => setTemplateDemo(null)} />
     </div>
   );
 }

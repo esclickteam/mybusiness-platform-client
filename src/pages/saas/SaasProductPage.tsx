@@ -12,11 +12,12 @@ import {
   useSaasLocale,
   WhatsAppDock,
 } from "../../saas/chrome";
-import { demoTarget, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import { demoTarget, isSaasTemplate, type SaasModelId, type SaasProduct } from "../../saas/logic";
 import SaasScreenMock from "../../saas/SaasScreenMock";
 import {
   CountryCheck,
   DemoTheater,
+  TemplateDemoDialog,
   FaqList,
   IncludedGrid,
   LeadDialog,
@@ -139,12 +140,14 @@ export default function SaasProductPage() {
                 <p className="mt-3 text-xl font-black text-slate-800">{story.headline}</p>
                 <p className="mt-4 max-w-xl text-base font-medium leading-8 text-slate-600">{story.subtitle}</p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  {live.external ? (
+                  {live.external && !isSaasTemplate(product) ? (
                     <a href={live.href} target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-[#24124d] px-5 py-3 text-sm font-black text-white">
                       {t("saasMarket.product.demo")}
                     </a>
                   ) : (
-                    <PrimaryButton onClick={() => setDemoOpen(true)}>{t("saasMarket.product.preview")}</PrimaryButton>
+                    <PrimaryButton onClick={() => setDemoOpen(true)}>
+                      {isSaasTemplate(product) ? t("saasMarket.platforms.liveDemo") : t("saasMarket.product.preview")}
+                    </PrimaryButton>
                   )}
                   <GhostButton href="#models">{t("saasMarket.product.explore")}</GhostButton>
                   <GhostButton onClick={() => openLead({ ctaSource: "talk_to_us" })}>{t("saasMarket.product.talk")}</GhostButton>
@@ -186,7 +189,9 @@ export default function SaasProductPage() {
                 ))}
               </div>
               <div className="mt-4 flex flex-wrap gap-3">
-                <PrimaryButton onClick={() => setDemoOpen(true)}>{t("saasMarket.product.preview")}</PrimaryButton>
+                <PrimaryButton onClick={() => setDemoOpen(true)}>
+                  {isSaasTemplate(product) ? t("saasMarket.platforms.liveDemo") : t("saasMarket.product.preview")}
+                </PrimaryButton>
                 {live.external ? (
                   <a href={live.href} target="_blank" rel="noreferrer" className="inline-flex rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-black">
                     {t("saasMarket.product.demo")}
@@ -269,7 +274,11 @@ export default function SaasProductPage() {
         />
       ) : null}
       <LeadDialog seed={lead} products={product ? [product] : []} onClose={() => setLead(null)} />
-      <DemoTheater product={demoOpen ? product : null} onClose={() => setDemoOpen(false)} />
+      {product && isSaasTemplate(product) ? (
+        <TemplateDemoDialog product={demoOpen ? product : null} onClose={() => setDemoOpen(false)} />
+      ) : (
+        <DemoTheater product={demoOpen ? product : null} onClose={() => setDemoOpen(false)} />
+      )}
     </div>
   );
 }

@@ -160,6 +160,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminClubPage = lazy(() => import("./pages/admin/AdminClubPage"));
 const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
 const AdminSaasMarketplace = lazy(() => import("./pages/admin/AdminSaasMarketplace"));
+const AdminSaasControlCenter = lazy(() => import("./pages/admin/AdminSaasControlCenter"));
 const AdminManagedWhatsApp = lazy(
   () => import("./pages/admin/AdminManagedWhatsApp")
 );
@@ -1453,6 +1454,14 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminSaasMarketplace />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/saas-control-center"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSaasControlCenter />
                             </ProtectedRoute>
                           }
                         />

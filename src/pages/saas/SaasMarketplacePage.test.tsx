@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -64,6 +64,42 @@ const products = [
     whatsappMessage: "Hi",
     purchasable: true,
   },
+  {
+    id: "3",
+    name: "Northwind Desk",
+    slug: "northwind-desk",
+    category: "real_estate",
+    categoryLabel: "Real Estate",
+    headline: "Northwind Desk",
+    subtitle: "Listings and owners.",
+    shortDescription: "Listings, owners, and inquiries in one white-label product.",
+    fullDescription: "Listings, owners, and inquiries in one white-label product.",
+    priceUsd: 0,
+    estimatedDevCostLabel: "",
+    accent: "#0F766E",
+    accentSecondary: "#38BDF8",
+    screenshots: [],
+    features: [],
+    included: [],
+    demoUrl: "",
+    status: "ACTIVE",
+    badge: "",
+    seoTitle: "Northwind Desk",
+    seoDescription: "Listings and owners.",
+    whatsappBlurb: "",
+    whatsappMessage: "Hi",
+    purchasable: false,
+    kind: "template",
+    interactiveDemoEnabled: true,
+    supportsAdminDemo: true,
+    supportsCustomerDemo: false,
+    demoSelectorUrl: "https://example.com/explore",
+    adminDemoUrl: "https://example.com/admin",
+    customerDemoUrl: "https://example.com/customer",
+    whiteLabel: true,
+    partnerModel: false,
+    exclusiveCountry: true,
+  },
 ];
 
 function named(expected: string) {
@@ -117,6 +153,27 @@ describe("SaaS marketplace page", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "All Systems" }));
     expect(screen.getByRole("heading", { name: "ServiceFlow" })).toBeTruthy();
+  });
+
+  it("opens a template demo from the published demo fields", async () => {
+    renderPage();
+    const heading = await screen.findByRole("heading", { name: "Northwind Desk" });
+    const row = heading.closest("article");
+    expect(row).toBeTruthy();
+    const card = within(row as HTMLElement);
+    expect(card.getByRole("link", { name: "To the system" }).getAttribute("href")).toBe("/saas/northwind-desk");
+    expect(card.getByText(named("Interactive Demo"))).toBeTruthy();
+    expect(card.getByText(named("White Label"))).toBeTruthy();
+    expect(card.queryByText(named("Partner Model Available"))).toBeNull();
+    expect(card.getByText(named("Country Exclusivity Possible"))).toBeTruthy();
+    fireEvent.click(card.getByRole("button", { name: "Live Demo" }));
+    expect(screen.getByRole("link", { name: "Admin / Owner Demo" }).getAttribute("href")).toBe(
+      "https://example.com/admin"
+    );
+    expect(screen.queryByRole("link", { name: "Customer Demo" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Explore Full Demo" }).getAttribute("href")).toBe(
+      "https://example.com/explore"
+    );
   });
 
   it("does not present fake traction", async () => {

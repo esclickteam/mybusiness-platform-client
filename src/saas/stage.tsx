@@ -15,7 +15,14 @@ import {
 import { Link } from "react-router-dom";
 import { checkCountryAvailability } from "./api";
 import { MixedText, useSaasLocale } from "./chrome";
-import { demoTarget, formatUsd, illustrativeMrr, type SaasModelId, type SaasProduct } from "./logic";
+import {
+  demoTarget,
+  formatUsd,
+  illustrativeMrr,
+  isSaasTemplate,
+  type SaasModelId,
+  type SaasProduct,
+} from "./logic";
 import SaasScreenMock from "./SaasScreenMock";
 import { useStory, type LeadSeed } from "./sections";
 
@@ -305,12 +312,20 @@ export function ProductRow({
   const reduce = useReducedMotion();
   const story = useStory(product);
   const live = demoTarget(product);
-  const badges = [
-    t("saasMarket.platforms.demoBadge"),
-    t("saasMarket.platforms.whiteLabelBadge"),
-    t("saasMarket.platforms.partnerBadge"),
-    t("saasMarket.platforms.countryBadge"),
-  ];
+  const template = isSaasTemplate(product);
+  const badges = template
+    ? [
+        product.interactiveDemoEnabled ? t("saasMarket.platforms.interactiveDemo") : "",
+        product.whiteLabel ? t("saasMarket.platforms.whiteLabelBadge") : "",
+        product.partnerModel ? t("saasMarket.platforms.partnerBadge") : "",
+        product.exclusiveCountry ? t("saasMarket.platforms.countryBadge") : "",
+      ].filter(Boolean)
+    : [
+        t("saasMarket.platforms.demoBadge"),
+        t("saasMarket.platforms.whiteLabelBadge"),
+        t("saasMarket.platforms.partnerBadge"),
+        t("saasMarket.platforms.countryBadge"),
+      ];
   return (
     <motion.article
       className={`saas-row ${flipped ? "is-flip" : ""}`}
@@ -336,15 +351,19 @@ export function ProductRow({
           ))}
         </div>
         <div className="saas-row-actions">
-          <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.exploreNamed", { name: product.name })}</Link>
-          {live.external ? (
-            <a href={live.href} target="_blank" rel="noreferrer">
-              {t("saasMarket.platforms.liveDemo")}
-            </a>
+          {template ? (
+            <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.toSystem")}</Link>
           ) : (
+            <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.exploreNamed", { name: product.name })}</Link>
+          )}
+          {template || !live.external ? (
             <button type="button" onClick={() => onDemo(product)}>
               {t("saasMarket.platforms.liveDemo")}
             </button>
+          ) : (
+            <a href={live.href} target="_blank" rel="noreferrer">
+              {t("saasMarket.platforms.liveDemo")}
+            </a>
           )}
         </div>
       </div>
