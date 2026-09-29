@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import API, { setAuthToken } from "../api";
-import { useAuth } from "../context/AuthContext";
-import AuthShell, { AuthCard } from "../components/auth/AuthShell";
+import API, { setAuthToken } from "../../api";
+import { useAuth } from "../../context/AuthContext";
+import AuthShell, { AuthCard } from "../../components/auth/AuthShell";
 import {
   clearManagedBusinessContext,
-} from "../lib/partnerManagedContext";
-import { clearAdminActiveBusinessId } from "../utils/adminTenant";
+} from "../../lib/partnerManagedContext";
+import { clearAdminActiveBusinessId } from "../../utils/adminTenant";
 import {
   clearRefreshDead,
   resetSessionInvalidationGuard,
-} from "../utils/sessionInvalidation";
-import { syncLanguageOnLogin } from "../i18n/persistLanguage";
+} from "../../utils/sessionInvalidation";
+import { syncLanguageOnLogin } from "../../i18n/persistLanguage";
 
 export default function PartnerAcceptInvite() {
   const navigate = useNavigate();
