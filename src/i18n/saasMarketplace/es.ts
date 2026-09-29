@@ -89,6 +89,7 @@ export const es: SaasMarketCopy = {
     countryBadge: "Exclusividad de país posible",
     toSystem: "Al sistema",
     interactiveDemo: "Demo interactiva",
+    demoPreparing: "Demo interactiva — en preparación",
     watchDemo: "Ver el demo",
   },
   showcase: {

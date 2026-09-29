@@ -71,6 +71,7 @@ export type SaasMarketCopy = {
     countryBadge: string;
     toSystem: string;
     interactiveDemo: string;
+    demoPreparing: string;
     watchDemo: string;
   };
   showcase: {

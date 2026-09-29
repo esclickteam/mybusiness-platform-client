@@ -89,6 +89,7 @@ export const ptBR: SaasMarketCopy = {
     countryBadge: "Exclusividade de país possível",
     toSystem: "Para o sistema",
     interactiveDemo: "Demo interativa",
+    demoPreparing: "Demo interativa — em preparação",
     watchDemo: "Ver a demo",
   },
   showcase: {

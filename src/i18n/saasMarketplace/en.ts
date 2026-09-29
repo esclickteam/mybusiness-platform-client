@@ -166,6 +166,7 @@ export const en: SaasMarketCopy = {
     countryBadge: "Country Exclusivity Possible",
     toSystem: "To the system",
     interactiveDemo: "Interactive Demo",
+    demoPreparing: "Interactive Demo — Preparing",
     watchDemo: "Watch the demo",
   },
   showcase: {

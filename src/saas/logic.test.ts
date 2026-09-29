@@ -12,6 +12,7 @@ import {
   partnerEntryUsd,
   cardFilm,
   isInAppDemo,
+  isPublicDemoUrl,
   templateDemoLinks,
   templateExperienceHref,
   templateShots,
@@ -134,11 +135,20 @@ describe("marketplace stays unlisted", () => {
     expect(templateDemoLinks({
       supportsAdminDemo: true,
       adminDemoUrl: "/saas/northwind-desk/demo?mode=admin",
-    }).map((link) => link.href)).toEqual(["/saas/northwind-desk/demo?mode=admin"]);
+    })).toEqual([]);
+    expect(templateDemoLinks({
+      supportsAdminDemo: true,
+      adminDemoUrl: "http://127.0.0.1:4321",
+    })).toEqual([]);
+    expect(isPublicDemoUrl("https://demo.example/admin")).toBe(true);
+    expect(isPublicDemoUrl("http://127.0.0.1:3456")).toBe(false);
+    expect(isPublicDemoUrl("https://bizuply.com/saas/beautyflow/demo?mode=admin")).toBe(false);
+    expect(isPublicDemoUrl("https://bizuply.com/saas-media/beautyflow/dashboard.png")).toBe(false);
     expect(templateExperienceHref("northwind-desk", "customer")).toBe("/saas/northwind-desk/demo?mode=customer");
     expect(isInAppDemo("/saas/northwind-desk/demo?mode=full")).toBe(true);
     expect(isInAppDemo("https://demo.example/admin")).toBe(false);
-    expect(cardFilm({ screenshots: [{ key: "dashboard", label: "Dashboard", imageUrl: "/saas-media/a.png" }] })).toHaveLength(1);
+    expect(cardFilm({ screenshots: [{ key: "dashboard", label: "Dashboard", imageUrl: "/saas-media/a.png" }] })).toHaveLength(0);
+    expect(cardFilm({ screenshots: [{ key: "dashboard", label: "Dashboard", imageUrl: "https://cdn.example/dashboard.png" }] })).toHaveLength(1);
     expect(templateShots({ screenshots: [{ key: "x", label: "X" }] })).toEqual([]);
   });
 

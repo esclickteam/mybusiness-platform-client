@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fetchSaasProduct } from "../../saas/api";
 import { SaasSeo, useSaasLocale } from "../../saas/chrome";
-import { isInAppDemo, type SaasProduct } from "../../saas/logic";
-import { DemoStudio, shotsForMode } from "../../saas/templateShowcase";
+import { isPublicDemoUrl, type SaasProduct } from "../../saas/logic";
 import "../../saas/saas.css";
 
 const MODES = ["admin", "customer", "full"] as const;
@@ -45,10 +44,9 @@ export default function SaasTemplateDemoPage() {
     };
   }, [slug]);
 
-  const engine =
+  const stored =
     mode === "admin" ? product?.adminDemoUrl : mode === "customer" ? product?.customerDemoUrl : product?.demoSelectorUrl;
-  const external = Boolean(engine) && !isInAppDemo(engine);
-  const shots = product ? shotsForMode(product, mode) : [];
+  const engine = isPublicDemoUrl(stored) ? String(stored) : "";
   const labels = {
     admin: t("saasMarket.templateDemo.admin"),
     customer: t("saasMarket.templateDemo.customer"),
@@ -77,7 +75,7 @@ export default function SaasTemplateDemoPage() {
       </header>
       <div className="saas-demo-stage">
         {missing ? <p className="saas-demo-empty">{t("saasMarket.product.missing")}</p> : null}
-        {external && !blocked ? (
+        {engine && !blocked ? (
           <iframe
             title={product?.name || "demo"}
             src={engine}
@@ -91,7 +89,13 @@ export default function SaasTemplateDemoPage() {
             }}
           />
         ) : (
-          <DemoStudio key={mode} shots={shots} />
+          <div className="saas-demo-empty">
+            {engine ? (
+              <a href={engine}>{labels[mode]}</a>
+            ) : (
+              <p>{t("saasMarket.platforms.demoPreparing")}</p>
+            )}
+          </div>
         )}
       </div>
     </div>

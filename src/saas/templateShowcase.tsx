@@ -13,24 +13,6 @@ const PREVIEW_TABS = [
 
 const GALLERY_ORDER = ["dashboard", "customers", "admin", "reports", "mobile", "settings", "jobs", "services", "properties"];
 
-export function shotsForMode(product: SaasProduct, mode: string) {
-  const shots = templateShots(product);
-  const mobile = (product.mobileScreenshots || []).filter((shot) => shot.imageUrl);
-  const all = [...shots];
-  for (const shot of mobile) {
-    if (!all.some((item) => item.imageUrl === shot.imageUrl)) all.push(shot);
-  }
-  if (mode === "customer") {
-    const customer = all.filter((shot) => shot.audience === "customer" || shot.audience === "both" || shot.gallery === "mobile");
-    return customer.length ? customer : all;
-  }
-  if (mode === "admin") {
-    const admin = all.filter((shot) => shot.audience !== "customer" || shot.audience === "both");
-    return admin.length ? admin : all;
-  }
-  return all;
-}
-
 export function CardFilm({ product }: { product: SaasProduct }) {
   const frames = cardFilm(product);
   const reduce = useReducedMotion();
@@ -264,38 +246,5 @@ export function MobilePreview({ product }: { product: SaasProduct }) {
         ))}
       </div>
     </section>
-  );
-}
-
-export function DemoStudio({ shots }: { shots: SaasScreenshot[] }) {
-  const reduce = useReducedMotion();
-  const [index, setIndex] = useState(0);
-  const shot = shots[index] || shots[0];
-  if (!shot) return null;
-  const mobile = shot.gallery === "mobile";
-  return (
-    <div className="saas-studio">
-      <aside>
-        {shots.map((item, itemIndex) => (
-          <button key={`${item.imageUrl}-${itemIndex}`} type="button" className={itemIndex === index ? "is-on" : ""} onClick={() => setIndex(itemIndex)}>
-            {item.label}
-          </button>
-        ))}
-      </aside>
-      <div className={mobile ? "is-phone" : ""}>
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={shot.imageUrl}
-            src={shot.imageUrl}
-            alt={shot.caption || shot.label}
-            initial={reduce ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduce ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.28 }}
-          />
-        </AnimatePresence>
-        {shot.caption ? <p>{shot.caption}</p> : null}
-      </div>
-    </div>
   );
 }

@@ -89,6 +89,7 @@ export const ar: SaasMarketCopy = {
     countryBadge: "حصرية الدولة ممكنة",
     toSystem: "إلى النظام",
     interactiveDemo: "عرض تفاعلي",
+    demoPreparing: "العرض التفاعلي — قيد التجهيز",
     watchDemo: "شاهد العرض",
   },
   showcase: {

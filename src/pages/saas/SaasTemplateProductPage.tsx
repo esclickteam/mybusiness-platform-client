@@ -8,7 +8,7 @@ import {
   useSaasLocale,
   WhatsAppDock,
 } from "../../saas/chrome";
-import { templateExperienceHref, templateShots, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import { isPublicDemoUrl, templateDemoLinks, templateExperienceHref, templateShots, type SaasModelId, type SaasProduct } from "../../saas/logic";
 import {
   LeadDialog,
   messageFor,
@@ -33,8 +33,11 @@ export default function SaasTemplateProductPage({
   const [demoOpen, setDemoOpen] = useState(false);
   const tagline = product.tagline || story.subtitle;
   const wa = buildWhatsappLink(whatsapp, messageFor(t, product.name, "partner"));
+  const demoLinks = templateDemoLinks(product);
+  const shots = templateShots(product);
+  const video = isPublicDemoUrl(product.promoVideoUrl) ? product.promoVideoUrl : "";
   const badges = [
-    product.interactiveDemoEnabled ? t("saasMarket.platforms.interactiveDemo") : "",
+    demoLinks.length ? t("saasMarket.platforms.interactiveDemo") : t("saasMarket.platforms.demoPreparing"),
     product.whiteLabel ? t("saasMarket.platforms.whiteLabelBadge") : "",
     product.partnerModel ? t("saasMarket.platforms.partnerBadge") : "",
     product.exclusiveCountry ? t("saasMarket.platforms.countryBadge") : "",
@@ -71,25 +74,35 @@ export default function SaasTemplateProductPage({
                 ))}
               </div>
               <div className="saas-hero-actions">
-                <button type="button" className="saas-btn" onClick={() => setDemoOpen(true)}>
-                  {t("saasMarket.platforms.watchDemo")}
-                </button>
+                {demoLinks.length ? (
+                  <button type="button" className="saas-btn" onClick={() => setDemoOpen(true)}>
+                    {t("saasMarket.platforms.watchDemo")}
+                  </button>
+                ) : (
+                  <span className="saas-btn saas-btn-ghost">{t("saasMarket.platforms.demoPreparing")}</span>
+                )}
                 <a className="saas-btn saas-btn-ghost" href="#models">
                   {t("saasMarket.showcase.partnership")}
                 </a>
               </div>
             </div>
             <div className="saas-template-stage">
-              {product.promoVideoUrl ? (
-                <PromoVideo url={product.promoVideoUrl} poster={product.promoVideoPosterUrl || product.coverImage} title={product.name} />
-              ) : (
+              {video ? (
+                <PromoVideo url={video} poster={product.promoVideoPosterUrl || product.coverImage} title={product.name} />
+              ) : shots.length ? (
                 <CardFilm product={product} />
+              ) : (
+                <div className="saas-template-pending">
+                  <strong>{product.name}</strong>
+                </div>
               )}
-              <div className="saas-hero-thumbs">
-                {templateShots(product).slice(0, 6).map((shot) => (
-                  <img key={shot.imageUrl} src={shot.imageUrl} alt={shot.label} />
-                ))}
-              </div>
+              {shots.length ? (
+                <div className="saas-hero-thumbs">
+                  {shots.slice(0, 6).map((shot) => (
+                    <img key={shot.imageUrl} src={shot.imageUrl} alt={shot.label} />
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
@@ -111,10 +124,16 @@ export default function SaasTemplateProductPage({
       </main>
       <SaasFooter />
       <div className="saas-sticky-cta">
-        <button type="button" onClick={() => setDemoOpen(true)}>
-          {t("saasMarket.platforms.watchDemo")}
-        </button>
-        <Link to={templateExperienceHref(product.slug, "full")}>{t("saasMarket.templateDemo.explore")}</Link>
+        {demoLinks.length ? (
+          <>
+            <button type="button" onClick={() => setDemoOpen(true)}>
+              {t("saasMarket.platforms.watchDemo")}
+            </button>
+            <Link to={templateExperienceHref(product.slug, "full")}>{t("saasMarket.templateDemo.explore")}</Link>
+          </>
+        ) : (
+          <span>{t("saasMarket.platforms.demoPreparing")}</span>
+        )}
         <a href="#models">{t("saasMarket.showcase.partnership")}</a>
       </div>
       <WhatsAppDock href={wa} />
