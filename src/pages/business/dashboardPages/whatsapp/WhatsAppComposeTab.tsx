@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   useNavigate,
-  useOutletContext,
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -17,7 +16,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import {
-  getWhatsAppStatus,
   listWhatsAppLists,
   listWhatsAppRecipients,
   listWhatsAppTemplates,
@@ -27,7 +25,6 @@ import {
   syncWhatsAppTemplates,
   type WhatsAppAppointmentStrategy,
   type WhatsAppCampaignPreviewRow,
-  type WhatsAppConnection,
   type WhatsAppMailingList,
   type WhatsAppMappingAppointment,
   type WhatsAppRecipient,
@@ -41,19 +38,19 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
 
-type OutletCtx = { businessId: string | null };
 type AudienceType = "selected_clients" | "mailing_list";
 
 export default function WhatsAppComposeTab() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { businessId } = useOutletContext<OutletCtx>();
+  const { businessId, connection } = useWhatsAppHubContext();
 
-  const [loading, setLoading] = useState(true);
+  const [templatesLoading, setTemplatesLoading] = useState(true);
+  const [recipientsLoading, setRecipientsLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [lists, setLists] = useState<WhatsAppMailingList[]>([]);
   const [recipients, setRecipients] = useState<WhatsAppRecipient[]>([]);
@@ -107,23 +104,16 @@ export default function WhatsAppComposeTab() {
 
     (async () => {
       try {
-        setLoading(true);
-        // Fast path: local DB lists + status without CreditCard resolve.
-        // Template sync from Meta runs after the UI is interactive.
-        const [status, listed, ls, people] = await Promise.all([
-          getWhatsAppStatus(businessId),
+        const [listed, ls] = await Promise.all([
           listWhatsAppTemplates(businessId, { approvedOnly: true }),
           listWhatsAppLists(businessId),
-          listWhatsAppRecipients(businessId),
         ]);
         if (cancelled) return;
 
-        setConnection(status);
         setLists(ls);
-        setRecipients(people);
         if (ls[0]?._id) setMailingListId(ls[0]._id);
 
-        let approved = pickApproved(listed);
+        const approved = pickApproved(listed);
         setTemplates(approved);
         if (preselected && approved.some((tpl) => tpl._id === preselected)) {
           setTemplateId(preselected);
@@ -132,11 +122,18 @@ export default function WhatsAppComposeTab() {
         } else {
           setTemplateId("");
         }
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setTemplatesLoading(false);
 
-        // Background refresh so newly approved Meta templates appear without
-        // blocking the compose screen.
-        if (status?.connected) {
+        void listWhatsAppRecipients(businessId)
+          .then((people) => {
+            if (!cancelled) setRecipients(people);
+          })
+          .catch(() => undefined)
+          .finally(() => {
+            if (!cancelled) setRecipientsLoading(false);
+          });
+
+        if (connection?.connected) {
           try {
             const synced = await syncWhatsAppTemplates(businessId);
             if (cancelled) return;
@@ -164,14 +161,17 @@ export default function WhatsAppComposeTab() {
         toast.error(
           error?.response?.data?.error || t("whatsapp.errors.loadCompose")
         );
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setTemplatesLoading(false);
+          setRecipientsLoading(false);
+        }
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [businessId, t, searchParams]);
+  }, [businessId, t, searchParams, connection?.connected]);
 
   const selectedTemplate = useMemo(
     () => templates.find((tpl) => tpl._id === templateId) || null,
@@ -428,7 +428,16 @@ export default function WhatsAppComposeTab() {
       return;
     }
     if (!connection?.readyToSend) {
-      toast.error(t("whatsapp.compose.registrationRequired"));
+      const registrationAlert = (connection?.alerts || []).some(
+        (row) => row.key === "phone_registration"
+      );
+      toast.error(
+        t(
+          registrationAlert
+            ? "whatsapp.compose.registrationRequired"
+            : "whatsapp.compose.notReadyToSend"
+        )
+      );
       return;
     }
     if (!templateId || !selectedTemplate) {
@@ -512,16 +521,12 @@ export default function WhatsAppComposeTab() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className={`${cardBase} flex items-center justify-center gap-2 p-10`}>
-        <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
-        <span className="text-sm font-semibold text-slate-600">
-          {t("whatsapp.loading")}
-        </span>
-      </div>
-    );
-  }
+  const phoneRegistrationAlert = (connection?.alerts || []).find(
+    (row) => row.key === "phone_registration"
+  );
+  const otherAlerts = (connection?.alerts || []).filter(
+    (row) => row.key !== "connection" && row.key !== "phone_registration"
+  );
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir={getTextDirection(i18n.language)}>
@@ -548,7 +553,7 @@ export default function WhatsAppComposeTab() {
           </div>
         )}
 
-        {connection?.connected && !connection?.readyToSend && (
+        {connection?.connected && phoneRegistrationAlert && (
           <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -569,6 +574,18 @@ export default function WhatsAppComposeTab() {
             </button>
           </div>
         )}
+
+        {otherAlerts.map((alert) => (
+          <div
+            key={`${alert.key}-${alert.i18nKey}`}
+            className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <p>{t(alert.i18nKey || "whatsapp.hub.issue")}</p>
+            </div>
+          </div>
+        ))}
 
         <section className={`${cardBase} p-4 sm:p-5`}>
           <h2 className="text-base font-black text-slate-900">
@@ -600,7 +617,12 @@ export default function WhatsAppComposeTab() {
                 value={templateId}
                 onChange={(e) => setTemplateId(e.target.value)}
               >
-                {templates.length === 0 && (
+                {templatesLoading && (
+                  <option value="">
+                    {t("whatsapp.loading")}
+                  </option>
+                )}
+                {!templatesLoading && templates.length === 0 && (
                   <option value="">
                     {t("whatsapp.compose.noTemplatesYet")}
                   </option>
@@ -794,7 +816,11 @@ export default function WhatsAppComposeTab() {
                 />
               </div>
               <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-slate-200 p-2">
-                {filteredRecipients.length === 0 ? (
+                {recipientsLoading ? (
+                  <p className="px-2 py-6 text-center text-sm font-medium text-slate-400">
+                    {t("whatsapp.loading")}
+                  </p>
+                ) : filteredRecipients.length === 0 ? (
                   <p className="px-2 py-6 text-center text-sm font-medium text-slate-400">
                     {t("whatsapp.compose.noClients")}
                   </p>

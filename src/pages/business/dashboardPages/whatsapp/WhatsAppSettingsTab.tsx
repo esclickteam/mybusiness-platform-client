@@ -941,27 +941,29 @@ export default function WhatsAppSettingsTab() {
   const readyToSend = Boolean(connection?.readyToSend);
   const needsRegistration =
     linked &&
-    !readyToSend &&
+    String(connection?.phonePlatformStatus || "").toUpperCase() !== "CONNECTED" &&
     (connection?.registrationStatus === "required" ||
       connection?.registrationStatus === "pending" ||
-      connection?.registrationStatus === "failed" ||
-      connection?.registrationStatus === "" ||
-      !connection?.phoneRegistered);
+      connection?.registrationStatus === "failed");
   const tone = readinessTone(connection);
   const statusTitle = readyToSend
     ? t("whatsapp.settings.readyToSend")
     : connection?.registrationStatus === "failed"
       ? t("whatsapp.settings.registrationFailed")
-      : linked
+      : needsRegistration
         ? t("whatsapp.settings.registrationRequired")
-        : t("whatsapp.settings.disconnectedStatus");
+        : linked
+          ? t("whatsapp.hub.connected")
+          : t("whatsapp.settings.disconnectedStatus");
   const statusHint = readyToSend
     ? t("whatsapp.settings.connectedHint")
     : connection?.registrationStatus === "failed"
       ? t("whatsapp.settings.registrationFailedHint")
-      : linked
+      : needsRegistration
         ? t("whatsapp.settings.registrationRequiredHint")
-        : t("whatsapp.settings.disconnectedHint");
+        : linked
+          ? t("whatsapp.settings.connectedHint")
+          : t("whatsapp.settings.disconnectedHint");
 
   return (
     <div className="space-y-4" dir={getTextDirection(i18n.language)}>

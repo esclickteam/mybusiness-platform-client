@@ -278,42 +278,47 @@ export default function MetaBillingAccountCards({
               ) : null}
               {wabaBilling.paymentMethodDisplay ||
               wabaBilling.hasPaymentMethod === true ||
-              wabaBilling.hasPrimaryFundingId === true ? (
+              wabaBilling.hasPrimaryFundingId === true ||
+              wabaBilling.paymentStatus === "meta_direct" ||
+              wabaBilling.paymentStatus === "credit_line" ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  {t("meta.billing.paymentSaved", "אמצעי תשלום שמור")}
-                  {wabaBilling.paymentMethodDisplay
-                    ? ` (${wabaBilling.paymentMethodDisplay})`
-                    : ""}
+                  {t("meta.billing.paymentConnected", "אמצעי תשלום מחובר")}
+                  {wabaBilling.paymentStatus === "meta_direct"
+                    ? ` · ${t("meta.billing.paymentDirect", "Meta Direct Billing")}`
+                    : wabaBilling.paymentStatus === "credit_line"
+                      ? ` · ${t("meta.billing.paymentCreditLine", "Credit line")}`
+                      : wabaBilling.paymentMethodDisplay
+                        ? ` (${wabaBilling.paymentMethodDisplay})`
+                        : ""}
                 </p>
               ) : null}
               {!wabaBilling.paymentMethodDisplay &&
               (wabaBilling.hasPaymentMethod === false ||
-                wabaBilling.hasPrimaryFundingId === false) ? (
+                wabaBilling.hasPrimaryFundingId === false ||
+                wabaBilling.paymentStatus === "needs_attention") ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  {t(
-                    "meta.billing.noPaymentWaba",
-                    "אין אמצעי תשלום — הוסיפו אחד בהגדרות חשבון וואטסאפ במטא"
-                  )}
+                  {t("meta.billing.noPaymentWaba", "לא מוגדר / נדרש טיפול")}
                 </p>
               ) : null}
-              {!wabaBilling.paymentMethodDisplay &&
-              wabaBilling.hasPaymentMethod !== true &&
-              wabaBilling.hasPrimaryFundingId !== true &&
-              wabaBilling.hasPaymentMethod !== false &&
-              wabaBilling.hasPrimaryFundingId !== false ? (
+              {wabaBilling.paymentStatus === "unverifiable" ||
+              (!wabaBilling.paymentMethodDisplay &&
+                wabaBilling.hasPaymentMethod !== true &&
+                wabaBilling.hasPrimaryFundingId !== true &&
+                wabaBilling.hasPaymentMethod !== false &&
+                wabaBilling.hasPrimaryFundingId !== false &&
+                wabaBilling.paymentStatus !== "needs_attention" &&
+                wabaBilling.paymentStatus !== "meta_direct" &&
+                wabaBilling.paymentStatus !== "credit_line") ? (
                 <p className="inline-flex items-start gap-1 text-xs font-semibold text-slate-600">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
                   <span>
-                    {t(
-                      "meta.billing.checkPaymentMeta",
-                      "אמצעי תשלום: בדקו בהגדרות חשבון וואטסאפ במטא"
-                    )}
+                    {t("meta.billing.paymentUnverifiable", "לא ניתן לאמת דרך API")}
                     <span className="mt-0.5 block font-medium text-slate-500">
                       {t(
-                        "meta.billing.checkPaymentHint",
-                        "מטא מציגה את הכרטיס שם (סיכום ← אמצעי תשלום). האפליקציה לא מקבלת מותג/4 ספרות אחרונות בסגנון חשבון מודעות עבור וואטסאפ."
+                        "meta.billing.paymentUnverifiableHint",
+                        "Meta לא מחזירה אישור ודאי על אמצעי התשלום בהרשאות הנוכחיות. לא מציגים מצב שגוי."
                       )}
                     </span>
                   </span>
