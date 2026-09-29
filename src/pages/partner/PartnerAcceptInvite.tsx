@@ -7,10 +7,7 @@ import {
   clearManagedBusinessContext,
 } from "../../lib/partnerManagedContext";
 import { clearAdminActiveBusinessId } from "../../utils/adminTenant";
-import {
-  clearRefreshDead,
-  resetSessionInvalidationGuard,
-} from "../../utils/sessionInvalidation";
+import { resetSessionInvalidationGuard } from "../../utils/sessionInvalidation";
 import { syncLanguageOnLogin } from "../../i18n/persistLanguage";
 
 export default function PartnerAcceptInvite() {
@@ -54,7 +51,6 @@ export default function PartnerAcceptInvite() {
       );
       if (data?.accessToken) {
         resetSessionInvalidationGuard();
-        clearRefreshDead();
         clearManagedBusinessContext();
         clearAdminActiveBusinessId();
         localStorage.setItem("token", data.accessToken);
