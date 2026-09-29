@@ -85,7 +85,7 @@ describe("WhatsAppViaMetaCard", () => {
         }}
       />
     );
-    expect(screen.getByText("whatsapp.viaMeta.paymentUnknown")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.paymentUnverifiable")).toBeTruthy();
     expect(screen.queryByText("whatsapp.viaMeta.paymentRequiredTitle")).toBeNull();
   });
 });

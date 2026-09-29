@@ -219,6 +219,12 @@ export default function WhatsAppMain() {
       setConnectionLoading(true);
     }
     try {
+      if (!hasLoadedConnectionRef.current) {
+        const cached = await getWhatsAppStatus(businessId, { cached: true });
+        setConnection(cached);
+        hasLoadedConnectionRef.current = true;
+        setConnectionLoading(false);
+      }
       const status = await getWhatsAppStatus(businessId);
       setConnection(status);
       hasLoadedConnectionRef.current = true;

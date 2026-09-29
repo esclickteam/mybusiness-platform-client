@@ -88,12 +88,27 @@ export default function WhatsAppViaMetaCard({
       .toUpperCase() === "BLOCKED" ||
     (wabaStatus && wabaStatus !== "ACTIVE");
 
+  const paymentStatus = String(
+    health?.paymentStatus || health?.paymentStatusRaw || ""
+  );
   const payment =
+    paymentStatus === "meta_direct" ||
+    paymentStatus === "credit_line" ||
     health?.hasPaymentMethod === true
       ? "configured"
-      : health?.hasPaymentMethod === false
+      : paymentStatus === "needs_attention" || health?.hasPaymentMethod === false
         ? "missing"
         : "unknown";
+  const paymentLabel =
+    paymentStatus === "meta_direct"
+      ? `${t("whatsapp.viaMeta.paymentConnected")} · ${t("whatsapp.viaMeta.paymentDirect")}`
+      : paymentStatus === "credit_line"
+        ? t("whatsapp.viaMeta.paymentCreditLine")
+        : payment === "configured"
+          ? t("whatsapp.viaMeta.paymentConnected")
+          : payment === "missing"
+            ? t("whatsapp.viaMeta.paymentNeedsAttention")
+            : t("whatsapp.viaMeta.paymentUnverifiable");
 
   const qualityLabel = formatQualityRating(connection?.qualityRating, t);
   const limitLabel = formatMessagingLimit(connection?.messagingLimitTier, t);
@@ -198,10 +213,10 @@ export default function WhatsAppViaMetaCard({
             payment === "configured",
             payment !== "configured",
             payment === "configured"
-              ? t("whatsapp.viaMeta.paymentConfigured")
+              ? paymentLabel
               : payment === "missing"
-                ? t("whatsapp.viaMeta.paymentMissing")
-                : t("whatsapp.viaMeta.paymentUnknown")
+                ? paymentLabel
+                : paymentLabel
           )}
         />
         {qualityLabel ? (

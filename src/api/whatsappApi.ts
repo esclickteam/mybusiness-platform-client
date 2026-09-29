@@ -31,10 +31,19 @@ export type WhatsAppWabaBillingHealth = {
   canSendMessage?: string | null;
   hasPrimaryFundingId?: boolean | null;
   /** Same semantics as Ad Account hasPaymentMethod — WABA biller only. */
+  /** true | false | null when Graph cannot confirm WABA payment method */
   hasPaymentMethod?: boolean | null;
   primaryFundingId?: string | null;
-  /** e.g. "MASTERCARD *4787" from Meta CreditCard fields */
   paymentMethodDisplay?: string | null;
+  paymentStatus?:
+    | "meta_direct"
+    | "credit_line"
+    | "needs_attention"
+    | "unverifiable"
+    | string;
+  billingModel?: string;
+  paymentStatusRaw?: string;
+  creditLine?: unknown;
   /** Card brand/last4 not exposed on WABA the way Ad Account exposes display_string */
   paymentMethodDetailsUnavailable?: boolean;
   severity: "ok" | "warning" | "error";
@@ -101,6 +110,15 @@ export type WhatsAppConnection = {
   businessVerificationStatus?: string;
   canSendMessage?: string;
   hasPrimaryFundingId?: boolean | null;
+  alerts?: Array<{
+    key: string;
+    severity?: string;
+    i18nKey?: string;
+    raw?: Record<string, unknown>;
+  }>;
+  phonePlatformType?: string;
+  billingModel?: string;
+  paymentStatusRaw?: string;
   registration?: {
     attempted?: boolean;
     success?: boolean;
@@ -568,11 +586,14 @@ export async function getWhatsAppOverview(businessId: string) {
 
 export async function getWhatsAppStatus(
   businessId: string,
-  opts?: { enrichPayment?: boolean }
+  opts?: { enrichPayment?: boolean; cached?: boolean }
 ) {
+  const extra: Record<string, string | number> = {};
+  if (opts?.enrichPayment) extra.enrichPayment = 1;
+  if (opts?.cached) extra.cached = 1;
   const { data } = await API.get(
     "/whatsapp/status",
-    withBusiness(businessId, opts?.enrichPayment ? { enrichPayment: 1 } : undefined)
+    withBusiness(businessId, Object.keys(extra).length ? extra : undefined)
   );
   return data as { success: boolean } & WhatsAppConnection;
 }
