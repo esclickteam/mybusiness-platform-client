@@ -70,6 +70,7 @@ export type WhatsAppConnection = {
   displayPhoneNumber: string;
   verifiedName: string;
   nameStatus?: string;
+  nameStatusDisplay?: string;
   qualityRating?: string;
   messagingLimitTier?: string;
   metaBusinessId?: string;
@@ -1101,6 +1102,7 @@ export async function syncWhatsAppAccountHealth(businessId: string) {
 export type WhatsAppBusinessProfile = {
   displayName: string;
   nameStatus: string;
+  nameStatusDisplay?: string;
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
@@ -1113,6 +1115,7 @@ export type WhatsAppBusinessProfile = {
   vertical: string;
   syncedAt: string | null;
   lastMetaSyncAt?: string | null;
+  source?: string;
   editableFields: string[];
   readOnlyFields: string[];
 };
@@ -1131,6 +1134,7 @@ export async function syncWhatsAppBusinessProfile(businessId: string) {
   return data as {
     success?: boolean;
     ok?: boolean;
+    connection?: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
   };
 }
@@ -1153,6 +1157,25 @@ export async function updateWhatsAppBusinessProfile(
   return data as {
     success?: boolean;
     ok?: boolean;
+    connection?: WhatsAppConnection;
+    profile: WhatsAppBusinessProfile;
+  };
+}
+
+export async function uploadWhatsAppBusinessProfilePicture(
+  businessId: string,
+  file: File
+) {
+  const form = new FormData();
+  form.append("businessId", businessId);
+  form.append("file", file);
+  const { data } = await API.post("/whatsapp/profile/picture", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data as {
+    success?: boolean;
+    ok?: boolean;
+    connection?: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
   };
 }

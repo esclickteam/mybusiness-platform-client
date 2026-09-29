@@ -23,21 +23,13 @@ export function qualityBadgeClass(raw?: string | null): string {
   return "bg-slate-50 text-slate-600 border-slate-100";
 }
 
-export function formatNameStatus(raw?: string | null, t?: Translate): string {
+export function formatNameStatus(raw?: string | null, _t?: Translate): string {
   const s = String(raw || "").trim().toUpperCase();
   if (!s) return "";
-  const map: Record<string, [string, string]> = {
-    APPROVED: ["whatsapp.hub.approved", "Approved"],
-    PENDING_REVIEW: ["whatsapp.hub.pending", "Pending"],
-    DECLINED: ["whatsapp.hub.rejected", "Rejected"],
-    REJECTED: ["whatsapp.hub.rejected", "Rejected"],
-    EXPIRED: ["whatsapp.hub.nameExpired", "Expired"],
-    AVAILABLE_WITHOUT_REVIEW: ["whatsapp.hub.nameAvailable", "Available"],
-    NONE: ["whatsapp.hub.nameNone", "None"],
-  };
-  const hit = map[s];
-  if (!hit) return raw || "";
-  return tr(t, hit[0], hit[1]);
+  if (s === "APPROVED" || s === "AVAILABLE_WITHOUT_REVIEW") return "APPROVED";
+  if (s === "PENDING_REVIEW" || s === "PENDING") return "PENDING";
+  if (s === "DECLINED" || s === "REJECTED") return "REJECTED";
+  return s;
 }
 
 export function nameStatusBadgeClass(raw?: string | null): string {
@@ -45,7 +37,9 @@ export function nameStatusBadgeClass(raw?: string | null): string {
   if (s === "APPROVED" || s === "AVAILABLE_WITHOUT_REVIEW") {
     return "bg-emerald-50 text-emerald-700 border-emerald-100";
   }
-  if (s === "PENDING_REVIEW") return "bg-amber-50 text-amber-800 border-amber-100";
+  if (s === "PENDING_REVIEW" || s === "PENDING") {
+    return "bg-amber-50 text-amber-800 border-amber-100";
+  }
   if (s === "DECLINED" || s === "REJECTED" || s === "EXPIRED") {
     return "bg-rose-50 text-rose-700 border-rose-100";
   }
