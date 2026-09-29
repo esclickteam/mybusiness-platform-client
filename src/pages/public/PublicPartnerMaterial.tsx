@@ -45,10 +45,6 @@ export default function PublicPartnerMaterial() {
             <p className="mt-2 font-bold text-slate-500">{item.description}</p>
             {item.videoReady && item.localeVideoUrl ? (
               <video className="mt-6 w-full rounded-2xl" controls src={item.localeVideoUrl} />
-            ) : item.assetType === "video_script" || item.assetType === "short_video" ? (
-              <p className="mt-6 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
-                {t("partnerCenter.readyForProduction")}
-              </p>
             ) : null}
             <pre className="mt-6 whitespace-pre-wrap text-sm font-bold leading-relaxed text-slate-700">
               {item.body}
