@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import {
   Copy,
   Download,
@@ -97,6 +98,7 @@ export default function PartnerCenterHub({
   const { t, i18n } = useTranslation();
   const locale = coerceSupportedLanguage(i18n.language);
   const dir = getTextDirection(locale);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("learn_bizuply");
   const [doneSlugs, setDoneSlugs] = useState<string[]>([]);
@@ -258,6 +260,17 @@ export default function PartnerCenterHub({
     else openLesson(item);
     if (tab) setPreview(item);
   }
+
+  useEffect(() => {
+    if (admin || loading || !onboarding) return;
+    const raw = String(searchParams.get("module") || "").trim();
+    if (!raw) return;
+    const byNumber = onboarding.modules.find((row) => String(row.n) === raw);
+    const slug = byNumber?.slug || raw;
+    openMaterialBySlug(slug, "video");
+    // Open once per module query so refresh still works but loops do not.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin, loading, Boolean(onboarding), searchParams.get("module")]);
 
   const hubCounts = useMemo(() => {
     return HUB.map((hub) => ({
@@ -434,7 +447,14 @@ export default function PartnerCenterHub({
           snapshot={onboarding}
           materials={onboardingMaterials}
           busy={onboardingBusy}
-          onStart={() => applyOnboarding({ action: "start" }).then((next) => next?.modules?.[0] && openMaterialBySlug(next.modules[0].slug, "video"))}
+          onStart={() =>
+            applyOnboarding({ action: "start" }).then((next) => {
+              if (next?.modules?.[0]) {
+                setSearchParams({ module: "1" });
+                openMaterialBySlug(next.modules[0].slug, "video");
+              }
+            })
+          }
           onOpenMaterial={(slug) => openMaterialBySlug(slug)}
           onWatch={(slug) => openMaterialBySlug(slug, "video")}
           onDownload={async (slug) => {
