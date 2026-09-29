@@ -14,7 +14,7 @@ const DEMO_REL: Record<string, string> = {
   present: "dashboard",
 };
 
-export function partnerProductDemoUrl(demoKey: string) {
+const PUBLIC_FALLBACK: Record<string, string> = {
   dashboard: "/crm",
   crm: "/crm",
   leads: "/crm",
