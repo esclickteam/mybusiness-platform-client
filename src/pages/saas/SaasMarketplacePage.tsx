@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { fetchMarketplace } from "../../saas/api";
 import {
@@ -18,8 +18,6 @@ import {
   GlobeSection,
   HeroStage,
   LaunchPicker,
-  PathTimeline,
-  PreviewDeck,
   ProductRow,
   StorySection,
   TrustStrip,
@@ -96,12 +94,13 @@ export default function SaasMarketplacePage() {
       <SaasHeader tone="dark" onTalk={() => openLead({ ctaSource: "talk_to_us" })} />
       <main>
         <section
+          id="top"
           className="saas-hero"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           <div className="saas-hero-grid">
-            <div>
+            <div className="saas-hero-copy">
               <p className="saas-kicker saas-kicker-light">{t("saasMarket.hero.eyebrow")}</p>
               <h1>
                 <MixedText value={t("saasMarket.hero.title")} />
@@ -113,7 +112,7 @@ export default function SaasMarketplacePage() {
                 <a className="saas-btn" href="#platforms">
                   {t("saasMarket.hero.viewPlatforms")}
                 </a>
-                <button type="button" className="saas-btn saas-btn-ghost" onClick={() => hero && setDemo(hero)}>
+                <button type="button" className="saas-btn saas-btn-ghost saas-btn-demo" onClick={() => hero && setDemo(hero)}>
                   {t("saasMarket.hero.watchDemo")}
                 </button>
                 <a className="saas-btn saas-btn-ghost" href="#models">
@@ -131,6 +130,7 @@ export default function SaasMarketplacePage() {
 
         <section id="platforms" className="saas-band saas-tone-mist">
           <div className="saas-wrap">
+            <motion.div {...sectionRise(reduce)}>
             <p className="saas-kicker">{t("saasMarket.platforms.eyebrow")}</p>
             <h2 className="saas-title">
               <MixedText value={t("saasMarket.platforms.title")} />
@@ -146,26 +146,24 @@ export default function SaasMarketplacePage() {
                 </FilterChip>
               ))}
             </div>
+            </motion.div>
             {error ? <p className="saas-status">{error}</p> : null}
             {loading ? <p className="saas-status">{t("saasMarket.platforms.loading")}</p> : null}
             {!loading && !error && visible.length === 0 ? <p className="saas-status">{t("saasMarket.platforms.empty")}</p> : null}
             <div className="saas-catalog">
               {visible.map((product, index) => (
-                <ProductRow key={product.slug} product={product} flipped={index % 2 === 1} onDemo={setDemo} />
+                <ProductRow key={product.slug} product={product} flipped={index % 2 === 1} index={index} onDemo={setDemo} />
               ))}
             </div>
           </div>
         </section>
 
-        <PreviewDeck product={hero} onDemo={setDemo} />
         <LaunchPicker onApply={(model, cta) => openLead({ model, ctaSource: cta, slug: hero?.slug })} />
         <GlobeSection products={products} initialSlug={hero?.slug} onRequest={(seed) => setLead(seed)} />
-        <PathTimeline />
-
         <FaqList wide />
 
-        <section className="saas-final">
-          <div className="saas-wrap">
+        <section id="close" className="saas-final">
+          <motion.div className="saas-wrap" {...sectionRise(reduce)}>
             <h2>
               <MixedText value={t("saasMarket.closing.title")} />
             </h2>
@@ -189,10 +187,11 @@ export default function SaasMarketplacePage() {
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         </section>
 
       </main>
+      <SectionRail />
       <SaasFooter tone="dark" />
       <WhatsAppDock href={wa} />
       <StickyActions
@@ -206,6 +205,65 @@ export default function SaasMarketplacePage() {
       <LeadDialog seed={lead} products={products} onClose={() => setLead(null)} />
       <DemoTheater product={demo} onClose={() => setDemo(null)} />
     </div>
+  );
+}
+
+function sectionRise(reduce: boolean | null) {
+  if (reduce || typeof IntersectionObserver === "undefined") return {};
+  return {
+    initial: { opacity: 0, y: 14 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.35 },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  };
+}
+
+const RAIL_IDS = ["top", "what-is-saas", "why", "platforms", "models", "exclusive", "faq", "close"] as const;
+
+function SectionRail() {
+  const { t } = useSaasLocale();
+  const labels: Record<(typeof RAIL_IDS)[number], string> = {
+    top: t("saasMarket.hero.eyebrow"),
+    "what-is-saas": t("saasMarket.nav.saas"),
+    why: t("saasMarket.why.eyebrow"),
+    platforms: t("saasMarket.nav.platforms"),
+    models: t("saasMarket.nav.models"),
+    exclusive: t("saasMarket.nav.exclusive"),
+    faq: t("saasMarket.nav.faq"),
+    close: t("saasMarket.nav.talk"),
+  };
+  const [active, setActive] = useState("top");
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const nodes = RAIL_IDS.map((id) => document.getElementById(id)).filter((node): node is HTMLElement => Boolean(node));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const hit = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (hit?.target.id) setActive(hit.target.id);
+      },
+      { rootMargin: "-18% 0px -62% 0px", threshold: [0.1, 0.25, 0.5] }
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <nav className="saas-rail" aria-label={t("saasMarket.nav.progress")}>
+      {RAIL_IDS.map((id) => (
+        <a
+          key={id}
+          href={`#${id}`}
+          className={active === id ? "is-on" : ""}
+          aria-label={labels[id]}
+          aria-current={active === id ? "true" : undefined}
+        >
+          <span />
+        </a>
+      ))}
+    </nav>
   );
 }
 

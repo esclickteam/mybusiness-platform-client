@@ -34,6 +34,7 @@ export type SaasMarketCopy = {
     exclusive: string;
     faq: string;
     talk: string;
+    progress: string;
   };
   hero: {
     eyebrow: string;

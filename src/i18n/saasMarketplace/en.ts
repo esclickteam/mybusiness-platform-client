@@ -79,6 +79,7 @@ export const en: SaasMarketCopy = {
     exclusive: "Country license",
     faq: "FAQ",
     talk: "Talk to Us",
+    progress: "On this page",
   },
   hero: {
     eyebrow: "Bizuply SaaS Marketplace",

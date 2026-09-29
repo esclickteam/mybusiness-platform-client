@@ -10,6 +10,7 @@ export const he: SaasMarketCopy = {
     exclusive: "רישיון מדינה",
     faq: "שאלות",
     talk: "דברו איתנו",
+    progress: "בעמוד",
   },
   hero: {
     eyebrow: "מרקטפלייס ה-SaaS של Bizuply",
