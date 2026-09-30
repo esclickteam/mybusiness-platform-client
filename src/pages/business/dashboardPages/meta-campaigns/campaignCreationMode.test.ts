@@ -56,5 +56,12 @@ describe("BusinessDashboardRoutes wiring", () => {
     expect(source).toMatch(
       /path="edit\/:campaignId"\s+element=\{<MetaCampaignEditorPage/
     );
+    expect(source).not.toMatch(/MetaMediaLibraryTab/);
+    expect(source).toMatch(/path="library"\s+element=\{<Navigate to="overview"/);
+    const shell = fs.readFileSync(
+      path.resolve(__dirname, "./MetaCampaignsMain.tsx"),
+      "utf8"
+    );
+    expect(shell).not.toMatch(/path: "library"/);
   });
 });
