@@ -9539,6 +9539,7 @@
       "rules": "Automation Rules",
       "goals": "Campaign goals",
       "portfolio": "Portfolio Optimization",
+      "copilot": "AI Marketing Copilot",
       "settings": "Meta connection"
     },
     "manager": {
@@ -10542,6 +10543,24 @@
       "proposedTotal": "Proposed total budget",
       "blendedCpl": "Blended CPL",
       "explanation": "Explanation"
+    },
+    "copilot": {
+      "title": "AI Marketing Copilot",
+      "subtitle": "Ask about your Meta ads in plain language. Numbers are calculated first. Suggested actions always need your review.",
+      "placeholder": "Where am I wasting money?",
+      "ask": "Ask",
+      "thinking": "Analyzing…",
+      "facts": "Supporting facts",
+      "basedOn": "Based on",
+      "reviewAction": "Review action",
+      "insufficient": "There isn't enough data yet to answer this reliably.",
+      "synced": "Based on data synced {{minutes}} minutes ago",
+      "qAttention": "What needs my attention today?",
+      "qOverspend": "Where am I overspending?",
+      "qGoal": "Which campaign is closest to its goal?",
+      "qChanged": "What changed in the last 7 days?",
+      "qFatigue": "Are any ads showing fatigue?",
+      "qScale": "Where can I safely scale?"
     },
     "empty": {
       "notConnectedTitle": "No connected ad account found",
