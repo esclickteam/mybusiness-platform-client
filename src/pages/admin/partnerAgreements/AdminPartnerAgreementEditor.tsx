@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "../AdminsHeader";
 import CountrySelect from "./CountrySelect";
 import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPanel";
+import SignatoriesPanel from "./SignatoriesPanel";
+import { signatoryCopy } from "./signatoryCopy";
 import {
   agreementError,
   amendPartnerAgreement,
@@ -16,9 +18,12 @@ import {
   previewDraftAgreement,
   quoteAgreementCommission,
   renewPartnerAgreement,
+  resendSignatoryLink,
+  revokeSignatoryLink,
   savePartnerAgreement,
   searchAgreementPartners,
   type AgreementInput,
+  type AgreementSignatory,
   type CountryOption,
   type PartnerAgreement,
 } from "../../../lib/partnerAgreementApi";
@@ -89,6 +94,11 @@ const EMPTY: AgreementInput = {
   minimumCustomerTarget: "",
   renewalPrice: "",
   renewalTerm: "12 months",
+  signingMode: "parallel",
+  signatories: [
+    { party: "partner", fullName: "", title: "", email: "", phone: "", order: 1, required: true },
+    { party: "bizuply", fullName: "", title: "", email: "", phone: "", order: 1, required: true },
+  ],
 };
 
 function fromAgreement(row: PartnerAgreement): AgreementInput {
@@ -150,6 +160,21 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     minimumCustomerTarget: row.minimumCustomerTarget || "",
     renewalPrice: row.renewalPrice ?? "",
     renewalTerm: row.renewalTerm || "12 months",
+    signingMode: row.signingMode || "parallel",
+    signatories: row.signatories?.length
+      ? row.signatories
+      : [
+          {
+            party: "partner",
+            fullName: row.signatoryName || "",
+            title: row.signatoryTitle || "",
+            email: row.signatoryEmail || "",
+            phone: row.phone || "",
+            order: 1,
+            required: true,
+          },
+          { party: "bizuply", fullName: "", title: "", email: "", phone: "", order: 1, required: true },
+        ],
   };
 }
 
@@ -231,6 +256,12 @@ export default function AdminPartnerAgreementEditor() {
       signatoryName: "Test Signatory",
       signatoryTitle: "Director",
       signatoryEmail: "signatory-test@example.com",
+      signingMode: "parallel",
+      signatories: [
+        { party: "partner", fullName: "Test Signatory", title: "Director", email: "signatory-test@example.com", phone: "+258000000", order: 1, required: true },
+        { party: "partner", fullName: "Second Test Signatory", title: "Manager", email: "second-signatory-test@example.com", phone: "+258000001", order: 2, required: true },
+        { party: "bizuply", fullName: "", title: "", email: "", phone: "", order: 1, required: true },
+      ],
       agreementDate: "2026-01-15",
       countryCode: "MZ",
       territoryType: "exclusive",
@@ -413,6 +444,74 @@ export default function AdminPartnerAgreementEditor() {
     }
   }
 
+  function onSignatories(signatories: AgreementSignatory[], mode: "parallel" | "sequential") {
+    const primary = signatories.find((row) => row.party === "partner" && row.required !== false && row.fullName) || signatories.find((row) => row.party === "partner");
+    setForm((current) => ({
+      ...current,
+      signatories,
+      signingMode: mode,
+      signatoryName: primary?.fullName || "",
+      signatoryTitle: primary?.title || "",
+      signatoryEmail: primary?.email || "",
+    }));
+  }
+
+  async function onResend(signatoryId: string) {
+    if (!record) return;
+    setBusy(true);
+    setError("");
+    try {
+      const link = await resendSignatoryLink(record.id, signatoryId);
+      setMessage(`${signatoryCopy(form.locale).text.linkReady} ${link.path}`);
+      const loaded = await getPartnerAgreement(record.id);
+      setRecord(loaded.agreement);
+      setForm(fromAgreement(loaded.agreement));
+    } catch (err) {
+      setError(agreementError(err, "Could not resend the signing link."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onRevoke(signatoryId: string) {
+    if (!record) return;
+    setBusy(true);
+    setError("");
+    try {
+      await revokeSignatoryLink(record.id, signatoryId);
+      const loaded = await getPartnerAgreement(record.id);
+      setRecord(loaded.agreement);
+      setForm(fromAgreement(loaded.agreement));
+    } catch (err) {
+      setError(agreementError(err, "Could not revoke the signing link."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onSignBizuply(signatory: AgreementSignatory) {
+    if (!record || !signatory.signatoryId) return;
+    const company = record.bizuplyLegalCompanyName || "";
+    setBusy(true);
+    setError("");
+    try {
+      const result = await postAgreementAction(record.id, "sign", {
+        party: "bizuply",
+        signatoryId: signatory.signatoryId,
+        confirmed: true,
+        method: "typed",
+        typedName: signatory.fullName,
+        confirmationText: `I am authorized to sign this agreement on behalf of ${company}.`,
+      });
+      setRecord(result.agreement);
+      setForm(fromAgreement(result.agreement));
+    } catch (err) {
+      setError(agreementError(err, "Could not sign for Bizuply."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function onRenew() {
     if (!record) return;
     setBusy(true);
@@ -536,15 +635,6 @@ export default function AdminPartnerAgreementEditor() {
           <Field label="WhatsApp">
             <input className={inputClass} disabled={!editable} value={form.whatsapp || ""} onChange={(e) => set("whatsapp", e.target.value)} />
           </Field>
-          <Field label="Authorized signatory name">
-            <input className={inputClass} disabled={!editable} value={form.signatoryName || ""} onChange={(e) => set("signatoryName", e.target.value)} />
-          </Field>
-          <Field label="Authorized signatory title">
-            <input className={inputClass} disabled={!editable} value={form.signatoryTitle || ""} onChange={(e) => set("signatoryTitle", e.target.value)} />
-          </Field>
-          <Field label="Authorized signatory email">
-            <input className={inputClass} disabled={!editable} value={form.signatoryEmail || ""} onChange={(e) => set("signatoryEmail", e.target.value)} />
-          </Field>
           <Field label="Entity type">
             <input className={inputClass} disabled={!editable} value={form.entityType || ""} onChange={(e) => set("entityType", e.target.value)} />
           </Field>
@@ -552,6 +642,31 @@ export default function AdminPartnerAgreementEditor() {
             <input className={inputClass} disabled={!editable} value={form.taxNumber || ""} onChange={(e) => set("taxNumber", e.target.value)} />
           </Field>
         </Section>
+
+        <SignatoriesPanel
+          locale={form.locale}
+          signingMode={form.signingMode || "parallel"}
+          signatories={form.signatories || []}
+          editable={editable}
+          locked={Boolean(record?.signatories?.some((row) => row.signedAt))}
+          agreementId={record?.id}
+          busy={busy}
+          onChange={onSignatories}
+          onResend={(signatoryId) => void onResend(signatoryId)}
+          onRevoke={(signatoryId) => void onRevoke(signatoryId)}
+          onSignBizuply={(signatory) => void onSignBizuply(signatory)}
+        />
+        {record?.signatureProgress ? (
+          <div className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="signature-progress" dir={signatoryCopy(form.locale).dir}>
+            <p className="text-sm font-black text-slate-900" data-testid="partner-signature-progress">
+              {signatoryCopy(form.locale).text.partnerProgress}: {record.signatureProgress.partner.completed} of {record.signatureProgress.partner.required} {signatoryCopy(form.locale).text.completed}
+            </p>
+            <p className="mt-1 text-sm font-black text-slate-900" data-testid="bizuply-signature-progress">
+              {signatoryCopy(form.locale).text.bizuplyProgress}: {record.signatureProgress.bizuply.completed} of {record.signatureProgress.bizuply.required} {signatoryCopy(form.locale).text.completed}
+            </p>
+            {record.signatureStatusLabel ? <p className="mt-2 text-sm font-bold text-[#6D28D9]">{record.signatureStatusLabel}</p> : null}
+          </div>
+        ) : null}
 
         <Section title="Territory & Exclusivity">
           <Field label="Territory type">
@@ -731,10 +846,10 @@ export default function AdminPartnerAgreementEditor() {
           {status === "ready_for_review" ? <Action busy={busy} onClick={() => void run("send")}>Send for review</Action> : null}
           {status === "sent" ? <Action busy={busy} onClick={() => void run("sign")}>Mark signed</Action> : null}
           {status === "signed" ? <Action busy={busy} onClick={() => void run("payment-pending")}>Payment pending</Action> : null}
-          {(status === "signed" || status === "payment_pending") && record?.paymentStatus !== "paid" ? (
+          {["sent", "partially_signed", "partner_signed", "bizuply_signed", "payment_pending", "signed"].includes(status) && record?.paymentStatus !== "paid" ? (
             <Action busy={busy} onClick={() => void run("payment")}>Record payment</Action>
           ) : null}
-          {(status === "signed" || status === "payment_pending") && record?.paymentStatus === "paid" ? (
+          {status === "fully_signed" && record?.paymentStatus === "paid" ? (
             <Action busy={busy} onClick={() => void run("activate")}>Activate agreement</Action>
           ) : null}
           {status === "active" ? <Action busy={busy} onClick={() => void run("expire")}>Expire</Action> : null}
