@@ -71,18 +71,26 @@ function draftFromProfile(profile: WhatsAppBusinessProfile) {
   };
 }
 
+function isTransientRefreshError(message?: string | null) {
+  const text = String(message || "").trim();
+  if (!text) return false;
+  if (/failed to re-fetch whatsapp profile from meta/i.test(text)) return true;
+  return /^an unknown error has occurred/i.test(text) && /\bcode 1\b/.test(text);
+}
+
 function firstFieldError(errors?: Record<string, string> | null) {
   if (!errors) return "";
+  const cleaned = { ...errors };
+  if (isTransientRefreshError(cleaned._all)) delete cleaned._all;
   return (
-    errors._all ||
-    errors.about ||
-    errors.description ||
-    errors.vertical ||
-    errors.email ||
-    errors.address ||
-    errors.websites ||
-    errors.profilePictureUrl ||
-    Object.values(errors).find(Boolean) ||
+    cleaned.about ||
+    cleaned.description ||
+    cleaned.vertical ||
+    cleaned.email ||
+    cleaned.address ||
+    cleaned.websites ||
+    cleaned.profilePictureUrl ||
+    Object.values(cleaned).find(Boolean) ||
     ""
   );
 }
@@ -142,7 +150,11 @@ export default function WhatsAppProfileTab() {
     );
   };
 
-  const fieldErrors = profile?.fieldErrors || {};
+  const fieldErrors = Object.fromEntries(
+    Object.entries(profile?.fieldErrors || {}).filter(
+      ([key, value]) => key !== "_all" || !isTransientRefreshError(String(value || ""))
+    )
+  );
   const pictureUrl =
     pendingPhotoUrl || draft.profilePictureUrl || profile?.profilePictureUrl || "";
 
@@ -298,17 +310,26 @@ export default function WhatsAppProfileTab() {
         keepDraft: Boolean(picturePersistError),
       });
       await refreshConnection();
-      const syncError =
-        result.syncError ||
-        result.profile?.syncError ||
-        firstFieldError(result.fieldErrors || result.profile?.fieldErrors) ||
+      const fieldErrs = result.fieldErrors || result.profile?.fieldErrors || {};
+      const globalSaveError =
+        (!isTransientRefreshError(fieldErrs._all) && fieldErrs._all) ||
+        (!isTransientRefreshError(result.syncError) &&
+        result.ok === false &&
+        !firstFieldError(fieldErrs)
+          ? result.syncError
+          : "") ||
+        "";
+      const fieldSaveError =
+        firstFieldError(fieldErrs) ||
         (result.pictureSync?.ok === false
           ? result.pictureSync.error || t("whatsapp.hub.profilePhotoMetaError")
           : "") ||
         picturePersistError;
-      if (syncError) {
-        setActionWarning(syncError);
-        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
+      if (globalSaveError) {
+        setActionWarning(globalSaveError);
+        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${globalSaveError}`);
+      } else if (fieldSaveError) {
+        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${fieldSaveError}`);
       } else {
         setSaveSucceeded(true);
         toast.success(t("whatsapp.hub.profileSaved"));
@@ -379,16 +400,15 @@ export default function WhatsAppProfileTab() {
         </div>
       </div>
 
-      {saveSucceeded && !actionWarning && !profile?.syncError ? (
+      {saveSucceeded && !actionWarning ? (
         <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
           {t("whatsapp.hub.profileSaved")}
         </p>
       ) : null}
 
-      {actionWarning || profile?.syncError ? (
+      {actionWarning || fieldErrors._all ? (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-          {t("whatsapp.hub.profileSyncWarning")}{" "}
-          {actionWarning || profile?.syncError}
+          {t("whatsapp.hub.profileSyncWarning")} {actionWarning || fieldErrors._all}
         </p>
       ) : null}
 
