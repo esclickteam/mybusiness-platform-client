@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { path: "/admin/businesses", label: "עסקים" },
   { path: "/admin/affiliates", label: "שותפים" },
   { path: "/admin/partners", label: "פרטנרים", labelKey: "adminNav.partners" },
+  { path: "/admin/partner-agreements", label: "הסכמי פרטנר", labelKey: "adminNav.partnerAgreements" },
   { path: "/admin/partner-center", label: "מרכז שותפים", labelKey: "adminNav.partnerCenter" },
   { path: "/admin/partners/referrals", label: "צירופי פרטנרים", labelKey: "adminNav.partnerReferrals" },
   { path: "/admin/marketers", label: "משווקים" },
