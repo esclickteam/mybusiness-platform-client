@@ -11,6 +11,7 @@ import {
   type AutomationRule,
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
+import { AUTOMATION_TEMPLATES } from "./metaAutomationTemplates";
 
 const METRICS = [
   "spend",
@@ -156,6 +157,28 @@ export default function MetaAutomationRulesPage() {
         <p className="mt-2 text-xs font-bold text-violet-700">
           {t("metaCampaigns.automationRules.safety")}
         </p>
+      </section>
+
+      <section className={`${cardBase} space-y-3 p-4`}>
+        <p className="text-sm font-black">{t("metaCampaigns.ux.templates")}</p>
+        <div className="flex flex-wrap gap-2">
+          {AUTOMATION_TEMPLATES.map((row) => (
+            <button
+              key={row.id}
+              type="button"
+              className={btnSecondary}
+              onClick={() => {
+                setEditingId(null);
+                setForm({ ...emptyForm, ...row.payload });
+              }}
+            >
+              {t(row.nameKey)}
+            </button>
+          ))}
+          <button type="button" className={btnSecondary} onClick={() => setForm(emptyForm)}>
+            {t("metaCampaigns.ux.customRule")}
+          </button>
+        </div>
       </section>
 
       <section className={`${cardBase} space-y-3 p-4`}>

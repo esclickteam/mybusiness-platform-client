@@ -33,6 +33,8 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("goals")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("portfolio")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("copilot")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("campaigns")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("automations")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("mystery")).toBe(false);
   });
@@ -70,6 +72,9 @@ describe("BusinessDashboardRoutes wiring", () => {
       /path="copilot"\s+element=\{<MetaMarketingCopilotPage/
     );
     expect(source).toMatch(
+      /path="campaigns"\s+element=\{<MetaCampaignsCampaignsPage/
+    );
+    expect(source).toMatch(
       /path="edit\/:campaignId"\s+element=\{<MetaCampaignEditorPage/
     );
     expect(source).not.toMatch(/MetaMediaLibraryTab/);
@@ -78,6 +83,7 @@ describe("BusinessDashboardRoutes wiring", () => {
       path.resolve(__dirname, "./MetaCampaignsMain.tsx"),
       "utf8"
     );
+    expect(shell).not.toMatch(/path: "create"/);
     expect(shell).not.toMatch(/path: "library"/);
   });
 });

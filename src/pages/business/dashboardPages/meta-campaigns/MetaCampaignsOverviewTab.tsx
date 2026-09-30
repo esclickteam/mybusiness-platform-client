@@ -53,10 +53,11 @@ import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
-import CreateCampaignButton from "./CreateCampaignButton";
 import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
-import MetaPerformanceBreakdown from "./MetaPerformanceBreakdown";
+import MetaAdsOnboarding from "./MetaAdsOnboarding";
+import MetaAdsConnectionHealth from "./MetaAdsConnectionHealth";
+import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   DATE_RANGE_OPTIONS,
   daysAgoIso,
@@ -347,10 +348,13 @@ export default function MetaCampaignsOverviewTab() {
         toast.error(t("metaCampaigns.errors.permissionRead"));
       } else {
         setLoadError("generic");
+        const kind = metaAdsFriendlyMessage(error, "LOAD");
         toast.error(
-          error?.response?.data?.error ||
-            error?.response?.data?.message ||
-            t("metaCampaigns.errors.loadOverview")
+          kind === "RATE_LIMIT"
+            ? t("metaCampaigns.actions.rateLimited")
+            : kind === "TOKEN"
+              ? t("metaCampaigns.ux.tokenIssue")
+              : t("metaCampaigns.errors.loadOverview")
         );
       }
     } finally {
@@ -460,7 +464,7 @@ export default function MetaCampaignsOverviewTab() {
       if (Date.now() < backoffUntilRef.current) return;
       void load({ silent: true });
     };
-    const timer = window.setInterval(tick, 30000 + jitterMs);
+    const timer = window.setInterval(tick, 120000 + jitterMs);
     const onVisible = () => {
       if (document.visibilityState === "visible") tick();
     };
@@ -649,9 +653,33 @@ export default function MetaCampaignsOverviewTab() {
               {t("metaCampaigns.manager.syncing")}
             </span>
           ) : null}
-          <CreateCampaignButton basePath={basePath} />
         </div>
       </div>
+
+      <MetaAdsOnboarding
+        basePath={basePath}
+        connected={connected}
+        hasAccount={Boolean(selectedAccountId)}
+        hasPage={Boolean(data?.connection?.selectedPage?.pageId)}
+        hasInstagram={!instagramMissing}
+        hasCampaigns={(data?.campaigns || []).length > 0}
+      />
+
+      <MetaAdsConnectionHealth
+        basePath={basePath}
+        accountName={selectedAccount?.name}
+        pageName={data?.connection?.selectedPage?.pageName}
+        instagramConnected={!instagramMissing}
+        tokenHealthy={tokenLinked}
+        lastSync={
+          lastUpdatedAt
+            ? t("metaCampaigns.copilot.synced", {
+                minutes: Math.max(0, Math.round((nowMs - lastUpdatedAt.getTime()) / 60000)),
+              })
+            : undefined
+        }
+        needsAction={!tokenLinked}
+      />
 
       <div className={`${cardBase} p-4`}>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -673,7 +701,7 @@ export default function MetaCampaignsOverviewTab() {
                 {t("metaCampaigns.overview.connectedThroughMeta")}
               </span>
             </div>
-            <p className="text-sm font-bold text-slate-600 tabular-nums">
+            <p className="sr-only">
               {t("metaCampaigns.overview.adAccountId", {
                 id: accountIdDisplay || "—",
               })}
@@ -740,7 +768,22 @@ export default function MetaCampaignsOverviewTab() {
         ) : null}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-demo-target="meta-overview">
+      <section className={`${cardBase} p-4`} data-testid="what-needs-attention">
+        <h3 className="text-sm font-black text-slate-900">{t("metaCampaigns.ux.attention")}</h3>
+        <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-600">
+          {!hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionNoData")}</li> : null}
+          {instagramMissing ? <li>{t("metaCampaigns.overview.instagramNotConnected")}</li> : null}
+          {(data?.campaigns || []).filter((row) => String(row.effectiveStatus || "").toUpperCase().includes("ERROR") || String(row.effectiveStatus || "").toUpperCase().includes("REJECT")).length ? (
+            <li>{t("metaCampaigns.ux.attentionDelivery")}</li>
+          ) : null}
+          {hasInsightSignal && !instagramMissing ? <li>{t("metaCampaigns.ux.attentionOk")}</li> : null}
+        </ul>
+        <Link to={`${basePath}/copilot`} className="mt-3 inline-flex text-sm font-black text-violet-700 underline">
+          {t("metaCampaigns.ux.askAiAttention")}
+        </Link>
+      </section>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-demo-target="meta-overview">
         <KpiCard
           label={t("metaCampaigns.kpis.spend")}
           value={formatMetricOrDash(kpis?.spend, (n) =>
@@ -783,11 +826,25 @@ export default function MetaCampaignsOverviewTab() {
           hint={t("metaCampaigns.kpis.ctrHint")}
         />
         <KpiCard
-          label={t("metaCampaigns.kpis.roas")}
-          value={formatMetricOrDash(kpis?.roas, formatRoas, {
-            treatZeroAsEmpty: true,
-          })}
-          hint={t("metaCampaigns.kpis.roasHint")}
+          label={t("metaCampaigns.table.reach")}
+          value={formatMetricOrDash(kpis?.reach, formatNumber, { treatZeroAsEmpty: !hasInsightSignal })}
+        />
+        <KpiCard
+          label={t("metaCampaigns.table.impressions")}
+          value={formatMetricOrDash(kpis?.impressions, formatNumber, { treatZeroAsEmpty: !hasInsightSignal })}
+        />
+        <KpiCard
+          label={t("metaCampaigns.table.cpc")}
+          value={formatMetricOrDash(kpis?.cpc, (n) => formatCurrency(n, currency), { treatZeroAsEmpty: true })}
+        />
+        <KpiCard
+          label={t("metaCampaigns.table.cpm")}
+          value={formatMetricOrDash(kpis?.cpm, (n) => formatCurrency(n, currency), { treatZeroAsEmpty: true })}
+        />
+        <KpiCard
+          label={t("metaCampaigns.ux.activePaused")}
+          value={`${(data?.campaigns || []).filter((row) => String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE").length} / ${(data?.campaigns || []).length}`}
+          hint={t("metaCampaigns.ux.activePausedHint")}
         />
       </div>
 
@@ -1011,6 +1068,9 @@ export default function MetaCampaignsOverviewTab() {
                   })}
                 </p>
               </div>
+              <Link to={`${basePath}/campaigns`} className={btnSecondary}>
+                {t("metaCampaigns.ux.viewCampaigns")}
+              </Link>
             </div>
 
             <div className="overflow-x-auto">
@@ -1020,7 +1080,7 @@ export default function MetaCampaignsOverviewTab() {
                     <th className="px-4 py-3 text-start">
                       {t("metaCampaigns.table.name")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.campaignId")}
                     </th>
                     <th className="px-3 py-3 text-start">
@@ -1041,34 +1101,34 @@ export default function MetaCampaignsOverviewTab() {
                     <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.spend")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.impressions")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.reach")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.clicks")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.linkClicks")}
                     </th>
                     <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.ctr")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.cpc")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.cpm")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.frequency")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.start")}
                     </th>
-                    <th className="px-3 py-3 text-start">
+                    <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.end")}
                     </th>
                     <th className="px-3 py-3 text-start">
@@ -1113,7 +1173,7 @@ export default function MetaCampaignsOverviewTab() {
                               </p>
                             </button>
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-600 tabular-nums">
+                          <td className="hidden px-3 py-3 font-bold text-slate-600 tabular-nums">
                             {campaign.id || "—"}
                           </td>
                           <td className="px-3 py-3">
@@ -1180,28 +1240,28 @@ export default function MetaCampaignsOverviewTab() {
                               }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.impressions,
                               formatNumber,
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.reach,
                               formatNumber,
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.clicks,
                               formatNumber,
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.linkClicks,
                               formatNumber,
@@ -1215,31 +1275,31 @@ export default function MetaCampaignsOverviewTab() {
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.cpc,
                               (n) => formatCurrency(n, currency),
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.cpm,
                               (n) => formatCurrency(n, currency),
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(
                               campaign.metrics?.frequency,
                               (n) => formatNumber(Number(n.toFixed(2))),
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatDateHe(campaign.startTime, locale)}
                           </td>
-                          <td className="px-3 py-3 font-bold text-slate-700">
+                          <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {campaign.stopTime
                               ? formatDateHe(campaign.stopTime, locale)
                               : t("metaCampaigns.table.endOngoing")}
@@ -1248,6 +1308,7 @@ export default function MetaCampaignsOverviewTab() {
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
+                                aria-label={t("metaCampaigns.actions.viewDetails")}
                                 title={t("metaCampaigns.actions.viewDetails")}
                                 onClick={() => setDetailsCampaign(campaign)}
                                 className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700"
@@ -1256,6 +1317,7 @@ export default function MetaCampaignsOverviewTab() {
                               </button>
                               <button
                                 type="button"
+                                aria-label={t("metaCampaigns.actions.edit")}
                                 title={t("metaCampaigns.actions.edit")}
                                 onClick={() =>
                                   navigate(`${basePath}/edit/${campaign.id}`)
@@ -1364,7 +1426,7 @@ export default function MetaCampaignsOverviewTab() {
               ))}
             </ol>
             <Link
-              to={`/business/${urlBusinessId || businessId}/dashboard/automations`}
+              to={`${basePath}/rules`}
               className={`${btnSecondary} mt-4 w-full`}
             >
               <ArrowUpRight className="h-4 w-4" />
@@ -1390,14 +1452,6 @@ export default function MetaCampaignsOverviewTab() {
           </div>
         </aside>
       </div>
-
-      {businessId ? (
-        <MetaPerformanceBreakdown
-          businessId={businessId}
-          rangeQuery={rangeQuery}
-          currency={currency}
-        />
-      ) : null}
 
       {detailsCampaign && businessId ? (
         <MetaCampaignDetailsDrawer
@@ -1436,8 +1490,9 @@ export default function MetaCampaignsOverviewTab() {
                 ? t("metaCampaigns.actions.confirmPauseBody", {
                     name: pendingStatusCampaign.name,
                   })
-                : t("metaCampaigns.actions.confirmActivateSpend", {
+                : t("metaCampaigns.ux.activateSpend", {
                     name: pendingStatusCampaign.name,
+                    budget: pendingStatusCampaign.dailyBudget || 0,
                   })}
             </p>
             <div className="mt-5 flex flex-wrap justify-end gap-2">

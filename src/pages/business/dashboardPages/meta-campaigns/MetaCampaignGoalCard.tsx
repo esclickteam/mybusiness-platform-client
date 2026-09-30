@@ -23,14 +23,14 @@ export default function MetaCampaignGoalCard({
   return (
     <article className={`${cardBase} p-4`} data-testid="campaign-goal-card">
       <p className="text-xs font-black uppercase tracking-wide text-violet-700">
-        {t("metaCampaigns.goals.title")}
+        {t("metaCampaigns.ux.yourGoal")}
       </p>
       <h3 className="mt-1 text-base font-black text-slate-900">{goalName}</h3>
       <p className="mt-2 text-sm font-bold text-slate-700">
-        {t("metaCampaigns.goals.targetCpl")}: ≤ {target} ILS
+        {t("metaCampaigns.ux.keepLeadsUnder", { target })}
       </p>
       <p className="text-sm font-semibold text-slate-600">
-        {t("metaCampaigns.goals.current")}: {current == null ? "—" : `${current} ILS`}
+        {t("metaCampaigns.ux.currentValue", { value: current == null ? "—" : current })}
       </p>
       <p className="text-sm font-semibold text-slate-600">
         {t("metaCampaigns.goals.difference")}:{" "}
@@ -44,6 +44,7 @@ export default function MetaCampaignGoalCard({
       <p className="mt-2 text-sm font-black text-slate-900" data-testid="campaign-goal-status">
         {t(`metaCampaigns.goals.status.${status}`, { defaultValue: status })}
       </p>
+      <p className="mt-2 text-xs font-bold text-violet-700">{t("metaCampaigns.ux.viewDetails")}</p>
     </article>
   );
 }

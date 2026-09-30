@@ -10,6 +10,7 @@ import {
   type PortfolioAllocation,
   type PortfolioCampaignRow,
 } from "../../../../api/metaCampaignsApi";
+import { Link } from "react-router-dom";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 
 export default function MetaPortfolioPage() {
@@ -51,6 +52,14 @@ export default function MetaPortfolioPage() {
       <section className={`${cardBase} p-4`}>
         <h2 className="text-lg font-black">{t("metaCampaigns.portfolio.title")}</h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">{t("metaCampaigns.portfolio.subtitle")}</p>
+        <p className="mt-2 text-sm font-semibold text-slate-600">
+          {rows.every((row) => !row.results && !row.spend)
+            ? t("metaCampaigns.ux.portfolioNoData")
+            : t("metaCampaigns.ux.portfolioHasData")}
+        </p>
+        <Link to="../copilot?q=Ask%20AI%20about%20my%20budget%20allocation" className="mt-2 inline-flex text-sm font-black text-violet-700 underline">
+          {t("metaCampaigns.ux.askAiBudget")}
+        </Link>
       </section>
 
       <section className={`${cardBase} grid gap-3 p-4 md:grid-cols-5`}>
@@ -174,10 +183,21 @@ export default function MetaPortfolioPage() {
         className={btnSecondary}
         onClick={async () => setHistory(await getMetaPortfolioHistory(businessId))}
       >
-        History
+        {t("metaCampaigns.ux.history")}
       </button>
       {history.length ? (
-        <pre className={`${cardBase} overflow-auto p-3 text-xs`}>{JSON.stringify(history, null, 2)}</pre>
+        <ul className={`${cardBase} space-y-2 p-3 text-sm`}>
+          {history.slice(0, 8).map((row) => (
+            <li key={row.id}>
+              {t("metaCampaigns.ux.portfolioHistoryRow", {
+                mode: row.mode,
+                from: row.totals?.currentBudget,
+                to: row.totals?.proposedBudget,
+                status: row.status,
+              })}
+            </li>
+          ))}
+        </ul>
       ) : null}
     </div>
   );

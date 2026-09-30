@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -18,13 +19,18 @@ vi.mock("../../../../api/metaCampaignsApi", () => ({
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
+  initReactI18next: { type: "3rdParty", init: () => {} },
 }));
 
 import MetaCampaignGoalsPage from "./MetaCampaignGoalsPage";
 
 describe("MetaCampaignGoalsPage", () => {
   it("renders the goal wizard objectives", async () => {
-    render(<MetaCampaignGoalsPage />);
+    render(
+      <MemoryRouter>
+        <MetaCampaignGoalsPage />
+      </MemoryRouter>
+    );
     expect(await screen.findByTestId("campaign-goals-page")).toBeTruthy();
     expect(screen.getByText("metaCampaigns.goals.moreLeads")).toBeTruthy();
     expect(screen.getByText("metaCampaigns.goals.lowerCpl")).toBeTruthy();
