@@ -16,6 +16,7 @@ const FILTERS: { id: TerritoryAvailability | "all"; label: string }[] = [
   { id: "available", label: "Available" },
   { id: "agreement_pending", label: "Agreement pending" },
   { id: "exclusive_active", label: "Exclusive active" },
+  { id: "renewal_window", label: "Renewal window" },
   { id: "expiring_soon", label: "Expiring soon" },
 ];
 
@@ -34,6 +35,7 @@ export default function AdminPartnerAgreements() {
       requested === "available" ||
       requested === "agreement_pending" ||
       requested === "exclusive_active" ||
+      requested === "renewal_window" ||
       requested === "expiring_soon"
     ) {
       return requested;
@@ -89,7 +91,7 @@ export default function AdminPartnerAgreements() {
   }, [countries, filter, q]);
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]" dir="ltr">
+    <div className="min-h-screen bg-[#F7F8FA]">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] space-y-6 px-4 py-6">
         <div className="flex flex-wrap items-end justify-between gap-3">

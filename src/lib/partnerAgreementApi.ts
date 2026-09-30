@@ -4,6 +4,9 @@ export type AgreementStatus =
   | "draft"
   | "ready_for_review"
   | "sent"
+  | "partner_signed"
+  | "bizuply_signed"
+  | "fully_signed"
   | "signed"
   | "payment_pending"
   | "active"
@@ -17,6 +20,7 @@ export type TerritoryAvailability =
   | "available"
   | "agreement_pending"
   | "exclusive_active"
+  | "renewal_window"
   | "expiring_soon";
 
 export type CommissionTier = {
@@ -43,8 +47,19 @@ export type PartnerAgreement = {
   signatoryName: string;
   signatoryTitle: string;
   signatoryEmail: string;
+  entityType?: string;
+  taxNumber?: string;
+  locale?: string;
+  bilingual?: boolean;
+  secondaryLocale?: string;
   countryCode: string;
   countryName: string;
+  subdivisionCode?: string;
+  localityName?: string;
+  localityKind?: string;
+  effectiveDate?: string;
+  curePeriod?: string;
+  adminNotes?: string;
   territoryName: string;
   territoryType: TerritoryType;
   agreementDate: string;
@@ -91,8 +106,17 @@ export type AgreementInput = {
   signatoryName?: string;
   signatoryTitle?: string;
   signatoryEmail?: string;
+  entityType?: string;
+  taxNumber?: string;
   agreementDate?: string;
+  effectiveDate?: string;
+  locale?: string;
+  bilingual?: boolean;
+  secondaryLocale?: string;
   countryCode?: string;
+  subdivisionCode?: string;
+  localityName?: string;
+  localityKind?: string;
   territoryName?: string;
   territoryType?: TerritoryType;
   startDate?: string;
@@ -105,6 +129,8 @@ export type AgreementInput = {
   commissionPercents?: number[];
   salesTarget?: string;
   targetPeriod?: string;
+  curePeriod?: string;
+  adminNotes?: string;
   renewalDate?: string;
   renewalNotes?: string;
   specialTermsEnabled?: boolean;
@@ -217,6 +243,9 @@ export async function previewPartnerAgreement(id: string, version?: number) {
     versionNumber: number | null;
     frozen: boolean;
     live: boolean;
+    dir?: "ltr" | "rtl" | string;
+    locale?: string;
+    parts?: { locale: string; dir: string; title: string; sections: { number: number | null; title: string; paragraphs: string[] }[] }[];
     sections: { number: number | null; title: string; paragraphs: string[] }[];
     variables: Record<string, string | string[] | boolean>;
   };

@@ -169,6 +169,8 @@ const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
+const PartnerAgreementSign = lazy(() => import("./pages/sign/PartnerAgreementSign"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
@@ -851,6 +853,7 @@ export default function App() {
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
+  const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
     const parts = location.pathname.split("/").filter(Boolean);
     if (parts[0] === "book" && parts[1] === "bizuply" && parts[2]) return parts[2];
@@ -997,6 +1000,7 @@ export default function App() {
           !isPublicPartnerSales &&
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
+          !isPartnerSignRoute &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
@@ -1547,6 +1551,18 @@ export default function App() {
                         />
 
                         <Route
+                          path="/sign/partner-agreement/:token"
+                          element={<PartnerAgreementSign />}
+                        />
+                        <Route
+                          path="/admin/settings/legal"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminLegalProfile />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/admin/settings"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1825,6 +1841,7 @@ export default function App() {
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
+          !isPartnerSignRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
           !isBizuplyPublicBookingRoute && <Footer />}
@@ -1832,7 +1849,7 @@ export default function App() {
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
         <PreLoginBot />
       )}
 
@@ -1851,6 +1868,7 @@ export default function App() {
         !isStaffRoute &&
         !isGuidedDemoRoute &&
         !isPublicProposalRoute &&
+        !isPartnerSignRoute &&
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
@@ -1867,6 +1885,7 @@ export default function App() {
         !isDevVisualRoute &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
+        !isPartnerSignRoute &&
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute && (

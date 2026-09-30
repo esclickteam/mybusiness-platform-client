@@ -39,8 +39,17 @@ const EMPTY: AgreementInput = {
   signatoryName: "",
   signatoryTitle: "",
   signatoryEmail: "",
+  entityType: "",
+  taxNumber: "",
+  locale: "en",
+  bilingual: false,
+  secondaryLocale: "",
   agreementDate: "",
+  effectiveDate: "",
   countryCode: "",
+  subdivisionCode: "",
+  localityName: "",
+  localityKind: "custom",
   territoryName: "",
   territoryType: "non_exclusive",
   startDate: "",
@@ -53,6 +62,8 @@ const EMPTY: AgreementInput = {
   commissionPercents: [30, 35, 40],
   salesTarget: "",
   targetPeriod: "",
+  curePeriod: "",
+  adminNotes: "",
   renewalDate: "",
   renewalNotes: "",
   specialTermsEnabled: false,
@@ -75,8 +86,17 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     signatoryName: row.signatoryName || "",
     signatoryTitle: row.signatoryTitle || "",
     signatoryEmail: row.signatoryEmail || "",
+    entityType: row.entityType || "",
+    taxNumber: row.taxNumber || "",
+    locale: row.locale || "en",
+    bilingual: Boolean(row.bilingual),
+    secondaryLocale: row.secondaryLocale || "",
     agreementDate: row.agreementDate || "",
+    effectiveDate: row.effectiveDate || "",
     countryCode: row.countryCode || "",
+    subdivisionCode: row.subdivisionCode || "",
+    localityName: row.localityName || row.territoryName || "",
+    localityKind: row.localityKind || "custom",
     territoryName: row.territoryName || "",
     territoryType: row.territoryType || "non_exclusive",
     startDate: row.startDate || "",
@@ -89,6 +109,8 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     commissionPercents: row.commissionPercents?.length === 3 ? row.commissionPercents : [30, 35, 40],
     salesTarget: row.salesTarget || "",
     targetPeriod: row.targetPeriod || "",
+    curePeriod: row.curePeriod || "",
+    adminNotes: row.adminNotes || "",
     renewalDate: row.renewalDate || "",
     renewalNotes: row.renewalNotes || "",
     specialTermsEnabled: Boolean(row.specialTermsEnabled),
@@ -351,7 +373,7 @@ export default function AdminPartnerAgreementEditor() {
   const status = record?.status || "draft";
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]" dir="ltr">
+    <div className="min-h-screen bg-[#F7F8FA]">
       <AdminHeader />
       <main className="mx-auto max-w-[1100px] space-y-4 px-4 py-6" data-testid="partner-agreement-form">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -444,6 +466,12 @@ export default function AdminPartnerAgreementEditor() {
           <Field label="Authorized signatory email">
             <input className={inputClass} disabled={!editable} value={form.signatoryEmail || ""} onChange={(e) => set("signatoryEmail", e.target.value)} />
           </Field>
+          <Field label="Entity type">
+            <input className={inputClass} disabled={!editable} value={form.entityType || ""} onChange={(e) => set("entityType", e.target.value)} />
+          </Field>
+          <Field label="Tax / VAT number">
+            <input className={inputClass} disabled={!editable} value={form.taxNumber || ""} onChange={(e) => set("taxNumber", e.target.value)} />
+          </Field>
         </Section>
 
         <Section title="Territory & Exclusivity">
@@ -468,17 +496,27 @@ export default function AdminPartnerAgreementEditor() {
               onChange={(code) => set("countryCode", code)}
             />
           </Field>
-          <div className="md:col-span-2">
-            <Field label="Custom territory, if it is not the whole country">
-              <input
-                className={inputClass}
-                disabled={!editable}
-                placeholder="Leave blank for the whole country. Example: a province inside the selected country."
-                value={form.territoryName || ""}
-                onChange={(e) => set("territoryName", e.target.value)}
-              />
-            </Field>
-          </div>
+          <Field label="State / province / emirate / region">
+            <input
+              className={inputClass}
+              disabled={!editable}
+              placeholder="ISO code, for example US-FL. Leave blank for the whole country."
+              value={form.subdivisionCode || ""}
+              onChange={(e) => set("subdivisionCode", e.target.value.toUpperCase())}
+            />
+          </Field>
+          <Field label="City / metro / custom territory">
+            <input
+              className={inputClass}
+              disabled={!editable}
+              placeholder="Example: Miami or South Florida"
+              value={form.localityName || ""}
+              onChange={(e) => {
+                set("localityName", e.target.value);
+                set("territoryName", e.target.value);
+              }}
+            />
+          </Field>
           {form.territoryType === "exclusive" ? (
             <div className="md:col-span-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-950" data-testid="exclusivity-notice">
               {EXCLUSIVITY_NOTICE}
@@ -496,6 +534,34 @@ export default function AdminPartnerAgreementEditor() {
         </Section>
 
         <Section title="Commercial Terms">
+          <Field label="Agreement language">
+            <select className={inputClass} disabled={!editable} value={form.locale || "en"} onChange={(e) => set("locale", e.target.value)}>
+              <option value="en">English</option>
+              <option value="he">עברית</option>
+              <option value="es">Español</option>
+              <option value="pt-BR">Português (Brasil)</option>
+              <option value="ar">العربية</option>
+            </select>
+          </Field>
+          <Field label="Bilingual with">
+            <select
+              className={inputClass}
+              disabled={!editable}
+              value={form.bilingual ? form.secondaryLocale || "" : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                set("bilingual", Boolean(value));
+                set("secondaryLocale", value);
+              }}
+            >
+              <option value="">One language</option>
+              <option value="en">English</option>
+              <option value="he">עברית</option>
+              <option value="es">Español</option>
+              <option value="pt-BR">Português (Brasil)</option>
+              <option value="ar">العربية</option>
+            </select>
+          </Field>
           <Field label="Agreement date">
             <input type="date" className={inputClass} disabled={!editable} value={form.agreementDate || ""} onChange={(e) => set("agreementDate", e.target.value)} />
           </Field>
