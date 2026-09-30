@@ -125,7 +125,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
               {data.versionNumber ? ` · ${fill(t.version, { version: data.versionNumber })}` : ""}
             </p>
             <dl className="mt-6 grid gap-2 rounded-2xl bg-[#F5F3FF] p-4 text-sm sm:grid-cols-2" dir={page.dir}>
-              <div><dt className="font-bold text-slate-500">{t.partner}</dt><dd className="font-black">{String(data.variables.legalCompanyName || "")}</dd></div>
+              <div><dt className="font-bold text-slate-500">{t.partner}</dt><dd className="font-black">{String(data.variables.legalCompanyName || data.variables.PARTNER_LEGAL_COMPANY_NAME || "")}</dd></div>
               <div><dt className="font-bold text-slate-500">{t.territory}</dt><dd className="font-black">{String(data.variables.territoryLabel || "")}</dd></div>
               <div><dt className="font-bold text-slate-500">{t.type}</dt><dd className="font-black">{String(data.variables.territoryTypeLabel || data.variables.TERRITORY_TYPE || "")}</dd></div>
               <div><dt className="font-bold text-slate-500">{t.fee}</dt><dd className="font-black">{String(data.variables.licenseFee || "")}</dd></div>
