@@ -12,6 +12,7 @@ import {
   markRefreshDead,
 } from "../utils/tokenRefresh";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
+import { messageForLoginFailure } from "../utils/loginFailureMessage";
 import {
   bindSessionInvalidationListeners,
   clearPersistedAuthState,
@@ -528,11 +529,7 @@ export function AuthProvider({ children }) {
         redirectUrl: redirectUrl || destination || null,
       };
     } catch (err) {
-      setError(
-        err.response?.status >= 400 && err.response?.status < 500
-          ? i18n.t("login.errors.incorrectCredentials")
-          : i18n.t("login.errors.serverError")
-      );
+      setError(messageForLoginFailure(err, (key) => i18n.t(key)));
 
       throw err;
     }

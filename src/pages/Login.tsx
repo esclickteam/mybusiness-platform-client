@@ -20,6 +20,7 @@ import {
   applyLanguageFromUrl,
   normalizeLanguage,
 } from "../i18n/localeUtils";
+import { messageForLoginFailure } from "../utils/loginFailureMessage";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -44,12 +45,8 @@ type LoginResponse = {
   redirectUrl?: string;
 };
 
-type ApiError = {
-  message?: string;
-};
-
 export default function Login() {
-  const { login, error: authError } = useAuth();
+  const { login } = useAuth();
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
   const { whiteLabelEnabled } = usePartnerHostBranding();
@@ -200,8 +197,7 @@ export default function Login() {
         }
       }, 1000);
     } catch (err) {
-      const apiError = err as ApiError;
-      setLoginError(authError || apiError.message || t("login.errors.incorrectCredentials"));
+      setLoginError(messageForLoginFailure(err, t));
     } finally {
       setLoading(false);
     }
@@ -249,7 +245,7 @@ export default function Login() {
                 autoComplete="email"
                 placeholder="name@company.com"
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-11 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
               />
             </div>
           </div>
