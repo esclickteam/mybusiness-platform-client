@@ -2,9 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  applyAiCampaignRecommendation,
   dismissAiCampaignRecommendation,
+  generateAiCampaignRecommendations,
   getMetaCampaignHealth,
   listAiCampaignRecommendations,
+  undoAiCampaignRecommendation,
   viewAiCampaignRecommendation,
   type AiCampaignRecommendation,
   type CampaignHealth,
@@ -41,6 +44,8 @@ function RecommendationCard({
   currency,
   highlight,
   onDismiss,
+  onApply,
+  onUndo,
   onOpen,
 }: {
   rec: AiCampaignRecommendation;
@@ -48,6 +53,8 @@ function RecommendationCard({
   currency: string;
   highlight?: boolean;
   onDismiss: (id: string) => void;
+  onApply?: (rec: AiCampaignRecommendation) => void;
+  onUndo?: (id: string) => void;
   onOpen?: (campaignId: string) => void;
 }) {
   const { t } = useTranslation();
@@ -80,6 +87,11 @@ function RecommendationCard({
       <p className="mt-2 text-sm font-bold text-slate-800">
         {t("metaCampaigns.campaignHealth.recommendationLabel")}: {rec.recommendedAction}
       </p>
+      {rec.actionPayload?.evidence ? (
+        <p className="mt-1 text-xs font-semibold text-slate-500">
+          {t("metaCampaigns.campaignHealth.evidence")}: {String(rec.actionPayload.evidence)}
+        </p>
+      ) : null}
       <div className="mt-3 flex flex-wrap gap-2">
         {rec.recommendedActionType === "CREATE_NEW_VARIANT" ? (
           <Link to={wizardPath} className={btnPrimary}>
@@ -95,7 +107,27 @@ function RecommendationCard({
             {t("metaCampaigns.campaignHealth.openCampaign")}
           </Link>
         )}
-        {rec.status === "OPEN" || rec.status === "VIEWED" ? (
+        {rec.applyable && onApply ? (
+          <button
+            type="button"
+            className={btnPrimary}
+            data-testid={`recommendation-apply-${rec.id}`}
+            onClick={() => onApply(rec)}
+          >
+            {t("metaCampaigns.campaignHealth.apply")}
+          </button>
+        ) : null}
+        {rec.undoable && onUndo ? (
+          <button
+            type="button"
+            className={btnSecondary}
+            data-testid={`recommendation-undo-${rec.id}`}
+            onClick={() => onUndo(rec.id)}
+          >
+            {t("metaCampaigns.campaignHealth.undo")}
+          </button>
+        ) : null}
+        {["OPEN", "VIEWED", "NEW", "REVIEWED"].includes(rec.status) ? (
           <button type="button" className={btnSecondary} onClick={() => onDismiss(rec.id)}>
             {t("metaCampaigns.campaignHealth.notNow")}
           </button>
@@ -122,6 +154,8 @@ export default function MetaCampaignHealthPanel({
   const [closedRecs, setClosedRecs] = useState<AiCampaignRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [pending, setPending] = useState<AiCampaignRecommendation | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -180,6 +214,40 @@ export default function MetaCampaignHealthPanel({
     await load();
   };
 
+  const onGenerate = async () => {
+    if (!campaignId) return;
+    setNotice("");
+    const result = await generateAiCampaignRecommendations(businessId, campaignId);
+    setNotice(
+      result.lowData
+        ? t("metaCampaigns.campaignHealth.lowData")
+        : result.message || ""
+    );
+    await load();
+  };
+
+  const onConfirmApply = async () => {
+    if (!pending) return;
+    const result = await applyAiCampaignRecommendation(businessId, pending.id);
+    setPending(null);
+    setNotice(
+      result.applied
+        ? t("metaCampaigns.campaignHealth.applied")
+        : t("metaCampaigns.campaignHealth.applyFailed")
+    );
+    await load();
+  };
+
+  const onUndo = async (id: string) => {
+    const result = await undoAiCampaignRecommendation(businessId, id);
+    setNotice(
+      result.undone
+        ? t("metaCampaigns.campaignHealth.applied")
+        : t("metaCampaigns.campaignHealth.applyFailed")
+    );
+    await load();
+  };
+
   return (
     <section
       data-testid="campaign-health-panel"
@@ -195,6 +263,21 @@ export default function MetaCampaignHealthPanel({
       <p className="mt-1 text-sm font-bold text-slate-700">
         {t(`metaCampaigns.campaignHealth.status.${status}`)}
       </p>
+      {campaignId ? (
+        <button
+          type="button"
+          className={`${btnSecondary} mt-3`}
+          data-testid="recommendation-generate"
+          onClick={() => void onGenerate()}
+        >
+          {t("metaCampaigns.campaignHealth.generate")}
+        </button>
+      ) : null}
+      {notice ? (
+        <p className="mt-2 text-sm font-semibold text-slate-700" data-testid="recommendation-notice">
+          {notice}
+        </p>
+      ) : null}
 
       {loading ? (
         <p className="mt-3 text-sm font-semibold text-slate-500">
@@ -256,6 +339,8 @@ export default function MetaCampaignHealthPanel({
               currency={currency}
               highlight={rec.id === highlightRecommendationId}
               onDismiss={onDismiss}
+              onApply={setPending}
+              onUndo={(id) => void onUndo(id)}
               onOpen={onOpenCampaign}
             />
           ))}
@@ -274,9 +359,61 @@ export default function MetaCampaignHealthPanel({
               businessId={businessId}
               currency={currency}
               onDismiss={onDismiss}
+              onApply={setPending}
+              onUndo={(id) => void onUndo(id)}
               onOpen={onOpenCampaign}
             />
           ))}
+        </div>
+      ) : null}
+
+      {pending ? (
+        <div
+          className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3"
+          data-testid="recommendation-confirm"
+        >
+          <p className="text-sm font-black text-slate-900">
+            {t("metaCampaigns.campaignHealth.confirmTitle")}
+          </p>
+          <dl className="mt-2 space-y-1 text-sm font-semibold text-slate-700">
+            <div>
+              {t("metaCampaigns.campaignHealth.confirmObject")}:{" "}
+              {pending.confirmation?.object?.type} {pending.confirmation?.object?.id}
+            </div>
+            <div>
+              {t("metaCampaigns.campaignHealth.confirmCurrent")}:{" "}
+              {String(pending.confirmation?.currentValue ?? "")}
+            </div>
+            <div>
+              {t("metaCampaigns.campaignHealth.confirmNew")}:{" "}
+              {String(pending.confirmation?.newValue ?? "")}
+            </div>
+            <div>
+              {t("metaCampaigns.campaignHealth.confirmWhy")}: {pending.confirmation?.why}
+            </div>
+            <div>
+              {t("metaCampaigns.campaignHealth.confirmImpact")}:{" "}
+              {pending.confirmation?.expectedImpact}
+            </div>
+            <div>
+              {pending.confirmation?.canAffectSpend
+                ? t("metaCampaigns.campaignHealth.confirmSpend")
+                : t("metaCampaigns.campaignHealth.confirmSpendNo")}
+            </div>
+          </dl>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              className={btnPrimary}
+              data-testid="recommendation-confirm-apply"
+              onClick={() => void onConfirmApply()}
+            >
+              {t("metaCampaigns.campaignHealth.confirmApply")}
+            </button>
+            <button type="button" className={btnSecondary} onClick={() => setPending(null)}>
+              {t("metaCampaigns.campaignHealth.cancel")}
+            </button>
+          </div>
         </div>
       ) : null}
     </section>
