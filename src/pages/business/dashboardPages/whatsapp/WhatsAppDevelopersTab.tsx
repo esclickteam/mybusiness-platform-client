@@ -24,7 +24,7 @@ export default function WhatsAppDevelopersTab() {
           </p>
         </div>
         <a
-          href="/api/v1/whatsapp/docs"
+          href="https://api.bizuply.com/api/v1/whatsapp/docs"
           target="_blank"
           rel="noreferrer"
           className={`${btnSecondary} !px-3 !py-1.5 text-xs`}
