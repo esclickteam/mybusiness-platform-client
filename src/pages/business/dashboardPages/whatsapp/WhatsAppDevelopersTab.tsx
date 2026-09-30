@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import WhatsAppExternalApiSettingsCard from "./WhatsAppExternalApiSettingsCard";
+import WhatsAppChannelSettingsCard from "./WhatsAppChannelSettingsCard";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 
@@ -34,32 +35,44 @@ export default function WhatsAppDevelopersTab() {
         </a>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        {[
-          {
-            title: t("whatsapp.hub.devSectionApi"),
-            text: t("whatsapp.hub.devSectionApiHint"),
-          },
-          {
-            title: t("whatsapp.hub.devSectionWebhook"),
-            text: t("whatsapp.hub.devSectionWebhookHint"),
-          },
-          {
-            title: t("whatsapp.hub.devSectionDocs"),
-            text: t("whatsapp.hub.devSectionDocsHint"),
-          },
-        ].map((s) => (
-          <article key={s.title} className={`${cardBase} px-3 py-2.5`}>
-            <p className="text-xs font-black text-slate-900">{s.title}</p>
-            <p className="mt-0.5 text-[11px] font-semibold text-slate-500">
-              {s.text}
-            </p>
-          </article>
-        ))}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <article className={`${cardBase} px-3 py-2.5`}>
+          <p className="text-[10px] font-black uppercase tracking-wide text-emerald-700">
+            {t("whatsapp.settings.channelSettingsDirection")}
+          </p>
+          <p className="mt-0.5 text-xs font-black text-slate-900">
+            {t("whatsapp.settings.channelSettingsTitle")}
+          </p>
+          <p className="mt-0.5 text-[11px] font-semibold text-slate-500">
+            {t("whatsapp.settings.channelSettingsHint")}
+          </p>
+        </article>
+        <article className={`${cardBase} px-3 py-2.5`}>
+          <p className="text-[10px] font-black uppercase tracking-wide text-sky-700">
+            {t("whatsapp.settings.channelExternalApiDirection")}
+          </p>
+          <p className="mt-0.5 text-xs font-black text-slate-900">
+            {t("whatsapp.settings.channelExternalApiTitle")}
+          </p>
+          <p className="mt-0.5 text-[11px] font-semibold text-slate-500">
+            {t("whatsapp.settings.channelExternalApiHint")}
+          </p>
+        </article>
       </div>
 
       {visualQa ? (
         <div className="grid gap-3 lg:grid-cols-2">
+          <article className={`${cardBase} space-y-2 p-3`}>
+            <h3 className="text-sm font-black">
+              {t("whatsapp.settings.channelSettingsTitle")}
+            </h3>
+            <p className="text-[10px] font-black uppercase text-slate-400">
+              {t("whatsapp.settings.channelWebhookUrl")}
+            </p>
+            <p className="font-mono text-xs" dir="ltr">
+              https://api.bizuply.com/api/whatsapp/webhook
+            </p>
+          </article>
           <article className={`${cardBase} space-y-2 p-3`}>
             <h3 className="text-sm font-black">{t("whatsapp.hub.devSectionApi")}</h3>
             <p className="text-[10px] font-black uppercase text-slate-400">
@@ -68,33 +81,11 @@ export default function WhatsAppDevelopersTab() {
             <p className="font-mono text-xs" dir="ltr">
               https://api.bizuply.com/api/v1/whatsapp
             </p>
-            <p className="text-[10px] font-black uppercase text-slate-400">
-              {t("whatsapp.settings.apiSettingsApiKey")}
-            </p>
-            <p className="font-mono text-xs">biz_wa_••••••••abcd</p>
-            <p className="text-[11px] text-slate-500">
-              {t("whatsapp.settings.apiSettingsScopes")}: templates.read · messages.send
-            </p>
-          </article>
-          <article className={`${cardBase} space-y-2 p-3`}>
-            <h3 className="text-sm font-black">{t("whatsapp.hub.devSectionWebhook")}</h3>
-            <p className="text-[10px] font-black uppercase text-slate-400">
-              {t("whatsapp.settings.apiSettingsWebhookUrl")}
-            </p>
-            <p className="font-mono text-xs" dir="ltr">
-              https://partner.example/hooks/wa
-            </p>
-            <p className="text-[10px] font-black uppercase text-slate-400">
-              {t("whatsapp.settings.apiSettingsWebhookSecret")}
-            </p>
-            <p className="font-mono text-xs">whsec_••••••••</p>
-            <p className="text-[11px] text-slate-500">
-              {t("whatsapp.settings.apiSettingsTestWebhook")}
-            </p>
           </article>
         </div>
       ) : businessId ? (
-        <div className="wa-hub-developers">
+        <div className="wa-hub-developers space-y-3">
+          <WhatsAppChannelSettingsCard businessId={businessId} />
           <WhatsAppExternalApiSettingsCard
             businessId={businessId}
             linked={Boolean(connection?.connected)}
