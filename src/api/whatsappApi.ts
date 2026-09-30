@@ -1780,11 +1780,6 @@ export type WhatsAppChannelSettings = {
     webhookSubscribed: boolean;
   };
   timezoneId: string;
-  namespace: {
-    required: boolean;
-    value: string;
-    note: string;
-  };
   webhook: {
     url: string;
     path: string;
