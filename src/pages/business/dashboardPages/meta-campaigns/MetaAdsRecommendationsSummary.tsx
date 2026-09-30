@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { listAiCampaignRecommendations } from "../../../../api/metaCampaignsApi";
 import { cardBase } from "../../../../styles/bizuplyUi";
 import { recommendationFilterBucket } from "./localizeMetaRecommendation";
 
+/** Compact summary only — no customer tab. Prefer MetaAdsOverviewSignals. */
 export default function MetaAdsRecommendationsSummary({
   businessId,
-  basePath,
 }: {
   businessId: string;
-  basePath: string;
+  basePath?: string;
 }) {
   const { t } = useTranslation();
   const [openCount, setOpenCount] = useState(0);
@@ -29,12 +28,6 @@ export default function MetaAdsRecommendationsSummary({
       <p className="text-sm font-black text-slate-900">
         {t("metaCampaigns.recommendations.openCount", { count: openCount })}
       </p>
-      <Link
-        to={`${basePath}/recommendations`}
-        className="mt-2 inline-flex text-sm font-black text-violet-700 underline"
-      >
-        {t("metaCampaigns.recommendations.viewCta")}
-      </Link>
     </section>
   );
 }

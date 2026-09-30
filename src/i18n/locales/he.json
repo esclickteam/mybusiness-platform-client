@@ -9580,7 +9580,11 @@
       "instagramConnectCta": "פתיחת הגדרות Meta",
       "switchAccount": "בחירת חשבון מודעות",
       "lastUpdated": "עודכן לאחרונה: {{time}}",
-      "lastUpdatedLabel": "עודכן לאחרונה"
+      "lastUpdatedLabel": "עודכן לאחרונה",
+      "currentGoal": "יעד נוכחי: {{name}}",
+      "noGoal": "לא הוגדר יעד קמפיין",
+      "optimizationStatus": "מצב אופטימיזציה: {{status}}",
+      "optimizationIdle": "מצב אופטימיזציה: ללא שינוי"
     },
     "accountStatus": {
       "active": "פעיל",

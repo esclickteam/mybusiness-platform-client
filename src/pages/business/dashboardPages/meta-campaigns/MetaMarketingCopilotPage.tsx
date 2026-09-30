@@ -146,7 +146,7 @@ export default function MetaMarketingCopilotPage() {
               data-testid="copilot-review-action"
               onClick={() => {
                 if (action.handoff?.allowed && action.recommendationId) {
-                  navigate(`recommendations?recommendationId=${encodeURIComponent(action.recommendationId)}`);
+                  navigate(`overview`);
                 }
               }}
             >

@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Lightbulb, Megaphone, PieChart, Settings2, Sparkles, Target } from "lucide-react";
+import { LayoutDashboard, Megaphone, Settings2, Sparkles } from "lucide-react";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
@@ -27,9 +27,6 @@ type MetaCampaignsTab = {
 const tabs: MetaCampaignsTab[] = [
   { path: "overview", labelKey: "metaCampaigns.nav.overview", icon: LayoutDashboard },
   { path: "campaigns", labelKey: "metaCampaigns.nav.campaigns", icon: Megaphone },
-  { path: "goals", labelKey: "metaCampaigns.nav.goals", icon: Target },
-  { path: "recommendations", labelKey: "metaCampaigns.nav.recommendations", icon: Lightbulb },
-  { path: "portfolio", labelKey: "metaCampaigns.nav.portfolio", icon: PieChart },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
 ];
 
@@ -82,16 +79,17 @@ export default function MetaCampaignsMain() {
       ? cleanPath
       : cleanPath.replace(new RegExp(`/${lastPart}$`), "");
 
-    if (lastPart === "rules" || lastPart === "automations" || lastPart === "copilot") {
+    if (
+      lastPart === "rules" ||
+      lastPart === "automations" ||
+      lastPart === "copilot" ||
+      lastPart === "health" ||
+      lastPart === "goals" ||
+      lastPart === "recommendations" ||
+      lastPart === "portfolio" ||
+      lastPart === "library"
+    ) {
       navigate(`${basePath}/overview`, { replace: true });
-      return;
-    }
-    if (lastPart === "health") {
-      navigate(`${basePath}/recommendations${location.search || ""}`, { replace: true });
-      return;
-    }
-    if (lastPart === "overview" && searchParams.get("recommendationId")) {
-      navigate(`${basePath}/recommendations${location.search || ""}`, { replace: true });
       return;
     }
 

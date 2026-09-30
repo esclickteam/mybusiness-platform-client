@@ -105,4 +105,16 @@ describe("Meta Campaigns creation-mode routing", () => {
     await waitFor(() => expect(screen.getByText("overview-page")).toBeTruthy());
     expect(screen.queryByText("rules-page")).toBeNull();
   });
+
+  it("redirects goals to overview and keeps only three primary tabs", async () => {
+    renderCampaigns("/business/biz-1/dashboard/meta-campaigns/goals");
+    await waitFor(() => expect(screen.getByText("overview-page")).toBeTruthy());
+    expect(screen.queryByText("goals-page")).toBeNull();
+    expect(screen.getByRole("navigation").textContent).toMatch(/metaCampaigns.nav.overview/);
+    expect(screen.getByRole("navigation").textContent).toMatch(/metaCampaigns.nav.campaigns/);
+    expect(screen.getByRole("navigation").textContent).toMatch(/metaCampaigns.nav.settings/);
+    expect(screen.getByRole("navigation").textContent).not.toMatch(/metaCampaigns.nav.goals/);
+    expect(screen.getByRole("navigation").textContent).not.toMatch(/metaCampaigns.nav.recommendations/);
+    expect(screen.getByRole("navigation").textContent).not.toMatch(/metaCampaigns.nav.portfolio/);
+  });
 });

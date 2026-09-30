@@ -51,7 +51,7 @@ vi.mock("react-i18next", () => ({
 import MetaMarketingCopilotPage from "./MetaMarketingCopilotPage";
 
 describe("MetaMarketingCopilotPage", () => {
-  it("does not call AI on load and hands review action to the recommendations tab", async () => {
+  it("does not call AI on load and hands review action to overview", async () => {
     navigate.mockReset();
     render(
       <MemoryRouter>
@@ -69,7 +69,7 @@ describe("MetaMarketingCopilotPage", () => {
     expect(screen.getByTestId("copilot-period").textContent).toMatch(/Today|showingRange/);
     fireEvent.click(screen.getByTestId("copilot-review-action"));
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith("recommendations?recommendationId=rec-safe-1");
+      expect(navigate).toHaveBeenCalledWith("overview");
     });
   });
 });

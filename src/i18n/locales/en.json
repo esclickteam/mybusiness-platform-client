@@ -9591,7 +9591,11 @@
       "instagramConnectCta": "Open Meta settings",
       "switchAccount": "Select ad account",
       "lastUpdated": "Last updated: {{time}}",
-      "lastUpdatedLabel": "Last updated"
+      "lastUpdatedLabel": "Last updated",
+      "currentGoal": "Current goal: {{name}}",
+      "noGoal": "No campaign goal set",
+      "optimizationStatus": "Optimization: {{status}}",
+      "optimizationIdle": "Optimization: idle"
     },
     "accountStatus": {
       "active": "Active",

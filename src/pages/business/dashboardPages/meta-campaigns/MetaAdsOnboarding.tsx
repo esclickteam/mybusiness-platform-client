@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
+import { btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import CreateCampaignButton from "./CreateCampaignButton";
 
 type Props = {
@@ -40,7 +40,6 @@ export default function MetaAdsOnboarding({
       { done: hasPage, label: t("metaCampaigns.ux.onboardPage"), href: `${basePath}/settings` },
       { done: hasInstagram, label: t("metaCampaigns.ux.onboardInstagram"), href: `${basePath}/settings`, optional: true },
       { done: hasCampaigns, label: t("metaCampaigns.ux.onboardCreate"), href: `${basePath}/campaigns` },
-      { done: false, label: t("metaCampaigns.ux.onboardGoal"), href: `${basePath}/goals`, optional: true },
     ],
     [basePath, connected, hasAccount, hasCampaigns, hasInstagram, hasPage, t]
   );
@@ -87,9 +86,6 @@ export default function MetaAdsOnboarding({
       </ol>
       <div className="mt-4 flex flex-wrap gap-2">
         <CreateCampaignButton basePath={basePath} />
-        <Link to={`${basePath}/goals`} className={btnPrimary}>
-          {t("metaCampaigns.ux.setGoalOptional")}
-        </Link>
       </div>
     </section>
   );
