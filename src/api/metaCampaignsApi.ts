@@ -183,17 +183,24 @@ export type MetaCampaignAdSet = {
   startTime?: string | null;
   endTime?: string | null;
   locations?: MetaLocationTarget[];
+  excludedLocations?: MetaLocationTarget[];
   interests?: MetaInterestTarget[];
+  behaviors?: MetaInterestTarget[];
+  customAudiences?: MetaInterestTarget[];
+  excludedAudiences?: MetaInterestTarget[];
+  locales?: Array<string | number>;
   ageMin?: number | null;
   ageMax?: number | null;
   genders?: number[];
   gender?: string;
-  advantageAudience?: boolean;
+  advantageAudience?: boolean | null;
   pageId?: string;
   publisherPlatforms?: string[];
   facebookPositions?: string[];
   instagramPositions?: string[];
   placementMode?: string;
+  targetingRaw?: Record<string, unknown> | null;
+  targetingLoaded?: boolean;
 };
 
 export type MetaLabeledOption = {
@@ -940,6 +947,9 @@ export async function estimateMetaAudienceReach(
     advantageAudience?: boolean;
     suggestAudience?: boolean;
     furtherLimitReach?: boolean;
+    estimateWithSuggestions?: boolean;
+    strictEstimate?: boolean;
+    noGeoFallback?: boolean;
   }
 ) {
   const { data } = await API.post<{

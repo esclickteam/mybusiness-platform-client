@@ -44,6 +44,7 @@ export function snapshotAdsManager(state: AdsManagerState) {
     adSets: state.adSets.map((adSet) => ({
       id: adSet.id,
       name: adSet.name.trim(),
+      targetingLoaded: adSet.targetingLoaded,
       locations: (adSet.locations || [])
         .filter((loc) => loc.include !== false)
         .map((loc) => loc.name || loc.key)
@@ -118,6 +119,17 @@ export function diffAdsManagerState(
   after.adSets.forEach((adSet) => {
     const prev = before.adSets.find((row) => row.id === adSet.id);
     if (!prev) return;
+    if (!adSet.targetingLoaded || !prev.targetingLoaded) {
+      pushChange(changes, {
+        labelKey: "changeAdSetName",
+        oldValue: text(prev.name),
+        newValue: text(adSet.name),
+        spendImpact: false,
+        entity: "adset",
+        entityId: adSet.id,
+      });
+      return;
+    }
     pushChange(changes, {
       labelKey: "changeAdSetName",
       oldValue: text(prev.name),

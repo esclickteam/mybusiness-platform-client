@@ -73,6 +73,10 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     dailyBudget: "",
     lifetimeBudget: "",
     includeCustomAudiences: [],
+    customAudiences: [],
+    excludedAudiences: [],
+    targetingLoaded: false,
+    targetingRaw: null,
     /** Meta: show Age / Gender / Detailed targeting under Suggest an audience */
     suggestAudience: true,
     furtherLimitReach: false,
@@ -140,6 +144,7 @@ export function createDefaultAdsManagerState(): AdsManagerState {
       lower: 3_800_000,
       upper: 4_500_000,
       spectrum: 0.9,
+      ready: true,
     },
     campaignScore: 72,
   };

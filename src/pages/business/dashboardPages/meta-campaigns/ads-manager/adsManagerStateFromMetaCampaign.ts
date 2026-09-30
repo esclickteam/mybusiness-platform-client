@@ -77,30 +77,66 @@ function mapAdSet(
   const interests = (adSet.interests?.length ? adSet.interests : campaign.interests || []).map(
     (row) => ({ id: String(row.id), name: String(row.name || row.id) })
   );
+  const targetingLoaded = adSet.targetingLoaded !== false && Boolean(
+    adSet.targetingRaw ||
+      locations.length ||
+      adSet.ageMin != null ||
+      adSet.ageMax != null
+  );
+  const advantageAudience =
+    adSet.advantageAudience != null
+      ? adSet.advantageAudience
+      : campaign.advantageAudience != null
+        ? campaign.advantageAudience
+        : null;
+  const ageMin =
+    adSet.ageMin != null
+      ? Number(adSet.ageMin)
+      : campaign.ageMin != null
+        ? Number(campaign.ageMin)
+        : null;
+  const ageMax =
+    adSet.ageMax != null
+      ? Number(adSet.ageMax)
+      : campaign.ageMax != null
+        ? Number(campaign.ageMax)
+        : null;
   return {
     ...fallback,
     id: adSet.id,
     name: adSet.name || fallback.name,
     status: adSet.status || fallback.status,
-    facebookPageId: adSet.pageId || campaign.pageId || fallback.facebookPageId,
+    facebookPageId: adSet.pageId || campaign.pageId || "",
     facebookPageName: fallback.facebookPageName,
-    locationsSummary: locations.map((loc) => loc.name).join(", ") || fallback.locationsSummary,
-    locations: locations.length ? locations : fallback.locations,
-    ageMin: Number(adSet.ageMin ?? campaign.ageMin ?? fallback.ageMin),
-    ageMax: Number(adSet.ageMax ?? campaign.ageMax ?? fallback.ageMax),
+    locationsSummary: locations.map((loc) => loc.name).join(", "),
+    locations,
+    ageMin: Number.isFinite(ageMin as number) ? (ageMin as number) : null,
+    ageMax: Number.isFinite(ageMax as number) ? (ageMax as number) : null,
     gender: genderFromMeta(adSet, campaign),
     interests,
-    optimizationGoal: adSet.optimizationGoal || fallback.optimizationGoal,
-    billingEvent: adSet.billingEvent || fallback.billingEvent,
+    customAudiences: (adSet.customAudiences || []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name || row.id),
+    })),
+    excludedAudiences: (adSet.excludedAudiences || []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name || row.id),
+    })),
+    optimizationGoal: adSet.optimizationGoal || "",
+    billingEvent: adSet.billingEvent || "",
     dailyBudget: adSet.dailyBudget ? String(adSet.dailyBudget) : "",
     lifetimeBudget: adSet.lifetimeBudget ? String(adSet.lifetimeBudget) : "",
-    advantageAudience: adSet.advantageAudience ?? campaign.advantageAudience ?? true,
-    advantagePlacements: campaign.placementMode === "advantage" || !campaign.facebookPositions?.length,
-    startDate: start.date || fallback.startDate,
-    startTime: start.time || fallback.startTime,
+    advantageAudience: advantageAudience === true,
+    advantagePlacements:
+      adSet.placementMode === "advantage" ||
+      !(adSet.publisherPlatforms || campaign.publisherPlatforms || []).length,
+    targetingLoaded,
+    targetingRaw: adSet.targetingRaw || null,
+    startDate: start.date || "",
+    startTime: start.time || "",
     endDateEnabled: Boolean(end.date),
     endDate: end.date,
-    endTime: end.time || fallback.endTime,
+    endTime: end.time || "",
     conversionLocation:
       campaign.leadFormId || campaign.formId
         ? "Instant forms"
@@ -109,8 +145,8 @@ function mapAdSet(
     showMorePlacements: true,
     ageExpanded: true,
     locationsExpanded: true,
-    suggestAudience: true,
-    furtherLimitReach: (adSet.advantageAudience ?? campaign.advantageAudience) === false,
+    suggestAudience: advantageAudience !== false,
+    furtherLimitReach: advantageAudience === false,
   };
 }
 
@@ -259,5 +295,6 @@ export function adsManagerStateFromMetaCampaign(
     campaign: campaignDraft,
     adSets,
     ads,
+    audienceEstimate: { lower: 0, upper: 0, spectrum: 0.5, ready: false },
   };
 }

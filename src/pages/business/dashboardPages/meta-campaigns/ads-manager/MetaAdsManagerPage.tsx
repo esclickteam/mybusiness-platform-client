@@ -282,11 +282,16 @@ export default function MetaAdsManagerPage() {
     connection?.selectedPage?.pageId,
   ]);
 
-  // Live Meta reach estimate (Israel + ages → e.g. 3,800,000 - 4,500,000).
+  // Live Meta reach estimate. Edit uses the loaded Ad Set targeting only —
+  // never IL/18–65 fallbacks that inflate the size vs Ads Manager.
   useEffect(() => {
     if (!businessId || !selectedAdSet) return;
     if (!connection?.connected && !connection?.isConnected) return;
     if (!connection.selectedAdAccount) return;
+    if (isEditSession && (!selectedAdSet.targetingLoaded || selectedAdSet.ageMin == null)) {
+      setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+      return;
+    }
 
     const timer = window.setTimeout(async () => {
       setEstimateLoading(true);
@@ -314,7 +319,6 @@ export default function MetaAdsManagerPage() {
         const data = await estimateMetaAudienceReach(businessId, {
           locations: locations.map((loc) => {
             const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
-            // Meta default for cities = "Cities within radius" 25mi (unless city only).
             const cityOnly = loc.cityOnly === true;
             const radiusMiles =
               isCity && !cityOnly
@@ -329,36 +333,51 @@ export default function MetaAdsManagerPage() {
               region: loc.region,
               metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
               radiusMiles,
-              // Server maps radiusKm as the numeric radius for Meta geo.
               radiusKm: radiusMiles,
               distanceUnit: radiusMiles != null ? "mile" : undefined,
               latitude: loc.latitude,
               longitude: loc.longitude,
             };
           }),
-          // Only send country list when targeting countries (don't force IL over a city).
           countries: hasCityOrPlace
             ? countries
             : countries.length
               ? countries
-              : ["IL"],
-          ageMin: selectedAdSet.ageMin,
-          ageMax: selectedAdSet.ageMax >= 65 ? 65 : selectedAdSet.ageMax,
+              : isEditSession
+                ? []
+                : ["IL"],
+          ageMin: selectedAdSet.ageMin ?? undefined,
+          ageMax:
+            selectedAdSet.ageMax == null
+              ? undefined
+              : selectedAdSet.ageMax >= 65
+                ? 65
+                : selectedAdSet.ageMax,
           genders,
           locationsSummary: selectedAdSet.locationsSummary,
-          // Meta: Advantage+ suggestions → estimate ignores age/gender.
           advantageAudience: selectedAdSet.advantageAudience !== false,
           suggestAudience: selectedAdSet.suggestAudience !== false,
           furtherLimitReach: Boolean(selectedAdSet.furtherLimitReach),
+          estimateWithSuggestions: isEditSession,
+          strictEstimate: isEditSession,
+          noGeoFallback: isEditSession,
         });
+
+        if (data.estimateReady === false || data.lower == null || data.upper == null) {
+          setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+          return;
+        }
 
         setAudienceEstimate({
           lower: Number(data.lower) || 0,
           upper: Number(data.upper) || 0,
           spectrum: Number(data.spectrum) || 0.5,
+          ready: true,
         });
       } catch {
-        // Keep last estimate; defaults already match Meta IL broad range.
+        if (isEditSession) {
+          setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+        }
       } finally {
         setEstimateLoading(false);
       }
@@ -375,6 +394,8 @@ export default function MetaAdsManagerPage() {
     selectedAdSet?.ageMin,
     selectedAdSet?.ageMax,
     selectedAdSet?.gender,
+    selectedAdSet?.targetingLoaded,
+    isEditSession,
     setAudienceEstimate,
   ]);
 
@@ -868,13 +889,13 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewAge")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {selectedAdSet
-                      ? `${selectedAdSet.ageMin} - ${
+                    {selectedAdSet?.ageMin == null || selectedAdSet?.ageMax == null
+                      ? c("ageNotLoaded")
+                      : `${selectedAdSet.ageMin} - ${
                           selectedAdSet.ageMax >= 65
                             ? c("age65Plus")
                             : selectedAdSet.ageMax
-                        }`
-                      : "—"}
+                        }`}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
@@ -979,6 +1000,7 @@ export default function MetaAdsManagerPage() {
               ageMax={selectedAdSet.ageMax}
               gender={selectedAdSet.gender}
               estimateLoading={estimateLoading}
+              estimatePending={isEditSession && state.audienceEstimate.ready === false}
             />
           ) : null}
           {state.selectedLevel === "ad" && selectedAd ? (
