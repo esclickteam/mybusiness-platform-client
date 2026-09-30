@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   isNearBottom,
   isNearTop,
+  pinThreadToBottom,
   preserveScrollAfterPrepend,
   previewWhatsAppTemplateBody,
   scrollScrollerToBottom,
@@ -30,6 +31,19 @@ describe("adminSupportChatScroll", () => {
     ).toBe(false);
     expect(isNearTop({ scrollTop: 10 })).toBe(true);
     expect(isNearTop({ scrollTop: 400 })).toBe(false);
+  });
+
+  it("pins using the bottom of the scroller even when an old scrollTop exists", () => {
+    const el = fakeScroller({
+      scrollHeight: 2400,
+      scrollTop: 80,
+      clientHeight: 400,
+    });
+    const scrollIntoView = vi.fn();
+    const anchor = { scrollIntoView } as unknown as HTMLElement;
+    pinThreadToBottom(el, anchor, false);
+    expect(el.scrollTop).toBe(2400);
+    expect(scrollIntoView).toHaveBeenCalled();
   });
 
   it("scrolls the conversation scroller to its own bottom", () => {
