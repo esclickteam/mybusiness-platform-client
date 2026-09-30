@@ -8604,7 +8604,7 @@
       "inventoryPlaceholder": "ملاحظة المشغل (لا توجد أسرار)",
       "inventoryNoSecrets": "لا تقم بتخزين مفاتيح API أو الرموز المميزة أو قيم PIN هنا. لا يقوم BizUply أبدًا بحذف/إلغاء/إصدار قنوات الحوار 360 تلقائيًا.",
       "channelSettingsTitle": "إعدادات قناة WhatsApp",
-      "channelSettingsHint": "إعدادات الاتصال المباشر بين BizUply وMeta WhatsApp Cloud API.",
+      "channelSettingsHint": "هذا هو اتصال Meta بـ BizUply.",
       "channelSettingsDirection": "Meta → BizUply",
       "channelSettingsLoadError": "تعذر تحميل إعدادات قناة WhatsApp",
       "channelSettingsRefreshed": "تم تحديث حالة القناة من Meta",
@@ -8637,17 +8637,18 @@
       "channelLastReceivedAt": "آخر Webhook تم استلامه في",
       "channelWebhookHealth": "صحة Webhook",
       "channelNotConnected": "قم بتوصيل WhatsApp لعرض بيانات القناة الحقيقية من Meta.",
+      "noActivityYet": "لا يوجد نشاط بعد",
       "channelTooltipPhone": "رقم واتساب للأعمال المتصل بهذا الحساب في BizUply.",
       "channelTooltipWebhook": "العنوان الذي ترسل منه Meta أحداث Cloud API إلى BizUply. هذا ليس Webhook الخاص بـ External API.",
       "channelTooltipVerify": "يتم التكوين عند تعيين WHATSAPP_VERIFY_TOKEN لـ hub.verify_token لدى Meta.",
       "channelExternalApiTitle": "External API",
-      "channelExternalApiHint": "نظام خارجي → BizUply. مفاتيح API وscopes وwebhooks للشركاء.",
+      "channelExternalApiHint": "هكذا تتصل الأنظمة الخارجية بـ BizUply.",
       "channelExternalApiDirection": "نظام خارجي → BizUply",
       "channelHealth": {
         "active": "نشط",
         "not_configured": "غير مُعدّ",
         "verification_failed": "فشل التحقق",
-        "no_events": "لم يتم استلام أحداث بعد",
+        "no_events": "بانتظار أول حدث من Meta",
         "error": "خطأ"
       },
       "channelVerify": {
@@ -8656,6 +8657,11 @@
         "ready": "جاهز",
         "failed": "فشل",
         "not_configured": "غير مُعدّ"
+      },
+      "channelVerification": {
+        "verified": "موثّق",
+        "not_tested": "لم يُختبر بعد",
+        "failed": "فشل"
       },
       "apiSettingsTitle": "إعدادات واجهة برمجة التطبيقات",
       "apiSettingsHint": "قم بتوصيل نظامك الخارجي بـ Bizuply WhatsApp - بدون رموز Meta. استخدم مفتاح Bizuply API الخاص بك مثل مفتاح موفر BSP.",
@@ -8679,7 +8685,7 @@
       "apiSettingsWebhookEmpty": "لم يتم تكوينه",
       "apiSettingsWebhookSaved": "تم حفظ عنوان URL للرد التلقائي على الويب",
       "apiSettingsWebhookError": "تعذر حفظ عنوان URL للرد التلقائي على الويب",
-      "apiSettingsWebhookSecret": "سر الويب هوك",
+      "apiSettingsWebhookSecret": "سِرّ Webhook",
       "apiSettingsNoSecret": "لا يوجد سر webhook حتى الآن",
       "apiSettingsSecretError": "تعذر تحميل webhook السري",
       "apiSettingsSecretRegenConfirm": "هل تريد إعادة إنشاء سر الرد التلقائي على الويب؟ يجب أن يقوم نظامك الخارجي بتحديث مفتاح التحقق من التوقيع.",

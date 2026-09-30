@@ -8604,7 +8604,7 @@
       "inventoryPlaceholder": "Nota del operador (sin secretos)",
       "inventoryNoSecrets": "No almacene aquí claves API, tokens ni valores de PIN. BizUply nunca elimina, cancela o libera canales de 360dialog automáticamente.",
       "channelSettingsTitle": "WhatsApp Channel Settings",
-      "channelSettingsHint": "Ajustes de la conexión directa entre BizUply y Meta WhatsApp Cloud API.",
+      "channelSettingsHint": "Esta es la conexión de Meta a BizUply.",
       "channelSettingsDirection": "Meta → BizUply",
       "channelSettingsLoadError": "No se pudieron cargar los ajustes del canal de WhatsApp",
       "channelSettingsRefreshed": "Estado del canal actualizado desde Meta",
@@ -8625,7 +8625,7 @@
       "channelDisplayNameStatus": "Estado del nombre visible",
       "channelMessagingLimit": "Límite de mensajería",
       "channelQualityRating": "Calidad",
-      "channelTimezone": "Timezone ID",
+      "channelTimezone": "Zona horaria",
       "channelNamespace": "Namespace",
       "channelNamespaceCloud": "No requerido para Cloud API",
       "channelWebhookUrl": "Channel Webhook URL",
@@ -8637,17 +8637,18 @@
       "channelLastReceivedAt": "Último webhook recibido",
       "channelWebhookHealth": "Salud del webhook",
       "channelNotConnected": "Conecte WhatsApp para ver los datos reales del canal de Meta.",
+      "noActivityYet": "Sin actividad todavía",
       "channelTooltipPhone": "El número de WhatsApp Business conectado a esta cuenta de BizUply.",
       "channelTooltipWebhook": "La URL donde Meta envía eventos de Cloud API a BizUply. No es el webhook de External API.",
       "channelTooltipVerify": "Configurado cuando WHATSAPP_VERIFY_TOKEN está definido para hub.verify_token de Meta.",
       "channelExternalApiTitle": "External API",
-      "channelExternalApiHint": "Sistema externo → BizUply. Claves API, scopes y webhooks para partners.",
+      "channelExternalApiHint": "Así se conectan los sistemas externos a BizUply.",
       "channelExternalApiDirection": "Sistema externo → BizUply",
       "channelHealth": {
         "active": "Activo",
         "not_configured": "No configurado",
         "verification_failed": "Verificación fallida",
-        "no_events": "Aún no se recibieron eventos",
+        "no_events": "Esperando el primer evento de Meta",
         "error": "Error"
       },
       "channelVerify": {
@@ -8656,6 +8657,11 @@
         "ready": "Listo",
         "failed": "Fallido",
         "not_configured": "No configurado"
+      },
+      "channelVerification": {
+        "verified": "Verificado",
+        "not_tested": "Aún no se ha comprobado",
+        "failed": "Fallido"
       },
       "apiSettingsTitle": "Configuración de API",
       "apiSettingsHint": "Conecte su sistema externo a Bizuply WhatsApp, sin Meta tokens. Utilice su clave API de Bizuply como una clave de proveedor BSP.",

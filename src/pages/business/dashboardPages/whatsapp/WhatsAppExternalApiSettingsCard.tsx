@@ -8,7 +8,6 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
-  KeyRound,
   Loader2,
   RefreshCw,
   Send,
@@ -274,6 +273,7 @@ export default function WhatsAppExternalApiSettingsCard({
     }
   };
 
+  const noActivity = t("whatsapp.settings.noActivityYet");
   if (!linked) return null;
 
   const apiKeyDisplay =
@@ -300,19 +300,7 @@ export default function WhatsAppExternalApiSettingsCard({
   return (
     <>
     <div className={`${cardBase} px-4 py-4 sm:px-5`}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-wide text-sky-700">
-            {t("whatsapp.settings.channelExternalApiDirection")}
-          </p>
-          <p className="mt-0.5 flex items-center gap-2 text-sm font-black text-slate-900">
-            <KeyRound className="h-4 w-4 text-slate-700" aria-hidden />
-            {t("whatsapp.settings.apiSettingsTitle")}
-          </p>
-          <p className="mt-1 text-xs font-medium text-slate-600">
-            {t("whatsapp.settings.apiSettingsHint")}
-          </p>
-        </div>
+      <div className="flex items-center justify-end gap-3">
         <span
           className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
             settings?.status === "Active"
@@ -320,7 +308,7 @@ export default function WhatsAppExternalApiSettingsCard({
               : "bg-slate-100 text-slate-600"
           }`}
         >
-          {settings?.status || "—"}
+          {settings?.status || noActivity}
         </span>
       </div>
 
@@ -330,7 +318,7 @@ export default function WhatsAppExternalApiSettingsCard({
           {t("common.loading")}
         </div>
       ) : (
-        <div className="mt-4 space-y-4" dir="ltr">
+        <div className="mt-4 space-y-4">
           <Field
             label={t("whatsapp.settings.apiSettingsApiKey")}
             value={apiKeyDisplay}
@@ -379,7 +367,7 @@ export default function WhatsAppExternalApiSettingsCard({
             <div className="grid gap-2 sm:grid-cols-2">
               <Meta
                 label={t("whatsapp.settings.apiSettingsLastUsed")}
-                value={formatDate(settings.apiKey.lastUsedAt)}
+                value={formatDate(settings.apiKey.lastUsedAt, noActivity)}
               />
               <Meta
                 label={t("whatsapp.settings.apiSettingsCreatedAt", {
@@ -493,7 +481,9 @@ export default function WhatsAppExternalApiSettingsCard({
           </div>
 
           <Field
-            label={t("whatsapp.settings.apiSettingsWebhookSecret")}
+            label={t("whatsapp.settings.apiSettingsWebhookSecret", {
+              defaultValue: "Webhook Secret",
+            })}
             value={secretDisplay}
             mono
             actions={
@@ -562,19 +552,25 @@ export default function WhatsAppExternalApiSettingsCard({
                 label={t("whatsapp.settings.apiSettingsTimestamp", {
                   defaultValue: "Timestamp",
                 })}
-                value={formatDate(settings?.webhook?.lastDeliveryAt)}
+                value={formatDate(settings?.webhook?.lastDeliveryAt, noActivity)}
               />
               <Meta
                 label={t("whatsapp.settings.apiSettingsHttpStatus", {
                   defaultValue: "HTTP Status",
                 })}
-                value={formatNumber(settings?.webhook?.lastDeliveryHttpStatus)}
+                value={formatNumber(
+                  settings?.webhook?.lastDeliveryHttpStatus,
+                  noActivity
+                )}
               />
               <Meta
                 label={t("whatsapp.settings.apiSettingsDuration", {
                   defaultValue: "Duration",
                 })}
-                value={formatDuration(settings?.webhook?.lastDeliveryDurationMs)}
+                value={formatDuration(
+                  settings?.webhook?.lastDeliveryDurationMs,
+                  noActivity
+                )}
               />
             </div>
             {settings?.webhook?.lastDeliveryError ? (
@@ -714,16 +710,16 @@ export default function WhatsAppExternalApiSettingsCard({
   );
 }
 
-function formatDate(value?: string | null) {
-  return value ? new Date(value).toLocaleString() : "—";
+function formatDate(value?: string | null, empty = "No activity yet") {
+  return value ? new Date(value).toLocaleString() : empty;
 }
 
-function formatNumber(value?: number | null) {
-  return typeof value === "number" ? String(value) : "—";
+function formatNumber(value?: number | null, empty = "No activity yet") {
+  return typeof value === "number" ? String(value) : empty;
 }
 
-function formatDuration(value?: number | null) {
-  return typeof value === "number" ? `${value} ms` : "—";
+function formatDuration(value?: number | null, empty = "No activity yet") {
+  return typeof value === "number" ? `${value} ms` : empty;
 }
 
 function StatusBadge({

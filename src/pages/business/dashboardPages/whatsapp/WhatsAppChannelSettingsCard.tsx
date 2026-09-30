@@ -45,7 +45,14 @@ function healthBadgeClass(health: string) {
   if (health === "error" || health === "verification_failed") {
     return "bg-rose-50 text-rose-700 border-rose-100";
   }
-  if (health === "no_events") return "bg-amber-50 text-amber-800 border-amber-100";
+  return "bg-slate-50 text-slate-600 border-slate-100";
+}
+
+function verifyBadgeClass(status: string) {
+  if (status === "configured" || status === "verified") {
+    return "bg-emerald-50 text-emerald-700 border-emerald-100";
+  }
+  if (status === "failed") return "bg-rose-50 text-rose-700 border-rose-100";
   return "bg-slate-50 text-slate-600 border-slate-100";
 }
 
@@ -182,28 +189,19 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
     }
   };
 
+  const empty = t("whatsapp.settings.noActivityYet");
   const conn = settings?.connection;
   const webhook = settings?.webhook;
   const health = webhook?.health || "not_configured";
   const lastAt = webhook?.lastEventAt
     ? new Date(webhook.lastEventAt).toLocaleString(locale)
-    : dash;
+    : empty;
+  const verifyStatus = webhook?.verifyTokenStatus || "missing";
+  const verificationStatus = webhook?.verificationStatus || "not_tested";
 
   return (
     <article className={`${cardBase} overflow-hidden p-0`}>
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-wide text-emerald-700">
-            {t("whatsapp.settings.channelSettingsDirection")}
-          </p>
-          <h3 className="mt-0.5 text-sm font-black text-slate-900">
-            {t("whatsapp.settings.channelSettingsTitle")}
-          </h3>
-          <p className="mt-1 max-w-xl text-[12px] font-semibold text-slate-500">
-            {t("whatsapp.settings.channelSettingsHint")}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2 border-b border-slate-100 px-4 py-3">
           <span
             className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-black ${healthBadgeClass(health)}`}
           >
@@ -227,7 +225,6 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
             <ShieldCheck className="h-3.5 w-3.5" />
             {t("whatsapp.settings.channelSettingsTestWebhook")}
           </button>
-        </div>
       </div>
 
       {loading ? (
@@ -314,10 +311,6 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
                 ltr
               />
             ) : null}
-            <FieldRow
-              label={t("whatsapp.settings.channelNamespace")}
-              value={t("whatsapp.settings.channelNamespaceCloud")}
-            />
           </div>
 
           <div className="divide-y divide-slate-100 border-t border-slate-100 px-4 py-1 lg:border-l lg:border-t-0">
@@ -333,15 +326,17 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
             <FieldRow
               label={t("whatsapp.settings.channelVerifyToken")}
               value={t(
-                `whatsapp.settings.channelVerify.${webhook?.verifyTokenStatus || "missing"}`
+                `whatsapp.settings.channelVerify.${verifyStatus}`
               )}
               tooltip={t("whatsapp.settings.channelTooltipVerify")}
+              badgeClass={verifyBadgeClass(verifyStatus)}
             />
             <FieldRow
               label={t("whatsapp.settings.channelVerificationStatus")}
               value={t(
-                `whatsapp.settings.channelVerify.${webhook?.verificationStatus || "not_configured"}`
+                `whatsapp.settings.channelVerification.${verificationStatus}`
               )}
+              badgeClass={verifyBadgeClass(verificationStatus)}
             />
             <FieldRow
               label={t("whatsapp.settings.channelWebhookHealth")}
@@ -350,17 +345,17 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
             />
             <FieldRow
               label={t("whatsapp.settings.channelLastEventType")}
-              value={webhook?.lastEventType || dash}
+              value={webhook?.lastEventType || empty}
               ltr
             />
             <FieldRow
               label={t("whatsapp.settings.channelLastEvent")}
-              value={webhook?.lastEventStatus || webhook?.lastEventWamid || dash}
+              value={webhook?.lastEventStatus || webhook?.lastEventWamid || empty}
               ltr
             />
             <FieldRow
               label={t("whatsapp.settings.channelLastError")}
-              value={webhook?.lastEventError || dash}
+              value={webhook?.lastEventError || empty}
             />
             <FieldRow
               label={t("whatsapp.settings.channelLastReceivedAt")}

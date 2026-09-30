@@ -8649,7 +8649,7 @@
       "inventoryPlaceholder": "הערת מפעיל (בלי סודות)",
       "inventoryNoSecrets": "אל תשמרו כאן מפתחות API, טוקנים או PIN. BizUply לעולם לא מוחקת/מבטלת/משחררת ערוצי 360dialog אוטומטית.",
       "channelSettingsTitle": "הגדרות ערוץ WhatsApp",
-      "channelSettingsHint": "הגדרות החיבור הישיר בין BizUply ל-Meta WhatsApp Cloud API.",
+      "channelSettingsHint": "זה החיבור של Meta ל-BizUply.",
       "channelSettingsDirection": "Meta → BizUply",
       "channelSettingsLoadError": "לא ניתן לטעון את הגדרות ערוץ WhatsApp",
       "channelSettingsRefreshed": "סטטוס הערוץ רוענן מ-Meta",
@@ -8682,17 +8682,18 @@
       "channelLastReceivedAt": "Webhook אחרון התקבל ב",
       "channelWebhookHealth": "בריאות Webhook",
       "channelNotConnected": "חברו WhatsApp כדי לראות נתוני ערוץ חיים מ-Meta.",
+      "noActivityYet": "אין פעילות עדיין",
       "channelTooltipPhone": "מספר ה-WhatsApp Business שמחובר כעת לחשבון BizUply הזה.",
       "channelTooltipWebhook": "הכתובת שבה Meta שולחת אירועי Cloud API ל-BizUply. זו לא כתובת ה-Webhook של External API.",
       "channelTooltipVerify": "מוגדר כאשר WHATSAPP_VERIFY_TOKEN מוגדר עבור hub.verify_token של Meta.",
       "channelExternalApiTitle": "External API",
-      "channelExternalApiHint": "מערכת חיצונית → BizUply. מפתחות API, scopes ו-webhooks לשותפים.",
+      "channelExternalApiHint": "זה החיבור של מערכות חיצוניות ל-BizUply.",
       "channelExternalApiDirection": "מערכת חיצונית → BizUply",
       "channelHealth": {
         "active": "פעיל",
         "not_configured": "לא מוגדר",
         "verification_failed": "האימות נכשל",
-        "no_events": "עדיין לא התקבלו אירועים",
+        "no_events": "ממתין לאירוע ראשון מ-Meta",
         "error": "שגיאה"
       },
       "channelVerify": {
@@ -8701,6 +8702,11 @@
         "ready": "מוכן",
         "failed": "נכשל",
         "not_configured": "לא מוגדר"
+      },
+      "channelVerification": {
+        "verified": "מאומת",
+        "not_tested": "טרם נבדק",
+        "failed": "נכשל"
       },
       "apiSettingsTitle": "הגדרות API",
       "apiSettingsHint": "חברו מערכת חיצונית ל-WhatsApp של Bizuply — בלי טוקנים של Meta. השתמשו במפתח Bizuply כמו אצל ספק BSP.",
