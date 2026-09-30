@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import type { CountryOption } from "../../../lib/partnerAgreementApi";
 import { exclusiveSelectionBlocked } from "../../../lib/partnerAgreementRules";
+import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
 
 type Props = {
   id?: string;
@@ -22,11 +23,13 @@ export default function CountrySelect({
   onChange,
   territoryType = "",
   blockExclusive = false,
-  placeholder = "Search countries",
+  placeholder,
   disabled = false,
   initialOpen = false,
   initialQuery = "",
 }: Props) {
+  const { text, dir } = usePartnerAgreementPage();
+  const searchLabel = placeholder || text.country.search;
   const [open, setOpen] = useState(initialOpen);
   const [query, setQuery] = useState(initialQuery);
   const selected = countries.find((row) => row.countryCode === value);
@@ -42,11 +45,11 @@ export default function CountrySelect({
   }, [countries, query]);
 
   return (
-    <div className="relative" data-testid={id}>
+    <div className="relative" data-testid={id} dir={dir}>
       <input
-        aria-label={placeholder}
+        aria-label={searchLabel}
         value={open ? query : selected ? `${selected.countryName} (${selected.countryCode})` : query}
-        placeholder={placeholder}
+        placeholder={searchLabel}
         disabled={disabled}
         onFocus={() => {
           if (disabled) return;
@@ -62,7 +65,7 @@ export default function CountrySelect({
       {open ? (
         <div className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
           {filtered.length === 0 ? (
-            <p className="px-3 py-3 text-sm font-bold text-slate-500">No countries match.</p>
+            <p className="px-3 py-3 text-sm font-bold text-slate-500">{text.country.empty}</p>
           ) : (
             filtered.map((row) => {
               const blocked = blockExclusive && exclusiveSelectionBlocked(territoryType, row);
@@ -79,17 +82,17 @@ export default function CountrySelect({
                     setOpen(false);
                     setQuery("");
                   }}
-                  className="block w-full px-3 py-2 text-left hover:bg-violet-50 disabled:cursor-not-allowed disabled:bg-slate-50"
+                  className="block w-full px-3 py-2 text-start hover:bg-violet-50 disabled:cursor-not-allowed disabled:bg-slate-50"
                 >
                   <span className="block text-sm font-black text-slate-900">
                     {row.countryName}
-                    <span className="ml-2 font-bold text-slate-400">{row.countryCode}</span>
+                    <span className="ms-2 font-bold text-slate-400">{row.countryCode}</span>
                   </span>
                   {blocked ? (
                     <span className="mt-0.5 block text-xs font-bold text-rose-700">
-                      Exclusive — Unavailable
+                      {text.country.exclusiveUnavailable}
                       {row.partnerName ? ` · ${row.partnerName}` : ""}
-                      {row.startDate || row.endDate ? ` · ${row.startDate || "—"} to ${row.endDate || "—"}` : ""}
+                      {row.startDate || row.endDate ? ` · ${row.startDate || "—"} ${text.country.to} ${row.endDate || "—"}` : ""}
                     </span>
                   ) : null}
                 </button>

@@ -1,6 +1,7 @@
 import React from "react";
 import type { AgreementSignatory } from "../../../lib/partnerAgreementApi";
-import { signatoryCopy } from "./signatoryCopy";
+import { linkStateLabel } from "./partnerAgreementPageCopy.js";
+import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-semibold outline-none focus:border-violet-400";
@@ -18,7 +19,6 @@ function countValue(count: number, options: number[]) {
 }
 
 export default function SignatoriesPanel({
-  locale,
   signingMode,
   signatories,
   editable,
@@ -30,7 +30,6 @@ export default function SignatoriesPanel({
   onRevoke,
   onSignBizuply,
 }: {
-  locale?: string;
   signingMode: "parallel" | "sequential";
   signatories: AgreementSignatory[];
   editable: boolean;
@@ -42,8 +41,8 @@ export default function SignatoriesPanel({
   onRevoke?: (signatoryId: string) => void;
   onSignBizuply?: (signatory: AgreementSignatory) => void;
 }) {
-  const copy = signatoryCopy(locale);
-  const text = copy.text;
+  const page = usePartnerAgreementPage();
+  const text = page.text.sign;
   const rows = signatories.length ? signatories : [blank("partner", 1), blank("bizuply", 1)];
 
   function update(next: AgreementSignatory[], mode = signingMode) {
@@ -89,7 +88,7 @@ export default function SignatoriesPanel({
   const bizuplyOptions = [1, 2, 3];
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5" dir={copy.dir} lang={copy.locale} data-testid="signatories-section">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5" dir={page.dir} lang={page.locale} data-testid="signatories-section">
       <h2 className="text-lg font-black text-slate-900">{text.section}</h2>
       {locked ? <p className="mt-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm font-bold text-amber-950">{text.locked}</p> : null}
       <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -166,7 +165,7 @@ export default function SignatoriesPanel({
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-600">
                     <span>{row.signedAt ? text.signed : text.pending}</span>
                     {row.signedAt ? <span>{text.signedDate}: {String(row.signedAt).slice(0, 10)}</span> : null}
-                    {row.linkState && row.linkState !== "none" ? <span>{row.linkState}</span> : null}
+                    {row.linkState && row.linkState !== "none" ? <span>{linkStateLabel(row.linkState, page.text)}</span> : null}
                     {editable && !locked && !row.signedAt ? (
                       <button type="button" className="rounded-xl bg-slate-100 px-2 py-1" onClick={() => remove(index)}>
                         {text.remove}
