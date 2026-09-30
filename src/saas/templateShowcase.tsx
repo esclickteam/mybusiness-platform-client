@@ -230,19 +230,87 @@ export function PromoVideo({ url, poster, title }: { url?: string; poster?: stri
   );
 }
 
+/**
+ * Compact iPhone-style device showcase.
+ * Mobile screenshots are clipped inside a fixed aspect-ratio frame —
+ * they never stretch the product page into an endlessly tall layout.
+ * Swipe/carousel between 3–5 screens; content can scroll inside the frame.
+ */
 export function MobilePreview({ product }: { product: SaasProduct }) {
   const { t } = useSaasLocale();
-  const shots = (product.mobileScreenshots || []).filter((shot) => isPublicDemoUrl(shot.imageUrl));
+  const reduce = useReducedMotion();
+  const shots = (product.mobileScreenshots || [])
+    .filter((shot) => isPublicDemoUrl(shot.imageUrl))
+    .slice(0, 5);
+  const [index, setIndex] = useState(0);
+  const [touchX, setTouchX] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (reduce || shots.length < 2) return undefined;
+    const timer = window.setInterval(() => setIndex((current) => (current + 1) % shots.length), 4200);
+    return () => window.clearInterval(timer);
+  }, [reduce, shots.length]);
+
   if (!shots.length) return null;
+  const current = shots[Math.min(index, shots.length - 1)]!;
+
+  function go(delta: number) {
+    setIndex((current) => (current + delta + shots.length) % shots.length);
+  }
+
   return (
-    <section className="saas-showcase-block">
+    <section className="saas-showcase-block saas-mobile-showcase" id="mobile">
+      <p className="saas-kicker">{t("saasMarket.showcase.mobileTitle")}</p>
       <h2 className="saas-title">{t("saasMarket.showcase.mobileTitle")}</h2>
-      <div className="saas-phones">
-        {shots.map((shot) => (
-          <figure key={shot.imageUrl} className="saas-phone">
-            <img src={shot.imageUrl} alt={shot.caption || shot.label} />
-            <figcaption>{shot.caption || shot.label}</figcaption>
-          </figure>
+      <div className="saas-mobile-stage">
+        <button type="button" className="saas-mobile-nav" aria-label="Previous" onClick={() => go(-1)}>
+          ‹
+        </button>
+        <div
+          className="saas-phone-device"
+          onTouchStart={(event) => setTouchX(event.changedTouches[0]?.clientX ?? null)}
+          onTouchEnd={(event) => {
+            if (touchX == null) return;
+            const x = event.changedTouches[0]?.clientX ?? touchX;
+            const dx = x - touchX;
+            if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+            setTouchX(null);
+          }}
+        >
+          <div className="saas-phone-notch" aria-hidden="true" />
+          <div className="saas-phone-screen">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current.imageUrl}
+                className="saas-phone-scroll"
+                initial={reduce ? false : { opacity: 0, x: 18 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={reduce ? undefined : { opacity: 0, x: -18 }}
+                transition={{ duration: 0.28 }}
+              >
+                <img src={current.imageUrl} alt={current.caption || current.label} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <div className="saas-phone-home" aria-hidden="true" />
+        </div>
+        <button type="button" className="saas-mobile-nav" aria-label="Next" onClick={() => go(1)}>
+          ›
+        </button>
+      </div>
+      <p className="saas-showcase-caption">{current.caption || current.label}</p>
+      <div className="saas-mobile-dots" role="tablist" aria-label="Mobile screens">
+        {shots.map((shot, i) => (
+          <button
+            key={shot.imageUrl}
+            type="button"
+            role="tab"
+            aria-selected={i === index}
+            className={i === index ? "is-on" : ""}
+            onClick={() => setIndex(i)}
+          >
+            <span>{shot.label}</span>
+          </button>
         ))}
       </div>
     </section>
