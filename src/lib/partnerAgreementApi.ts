@@ -4,6 +4,7 @@ export type AgreementStatus =
   | "draft"
   | "ready_for_review"
   | "sent"
+  | "partially_signed"
   | "partner_signed"
   | "bizuply_signed"
   | "fully_signed"
@@ -27,6 +28,25 @@ export type CommissionTier = {
   minCustomers: number;
   maxCustomers: number | null;
   percent: number;
+};
+
+export type AgreementSignatory = {
+  signatoryId?: string;
+  party: "partner" | "bizuply";
+  fullName: string;
+  title: string;
+  email: string;
+  phone?: string;
+  order: number;
+  required: boolean;
+  signedAt?: string | null;
+  status?: "pending" | "signed";
+  linkState?: "none" | "active" | "revoked" | "consumed" | "expired";
+};
+
+export type SignatureProgress = {
+  partner: { completed: number; required: number; total: number };
+  bizuply: { completed: number; required: number; total: number };
 };
 
 export type PartnerAgreement = {
@@ -111,6 +131,12 @@ export type PartnerAgreement = {
   versions: { versionNumber: number; frozen: boolean; source: string; templateRevision: string; createdAt: string }[];
   renewedFromAgreementId: string;
   renewedToAgreementId: string;
+  signingMode?: "parallel" | "sequential";
+  signatories?: AgreementSignatory[];
+  signatureProgress?: SignatureProgress;
+  signatureStatus?: string;
+  signatureStatusLabel?: string;
+  bizuplyLegalCompanyName?: string;
 };
 
 export type AgreementInput = {
@@ -171,6 +197,8 @@ export type AgreementInput = {
   renewalNotes?: string;
   specialTermsEnabled?: boolean;
   specialTerms?: string;
+  signingMode?: "parallel" | "sequential";
+  signatories?: AgreementSignatory[];
 };
 
 export type CountryOption = {
@@ -296,6 +324,7 @@ export async function previewPartnerAgreement(id: string, version?: number) {
     parts?: { locale: string; dir: string; title: string; sections: { number: number | null; title: string; paragraphs: string[] }[] }[];
     sections: { number: number | null; title: string; paragraphs: string[] }[];
     variables: Record<string, string | string[] | boolean>;
+    signatories?: AgreementSignatory[];
   };
 }
 
@@ -305,8 +334,19 @@ export async function previewDraftAgreement(input: AgreementInput) {
     title: string;
     sections: { number: number | null; title: string; paragraphs: string[] }[];
     variables: Record<string, string | string[] | boolean>;
+    signatories?: AgreementSignatory[];
     persisted: boolean;
   };
+}
+
+export async function resendSignatoryLink(id: string, signatoryId: string) {
+  const { data } = await API.post(`/admin/partner-agreements/${id}/signatories/${signatoryId}/link`);
+  return data as { path: string; expiresAt: string; fullName?: string; notified: boolean };
+}
+
+export async function revokeSignatoryLink(id: string, signatoryId: string) {
+  const { data } = await API.post(`/admin/partner-agreements/${id}/signatories/${signatoryId}/revoke`);
+  return data as { revoked: boolean; signatoryId: string };
 }
 
 export async function downloadAgreementPdf(id: string, version?: number) {

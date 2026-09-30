@@ -99,15 +99,28 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
                 </div>
               ))}
             </div>
-            <div className="mt-10 grid gap-4 border-t border-slate-200 pt-6 sm:grid-cols-2">
-              <section data-testid="bizuply-signature" className="rounded-2xl border border-dashed border-slate-300 p-4">
-                <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">Bizuply signature</h2>
-                <p className="mt-6 text-sm font-semibold text-slate-400">Signature appears here after Bizuply signs this version.</p>
-              </section>
-              <section data-testid="partner-signature" className="rounded-2xl border border-dashed border-slate-300 p-4">
-                <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">Partner signature</h2>
-                <p className="mt-6 text-sm font-semibold text-slate-400">Signature appears here after the partner signs this version.</p>
-              </section>
+            <div className="mt-10 space-y-4 border-t border-slate-200 pt-6" data-testid="signature-blocks">
+              {(data.signatories?.length
+                ? data.signatories
+                : [
+                    { party: "partner" as const, fullName: String(data.variables.PARTNER_SIGNATORY_NAME || ""), title: String(data.variables.PARTNER_SIGNATORY_TITLE || ""), order: 1, required: true, email: "" },
+                    { party: "bizuply" as const, fullName: String(data.variables.BIZUPLY_SIGNATORY_NAME || "Authorized representative"), title: String(data.variables.BIZUPLY_SIGNATORY_TITLE || "Bizuply"), order: 1, required: true, email: "" },
+                  ]
+              ).map((signatory, index) => (
+                <section
+                  key={`${signatory.party}-${signatory.fullName}-${index}`}
+                  data-testid={signatory.party === "bizuply" ? "bizuply-signature" : "partner-signature"}
+                  className="rounded-2xl border border-dashed border-slate-300 p-4"
+                >
+                  <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">
+                    {signatory.party === "bizuply" ? "Bizuply" : "Partner"}
+                  </h2>
+                  <p className="mt-3 font-black text-slate-950">{signatory.fullName || "Name"}</p>
+                  <p className="text-sm font-semibold text-slate-600">{signatory.title || "Title"}</p>
+                  <p className="mt-6 text-sm font-semibold text-slate-400">Signature: __________</p>
+                  <p className="text-sm font-semibold text-slate-400">Date: __________</p>
+                </section>
+              ))}
             </div>
           </article>
         ) : !error ? (
