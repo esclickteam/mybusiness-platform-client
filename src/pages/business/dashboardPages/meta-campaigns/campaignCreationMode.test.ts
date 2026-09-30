@@ -31,6 +31,7 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("settings")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("rules")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("goals")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("portfolio")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("mystery")).toBe(false);
   });
@@ -60,6 +61,9 @@ describe("BusinessDashboardRoutes wiring", () => {
     );
     expect(source).toMatch(
       /path="goals"\s+element=\{<MetaCampaignGoalsPage/
+    );
+    expect(source).toMatch(
+      /path="portfolio"\s+element=\{<MetaPortfolioPage/
     );
     expect(source).toMatch(
       /path="edit\/:campaignId"\s+element=\{<MetaCampaignEditorPage/

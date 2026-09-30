@@ -195,6 +195,9 @@ const MetaAutomationRulesPage = lazy(() =>
 const MetaCampaignGoalsPage = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignGoalsPage")
 );
+const MetaPortfolioPage = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaPortfolioPage")
+);
 
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
@@ -602,6 +605,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="library" element={<Navigate to="overview" replace />} />
             <Route path="rules" element={<MetaAutomationRulesPage />} />
             <Route path="goals" element={<MetaCampaignGoalsPage />} />
+            <Route path="portfolio" element={<MetaPortfolioPage />} />
             <Route path="settings" element={<MetaCampaignsSettingsTab />} />
             <Route path="*" element={<Navigate to="overview" replace />} />
           </Route>

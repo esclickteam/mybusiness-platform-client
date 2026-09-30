@@ -9527,6 +9527,7 @@
       "library": "ספריית קריאייטיב",
       "rules": "חוקי אוטומציה",
       "goals": "יעדי קמפיין",
+      "portfolio": "אופטימיזציית תיק",
       "settings": "חיבור Meta"
     },
     "manager": {
@@ -10510,6 +10511,24 @@
       "difference": "פער",
       "started": "כשהיעד הוגדר",
       "noGoals": "עדיין אין יעדים."
+    },
+    "portfolio": {
+      "title": "אופטימיזציית תיק",
+      "subtitle": "משווים קמפיינים בחשבון ומציגים חלוקת תקציב עם הגנות, לפני כל כתיבה ל-Meta.",
+      "keepTotal": "לשמור על סך התקציב",
+      "growth": "לאפשר גדילה עד תקרת החשבון",
+      "targetCpl": "יעד CPL משוקלל",
+      "accountCap": "תקרה יומית לחשבון",
+      "maxChange": "שינוי מקסימלי %",
+      "analyze": "ניתוח",
+      "simulate": "סימולציית הקצאה",
+      "apply": "החלת הקצאה",
+      "confirm": "אישור החלה",
+      "review": "נוכחי → מוצע",
+      "currentTotal": "סך תקציב נוכחי",
+      "proposedTotal": "סך תקציב מוצע",
+      "blendedCpl": "CPL משוקלל",
+      "explanation": "הסבר"
     },
     "empty": {
       "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",
