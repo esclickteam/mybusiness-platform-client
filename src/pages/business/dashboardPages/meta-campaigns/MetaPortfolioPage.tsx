@@ -10,7 +10,6 @@ import {
   type PortfolioAllocation,
   type PortfolioCampaignRow,
 } from "../../../../api/metaCampaignsApi";
-import { Link } from "react-router-dom";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { humanizeMetaCustomerLabel } from "./metaCampaignUtils";
@@ -70,12 +69,6 @@ export default function MetaPortfolioPage() {
             ? t("metaCampaigns.ux.portfolioNoData")
             : t("metaCampaigns.ux.portfolioHasData")}
         </p>
-        <Link
-          to={`../copilot?q=${encodeURIComponent(t("metaCampaigns.ux.askAiBudget"))}`}
-          className="mt-2 inline-flex text-sm font-black text-violet-700 underline"
-        >
-          {t("metaCampaigns.ux.askAiBudget")}
-        </Link>
       </section>
 
       <section className={`${cardBase} grid gap-3 p-4 md:grid-cols-5`}>

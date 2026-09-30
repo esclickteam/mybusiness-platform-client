@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Eye, Loader2, Pause, Pencil, Play } from "lucide-react";
 import {
@@ -385,12 +385,6 @@ export default function MetaCampaignsCampaignsPage() {
           </div>
         </div>
       ) : null}
-
-      <p className="text-xs font-semibold text-slate-400">
-        <Link to={`${basePath}/copilot`} className="underline">
-          {t("metaCampaigns.ux.askAiBudget")}
-        </Link>
-      </p>
     </div>
   );
 }
