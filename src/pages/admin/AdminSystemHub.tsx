@@ -16,6 +16,7 @@ const LINKS = [
   { to: "/admin/support-chat", title: "צ'אט תמיכה", text: "פניות אנושיות מהאתר" },
   { to: "/admin/early-access", title: "הרשמה מוקדמת", text: "לידים מדף Early Access" },
   { to: "/admin/settings", title: "הגדרות", text: "הגדרות מערכת" },
+  { to: "/admin/ai-usage", title: "AI Usage", text: "עלות, טוקנים וקריאות OpenAI" },
 ];
 
 export default function AdminSystemHub() {
