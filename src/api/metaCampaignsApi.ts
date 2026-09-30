@@ -1325,6 +1325,98 @@ export async function evaluateAutomationRule(businessId: string, id: string) {
   return data;
 }
 
+export type CampaignGoal = {
+  id: string;
+  name: string;
+  scope: string;
+  metaCampaignId?: string;
+  objective: string;
+  primaryKpi: string;
+  targetValue: number;
+  supportingKpis?: string[];
+  generatedRules?: Array<Record<string, unknown>>;
+  ruleIds?: string[];
+  safetyLimits?: Record<string, unknown>;
+  automationPreference: "RECOMMEND" | "AUTOMATIC";
+  status: "DRAFT" | "ACTIVE" | "PAUSED";
+  explanation?: string;
+  lastHealth?: string;
+  startingSnapshot?: { cpl?: number } | null;
+  lastSnapshot?: { cpl?: number } | null;
+};
+
+export async function listCampaignGoals(businessId: string, campaignId?: string) {
+  const { data } = await API.get<{ success: boolean; goals: CampaignGoal[] }>(
+    "/meta-campaigns/goals",
+    withBusiness(businessId, campaignId ? { campaignId } : undefined)
+  );
+  return data.goals || [];
+}
+
+export async function draftCampaignGoal(
+  businessId: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    goal: CampaignGoal;
+    plan: Record<string, unknown>;
+    explanation: string;
+  }>("/meta-campaigns/goals/draft", { ...payload, businessId });
+  return data;
+}
+
+export async function updateCampaignGoal(
+  businessId: string,
+  id: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.put<{ success: boolean; goal: CampaignGoal }>(
+    `/meta-campaigns/goals/${id}`,
+    { ...payload, businessId }
+  );
+  return data.goal;
+}
+
+export async function activateCampaignGoal(businessId: string, id: string) {
+  const { data } = await API.post<{
+    success: boolean;
+    goal: CampaignGoal;
+    rules: Array<{ id: string; name: string }>;
+  }>(`/meta-campaigns/goals/${id}/activate`, { businessId });
+  return data;
+}
+
+export async function evaluateCampaignGoal(businessId: string, id: string) {
+  const { data } = await API.post<{
+    success: boolean;
+    goal: CampaignGoal;
+    health: { status: string; currentValue: number; differencePct: number | null };
+  }>(`/meta-campaigns/goals/${id}/evaluate`, { businessId });
+  return data;
+}
+
+export async function getCampaignGoalHistory(businessId: string, id: string) {
+  const { data } = await API.get<{ success: boolean; history: Array<Record<string, unknown>> }>(
+    `/meta-campaigns/goals/${id}/history`,
+    withBusiness(businessId)
+  );
+  return data.history || [];
+}
+
+export async function getCampaignGoalDashboard(businessId: string, campaignId: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    dashboard: {
+      goal: CampaignGoal;
+      current: { cpl?: number };
+      health: { status: string; currentValue: number; differencePct: number | null };
+      progress: { target: number; current: number; differencePct: number | null; started: number | null };
+    } | null;
+  }>(`/meta-campaigns/campaigns/${campaignId}/goal`, withBusiness(businessId));
+  return data.dashboard;
+}
+
 export async function pollMetaPublishes(businessId: string) {
   const { data } = await API.post<{
     success: boolean;

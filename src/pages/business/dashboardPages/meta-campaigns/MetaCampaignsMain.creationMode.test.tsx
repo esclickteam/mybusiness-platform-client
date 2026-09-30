@@ -56,6 +56,7 @@ function renderCampaigns(initial: string) {
           <Route path="create" element={<div>manual-ads-manager</div>} />
           <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
           <Route path="rules" element={<div>rules-page</div>} />
+          <Route path="goals" element={<div>goals-page</div>} />
           <Route path="settings" element={<div>settings-page</div>} />
           <Route path="edit/:campaignId" element={<div>edit-page</div>} />
         </Route>

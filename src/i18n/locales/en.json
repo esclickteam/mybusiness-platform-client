@@ -9537,6 +9537,7 @@
       "create": "Ads Manager",
       "library": "Creative library",
       "rules": "Automation Rules",
+      "goals": "Campaign goals",
       "settings": "Meta connection"
     },
     "manager": {
@@ -10487,6 +10488,41 @@
       "testResult": "Test result",
       "noRules": "No automation rules yet.",
       "safety": "Rules never activate a paused object. Automatic only runs the action you chose."
+    },
+    "goals": {
+      "title": "Campaign goals",
+      "subtitle": "Set a simple business goal. Invistimo turns it into KPIs and Phase 5 rules you can review first.",
+      "setGoal": "Set campaign goal",
+      "step1": "Objective",
+      "step2": "Target",
+      "step3": "Budget boundaries",
+      "step4": "Automation preference",
+      "moreLeads": "More leads",
+      "lowerCpl": "Lower cost per lead",
+      "moreConversions": "More website conversions",
+      "improveEfficiency": "Improve efficiency",
+      "scale": "Scale performance",
+      "targetCpl": "Target CPL (ILS)",
+      "currentBudget": "Current daily budget",
+      "maxBudget": "Maximum daily budget",
+      "maxIncrease": "Maximum increase %",
+      "maxDecrease": "Maximum decrease %",
+      "recommendOnly": "Recommendations only",
+      "safeAuto": "Safe automatic actions",
+      "draft": "Generate plan",
+      "reviewTitle": "Based on your goal, Invistimo will monitor",
+      "start": "Start monitoring",
+      "editRules": "You can edit, remove, or change mode before starting.",
+      "status": {
+        "ON_TARGET": "On target",
+        "NEAR_TARGET": "Near target",
+        "NEEDS_ATTENTION": "Needs attention",
+        "INSUFFICIENT_DATA": "Insufficient data"
+      },
+      "current": "Current",
+      "difference": "Difference",
+      "started": "When goal started",
+      "noGoals": "No goals yet."
     },
     "empty": {
       "notConnectedTitle": "No connected ad account found",
