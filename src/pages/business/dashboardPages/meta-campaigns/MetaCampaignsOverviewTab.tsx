@@ -50,10 +50,10 @@ import {
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
-import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import MetaAdsOnboarding from "./MetaAdsOnboarding";
 import MetaAdsConnectionHealth from "./MetaAdsConnectionHealth";
+import MetaAdsRecommendationsSummary from "./MetaAdsRecommendationsSummary";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   formatAdAccountLabel,
@@ -250,7 +250,6 @@ export default function MetaCampaignsOverviewTab() {
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const [searchParams] = useSearchParams();
   const queryCampaignId = searchParams.get("campaignId") || "";
-  const queryRecommendationId = searchParams.get("recommendationId") || "";
   const basePath = `/business/${urlBusinessId || businessId}/dashboard/meta-campaigns`;
   const locale = getIntlLocale(i18n.language);
 
@@ -726,30 +725,16 @@ export default function MetaCampaignsOverviewTab() {
             {t("metaCampaigns.empty.loadingFromMeta")}
           </p>
         )}
-        {instagramMissing ? (
-          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
-            <p className="text-sm font-black text-amber-900">
-              {t("metaCampaigns.overview.instagramNotConnected")}
-            </p>
-            <Link
-              to={`${basePath}/settings`}
-              className="mt-2 inline-flex text-xs font-black text-amber-900 underline"
-            >
-              {t("metaCampaigns.overview.instagramConnectCta")}
-            </Link>
-          </div>
-        ) : null}
       </div>
 
       <section className={`${cardBase} p-4`} data-testid="what-needs-attention">
         <h3 className="text-sm font-black text-slate-900">{t("metaCampaigns.ux.attention")}</h3>
         <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-600">
           {!hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionNoData")}</li> : null}
-          {instagramMissing ? <li>{t("metaCampaigns.overview.instagramNotConnected")}</li> : null}
           {(data?.campaigns || []).filter((row) => String(row.effectiveStatus || "").toUpperCase().includes("ERROR") || String(row.effectiveStatus || "").toUpperCase().includes("REJECT")).length ? (
             <li>{t("metaCampaigns.ux.attentionDelivery")}</li>
           ) : null}
-          {hasInsightSignal && !instagramMissing ? <li>{t("metaCampaigns.ux.attentionOk")}</li> : null}
+          {hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionOk")}</li> : null}
         </ul>
         <Link to={`${basePath}/copilot`} className="mt-3 inline-flex text-sm font-black text-violet-700 underline">
           {t("metaCampaigns.ux.askAiAttention")}
@@ -1301,15 +1286,9 @@ export default function MetaCampaignsOverviewTab() {
 
         <aside className="space-y-4">
           {businessId || urlBusinessId ? (
-            <MetaCampaignHealthPanel
+            <MetaAdsRecommendationsSummary
               businessId={String(urlBusinessId || businessId)}
-              currency={currency}
-              variant="list"
-              highlightRecommendationId={queryRecommendationId || undefined}
-              onOpenCampaign={(id) => {
-                const match = (data?.campaigns || []).find((item) => item.id === id);
-                if (match) setDetailsCampaign(match);
-              }}
+              basePath={basePath}
             />
           ) : null}
           <div className={`${cardBase} p-4`}>

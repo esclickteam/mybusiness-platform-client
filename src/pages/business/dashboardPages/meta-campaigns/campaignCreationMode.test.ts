@@ -31,6 +31,7 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("settings")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("rules")).toBe(false);
     expect(isMetaCampaignsKnownChildPath("goals")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("recommendations")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("portfolio")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("copilot")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("campaigns")).toBe(true);
@@ -67,6 +68,12 @@ describe("BusinessDashboardRoutes wiring", () => {
     );
     expect(source).toMatch(
       /path="goals"\s+element=\{<MetaCampaignGoalsPage/
+    );
+    expect(source).toMatch(
+      /path="recommendations"\s+element=\{<MetaAdsRecommendationsPage/
+    );
+    expect(source).toMatch(
+      /path="health"\s+element=\{<Navigate to="recommendations"/
     );
     expect(source).toMatch(
       /path="portfolio"\s+element=\{<MetaPortfolioPage/
