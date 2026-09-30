@@ -31,8 +31,8 @@ export default function MetaCampaignGoalCard({
       </p>
       <h3 className="mt-1 text-base font-black text-slate-900">{goalName}</h3>
       {evaluationWindow ? (
-        <p className="mt-2 text-xs font-black uppercase tracking-wide text-slate-500" data-testid="goal-window">
-          {t("metaCampaigns.goals.evaluationWindow", {
+        <p className="mt-2 text-xs font-semibold text-slate-500" data-testid="goal-window">
+          {t("metaCampaigns.goals.basedOnWindow", {
             window: t(`metaCampaigns.goals.windows.${evaluationWindow}`, {
               defaultValue: evaluationWindow,
             }),

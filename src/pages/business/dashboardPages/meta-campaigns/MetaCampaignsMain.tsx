@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, ListChecks, Megaphone, MessageSquare, PieChart, Settings2, Sparkles, Target } from "lucide-react";
+import { LayoutDashboard, Megaphone, MessageSquare, PieChart, Settings2, Sparkles, Target } from "lucide-react";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
@@ -28,7 +28,6 @@ const tabs: MetaCampaignsTab[] = [
   { path: "overview", labelKey: "metaCampaigns.nav.overview", icon: LayoutDashboard },
   { path: "campaigns", labelKey: "metaCampaigns.nav.campaigns", icon: Megaphone },
   { path: "goals", labelKey: "metaCampaigns.nav.goals", icon: Target },
-  { path: "rules", labelKey: "metaCampaigns.nav.automations", icon: ListChecks },
   { path: "portfolio", labelKey: "metaCampaigns.nav.portfolio", icon: PieChart },
   { path: "copilot", labelKey: "metaCampaigns.nav.copilot", icon: MessageSquare },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
@@ -59,7 +58,6 @@ export default function MetaCampaignsMain() {
     const parts = location.pathname.split("/").filter(Boolean);
     const last = parts[parts.length - 1] || "overview";
     if (parts.includes("edit")) return "edit";
-    if (last === "automations") return "rules";
     return last;
   }, [location.pathname]);
 
@@ -79,11 +77,17 @@ export default function MetaCampaignsMain() {
     const isRoot = lastPart === "meta-campaigns";
 
     if (pathParts.includes("edit")) return;
-    if (!isRoot && isKnownTab) return;
 
     const basePath = isRoot
       ? cleanPath
-      : cleanPath.replace(new RegExp(`/${currentTab}$`), "");
+      : cleanPath.replace(new RegExp(`/${lastPart}$`), "");
+
+    if (lastPart === "rules" || lastPart === "automations") {
+      navigate(`${basePath}/overview`, { replace: true });
+      return;
+    }
+
+    if (!isRoot && isKnownTab) return;
 
     navigate(`${basePath}/overview`, { replace: true });
   }, [currentTab, isKnownTab, location.pathname, navigate]);

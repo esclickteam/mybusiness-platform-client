@@ -99,4 +99,10 @@ describe("Meta Campaigns creation-mode routing", () => {
     renderCampaigns("/business/biz-1/dashboard/meta-campaigns/edit/123");
     expect(screen.getByText("edit-page")).toBeTruthy();
   });
+
+  it("redirects legacy automation routes to overview", async () => {
+    renderCampaigns("/business/biz-1/dashboard/meta-campaigns/rules");
+    await waitFor(() => expect(screen.getByText("overview-page")).toBeTruthy());
+    expect(screen.queryByText("rules-page")).toBeNull();
+  });
 });

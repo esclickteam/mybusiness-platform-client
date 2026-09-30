@@ -22,7 +22,6 @@ import {
   YAxis,
 } from "recharts";
 import {
-  ArrowUpRight,
   CheckCircle2,
   Eye,
   Facebook,
@@ -38,7 +37,6 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
-  Workflow,
   X,
 } from "lucide-react";
 import {
@@ -52,7 +50,6 @@ import {
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
-import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import MetaAdsOnboarding from "./MetaAdsOnboarding";
@@ -68,7 +65,6 @@ import {
   formatPercent,
   formatRoas,
   metaDeliveryStatusKey,
-  resolveAdAccountId,
   resolveMetaAccountStatus,
   resolveCampaignCurrency,
   SEGMENT_OPTIONS,
@@ -284,7 +280,6 @@ export default function MetaCampaignsOverviewTab() {
   const selectedAccount = data?.connection?.selectedAdAccount || null;
   const adAccounts = data?.connection?.adAccounts || [];
   const selectedAccountId = selectedAccount?.id || "";
-  const accountIdDisplay = resolveAdAccountId(selectedAccount);
   const accountMeta = adAccounts.find((a) => a.id === selectedAccountId);
   const accountStatus = resolveMetaAccountStatus(
     accountMeta?.accountStatus ?? selectedAccount?.accountStatus
@@ -588,7 +583,6 @@ export default function MetaCampaignsOverviewTab() {
               : t("metaCampaigns.empty.connectCta")}
           </Link>
         </div>
-        <MetaAdsReviewCaptions set="overview" />
       </div>
     );
   }
@@ -605,14 +599,15 @@ export default function MetaCampaignsOverviewTab() {
           </p>
           {lastUpdatedAt ? (
             <p className="mt-1 text-xs font-bold text-slate-400">
-              {t("metaCampaigns.overview.syncedWithMeta")}
-              {" · "}
-              {t("metaCampaigns.overview.lastSyncedAgo", {
-                seconds: Math.max(
+              {(() => {
+                const minutes = Math.max(
                   0,
-                  Math.round((nowMs - lastUpdatedAt.getTime()) / 1000)
-                ),
-              })}
+                  Math.round((nowMs - lastUpdatedAt.getTime()) / 60000)
+                );
+                return minutes < 1
+                  ? t("metaCampaigns.overview.syncedJustNow")
+                  : t("metaCampaigns.overview.syncedMinutesAgo", { minutes });
+              })()}
             </p>
           ) : null}
         </div>
@@ -687,11 +682,6 @@ export default function MetaCampaignsOverviewTab() {
                 {t("metaCampaigns.overview.connectedThroughMeta")}
               </span>
             </div>
-            <p className="sr-only">
-              {t("metaCampaigns.overview.adAccountId", {
-                id: accountIdDisplay || "—",
-              })}
-            </p>
             <p className="text-sm font-bold text-slate-600">
               {t("metaCampaigns.overview.accountStatusLabel", {
                 status: accountStatusLabel,
@@ -740,9 +730,6 @@ export default function MetaCampaignsOverviewTab() {
           <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
             <p className="text-sm font-black text-amber-900">
               {t("metaCampaigns.overview.instagramNotConnected")}
-            </p>
-            <p className="mt-1 text-xs font-semibold text-amber-800">
-              {t("metaCampaigns.overview.instagramConnectHint")}
             </p>
             <Link
               to={`${basePath}/settings`}
@@ -1341,44 +1328,6 @@ export default function MetaCampaignsOverviewTab() {
 
           <div className={`${cardBase} p-4`}>
             <div className="flex items-center gap-2">
-              <Workflow className="h-4 w-4 text-sky-600" />
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.automations.title")}
-              </p>
-            </div>
-            <p className="mt-1 text-xs font-semibold text-slate-500">
-              {t("metaCampaigns.automations.subtitle")}
-            </p>
-            <ol className="relative mt-4 space-y-4 border-s border-slate-200 ps-4">
-              {[
-                t("metaCampaigns.automations.step1"),
-                t("metaCampaigns.automations.step2"),
-                t("metaCampaigns.automations.step3"),
-              ].map((step, index) => (
-                <li key={step} className="relative">
-                  <span className="absolute -start-[21px] top-1 grid h-3.5 w-3.5 place-items-center rounded-full border-2 border-white bg-violet-500 shadow" />
-                  <p className="text-xs font-black text-slate-400">
-                    {t("metaCampaigns.automations.stepLabel", {
-                      n: index + 1,
-                    })}
-                  </p>
-                  <p className="mt-0.5 text-sm font-bold text-slate-700">
-                    {step}
-                  </p>
-                </li>
-              ))}
-            </ol>
-            <Link
-              to={`${basePath}/rules`}
-              className={`${btnSecondary} mt-4 w-full`}
-            >
-              <ArrowUpRight className="h-4 w-4" />
-              {t("metaCampaigns.automations.cta")}
-            </Link>
-          </div>
-
-          <div className={`${cardBase} p-4`}>
-            <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4 text-emerald-600" />
               <p className="text-sm font-black text-slate-900">
                 {t("metaCampaigns.overview.spendCard")}
@@ -1422,10 +1371,7 @@ export default function MetaCampaignsOverviewTab() {
             className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
-              {t("metaCampaigns.review.managementBadge")}
-            </p>
-            <h3 className="mt-2 text-lg font-black text-slate-900">
+            <h3 className="text-lg font-black text-slate-900">
               {pendingNextStatus === "PAUSED"
                 ? t("metaCampaigns.actions.confirmPauseTitle")
                 : t("metaCampaigns.actions.confirmResumeTitle")}
@@ -1466,8 +1412,6 @@ export default function MetaCampaignsOverviewTab() {
           </div>
         </div>
       ) : null}
-
-      <MetaAdsReviewCaptions set="overview" />
     </div>
   );
 }

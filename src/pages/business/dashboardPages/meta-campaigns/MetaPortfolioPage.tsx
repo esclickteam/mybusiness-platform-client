@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import { humanizeMetaCustomerLabel } from "./metaCampaignUtils";
 
 export default function MetaPortfolioPage() {
   const { t } = useTranslation();
@@ -156,8 +157,10 @@ export default function MetaPortfolioPage() {
                   <dd className="font-bold">{row.cpl}</dd>
                 </div>
               </dl>
-              <p className="text-sm font-black">{row.recommendation}</p>
-              {row.reason ? <p className="text-xs text-slate-500">{row.reason}</p> : null}
+              <p className="text-sm font-black">{humanizeMetaCustomerLabel(row.recommendation, t)}</p>
+              {row.reason ? (
+                <p className="text-xs text-slate-500">{humanizeMetaCustomerLabel(row.reason, t)}</p>
+              ) : null}
             </article>
           ))
         )}
@@ -181,14 +184,14 @@ export default function MetaPortfolioPage() {
             {rows.map((row) => (
               <tr key={row.campaignId} className="border-b border-slate-100">
                 <td className="p-2 font-bold">{row.name}</td>
-                <td className="p-2">{row.status}</td>
+                <td className="p-2">{humanizeMetaCustomerLabel(row.status, t)}</td>
                 <td className="p-2">{row.currentBudget}</td>
                 <td className="p-2">{row.proposedBudget}</td>
                 <td className="p-2">{row.spend}</td>
                 <td className="p-2">{row.results}</td>
                 <td className="p-2">{row.cpl}</td>
-                <td className="p-2 font-black">{row.recommendation}</td>
-                <td className="p-2 text-xs">{row.reason}</td>
+                <td className="p-2 font-black">{humanizeMetaCustomerLabel(row.recommendation, t)}</td>
+                <td className="p-2 text-xs">{humanizeMetaCustomerLabel(row.reason, t)}</td>
               </tr>
             ))}
           </tbody>
@@ -239,10 +242,10 @@ export default function MetaPortfolioPage() {
           {history.slice(0, 8).map((row) => (
             <li key={row.id}>
               {t("metaCampaigns.ux.portfolioHistoryRow", {
-                mode: row.mode,
+                mode: humanizeMetaCustomerLabel(row.mode, t),
                 from: row.totals?.currentBudget,
                 to: row.totals?.proposedBudget,
-                status: row.status,
+                status: humanizeMetaCustomerLabel(row.status, t),
               })}
             </li>
           ))}

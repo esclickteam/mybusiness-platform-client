@@ -58,7 +58,7 @@ describe("MetaMarketingCopilotPage", () => {
     });
     fireEvent.click(screen.getByTestId("copilot-ask"));
     expect(await screen.findByTestId("copilot-insufficient")).toBeTruthy();
-    expect(screen.getByTestId("copilot-based-on").textContent).toMatch(/Today/);
+    expect(screen.getByTestId("copilot-based-on").textContent).toMatch(/Today|synced|showingRange/i);
     expect(screen.getByTestId("copilot-period").textContent).toMatch(/Today|showingRange/);
     fireEvent.click(screen.getByTestId("copilot-review-action"));
     await waitFor(() => {

@@ -8,6 +8,7 @@ import {
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import { humanizeMetaCustomerLabel } from "./metaCampaignUtils";
 
 const PROMPTS = [
   "What needs my attention today?",
@@ -106,8 +107,10 @@ export default function MetaMarketingCopilotPage() {
         <section className={`${cardBase} space-y-3 p-4`} data-testid="copilot-answer">
           <p className="text-sm font-black text-slate-900">{reply.answer}</p>
           {reply.period ? (
-            <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="copilot-period">
-              {t("metaCampaigns.ux.showingRange", { range: reply.period })}
+            <p className="text-xs font-semibold text-slate-500" data-testid="copilot-period">
+              {t("metaCampaigns.ux.showingRange", {
+                range: humanizeMetaCustomerLabel(reply.period, t),
+              })}
             </p>
           ) : null}
           {reply.insufficientData ? (
@@ -126,15 +129,15 @@ export default function MetaMarketingCopilotPage() {
             </ul>
           </div>
           <div data-testid="copilot-based-on">
-            <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-              {t("metaCampaigns.copilot.basedOn")}
-            </p>
-            <p className="mt-1 text-sm font-semibold text-slate-600">
-              {(reply.sources || []).join(" · ")}
-              {reply.syncedMinutesAgo != null
-                ? ` · ${t("metaCampaigns.copilot.synced", { minutes: reply.syncedMinutesAgo })}`
-                : ""}
-            </p>
+            {reply.syncedMinutesAgo != null ? (
+              <p className="mt-1 text-sm font-semibold text-slate-600">
+                {t("metaCampaigns.copilot.synced", { minutes: reply.syncedMinutesAgo })}
+              </p>
+            ) : reply.period ? (
+              <p className="mt-1 text-sm font-semibold text-slate-600">
+                {humanizeMetaCustomerLabel(reply.period, t)}
+              </p>
+            ) : null}
           </div>
           {(reply.suggestedActions || []).map((action) => (
             <button

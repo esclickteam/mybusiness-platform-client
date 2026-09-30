@@ -19,7 +19,7 @@ export default function MetaAdsConnectionHealth({
   accountName,
   pageName,
   instagramConnected,
-  tokenHealthy,
+  tokenHealthy: _tokenHealthy,
   lastSync,
   needsAction,
 }: Props) {
@@ -38,10 +38,6 @@ export default function MetaAdsConnectionHealth({
           <p className="text-sm font-semibold text-slate-600">
             {t("metaCampaigns.ux.instagram")}:{" "}
             {instagramConnected ? t("metaCampaigns.ux.connected") : t("metaCampaigns.ux.notConnected")}
-          </p>
-          <p className="text-sm font-semibold text-slate-600">
-            {t("metaCampaigns.ux.tokenHealth")}:{" "}
-            {tokenHealthy ? t("metaCampaigns.ux.tokenOk") : t("metaCampaigns.ux.tokenIssue")}
           </p>
           {lastSync ? (
             <p className="mt-1 text-xs font-semibold text-slate-400">{lastSync}</p>

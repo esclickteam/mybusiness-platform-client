@@ -35,10 +35,9 @@ import {
 } from "../../../../styles/bizuplyUi";
 import {
   formatAdAccountLabel,
-  resolveAdAccountId,
+  formatDateTimeHe,
   resolveMetaAccountStatus,
 } from "./metaCampaignUtils";
-import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 
 type OutletCtx = { businessId: string | null };
 
@@ -92,7 +91,7 @@ export default function MetaCampaignsSettingsTab() {
       toast.success(t("metaCampaigns.toasts.connected"));
     }
     if (error) {
-      toast.error(error);
+      toast.error(t("metaCampaigns.settings.reconnectNeeded"));
     }
 
     const next = new URLSearchParams(searchParams);
@@ -252,22 +251,24 @@ export default function MetaCampaignsSettingsTab() {
     `metaCampaigns.accountStatus.${selectedAccountStatus.key}`,
     { defaultValue: selectedAccountStatus.labelEn }
   );
+  const showInternalDiagnostics = isAdminUser(user);
+  const instagramConnected = Boolean(
+    String(
+      status?.selectedPage?.instagramBusinessAccountId ||
+        status?.pages?.find((page) => page.id === status?.selectedPage?.pageId)
+          ?.instagramBusinessAccountId ||
+        ""
+    ).trim()
+  );
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="mx-auto max-w-3xl space-y-4" data-testid="meta-connection-page">
       <div className={`${cardBase} p-5`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-violet-700">
-              <Facebook className="h-3.5 w-3.5" />
-              {t("metaCampaigns.settings.badge")}
-            </p>
-            <h2 className="mt-2 text-xl font-black text-slate-900">
+            <h2 className="text-xl font-black text-slate-900">
               {t("metaCampaigns.settings.title")}
             </h2>
-            <p className="mt-1 text-sm font-semibold text-slate-500">
-              {t("metaCampaigns.settings.subtitle")}
-            </p>
           </div>
           {isLinked ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">
@@ -282,120 +283,127 @@ export default function MetaCampaignsSettingsTab() {
           )}
         </div>
 
+        {isLinked ? (
+          <dl className="mt-5 space-y-2 text-sm font-semibold text-slate-700">
+            <div className="flex flex-wrap justify-between gap-2">
+              <dt>{t("metaCampaigns.ux.adAccount")}</dt>
+              <dd className="font-black text-slate-900">
+                {status?.selectedAdAccount?.name || "—"}
+              </dd>
+            </div>
+            <div className="flex flex-wrap justify-between gap-2">
+              <dt>{t("metaCampaigns.ux.facebookPage")}</dt>
+              <dd className="font-black text-slate-900">
+                {status?.selectedPage?.pageName || "—"}
+              </dd>
+            </div>
+            <div className="flex flex-wrap justify-between gap-2">
+              <dt>{t("metaCampaigns.ux.instagram")}</dt>
+              <dd className="font-black text-slate-900">
+                {instagramConnected
+                  ? t("metaCampaigns.ux.connected")
+                  : t("metaCampaigns.ux.notConnected")}
+              </dd>
+            </div>
+            {status?.selectedAdAccount?.currency ? (
+              <div className="flex flex-wrap justify-between gap-2">
+                <dt>{t("metaCampaigns.settings.currency")}</dt>
+                <dd className="font-black text-slate-900">
+                  {status.selectedAdAccount.currency}
+                </dd>
+              </div>
+            ) : null}
+            <div className="flex flex-wrap justify-between gap-2">
+              <dt>{t("metaCampaigns.settings.lastSync")}</dt>
+              <dd className="font-black text-slate-900">
+                {status?.lastSyncAt
+                  ? formatDateTimeHe(status.lastSyncAt)
+                  : "—"}
+              </dd>
+            </div>
+          </dl>
+        ) : null}
+
+        {status?.metaUserName ? (
+          <p className="mt-4 text-xs font-semibold text-slate-400">
+            {t("metaCampaigns.settings.managedVia", {
+              name: status.metaUserName,
+            })}
+          </p>
+        ) : null}
+
+        {status?.tokenInvalid ? (
+          <p className="mt-3 text-sm font-semibold text-rose-600">
+            {t("metaCampaigns.settings.tokenInvalid")}
+          </p>
+        ) : null}
+
         {demoSandbox ? (
           <p className="mt-5 text-sm font-semibold text-slate-500">
             {t("metaCampaigns.details.readOnlyHint")}
           </p>
         ) : (
-        <div className="mt-5 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={connect}
-            disabled={busy}
-            className={btnPrimary}
-            title={t("metaCampaigns.settings.connectHint")}
-          >
-            {busy ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Facebook className="h-4 w-4" />
-            )}
-            {isLinked
-              ? t("metaCampaigns.settings.reconnect")
-              : t("metaCampaigns.settings.connect")}
-          </button>
-          {isLinked ? (
-            <>
-              <button
-                type="button"
-                onClick={refresh}
-                disabled={busy}
-                className={btnSecondary}
-              >
-                <RefreshCw className="h-4 w-4" />
-                {t("metaCampaigns.settings.refreshAccounts")}
-              </button>
-              <button
-                type="button"
-                onClick={disconnect}
-                disabled={busy}
-                className={btnSecondary}
-              >
-                <Unplug className="h-4 w-4" />
-                {t("metaCampaigns.settings.disconnect")}
-              </button>
-            </>
-          ) : null}
-        </div>
-        )}
-        {demoSandbox ? null : (
-        <p className="mt-3 text-sm font-semibold text-slate-500">
-          {t("metaCampaigns.settings.connectHint")}
-        </p>
-        )}
-        <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/70 p-3">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">
-            {t("metaCampaigns.settings.permissionWhyTitle")}
-          </p>
-          <ul className="mt-2 space-y-1.5 text-sm font-semibold text-slate-700">
-            <li>{t("metaCampaigns.settings.permissionWhyAdsRead")}</li>
-            <li>{t("metaCampaigns.settings.permissionWhyAdsManagement")}</li>
-            <li>{t("metaCampaigns.settings.permissionWhyBusinessManagement")}</li>
-          </ul>
-        </div>
-
-        {status?.metaUserName ? (
-          <p className="mt-4 text-sm font-bold text-slate-600">
-            {t("metaCampaigns.settings.connectedAs", {
-              name: status.metaUserName,
-            })}
-          </p>
-        ) : null}
-        {status?.lastError ? (
-          <p className="mt-2 text-sm font-semibold text-rose-600">
-            {status.lastError}
-          </p>
-        ) : null}
-        {status?.tokenInvalid ? (
-          <p className="mt-2 text-sm font-semibold text-rose-600">
-            {t("metaCampaigns.settings.tokenInvalid")}
-          </p>
-        ) : null}
-        {(status?.grantedScopes || []).length ? (
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">
-              {t("metaCampaigns.settings.grantedPermissions")}
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {["ads_read", "ads_management", "business_management"].map(
-                (scope) => {
-                  const granted = (status?.grantedScopes || []).includes(scope);
-                  return (
-                    <span
-                      key={scope}
-                      className={[
-                        "rounded-full border px-2.5 py-1 text-[11px] font-black",
-                        granted
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border-slate-200 bg-slate-50 text-slate-500",
-                      ].join(" ")}
-                    >
-                      {scope}
-                      {granted ? " ✓" : ""}
-                    </span>
-                  );
-                }
+          <div className="mt-5 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={connect}
+              disabled={busy}
+              className={btnPrimary}
+            >
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Facebook className="h-4 w-4" />
               )}
-            </div>
+              {isLinked
+                ? t("metaCampaigns.settings.reconnect")
+                : t("metaCampaigns.settings.connect")}
+            </button>
+            {isLinked ? (
+              <>
+                <button
+                  type="button"
+                  onClick={refresh}
+                  disabled={busy}
+                  className={btnSecondary}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  {t("metaCampaigns.actions.refresh")}
+                </button>
+                <button
+                  type="button"
+                  onClick={disconnect}
+                  disabled={busy}
+                  className={btnSecondary}
+                >
+                  <Unplug className="h-4 w-4" />
+                  {t("metaCampaigns.settings.disconnect")}
+                </button>
+              </>
+            ) : null}
           </div>
-        ) : null}
+        )}
       </div>
 
-      <MetaBillingAccountCards
-        adAccountBilling={status?.adAccountBillingHealth || null}
-        adsSettingsPath="."
-        showWaba={false}
-      />
+      {showInternalDiagnostics ? (
+        <MetaBillingAccountCards
+          adAccountBilling={status?.adAccountBillingHealth || null}
+          adsSettingsPath="."
+          showWaba={false}
+        />
+      ) : null}
+
+      {showInternalDiagnostics && status?.lastError ? (
+        <pre className="overflow-auto rounded-xl border border-slate-200 bg-slate-50 p-3 text-[11px] text-slate-600">
+          {status.lastError}
+        </pre>
+      ) : null}
+
+      {showInternalDiagnostics && (status?.grantedScopes || []).length ? (
+        <p className="text-[11px] font-mono text-slate-400">
+          {(status?.grantedScopes || []).join(", ")}
+        </p>
+      ) : null}
 
       {isLinked ? (
         <>
@@ -489,11 +497,6 @@ export default function MetaCampaignsSettingsTab() {
                     ? ` (${status.selectedAdAccount.currency})`
                     : ""}
                 </p>
-                <p className="text-xs font-bold text-slate-600 tabular-nums">
-                  {t("metaCampaigns.settings.accountId", {
-                    id: resolveAdAccountId(status?.selectedAdAccount) || "—",
-                  })}
-                </p>
                 <p className="text-xs font-bold text-slate-600">
                   {t("metaCampaigns.overview.accountStatusLabel", {
                     status: selectedAccountStatusLabel,
@@ -551,16 +554,12 @@ export default function MetaCampaignsSettingsTab() {
                 <p className="text-sm font-black text-amber-900">
                   {t("metaCampaigns.overview.instagramNotConnected")}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-amber-800">
-                  {t("metaCampaigns.overview.instagramConnectHint")}
-                </p>
               </div>
             ) : null}
           </div>
 
         </>
       ) : null}
-      <MetaAdsReviewCaptions set="settings" />
     </div>
   );
 }

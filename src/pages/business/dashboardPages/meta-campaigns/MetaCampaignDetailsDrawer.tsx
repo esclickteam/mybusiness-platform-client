@@ -237,9 +237,6 @@ export default function MetaCampaignDetailsDrawer({
       <aside className="flex h-full w-full max-w-xl flex-col overflow-y-auto bg-white shadow-2xl sm:max-w-2xl">
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-slate-100 bg-white px-4 py-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-black uppercase tracking-wide text-violet-700">
-              {t("metaCampaigns.details.badge")}
-            </p>
             <h2 className="break-words text-lg font-black text-slate-900">{detail?.name || campaign.name}</h2>
             <a
               href={`../copilot?q=${encodeURIComponent(`${t("metaCampaigns.ux.askAiCampaign")} ${detail?.name || campaign.name}`)}`}

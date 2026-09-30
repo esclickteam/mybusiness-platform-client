@@ -99,6 +99,7 @@ import {
   resolvePreviewFormatsForPlacements,
   statusTone,
   validateLeadFormBuilder,
+  humanizeMetaCustomerLabel,
   type LeadFormCustomQuestionDraft,
   type MetaPreviewFormat,
 } from "./metaCampaignUtils";
@@ -1619,7 +1620,7 @@ export default function MetaCampaignEditorPage() {
               {t("metaCampaigns.wizard.identity.formsNote")}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              {t("metaCampaigns.form.status")}: {form.status}
+              {t("metaCampaigns.form.status")}: {humanizeMetaCustomerLabel(form.status, t)}
             </p>
           </div>
         );
@@ -2279,7 +2280,7 @@ export default function MetaCampaignEditorPage() {
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}
               >
-                {campaign?.effectiveStatus || form.status}
+                {humanizeMetaCustomerLabel(campaign?.effectiveStatus || form.status, t)}
               </span>
               <button type="button" onClick={toggleStatus} disabled={statusBusy} className={btnSecondary}>
                 {statusBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
