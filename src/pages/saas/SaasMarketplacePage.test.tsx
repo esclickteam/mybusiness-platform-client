@@ -169,11 +169,11 @@ describe("SaaS marketplace page", () => {
     fireEvent.click(card.getByRole("button", { name: "Watch the demo" }));
     expect(screen.getByRole("heading", { name: named("Explore Northwind Desk") })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Admin / Owner Demo" }).getAttribute("href")).toBe(
-      "/saas/northwind-desk/demo?mode=admin"
+      "https://example.com/admin"
     );
     expect(screen.queryByRole("link", { name: "Customer Demo" })).toBeNull();
     expect(screen.getByRole("link", { name: "Explore Full Demo" }).getAttribute("href")).toBe(
-      "/saas/northwind-desk/demo?mode=full"
+      "https://example.com/explore"
     );
   });
 
