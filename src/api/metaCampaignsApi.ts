@@ -80,6 +80,7 @@ export type MetaCampaign = {
   genders?: number[];
   gender?: "all" | "1" | "2" | string;
   advantageAudience?: boolean;
+  targetingRaw?: Record<string, unknown> | null;
   placementMode?: "advantage" | "facebook" | "instagram" | "both" | string;
   publisherPlatforms?: string[];
   facebookPositions?: string[];

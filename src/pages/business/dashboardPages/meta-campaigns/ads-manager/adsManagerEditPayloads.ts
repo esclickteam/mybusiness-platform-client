@@ -49,9 +49,24 @@ export function mergeLoadedTargeting(
   };
   const labels = new Set(changes.map((row) => row.labelKey));
   if (labels.has("changeAge")) {
-    targeting.age_min = adSet.ageMin;
-    if (adSet.ageMax != null && adSet.ageMax < 65) targeting.age_max = adSet.ageMax;
-    else delete targeting.age_max;
+    targeting.age_range = [adSet.ageMin, adSet.ageMax];
+    const automation =
+      targeting.targeting_automation && typeof targeting.targeting_automation === "object"
+        ? (targeting.targeting_automation as Record<string, unknown>)
+        : {};
+    const settings =
+      automation.individual_setting && typeof automation.individual_setting === "object"
+        ? (automation.individual_setting as Record<string, unknown>)
+        : {};
+    const ageIsSuggestion =
+      settings.age === 1 ||
+      settings.age === true ||
+      automation.advantage_audience === 1;
+    if (!ageIsSuggestion) {
+      targeting.age_min = adSet.ageMin;
+      if (adSet.ageMax != null && adSet.ageMax < 65) targeting.age_max = adSet.ageMax;
+      else delete targeting.age_max;
+    }
   }
   if (labels.has("changeGender")) {
     const genders = gendersForMeta(adSet.gender);
