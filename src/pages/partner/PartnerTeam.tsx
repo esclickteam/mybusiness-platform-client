@@ -48,7 +48,8 @@ export default function PartnerTeam() {
     name: "",
     email: "",
     password: "",
-    permissions: ["view_clients"] as PartnerPermission[],
+    permissionPreset: "sales_representative",
+    permissions: ["view_clients", "create_clients", "edit_clients"] as PartnerPermission[],
   });
 
   async function refresh() {
@@ -64,11 +65,12 @@ export default function PartnerTeam() {
     e.preventDefault();
     setError("");
     try {
-      await invitePartnerMember(form);
-      setForm({ name: "", email: "", password: "", permissions: ["view_clients"] });
+      await invitePartnerMember({ ...form, password: undefined });
+      setForm({ name: "", email: "", password: "", permissionPreset: "sales_representative", permissions: ["view_clients", "create_clients", "edit_clients"] });
       await refresh();
     } catch (err: any) {
-      setError(err.response?.data?.error || t("partner.errors.invite"));
+      const upgrade = err.response?.data?.upgrade;
+      setError([err.response?.data?.error || t("partner.errors.invite"), upgrade].filter(Boolean).join(" "));
     }
   }
 
@@ -77,7 +79,7 @@ export default function PartnerTeam() {
       <PartnerPageHeader
         eyebrow={t("partner.team.title")}
         title={t("partner.team.partnerTeam")}
-        subtitle={t("partner.team.seatLimit", { used: data?.used || 0, limit: data?.limit ?? 0 })}
+        subtitle={`${t("partner.team.seatLimit", { used: data?.used || 0, limit: data?.limit ?? 0 })} · ${data?.seatsRemaining ?? 0} remaining`}
       />
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
@@ -97,12 +99,9 @@ export default function PartnerTeam() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           placeholder={t("partner.email")}
         />
-        <PartnerInput
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          placeholder={t("common.password")}
-        />
+        <p className="text-sm font-semibold text-slate-600">
+          The Primary Partner is included. Additional people are Sub-Partner users. An invitation lets them set their own password.
+        </p>
         <div className="grid gap-1 text-sm">
           {PERMISSIONS.map((key) => (
             <label key={key}>

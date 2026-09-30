@@ -91,6 +91,8 @@ export type PartnerAgreement = {
   paymentDueDate: string;
   paymentStatus: "unpaid" | "paid";
   paymentReference: string;
+  paymentStructure?: string;
+  paymentMethod?: string;
   commissionOverride: boolean;
   commissionStructure?: "tiers" | "flat" | "product";
   flatCommissionPercent?: number | null;
@@ -180,6 +182,9 @@ export type AgreementInput = {
   productCommissions?: { name: string; percent: number | string }[];
   fieldModes?: Record<string, "default" | "custom">;
   paymentSchedule?: string;
+  paymentStructure?: "one_time" | "installments" | string;
+  paymentMethod?: string;
+  activationRequirement?: "full" | "first_installment" | "full_prepayment" | string;
   depositAmount?: number | string | null;
   remainingBalance?: number | string | null;
   installmentCount?: number | string | null;
@@ -338,6 +343,23 @@ export async function previewPartnerAgreement(id: string, version?: number) {
   };
 }
 
+export async function createSignedPartnerAgreement(
+  input: AgreementInput & {
+    previewHash: string;
+    bizuplySignature: {
+      confirmed: boolean;
+      method: "typed" | "drawn" | "stored";
+      typedName?: string;
+      imageDataUrl?: string;
+      confirmationText: string;
+      signatoryId?: string;
+    };
+  }
+) {
+  const { data } = await API.post("/admin/partner-agreements/create-signed", input);
+  return data as { agreement: PartnerAgreement; documentHash: string; signingLinkIssued: boolean; persisted: boolean };
+}
+
 export async function previewDraftAgreement(input: AgreementInput) {
   const { data } = await API.post("/admin/partner-agreements/preview-draft", input);
   return data as {
@@ -346,6 +368,7 @@ export async function previewDraftAgreement(input: AgreementInput) {
     variables: Record<string, string | string[] | boolean>;
     signatories?: AgreementSignatory[];
     persisted: boolean;
+    documentHash?: string;
     issues?: { field: string; code?: string; message?: string }[];
   };
 }

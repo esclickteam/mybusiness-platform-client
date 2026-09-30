@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "../AdminsHeader";
+import API from "../../../api";
 import CountrySelect from "./CountrySelect";
 import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPanel";
 import SignatoriesPanel from "./SignatoriesPanel";
@@ -16,6 +17,7 @@ import {
   getPartnerAgreement,
   postAgreementAction,
   prefillAgreementPartner,
+  createSignedPartnerAgreement,
   previewDraftAgreement,
   quoteAgreementCommission,
   renewPartnerAgreement,
@@ -78,6 +80,8 @@ const EMPTY: AgreementInput = {
   specialTerms: "",
   fieldModes: {},
   paymentSchedule: "single",
+  paymentStructure: "one_time",
+  paymentMethod: "",
   depositAmount: 0,
   remainingBalance: "",
   installmentCount: 1,
@@ -148,6 +152,8 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     specialTerms: row.specialTerms || "",
     fieldModes: row.fieldModes || {},
     paymentSchedule: row.paymentSchedule || "single",
+    paymentStructure: row.paymentStructure || (row.paymentSchedule === "installments" ? "installments" : "one_time"),
+    paymentMethod: row.paymentMethod || "",
     depositAmount: row.depositAmount ?? 0,
     remainingBalance: row.remainingBalance ?? "",
     installmentCount: row.installmentCount ?? 1,
@@ -214,6 +220,10 @@ export default function AdminPartnerAgreementEditor() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [legalCompanyName, setLegalCompanyName] = useState("BizUply LLC");
+  const [bizSignature, setBizSignature] = useState<{ typedName: string; confirmed: boolean } | null>(null);
+  const [signName, setSignName] = useState("");
+  const [signConfirmed, setSignConfirmed] = useState(false);
   const [renewal, setRenewal] = useState({ startDate: "", endDate: "", agreementNumber: "" });
   const [quote, setQuote] = useState({ customers: "20", gross: "1000", taxes: "0", refunds: "0", chargebacks: "0", passThrough: "0", result: "" });
 
@@ -296,6 +306,30 @@ export default function AdminPartnerAgreementEditor() {
   }, [partnerQuery]);
 
   useEffect(() => {
+    API.get("/admin/legal-profile")
+      .then((res) => {
+        const profile = res.data?.profile || {};
+        if (profile.legalCompanyName) setLegalCompanyName(profile.legalCompanyName);
+        if (profile.signatoryName) {
+          setSignName((current) => current || profile.signatoryName);
+          setForm((current) => {
+            const rows = current.signatories?.length ? [...current.signatories] : [];
+            const index = rows.findIndex((row) => row.party === "bizuply");
+            if (index < 0 || rows[index].fullName) return current;
+            rows[index] = {
+              ...rows[index],
+              fullName: profile.signatoryName,
+              title: profile.signatoryTitle || rows[index].title,
+              email: profile.signatoryEmail || rows[index].email,
+            };
+            return { ...current, signatories: rows };
+          });
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
     const code = form.countryCode || "";
     if (!code) {
       setSubdivisions([]);
@@ -365,6 +399,46 @@ export default function AdminPartnerAgreementEditor() {
     return saved.agreement;
   }
 
+  async function onCreateSigned() {
+    if (!bizSignature?.confirmed || !bizSignature.typedName) {
+      setError("Sign as Bizuply before creating the agreement.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const preview = await previewDraftAgreement(form);
+      if (preview.persisted) {
+        setError(t.previewRefused);
+        return;
+      }
+      if (preview.issues?.length) {
+        setError(preview.issues.map((issue) => issue.message || issue.field).filter(Boolean).join(" "));
+        return;
+      }
+      const saved = await createSignedPartnerAgreement({
+        ...form,
+        previewHash: preview.documentHash || "",
+        bizuplySignature: {
+          confirmed: true,
+          method: "typed",
+          typedName: bizSignature.typedName,
+          confirmationText: `I confirm that I am authorized to sign this Agreement on behalf of ${legalCompanyName}.`,
+        },
+      });
+      sessionStorage.removeItem("partner-agreement-pending-bizuply-signature");
+      setRecord(saved.agreement);
+      setForm(fromAgreement(saved.agreement));
+      setMessage("Signed agreement created. Bizuply is signed. Partner signature is pending. Generate signing links when you are ready.");
+      if (saved.agreement?.id) navigate(`/admin/partner-agreements/${saved.agreement.id}`, { replace: true });
+    } catch (err) {
+      setError(agreementError(err, "Could not create the signed agreement."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function onSave() {
     setBusy(true);
     setError("");
@@ -389,6 +463,7 @@ export default function AdminPartnerAgreementEditor() {
         return;
       }
       sessionStorage.setItem("partner-agreement-unsaved-preview", JSON.stringify(preview));
+      sessionStorage.setItem("partner-agreement-pending-bizuply-signature", JSON.stringify(bizSignature));
       navigate("/admin/partner-agreements/preview");
     } catch (err) {
       setError(agreementError(err, t.previewError));
@@ -836,6 +911,37 @@ export default function AdminPartnerAgreementEditor() {
           </Field>
           <p className="text-sm font-semibold text-slate-500 md:col-span-2">{t.specialNote}</p>
         </Section>
+
+        {!record ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="sign-before-create">
+            <h2 className="text-lg font-black">Sign as Bizuply</h2>
+            <p className="mt-1 text-sm font-semibold text-slate-600">
+              The signature stays on this screen until you create the agreement. Creation binds it to the immutable document hash.
+            </p>
+            <label className="mt-3 block text-sm font-bold text-slate-800">
+              Typed signature
+              <input className={`${inputClass} mt-1`} value={signName} onChange={(e) => { setSignName(e.target.value); setBizSignature(null); }} />
+            </label>
+            <label className="mt-3 flex items-start gap-2 text-sm font-semibold text-slate-800">
+              <input type="checkbox" className="mt-1" checked={signConfirmed} onChange={(e) => { setSignConfirmed(e.target.checked); setBizSignature(null); }} />
+              <span>I confirm that I am authorized to sign this Agreement on behalf of {legalCompanyName}.</span>
+            </label>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50"
+                disabled={!signConfirmed || !signName.trim()}
+                onClick={() => setBizSignature({ typedName: signName.trim(), confirmed: true })}
+              >
+                Sign as Bizuply
+              </button>
+              <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
+                Create Signed Agreement
+              </button>
+            </div>
+            {bizSignature ? <p className="mt-2 text-sm font-bold text-emerald-800">Bizuply signature ready: {bizSignature.typedName}</p> : null}
+          </section>
+        ) : null}
 
         <div className="flex flex-wrap gap-2">
           <button type="button" disabled={busy || !editable} onClick={() => void onSave()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.save}</button>

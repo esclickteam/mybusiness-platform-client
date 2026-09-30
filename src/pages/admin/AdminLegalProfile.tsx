@@ -6,10 +6,13 @@ import { useLocaleDir } from "../../hooks/useLocaleDir";
 
 type Profile = {
   legalCompanyName: string;
+  brandName: string;
   entityType: string;
   incorporationCountryCode: string;
   formationJurisdiction: string;
   registrationNumber: string;
+  formationDate: string;
+  ein: string;
   taxIdMasked: string;
   taxIdOnFile: boolean;
   displayTaxIdInAgreements: boolean;
@@ -27,10 +30,13 @@ type Profile = {
 
 const EMPTY: Profile = {
   legalCompanyName: "",
+  brandName: "",
   entityType: "",
   incorporationCountryCode: "",
   formationJurisdiction: "",
   registrationNumber: "",
+  formationDate: "",
+  ein: "",
   taxIdMasked: "",
   taxIdOnFile: false,
   displayTaxIdInAgreements: false,
@@ -105,10 +111,13 @@ export default function AdminLegalProfile() {
         </p>
         <form onSubmit={save} className="mt-5 grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 md:grid-cols-2" data-testid="legal-profile-form">
           {field("Legal company name", "legalCompanyName")}
+          {field("Brand / display name", "brandName")}
           {field("Entity type", "entityType")}
           {field("Country of incorporation", "incorporationCountryCode")}
           {field("State / jurisdiction of formation", "formationJurisdiction")}
-          {field("Company registration number", "registrationNumber")}
+          {field("Company registration / Delaware file number", "registrationNumber")}
+          {field("Formation date", "formationDate")}
+          {field("EIN", "ein")}
           <label className="block text-sm font-bold text-slate-800">
             EIN / Tax ID
             <input className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold" value={taxId} placeholder={profile.taxIdOnFile ? `On file ${profile.taxIdMasked}` : "Not stored"} onChange={(e) => setTaxId(e.target.value)} />

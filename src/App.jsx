@@ -170,6 +170,7 @@ const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
+const AdminSubPartnerPricing = lazy(() => import("./pages/admin/AdminSubPartnerPricing"));
 const PartnerAgreementSign = lazy(() => import("./pages/sign/PartnerAgreementSign"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
@@ -1559,6 +1560,14 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminLegalProfile />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/settings/partner-program"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSubPartnerPricing />
                             </ProtectedRoute>
                           }
                         />
