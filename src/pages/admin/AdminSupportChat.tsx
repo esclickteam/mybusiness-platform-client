@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -22,9 +22,9 @@ import AdminSupportChatSendTemplateModal from "./AdminSupportChatSendTemplateMod
 import {
   isNearBottom,
   isNearTop,
+  pinThreadToBottom,
   preserveScrollAfterPrepend,
   scheduleScrollToBottomAfterLayout,
-  scrollScrollerToBottom,
 } from "./adminSupportChatScroll";
 import {
   deliveryFailureDetail,
@@ -459,6 +459,7 @@ export default function AdminSupportChat() {
   const [historyPreviewLoading, setHistoryPreviewLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const messagesInnerRef = useRef<HTMLDivElement | null>(null);
   const selectedIdRef = useRef<string | null>(null);
   const stickToBottomRef = useRef(true);
   const lastScrolledMsgIdRef = useRef<string | null>(null);
@@ -611,7 +612,12 @@ export default function AdminSupportChat() {
     stickToBottomRef.current = true;
     setUnseenCount(0);
     const run = () =>
-      scrollScrollerToBottom(messagesContainerRef.current, smooth);
+      pinThreadToBottom(
+        messagesContainerRef.current,
+        messagesEndRef.current,
+        smooth
+      );
+    run();
     requestAnimationFrame(() => {
       run();
       requestAnimationFrame(run);
@@ -619,7 +625,7 @@ export default function AdminSupportChat() {
   }, []);
 
   // Auto-scroll after bubbles have rendered. Never yank while reading history.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const lastId = messages[messages.length - 1]?._id || null;
     const conversationChanged =
       selectedId !== prevSelectedForScrollRef.current;
@@ -631,30 +637,36 @@ export default function AdminSupportChat() {
       setUnseenCount(0);
     }
 
-    const lastChanged = lastId !== lastScrolledMsgIdRef.current;
-    if (!stickToBottomRef.current || (!lastChanged && !conversationChanged)) {
-      return;
-    }
+    if (!stickToBottomRef.current) return;
     if (loadingMessages) return;
+    if (historyPreviewId) return;
 
     lastScrolledMsgIdRef.current = lastId;
+    pinThreadToBottom(
+      messagesContainerRef.current,
+      messagesEndRef.current,
+      false
+    );
     scheduleScrollToBottomAfterLayout(
       () => messagesContainerRef.current,
-      () => stickToBottomRef.current
+      () => stickToBottomRef.current,
+      16,
+      () => messagesEndRef.current
     );
-  }, [messages, selectedId, loadingMessages]);
+  }, [messages, selectedId, loadingMessages, historyPreviewId]);
 
   useEffect(() => {
-    const el = messagesContainerRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
+    const inner = messagesInnerRef.current;
+    const scroller = messagesContainerRef.current;
+    if (!inner || !scroller || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
       if (stickToBottomRef.current) {
-        scrollScrollerToBottom(el, false);
+        pinThreadToBottom(scroller, messagesEndRef.current, false);
       }
     });
-    observer.observe(el);
+    observer.observe(inner);
     return () => observer.disconnect();
-  }, [selectedId, loadingMessages]);
+  }, [selectedId, loadingMessages, messages.length]);
 
   // Deep-link from PWA / push: /admin/support-chat?c=<id>
   useEffect(() => {
@@ -940,7 +952,9 @@ export default function AdminSupportChat() {
     }
     scheduleScrollToBottomAfterLayout(
       () => messagesContainerRef.current,
-      () => stickToBottomRef.current
+      () => stickToBottomRef.current,
+      16,
+      () => messagesEndRef.current
     );
   }
 
@@ -1103,13 +1117,13 @@ export default function AdminSupportChat() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-[#F8F9FA] text-slate-900"
+      className="flex h-[100dvh] flex-col overflow-hidden bg-[#F8F9FA] text-slate-900"
       style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <AdminHeader />
 
-      <main className="mx-auto max-w-[1480px] px-3 py-5 sm:px-4 sm:py-6 md:px-8">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <main className="mx-auto flex min-h-0 w-full max-w-[1480px] flex-1 flex-col overflow-hidden px-3 py-5 sm:px-4 sm:py-6 md:px-8">
+        <div className="mb-5 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 sm:text-3xl">
               <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25">
@@ -1154,10 +1168,10 @@ export default function AdminSupportChat() {
           </div>
         )}
 
-        <div className="grid min-h-[calc(100dvh-11rem)] grid-cols-1 overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] lg:grid-cols-[360px_1fr]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] lg:grid-cols-[360px_1fr]">
           <aside
-            className={`border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/80 lg:border-b-0 lg:border-l lg:border-slate-100 ${
-              selectedId ? "hidden lg:block" : "block"
+            className={`flex min-h-0 flex-col overflow-hidden border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/80 lg:border-b-0 lg:border-l lg:border-slate-100 ${
+              selectedId ? "hidden lg:flex" : "flex"
             }`}
           >
             <div className="flex flex-wrap gap-1.5 border-b border-slate-100 p-3">
@@ -1209,7 +1223,7 @@ export default function AdminSupportChat() {
               </div>
             ) : null}
 
-            <div className="max-h-[60vh] overflow-y-auto overscroll-contain lg:max-h-[calc(72vh-64px)]">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               {loadingList ? (
                 <p className="p-5 text-sm font-semibold text-slate-500">
                   טוען שיחות...
@@ -1229,6 +1243,13 @@ export default function AdminSupportChat() {
                     key={c._id}
                     type="button"
                     onClick={() => {
+                      stickToBottomRef.current = true;
+                      lastScrolledMsgIdRef.current = null;
+                      setUnseenCount(0);
+                      if (selectedId === c._id) {
+                        pinToLatest(false);
+                        return;
+                      }
                       setSelectedId(c._id);
                       setSearchParams({ c: c._id });
                     }}
@@ -1292,7 +1313,7 @@ export default function AdminSupportChat() {
           </aside>
 
           <section
-            className={`flex min-h-[60vh] flex-col ${
+            className={`min-h-0 flex-col overflow-hidden ${
               selectedId ? "flex" : "hidden lg:flex"
             }`}
           >
@@ -1310,7 +1331,7 @@ export default function AdminSupportChat() {
               </div>
             ) : (
               <>
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white px-5 py-4">
+                <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white px-5 py-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <button
                       type="button"
@@ -1495,6 +1516,7 @@ export default function AdminSupportChat() {
                   </div>
                 )}
 
+                <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div
                   ref={messagesContainerRef}
                   onScroll={() => {
@@ -1506,8 +1528,9 @@ export default function AdminSupportChat() {
                       void loadOlderMessages();
                     }
                   }}
-                  className="relative min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,#faf8ff_0%,#f8fafc_100%)] px-4 py-5 md:px-6"
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[linear-gradient(180deg,#faf8ff_0%,#f8fafc_100%)] [overflow-anchor:none] px-4 py-5 md:px-6"
                 >
+                  <div ref={messagesInnerRef} className="space-y-4">
                   {historyPreviewId ? (
                     <>
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-violet-100 bg-white px-3 py-2">
@@ -1579,12 +1602,18 @@ export default function AdminSupportChat() {
                           />
                         ))
                       )}
-                      <div ref={messagesEndRef} />
+                      <div
+                        ref={messagesEndRef}
+                        data-testid="support-thread-bottom-anchor"
+                        className="h-px w-full shrink-0 [overflow-anchor:auto]"
+                        aria-hidden="true"
+                      />
                     </>
                   )}
+                  </div>
                 </div>
                 {unseenCount > 0 && !historyPreviewId ? (
-                  <div className="pointer-events-none relative z-20 -mt-12 mb-2 flex justify-center">
+                  <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex justify-center">
                     <button
                       type="button"
                       data-testid="support-jump-latest"
@@ -1596,9 +1625,10 @@ export default function AdminSupportChat() {
                     </button>
                   </div>
                 ) : null}
+                </div>
 
                 {!historyPreviewId && (
-                  <footer className="sticky bottom-0 z-10 border-t border-slate-100 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                  <footer className="shrink-0 border-t border-slate-100 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                     {selected.channel === "whatsapp" &&
                     supportSendingFromLabel(selected) ? (
                       <p

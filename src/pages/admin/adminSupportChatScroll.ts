@@ -18,12 +18,32 @@ export function isNearTop(
 
 export function scrollScrollerToBottom(el: HTMLElement | null, smooth = false) {
   if (!el) return;
-  const top = el.scrollHeight;
+  const top = Math.max(0, el.scrollHeight - el.clientHeight);
   if (smooth && typeof el.scrollTo === "function") {
-    el.scrollTo({ top, behavior: "smooth" });
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
     return;
   }
-  el.scrollTop = top;
+  el.scrollTop = el.scrollHeight;
+}
+
+/** Pin the thread scroller to a dedicated bottom anchor above the composer. */
+export function pinThreadToBottom(
+  scroller: HTMLElement | null,
+  anchor: HTMLElement | null,
+  smooth = false
+) {
+  if (anchor && typeof anchor.scrollIntoView === "function") {
+    try {
+      anchor.scrollIntoView({
+        block: "end",
+        inline: "nearest",
+        behavior: smooth ? "smooth" : "auto",
+      });
+    } catch {
+      /* jsdom / older browsers */
+    }
+  }
+  scrollScrollerToBottom(scroller, smooth);
 }
 
 export function preserveScrollAfterPrepend(
@@ -39,12 +59,13 @@ export function preserveScrollAfterPrepend(
 export function scheduleScrollToBottomAfterLayout(
   getEl: () => HTMLElement | null,
   shouldStick: () => boolean,
-  attempts = 12
+  attempts = 16,
+  getAnchor?: () => HTMLElement | null
 ) {
   let n = 0;
   const tick = () => {
     if (!shouldStick()) return;
-    scrollScrollerToBottom(getEl(), false);
+    pinThreadToBottom(getEl(), getAnchor ? getAnchor() : null, false);
     n += 1;
     if (n < attempts) requestAnimationFrame(tick);
   };
