@@ -57,6 +57,7 @@ function emptyDraft() {
     email: "",
     vertical: "",
     websites: ["", ""] as string[],
+    profilePictureUrl: "",
   };
 }
 
@@ -68,7 +69,24 @@ function draftFromProfile(profile: WhatsAppBusinessProfile) {
     email: profile.email || "",
     vertical: profile.vertical || "",
     websites: [profile.websites?.[0] || "", profile.websites?.[1] || ""],
+    profilePictureUrl: profile.profilePictureUrl || "",
   };
+}
+
+function firstFieldError(errors?: Record<string, string> | null) {
+  if (!errors) return "";
+  return (
+    errors._all ||
+    errors.about ||
+    errors.description ||
+    errors.vertical ||
+    errors.email ||
+    errors.address ||
+    errors.websites ||
+    errors.profilePictureUrl ||
+    Object.values(errors).find(Boolean) ||
+    ""
+  );
 }
 
 function metaErrorMessage(error: unknown, fallback: string) {
@@ -92,6 +110,9 @@ export default function WhatsAppProfileTab() {
     setProfile(next);
     setDraft(draftFromProfile(next));
   };
+
+  const fieldErrors = profile?.fieldErrors || {};
+  const pictureUrl = draft.profilePictureUrl || profile?.profilePictureUrl || "";
 
   const load = async (opts?: { syncFirst?: boolean }) => {
     if (visualQa) {
@@ -151,6 +172,11 @@ export default function WhatsAppProfileTab() {
         : await getWhatsAppBusinessProfile(businessId);
       applyProfile(data.profile);
       await refreshConnection();
+      const syncError =
+        data.syncError || data.profile?.syncError || firstFieldError(data.fieldErrors);
+      if (syncError && opts?.syncFirst) {
+        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
+      }
     } catch (error) {
       toast.error(metaErrorMessage(error, t("whatsapp.hub.profileLoadError")));
     } finally {
@@ -174,14 +200,19 @@ export default function WhatsAppProfileTab() {
         description: draft.description,
         email: draft.email,
         vertical: draft.vertical,
-        websites: draft.websites.map((w) => w.trim()).filter(Boolean),
+        websites: [draft.websites[0], draft.websites[1]],
       });
       applyProfile(result.profile);
       await refreshConnection();
-      if (result.pictureSync && result.pictureSync.ok === false) {
-        toast.error(
-          result.pictureSync.error || t("whatsapp.hub.profilePhotoMetaError")
-        );
+      const syncError =
+        result.syncError ||
+        result.profile?.syncError ||
+        firstFieldError(result.fieldErrors || result.profile?.fieldErrors) ||
+        (result.pictureSync?.ok === false
+          ? result.pictureSync.error || t("whatsapp.hub.profilePhotoMetaError")
+          : "");
+      if (syncError) {
+        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
       } else {
         toast.success(t("whatsapp.hub.profileSaved"));
       }
@@ -275,6 +306,12 @@ export default function WhatsAppProfileTab() {
         </div>
       </div>
 
+      {profile?.syncError ? (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+          {t("whatsapp.hub.profileSyncWarning")} {profile.syncError}
+        </p>
+      ) : null}
+
       {loading && !profile ? (
         <div className={`${cardBase} flex items-center gap-2 p-6 text-sm font-semibold text-slate-500`}>
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -335,9 +372,9 @@ export default function WhatsAppProfileTab() {
                   disabled={!businessId || uploadingPhoto || !connection?.connected}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {profile?.profilePictureUrl ? (
+                  {pictureUrl ? (
                     <img
-                      src={profile.profilePictureUrl}
+                      src={pictureUrl}
                       alt=""
                       className="h-full w-full object-cover"
                     />
@@ -393,6 +430,7 @@ export default function WhatsAppProfileTab() {
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.about.length}/139
               </p>
+              <FieldError message={fieldErrors.about} />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-wide text-slate-400">
@@ -412,6 +450,7 @@ export default function WhatsAppProfileTab() {
                   </option>
                 ))}
               </select>
+              <FieldError message={fieldErrors.vertical} />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-wide text-slate-400">
@@ -429,6 +468,7 @@ export default function WhatsAppProfileTab() {
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.description.length}/512
               </p>
+              <FieldError message={fieldErrors.description} />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-wide text-slate-400">
@@ -447,6 +487,7 @@ export default function WhatsAppProfileTab() {
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.email.length}/128
               </p>
+              <FieldError message={fieldErrors.email} />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-wide text-slate-400">
@@ -463,6 +504,7 @@ export default function WhatsAppProfileTab() {
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.address.length}/256
               </p>
+              <FieldError message={fieldErrors.address} />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-wide text-slate-400">
@@ -503,15 +545,16 @@ export default function WhatsAppProfileTab() {
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.websites[1].length}/256
               </p>
+              <FieldError message={fieldErrors.websites} />
             </label>
           </div>
 
           <aside className={`${cardBase} overflow-hidden p-0`}>
             <div className="bg-gradient-to-b from-slate-50 to-white px-4 pb-5 pt-4">
               <div className="mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow">
-                {profile?.profilePictureUrl ? (
+                {pictureUrl ? (
                   <img
-                    src={profile.profilePictureUrl}
+                    src={pictureUrl}
                     alt=""
                     className="h-full w-full object-cover"
                   />
@@ -557,6 +600,7 @@ export default function WhatsAppProfileTab() {
                 <PreviewRow label="DESCRIPTION" value={draft.description} />
                 <PreviewRow label="CATEGORY" value={categoryLabel} />
                 <PreviewRow label="EMAIL" value={draft.email} ltr />
+                <PreviewRow label="ADDRESS" value={draft.address} />
                 <PreviewRow label="WEBSITE" value={draft.websites[0]} ltr />
                 {draft.websites[1] ? (
                   <PreviewRow label="WEBSITE 2" value={draft.websites[1]} ltr />
@@ -567,6 +611,13 @@ export default function WhatsAppProfileTab() {
         </div>
       )}
     </div>
+  );
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p className="mt-0.5 text-[10px] font-bold text-rose-600">{message}</p>
   );
 }
 

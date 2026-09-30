@@ -1144,6 +1144,8 @@ export type WhatsAppBusinessProfile = {
   syncedAt: string | null;
   lastMetaSyncAt?: string | null;
   source?: string;
+  fieldErrors?: Record<string, string>;
+  syncError?: string;
   editableFields: string[];
   readOnlyFields: string[];
 };
@@ -1154,6 +1156,8 @@ export async function getWhatsAppBusinessProfile(businessId: string) {
     success?: boolean;
     connection: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
+    fieldErrors?: Record<string, string>;
+    syncError?: string;
   };
 }
 
@@ -1164,6 +1168,8 @@ export async function syncWhatsAppBusinessProfile(businessId: string) {
     ok?: boolean;
     connection?: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
+    fieldErrors?: Record<string, string>;
+    syncError?: string;
   };
 }
 
@@ -1194,6 +1200,8 @@ export async function updateWhatsAppBusinessProfile(
       error?: string;
       code?: string;
     };
+    fieldErrors?: Record<string, string>;
+    syncError?: string;
   };
 }
 
