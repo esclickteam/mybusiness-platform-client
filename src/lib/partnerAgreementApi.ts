@@ -215,11 +215,21 @@ export type CountryOption = {
 };
 
 export function agreementError(err: unknown, fallback: string) {
-  const data = (err as { response?: { data?: { error?: string; code?: string } } })?.response?.data;
+  const row = err as {
+    message?: string;
+    fields?: { field?: string; message?: string }[];
+    response?: { data?: { error?: string; code?: string; fields?: { field?: string; message?: string }[] } };
+  };
+  const data = row?.response?.data;
+  const fields = data?.fields || row?.fields;
+  const listed = Array.isArray(fields)
+    ? fields.map((field) => field?.message || field?.field).filter(Boolean).join(" ")
+    : "";
   if (data?.code === "TERRITORY_ALREADY_EXCLUSIVE") {
-    return data.error || "This country already has an active exclusive partner agreement.";
+    return [data.error, listed].filter(Boolean).join(" ") || "This country already has an active exclusive partner agreement.";
   }
-  return data?.error || fallback;
+  const message = data?.error || (row?.message && row.message !== "Network error" ? row.message : "");
+  return [message, listed && !String(message).includes(listed) ? listed : ""].filter(Boolean).join(" ") || fallback;
 }
 
 export async function fetchAgreementMeta() {
@@ -336,6 +346,7 @@ export async function previewDraftAgreement(input: AgreementInput) {
     variables: Record<string, string | string[] | boolean>;
     signatories?: AgreementSignatory[];
     persisted: boolean;
+    issues?: { field: string; code?: string; message?: string }[];
   };
 }
 

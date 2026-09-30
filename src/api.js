@@ -115,6 +115,8 @@ function rejectWithApiMessage(response, { silent = false } = {}) {
   const err = new Error(message);
   err.code = response.data?.code;
   err.status = response.status;
+  err.fields = response.data?.fields;
+  err.response = response;
   return Promise.reject(err);
 }
 
