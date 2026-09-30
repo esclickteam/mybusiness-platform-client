@@ -20,6 +20,7 @@ import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
 import {
   isModuleEnabled,
+  isWhatsappOnlyPackage,
   normalizeEnabledModules,
 } from "../utils/moduleAccess";
 import { normalizeBusinessId } from "../utils/notificationNavigation";
@@ -224,6 +225,11 @@ export default function BusinessWorkspaceNav({
     (canSeeRestrictedNav(user?.businessId || businessId) ||
       Boolean(user?.isShowcaseDemo)) &&
     !Boolean(user?.isGuidedDemo);
+  // A limited package that explicitly includes WhatsApp (or campaigns) must
+  // see that entry even when the business is outside the pilot allowlist.
+  const explicitlyEnabled = (moduleKey: string) =>
+    Boolean(enabledModules) && isModuleEnabled(enabledModules, moduleKey);
+  const hideGlobalClub = isWhatsappOnlyPackage(enabledModules);
 
   const items: NavItemConfig[] = [
     {
@@ -255,7 +261,10 @@ export default function BusinessWorkspaceNav({
       fallback: "WhatsApp Messages",
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
-      moduleKey: showRestrictedNav || user?.isGuidedDemo ? "whatsapp" : "__hidden__",
+      moduleKey:
+        showRestrictedNav || user?.isGuidedDemo || explicitlyEnabled("whatsapp")
+          ? "whatsapp"
+          : "__hidden__",
       demoTarget: "nav-whatsapp",
     },
     {
@@ -263,7 +272,12 @@ export default function BusinessWorkspaceNav({
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
-      moduleKey: showRestrictedNav || user?.isGuidedDemo ? "meta-campaigns" : "__hidden__",
+      moduleKey:
+        showRestrictedNav ||
+        user?.isGuidedDemo ||
+        explicitlyEnabled("meta-campaigns")
+          ? "meta-campaigns"
+          : "__hidden__",
       demoTarget: "nav-meta-campaigns",
     },
     {
@@ -279,7 +293,7 @@ export default function BusinessWorkspaceNav({
       fallback: "Global Business Club",
       to: `${basePath}/dashboard/global-club`,
       icon: Globe2,
-      moduleKey: null,
+      moduleKey: hideGlobalClub ? "__hidden__" : null,
       demoTarget: "nav-global-club",
     },
     {

@@ -238,6 +238,55 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 
+  it("shows WhatsApp and hides the club for a WhatsApp-only package outside the allowlist", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: ["dashboard", "whatsapp"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "dashboard")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).toBeNull();
+  });
+
+  it("keeps the club and hides WhatsApp for a CRM-only package outside the allowlist", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: ["crm"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
+  });
+
+  it("shows campaigns when a limited package explicitly includes them", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: ["dashboard", "meta-campaigns"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).not.toBeNull();
+  });
+
   it("uses the same WhatsApp and Campaigns labels as a regular allowlisted business", async () => {
     await renderNav({
       user: { businessId: ALLOWED_BUSINESS_ID, role: "business" },
