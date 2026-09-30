@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Link,
   useNavigate,
@@ -216,6 +216,19 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
+function isMetaThrottleError(error: any) {
+  const blob = JSON.stringify(
+    error?.response?.data || error?.message || ""
+  ).toLowerCase();
+  return (
+    Number(error?.response?.data?.details?.code) === 613 ||
+    Number(error?.response?.status) === 429 ||
+    blob.includes("613") ||
+    blob.includes("rate limit") ||
+    blob.includes("too many calls")
+  );
+}
+
 function isPermissionError(error: any) {
   const status = Number(error?.response?.status || 0);
   const message = String(
@@ -264,6 +277,10 @@ export default function MetaCampaignsOverviewTab() {
   );
   const [pendingStatusCampaign, setPendingStatusCampaign] =
     useState<MetaCampaign | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const loadInFlightRef = useRef(false);
+  const backoffUntilRef = useRef(0);
+  const lastStartedAtRef = useRef(0);
 
   const currency = resolveCampaignCurrency(data?.connection?.selectedAdAccount?.currency);
   const selectedAccount = data?.connection?.selectedAdAccount || null;
@@ -290,7 +307,24 @@ export default function MetaCampaignsOverviewTab() {
 
   const load = async (options?: { silent?: boolean; successToast?: boolean }) => {
     if (!businessId) return;
+    if (loadInFlightRef.current) return;
+    const now = Date.now();
+    if (now < backoffUntilRef.current) {
+      if (!options?.silent) {
+        toast.error(t("metaCampaigns.actions.syncThrottled"));
+      }
+      return;
+    }
+    if (
+      options?.silent &&
+      lastStartedAtRef.current &&
+      now - lastStartedAtRef.current < 15000
+    ) {
+      return;
+    }
     const silent = Boolean(options?.silent);
+    loadInFlightRef.current = true;
+    lastStartedAtRef.current = now;
     if (silent) setRefreshing(true);
     else setLoading(true);
     setLoadError(null);
@@ -298,11 +332,15 @@ export default function MetaCampaignsOverviewTab() {
       const overview = await getMetaCampaignsOverview(businessId, rangeQuery);
       setData(overview);
       setLastUpdatedAt(new Date());
+      backoffUntilRef.current = 0;
       if (options?.successToast) {
         toast.success(t("metaCampaigns.toasts.overviewRefreshed"));
       }
     } catch (error: any) {
-      if (isPermissionError(error)) {
+      if (isMetaThrottleError(error)) {
+        backoffUntilRef.current = Date.now() + 45000;
+        toast.error(t("metaCampaigns.actions.syncThrottled"));
+      } else if (isPermissionError(error)) {
         setLoadError("permission");
         toast.error(t("metaCampaigns.errors.permissionRead"));
       } else {
@@ -314,6 +352,7 @@ export default function MetaCampaignsOverviewTab() {
         );
       }
     } finally {
+      loadInFlightRef.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -394,15 +433,32 @@ export default function MetaCampaignsOverviewTab() {
       data?.connection?.demoData
   );
   const connected = Boolean(data?.connection?.connected || demoSandbox);
+  const instagramAccountId = String(
+    data?.connection?.selectedPage?.instagramBusinessAccountId || ""
+  ).trim();
+  const instagramMissing = Boolean(
+    connected &&
+      !demoSandbox &&
+      data?.connection?.selectedPage?.pageId &&
+      !instagramAccountId
+  );
+  useEffect(() => {
+    if (!lastUpdatedAt) return;
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [lastUpdatedAt]);
   useEffect(() => {
     if (!businessId || !connected) return;
+    const jitterMs = Math.floor(Math.random() * 4000);
     const tick = () => {
       if (typeof document !== "undefined" && document.visibilityState !== "visible") {
         return;
       }
+      if (loadInFlightRef.current) return;
+      if (Date.now() < backoffUntilRef.current) return;
       void load({ silent: true });
     };
-    const timer = window.setInterval(tick, 30000);
+    const timer = window.setInterval(tick, 30000 + jitterMs);
     const onVisible = () => {
       if (document.visibilityState === "visible") tick();
     };
@@ -552,8 +608,13 @@ export default function MetaCampaignsOverviewTab() {
           </p>
           {lastUpdatedAt ? (
             <p className="mt-1 text-xs font-bold text-slate-400">
-              {t("metaCampaigns.overview.lastUpdated", {
-                time: formatDateTimeHe(lastUpdatedAt, locale),
+              {t("metaCampaigns.overview.syncedWithMeta")}
+              {" · "}
+              {t("metaCampaigns.overview.lastSyncedAgo", {
+                seconds: Math.max(
+                  0,
+                  Math.round((nowMs - lastUpdatedAt.getTime()) / 1000)
+                ),
               })}
             </p>
           ) : null}
@@ -563,7 +624,11 @@ export default function MetaCampaignsOverviewTab() {
             type="button"
             onClick={() => load({ silent: true, successToast: true })}
             className={btnSecondary}
-            disabled={refreshing || switchingAccount}
+            disabled={
+              refreshing ||
+              switchingAccount ||
+              Date.now() < backoffUntilRef.current
+            }
           >
             {refreshing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -645,6 +710,22 @@ export default function MetaCampaignsOverviewTab() {
             {t("metaCampaigns.empty.loadingFromMeta")}
           </p>
         )}
+        {instagramMissing ? (
+          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+            <p className="text-sm font-black text-amber-900">
+              {t("metaCampaigns.overview.instagramNotConnected")}
+            </p>
+            <p className="mt-1 text-xs font-semibold text-amber-800">
+              {t("metaCampaigns.overview.instagramConnectHint")}
+            </p>
+            <Link
+              to={`${basePath}/settings`}
+              className="mt-2 inline-flex text-xs font-black text-amber-900 underline"
+            >
+              {t("metaCampaigns.overview.instagramConnectCta")}
+            </Link>
+          </div>
+        ) : null}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-demo-target="meta-overview">

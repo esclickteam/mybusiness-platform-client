@@ -9547,6 +9547,11 @@
       "accountStatusLabel": "Status: {{status}}",
       "currencyLabel": "Currency: {{currency}}",
       "connectedThroughMeta": "Connected through Meta",
+      "syncedWithMeta": "Synced with Meta",
+      "lastSyncedAgo": "Last synced {{seconds}} seconds ago",
+      "instagramNotConnected": "Instagram account not connected",
+      "instagramConnectHint": "Connect an Instagram professional account to this Facebook Page in Meta. Facebook-only campaigns keep working.",
+      "instagramConnectCta": "Open Meta settings",
       "switchAccount": "Select ad account",
       "lastUpdated": "Last updated: {{time}}",
       "lastUpdatedLabel": "Last updated"
@@ -9571,7 +9576,8 @@
     },
     "actions": {
       "create": "Create new campaign",
-      "refresh": "Refresh",
+      "refresh": "Sync now",
+      "syncThrottled": "Meta asked us to slow down. Try again shortly.",
       "edit": "Edit",
       "pause": "Pause",
       "activate": "Activate",
