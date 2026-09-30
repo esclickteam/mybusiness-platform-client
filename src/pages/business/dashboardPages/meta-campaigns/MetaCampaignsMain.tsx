@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, ListChecks, Megaphone, PieChart, PlusCircle, Settings2, Sparkles, Target } from "lucide-react";
+import { LayoutDashboard, ListChecks, Megaphone, MessageSquare, PieChart, PlusCircle, Settings2, Sparkles, Target } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
@@ -28,6 +28,7 @@ const tabs: MetaCampaignsTab[] = [
   { path: "rules", labelKey: "metaCampaigns.nav.rules", icon: ListChecks },
   { path: "goals", labelKey: "metaCampaigns.nav.goals", icon: Target },
   { path: "portfolio", labelKey: "metaCampaigns.nav.portfolio", icon: PieChart },
+  { path: "copilot", labelKey: "metaCampaigns.nav.copilot", icon: MessageSquare },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
 ];
 

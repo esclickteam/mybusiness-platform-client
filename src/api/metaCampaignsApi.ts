@@ -1487,6 +1487,38 @@ export async function applyMetaPortfolio(businessId: string, id: string) {
   return data;
 }
 
+export type MarketingCopilotAnswer = {
+  answer: string;
+  supportingFacts: Array<{ text: string; campaignId?: string }>;
+  suggestedActions: Array<{
+    label: string;
+    recommendationId?: string | null;
+    campaignId?: string;
+    actionType?: string;
+    handoff?: { allowed: boolean; recommendationId?: string | null; confirmRequired?: boolean };
+  }>;
+  confidence: string;
+  insufficientData: boolean;
+  sources: string[];
+  period?: string;
+  syncedMinutesAgo?: number;
+  cached?: boolean;
+  usedAi?: boolean;
+  sessionId?: string;
+};
+
+export async function askMarketingCopilot(
+  businessId: string,
+  question: string,
+  sessionId?: string
+) {
+  const { data } = await API.post<{ success: boolean } & MarketingCopilotAnswer>(
+    "/meta-campaigns/copilot/ask",
+    { businessId, question, sessionId }
+  );
+  return data;
+}
+
 export async function getMetaPortfolioHistory(businessId: string) {
   const { data } = await API.get<{ success: boolean; history: PortfolioAllocation[] }>(
     "/meta-campaigns/portfolio/history",
