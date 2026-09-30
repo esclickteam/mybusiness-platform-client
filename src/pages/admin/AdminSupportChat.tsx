@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
+  ChevronDown,
+  FileText,
   Headphones,
   History,
   RefreshCw,
@@ -16,6 +18,14 @@ import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
 import { AdminSendDemoButton } from "./AdminSendGuidedDemoModal";
 import AdminInteractiveDemoFollowupModal from "./AdminInteractiveDemoFollowupModal";
+import AdminSupportChatSendTemplateModal from "./AdminSupportChatSendTemplateModal";
+import {
+  isNearBottom,
+  isNearTop,
+  preserveScrollAfterPrepend,
+  scheduleScrollToBottomAfterLayout,
+  scrollScrollerToBottom,
+} from "./adminSupportChatScroll";
 import {
   deliveryFailureDetail,
   deliveryStatusLabel,
@@ -350,6 +360,19 @@ function ChatBubble({
             {sentVia}
           </p>
         ) : null}
+        {!isInteractiveDemoCard(msg) &&
+        (msg.metadata?.templateName || msg.metadata?.template) ? (
+          <p
+            className={`mt-1 text-[10px] font-bold ${
+              mine ? "text-white/85" : "text-slate-500"
+            }`}
+            dir="ltr"
+            data-testid="support-template-used"
+          >
+            Template:{" "}
+            {String(msg.metadata?.templateName || msg.metadata?.template)}
+          </p>
+        ) : null}
         <p className="mt-1.5 text-[10px] font-semibold opacity-70">
           {formatTime(msg.createdAt)}
           {status && !isInteractiveDemoCard(msg) ? ` · ${status}` : ""}
@@ -393,6 +416,8 @@ function mergeMessagesById(
   }
   return merged;
 }
+
+const PAGE_SIZE = 80;
 
 export default function AdminSupportChat() {
   const { user, socket } = useAuth() as {
@@ -440,6 +465,17 @@ export default function AdminSupportChat() {
   const prevSelectedForScrollRef = useRef<string | null>(null);
   /** Sync guard — React state alone cannot stop double Enter/click before re-render. */
   const sendingRef = useRef(false);
+  const loadingOlderRef = useRef(false);
+
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [unseenCount, setUnseenCount] = useState(0);
+  const [hasMoreMessages, setHasMoreMessages] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [waContext, setWaContext] = useState<{
+    sessionWindowOpen?: boolean;
+    requiresTemplate?: boolean;
+    managedConnectionId?: string;
+  } | null>(null);
 
   useEffect(() => {
     selectedIdRef.current = selectedId;
@@ -449,6 +485,27 @@ export default function AdminSupportChat() {
     () => conversations.find((c) => c._id === selectedId) || null,
     [conversations, selectedId]
   );
+
+  const sessionRequiresTemplate =
+    selected?.channel === "whatsapp" && waContext?.requiresTemplate === true;
+
+  useEffect(() => {
+    if (!selectedId || selected?.channel !== "whatsapp") {
+      if (selected?.channel !== "whatsapp") setWaContext(null);
+      return;
+    }
+    let cancelled = false;
+    API.get(`/support-chat/admin/${selectedId}/whatsapp-context`)
+      .then(({ data }) => {
+        if (!cancelled) setWaContext(data);
+      })
+      .catch(() => {
+        if (!cancelled) setWaContext(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedId, selected?.channel]);
 
   const loadConversations = useCallback(
     async (opts?: { silent?: boolean }) => {
@@ -489,12 +546,31 @@ export default function AdminSupportChat() {
       const silent = !!opts?.silent;
       if (!silent) setLoadingMessages(true);
       try {
-        const { data } = await API.get(`/support-chat/${id}/messages`);
+        const { data } = await API.get(`/support-chat/${id}/messages`, {
+          params: { limit: PAGE_SIZE },
+        });
         const incoming: SupportMessage[] = data.messages || [];
         if (silent) {
-          setMessages((prev) => mergeMessagesById(prev, incoming));
+          setMessages((prev) => {
+            const added = incoming.filter(
+              (m) => !prev.some((p) => p._id === m._id)
+            );
+            if (
+              !stickToBottomRef.current &&
+              added.some(
+                (m) =>
+                  m.senderType === "visitor" || m.direction === "inbound"
+              )
+            ) {
+              setUnseenCount((n) => n + added.length);
+            }
+            return mergeMessagesById(prev, incoming);
+          });
         } else {
           setMessages(incoming);
+          setHasMoreMessages(Boolean(data.hasMore));
+          setUnseenCount(0);
+          stickToBottomRef.current = true;
         }
         await API.post(`/support-chat/admin/${id}/read`).catch(() => {});
         setConversations((prev) =>
@@ -517,11 +593,32 @@ export default function AdminSupportChat() {
   }, [loadConversations]);
 
   useEffect(() => {
-    if (selectedId) loadMessages(selectedId);
-    else setMessages([]);
+    if (selectedId) {
+      setMessages([]);
+      setHasMoreMessages(false);
+      setUnseenCount(0);
+      setWaContext(null);
+      stickToBottomRef.current = true;
+      lastScrolledMsgIdRef.current = null;
+      void loadMessages(selectedId);
+    } else {
+      setMessages([]);
+      setWaContext(null);
+    }
   }, [selectedId, loadMessages]);
 
-  // Auto-scroll only when near bottom / new conversation — never yank while reading up.
+  const pinToLatest = useCallback((smooth = false) => {
+    stickToBottomRef.current = true;
+    setUnseenCount(0);
+    const run = () =>
+      scrollScrollerToBottom(messagesContainerRef.current, smooth);
+    requestAnimationFrame(() => {
+      run();
+      requestAnimationFrame(run);
+    });
+  }, []);
+
+  // Auto-scroll after bubbles have rendered. Never yank while reading history.
   useEffect(() => {
     const lastId = messages[messages.length - 1]?._id || null;
     const conversationChanged =
@@ -531,21 +628,33 @@ export default function AdminSupportChat() {
       prevSelectedForScrollRef.current = selectedId;
       stickToBottomRef.current = true;
       lastScrolledMsgIdRef.current = null;
+      setUnseenCount(0);
     }
 
     const lastChanged = lastId !== lastScrolledMsgIdRef.current;
     if (!stickToBottomRef.current || (!lastChanged && !conversationChanged)) {
       return;
     }
+    if (loadingMessages) return;
 
     lastScrolledMsgIdRef.current = lastId;
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    } else {
-      messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
-    }
-  }, [messages, selectedId]);
+    scheduleScrollToBottomAfterLayout(
+      () => messagesContainerRef.current,
+      () => stickToBottomRef.current
+    );
+  }, [messages, selectedId, loadingMessages]);
+
+  useEffect(() => {
+    const el = messagesContainerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (stickToBottomRef.current) {
+        scrollScrollerToBottom(el, false);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [selectedId, loadingMessages]);
 
   // Deep-link from PWA / push: /admin/support-chat?c=<id>
   useEffect(() => {
@@ -628,6 +737,13 @@ export default function AdminSupportChat() {
       ) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === message._id)) return prev;
+          if (
+            !stickToBottomRef.current &&
+            (message?.senderType === "visitor" ||
+              message?.direction === "inbound")
+          ) {
+            setUnseenCount((n) => n + 1);
+          }
           return [...prev, message];
         });
       }
@@ -808,6 +924,8 @@ export default function AdminSupportChat() {
     message?: SupportMessage;
     conversation?: SupportConversation;
   }) {
+    stickToBottomRef.current = true;
+    setUnseenCount(0);
     if (data.message) {
       setMessages((prev) => {
         if (prev.some((m) => m._id === data.message!._id)) return prev;
@@ -820,6 +938,10 @@ export default function AdminSupportChat() {
         prev.map((c) => (c._id === conversation._id ? conversation : c))
       );
     }
+    scheduleScrollToBottomAfterLayout(
+      () => messagesContainerRef.current,
+      () => stickToBottomRef.current
+    );
   }
 
   async function sendViaRest(
@@ -835,9 +957,12 @@ export default function AdminSupportChat() {
   }
 
   async function reloadConversationMessages(conversationId: string) {
-    const { data } = await API.get(`/support-chat/${conversationId}/messages`);
+    const { data } = await API.get(`/support-chat/${conversationId}/messages`, {
+      params: { limit: PAGE_SIZE },
+    });
     if (selectedIdRef.current !== conversationId) return;
-    setMessages(data.messages || []);
+    setMessages((prev) => mergeMessagesById(prev, data.messages || []));
+    if (data.hasMore != null) setHasMoreMessages(Boolean(data.hasMore));
     if (data.conversation) {
       setConversations((prev) =>
         prev.map((c) =>
@@ -847,9 +972,46 @@ export default function AdminSupportChat() {
     }
   }
 
+  async function loadOlderMessages() {
+    if (!selectedId || !hasMoreMessages || loadingOlderRef.current) return;
+    const oldest = messages[0];
+    if (!oldest?._id) return;
+    const el = messagesContainerRef.current;
+    const prevHeight = el?.scrollHeight || 0;
+    const prevTop = el?.scrollTop || 0;
+    loadingOlderRef.current = true;
+    setLoadingOlder(true);
+    try {
+      const { data } = await API.get(`/support-chat/${selectedId}/messages`, {
+        params: { limit: PAGE_SIZE, before: oldest._id },
+      });
+      const older: SupportMessage[] = data.messages || [];
+      setHasMoreMessages(Boolean(data.hasMore));
+      if (older.length) {
+        setMessages((prev) => mergeMessagesById(older, prev));
+        requestAnimationFrame(() => {
+          preserveScrollAfterPrepend(
+            messagesContainerRef.current,
+            prevHeight,
+            prevTop
+          );
+        });
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "שגיאה בטעינת היסטוריה");
+    } finally {
+      loadingOlderRef.current = false;
+      setLoadingOlder(false);
+    }
+  }
+
   async function sendMessage() {
     const text = input.trim();
     if (!text || !selectedId || sendingRef.current) return;
+    if (sessionRequiresTemplate) {
+      setTemplateOpen(true);
+      return;
+    }
     sendingRef.current = true;
     setSending(true);
     setInput("");
@@ -1218,6 +1380,17 @@ export default function AdminSupportChat() {
                       </Link>
                     ) : null}
                     {selected.channel === "whatsapp" ? (
+                      <button
+                        type="button"
+                        data-testid="support-send-template"
+                        onClick={() => setTemplateOpen(true)}
+                        className="inline-flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-black text-emerald-800"
+                      >
+                        <FileText size={15} />
+                        Send Template
+                      </button>
+                    ) : null}
+                    {selected.channel === "whatsapp" ? (
                       <AdminSendDemoButton
                         onClick={() => setDemoOpen(true)}
                         className="!min-h-0 rounded-2xl px-3.5 py-2 text-xs shadow-md shadow-[#6D28D9]/20"
@@ -1327,11 +1500,13 @@ export default function AdminSupportChat() {
                   onScroll={() => {
                     const el = messagesContainerRef.current;
                     if (!el) return;
-                    const distance =
-                      el.scrollHeight - el.scrollTop - el.clientHeight;
-                    stickToBottomRef.current = distance < 140;
+                    stickToBottomRef.current = isNearBottom(el);
+                    if (stickToBottomRef.current) setUnseenCount(0);
+                    if (isNearTop(el) && hasMoreMessages && !loadingOlder) {
+                      void loadOlderMessages();
+                    }
                   }}
-                  className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,#faf8ff_0%,#f8fafc_100%)] px-4 py-5 md:px-6"
+                  className="relative min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,#faf8ff_0%,#f8fafc_100%)] px-4 py-5 md:px-6"
                 >
                   {historyPreviewId ? (
                     <>
@@ -1385,6 +1560,11 @@ export default function AdminSupportChat() {
 
                   {!historyPreviewId && (
                     <>
+                      {loadingOlder ? (
+                        <p className="text-center text-[11px] font-semibold text-slate-400">
+                          טוען הודעות ישנות…
+                        </p>
+                      ) : null}
                       {loadingMessages ? (
                         <p className="text-sm font-semibold text-slate-500">
                           טוען הודעות...
@@ -1403,6 +1583,19 @@ export default function AdminSupportChat() {
                     </>
                   )}
                 </div>
+                {unseenCount > 0 && !historyPreviewId ? (
+                  <div className="pointer-events-none relative z-20 -mt-12 mb-2 flex justify-center">
+                    <button
+                      type="button"
+                      data-testid="support-jump-latest"
+                      className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-[#111b21] px-3 py-1.5 text-[11px] font-black text-white shadow-lg"
+                      onClick={() => pinToLatest(true)}
+                    >
+                      <ChevronDown size={14} />
+                      New messages
+                    </button>
+                  </div>
+                ) : null}
 
                 {!historyPreviewId && (
                   <footer className="sticky bottom-0 z-10 border-t border-slate-100 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
@@ -1416,12 +1609,35 @@ export default function AdminSupportChat() {
                         Sending from: {supportSendingFromLabel(selected)}
                       </p>
                     ) : null}
+                    {sessionRequiresTemplate ? (
+                      <div
+                        className="mb-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2"
+                        data-testid="support-window-closed"
+                      >
+                        <p className="text-xs font-black text-amber-900">
+                          The 24-hour customer service window is closed. An approved
+                          template is required.
+                        </p>
+                        <button
+                          type="button"
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-[#7C4DFF] px-3 py-1.5 text-[11px] font-black text-white"
+                          onClick={() => setTemplateOpen(true)}
+                        >
+                          <FileText size={13} />
+                          Send Template
+                        </button>
+                      </div>
+                    ) : null}
                     <div className="flex items-end gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
                       <textarea
                         data-testid="support-chat-composer"
                         value={input}
                         rows={1}
-                        disabled={selected.status === "closed" || sending}
+                        disabled={
+                          selected.status === "closed" ||
+                          sending ||
+                          sessionRequiresTemplate
+                        }
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
@@ -1432,16 +1648,31 @@ export default function AdminSupportChat() {
                         placeholder={
                           selected.status === "closed"
                             ? "השיחה סגורה"
-                            : selected.channel === "whatsapp"
-                              ? "תשובה ב-WhatsApp..."
-                              : "כתבו תשובה ללקוח..."
+                            : sessionRequiresTemplate
+                              ? "Template required — 24h window is closed"
+                              : selected.channel === "whatsapp"
+                                ? "תשובה ב-WhatsApp..."
+                                : "כתבו תשובה ללקוח..."
                         }
                         className="max-h-32 min-h-11 flex-1 resize-none rounded-2xl bg-transparent px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
                       />
+                      {selected.channel === "whatsapp" ? (
+                        <button
+                          type="button"
+                          data-testid="support-composer-template"
+                          onClick={() => setTemplateOpen(true)}
+                          disabled={selected.status === "closed"}
+                          className="flex h-11 min-h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40"
+                          aria-label="Send Template"
+                        >
+                          <FileText size={16} />
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         onClick={sendMessage}
                         disabled={
+                          sessionRequiresTemplate ||
                           !input.trim() ||
                           selected.status === "closed" ||
                           sending
@@ -1460,6 +1691,20 @@ export default function AdminSupportChat() {
         </div>
       </main>
 
+      <AdminSupportChatSendTemplateModal
+        open={templateOpen}
+        conversationId={selected?._id || ""}
+        managedConnectionId={
+          selected?.managedConnectionId || waContext?.managedConnectionId || ""
+        }
+        onClose={() => setTemplateOpen(false)}
+        onSent={(payload) => {
+          applySendResult(payload as {
+            message?: SupportMessage;
+            conversation?: SupportConversation;
+          });
+        }}
+      />
       <AdminInteractiveDemoFollowupModal
         open={demoOpen}
         onClose={() => setDemoOpen(false)}
