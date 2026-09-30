@@ -180,4 +180,39 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.adSets[0].advantageAudience).toBe(true);
     expect(state.adSets[0].locations[0].name).toBe("Israel");
   });
+
+  it("uses targetingRaw.age_range 24–35 instead of Advantage envelope 18–65", () => {
+    const live: MetaCampaign = {
+      ...campaign,
+      ageMin: 18,
+      ageMax: 65,
+      genders: [],
+      advantageAudience: true,
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          ageMin: 18,
+          ageMax: 65,
+          genders: [],
+          advantageAudience: true,
+          targetingLoaded: true,
+          targetingRaw: {
+            age_min: 18,
+            age_max: 65,
+            age_range: [24, 35],
+            geo_locations: { countries: ["IL"] },
+            targeting_automation: {
+              advantage_audience: 1,
+              individual_setting: { age: 1, gender: 1 },
+            },
+          },
+        },
+      ],
+    };
+    const state = adsManagerStateFromMetaCampaign(live);
+    expect(state.adSets[0].ageMin).toBe(24);
+    expect(state.adSets[0].ageMax).toBe(35);
+    expect(state.adSets[0].gender).toBe("all");
+    expect(state.adSets[0].advantageAudience).toBe(true);
+  });
 });

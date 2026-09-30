@@ -84,8 +84,7 @@ describe("adsManagerEditPayloads", () => {
     );
     expect(patch?.targeting).toEqual(
       expect.objectContaining({
-        age_min: 27,
-        age_max: 50,
+        age_range: [27, 50],
         custom_audiences: [{ id: "ca-1", name: "Buyers" }],
         targeting_automation: { advantage_audience: 1 },
       })

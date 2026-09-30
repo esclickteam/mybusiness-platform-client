@@ -346,13 +346,20 @@ export default function MetaAdsManagerPage() {
               : isEditSession
                 ? []
                 : ["IL"],
-          ageMin: selectedAdSet.ageMin ?? undefined,
-          ageMax:
-            selectedAdSet.ageMax == null
-              ? undefined
-              : selectedAdSet.ageMax >= 65
-                ? 65
-                : selectedAdSet.ageMax,
+          ageMin: (() => {
+            const range = Array.isArray(selectedAdSet.targetingRaw?.age_range)
+              ? (selectedAdSet.targetingRaw.age_range as number[])
+              : null;
+            return range?.[0] ?? selectedAdSet.ageMin ?? undefined;
+          })(),
+          ageMax: (() => {
+            const range = Array.isArray(selectedAdSet.targetingRaw?.age_range)
+              ? (selectedAdSet.targetingRaw.age_range as number[])
+              : null;
+            const value = range?.[1] ?? selectedAdSet.ageMax;
+            if (value == null) return undefined;
+            return value >= 65 ? 65 : value;
+          })(),
           genders,
           locationsSummary: selectedAdSet.locationsSummary,
           advantageAudience: selectedAdSet.advantageAudience !== false,

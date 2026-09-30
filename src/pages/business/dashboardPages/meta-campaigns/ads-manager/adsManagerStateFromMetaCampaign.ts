@@ -89,18 +89,27 @@ function mapAdSet(
       : campaign.advantageAudience != null
         ? campaign.advantageAudience
         : null;
+  const suggestionRange = Array.isArray(adSet.targetingRaw?.age_range)
+    ? (adSet.targetingRaw.age_range as number[])
+    : Array.isArray(campaign.targetingRaw?.age_range)
+      ? (campaign.targetingRaw.age_range as number[])
+      : null;
   const ageMin =
-    adSet.ageMin != null
-      ? Number(adSet.ageMin)
-      : campaign.ageMin != null
-        ? Number(campaign.ageMin)
-        : null;
+    suggestionRange?.[0] != null
+      ? Number(suggestionRange[0])
+      : adSet.ageMin != null
+        ? Number(adSet.ageMin)
+        : campaign.ageMin != null
+          ? Number(campaign.ageMin)
+          : null;
   const ageMax =
-    adSet.ageMax != null
-      ? Number(adSet.ageMax)
-      : campaign.ageMax != null
-        ? Number(campaign.ageMax)
-        : null;
+    suggestionRange?.[1] != null
+      ? Number(suggestionRange[1])
+      : adSet.ageMax != null
+        ? Number(adSet.ageMax)
+        : campaign.ageMax != null
+          ? Number(campaign.ageMax)
+          : null;
   return {
     ...fallback,
     id: adSet.id,
