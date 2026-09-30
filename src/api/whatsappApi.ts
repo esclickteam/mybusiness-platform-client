@@ -1201,6 +1201,7 @@ export async function updateWhatsAppBusinessProfile(
       code?: string;
     };
     fieldErrors?: Record<string, string>;
+    fieldErrorDetails?: Record<string, unknown>;
     syncError?: string;
   };
 }
