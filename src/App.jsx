@@ -198,6 +198,9 @@ const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
 const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
 const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
+const AdminPartnerAgreements = lazy(() => import("./pages/admin/partnerAgreements/AdminPartnerAgreements"));
+const AdminPartnerAgreementEditor = lazy(() => import("./pages/admin/partnerAgreements/AdminPartnerAgreementEditor"));
+const AdminPartnerAgreementPreview = lazy(() => import("./pages/admin/partnerAgreements/AdminPartnerAgreementPreview"));
 const AdminPartnerCenter = lazy(() => import("./pages/admin/AdminPartnerCenter"));
 const PartnerCenterPage = lazy(() => import("./pages/partner/PartnerCenterPage"));
 const PublicPartnerMaterial = lazy(() => import("./pages/public/PublicPartnerMaterial"));
@@ -1665,6 +1668,38 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminPartners />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/partner-agreements"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAgreements />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/partner-agreements/new"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAgreementEditor />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/partner-agreements/:id/preview"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAgreementPreview />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/partner-agreements/:id"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAgreementEditor />
                             </ProtectedRoute>
                           }
                         />

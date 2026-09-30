@@ -1,0 +1,277 @@
+import API from "../api";
+
+export type AgreementStatus =
+  | "draft"
+  | "ready_for_review"
+  | "sent"
+  | "signed"
+  | "payment_pending"
+  | "active"
+  | "expired"
+  | "terminated"
+  | "cancelled";
+
+export type TerritoryType = "" | "exclusive" | "non_exclusive";
+
+export type TerritoryAvailability =
+  | "available"
+  | "agreement_pending"
+  | "exclusive_active"
+  | "expiring_soon";
+
+export type CommissionTier = {
+  minCustomers: number;
+  maxCustomers: number | null;
+  percent: number;
+};
+
+export type PartnerAgreement = {
+  id: string;
+  agreementNumber: string;
+  status: AgreementStatus;
+  partnerId: string;
+  brandName: string;
+  legalCompanyName: string;
+  registrationNumber: string;
+  registeredAddress: string;
+  incorporationCountryCode: string;
+  incorporationCountryName: string;
+  contactName: string;
+  contactEmail: string;
+  phone: string;
+  whatsapp: string;
+  signatoryName: string;
+  signatoryTitle: string;
+  signatoryEmail: string;
+  countryCode: string;
+  countryName: string;
+  territoryName: string;
+  territoryType: TerritoryType;
+  agreementDate: string;
+  startDate: string;
+  endDate: string;
+  licenseTerm: string;
+  licenseFee: number | null;
+  currency: string;
+  paymentDueDate: string;
+  paymentStatus: "unpaid" | "paid";
+  paymentReference: string;
+  commissionOverride: boolean;
+  commissionPercents: number[];
+  tiers: CommissionTier[];
+  usesDefaultTiers: boolean;
+  salesTarget: string;
+  targetPeriod: string;
+  renewalDate: string;
+  renewalNotes: string;
+  specialTermsEnabled: boolean;
+  specialTerms: string;
+  currentVersion: number;
+  signedVersionNumber: number | null;
+  templateRevision: string;
+  locking: boolean;
+  history: { at: string; action: string; fromStatus: string; toStatus: string; note: string }[];
+  versions: { versionNumber: number; frozen: boolean; source: string; templateRevision: string; createdAt: string }[];
+  renewedFromAgreementId: string;
+  renewedToAgreementId: string;
+};
+
+export type AgreementInput = {
+  partnerId?: string;
+  agreementNumber?: string;
+  brandName?: string;
+  legalCompanyName?: string;
+  registrationNumber?: string;
+  registeredAddress?: string;
+  incorporationCountryCode?: string;
+  contactName?: string;
+  contactEmail?: string;
+  phone?: string;
+  whatsapp?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+  signatoryEmail?: string;
+  agreementDate?: string;
+  countryCode?: string;
+  territoryName?: string;
+  territoryType?: TerritoryType;
+  startDate?: string;
+  endDate?: string;
+  licenseTerm?: string;
+  licenseFee?: number | string | null;
+  currency?: string;
+  paymentDueDate?: string;
+  commissionOverride?: boolean;
+  commissionPercents?: number[];
+  salesTarget?: string;
+  targetPeriod?: string;
+  renewalDate?: string;
+  renewalNotes?: string;
+  specialTermsEnabled?: boolean;
+  specialTerms?: string;
+};
+
+export type CountryOption = {
+  countryCode: string;
+  countryName: string;
+  availability: TerritoryAvailability;
+  selectableForExclusive: boolean;
+  partnerName: string;
+  agreementId: string;
+  agreementNumber: string;
+  agreementStatus: string;
+  startDate: string;
+  endDate: string;
+};
+
+export function agreementError(err: unknown, fallback: string) {
+  const data = (err as { response?: { data?: { error?: string; code?: string } } })?.response?.data;
+  if (data?.code === "TERRITORY_ALREADY_EXCLUSIVE") {
+    return data.error || "This country already has an active exclusive partner agreement.";
+  }
+  return data?.error || fallback;
+}
+
+export async function fetchAgreementMeta() {
+  const { data } = await API.get("/admin/partner-agreements/meta");
+  return data as {
+    statuses: AgreementStatus[];
+    defaultTiers: CommissionTier[];
+    currencies: string[];
+    templateRevision: string;
+    exclusivityNotice: string;
+    expiringSoonDays: number;
+  };
+}
+
+export async function fetchTerritoryAvailability(q?: string) {
+  const { data } = await API.get("/admin/partner-agreements/territories", {
+    params: q ? { q } : undefined,
+  });
+  return data as {
+    countries: CountryOption[];
+    counts: Record<TerritoryAvailability, number>;
+    expiringSoonDays: number;
+  };
+}
+
+export async function searchAgreementPartners(q: string) {
+  const { data } = await API.get("/admin/partner-agreements/partners", { params: { q } });
+  return data as {
+    items: { id: string; name: string; legalCompanyName: string; country: string; contactEmail: string }[];
+  };
+}
+
+export async function prefillAgreementPartner(partnerId: string) {
+  const { data } = await API.get(`/admin/partner-agreements/partners/${partnerId}/prefill`);
+  return data as {
+    prefill: {
+      partnerId: string;
+      brandName: string;
+      legalCompanyName: string;
+      contactName: string;
+      contactEmail: string;
+      phone: string;
+      whatsapp: string;
+      countryCode: string;
+      countryName: string;
+      territoryName: string;
+      territoryType: TerritoryType;
+      incorporationCountryCode: string;
+      startDate: string;
+      endDate: string;
+      currentCustomCommissionPercent: number | null;
+      publicName: string;
+    };
+  };
+}
+
+export async function listPartnerAgreements(params?: { status?: string; q?: string }) {
+  const { data } = await API.get("/admin/partner-agreements", { params });
+  return data as { items: PartnerAgreement[] };
+}
+
+export async function getPartnerAgreement(id: string) {
+  const { data } = await API.get(`/admin/partner-agreements/${id}`);
+  return data as { agreement: PartnerAgreement };
+}
+
+export async function savePartnerAgreement(id: string | null, input: AgreementInput) {
+  if (!id) {
+    const { data } = await API.post("/admin/partner-agreements", input);
+    return data as { agreement: PartnerAgreement };
+  }
+  const { data } = await API.patch(`/admin/partner-agreements/${id}`, input);
+  return data as { agreement: PartnerAgreement };
+}
+
+export async function previewPartnerAgreement(id: string, version?: number) {
+  const { data } = await API.get(`/admin/partner-agreements/${id}/preview`, {
+    params: version ? { version } : undefined,
+  });
+  return data as {
+    title: string;
+    templateRevision: string;
+    agreementNumber: string;
+    status: string;
+    versionNumber: number | null;
+    frozen: boolean;
+    live: boolean;
+    sections: { number: number | null; title: string; paragraphs: string[] }[];
+    variables: Record<string, string | string[] | boolean>;
+  };
+}
+
+export async function previewDraftAgreement(input: AgreementInput) {
+  const { data } = await API.post("/admin/partner-agreements/preview-draft", input);
+  return data as {
+    title: string;
+    sections: { number: number | null; title: string; paragraphs: string[] }[];
+    variables: Record<string, string | string[] | boolean>;
+    persisted: boolean;
+  };
+}
+
+export async function downloadAgreementPdf(id: string, version?: number) {
+  const { data } = await API.get(`/admin/partner-agreements/${id}/pdf`, {
+    params: version ? { version } : undefined,
+    responseType: "blob",
+  });
+  return data as Blob;
+}
+
+export async function postAgreementAction(
+  id: string,
+  action: "ready" | "send" | "sign" | "payment-pending" | "payment" | "activate" | "expire" | "terminate" | "cancel",
+  body?: Record<string, unknown>
+) {
+  const { data } = await API.post(`/admin/partner-agreements/${id}/${action}`, body || {});
+  return data as { agreement: PartnerAgreement; notified?: boolean; message?: string };
+}
+
+export async function renewPartnerAgreement(
+  id: string,
+  body: { startDate: string; endDate: string; agreementNumber?: string; renewalNotes?: string }
+) {
+  const { data } = await API.post(`/admin/partner-agreements/${id}/renew`, body);
+  return data as { agreement: PartnerAgreement };
+}
+
+export async function quoteAgreementCommission(body: {
+  commissionOverride: boolean;
+  commissionPercents: number[];
+  activePayingCustomers: number;
+  grossCollected: number;
+  taxes: number;
+  refunds: number;
+  chargebacks: number;
+  passThroughUsage: number;
+}) {
+  const { data } = await API.post("/admin/partner-agreements/commission-quote", body);
+  return data as {
+    commissionableRevenue: number;
+    percent: number;
+    amount: number;
+    activePayingCustomers: number;
+  };
+}
