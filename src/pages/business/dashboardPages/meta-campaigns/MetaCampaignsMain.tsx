@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Megaphone, PlusCircle, Settings2, Sparkles } from "lucide-react";
+import { LayoutDashboard, ListChecks, Megaphone, PlusCircle, Settings2, Sparkles } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
@@ -25,6 +25,7 @@ type MetaCampaignsTab = {
 const tabs: MetaCampaignsTab[] = [
   { path: "overview", labelKey: "metaCampaigns.nav.overview", icon: LayoutDashboard },
   { path: "create", labelKey: "metaCampaigns.nav.create", icon: PlusCircle },
+  { path: "rules", labelKey: "metaCampaigns.nav.rules", icon: ListChecks },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
 ];
 

@@ -37,6 +37,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => key,
     i18n: { language: "he", changeLanguage: vi.fn() },
   }),
+  initReactI18next: { type: "3rdParty", init: () => {} },
 }));
 
 import MetaCampaignsMain from "./MetaCampaignsMain";
@@ -54,6 +55,7 @@ function renderCampaigns(initial: string) {
           <Route path="overview" element={<div>overview-page</div>} />
           <Route path="create" element={<div>manual-ads-manager</div>} />
           <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
+          <Route path="rules" element={<div>rules-page</div>} />
           <Route path="settings" element={<div>settings-page</div>} />
           <Route path="edit/:campaignId" element={<div>edit-page</div>} />
         </Route>
