@@ -29,6 +29,7 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("create-ai")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("overview")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("settings")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("rules")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("mystery")).toBe(false);
   });
@@ -52,6 +53,9 @@ describe("BusinessDashboardRoutes wiring", () => {
     );
     expect(source).toMatch(
       /path="settings"\s+element=\{<MetaCampaignsSettingsTab/
+    );
+    expect(source).toMatch(
+      /path="rules"\s+element=\{<MetaAutomationRulesPage/
     );
     expect(source).toMatch(
       /path="edit\/:campaignId"\s+element=\{<MetaCampaignEditorPage/

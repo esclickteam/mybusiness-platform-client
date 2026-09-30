@@ -1249,6 +1249,82 @@ export async function dismissAiCampaignRecommendation(
   return data.recommendation;
 }
 
+export type AutomationRule = {
+  id: string;
+  name: string;
+  enabled: boolean;
+  scope: string;
+  objectIds: string[];
+  conditions: Array<{ metric: string; operator: string; threshold: number }>;
+  window: string;
+  consecutivePeriods: number;
+  minImpressions: number;
+  minSpend: number;
+  minResults: number;
+  minAgeHours: number;
+  action: string;
+  actionValue?: number | null;
+  mode: "RECOMMEND" | "AUTOMATIC";
+  cooldownHours: number;
+  lastEvaluatedAt?: string | null;
+  lastTriggeredAt?: string | null;
+  executionCount?: number;
+};
+
+export async function listAutomationRules(businessId: string) {
+  const { data } = await API.get<{ success: boolean; rules: AutomationRule[] }>(
+    "/meta-campaigns/automation-rules",
+    withBusiness(businessId)
+  );
+  return data.rules || [];
+}
+
+export async function saveAutomationRule(
+  businessId: string,
+  payload: Partial<AutomationRule> & { name: string; action: string },
+  id?: string
+) {
+  const body = { ...payload, businessId };
+  const { data } = id
+    ? await API.put<{ success: boolean; rule: AutomationRule }>(
+        `/meta-campaigns/automation-rules/${id}`,
+        body
+      )
+    : await API.post<{ success: boolean; rule: AutomationRule }>(
+        "/meta-campaigns/automation-rules",
+        body
+      );
+  return data.rule;
+}
+
+export async function deleteAutomationRule(businessId: string, id: string) {
+  await API.delete(`/meta-campaigns/automation-rules/${id}`, withBusiness(businessId));
+}
+
+export async function getAutomationRuleHistory(businessId: string, id: string) {
+  const { data } = await API.get<{ success: boolean; history: Array<Record<string, unknown>> }>(
+    `/meta-campaigns/automation-rules/${id}/history`,
+    withBusiness(businessId)
+  );
+  return data.history || [];
+}
+
+export async function testAutomationRule(businessId: string, id: string) {
+  const { data } = await API.post<{ success: boolean; results?: Array<Record<string, unknown>> }>(
+    `/meta-campaigns/automation-rules/${id}/test`,
+    { businessId }
+  );
+  return data;
+}
+
+export async function evaluateAutomationRule(businessId: string, id: string) {
+  const { data } = await API.post<{ success: boolean; results?: Array<Record<string, unknown>> }>(
+    `/meta-campaigns/automation-rules/${id}/evaluate`,
+    { businessId }
+  );
+  return data;
+}
+
 export async function pollMetaPublishes(businessId: string) {
   const { data } = await API.post<{
     success: boolean;
