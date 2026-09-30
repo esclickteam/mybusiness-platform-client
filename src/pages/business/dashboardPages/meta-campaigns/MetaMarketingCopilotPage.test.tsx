@@ -3,9 +3,15 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
+const navigate = vi.fn();
+
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
-  return { ...actual, useOutletContext: () => ({ businessId: "biz-1" }) };
+  return {
+    ...actual,
+    useOutletContext: () => ({ businessId: "biz-1" }),
+    useNavigate: () => navigate,
+  };
 });
 
 const askMarketingCopilot = vi.fn().mockResolvedValue({
@@ -45,7 +51,8 @@ vi.mock("react-i18next", () => ({
 import MetaMarketingCopilotPage from "./MetaMarketingCopilotPage";
 
 describe("MetaMarketingCopilotPage", () => {
-  it("does not call AI on load and hands review action to the existing recommendation panel", async () => {
+  it("does not call AI on load and hands review action to the recommendations tab", async () => {
+    navigate.mockReset();
     render(
       <MemoryRouter>
         <MetaMarketingCopilotPage />
@@ -62,8 +69,7 @@ describe("MetaMarketingCopilotPage", () => {
     expect(screen.getByTestId("copilot-period").textContent).toMatch(/Today|showingRange/);
     fireEvent.click(screen.getByTestId("copilot-review-action"));
     await waitFor(() => {
-      expect(screen.getByTestId("copilot-handoff")).toBeTruthy();
-      expect(screen.getByTestId("campaign-health-panel")).toBeTruthy();
+      expect(navigate).toHaveBeenCalledWith("recommendations?recommendationId=rec-safe-1");
     });
   });
 });

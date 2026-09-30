@@ -51,7 +51,6 @@ import {
   type MetaLeadForm,
   type MetaLocationTarget,
 } from "../../../../api/metaCampaignsApi";
-import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   btnGhost,
@@ -352,6 +351,13 @@ export default function MetaCampaignEditorPage() {
     connection?.pages?.find((page) => page.id === form.pageId)?.name ||
     connection?.selectedPage?.pageName ||
     "—";
+  const instagramConnected = Boolean(
+    String(
+      connection?.pages?.find((page) => page.id === form.pageId)?.instagramBusinessAccountId ||
+        connection?.selectedPage?.instagramBusinessAccountId ||
+        ""
+    ).trim()
+  );
 
   const goToFlatIndex = useCallback(
     (index: number) => {
@@ -1202,6 +1208,12 @@ export default function MetaCampaignEditorPage() {
           </button>
         ))}
       </div>
+      {(form.placementMode === "instagram" || form.placementMode === "both") &&
+      !instagramConnected ? (
+        <p className="mt-3 text-sm font-semibold text-amber-800">
+          {t("metaCampaigns.form.instagramRequiredForPlacement")}
+        </p>
+      ) : null}
       {form.placementMode !== "advantage" ? (
         <div className="space-y-2 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-sm font-semibold text-slate-700">
           {(form.placementMode === "facebook" ||
@@ -2389,11 +2401,12 @@ export default function MetaCampaignEditorPage() {
         <div className="grid gap-4 xl:grid-cols-2">
           <aside className="space-y-4">
             {(businessId || urlBusinessId) && campaignId ? (
-              <MetaCampaignHealthPanel
-                businessId={String(urlBusinessId || businessId)}
-                campaignId={campaignId}
-                currency={currency}
-              />
+              <Link
+                to={`../recommendations?campaignId=${encodeURIComponent(campaignId)}`}
+                className={`${btnSecondary} w-full`}
+              >
+                {t("metaCampaigns.recommendations.viewCta")}
+              </Link>
             ) : null}
           <div className={`${cardBase} p-4`}>
             <p className="text-sm font-black text-slate-900">

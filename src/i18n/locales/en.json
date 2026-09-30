@@ -9541,7 +9541,8 @@
       "create": "Ads Manager",
       "library": "Creative library",
       "rules": "Automation Rules",
-      "goals": "Campaign goals",
+      "goals": "Campaign Goals",
+      "recommendations": "Recommendations",
       "portfolio": "Portfolio Optimization",
       "copilot": "AI Marketing Copilot",
       "campaigns": "Campaigns",
@@ -10435,6 +10436,56 @@
       "title": "What to know",
       "demoData": "Demo data"
     },
+    "recommendations": {
+      "title": "Recommendations",
+      "subtitle": "Suggested checks for your campaigns — nothing changes until you approve.",
+      "viewCta": "View recommendations",
+      "openCount": "{{count}} open recommendations",
+      "loading": "Loading recommendations…",
+      "empty": "No recommendations to show.",
+      "whyLabel": "Why this was created",
+      "review": "Review",
+      "confirmHint": "You can approve a change only after reviewing it. Nothing changes without approval.",
+      "campaignFallback": "Campaign",
+      "filters": {
+        "all": "All",
+        "open": "Open",
+        "applied": "Applied",
+        "dismissed": "Dismissed"
+      },
+      "status": {
+        "open": "Open",
+        "applied": "Applied",
+        "dismissed": "Dismissed"
+      },
+      "kinds": {
+        "cpl": {
+          "title": "Cost per lead needs attention",
+          "body": "Campaign performance has changed recently. Review the budget and performance before making changes.",
+          "why": "Cost per lead changed compared with the previous period."
+        },
+        "creative": {
+          "title": "Review this ad",
+          "body": "Campaign performance has changed recently. Review the budget and performance before making changes.",
+          "why": "The ad is showing signs that are worth checking."
+        },
+        "budget": {
+          "title": "Review the budget",
+          "body": "Campaign performance has changed recently. Review the budget and performance before making changes.",
+          "why": "Budget or spend pace has changed."
+        },
+        "pause": {
+          "title": "Review this campaign",
+          "body": "Campaign performance has changed recently. Review the budget and performance before making changes.",
+          "why": "Campaign status needs a check."
+        },
+        "generic": {
+          "title": "Performance check recommended",
+          "body": "Campaign performance has changed recently. Review the budget and performance before making changes.",
+          "why": "A performance risk or opportunity was detected."
+        }
+      }
+    },
     "automations": {
       "title": "Post-lead automations",
       "subtitle": "Recommended sequence after a Meta lead arrives",
@@ -10827,6 +10878,7 @@
       "placementBoth": "Facebook + Instagram",
       "placementFacebook": "Facebook only",
       "placementInstagram": "Instagram only",
+      "instagramRequiredForPlacement": "To advertise on Instagram, connect an Instagram account.",
       "posFacebookFeed": "Facebook Feed",
       "posFacebookStory": "Facebook Story",
       "posFacebookReels": "Facebook Reels",

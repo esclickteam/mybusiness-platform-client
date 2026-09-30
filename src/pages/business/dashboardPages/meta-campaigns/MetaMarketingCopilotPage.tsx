@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   askMarketingCopilot,
   type MarketingCopilotAnswer,
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
-import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { humanizeMetaCustomerLabel } from "./metaCampaignUtils";
 
@@ -21,6 +20,7 @@ const PROMPTS = [
 
 export default function MetaMarketingCopilotPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { businessId } = useOutletContext<{ businessId: string }>();
   const [searchParams] = useSearchParams();
   const { serverWindow, labelKey } = useMetaAdsDateRange();
@@ -32,7 +32,6 @@ export default function MetaMarketingCopilotPage() {
   );
   const [busy, setBusy] = useState(false);
   const [reply, setReply] = useState<MarketingCopilotAnswer | null>(null);
-  const [reviewId, setReviewId] = useState("");
 
   const prompts = useMemo(
     () => [
@@ -147,7 +146,7 @@ export default function MetaMarketingCopilotPage() {
               data-testid="copilot-review-action"
               onClick={() => {
                 if (action.handoff?.allowed && action.recommendationId) {
-                  setReviewId(action.recommendationId);
+                  navigate(`recommendations?recommendationId=${encodeURIComponent(action.recommendationId)}`);
                 }
               }}
             >
@@ -157,15 +156,6 @@ export default function MetaMarketingCopilotPage() {
         </section>
       ) : null}
 
-      {reviewId ? (
-        <div data-testid="copilot-handoff">
-          <MetaCampaignHealthPanel
-            businessId={businessId}
-            highlightRecommendationId={reviewId}
-            variant="list"
-          />
-        </div>
-      ) : null}
     </div>
   );
 }

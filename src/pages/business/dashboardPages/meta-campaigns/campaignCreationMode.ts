@@ -18,6 +18,7 @@ export function isMetaCampaignsKnownChildPath(pathSegment: string): boolean {
     pathSegment === "create-ai" ||
     pathSegment === "settings" ||
     pathSegment === "goals" ||
+    pathSegment === "recommendations" ||
     pathSegment === "portfolio" ||
     pathSegment === "copilot" ||
     pathSegment === "library" ||

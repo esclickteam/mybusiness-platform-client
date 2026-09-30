@@ -17,6 +17,7 @@ import {
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { formatCurrency, formatPercent } from "./metaCampaignUtils";
 import MetaCampaignGoalCard from "./MetaCampaignGoalCard";
+import { localizeRecommendationCopy } from "./localizeMetaRecommendation";
 
 type Props = {
   businessId: string;
@@ -59,7 +60,8 @@ function RecommendationCard({
   onUndo?: (id: string) => void;
   onOpen?: (campaignId: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const copy = localizeRecommendationCopy(rec, t, i18n.language);
   const editorPath = `/business/${businessId}/dashboard/meta-campaigns/edit/${rec.metaCampaignId}`;
   const wizardPath = `/business/${businessId}/dashboard/meta-campaigns/create-ai`;
   const change = rec.metricsSummary?.changes?.cplPct ?? rec.metricsSummary?.changes?.ctrPct;
@@ -70,35 +72,22 @@ function RecommendationCard({
         highlight ? "border-violet-400 bg-violet-50" : "border-slate-200 bg-white"
       }`}
     >
-      <p className="text-sm font-black text-slate-900">
-        {rec.severity === "CRITICAL" ? "⚠️ " : rec.severity === "OPPORTUNITY" ? "✨ " : ""}
-        {rec.title}
-      </p>
+      <p className="text-sm font-black text-slate-900">{copy.title}</p>
+      <p className="mt-1 text-xs font-bold text-slate-600">{copy.campaignName}</p>
       {change != null ? (
         <p className="mt-1 text-xs font-bold text-slate-500">
           {formatDelta(change)} {t("metaCampaigns.campaignHealth.versusPrevious")}
         </p>
       ) : null}
-      {rec.aiGenerated ? (
-        <p className="mt-2 text-sm font-semibold text-slate-700">
-          {t("metaCampaigns.campaignHealth.aiLabel")}: {rec.explanation}
-        </p>
-      ) : (
-        <p className="mt-2 text-sm font-semibold text-slate-700">{rec.finding}</p>
-      )}
-      <p className="mt-2 text-sm font-bold text-slate-800">
-        {t("metaCampaigns.campaignHealth.recommendationLabel")}: {rec.recommendedAction}
+      <p className="mt-2 text-sm font-semibold text-slate-700">{copy.body}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-500">
+        {t("metaCampaigns.recommendations.whyLabel")}: {copy.why}
       </p>
       {rec.freshness?.stale ? (
         <p className="mt-1 text-xs font-semibold text-amber-800">{t("metaCampaigns.campaignHealth.stale")}</p>
       ) : null}
       {!rec.applyable && rec.recommendedActionType === "CHANGE_BUDGET" ? (
         <p className="mt-1 text-xs font-semibold text-amber-800">{t("metaCampaigns.campaignHealth.applyPaused")}</p>
-      ) : null}
-      {rec.actionPayload?.evidence ? (
-        <p className="mt-1 text-xs font-semibold text-slate-500">
-          {t("metaCampaigns.campaignHealth.evidence")}: {String(rec.actionPayload.evidence)}
-        </p>
       ) : null}
       <div className="mt-3 flex flex-wrap gap-2">
         {rec.recommendedActionType === "CREATE_NEW_VARIANT" ? (
@@ -156,7 +145,7 @@ export default function MetaCampaignHealthPanel({
   variant = "campaign",
   onOpenCampaign,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [health, setHealth] = useState<CampaignHealth | null>(null);
   const [openRecs, setOpenRecs] = useState<AiCampaignRecommendation[]>([]);
   const [closedRecs, setClosedRecs] = useState<AiCampaignRecommendation[]>([]);
@@ -345,7 +334,9 @@ export default function MetaCampaignHealthPanel({
       ) : null}
 
       {primaryRec && status !== "HEALTHY" ? (
-        <p className="mt-3 text-sm font-semibold text-slate-700">{primaryRec.finding}</p>
+        <p className="mt-3 text-sm font-semibold text-slate-700">
+          {localizeRecommendationCopy(primaryRec, t, i18n.language).body}
+        </p>
       ) : null}
 
       {openRecs.length ? (
@@ -400,7 +391,8 @@ export default function MetaCampaignHealthPanel({
           <dl className="mt-2 space-y-1 text-sm font-semibold text-slate-700">
             <div>
               {t("metaCampaigns.campaignHealth.confirmObject")}:{" "}
-              {pending.confirmation?.object?.type} {pending.confirmation?.object?.id}
+              {pending.confirmation?.object?.name ||
+                localizeRecommendationCopy(pending, t, i18n.language).campaignName}
             </div>
             <div>
               {t("metaCampaigns.campaignHealth.confirmCurrent")}:{" "}
