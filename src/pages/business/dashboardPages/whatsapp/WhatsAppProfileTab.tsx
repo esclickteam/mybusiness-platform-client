@@ -178,7 +178,13 @@ export default function WhatsAppProfileTab() {
       });
       applyProfile(result.profile);
       await refreshConnection();
-      toast.success(t("whatsapp.hub.profileSaved"));
+      if (result.pictureSync && result.pictureSync.ok === false) {
+        toast.error(
+          result.pictureSync.error || t("whatsapp.hub.profilePhotoMetaError")
+        );
+      } else {
+        toast.success(t("whatsapp.hub.profileSaved"));
+      }
     } catch (error) {
       toast.error(metaErrorMessage(error, t("whatsapp.hub.profileSaveError")));
     } finally {
@@ -196,9 +202,11 @@ export default function WhatsAppProfileTab() {
       );
       applyProfile(result.profile);
       await refreshConnection();
-      toast.success(t("whatsapp.hub.profileSaved"));
+      toast.success(t("whatsapp.hub.profilePhotoSaved"));
     } catch (error) {
-      toast.error(metaErrorMessage(error, t("whatsapp.hub.profileSaveError")));
+      toast.error(
+        metaErrorMessage(error, t("whatsapp.hub.profilePhotoSaveError"))
+      );
     } finally {
       setUploadingPhoto(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
