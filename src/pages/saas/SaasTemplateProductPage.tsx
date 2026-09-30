@@ -129,7 +129,15 @@ export default function SaasTemplateProductPage({
             <button type="button" onClick={() => setDemoOpen(true)}>
               {t("saasMarket.platforms.watchDemo")}
             </button>
-            <Link to={templateExperienceHref(product.slug, "full")}>{t("saasMarket.templateDemo.explore")}</Link>
+            {demoLinks.find((l) => l.id === "explore" && isPublicDemoUrl(l.href)) ? (
+              <a href={demoLinks.find((l) => l.id === "explore")!.href}>
+                {t("saasMarket.templateDemo.explore")}
+              </a>
+            ) : (
+              <Link to={templateExperienceHref(product.slug, "full")}>
+                {t("saasMarket.templateDemo.explore")}
+              </Link>
+            )}
           </>
         ) : (
           <span>{t("saasMarket.platforms.demoPreparing")}</span>
