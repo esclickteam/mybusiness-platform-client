@@ -1138,6 +1138,7 @@ export type WhatsAppBusinessProfile = {
   description: string;
   email: string;
   profilePictureUrl: string;
+  profilePicturePendingMetaSync?: boolean;
   websites: string[];
   vertical: string;
   syncedAt: string | null;
@@ -1186,6 +1187,13 @@ export async function updateWhatsAppBusinessProfile(
     ok?: boolean;
     connection?: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
+    pictureSync?: {
+      ok?: boolean;
+      skipped?: boolean;
+      pendingMeta?: boolean;
+      error?: string;
+      code?: string;
+    };
   };
 }
 
@@ -1204,6 +1212,13 @@ export async function uploadWhatsAppBusinessProfilePicture(
     ok?: boolean;
     connection?: WhatsAppConnection;
     profile: WhatsAppBusinessProfile;
+    pictureSync?: {
+      ok?: boolean;
+      skipped?: boolean;
+      pendingMeta?: boolean;
+      error?: string;
+      code?: string;
+    };
   };
 }
 
