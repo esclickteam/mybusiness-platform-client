@@ -8099,7 +8099,7 @@
       "history": "History",
       "insights": "Insights",
       "developers": "API / Developers",
-      "billing": "Meta",
+      "billing": "Meta Billing",
       "connection": "Connection",
       "health": "Account usage & health",
       "settings": "API connection"
@@ -8210,9 +8210,12 @@
         "verified": "Verified",
         "unverified": "Unverified",
         "pending": "Pending",
-        "unknown": "Unknown"
+        "unknown": "Unknown",
+        "not_verified": "Not verified"
       },
-      "phoneNumberId": "Phone number ID"
+      "phoneNumberId": "Phone number ID",
+      "wabaId": "WABA ID",
+      "wabaName": "WhatsApp Business Account"
     },
     "categories": {
       "appointment_reminder": "Appointment reminder",
@@ -8256,7 +8259,7 @@
       "notConnectedHint": "Connect your WhatsApp Business account through Meta to send template messages.",
       "registrationRequired": "Registration required",
       "registrationRequiredHint": "Complete phone registration in Settings before sending.",
-      "notReadyToSend": "Sending is not available right now — check connection, verification, or billing alerts.",
+      "notReadyToSend": "Sending is not available because this number is not ready.",
       "connectCta": "Connect WhatsApp Business",
       "consentLabel": "I confirm that these recipients provided consent to receive WhatsApp messages from this business.",
       "consentRequired": "Confirm recipient consent before sending",
@@ -8765,17 +8768,24 @@
       "apiSettingsResponseTime": "Response time",
       "apiSettingsKeyReady": "Your API key is ready",
       "apiSettingsKeyCopyWarning": "Copy this API key now. For security reasons, it will not be shown again.",
-      "apiSettingsDone": "I have copied the key"
+      "apiSettingsDone": "I have copied the key",
+      "apiSettingsWebhookNotConfigured": "Not configured",
+      "apiSettingsWebhookPlaceholder": "https://your-domain.com/webhooks/bizuply",
+      "webhookStatus": {
+        "not_configured": "Not configured",
+        "active": "Active",
+        "configured": "Configured"
+      }
     },
     "alerts": {
       "notConnected": "WhatsApp is not connected",
       "phoneRegistrationRequired": "Cloud API phone registration is required",
       "phoneRegistrationFailed": "Phone registration failed",
       "codeVerificationExpired": "Code verification has expired",
-      "businessVerification": "Business verification needs attention in Meta",
+      "businessVerification": "Business verification in Meta needs attention. This is separate from billing.",
       "paymentIssue": "Payment / billing needs attention in Meta",
       "messagingBlocked": "Messaging is blocked in Meta",
-      "messagingLimited": "Messaging is limited in Meta",
+      "messagingLimited": "Messaging is limited on Meta. You can still send if the number is connected.",
       "wabaNotActive": "The WhatsApp Business Account is not active"
     },
     "errors": {
@@ -9313,7 +9323,20 @@
       "wabaRestrictedBody": "This WhatsApp Business Account is restricted. Open WhatsApp Manager to review and resolve the issue.",
       "resolveInMeta": "Resolve in Meta",
       "active": "Active",
-      "notAvailable": "Not available"
+      "notAvailable": "Not available",
+      "billingTitle": "Meta Billing",
+      "phoneHint": "Identifies the WhatsApp number billed by Meta.",
+      "paymentMethodHint": "Payment method on the WhatsApp Business Account, billed by Meta.",
+      "funding": "Funding",
+      "fundingHint": "Primary funding source on the WABA, when Meta exposes it.",
+      "fundingPresent": "Funding source found",
+      "fundingUnknown": "No funding source returned",
+      "creditLine": "Credit line",
+      "creditLineHint": "Business credit line attached to this WABA, when available via API.",
+      "creditLinePresent": "Credit line connected",
+      "creditLineUnknown": "Cannot verify via API",
+      "directBilling": "Meta Direct Billing",
+      "paymentUnverifiableHint": "Meta does not return a confirmed payment method with the current API permissions. This is not a Business Verification issue."
     },
     "billing": {
       "loadError": "We could not load WhatsApp billing data right now.",
@@ -9419,6 +9442,11 @@
         "autoCancelFailed": "Could not cancel Monthly Auto Funding"
       },
       "saveChanges": "Save changes"
+    },
+    "alertLevel": {
+      "blocking": "Blocking",
+      "warning": "Warning",
+      "info": "Info"
     }
   },
   "metaCampaigns": {

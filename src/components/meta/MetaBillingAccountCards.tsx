@@ -252,30 +252,8 @@ export default function MetaBillingAccountCards({
                 {t("meta.billing.accountStatus", "סטטוס החשבון: {{status}}", {
                   status: wabaBilling.status || emDash,
                 })}
-                {wabaBilling.canSendMessage
-                  ? ` · ${t("meta.billing.sendLabel", "שליחה: {{value}}", {
-                      value: wabaBilling.canSendMessage,
-                    })}`
-                  : ""}
                 {wabaBilling.currency ? ` · ${wabaBilling.currency}` : ""}
               </p>
-              {wabaBilling.accountReviewStatus ? (
-                <p className="text-xs font-semibold text-slate-600">
-                  {t("meta.billing.reviewStatus", "סטטוס בדיקת חשבון: {{status}}", {
-                    status: wabaBilling.accountReviewStatus,
-                  })}
-                </p>
-              ) : null}
-              {wabaBilling.businessVerificationLabel ||
-              wabaBilling.businessVerificationStatus ? (
-                <p className="text-xs font-semibold text-slate-600">
-                  {t("meta.billing.businessVerify", "אימות עסק: {{status}}", {
-                    status:
-                      wabaBilling.businessVerificationLabel ||
-                      wabaBilling.businessVerificationStatus,
-                  })}
-                </p>
-              ) : null}
               {wabaBilling.paymentMethodDisplay ||
               wabaBilling.hasPaymentMethod === true ||
               wabaBilling.hasPrimaryFundingId === true ||

@@ -13,7 +13,6 @@ import {
   Search,
   Send,
   Users,
-  AlertCircle,
 } from "lucide-react";
 import {
   listWhatsAppLists,
@@ -39,6 +38,8 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
+import WhatsAppStatusAlerts from "./WhatsAppStatusAlerts";
+import { visibleWhatsAppAlerts } from "./whatsappStatusUx";
 
 type AudienceType = "selected_clients" | "mailing_list";
 
@@ -428,7 +429,7 @@ export default function WhatsAppComposeTab() {
       return;
     }
     if (!connection?.readyToSend) {
-      const registrationAlert = (connection?.alerts || []).some(
+      const registrationAlert = visibleWhatsAppAlerts(connection).some(
         (row) => row.key === "phone_registration"
       );
       toast.error(
@@ -521,23 +522,21 @@ export default function WhatsAppComposeTab() {
     }
   };
 
-  const phoneRegistrationAlert = (connection?.alerts || []).find(
-    (row) => row.key === "phone_registration"
-  );
-  const otherAlerts = (connection?.alerts || []).filter(
-    (row) => row.key !== "connection" && row.key !== "phone_registration"
-  );
+  const statusAlerts = visibleWhatsAppAlerts(connection);
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir={getTextDirection(i18n.language)}>
       <div className="space-y-4">
         {!connection?.connected && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-950 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <PlugZap className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
+                <p className="text-[10px] font-black uppercase tracking-wide opacity-70">
+                  {t("whatsapp.alertLevel.blocking")}
+                </p>
                 <p>{t("whatsapp.compose.notConnectedTitle")}</p>
-                <p className="mt-1 font-medium text-amber-800">
+                <p className="mt-1 font-medium text-rose-800">
                   {t("whatsapp.compose.notConnectedHint")}
                 </p>
               </div>
@@ -553,39 +552,7 @@ export default function WhatsAppComposeTab() {
           </div>
         )}
 
-        {connection?.connected && phoneRegistrationAlert && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-              <div>
-                <p>{t("whatsapp.compose.registrationRequired")}</p>
-                <p className="mt-1 font-medium text-amber-800">
-                  {t("whatsapp.compose.registrationRequiredHint")}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className={btnPrimary}
-              onClick={() => navigate("../settings")}
-            >
-              <PlugZap className="h-4 w-4" />
-              {t("whatsapp.compose.connectCta")}
-            </button>
-          </div>
-        )}
-
-        {otherAlerts.map((alert) => (
-          <div
-            key={`${alert.key}-${alert.i18nKey}`}
-            className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
-          >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            <div>
-              <p>{t(alert.i18nKey || "whatsapp.hub.issue")}</p>
-            </div>
-          </div>
-        ))}
+        {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
 
         <section className={`${cardBase} p-4 sm:p-5`}>
           <h2 className="text-base font-black text-slate-900">

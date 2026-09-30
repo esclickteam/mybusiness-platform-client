@@ -18,6 +18,8 @@ import {
 } from "./hubFormat";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
+import WhatsAppStatusAlerts from "./WhatsAppStatusAlerts";
+import { visibleWhatsAppAlerts } from "./whatsappStatusUx";
 
 function StatCard({
   label,
@@ -164,6 +166,7 @@ export default function WhatsAppOverviewTab() {
   );
 
   const busy = (connectionLoading && !connection) || loading;
+  const statusAlerts = visibleWhatsAppAlerts(connection);
 
   return (
     <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview">
@@ -200,6 +203,8 @@ export default function WhatsAppOverviewTab() {
           {error}
         </div>
       ) : null}
+
+      {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
 
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {busy ? (
@@ -281,7 +286,11 @@ export default function WhatsAppOverviewTab() {
           </h3>
           <dl className="mt-3 grid gap-x-4 gap-y-2.5 sm:grid-cols-2">
             {[
-              ["WABA ID", connection?.wabaId || "—", true],
+              [
+                t("whatsapp.hub.wabaId"),
+                connection?.wabaId || "—",
+                true,
+              ],
               [t("whatsapp.hub.phoneNumberId", "Phone Number ID"), connection?.phoneNumberId || "—", true],
               [
                 t("whatsapp.hub.phone"),
@@ -307,7 +316,11 @@ export default function WhatsAppOverviewTab() {
                   : "—",
                 false,
               ],
-              ["WABA", connection?.wabaName || "—", false],
+              [
+                t("whatsapp.hub.wabaName"),
+                connection?.wabaName || "—",
+                false,
+              ],
             ].map(([label, value, ltr]) => (
               <div key={String(label)}>
                 <dt className="text-[10px] font-black uppercase tracking-wide text-slate-400">

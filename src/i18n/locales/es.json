@@ -8101,7 +8101,7 @@
       "messages": "Mensajes",
       "insights": "Perspectivas",
       "developers": "API / Desarrolladores",
-      "billing": "Meta",
+      "billing": "Facturación de Meta",
       "connection": "Conexión"
     },
     "categories": {
@@ -8180,7 +8180,8 @@
       "statusReady": "Listo",
       "statusMissingAppointment": "Falta de nombramiento",
       "readyRecipientsCount": "{{ready}} listo / {{total}} seleccionado",
-      "noReadyRecipients": "Ningún destinatario está preparado. Arreglar las citas que faltan o cambiar la regla de la cita."
+      "noReadyRecipients": "Ningún destinatario está preparado. Arreglar las citas que faltan o cambiar la regla de la cita.",
+      "notReadyToSend": "No se puede enviar porque el número no está listo."
     },
     "templates": {
       "title": "Plantillas de mensajes",
@@ -8654,7 +8655,14 @@
       "apiSettingsResponseTime": "Tiempo de respuesta",
       "apiSettingsKeyReady": "Tu clave de API está lista",
       "apiSettingsKeyCopyWarning": "Copia esta clave de API ahora. Por seguridad, no se volverá a mostrar.",
-      "apiSettingsDone": "Ya copié la clave"
+      "apiSettingsDone": "Ya copié la clave",
+      "apiSettingsWebhookNotConfigured": "No configurado",
+      "apiSettingsWebhookPlaceholder": "https://your-domain.com/webhooks/bizuply",
+      "webhookStatus": {
+        "not_configured": "No configurado",
+        "active": "Activo",
+        "configured": "Configurado"
+      }
     },
     "errors": {
       "loadCompose": "No se pudo cargar los datos de redacción de WhatsApp",
@@ -9173,7 +9181,7 @@
       "paymentMethod": "Método de pago",
       "paymentConfigured": "Configurado",
       "paymentMissing": "Falta",
-      "paymentUnknown": "Revisar en Meta",
+      "paymentUnknown": "No se puede verificar por API",
       "quality": "Calidad",
       "messagingLimit": "Límite de mensajería",
       "manageBilling": "Gestionar facturación en Meta",
@@ -9186,7 +9194,25 @@
       "wabaRestrictedBody": "Esta cuenta de WhatsApp Business está restringida. Abre WhatsApp Manager para revisar y resolver el problema.",
       "resolveInMeta": "Resolver en Meta",
       "active": "Activa",
-      "notAvailable": "No disponible"
+      "notAvailable": "No disponible",
+      "billingTitle": "Facturación de Meta",
+      "phoneHint": "Identifica el número de WhatsApp facturado por Meta.",
+      "paymentMethodHint": "Método de pago de la cuenta de WhatsApp Business, facturado por Meta.",
+      "funding": "Financiación",
+      "fundingHint": "Fuente de financiación principal del WABA, cuando Meta la expone.",
+      "fundingPresent": "Fuente de financiación encontrada",
+      "fundingUnknown": "No se devolvió una fuente de financiación",
+      "creditLine": "Línea de crédito",
+      "creditLineHint": "Línea de crédito empresarial asociada a este WABA, si la API la expone.",
+      "creditLinePresent": "Línea de crédito conectada",
+      "creditLineUnknown": "No se puede verificar por API",
+      "directBilling": "Facturación directa de Meta",
+      "paymentUnverifiableHint": "Meta no devuelve un método de pago confirmado con los permisos actuales de la API. Esto no es una verificación del negocio.",
+      "paymentConnected": "Método de pago conectado",
+      "paymentDirect": "Facturación directa de Meta",
+      "paymentCreditLine": "Línea de crédito",
+      "paymentNeedsAttention": "No configurado / requiere atención",
+      "paymentUnverifiable": "No se puede verificar por API"
     },
     "billing": {
       "loadError": "No pudimos cargar los datos de facturación de WhatsApp ahora.",
@@ -9399,9 +9425,21 @@
         "verified": "Verificado",
         "unverified": "No verificado",
         "pending": "Pendiente",
-        "unknown": "Desconocido"
+        "unknown": "Desconocido",
+        "not_verified": "No verificado"
       },
-      "phoneNumberId": "ID del número de teléfono"
+      "phoneNumberId": "ID del número de teléfono",
+      "wabaId": "ID de WABA",
+      "wabaName": "Cuenta de WhatsApp Business"
+    },
+    "alertLevel": {
+      "blocking": "Bloqueante",
+      "warning": "Advertencia",
+      "info": "Información"
+    },
+    "alerts": {
+      "businessVerification": "La verificación del negocio en Meta requiere atención. Es independiente de la facturación.",
+      "messagingLimited": "La mensajería está limitada en Meta. Aún puedes enviar si el número está conectado."
     }
   },
   "metaCampaigns": {

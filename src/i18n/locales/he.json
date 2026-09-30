@@ -8088,7 +8088,7 @@
       "history": "היסטוריה",
       "insights": "תובנות",
       "developers": "API / מפתחים",
-      "billing": "Meta",
+      "billing": "חיובים ב-Meta",
       "connection": "חיבור",
       "health": "נתוני שימוש ובריאות החשבון",
       "settings": "חיבור"
@@ -8199,9 +8199,12 @@
         "verified": "מאומת",
         "unverified": "לא מאומת",
         "pending": "ממתין",
-        "unknown": "לא ידוע"
+        "unknown": "לא ידוע",
+        "not_verified": "לא מאומת"
       },
-      "phoneNumberId": "מזהה מספר טלפון"
+      "phoneNumberId": "מזהה מספר טלפון",
+      "wabaId": "מזהה WABA",
+      "wabaName": "חשבון WhatsApp Business"
     },
     "categories": {
       "appointment_reminder": "תזכורת לתור",
@@ -8245,7 +8248,7 @@
       "notConnectedHint": "חברו את חשבון וואטסאפ עסקי דרך מטא כדי לשלוח הודעות מתבניות.",
       "registrationRequired": "נדרש רישום מספר",
       "registrationRequiredHint": "השלימו רישום מספר הטלפון בהגדרות לפני שליחה.",
-      "notReadyToSend": "לא ניתן לשלוח כרגע — בדקו את התראות החיבור, האימות או החיוב.",
+      "notReadyToSend": "לא ניתן לשלוח כי המספר אינו מוכן לשליחה.",
       "connectCta": "חיבור וואטסאפ עסקי",
       "consentLabel": "אני מאשר/ת שלנמענים האלה יש הסכמה לקבל הודעות וואטסאפ מהעסק.",
       "consentRequired": "יש לאשר הסכמת נמענים לפני השליחה",
@@ -8754,17 +8757,24 @@
       "apiSettingsResponseTime": "זמן תגובה",
       "apiSettingsKeyReady": "מפתח ה-API שלך מוכן",
       "apiSettingsKeyCopyWarning": "העתיקו את מפתח ה-API עכשיו. מטעמי אבטחה הוא לא יוצג שוב.",
-      "apiSettingsDone": "העתקתי את המפתח"
+      "apiSettingsDone": "העתקתי את המפתח",
+      "apiSettingsWebhookNotConfigured": "לא הוגדר",
+      "apiSettingsWebhookPlaceholder": "https://your-domain.com/webhooks/bizuply",
+      "webhookStatus": {
+        "not_configured": "לא הוגדר",
+        "active": "פעיל",
+        "configured": "מוגדר"
+      }
     },
     "alerts": {
       "notConnected": "וואטסאפ אינו מחובר",
       "phoneRegistrationRequired": "נדרש רישום מספר ל-Cloud API",
       "phoneRegistrationFailed": "רישום המספר נכשל",
       "codeVerificationExpired": "אימות הקוד פג תוקף",
-      "businessVerification": "נדרש טיפול באימות העסק ב-Meta",
+      "businessVerification": "נדרש טיפול באימות העסק ב-Meta. זה נפרד מחיוב.",
       "paymentIssue": "נדרש טיפול באמצעי תשלום / חיוב ב-Meta",
       "messagingBlocked": "שליחת הודעות חסומה ב-Meta",
-      "messagingLimited": "שליחת הודעות מוגבלת ב-Meta",
+      "messagingLimited": "שליחת הודעות מוגבלת ב-Meta. עדיין ניתן לשלוח אם המספר מחובר.",
       "wabaNotActive": "חשבון WhatsApp Business אינו פעיל"
     },
     "errors": {
@@ -9285,7 +9295,7 @@
       "paymentConfigured": "מוגדר",
       "paymentConnected": "אמצעי תשלום מחובר",
       "paymentDirect": "Meta Direct Billing",
-      "paymentCreditLine": "Credit line",
+      "paymentCreditLine": "קו אשראי",
       "paymentNeedsAttention": "לא מוגדר / נדרש טיפול",
       "paymentUnverifiable": "לא ניתן לאמת דרך API",
       "paymentMissing": "חסר",
@@ -9302,7 +9312,20 @@
       "wabaRestrictedBody": "חשבון WhatsApp Business מוגבל. פתחו את WhatsApp Manager כדי לבדוק ולטפל בבעיה.",
       "resolveInMeta": "טפלו ב-Meta",
       "active": "פעיל",
-      "notAvailable": "לא זמין"
+      "notAvailable": "לא זמין",
+      "billingTitle": "חיובים ב-Meta",
+      "phoneHint": "מזהה את מספר WhatsApp שמחויב ב-Meta.",
+      "paymentMethodHint": "אמצעי התשלום בחשבון WhatsApp Business, מחויב על ידי Meta.",
+      "funding": "מימון",
+      "fundingHint": "מקור המימון הראשי ב-WABA, כש-Meta חושפת אותו.",
+      "fundingPresent": "נמצא מקור מימון",
+      "fundingUnknown": "לא הוחזר מקור מימון",
+      "creditLine": "קו אשראי",
+      "creditLineHint": "קו אשראי עסקי המשויך ל-WABA, כשזמין דרך ה-API.",
+      "creditLinePresent": "קו אשראי מחובר",
+      "creditLineUnknown": "לא ניתן לאמת דרך API",
+      "directBilling": "Meta Direct Billing",
+      "paymentUnverifiableHint": "Meta לא מחזירה אישור על אמצעי תשלום בהרשאות ה-API הנוכחיות. זה אינו אימות עסק."
     },
     "billing": {
       "loadError": "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.",
@@ -9408,6 +9431,11 @@
         "autoCancelFailed": "לא ניתן לבטל טעינה אוטומטית חודשית"
       },
       "saveChanges": "שמירת שינויים"
+    },
+    "alertLevel": {
+      "blocking": "חוסם שליחה",
+      "warning": "דורש תשומת לב",
+      "info": "מידע"
     }
   },
   "metaCampaigns": {
