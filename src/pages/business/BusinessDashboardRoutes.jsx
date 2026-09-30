@@ -201,6 +201,9 @@ const MetaPortfolioPage = lazy(() =>
 const MetaMarketingCopilotPage = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaMarketingCopilotPage")
 );
+const MetaCampaignsCampaignsPage = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaCampaignsCampaignsPage")
+);
 
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
@@ -602,11 +605,13 @@ const BusinessDashboardRoutes = () => {
           >
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<MetaCampaignsOverviewTab />} />
+            <Route path="campaigns" element={<MetaCampaignsCampaignsPage />} />
             <Route path="create" element={<MetaAdsManagerPage />} />
             <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
             <Route path="edit/:campaignId" element={<MetaCampaignEditorPage />} />
             <Route path="library" element={<Navigate to="overview" replace />} />
             <Route path="rules" element={<MetaAutomationRulesPage />} />
+            <Route path="automations" element={<MetaAutomationRulesPage />} />
             <Route path="goals" element={<MetaCampaignGoalsPage />} />
             <Route path="portfolio" element={<MetaPortfolioPage />} />
             <Route path="copilot" element={<MetaMarketingCopilotPage />} />

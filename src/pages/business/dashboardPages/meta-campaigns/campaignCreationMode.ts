@@ -13,10 +13,12 @@ export function metaCampaignsChildPath(
 export function isMetaCampaignsKnownChildPath(pathSegment: string): boolean {
   return (
     pathSegment === "overview" ||
+    pathSegment === "campaigns" ||
     pathSegment === "create" ||
     pathSegment === "create-ai" ||
     pathSegment === "settings" ||
     pathSegment === "rules" ||
+    pathSegment === "automations" ||
     pathSegment === "goals" ||
     pathSegment === "portfolio" ||
     pathSegment === "copilot" ||

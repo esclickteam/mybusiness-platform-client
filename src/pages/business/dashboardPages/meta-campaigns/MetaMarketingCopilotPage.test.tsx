@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -44,7 +45,11 @@ import MetaMarketingCopilotPage from "./MetaMarketingCopilotPage";
 
 describe("MetaMarketingCopilotPage", () => {
   it("does not call AI on load and hands review action to the existing recommendation panel", async () => {
-    render(<MetaMarketingCopilotPage />);
+    render(
+      <MemoryRouter>
+        <MetaMarketingCopilotPage />
+      </MemoryRouter>
+    );
     expect(screen.getByTestId("marketing-copilot-page")).toBeTruthy();
     expect(askMarketingCopilot).not.toHaveBeenCalled();
     fireEvent.change(screen.getByTestId("copilot-question"), {

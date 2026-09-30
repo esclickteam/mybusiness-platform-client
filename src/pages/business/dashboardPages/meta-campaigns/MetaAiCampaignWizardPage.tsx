@@ -614,6 +614,9 @@ export default function MetaAiCampaignWizardPage() {
           <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-500">
             {t("metaCampaigns.ai.subtitle")}
           </p>
+          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-bold text-amber-900">
+            {t("metaCampaigns.ux.createPausedNotice")}
+          </p>
           {session && !isReady && progressLabel ? (
             <p
               className="mt-2 text-xs font-bold text-violet-700"

@@ -8,7 +8,8 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, ListChecks, Megaphone, MessageSquare, PieChart, PlusCircle, Settings2, Sparkles, Target } from "lucide-react";
+import { LayoutDashboard, ListChecks, Megaphone, MessageSquare, PieChart, Settings2, Sparkles, Target } from "lucide-react";
+import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
@@ -24,9 +25,9 @@ type MetaCampaignsTab = {
 
 const tabs: MetaCampaignsTab[] = [
   { path: "overview", labelKey: "metaCampaigns.nav.overview", icon: LayoutDashboard },
-  { path: "create", labelKey: "metaCampaigns.nav.create", icon: PlusCircle },
-  { path: "rules", labelKey: "metaCampaigns.nav.rules", icon: ListChecks },
+  { path: "campaigns", labelKey: "metaCampaigns.nav.campaigns", icon: Megaphone },
   { path: "goals", labelKey: "metaCampaigns.nav.goals", icon: Target },
+  { path: "rules", labelKey: "metaCampaigns.nav.automations", icon: ListChecks },
   { path: "portfolio", labelKey: "metaCampaigns.nav.portfolio", icon: PieChart },
   { path: "copilot", labelKey: "metaCampaigns.nav.copilot", icon: MessageSquare },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
@@ -57,6 +58,7 @@ export default function MetaCampaignsMain() {
     const parts = location.pathname.split("/").filter(Boolean);
     const last = parts[parts.length - 1] || "overview";
     if (parts.includes("edit")) return "edit";
+    if (last === "automations") return "rules";
     return last;
   }, [location.pathname]);
 
@@ -112,13 +114,12 @@ export default function MetaCampaignsMain() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
+                {businessId ? (
+                  <CreateCampaignButton
+                    basePath={`/business/${businessId}/dashboard/meta-campaigns`}
+                  />
+                ) : null}
                 <LanguageSwitcher />
-                <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-1.5">
-                  <Megaphone className="h-3.5 w-3.5 text-violet-600" />
-                  <span className="text-xs font-black text-violet-700">
-                    {t("metaCampaigns.shell.channel")}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
@@ -127,11 +128,23 @@ export default function MetaCampaignsMain() {
             aria-label={t("metaCampaigns.shell.title")}
             className="border-t border-slate-100 px-2 sm:px-3"
           >
+            <label className="block px-2 py-2 md:hidden">
+              <span className="sr-only">{t("metaCampaigns.shell.title")}</span>
+              <select
+                className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-800"
+                value={tabs.some((tab) => tab.path === currentTab) ? currentTab : "overview"}
+                onChange={(event) => navigate(event.target.value)}
+              >
+                {tabs.map((tab) => (
+                  <option key={tab.path} value={tab.path}>
+                    {t(tab.labelKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div
               className={[
-                "flex items-stretch gap-0.5 overflow-x-auto",
-                "[scrollbar-width:none] [-ms-overflow-style:none]",
-                "[&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:bg-transparent",
+                "hidden items-stretch gap-0.5 md:flex",
               ].join(" ")}
             >
               {tabs.map((tab) => {

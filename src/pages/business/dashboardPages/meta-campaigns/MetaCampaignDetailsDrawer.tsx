@@ -237,6 +237,12 @@ export default function MetaCampaignDetailsDrawer({
               {t("metaCampaigns.details.badge")}
             </p>
             <h2 className="text-lg font-black text-slate-900">{detail?.name || campaign.name}</h2>
+            <a
+              href={`../copilot?q=${encodeURIComponent(`Ask AI about this campaign ${detail?.name || campaign.name}`)}`}
+              className="mt-1 inline-flex text-xs font-black text-violet-700 underline"
+            >
+              {t("metaCampaigns.ux.askAiCampaign")}
+            </a>
             <p className="text-xs text-slate-500">
               {t("metaCampaigns.overview.lastSynced", {
                 time: lastSynced ? formatDateTimeHe(lastSynced, locale) : "—",

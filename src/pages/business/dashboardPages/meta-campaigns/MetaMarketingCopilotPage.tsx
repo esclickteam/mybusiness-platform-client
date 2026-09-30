@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   askMarketingCopilot,
@@ -20,7 +20,8 @@ const PROMPTS = [
 export default function MetaMarketingCopilotPage() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<{ businessId: string }>();
-  const [question, setQuestion] = useState("");
+  const [searchParams] = useSearchParams();
+  const [question, setQuestion] = useState(() => searchParams.get("q") || "");
   const [sessionId] = useState(() =>
     typeof crypto !== "undefined" && crypto.randomUUID
       ? crypto.randomUUID()
