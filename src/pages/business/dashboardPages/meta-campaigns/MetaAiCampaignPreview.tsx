@@ -375,11 +375,39 @@ export default function MetaAiCampaignPreview({
             creativeFormat={proposal.creative.media?.kind === "video" ? "video" : "single"}
           />
           <label className="mt-3 block text-xs font-black uppercase tracking-wide text-slate-500">
+            {t("metaCampaigns.ai.preview.headline", { defaultValue: "Headline" })}
+            <input
+              className={`${inputBase} mt-1`}
+              defaultValue={proposal.creative.headline || ""}
+              key={`headline-${proposal.creative.headline || ""}`}
+              disabled={busy || lockedAfterDraft}
+              maxLength={80}
+              data-testid="meta-ai-headline"
+              onBlur={(event) =>
+                onPatch({ creative: { headline: event.target.value } })
+              }
+            />
+          </label>
+          <label className="mt-3 block text-xs font-black uppercase tracking-wide text-slate-500">
+            {t("metaCampaigns.ai.preview.primaryText", { defaultValue: "Primary text" })}
+            <textarea
+              className={`${inputBase} mt-1 min-h-[72px]`}
+              defaultValue={proposal.creative.primaryText || ""}
+              key={`primary-${(proposal.creative.primaryText || "").slice(0, 24)}`}
+              disabled={busy || lockedAfterDraft}
+              maxLength={500}
+              data-testid="meta-ai-primary-text"
+              onBlur={(event) =>
+                onPatch({ creative: { primaryText: event.target.value } })
+              }
+            />
+          </label>
+          <label className="mt-3 block text-xs font-black uppercase tracking-wide text-slate-500">
             {t("metaCampaigns.ai.preview.cta")}
             <select
               className={`${inputBase} mt-1`}
               value={proposal.creative.ctaKey}
-              disabled={busy}
+              disabled={busy || lockedAfterDraft}
               data-testid="meta-ai-cta"
               onChange={(event) =>
                 onPatch({ creative: { ctaKey: event.target.value } })
