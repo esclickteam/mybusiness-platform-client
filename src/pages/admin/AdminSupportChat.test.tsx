@@ -122,9 +122,36 @@ describe("AdminSupportChat whatsapp", () => {
           data: { conversations: [conversation], onlineAgents: [] },
         });
       }
+      if (String(url).includes("/whatsapp-context")) {
+        return Promise.resolve({
+          data: {
+            sessionWindowOpen: true,
+            requiresTemplate: false,
+            managedConnectionId: "US_MANAGED",
+          },
+        });
+      }
+      if (String(url).includes("/whatsapp-templates")) {
+        return Promise.resolve({
+          data: {
+            managedConnectionId: "US_MANAGED",
+            templates: [
+              {
+                id: "tpl-1",
+                metaTemplateName: "partner_agreement_followup_v1",
+                language: "en_US",
+                metaCategory: "UTILITY",
+                metaStatus: "APPROVED",
+                body: "Hi {{1}}, following up on the partner agreement.",
+                variables: ["1"],
+              },
+            ],
+          },
+        });
+      }
       if (String(url).includes("/messages")) {
         return Promise.resolve({
-          data: { messages: [outbound, inbound], conversation },
+          data: { messages: [outbound, inbound], conversation, hasMore: false },
         });
       }
       return Promise.resolve({ data: {} });
@@ -162,7 +189,8 @@ describe("AdminSupportChat whatsapp", () => {
 
     await waitFor(() => {
       expect(getMock).toHaveBeenCalledWith(
-        "/support-chat/conv-wa-1/messages"
+        "/support-chat/conv-wa-1/messages",
+        expect.objectContaining({ params: { limit: 80 } })
       );
     });
     expect(await screen.findByTestId("support-bubble-outbound")).toBeTruthy();
@@ -334,6 +362,71 @@ describe("AdminSupportChat whatsapp", () => {
     expect(card.textContent).not.toContain("SHOULD_NOT_RENDER");
     expect(screen.getByTestId("interactive-demo-open").getAttribute("href")).toBe(
       "https://bizuply.com/demo/3cyGi127La8xeOzmVpLswxsbcTJ-D-DrHFjbQmG5uNo"
+    );
+  });
+
+  it("opens the send-template drawer for the conversation connection", async () => {
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    fireEvent.click(await screen.findByTestId("support-send-template"));
+    const drawer = await screen.findByTestId("support-template-drawer");
+    expect(drawer.textContent).toContain("US_MANAGED");
+    expect(await screen.findByText("partner_agreement_followup_v1")).toBeTruthy();
+    expect(drawer.textContent).toContain("en_US");
+    expect(drawer.textContent).toContain("UTILITY");
+    expect(drawer.textContent).toContain("APPROVED");
+    expect(screen.getByTestId("support-template-preview").textContent).toContain(
+      "partner agreement"
+    );
+  });
+
+  it("requires a template when the 24h window is closed", async () => {
+    getMock.mockImplementation((url: string) => {
+      if (String(url).includes("/admin/conversations")) {
+        return Promise.resolve({
+          data: { conversations: [conversation], onlineAgents: [] },
+        });
+      }
+      if (String(url).includes("/whatsapp-context")) {
+        return Promise.resolve({
+          data: {
+            sessionWindowOpen: false,
+            requiresTemplate: true,
+            managedConnectionId: "US_MANAGED",
+          },
+        });
+      }
+      if (String(url).includes("/whatsapp-templates")) {
+        return Promise.resolve({
+          data: { managedConnectionId: "US_MANAGED", templates: [] },
+        });
+      }
+      if (String(url).includes("/messages")) {
+        return Promise.resolve({
+          data: { messages: [inbound], conversation, hasMore: false },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+    render(
+      <MemoryRouter initialEntries={["/admin/support-chat?c=conv-wa-1"]}>
+        <Routes>
+          <Route path="/admin/support-chat" element={<AdminSupportChat />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(await screen.findByTestId("support-window-closed")).toBeTruthy();
+    expect(screen.getByTestId("support-chat-composer")).toHaveProperty(
+      "disabled",
+      true
+    );
+    expect(screen.getByTestId("support-window-closed").textContent).toContain(
+      "Send Template"
     );
   });
 });
