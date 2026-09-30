@@ -96,6 +96,8 @@ export default function PartnerLayout() {
       email?: string;
       role?: string;
       managedBusinessId?: string | null;
+      impersonatedBy?: string | null;
+      impersonatorRole?: string | null;
     } | null;
     logout: () => void;
     loginWithToken?: (
@@ -203,12 +205,19 @@ export default function PartnerLayout() {
     </div>
   );
 
+  const impersonating = Boolean(user?.impersonatedBy && user?.impersonatorRole === "admin");
+
   return (
     <div
       dir={layoutDir}
       className="min-h-screen bg-[#F7F8FA] text-slate-800"
       style={{ fontFamily: PARTNER_FONT }}
     >
+      {impersonating ? (
+        <div className="bg-amber-400 px-4 py-2 text-center text-sm font-black text-slate-950" data-testid="admin-impersonation-banner">
+          Admin support access. You are viewing this Partner workspace. Signature and payment-credential actions stay in the Admin tools.
+        </div>
+      ) : null}
       <div className="flex min-h-screen">
         <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 overflow-y-auto bg-[#F1ECFB] lg:block">
           {sidebar}

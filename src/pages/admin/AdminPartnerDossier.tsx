@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import API from "../../api";
+import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 import {
   adminPatchPartnerCommercial,
@@ -15,21 +17,24 @@ import { formatIls } from "../../lib/partnerMoney";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const TABS = [
-  ["overview", "סקירה"],
-  ["commercial", "Partner Details"],
-  ["onboarding", "Onboarding"],
-  ["kyc", "מסמכים וחשבון בנק"],
-  ["clients", "לקוחות"],
-  ["deals", "עסקאות"],
-  ["commissions", "עמלות"],
-  ["withdrawals", "בקשות משיכה"],
-  ["subscription", "מנוי Partner"],
-  ["team", "צוות"],
-  ["activity", "Activity / history"],
+  ["overview", "Overview"],
+  ["legal", "Legal Details"],
+  ["agreement", "Agreement"],
+  ["territory", "Territory"],
+  ["commission", "Commission"],
+  ["customers", "Customers"],
+  ["payments", "Payments"],
+  ["sub-partners", "Sub-Partners"],
+  ["progress", "Partner Center Progress"],
+  ["audit", "Audit Log"],
 ];
 
 export default function AdminPartnerDossier() {
   const { partnerId } = useParams();
+  const navigate = useNavigate();
+  const { loginWithToken } = useAuth() as {
+    loginWithToken?: (nextUser: unknown, token: string, options?: { skipRedirect?: boolean }) => void;
+  };
   const [tab, setTab] = useState("overview");
   const [data, setData] = useState<any>(null);
   const [onboarding, setOnboarding] = useState<any>(null);
@@ -142,10 +147,41 @@ export default function AdminPartnerDossier() {
             <Kpi label="Pending withdrawals" value={formatIls(data.commissions?.totals?.pendingCommission)} />
             <Kpi label="Paid commissions" value={formatIls(data.commissions?.totals?.paidCommission)} />
             <Kpi label="מסמכים" value={data.compliance?.reviewStatus || "incomplete"} />
+            <Kpi label="Agreement" value={data.agreement?.status || "none"} />
+            <Kpi label="Territory" value={data.agreement?.territory?.countryName || data.commercial?.territory || "—"} />
+            <Kpi label="Exclusivity" value={data.agreement?.exclusivity || data.commercial?.exclusivity || "—"} />
+            <Kpi label="Renewal deadline" value={data.agreement?.renewalDeadline || "—"} />
+            <Kpi label="Sub-Partner seats" value={`${data.seats?.used || 0} / ${data.seats?.limit || 0}`} />
+          </section>
+        ) : null}
+        {tab === "overview" ? (
+          <button
+            type="button"
+            className="mt-4 rounded-2xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white"
+            onClick={() => {
+              void API.post(`/admin/partners/${partnerId}/open-workspace`).then((res) => {
+                loginWithToken?.(res.data.user, res.data.token, { skipRedirect: true });
+                navigate("/partner/dashboard");
+              }).catch((err) => setError(partnerApiError(err, "Could not open the Partner workspace")));
+            }}
+          >
+            Open Partner Workspace
+          </button>
+        ) : null}
+
+        {tab === "agreement" || tab === "territory" ? (
+          <section className="mt-5 rounded-3xl border bg-white p-5">
+            <h2 className="text-xl font-black">Agreement</h2>
+            <p className="mt-2 text-sm font-semibold text-slate-700">Status: {data.agreement?.status || "No agreement"}</p>
+            <p className="text-sm font-semibold text-slate-700">Territory: {data.agreement?.territory?.countryName || "—"} {data.agreement?.territory?.territoryName || ""}</p>
+            <p className="text-sm font-semibold text-slate-700">Exclusivity: {data.agreement?.exclusivity || "—"}</p>
+            <p className="text-sm font-semibold text-slate-700">End date: {data.agreement?.endDate ? String(data.agreement.endDate).slice(0, 10) : "—"}</p>
+            <p className="text-sm font-bold text-slate-900">Renewal completion deadline: {data.agreement?.renewalDeadline || "—"}</p>
+            <p className="mt-2 text-xs font-semibold text-slate-500">The deadline is 90 days before the end date. Missing it does not end the current exclusive term early.</p>
           </section>
         ) : null}
 
-        {tab === "commercial" ? (
+        {tab === "legal" || tab === "commercial" ? (
           <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
             <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Partner Details / Commercial</p>
             <h2 className="mt-1 text-xl font-black">{partner.name}</h2>
@@ -308,7 +344,7 @@ export default function AdminPartnerDossier() {
           </section>
         ) : null}
 
-        {tab === "onboarding" ? (
+        {tab === "progress" || tab === "onboarding" ? (
           <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
             {onboarding ? (
               <>
@@ -361,21 +397,35 @@ export default function AdminPartnerDossier() {
           />
         ) : null}
 
-        {tab === "clients" ? <Table rows={data.clients} cols={clientCols} /> : null}
+        {tab === "customers" || tab === "clients" ? <Table rows={data.clients} cols={clientCols} /> : null}
         {tab === "deals" ? <Table rows={data.deals} cols={dealCols} /> : null}
-        {tab === "commissions" ? <Table rows={data.commissions?.items || []} cols={commissionCols} /> : null}
+        {tab === "commission" || tab === "commissions" ? <Table rows={data.commissions?.items || []} cols={commissionCols} /> : null}
         {tab === "subscription" ? (
           <section className="mt-5 rounded-3xl border bg-white p-5">
             <p className="font-black">Setup {formatIls(plan.setupIls)} + {formatIls(plan.monthlyIls)} / חודש</p>
             <p className="mt-2 text-sm font-bold text-slate-500">נפרד מעסקאות לקוחות.</p>
           </section>
         ) : null}
-        {tab === "team" ? <Table rows={data.team} cols={teamCols} /> : null}
-        {tab === "activity" ? (
-          <Table rows={data.commissions?.items || []} cols={commissionCols} />
+        {tab === "sub-partners" || tab === "team" ? (
+          <section className="mt-5 space-y-3">
+            <p className="text-sm font-bold text-slate-700">
+              Package seats {data.seats?.used || 0} used, limit {data.seats?.limit || 0}. The Primary Partner is not counted as an additional user.
+            </p>
+            <Table rows={data.team} cols={teamCols} />
+          </section>
+        ) : null}
+        {tab === "audit" || tab === "activity" ? (
+          <Table
+            rows={data.audit || []}
+            cols={[
+              ["action", "Action"],
+              ["createdAt", "When"],
+              ["reason", "Reason"],
+            ]}
+          />
         ) : null}
 
-        {tab === "withdrawals" ? (
+        {tab === "payments" || tab === "withdrawals" ? (
           <section className="mt-5 grid gap-4 lg:grid-cols-[1fr_380px]">
             <Table
               rows={data.withdrawals}

@@ -34,6 +34,7 @@ function AdminSettings() {
       <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
       <h1>⚙️ General Settings</h1>
       <p><Link to="/admin/settings/legal">Legal → Bizuply Legal Profile</Link></p>
+      <p><Link to="/admin/settings/partner-program">Partner Program → Sub-Partner Pricing</Link></p>
 
       <div className="settings-form">
         <label>🌍 Time Zone:

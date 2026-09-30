@@ -157,26 +157,28 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
         <TermField field="endDate" label={c.end} mode={modeOf(form, "endDate")} editable={editable} onMode={(mode) => setMode("endDate", mode)} onReset={() => resetField("endDate")} labels={labels} defaultText={c.endDefault}>
           <input type="date" className={inputClass} disabled={!editable} value={form.endDate || ""} onChange={(e) => set("endDate", e.target.value)} />
         </TermField>
-        <TermField field="paymentSchedule" label={c.schedule} mode={modeOf(form, "paymentSchedule")} editable={editable} onMode={(mode) => setMode("paymentSchedule", mode)} onReset={() => resetField("paymentSchedule")} labels={labels} defaultText={c.scheduleDefault}>
-          <select className={inputClass} disabled={!editable} value={form.paymentSchedule || "single"} onChange={(e) => set("paymentSchedule", e.target.value)}>
-            <option value="single">{c.single}</option>
-            <option value="deposit_balance">{c.depositBalance}</option>
+        <TermField field="paymentSchedule" label={c.schedule} mode={modeOf(form, "paymentSchedule")} editable={editable} onMode={(mode) => setMode("paymentSchedule", mode)} onReset={() => { resetField("paymentSchedule"); set("paymentStructure", "one_time"); }} labels={labels} defaultText={c.single}>
+          <select
+            className={inputClass}
+            disabled={!editable}
+            value={form.paymentStructure === "installments" || form.paymentSchedule === "installments" ? "installments" : "one_time"}
+            onChange={(e) => {
+              const structure = e.target.value === "installments" ? "installments" : "one_time";
+              set("paymentStructure", structure);
+              set("paymentSchedule", structure === "installments" ? "installments" : "single");
+            }}
+          >
+            <option value="one_time">{c.single}</option>
             <option value="installments">{c.installmentsOption}</option>
-            <option value="custom">{c.customSchedule}</option>
           </select>
         </TermField>
-        <TermField field="depositAmount" label={c.deposit} mode={modeOf(form, "depositAmount")} editable={editable} onMode={(mode) => setMode("depositAmount", mode)} onReset={() => resetField("depositAmount")} labels={labels} defaultText="0">
-          <input className={inputClass} disabled={!editable} value={form.depositAmount ?? ""} onChange={(e) => set("depositAmount", e.target.value)} />
-        </TermField>
-        <TermField field="remainingBalance" label={c.remaining} mode={modeOf(form, "remainingBalance")} editable={editable} onMode={(mode) => setMode("remainingBalance", mode)} onReset={() => resetField("remainingBalance")} labels={labels} defaultText={c.remainingDefault}>
-          <input className={inputClass} disabled={!editable} value={form.remainingBalance ?? ""} onChange={(e) => set("remainingBalance", e.target.value)} />
-        </TermField>
-        <TermField field="installmentCount" label={c.installmentCount} mode={modeOf(form, "installmentCount")} editable={editable} onMode={(mode) => setMode("installmentCount", mode)} onReset={() => resetField("installmentCount")} labels={labels} defaultText="1">
-          <input className={inputClass} disabled={!editable} value={form.installmentCount ?? ""} onChange={(e) => set("installmentCount", e.target.value)} />
-        </TermField>
+        <label className="block text-sm font-bold text-slate-800">
+          Payment method
+          <input className={`${inputClass} mt-1`} disabled={!editable} value={form.paymentMethod || ""} onChange={(e) => set("paymentMethod", e.target.value)} />
+        </label>
       </div>
 
-      <div className="mt-3">
+      {form.paymentStructure === "installments" || form.paymentSchedule === "installments" ? <div className="mt-3">
         <TermField field="installments" label={c.installmentAmounts} mode={modeOf(form, "installments")} editable={editable} onMode={(mode) => setMode("installments", mode)} onReset={() => resetField("installments")} labels={labels} defaultText={c.installmentDefault}>
           <div className="space-y-2">
             {(form.installments || [{ label: fill(c.installmentName, { n: 1 }), amount: "", dueDate: "" }]).map((row, index) => (
@@ -203,7 +205,8 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
             </button>
           </div>
         </TermField>
-      </div>
+        <p className="mt-2 text-xs font-bold text-slate-500">Installment amounts must add up to the total license fee.</p>
+      </div> : null}
 
       <div className="mt-3" data-testid="commission-section">
         <TermField field="commission" label={c.commission} mode={modeOf(form, "commission")} editable={editable} onMode={(mode) => setMode("commission", mode)} onReset={() => resetField("commission")} labels={labels} defaultText={c.commissionDefault}>
@@ -272,18 +275,6 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
       </div>
 
       <div className="mt-3 grid gap-3 md:grid-cols-2">
-        <TermField field="minimumCustomerTarget" label={c.minimum} mode={modeOf(form, "minimumCustomerTarget")} editable={editable} onMode={(mode) => setMode("minimumCustomerTarget", mode)} onReset={() => resetField("minimumCustomerTarget")} labels={labels} defaultText={c.minimumDefault}>
-          <input className={inputClass} disabled={!editable} value={form.minimumCustomerTarget || ""} onChange={(e) => set("minimumCustomerTarget", e.target.value)} />
-        </TermField>
-        <TermField field="performanceTarget" label={c.performance} mode={modeOf(form, "performanceTarget")} editable={editable} onMode={(mode) => setMode("performanceTarget", mode)} onReset={() => resetField("performanceTarget")} labels={labels} defaultText={c.performanceDefault}>
-          <input className={inputClass} disabled={!editable} value={form.salesTarget || ""} onChange={(e) => set("salesTarget", e.target.value)} />
-        </TermField>
-        <TermField field="measurementPeriod" label={c.period} mode={modeOf(form, "measurementPeriod")} editable={editable} onMode={(mode) => setMode("measurementPeriod", mode)} onReset={() => resetField("measurementPeriod")} labels={labels} defaultText={c.periodDefault}>
-          <input className={inputClass} disabled={!editable} value={form.targetPeriod || ""} onChange={(e) => set("targetPeriod", e.target.value)} />
-        </TermField>
-        <TermField field="curePeriod" label={c.cure} mode={modeOf(form, "curePeriod")} editable={editable} onMode={(mode) => setMode("curePeriod", mode)} onReset={() => resetField("curePeriod")} labels={labels} defaultText={c.cureDefault}>
-          <input className={inputClass} disabled={!editable} value={form.curePeriod || ""} onChange={(e) => set("curePeriod", e.target.value)} />
-        </TermField>
         <TermField field="renewalPrice" label={c.renewalPrice} mode={modeOf(form, "renewalPrice")} editable={editable} onMode={(mode) => setMode("renewalPrice", mode)} onReset={() => resetField("renewalPrice")} labels={labels} defaultText={c.renewalPriceDefault}>
           <input className={inputClass} disabled={!editable} value={form.renewalPrice ?? ""} onChange={(e) => set("renewalPrice", e.target.value)} />
         </TermField>

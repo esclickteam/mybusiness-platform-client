@@ -383,7 +383,8 @@ export async function fetchPartnerTeam() {
 export async function invitePartnerMember(payload: {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  permissionPreset?: string;
   permissions: PartnerPermission[];
 }) {
   const { data } = await API.post("/partner/team", payload);

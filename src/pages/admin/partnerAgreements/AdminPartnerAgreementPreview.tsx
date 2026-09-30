@@ -163,7 +163,16 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
                     { party: "partner" as const, fullName: String(data.variables.PARTNER_SIGNATORY_NAME || ""), title: String(data.variables.PARTNER_SIGNATORY_TITLE || ""), order: 1, required: true, email: "" },
                     { party: "bizuply" as const, fullName: String(data.variables.BIZUPLY_SIGNATORY_NAME || t.authorized), title: String(data.variables.BIZUPLY_SIGNATORY_TITLE || "Bizuply"), order: 1, required: true, email: "" },
                   ]
-              ).map((signatory, index) => (
+              ).map((signatory, index) => {
+                let pending: { typedName?: string } | null = null;
+                if (signatory.party === "bizuply" && !data.agreementId) {
+                  try {
+                    pending = JSON.parse(sessionStorage.getItem("partner-agreement-pending-bizuply-signature") || "null");
+                  } catch {
+                    pending = null;
+                  }
+                }
+                return (
                 <section
                   key={`${signatory.party}-${signatory.fullName}-${index}`}
                   data-testid={signatory.party === "bizuply" ? "bizuply-signature" : "partner-signature"}
@@ -172,12 +181,15 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
                   <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">
                     {signatory.party === "bizuply" ? t.bizuply : t.partner}
                   </h2>
-                  <p className="mt-3 font-black text-slate-950">{signatory.fullName || t.name}</p>
+                  <p className="mt-3 font-black text-slate-950">{signatory.fullName || pending?.typedName || t.name}</p>
                   <p className="text-sm font-semibold text-slate-600">{signatory.title || t.title}</p>
-                  <p className="mt-6 text-sm font-semibold text-slate-400">{t.signature}: __________</p>
-                  <p className="text-sm font-semibold text-slate-400">{t.date}: __________</p>
+                  <p className="mt-6 font-['Georgia'] text-2xl text-slate-900">
+                    {t.signature}: {pending?.typedName || "__________"}
+                  </p>
+                  <p className="text-sm font-semibold text-slate-400">{t.date}: {pending?.typedName ? "Pending create" : "__________"}</p>
                 </section>
-              ))}
+                );
+              })}
             </div>
           </article>
         ) : !error ? (

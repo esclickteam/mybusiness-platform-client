@@ -16,6 +16,7 @@ import { billingLabel, isCommissionSku, publicPackageLabel } from "../../lib/par
 import { formatIls } from "../../lib/partnerMoney";
 import { absoluteCustomerUrl } from "../../lib/partnerBranding";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import PartnerFundedDiscountCard from "../../components/partner/PartnerFundedDiscountCard";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
 import { catalogProductName } from "../../i18n/partnerCatalogCopy";
@@ -267,6 +268,8 @@ export default function PartnerDealDetail() {
           {savingName ? t("partner.saving") : t("partner.deal.saveNames")}
         </button>
       </section>
+
+      <PartnerFundedDiscountCard />
 
       <section className="grid gap-3 md:grid-cols-4">
         <Stat label={t("partner.deal.payBizuply")} value={partnerStatusLabel((deal as any).paymentStatus || deal.status, t)} />
