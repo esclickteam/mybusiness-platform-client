@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Camera, Loader2, RefreshCw, Save } from "lucide-react";
+import { Camera, Loader2, Save } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   getWhatsAppBusinessProfile,
-  syncWhatsAppBusinessProfile,
   updateWhatsAppBusinessProfile,
   uploadWhatsAppBusinessProfilePicture,
   type WhatsAppBusinessProfile,
@@ -12,7 +11,6 @@ import {
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   btnPrimary,
-  btnSecondary,
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
@@ -89,24 +87,6 @@ function firstFieldError(errors?: Record<string, string> | null) {
   );
 }
 
-function hasPersistedProfileValues(profile?: WhatsAppBusinessProfile | null) {
-  if (!profile) return false;
-  return Boolean(
-    profile.about ||
-      profile.address ||
-      profile.description ||
-      profile.email ||
-      profile.vertical ||
-      profile.profilePictureUrl ||
-      (profile.websites || []).some((item) => Boolean(item))
-  );
-}
-
-function profileForPageLoad(profile: WhatsAppBusinessProfile) {
-  if (!hasPersistedProfileValues(profile)) return profile;
-  return { ...profile, syncError: "", fieldErrors: {} };
-}
-
 function metaErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error && error.message) return error.message;
   return fallback;
@@ -119,32 +99,66 @@ export default function WhatsAppProfileTab() {
   const visualQa = useWhatsAppVisualQaOverride();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const appliedRankRef = useRef(0);
+  const dirtyRef = useRef(false);
+  const pendingPhotoRef = useRef<File | null>(null);
+  const pendingPhotoUrlRef = useRef("");
   const [profile, setProfile] = useState<WhatsAppBusinessProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [syncing, setSyncing] = useState(false);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [saveSucceeded, setSaveSucceeded] = useState(false);
+  const [actionWarning, setActionWarning] = useState("");
+  const [pendingPhotoUrl, setPendingPhotoUrl] = useState("");
   const [draft, setDraft] = useState(emptyDraft);
 
-  const applyProfile = (next: WhatsAppBusinessProfile) => {
+  const applyProfile = (
+    next: WhatsAppBusinessProfile,
+    opts?: { keepDraft?: boolean }
+  ) => {
     setProfile(next);
-    setDraft(draftFromProfile(next));
+    if (!opts?.keepDraft) {
+      setDraft(draftFromProfile(next));
+    }
+  };
+
+  const markDirty = () => {
+    dirtyRef.current = true;
+    setSaveSucceeded(false);
+    setActionWarning("");
+  };
+
+  const clearPendingPhoto = () => {
+    pendingPhotoRef.current = null;
+    if (pendingPhotoUrlRef.current) {
+      URL.revokeObjectURL(pendingPhotoUrlRef.current);
+      pendingPhotoUrlRef.current = "";
+    }
+    setPendingPhotoUrl("");
+  };
+
+  const updateDraft = (patch: Partial<typeof draft> | ((current: typeof draft) => typeof draft)) => {
+    markDirty();
+    setDraft((current) =>
+      typeof patch === "function" ? patch(current) : { ...current, ...patch }
+    );
   };
 
   const fieldErrors = profile?.fieldErrors || {};
-  const pictureUrl = draft.profilePictureUrl || profile?.profilePictureUrl || "";
+  const pictureUrl =
+    pendingPhotoUrl || draft.profilePictureUrl || profile?.profilePictureUrl || "";
 
   const applyRankedProfile = (
     next: WhatsAppBusinessProfile,
-    rank: number
+    rank: number,
+    opts?: { keepDraft?: boolean }
   ) => {
     if (rank < appliedRankRef.current) return;
     appliedRankRef.current = rank;
-    applyProfile(next);
+    applyProfile(next, {
+      keepDraft: Boolean(opts?.keepDraft || dirtyRef.current),
+    });
   };
 
   const load = async (opts?: {
-    syncFirst?: boolean;
     cached?: boolean;
     silent?: boolean;
   }) => {
@@ -200,40 +214,40 @@ export default function WhatsAppProfileTab() {
     if (!businessId) return;
     if (!opts?.silent) setLoading(true);
     try {
-      const data = opts?.syncFirst
-        ? await syncWhatsAppBusinessProfile(businessId)
-        : await getWhatsAppBusinessProfile(businessId, {
-            cached: Boolean(opts?.cached),
-          });
-      const next = opts?.syncFirst
-        ? data.profile
-        : profileForPageLoad(data.profile);
-      applyRankedProfile(next, opts?.syncFirst ? 3 : opts?.cached ? 1 : 2);
-      if (opts?.syncFirst) {
-        await refreshConnection();
-        const syncError =
-          data.syncError ||
-          data.profile?.syncError ||
-          firstFieldError(data.fieldErrors);
-        if (syncError) {
-          toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
-        }
-      }
+      const data = await getWhatsAppBusinessProfile(businessId, {
+        cached: Boolean(opts?.cached),
+      });
+      applyRankedProfile(data.profile, opts?.cached ? 1 : 2, {
+        keepDraft: dirtyRef.current,
+      });
     } catch (error) {
-      if (opts?.syncFirst || !profile) {
+      if (!profile) {
         toast.error(metaErrorMessage(error, t("whatsapp.hub.profileLoadError")));
       }
     } finally {
       setLoading(false);
-      setSyncing(false);
     }
   };
 
   useEffect(() => {
     appliedRankRef.current = 0;
+    dirtyRef.current = false;
+    setSaveSucceeded(false);
+    setActionWarning("");
+    clearPendingPhoto();
     void load({ cached: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  useEffect(() => {
+    return () => {
+      pendingPhotoRef.current = null;
+      if (pendingPhotoUrlRef.current) {
+        URL.revokeObjectURL(pendingPhotoUrlRef.current);
+        pendingPhotoUrlRef.current = "";
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!businessId || visualQa) return;
@@ -251,7 +265,23 @@ export default function WhatsAppProfileTab() {
   const save = async () => {
     if (!businessId) return;
     setSaving(true);
+    setSaveSucceeded(false);
+    setActionWarning("");
     try {
+      let picturePersistError = "";
+      if (pendingPhotoRef.current) {
+        try {
+          await uploadWhatsAppBusinessProfilePicture(
+            businessId,
+            pendingPhotoRef.current
+          );
+        } catch (error) {
+          picturePersistError = metaErrorMessage(
+            error,
+            t("whatsapp.hub.profilePhotoSaveError")
+          );
+        }
+      }
       const result = await updateWhatsAppBusinessProfile(businessId, {
         about: draft.about,
         address: draft.address,
@@ -260,7 +290,13 @@ export default function WhatsAppProfileTab() {
         vertical: draft.vertical,
         websites: [draft.websites[0], draft.websites[1]],
       });
-      applyRankedProfile(result.profile, 3);
+      if (!picturePersistError) {
+        dirtyRef.current = false;
+        clearPendingPhoto();
+      }
+      applyRankedProfile(result.profile, 3, {
+        keepDraft: Boolean(picturePersistError),
+      });
       await refreshConnection();
       const syncError =
         result.syncError ||
@@ -268,10 +304,13 @@ export default function WhatsAppProfileTab() {
         firstFieldError(result.fieldErrors || result.profile?.fieldErrors) ||
         (result.pictureSync?.ok === false
           ? result.pictureSync.error || t("whatsapp.hub.profilePhotoMetaError")
-          : "");
+          : "") ||
+        picturePersistError;
       if (syncError) {
+        setActionWarning(syncError);
         toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
       } else {
+        setSaveSucceeded(true);
         toast.success(t("whatsapp.hub.profileSaved"));
       }
     } catch (error) {
@@ -281,25 +320,17 @@ export default function WhatsAppProfileTab() {
     }
   };
 
-  const onPickPhoto = async (file?: File | null) => {
-    if (!businessId || !file) return;
-    setUploadingPhoto(true);
-    try {
-      const result = await uploadWhatsAppBusinessProfilePicture(
-        businessId,
-        file
-      );
-      applyRankedProfile(result.profile, 3);
-      await refreshConnection();
-      toast.success(t("whatsapp.hub.profilePhotoSaved"));
-    } catch (error) {
-      toast.error(
-        metaErrorMessage(error, t("whatsapp.hub.profilePhotoSaveError"))
-      );
-    } finally {
-      setUploadingPhoto(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+  const onPickPhoto = (file?: File | null) => {
+    if (!file) return;
+    markDirty();
+    pendingPhotoRef.current = file;
+    if (pendingPhotoUrlRef.current) {
+      URL.revokeObjectURL(pendingPhotoUrlRef.current);
     }
+    const previewUrl = URL.createObjectURL(file);
+    pendingPhotoUrlRef.current = previewUrl;
+    setPendingPhotoUrl(previewUrl);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const metaNameStatusRaw = String(
@@ -334,22 +365,6 @@ export default function WhatsAppProfileTab() {
         <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
-            className={`${btnSecondary} !px-3 !py-1.5 text-xs`}
-            disabled={!businessId || syncing || loading}
-            onClick={() => {
-              setSyncing(true);
-              void load({ syncFirst: true });
-            }}
-          >
-            {syncing ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <RefreshCw className="h-3.5 w-3.5" />
-            )}
-            {t("whatsapp.hub.syncProfile")}
-          </button>
-          <button
-            type="button"
             className={`${btnPrimary} !px-3 !py-1.5 text-xs`}
             disabled={!businessId || saving || loading || !connection?.connected}
             onClick={() => void save()}
@@ -364,9 +379,16 @@ export default function WhatsAppProfileTab() {
         </div>
       </div>
 
-      {profile?.syncError && !hasPersistedProfileValues(profile) ? (
+      {saveSucceeded && !actionWarning && !profile?.syncError ? (
+        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+          {t("whatsapp.hub.profileSaved")}
+        </p>
+      ) : null}
+
+      {actionWarning || profile?.syncError ? (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-          {t("whatsapp.hub.profileSyncWarning")} {profile.syncError}
+          {t("whatsapp.hub.profileSyncWarning")}{" "}
+          {actionWarning || profile?.syncError}
         </p>
       ) : null}
 
@@ -427,7 +449,7 @@ export default function WhatsAppProfileTab() {
                 <button
                   type="button"
                   className="relative h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100"
-                  disabled={!businessId || uploadingPhoto || !connection?.connected}
+                  disabled={!businessId || saving || !connection?.connected}
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {pictureUrl ? (
@@ -442,18 +464,14 @@ export default function WhatsAppProfileTab() {
                     </span>
                   )}
                   <span className="absolute bottom-0 end-0 grid h-6 w-6 place-items-center rounded-full bg-sky-500 text-white shadow">
-                    {uploadingPhoto ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Camera className="h-3 w-3" />
-                    )}
+                    <Camera className="h-3 w-3" />
                   </span>
                 </button>
                 <div>
                   <button
                     type="button"
                     className="text-xs font-bold text-sky-700"
-                    disabled={!businessId || uploadingPhoto || !connection?.connected}
+                    disabled={!businessId || saving || !connection?.connected}
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {t("whatsapp.hub.changePhoto")}
@@ -467,7 +485,7 @@ export default function WhatsAppProfileTab() {
                   type="file"
                   accept="image/png,image/jpeg,image/gif"
                   className="hidden"
-                  onChange={(e) => void onPickPhoto(e.target.files?.[0])}
+                  onChange={(e) => onPickPhoto(e.target.files?.[0])}
                 />
               </div>
             </div>
@@ -481,9 +499,7 @@ export default function WhatsAppProfileTab() {
                 maxLength={139}
                 dir="auto"
                 value={draft.about}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, about: e.target.value }))
-                }
+                onChange={(e) => updateDraft({ about: e.target.value })}
               />
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.about.length}/139
@@ -497,9 +513,7 @@ export default function WhatsAppProfileTab() {
               <select
                 className={`${inputBase} mt-1 !h-10`}
                 value={draft.vertical}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, vertical: e.target.value }))
-                }
+                onChange={(e) => updateDraft({ vertical: e.target.value })}
               >
                 <option value="">—</option>
                 {VERTICALS.map((item) => (
@@ -519,9 +533,7 @@ export default function WhatsAppProfileTab() {
                 maxLength={512}
                 dir="auto"
                 value={draft.description}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, description: e.target.value }))
-                }
+                onChange={(e) => updateDraft({ description: e.target.value })}
               />
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.description.length}/512
@@ -538,9 +550,7 @@ export default function WhatsAppProfileTab() {
                 dir="ltr"
                 maxLength={128}
                 value={draft.email}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, email: e.target.value }))
-                }
+                onChange={(e) => updateDraft({ email: e.target.value })}
               />
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.email.length}/128
@@ -555,9 +565,7 @@ export default function WhatsAppProfileTab() {
                 className={`${inputBase} mt-1 !h-10`}
                 maxLength={256}
                 value={draft.address}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, address: e.target.value }))
-                }
+                onChange={(e) => updateDraft({ address: e.target.value })}
               />
               <p className="mt-0.5 text-end text-[10px] font-semibold text-slate-400" dir="ltr">
                 {draft.address.length}/256
@@ -574,7 +582,7 @@ export default function WhatsAppProfileTab() {
                 maxLength={256}
                 value={draft.websites[0]}
                 onChange={(e) =>
-                  setDraft((d) => ({
+                  updateDraft((d) => ({
                     ...d,
                     websites: [e.target.value, d.websites[1]],
                   }))
@@ -594,7 +602,7 @@ export default function WhatsAppProfileTab() {
                 maxLength={256}
                 value={draft.websites[1]}
                 onChange={(e) =>
-                  setDraft((d) => ({
+                  updateDraft((d) => ({
                     ...d,
                     websites: [d.websites[0], e.target.value],
                   }))

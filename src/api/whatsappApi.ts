@@ -1168,6 +1168,7 @@ export async function getWhatsAppBusinessProfile(
   };
 }
 
+/** Internal/admin re-fetch. Customer profile UI should Save, not call this. */
 export async function syncWhatsAppBusinessProfile(businessId: string) {
   const { data } = await API.post("/whatsapp/profile/sync", { businessId });
   return data as {
