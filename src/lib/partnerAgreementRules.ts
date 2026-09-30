@@ -6,7 +6,7 @@ export function exclusiveSelectionBlocked(
 }
 
 export const EXCLUSIVITY_NOTICE =
-  "Exclusivity becomes effective only after the agreement is signed and the required payment has been completed.";
+  "Exclusivity becomes effective only after both parties have signed, the required payment has been completed, and the agreement is active.";
 
 export function availabilityLabel(value: string) {
   switch (value) {
@@ -16,6 +16,8 @@ export function availabilityLabel(value: string) {
       return "Agreement pending";
     case "exclusive_active":
       return "Exclusive active";
+    case "renewal_window":
+      return "Renewal window";
     case "expiring_soon":
       return "Expiring soon";
     default:
