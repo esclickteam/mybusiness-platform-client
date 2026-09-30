@@ -4,7 +4,7 @@ import AdminHeader from "../AdminsHeader";
 import logo from "../../../images/logo_final.svg";
 import { agreementError, previewPartnerAgreement } from "../../../lib/partnerAgreementApi";
 
-export default function AdminPartnerAgreementPreview() {
+export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsaved?: boolean }) {
   const { id = "" } = useParams();
   const [params] = useSearchParams();
   const version = params.get("version");
@@ -13,6 +13,22 @@ export default function AdminPartnerAgreementPreview() {
 
   useEffect(() => {
     let cancelled = false;
+    if (unsaved) {
+      try {
+        const stored = sessionStorage.getItem("partner-agreement-unsaved-preview");
+        const preview = stored ? JSON.parse(stored) : null;
+        if (!preview || preview.persisted) {
+          setError("This preview is empty. Open it from Create Agreement. Nothing is saved.");
+        } else {
+          setData(preview);
+        }
+      } catch {
+        setError("This preview could not be read. Nothing is saved.");
+      }
+      return () => {
+        cancelled = true;
+      };
+    }
     previewPartnerAgreement(id, version ? Number(version) : undefined)
       .then((preview) => {
         if (!cancelled) setData(preview);
@@ -23,7 +39,7 @@ export default function AdminPartnerAgreementPreview() {
     return () => {
       cancelled = true;
     };
-  }, [id, version]);
+  }, [id, unsaved, version]);
 
   const tiers = Array.isArray(data?.variables?.tierLines) ? data?.variables.tierLines : [];
 
@@ -31,9 +47,10 @@ export default function AdminPartnerAgreementPreview() {
     <div className="min-h-screen bg-[#F3F0EA]">
       <AdminHeader />
       <main className="mx-auto max-w-[860px] px-4 py-6">
-        <Link to={`/admin/partner-agreements/${id}`} className="text-sm font-black text-[#6D28D9]">
-          Back to agreement
+        <Link to={unsaved ? "/admin/partner-agreements/new" : `/admin/partner-agreements/${id}`} className="text-sm font-black text-[#6D28D9]">
+          {unsaved ? "Back to create agreement" : "Back to agreement"}
         </Link>
+        {unsaved ? <p className="mt-2 text-sm font-bold text-emerald-800">Preview only. No agreement record was saved.</p> : null}
         {error ? <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
         {data ? (
           <article
@@ -81,6 +98,16 @@ export default function AdminPartnerAgreementPreview() {
                   ))}
                 </div>
               ))}
+            </div>
+            <div className="mt-10 grid gap-4 border-t border-slate-200 pt-6 sm:grid-cols-2">
+              <section data-testid="bizuply-signature" className="rounded-2xl border border-dashed border-slate-300 p-4">
+                <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">Bizuply signature</h2>
+                <p className="mt-6 text-sm font-semibold text-slate-400">Signature appears here after Bizuply signs this version.</p>
+              </section>
+              <section data-testid="partner-signature" className="rounded-2xl border border-dashed border-slate-300 p-4">
+                <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">Partner signature</h2>
+                <p className="mt-6 text-sm font-semibold text-slate-400">Signature appears here after the partner signs this version.</p>
+              </section>
             </div>
           </article>
         ) : !error ? (

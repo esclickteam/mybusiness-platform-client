@@ -2,20 +2,23 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "../AdminsHeader";
 import CountrySelect from "./CountrySelect";
+import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPanel";
 import {
   agreementError,
+  amendPartnerAgreement,
   downloadAgreementPdf,
   fetchAgreementMeta,
+  fetchSubdivisions,
   fetchTerritoryAvailability,
   getPartnerAgreement,
   postAgreementAction,
   prefillAgreementPartner,
+  previewDraftAgreement,
   quoteAgreementCommission,
   renewPartnerAgreement,
   savePartnerAgreement,
   searchAgreementPartners,
   type AgreementInput,
-  type CommissionTier,
   type CountryOption,
   type PartnerAgreement,
 } from "../../../lib/partnerAgreementApi";
@@ -68,6 +71,24 @@ const EMPTY: AgreementInput = {
   renewalNotes: "",
   specialTermsEnabled: false,
   specialTerms: "",
+  fieldModes: {},
+  paymentSchedule: "single",
+  depositAmount: 0,
+  remainingBalance: "",
+  installmentCount: 1,
+  installments: [],
+  additionalAmounts: [],
+  commissionStructure: "tiers",
+  commissionTiers: [
+    { minCustomers: 1, maxCustomers: 19, percent: 30 },
+    { minCustomers: 20, maxCustomers: 39, percent: 35 },
+    { minCustomers: 40, maxCustomers: null, percent: 40 },
+  ],
+  flatCommissionPercent: "",
+  productCommissions: [],
+  minimumCustomerTarget: "",
+  renewalPrice: "",
+  renewalTerm: "12 months",
 };
 
 function fromAgreement(row: PartnerAgreement): AgreementInput {
@@ -115,6 +136,20 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     renewalNotes: row.renewalNotes || "",
     specialTermsEnabled: Boolean(row.specialTermsEnabled),
     specialTerms: row.specialTerms || "",
+    fieldModes: row.fieldModes || {},
+    paymentSchedule: row.paymentSchedule || "single",
+    depositAmount: row.depositAmount ?? 0,
+    remainingBalance: row.remainingBalance ?? "",
+    installmentCount: row.installmentCount ?? 1,
+    installments: row.installments || [],
+    additionalAmounts: row.additionalAmounts || [],
+    commissionStructure: row.commissionStructure || (row.commissionOverride ? "tiers" : "tiers"),
+    commissionTiers: row.tiers || [],
+    flatCommissionPercent: row.flatCommissionPercent ?? "",
+    productCommissions: row.productCommissions || [],
+    minimumCustomerTarget: row.minimumCustomerTarget || "",
+    renewalPrice: row.renewalPrice ?? "",
+    renewalTerm: row.renewalTerm || "12 months",
   };
 }
 
@@ -142,8 +177,9 @@ export default function AdminPartnerAgreementEditor() {
   const [form, setForm] = useState<AgreementInput>(EMPTY);
   const [record, setRecord] = useState<PartnerAgreement | null>(null);
   const [countries, setCountries] = useState<CountryOption[]>([]);
+  const [subdivisions, setSubdivisions] = useState<{ code: string; name: string }[]>([]);
+  const [subdivisionKind, setSubdivisionKind] = useState("");
   const [currencies, setCurrencies] = useState<string[]>(["USD"]);
-  const [tiers, setTiers] = useState<CommissionTier[]>([]);
   const [partnerQuery, setPartnerQuery] = useState("");
   const [partners, setPartners] = useState<{ id: string; name: string; legalCompanyName: string }[]>([]);
   const [commissionNote, setCommissionNote] = useState("");
@@ -163,7 +199,6 @@ export default function AdminPartnerAgreementEditor() {
         const [meta, territories] = await Promise.all([fetchAgreementMeta(), fetchTerritoryAvailability()]);
         if (cancelled) return;
         setCurrencies(meta.currencies || ["USD"]);
-        setTiers(meta.defaultTiers || []);
         setCountries(territories.countries || []);
         if (id) {
           const loaded = await getPartnerAgreement(id);
@@ -225,6 +260,31 @@ export default function AdminPartnerAgreementEditor() {
     }, 250);
     return () => window.clearTimeout(handle);
   }, [partnerQuery]);
+
+  useEffect(() => {
+    const code = form.countryCode || "";
+    if (!code) {
+      setSubdivisions([]);
+      setSubdivisionKind("");
+      return;
+    }
+    let cancelled = false;
+    fetchSubdivisions(code)
+      .then((data) => {
+        if (cancelled) return;
+        setSubdivisions(data.subdivisions || []);
+        setSubdivisionKind(data.kind || "");
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSubdivisions([]);
+          setSubdivisionKind("");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form.countryCode]);
 
   function set<K extends keyof AgreementInput>(key: K, value: AgreementInput[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -289,10 +349,29 @@ export default function AdminPartnerAgreementEditor() {
     setBusy(true);
     setError("");
     try {
-      const saved = editable ? await persist() : record;
-      if (saved) navigate(`/admin/partner-agreements/${saved.id}/preview`);
+      const preview = await previewDraftAgreement(form);
+      if (preview.persisted) {
+        setError("Preview was refused because it would save an agreement.");
+        return;
+      }
+      sessionStorage.setItem("partner-agreement-unsaved-preview", JSON.stringify(preview));
+      navigate("/admin/partner-agreements/preview");
     } catch (err) {
       setError(agreementError(err, "Could not open the preview."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onAmend() {
+    if (!record) return;
+    setBusy(true);
+    setError("");
+    try {
+      const created = await amendPartnerAgreement(record.id);
+      navigate(`/admin/partner-agreements/${created.agreement.id}`);
+    } catch (err) {
+      setError(agreementError(err, "Could not create a new agreement version."));
     } finally {
       setBusy(false);
     }
@@ -496,20 +575,44 @@ export default function AdminPartnerAgreementEditor() {
               onChange={(code) => set("countryCode", code)}
             />
           </Field>
-          <Field label="State / province / emirate / region">
-            <input
-              className={inputClass}
-              disabled={!editable}
-              placeholder="ISO code, for example US-FL. Leave blank for the whole country."
-              value={form.subdivisionCode || ""}
-              onChange={(e) => set("subdivisionCode", e.target.value.toUpperCase())}
-            />
+          <Field label={subdivisionLabel(subdivisionKind, form.countryCode || "")}>
+            {subdivisions.length ? (
+              <select
+                className={inputClass}
+                disabled={!editable}
+                data-testid="subdivision-select"
+                value={form.subdivisionCode || ""}
+                onChange={(e) => set("subdivisionCode", e.target.value)}
+              >
+                <option value="">Whole country</option>
+                {subdivisions.map((row) => (
+                  <option key={row.code} value={row.code}>
+                    {row.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-600" data-testid="country-level-territory">
+                This country is sold at country level. A state or province is not required.
+              </p>
+            )}
           </Field>
           <Field label="City / metro / custom territory">
+            <select
+              className={`${inputClass} mb-2`}
+              disabled={!editable}
+              data-testid="locality-kind"
+              value={form.localityKind || "custom"}
+              onChange={(e) => set("localityKind", e.target.value)}
+            >
+              <option value="city">City</option>
+              <option value="metro">Metro</option>
+              <option value="custom">Custom territory</option>
+            </select>
             <input
               className={inputClass}
               disabled={!editable}
-              placeholder="Example: Miami or South Florida"
+              placeholder="Optional. Example: Miami or South Florida"
               value={form.localityName || ""}
               onChange={(e) => {
                 set("localityName", e.target.value);
@@ -565,148 +668,64 @@ export default function AdminPartnerAgreementEditor() {
           <Field label="Agreement date">
             <input type="date" className={inputClass} disabled={!editable} value={form.agreementDate || ""} onChange={(e) => set("agreementDate", e.target.value)} />
           </Field>
-          <Field label="License term">
-            <input className={inputClass} disabled={!editable} value={form.licenseTerm || ""} onChange={(e) => set("licenseTerm", e.target.value)} />
-          </Field>
-          <Field label="Agreement start date">
-            <input type="date" className={inputClass} disabled={!editable} value={form.startDate || ""} onChange={(e) => set("startDate", e.target.value)} />
-          </Field>
-          <Field label="Agreement end date">
-            <input type="date" className={inputClass} disabled={!editable} value={form.endDate || ""} onChange={(e) => set("endDate", e.target.value)} />
-          </Field>
-          <Field label="License fee">
-            <input className={inputClass} disabled={!editable} value={form.licenseFee ?? ""} onChange={(e) => set("licenseFee", e.target.value)} />
-          </Field>
-          <Field label="Currency">
-            <select className={inputClass} disabled={!editable} value={form.currency || "USD"} onChange={(e) => set("currency", e.target.value)}>
-              {currencies.map((code) => (
-                <option key={code} value={code}>{code}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Payment due date">
-            <input type="date" className={inputClass} disabled={!editable} value={form.paymentDueDate || ""} onChange={(e) => set("paymentDueDate", e.target.value)} />
-          </Field>
           <Field label="Payment status">
             <input className={inputClass} disabled value={record?.paymentStatus || "unpaid"} />
           </Field>
-        </Section>
-
-        <Section title="Commission">
-          <div className="md:col-span-2 space-y-2 text-sm font-semibold text-slate-700">
-            <p>Default Partner Agreement template. Commission continues while the customer remains active and successfully paying.</p>
-            {(tiers.length ? tiers : [
-              { minCustomers: 1, maxCustomers: 19, percent: 30 },
-              { minCustomers: 20, maxCustomers: 39, percent: 35 },
-              { minCustomers: 40, maxCustomers: null, percent: 40 },
-            ]).map((tier, index) => (
-              <label key={tier.minCustomers} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2" data-testid={`commission-tier-${index}`}>
-                <span>
-                  {tier.maxCustomers == null ? `${tier.minCustomers}+` : `${tier.minCustomers}-${tier.maxCustomers}`} active paying customers
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  disabled={!editable || !form.commissionOverride}
-                  value={form.commissionPercents?.[index] ?? tier.percent}
-                  onChange={(event) => {
-                    const next = [...(form.commissionPercents || [30, 35, 40])];
-                    next[index] = Number(event.target.value);
-                    set("commissionPercents", next);
-                  }}
-                  className="w-24 rounded-xl border border-slate-200 px-2 py-1 text-right font-black"
-                />
-              </label>
-            ))}
-            <label className="flex items-center gap-2 font-bold">
-              <input
-                type="checkbox"
-                disabled={!editable}
-                checked={Boolean(form.commissionOverride)}
-                onChange={(event) => set("commissionOverride", event.target.checked)}
-              />
-              Override percentages for this agreement
-            </label>
-            {commissionNote ? <p className="text-amber-900">{commissionNote}</p> : null}
-            <p>Taxes, refunds, chargebacks, and pass-through usage charges are excluded.</p>
-            <div className="grid gap-2 md:grid-cols-3">
-              {([
-                ["customers", "Active paying customers"],
-                ["gross", "Gross collected"],
-                ["taxes", "Taxes"],
-                ["refunds", "Refunds"],
-                ["chargebacks", "Chargebacks"],
-                ["passThrough", "Pass-through usage"],
-              ] as const).map(([key, label]) => (
-                <label key={key} className="text-xs font-black uppercase text-slate-500">
-                  {label}
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={quote[key]}
-                    onChange={(event) => setQuote((current) => ({ ...current, [key]: event.target.value }))}
-                  />
-                </label>
-              ))}
-            </div>
-            <button type="button" onClick={() => void onQuote()} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-black text-white">
-              Calculate commission
-            </button>
-            {quote.result ? <p className="font-black" data-testid="commission-quote">{quote.result}</p> : null}
-          </div>
-        </Section>
-
-        <Section title="Performance & Renewal">
-          <Field label="Sales / customer target">
-            <input className={inputClass} disabled={!editable} value={form.salesTarget || ""} onChange={(e) => set("salesTarget", e.target.value)} />
-          </Field>
-          <Field label="Target period">
-            <input className={inputClass} disabled={!editable} value={form.targetPeriod || ""} onChange={(e) => set("targetPeriod", e.target.value)} />
-          </Field>
-          <Field label="Renewal date">
-            <input type="date" className={inputClass} disabled={!editable} value={form.renewalDate || ""} onChange={(e) => set("renewalDate", e.target.value)} />
-          </Field>
           <div className="md:col-span-2">
-            <Field label="Renewal terms / notes">
+            <Field label="Renewal notes">
               <textarea className={inputClass} rows={3} disabled={!editable} value={form.renewalNotes || ""} onChange={(e) => set("renewalNotes", e.target.value)} />
             </Field>
           </div>
-          <p className="md:col-span-2 text-sm font-semibold text-slate-600">
-            Continued exclusivity may be subject to the agreed commercial and performance conditions.
-          </p>
         </Section>
+
+        <CommercialTermsPanel
+          form={form}
+          set={set}
+          editable={editable}
+          currencies={currencies}
+          onResetAll={() => setForm((current) => resetCommercialModes(current))}
+        />
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="commission-quote-panel">
+          <h2 className="text-lg font-black">Commission quote</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-600">This calculator does not save an agreement.</p>
+          <div className="mt-3 grid gap-2 md:grid-cols-3">
+            {([
+              ["customers", "Active paying customers"],
+              ["gross", "Gross collected"],
+              ["taxes", "Taxes"],
+              ["refunds", "Refunds"],
+              ["chargebacks", "Chargebacks"],
+              ["passThrough", "Pass-through usage"],
+            ] as const).map(([key, label]) => (
+              <label key={key} className="text-xs font-black uppercase text-slate-500">
+                {label}
+                <input className={`${inputClass} mt-1`} value={quote[key]} onChange={(event) => setQuote((current) => ({ ...current, [key]: event.target.value }))} />
+              </label>
+            ))}
+          </div>
+          <button type="button" onClick={() => void onQuote()} className="mt-3 rounded-xl bg-slate-900 px-3 py-2 text-sm font-black text-white">
+            Calculate commission
+          </button>
+          {quote.result ? <p className="mt-2 font-black" data-testid="commission-quote">{quote.result}</p> : null}
+          {commissionNote ? <p className="mt-2 text-sm font-semibold text-amber-900">{commissionNote}</p> : null}
+        </section>
 
         <Section title="Agreement">
           <Field label="Agreement number">
             <input className={inputClass} disabled={!editable} placeholder="Assigned on save if left blank" value={form.agreementNumber || ""} onChange={(e) => set("agreementNumber", e.target.value)} />
           </Field>
-          <div className="md:col-span-2">
-            <button
-              type="button"
-              className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-black"
-              onClick={() => set("specialTermsEnabled", !form.specialTermsEnabled)}
-              disabled={!editable}
-            >
-              Edit special terms
-            </button>
-            {form.specialTermsEnabled ? (
-              <textarea
-                className={`${inputClass} mt-3`}
-                rows={5}
-                disabled={!editable}
-                placeholder="Exceptional terms for this agreement only."
-                value={form.specialTerms || ""}
-                onChange={(e) => set("specialTerms", e.target.value)}
-              />
-            ) : (
-              <p className="mt-2 text-sm font-semibold text-slate-500">The standard legal sections are not edited here.</p>
-            )}
-          </div>
+          <p className="text-sm font-semibold text-slate-500 md:col-span-2">Special commercial terms are set in the commercial section. The fixed legal sections are not edited here.</p>
         </Section>
 
         <div className="flex flex-wrap gap-2">
           <button type="button" disabled={busy || !editable} onClick={() => void onSave()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">Save draft</button>
           <button type="button" disabled={busy} onClick={() => void onPreview()} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50">Preview agreement</button>
+          {!editable && record ? (
+            <button type="button" disabled={busy} onClick={() => void onAmend()} className="rounded-2xl bg-amber-500 px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="new-agreement-version">
+              New Agreement Version / Amendment
+            </button>
+          ) : null}
           <button type="button" disabled={busy || !record} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">Generate PDF</button>
           {status === "draft" ? <Action busy={busy} onClick={() => void run("ready")}>Ready for review</Action> : null}
           {status === "ready_for_review" ? <Action busy={busy} onClick={() => void run("send")}>Send for review</Action> : null}
@@ -743,6 +762,26 @@ export default function AdminPartnerAgreementEditor() {
           </section>
         ) : null}
 
+        <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="commercial-audit">
+          <h2 className="text-lg font-black">Commercial audit</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-600">
+            Manual overrides record the field, the previous value, the new value, the Admin, and the time. A signed version is not edited in place.
+          </p>
+          {record?.commercialAudit?.length ? (
+            <ul className="mt-3 space-y-2 text-sm">
+              {record.commercialAudit.map((row, index) => (
+                <li key={`${row.field}-${row.at}-${index}`} className="rounded-2xl bg-slate-50 px-3 py-2" data-testid="audit-row">
+                  <p className="font-black">{row.field}</p>
+                  <p className="font-semibold text-slate-600">{row.previousValue} → {row.newValue}</p>
+                  <p className="text-xs font-bold text-slate-500">{row.adminName || "Admin"} · {row.at ? new Date(row.at).toLocaleString() : ""}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm font-semibold text-slate-500">No manual commercial overrides have been saved on this agreement.</p>
+          )}
+        </section>
+
         {record?.history?.length ? (
           <section className="rounded-3xl border border-slate-200 bg-white p-5">
             <h2 className="text-lg font-black">History</h2>
@@ -773,6 +812,19 @@ export default function AdminPartnerAgreementEditor() {
       </main>
     </div>
   );
+}
+
+function subdivisionLabel(kind: string, countryCode = "") {
+  if (countryCode === "US") return "State";
+  if (countryCode === "CA") return "Province / territory";
+  if (countryCode === "AU") return "State / territory";
+  if (countryCode === "AE") return "Emirate";
+  if (countryCode === "BR" || countryCode === "MX") return "State";
+  if (countryCode === "IN") return "State / union territory";
+  if (kind === "province") return "Province / territory";
+  if (kind === "emirate") return "Emirate";
+  if (kind === "state") return "State / territory";
+  return "State / province / emirate / region";
 }
 
 function Action({ children, onClick, busy }: { children: React.ReactNode; onClick: () => void; busy: boolean }) {

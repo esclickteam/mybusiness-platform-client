@@ -1704,6 +1704,14 @@ export default function App() {
                           }
                         />
                         <Route
+                          path="/admin/partner-agreements/preview"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAgreementPreview unsaved />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/admin/partner-agreements/:id/preview"
                           element={
                             <ProtectedRoute roles={["admin"]}>

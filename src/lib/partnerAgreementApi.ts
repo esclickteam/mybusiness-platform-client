@@ -72,6 +72,28 @@ export type PartnerAgreement = {
   paymentStatus: "unpaid" | "paid";
   paymentReference: string;
   commissionOverride: boolean;
+  commissionStructure?: "tiers" | "flat" | "product";
+  flatCommissionPercent?: number | null;
+  productCommissions?: { name: string; percent: number }[];
+  fieldModes?: Record<string, "default" | "custom">;
+  paymentSchedule?: string;
+  depositAmount?: number | null;
+  remainingBalance?: number | null;
+  installmentCount?: number | null;
+  installments?: { label?: string; amount?: number | null; dueDate?: string }[];
+  additionalAmounts?: { label?: string; amount?: number | null }[];
+  minimumCustomerTarget?: string;
+  renewalPrice?: number | null;
+  renewalTerm?: string;
+  commercialAudit?: {
+    field: string;
+    previousValue: string;
+    newValue: string;
+    adminName: string;
+    at: string;
+  }[];
+  editable?: boolean;
+  amendedFromAgreementId?: string;
   commissionPercents: number[];
   tiers: CommissionTier[];
   usesDefaultTiers: boolean;
@@ -126,6 +148,20 @@ export type AgreementInput = {
   currency?: string;
   paymentDueDate?: string;
   commissionOverride?: boolean;
+  commissionStructure?: "tiers" | "flat" | "product";
+  commissionTiers?: CommissionTier[];
+  flatCommissionPercent?: number | string | null;
+  productCommissions?: { name: string; percent: number | string }[];
+  fieldModes?: Record<string, "default" | "custom">;
+  paymentSchedule?: string;
+  depositAmount?: number | string | null;
+  remainingBalance?: number | string | null;
+  installmentCount?: number | string | null;
+  installments?: { label?: string; amount?: number | string | null; dueDate?: string }[];
+  additionalAmounts?: { label?: string; amount?: number | string | null }[];
+  minimumCustomerTarget?: string;
+  renewalPrice?: number | string | null;
+  renewalTerm?: string;
   commissionPercents?: number[];
   salesTarget?: string;
   targetPeriod?: string;
@@ -163,6 +199,18 @@ export async function fetchAgreementMeta() {
   return data as {
     statuses: AgreementStatus[];
     defaultTiers: CommissionTier[];
+    standardCommercial?: {
+      licenseFee: number | null;
+      currency: string;
+      paymentSchedule: string;
+      depositAmount: number;
+      installmentCount: number;
+      curePeriod: string;
+      licenseTerm: string;
+      renewalTerm: string;
+      territoryType: string;
+      commissionTiers: CommissionTier[];
+    };
     currencies: string[];
     templateRevision: string;
     exclusivityNotice: string;
@@ -276,6 +324,16 @@ export async function postAgreementAction(
 ) {
   const { data } = await API.post(`/admin/partner-agreements/${id}/${action}`, body || {});
   return data as { agreement: PartnerAgreement; notified?: boolean; message?: string };
+}
+
+export async function fetchSubdivisions(countryCode: string) {
+  const { data } = await API.get(`/admin/partner-agreements/subdivisions/${countryCode}`);
+  return data as { kind: string; subdivisions: { code: string; name: string }[] };
+}
+
+export async function amendPartnerAgreement(id: string) {
+  const { data } = await API.post(`/admin/partner-agreements/${id}/amend`);
+  return data as { agreement: PartnerAgreement };
 }
 
 export async function renewPartnerAgreement(
