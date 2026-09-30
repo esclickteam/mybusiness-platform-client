@@ -62,7 +62,7 @@ export default function WhatsAppExternalApiSettingsCard({
   businessId,
   linked,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [settings, setSettings] = useState<WhatsAppExternalApiSettings | null>(
@@ -373,7 +373,7 @@ export default function WhatsAppExternalApiSettingsCard({
                 label={t("whatsapp.settings.apiSettingsCreatedAt", {
                   defaultValue: "Created At",
                 })}
-                value={formatDate(settings.apiKey.createdAt)}
+                value={formatDate(settings.apiKey.createdAt, noActivity)}
               />
               <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 sm:col-span-2">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
@@ -472,17 +472,25 @@ export default function WhatsAppExternalApiSettingsCard({
                   </button>
                 </div>
               </div>
+            ) : settings?.webhook?.url ? (
+              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-800 break-all" dir="ltr">
+                {settings.webhook.url}
+              </p>
             ) : (
-              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-800 break-all">
-                {settings?.webhook?.url ||
-                  t("whatsapp.settings.apiSettingsWebhookEmpty")}
+              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-500">
+                {t("whatsapp.settings.apiSettingsWebhookEmpty")}
               </p>
             )}
           </div>
 
           <Field
-            label={t("whatsapp.settings.apiSettingsWebhookSecret", {
-              defaultValue: "Webhook Secret",
+            label={t("whatsapp.settings.hmacSecretLabel", {
+              defaultValue:
+                i18n.language?.startsWith("he")
+                  ? "סוד Webhook"
+                  : i18n.language?.startsWith("ar")
+                    ? "سِرّ Webhook"
+                    : "Webhook Secret",
             })}
             value={secretDisplay}
             mono
@@ -548,6 +556,8 @@ export default function WhatsAppExternalApiSettingsCard({
               ) : null}
             </div>
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              {settings?.webhook?.lastDeliveryAt ? (
+                <>
               <Meta
                 label={t("whatsapp.settings.apiSettingsTimestamp", {
                   defaultValue: "Timestamp",
@@ -572,6 +582,12 @@ export default function WhatsAppExternalApiSettingsCard({
                   noActivity
                 )}
               />
+                </>
+              ) : (
+                <p className="sm:col-span-3 text-sm font-semibold text-slate-500">
+                  {noActivity}
+                </p>
+              )}
             </div>
             {settings?.webhook?.lastDeliveryError ? (
               <p className="mt-2 rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 break-words">
