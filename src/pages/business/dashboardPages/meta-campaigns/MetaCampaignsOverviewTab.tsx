@@ -26,17 +26,14 @@ import {
   Eye,
   Facebook,
   Instagram,
-  Lightbulb,
   Loader2,
   Pause,
   Pencil,
   Play,
   RefreshCw,
-  Sparkles,
   Target,
   TrendingDown,
   TrendingUp,
-  Wallet,
   X,
 } from "lucide-react";
 import {
@@ -44,7 +41,6 @@ import {
   selectMetaAdAccount,
   setMetaCampaignStatus,
   type MetaCampaign,
-  type MetaCampaignInsight,
   type MetaCampaignsOverview,
 } from "../../../../api/metaCampaignsApi";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
@@ -53,7 +49,6 @@ import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import MetaAdsOnboarding from "./MetaAdsOnboarding";
 import MetaAdsConnectionHealth from "./MetaAdsConnectionHealth";
-import MetaAdsOverviewSignals from "./MetaAdsOverviewSignals";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   formatAdAccountLabel,
@@ -150,44 +145,6 @@ function KpiCard({
     <Link to={href} className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300">
       {body}
     </Link>
-  );
-}
-
-function InsightCard({ item }: { item: MetaCampaignInsight }) {
-  const { t } = useTranslation();
-  const tone =
-    item.tone === "success"
-      ? "border-emerald-100 bg-emerald-50/70 text-emerald-800"
-      : item.tone === "warning"
-        ? "border-amber-100 bg-amber-50/70 text-amber-900"
-        : "border-sky-100 bg-sky-50/70 text-sky-900";
-  const title = item.titleKey
-    ? t(item.titleKey, { defaultValue: item.title || "" })
-    : item.title || "";
-  const body = item.bodyKey
-    ? t(item.bodyKey, {
-        ...(item.bodyParams || {}),
-        defaultValue: item.body || "",
-      })
-    : item.body || "";
-
-  return (
-    <div className={`rounded-xl border p-3 ${tone}`}>
-      <div className="flex items-start gap-2">
-        {item.demoData ? (
-          <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-slate-500">
-            {t("metaCampaigns.insights.demoData", "Demo data")}
-          </span>
-        ) : null}
-        <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 opacity-80" />
-        <div className="min-w-0">
-          <p className="text-sm font-black">{title}</p>
-          <p className="mt-1 text-xs font-semibold leading-relaxed opacity-90">
-            {body}
-          </p>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -727,17 +684,6 @@ export default function MetaCampaignsOverviewTab() {
         )}
       </div>
 
-      <section className={`${cardBase} p-4`} data-testid="what-needs-attention">
-        <h3 className="text-sm font-black text-slate-900">{t("metaCampaigns.ux.attention")}</h3>
-        <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-600">
-          {!hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionNoData")}</li> : null}
-          {(data?.campaigns || []).filter((row) => String(row.effectiveStatus || "").toUpperCase().includes("ERROR") || String(row.effectiveStatus || "").toUpperCase().includes("REJECT")).length ? (
-            <li>{t("metaCampaigns.ux.attentionDelivery")}</li>
-          ) : null}
-          {hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionOk")}</li> : null}
-        </ul>
-      </section>
-
       <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="overview-range-label">
         {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
       </p>
@@ -806,8 +752,7 @@ export default function MetaCampaignsOverviewTab() {
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-4 min-w-0">
+      <div className="space-y-4">
           <div className={`${cardBase} p-4`}>
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div>
@@ -1279,45 +1224,6 @@ export default function MetaCampaignsOverviewTab() {
               </table>
             </div>
           </div>
-        </div>
-
-        <aside className="space-y-4">
-          {businessId || urlBusinessId ? (
-            <MetaAdsOverviewSignals
-              businessId={String(urlBusinessId || businessId)}
-            />
-          ) : null}
-          <div className={`${cardBase} p-4`}>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-violet-600" />
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.insights.title")}
-              </p>
-            </div>
-            <div className="mt-3 space-y-2.5">
-              {(data?.insights || []).map((item) => (
-                <InsightCard key={item.id} item={item} />
-              ))}
-            </div>
-          </div>
-
-          <div className={`${cardBase} p-4`}>
-            <div className="flex items-center gap-2">
-              <Wallet className="h-4 w-4 text-emerald-600" />
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.overview.spendCard")}
-              </p>
-            </div>
-            <p className="mt-3 text-2xl font-black text-slate-900">
-              {formatMetricOrDash(kpis?.spend, (n) =>
-                formatCurrency(n, currency)
-              , { treatZeroAsEmpty: !hasInsightSignal })}
-            </p>
-            <p className="mt-1 text-xs font-semibold text-slate-500">
-              {t("metaCampaigns.overview.spendCardHint")}
-            </p>
-          </div>
-        </aside>
       </div>
 
       {detailsCampaign && businessId ? (
