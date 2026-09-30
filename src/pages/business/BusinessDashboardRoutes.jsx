@@ -186,16 +186,6 @@ const MetaAiCampaignWizardPage = lazy(() =>
 const MetaCampaignsSettingsTab = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignsSettingsTab")
 );
-;
-const MetaCampaignGoalsPage = lazy(() =>
-  import("./dashboardPages/meta-campaigns/MetaCampaignGoalsPage")
-);
-const MetaPortfolioPage = lazy(() =>
-  import("./dashboardPages/meta-campaigns/MetaPortfolioPage")
-);
-const MetaAdsRecommendationsPage = lazy(() =>
-  import("./dashboardPages/meta-campaigns/MetaAdsRecommendationsPage")
-);
 const MetaCampaignsCampaignsPage = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignsCampaignsPage")
 );
@@ -607,10 +597,10 @@ const BusinessDashboardRoutes = () => {
             <Route path="library" element={<Navigate to="overview" replace />} />
             <Route path="rules" element={<Navigate to="overview" replace />} />
             <Route path="automations" element={<Navigate to="overview" replace />} />
-            <Route path="goals" element={<MetaCampaignGoalsPage />} />
-            <Route path="recommendations" element={<MetaAdsRecommendationsPage />} />
-            <Route path="health" element={<Navigate to="recommendations" replace />} />
-            <Route path="portfolio" element={<MetaPortfolioPage />} />
+            <Route path="goals" element={<Navigate to="overview" replace />} />
+            <Route path="recommendations" element={<Navigate to="overview" replace />} />
+            <Route path="health" element={<Navigate to="overview" replace />} />
+            <Route path="portfolio" element={<Navigate to="overview" replace />} />
             <Route path="copilot" element={<Navigate to="overview" replace />} />
             <Route path="settings" element={<MetaCampaignsSettingsTab />} />
             <Route path="*" element={<Navigate to="overview" replace />} />

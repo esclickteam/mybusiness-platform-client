@@ -53,7 +53,7 @@ import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import MetaAdsOnboarding from "./MetaAdsOnboarding";
 import MetaAdsConnectionHealth from "./MetaAdsConnectionHealth";
-import MetaAdsRecommendationsSummary from "./MetaAdsRecommendationsSummary";
+import MetaAdsOverviewSignals from "./MetaAdsOverviewSignals";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   formatAdAccountLabel,
@@ -1283,9 +1283,8 @@ export default function MetaCampaignsOverviewTab() {
 
         <aside className="space-y-4">
           {businessId || urlBusinessId ? (
-            <MetaAdsRecommendationsSummary
+            <MetaAdsOverviewSignals
               businessId={String(urlBusinessId || businessId)}
-              basePath={basePath}
             />
           ) : null}
           <div className={`${cardBase} p-4`}>

@@ -2400,14 +2400,6 @@ export default function MetaCampaignEditorPage() {
       {isEdit ? (
         <div className="grid gap-4 xl:grid-cols-2">
           <aside className="space-y-4">
-            {(businessId || urlBusinessId) && campaignId ? (
-              <Link
-                to={`../recommendations?campaignId=${encodeURIComponent(campaignId)}`}
-                className={`${btnSecondary} w-full`}
-              >
-                {t("metaCampaigns.recommendations.viewCta")}
-              </Link>
-            ) : null}
           <div className={`${cardBase} p-4`}>
             <p className="text-sm font-black text-slate-900">
               {t("metaCampaigns.form.metricsTitle")}

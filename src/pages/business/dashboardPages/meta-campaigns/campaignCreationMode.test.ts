@@ -67,16 +67,16 @@ describe("BusinessDashboardRoutes wiring", () => {
       /path="automations"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
-      /path="goals"\s+element=\{<MetaCampaignGoalsPage/
+      /path="goals"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
-      /path="recommendations"\s+element=\{<MetaAdsRecommendationsPage/
+      /path="recommendations"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
-      /path="health"\s+element=\{<Navigate to="recommendations"/
+      /path="health"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
-      /path="portfolio"\s+element=\{<MetaPortfolioPage/
+      /path="portfolio"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
       /path="copilot"\s+element=\{<Navigate to="overview"/
@@ -97,6 +97,9 @@ describe("BusinessDashboardRoutes wiring", () => {
     expect(shell).not.toMatch(/path: "library"/);
     expect(shell).not.toMatch(/path: "rules"/);
     expect(shell).not.toMatch(/path: "copilot"/);
+    expect(shell).not.toMatch(/path: "goals"/);
+    expect(shell).not.toMatch(/path: "recommendations"/);
+    expect(shell).not.toMatch(/path: "portfolio"/);
     const goals = fs.readFileSync(
       path.resolve(__dirname, "./MetaCampaignGoalsPage.tsx"),
       "utf8"
@@ -121,5 +124,8 @@ describe("BusinessDashboardRoutes wiring", () => {
       expect(file).not.toMatch(/\/copilot/);
       expect(file).not.toMatch(/askAi/);
     }
+    expect(overview).not.toMatch(/\/recommendations/);
+    expect(overview).not.toMatch(/\/goals/);
+    expect(overview).not.toMatch(/\/portfolio/);
   });
 });
