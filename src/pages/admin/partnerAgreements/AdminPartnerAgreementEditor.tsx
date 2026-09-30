@@ -7,6 +7,7 @@ import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPan
 import SignatoriesPanel from "./SignatoriesPanel";
 import { agreementActionLabel, agreementStatusLabel, fill, subdivisionLabel } from "./partnerAgreementPageCopy.js";
 import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
+import SignaturePad from "../../../components/SignaturePad";
 import {
   agreementError,
   amendPartnerAgreement,
@@ -221,8 +222,7 @@ export default function AdminPartnerAgreementEditor() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [legalCompanyName, setLegalCompanyName] = useState("BizUply LLC");
-  const [bizSignature, setBizSignature] = useState<{ typedName: string; confirmed: boolean } | null>(null);
-  const [signName, setSignName] = useState("");
+  const [bizSignature, setBizSignature] = useState<{ imageDataUrl: string; confirmed: boolean } | null>(null);
   const [signConfirmed, setSignConfirmed] = useState(false);
   const [renewal, setRenewal] = useState({ startDate: "", endDate: "", agreementNumber: "" });
   const [quote, setQuote] = useState({ customers: "20", gross: "1000", taxes: "0", refunds: "0", chargebacks: "0", passThrough: "0", result: "" });
@@ -400,8 +400,8 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   async function onCreateSigned() {
-    if (!bizSignature?.confirmed || !bizSignature.typedName) {
-      setError("Sign as Bizuply before creating the agreement.");
+    if (!bizSignature?.confirmed || !bizSignature.imageDataUrl) {
+      setError("Draw the Bizuply signature before creating the agreement.");
       return;
     }
     setBusy(true);
@@ -422,9 +422,12 @@ export default function AdminPartnerAgreementEditor() {
         previewHash: preview.documentHash || "",
         bizuplySignature: {
           confirmed: true,
-          method: "typed",
-          typedName: bizSignature.typedName,
+          method: "drawn",
+          imageDataUrl: bizSignature.imageDataUrl,
           confirmationText: `I confirm that I am authorized to sign this Agreement on behalf of ${legalCompanyName}.`,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+          localDate: new Date().toLocaleDateString(),
+          localTime: new Date().toLocaleTimeString(),
         },
       });
       sessionStorage.removeItem("partner-agreement-pending-bizuply-signature");
@@ -916,30 +919,40 @@ export default function AdminPartnerAgreementEditor() {
           <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="sign-before-create">
             <h2 className="text-lg font-black">Sign as Bizuply</h2>
             <p className="mt-1 text-sm font-semibold text-slate-600">
-              The signature stays on this screen until you create the agreement. Creation binds it to the immutable document hash.
+              Draw the Bizuply signature on this screen. Creating the agreement binds it to the immutable document hash.
             </p>
-            <label className="mt-3 block text-sm font-bold text-slate-800">
-              Typed signature
-              <input className={`${inputClass} mt-1`} value={signName} onChange={(e) => { setSignName(e.target.value); setBizSignature(null); }} />
-            </label>
             <label className="mt-3 flex items-start gap-2 text-sm font-semibold text-slate-800">
               <input type="checkbox" className="mt-1" checked={signConfirmed} onChange={(e) => { setSignConfirmed(e.target.checked); setBizSignature(null); }} />
               <span>I confirm that I am authorized to sign this Agreement on behalf of {legalCompanyName}.</span>
             </label>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50"
-                disabled={!signConfirmed || !signName.trim()}
-                onClick={() => setBizSignature({ typedName: signName.trim(), confirmed: true })}
-              >
-                Sign as Bizuply
-              </button>
-              <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
-                Create Signed Agreement
-              </button>
+            <div className="mt-3">
+              <SignaturePad
+                label="Draw signature"
+                clearLabel="Clear"
+                onChange={(imageDataUrl) => setBizSignature(signConfirmed && imageDataUrl ? { imageDataUrl, confirmed: true } : null)}
+              />
             </div>
-            {bizSignature ? <p className="mt-2 text-sm font-bold text-emerald-800">Bizuply signature ready: {bizSignature.typedName}</p> : null}
+            <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
+              Create Signed Agreement
+            </button>
+          </section>
+        ) : null}
+        {record?.partnerSignatureTimeline?.length ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="partner-signature-timeline">
+            <h2 className="text-lg font-black">Partner Signature Timeline</h2>
+            <div className="mt-3 space-y-3">
+              {record.partnerSignatureTimeline.map((row) => (
+                <p key={row.signatoryId || row.email} className="text-sm font-semibold text-slate-800">
+                  <span className="font-black">{row.legalName}</span>
+                  <br />
+                  {row.title}
+                  <br />
+                  Signed: {row.localDate || String(row.signedAt || "").slice(0, 10)} {row.localTime || ""}
+                  <br />
+                  Time zone: {row.timeZone || "UTC"}
+                </p>
+              ))}
+            </div>
           </section>
         ) : null}
 

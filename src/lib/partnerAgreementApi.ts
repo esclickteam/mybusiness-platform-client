@@ -90,6 +90,20 @@ export type PartnerAgreement = {
   currency: string;
   paymentDueDate: string;
   paymentStatus: "unpaid" | "paid";
+  verificationStatus?: string;
+  documentCount?: number;
+  activationStatus?: string;
+  signatureStatus?: string;
+  partnerSignatureTimeline?: {
+    signatoryId?: string;
+    legalName: string;
+    title: string;
+    email: string;
+    signedAt?: string;
+    timeZone?: string;
+    localDate?: string;
+    localTime?: string;
+  }[];
   paymentReference: string;
   paymentStructure?: string;
   paymentMethod?: string;
@@ -303,7 +317,7 @@ export async function prefillAgreementPartner(partnerId: string) {
   };
 }
 
-export async function listPartnerAgreements(params?: { status?: string; q?: string }) {
+export async function listPartnerAgreements(params?: { status?: string; q?: string; exclusive?: string }) {
   const { data } = await API.get("/admin/partner-agreements", { params });
   return data as { items: PartnerAgreement[] };
 }
