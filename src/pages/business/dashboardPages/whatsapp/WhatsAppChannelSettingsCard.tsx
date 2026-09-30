@@ -189,13 +189,12 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
     }
   };
 
-  const empty = t("whatsapp.settings.noActivityYet");
   const conn = settings?.connection;
   const webhook = settings?.webhook;
   const health = webhook?.health || "not_configured";
   const lastAt = webhook?.lastEventAt
     ? new Date(webhook.lastEventAt).toLocaleString(locale)
-    : empty;
+    : "";
   const verifyStatus = webhook?.verifyTokenStatus || "missing";
   const verificationStatus = webhook?.verificationStatus || "not_tested";
 
@@ -343,24 +342,36 @@ export default function WhatsAppChannelSettingsCard({ businessId }: Props) {
               value={t(`whatsapp.settings.channelHealth.${health}`, health)}
               badgeClass={healthBadgeClass(health)}
             />
-            <FieldRow
-              label={t("whatsapp.settings.channelLastEventType")}
-              value={webhook?.lastEventType || empty}
-              ltr
-            />
-            <FieldRow
-              label={t("whatsapp.settings.channelLastEvent")}
-              value={webhook?.lastEventStatus || webhook?.lastEventWamid || empty}
-              ltr
-            />
-            <FieldRow
-              label={t("whatsapp.settings.channelLastError")}
-              value={webhook?.lastEventError || empty}
-            />
-            <FieldRow
-              label={t("whatsapp.settings.channelLastReceivedAt")}
-              value={lastAt}
-            />
+            {health === "no_events" ? null : (
+              <>
+                {webhook?.lastEventType ? (
+                  <FieldRow
+                    label={t("whatsapp.settings.channelLastEventType")}
+                    value={webhook.lastEventType}
+                    ltr
+                  />
+                ) : null}
+                {webhook?.lastEventStatus || webhook?.lastEventWamid ? (
+                  <FieldRow
+                    label={t("whatsapp.settings.channelLastEvent")}
+                    value={webhook.lastEventStatus || webhook.lastEventWamid}
+                    ltr
+                  />
+                ) : null}
+                {webhook?.lastEventError ? (
+                  <FieldRow
+                    label={t("whatsapp.settings.channelLastError")}
+                    value={webhook.lastEventError}
+                  />
+                ) : null}
+                {webhook?.lastEventAt ? (
+                  <FieldRow
+                    label={t("whatsapp.settings.channelLastReceivedAt")}
+                    value={lastAt}
+                  />
+                ) : null}
+              </>
+            )}
           </div>
         </div>
       )}
