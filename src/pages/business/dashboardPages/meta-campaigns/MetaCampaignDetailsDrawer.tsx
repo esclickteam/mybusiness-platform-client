@@ -18,6 +18,7 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary } from "../../../../styles/bizuplyUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
+import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   formatCurrency,
   formatDateHe,
@@ -26,6 +27,7 @@ import {
   formatNumber,
   formatPercent,
   metaDeliveryStatusKey,
+  metaObjectiveLabel,
   statusTone,
 } from "./metaCampaignUtils";
 
@@ -104,10 +106,15 @@ export default function MetaCampaignDetailsDrawer({
         setCta(firstAd?.callToAction || next.callToAction || "");
       })
       .catch((error: any) => {
+        const kind = metaAdsFriendlyMessage(error, "LOAD");
         toast.error(
-          error?.response?.data?.error ||
-            error?.response?.data?.message ||
-            t("metaCampaigns.errors.loadCampaign")
+          kind === "RATE_LIMIT"
+            ? t("metaCampaigns.actions.rateLimited")
+            : kind === "TOKEN"
+              ? t("metaCampaigns.ux.tokenIssue")
+              : kind === "PERMISSION"
+                ? t("metaCampaigns.errors.permissionRead")
+                : t("metaCampaigns.errors.loadCampaign")
         );
         setDetail(campaign);
       })
@@ -165,10 +172,11 @@ export default function MetaCampaignDetailsDrawer({
       toast.success(t("metaCampaigns.toasts.saved"));
       onChanged();
     } catch (error: any) {
+      const kind = metaAdsFriendlyMessage(error, "UPDATE");
       toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.errors.updateCampaign")
+        kind === "RATE_LIMIT"
+          ? t("metaCampaigns.actions.rateLimited")
+          : t("metaCampaigns.errors.updateCampaign")
       );
     } finally {
       setSaving(false);
@@ -195,11 +203,7 @@ export default function MetaCampaignDetailsDrawer({
       });
       setPreviews(res.previews || (res.preview ? [res.preview] : []));
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.preview.failed")
-      );
+      toast.error(t("metaCampaigns.preview.failed"));
     } finally {
       setPreviewing(false);
     }
@@ -221,11 +225,7 @@ export default function MetaCampaignDetailsDrawer({
       toast.success(t("metaCampaigns.manager.duplicatedPaused"));
       onChanged();
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.errors.duplicate")
-      );
+      toast.error(t("metaCampaigns.errors.duplicate"));
     } finally {
       setSaving(false);
     }
@@ -236,13 +236,13 @@ export default function MetaCampaignDetailsDrawer({
       <button type="button" className="h-full flex-1" aria-label={t("metaCampaigns.details.close")} onClick={onClose} />
       <aside className="flex h-full w-full max-w-xl flex-col overflow-y-auto bg-white shadow-2xl sm:max-w-2xl">
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-slate-100 bg-white px-4 py-3">
-          <div>
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] font-black uppercase tracking-wide text-violet-700">
               {t("metaCampaigns.details.badge")}
             </p>
-            <h2 className="text-lg font-black text-slate-900">{detail?.name || campaign.name}</h2>
+            <h2 className="break-words text-lg font-black text-slate-900">{detail?.name || campaign.name}</h2>
             <a
-              href={`../copilot?q=${encodeURIComponent(`Ask AI about this campaign ${detail?.name || campaign.name}`)}`}
+              href={`../copilot?q=${encodeURIComponent(`${t("metaCampaigns.ux.askAiCampaign")} ${detail?.name || campaign.name}`)}`}
               className="mt-1 inline-flex text-xs font-black text-violet-700 underline"
             >
               {t("metaCampaigns.ux.askAiCampaign")}
@@ -259,8 +259,9 @@ export default function MetaCampaignDetailsDrawer({
         </div>
 
         {loading ? (
-          <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 text-center">
             <Loader2 className="h-6 w-6 animate-spin text-violet-600" />
+            <p className="text-sm font-semibold text-slate-500">{t("metaCampaigns.empty.loadingFromMeta")}</p>
           </div>
         ) : (
           <div className="space-y-5 px-4 py-4">
@@ -280,8 +281,14 @@ export default function MetaCampaignDetailsDrawer({
                   {t(`metaCampaigns.status.${metaDeliveryStatusKey(detail?.deliveryStatus || detail?.effectiveStatus || detail?.status)}`)}
                 </span>
               } />
-              <Field label={t("metaCampaigns.manager.configured")} value={detail?.configuredStatus || detail?.status} />
-              <Field label={t("metaCampaigns.table.objective")} value={detail?.objective} />
+              <Field
+                label={t("metaCampaigns.manager.configured")}
+                value={t(`metaCampaigns.status.${metaDeliveryStatusKey(detail?.configuredStatus || detail?.status)}`)}
+              />
+              <Field
+                label={t("metaCampaigns.table.objective")}
+                value={metaObjectiveLabel(detail?.objective, t)}
+              />
               <Field
                 label={t("metaCampaigns.table.budget")}
                 value={
@@ -329,7 +336,9 @@ export default function MetaCampaignDetailsDrawer({
                       }}
                     >
                       <span>{adSet.name}</span>
-                      <span className="text-xs text-slate-500">{adSet.effectiveStatus || adSet.status}</span>
+                      <span className="text-xs text-slate-500">
+                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(adSet.effectiveStatus || adSet.status)}`)}
+                      </span>
                     </button>
                     <div className="border-t border-slate-100 px-3 py-2">
                       {(adSet.ads || []).map((ad) => (

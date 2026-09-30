@@ -9583,6 +9583,7 @@
       "connectedThroughMeta": "Connected through Meta",
       "syncedWithMeta": "Synced with Meta",
       "lastSyncedAgo": "Last synced {{seconds}} seconds ago",
+      "lastSynced": "Last synced: {{time}}",
       "instagramNotConnected": "Instagram account not connected",
       "instagramConnectHint": "Connect an Instagram professional account to this Facebook Page in Meta. Facebook-only campaigns keep working.",
       "instagramConnectCta": "Open Meta settings",
@@ -9603,7 +9604,7 @@
       "other": "Other"
     },
     "details": {
-      "badge": "ads_read · Read only",
+      "badge": "Read only",
       "readOnlyHint": "Open a campaign to review metrics, hierarchy, and edit after Meta confirms the save.",
       "close": "Close",
       "viewLeadsInCrm": "View leads in CRM",
@@ -10533,7 +10534,18 @@
       "difference": "Difference",
       "started": "When goal started",
       "noGoals": "No goals yet.",
-      "evaluationWindow": "Goal evaluation window: {{window}}"
+      "evaluationWindow": "Goal evaluation window: {{window}}",
+      "evaluate": "Evaluate",
+      "remove": "Remove",
+      "currencyValue": "{{value}} ILS",
+      "windows": {
+        "TODAY": "Today",
+        "YESTERDAY": "Yesterday",
+        "LAST_3D": "Last 3 days",
+        "LAST_7D": "Last 7 days",
+        "LAST_14D": "Last 14 days",
+        "LAST_30D": "Last 30 days"
+      }
     },
     "portfolio": {
       "title": "Portfolio Optimization",
@@ -10551,7 +10563,10 @@
       "currentTotal": "Current total budget",
       "proposedTotal": "Proposed total budget",
       "blendedCpl": "Blended CPL",
-      "explanation": "Explanation"
+      "explanation": "Explanation",
+      "colProposed": "Proposed",
+      "colRec": "Recommendation",
+      "colReason": "Reason"
     },
     "copilot": {
       "title": "AI Marketing Copilot",
