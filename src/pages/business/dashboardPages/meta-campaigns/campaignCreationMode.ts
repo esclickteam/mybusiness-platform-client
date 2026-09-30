@@ -18,6 +18,7 @@ export function isMetaCampaignsKnownChildPath(pathSegment: string): boolean {
     pathSegment === "settings" ||
     pathSegment === "rules" ||
     pathSegment === "goals" ||
+    pathSegment === "portfolio" ||
     pathSegment === "library" ||
     pathSegment === "edit"
   );

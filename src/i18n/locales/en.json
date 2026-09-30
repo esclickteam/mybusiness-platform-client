@@ -9538,6 +9538,7 @@
       "library": "Creative library",
       "rules": "Automation Rules",
       "goals": "Campaign goals",
+      "portfolio": "Portfolio Optimization",
       "settings": "Meta connection"
     },
     "manager": {
@@ -10523,6 +10524,24 @@
       "difference": "Difference",
       "started": "When goal started",
       "noGoals": "No goals yet."
+    },
+    "portfolio": {
+      "title": "Portfolio Optimization",
+      "subtitle": "Compare campaigns in this ad account and review a guarded budget split before anything is sent to Meta.",
+      "keepTotal": "Keep total budget unchanged",
+      "growth": "Allow growth up to account cap",
+      "targetCpl": "Target blended CPL",
+      "accountCap": "Account daily cap",
+      "maxChange": "Max change %",
+      "analyze": "Analyze",
+      "simulate": "Simulate allocation",
+      "apply": "Apply allocation",
+      "confirm": "Confirm apply",
+      "review": "Current → Proposed",
+      "currentTotal": "Current total budget",
+      "proposedTotal": "Proposed total budget",
+      "blendedCpl": "Blended CPL",
+      "explanation": "Explanation"
     },
     "empty": {
       "notConnectedTitle": "No connected ad account found",

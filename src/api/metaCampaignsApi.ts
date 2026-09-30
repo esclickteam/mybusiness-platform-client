@@ -1417,6 +1417,84 @@ export async function getCampaignGoalDashboard(businessId: string, campaignId: s
   return data.dashboard;
 }
 
+export type PortfolioCampaignRow = {
+  campaignId: string;
+  name: string;
+  status: string;
+  currentBudget: number;
+  proposedBudget: number;
+  delta: number;
+  spend: number;
+  results: number;
+  cpl: number;
+  ctr: number;
+  cpc: number;
+  cpm: number;
+  frequency: number;
+  recommendation: string;
+  reason: string;
+  goalTarget?: number | null;
+};
+
+export type PortfolioAllocation = {
+  id?: string;
+  objective: string;
+  mode: string;
+  campaigns: PortfolioCampaignRow[];
+  blended: {
+    totalSpend: number;
+    totalResults: number;
+    blendedCpl: number;
+    weightedCtr: number;
+    totalDailyBudget: number;
+  };
+  totals: { currentBudget: number; proposedBudget: number; delta: number };
+  explanation?: string;
+  status?: string;
+  applyResults?: Array<Record<string, unknown>>;
+};
+
+export async function getMetaPortfolio(businessId: string) {
+  const { data } = await API.get<{ success: boolean; allocation?: PortfolioAllocation; campaigns: PortfolioCampaignRow[]; blended: PortfolioAllocation["blended"]; totals: PortfolioAllocation["totals"] }>(
+    "/meta-campaigns/portfolio",
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function analyzeMetaPortfolio(businessId: string, payload: Record<string, unknown>) {
+  const { data } = await API.post<{ success: boolean; allocation: PortfolioAllocation }>(
+    "/meta-campaigns/portfolio/analyze",
+    { ...payload, businessId }
+  );
+  return data;
+}
+
+export async function simulateMetaPortfolio(businessId: string, payload: Record<string, unknown>) {
+  const { data } = await API.post<{ success: boolean; allocation: PortfolioAllocation }>(
+    "/meta-campaigns/portfolio/simulate",
+    { ...payload, businessId }
+  );
+  return data;
+}
+
+export async function applyMetaPortfolio(businessId: string, id: string) {
+  const { data } = await API.post<{
+    success: boolean;
+    allocation: PortfolioAllocation;
+    partial?: boolean;
+  }>(`/meta-campaigns/portfolio/${id}/apply`, { businessId, confirm: true });
+  return data;
+}
+
+export async function getMetaPortfolioHistory(businessId: string) {
+  const { data } = await API.get<{ success: boolean; history: PortfolioAllocation[] }>(
+    "/meta-campaigns/portfolio/history",
+    withBusiness(businessId)
+  );
+  return data.history || [];
+}
+
 export async function pollMetaPublishes(businessId: string) {
   const { data } = await API.post<{
     success: boolean;
