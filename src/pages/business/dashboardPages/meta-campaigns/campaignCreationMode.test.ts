@@ -127,5 +127,9 @@ describe("BusinessDashboardRoutes wiring", () => {
     expect(overview).not.toMatch(/\/recommendations/);
     expect(overview).not.toMatch(/\/goals/);
     expect(overview).not.toMatch(/\/portfolio/);
+    expect(overview).not.toMatch(/MetaAdsOverviewSignals/);
+    expect(overview).not.toMatch(/what-needs-attention/);
+    expect(overview).not.toMatch(/insights\.title/);
+    expect(overview).not.toMatch(/attentionOk/);
   });
 });
