@@ -5,6 +5,7 @@ import {
   applyAiCampaignRecommendation,
   dismissAiCampaignRecommendation,
   generateAiCampaignRecommendations,
+  getCampaignGoalDashboard,
   getMetaCampaignHealth,
   listAiCampaignRecommendations,
   undoAiCampaignRecommendation,
@@ -15,6 +16,7 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { formatCurrency, formatPercent } from "./metaCampaignUtils";
+import MetaCampaignGoalCard from "./MetaCampaignGoalCard";
 
 type Props = {
   businessId: string;
@@ -156,6 +158,7 @@ export default function MetaCampaignHealthPanel({
   const [error, setError] = useState(false);
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState<AiCampaignRecommendation | null>(null);
+  const [goalCard, setGoalCard] = useState<Awaited<ReturnType<typeof getCampaignGoalDashboard>>>(null);
 
   const load = async () => {
     setLoading(true);
@@ -164,6 +167,7 @@ export default function MetaCampaignHealthPanel({
       if (campaignId && variant === "campaign") {
         const next = await getMetaCampaignHealth(businessId, campaignId);
         setHealth(next);
+        setGoalCard(await getCampaignGoalDashboard(businessId, campaignId));
       }
       const [open, closed] = await Promise.all([
         listAiCampaignRecommendations(businessId, "open"),
@@ -263,6 +267,18 @@ export default function MetaCampaignHealthPanel({
       <p className="mt-1 text-sm font-bold text-slate-700">
         {t(`metaCampaigns.campaignHealth.status.${status}`)}
       </p>
+      {goalCard ? (
+        <div className="mt-3">
+          <MetaCampaignGoalCard
+            goalName={goalCard.goal.name}
+            target={goalCard.progress.target}
+            current={goalCard.progress.current}
+            differencePct={goalCard.progress.differencePct}
+            status={goalCard.health.status}
+            started={goalCard.progress.started}
+          />
+        </div>
+      ) : null}
       {campaignId ? (
         <button
           type="button"

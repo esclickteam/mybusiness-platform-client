@@ -53,6 +53,7 @@ vi.mock("../../../../api/metaCampaignsApi", async () => {
       dismissAiCampaignRecommendation(...args),
     viewAiCampaignRecommendation: (...args: unknown[]) =>
       viewAiCampaignRecommendation(...args),
+    getCampaignGoalDashboard: vi.fn().mockResolvedValue(null),
   };
 });
 

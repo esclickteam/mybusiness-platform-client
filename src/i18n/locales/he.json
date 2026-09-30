@@ -9526,6 +9526,7 @@
       "create": "מנהל המודעות",
       "library": "ספריית קריאייטיב",
       "rules": "חוקי אוטומציה",
+      "goals": "יעדי קמפיין",
       "settings": "חיבור Meta"
     },
     "manager": {
@@ -10474,6 +10475,41 @@
       "testResult": "תוצאת בדיקה",
       "noRules": "עדיין אין חוקי אוטומציה.",
       "safety": "חוק לעולם לא מפעיל אובייקט מושהה. אוטומטי מבצע רק את הפעולה שבחרתם."
+    },
+    "goals": {
+      "title": "יעדי קמפיין",
+      "subtitle": "מגדירים יעד עסקי פשוט. Invistimo מתרגם אותו למדדים ולחוקי Phase 5 שסוקרים לפני הפעלה.",
+      "setGoal": "הגדרת יעד לקמפיין",
+      "step1": "מטרה",
+      "step2": "יעד",
+      "step3": "גבולות תקציב",
+      "step4": "העדפת אוטומציה",
+      "moreLeads": "יותר לידים",
+      "lowerCpl": "עלות ליד נמוכה יותר",
+      "moreConversions": "יותר המרות באתר",
+      "improveEfficiency": "שיפור יעילות",
+      "scale": "הגדלה זהירה",
+      "targetCpl": "יעד CPL (₪)",
+      "currentBudget": "תקציב יומי נוכחי",
+      "maxBudget": "תקציב יומי מקסימלי",
+      "maxIncrease": "העלאה מקסימלית %",
+      "maxDecrease": "הפחתה מקסימלית %",
+      "recommendOnly": "המלצות בלבד",
+      "safeAuto": "פעולות אוטומטיות בטוחות",
+      "draft": "יצירת תוכנית",
+      "reviewTitle": "לפי היעד, Invistimo יעקוב אחרי",
+      "start": "התחלת מעקב",
+      "editRules": "אפשר לערוך, להסיר או לשנות מצב לפני ההתחלה.",
+      "status": {
+        "ON_TARGET": "עומד ביעד",
+        "NEAR_TARGET": "קרוב ליעד",
+        "NEEDS_ATTENTION": "דורש תשומת לב",
+        "INSUFFICIENT_DATA": "אין מספיק נתונים"
+      },
+      "current": "נוכחי",
+      "difference": "פער",
+      "started": "כשהיעד הוגדר",
+      "noGoals": "עדיין אין יעדים."
     },
     "empty": {
       "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",
