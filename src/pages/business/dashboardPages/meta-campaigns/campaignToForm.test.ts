@@ -59,4 +59,29 @@ describe("campaignToForm", () => {
     expect(form.instagramReels).toBe(true);
     expect(form.pageId).toBe("page_showcase_demo");
   });
+
+  it("reloads Meta creative fields after a campaign GET", () => {
+    const form = campaignToForm(
+      {
+        ...campaign,
+        id: "120251635041620469",
+        pageId: "1222199210985216",
+        instagramUserId: "17841400000000000",
+        primaryText: "Invistimo production E2E paused creative. No spend.",
+        headline: "Paused production test",
+        callToAction: "LEARN_MORE",
+        link: "https://invistimo.com",
+        imageHash: "6688245a4912f205c535bc21a8de2563",
+        imageUrl: "https://example.com/ad.png",
+      },
+      "fallback-page"
+    );
+    expect(form.primaryText).toContain("Invistimo production E2E");
+    expect(form.headline).toBe("Paused production test");
+    expect(form.callToAction).toBe("LEARN_MORE");
+    expect(form.link).toBe("https://invistimo.com");
+    expect(form.imageHash).toBe("6688245a4912f205c535bc21a8de2563");
+    expect(form.imagePreviewUrl).toBe("https://example.com/ad.png");
+    expect(form.pageId).toBe("1222199210985216");
+  });
 });

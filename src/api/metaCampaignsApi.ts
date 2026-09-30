@@ -67,6 +67,11 @@ export type MetaCampaign = {
   stopTime?: string | null;
   metrics: MetaCampaignMetrics;
   pageId?: string;
+  instagramUserId?: string;
+  instagramActorId?: string;
+  creativeId?: string;
+  adId?: string;
+  adSetId?: string;
   locations?: MetaLocationTarget[];
   locationMode?: "places" | "radius";
   interests?: MetaInterestTarget[];
