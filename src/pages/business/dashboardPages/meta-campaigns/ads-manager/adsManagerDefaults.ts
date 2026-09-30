@@ -15,6 +15,7 @@ export function createDefaultCampaign(): CampaignDraft {
     name: "New leads campaign",
     buyingType: "auction",
     objective: "OUTCOME_LEADS",
+    status: "PAUSED",
     budgetStrategy: "campaign",
     budgetType: "daily",
     budgetAmount: "70.00",
@@ -30,6 +31,7 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
   return {
     id: "adset_1",
     name: `${campaignName} — Ad set`,
+    status: "PAUSED",
     conversionLocation: "Instant forms",
     facebookPageId: "",
     facebookPageName: "",
@@ -65,6 +67,11 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     ageMin: 18,
     ageMax: 65,
     gender: "all",
+    interests: [],
+    optimizationGoal: "",
+    billingEvent: "",
+    dailyBudget: "",
+    lifetimeBudget: "",
     includeCustomAudiences: [],
     /** Meta: show Age / Gender / Detailed targeting under Suggest an audience */
     suggestAudience: true,
@@ -84,7 +91,10 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
 export function createDefaultAd(adSetName: string): AdDraft {
   return {
     id: "ad_1",
+    adSetId: "adset_1",
     name: `${adSetName} — Ad`,
+    status: "PAUSED",
+    creativeId: "",
     partnershipAd: false,
     facebookPageId: "",
     facebookPageName: "",
@@ -115,6 +125,7 @@ export function createDefaultAdsManagerState(): AdsManagerState {
   const adSet = createDefaultAdSet(campaign.name);
   const ad = createDefaultAd(adSet.name);
   return {
+    sessionMode: "create",
     mode: "edit",
     selectedLevel: "campaign",
     selectedId: campaign.id,

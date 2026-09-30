@@ -26,6 +26,8 @@ const OBJECTIVES: Array<{ id: CampaignDraft["objective"] }> = [
 type Props = {
   campaign: CampaignDraft;
   onChange: (patch: Partial<CampaignDraft>) => void;
+  sessionMode?: "create" | "edit";
+  onDuplicate?: () => void;
 };
 
 function formatBudgetMoney(campaign: CampaignDraft) {
@@ -42,7 +44,12 @@ function formatBudgetMoney(campaign: CampaignDraft) {
   }
 }
 
-export default function CampaignLevelEditor({ campaign, onChange }: Props) {
+export default function CampaignLevelEditor({
+  campaign,
+  onChange,
+  sessionMode = "create",
+  onDuplicate,
+}: Props) {
   const { t } = useTranslation();
 
   return (
@@ -70,6 +77,7 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
             <select
               className={metaSelectClass}
               value={campaign.buyingType}
+              disabled={sessionMode === "edit"}
               onChange={(e) =>
                 onChange({
                   buyingType: e.target.value as CampaignDraft["buyingType"],
@@ -88,6 +96,7 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
             <select
               className={metaSelectClass}
               value={campaign.objective}
+              disabled={sessionMode === "edit"}
               onChange={(e) =>
                 onChange({
                   objective: e.target.value as CampaignDraft["objective"],
@@ -100,6 +109,23 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
                 </option>
               ))}
             </select>
+            {sessionMode === "edit" ? (
+              <p className="mt-2 text-[12px] font-semibold text-[#65676B]">
+                {t("metaCampaigns.adsManager.chrome.objectiveLockedHint")}
+                {onDuplicate ? (
+                  <>
+                    {" "}
+                    <button
+                      type="button"
+                      className="font-black text-[#1877F2] underline"
+                      onClick={onDuplicate}
+                    >
+                      {t("metaCampaigns.adsManager.chrome.duplicateWithChanges")}
+                    </button>
+                  </>
+                ) : null}
+              </p>
+            ) : null}
           </MetaField>
         </div>
         <MetaLinkButton
@@ -136,13 +162,19 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
           <div className="grid gap-2">
             <MetaRadioCard
               checked={campaign.budgetStrategy === "campaign"}
-              onSelect={() => onChange({ budgetStrategy: "campaign" })}
+              onSelect={() => {
+                if (sessionMode === "edit") return;
+                onChange({ budgetStrategy: "campaign" });
+              }}
               title={t("metaCampaigns.adsManager.campaignBudget")}
               description={t("metaCampaigns.adsManager.campaignBudgetHint")}
             />
             <MetaRadioCard
               checked={campaign.budgetStrategy === "adset"}
-              onSelect={() => onChange({ budgetStrategy: "adset" })}
+              onSelect={() => {
+                if (sessionMode === "edit") return;
+                onChange({ budgetStrategy: "adset" });
+              }}
               title={t("metaCampaigns.adsManager.adSetBudget")}
               description={t("metaCampaigns.adsManager.adSetBudgetHint")}
             />

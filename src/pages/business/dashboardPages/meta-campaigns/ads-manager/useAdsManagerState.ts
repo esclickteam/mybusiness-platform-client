@@ -116,14 +116,33 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
       id: ad.id,
       level: "ad" as const,
       name: ad.name || t("metaCampaigns.adsManager.adSuffix"),
-      parentId: state.adSets[0]?.id || null,
+      parentId: ad.adSetId || state.adSets[0]?.id || null,
       validation: validation.ad,
     }));
     return [campaignNode, ...adSetNodes, ...adNodes];
   }, [state, validation, t]);
 
-  const selectedAdSet = state.adSets[0];
-  const selectedAd = state.ads[0];
+  const selectedAdSet = useMemo(() => {
+    if (state.selectedLevel === "adset") {
+      return state.adSets.find((row) => row.id === state.selectedId) || state.adSets[0];
+    }
+    if (state.selectedLevel === "ad") {
+      const ad = state.ads.find((row) => row.id === state.selectedId);
+      return (
+        state.adSets.find((row) => row.id === ad?.adSetId) || state.adSets[0]
+      );
+    }
+    return state.adSets[0];
+  }, [state.adSets, state.ads, state.selectedId, state.selectedLevel]);
+
+  const selectedAd = useMemo(() => {
+    if (state.selectedLevel === "ad") {
+      return state.ads.find((row) => row.id === state.selectedId) || state.ads[0];
+    }
+    return (
+      state.ads.find((row) => row.adSetId === selectedAdSet?.id) || state.ads[0]
+    );
+  }, [selectedAdSet?.id, state.ads, state.selectedId, state.selectedLevel]);
 
   const selectNode = useCallback((level: AdsManagerLevel, id: string) => {
     setState((prev) => ({ ...prev, selectedLevel: level, selectedId: id }));
@@ -193,6 +212,10 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
     setState(deepCloneState(createDefaultAdsManagerState()));
   }, []);
 
+  const replaceState = useCallback((next: AdsManagerState) => {
+    setState(deepCloneState(next));
+  }, []);
+
   const applyCreateChoice = useCallback(
     (choice: { buyingType: BuyingType; objective: CampaignObjective }) => {
       const campaignName = t(
@@ -237,6 +260,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
               ? {
                   ...row,
                   id: adId,
+                  adSetId: adSetId,
                   name: adName,
                   callToAction: isLeads ? "SIGN_UP" : "LEARN_MORE",
                   instantFormId: isLeads ? row.instantFormId : "",
@@ -278,6 +302,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
     setAudienceEstimate,
     renameSelected,
     resetDraft,
+    replaceState,
     applyCreateChoice,
     canPublish,
   };

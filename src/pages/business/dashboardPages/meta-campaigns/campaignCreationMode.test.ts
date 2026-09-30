@@ -85,7 +85,7 @@ describe("BusinessDashboardRoutes wiring", () => {
       /path="campaigns"\s+element=\{<MetaCampaignsCampaignsPage/
     );
     expect(source).toMatch(
-      /path="edit\/:campaignId"\s+element=\{<MetaCampaignEditorPage/
+      /path="edit\/:campaignId"\s+element=\{<MetaAdsManagerPage/
     );
     expect(source).not.toMatch(/MetaMediaLibraryTab/);
     expect(source).toMatch(/path="library"\s+element=\{<Navigate to="overview"/);

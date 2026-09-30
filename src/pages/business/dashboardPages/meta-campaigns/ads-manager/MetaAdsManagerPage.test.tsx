@@ -23,6 +23,7 @@ vi.mock("react-i18next", () => ({
     },
     i18n: { language: "en" },
   }),
+  initReactI18next: { type: "3rdParty", init: () => undefined },
 }));
 
 vi.mock("../../../../../hooks/useLocaleDir", () => ({
@@ -31,11 +32,16 @@ vi.mock("../../../../../hooks/useLocaleDir", () => ({
 
 vi.mock("../../../../../api/metaCampaignsApi", () => ({
   getMetaCampaignsStatus: vi.fn().mockResolvedValue({ connected: false }),
+  getMetaCampaign: vi.fn().mockResolvedValue({ campaign: null }),
   listMetaLeadForms: vi.fn().mockResolvedValue({ forms: [] }),
   estimateMetaAudienceReach: vi.fn(),
   publishMetaCampaign: vi.fn(),
   retryMetaPublish: vi.fn(),
   syncMetaPublish: vi.fn(),
+  updateMetaCampaign: vi.fn(),
+  updateMetaAdSet: vi.fn(),
+  updateMetaAd: vi.fn(),
+  duplicateMetaCampaign: vi.fn(),
 }));
 
 import en from "../../../../../i18n/locales/en.json";
@@ -67,6 +73,7 @@ function renderManager(state?: unknown) {
           element={<Outlet context={{ businessId: "biz-1" }} />}
         >
           <Route path="create" element={<MetaAdsManagerPage />} />
+          <Route path="edit/:campaignId" element={<MetaAdsManagerPage />} />
           <Route path="overview" element={<div>overview-page</div>} />
         </Route>
       </Routes>
@@ -115,7 +122,7 @@ describe("MetaAdsManagerPage manual create", () => {
       },
     });
     expect(screen.queryByText("Create new campaign")).toBeNull();
-    expect(screen.getByDisplayValue("Facial — לידים")).toBeTruthy();
+    expect(screen.getAllByDisplayValue("Facial — לידים").length).toBeGreaterThan(0);
   });
 
   it("does not import AI session APIs", () => {

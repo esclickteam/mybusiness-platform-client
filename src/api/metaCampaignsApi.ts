@@ -143,8 +143,14 @@ export type MetaCampaignAd = {
   effectiveStatus?: string;
   headline?: string;
   primaryText?: string;
+  description?: string;
+  displayLink?: string;
   imageUrl?: string;
   imageHash?: string;
+  videoId?: string;
+  creativeId?: string;
+  leadFormId?: string;
+  formId?: string;
   link?: string;
   callToAction?: string;
   pageId?: string;
@@ -173,8 +179,21 @@ export type MetaCampaignAdSet = {
   campaignId?: string;
   campaignName?: string;
   optimizationGoal?: string;
+  billingEvent?: string;
   startTime?: string | null;
   endTime?: string | null;
+  locations?: MetaLocationTarget[];
+  interests?: MetaInterestTarget[];
+  ageMin?: number | null;
+  ageMax?: number | null;
+  genders?: number[];
+  gender?: string;
+  advantageAudience?: boolean;
+  pageId?: string;
+  publisherPlatforms?: string[];
+  facebookPositions?: string[];
+  instagramPositions?: string[];
+  placementMode?: string;
 };
 
 export type MetaLabeledOption = {

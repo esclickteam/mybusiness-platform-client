@@ -122,8 +122,29 @@ export default function MetaAdsManagerTree({
         <p className="text-[12px] font-bold uppercase tracking-wide text-[#65676B]">
           {c("treeTitle")}
         </p>
+        <label className="mt-2 block lg:hidden">
+          <span className="sr-only">{c("treeTitle")}</span>
+          <select
+            className="h-11 w-full rounded-md border border-[#CED0D4] bg-white px-2 text-[13px] font-semibold"
+            value={selectedId}
+            onChange={(event) => {
+              const node = nodes.find((row) => row.id === event.target.value);
+              if (node) onSelect(node.level, node.id);
+            }}
+          >
+            {nodes.map((node) => (
+              <option key={node.id} value={node.id}>
+                {node.level === "campaign"
+                  ? node.name
+                  : node.level === "adset"
+                    ? `↳ ${node.name}`
+                    : `↳↳ ${node.name}`}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
-      <div className="flex-1 space-y-0.5 overflow-y-auto px-1.5 py-2">
+      <div className="hidden flex-1 space-y-0.5 overflow-y-auto px-1.5 py-2 lg:block">
         {campaign ? renderRow(campaign, 0) : null}
         {adSets.map((adSet) => (
           <div key={adSet.id}>
