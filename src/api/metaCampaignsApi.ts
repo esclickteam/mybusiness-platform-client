@@ -1085,7 +1085,29 @@ export type AiCampaignRecommendation = {
   recommendedActionType: string;
   recommendedAction: string;
   requiresApproval: boolean;
-  status: "OPEN" | "VIEWED" | "ACCEPTED" | "DISMISSED" | "EXPIRED";
+  status:
+    | "OPEN"
+    | "VIEWED"
+    | "ACCEPTED"
+    | "DISMISSED"
+    | "EXPIRED"
+    | "NEW"
+    | "REVIEWED"
+    | "APPLIED"
+    | "FAILED"
+    | "ROLLED_BACK";
+  actionPayload?: Record<string, unknown>;
+  confirmation?: {
+    object?: { type?: string; id?: string; campaignId?: string; name?: string };
+    currentValue?: unknown;
+    newValue?: unknown;
+    why?: string;
+    expectedImpact?: string;
+    canAffectSpend?: boolean;
+  };
+  applyable?: boolean;
+  undoable?: boolean;
+  applyAudit?: Record<string, unknown> | null;
   metricsSummary?: {
     current?: CampaignHealthMetrics;
     previous?: CampaignHealthMetrics;
@@ -1170,6 +1192,48 @@ export async function viewAiCampaignRecommendation(
     recommendation: AiCampaignRecommendation;
   }>(`/meta-campaigns/recommendations/${recommendationId}/view`, { businessId });
   return data.recommendation;
+}
+
+export async function generateAiCampaignRecommendations(
+  businessId: string,
+  campaignId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    lowData?: boolean;
+    message?: string;
+    recommendations: AiCampaignRecommendation[];
+  }>("/meta-campaigns/recommendations/generate", { businessId, campaignId });
+  return data;
+}
+
+export async function applyAiCampaignRecommendation(
+  businessId: string,
+  recommendationId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    applied?: boolean;
+    recommendation: AiCampaignRecommendation;
+    readBack?: { expected?: unknown; actual?: unknown; matched?: boolean };
+  }>(`/meta-campaigns/recommendations/${recommendationId}/apply`, {
+    businessId,
+    confirm: true,
+  });
+  return data;
+}
+
+export async function undoAiCampaignRecommendation(
+  businessId: string,
+  recommendationId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    undone?: boolean;
+    recommendation: AiCampaignRecommendation;
+    readBack?: { expected?: unknown; actual?: unknown; matched?: boolean };
+  }>(`/meta-campaigns/recommendations/${recommendationId}/undo`, { businessId });
+  return data;
 }
 
 export async function dismissAiCampaignRecommendation(
