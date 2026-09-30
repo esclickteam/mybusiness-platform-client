@@ -12,6 +12,7 @@ export type MetaAdAccount = {
 export type MetaAdsPage = {
   id: string;
   name: string;
+  instagramBusinessAccountId?: string;
 };
 
 export type MetaSelectedAdAccount = {
@@ -239,6 +240,7 @@ export type MetaAdsConnectionStatus = {
     pageId: string;
     pageName: string;
     selectedAt?: string | null;
+    instagramBusinessAccountId?: string;
   } | null;
   lastSyncAt?: string | null;
   lastError?: string;

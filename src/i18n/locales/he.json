@@ -9536,6 +9536,11 @@
       "accountStatusLabel": "סטטוס: {{status}}",
       "currencyLabel": "מטבע: {{currency}}",
       "connectedThroughMeta": "מחובר דרך Meta",
+      "syncedWithMeta": "מסונכרן עם Meta",
+      "lastSyncedAgo": "סונכרן לפני {{seconds}} שניות",
+      "instagramNotConnected": "חשבון Instagram לא מחובר",
+      "instagramConnectHint": "חברו חשבון Instagram מקצועי לעמוד הפייסבוק במטא. קמפיינים לפייסבוק בלבד ממשיכים לעבוד כרגיל.",
+      "instagramConnectCta": "פתיחת הגדרות Meta",
       "switchAccount": "בחירת חשבון מודעות",
       "lastUpdated": "עודכן לאחרונה: {{time}}",
       "lastUpdatedLabel": "עודכן לאחרונה"
@@ -9560,7 +9565,8 @@
     },
     "actions": {
       "create": "צור קמפיין חדש",
-      "refresh": "רענון",
+      "refresh": "סנכרון עכשיו",
+      "syncThrottled": "מטא ביקשה להאט. נסו שוב בעוד רגע.",
       "edit": "עריכה",
       "pause": "השהיה",
       "activate": "הפעלה",
