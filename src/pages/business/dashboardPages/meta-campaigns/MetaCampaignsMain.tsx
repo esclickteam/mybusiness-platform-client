@@ -146,11 +146,7 @@ export default function MetaCampaignsMain() {
                 ))}
               </select>
             </label>
-            <div
-              className={[
-                "hidden items-stretch gap-0.5 md:flex",
-              ].join(" ")}
-            >
+            <div className="hidden items-stretch gap-0.5 overflow-x-auto md:flex">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (

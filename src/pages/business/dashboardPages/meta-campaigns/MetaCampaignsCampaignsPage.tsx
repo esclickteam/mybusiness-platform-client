@@ -168,7 +168,72 @@ export default function MetaCampaignsCampaignsPage() {
           </div>
         </div>
       ) : (
-        <div className={`${cardBase} overflow-x-auto`}>
+        <>
+        <div className="space-y-3 md:hidden">
+          {rows.map((campaign) => {
+            const delivery = campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
+            const tone = statusTone(delivery);
+            const results = campaign.metrics?.results ?? campaign.metrics?.leads;
+            const cpl = campaign.metrics?.costPerResult ?? campaign.metrics?.costPerLead;
+            const configured = String(campaign.configuredStatus || campaign.status || "").toUpperCase();
+            return (
+              <article key={campaign.id} className={`${cardBase} space-y-3 p-4`}>
+                <button type="button" className="w-full text-start" onClick={() => setDetails(campaign)}>
+                  <p className="break-words font-black text-slate-900">{campaign.name}</p>
+                  <p className="text-xs font-semibold text-slate-400">
+                    {t(`metaCampaigns.objectives.${objectiveKey(campaign.objective)}`)}
+                  </p>
+                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
+                    {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {configured !== String(campaign.effectiveStatus || "").toUpperCase()
+                      ? t("metaCampaigns.ux.statusMismatch")
+                      : t("metaCampaigns.ux.deliveryOk")}
+                  </span>
+                </div>
+                <dl className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.budget")}</dt>
+                    <dd className="font-bold">{campaign.dailyBudget ? formatCurrency(campaign.dailyBudget, currency) : "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.spend")}</dt>
+                    <dd className="font-bold">
+                      {formatMetricOrDash(campaign.metrics?.spend, (n) => formatCurrency(n, currency), {
+                        treatZeroAsEmpty: true,
+                      })}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.results")}</dt>
+                    <dd className="font-bold">{formatMetricOrDash(results, formatNumber, { treatZeroAsEmpty: true })}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.kpis.cpl")}</dt>
+                    <dd className="font-bold">
+                      {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" className={btnSecondary} onClick={() => setDetails(campaign)}>
+                    {t("metaCampaigns.actions.viewDetails")}
+                  </button>
+                  <button type="button" className={btnSecondary} onClick={() => navigate(`${basePath}/edit/${campaign.id}`)}>
+                    {t("metaCampaigns.actions.edit")}
+                  </button>
+                  <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
+                    {configured === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+        <div className={`${cardBase} hidden overflow-x-auto md:block`}>
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs font-black uppercase text-slate-500">
               <tr>
@@ -250,6 +315,7 @@ export default function MetaCampaignsCampaignsPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {details && businessId ? (
@@ -285,13 +351,13 @@ export default function MetaCampaignsCampaignsPage() {
                 {t("metaCampaigns.actions.confirmPauseBody", { name: pending.name })}
               </p>
             )}
-            <div className="mt-4 flex justify-end gap-2">
-              <button type="button" className={btnSecondary} onClick={() => setPending(null)}>
+            <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" className={`${btnSecondary} w-full sm:w-auto`} onClick={() => setPending(null)}>
                 {t("common.cancel", { defaultValue: "Cancel" })}
               </button>
               <button
                 type="button"
-                className={btnPrimary}
+                className={`${btnPrimary} w-full sm:w-auto`}
                 disabled={Boolean(busyId)}
                 onClick={async () => {
                   if (!businessId) return;

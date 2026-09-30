@@ -170,7 +170,7 @@ export default function MetaCampaignGoalsPage() {
                     setDraft(updated);
                   }}
                 >
-                  Remove
+                  {t("metaCampaigns.goals.remove")}
                 </button>
               </div>
             ))}
@@ -207,7 +207,7 @@ export default function MetaCampaignGoalsPage() {
               started={goal.startingSnapshot?.cpl}
               evaluationWindow={goal.evaluationWindow || "LAST_3D"}
             />
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 className={btnSecondary}
@@ -216,21 +216,32 @@ export default function MetaCampaignGoalsPage() {
                   await reload();
                 }}
               >
-                Evaluate
+                {t("metaCampaigns.goals.evaluate")}
               </button>
               <button
                 type="button"
                 className={btnSecondary}
                 onClick={async () => setHistory(await getCampaignGoalHistory(businessId, goal.id))}
               >
-                History
+                {t("metaCampaigns.ux.history")}
               </button>
             </div>
           </div>
         ))
       )}
       {history.length ? (
-        <pre className={`${cardBase} overflow-auto p-3 text-xs`}>{JSON.stringify(history, null, 2)}</pre>
+        <ul className={`${cardBase} space-y-2 overflow-auto p-3 text-sm`}>
+          {history.map((row, index) => (
+            <li key={index} className="rounded-lg border border-slate-100 px-3 py-2">
+              {t("metaCampaigns.ux.portfolioHistoryRow", {
+                mode: String(row.action || row.type || row.window || "—"),
+                from: String(row.from ?? row.previous ?? row.previousCpl ?? "—"),
+                to: String(row.to ?? row.next ?? row.cpl ?? "—"),
+                status: String(row.status || row.health || ""),
+              })}
+            </li>
+          ))}
+        </ul>
       ) : null}
     </div>
   );

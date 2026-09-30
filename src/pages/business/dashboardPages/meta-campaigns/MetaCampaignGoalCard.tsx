@@ -32,7 +32,11 @@ export default function MetaCampaignGoalCard({
       <h3 className="mt-1 text-base font-black text-slate-900">{goalName}</h3>
       {evaluationWindow ? (
         <p className="mt-2 text-xs font-black uppercase tracking-wide text-slate-500" data-testid="goal-window">
-          {t("metaCampaigns.goals.evaluationWindow", { window: evaluationWindow })}
+          {t("metaCampaigns.goals.evaluationWindow", {
+            window: t(`metaCampaigns.goals.windows.${evaluationWindow}`, {
+              defaultValue: evaluationWindow,
+            }),
+          })}
         </p>
       ) : null}
       {paused ? (
@@ -50,7 +54,8 @@ export default function MetaCampaignGoalCard({
       </p>
       {started != null ? (
         <p className="text-xs font-semibold text-slate-500">
-          {t("metaCampaigns.goals.started")}: {started} ILS
+          {t("metaCampaigns.goals.started")}:{" "}
+          {t("metaCampaigns.goals.currencyValue", { value: started })}
         </p>
       ) : null}
       <p className="mt-2 text-sm font-black text-slate-900" data-testid="campaign-goal-status">

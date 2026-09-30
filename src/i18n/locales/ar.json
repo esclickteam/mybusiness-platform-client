@@ -9616,6 +9616,7 @@
       "connectedThroughMeta": "متصل من خلال Meta",
       "switchAccount": "اختر حساب إعلان",
       "lastUpdated": "تم تحديثه آخر مرة بتاريخ: {{time}}",
+      "lastSynced": "آخر مزامنة: {{time}}",
       "lastUpdatedLabel": "آخر تحديث"
     },
     "accountStatus": {
@@ -9631,7 +9632,7 @@
       "other": "أخرى"
     },
     "details": {
-      "badge": "ads_read  قراءة فقط",
+      "badge": "للقراءة فقط",
       "readOnlyHint": "تفاصيل الحملة للقراءة فقط - لا تعديل أو تغييرات في الميزانية.",
       "viewLeadsInCrm": "عرض العملاء في CRM",
       "adSets": "مجموعات الإعلانات"

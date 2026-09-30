@@ -9616,6 +9616,7 @@
       "connectedThroughMeta": "Conectado a través de Meta",
       "switchAccount": "Seleccione una cuenta de anuncios",
       "lastUpdated": "Última actualización: {{time}}",
+      "lastSynced": "Última sincronización: {{time}}",
       "lastUpdatedLabel": "Última actualización"
     },
     "accountStatus": {
@@ -9631,7 +9632,7 @@
       "other": "Otros"
     },
     "details": {
-      "badge": "ads_read · Solo lectura",
+      "badge": "Solo lectura",
       "readOnlyHint": "Los detalles de la campaña son de solo lectura, sin cambios de edición ni de presupuesto.",
       "viewLeadsInCrm": "Ver leads en el CRM",
       "adSets": "Conjuntos de anuncios"

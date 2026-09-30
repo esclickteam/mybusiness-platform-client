@@ -9572,6 +9572,7 @@
       "connectedThroughMeta": "מחובר דרך Meta",
       "syncedWithMeta": "מסונכרן עם Meta",
       "lastSyncedAgo": "סונכרן לפני {{seconds}} שניות",
+      "lastSynced": "סונכרן לאחרונה: {{time}}",
       "instagramNotConnected": "חשבון Instagram לא מחובר",
       "instagramConnectHint": "חברו חשבון Instagram מקצועי לעמוד הפייסבוק במטא. קמפיינים לפייסבוק בלבד ממשיכים לעבוד כרגיל.",
       "instagramConnectCta": "פתיחת הגדרות Meta",
@@ -9592,8 +9593,9 @@
       "other": "אחר"
     },
     "details": {
-      "badge": "ads_read · קריאה בלבד",
+      "badge": "קריאה בלבד",
       "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב.",
+      "close": "סגירה",
       "viewLeadsInCrm": "צפייה בלידים ב-CRM",
       "adSets": "קבוצות מודעות"
     },
@@ -10454,11 +10456,11 @@
       "evaluate": "הערכה עכשיו",
       "enabled": "פעיל",
       "disabled": "כבוי",
-      "when": "WHEN",
-      "is": "IS",
-      "for": "FOR",
-      "onlyIf": "ONLY IF",
-      "then": "THEN",
+      "when": "מתי",
+      "is": "הוא",
+      "for": "עבור",
+      "onlyIf": "רק אם",
+      "then": "אז",
       "name": "שם החוק",
       "scope": "היקף",
       "metric": "מדד",
@@ -10520,7 +10522,18 @@
       "difference": "פער",
       "started": "כשהיעד הוגדר",
       "noGoals": "עדיין אין יעדים.",
-      "evaluationWindow": "חלון הערכת יעד: {{window}}"
+      "evaluationWindow": "חלון הערכת יעד: {{window}}",
+      "evaluate": "הערכה",
+      "remove": "הסרה",
+      "currencyValue": "{{value}} ₪",
+      "windows": {
+        "TODAY": "היום",
+        "YESTERDAY": "אתמול",
+        "LAST_3D": "3 הימים האחרונים",
+        "LAST_7D": "7 הימים האחרונים",
+        "LAST_14D": "14 הימים האחרונים",
+        "LAST_30D": "30 הימים האחרונים"
+      }
     },
     "portfolio": {
       "title": "אופטימיזציית תיק",
@@ -10538,7 +10551,10 @@
       "currentTotal": "סך תקציב נוכחי",
       "proposedTotal": "סך תקציב מוצע",
       "blendedCpl": "CPL משוקלל",
-      "explanation": "הסבר"
+      "explanation": "הסבר",
+      "colProposed": "מוצע",
+      "colRec": "המלצה",
+      "colReason": "סיבה"
     },
     "copilot": {
       "title": "קופיילוט שיווק מבוסס AI",

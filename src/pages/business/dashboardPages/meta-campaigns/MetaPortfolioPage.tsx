@@ -69,7 +69,10 @@ export default function MetaPortfolioPage() {
             ? t("metaCampaigns.ux.portfolioNoData")
             : t("metaCampaigns.ux.portfolioHasData")}
         </p>
-        <Link to="../copilot?q=Ask%20AI%20about%20my%20budget%20allocation" className="mt-2 inline-flex text-sm font-black text-violet-700 underline">
+        <Link
+          to={`../copilot?q=${encodeURIComponent(t("metaCampaigns.ux.askAiBudget"))}`}
+          className="mt-2 inline-flex text-sm font-black text-violet-700 underline"
+        >
           {t("metaCampaigns.ux.askAiBudget")}
         </Link>
       </section>
@@ -125,19 +128,53 @@ export default function MetaPortfolioPage() {
         </div>
       </section>
 
-      <div className={`${cardBase} overflow-auto`}>
+      <div className="space-y-3 md:hidden">
+        {rows.length === 0 ? (
+          <p className={`${cardBase} p-4 text-sm font-semibold text-slate-500`}>
+            {t("metaCampaigns.ux.portfolioNoData")}
+          </p>
+        ) : (
+          rows.map((row) => (
+            <article key={row.campaignId} className={`${cardBase} space-y-2 p-4`}>
+              <p className="break-words font-black">{row.name}</p>
+              <p className="text-xs font-semibold text-slate-500">{row.status}</p>
+              <dl className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <dt className="text-xs text-slate-500">{t("metaCampaigns.table.budget")}</dt>
+                  <dd className="font-bold">{row.currentBudget}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">{t("metaCampaigns.portfolio.colProposed")}</dt>
+                  <dd className="font-bold">{row.proposedBudget}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">{t("metaCampaigns.table.spend")}</dt>
+                  <dd className="font-bold">{row.spend}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">{t("metaCampaigns.kpis.cpl")}</dt>
+                  <dd className="font-bold">{row.cpl}</dd>
+                </div>
+              </dl>
+              <p className="text-sm font-black">{row.recommendation}</p>
+              {row.reason ? <p className="text-xs text-slate-500">{row.reason}</p> : null}
+            </article>
+          ))
+        )}
+      </div>
+      <div className={`${cardBase} hidden overflow-auto md:block`}>
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b text-left text-xs font-black uppercase text-slate-500">
-              <th className="p-2">Campaign</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Budget</th>
-              <th className="p-2">Proposed</th>
-              <th className="p-2">Spend</th>
-              <th className="p-2">Results</th>
-              <th className="p-2">CPL</th>
-              <th className="p-2">Rec</th>
-              <th className="p-2">Reason</th>
+            <tr className="border-b text-start text-xs font-black uppercase text-slate-500">
+              <th className="p-2">{t("metaCampaigns.table.name")}</th>
+              <th className="p-2">{t("metaCampaigns.table.status")}</th>
+              <th className="p-2">{t("metaCampaigns.table.budget")}</th>
+              <th className="p-2">{t("metaCampaigns.portfolio.colProposed")}</th>
+              <th className="p-2">{t("metaCampaigns.table.spend")}</th>
+              <th className="p-2">{t("metaCampaigns.table.results")}</th>
+              <th className="p-2">{t("metaCampaigns.kpis.cpl")}</th>
+              <th className="p-2">{t("metaCampaigns.portfolio.colRec")}</th>
+              <th className="p-2">{t("metaCampaigns.portfolio.colReason")}</th>
             </tr>
           </thead>
           <tbody>

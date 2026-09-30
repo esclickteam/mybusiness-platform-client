@@ -123,6 +123,29 @@ export function metaDeliveryStatusKey(status: string) {
   return value.toLowerCase();
 }
 
+export function metaObjectiveLabel(
+  objective: string | null | undefined,
+  t: (key: string, options?: { defaultValue?: string }) => string
+) {
+  const raw = String(objective || "").trim();
+  if (!raw) return "—";
+  const apiKey = `metaCampaigns.adsManager.objectives.${raw}`;
+  const fromApi = t(apiKey);
+  if (fromApi && fromApi !== apiKey) return fromApi;
+  const value = raw.toLowerCase();
+  const fallback =
+    value.includes("sale")
+      ? "sales"
+      : value.includes("traffic")
+        ? "traffic"
+        : value.includes("aware")
+          ? "awareness"
+          : value.includes("engage")
+            ? "engagement"
+            : "leads";
+  return t(`metaCampaigns.objectives.${fallback}`);
+}
+
 /**
  * Meta Ads Manager Delivery badge colors.
  * In review / Processing use hollow-green style like Meta.
