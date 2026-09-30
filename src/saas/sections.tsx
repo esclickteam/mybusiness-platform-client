@@ -420,15 +420,25 @@ export function TemplateDemoDialog({
         ) : null}
         {links.length ? (
           <div className="mt-4 grid gap-2">
-            {links.map((link) => (
-              <Link
-                key={link.id}
-                to={`/saas/${product.slug}/demo?mode=${link.id === "explore" ? "full" : link.id}`}
-                className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
-              >
-                {labels[link.id]}
-              </Link>
-            ))}
+            {links.map((link) =>
+              isPublicDemoUrl(link.href) ? (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
+                >
+                  {labels[link.id]}
+                </a>
+              ) : (
+                <Link
+                  key={link.id}
+                  to={`/saas/${product.slug}/demo?mode=${link.id === "explore" ? "full" : link.id}`}
+                  className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
+                >
+                  {labels[link.id]}
+                </Link>
+              )
+            )}
           </div>
         ) : (
           <p className="mt-4 text-sm font-semibold leading-6 text-slate-600">{t("saasMarket.platforms.demoPreparing")}</p>
