@@ -1,5 +1,6 @@
 export type AdsManagerLevel = "campaign" | "adset" | "ad";
 export type AdsManagerMode = "edit" | "review";
+export type AdsManagerSessionMode = "create" | "edit";
 export type BudgetStrategy = "campaign" | "adset";
 export type BudgetType = "daily" | "lifetime";
 export type BuyingType = "auction" | "reserved";
@@ -27,6 +28,7 @@ export type CampaignDraft = {
   name: string;
   buyingType: BuyingType;
   objective: CampaignObjective;
+  status: string;
   budgetStrategy: BudgetStrategy;
   budgetType: BudgetType;
   budgetAmount: string;
@@ -64,9 +66,12 @@ export type AdsManagerLocation = {
   include?: boolean;
 };
 
+export type AdSetInterest = { id: string; name: string };
+
 export type AdSetDraft = {
   id: string;
   name: string;
+  status: string;
   conversionLocation: string;
   /** Facebook Page used for Instant forms / lead conversion */
   facebookPageId: string;
@@ -92,6 +97,11 @@ export type AdSetDraft = {
   ageMin: number;
   ageMax: number;
   gender: AdsManagerGender;
+  interests: AdSetInterest[];
+  optimizationGoal: string;
+  billingEvent: string;
+  dailyBudget: string;
+  lifetimeBudget: string;
   includeCustomAudiences: string[];
   suggestAudience: boolean;
   furtherLimitReach: boolean;
@@ -110,7 +120,10 @@ export type AdCreativeFormat = "image" | "video";
 
 export type AdDraft = {
   id: string;
+  adSetId: string;
   name: string;
+  status: string;
+  creativeId: string;
   partnershipAd: boolean;
   facebookPageId: string;
   facebookPageName: string;
@@ -143,6 +156,7 @@ export type AdsManagerTreeNode = {
 };
 
 export type AdsManagerState = {
+  sessionMode: AdsManagerSessionMode;
   mode: AdsManagerMode;
   selectedLevel: AdsManagerLevel;
   selectedId: string;

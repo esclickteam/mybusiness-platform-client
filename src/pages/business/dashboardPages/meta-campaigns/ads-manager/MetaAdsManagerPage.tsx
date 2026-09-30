@@ -1,15 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
+  duplicateMetaCampaign,
   estimateMetaAudienceReach,
+  getMetaCampaign,
   getMetaCampaignsStatus,
   listMetaLeadForms,
   publishMetaCampaign,
   retryMetaPublish,
   syncMetaPublish,
+  updateMetaAd,
+  updateMetaAdSet,
+  updateMetaCampaign,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
   type MetaLeadForm,
@@ -28,6 +33,19 @@ import {
   validateAdsManagerClient,
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
+import { adsManagerStateFromMetaCampaign } from "./adsManagerStateFromMetaCampaign";
+import {
+  diffAdsManagerState,
+  isAdsManagerDirty,
+  type AdsManagerChange,
+} from "./adsManagerDiff";
+import {
+  buildAdSetUpdateFromDiff,
+  buildAdUpdateFromDiff,
+  buildCampaignUpdateFromDiff,
+} from "./adsManagerEditPayloads";
+import AdsManagerChangeReviewModal from "./AdsManagerChangeReviewModal";
+import type { AdsManagerState } from "./adsManagerTypes";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import { getTextDirection } from "@/i18n/localeUtils";
@@ -48,6 +66,8 @@ export default function MetaAdsManagerPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { businessId } = useOutletContext<OutletCtx>();
+  const { campaignId } = useParams<{ campaignId?: string }>();
+  const isEditSession = Boolean(campaignId);
   const aiHandoff =
     (location.state as { aiProposal?: AiProposalHandoff } | null)?.aiProposal ||
     null;
@@ -64,6 +84,7 @@ export default function MetaAdsManagerPage() {
     patchAd,
     setAudienceEstimate,
     applyCreateChoice,
+    replaceState,
     canPublish,
   } = ctrl;
 
@@ -81,11 +102,16 @@ export default function MetaAdsManagerPage() {
   const [modalOpen, setModalOpen] = useState(false);
   // Meta-style gate: choose objective before opening the Ads Manager editor.
   const [createChooserOpen, setCreateChooserOpen] = useState(
-    () => !aiHandoff?.proposal
+    () => !aiHandoff?.proposal && !isEditSession
   );
   const [campaignStarted, setCampaignStarted] = useState(() =>
-    Boolean(aiHandoff?.proposal)
+    Boolean(aiHandoff?.proposal || isEditSession)
   );
+  const [editLoading, setEditLoading] = useState(isEditSession);
+  const [pendingChanges, setPendingChanges] = useState<AdsManagerChange[]>([]);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const baselineRef = useRef<AdsManagerState | null>(null);
 
   const loadLeadForms = async (pageId?: string | null) => {
     if (!businessId || !pageId || pageId.startsWith("page_")) {
@@ -111,6 +137,46 @@ export default function MetaAdsManagerPage() {
       setFormsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isEditSession || !businessId || !campaignId) return;
+    let cancelled = false;
+    (async () => {
+      setEditLoading(true);
+      try {
+        const data = await getMetaCampaign(businessId, campaignId);
+        if (cancelled || !data?.campaign) return;
+        const hydrated = adsManagerStateFromMetaCampaign(data.campaign, {
+          currency: data.currency,
+        });
+        replaceState(hydrated);
+        baselineRef.current = hydrated;
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { error?: string } }; message?: string };
+        toast.error(
+          err.response?.data?.error || err.message || t("metaCampaigns.adsManager.chrome.saveFailed")
+        );
+        navigate("../campaigns");
+      } finally {
+        if (!cancelled) setEditLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, campaignId, isEditSession, navigate, replaceState, t]);
+
+  const dirty = isAdsManagerDirty(baselineRef.current, state);
+
+  useEffect(() => {
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isEditSession || !dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty, isEditSession]);
 
   useEffect(() => {
     if (!businessId) return;
@@ -161,6 +227,7 @@ export default function MetaAdsManagerPage() {
 
   // Prefill Facebook Page on Ad Set + Ad from connected Meta pages.
   useEffect(() => {
+    if (isEditSession) return;
     const preferredId =
       connection?.selectedPage?.pageId || connectedPages[0]?.id;
     const preferredName =
@@ -197,6 +264,7 @@ export default function MetaAdsManagerPage() {
     selectedAdSet,
     patchAd,
     patchAdSet,
+    isEditSession,
   ]);
 
   // Reload Instant Forms when the selected Facebook Page changes.
@@ -421,6 +489,87 @@ export default function MetaAdsManagerPage() {
     }
   };
 
+  const requestLeave = () => {
+    if (isEditSession && dirty) {
+      setLeaveOpen(true);
+      return;
+    }
+    navigate("../campaigns");
+  };
+
+  const handleDuplicate = async () => {
+    if (!businessId || !campaignId) return;
+    try {
+      setPublishing(true);
+      const result = await duplicateMetaCampaign(businessId, campaignId);
+      const newId =
+        (result?.result as { campaignId?: string } | undefined)?.campaignId ||
+        "";
+      toast.success(c("duplicateStarted"));
+      if (newId) navigate(`../edit/${newId}`);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } }; message?: string };
+      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const openChangeReview = () => {
+    const clientErrors = validateAdsManagerClient(state);
+    if (clientErrors.length) {
+      toast.error(clientErrors[0]);
+      setMode("review");
+      return;
+    }
+    if (!baselineRef.current) return;
+    const changes = diffAdsManagerState(baselineRef.current, state);
+    if (!changes.length) {
+      toast.success(c("noChanges"));
+      return;
+    }
+    setPendingChanges(changes);
+    setReviewOpen(true);
+  };
+
+  const handleSaveChanges = async () => {
+    if (!businessId || !campaignId || !baselineRef.current) return;
+    const changes = pendingChanges.length
+      ? pendingChanges
+      : diffAdsManagerState(baselineRef.current, state);
+    try {
+      setPublishing(true);
+      const campaignPatch = buildCampaignUpdateFromDiff(state, changes);
+      if (campaignPatch) {
+        await updateMetaCampaign(businessId, campaignId, campaignPatch);
+      }
+      for (const adSet of state.adSets) {
+        const patch = buildAdSetUpdateFromDiff(adSet, state.campaign, changes);
+        if (patch) await updateMetaAdSet(businessId, adSet.id, patch);
+      }
+      for (const ad of state.ads) {
+        const patch = buildAdUpdateFromDiff(ad, changes);
+        if (patch) await updateMetaAd(businessId, ad.id, patch);
+      }
+      const readBack = await getMetaCampaign(businessId, campaignId);
+      if (readBack?.campaign) {
+        const hydrated = adsManagerStateFromMetaCampaign(readBack.campaign, {
+          currency: readBack.currency,
+        });
+        replaceState(hydrated);
+        baselineRef.current = hydrated;
+      }
+      setReviewOpen(false);
+      setPendingChanges([]);
+      toast.success(c("saveSuccess"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } }; message?: string };
+      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   const handleSync = async () => {
     if (!businessId || !publishResult?.id) return;
     try {
@@ -494,6 +643,15 @@ export default function MetaAdsManagerPage() {
   const connected = Boolean(connection?.connected || connection?.isConnected);
   const demoLocale = readGuidedDemoLocaleLock();
   const shellDir = demoLocale ? getTextDirection(demoLocale) : "ltr";
+
+  if (isEditSession && editLoading) {
+    return (
+      <div className="flex min-h-[360px] items-center justify-center gap-2 rounded-xl border border-[#CED0D4] bg-white text-[14px] font-semibold text-[#65676B]">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        {c("loadingCampaign")}
+      </div>
+    );
+  }
 
   if (!campaignStarted) {
     return (
@@ -571,6 +729,9 @@ export default function MetaAdsManagerPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#CED0D4] bg-white px-3 py-2.5 sm:px-4">
         <div className="flex min-w-0 flex-wrap items-center gap-1 text-[13px]">
+          {isEditSession ? (
+            <span className="me-2 font-black text-[#050505]">{c("editCampaign")}</span>
+          ) : null}
           {crumbs.map((crumb, index) => (
             <React.Fragment key={crumb.id}>
               {index > 0 ? (
@@ -593,6 +754,11 @@ export default function MetaAdsManagerPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {isEditSession ? (
+            <button type="button" className={metaBtnSecondary} onClick={requestLeave}>
+              {c("back")}
+            </button>
+          ) : null}
           <button
             type="button"
             className={
@@ -611,6 +777,17 @@ export default function MetaAdsManagerPage() {
           >
             {c("review")}
           </button>
+          {isEditSession ? (
+            <button
+              type="button"
+              className={metaBtnPrimary}
+              disabled={publishing || !canPublish || !connected}
+              onClick={openChangeReview}
+            >
+              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {publishing ? c("savingChanges") : c("saveChanges")}
+            </button>
+          ) : (
           <button
             type="button"
             className={metaBtnPrimary}
@@ -630,6 +807,7 @@ export default function MetaAdsManagerPage() {
             ) : null}
             {publishing ? c("publishing") : c("publish")}
           </button>
+          )}
         </div>
       </div>
 
@@ -734,6 +912,8 @@ export default function MetaAdsManagerPage() {
           {state.mode === "edit" && state.selectedLevel === "campaign" ? (
             <CampaignLevelEditor
               campaign={state.campaign}
+              sessionMode={isEditSession ? "edit" : "create"}
+              onDuplicate={() => void handleDuplicate()}
               onChange={patchCampaign}
             />
           ) : null}
@@ -769,6 +949,7 @@ export default function MetaAdsManagerPage() {
               formsError={formsError}
               pages={connectedPages}
               businessId={businessId}
+              sessionMode={isEditSession ? "edit" : "create"}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
               onFormsRefresh={async () => {
                 const pageId =
@@ -827,9 +1008,43 @@ export default function MetaAdsManagerPage() {
             c("draftFailed")
           )}
         </div>
-        <span>{c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}</span>
+        <span>
+          {isEditSession
+            ? c("editFooterNote")
+            : c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}
+        </span>
       </div>
 
+      <AdsManagerChangeReviewModal
+        open={reviewOpen}
+        saving={publishing}
+        changes={pendingChanges}
+        onCancel={() => setReviewOpen(false)}
+        onConfirm={() => void handleSaveChanges()}
+      />
+      {leaveOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-2xl">
+            <h2 className="text-[18px] font-black">{c("unsavedChanges")}</h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#65676B]">{c("unsavedChangesBody")}</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button type="button" className={metaBtnSecondary} onClick={() => setLeaveOpen(false)}>
+                {c("stay")}
+              </button>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                onClick={() => {
+                  setLeaveOpen(false);
+                  navigate("../campaigns");
+                }}
+              >
+                {c("leaveWithoutSaving")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <PublishResultModal
         open={modalOpen}
         publish={publishResult}

@@ -37,6 +37,7 @@ type Props = {
   formsError?: string;
   pages: MetaAdsPage[];
   businessId: string | null;
+  sessionMode?: "create" | "edit";
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
 };
@@ -48,6 +49,7 @@ export default function AdLevelEditor({
   formsError = "",
   pages,
   businessId,
+  sessionMode = "create",
   onChange,
   onFormsRefresh,
 }: Props) {
@@ -217,6 +219,7 @@ export default function AdLevelEditor({
               <h3 className="text-[15px] font-bold text-[#050505]">
                 {c("instantForm")}
               </h3>
+              {sessionMode === "create" ? (
               <button
                 type="button"
                 className={metaBtnPrimary}
@@ -230,7 +233,21 @@ export default function AdLevelEditor({
               >
                 {c("createForm")}
               </button>
+              ) : null}
             </div>
+            {sessionMode === "edit" ? (
+              <div className="mt-3 rounded-lg border border-[#E4E6EB] bg-[#F7F8FA] px-3 py-2 text-[13px] font-semibold text-[#050505]">
+                <p className="text-[12px] font-black uppercase tracking-wide text-[#65676B]">
+                  {c("currentLeadForm")}
+                </p>
+                <p className="mt-1">
+                  {forms.find((form) => form.id === ad.instantFormId)?.name ||
+                    c("notSelected")}
+                </p>
+                <p className="mt-1 text-[12px] text-[#65676B]">{c("leadFormReadOnly")}</p>
+                <p className="mt-2 text-[12px] font-black text-[#1877F2]">{c("chooseOtherForm")}</p>
+              </div>
+            ) : null}
 
             <div className="relative mt-3">
               <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
