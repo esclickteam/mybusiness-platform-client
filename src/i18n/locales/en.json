@@ -8781,12 +8781,23 @@
       "notConnected": "WhatsApp is not connected",
       "phoneRegistrationRequired": "Cloud API phone registration is required",
       "phoneRegistrationFailed": "Phone registration failed",
-      "codeVerificationExpired": "Code verification has expired",
-      "businessVerification": "Business verification in Meta needs attention. This is separate from billing.",
+      "codeVerificationExpired": "Code verification is managed in Meta",
+      "businessVerification": "Business verification is managed in Meta",
       "paymentIssue": "Payment / billing needs attention in Meta",
       "messagingBlocked": "Messaging is blocked in Meta",
-      "messagingLimited": "Messaging is limited on Meta. You can still send if the number is connected.",
+      "messagingLimited": "Sending is available, subject to Meta limits",
       "wabaNotActive": "The WhatsApp Business Account is not active"
+    },
+    "accountStatus": {
+      "title": "WhatsApp account status",
+      "ready": "The number is connected and ready to send",
+      "readyHint": "You can send messages from this screen.",
+      "codeManagedTitle": "Code verification is managed in Meta",
+      "codeManagedHint": "This number is already connected to Cloud API. If Meta asks for extra verification, complete it in WhatsApp Manager.",
+      "verificationManagedTitle": "Business verification is managed in Meta",
+      "verificationManagedHint": "Business verification status may affect usage limits, but it does not block sending while Meta still allows it.",
+      "sendAvailableTitle": "Sending is available, subject to Meta limits",
+      "sendAvailableHint": "BizUply can send messages. Meta may still limit volume based on account status."
     },
     "errors": {
       "loadCompose": "Failed to load WhatsApp compose data",

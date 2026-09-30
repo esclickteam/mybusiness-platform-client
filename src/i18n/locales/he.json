@@ -8770,12 +8770,23 @@
       "notConnected": "וואטסאפ אינו מחובר",
       "phoneRegistrationRequired": "נדרש רישום מספר ל-Cloud API",
       "phoneRegistrationFailed": "רישום המספר נכשל",
-      "codeVerificationExpired": "אימות הקוד פג תוקף",
-      "businessVerification": "נדרש טיפול באימות העסק ב-Meta. זה נפרד מחיוב.",
+      "codeVerificationExpired": "אימות הקוד מנוהל ב־Meta",
+      "businessVerification": "אימות העסק מנוהל ב־Meta",
       "paymentIssue": "נדרש טיפול באמצעי תשלום / חיוב ב-Meta",
       "messagingBlocked": "שליחת הודעות חסומה ב-Meta",
-      "messagingLimited": "שליחת הודעות מוגבלת ב-Meta. עדיין ניתן לשלוח אם המספר מחובר.",
+      "messagingLimited": "שליחה זמינה בכפוף למגבלות Meta",
       "wabaNotActive": "חשבון WhatsApp Business אינו פעיל"
+    },
+    "accountStatus": {
+      "title": "סטטוס חשבון WhatsApp",
+      "ready": "המספר מחובר ומוכן לשליחה",
+      "readyHint": "ניתן לשלוח הודעות מהמסך הזה.",
+      "codeManagedTitle": "אימות הקוד מנוהל ב־Meta",
+      "codeManagedHint": "המספר כבר מחובר ל־Cloud API. אם Meta תדרוש אימות נוסף, ניתן לבצע זאת דרך WhatsApp Manager.",
+      "verificationManagedTitle": "אימות העסק מנוהל ב־Meta",
+      "verificationManagedHint": "סטטוס אימות העסק עשוי להשפיע על מגבלות שימוש, אך אינו חוסם שליחה כל עוד Meta מאפשרת שליחה.",
+      "sendAvailableTitle": "שליחה זמינה בכפוף למגבלות Meta",
+      "sendAvailableHint": "המערכת יכולה לשלוח הודעות, אך Meta עשויה להגביל נפח שליחה לפי סטטוס החשבון."
     },
     "errors": {
       "loadCompose": "טעינת נתוני השליחה נכשלה",

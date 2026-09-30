@@ -9,6 +9,11 @@ export type WhatsAppVisibleAlert = {
   raw?: Record<string, unknown>;
 };
 
+export type WhatsAppCalmStatusRow = {
+  titleKey: string;
+  hintKey: string;
+};
+
 function upper(value?: string | null) {
   return String(value || "").trim().toUpperCase();
 }
@@ -24,40 +29,58 @@ export function isCloudApiPhoneConnected(
   return !platform || platform === "CLOUD_API" || platform === "NOT_APPLICABLE";
 }
 
-function rawSend(raw?: Record<string, unknown>) {
-  return upper(String(raw?.canSendMessage || ""));
+export function isWhatsAppReadyToSend(
+  connection: WhatsAppConnection | null | undefined
+): boolean {
+  return Boolean(
+    connection?.connected &&
+      connection.phoneNumberId &&
+      connection.wabaId &&
+      connection.readyToSend
+  );
+}
+
+function rawSend(raw?: Record<string, unknown>, fallback?: string) {
+  return upper(String(raw?.canSendMessage || fallback || ""));
+}
+
+function isRealSendBlock(connection: WhatsAppConnection | null | undefined, row: {
+  key: string;
+  raw?: Record<string, unknown>;
+}) {
+  const send = rawSend(row.raw, connection?.canSendMessage);
+  if (row.key === "messaging" && send === "BLOCKED") return true;
+  if (row.key === "phone_registration") return true;
+  if (row.key === "waba_status") return true;
+  if (row.key === "payment" && send === "BLOCKED") return true;
+  return false;
 }
 
 export function visibleWhatsAppAlerts(
   connection: WhatsAppConnection | null | undefined
 ): WhatsAppVisibleAlert[] {
   const alerts = connection?.alerts || [];
-  const ready = Boolean(connection?.readyToSend);
+  const ready = isWhatsAppReadyToSend(connection);
   const cloud = isCloudApiPhoneConnected(connection);
+
+  if (ready && cloud) return [];
 
   return alerts
     .filter((row) => {
       if (row.key === "connection" && connection?.connected) return false;
       if (row.key === "phone_registration" && (cloud || ready)) return false;
+      if (ready && !isRealSendBlock(connection, row)) return false;
       return true;
     })
     .map((row) => {
-      const send = rawSend(row.raw);
-      let level: WhatsAppAlertLevel =
-        row.severity === "error"
+      const send = rawSend(row.raw, connection?.canSendMessage);
+      let level: WhatsAppAlertLevel = isRealSendBlock(connection, row)
+        ? "blocking"
+        : row.severity === "error"
           ? "blocking"
-          : row.severity === "info"
-            ? "info"
-            : "warning";
-
-      if (row.key === "messaging" && send === "LIMITED") {
-        level = "warning";
-      }
-      if (row.key === "business_verification" && send !== "BLOCKED") {
-        const verify = String(row.raw?.businessVerificationStatus || "").toLowerCase();
-        level = verify === "not_verified" ? "info" : "warning";
-      }
-      if (ready && level === "blocking") {
+          : "warning";
+      if (row.key === "messaging" && send === "LIMITED") level = "warning";
+      if (ready && level === "blocking" && !isRealSendBlock(connection, row)) {
         level = "warning";
       }
       return {
@@ -67,4 +90,41 @@ export function visibleWhatsAppAlerts(
         raw: row.raw,
       };
     });
+}
+
+export function calmWhatsAppStatusRows(
+  connection: WhatsAppConnection | null | undefined
+): WhatsAppCalmStatusRow[] | null {
+  if (!isWhatsAppReadyToSend(connection) || !isCloudApiPhoneConnected(connection)) {
+    return null;
+  }
+
+  const alerts = connection?.alerts || [];
+  const hasExpiredCode = alerts.some((row) => row.key === "code_verification");
+
+  const rows: WhatsAppCalmStatusRow[] = [
+    {
+      titleKey: "whatsapp.accountStatus.ready",
+      hintKey: "whatsapp.accountStatus.readyHint",
+    },
+  ];
+
+  if (hasExpiredCode) {
+    rows.push({
+      titleKey: "whatsapp.accountStatus.codeManagedTitle",
+      hintKey: "whatsapp.accountStatus.codeManagedHint",
+    });
+  }
+
+  rows.push({
+    titleKey: "whatsapp.accountStatus.verificationManagedTitle",
+    hintKey: "whatsapp.accountStatus.verificationManagedHint",
+  });
+
+  rows.push({
+    titleKey: "whatsapp.accountStatus.sendAvailableTitle",
+    hintKey: "whatsapp.accountStatus.sendAvailableHint",
+  });
+
+  return rows;
 }

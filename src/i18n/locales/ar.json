@@ -9438,8 +9438,20 @@
       "info": "معلومة"
     },
     "alerts": {
-      "businessVerification": "توثيق النشاط التجاري في Meta يحتاج إلى متابعة. هذا منفصل عن الفوترة.",
-      "messagingLimited": "المراسلة محدودة في Meta. ما زال بالإمكان الإرسال إذا كان الرقم متصلاً."
+      "businessVerification": "توثيق النشاط التجاري يُدار في Meta",
+      "messagingLimited": "الإرسال متاح وفق حدود Meta",
+      "codeVerificationExpired": "التحقق من الرمز يُدار في Meta"
+    },
+    "accountStatus": {
+      "title": "حالة حساب واتساب",
+      "ready": "الرقم متصل وجاهز للإرسال",
+      "readyHint": "يمكنك إرسال الرسائل من هذه الشاشة.",
+      "codeManagedTitle": "التحقق من الرمز يُدار في Meta",
+      "codeManagedHint": "هذا الرقم متصل بالفعل بـ Cloud API. إذا طلبت Meta تحققاً إضافياً، يمكن إتمامه من WhatsApp Manager.",
+      "verificationManagedTitle": "توثيق النشاط التجاري يُدار في Meta",
+      "verificationManagedHint": "قد يؤثر توثيق النشاط على حدود الاستخدام، لكنه لا يمنع الإرسال طالما أن Meta تسمح به.",
+      "sendAvailableTitle": "الإرسال متاح وفق حدود Meta",
+      "sendAvailableHint": "يمكن للنظام إرسال الرسائل، وقد تقيّد Meta الحجم حسب حالة الحساب."
     }
   },
   "metaCampaigns": {

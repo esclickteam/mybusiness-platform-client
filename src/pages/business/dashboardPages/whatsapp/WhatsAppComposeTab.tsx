@@ -39,7 +39,11 @@ import {
 } from "../../../../styles/bizuplyUi";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
 import WhatsAppStatusAlerts from "./WhatsAppStatusAlerts";
-import { visibleWhatsAppAlerts } from "./whatsappStatusUx";
+import WhatsAppAccountStatusCard from "./WhatsAppAccountStatusCard";
+import {
+  calmWhatsAppStatusRows,
+  visibleWhatsAppAlerts,
+} from "./whatsappStatusUx";
 
 type AudienceType = "selected_clients" | "mailing_list";
 
@@ -523,6 +527,7 @@ export default function WhatsAppComposeTab() {
   };
 
   const statusAlerts = visibleWhatsAppAlerts(connection);
+  const calmStatusRows = calmWhatsAppStatusRows(connection);
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir={getTextDirection(i18n.language)}>
@@ -532,9 +537,6 @@ export default function WhatsAppComposeTab() {
             <div className="flex items-start gap-3">
               <PlugZap className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wide opacity-70">
-                  {t("whatsapp.alertLevel.blocking")}
-                </p>
                 <p>{t("whatsapp.compose.notConnectedTitle")}</p>
                 <p className="mt-1 font-medium text-rose-800">
                   {t("whatsapp.compose.notConnectedHint")}
@@ -553,6 +555,7 @@ export default function WhatsAppComposeTab() {
         )}
 
         {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
+        {calmStatusRows ? <WhatsAppAccountStatusCard rows={calmStatusRows} /> : null}
 
         <section className={`${cardBase} p-4 sm:p-5`}>
           <h2 className="text-base font-black text-slate-900">
