@@ -166,6 +166,7 @@ const AdminManagedWhatsApp = lazy(
   () => import("./pages/admin/AdminManagedWhatsApp")
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
@@ -1520,6 +1521,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminLogs />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/ai-usage"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminAiUsage />
                             </ProtectedRoute>
                           }
                         />
