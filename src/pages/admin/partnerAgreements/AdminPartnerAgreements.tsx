@@ -9,22 +9,21 @@ import {
   type PartnerAgreement,
   type TerritoryAvailability,
 } from "../../../lib/partnerAgreementApi";
-import { availabilityLabel } from "../../../lib/partnerAgreementRules";
+import { agreementStatusLabel, fill } from "./partnerAgreementPageCopy.js";
+import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
 
-const FILTERS: { id: TerritoryAvailability | "all"; label: string }[] = [
-  { id: "all", label: "All countries" },
-  { id: "available", label: "Available" },
-  { id: "agreement_pending", label: "Agreement pending" },
-  { id: "exclusive_active", label: "Exclusive active" },
-  { id: "renewal_window", label: "Renewal window" },
-  { id: "expiring_soon", label: "Expiring soon" },
+const FILTER_IDS: (TerritoryAvailability | "all")[] = [
+  "all",
+  "available",
+  "agreement_pending",
+  "exclusive_active",
+  "renewal_window",
+  "expiring_soon",
 ];
 
-function statusLabel(status: string) {
-  return status.replace(/_/g, " ");
-}
-
 export default function AdminPartnerAgreements() {
+  const { text, dir, locale } = usePartnerAgreementPage();
+  const copy = text.list;
   const [items, setItems] = useState<PartnerAgreement[]>([]);
   const [countries, setCountries] = useState<CountryOption[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -60,7 +59,7 @@ export default function AdminPartnerAgreements() {
         setCountries(territories.countries || []);
         setCounts(territories.counts || {});
       } catch (err) {
-        if (!cancelled) setError(agreementError(err, "Could not load partner agreements."));
+        if (!cancelled) setError(agreementError(err, copy.loadError));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -68,7 +67,7 @@ export default function AdminPartnerAgreements() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [copy.loadError]);
 
   const visibleCountries = useMemo(() => {
     const query = q.trim().toLowerCase();
@@ -93,68 +92,64 @@ export default function AdminPartnerAgreements() {
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <AdminHeader />
-      <main className="mx-auto max-w-[1480px] space-y-6 px-4 py-6">
+      <main className="mx-auto max-w-[1480px] space-y-6 px-4 py-6" dir={dir} lang={locale}>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs font-black uppercase tracking-wide text-[#7C4DFF]">Bizuply Admin</p>
-            <h1 className="text-3xl font-black text-slate-900">Partner Agreements</h1>
-            <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-600">
-              The legal agreement is a fixed template. Create a record only when you are ready to set the partner and commercial details. Nothing is generated or sent on its own.
-            </p>
+            <p className="text-xs font-black uppercase tracking-wide text-[#7C4DFF]">{copy.eyebrow}</p>
+            <h1 className="text-3xl font-black text-slate-900">{copy.title}</h1>
+            <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-600">{copy.intro}</p>
           </div>
           <Link
             to="/admin/partner-agreements/new"
             className="rounded-2xl bg-[#7C4DFF] px-4 py-2.5 text-sm font-black text-white"
           >
-            Create agreement
+            {copy.create}
           </Link>
         </div>
 
         {error ? <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
 
         <section data-testid="territory-availability" className="rounded-3xl border border-slate-200 bg-white p-5">
-          <h2 className="text-xl font-black">Territory availability</h2>
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            A country stays available until an exclusive agreement is signed, paid, and active.
-          </p>
+          <h2 className="text-xl font-black">{copy.territoryTitle}</h2>
+          <p className="mt-1 text-sm font-semibold text-slate-500">{copy.territoryHelp}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {FILTERS.map((item) => (
+            {FILTER_IDS.map((id) => (
               <button
-                key={item.id}
+                key={id}
                 type="button"
-                onClick={() => setFilter(item.id)}
+                onClick={() => setFilter(id)}
                 className={`rounded-full px-3 py-1.5 text-sm font-black ${
-                  filter === item.id ? "bg-[#7C4DFF] text-white" : "bg-slate-100 text-slate-700"
+                  filter === id ? "bg-[#7C4DFF] text-white" : "bg-slate-100 text-slate-700"
                 }`}
               >
-                {item.label}
-                {item.id !== "all" ? ` · ${counts[item.id] || 0}` : ""}
+                {copy[id]}
+                {id !== "all" ? ` · ${counts[id] || 0}` : ""}
               </button>
             ))}
           </div>
           <input
             value={q}
             onChange={(event) => setQ(event.target.value)}
-            placeholder="Search country, partner, or agreement"
+            placeholder={copy.search}
             className="mt-4 w-full max-w-md rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-semibold outline-none focus:border-violet-400"
           />
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left text-sm">
+            <table className="w-full min-w-[760px] text-start text-sm">
               <thead className="text-xs font-black uppercase text-slate-400">
                 <tr>
-                  <th className="py-2">Country</th>
-                  <th>Status</th>
-                  <th>Partner</th>
-                  <th>Agreement</th>
-                  <th>Start</th>
-                  <th>Expiry</th>
+                  <th className="py-2 text-start">{copy.country}</th>
+                  <th className="text-start">{copy.status}</th>
+                  <th className="text-start">{copy.partner}</th>
+                  <th className="text-start">{copy.agreement}</th>
+                  <th className="text-start">{copy.start}</th>
+                  <th className="text-start">{copy.expiry}</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
                     <td className="py-4 font-bold text-slate-500" colSpan={6}>
-                      Loading territories...
+                      {copy.loading}
                     </td>
                   </tr>
                 ) : (
@@ -163,7 +158,7 @@ export default function AdminPartnerAgreements() {
                       <td className="py-2 font-black">
                         {row.countryName} <span className="font-bold text-slate-400">{row.countryCode}</span>
                       </td>
-                      <td className="font-bold">{availabilityLabel(row.availability)}</td>
+                      <td className="font-bold">{copy[row.availability] || row.availability}</td>
                       <td>{row.partnerName || "—"}</td>
                       <td>
                         {row.agreementId ? (
@@ -183,32 +178,32 @@ export default function AdminPartnerAgreements() {
             </table>
             {(filter === "available" || filter === "all") && visibleCountries.length > 80 ? (
               <p className="mt-2 text-xs font-bold text-slate-500">
-                Showing 80 of {visibleCountries.length}. Search to narrow the list.
+                {fill(copy.showing, { shown: 80, total: visibleCountries.length })}
               </p>
             ) : null}
           </div>
         </section>
 
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
-          <h2 className="text-xl font-black">Agreements</h2>
+          <h2 className="text-xl font-black">{copy.agreements}</h2>
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[860px] text-left text-sm">
+            <table className="w-full min-w-[860px] text-start text-sm">
               <thead className="text-xs font-black uppercase text-slate-400">
                 <tr>
-                  <th className="py-2">Number</th>
-                  <th>Partner</th>
-                  <th>Territory</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Payment</th>
-                  <th>Term</th>
+                  <th className="py-2 text-start">{copy.number}</th>
+                  <th className="text-start">{copy.partner}</th>
+                  <th className="text-start">{copy.country}</th>
+                  <th className="text-start">{copy.type}</th>
+                  <th className="text-start">{copy.status}</th>
+                  <th className="text-start">{copy.payment}</th>
+                  <th className="text-start">{copy.term}</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 ? (
                   <tr>
                     <td className="py-4 font-bold text-slate-500" colSpan={7}>
-                      No agreements yet.
+                      {copy.empty}
                     </td>
                   </tr>
                 ) : (
@@ -223,11 +218,11 @@ export default function AdminPartnerAgreements() {
                       <td>
                         {row.countryName || "—"} {row.countryCode}
                       </td>
-                      <td>{row.territoryType === "exclusive" ? "Exclusive" : row.territoryType === "non_exclusive" ? "Non-exclusive" : "—"}</td>
-                      <td className="capitalize">{statusLabel(row.status)}</td>
-                      <td className="capitalize">{row.paymentStatus}</td>
+                      <td>{row.territoryType === "exclusive" ? copy.exclusive : row.territoryType === "non_exclusive" ? copy.nonExclusive : "—"}</td>
+                      <td>{agreementStatusLabel(row.status, text)}</td>
+                      <td>{agreementStatusLabel(row.paymentStatus, text)}</td>
                       <td>
-                        {row.startDate || "—"} to {row.endDate || "—"}
+                        {row.startDate || "—"} {copy.rangeTo} {row.endDate || "—"}
                       </td>
                     </tr>
                   ))
