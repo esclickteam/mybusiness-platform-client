@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   activateCampaignGoal,
@@ -73,9 +73,6 @@ export default function MetaCampaignGoalsPage() {
         <h2 className="text-lg font-black">{t("metaCampaigns.goals.title")}</h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">{t("metaCampaigns.goals.subtitle")}</p>
         <p className="mt-2 text-sm font-semibold text-slate-500">{t("metaCampaigns.ux.goalOptional")}</p>
-        <Link to="../copilot?q=Ask%20why%20I%27m%20above%20target" className="mt-2 inline-flex text-sm font-black text-violet-700 underline">
-          {t("metaCampaigns.ux.askAiGoal")}
-        </Link>
       </section>
 
       <section className={`${cardBase} space-y-3 p-4`}>

@@ -33,7 +33,7 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("goals")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("recommendations")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("portfolio")).toBe(true);
-    expect(isMetaCampaignsKnownChildPath("copilot")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("copilot")).toBe(false);
     expect(isMetaCampaignsKnownChildPath("campaigns")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("automations")).toBe(false);
     expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
@@ -79,7 +79,7 @@ describe("BusinessDashboardRoutes wiring", () => {
       /path="portfolio"\s+element=\{<MetaPortfolioPage/
     );
     expect(source).toMatch(
-      /path="copilot"\s+element=\{<MetaMarketingCopilotPage/
+      /path="copilot"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
       /path="campaigns"\s+element=\{<MetaCampaignsCampaignsPage/
@@ -96,5 +96,30 @@ describe("BusinessDashboardRoutes wiring", () => {
     expect(shell).not.toMatch(/path: "create"/);
     expect(shell).not.toMatch(/path: "library"/);
     expect(shell).not.toMatch(/path: "rules"/);
+    expect(shell).not.toMatch(/path: "copilot"/);
+    const goals = fs.readFileSync(
+      path.resolve(__dirname, "./MetaCampaignGoalsPage.tsx"),
+      "utf8"
+    );
+    const overview = fs.readFileSync(
+      path.resolve(__dirname, "./MetaCampaignsOverviewTab.tsx"),
+      "utf8"
+    );
+    const portfolio = fs.readFileSync(
+      path.resolve(__dirname, "./MetaPortfolioPage.tsx"),
+      "utf8"
+    );
+    const drawer = fs.readFileSync(
+      path.resolve(__dirname, "./MetaCampaignDetailsDrawer.tsx"),
+      "utf8"
+    );
+    const campaigns = fs.readFileSync(
+      path.resolve(__dirname, "./MetaCampaignsCampaignsPage.tsx"),
+      "utf8"
+    );
+    for (const file of [goals, overview, portfolio, drawer, campaigns]) {
+      expect(file).not.toMatch(/\/copilot/);
+      expect(file).not.toMatch(/askAi/);
+    }
   });
 });

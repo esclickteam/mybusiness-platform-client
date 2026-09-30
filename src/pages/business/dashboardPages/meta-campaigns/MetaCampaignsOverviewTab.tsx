@@ -736,9 +736,6 @@ export default function MetaCampaignsOverviewTab() {
           ) : null}
           {hasInsightSignal ? <li>{t("metaCampaigns.ux.attentionOk")}</li> : null}
         </ul>
-        <Link to={`${basePath}/copilot`} className="mt-3 inline-flex text-sm font-black text-violet-700 underline">
-          {t("metaCampaigns.ux.askAiAttention")}
-        </Link>
       </section>
 
       <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="overview-range-label">

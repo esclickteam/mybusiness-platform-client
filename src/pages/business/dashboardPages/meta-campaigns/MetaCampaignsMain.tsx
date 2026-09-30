@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Lightbulb, Megaphone, MessageSquare, PieChart, Settings2, Sparkles, Target } from "lucide-react";
+import { LayoutDashboard, Lightbulb, Megaphone, PieChart, Settings2, Sparkles, Target } from "lucide-react";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
@@ -30,7 +30,6 @@ const tabs: MetaCampaignsTab[] = [
   { path: "goals", labelKey: "metaCampaigns.nav.goals", icon: Target },
   { path: "recommendations", labelKey: "metaCampaigns.nav.recommendations", icon: Lightbulb },
   { path: "portfolio", labelKey: "metaCampaigns.nav.portfolio", icon: PieChart },
-  { path: "copilot", labelKey: "metaCampaigns.nav.copilot", icon: MessageSquare },
   { path: "settings", labelKey: "metaCampaigns.nav.settings", icon: Settings2 },
 ];
 
@@ -83,7 +82,7 @@ export default function MetaCampaignsMain() {
       ? cleanPath
       : cleanPath.replace(new RegExp(`/${lastPart}$`), "");
 
-    if (lastPart === "rules" || lastPart === "automations") {
+    if (lastPart === "rules" || lastPart === "automations" || lastPart === "copilot") {
       navigate(`${basePath}/overview`, { replace: true });
       return;
     }

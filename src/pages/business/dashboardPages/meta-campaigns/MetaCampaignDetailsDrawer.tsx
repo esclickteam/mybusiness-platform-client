@@ -238,12 +238,6 @@ export default function MetaCampaignDetailsDrawer({
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-slate-100 bg-white px-4 py-3">
           <div className="min-w-0 flex-1">
             <h2 className="break-words text-lg font-black text-slate-900">{detail?.name || campaign.name}</h2>
-            <a
-              href={`../copilot?q=${encodeURIComponent(`${t("metaCampaigns.ux.askAiCampaign")} ${detail?.name || campaign.name}`)}`}
-              className="mt-1 inline-flex text-xs font-black text-violet-700 underline"
-            >
-              {t("metaCampaigns.ux.askAiCampaign")}
-            </a>
             <p className="text-xs text-slate-500">
               {t("metaCampaigns.overview.lastSynced", {
                 time: lastSynced ? formatDateTimeHe(lastSynced, locale) : "—",
