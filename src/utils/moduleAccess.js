@@ -53,6 +53,22 @@ export function isModuleEnabled(enabledModules, moduleKey) {
 }
 
 /**
+ * Complimentary / sold WhatsApp-only access: dashboard plus WhatsApp,
+ * with no other product modules. Those accounts should not see the club.
+ */
+export function isWhatsappOnlyPackage(enabledModules) {
+  const normalized = normalizeEnabledModules(enabledModules);
+  if (!normalized) return false;
+  const productModules = normalized.filter(
+    (key) => key !== "dashboard" && key !== "help-center" && key !== "billing"
+  );
+  return (
+    productModules.length > 0 &&
+    productModules.every((key) => key === "whatsapp")
+  );
+}
+
+/**
  * Extract first dashboard segment from a path like
  * `/business/:id/dashboard/crm/leads` → `crm`
  */
@@ -70,10 +86,13 @@ export function isDashboardPathAllowed(pathname, enabledModules) {
   if (!segment) return true;
 
   const moduleKey = NAV_PATH_MODULE_MAP[segment] || segment;
-  // Soft utility pages stay reachable for plan-limited business accounts.
-  // Help Center and the Club landing stay reachable for plan-limited accounts.
+  // Help Center stays reachable for plan-limited business accounts.
+  // The Club landing stays reachable too, except on a WhatsApp-only package.
   // Club content itself is gated by Club membership on the API.
-  const alwaysAllowed = new Set(["help-center", "global-club"]);
+  if (segment === "global-club" && !isWhatsappOnlyPackage(enabledModules)) {
+    return true;
+  }
+  const alwaysAllowed = new Set(["help-center"]);
   if (alwaysAllowed.has(segment)) return true;
 
   return isModuleEnabled(enabledModules, moduleKey);
