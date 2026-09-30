@@ -562,7 +562,11 @@ export default function AdSetLevelEditor({
                     <ChevronDown className="h-4 w-4 text-[#65676B]" />
                   )}
                 </button>
-                {adSet.ageExpanded ? (
+                {adSet.ageMin == null || adSet.ageMax == null ? (
+                  <p className="bg-white px-3 py-2 text-[14px] font-semibold text-amber-800">
+                    {t("metaCampaigns.adsManager.chrome.ageNotLoaded")}
+                  </p>
+                ) : adSet.ageExpanded ? (
                   <div className="grid grid-cols-2 gap-2 bg-white px-3 py-3">
                     <select
                       className={metaSelectClass}
@@ -572,7 +576,7 @@ export default function AdSetLevelEditor({
                         const ageMin = Number(e.target.value);
                         onChange({
                           ageMin,
-                          ageMax: Math.max(ageMin, adSet.ageMax),
+                          ageMax: Math.max(ageMin, adSet.ageMax || ageMin),
                         });
                       }}
                     >
@@ -590,7 +594,7 @@ export default function AdSetLevelEditor({
                         const ageMax = Number(e.target.value);
                         onChange({
                           ageMax,
-                          ageMin: Math.min(adSet.ageMin, ageMax),
+                          ageMin: Math.min(adSet.ageMin || ageMax, ageMax),
                         });
                       }}
                     >

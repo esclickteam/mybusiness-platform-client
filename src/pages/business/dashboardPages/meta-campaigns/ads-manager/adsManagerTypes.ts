@@ -94,8 +94,8 @@ export type AdSetDraft = {
   savedAudienceId: string;
   locationsSummary: string;
   locations: AdsManagerLocation[];
-  ageMin: number;
-  ageMax: number;
+  ageMin: number | null;
+  ageMax: number | null;
   gender: AdsManagerGender;
   interests: AdSetInterest[];
   optimizationGoal: string;
@@ -103,6 +103,10 @@ export type AdSetDraft = {
   dailyBudget: string;
   lifetimeBudget: string;
   includeCustomAudiences: string[];
+  customAudiences: AdSetInterest[];
+  excludedAudiences: AdSetInterest[];
+  targetingLoaded: boolean;
+  targetingRaw: Record<string, unknown> | null;
   suggestAudience: boolean;
   furtherLimitReach: boolean;
   advertiserId: string;
@@ -170,6 +174,7 @@ export type AdsManagerState = {
     lower: number;
     upper: number;
     spectrum: number; // 0 narrow … 1 broad
+    ready?: boolean;
   };
   campaignScore: number;
 };

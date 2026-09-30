@@ -57,6 +57,13 @@ const campaign: MetaCampaign = {
       ],
       interests: [{ id: "600", name: "Small business" }],
       advantageAudience: false,
+      targetingLoaded: true,
+      targetingRaw: {
+        geo_locations: { countries: ["IL"] },
+        age_min: 25,
+        age_max: 55,
+        genders: [1],
+      },
       pageId: "1222199210985216",
       optimizationGoal: "LEAD_GENERATION",
       billingEvent: "IMPRESSIONS",
@@ -118,5 +125,59 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(changes[0].labelKey).toBe("changeHeadline");
     expect(changes[0].oldValue).toBe("Headline from Meta");
     expect(changes[0].newValue).toBe("New headline");
+  });
+
+  it("does not invent 18–65 when Meta ages are missing", () => {
+    const missingAges: MetaCampaign = {
+      ...campaign,
+      ageMin: null,
+      ageMax: null,
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          ageMin: null,
+          ageMax: null,
+          targetingLoaded: true,
+          targetingRaw: { geo_locations: { countries: ["IL"] } },
+        },
+      ],
+    };
+    const state = adsManagerStateFromMetaCampaign(missingAges);
+    expect(state.adSets[0].ageMin).toBeNull();
+    expect(state.adSets[0].ageMax).toBeNull();
+    expect(state.adSets[0].locations[0].name).toBe("Israel");
+    expect(state.audienceEstimate.ready).toBe(false);
+  });
+
+  it("maps Advantage+ suggestion ages 24–35 without flattening to 18–65", () => {
+    const live: MetaCampaign = {
+      ...campaign,
+      ageMin: 24,
+      ageMax: 35,
+      genders: [],
+      advantageAudience: true,
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          ageMin: 24,
+          ageMax: 35,
+          genders: [],
+          advantageAudience: true,
+          targetingLoaded: true,
+          targetingRaw: {
+            geo_locations: { countries: ["IL"] },
+            age_min: 24,
+            age_max: 35,
+            targeting_automation: { advantage_audience: 1 },
+          },
+        },
+      ],
+    };
+    const state = adsManagerStateFromMetaCampaign(live);
+    expect(state.adSets[0].ageMin).toBe(24);
+    expect(state.adSets[0].ageMax).toBe(35);
+    expect(state.adSets[0].gender).toBe("all");
+    expect(state.adSets[0].advantageAudience).toBe(true);
+    expect(state.adSets[0].locations[0].name).toBe("Israel");
   });
 });

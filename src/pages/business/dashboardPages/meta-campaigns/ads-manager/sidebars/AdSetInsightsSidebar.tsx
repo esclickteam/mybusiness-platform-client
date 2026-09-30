@@ -8,13 +8,15 @@ type Props = {
   estimate: AdsManagerState["audienceEstimate"];
   locationsSummary: string;
   advantageAudience: boolean;
-  ageMin: number;
-  ageMax: number;
+  ageMin: number | null;
+  ageMax: number | null;
   gender: AdsManagerGender;
   estimateLoading?: boolean;
+  estimatePending?: boolean;
 };
 
-function ageLabel(ageMin: number, ageMax: number) {
+function ageLabel(ageMin: number | null, ageMax: number | null, missing: string) {
+  if (ageMin == null || ageMax == null) return missing;
   return `${ageMin} - ${ageMax >= 65 ? "65+" : ageMax}`;
 }
 
@@ -30,6 +32,7 @@ export default function AdSetInsightsSidebar({
   ageMax,
   gender,
   estimateLoading = false,
+  estimatePending = false,
 }: Props) {
   const { t } = useTranslation();
   const cc = (key: string, opts?: Record<string, unknown>) =>
@@ -57,7 +60,7 @@ export default function AdSetInsightsSidebar({
           <div>
             <p className="font-semibold text-[#65676B]">{cc("age")}</p>
             <p className="mt-0.5 font-bold text-[#050505]">
-              {ageLabel(ageMin, ageMax)}
+              {ageLabel(ageMin, ageMax, cc("ageNotLoaded"))}
               {advantageAudience ? (
                 <span className="ms-2 rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[10px] font-semibold text-[#65676B]">
                   {cc("suggestion")}
@@ -108,6 +111,10 @@ export default function AdSetInsightsSidebar({
             {estimateLoading ? (
               <span className="font-semibold text-[#65676B]">
                 {cc("updating")}
+              </span>
+            ) : estimatePending || estimate.ready === false || !estimate.lower ? (
+              <span className="font-semibold text-[#65676B]">
+                {cc("estimatePendingEdit")}
               </span>
             ) : (
               <span>
