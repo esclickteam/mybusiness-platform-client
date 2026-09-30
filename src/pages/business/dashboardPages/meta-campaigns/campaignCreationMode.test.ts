@@ -29,12 +29,12 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("create-ai")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("overview")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("settings")).toBe(true);
-    expect(isMetaCampaignsKnownChildPath("rules")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("rules")).toBe(false);
     expect(isMetaCampaignsKnownChildPath("goals")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("portfolio")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("copilot")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("campaigns")).toBe(true);
-    expect(isMetaCampaignsKnownChildPath("automations")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("automations")).toBe(false);
     expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("mystery")).toBe(false);
   });
@@ -60,7 +60,10 @@ describe("BusinessDashboardRoutes wiring", () => {
       /path="settings"\s+element=\{<MetaCampaignsSettingsTab/
     );
     expect(source).toMatch(
-      /path="rules"\s+element=\{<MetaAutomationRulesPage/
+      /path="rules"\s+element=\{<Navigate to="overview"/
+    );
+    expect(source).toMatch(
+      /path="automations"\s+element=\{<Navigate to="overview"/
     );
     expect(source).toMatch(
       /path="goals"\s+element=\{<MetaCampaignGoalsPage/
@@ -85,5 +88,6 @@ describe("BusinessDashboardRoutes wiring", () => {
     );
     expect(shell).not.toMatch(/path: "create"/);
     expect(shell).not.toMatch(/path: "library"/);
+    expect(shell).not.toMatch(/path: "rules"/);
   });
 });

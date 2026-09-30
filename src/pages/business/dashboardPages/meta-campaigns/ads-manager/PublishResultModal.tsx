@@ -63,8 +63,8 @@ export default function PublishResultModal({
               </h2>
               <p className="mt-0.5 text-[13px] text-[#65676B]">
                 {ok
-                  ? c("publishOkSubtitle")
-                  : publish.lastError || c("publishFailSubtitle")}
+                  ? c("publishOkCustomer")
+                  : c("publishFailSubtitle")}
               </p>
             </div>
           </div>
@@ -78,15 +78,7 @@ export default function PublishResultModal({
         </div>
 
         <div className="space-y-2 px-4 py-4 text-[13px]">
-          <Row label={c("metaCampaignId")} value={publish.metaCampaignId || "—"} />
-          <Row label={c("metaAdSetId")} value={publish.metaAdSetId || "—"} />
-          <Row label={c("metaCreativeId")} value={publish.metaCreativeId || "—"} />
-          <Row label={c("metaAdId")} value={publish.metaAdId || "—"} mono />
           <Row label={c("currentMetaStatus")} value={statusLabel} />
-          <Row
-            label={c("effectiveStatusLabel")}
-            value={publish.metaEffectiveStatus || "—"}
-          />
           <Row
             label={c("submittedTime")}
             value={
@@ -95,15 +87,6 @@ export default function PublishResultModal({
                 : "—"
             }
           />
-          {publish.failedStage ? (
-            <Row label={c("failedStage")} value={publish.failedStage} />
-          ) : null}
-          {publish.lastMetaErrorCode ? (
-            <Row
-              label={c("metaError")}
-              value={`${publish.lastMetaErrorCode}: ${publish.lastMetaErrorMessage || ""}`}
-            />
-          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[#E4E6EB] px-4 py-3">

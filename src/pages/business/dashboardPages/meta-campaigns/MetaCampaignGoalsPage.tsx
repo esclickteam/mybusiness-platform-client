@@ -12,6 +12,7 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 import MetaCampaignGoalCard from "./MetaCampaignGoalCard";
+import { humanizeMetaCustomerLabel } from "./metaCampaignUtils";
 
 const OBJECTIVES = [
   { id: "MORE_LEADS", labelKey: "metaCampaigns.goals.moreLeads" },
@@ -154,13 +155,11 @@ export default function MetaCampaignGoalsPage() {
         ) : null}
         {step === 5 && draft ? (
           <div className="space-y-3" data-testid="goal-review">
-            <p className="text-sm font-black">{t("metaCampaigns.goals.reviewTitle")}: CPL, CTR, Frequency, Spend</p>
+            <p className="text-sm font-black">{t("metaCampaigns.goals.reviewTitle")}</p>
             <p className="text-sm text-slate-600">{explanation}</p>
-            <p className="text-xs font-semibold text-slate-500">{t("metaCampaigns.goals.editRules")}</p>
             {(draft.generatedRules || []).map((rule, index) => (
               <div key={String(rule.key || index)} className="rounded-lg border border-slate-200 p-3 text-sm">
                 <p className="font-black">{String(rule.name)}</p>
-                <p>{String(rule.action)} · {String(rule.mode)}</p>
                 <button
                   type="button"
                   className={btnSecondary}
@@ -234,10 +233,10 @@ export default function MetaCampaignGoalsPage() {
           {history.map((row, index) => (
             <li key={index} className="rounded-lg border border-slate-100 px-3 py-2">
               {t("metaCampaigns.ux.portfolioHistoryRow", {
-                mode: String(row.action || row.type || row.window || "—"),
+                mode: humanizeMetaCustomerLabel(String(row.action || row.type || row.window || "—"), t),
                 from: String(row.from ?? row.previous ?? row.previousCpl ?? "—"),
                 to: String(row.to ?? row.next ?? row.cpl ?? "—"),
-                status: String(row.status || row.health || ""),
+                status: humanizeMetaCustomerLabel(String(row.status || row.health || ""), t),
               })}
             </li>
           ))}

@@ -547,7 +547,7 @@ export function formatAdAccountLabel(
     accountId?: string | null;
     id?: string | null;
   } | null,
-  options?: { fallbackName?: string; includeCurrency?: boolean }
+  options?: { fallbackName?: string; includeCurrency?: boolean; includeAccountId?: boolean }
 ) {
   const name =
     String(account?.name || "").trim() ||
@@ -556,13 +556,48 @@ export function formatAdAccountLabel(
   const currency = String(account?.currency || "").trim();
   const accountId = resolveAdAccountId(account);
   const includeCurrency = options?.includeCurrency !== false;
+  const includeAccountId = Boolean(options?.includeAccountId);
 
   const parts = [name];
   if (includeCurrency && currency) {
     parts[0] = `${name} (${currency})`;
   }
-  if (accountId) {
+  if (includeAccountId && accountId) {
     parts.push(accountId);
   }
   return parts.join(" · ");
+}
+
+export function humanizeMetaCustomerLabel(
+  raw: string | null | undefined,
+  t: (key: string, options?: { defaultValue?: string }) => string
+): string {
+  const value = String(raw || "").trim();
+  if (!value) return "—";
+  const compact = value.toUpperCase().replace(/[\s-]+/g, "_");
+  const humanKey = `metaCampaigns.human.${compact}`;
+  const fromHuman = t(humanKey);
+  if (fromHuman && fromHuman !== humanKey) return String(fromHuman);
+  const windowKey = `metaCampaigns.goals.windows.${compact}`;
+  const fromWindow = t(windowKey);
+  if (fromWindow && fromWindow !== windowKey) return String(fromWindow);
+  const deliveryKey = `metaCampaigns.status.${metaDeliveryStatusKey(value)}`;
+  const fromDelivery = t(deliveryKey);
+  if (fromDelivery && fromDelivery !== deliveryKey) return String(fromDelivery);
+  if (
+    /OUTCOME_|LEAD_GENERATION|CONVERSIONS/.test(compact) ||
+    compact.startsWith("OUTCOME")
+  ) {
+    const fromObjective = metaObjectiveLabel(value, t);
+    if (fromObjective && fromObjective !== value && fromObjective !== "—") {
+      return fromObjective;
+    }
+  }
+  if (/^[A-Z][A-Z0-9_]{2,}$/.test(compact)) {
+    return compact
+      .split("_")
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(" ");
+  }
+  return value;
 }

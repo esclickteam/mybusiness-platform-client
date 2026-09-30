@@ -9533,8 +9533,8 @@
     "shell": {
       "badge": "Meta Ads",
       "title": "Meta Campaign Management",
-      "subtitle": "Manage, track, and optimize Facebook and Instagram campaigns in one place.",
-      "channel": "Meta Marketing API"
+      "subtitle": "Manage Facebook and Instagram campaigns in one place.",
+      "channel": "Meta Ads"
     },
     "nav": {
       "overview": "Overview",
@@ -9557,7 +9557,7 @@
       "duplicateCampaign": "Duplicate campaign",
       "duplicateAdSet": "Duplicate ad set",
       "duplicateAd": "Duplicate ad",
-      "duplicateConfirm": "Duplicate this {{kind}} as PAUSED in Meta?",
+      "duplicateConfirm": "Duplicate this {{kind}} as paused?",
       "duplicatedPaused": "Duplicated in Meta as PAUSED",
       "tabs": {
         "campaign": "Campaigns",
@@ -9572,8 +9572,8 @@
       "syncing": "Syncing with Meta…"
     },
     "overview": {
-      "heading": "Campaign management",
-      "subheading": "Manage and optimize your Meta campaigns here.",
+      "heading": "Overview",
+      "subheading": "Spend, leads, and campaigns in one place.",
       "account": "Ad account",
       "spendCard": "Spend in range",
       "spendCardHint": "Total spend for the selected date range",
@@ -9582,7 +9582,8 @@
       "currencyLabel": "Currency: {{currency}}",
       "connectedThroughMeta": "Connected through Meta",
       "syncedWithMeta": "Synced with Meta",
-      "lastSyncedAgo": "Last synced {{seconds}} seconds ago",
+      "syncedJustNow": "Synced with Meta just now",
+      "syncedMinutesAgo": "Synced with Meta {{minutes}} minutes ago",
       "lastSynced": "Last synced: {{time}}",
       "instagramNotConnected": "Instagram account not connected",
       "instagramConnectHint": "Connect an Instagram professional account to this Facebook Page in Meta. Facebook-only campaigns keep working.",
@@ -10012,6 +10013,7 @@
         "statusRejected": "Rejected",
         "campaignSubmittedTitle": "Campaign submitted to Meta",
         "publishOkSubtitle": "Campaign created successfully in Meta — currently paused. Use Activate only if you want it to start spending.",
+        "publishOkCustomer": "The campaign was submitted. You can follow its status here.",
         "publishFailSubtitle": "One or more Meta create steps failed. You can retry from the failed stage.",
         "currentMetaStatus": "Current Meta status",
         "effectiveStatusLabel": "effective_status",
@@ -10367,17 +10369,47 @@
     },
     "status": {
       "active": "Active",
-      "paused": "Off",
+      "paused": "Paused",
       "archived": "Archived",
       "deleted": "Deleted",
       "draft": "Draft",
       "pending_review": "In review",
       "in_process": "Processing",
-      "adset_paused": "Ad set off",
-      "disapproved": "Disapproved",
+      "adset_paused": "Ad set paused",
+      "disapproved": "Not approved",
       "rejected": "Rejected",
-      "with_issues": "With issues",
-      "campaign_paused": "Campaign off"
+      "with_issues": "Needs attention",
+      "campaign_paused": "Campaign paused"
+    },
+    "human": {
+      "HOLD": "Keep the budget as it is for now",
+      "KEEP": "Keep the budget as it is for now",
+      "NO_CHANGE": "Keep the budget as it is for now",
+      "INCREASE": "Consider increasing the budget",
+      "DECREASE": "Consider decreasing the budget",
+      "SCALE_UP": "Consider scaling up carefully",
+      "SCALE_DOWN": "Consider scaling down",
+      "PAUSE": "Consider pausing",
+      "RESUME": "Consider turning back on",
+      "KEEP_TOTAL": "Keep the same total budget",
+      "GROWTH": "Allow growth up to the cap",
+      "INSUFFICIENT_DATA": "There isn’t enough data yet to recommend a budget change",
+      "ACTIVE": "Active",
+      "PAUSED": "Paused",
+      "TODAY": "Today",
+      "YESTERDAY": "Yesterday",
+      "LAST_3D": "Last 3 days",
+      "LAST_7D": "Last 7 days",
+      "LAST_14D": "Last 14 days",
+      "LAST_30D": "Last 30 days",
+      "OUTCOME_LEADS": "Leads",
+      "LEAD_GENERATION": "Leads",
+      "OUTCOME_SALES": "Sales",
+      "OUTCOME_TRAFFIC": "Traffic",
+      "OUTCOME_AWARENESS": "Awareness",
+      "OUTCOME_ENGAGEMENT": "Engagement",
+      "CONVERSIONS": "Conversions",
+      "BLENDED_CPL": "Cost per lead"
     },
     "objectives": {
       "leads": "Leads",
@@ -10400,7 +10432,7 @@
       "financial": "Financial products"
     },
     "insights": {
-      "title": "Smart insights",
+      "title": "What to know",
       "demoData": "Demo data"
     },
     "automations": {
@@ -10502,7 +10534,7 @@
     },
     "goals": {
       "title": "Campaign goals",
-      "subtitle": "Set a simple business goal. Invistimo turns it into KPIs and Phase 5 rules you can review first.",
+      "subtitle": "Your target, and whether ads are meeting it.",
       "setGoal": "Set campaign goal",
       "step1": "Objective",
       "step2": "Target",
@@ -10528,14 +10560,15 @@
         "ON_TARGET": "On target",
         "NEAR_TARGET": "Near target",
         "NEEDS_ATTENTION": "Needs attention",
-        "INSUFFICIENT_DATA": "Insufficient data"
+        "INSUFFICIENT_DATA": "Not enough data yet"
       },
       "current": "Current",
       "difference": "Difference",
       "started": "When goal started",
       "noGoals": "No goals yet.",
-      "evaluationWindow": "Goal evaluation window: {{window}}",
-      "evaluate": "Evaluate",
+      "evaluationWindow": "Based on {{window}}",
+      "basedOnWindow": "Based on {{window}}",
+      "evaluate": "Refresh results",
       "remove": "Remove",
       "currencyValue": "{{value}} ILS",
       "windows": {
@@ -10549,7 +10582,7 @@
     },
     "portfolio": {
       "title": "Portfolio Optimization",
-      "subtitle": "Compare campaigns in this ad account and review a guarded budget split before anything is sent to Meta.",
+      "subtitle": "Compare campaigns and review a suggested budget change — only after you approve.",
       "keepTotal": "Keep total budget unchanged",
       "growth": "Allow growth up to account cap",
       "targetCpl": "Target blended CPL",
@@ -10569,8 +10602,8 @@
       "colReason": "Reason"
     },
     "copilot": {
-      "title": "AI Marketing Copilot",
-      "subtitle": "Ask about your Meta ads in plain language. Numbers are calculated first. Suggested actions always need your review.",
+      "title": "Ask AI about your campaigns",
+      "subtitle": "Ask in plain language. Suggested changes always need your approval.",
       "placeholder": "Where am I wasting money?",
       "ask": "Ask",
       "thinking": "Analyzing…",
@@ -10654,9 +10687,9 @@
       "notConnectedTitle": "No connected ad account found",
       "notConnectedBody": "Connect a Meta account to view campaign data.",
       "connectCta": "Go to Meta connection",
-      "loadingFromMeta": "Loading campaign data from Meta...",
+      "loadingFromMeta": "Loading campaigns...",
       "noCampaignsInRange": "No campaigns found for the selected date range.",
-      "permissionTitle": "No permission to read account data",
+      "permissionTitle": "Reconnect Meta to continue",
       "permissionBody": "Please reconnect your Meta account.",
       "selectAccountTitle": "Select an ad account",
       "selectAccountBody": "Choose a Meta ad account to load campaigns and performance.",
@@ -11115,8 +11148,8 @@
     },
     "settings": {
       "badge": "Connection",
-      "title": "Meta Ads connection",
-      "subtitle": "Sign in with ads permissions and pick an ad account and Page. Budget is set per campaign.",
+      "title": "Meta connection",
+      "subtitle": "Connect your ads account to manage campaigns here.",
       "connected": "Connected",
       "disconnected": "Disconnected",
       "connect": "Connect Meta",
@@ -11124,9 +11157,13 @@
       "refreshAccounts": "Refresh accounts",
       "disconnect": "Disconnect",
       "confirmDisconnect": "Disconnect Meta Ads?",
-      "connectedAs": "Connected as {{name}}",
+      "connectedAs": "Meta connection managed via: {{name}}",
+      "managedVia": "Meta connection managed via: {{name}}",
+      "lastSync": "Last sync",
+      "currency": "Currency",
+      "reconnectNeeded": "We couldn’t finish connecting. Please try again.",
       "adAccountTitle": "Ad account",
-      "adAccountHint": "Choose the ad account used to manage campaigns. Account IDs are shown just like in Meta.",
+      "adAccountHint": "Choose the ad account used to manage campaigns.",
       "adAccount": "Ad Account",
       "adAccountPlaceholder": "Select an ad account",
       "selectAccountRequired": "Please select an ad account",
@@ -11146,9 +11183,9 @@
       "businessHint": "Choose the Meta Business Portfolio that owns or shares the ad accounts you will manage.",
       "businessPlaceholder": "Select a Meta business",
       "businessTitle": "Meta Business Portfolio",
-      "connectHint": "Sign in with Facebook Login and grant ads_read, ads_management, and business_management.",
+      "connectHint": "Sign in with Facebook to manage ads from here.",
       "grantedPermissions": "Granted permissions",
-      "noBusinesses": "No Meta businesses were returned. Reconnect and grant business_management.",
+      "noBusinesses": "No businesses found. Reconnect and try again.",
       "permissionWhyTitle": "Why these permissions",
       "permissionWhyAdsRead": "ads_read — load campaigns and performance from Meta.",
       "permissionWhyAdsManagement": "ads_management — pause or resume campaigns from BizUply.",
@@ -11157,7 +11194,7 @@
       "saveBusiness": "Save Meta business",
       "saveBusinessHint": "Save the selected Meta Business Portfolio, then pick an ad account.",
       "selectBusinessRequired": "Please select a Meta business",
-      "tokenInvalid": "The Meta token is no longer valid. Reconnect to continue."
+      "tokenInvalid": "The Meta connection expired. Reconnect to continue."
     },
     "toasts": {
       "connected": "Meta Ads connected successfully",
