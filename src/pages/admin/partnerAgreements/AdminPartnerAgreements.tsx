@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import API from "../../../api";
 import AdminHeader from "../AdminsHeader";
 import {
   agreementError,
@@ -42,6 +43,10 @@ export default function AdminPartnerAgreements() {
     return "exclusive_active";
   });
   const [q, setQ] = useState("");
+  const [agreementQuery, setAgreementQuery] = useState("");
+  const [agreementStatus, setAgreementStatus] = useState("");
+  const [exclusive, setExclusive] = useState("");
+  const [documents, setDocuments] = useState<{ id: string; files: { kind: string; filename?: string; uploadedAt?: string }[] } | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +56,11 @@ export default function AdminPartnerAgreements() {
       setLoading(true);
       try {
         const [agreements, territories] = await Promise.all([
-          listPartnerAgreements(),
+          listPartnerAgreements({
+            q: agreementQuery || undefined,
+            status: agreementStatus || undefined,
+            exclusive: exclusive || undefined,
+          }),
           fetchTerritoryAvailability(),
         ]);
         if (cancelled) return;
@@ -67,7 +76,7 @@ export default function AdminPartnerAgreements() {
     return () => {
       cancelled = true;
     };
-  }, [copy.loadError]);
+  }, [agreementQuery, agreementStatus, exclusive, copy.loadError]);
 
   const visibleCountries = useMemo(() => {
     const query = q.trim().toLowerCase();
@@ -184,8 +193,22 @@ export default function AdminPartnerAgreements() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-5">
+        <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="agreement-search">
           <h2 className="text-xl font-black">{copy.agreements}</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <input value={agreementQuery} onChange={(event) => setAgreementQuery(event.target.value)} placeholder="Number, company, signatory, territory" className="w-full max-w-md rounded-xl border px-3 py-2 text-sm font-semibold" />
+            <select value={agreementStatus} onChange={(event) => setAgreementStatus(event.target.value)} className="rounded-xl border px-3 py-2 text-sm font-bold">
+              <option value="">All statuses</option>
+              {["draft", "bizuply_signed", "partner_signature_pending", "partially_signed", "fully_signed", "payment_pending", "verification_pending", "active", "expired", "terminated"].map((id) => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
+            <select value={exclusive} onChange={(event) => setExclusive(event.target.value)} className="rounded-xl border px-3 py-2 text-sm font-bold">
+              <option value="">Exclusive and non-exclusive</option>
+              <option value="exclusive">Exclusive</option>
+              <option value="non_exclusive">Non-exclusive</option>
+            </select>
+          </div>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[860px] text-start text-sm">
               <thead className="text-xs font-black uppercase text-slate-400">
@@ -196,13 +219,14 @@ export default function AdminPartnerAgreements() {
                   <th className="text-start">{copy.type}</th>
                   <th className="text-start">{copy.status}</th>
                   <th className="text-start">{copy.payment}</th>
-                  <th className="text-start">{copy.term}</th>
+                  <th className="text-start">Verification</th>
+                  <th className="text-start">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 ? (
                   <tr>
-                    <td className="py-4 font-bold text-slate-500" colSpan={7}>
+                    <td className="py-4 font-bold text-slate-500" colSpan={8}>
                       {copy.empty}
                     </td>
                   </tr>
@@ -221,8 +245,14 @@ export default function AdminPartnerAgreements() {
                       <td>{row.territoryType === "exclusive" ? copy.exclusive : row.territoryType === "non_exclusive" ? copy.nonExclusive : "—"}</td>
                       <td>{agreementStatusLabel(row.status, text)}</td>
                       <td>{agreementStatusLabel(row.paymentStatus, text)}</td>
-                      <td>
-                        {row.startDate || "—"} {copy.rangeTo} {row.endDate || "—"}
+                      <td>{row.verificationStatus || "—"} · {row.activationStatus || "—"}</td>
+                      <td className="space-x-2 py-2">
+                        <Link className="font-black text-[#6D28D9]" to={`/admin/partner-agreements/${row.id}`}>View</Link>
+                        <button type="button" className="font-black text-slate-800" onClick={async () => {
+                          const res = await API.get(`/admin/partner-agreements/${row.id}/documents`);
+                          setDocuments({ id: row.id, files: res.data?.documents?.files || [] });
+                        }}>Documents ({row.documentCount || 0})</button>
+                        {row.partnerId ? <Link className="font-black text-slate-800" to={`/admin/partners/${row.partnerId}`}>Dossier</Link> : null}
                       </td>
                     </tr>
                   ))
@@ -231,6 +261,25 @@ export default function AdminPartnerAgreements() {
             </table>
           </div>
         </section>
+        {documents ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="documents-panel">
+            <h2 className="text-lg font-black">Documents ({documents.files.length})</h2>
+            <ul className="mt-3 space-y-2 text-sm font-semibold">
+              {documents.files.map((file) => (
+                <li key={`${file.kind}-${file.filename}`}>
+                  {file.kind} · {file.filename} · {file.uploadedAt ? String(file.uploadedAt).slice(0, 16) : ""}
+                  {" "}
+                  <button type="button" className="font-black text-[#6D28D9]" onClick={async () => {
+                    const res = await API.get(`/admin/partner-agreements/${documents.id}/verification/files/${file.kind}`, { responseType: "blob" });
+                    const url = URL.createObjectURL(res.data);
+                    window.open(url, "_blank", "noopener");
+                  }}>Download</button>
+                </li>
+              ))}
+            </ul>
+            <button type="button" className="mt-3 text-sm font-black" onClick={() => setDocuments(null)}>Close</button>
+          </section>
+        ) : null}
       </main>
     </div>
   );

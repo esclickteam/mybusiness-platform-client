@@ -20,6 +20,8 @@ const TABS = [
   ["overview", "Overview"],
   ["legal", "Legal Details"],
   ["agreement", "Agreement"],
+  ["documents", "Documents"],
+  ["activation", "Activation Annex"],
   ["territory", "Territory"],
   ["commission", "Commission"],
   ["customers", "Customers"],
@@ -168,6 +170,13 @@ export default function AdminPartnerDossier() {
           >
             Open Partner Workspace
           </button>
+        ) : null}
+
+        {tab === "documents" && data.agreement?.id ? (
+          <DocumentsPanel agreementId={data.agreement.id} />
+        ) : null}
+        {tab === "activation" && data.agreement?.id ? (
+          <AnnexPanel agreementId={data.agreement.id} />
         ) : null}
 
         {tab === "agreement" || tab === "territory" ? (
@@ -733,6 +742,60 @@ function KycPanel({
           </button>
         </div>
       </aside>
+    </section>
+  );
+}
+
+function DocumentsPanel({ agreementId }: { agreementId: string }) {
+  const [files, setFiles] = useState<{ kind: string; filename?: string; uploadedAt?: string; uploadedBySignatoryId?: string }[]>([]);
+  useEffect(() => {
+    API.get(`/admin/partner-agreements/${agreementId}/documents`).then((res) => setFiles(res.data?.documents?.files || []));
+  }, [agreementId]);
+  return (
+    <section className="mt-5 rounded-3xl border bg-white p-5" data-testid="dossier-documents">
+      <h2 className="text-xl font-black">Documents ({files.length})</h2>
+      <ul className="mt-3 space-y-2 text-sm font-semibold">
+        {files.map((file) => (
+          <li key={`${file.kind}-${file.uploadedAt}`}>
+            {file.kind} · {file.filename} · {file.uploadedAt ? String(file.uploadedAt).slice(0, 16) : ""} · {file.uploadedBySignatoryId || ""}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function AnnexPanel({ agreementId }: { agreementId: string }) {
+  const [annex, setAnnex] = useState<any>(null);
+  const [payer, setPayer] = useState("");
+  async function load() {
+    const res = await API.get(`/admin/partner-agreements/${agreementId}/documents`);
+    setAnnex(res.data?.activationAnnex || null);
+  }
+  useEffect(() => { void load(); }, [agreementId]);
+  async function record(event: string) {
+    await API.post(`/admin/partner-agreements/${agreementId}/activation-annex`, { event, payerName: payer });
+    await load();
+  }
+  return (
+    <section className="mt-5 rounded-3xl border bg-white p-5" data-testid="activation-annex">
+      <h2 className="text-xl font-black">Partner Activation Annex</h2>
+      <p className="mt-2 text-sm font-bold">{annex?.status === "completed" ? "COMPLETED" : "Activation in progress"}</p>
+      <p className="text-sm">Payment initiated: {annex?.lines?.paymentInitiated || "Pending"}</p>
+      <p className="text-sm">Bank payment received: {annex?.lines?.paymentReceived || "Pending"}</p>
+      <p className="text-sm">Company verification: {annex?.lines?.verification || "Pending"}</p>
+      <p className="text-sm">Partner account activated: {annex?.lines?.partnerActivated || "Pending"}</p>
+      <p className="text-sm">Start: {annex?.startDate?.slice?.(0, 10) || "Pending"}</p>
+      <p className="text-sm">End: {annex?.endDate?.slice?.(0, 10) || "Pending"}</p>
+      <p className="text-sm">Renewal deadline: {annex?.renewalDeadline?.slice?.(0, 10) || "Pending"}</p>
+      {annex?.status !== "completed" ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <input value={payer} onChange={(event) => setPayer(event.target.value)} placeholder="Payer / remitter name" className="rounded-xl border px-3 py-2 text-sm" />
+          <button type="button" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-black text-white" onClick={() => void record("payment_initiated")}>Record payment initiated</button>
+          <button type="button" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-black text-white" onClick={() => void record("payment_received")}>Record bank receipt</button>
+          <button type="button" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-black text-white" onClick={() => void record("verification_approved")}>Approve verification</button>
+        </div>
+      ) : null}
     </section>
   );
 }
