@@ -340,6 +340,10 @@ export async function previewPartnerAgreement(id: string, version?: number) {
     sections: { number: number | null; title: string; paragraphs: string[] }[];
     variables: Record<string, string | string[] | boolean>;
     signatories?: AgreementSignatory[];
+    blocked?: boolean;
+    presentationHtml?: string;
+    issues?: { field?: string; code?: string; message?: string }[];
+    agreementId?: string | null;
   };
 }
 
@@ -370,6 +374,8 @@ export async function previewDraftAgreement(input: AgreementInput) {
     persisted: boolean;
     documentHash?: string;
     issues?: { field: string; code?: string; message?: string }[];
+    blocked?: boolean;
+    presentationHtml?: string;
   };
 }
 
