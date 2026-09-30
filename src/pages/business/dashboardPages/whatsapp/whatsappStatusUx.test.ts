@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { WhatsAppConnection } from "../../../../api/whatsappApi";
 import {
+  calmWhatsAppStatusRows,
   isCloudApiPhoneConnected,
   visibleWhatsAppAlerts,
 } from "./whatsappStatusUx";
@@ -22,6 +23,8 @@ const connected: WhatsAppConnection = {
   connectedAt: null,
   phonePlatformStatus: "CONNECTED",
   phonePlatformType: "CLOUD_API",
+  canSendMessage: "LIMITED",
+  businessVerificationStatus: "not_verified",
   alerts: [
     {
       key: "phone_registration",
@@ -53,13 +56,34 @@ describe("whatsappStatusUx", () => {
     expect(isCloudApiPhoneConnected(connected)).toBe(true);
   });
 
-  it("hides phone registration and does not block when readyToSend", () => {
-    const alerts = visibleWhatsAppAlerts(connected);
-    expect(alerts.some((row) => row.key === "phone_registration")).toBe(false);
-    expect(alerts.find((row) => row.key === "messaging")?.level).toBe("warning");
-    expect(alerts.find((row) => row.key === "business_verification")?.level).toBe(
-      "info"
-    );
-    expect(alerts.every((row) => row.level !== "blocking")).toBe(true);
+  it("shows a calm status card and no banners when readyToSend", () => {
+    expect(visibleWhatsAppAlerts(connected)).toEqual([]);
+    const rows = calmWhatsAppStatusRows(connected);
+    expect(rows?.map((row) => row.titleKey)).toEqual([
+      "whatsapp.accountStatus.ready",
+      "whatsapp.accountStatus.codeManagedTitle",
+      "whatsapp.accountStatus.verificationManagedTitle",
+      "whatsapp.accountStatus.sendAvailableTitle",
+    ]);
+  });
+
+  it("keeps a blocking banner when messaging is blocked", () => {
+    const blocked = {
+      ...connected,
+      readyToSend: false,
+      canSendMessage: "BLOCKED",
+      alerts: [
+        {
+          key: "messaging",
+          severity: "error",
+          i18nKey: "whatsapp.alerts.messagingBlocked",
+          raw: { canSendMessage: "BLOCKED" },
+        },
+      ],
+    };
+    const alerts = visibleWhatsAppAlerts(blocked);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].level).toBe("blocking");
+    expect(calmWhatsAppStatusRows(blocked)).toBeNull();
   });
 });

@@ -19,7 +19,11 @@ import {
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
 import WhatsAppStatusAlerts from "./WhatsAppStatusAlerts";
-import { visibleWhatsAppAlerts } from "./whatsappStatusUx";
+import WhatsAppAccountStatusCard from "./WhatsAppAccountStatusCard";
+import {
+  calmWhatsAppStatusRows,
+  visibleWhatsAppAlerts,
+} from "./whatsappStatusUx";
 
 function StatCard({
   label,
@@ -167,6 +171,7 @@ export default function WhatsAppOverviewTab() {
 
   const busy = (connectionLoading && !connection) || loading;
   const statusAlerts = visibleWhatsAppAlerts(connection);
+  const calmStatusRows = calmWhatsAppStatusRows(connection);
 
   return (
     <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview">
@@ -205,6 +210,7 @@ export default function WhatsAppOverviewTab() {
       ) : null}
 
       {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
+      {calmStatusRows ? <WhatsAppAccountStatusCard rows={calmStatusRows} /> : null}
 
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {busy ? (

@@ -9438,8 +9438,20 @@
       "info": "Informação"
     },
     "alerts": {
-      "businessVerification": "A verificação da empresa na Meta precisa de atenção. Isso é separado da cobrança.",
-      "messagingLimited": "O envio está limitado na Meta. Ainda é possível enviar se o número estiver conectado."
+      "businessVerification": "A verificação da empresa é gerenciada na Meta",
+      "messagingLimited": "O envio está disponível, sujeito aos limites da Meta",
+      "codeVerificationExpired": "A verificação do código é gerenciada na Meta"
+    },
+    "accountStatus": {
+      "title": "Status da conta do WhatsApp",
+      "ready": "O número está conectado e pronto para enviar",
+      "readyHint": "Você pode enviar mensagens nesta tela.",
+      "codeManagedTitle": "A verificação do código é gerenciada na Meta",
+      "codeManagedHint": "Este número já está conectado à Cloud API. Se a Meta pedir verificação extra, conclua no WhatsApp Manager.",
+      "verificationManagedTitle": "A verificação da empresa é gerenciada na Meta",
+      "verificationManagedHint": "O status de verificação pode afetar limites de uso, mas não bloqueia o envio enquanto a Meta permitir.",
+      "sendAvailableTitle": "O envio está disponível, sujeito aos limites da Meta",
+      "sendAvailableHint": "O sistema pode enviar mensagens. A Meta pode limitar o volume conforme o status da conta."
     }
   },
   "metaCampaigns": {
