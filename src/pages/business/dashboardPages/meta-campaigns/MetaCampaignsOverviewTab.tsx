@@ -394,6 +394,25 @@ export default function MetaCampaignsOverviewTab() {
       data?.connection?.demoData
   );
   const connected = Boolean(data?.connection?.connected || demoSandbox);
+  useEffect(() => {
+    if (!businessId || !connected) return;
+    const tick = () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
+      void load({ silent: true });
+    };
+    const timer = window.setInterval(tick, 30000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId, connected, rangePreset, customSince, customUntil]);
   const tokenLinked = Boolean(
     demoSandbox ||
       (data?.connection?.isConnected && data?.connection?.hasAccessToken)
@@ -933,6 +952,21 @@ export default function MetaCampaignsOverviewTab() {
                       {t("metaCampaigns.table.clicks")}
                     </th>
                     <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.linkClicks")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.ctr")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.cpc")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.cpm")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.frequency")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.start")}
                     </th>
                     <th className="px-3 py-3 text-start">
@@ -1065,6 +1099,41 @@ export default function MetaCampaignsOverviewTab() {
                             {formatMetricOrDash(
                               campaign.metrics?.clicks,
                               formatNumber,
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.linkClicks,
+                              formatNumber,
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.ctr,
+                              (n) => formatPercent(n),
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.cpc,
+                              (n) => formatCurrency(n, currency),
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.cpm,
+                              (n) => formatCurrency(n, currency),
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.frequency,
+                              (n) => formatNumber(Number(n.toFixed(2))),
                               { treatZeroAsEmpty: true }
                             )}
                           </td>
