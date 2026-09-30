@@ -12,10 +12,12 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import { Link } from "react-router-dom";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
+import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 
 export default function MetaPortfolioPage() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<{ businessId: string }>();
+  const { serverWindow, query, labelKey } = useMetaAdsDateRange();
   const [rows, setRows] = useState<PortfolioCampaignRow[]>([]);
   const [allocation, setAllocation] = useState<PortfolioAllocation | null>(null);
   const [history, setHistory] = useState<PortfolioAllocation[]>([]);
@@ -30,14 +32,18 @@ export default function MetaPortfolioPage() {
 
   async function load() {
     if (!businessId) return;
-    const data = await getMetaPortfolio(businessId);
+    const data = await getMetaPortfolio(businessId, {
+      window: serverWindow,
+      since: query.since,
+      until: query.until,
+    });
     setRows(data.campaigns || data.allocation?.campaigns || []);
     setAllocation(data.allocation || null);
   }
 
   useEffect(() => {
     void load();
-  }, [businessId]);
+  }, [businessId, serverWindow, query.since, query.until]);
 
   const payload = {
     mode: form.mode,
@@ -45,6 +51,9 @@ export default function MetaPortfolioPage() {
     targetCpl: Number(form.targetCpl),
     accountCap: Number(form.accountCap),
     maxChangePct: Number(form.maxChangePct),
+    window: serverWindow,
+    since: query.since,
+    until: query.until,
   };
 
   return (
@@ -52,6 +61,9 @@ export default function MetaPortfolioPage() {
       <section className={`${cardBase} p-4`}>
         <h2 className="text-lg font-black">{t("metaCampaigns.portfolio.title")}</h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">{t("metaCampaigns.portfolio.subtitle")}</p>
+        <p className="mt-2 text-xs font-black uppercase tracking-wide text-slate-500">
+          {t("metaCampaigns.ux.showingRange", { range: t(labelKey) })}
+        </p>
         <p className="mt-2 text-sm font-semibold text-slate-600">
           {rows.every((row) => !row.results && !row.spend)
             ? t("metaCampaigns.ux.portfolioNoData")

@@ -13,17 +13,15 @@ import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
-  DATE_RANGE_OPTIONS,
   formatCurrency,
   formatMetricOrDash,
   formatNumber,
   formatPercent,
   metaDeliveryStatusKey,
   resolveCampaignCurrency,
-  resolveMetaDateRangeQuery,
   statusTone,
-  type MetaDateRangePreset,
 } from "./metaCampaignUtils";
+import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 
 type OutletCtx = { businessId: string | null };
 
@@ -47,7 +45,7 @@ export default function MetaCampaignsCampaignsPage() {
   const [currency, setCurrency] = useState("ILS");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [rangePreset, setRangePreset] = useState<MetaDateRangePreset>("last_7");
+  const { query: rangeQuery, labelKey: rangeLabelKey } = useMetaAdsDateRange();
   const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl">("spend");
   const [details, setDetails] = useState<MetaCampaign | null>(null);
   const [pending, setPending] = useState<MetaCampaign | null>(null);
@@ -57,10 +55,7 @@ export default function MetaCampaignsCampaignsPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const data = await getMetaCampaignsOverview(
-        businessId,
-        resolveMetaDateRangeQuery(rangePreset, {})
-      );
+      const data = await getMetaCampaignsOverview(businessId, rangeQuery);
       setCampaigns(data.campaigns || []);
       setCurrency(resolveCampaignCurrency(data.connection?.selectedAdAccount?.currency));
     } catch (error) {
@@ -82,7 +77,7 @@ export default function MetaCampaignsCampaignsPage() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, rangePreset]);
+  }, [businessId, rangeQuery.datePreset, rangeQuery.days, rangeQuery.since, rangeQuery.until]);
 
   const rows = useMemo(() => {
     const filtered = campaigns.filter((row) => {
@@ -142,18 +137,9 @@ export default function MetaCampaignsCampaignsPage() {
           <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
           <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
         </select>
-        <select
-          className={inputBase}
-          value={rangePreset}
-          onChange={(event) => setRangePreset(event.target.value as MetaDateRangePreset)}
-          aria-label={t("metaCampaigns.ranges.last7")}
-        >
-          {DATE_RANGE_OPTIONS.filter((row) => row.value !== "custom").map((row) => (
-            <option key={row.value} value={row.value}>
-              {t(row.labelKey)}
-            </option>
-          ))}
-        </select>
+        <p className="self-center text-xs font-black uppercase tracking-wide text-slate-500">
+          {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
+        </p>
         <select
           className={inputBase}
           value={sortKey}
@@ -272,6 +258,8 @@ export default function MetaCampaignsCampaignsPage() {
           businessId={businessId}
           campaign={details}
           currency={currency}
+          rangeQuery={rangeQuery}
+          rangeLabel={t(rangeLabelKey)}
           canEdit
           onClose={() => setDetails(null)}
           onOpenEdit={(id) => navigate(`${basePath}/edit/${id}`)}

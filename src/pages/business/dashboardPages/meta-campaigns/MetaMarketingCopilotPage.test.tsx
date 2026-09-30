@@ -20,7 +20,8 @@ const askMarketingCopilot = vi.fn().mockResolvedValue({
   ],
   confidence: "low",
   insufficientData: true,
-  sources: ["4 campaigns", "Last 7 days (default)", "Meta Insights"],
+  sources: ["4 campaigns", "Today", "Meta Insights"],
+  period: "Today",
   sessionId: "sess-1",
 });
 
@@ -57,7 +58,8 @@ describe("MetaMarketingCopilotPage", () => {
     });
     fireEvent.click(screen.getByTestId("copilot-ask"));
     expect(await screen.findByTestId("copilot-insufficient")).toBeTruthy();
-    expect(screen.getByTestId("copilot-based-on").textContent).toMatch(/Last 7 days/);
+    expect(screen.getByTestId("copilot-based-on").textContent).toMatch(/Today/);
+    expect(screen.getByTestId("copilot-period").textContent).toMatch(/Today|showingRange/);
     fireEvent.click(screen.getByTestId("copilot-review-action"));
     await waitFor(() => {
       expect(screen.getByTestId("copilot-handoff")).toBeTruthy();

@@ -35,6 +35,8 @@ type Props = {
   campaign: MetaCampaign | null;
   currency: string;
   lastSynced?: Date | null;
+  rangeQuery?: { since?: string; until?: string; days?: number; datePreset?: string };
+  rangeLabel?: string;
   canEdit: boolean;
   onClose: () => void;
   onOpenEdit: (campaignId: string) => void;
@@ -56,6 +58,8 @@ export default function MetaCampaignDetailsDrawer({
   campaign,
   currency,
   lastSynced,
+  rangeQuery,
+  rangeLabel,
   canEdit,
   onClose,
   onOpenEdit,
@@ -82,7 +86,7 @@ export default function MetaCampaignDetailsDrawer({
     if (!open || !campaign?.id) return;
     let cancelled = false;
     setLoading(true);
-    getMetaCampaign(businessId, campaign.id)
+    getMetaCampaign(businessId, campaign.id, rangeQuery)
       .then((res) => {
         if (cancelled) return;
         const next = res.campaign;
@@ -113,7 +117,7 @@ export default function MetaCampaignDetailsDrawer({
     return () => {
       cancelled = true;
     };
-  }, [open, businessId, campaign?.id]);
+  }, [open, businessId, campaign?.id, rangeQuery?.datePreset, rangeQuery?.days, rangeQuery?.since, rangeQuery?.until]);
 
   const metrics = detail?.metrics;
   const issues = useMemo(
@@ -260,6 +264,16 @@ export default function MetaCampaignDetailsDrawer({
           </div>
         ) : (
           <div className="space-y-5 px-4 py-4">
+            {rangeLabel ? (
+              <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="details-range-label">
+                {t("metaCampaigns.ux.showingRange", { range: rangeLabel })}
+              </p>
+            ) : null}
+            {String(detail?.configuredStatus || detail?.status || "").toUpperCase() === "PAUSED" ? (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
+                {t("metaCampaigns.ux.pausedHistorical")}
+              </p>
+            ) : null}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               <Field label={t("metaCampaigns.table.status")} value={
                 <span className={statusTone(detail?.effectiveStatus || detail?.status || "")}>
