@@ -198,6 +198,8 @@ export function todayIso() {
 }
 
 export type MetaDateRangePreset =
+  | "today"
+  | "yesterday"
   | "last_7"
   | "last_14"
   | "last_30"
@@ -206,6 +208,8 @@ export type MetaDateRangePreset =
   | "custom";
 
 export const DATE_RANGE_OPTIONS = [
+  { value: "today" as const, labelKey: "metaCampaigns.ranges.today" },
+  { value: "yesterday" as const, labelKey: "metaCampaigns.ranges.yesterday" },
   { value: "last_7" as const, labelKey: "metaCampaigns.ranges.last7" },
   { value: "last_14" as const, labelKey: "metaCampaigns.ranges.last14" },
   { value: "last_30" as const, labelKey: "metaCampaigns.ranges.last30" },
@@ -218,16 +222,18 @@ export const DATE_RANGE_OPTIONS = [
 export function resolveMetaDateRangeQuery(
   preset: MetaDateRangePreset,
   custom?: { since?: string; until?: string }
-): { days?: number; since?: string; until?: string } {
+): { days?: number; since?: string; until?: string; datePreset?: string } {
   const until = todayIso();
-  if (preset === "last_7") return { days: 7 };
-  if (preset === "last_14") return { days: 14 };
-  if (preset === "last_30") return { days: 30 };
+  if (preset === "today") return { datePreset: "today" };
+  if (preset === "yesterday") return { datePreset: "yesterday" };
+  if (preset === "last_7") return { days: 7, datePreset: "last_7d" };
+  if (preset === "last_14") return { days: 14, datePreset: "last_14d" };
+  if (preset === "last_30") return { days: 30, datePreset: "last_30d" };
 
   if (preset === "this_month") {
     const now = new Date();
     const since = toLocalIsoDate(new Date(now.getFullYear(), now.getMonth(), 1));
-    return { since, until };
+    return { since, until, datePreset: "this_month" };
   }
 
   if (preset === "last_month") {
@@ -238,6 +244,7 @@ export function resolveMetaDateRangeQuery(
     return {
       since: toLocalIsoDate(firstPrev),
       until: toLocalIsoDate(lastPrev),
+      datePreset: "last_month",
     };
   }
 

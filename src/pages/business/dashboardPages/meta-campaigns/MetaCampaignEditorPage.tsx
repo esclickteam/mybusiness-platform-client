@@ -1014,9 +1014,18 @@ export default function MetaCampaignEditorPage() {
       "ACTIVE"
         ? "PAUSED"
         : "ACTIVE";
+    if (next === "ACTIVE") {
+      const ok = window.confirm(t("metaCampaigns.actions.confirmActivateSpend", { name: campaign.name }));
+      if (!ok) return;
+    }
     try {
       setStatusBusy(true);
-      const result = await setMetaCampaignStatus(businessId, campaignId, next);
+      const result = await setMetaCampaignStatus(
+        businessId,
+        campaignId,
+        next,
+        next === "ACTIVE" ? { confirmActivate: true } : undefined
+      );
       setCampaign(result.campaign);
       setForm((prev) => ({
         ...prev,

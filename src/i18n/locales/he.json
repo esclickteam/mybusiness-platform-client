@@ -9524,7 +9524,31 @@
     "nav": {
       "overview": "סקירה",
       "create": "מנהל המודעות",
+      "library": "ספריית קריאייטיב",
       "settings": "חיבור Meta"
+    },
+    "manager": {
+      "configured": "סטטוס מוגדר",
+      "hierarchy": "קמפיין → מערכי מודעות → מודעות",
+      "edit": "עריכה ב-Invistimo",
+      "adSetName": "שם מערך מודעות",
+      "viewOnly": "אפשר לצפות בקמפיין, בלי לשנות הגדרות שמשפיעות על הוצאה.",
+      "duplicateCampaign": "שכפול קמפיין",
+      "duplicateAdSet": "שכפול מערך מודעות",
+      "duplicateAd": "שכפול מודעה",
+      "duplicateConfirm": "לשכפל את ה-{{kind}} כ-PAUSED במטא?",
+      "duplicatedPaused": "שוכפל במטא במצב מושהה",
+      "tabs": {
+        "campaign": "קמפיינים",
+        "adset": "מערכי מודעות",
+        "ad": "מודעות"
+      },
+      "libraryTitle": "ספריית קריאייטיב",
+      "libraryBody": "שימוש חוזר בתמונות וסרטונים שכבר הועלו לחשבון המודעות.",
+      "uploadNew": "העלאה חדשה",
+      "reuse": "העתקת מזהה לשימוש חוזר",
+      "copied": "הועתק",
+      "syncing": "מסנכרן עם Meta…"
     },
     "overview": {
       "heading": "ניהול קמפיינים",
@@ -9578,7 +9602,11 @@
       "confirmPauseTitle": "להשהות את הקמפיין?",
       "confirmPauseBody": "להשהות את {{name}} במטא? המודעות יופסקו עד שתפעילו מחדש.",
       "confirmResumeTitle": "להפעיל מחדש את הקמפיין?",
-      "confirmResumeBody": "להפעיל מחדש את {{name}} במטא? המודעות יחזרו לרוץ לפי ההגדרות השמורות."
+      "confirmResumeBody": "להפעיל מחדש את {{name}} במטא? המודעות יחזרו לרוץ לפי ההגדרות השמורות.",
+      "confirmActivateSpend": "פעולה זו תפעיל את {{name}} במטא ועלולה להתחיל חיוב כספי.",
+      "rateLimited": "Meta הגבילה זמנית את הסנכרון. ננסה שוב אוטומטית.",
+      "save": "שמירה",
+      "editFull": "עורך מלא"
     },
     "creationMode": {
       "title": "קמפיין חדש",
@@ -10250,6 +10278,8 @@
       "ctrHint": "שיעור הקלקה"
     },
     "ranges": {
+      "today": "היום",
+      "yesterday": "אתמול",
       "last7": "7 ימים אחרונים",
       "last14": "14 ימים אחרונים",
       "last30": "30 ימים אחרונים",
@@ -10903,6 +10933,7 @@
       "deleted": "הקמפיין נמחק / הועבר לארכיון",
       "activated": "הקמפיין הופעל",
       "paused": "הקמפיין הושהה",
+      "saved": "נשמר במטא",
       "mediaUploaded": "המדיה הועלתה למטא",
       "leadFormCreated": "טופס הלידים נוצר",
       "businessSelected": "העסק במטא נשמר"
@@ -10913,6 +10944,8 @@
       "loadCampaign": "טעינת הקמפיין נכשלה",
       "loadSettings": "טעינת הגדרות Meta נכשלה",
       "saveCampaign": "שמירת הקמפיין נכשלה",
+      "updateCampaign": "Meta דחתה את העדכון",
+      "duplicate": "השכפול במטא נכשל",
       "preview": "יצירת תצוגה מקדימה נכשלה",
       "deleteCampaign": "מחיקת הקמפיין נכשלה",
       "updateStatus": "עדכון הסטטוס נכשל",
