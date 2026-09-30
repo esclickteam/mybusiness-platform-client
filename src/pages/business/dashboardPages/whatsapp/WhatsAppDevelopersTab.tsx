@@ -61,35 +61,35 @@ export default function WhatsAppDevelopersTab() {
       {visualQa ? (
         <div className="grid gap-3 lg:grid-cols-2">
           <article className={`${cardBase} space-y-2 p-3`}>
-            <h3 className="text-sm font-black">API Access</h3>
+            <h3 className="text-sm font-black">{t("whatsapp.hub.devSectionApi")}</h3>
             <p className="text-[10px] font-black uppercase text-slate-400">
-              API Base URL
+              {t("whatsapp.settings.apiSettingsBaseUrl")}
             </p>
             <p className="font-mono text-xs" dir="ltr">
               https://api.bizuply.com/api/v1/whatsapp
             </p>
             <p className="text-[10px] font-black uppercase text-slate-400">
-              API Key
+              {t("whatsapp.settings.apiSettingsApiKey")}
             </p>
             <p className="font-mono text-xs">biz_wa_••••••••abcd</p>
             <p className="text-[11px] text-slate-500">
-              Scopes: templates.read · messages.send · Last used: today
+              {t("whatsapp.settings.apiSettingsScopes")}: templates.read · messages.send
             </p>
           </article>
           <article className={`${cardBase} space-y-2 p-3`}>
-            <h3 className="text-sm font-black">Webhook</h3>
+            <h3 className="text-sm font-black">{t("whatsapp.hub.devSectionWebhook")}</h3>
             <p className="text-[10px] font-black uppercase text-slate-400">
-              Webhook URL
+              {t("whatsapp.settings.apiSettingsWebhookUrl")}
             </p>
             <p className="font-mono text-xs" dir="ltr">
               https://partner.example/hooks/wa
             </p>
             <p className="text-[10px] font-black uppercase text-slate-400">
-              Secret
+              {t("whatsapp.settings.apiSettingsWebhookSecret")}
             </p>
             <p className="font-mono text-xs">whsec_••••••••</p>
             <p className="text-[11px] text-slate-500">
-              Last delivery: success · Test Webhook available
+              {t("whatsapp.settings.apiSettingsTestWebhook")}
             </p>
           </article>
         </div>

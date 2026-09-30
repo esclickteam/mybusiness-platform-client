@@ -8101,7 +8101,7 @@
       "messages": "رسائل",
       "insights": "رؤى",
       "developers": "API / المطورون",
-      "billing": "Meta",
+      "billing": "فوترة Meta",
       "connection": "اتصال"
     },
     "categories": {
@@ -8180,7 +8180,8 @@
       "statusReady": "جاهز",
       "statusMissingAppointment": "تعيين مفقود",
       "readyRecipientsCount": "{{ready}} جاهز / {{total}} تم اختيار",
-      "noReadyRecipients": "لا يوجد مستلمون جاهزون. إصلاح المواعيد المفقودة أو تغيير قاعدة التعيين."
+      "noReadyRecipients": "لا يوجد مستلمون جاهزون. إصلاح المواعيد المفقودة أو تغيير قاعدة التعيين.",
+      "notReadyToSend": "لا يمكن الإرسال لأن الرقم غير جاهز."
     },
     "templates": {
       "title": "قوالب الرسائل",
@@ -8654,7 +8655,14 @@
       "apiSettingsResponseTime": "زمن الاستجابة",
       "apiSettingsKeyReady": "مفتاح API الخاص بك جاهز",
       "apiSettingsKeyCopyWarning": "انسخ مفتاح API الآن. لأسباب أمنية لن يظهر مرة أخرى.",
-      "apiSettingsDone": "لقد نسخت المفتاح"
+      "apiSettingsDone": "لقد نسخت المفتاح",
+      "apiSettingsWebhookNotConfigured": "غير مضبوط",
+      "apiSettingsWebhookPlaceholder": "https://your-domain.com/webhooks/bizuply",
+      "webhookStatus": {
+        "not_configured": "غير مضبوط",
+        "active": "نشط",
+        "configured": "مضبوط"
+      }
     },
     "errors": {
       "loadCompose": "فشل في تحميل بيانات WhatsApp",
@@ -9173,7 +9181,7 @@
       "paymentMethod": "طريقة الدفع",
       "paymentConfigured": "مضبوطة",
       "paymentMissing": "غير موجودة",
-      "paymentUnknown": "تحقق في Meta",
+      "paymentUnknown": "تعذّر التحقق عبر API",
       "quality": "تقييم الجودة",
       "messagingLimit": "حد المراسلة",
       "manageBilling": "إدارة الفوترة في Meta",
@@ -9186,7 +9194,25 @@
       "wabaRestrictedBody": "حساب واتساب للأعمال مقيّد. افتح WhatsApp Manager للمراجعة والمعالجة.",
       "resolveInMeta": "المعالجة في Meta",
       "active": "نشط",
-      "notAvailable": "غير متاح"
+      "notAvailable": "غير متاح",
+      "billingTitle": "فوترة Meta",
+      "phoneHint": "يحدد رقم واتساب الذي تفوتره Meta.",
+      "paymentMethodHint": "وسيلة الدفع في حساب واتساب للأعمال، وتفوترها Meta.",
+      "funding": "التمويل",
+      "fundingHint": "مصدر التمويل الأساسي لـ WABA عندما تكشفه Meta.",
+      "fundingPresent": "تم العثور على مصدر تمويل",
+      "fundingUnknown": "لم يُرجع مصدر تمويل",
+      "creditLine": "خط ائتمان",
+      "creditLineHint": "خط ائتمان تجاري مرتبط بهذا WABA عند توفّره عبر واجهة API.",
+      "creditLinePresent": "خط الائتمان متصل",
+      "creditLineUnknown": "تعذّر التحقق عبر API",
+      "directBilling": "فوترة Meta المباشرة",
+      "paymentUnverifiableHint": "لا تُرجع Meta وسيلة دفع مؤكدة بصلاحيات واجهة API الحالية. هذه ليست مشكلة توثيق النشاط التجاري.",
+      "paymentConnected": "وسيلة الدفع متصلة",
+      "paymentDirect": "فوترة Meta المباشرة",
+      "paymentCreditLine": "خط ائتمان",
+      "paymentNeedsAttention": "غير مضبوط / يحتاج إلى معالجة",
+      "paymentUnverifiable": "تعذّر التحقق عبر API"
     },
     "billing": {
       "loadError": "تعذّر تحميل بيانات فوترة واتساب الآن.",
@@ -9399,9 +9425,21 @@
         "verified": "موثّق",
         "unverified": "غير موثّق",
         "pending": "قيد الانتظار",
-        "unknown": "غير معروف"
+        "unknown": "غير معروف",
+        "not_verified": "غير موثّق"
       },
-      "phoneNumberId": "معرّف رقم الهاتف"
+      "phoneNumberId": "معرّف رقم الهاتف",
+      "wabaId": "معرّف WABA",
+      "wabaName": "حساب واتساب للأعمال"
+    },
+    "alertLevel": {
+      "blocking": "يمنع الإرسال",
+      "warning": "تحذير",
+      "info": "معلومة"
+    },
+    "alerts": {
+      "businessVerification": "توثيق النشاط التجاري في Meta يحتاج إلى متابعة. هذا منفصل عن الفوترة.",
+      "messagingLimited": "المراسلة محدودة في Meta. ما زال بالإمكان الإرسال إذا كان الرقم متصلاً."
     }
   },
   "metaCampaigns": {

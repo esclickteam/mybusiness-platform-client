@@ -36,6 +36,7 @@ import {
   type WhatsAppTemplate,
   type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
+import { isCloudApiPhoneConnected } from "./whatsappStatusUx";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import {
@@ -941,6 +942,7 @@ export default function WhatsAppSettingsTab() {
   const readyToSend = Boolean(connection?.readyToSend);
   const needsRegistration =
     linked &&
+    !isCloudApiPhoneConnected(connection) &&
     String(connection?.phonePlatformStatus || "").toUpperCase() !== "CONNECTED" &&
     (connection?.registrationStatus === "required" ||
       connection?.registrationStatus === "pending" ||

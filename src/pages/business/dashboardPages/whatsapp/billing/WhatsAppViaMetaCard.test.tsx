@@ -59,9 +59,10 @@ describe("WhatsAppViaMetaCard", () => {
     const open = vi.fn();
     vi.stubGlobal("open", open);
     render(<WhatsAppViaMetaCard connection={connection} />);
-    expect(screen.getByText("whatsapp.viaMeta.title")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.billingTitle")).toBeTruthy();
     expect(screen.getByText("whatsapp.viaMeta.chargesByMeta")).toBeTruthy();
     expect(screen.getByText("whatsapp.viaMeta.paymentRequiredTitle")).toBeTruthy();
+    expect(screen.queryByText("whatsapp.viaMeta.verificationNeededTitle")).toBeNull();
     fireEvent.click(screen.getByText("whatsapp.viaMeta.manageBilling"));
     expect(open).toHaveBeenCalledWith(
       expect.stringContaining("whatsapp_account"),
@@ -85,7 +86,8 @@ describe("WhatsAppViaMetaCard", () => {
         }}
       />
     );
-    expect(screen.getByText("whatsapp.viaMeta.paymentUnverifiable")).toBeTruthy();
+    expect(screen.getAllByText("whatsapp.viaMeta.paymentUnverifiable").length).toBeGreaterThan(0);
     expect(screen.queryByText("whatsapp.viaMeta.paymentRequiredTitle")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.verificationNeededTitle")).toBeNull();
   });
 });

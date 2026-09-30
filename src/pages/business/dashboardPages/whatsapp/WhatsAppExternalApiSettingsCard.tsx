@@ -457,7 +457,7 @@ export default function WhatsAppExternalApiSettingsCard({
                   className={`${inputBase} flex-1 font-mono text-sm`}
                   value={webhookDraft}
                   onChange={(e) => setWebhookDraft(e.target.value)}
-                  placeholder="https://client-domain.com/api/webhooks/bizuply"
+                  placeholder={t("whatsapp.settings.apiSettingsWebhookPlaceholder")}
                   dir="ltr"
                 />
                 <div className="flex gap-2">
@@ -593,7 +593,12 @@ export default function WhatsAppExternalApiSettingsCard({
             </button>
             <span className="text-xs font-semibold text-slate-500">
               {t("whatsapp.settings.apiSettingsWebhookStatus")}:{" "}
-              {settings?.webhook?.status || "not_configured"}
+              {t(
+                `whatsapp.settings.webhookStatus.${String(
+                  settings?.webhook?.status || "not_configured"
+                )}`,
+                settings?.webhook?.status || t("whatsapp.settings.apiSettingsWebhookNotConfigured")
+              )}
             </span>
           </div>
           {lastTestResult ? (
