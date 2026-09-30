@@ -1150,8 +1150,15 @@ export type WhatsAppBusinessProfile = {
   readOnlyFields: string[];
 };
 
-export async function getWhatsAppBusinessProfile(businessId: string) {
-  const { data } = await API.get("/whatsapp/profile", withBusiness(businessId));
+export async function getWhatsAppBusinessProfile(
+  businessId: string,
+  opts?: { cached?: boolean }
+) {
+  const extra = opts?.cached ? { cached: 1 } : undefined;
+  const { data } = await API.get(
+    "/whatsapp/profile",
+    withBusiness(businessId, extra)
+  );
   return data as {
     success?: boolean;
     connection: WhatsAppConnection;

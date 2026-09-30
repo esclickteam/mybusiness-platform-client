@@ -89,6 +89,24 @@ function firstFieldError(errors?: Record<string, string> | null) {
   );
 }
 
+function hasPersistedProfileValues(profile?: WhatsAppBusinessProfile | null) {
+  if (!profile) return false;
+  return Boolean(
+    profile.about ||
+      profile.address ||
+      profile.description ||
+      profile.email ||
+      profile.vertical ||
+      profile.profilePictureUrl ||
+      (profile.websites || []).some((item) => Boolean(item))
+  );
+}
+
+function profileForPageLoad(profile: WhatsAppBusinessProfile) {
+  if (!hasPersistedProfileValues(profile)) return profile;
+  return { ...profile, syncError: "", fieldErrors: {} };
+}
+
 function metaErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error && error.message) return error.message;
   return fallback;
@@ -96,9 +114,11 @@ function metaErrorMessage(error: unknown, fallback: string) {
 
 export default function WhatsAppProfileTab() {
   const { t, i18n } = useTranslation();
-  const { businessId, connection, refreshConnection } = useWhatsAppHubContext();
+  const { businessId, connection, connectionLoading, refreshConnection } =
+    useWhatsAppHubContext();
   const visualQa = useWhatsAppVisualQaOverride();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const appliedRankRef = useRef(0);
   const [profile, setProfile] = useState<WhatsAppBusinessProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -114,7 +134,20 @@ export default function WhatsAppProfileTab() {
   const fieldErrors = profile?.fieldErrors || {};
   const pictureUrl = draft.profilePictureUrl || profile?.profilePictureUrl || "";
 
-  const load = async (opts?: { syncFirst?: boolean }) => {
+  const applyRankedProfile = (
+    next: WhatsAppBusinessProfile,
+    rank: number
+  ) => {
+    if (rank < appliedRankRef.current) return;
+    appliedRankRef.current = rank;
+    applyProfile(next);
+  };
+
+  const load = async (opts?: {
+    syncFirst?: boolean;
+    cached?: boolean;
+    silent?: boolean;
+  }) => {
     if (visualQa) {
       const mock: WhatsAppBusinessProfile = {
         displayName: visualQa.connection.verifiedName || "Invistimo RSVP",
@@ -165,20 +198,31 @@ export default function WhatsAppProfileTab() {
       return;
     }
     if (!businessId) return;
-    setLoading(true);
+    if (!opts?.silent) setLoading(true);
     try {
       const data = opts?.syncFirst
         ? await syncWhatsAppBusinessProfile(businessId)
-        : await getWhatsAppBusinessProfile(businessId);
-      applyProfile(data.profile);
-      await refreshConnection();
-      const syncError =
-        data.syncError || data.profile?.syncError || firstFieldError(data.fieldErrors);
-      if (syncError && opts?.syncFirst) {
-        toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
+        : await getWhatsAppBusinessProfile(businessId, {
+            cached: Boolean(opts?.cached),
+          });
+      const next = opts?.syncFirst
+        ? data.profile
+        : profileForPageLoad(data.profile);
+      applyRankedProfile(next, opts?.syncFirst ? 3 : opts?.cached ? 1 : 2);
+      if (opts?.syncFirst) {
+        await refreshConnection();
+        const syncError =
+          data.syncError ||
+          data.profile?.syncError ||
+          firstFieldError(data.fieldErrors);
+        if (syncError) {
+          toast.error(`${t("whatsapp.hub.profileSyncWarning")} ${syncError}`);
+        }
       }
     } catch (error) {
-      toast.error(metaErrorMessage(error, t("whatsapp.hub.profileLoadError")));
+      if (opts?.syncFirst || !profile) {
+        toast.error(metaErrorMessage(error, t("whatsapp.hub.profileLoadError")));
+      }
     } finally {
       setLoading(false);
       setSyncing(false);
@@ -186,9 +230,23 @@ export default function WhatsAppProfileTab() {
   };
 
   useEffect(() => {
-    void load();
+    appliedRankRef.current = 0;
+    void load({ cached: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  useEffect(() => {
+    if (!businessId || visualQa) return;
+    if (connectionLoading) return;
+    if (!connection?.connected || !connection?.phoneNumberId) return;
+    void load({ silent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    businessId,
+    connectionLoading,
+    connection?.connected,
+    connection?.phoneNumberId,
+  ]);
 
   const save = async () => {
     if (!businessId) return;
@@ -202,7 +260,7 @@ export default function WhatsAppProfileTab() {
         vertical: draft.vertical,
         websites: [draft.websites[0], draft.websites[1]],
       });
-      applyProfile(result.profile);
+      applyRankedProfile(result.profile, 3);
       await refreshConnection();
       const syncError =
         result.syncError ||
@@ -231,7 +289,7 @@ export default function WhatsAppProfileTab() {
         businessId,
         file
       );
-      applyProfile(result.profile);
+      applyRankedProfile(result.profile, 3);
       await refreshConnection();
       toast.success(t("whatsapp.hub.profilePhotoSaved"));
     } catch (error) {
@@ -306,7 +364,7 @@ export default function WhatsAppProfileTab() {
         </div>
       </div>
 
-      {profile?.syncError ? (
+      {profile?.syncError && !hasPersistedProfileValues(profile) ? (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
           {t("whatsapp.hub.profileSyncWarning")} {profile.syncError}
         </p>
