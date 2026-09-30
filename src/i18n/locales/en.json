@@ -9321,7 +9321,7 @@
       "paymentNeedsAttention": "Not set / needs attention",
       "paymentUnverifiable": "Cannot verify via API",
       "paymentMissing": "Missing",
-      "paymentUnknown": "Cannot verify via API",
+      "paymentUnknown": "Managed in Meta",
       "quality": "Quality rating",
       "messagingLimit": "Messaging limit",
       "manageBilling": "Manage Billing in Meta",
@@ -9345,9 +9345,13 @@
       "creditLine": "Credit line",
       "creditLineHint": "Business credit line attached to this WABA, when available via API.",
       "creditLinePresent": "Credit line connected",
-      "creditLineUnknown": "Cannot verify via API",
+      "creditLineUnknown": "Managed in Meta",
       "directBilling": "Meta Direct Billing",
-      "paymentUnverifiableHint": "Meta does not return a confirmed payment method with the current API permissions. This is not a Business Verification issue."
+      "paymentUnverifiableHint": "Billing details are managed in Meta.",
+      "managedTitle": "Billing is managed in Meta",
+      "managedBody": "Billing details and payment methods are managed in WhatsApp Manager / Meta.",
+      "managedHint": "To view or update a payment method, open WhatsApp Manager.",
+      "adminApiTooltip": "Billing details are not available through the current Meta API permissions"
     },
     "billing": {
       "loadError": "We could not load WhatsApp billing data right now.",

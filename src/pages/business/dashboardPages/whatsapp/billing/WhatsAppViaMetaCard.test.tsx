@@ -6,9 +6,13 @@ import type { WhatsAppConnection } from "../../../../../api/whatsappApi";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, fallback?: string) => fallback || key,
     i18n: { language: "en" },
   }),
+}));
+
+vi.mock("../../../../../context/AuthContext", () => ({
+  useAuth: () => ({ user: { role: "business" } }),
 }));
 
 const connection: WhatsAppConnection = {
@@ -72,7 +76,7 @@ describe("WhatsAppViaMetaCard", () => {
     vi.unstubAllGlobals();
   });
 
-  it("shows Check in Meta when payment method is unknown", () => {
+  it("shows one managed-by-Meta card instead of repeating unverifiable API labels", () => {
     render(
       <WhatsAppViaMetaCard
         connection={{
@@ -80,14 +84,24 @@ describe("WhatsAppViaMetaCard", () => {
           wabaBillingHealth: {
             ...connection.wabaBillingHealth!,
             hasPaymentMethod: null,
+            paymentStatusRaw: "unverifiable",
             actionRequired: false,
             issues: [],
           },
         }}
       />
     );
-    expect(screen.getAllByText("whatsapp.viaMeta.paymentUnverifiable").length).toBeGreaterThan(0);
+    expect(screen.getByText("whatsapp.viaMeta.managedTitle")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.managedBody")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.managedHint")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.openManager")).toBeTruthy();
+    expect(screen.getByText("whatsapp.viaMeta.manageBilling")).toBeTruthy();
+    expect(screen.queryByText("whatsapp.viaMeta.paymentUnverifiable")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.paymentUnverifiableHint")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.paymentMethod")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.funding")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.creditLine")).toBeNull();
+    expect(screen.queryByText("whatsapp.viaMeta.directBilling")).toBeNull();
     expect(screen.queryByText("whatsapp.viaMeta.paymentRequiredTitle")).toBeNull();
-    expect(screen.queryByText("whatsapp.viaMeta.verificationNeededTitle")).toBeNull();
   });
 });

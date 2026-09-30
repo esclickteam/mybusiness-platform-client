@@ -9310,7 +9310,7 @@
       "paymentNeedsAttention": "לא מוגדר / נדרש טיפול",
       "paymentUnverifiable": "לא ניתן לאמת דרך API",
       "paymentMissing": "חסר",
-      "paymentUnknown": "לא ניתן לאמת דרך API",
+      "paymentUnknown": "מנוהל ב-Meta",
       "quality": "דירוג איכות",
       "messagingLimit": "מגבלת הודעות",
       "manageBilling": "ניהול חיוב ב-Meta",
@@ -9334,9 +9334,13 @@
       "creditLine": "קו אשראי",
       "creditLineHint": "קו אשראי עסקי המשויך ל-WABA, כשזמין דרך ה-API.",
       "creditLinePresent": "קו אשראי מחובר",
-      "creditLineUnknown": "לא ניתן לאמת דרך API",
+      "creditLineUnknown": "מנוהל ב-Meta",
       "directBilling": "Meta Direct Billing",
-      "paymentUnverifiableHint": "Meta לא מחזירה אישור על אמצעי תשלום בהרשאות ה-API הנוכחיות. זה אינו אימות עסק."
+      "paymentUnverifiableHint": "פרטי החיוב מנוהלים ב-Meta.",
+      "managedTitle": "החיוב מנוהל ב-Meta",
+      "managedBody": "פרטי החיוב ואמצעי התשלום מנוהלים דרך WhatsApp Manager / Meta.",
+      "managedHint": "כדי לצפות או לעדכן אמצעי תשלום, יש לפתוח את WhatsApp Manager.",
+      "adminApiTooltip": "Billing details are not available through the current Meta API permissions"
     },
     "billing": {
       "loadError": "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.",
