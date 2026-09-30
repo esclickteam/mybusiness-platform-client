@@ -29,6 +29,7 @@ describe("campaignCreationMode helpers", () => {
     expect(isMetaCampaignsKnownChildPath("create-ai")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("overview")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("settings")).toBe(true);
+    expect(isMetaCampaignsKnownChildPath("library")).toBe(true);
     expect(isMetaCampaignsKnownChildPath("mystery")).toBe(false);
   });
 });

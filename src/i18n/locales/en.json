@@ -9535,7 +9535,31 @@
     "nav": {
       "overview": "Overview",
       "create": "Ads Manager",
+      "library": "Creative library",
       "settings": "Meta connection"
+    },
+    "manager": {
+      "configured": "Configured status",
+      "hierarchy": "Campaign → Ad sets → Ads",
+      "edit": "Edit in Invistimo",
+      "adSetName": "Ad set name",
+      "viewOnly": "You can view this campaign but not change spend settings.",
+      "duplicateCampaign": "Duplicate campaign",
+      "duplicateAdSet": "Duplicate ad set",
+      "duplicateAd": "Duplicate ad",
+      "duplicateConfirm": "Duplicate this {{kind}} as PAUSED in Meta?",
+      "duplicatedPaused": "Duplicated in Meta as PAUSED",
+      "tabs": {
+        "campaign": "Campaigns",
+        "adset": "Ad sets",
+        "ad": "Ads"
+      },
+      "libraryTitle": "Creative library",
+      "libraryBody": "Reuse images and videos already uploaded to this ad account.",
+      "uploadNew": "Upload new",
+      "reuse": "Copy ID to reuse",
+      "copied": "Copied",
+      "syncing": "Syncing with Meta…"
     },
     "overview": {
       "heading": "Campaign management",
@@ -9570,7 +9594,8 @@
     },
     "details": {
       "badge": "ads_read · Read only",
-      "readOnlyHint": "Campaign details are read-only — no edit or budget changes.",
+      "readOnlyHint": "Open a campaign to review metrics, hierarchy, and edit after Meta confirms the save.",
+      "close": "Close",
       "viewLeadsInCrm": "View leads in CRM",
       "adSets": "Ad sets"
     },
@@ -9589,7 +9614,11 @@
       "confirmPauseTitle": "Pause campaign?",
       "confirmPauseBody": "Pause {{name}} in Meta? Ads will stop running until you resume it.",
       "confirmResumeTitle": "Resume campaign?",
-      "confirmResumeBody": "Resume {{name}} in Meta? Ads will start running again with the saved settings."
+      "confirmResumeBody": "Resume {{name}} in Meta? Ads will start running again with the saved settings.",
+      "confirmActivateSpend": "This will activate {{name}} in Meta and may begin spending money.",
+      "rateLimited": "Meta temporarily limited synchronization. We'll retry automatically.",
+      "save": "Save",
+      "editFull": "Open full editor"
     },
     "creationMode": {
       "title": "New campaign",
@@ -9971,7 +10000,7 @@
         "statusProcessing": "Processing",
         "statusRejected": "Rejected",
         "campaignSubmittedTitle": "Campaign submitted to Meta",
-        "publishOkSubtitle": "Meta returned a real Ad ID. Status below is from Meta, not a local mock.",
+        "publishOkSubtitle": "Campaign created successfully in Meta — currently paused. Use Activate only if you want it to start spending.",
         "publishFailSubtitle": "One or more Meta create steps failed. You can retry from the failed stage.",
         "currentMetaStatus": "Current Meta status",
         "effectiveStatusLabel": "effective_status",
@@ -10261,6 +10290,8 @@
       "ctrHint": "Click-through rate"
     },
     "ranges": {
+      "today": "Today",
+      "yesterday": "Yesterday",
       "last7": "Last 7 days",
       "last14": "Last 14 days",
       "last30": "Last 30 days",
@@ -10319,6 +10350,7 @@
       "start": "Start",
       "end": "Ends",
       "endOngoing": "Ongoing",
+      "objective": "Objective",
       "budgetDaily": "Daily",
       "budgetLifetime": "Lifetime"
     },
@@ -10830,6 +10862,9 @@
       "mediaPlaceholder": "Upload an image in the ad step to see it here",
       "mobileFeed": "Mobile Feed",
       "desktopFeed": "Desktop Feed",
+      "title": "Ad preview",
+      "action": "Refresh preview",
+      "failed": "Could not load Meta preview",
       "instagram": "Instagram",
       "refresh": "Refresh Meta preview",
       "loading": "Loading official Meta preview…",
@@ -10914,6 +10949,7 @@
       "deleted": "Campaign deleted / archived",
       "activated": "Campaign activated",
       "paused": "Campaign paused",
+      "saved": "Saved in Meta",
       "mediaUploaded": "Media uploaded to Meta",
       "leadFormCreated": "Lead form created",
       "businessSelected": "Meta business saved"
@@ -10924,6 +10960,8 @@
       "loadCampaign": "Failed to load campaign",
       "loadSettings": "Failed to load Meta settings",
       "saveCampaign": "Failed to save campaign",
+      "updateCampaign": "Meta rejected the update",
+      "duplicate": "Failed to duplicate in Meta",
       "preview": "Failed to generate ad preview",
       "deleteCampaign": "Failed to delete campaign",
       "updateStatus": "Failed to update status",

@@ -100,6 +100,9 @@ export type MetaCampaign = {
   ctaCustom?: string;
   carouselCards?: MetaCarouselCard[];
   adSets?: MetaCampaignAdSet[];
+  ads?: MetaCampaignAd[];
+  lastSynced?: string | null;
+  issues?: MetaIssueInfo[];
   audienceSummary?: string;
 };
 
@@ -126,23 +129,52 @@ export type MetaCampaignInsight = {
   demoData?: boolean;
 };
 
+export type MetaIssueInfo = {
+  level?: string;
+  errorType?: string;
+  message: string;
+};
+
 export type MetaCampaignAd = {
   id: string;
   name: string;
   status?: string;
+  configuredStatus?: string;
+  effectiveStatus?: string;
   headline?: string;
   primaryText?: string;
   imageUrl?: string;
+  imageHash?: string;
+  link?: string;
+  callToAction?: string;
+  pageId?: string;
+  instagramUserId?: string;
   results?: number;
+  issues?: MetaIssueInfo[];
+  metrics?: MetaCampaignMetrics;
+  campaignId?: string;
+  campaignName?: string;
+  adSetId?: string;
 };
 
 export type MetaCampaignAdSet = {
   id: string;
   name: string;
   status?: string;
+  configuredStatus?: string;
+  effectiveStatus?: string;
   dailyBudget?: number;
+  lifetimeBudget?: number;
   audience?: string;
   ads?: MetaCampaignAd[];
+  issues?: MetaIssueInfo[];
+  learningStageInfo?: { status?: string } | null;
+  metrics?: MetaCampaignMetrics;
+  campaignId?: string;
+  campaignName?: string;
+  optimizationGoal?: string;
+  startTime?: string | null;
+  endTime?: string | null;
 };
 
 export type MetaLabeledOption = {
@@ -286,6 +318,12 @@ export type MetaCampaignsOverview = {
   series: MetaCampaignSeriesPoint[];
   campaigns: MetaCampaign[];
   insights: MetaCampaignInsight[];
+  comparison?: {
+    current?: MetaCampaignsOverview["kpis"];
+    previous?: MetaCampaignsOverview["kpis"];
+    changes?: Partial<Record<keyof MetaCampaignsOverview["kpis"], number | null>>;
+    previousRange?: { since: string; until: string };
+  } | null;
   demoData?: boolean;
 };
 
@@ -379,6 +417,8 @@ export type MetaCampaignPayload = {
   adSetName?: string;
   adName?: string;
   creativeName?: string;
+  adSetId?: string;
+  adId?: string;
 };
 
 export type MetaAdPreview = {
@@ -531,7 +571,7 @@ export async function disconnectMetaAds(businessId?: string) {
 
 export async function getMetaCampaignsOverview(
   businessId?: string,
-  range?: { since?: string; until?: string; days?: number }
+  range?: { since?: string; until?: string; days?: number; datePreset?: string; compare?: number }
 ) {
   const { data } = await API.get<MetaCampaignsOverview>(
     "/meta-campaigns/overview",
@@ -604,11 +644,134 @@ export async function updateMetaCampaign(
 export async function setMetaCampaignStatus(
   businessId: string | undefined,
   campaignId: string,
-  status: string
+  status: string,
+  options?: { confirmActivate?: boolean }
 ) {
   const { data } = await API.post<{ success: boolean; campaign: MetaCampaign }>(
     `/meta-campaigns/campaigns/${campaignId}/status`,
-    { status, businessId },
+    {
+      status,
+      businessId,
+      ...(status === "ACTIVE" ? { confirmActivate: options?.confirmActivate === true } : {}),
+    },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function getMetaPerformance(
+  businessId: string | undefined,
+  query: { level: "campaign" | "adset" | "ad"; datePreset?: string; since?: string; until?: string; days?: number }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    level: string;
+    rows: Array<MetaCampaign | MetaCampaignAdSet | MetaCampaignAd>;
+  }>("/meta-campaigns/performance", withBusiness(businessId, query));
+  return data;
+}
+
+export async function listMetaMediaLibrary(businessId?: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    images: Array<{ kind: "image"; hash: string; url: string; name?: string; createdTime?: string | null }>;
+    videos: Array<{ kind: "video"; videoId: string; url?: string; picture?: string; name?: string; createdTime?: string | null }>;
+  }>("/meta-campaigns/media", withBusiness(businessId));
+  return data;
+}
+
+export async function updateMetaAdSet(
+  businessId: string | undefined,
+  adSetId: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.patch<{ success: boolean; adSet: MetaCampaignAdSet }>(
+    `/meta-campaigns/adsets/${adSetId}`,
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function updateMetaAd(
+  businessId: string | undefined,
+  adId: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.patch<{ success: boolean; ad: MetaCampaignAd }>(
+    `/meta-campaigns/ads/${adId}`,
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function duplicateMetaCampaign(businessId: string | undefined, campaignId: string) {
+  const { data } = await API.post<{ success: boolean; result: unknown; status: string }>(
+    `/meta-campaigns/campaigns/${campaignId}/duplicate`,
+    { businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function duplicateMetaAdSet(
+  businessId: string | undefined,
+  adSetId: string,
+  campaignId?: string
+) {
+  const { data } = await API.post<{ success: boolean; result: unknown; status: string }>(
+    `/meta-campaigns/adsets/${adSetId}/duplicate`,
+    { businessId, campaignId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function duplicateMetaAd(
+  businessId: string | undefined,
+  adId: string,
+  adSetId?: string
+) {
+  const { data } = await API.post<{ success: boolean; result: unknown; status: string }>(
+    `/meta-campaigns/ads/${adId}/duplicate`,
+    { businessId, adSetId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function setMetaAdSetStatus(
+  businessId: string | undefined,
+  adSetId: string,
+  status: string,
+  options?: { confirmActivate?: boolean }
+) {
+  const { data } = await API.post<{ success: boolean; adSet: MetaCampaignAdSet }>(
+    `/meta-campaigns/adsets/${adSetId}/status`,
+    {
+      status,
+      businessId,
+      ...(status === "ACTIVE" ? { confirmActivate: options?.confirmActivate === true } : {}),
+    },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function setMetaAdStatus(
+  businessId: string | undefined,
+  adId: string,
+  status: string,
+  options?: { confirmActivate?: boolean }
+) {
+  const { data } = await API.post<{ success: boolean; ad: MetaCampaignAd }>(
+    `/meta-campaigns/ads/${adId}/status`,
+    {
+      status,
+      businessId,
+      ...(status === "ACTIVE" ? { confirmActivate: options?.confirmActivate === true } : {}),
+    },
     withBusiness(businessId)
   );
   return data;

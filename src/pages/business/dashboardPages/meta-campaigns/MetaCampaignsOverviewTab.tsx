@@ -55,6 +55,8 @@ import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 import CreateCampaignButton from "./CreateCampaignButton";
 import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
+import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
+import MetaPerformanceBreakdown from "./MetaPerformanceBreakdown";
 import {
   DATE_RANGE_OPTIONS,
   daysAgoIso,
@@ -311,7 +313,7 @@ export default function MetaCampaignsOverviewTab() {
     const now = Date.now();
     if (now < backoffUntilRef.current) {
       if (!options?.silent) {
-        toast.error(t("metaCampaigns.actions.syncThrottled"));
+        toast.error(t("metaCampaigns.actions.rateLimited"));
       }
       return;
     }
@@ -339,7 +341,7 @@ export default function MetaCampaignsOverviewTab() {
     } catch (error: any) {
       if (isMetaThrottleError(error)) {
         backoffUntilRef.current = Date.now() + 45000;
-        toast.error(t("metaCampaigns.actions.syncThrottled"));
+        toast.error(t("metaCampaigns.actions.rateLimited"));
       } else if (isPermissionError(error)) {
         setLoadError("permission");
         toast.error(t("metaCampaigns.errors.permissionRead"));
@@ -500,7 +502,12 @@ export default function MetaCampaignsOverviewTab() {
     const next = configured === "ACTIVE" ? "PAUSED" : "ACTIVE";
     try {
       setBusyId(campaign.id);
-      const result = await setMetaCampaignStatus(businessId, campaign.id, next);
+      const result = await setMetaCampaignStatus(
+        businessId,
+        campaign.id,
+        next,
+        next === "ACTIVE" ? { confirmActivate: true } : undefined
+      );
       const confirmed = String(
         result?.campaign?.configuredStatus ||
           result?.campaign?.status ||
@@ -637,6 +644,11 @@ export default function MetaCampaignsOverviewTab() {
             )}
             {t("metaCampaigns.actions.refresh")}
           </button>
+          {refreshing ? (
+            <span className="text-xs font-bold text-violet-700">
+              {t("metaCampaigns.manager.syncing")}
+            </span>
+          ) : null}
           <CreateCampaignButton basePath={basePath} />
         </div>
       </div>
@@ -735,6 +747,12 @@ export default function MetaCampaignsOverviewTab() {
             formatCurrency(n, currency)
           , { treatZeroAsEmpty: !hasInsightSignal })}
           hint={t("metaCampaigns.kpis.spendHint")}
+          trend={
+            data?.comparison?.changes?.spend == null
+              ? undefined
+              : `${data.comparison.changes.spend >= 0 ? "+" : ""}${data.comparison.changes.spend.toFixed(1)}%`
+          }
+          trendPositive={(data?.comparison?.changes?.spend || 0) <= 0}
         />
         <KpiCard
           label={t("metaCampaigns.kpis.leads")}
@@ -1373,216 +1391,28 @@ export default function MetaCampaignsOverviewTab() {
         </aside>
       </div>
 
-      {detailsCampaign ? (
-        <div
-          data-testid="campaign-details-drawer"
-          className="fixed inset-0 z-[2147482990] flex justify-end bg-slate-900/40 p-0 sm:p-4"
-          onClick={() => setDetailsCampaign(null)}
-        >
-          <aside
-            className="flex h-full w-full max-w-md flex-col overflow-hidden bg-white shadow-2xl sm:rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between border-b border-slate-100 px-4 py-3">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">
-                  {t("metaCampaigns.details.badge")}
-                </p>
-                <h3 className="mt-1 text-lg font-black text-slate-900">
-                  {detailsCampaign.name}
-                </h3>
-                <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                  {t("metaCampaigns.details.readOnlyHint")}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setDetailsCampaign(null)}
-                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-500"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <dl className="flex-1 overflow-y-auto px-4 py-2">
-              {isDemoOverview ? (
-                <Link
-                  to={`/business/${urlBusinessId || businessId}/dashboard/crm/leads?lead=sarah`}
-                  data-demo-target="meta-drawer-leads"
-                  className="mb-3 flex items-center justify-between rounded-xl border border-violet-100 bg-violet-50 px-3 py-2.5 text-sm font-black text-violet-800 hover:bg-violet-100"
-                >
-                  <span>{t("metaCampaigns.details.viewLeadsInCrm")}</span>
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              ) : null}
-              {businessId || urlBusinessId ? (
-                <div className="mb-3">
-                  <MetaCampaignHealthPanel
-                    businessId={String(urlBusinessId || businessId)}
-                    campaignId={detailsCampaign.id}
-                    currency={currency}
-                    highlightRecommendationId={queryRecommendationId || undefined}
-                  />
-                </div>
-              ) : null}
-              <DetailRow
-                label={t("metaCampaigns.table.name")}
-                value={detailsCampaign.name || "—"}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.campaignId")}
-                value={detailsCampaign.id || "—"}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.status")}
-                value={t(
-                  `metaCampaigns.status.${metaDeliveryStatusKey(
-                    detailsCampaign.deliveryStatus ||
-                      detailsCampaign.effectiveStatus ||
-                      detailsCampaign.status ||
-                      ""
-                  )}`,
-                  {
-                    defaultValue:
-                      detailsCampaign.deliveryStatus ||
-                      detailsCampaign.effectiveStatus ||
-                      detailsCampaign.status ||
-                      "—",
-                  }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.form.objective")}
-                value={
-                  detailsCampaign.objective
-                    ? t(`metaCampaigns.objectives.${objectiveKey(detailsCampaign.objective)}`)
-                    : "—"
-                }
-              />
-              <DetailRow
-                label={t("metaCampaigns.adsManager.buyingType")}
-                value={detailsCampaign.buyingType || "—"}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.budget")}
-                value={
-                  detailsCampaign.dailyBudget
-                    ? `${formatCurrency(detailsCampaign.dailyBudget, currency)} (${t("metaCampaigns.table.budgetDaily")})`
-                    : detailsCampaign.lifetimeBudget
-                      ? `${formatCurrency(detailsCampaign.lifetimeBudget, currency)} (${t("metaCampaigns.table.budgetLifetime")})`
-                      : "—"
-                }
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.spend")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.spend,
-                  (n) => formatCurrency(n, currency),
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.impressions")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.impressions,
-                  formatNumber,
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.reach")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.reach,
-                  formatNumber,
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.clicks")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.clicks,
-                  formatNumber,
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.ctr")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.ctr,
-                  (n) => formatPercent(n),
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.leads")}
-                value={formatMetricOrDash(
-                  detailsCampaign.metrics?.leads,
-                  formatNumber,
-                  { treatZeroAsEmpty: true }
-                )}
-              />
-              {(detailsCampaign.adSets || []).length ? (
-                <div className="mb-3 space-y-3">
-                  <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    {t("metaCampaigns.details.adSets", "Ad sets")}
-                  </p>
-                  {detailsCampaign.adSets?.map((adSet) => (
-                    <div key={adSet.id} className="rounded-xl border border-slate-100 p-3">
-                      <p className="text-sm font-black text-slate-900">{adSet.name}</p>
-                      <p className="mt-1 text-xs font-semibold text-slate-500">
-                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(adSet.status || "")}`, {
-                          defaultValue: adSet.status,
-                        })}
-                        {adSet.audience ? ` · ${adSet.audience}` : ""}
-                      </p>
-                      {(adSet.ads || []).map((ad) => (
-                        <div key={ad.id} className="mt-2 flex gap-2">
-                          {ad.imageUrl ? (
-                            <img
-                              src={ad.imageUrl}
-                              alt=""
-                              className="h-14 w-14 rounded-lg object-cover"
-                            />
-                          ) : null}
-                          <div className="min-w-0">
-                            <p className="text-xs font-black text-slate-800">{ad.name}</p>
-                            <p className="text-[11px] font-semibold text-slate-500">{ad.headline}</p>
-                            <p className="text-[11px] font-semibold text-slate-400">{ad.primaryText}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              <DetailRow
-                label={t("metaCampaigns.table.cpl")}
-                value={formatMetricOrDash(
-                  (detailsCampaign.metrics?.leads || 0) > 0
-                    ? detailsCampaign.metrics?.costPerLead
-                    : null,
-                  (n) => formatCurrency(n, currency)
-                )}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.start")}
-                value={formatDateHe(detailsCampaign.startTime, locale)}
-              />
-              <DetailRow
-                label={t("metaCampaigns.table.end")}
-                value={
-                  detailsCampaign.stopTime
-                    ? formatDateHe(detailsCampaign.stopTime, locale)
-                    : t("metaCampaigns.table.endOngoing")
-                }
-              />
-              <DetailRow
-                label={t("metaCampaigns.overview.lastUpdatedLabel")}
-                value={formatDateTimeHe(lastUpdatedAt, locale)}
-              />
-            </dl>
-          </aside>
-        </div>
+      {businessId ? (
+        <MetaPerformanceBreakdown
+          businessId={businessId}
+          rangeQuery={rangeQuery}
+          currency={currency}
+        />
       ) : null}
+
+      {detailsCampaign && businessId ? (
+        <MetaCampaignDetailsDrawer
+          open
+          businessId={businessId}
+          campaign={detailsCampaign}
+          currency={currency}
+          lastSynced={lastUpdatedAt}
+          canEdit={!isDemoOverview}
+          onClose={() => setDetailsCampaign(null)}
+          onOpenEdit={(id) => navigate(`${basePath}/edit/${id}`)}
+          onChanged={() => void load({ silent: true })}
+        />
+      ) : null}
+
 
       {pendingStatusCampaign ? (
         <div
@@ -1606,7 +1436,7 @@ export default function MetaCampaignsOverviewTab() {
                 ? t("metaCampaigns.actions.confirmPauseBody", {
                     name: pendingStatusCampaign.name,
                   })
-                : t("metaCampaigns.actions.confirmResumeBody", {
+                : t("metaCampaigns.actions.confirmActivateSpend", {
                     name: pendingStatusCampaign.name,
                   })}
             </p>
