@@ -277,7 +277,7 @@ const en = {
     loading: "Loading preview...",
     issuesTitle: "These fields need attention. The preview still shows the values you entered. Nothing was saved.",
     issueLegalProfile: "Bizuply legal profile is missing or incomplete.",
-    issueLegalCompanyName: "Legal company name is missing.",
+    issueLegalCompanyName: "Partner legal company name is required before Preview.",
     issueBrandName: "Partner / brand name is missing.",
     issueCountry: "Country is missing or not a valid ISO country.",
     issueTerritoryType: "Territory type is missing or not valid.",

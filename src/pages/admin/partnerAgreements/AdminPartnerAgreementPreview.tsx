@@ -109,7 +109,21 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
             </ul>
           </div>
         ) : null}
-        {data ? (
+        {data && !data.blocked && data.presentationHtml ? (
+          <div className="mt-4 overflow-auto rounded-2xl bg-[#E7E5E4] p-3" data-testid="agreement-preview">
+            <iframe
+              title={String(data.title || "Agreement")}
+              srcDoc={data.presentationHtml}
+              className="mx-auto block min-w-[210mm] border-0 bg-white"
+              style={{ width: "210mm", height: "1120px" }}
+              onLoad={(event) => {
+                const frame = event.currentTarget;
+                const height = frame.contentDocument?.documentElement?.scrollHeight;
+                if (height) frame.style.height = `${height + 12}px`;
+              }}
+            />
+          </div>
+        ) : data && !data.blocked ? (
           <article
             data-testid="agreement-preview"
             dir={data.dir === "rtl" ? "rtl" : "ltr"}
@@ -141,7 +155,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
               {(data.parts?.length ? data.parts : [{ locale: data.locale || "en", dir: data.dir || "ltr", title: data.title, sections: data.sections }]).map((part) => (
                 <div key={part.locale} dir={part.dir === "rtl" ? "rtl" : "ltr"} lang={part.locale}>
                   {data.parts && data.parts.length > 1 ? <h2 className="mb-4 text-2xl font-black">{part.title}</h2> : null}
-                  {part.sections.map((section) => (
+                  {part.sections.filter((section) => (section as { id?: string }).id !== "signatureBlocks" && !section.paragraphs.some((paragraph) => /_{5,}/.test(paragraph))).map((section) => (
                     <section key={`${part.locale}-${section.number}-${section.title}`} className="mb-6">
                       <h2 className="text-lg font-black text-[#6D28D9]">
                         {section.number ? `${section.number}. ${section.title}` : section.title}
@@ -155,41 +169,6 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
                   ))}
                 </div>
               ))}
-            </div>
-            <div className="mt-10 space-y-4 border-t border-slate-200 pt-6" data-testid="signature-blocks" dir={page.dir}>
-              {(data.signatories?.length
-                ? data.signatories
-                : [
-                    { party: "partner" as const, fullName: String(data.variables.PARTNER_SIGNATORY_NAME || ""), title: String(data.variables.PARTNER_SIGNATORY_TITLE || ""), order: 1, required: true, email: "" },
-                    { party: "bizuply" as const, fullName: String(data.variables.BIZUPLY_SIGNATORY_NAME || t.authorized), title: String(data.variables.BIZUPLY_SIGNATORY_TITLE || "Bizuply"), order: 1, required: true, email: "" },
-                  ]
-              ).map((signatory, index) => {
-                let pending: { typedName?: string } | null = null;
-                if (signatory.party === "bizuply" && !data.agreementId) {
-                  try {
-                    pending = JSON.parse(sessionStorage.getItem("partner-agreement-pending-bizuply-signature") || "null");
-                  } catch {
-                    pending = null;
-                  }
-                }
-                return (
-                <section
-                  key={`${signatory.party}-${signatory.fullName}-${index}`}
-                  data-testid={signatory.party === "bizuply" ? "bizuply-signature" : "partner-signature"}
-                  className="rounded-2xl border border-dashed border-slate-300 p-4"
-                >
-                  <h2 className="text-sm font-black uppercase tracking-wide text-slate-500">
-                    {signatory.party === "bizuply" ? t.bizuply : t.partner}
-                  </h2>
-                  <p className="mt-3 font-black text-slate-950">{signatory.fullName || pending?.typedName || t.name}</p>
-                  <p className="text-sm font-semibold text-slate-600">{signatory.title || t.title}</p>
-                  <p className="mt-6 font-['Georgia'] text-2xl text-slate-900">
-                    {t.signature}: {pending?.typedName || "__________"}
-                  </p>
-                  <p className="text-sm font-semibold text-slate-400">{t.date}: {pending?.typedName ? "Pending create" : "__________"}</p>
-                </section>
-                );
-              })}
             </div>
           </article>
         ) : !error ? (

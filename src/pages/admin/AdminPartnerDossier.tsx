@@ -25,6 +25,7 @@ const TABS = [
   ["customers", "Customers"],
   ["payments", "Payments"],
   ["sub-partners", "Sub-Partners"],
+  ["verification", "Verification"],
   ["progress", "Partner Center Progress"],
   ["audit", "Audit Log"],
 ];
@@ -408,10 +409,59 @@ export default function AdminPartnerDossier() {
         ) : null}
         {tab === "sub-partners" || tab === "team" ? (
           <section className="mt-5 space-y-3">
-            <p className="text-sm font-bold text-slate-700">
-              Package seats {data.seats?.used || 0} used, limit {data.seats?.limit || 0}. The Primary Partner is not counted as an additional user.
-            </p>
+            <div className="rounded-3xl border bg-white p-5 text-sm font-bold text-slate-700">
+              <p>Requested additional users: {data.teamPackageRequest?.requestedSubPartnerSeats ?? 0}</p>
+              <p>Requested package: {data.teamPackageRequest?.requestedSubPartnerPackage || "—"}</p>
+              <p>Annual package price: {data.teamPackageRequest?.requestedSubPartnerAnnualPrice ?? "—"} {data.teamPackageRequest?.requestedSubPartnerCurrency || ""}</p>
+              <p>Package payment status: {data.teamPackageRequest?.subPartnerPackageStatus || "none"}</p>
+              <p>Package start: {data.subPartnerPackage?.startsAt || data.teamPackageRequest?.startsAt || "—"}</p>
+              <p>Package expiry: {data.subPartnerPackage?.expiresAt || data.teamPackageRequest?.expiresAt || "—"}</p>
+              <p>Seats included: {data.seats?.limit || 0}. Used: {data.seats?.used || 0}. Remaining: {Math.max(0, Number(data.seats?.limit || 0) - Number(data.seats?.used || 0))}.</p>
+              <p>The Primary Partner is not counted as an additional user.</p>
+              {data.agreement?.id ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {["approve", "record_payment", "activate", "cancel"].map((action) => (
+                    <button key={action} type="button" className="rounded-2xl border px-3 py-2" onClick={async () => {
+                      const price = action === "approve" && data.teamPackageRequest?.custom ? window.prompt("Approved annual price") : undefined;
+                      await API.post(`/admin/partner-agreements/${data.agreement.id}/team-package`, { action, price, seats: data.teamPackageRequest?.requestedSubPartnerSeats });
+                      await refresh();
+                    }}>{action.replace("_", " ")}</button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
             <Table rows={data.team} cols={teamCols} />
+          </section>
+        ) : null}
+        {tab === "verification" ? (
+          <section className="mt-5 space-y-2 rounded-3xl border bg-white p-5 text-sm font-bold">
+            <p>Verification status: {data.companyVerification?.status || "not_started"}</p>
+            <p>Company Registration document: {data.companyVerification?.hasRegistration ? "Uploaded" : "Missing"}</p>
+            <p>Authorized Signatory proof: {data.companyVerification?.hasAuthority ? "Uploaded" : "Not required yet"}</p>
+            <p>Personal ID requested? {data.companyVerification?.identityRequired ? "Yes" : "No"}</p>
+            <p>Personal ID status: {data.companyVerification?.identityStatus || "—"}</p>
+            <p>Uploaded: {data.companyVerification?.uploadedAt || "—"}</p>
+            <p>Reviewed: {data.companyVerification?.reviewedAt || "—"}</p>
+            <p>Reviewed by: {data.companyVerification?.reviewedBy || "—"}</p>
+            <p>Admin notes: {data.companyVerification?.adminNotes || "—"}</p>
+            <p>Payment remitter match: {data.companyVerification?.remitterMatch || "—"} {data.companyVerification?.payerName ? `(${data.companyVerification.payerName})` : ""}</p>
+            {data.agreement?.id ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {[
+                  ["request_documents", "Request Documents"],
+                  ["request_more", "Request More Information"],
+                  ["verify", "Mark Verified"],
+                  ["reject", "Reject Verification"],
+                  ["request_id", "Request ID Verification"],
+                  ["review_remitter", "Review remitter"],
+                ].map(([action, label]) => (
+                  <button key={action} type="button" className="rounded-2xl border px-3 py-2" onClick={async () => {
+                    await API.post(`/admin/partner-agreements/${data.agreement.id}/verification`, { action });
+                    await refresh();
+                  }}>{label}</button>
+                ))}
+              </div>
+            ) : null}
           </section>
         ) : null}
         {tab === "audit" || tab === "activity" ? (

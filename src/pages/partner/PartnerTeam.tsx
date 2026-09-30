@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import API from "../../api";
 import {
   fetchPartnerTeam,
   invitePartnerMember,
@@ -81,6 +82,17 @@ export default function PartnerTeam() {
         title={t("partner.team.partnerTeam")}
         subtitle={`${t("partner.team.seatLimit", { used: data?.used || 0, limit: data?.limit ?? 0 })} · ${data?.seatsRemaining ?? 0} remaining`}
       />
+      {data?.package ? (
+        <PartnerCard className="p-5 text-sm font-semibold text-slate-700">
+          <p className="font-black text-slate-950">Your Team Package</p>
+          <p>Primary Partner: Included</p>
+          <p>Additional seats: {data.package.allowedAdditionalUsers ?? data.limit ?? 0}</p>
+          <p>Used: {data.used || 0}</p>
+          <p>Available: {data.seatsRemaining ?? 0}</p>
+          <p>Renewal/expiry: {data.package.expiresAt || "—"}</p>
+          <p>Annual price: {data.package.currency || "USD"} {data.package.pricePaid ?? "—"}</p>
+        </PartnerCard>
+      ) : null}
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
@@ -157,16 +169,23 @@ export default function PartnerTeam() {
                     {t(`partner.team.perm.${PERM_I18N_KEY[key]}`)}
                   </label>
                 ))}
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await revokePartnerMember(member._id);
-                    await refresh();
-                  }}
-                  className="mt-2 w-fit rounded-xl border border-rose-200 px-3 py-1 text-sm font-bold text-rose-700"
-                >
-                  {t("partner.team.revoke")}
-                </button>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {member.status === "active" ? (
+                    <button type="button" className="rounded-xl border px-3 py-1 text-sm font-bold" onClick={async () => { await API.post(`/partner/team/${member._id}/status`, { status: "suspended" }); await refresh(); }}>Suspend</button>
+                  ) : member.status === "suspended" ? (
+                    <button type="button" className="rounded-xl border px-3 py-1 text-sm font-bold" onClick={async () => { await API.post(`/partner/team/${member._id}/status`, { status: "active" }); await refresh(); }}>Reactivate</button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await revokePartnerMember(member._id);
+                      await refresh();
+                    }}
+                    className="w-fit rounded-xl border border-rose-200 px-3 py-1 text-sm font-bold text-rose-700"
+                  >
+                    {t("partner.team.revoke")}
+                  </button>
+                </div>
               </div>
             )}
           </article>
