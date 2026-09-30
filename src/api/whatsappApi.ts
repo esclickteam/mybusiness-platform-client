@@ -1759,3 +1759,74 @@ export async function testWhatsAppExternalWebhook(businessId: string) {
     error?: string;
   };
 }
+
+export type WhatsAppChannelSettings = {
+  success: boolean;
+  demoSafe?: boolean;
+  direction: "meta_to_bizuply";
+  platformType: string;
+  connection: {
+    connected: boolean;
+    status: string;
+    readiness?: string;
+    phoneNumber: string;
+    phoneNumberId: string;
+    wabaId: string;
+    wabaName: string;
+    displayName: string;
+    displayNameStatus: string;
+    messagingLimit: string;
+    qualityRating: string;
+    webhookSubscribed: boolean;
+  };
+  timezoneId: string;
+  namespace: {
+    required: boolean;
+    value: string;
+    note: string;
+  };
+  webhook: {
+    url: string;
+    path: string;
+    verifyTokenConfigured: boolean;
+    verifyTokenStatus: string;
+    verificationStatus: string;
+    subscribed: boolean;
+    health: string;
+    lastEventType: string;
+    lastEventError: string;
+    lastEventAt: string | null;
+    lastEventWamid: string;
+    lastEventStatus: string;
+    lastInternalTestAt: string | null;
+    lastInternalTestOk: boolean | null;
+  };
+};
+
+export async function getWhatsAppChannelSettings(businessId: string) {
+  const { data } = await API.get("/whatsapp/channel-settings", {
+    params: { businessId },
+  });
+  return data as WhatsAppChannelSettings;
+}
+
+export async function refreshWhatsAppChannelSettings(businessId: string) {
+  const { data } = await API.post("/whatsapp/channel-settings/refresh", {
+    businessId,
+  });
+  return data as WhatsAppChannelSettings;
+}
+
+export async function testWhatsAppChannelWebhook(businessId: string) {
+  const { data } = await API.post("/whatsapp/channel-settings/test-webhook", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    kind?: string;
+    verification?: string;
+    challengeEchoed?: boolean;
+    webhookUrl?: string;
+    note?: string;
+  };
+}

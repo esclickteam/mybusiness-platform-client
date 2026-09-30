@@ -302,7 +302,10 @@ export default function WhatsAppExternalApiSettingsCard({
     <div className={`${cardBase} px-4 py-4 sm:px-5`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="flex items-center gap-2 text-sm font-black text-slate-900">
+          <p className="text-[10px] font-black uppercase tracking-wide text-sky-700">
+            {t("whatsapp.settings.channelExternalApiDirection")}
+          </p>
+          <p className="mt-0.5 flex items-center gap-2 text-sm font-black text-slate-900">
             <KeyRound className="h-4 w-4 text-slate-700" aria-hidden />
             {t("whatsapp.settings.apiSettingsTitle")}
           </p>
