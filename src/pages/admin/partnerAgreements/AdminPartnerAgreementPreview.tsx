@@ -6,13 +6,56 @@ import { agreementError, previewPartnerAgreement } from "../../../lib/partnerAgr
 import { fill } from "./partnerAgreementPageCopy.js";
 import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
 
+type PreviewIssue = { field?: string; code?: string; message?: string };
+
+const ISSUE_KEYS: Record<string, string> = {
+  legalProfile: "issueLegalProfile",
+  legalCompanyName: "issueLegalCompanyName",
+  brandName: "issueBrandName",
+  country: "issueCountry",
+  incorporationCountry: "issueIncorporation",
+  territoryType: "issueTerritoryType",
+  dates: "issueDates",
+  agreementDate: "issueDates",
+  effectiveDate: "issueDates",
+  startDate: "issueDates",
+  endDate: "issueDates",
+  paymentDueDate: "issueDates",
+  renewalDate: "issueDates",
+  licenseFee: "issueLicenseFee",
+  currency: "issueCurrency",
+  contactEmail: "issueContactEmail",
+  signatoryEmail: "issueSignatoryEmail",
+  signatories: "issueSignatories",
+  subdivision: "issueSubdivision",
+  locale: "issueLocale",
+  commission: "issueCommission",
+  payment: "issuePayment",
+  commercial: "issuePayment",
+  form: "issueGeneric",
+};
+
+function issueLines(issues: PreviewIssue[], text: object) {
+  const pack = text as Record<string, string>;
+  const lines: string[] = [];
+  const seen = new Set<string>();
+  issues.forEach((issue) => {
+    const key = ISSUE_KEYS[issue.field || ""] || "";
+    const line = (key && pack[key]) || issue.message || pack.issueGeneric;
+    if (!line || seen.has(line)) return;
+    seen.add(line);
+    lines.push(line);
+  });
+  return lines;
+}
+
 export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsaved?: boolean }) {
   const page = usePartnerAgreementPage();
   const t = page.text.preview;
   const { id = "" } = useParams();
   const [params] = useSearchParams();
   const version = params.get("version");
-  const [data, setData] = useState<Awaited<ReturnType<typeof previewPartnerAgreement>> | null>(null);
+  const [data, setData] = useState<(Awaited<ReturnType<typeof previewPartnerAgreement>> & { issues?: PreviewIssue[] }) | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -56,6 +99,16 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
         </Link>
         {unsaved ? <p className="mt-2 text-sm font-bold text-emerald-800">{t.unsaved}</p> : null}
         {error ? <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
+        {data?.issues?.length ? (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-950" data-testid="preview-issues">
+            <p>{t.issuesTitle}</p>
+            <ul className="mt-2 list-disc space-y-1 ps-5">
+              {issueLines(data.issues, t).map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {data ? (
           <article
             data-testid="agreement-preview"
@@ -74,7 +127,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
             <dl className="mt-6 grid gap-2 rounded-2xl bg-[#F5F3FF] p-4 text-sm sm:grid-cols-2" dir={page.dir}>
               <div><dt className="font-bold text-slate-500">{t.partner}</dt><dd className="font-black">{String(data.variables.legalCompanyName || "")}</dd></div>
               <div><dt className="font-bold text-slate-500">{t.territory}</dt><dd className="font-black">{String(data.variables.territoryLabel || "")}</dd></div>
-              <div><dt className="font-bold text-slate-500">{t.type}</dt><dd className="font-black">{String(data.variables.territoryTypeLabel || "")}</dd></div>
+              <div><dt className="font-bold text-slate-500">{t.type}</dt><dd className="font-black">{String(data.variables.territoryTypeLabel || data.variables.TERRITORY_TYPE || "")}</dd></div>
               <div><dt className="font-bold text-slate-500">{t.fee}</dt><dd className="font-black">{String(data.variables.licenseFee || "")}</dd></div>
             </dl>
             {tiers.length ? (
