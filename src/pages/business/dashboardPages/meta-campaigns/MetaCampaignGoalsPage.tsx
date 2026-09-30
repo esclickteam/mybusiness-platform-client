@@ -205,6 +205,7 @@ export default function MetaCampaignGoalsPage() {
               }
               status={goal.lastHealth || "INSUFFICIENT_DATA"}
               started={goal.startingSnapshot?.cpl}
+              evaluationWindow={goal.evaluationWindow || "LAST_3D"}
             />
             <div className="flex gap-2">
               <button

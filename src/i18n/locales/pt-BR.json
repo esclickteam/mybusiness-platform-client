@@ -9598,7 +9598,10 @@
       "goalOptional": "A meta é opcional.",
       "createPausedNotice": "Nada será gasto até você ativar a campanha.",
       "activePaused": "Ativas / total",
-      "activePausedHint": "Status configurado na conta"
+      "activePausedHint": "Status configurado na conta",
+      "sharedRange": "Intervalo de datas",
+      "showingRange": "Exibindo: {{range}}",
+      "pausedHistorical": "Esta campanha está pausada. Os números são históricos, não entrega atual."
     },
     "overview": {
       "heading": "Gestão de campanhas",

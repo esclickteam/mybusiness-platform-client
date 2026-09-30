@@ -10450,6 +10450,8 @@
       "applied": "Applied successfully",
       "applyFailed": "Read-back did not match. Change was not marked successful.",
       "lowData": "Not enough data to recommend a change yet",
+      "stale": "Recommendation is stale — recalculate before applying.",
+      "applyPaused": "Apply is disabled while the campaign is paused.",
       "issue": "Issue",
       "evidence": "Evidence",
       "confidence": "Confidence"
@@ -10529,7 +10531,8 @@
       "current": "Current",
       "difference": "Difference",
       "started": "When goal started",
-      "noGoals": "No goals yet."
+      "noGoals": "No goals yet.",
+      "evaluationWindow": "Goal evaluation window: {{window}}"
     },
     "portfolio": {
       "title": "Portfolio Optimization",
@@ -10626,7 +10629,10 @@
       "goalOptional": "A goal is optional. You can use Meta Ads without one.",
       "createPausedNotice": "Nothing will spend until you activate the campaign.",
       "activePaused": "Active / total",
-      "activePausedHint": "Configured status across this ad account"
+      "activePausedHint": "Configured status across this ad account",
+      "sharedRange": "Date range",
+      "showingRange": "Showing: {{range}}",
+      "pausedHistorical": "This campaign is paused. Numbers below are historical performance, not current delivery."
     },
     "empty": {
       "notConnectedTitle": "No connected ad account found",

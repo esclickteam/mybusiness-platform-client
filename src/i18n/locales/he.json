@@ -10437,6 +10437,8 @@
       "applied": "הוחל בהצלחה",
       "applyFailed": "הערך ב-Meta לא תאם. השינוי לא סומן כהצלחה.",
       "lowData": "אין מספיק נתונים כדי להמליץ על שינוי",
+      "stale": "ההמלצה לא עדכנית — יש לחשב מחדש לפני Apply.",
+      "applyPaused": "לא ניתן לבצע Apply בזמן שהקמפיין מושהה.",
       "issue": "בעיה",
       "evidence": "ראיה",
       "confidence": "ביטחון"
@@ -10516,7 +10518,8 @@
       "current": "נוכחי",
       "difference": "פער",
       "started": "כשהיעד הוגדר",
-      "noGoals": "עדיין אין יעדים."
+      "noGoals": "עדיין אין יעדים.",
+      "evaluationWindow": "חלון הערכת יעד: {{window}}"
     },
     "portfolio": {
       "title": "אופטימיזציית תיק",
@@ -10613,7 +10616,10 @@
       "goalOptional": "יעד הוא אופציונלי. אפשר להשתמש במודול גם בלי יעד.",
       "createPausedNotice": "שום דבר לא יוציא כסף עד שתפעילו את הקמפיין.",
       "activePaused": "פעיל / סהכ",
-      "activePausedHint": "סטטוס מוגדר בכל החשבון"
+      "activePausedHint": "סטטוס מוגדר בכל החשבון",
+      "sharedRange": "טווח תאריכים",
+      "showingRange": "מוצג: {{range}}",
+      "pausedHistorical": "הקמפיין מושהה. המספרים כאן הם ביצועים היסטוריים, לא מסירה פעילה עכשיו."
     },
     "empty": {
       "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",

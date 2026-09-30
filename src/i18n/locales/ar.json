@@ -9598,7 +9598,10 @@
       "goalOptional": "الهدف اختياري.",
       "createPausedNotice": "لن يُنفق شيء حتى تفعّل الحملة.",
       "activePaused": "نشط / الإجمالي",
-      "activePausedHint": "الحالة المضبوطة في الحساب"
+      "activePausedHint": "الحالة المضبوطة في الحساب",
+      "sharedRange": "نطاق التاريخ",
+      "showingRange": "العرض: {{range}}",
+      "pausedHistorical": "هذه الحملة متوقفة. الأرقام أدناه أداء تاريخي وليست تسليمًا حاليًا."
     },
     "overview": {
       "heading": "إدارة الحملة",

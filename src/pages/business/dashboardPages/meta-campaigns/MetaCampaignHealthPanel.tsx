@@ -89,6 +89,12 @@ function RecommendationCard({
       <p className="mt-2 text-sm font-bold text-slate-800">
         {t("metaCampaigns.campaignHealth.recommendationLabel")}: {rec.recommendedAction}
       </p>
+      {rec.freshness?.stale ? (
+        <p className="mt-1 text-xs font-semibold text-amber-800">{t("metaCampaigns.campaignHealth.stale")}</p>
+      ) : null}
+      {!rec.applyable && rec.recommendedActionType === "CHANGE_BUDGET" ? (
+        <p className="mt-1 text-xs font-semibold text-amber-800">{t("metaCampaigns.campaignHealth.applyPaused")}</p>
+      ) : null}
       {rec.actionPayload?.evidence ? (
         <p className="mt-1 text-xs font-semibold text-slate-500">
           {t("metaCampaigns.campaignHealth.evidence")}: {String(rec.actionPayload.evidence)}

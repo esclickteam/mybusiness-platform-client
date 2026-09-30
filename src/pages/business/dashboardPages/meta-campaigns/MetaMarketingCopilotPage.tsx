@@ -7,6 +7,7 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import { btnPrimary, btnSecondary, cardBase, inputBase } from "../../../../styles/bizuplyUi";
 import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
+import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 
 const PROMPTS = [
   "What needs my attention today?",
@@ -21,6 +22,7 @@ export default function MetaMarketingCopilotPage() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<{ businessId: string }>();
   const [searchParams] = useSearchParams();
+  const { serverWindow, labelKey } = useMetaAdsDateRange();
   const [question, setQuestion] = useState(() => searchParams.get("q") || "");
   const [sessionId] = useState(() =>
     typeof crypto !== "undefined" && crypto.randomUUID
@@ -47,7 +49,7 @@ export default function MetaMarketingCopilotPage() {
     if (!businessId || !nextQuestion.trim()) return;
     setBusy(true);
     try {
-      const data = await askMarketingCopilot(businessId, nextQuestion.trim(), sessionId);
+      const data = await askMarketingCopilot(businessId, nextQuestion.trim(), sessionId, serverWindow);
       setReply(data);
     } finally {
       setBusy(false);
@@ -59,6 +61,9 @@ export default function MetaMarketingCopilotPage() {
       <section className={`${cardBase} p-4`}>
         <h2 className="text-lg font-black">{t("metaCampaigns.copilot.title")}</h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">{t("metaCampaigns.copilot.subtitle")}</p>
+        <p className="mt-2 text-xs font-black uppercase tracking-wide text-slate-500">
+          {t("metaCampaigns.ux.showingRange", { range: t(labelKey) })}
+        </p>
       </section>
 
       <section className={`${cardBase} space-y-3 p-4`}>
@@ -100,6 +105,11 @@ export default function MetaMarketingCopilotPage() {
       {reply ? (
         <section className={`${cardBase} space-y-3 p-4`} data-testid="copilot-answer">
           <p className="text-sm font-black text-slate-900">{reply.answer}</p>
+          {reply.period ? (
+            <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="copilot-period">
+              {t("metaCampaigns.ux.showingRange", { range: reply.period })}
+            </p>
+          ) : null}
           {reply.insufficientData ? (
             <p className="text-sm font-semibold text-amber-700" data-testid="copilot-insufficient">
               {t("metaCampaigns.copilot.insufficient")}

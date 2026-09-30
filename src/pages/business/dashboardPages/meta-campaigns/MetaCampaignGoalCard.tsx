@@ -9,6 +9,8 @@ type Props = {
   differencePct?: number | null;
   status: string;
   started?: number | null;
+  evaluationWindow?: string;
+  paused?: boolean;
 };
 
 export default function MetaCampaignGoalCard({
@@ -18,6 +20,8 @@ export default function MetaCampaignGoalCard({
   differencePct,
   status,
   started,
+  evaluationWindow,
+  paused,
 }: Props) {
   const { t } = useTranslation();
   return (
@@ -26,6 +30,14 @@ export default function MetaCampaignGoalCard({
         {t("metaCampaigns.ux.yourGoal")}
       </p>
       <h3 className="mt-1 text-base font-black text-slate-900">{goalName}</h3>
+      {evaluationWindow ? (
+        <p className="mt-2 text-xs font-black uppercase tracking-wide text-slate-500" data-testid="goal-window">
+          {t("metaCampaigns.goals.evaluationWindow", { window: evaluationWindow })}
+        </p>
+      ) : null}
+      {paused ? (
+        <p className="mt-2 text-xs font-semibold text-amber-800">{t("metaCampaigns.ux.pausedHistorical")}</p>
+      ) : null}
       <p className="mt-2 text-sm font-bold text-slate-700">
         {t("metaCampaigns.ux.keepLeadsUnder", { target })}
       </p>

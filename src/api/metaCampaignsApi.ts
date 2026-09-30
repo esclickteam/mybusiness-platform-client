@@ -602,7 +602,7 @@ export async function listMetaCampaigns(
 export async function getMetaCampaign(
   businessId: string | undefined,
   campaignId: string,
-  range?: { since?: string; until?: string; days?: number }
+  range?: { since?: string; until?: string; days?: number; datePreset?: string }
 ) {
   const { data } = await API.get<{
     success: boolean;
@@ -1107,6 +1107,14 @@ export type AiCampaignRecommendation = {
   };
   applyable?: boolean;
   undoable?: boolean;
+  freshness?: {
+    generatedAt?: string | null;
+    metricsWindow?: string;
+    metricsSnapshotHash?: string;
+    stale?: boolean;
+    valid?: boolean;
+    reason?: string;
+  };
   applyAudit?: Record<string, unknown> | null;
   metricsSummary?: {
     current?: CampaignHealthMetrics;
@@ -1343,6 +1351,7 @@ export type CampaignGoal = {
   lastHealth?: string;
   startingSnapshot?: { cpl?: number } | null;
   lastSnapshot?: { cpl?: number } | null;
+  evaluationWindow?: string;
 };
 
 export async function listCampaignGoals(businessId: string, campaignId?: string) {
@@ -1454,10 +1463,10 @@ export type PortfolioAllocation = {
   applyResults?: Array<Record<string, unknown>>;
 };
 
-export async function getMetaPortfolio(businessId: string) {
+export async function getMetaPortfolio(businessId: string, query?: { window?: string; since?: string; until?: string }) {
   const { data } = await API.get<{ success: boolean; allocation?: PortfolioAllocation; campaigns: PortfolioCampaignRow[]; blended: PortfolioAllocation["blended"]; totals: PortfolioAllocation["totals"] }>(
     "/meta-campaigns/portfolio",
-    withBusiness(businessId)
+    withBusiness(businessId, query)
   );
   return data;
 }
@@ -1510,11 +1519,12 @@ export type MarketingCopilotAnswer = {
 export async function askMarketingCopilot(
   businessId: string,
   question: string,
-  sessionId?: string
+  sessionId?: string,
+  window?: string
 ) {
   const { data } = await API.post<{ success: boolean } & MarketingCopilotAnswer>(
     "/meta-campaigns/copilot/ask",
-    { businessId, question, sessionId }
+    { businessId, question, sessionId, window }
   );
   return data;
 }

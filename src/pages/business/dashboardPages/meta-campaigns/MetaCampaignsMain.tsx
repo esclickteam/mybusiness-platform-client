@@ -16,6 +16,7 @@ import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import LanguageSwitcher from "../../../../components/LanguageSwitcher";
 import { applyLanguageFromUrl, normalizeLanguage } from "../../../../i18n/localeUtils";
 import { isMetaCampaignsKnownChildPath } from "./campaignCreationMode";
+import MetaAdsDateRangeBar from "./MetaAdsDateRangeBar";
 
 type MetaCampaignsTab = {
   path: string;
@@ -114,6 +115,7 @@ export default function MetaCampaignsMain() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
+                <MetaAdsDateRangeBar />
                 {businessId ? (
                   <CreateCampaignButton
                     basePath={`/business/${businessId}/dashboard/meta-campaigns`}
@@ -133,7 +135,9 @@ export default function MetaCampaignsMain() {
               <select
                 className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-800"
                 value={tabs.some((tab) => tab.path === currentTab) ? currentTab : "overview"}
-                onChange={(event) => navigate(event.target.value)}
+                onChange={(event) =>
+                  navigate({ pathname: event.target.value, search: searchParams.toString() })
+                }
               >
                 {tabs.map((tab) => (
                   <option key={tab.path} value={tab.path}>
@@ -152,7 +156,7 @@ export default function MetaCampaignsMain() {
                 return (
                   <NavLink
                     key={tab.path}
-                    to={tab.path}
+                    to={{ pathname: tab.path, search: searchParams.toString() }}
                     className={({ isActive }) =>
                       [
                         "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",

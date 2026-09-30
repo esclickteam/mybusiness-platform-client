@@ -59,8 +59,6 @@ import MetaAdsOnboarding from "./MetaAdsOnboarding";
 import MetaAdsConnectionHealth from "./MetaAdsConnectionHealth";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
-  DATE_RANGE_OPTIONS,
-  daysAgoIso,
   formatAdAccountLabel,
   formatCurrency,
   formatDateHe,
@@ -72,13 +70,11 @@ import {
   metaDeliveryStatusKey,
   resolveAdAccountId,
   resolveMetaAccountStatus,
-  resolveMetaDateRangeQuery,
   resolveCampaignCurrency,
   SEGMENT_OPTIONS,
   statusTone,
-  todayIso,
-  type MetaDateRangePreset,
 } from "./metaCampaignUtils";
+import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 
 type OutletCtx = { businessId: string | null };
 
@@ -265,9 +261,8 @@ export default function MetaCampaignsOverviewTab() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
-  const [rangePreset, setRangePreset] = useState<MetaDateRangePreset>("last_30");
-  const [customSince, setCustomSince] = useState("");
-  const [customUntil, setCustomUntil] = useState("");
+  const { preset: rangePreset, customSince, customUntil, query: rangeQuery, labelKey: rangeLabelKey } =
+    useMetaAdsDateRange();
   const [segment, setSegment] = useState("all");
   const [data, setData] = useState<MetaCampaignsOverview | null>(null);
   const [busyId, setBusyId] = useState("");
@@ -297,15 +292,6 @@ export default function MetaCampaignsOverviewTab() {
   const accountStatusLabel = t(
     `metaCampaigns.accountStatus.${accountStatus.key}`,
     { defaultValue: accountStatus.labelEn }
-  );
-
-  const rangeQuery = useMemo(
-    () =>
-      resolveMetaDateRangeQuery(rangePreset, {
-        since: customSince,
-        until: customUntil,
-      }),
-    [rangePreset, customSince, customUntil]
   );
 
   const load = async (options?: { silent?: boolean; successToast?: boolean }) => {
@@ -783,6 +769,9 @@ export default function MetaCampaignsOverviewTab() {
         </Link>
       </section>
 
+      <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="overview-range-label">
+        {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
+      </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-demo-target="meta-overview">
         <KpiCard
           label={t("metaCampaigns.kpis.spend")}
@@ -861,25 +850,6 @@ export default function MetaCampaignsOverviewTab() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <select
-                  value={rangePreset}
-                  onChange={(e) => {
-                    const next = e.target.value as MetaDateRangePreset;
-                    if (next === "custom") {
-                      setCustomSince((prev) => prev || daysAgoIso(29));
-                      setCustomUntil((prev) => prev || todayIso());
-                    }
-                    setRangePreset(next);
-                  }}
-                  disabled={refreshing}
-                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:border-violet-200 focus:ring-2 focus:ring-violet-100"
-                >
-                  {DATE_RANGE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </option>
-                  ))}
-                </select>
                 <div className="flex flex-wrap gap-1">
                   {SEGMENT_OPTIONS.map((option) => {
                     const active = segment === option.value;
@@ -902,33 +872,6 @@ export default function MetaCampaignsOverviewTab() {
                 </div>
               </div>
             </div>
-
-            {rangePreset === "custom" ? (
-              <div className="mt-3 flex flex-wrap items-end gap-2">
-                <label className="block">
-                  <span className="mb-1 block text-[11px] font-black text-slate-500">
-                    {t("metaCampaigns.ranges.since")}
-                  </span>
-                  <input
-                    type="date"
-                    value={customSince}
-                    onChange={(e) => setCustomSince(e.target.value)}
-                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1 block text-[11px] font-black text-slate-500">
-                    {t("metaCampaigns.ranges.until")}
-                  </span>
-                  <input
-                    type="date"
-                    value={customUntil}
-                    onChange={(e) => setCustomUntil(e.target.value)}
-                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700"
-                  />
-                </label>
-              </div>
-            ) : null}
 
             <div className="mt-4 h-[280px] w-full">
               {chartHasData ? (
@@ -1460,6 +1403,8 @@ export default function MetaCampaignsOverviewTab() {
           campaign={detailsCampaign}
           currency={currency}
           lastSynced={lastUpdatedAt}
+          rangeQuery={rangeQuery}
+          rangeLabel={t(rangeLabelKey)}
           canEdit={!isDemoOverview}
           onClose={() => setDetailsCampaign(null)}
           onOpenEdit={(id) => navigate(`${basePath}/edit/${id}`)}
