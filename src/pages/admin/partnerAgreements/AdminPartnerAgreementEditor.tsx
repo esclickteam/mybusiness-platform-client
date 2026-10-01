@@ -6,7 +6,13 @@ import CountrySelect from "./CountrySelect";
 import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPanel";
 import SignatoriesPanel from "./SignatoriesPanel";
 import { agreementActionLabel, agreementStatusLabel, fill, subdivisionLabel } from "./partnerAgreementPageCopy.js";
-import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
+import {
+  PENDING_SIGNATURE_KEY,
+  UNSAVED_PREVIEW_KEY,
+  clearCanonicalDraft,
+  loadCanonicalDraft,
+  saveCanonicalDraft,
+} from "../../../lib/partnerAgreementDraft";
 import SignaturePad from "../../../components/SignaturePad";
 import {
   agreementError,
@@ -20,6 +26,7 @@ import {
   prefillAgreementPartner,
   createSignedPartnerAgreement,
   previewDraftAgreement,
+  downloadDraftPdf,
   quoteAgreementCommission,
   renewPartnerAgreement,
   resendSignatoryLink,
@@ -52,6 +59,8 @@ const EMPTY: AgreementInput = {
   signatoryEmail: "",
   entityType: "",
   taxNumber: "",
+  commercialLicenseNumber: "",
+  incorporationDate: "",
   locale: "en",
   bilingual: false,
   secondaryLocale: "",
@@ -124,6 +133,8 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
     signatoryEmail: row.signatoryEmail || "",
     entityType: row.entityType || "",
     taxNumber: row.taxNumber || "",
+    commercialLicenseNumber: row.commercialLicenseNumber || "",
+    incorporationDate: row.incorporationDate || "",
     locale: row.locale || "en",
     bilingual: Boolean(row.bilingual),
     secondaryLocale: row.secondaryLocale || "",
@@ -209,7 +220,8 @@ export default function AdminPartnerAgreementEditor() {
   const c = page.text.commercial;
   const { id } = useParams();
   const navigate = useNavigate();
-  const [form, setForm] = useState<AgreementInput>(EMPTY);
+  const restored = !id ? loadCanonicalDraft() : null;
+  const [form, setForm] = useState<AgreementInput>(restored?.form || EMPTY);
   const [record, setRecord] = useState<PartnerAgreement | null>(null);
   const [countries, setCountries] = useState<CountryOption[]>([]);
   const [subdivisions, setSubdivisions] = useState<{ code: string; name: string }[]>([]);
@@ -222,8 +234,9 @@ export default function AdminPartnerAgreementEditor() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [legalCompanyName, setLegalCompanyName] = useState("BizUply LLC");
-  const [bizSignature, setBizSignature] = useState<{ imageDataUrl: string; confirmed: boolean } | null>(null);
-  const [signConfirmed, setSignConfirmed] = useState(false);
+  const [bizSignature, setBizSignature] = useState<{ imageDataUrl: string; confirmed: boolean } | null>(restored?.signature || null);
+  const [signConfirmed, setSignConfirmed] = useState(Boolean(restored?.signature?.confirmed));
+  const [signingLinks, setSigningLinks] = useState<{ fullName?: string; path: string; email?: string }[]>([]);
   const [renewal, setRenewal] = useState({ startDate: "", endDate: "", agreementNumber: "" });
   const [quote, setQuote] = useState({ customers: "20", gross: "1000", taxes: "0", refunds: "0", chargebacks: "0", passThrough: "0", result: "" });
 
@@ -252,6 +265,11 @@ export default function AdminPartnerAgreementEditor() {
       cancelled = true;
     };
   }, [id, t.openError]);
+
+  useEffect(() => {
+    if (id) return;
+    saveCanonicalDraft(form, bizSignature);
+  }, [form, bizSignature, id]);
 
   useEffect(() => {
     if (!sampleRequested) return;
@@ -420,6 +438,7 @@ export default function AdminPartnerAgreementEditor() {
       const saved = await createSignedPartnerAgreement({
         ...form,
         previewHash: preview.documentHash || "",
+        generateSigningLinks: true,
         bizuplySignature: {
           confirmed: true,
           method: "drawn",
@@ -430,10 +449,12 @@ export default function AdminPartnerAgreementEditor() {
           localTime: new Date().toLocaleTimeString(),
         },
       });
-      sessionStorage.removeItem("partner-agreement-pending-bizuply-signature");
+      sessionStorage.removeItem(PENDING_SIGNATURE_KEY);
+      clearCanonicalDraft();
       setRecord(saved.agreement);
       setForm(fromAgreement(saved.agreement));
-      setMessage("Signed agreement created. Bizuply is signed. Partner signature is pending. Generate signing links when you are ready.");
+      setSigningLinks(saved.signingLinks || []);
+      setMessage("Signed agreement created. Bizuply is signed. Partner signing links are ready to copy or send. Nothing was emailed or sent on WhatsApp.");
       if (saved.agreement?.id) navigate(`/admin/partner-agreements/${saved.agreement.id}`, { replace: true });
     } catch (err) {
       setError(agreementError(err, "Could not create the signed agreement."));
@@ -460,13 +481,17 @@ export default function AdminPartnerAgreementEditor() {
     setBusy(true);
     setError("");
     try {
-      const preview = await previewDraftAgreement(form);
+      const preview = await previewDraftAgreement({
+        ...form,
+        bizuplySignature: bizSignature?.confirmed ? bizSignature : undefined,
+      });
       if (preview.persisted) {
         setError(t.previewRefused);
         return;
       }
-      sessionStorage.setItem("partner-agreement-unsaved-preview", JSON.stringify(preview));
-      sessionStorage.setItem("partner-agreement-pending-bizuply-signature", JSON.stringify(bizSignature));
+      saveCanonicalDraft(form, bizSignature);
+      sessionStorage.setItem(UNSAVED_PREVIEW_KEY, JSON.stringify(preview));
+      sessionStorage.setItem(PENDING_SIGNATURE_KEY, JSON.stringify(bizSignature));
       navigate("/admin/partner-agreements/preview");
     } catch (err) {
       setError(agreementError(err, t.previewError));
@@ -490,15 +515,19 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   async function onPdf() {
-    if (!record) return;
     setBusy(true);
     setError("");
     try {
-      const blob = await downloadAgreementPdf(record.id, record.signedVersionNumber || undefined);
+      const blob = record
+        ? await downloadAgreementPdf(record.id, record.signedVersionNumber || undefined)
+        : await downloadDraftPdf({
+            ...form,
+            bizuplySignature: bizSignature?.confirmed ? bizSignature : undefined,
+          });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `Bizuply-Partner-Agreement-${record.agreementNumber}.pdf`;
+      link.download = `Bizuply-Partner-Agreement-${record?.agreementNumber || "Pending"}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -722,6 +751,12 @@ export default function AdminPartnerAgreementEditor() {
           <Field label={t.tax}>
             <input className={inputClass} disabled={!editable} value={form.taxNumber || ""} onChange={(e) => set("taxNumber", e.target.value)} />
           </Field>
+          <Field label={t.commercialLicense}>
+            <input className={inputClass} disabled={!editable} value={form.commercialLicenseNumber || ""} onChange={(e) => set("commercialLicenseNumber", e.target.value)} />
+          </Field>
+          <Field label={t.incorporationDate}>
+            <input type="date" className={inputClass} disabled={!editable} value={form.incorporationDate || ""} onChange={(e) => set("incorporationDate", e.target.value)} />
+          </Field>
         </Section>
 
         <SignatoriesPanel
@@ -933,7 +968,7 @@ export default function AdminPartnerAgreementEditor() {
               />
             </div>
             <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
-              Create Signed Agreement
+              Create Agreement & Generate Signing Links
             </button>
           </section>
         ) : null}
@@ -956,6 +991,27 @@ export default function AdminPartnerAgreementEditor() {
           </section>
         ) : null}
 
+        {signingLinks.length ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="signing-links">
+            <h2 className="text-lg font-black">Partner signing links</h2>
+            <p className="mt-1 text-sm font-semibold text-slate-600">Links were generated but not sent. Copy or send each one explicitly.</p>
+            <ul className="mt-3 space-y-2">
+              {signingLinks.map((link) => (
+                <li key={link.path} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-semibold">
+                  <span>{link.fullName || link.email} · {link.path}</span>
+                  <button
+                    type="button"
+                    className="rounded-xl bg-slate-900 px-3 py-1 text-white"
+                    onClick={() => void navigator.clipboard.writeText(`${window.location.origin}${link.path}`)}
+                  >
+                    Copy
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <div className="flex flex-wrap gap-2">
           <button type="button" disabled={busy || !editable} onClick={() => void onSave()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.save}</button>
           <button type="button" disabled={busy} onClick={() => void onPreview()} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.preview}</button>
@@ -964,7 +1020,7 @@ export default function AdminPartnerAgreementEditor() {
               {t.newVersion}
             </button>
           ) : null}
-          <button type="button" disabled={busy || !record} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">{t.pdf}</button>
+          <button type="button" disabled={busy} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">{t.pdf}</button>
           {status === "draft" ? <Action busy={busy} onClick={() => void run("ready")}>{t.ready}</Action> : null}
           {status === "ready_for_review" ? <Action busy={busy} onClick={() => void run("send")}>{t.send}</Action> : null}
           {status === "sent" ? <Action busy={busy} onClick={() => void run("sign")}>{t.markSigned}</Action> : null}

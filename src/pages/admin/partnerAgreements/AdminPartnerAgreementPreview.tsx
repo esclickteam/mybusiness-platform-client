@@ -97,6 +97,27 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
         <Link to={unsaved ? "/admin/partner-agreements/new" : `/admin/partner-agreements/${id}`} className="text-sm font-black text-[#6D28D9]">
           {unsaved ? t.backCreate : t.back}
         </Link>
+        {unsaved ? (
+          <button
+            type="button"
+            className="ms-4 text-sm font-black text-slate-900"
+            onClick={async () => {
+              const stored = sessionStorage.getItem("partner-agreement-canonical-draft");
+              const draft = stored ? JSON.parse(stored) : null;
+              if (!draft?.form) return;
+              const { downloadDraftPdf } = await import("../../../lib/partnerAgreementApi");
+              const blob = await downloadDraftPdf(draft.form);
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "Bizuply-Partner-Agreement-Pending.pdf";
+              link.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            Export PDF
+          </button>
+        ) : null}
         {unsaved ? <p className="mt-2 text-sm font-bold text-emerald-800">{t.unsaved}</p> : null}
         {error ? <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
         {data?.issues?.length ? (
