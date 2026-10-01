@@ -375,7 +375,14 @@ export async function createSignedPartnerAgreement(
   }
 ) {
   const { data } = await API.post("/admin/partner-agreements/create-signed", input);
-  return data as { agreement: PartnerAgreement; documentHash: string; signingLinkIssued: boolean; persisted: boolean };
+  return data as {
+    agreement: PartnerAgreement;
+    documentHash: string;
+    signingLinkIssued: boolean;
+    persisted: boolean;
+    notified: boolean;
+    signingLinks?: { fullName?: string; email?: string; path: string; signatoryId?: string }[];
+  };
 }
 
 export async function previewDraftAgreement(input: AgreementInput) {
@@ -401,6 +408,11 @@ export async function resendSignatoryLink(id: string, signatoryId: string) {
 export async function revokeSignatoryLink(id: string, signatoryId: string) {
   const { data } = await API.post(`/admin/partner-agreements/${id}/signatories/${signatoryId}/revoke`);
   return data as { revoked: boolean; signatoryId: string };
+}
+
+export async function downloadDraftAgreementPdf(input: AgreementInput & { bizuplySignature?: unknown }) {
+  const { data } = await API.post("/admin/partner-agreements/preview-draft/pdf", input, { responseType: "blob" });
+  return data as Blob;
 }
 
 export async function downloadAgreementPdf(id: string, version?: number) {

@@ -281,7 +281,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
         <TermField field="renewalTerm" label={c.renewalTerm} mode={modeOf(form, "renewalTerm")} editable={editable} onMode={(mode) => setMode("renewalTerm", mode)} onReset={() => resetField("renewalTerm")} labels={labels} defaultText={c.months12}>
           <input className={inputClass} disabled={!editable} value={form.renewalTerm || ""} onChange={(e) => set("renewalTerm", e.target.value)} />
         </TermField>
-        <TermField field="territoryType" label={c.exclusivity} mode={modeOf(form, "territoryType")} editable={editable} onMode={(mode) => setMode("territoryType", mode)} onReset={() => { resetField("territoryType"); set("territoryType", "non_exclusive"); }} labels={labels} defaultText={c.nonExclusiveDefault}>
+        <TermField field="territoryType" label={c.exclusivity} mode={modeOf(form, "territoryType")} editable={editable} onMode={(mode) => setMode("territoryType", mode)} onReset={() => { resetField("territoryType"); set("territoryType", "non_exclusive"); }} labels={labels} defaultText={form.territoryType === "exclusive" ? c.exclusive : c.nonExclusive}>
           <select className={inputClass} disabled={!editable} value={form.territoryType || "non_exclusive"} onChange={(e) => set("territoryType", e.target.value as AgreementInput["territoryType"])}>
             <option value="non_exclusive">{c.nonExclusive}</option>
             <option value="exclusive">{c.exclusive}</option>
