@@ -12,6 +12,7 @@ import {
   agreementError,
   amendPartnerAgreement,
   downloadAgreementPdf,
+  downloadDraftAgreementPdf,
   fetchAgreementMeta,
   fetchSubdivisions,
   fetchTerritoryAvailability,
@@ -223,6 +224,7 @@ export default function AdminPartnerAgreementEditor() {
   const [busy, setBusy] = useState(false);
   const [legalCompanyName, setLegalCompanyName] = useState("BizUply LLC");
   const [bizSignature, setBizSignature] = useState<{ imageDataUrl: string; confirmed: boolean } | null>(null);
+  const [signingLinks, setSigningLinks] = useState<{ fullName?: string; email?: string; path: string }[]>([]);
   const [signConfirmed, setSignConfirmed] = useState(false);
   const [renewal, setRenewal] = useState({ startDate: "", endDate: "", agreementNumber: "" });
   const [quote, setQuote] = useState({ customers: "20", gross: "1000", taxes: "0", refunds: "0", chargebacks: "0", passThrough: "0", result: "" });
@@ -358,6 +360,23 @@ export default function AdminPartnerAgreementEditor() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function previewPayload() {
+    return {
+      ...form,
+      bizuplySignature: bizSignature?.confirmed && bizSignature.imageDataUrl
+        ? {
+            confirmed: true,
+            method: "drawn" as const,
+            imageDataUrl: bizSignature.imageDataUrl,
+            confirmationText: `I confirm that I am authorized to sign this Agreement on behalf of ${legalCompanyName}.`,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+            localDate: new Date().toLocaleDateString(),
+            localTime: new Date().toLocaleTimeString(),
+          }
+        : undefined,
+    };
+  }
+
   const selectedCountry = useMemo(
     () => countries.find((row) => row.countryCode === form.countryCode),
     [countries, form.countryCode]
@@ -408,7 +427,7 @@ export default function AdminPartnerAgreementEditor() {
     setError("");
     setMessage("");
     try {
-      const preview = await previewDraftAgreement(form);
+      const preview = await previewDraftAgreement(previewPayload());
       if (preview.persisted) {
         setError(t.previewRefused);
         return;
@@ -418,7 +437,7 @@ export default function AdminPartnerAgreementEditor() {
         return;
       }
       const saved = await createSignedPartnerAgreement({
-        ...form,
+        ...previewPayload(),
         previewHash: preview.documentHash || "",
         bizuplySignature: {
           confirmed: true,
@@ -433,7 +452,8 @@ export default function AdminPartnerAgreementEditor() {
       sessionStorage.removeItem("partner-agreement-pending-bizuply-signature");
       setRecord(saved.agreement);
       setForm(fromAgreement(saved.agreement));
-      setMessage("Signed agreement created. Bizuply is signed. Partner signature is pending. Generate signing links when you are ready.");
+      setSigningLinks(saved.signingLinks || []);
+      setMessage("Agreement created. Bizuply is signed. The partner signing links are below. Nothing has been sent.");
       if (saved.agreement?.id) navigate(`/admin/partner-agreements/${saved.agreement.id}`, { replace: true });
     } catch (err) {
       setError(agreementError(err, "Could not create the signed agreement."));
@@ -460,7 +480,7 @@ export default function AdminPartnerAgreementEditor() {
     setBusy(true);
     setError("");
     try {
-      const preview = await previewDraftAgreement(form);
+      const preview = await previewDraftAgreement(previewPayload());
       if (preview.persisted) {
         setError(t.previewRefused);
         return;
@@ -490,15 +510,16 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   async function onPdf() {
-    if (!record) return;
     setBusy(true);
     setError("");
     try {
-      const blob = await downloadAgreementPdf(record.id, record.signedVersionNumber || undefined);
+      const blob = record
+        ? await downloadAgreementPdf(record.id, record.signedVersionNumber || undefined)
+        : await downloadDraftAgreementPdf(previewPayload());
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `Bizuply-Partner-Agreement-${record.agreementNumber}.pdf`;
+      link.download = `Bizuply-Partner-Agreement-${record?.agreementNumber || "preview"}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -756,7 +777,14 @@ export default function AdminPartnerAgreementEditor() {
               className={inputClass}
               disabled={!editable}
               value={form.territoryType || "non_exclusive"}
-              onChange={(e) => set("territoryType", e.target.value as AgreementInput["territoryType"])}
+              onChange={(e) => {
+                const territoryType = e.target.value as AgreementInput["territoryType"];
+                setForm((current) => ({
+                  ...current,
+                  territoryType,
+                  fieldModes: { ...(current.fieldModes || {}), territoryType: "custom" },
+                }));
+              }}
             >
               <option value="non_exclusive">{c.nonExclusive}</option>
               <option value="exclusive">{c.exclusive}</option>
@@ -933,8 +961,23 @@ export default function AdminPartnerAgreementEditor() {
               />
             </div>
             <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
-              Create Signed Agreement
+              Create Agreement & Generate Signing Links
             </button>
+          </section>
+        ) : null}
+        {signingLinks.length ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="generated-signing-links">
+            <h2 className="text-lg font-black">Partner signing links</h2>
+            <p className="mt-1 text-sm font-semibold text-slate-600">These links were generated for review. Nothing has been sent.</p>
+            <div className="mt-3 space-y-2">
+              {signingLinks.map((link) => (
+                <p key={link.path} className="break-all rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
+                  <span className="font-black">{link.fullName || link.email}</span>
+                  <br />
+                  {link.path}
+                </p>
+              ))}
+            </div>
           </section>
         ) : null}
         {record?.partnerSignatureTimeline?.length ? (
@@ -964,7 +1007,7 @@ export default function AdminPartnerAgreementEditor() {
               {t.newVersion}
             </button>
           ) : null}
-          <button type="button" disabled={busy || !record} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">{t.pdf}</button>
+          <button type="button" disabled={busy} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">{t.pdf}</button>
           {status === "draft" ? <Action busy={busy} onClick={() => void run("ready")}>{t.ready}</Action> : null}
           {status === "ready_for_review" ? <Action busy={busy} onClick={() => void run("send")}>{t.send}</Action> : null}
           {status === "sent" ? <Action busy={busy} onClick={() => void run("sign")}>{t.markSigned}</Action> : null}

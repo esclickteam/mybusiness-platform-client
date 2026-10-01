@@ -130,7 +130,7 @@ const en = {
     customCommission: "This partner profile has a custom commission of {percent}%. This agreement still uses the 30/35/40 template unless you override the percentages.",
     agreementSection: "Agreement",
     agreementNumber: "Agreement number",
-    numberPlaceholder: "Assigned on save if left blank",
+    numberPlaceholder: "Assigned on save, starting at BIZ-PA-2026-9127",
     specialNote: "Special commercial terms are set in the commercial section. The fixed legal sections are not edited here.",
     save: "Save draft",
     saved: "Draft saved. The territory is not reserved.",
