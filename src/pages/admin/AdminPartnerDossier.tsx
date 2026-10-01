@@ -747,7 +747,7 @@ function KycPanel({
 }
 
 function DocumentsPanel({ agreementId }: { agreementId: string }) {
-  const [files, setFiles] = useState<{ kind: string; filename?: string; uploadedAt?: string; uploadedBySignatoryId?: string }[]>([]);
+  const [files, setFiles] = useState<{ kind: string; filename?: string; uploadedAt?: string; uploadedByName?: string }[]>([]);
   useEffect(() => {
     API.get(`/admin/partner-agreements/${agreementId}/documents`).then((res) => setFiles(res.data?.documents?.files || []));
   }, [agreementId]);
@@ -757,7 +757,7 @@ function DocumentsPanel({ agreementId }: { agreementId: string }) {
       <ul className="mt-3 space-y-2 text-sm font-semibold">
         {files.map((file) => (
           <li key={`${file.kind}-${file.uploadedAt}`}>
-            {file.kind} · {file.filename} · {file.uploadedAt ? String(file.uploadedAt).slice(0, 16) : ""} · {file.uploadedBySignatoryId || ""}
+            {file.kind} · {file.filename} · {file.uploadedAt ? String(file.uploadedAt).slice(0, 16) : ""} · {file.uploadedByName || "partner signatory"}
           </li>
         ))}
       </ul>
