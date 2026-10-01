@@ -419,10 +419,11 @@ export default function AdminPartnerDossier() {
         {tab === "sub-partners" || tab === "team" ? (
           <section className="mt-5 space-y-3">
             <div className="rounded-3xl border bg-white p-5 text-sm font-bold text-slate-700">
-              <p>Requested additional users: {data.teamPackageRequest?.requestedSubPartnerSeats ?? 0}</p>
-              <p>Requested package: {data.teamPackageRequest?.requestedSubPartnerPackage || "—"}</p>
-              <p>Annual package price: {data.teamPackageRequest?.requestedSubPartnerAnnualPrice ?? "—"} {data.teamPackageRequest?.requestedSubPartnerCurrency || ""}</p>
-              <p>Package payment status: {data.teamPackageRequest?.subPartnerPackageStatus || "none"}</p>
+              <p>Requested quantity: {data.teamPackageRequest?.requestedSubPartnerSeats ?? 0}</p>
+              <p>Package: {data.teamPackageRequest?.packageLabel || data.teamPackageRequest?.requestedSubPartnerPackage || "—"}</p>
+              <p>Annual price: {data.teamPackageRequest?.priceLabel || "—"}</p>
+              <p>Payment status: {data.teamPackageRequest?.paymentStatus || data.teamPackageRequest?.subPartnerPackageStatus || "none"}</p>
+              <p>Primary Partner account: Included separately. Additional users are not activated and no charge is taken until payment is recorded separately.</p>
               <p>Package start: {data.subPartnerPackage?.startsAt || data.teamPackageRequest?.startsAt || "—"}</p>
               <p>Package expiry: {data.subPartnerPackage?.expiresAt || data.teamPackageRequest?.expiresAt || "—"}</p>
               <p>Seats included: {data.seats?.limit || 0}. Used: {data.seats?.used || 0}. Remaining: {Math.max(0, Number(data.seats?.limit || 0) - Number(data.seats?.used || 0))}.</p>
