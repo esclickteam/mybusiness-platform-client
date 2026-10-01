@@ -13,7 +13,9 @@ import {
   applyStatusPatch,
   buildMessageFeed,
   connectionBadgeLabel,
+  crmConnectionNeedsPin,
   conversationViaDetailLabel,
+  managedSenderCanSend,
   formatClock,
   inboundEventMatches,
   mergeMessages,
@@ -172,14 +174,16 @@ export default function WhatsAppWebThread({
     Array<{
       connectionId: string;
       ready: boolean;
-      sendReady: boolean;
+      sendReady: boolean | null;
+      phoneRegistered?: boolean;
+      registrationStatus?: string;
       displayPhone?: string;
       label?: string;
       flag?: string;
     }>
   >([
-    { connectionId: "IL_MANAGED", ready: true, sendReady: true, flag: "🇮🇱", label: "Israel" },
-    { connectionId: "US_MANAGED", ready: false, sendReady: false, flag: "🇺🇸", label: "USA" },
+    { connectionId: "IL_MANAGED", ready: true, sendReady: null, flag: "🇮🇱", label: "Israel" },
+    { connectionId: "US_MANAGED", ready: true, sendReady: null, flag: "🇺🇸", label: "USA" },
   ]);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -198,8 +202,8 @@ export default function WhatsAppWebThread({
   const selected = templates.find((t) => t.id === templateId);
   const sessionOpen = Boolean(data?.bizuplyManaged?.sessionWindowOpen);
   const sender = data?.bizuplyManaged?.sender || {};
-  const senderReady = Boolean(
-    sender.sendReady ?? (sender.ready && sender.registrationStatus !== "required")
+  const senderConnectionId = normalizeManagedConnectionId(
+    data?.bizuplyManaged?.managedConnectionId
   );
   const threadConnectionId = resolveThreadConnectionId(
     threadConnection,
@@ -208,30 +212,28 @@ export default function WhatsAppWebThread({
   );
   const effectiveSendFromId =
     normalizeManagedConnectionId(sendFromConnectionId) || threadConnectionId;
-  const sendFromReady = useMemo(() => {
-    if (!effectiveSendFromId) return senderReady;
-    const row = managedConnections.find(
-      (conn) => conn.connectionId === effectiveSendFromId
-    );
-    return row?.ready !== false;
-  }, [managedConnections, effectiveSendFromId, senderReady]);
-  const sendFromRegistered = useMemo(() => {
-    if (!effectiveSendFromId) return senderReady;
-    const row = managedConnections.find(
-      (conn) => conn.connectionId === effectiveSendFromId
-    );
-    if (row && typeof row.sendReady === "boolean") return row.sendReady;
-    return senderReady;
-  }, [managedConnections, effectiveSendFromId, senderReady]);
-  const composerSendReady = (sendFromReady || senderReady) && sendFromRegistered !== false;
+  const sendFromRow = useMemo(
+    () =>
+      managedConnections.find((conn) => conn.connectionId === effectiveSendFromId) ||
+      null,
+    [managedConnections, effectiveSendFromId]
+  );
+  const senderScoped =
+    !senderConnectionId ||
+    !effectiveSendFromId ||
+    senderConnectionId === effectiveSendFromId;
+  const senderReady = Boolean(senderScoped && managedSenderCanSend(sender));
+  const sendFromReady = sendFromRow ? sendFromRow.ready !== false : true;
+  const sendFromRegistered = managedSenderCanSend(sendFromRow) || senderReady;
+  const needsRegistration = crmConnectionNeedsPin({
+    sender,
+    senderConnectionId,
+    connectionId: effectiveSendFromId,
+    row: sendFromRow,
+  });
+  const composerSendReady =
+    !needsRegistration && (sendFromRegistered || sendFromReady);
   const replyLocked = Boolean(threadConnectionId);
-  const needsRegistration =
-    Boolean(sender.ready || sendFromReady) &&
-    (sender.phoneRegistered === false ||
-      sender.registrationStatus === "required" ||
-      sender.registrationStatus === "failed" ||
-      sender.registrationStatus === "pending" ||
-      sendFromRegistered === false);
   const sendFromMismatch = Boolean(
     threadConnectionId &&
       effectiveSendFromId &&
@@ -426,8 +428,12 @@ export default function WhatsAppWebThread({
               status === "READY" ||
               status === "CONNECTED" ||
               Boolean(conn.credentialsConfigured);
+            const registrationStatus = String(conn.registrationStatus || "");
+            const phoneRegistered = Boolean(conn.phoneRegistered);
             const sendReady =
               Boolean(conn.sendReady) ||
+              phoneRegistered ||
+              registrationStatus.toLowerCase() === "registered" ||
               (Boolean(conn.phoneRegistered) && ready) ||
               (status === "READY" && conn.phoneRegistered !== false);
             const preset = SEND_FROM_OPTIONS.find((opt) => opt.id === id);
@@ -435,6 +441,8 @@ export default function WhatsAppWebThread({
               connectionId: id,
               ready,
               sendReady,
+              phoneRegistered,
+              registrationStatus,
               displayPhone: String(
                 conn.displayPhoneMasked || conn.expectedDisplayPhone || ""
               ).trim(),
@@ -1003,14 +1011,6 @@ export default function WhatsAppWebThread({
               </>
             ) : !sendFromReady ? (
               "חיבור USA אינו מחובר — בחר Israel או חבר USA ב-WhatsApp Managed."
-            ) : !sendFromRegistered ? (
-              <>
-                נדרש רישום PIN לחיבור{" "}
-                {effectiveSendFromId === "US_MANAGED" ? "USA" : "Israel"} ב-
-                <Link className="underline" to="/admin/managed-whatsapp">
-                  WhatsApp Managed
-                </Link>
-              </>
             ) : (
               "ערוץ WhatsApp של BizUply אינו זמין."
             )}

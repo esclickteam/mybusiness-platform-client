@@ -4,6 +4,7 @@ import {
   buildMessageFeed,
   bumpThreadList,
   connectionBadgeLabel,
+  crmConnectionNeedsPin,
   connectionChipLabel,
   conversationViaDetailLabel,
   dateSeparatorLabel,
@@ -13,6 +14,48 @@ import {
   outboundSentViaLabel,
   sendFromPhoneLabel,
 } from "./whatsAppWebMessages";
+
+describe("crm connection registration", () => {
+  it("does not warn when the thread sender is already send-ready", () => {
+    expect(
+      crmConnectionNeedsPin({
+        connectionId: "US_MANAGED",
+        senderConnectionId: "US_MANAGED",
+        sender: { sendReady: true, phoneRegistered: true, registrationStatus: "registered", ready: true },
+        row: { sendReady: false, phoneRegistered: false, registrationStatus: "required" },
+      })
+    ).toBe(false);
+  });
+
+  it("does not warn when the dashboard row is send-ready", () => {
+    expect(
+      crmConnectionNeedsPin({
+        connectionId: "US_MANAGED",
+        senderConnectionId: "US_MANAGED",
+        sender: { sendReady: false, phoneRegistered: false, registrationStatus: "required", ready: true },
+        row: { sendReady: true, phoneRegistered: true, registrationStatus: "registered" },
+      })
+    ).toBe(false);
+  });
+
+  it("warns only when this connection is explicitly not registered", () => {
+    expect(
+      crmConnectionNeedsPin({
+        connectionId: "US_MANAGED",
+        senderConnectionId: "US_MANAGED",
+        sender: { sendReady: false, phoneRegistered: false, registrationStatus: "required", ready: true },
+        row: { sendReady: false, registrationStatus: "required" },
+      })
+    ).toBe(true);
+    expect(
+      crmConnectionNeedsPin({
+        connectionId: "US_MANAGED",
+        sender: { ready: true },
+        row: { sendReady: null },
+      })
+    ).toBe(false);
+  });
+});
 
 describe("whatsAppWebMessages", () => {
   it("dedupes by wamid and keeps chronological order", () => {
