@@ -127,6 +127,44 @@ export function normalizeManagedConnectionId(value?: string | null) {
     .toUpperCase();
 }
 
+export type ManagedSendStatus = {
+  sendReady?: boolean | null;
+  phoneRegistered?: boolean | null;
+  registrationStatus?: string | null;
+  ready?: boolean | null;
+};
+
+/** True when this payload already says the number can send. */
+export function managedSenderCanSend(status?: ManagedSendStatus | null) {
+  if (!status) return false;
+  if (status.sendReady || status.phoneRegistered) return true;
+  return String(status.registrationStatus || "").toLowerCase() === "registered";
+}
+
+/**
+ * CRM PIN warning. Matches the Managed dashboard: a connection that is
+ * send-ready never shows PIN registration. A missing list row must not
+ * override the thread connection's own sender status.
+ */
+export function crmConnectionNeedsPin(input: {
+  sender?: ManagedSendStatus | null;
+  senderConnectionId?: string | null;
+  connectionId?: string | null;
+  row?: ManagedSendStatus | null;
+}) {
+  const senderId = normalizeManagedConnectionId(input.senderConnectionId);
+  const connectionId = normalizeManagedConnectionId(input.connectionId);
+  const senderScoped = !senderId || !connectionId || senderId === connectionId;
+  if (senderScoped && managedSenderCanSend(input.sender)) return false;
+  if (managedSenderCanSend(input.row)) return false;
+  const reg = String(
+    (senderScoped && input.sender?.registrationStatus) ||
+      input.row?.registrationStatus ||
+      ""
+  ).toLowerCase();
+  return reg === "required" || reg === "failed" || reg === "pending";
+}
+
 /** Compact US / IL badge for list chips. */
 export function connectionBadgeLabel(
   meta?: {
