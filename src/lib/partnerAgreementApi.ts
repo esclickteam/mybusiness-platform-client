@@ -96,6 +96,10 @@ export type PartnerAgreement = {
   documentCount?: number;
   activationStatus?: string;
   signatureStatus?: string;
+  agreementContentHash?: string;
+  finalSignedDocumentHash?: string;
+  documentHash?: string;
+  signingLinks?: { signatoryId?: string; fullName?: string; path: string; email?: string; createdAt?: string; status?: string }[];
   partnerSignatureTimeline?: {
     signatoryId?: string;
     legalName: string;
@@ -384,7 +388,9 @@ export async function createSignedPartnerAgreement(
     agreement: PartnerAgreement;
     documentHash: string;
     signingLinkIssued: boolean;
-    signingLinks?: { fullName?: string; path: string; email?: string }[];
+    signingLinks?: { signatoryId?: string; fullName?: string; path: string; email?: string; createdAt?: string; status?: string; expiresAt?: string }[];
+    agreementContentHash?: string;
+    finalSignedDocumentHash?: string;
     persisted: boolean;
   };
 }

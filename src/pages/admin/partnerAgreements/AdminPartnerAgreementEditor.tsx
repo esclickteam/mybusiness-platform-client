@@ -197,6 +197,55 @@ function fromAgreement(row: PartnerAgreement): AgreementInput {
   };
 }
 
+type SigningLinkRow = {
+  signatoryId?: string;
+  fullName?: string;
+  path: string;
+  email?: string;
+  createdAt?: string;
+  status?: string;
+  expiresAt?: string;
+};
+
+function signatureStateLabel(code?: string) {
+  if (code === "fully_signed") return "Fully Signed";
+  if (!code || code === "awaiting_signatures") return "Signature pending";
+  return "Partially signed";
+}
+
+function paymentStateLabel(status?: string, paymentStatus?: string) {
+  if (paymentStatus === "paid" || status === "active") return "Paid";
+  if (status === "payment_pending") return "Pending";
+  if (paymentStatus === "unpaid") return "Unpaid";
+  return "Pending";
+}
+
+function verificationStateLabel(status?: string) {
+  if (!status || status === "not_started") return "Not started";
+  if (status === "verified") return "Verified";
+  return "Pending";
+}
+
+function activationStateLabel(status?: string, activationStatus?: string) {
+  if (status === "active") return "Active";
+  if (activationStatus === "completed") return "Pending";
+  return "Pending";
+}
+
+function storedSigningLinks(id?: string) {
+  if (!id) return [];
+  try {
+    const raw = sessionStorage.getItem(`partner-signing-links:${id}`);
+    return raw ? (JSON.parse(raw) as SigningLinkRow[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberSigningLinks(id: string, links: SigningLinkRow[]) {
+  sessionStorage.setItem(`partner-signing-links:${id}`, JSON.stringify(links));
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm font-bold text-slate-800">
@@ -237,7 +286,7 @@ export default function AdminPartnerAgreementEditor() {
   const [legalCompanyName, setLegalCompanyName] = useState("BizUply LLC");
   const [bizSignature, setBizSignature] = useState<{ imageDataUrl: string; confirmed: boolean } | null>(restored?.signature || null);
   const [signConfirmed, setSignConfirmed] = useState(Boolean(restored?.signature?.confirmed));
-  const [signingLinks, setSigningLinks] = useState<{ fullName?: string; path: string; email?: string }[]>([]);
+  const [signingLinks, setSigningLinks] = useState<SigningLinkRow[]>([]);
   const [renewal, setRenewal] = useState({ startDate: "", endDate: "", agreementNumber: "" });
   const [quote, setQuote] = useState({ customers: "20", gross: "1000", taxes: "0", refunds: "0", chargebacks: "0", passThrough: "0", result: "" });
 
@@ -257,6 +306,7 @@ export default function AdminPartnerAgreementEditor() {
           if (cancelled) return;
           setRecord(loaded.agreement);
           setForm(fromAgreement(loaded.agreement));
+          setSigningLinks(storedSigningLinks(id));
         }
       } catch (err) {
         if (!cancelled) setError(agreementError(err, t.openError));
@@ -452,9 +502,11 @@ export default function AdminPartnerAgreementEditor() {
       });
       sessionStorage.removeItem(PENDING_SIGNATURE_KEY);
       clearCanonicalDraft();
+      const links = saved.signingLinks || saved.agreement?.signingLinks || [];
       setRecord(saved.agreement);
       setForm(fromAgreement(saved.agreement));
-      setSigningLinks(saved.signingLinks || []);
+      setSigningLinks(links);
+      if (saved.agreement?.id) rememberSigningLinks(saved.agreement.id, links);
       setMessage("Signed agreement created. Bizuply is signed. Partner signing links are ready to copy or send. Nothing was emailed or sent on WhatsApp.");
       if (saved.agreement?.id) navigate(`/admin/partner-agreements/${saved.agreement.id}`, { replace: true });
     } catch (err) {
@@ -573,6 +625,20 @@ export default function AdminPartnerAgreementEditor() {
     setError("");
     try {
       const link = await resendSignatoryLink(record.id, signatoryId);
+      const next = [
+        ...signingLinks.filter((row) => row.signatoryId !== signatoryId),
+        {
+          signatoryId,
+          fullName: link.fullName,
+          path: link.path,
+          email: record.signatories?.find((row) => row.signatoryId === signatoryId)?.email,
+          createdAt: new Date().toISOString(),
+          status: "pending",
+          expiresAt: link.expiresAt,
+        },
+      ];
+      setSigningLinks(next);
+      rememberSigningLinks(record.id, next);
       setMessage(`${page.text.sign.linkReady} ${link.path}`);
       const loaded = await getPartnerAgreement(record.id);
       setRecord(loaded.agreement);
@@ -590,6 +656,9 @@ export default function AdminPartnerAgreementEditor() {
     setError("");
     try {
       await revokeSignatoryLink(record.id, signatoryId);
+      const next = signingLinks.filter((row) => row.signatoryId !== signatoryId);
+      setSigningLinks(next);
+      rememberSigningLinks(record.id, next);
       const loaded = await getPartnerAgreement(record.id);
       setRecord(loaded.agreement);
       setForm(fromAgreement(loaded.agreement));
@@ -674,6 +743,18 @@ export default function AdminPartnerAgreementEditor() {
             <p className="text-sm font-semibold text-slate-500">
               {record ? fill(t.meta, { number: record.agreementNumber, status: agreementStatusLabel(status, page.text), version: record.currentVersion || 0 }) : t.fill}
             </p>
+            {record ? (
+              <div className="mt-2 space-y-1 text-sm font-black text-slate-900" data-testid="agreement-state">
+                <p data-testid="signature-status" data-signature-status={record.signatureStatus || ""}>
+                  Signatures: {signatureStateLabel(record.signatureStatus)}
+                </p>
+                <p data-testid="payment-status" data-payment-status={status === "payment_pending" ? "pending" : record.paymentStatus}>
+                  Payment: {paymentStateLabel(status, record.paymentStatus)}
+                </p>
+                <p data-testid="verification-status">Verification: {verificationStateLabel(record.verificationStatus)}</p>
+                <p data-testid="activation-status">Activation: {activationStateLabel(status, record.activationStatus)}</p>
+              </div>
+            ) : null}
           </div>
         </div>
         {sampleRequested ? (
@@ -994,21 +1075,39 @@ export default function AdminPartnerAgreementEditor() {
 
         {signingLinks.length ? (
           <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="signing-links">
-            <h2 className="text-lg font-black">Partner signing links</h2>
+            <h2 className="text-lg font-black">Partner Signing Links</h2>
             <p className="mt-1 text-sm font-semibold text-slate-600">Links were generated but not sent. Copy or send each one explicitly.</p>
             <ul className="mt-3 space-y-2">
-              {signingLinks.map((link) => (
-                <li key={link.path} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-semibold">
-                  <span>{link.fullName || link.email} · {link.path}</span>
-                  <button
-                    type="button"
-                    className="rounded-xl bg-slate-900 px-3 py-1 text-white"
-                    onClick={() => void navigator.clipboard.writeText(`${window.location.origin}${link.path}`)}
-                  >
-                    Copy
-                  </button>
-                </li>
-              ))}
+              {signingLinks.map((link) => {
+                const signer = record?.signatories?.find((row) => row.signatoryId && row.signatoryId === link.signatoryId);
+                const signed = signer?.status === "signed" || Boolean(signer?.signedAt);
+                return (
+                  <li key={link.path} className="rounded-2xl bg-slate-50 px-3 py-3 text-sm font-semibold" data-testid="partner-signing-link">
+                    <p className="font-black">{link.fullName || link.email}</p>
+                    <p data-testid="link-status">{signed ? "Signed" : "Pending"}</p>
+                    <p>Created: {link.createdAt ? new Date(link.createdAt).toLocaleString() : "—"}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="rounded-xl bg-slate-900 px-3 py-1 text-white"
+                        onClick={() => void navigator.clipboard.writeText(`${window.location.origin}${link.path}`)}
+                      >
+                        Copy Link
+                      </button>
+                      {link.signatoryId && !signed ? (
+                        <button type="button" className="rounded-xl border px-3 py-1" onClick={() => void onResend(link.signatoryId || "")}>
+                          Regenerate
+                        </button>
+                      ) : null}
+                      {link.signatoryId && !signed ? (
+                        <button type="button" className="rounded-xl border px-3 py-1" onClick={() => void onRevoke(link.signatoryId || "")}>
+                          Revoke
+                        </button>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ) : null}
