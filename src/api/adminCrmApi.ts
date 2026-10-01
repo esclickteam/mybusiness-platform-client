@@ -108,6 +108,14 @@ export const adminCrmApi = {
     API.get(`/admin/crm/whatsapp/inbox/${threadId}/messages${qs(params)}`),
   whatsappAssign: (threadId: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/whatsapp/inbox/${threadId}/assign`, body),
+  whatsappContacts: (q = "") =>
+    API.get(`/admin/crm/whatsapp/contacts${qs({ q: q || undefined })}`),
+  createWhatsAppContact: (body: Record<string, unknown>) =>
+    API.post("/admin/crm/whatsapp/contacts", body),
+  updateWhatsAppContact: (id: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/whatsapp/contacts/${id}`, body),
+  whatsappComposeContext: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/whatsapp/compose-context${qs(params)}`),
   calendar: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/calendar${qs(params)}`),
   calendarSettings: (body: Record<string, unknown>) =>

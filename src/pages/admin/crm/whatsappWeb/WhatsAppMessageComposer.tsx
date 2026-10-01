@@ -18,6 +18,11 @@ type Props = {
   stagedFile: StagedWhatsAppFile | null;
   onStageFile: (file: StagedWhatsAppFile | null) => void;
   onSend: () => void;
+  messagePlaceholder?: string;
+  captionPlaceholder?: string;
+  templatePlaceholder?: string;
+  sendLabel?: string;
+  onFocusChange?: (focused: boolean) => void;
 };
 
 export function WhatsAppMessageComposer({
@@ -30,6 +35,11 @@ export function WhatsAppMessageComposer({
   stagedFile,
   onStageFile,
   onSend,
+  messagePlaceholder = "הודעה חופשית",
+  captionPlaceholder = "כיתוב (אופציונלי)",
+  templatePlaceholder = "מחוץ לחלון 24 שעות חובה לבחור תבנית",
+  sendLabel = "שליחה",
+  onFocusChange,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -231,19 +241,23 @@ export function WhatsAppMessageComposer({
 
         <textarea
           ref={textareaRef}
-          className="max-h-36 min-h-[44px] min-w-0 flex-1 resize-none overflow-y-auto rounded-[24px] border-none bg-white px-4 py-2.5 text-[15px] leading-5 text-[#111b21] outline-none"
+          className="max-h-24 min-h-[44px] min-w-0 flex-1 resize-none overflow-y-auto rounded-[24px] border-none bg-white px-4 py-2.5 text-[15px] leading-5 text-[#111b21] outline-none"
           placeholder={
             stagedFile
               ? supportsCaption(stagedFile.messageType)
-                ? "כיתוב (אופציונלי)"
-                : "הודעה"
+                ? captionPlaceholder
+                : messagePlaceholder
               : sessionOpen
-                ? "הודעה חופשית"
-                : "מחוץ לחלון 24 שעות חובה לבחור תבנית"
+                ? messagePlaceholder
+                : templatePlaceholder
           }
           value={body}
           rows={1}
           disabled={disabled || (!sessionOpen && !hasTemplate && !stagedFile)}
+          autoComplete="off"
+          enterKeyHint="send"
+          onFocus={() => onFocusChange?.(true)}
+          onBlur={() => onFocusChange?.(false)}
           onChange={(e) => onBodyChange(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -255,10 +269,11 @@ export function WhatsAppMessageComposer({
 
         <button
           type="button"
-          className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[#7C4DFF] text-lg font-black text-white disabled:opacity-50"
+          className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[#7C4DFF] text-sm font-black text-white disabled:opacity-50"
           disabled={!canSend}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onSend}
-          aria-label="שליחה"
+          aria-label={sendLabel}
         >
           {sending ? "…" : "➤"}
         </button>

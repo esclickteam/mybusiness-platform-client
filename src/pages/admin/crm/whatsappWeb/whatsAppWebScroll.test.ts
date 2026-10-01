@@ -51,7 +51,7 @@ describe("whatsAppWebScroll", () => {
     expect(el.scrollTop).toBe(340);
   });
 
-  it("pins to the bottom after a resize only when already near bottom", () => {
+  it("does not jump to the bottom when the viewport resizes", () => {
     const el = fakeScroller({
       scrollHeight: 800,
       scrollTop: 100,
@@ -61,6 +61,6 @@ describe("whatsAppWebScroll", () => {
       wasNearBottom: true,
       previousScrollTop: 100,
     });
-    expect(el.scrollTop).toBe(800);
+    expect(el.scrollTop).toBe(100);
   });
 });

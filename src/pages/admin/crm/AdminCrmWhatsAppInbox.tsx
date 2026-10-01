@@ -12,6 +12,12 @@ import {
 import { ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
 import WhatsAppFailedMessagesPanel from "./WhatsAppFailedMessagesPanel";
 import WhatsAppWebThread from "./whatsappWeb/WhatsAppWebThread";
+import { WhatsAppContactDialog, type WhatsAppContactDraft } from "./whatsappWeb/WhatsAppContactDialog";
+import { WhatsAppNewMessageDialog } from "./whatsappWeb/WhatsAppNewMessageDialog";
+import { WhatsAppContactPanel } from "./whatsappWeb/WhatsAppContactPanel";
+import { conversationIdentity } from "./whatsappWeb/conversationIdentity";
+import { useAdminWhatsAppCopy } from "./whatsappWeb/adminWhatsAppInboxCopy";
+import { useVisualViewportFrame } from "./whatsappWeb/useVisualViewportFrame";
 import { useAdminCrmWhatsAppRealtime } from "./whatsappWeb/useAdminCrmWhatsAppRealtime";
 import {
   bumpThreadList,
@@ -66,6 +72,13 @@ export default function AdminCrmWhatsAppInbox() {
   } | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncSummary, setSyncSummary] = useState<WhatsAppSyncSummary | null>(null);
+  const [newMessageOpen, setNewMessageOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactSaving, setContactSaving] = useState(false);
+  const [contactError, setContactError] = useState("");
+  const { copy, dir } = useAdminWhatsAppCopy();
+  const [narrow, setNarrow] = useState(false);
+  const viewport = useVisualViewportFrame(mobileChat && narrow);
 
   const load = useCallback(
     async (
@@ -114,6 +127,23 @@ export default function AdminCrmWhatsAppInbox() {
   );
 
   React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const apply = () => setNarrow(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  React.useEffect(() => {
+    if (!mobileChat || !narrow) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileChat, narrow]);
+
+  React.useEffect(() => {
     load();
     adminCrmApi
       .meta()
@@ -155,7 +185,16 @@ export default function AdminCrmWhatsAppInbox() {
         return bumpThreadList(prev, {
           ...(existing || {}),
           ...payload.thread,
-          name: existing?.name || payload.thread.name,
+          name: existing?.companyName || existing?.name || payload.thread.name,
+          companyName: existing?.companyName || payload.thread.companyName,
+          contactPersonName: existing?.contactPersonName || payload.thread.contactPersonName,
+          contactSaved: existing?.contactSaved || payload.thread.contactSaved,
+          contactId: existing?.contactId || payload.thread.contactId,
+          email: existing?.email || payload.thread.email,
+          country: existing?.country || payload.thread.country,
+          notes: existing?.notes || payload.thread.notes,
+          whatsappProfileName:
+            payload.thread.whatsappProfileName || existing?.whatsappProfileName,
           phone: existing?.phone || payload.thread.phone,
           adminCustomerId:
             existing?.adminCustomerId ||
@@ -204,7 +243,16 @@ export default function AdminCrmWhatsAppInbox() {
         return bumpThreadList(prev, {
           ...(existing || {}),
           ...payload.thread,
-          name: existing?.name || payload.thread.name,
+          name: existing?.companyName || existing?.name || payload.thread.name,
+          companyName: existing?.companyName || payload.thread.companyName,
+          contactPersonName: existing?.contactPersonName || payload.thread.contactPersonName,
+          contactSaved: existing?.contactSaved || payload.thread.contactSaved,
+          contactId: existing?.contactId || payload.thread.contactId,
+          email: existing?.email || payload.thread.email,
+          country: existing?.country || payload.thread.country,
+          notes: existing?.notes || payload.thread.notes,
+          whatsappProfileName:
+            payload.thread.whatsappProfileName || existing?.whatsappProfileName,
           phone: existing?.phone || payload.thread.phone,
           adminCustomerId:
             existing?.adminCustomerId ||
@@ -226,6 +274,71 @@ export default function AdminCrmWhatsAppInbox() {
       void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
     },
   });
+
+  async function saveContact(draft: WhatsAppContactDraft) {
+    setContactSaving(true);
+    setContactError("");
+    try {
+      const payload = {
+        companyName: draft.companyName,
+        contactPersonName: draft.contactPersonName,
+        phone: draft.phone,
+        email: draft.email,
+        country: draft.country,
+        notes: draft.notes,
+        whatsappProfileName: draft.whatsappProfileName || selected?.whatsappProfileName || "",
+      };
+      const { data } = draft.id
+        ? await adminCrmApi.updateWhatsAppContact(draft.id, payload)
+        : await adminCrmApi.createWhatsAppContact(payload);
+      const contact = data.contact;
+      setItems((prev) =>
+        prev.map((row) =>
+          row.phone && contact.phone && threadRowKey(row) === threadRowKey(selected || row) &&
+          (row.contactId === contact.id || row.phone === selected?.phone || row.id === selected?.id)
+            ? {
+                ...row,
+                contactSaved: true,
+                contactId: contact.id,
+                companyName: contact.companyName,
+                contactPersonName: contact.contactPersonName,
+                phone: contact.phone || row.phone,
+                email: contact.email,
+                country: contact.country,
+                notes: contact.notes,
+                adminCustomerId: contact.adminCustomerId || row.adminCustomerId,
+                name: contact.companyName,
+              }
+            : row
+        )
+      );
+      setSelected((prev) =>
+        prev
+          ? {
+              ...prev,
+              contactSaved: true,
+              contactId: contact.id,
+              companyName: contact.companyName,
+              contactPersonName: contact.contactPersonName,
+              phone: contact.phone || prev.phone,
+              email: contact.email,
+              country: contact.country,
+              notes: contact.notes,
+              adminCustomerId: contact.adminCustomerId || prev.adminCustomerId,
+              name: contact.companyName,
+            }
+          : prev
+      );
+      setContactOpen(false);
+      setBanner(copy.contactSavedBanner);
+      void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
+    } catch (err: any) {
+      const code = err?.response?.data?.code;
+      setContactError(code === "DUPLICATE_PHONE" ? copy.duplicatePhone : err?.response?.data?.error || copy.sendFailed);
+    } finally {
+      setContactSaving(false);
+    }
+  }
 
   async function syncConversations() {
     setSyncing(true);
@@ -279,7 +392,7 @@ export default function AdminCrmWhatsAppInbox() {
   return (
     <div
       className="flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-purple-100 bg-white shadow-[0_18px_50px_rgba(124,77,255,0.06)]"
-      dir="rtl"
+      dir={dir}
     >
       {banner ? (
         <div className="shrink-0 border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#7C4DFF]">
@@ -295,10 +408,17 @@ export default function AdminCrmWhatsAppInbox() {
         >
           <div className="border-b border-[#e9edef] bg-[#f0f2f5] px-3 py-3">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-base font-black text-[#111b21]">שיחות</h2>
-              <div className="flex gap-1 text-[11px] font-black">
-                <span className="rounded-full bg-violet-50 px-2 py-1 text-violet-700">{unreadTotal}</span>
-                <span className="rounded-full bg-amber-50 px-2 py-1 text-amber-800">{unresolvedTotal}</span>
+              <h2 className="text-base font-black text-[#111b21]">{copy.conversations}</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="min-h-10 rounded-full bg-[#7C4DFF] px-3 text-xs font-black text-white"
+                  onClick={() => setNewMessageOpen(true)}
+                >
+                  {copy.newMessage}
+                </button>
+                <span className="rounded-full bg-violet-50 px-2 py-1 text-[11px] font-black text-violet-700">{unreadTotal}</span>
+                <span className="rounded-full bg-amber-50 px-2 py-1 text-[11px] font-black text-amber-800">{unresolvedTotal}</span>
               </div>
             </div>
             <div className="mb-2 flex flex-wrap gap-1.5" dir="ltr">
@@ -312,7 +432,7 @@ export default function AdminCrmWhatsAppInbox() {
                     : "bg-white text-[#54656f] ring-1 ring-[#d1d7db] hover:bg-[#f5f6f6]",
                 ].join(" ")}
               >
-                All
+                {copy.allConnections}
               </button>
               {connections.map((conn) => {
                 const id = normalizeManagedConnectionId(conn.managedConnectionId);
@@ -359,7 +479,7 @@ export default function AdminCrmWhatsAppInbox() {
             ) : null}
             <input
               className="min-h-10 w-full rounded-lg border-none bg-white px-3 text-sm outline-none"
-              placeholder="חיפוש או מספר טלפון"
+              placeholder={copy.searchConversations}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -416,12 +536,13 @@ export default function AdminCrmWhatsAppInbox() {
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {!filtered.length ? (
-              <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">אין לקוחות עם מספר טלפון</p>
+              <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">{copy.noConversations}</p>
             ) : (
               filtered.map((row) => {
                 const rowKey = threadRowKey(row);
                 const active = Boolean(selectedKey && rowKey && selectedKey === rowKey);
                 const badge = connectionBadgeLabel(row);
+                const identity = conversationIdentity(row);
                 return (
                   <button
                     key={rowKey || row.id}
@@ -443,15 +564,18 @@ export default function AdminCrmWhatsAppInbox() {
                     }}
                   >
                     <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#dfe5e7] text-sm font-black text-[#54656f]">
-                      {(row.name || "?").slice(0, 1)}
+                      {(identity.title || "?").slice(0, 1)}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
-                        <p className="truncate text-[16px] font-black text-[#111b21]">{row.name}</p>
+                        <p className="truncate text-[16px] font-black text-[#111b21]">{identity.title || copy.phone}</p>
                         <span className="shrink-0 text-[12px] text-[#667781]">
                           {listTimeLabel(row.lastMessageAt)}
                         </span>
                       </div>
+                      {identity.person ? (
+                        <p className="truncate text-[13px] font-bold text-[#111b21]">{identity.person}</p>
+                      ) : null}
                       <div className="mt-0.5 flex flex-wrap items-center gap-1">
                         {badge ? (
                           <span
@@ -493,7 +617,7 @@ export default function AdminCrmWhatsAppInbox() {
                         ) : null}
                       </div>
                       <p className="mt-0.5 truncate text-[12px] font-bold text-slate-500" dir="ltr">
-                        {row.phone || "—"}
+                        {identity.phone || row.phone || "—"}
                         {row.leadSource
                           ? ` · ${SOURCE_LABELS[row.leadSource] || row.leadSource}`
                           : ""}
@@ -528,9 +652,15 @@ export default function AdminCrmWhatsAppInbox() {
 
         <section
           className={[
-            "min-h-0 min-w-0 w-full flex-1 flex-col",
+            "min-h-0 min-w-0 w-full flex-1 flex-col bg-[#efeae2]",
             mobileChat ? "flex" : "hidden lg:flex",
+            mobileChat && narrow ? "fixed z-40" : "",
           ].join(" ")}
+          style={
+            mobileChat && narrow && viewport
+              ? { top: viewport.top, height: viewport.height, left: 0, right: 0 }
+              : undefined
+          }
         >
           {selected ? (
             <WhatsAppWebThread
@@ -542,7 +672,12 @@ export default function AdminCrmWhatsAppInbox() {
                   : null)
               }
               phone={selected.phone}
-              contactName={selected.name}
+              contactName={selected.whatsappProfileName || selected.name}
+              companyName={selected.companyName}
+              contactPersonName={selected.contactPersonName}
+              contactSaved={Boolean(selected.contactSaved)}
+              contactId={selected.contactId}
+              whatsappProfileName={selected.whatsappProfileName}
               initialManagedConnectionId={selected.managedConnectionId || null}
               threadConnection={{
                 managedConnectionId: selected.managedConnectionId,
@@ -561,6 +696,10 @@ export default function AdminCrmWhatsAppInbox() {
               canDemo={perms.demoSend !== false}
               onBanner={setBanner}
               onBack={() => setMobileChat(false)}
+              onAddContact={() => {
+                setContactError("");
+                setContactOpen(true);
+              }}
               onOpenSendDemo={(prefill) => {
                 setDemoPrefill(prefill || null);
                 setDemoOpen(true);
@@ -577,6 +716,20 @@ export default function AdminCrmWhatsAppInbox() {
             </div>
           )}
         </section>
+        {selected ? (
+          <WhatsAppContactPanel
+            row={selected}
+            copy={copy}
+            onAdd={() => {
+              setContactError("");
+              setContactOpen(true);
+            }}
+            onEdit={() => {
+              setContactError("");
+              setContactOpen(true);
+            }}
+          />
+        ) : null}
       </div>
 
       <AdminSendGuidedDemoModal
@@ -599,6 +752,41 @@ export default function AdminCrmWhatsAppInbox() {
             preferredLocaleFromConnectionCountry(selected?.connectionCountry) ||
             undefined,
         }}
+      />
+      <WhatsAppNewMessageDialog
+        open={newMessageOpen}
+        copy={copy}
+        dir={dir}
+        connections={connections}
+        onClose={() => setNewMessageOpen(false)}
+        onSent={() => {
+          setNewMessageOpen(false);
+          setBanner(copy.messageSent);
+          void load(unresolvedOnly, query, connectionFilter, phoneNumberFilter);
+        }}
+      />
+      <WhatsAppContactDialog
+        open={contactOpen}
+        copy={copy}
+        dir={dir}
+        saving={contactSaving}
+        error={contactError}
+        initial={
+          selected
+            ? {
+                id: selected.contactId || undefined,
+                companyName: selected.companyName || "",
+                contactPersonName: selected.contactPersonName || "",
+                phone: selected.phone || "",
+                email: selected.email || "",
+                country: selected.country || "",
+                notes: selected.notes || "",
+                whatsappProfileName: selected.whatsappProfileName || "",
+              }
+            : null
+        }
+        onClose={() => setContactOpen(false)}
+        onSave={(draft) => void saveContact(draft)}
       />
     </div>
   );
