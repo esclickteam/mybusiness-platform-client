@@ -20,14 +20,16 @@ import {
   normalizeManagedConnectionId,
   outboundSentViaLabel,
   sendFromPhoneLabel,
+  tickKind,
   type PublicWhatsAppMessage,
   type PublicWhatsAppThread,
 } from "./whatsAppWebMessages";
 import {
   isNearBottom,
-  preserveScrollerOnResize,
   scrollScrollerToBottom,
 } from "./whatsAppWebScroll";
+import { conversationIdentity } from "./conversationIdentity";
+import { useAdminWhatsAppCopy } from "./adminWhatsAppInboxCopy";
 
 type Template = {
   id: string;
@@ -105,6 +107,11 @@ export default function WhatsAppWebThread({
   threadId,
   phone: phoneProp,
   contactName: contactNameProp,
+  companyName = "",
+  contactPersonName = "",
+  contactSaved = false,
+  contactId = null,
+  whatsappProfileName = "",
   initialManagedConnectionId = null,
   threadConnection = null,
   canSend,
@@ -115,11 +122,17 @@ export default function WhatsAppWebThread({
   showConnectionCards = false,
   onBack,
   onOpenSendDemo,
+  onAddContact,
 }: {
   customerId?: string | null;
   threadId?: string | null;
   phone?: string | null;
   contactName?: string | null;
+  companyName?: string | null;
+  contactPersonName?: string | null;
+  contactSaved?: boolean;
+  contactId?: string | null;
+  whatsappProfileName?: string | null;
   initialManagedConnectionId?: string | null;
   threadConnection?: ThreadConnectionMeta | null;
   canSend: boolean;
@@ -129,6 +142,7 @@ export default function WhatsAppWebThread({
   initialIntent?: "message" | "follow_up" | "demo" | "payment";
   showConnectionCards?: boolean;
   onBack?: () => void;
+  onAddContact?: () => void;
   onOpenSendDemo?: (prefill?: {
     managedConnectionId?: string | null;
     phone?: string | null;
@@ -171,6 +185,11 @@ export default function WhatsAppWebThread({
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const lastScrollTopRef = useRef(0);
   const sendingRef = useRef(false);
+  const loadGenRef = useRef(0);
+  const composerFocusedRef = useRef(false);
+  const openedScrollKeyRef = useRef("");
+  const failedPayloadsRef = useRef(new Map<string, Record<string, unknown>>());
+  const { copy, dir } = useAdminWhatsAppCopy();
   const sendFromLockedRef = useRef(
     Boolean(resolveThreadConnectionId(threadConnection, initialManagedConnectionId))
   );
@@ -204,7 +223,8 @@ export default function WhatsAppWebThread({
     if (row && typeof row.sendReady === "boolean") return row.sendReady;
     return senderReady;
   }, [managedConnections, effectiveSendFromId, senderReady]);
-  const composerSendReady = sendFromReady && sendFromRegistered && senderReady;
+  const composerSendReady = (sendFromReady || senderReady) && sendFromRegistered !== false;
+  const replyLocked = Boolean(threadConnectionId);
   const needsRegistration =
     Boolean(sender.ready || sendFromReady) &&
     (sender.phoneRegistered === false ||
@@ -222,18 +242,24 @@ export default function WhatsAppWebThread({
     data?.bizuplyManaged?.thread?.adminCustomerId ||
     data?.thread?.adminCustomerId ||
     null;
-  const contactName =
-    contactNameProp ||
-    data?.customerConnection?.customerName ||
-    data?.bizuplyManaged?.prefill?.contact_name ||
-    data?.bizuplyManaged?.prefill?.name ||
-    data?.thread?.name ||
-    "";
   const matchPhone =
     phoneProp ||
     data?.bizuplyManaged?.prefill?.phone ||
     data?.bizuplyManaged?.thread?.phone ||
     "";
+  const identity = conversationIdentity({
+    contactSaved,
+    companyName,
+    contactPersonName,
+    whatsappProfileName:
+      whatsappProfileName ||
+      data?.thread?.whatsappProfileName ||
+      data?.bizuplyManaged?.thread?.whatsappProfileName ||
+      "",
+    name: contactNameProp || "",
+    phone: matchPhone,
+  });
+  const contactName = identity.person || identity.profileName || identity.title;
   const headerConnection =
     threadConnection ||
     (data?.bizuplyManaged?.thread as ThreadConnectionMeta | undefined) ||
@@ -325,18 +351,26 @@ export default function WhatsAppWebThread({
 
   const load = useCallback(async () => {
     setError("");
+    const requestKey = `${customerId || ""}:${threadId || ""}`;
+    const generation = ++loadGenRef.current;
     try {
       const nextMessages = await loadMessages();
+      if (generation !== loadGenRef.current) return;
       setMessages(nextMessages);
       if (customerId) {
-        const connectionId =
-          normalizeManagedConnectionId(sendFromConnectionId) ||
-          threadConnectionId ||
-          undefined;
+        const connectionId = threadConnectionId || undefined;
         const { data: wa } = await adminCrmApi.whatsapp(customerId, {
           managedConnectionId: connectionId,
         });
-        setData(wa);
+        if (generation !== loadGenRef.current) return;
+        setData((prev: any) => ({
+          ...wa,
+          thread: {
+            ...(wa?.thread || {}),
+            ...(prev?.thread || {}),
+            ...(wa?.bizuplyManaged?.thread || {}),
+          },
+        }));
         const catalogIds = new Set(
           (wa.bizuplyManaged?.templates || []).map((t: Template) => String(t.id))
         );
@@ -345,17 +379,15 @@ export default function WhatsAppWebThread({
           await adminCrmApi.whatsappRead(customerId).catch(() => null);
         }
       }
-      requestAnimationFrame(() => scrollToBottom(false));
+      if (openedScrollKeyRef.current !== requestKey) {
+        openedScrollKeyRef.current = requestKey;
+        stickRef.current = true;
+        requestAnimationFrame(() => scrollToBottom(false));
+      }
     } catch (err: any) {
-      setError(err?.response?.data?.error || "טעינת WhatsApp נכשלה");
+      setError(err?.response?.data?.error || "WhatsApp failed to load");
     }
-  }, [
-    customerId,
-    loadMessages,
-    scrollToBottom,
-    sendFromConnectionId,
-    threadConnectionId,
-  ]);
+  }, [customerId, loadMessages, scrollToBottom, threadConnectionId]);
 
   useEffect(() => {
     load();
@@ -441,16 +473,15 @@ export default function WhatsAppWebThread({
   }, [managedConnections, threadConnectionId, headerConnection?.businessDisplayPhone]);
 
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => {
-      preserveScrollerOnResize(el, {
-        wasNearBottom: stickRef.current,
-        previousScrollTop: lastScrollTopRef.current,
-      });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
+    openedScrollKeyRef.current = "";
+    setMessages([]);
+    setData(null);
+    setBody("");
+    setTemplateId("");
+    setVars({});
+    setPreview("");
+    setStagedFile(null);
+    failedPayloadsRef.current.clear();
   }, [customerId, threadId]);
 
   useEffect(() => {
@@ -488,8 +519,9 @@ export default function WhatsAppWebThread({
     onMessage: (payload) => {
       if (!inboundEventMatches(payload, matchCtx) || !payload.message) return;
       setMessages((prev) => mergeMessages(prev, payload.message!));
+      if (composerFocusedRef.current) return;
       if (stickRef.current) {
-        requestAnimationFrame(() => scrollToBottom(true));
+        requestAnimationFrame(() => scrollToBottom(false));
         setUnseen(0);
       } else if (payload.message.direction === "inbound") {
         setUnseen((n) => n + 1);
@@ -584,6 +616,19 @@ export default function WhatsAppWebThread({
       localPreviewUrl: stagedFile?.previewUrl || "",
     };
     stickRef.current = true;
+    const retryPayload = {
+      intent,
+      templateId: templateId || null,
+      body: text,
+      vars: mappedVars,
+      preview,
+      managedConnectionId: replyLocked
+        ? threadConnectionId
+        : effectiveSendFromId || threadConnectionId || undefined,
+      threadId: threadId || undefined,
+      stagedFile,
+    };
+    failedPayloadsRef.current.set(optimistic.id, retryPayload);
     setMessages((prev) => mergeMessages(prev, optimistic));
     requestAnimationFrame(() => scrollToBottom(true));
     try {
@@ -614,8 +659,10 @@ export default function WhatsAppWebThread({
         ),
         demoModules: modules,
         paymentPlan,
-        managedConnectionId:
-          effectiveSendFromId || threadConnectionId || undefined,
+        managedConnectionId: replyLocked
+          ? threadConnectionId
+          : effectiveSendFromId || threadConnectionId || undefined,
+        threadId: threadId || undefined,
         clientRequestId,
       };
       if (uploadedMedia) {
@@ -630,6 +677,7 @@ export default function WhatsAppWebThread({
 
       const { data: res } = await adminCrmApi.whatsappSend(customerId, payload);
       if (res.message) {
+        failedPayloadsRef.current.delete(optimistic.id);
         setMessages((prev) => {
           const withoutTmp = prev.filter((m) => m.id !== optimistic.id);
           return mergeMessages(withoutTmp, {
@@ -640,34 +688,67 @@ export default function WhatsAppWebThread({
       } else {
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
       }
-      onBanner(
-        res.kind === "media"
-          ? "מדיה נשלחה ב-WhatsApp"
-          : res.kind === "template"
-            ? "תבנית WhatsApp נשלחה מערוץ BizUply"
-            : "הודעת WhatsApp נשלחה מערוץ BizUply"
-      );
-      // Only after success: collapse template composer so the chat regains height.
+      onBanner(res.kind === "template" ? copy.templateSent : copy.messageSent);
       setTemplateId("");
       setVars({});
       setPreview("");
       setBody("");
       setStagedFile(null);
       stickRef.current = true;
-      // Wait for React layout (composer shrink) before scrolling to the new message.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => scrollToBottom(true));
-      });
+      requestAnimationFrame(() => scrollToBottom(false));
     } catch (err: any) {
       // Keep template + vars + preview on failure so the user can retry.
+      const failureText = err?.response?.data?.error || copy.sendFailed;
       setMessages((prev) =>
         applyStatusPatch(prev, {
           id: optimistic.id,
           status: "failed",
-          error: err?.response?.data?.error || "שליחה נכשלה",
+          error: failureText,
         })
       );
-      onBanner(err?.response?.data?.error || "השליחה נכשלה. הטיוטה נשמרה.");
+      onBanner(failureText);
+    } finally {
+      sendingRef.current = false;
+      setSending(false);
+    }
+  }
+
+  async function retryMessage(messageId: string) {
+    const stored = failedPayloadsRef.current.get(messageId);
+    if (!stored || !customerId || sendingRef.current) return;
+    sendingRef.current = true;
+    setSending(true);
+    const clientRequestId =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `req-${Date.now()}`;
+    try {
+      const { data: res } = await adminCrmApi.whatsappSend(customerId, {
+        intent: stored.intent || "message",
+        templateId: stored.templateId || null,
+        body: stored.body || "",
+        vars: stored.vars || {},
+        previewConfirmed: true,
+        managedConnectionId: stored.managedConnectionId,
+        threadId: stored.threadId,
+        clientRequestId,
+      });
+      failedPayloadsRef.current.delete(messageId);
+      setMessages((prev) => {
+        const without = prev.filter((row) => row.id !== messageId);
+        return res.message ? mergeMessages(without, res.message) : without;
+      });
+      onBanner(res.kind === "template" ? copy.templateSent : copy.messageSent);
+    } catch (err: any) {
+      const failureText = err?.response?.data?.error || copy.sendFailed;
+      setMessages((prev) =>
+        applyStatusPatch(prev, {
+          id: messageId,
+          status: "failed",
+          error: failureText,
+        })
+      );
+      onBanner(failureText);
     } finally {
       sendingRef.current = false;
       setSending(false);
@@ -688,7 +769,7 @@ export default function WhatsAppWebThread({
   if (!data && customerId) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-[#efeae2] text-sm font-bold text-slate-500">
-        טוען שיחה…
+        {copy.loading}
       </div>
     );
   }
@@ -696,7 +777,7 @@ export default function WhatsAppWebThread({
   return (
     <div
       className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
-      dir="rtl"
+      dir={dir}
       style={CHAT_WALLPAPER_STYLE}
     >
       <div className={CHAT_COLUMN_CLASS}>
@@ -706,7 +787,7 @@ export default function WhatsAppWebThread({
             type="button"
             className="min-h-11 min-w-11 rounded-full text-lg font-black text-slate-600 lg:hidden"
             onClick={onBack}
-            aria-label="חזרה לרשימה"
+            aria-label={copy.back}
           >
             →
           </button>
@@ -716,12 +797,24 @@ export default function WhatsAppWebThread({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[15px] font-black text-[#111b21]">
-            {contactName || "שיחת WhatsApp"}
+            {identity.title || copy.conversations}
           </p>
+          {identity.person ? (
+            <p className="truncate text-[13px] font-bold text-[#111b21]">{identity.person}</p>
+          ) : null}
           <p className="truncate text-[12px] font-bold text-[#667781]" dir="ltr">
-            {matchPhone || ""}
-            {sessionOpen ? " · חלון 24 שעות פתוח" : " · נדרשת תבנית"}
+            {identity.phone || matchPhone || ""}
+            {sessionOpen ? ` · ${copy.sessionOpen}` : ` · ${copy.templateRequired}`}
           </p>
+          {!contactSaved ? (
+            <button
+              type="button"
+              className="mt-1 text-[12px] font-black text-[#7C4DFF]"
+              onClick={onAddContact}
+            >
+              {copy.addContact}
+            </button>
+          ) : null}
           {conversationViaLabel ? (
             <p
               className="mt-0.5 truncate text-[11px] font-bold text-[#54656f]"
@@ -837,11 +930,37 @@ export default function WhatsAppWebThread({
                     <p className="mt-1 text-[11px] text-[#667781]">{item.message.templateName}</p>
                   ) : null}
                   {item.message.error ? (
-                    <p className="mt-1 text-[11px] font-bold text-rose-700">{item.message.error}</p>
+                    <p className="mt-1 text-[11px] font-bold text-rose-700">
+                      {copy.sendFailed}: {item.message.error}
+                    </p>
+                  ) : null}
+                  {item.message.status === "failed" ? (
+                    <button
+                      type="button"
+                      className="mt-1 text-[11px] font-black text-[#7C4DFF]"
+                      onClick={() => void retryMessage(item.message.id)}
+                    >
+                      {copy.retry}
+                    </button>
                   ) : null}
                   <span className="mt-1 flex items-center justify-end gap-1 text-[11px] text-[#667781]">
                     <span>{formatClock(item.message.timestamp)}</span>
-                    {outbound ? <WhatsAppWebTicks status={item.message.status} /> : null}
+                    {outbound ? (
+                      <>
+                        <span>
+                          {tickKind(item.message.status) === "failed"
+                            ? copy.failed
+                            : tickKind(item.message.status) === "read"
+                              ? copy.read
+                              : tickKind(item.message.status) === "delivered"
+                                ? copy.delivered
+                                : tickKind(item.message.status) === "sent"
+                                  ? copy.sent
+                                  : copy.queued}
+                        </span>
+                        <WhatsAppWebTicks status={item.message.status} />
+                      </>
+                    ) : null}
                   </span>
                 </div>
               </div>
@@ -863,7 +982,7 @@ export default function WhatsAppWebThread({
         ) : null}
       </div>
 
-      <div className="max-h-[min(42vh,380px)] shrink-0 overflow-x-hidden overflow-y-auto border-t border-black/5 bg-[#f0f2f5] px-3 py-2">
+      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {!canSend ? (
           <p className="mb-2 px-2 text-xs font-bold text-rose-700">אין הרשאה לשלוח WhatsApp.</p>
         ) : null}
@@ -899,7 +1018,9 @@ export default function WhatsAppWebThread({
         ) : null}
 
         <div className="mb-2 flex flex-wrap items-center gap-2 px-1">
-          <span className="text-xs font-bold text-[#667781]">Sending from:</span>
+          <span className="text-xs font-bold text-[#667781]">
+            {replyLocked ? copy.replyFrom : copy.sendingFrom}:
+          </span>
           <span
             className="text-xs font-black text-[#111b21]"
             dir="ltr"
@@ -907,7 +1028,7 @@ export default function WhatsAppWebThread({
           >
             {sendFromLine || effectiveSendFromId || "—"}
           </span>
-          {customerId && canSend ? (
+          {customerId && canSend && !replyLocked ? (
             <select
               className="min-h-9 rounded-full border-none bg-white px-3 text-sm font-bold"
               value={effectiveSendFromId || ""}
@@ -1017,7 +1138,7 @@ export default function WhatsAppWebThread({
               setPreview("");
             }}
           >
-            <option value="">{sessionOpen ? "הודעה חופשית (חלון פתוח)" : "בחירת תבנית מאושרת"}</option>
+            <option value="">{sessionOpen ? copy.freeForm : copy.chooseTemplate}</option>
             {templates.map((tpl) => (
               <option key={tpl.id} value={tpl.id}>
                 {tpl.name} · {tpl.languageLabel || tpl.language}
@@ -1079,15 +1200,20 @@ export default function WhatsAppWebThread({
           stagedFile={stagedFile}
           onStageFile={setStagedFile}
           onSend={() => void send()}
+          messagePlaceholder={copy.messagePlaceholder}
+          templatePlaceholder={copy.templatePlaceholder}
+          sendLabel={copy.send}
+          onFocusChange={(focused) => {
+            composerFocusedRef.current = focused;
+          }}
         />
         <p className="mt-1 px-2 text-[11px] font-semibold text-[#8696a0]">
           {sessionOpen ? (
             <>
-              <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">הודעה חופשית</Badge>
-              <span className="ms-2">Enter לשליחה · Shift+Enter לשורה חדשה</span>
+              <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">{copy.freeForm}</Badge>
             </>
           ) : (
-            "חלון 24 השעות סגור — שליחה בתבנית מאושרת בלבד"
+            copy.outsideWindow
           )}
         </p>
       </div>

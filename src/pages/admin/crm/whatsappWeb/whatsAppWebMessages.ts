@@ -71,6 +71,14 @@ export type PublicWhatsAppThread = {
   wabaId?: string;
   receivedOnLabel?: string;
   sendFromLabel?: string;
+  companyName?: string;
+  contactPersonName?: string;
+  contactSaved?: boolean;
+  contactId?: string | null;
+  email?: string;
+  country?: string;
+  notes?: string;
+  whatsappProfileName?: string;
 };
 
 export type WhatsAppInboxConnection = {

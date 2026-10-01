@@ -57,7 +57,7 @@ export default function AdminCrmLayout() {
             : "mx-auto mt-5 max-w-[1480px]"
         }
       >
-        <div className="mb-3 flex shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className={isWhatsApp ? "mb-2 hidden shrink-0 flex-col gap-3 lg:mb-3 lg:flex sm:flex-row sm:items-end sm:justify-between" : "mb-3 flex shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between"}>
           <div>
             <p className="text-xs font-black text-[#7C4DFF]">פאנל ניהול</p>
             <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">CRM וניהול לקוחות</h1>
@@ -66,7 +66,7 @@ export default function AdminCrmLayout() {
             </p>
           </div>
         </div>
-        <nav className="mb-3 flex shrink-0 gap-2 overflow-x-auto pb-1 sm:mb-5">
+        <nav className={isWhatsApp ? "mb-2 flex shrink-0 gap-2 overflow-x-auto pb-1" : "mb-3 flex shrink-0 gap-2 overflow-x-auto pb-1 sm:mb-5"}>
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}

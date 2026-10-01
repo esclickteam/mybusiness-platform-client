@@ -21,6 +21,7 @@ export function scrollScrollerToBottom(
   el.scrollTop = top;
 }
 
+/** Restore a history position if a viewport change reset the scroller. Never pin to the bottom from a resize — that jumps the thread while typing or when the keyboard opens. */
 export function preserveScrollerOnResize(
   el: HTMLElement,
   {
@@ -31,10 +32,7 @@ export function preserveScrollerOnResize(
     previousScrollTop: number;
   }
 ) {
-  if (wasNearBottom) {
-    scrollScrollerToBottom(el, false);
-    return;
-  }
+  if (wasNearBottom) return;
   if (el.scrollTop === 0 && previousScrollTop > 0) {
     el.scrollTop = previousScrollTop;
   }
