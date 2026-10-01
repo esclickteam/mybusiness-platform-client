@@ -69,6 +69,8 @@ export type PartnerAgreement = {
   signatoryEmail: string;
   entityType?: string;
   taxNumber?: string;
+  commercialLicenseNumber?: string;
+  incorporationDate?: string;
   locale?: string;
   bilingual?: boolean;
   secondaryLocale?: string;
@@ -172,6 +174,8 @@ export type AgreementInput = {
   signatoryEmail?: string;
   entityType?: string;
   taxNumber?: string;
+  commercialLicenseNumber?: string;
+  incorporationDate?: string;
   agreementDate?: string;
   effectiveDate?: string;
   locale?: string;
@@ -364,6 +368,7 @@ export async function previewPartnerAgreement(id: string, version?: number) {
 export async function createSignedPartnerAgreement(
   input: AgreementInput & {
     previewHash: string;
+    generateSigningLinks?: boolean;
     bizuplySignature: {
       confirmed: boolean;
       method: "typed" | "drawn" | "stored";
@@ -375,10 +380,16 @@ export async function createSignedPartnerAgreement(
   }
 ) {
   const { data } = await API.post("/admin/partner-agreements/create-signed", input);
-  return data as { agreement: PartnerAgreement; documentHash: string; signingLinkIssued: boolean; persisted: boolean };
+  return data as {
+    agreement: PartnerAgreement;
+    documentHash: string;
+    signingLinkIssued: boolean;
+    signingLinks?: { fullName?: string; path: string; email?: string }[];
+    persisted: boolean;
+  };
 }
 
-export async function previewDraftAgreement(input: AgreementInput) {
+export async function previewDraftAgreement(input: AgreementInput & { bizuplySignature?: { imageDataUrl?: string; confirmed?: boolean } }) {
   const { data } = await API.post("/admin/partner-agreements/preview-draft", input);
   return data as {
     title: string;
@@ -401,6 +412,11 @@ export async function resendSignatoryLink(id: string, signatoryId: string) {
 export async function revokeSignatoryLink(id: string, signatoryId: string) {
   const { data } = await API.post(`/admin/partner-agreements/${id}/signatories/${signatoryId}/revoke`);
   return data as { revoked: boolean; signatoryId: string };
+}
+
+export async function downloadDraftPdf(input: AgreementInput & { bizuplySignature?: { imageDataUrl?: string; confirmed?: boolean } }) {
+  const { data } = await API.post("/admin/partner-agreements/preview-draft/pdf", input, { responseType: "blob" });
+  return data as Blob;
 }
 
 export async function downloadAgreementPdf(id: string, version?: number) {

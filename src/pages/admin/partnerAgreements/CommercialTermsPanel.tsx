@@ -97,7 +97,8 @@ function TermField({
         ) : null}
       </div>
       <div className="mt-2">
-        {mode === "custom" ? children : <p className="text-sm font-semibold text-slate-600">{defaultText}</p>}
+        {children}
+        {mode !== "custom" ? <p className="mt-2 text-xs font-semibold text-slate-500">{defaultText}</p> : null}
       </div>
     </div>
   );
@@ -347,7 +348,6 @@ export function resetCommercialModes(form: AgreementInput): AgreementInput {
     curePeriod: "30 days",
     renewalPrice: "",
     renewalTerm: "12 months",
-    territoryType: "non_exclusive",
     specialTermsEnabled: false,
     specialTerms: "",
   };

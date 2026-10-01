@@ -182,11 +182,12 @@ export default function PartnerAgreementSign() {
             {step === 2 ? (
               <section className="mt-4" data-testid="company-verification">
                 <h2 className="text-xl font-black">{copy.stepDocuments}</h2>
-                {verification.hasRegistration ? <p className="mt-2 text-sm font-bold text-emerald-800">{copy.documentsSubmitted}</p> : (
-                  <>
-                    <p className="mt-2 text-sm">{copy.registrationLabel}</p>
-                    <input type="file" accept="application/pdf,image/jpeg,image/png" className="mt-2 text-sm" onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload("company_registration", file); }} />
-                  </>
+                {verification.hasRegistration ? <p className="mt-2 text-sm font-bold text-emerald-800">{copy.documentsSubmitted || "Company Registration — Already submitted"}</p> : (
+                  <label className="mt-3 block cursor-pointer rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+                    <p className="text-sm font-black">{copy.registrationLabel}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">PDF, JPEG, or PNG up to 8 MB</p>
+                    <input type="file" accept="application/pdf,image/jpeg,image/png" className="mt-3 text-sm" onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload("company_registration", file); }} />
+                  </label>
                 )}
                 <p className="mt-4 text-sm font-bold">{copy.showsSignatory}</p>
                 <div className="mt-2 flex gap-2">
