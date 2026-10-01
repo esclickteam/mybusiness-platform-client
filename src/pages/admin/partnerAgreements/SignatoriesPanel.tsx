@@ -28,7 +28,6 @@ export default function SignatoriesPanel({
   onChange,
   onResend,
   onRevoke,
-  onSignBizuply,
 }: {
   signingMode: "parallel" | "sequential";
   signatories: AgreementSignatory[];
@@ -39,7 +38,6 @@ export default function SignatoriesPanel({
   onChange: (signatories: AgreementSignatory[], mode: "parallel" | "sequential") => void;
   onResend?: (signatoryId: string) => void;
   onRevoke?: (signatoryId: string) => void;
-  onSignBizuply?: (signatory: AgreementSignatory) => void;
 }) {
   const page = usePartnerAgreementPage();
   const text = page.text.sign;
@@ -171,20 +169,17 @@ export default function SignatoriesPanel({
                         {text.remove}
                       </button>
                     ) : null}
-                    {agreementId && row.signatoryId && !row.signedAt ? (
+                    {agreementId && row.party === "partner" && row.signatoryId && !row.signedAt && row.linkState && row.linkState !== "none" ? (
                       <>
                         <button type="button" disabled={busy} className="rounded-xl bg-slate-900 px-2 py-1 text-white" onClick={() => onResend?.(row.signatoryId || "")}>
                           {text.resend}
                         </button>
-                        <button type="button" disabled={busy} className="rounded-xl bg-rose-50 px-2 py-1 text-rose-800" onClick={() => onRevoke?.(row.signatoryId || "")}>
-                          {text.revoke}
-                        </button>
+                        {row.linkState === "active" ? (
+                          <button type="button" disabled={busy} className="rounded-xl bg-rose-50 px-2 py-1 text-rose-800" onClick={() => onRevoke?.(row.signatoryId || "")}>
+                            {text.revoke}
+                          </button>
+                        ) : null}
                       </>
-                    ) : null}
-                    {agreementId && row.party === "bizuply" && row.signatoryId && !row.signedAt ? (
-                      <button type="button" disabled={busy} className="rounded-xl bg-[#7C4DFF] px-2 py-1 text-white" onClick={() => onSignBizuply?.(row)}>
-                        {text.signNow}
-                      </button>
                     ) : null}
                   </div>
                 </article>

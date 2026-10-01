@@ -380,7 +380,6 @@ export default function AdminPartnerAgreementEditor() {
         const profile = res.data?.profile || {};
         if (profile.legalCompanyName) setLegalCompanyName(profile.legalCompanyName);
         if (profile.signatoryName) {
-          setSignName((current) => current || profile.signatoryName);
           setForm((current) => {
             const rows = current.signatories?.length ? [...current.signatories] : [];
             const index = rows.findIndex((row) => row.party === "bizuply");
@@ -461,7 +460,8 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   async function persist() {
-    const saved = await savePartnerAgreement(id || null, form);
+    const paymentMethod = String(form.paymentMethod || "").trim() || String(record?.paymentMethod || "").trim();
+    const saved = await savePartnerAgreement(id || null, { ...form, paymentMethod });
     setRecord(saved.agreement);
     setForm(fromAgreement(saved.agreement));
     if (!id) navigate(`/admin/partner-agreements/${saved.agreement.id}`, { replace: true });
@@ -531,6 +531,10 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   async function onPreview() {
+    if (record?.id) {
+      navigate(`/admin/partner-agreements/${record.id}/preview`);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -669,24 +673,63 @@ export default function AdminPartnerAgreementEditor() {
     }
   }
 
-  async function onSignBizuply(signatory: AgreementSignatory) {
-    if (!record || !signatory.signatoryId) return;
-    const company = record.bizuplyLegalCompanyName || "";
+  async function onSignExisting() {
+    if (!record || !bizSignature?.imageDataUrl) return;
+    const signatory = (record.signatories || []).find((row) => row.party === "bizuply" && row.required !== false && !row.signedAt);
+    if (!signatory?.signatoryId) return;
+    const company = String(record.bizuplyLegalCompanyName || legalCompanyName || "").trim();
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       const result = await postAgreementAction(record.id, "sign", {
         party: "bizuply",
         signatoryId: signatory.signatoryId,
         confirmed: true,
-        method: "typed",
-        typedName: signatory.fullName,
-        confirmationText: `I am authorized to sign this agreement on behalf of ${company}.`,
+        method: "drawn",
+        imageDataUrl: bizSignature.imageDataUrl,
+        confirmationText: `I confirm that I am authorized to sign this Agreement on behalf of ${company}.`,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+        localDate: new Date().toLocaleDateString(),
+        localTime: new Date().toLocaleTimeString(),
       });
       setRecord(result.agreement);
       setForm(fromAgreement(result.agreement));
+      setBizSignature(null);
+      setSignConfirmed(false);
+      setMessage("Bizuply signature saved. The agreement content is locked. Partner links were not created.");
     } catch (err) {
       setError(agreementError(err, t.signError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onGeneratePartnerLinks() {
+    if (!record) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const { data } = await API.post(`/admin/partner-agreements/${record.id}/signing-link`, {});
+      const raw = Array.isArray(data?.links) ? data.links : [];
+      const next = raw.map((link: SigningLinkRow & { party?: string }) => ({
+        signatoryId: link.signatoryId,
+        fullName: link.fullName,
+        path: link.path,
+        email: link.email,
+        createdAt: link.createdAt || new Date().toISOString(),
+        status: "pending",
+        expiresAt: link.expiresAt,
+      }));
+      setSigningLinks(next);
+      rememberSigningLinks(record.id, next);
+      const loaded = await getPartnerAgreement(record.id);
+      setRecord(loaded.agreement);
+      setForm(fromAgreement(loaded.agreement));
+      setMessage("Partner signing links are ready to copy. Nothing was emailed or sent on WhatsApp.");
+    } catch (err) {
+      setError(agreementError(err, t.resendError));
     } finally {
       setBusy(false);
     }
@@ -729,6 +772,15 @@ export default function AdminPartnerAgreementEditor() {
   }
 
   const status = record?.status || "draft";
+  const unsignedBizuply = (record?.signatories || []).find((row) => row.party === "bizuply" && row.required !== false && !row.signedAt);
+  const bizuplyHasSigned = Boolean(
+    record &&
+    (record.signatories || []).some((row) => row.party === "bizuply" && row.required !== false && row.signedAt) &&
+    !unsignedBizuply
+  );
+  const partnersStillPending = (record?.signatories || []).some((row) => row.party === "partner" && row.required !== false && !row.signedAt);
+  const canDrawOnExisting = Boolean(unsignedBizuply && ["draft", "ready_for_review", "sent", "partner_signed", "partially_signed"].includes(status));
+  const signingCompany = record?.bizuplyLegalCompanyName || legalCompanyName;
 
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
@@ -851,7 +903,6 @@ export default function AdminPartnerAgreementEditor() {
           onChange={onSignatories}
           onResend={(signatoryId) => void onResend(signatoryId)}
           onRevoke={(signatoryId) => void onRevoke(signatoryId)}
-          onSignBizuply={(signatory) => void onSignBizuply(signatory)}
         />
         {record?.signatureProgress ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="signature-progress" dir={page.dir}>
@@ -1032,6 +1083,29 @@ export default function AdminPartnerAgreementEditor() {
           <p className="text-sm font-semibold text-slate-500 md:col-span-2">{t.specialNote}</p>
         </Section>
 
+        {canDrawOnExisting ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="sign-existing-bizuply">
+            <h2 className="text-lg font-black">Sign as Bizuply</h2>
+            <p className="mt-1 text-sm font-semibold text-slate-600">
+              Review this agreement, then draw your signature. Signing saves the drawing, the exact time, and binds it to this agreement version and content hash. It does not create partner links.
+            </p>
+            <label className="mt-3 flex items-start gap-2 text-sm font-semibold text-slate-800">
+              <input type="checkbox" className="mt-1" checked={signConfirmed} onChange={(e) => { setSignConfirmed(e.target.checked); setBizSignature(null); }} />
+              <span>I confirm that I am authorized to sign this Agreement on behalf of {signingCompany}.</span>
+            </label>
+            <div className="mt-3">
+              <SignaturePad
+                label="Draw signature"
+                clearLabel="Clear"
+                onChange={(imageDataUrl) => setBizSignature(signConfirmed && imageDataUrl ? { imageDataUrl, confirmed: true } : null)}
+              />
+            </div>
+            <button type="button" disabled={busy || !bizSignature} onClick={() => void onSignExisting()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="sign-existing-bizuply-button">
+              Sign as Bizuply
+            </button>
+          </section>
+        ) : null}
+
         {!record ? (
           <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="sign-before-create">
             <h2 className="text-lg font-black">Sign as Bizuply</h2>
@@ -1070,6 +1144,18 @@ export default function AdminPartnerAgreementEditor() {
                 </p>
               ))}
             </div>
+          </section>
+        ) : null}
+
+        {bizuplyHasSigned && partnersStillPending && !signingLinks.length ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-5" data-testid="generate-partner-links">
+            <h2 className="text-lg font-black">Generate Partner Signing Links</h2>
+            <p className="mt-1 text-sm font-semibold text-slate-600">
+              Creates a separate pending link for each partner signatory. Nothing is emailed or sent on WhatsApp.
+            </p>
+            <button type="button" disabled={busy} onClick={() => void onGeneratePartnerLinks()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="generate-partner-links-button">
+              Generate Partner Signing Links
+            </button>
           </section>
         ) : null}
 
@@ -1122,7 +1208,7 @@ export default function AdminPartnerAgreementEditor() {
           ) : null}
           <button type="button" disabled={busy} onClick={() => void onPdf()} className="rounded-2xl bg-white px-4 py-2 text-sm font-black text-slate-900 ring-1 ring-slate-200 disabled:opacity-50">{t.pdf}</button>
           {status === "draft" ? <Action busy={busy} onClick={() => void run("ready")}>{t.ready}</Action> : null}
-          {status === "ready_for_review" ? <Action busy={busy} onClick={() => void run("send")}>{t.send}</Action> : null}
+          {status === "ready_for_review" && bizuplyHasSigned ? <Action busy={busy} onClick={() => void run("send")}>{t.send}</Action> : null}
           {status === "sent" ? <Action busy={busy} onClick={() => void run("sign")}>{t.markSigned}</Action> : null}
           {status === "signed" ? <Action busy={busy} onClick={() => void run("payment-pending")}>{t.paymentPending}</Action> : null}
           {["sent", "partially_signed", "partner_signed", "bizuply_signed", "payment_pending", "signed"].includes(status) && record?.paymentStatus !== "paid" ? (

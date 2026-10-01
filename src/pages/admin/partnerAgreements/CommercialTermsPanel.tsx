@@ -175,7 +175,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
         </TermField>
         <label className="block text-sm font-bold text-slate-800">
           Payment method
-          <input className={`${inputClass} mt-1`} disabled={!editable} value={form.paymentMethod || ""} onChange={(e) => set("paymentMethod", e.target.value)} />
+          <input className={`${inputClass} mt-1`} data-testid="payment-method" disabled={!editable} value={form.paymentMethod || ""} onChange={(e) => set("paymentMethod", e.target.value)} />
         </label>
       </div>
 
