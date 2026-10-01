@@ -13,6 +13,8 @@ type Preview = {
   alreadySigned?: boolean;
   portalMode?: boolean;
   signatureStatus?: string;
+  paymentState?: string;
+  completion?: { title: string; message: string; signedAtLabel?: string; readOnly?: boolean } | null;
   presentationHtml?: string;
   onboarding?: Record<string, string>;
   teamPackageRequest?: { requestedSubPartnerSeats?: number; subPartnerPackageStatus?: string };
@@ -115,8 +117,21 @@ export default function PartnerAgreementSign() {
         {error ? <p className="mb-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
         {!data ? null : portal ? (
           <article className="rounded-3xl bg-white p-6 shadow-sm" data-testid="agreement-portal">
-            <h1 className="text-2xl font-black">{copy.viewAgreement}</h1>
+            {data.completion ? (
+              <section className="mb-4 rounded-2xl bg-emerald-50 px-4 py-3" data-testid="signature-completed">
+                <h1 className="text-2xl font-black">{data.completion.title}</h1>
+                <p className="mt-1 text-sm font-semibold text-emerald-950">{data.completion.message}</p>
+              </section>
+            ) : (
+              <h1 className="text-2xl font-black">{copy.viewAgreement}</h1>
+            )}
             <p className="mt-1 text-sm font-semibold text-slate-500">{data.agreementNumber}</p>
+            <p className="mt-2 text-sm font-black" data-testid="partner-signature-status">
+              Signatures: {data.signatureStatus === "fully_signed" ? "Fully Signed" : data.signatureStatus === "awaiting_signatures" ? "Signature pending" : "Partially signed"}
+            </p>
+            <p className="text-sm font-black" data-testid="partner-payment-status">
+              Payment: {data.paymentState === "paid" ? "Paid" : data.paymentState === "payment_pending" ? "Pending" : "Unpaid"}
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {([
                 ["agreement", copy.portalAgreement],

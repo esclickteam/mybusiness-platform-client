@@ -243,8 +243,11 @@ export default function AdminPartnerAgreements() {
                         {row.countryName || "—"} {row.countryCode}
                       </td>
                       <td>{row.territoryType === "exclusive" ? copy.exclusive : row.territoryType === "non_exclusive" ? copy.nonExclusive : "—"}</td>
-                      <td>{agreementStatusLabel(row.status, text)}</td>
-                      <td>{agreementStatusLabel(row.paymentStatus, text)}</td>
+                      <td>
+                        <div>{agreementStatusLabel(row.status, text)}</div>
+                        <div className="text-xs font-bold" data-testid="list-signature-status">Signatures: {row.signatureStatus === "fully_signed" ? "Fully Signed" : row.signatureStatus === "awaiting_signatures" || !row.signatureStatus ? "Signature pending" : "Partially signed"}</div>
+                      </td>
+                      <td data-testid="list-payment-status">Payment: {row.status === "payment_pending" ? "Pending" : agreementStatusLabel(row.paymentStatus, text)}</td>
                       <td>{row.verificationStatus || "—"} · {row.activationStatus || "—"}</td>
                       <td className="space-x-2 py-2">
                         <Link className="font-black text-[#6D28D9]" to={`/admin/partner-agreements/${row.id}`}>View</Link>
