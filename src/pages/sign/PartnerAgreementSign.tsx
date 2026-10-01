@@ -17,7 +17,15 @@ type Preview = {
   completion?: { title: string; message: string; signedAtLabel?: string; readOnly?: boolean } | null;
   presentationHtml?: string;
   onboarding?: Record<string, string>;
-  teamPackageRequest?: { requestedSubPartnerSeats?: number; subPartnerPackageStatus?: string };
+  teamPackages?: TeamPackage[];
+  teamPackageRequest?: {
+    requestedSubPartnerSeats?: number;
+    requestedSubPartnerPackage?: string;
+    packageLabel?: string;
+    priceLabel?: string;
+    paymentStatus?: string;
+    subPartnerPackageStatus?: string;
+  };
   companyVerification?: {
     status?: string;
     registrationShowsSignatory?: boolean | null;
@@ -35,6 +43,57 @@ type Preview = {
   };
   partnerSignatureTimeline?: { legalName: string; title: string; signedAt?: string; timeZone?: string; localDate?: string; localTime?: string }[];
 };
+
+type TeamPackage = {
+  tierKey: string;
+  minUsers: number;
+  maxUsers: number | null;
+  annualPriceUsd: number | null;
+  custom: boolean;
+  label: string;
+  priceLabel: string;
+};
+
+function quoteFor(seats: number, packages: TeamPackage[], copy: Record<string, string>) {
+  if (!Number.isFinite(seats) || seats < 0 || seats > 500) return null;
+  const count = Math.floor(seats);
+  if (count === 0) {
+    return {
+      packageKey: "none",
+      label: copy.noPackage || "No additional package",
+      seats: 0,
+      priceLabel: copy.priceZero || "USD $0",
+      annualPrice: 0 as number | null,
+    };
+  }
+  const tier = packages.find((row) => count >= row.minUsers && (row.maxUsers == null || count <= row.maxUsers));
+  if (!tier) return null;
+  return {
+    packageKey: tier.custom ? "custom" : tier.tierKey,
+    label: tier.label,
+    seats: count,
+    priceLabel: tier.priceLabel,
+    annualPrice: tier.annualPriceUsd,
+  };
+}
+
+function catalogFrom(copy: Record<string, string>, fromApi?: TeamPackage[]) {
+  if (fromApi?.length) return fromApi;
+  return [
+    { tierKey: "1", minUsers: 1, maxUsers: 1, annualPriceUsd: 250, custom: false, label: copy.package1 || "1 Additional User", priceLabel: "USD $250" },
+    { tierKey: "2-4", minUsers: 2, maxUsers: 4, annualPriceUsd: 700, custom: false, label: copy.package2 || "2–4 Additional Users", priceLabel: "USD $700" },
+    { tierKey: "5-9", minUsers: 5, maxUsers: 9, annualPriceUsd: 1300, custom: false, label: copy.package5 || "5–9 Additional Users", priceLabel: "USD $1,300" },
+    { tierKey: "10-19", minUsers: 10, maxUsers: 19, annualPriceUsd: 2200, custom: false, label: copy.package10 || "10–19 Additional Users", priceLabel: "USD $2,200" },
+    { tierKey: "20+", minUsers: 20, maxUsers: null, annualPriceUsd: null, custom: true, label: copy.package20 || "20 or more Additional Users", priceLabel: copy.priceCustom || "Custom pricing — approval required" },
+  ];
+}
+
+function fillConfirm(template: string, quote: { label: string; seats: number; priceLabel: string }) {
+  return template
+    .replace("{package}", quote.label)
+    .replace("{seats}", String(quote.seats))
+    .replace("{price}", quote.priceLabel);
+}
 
 function localStamp() {
   const now = new Date();
@@ -175,9 +234,13 @@ export default function PartnerAgreementSign() {
               </section>
             ) : null}
             {portalTab === "team" ? (
-              <p className="mt-4 text-sm font-semibold">
-                {copy.additionalRequested}: {data.teamPackageRequest?.requestedSubPartnerSeats ?? 0} · {data.teamPackageRequest?.subPartnerPackageStatus || "none"}
-              </p>
+              <section className="mt-4 space-y-1 text-sm font-semibold" data-testid="saved-team-request">
+                <p>{copy.quotePackage}: {data.teamPackageRequest?.packageLabel || copy.noPackage}</p>
+                <p>{copy.quoteRequested}: {data.teamPackageRequest?.requestedSubPartnerSeats ?? 0}</p>
+                <p>{copy.quotePrice}: {data.teamPackageRequest?.priceLabel || copy.priceZero}</p>
+                <p>{copy.quotePrimary}: {copy.quotePrimaryValue}</p>
+                <p>{data.teamPackageRequest?.paymentStatus || copy.noPackage}</p>
+              </section>
             ) : null}
           </article>
         ) : (
@@ -222,25 +285,27 @@ export default function PartnerAgreementSign() {
               </section>
             ) : null}
             {step === 3 ? (
-              <section className="mt-4" data-testid="team-package-request">
-                <h2 className="text-xl font-black">{copy.stepTeam}</h2>
-                <p className="mt-2 text-sm leading-6">{copy.teamIntro}</p>
-                <label className="mt-3 block text-sm font-bold">
-                  {copy.teamAsk}
-                  <input type="number" min={0} value={seats} onChange={(event) => setSeats(Number(event.target.value))} className="mt-1 w-28 rounded-xl border px-3 py-2" />
-                </label>
-                <label className="mt-3 flex items-start gap-2 text-sm font-bold">
-                  <input type="checkbox" checked={seatConfirmed} onChange={(event) => setSeatConfirmed(event.target.checked)} />
-                  <span>{copy.teamConfirm}</span>
-                </label>
-                <div className="mt-4 flex gap-2">
-                  <button type="button" className="rounded-2xl border px-4 py-2 text-sm font-black" onClick={() => setStep(2)}>{copy.back}</button>
-                  <button type="button" disabled={!seatConfirmed} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-40" onClick={async () => {
-                    await API.post(`/public/partner-agreement-sign/${token}/team-package`, { seats, confirmed: true });
-                    setStep(4);
-                  }}>{copy.continue}</button>
-                </div>
-              </section>
+              <TeamUsersStep
+                copy={copy}
+                packages={catalogFrom(copy, data.teamPackages)}
+                seats={seats}
+                confirmed={seatConfirmed}
+                onSeats={(value) => {
+                  setSeats(value);
+                  setSeatConfirmed(false);
+                }}
+                onConfirmed={setSeatConfirmed}
+                onBack={() => setStep(2)}
+                onContinue={async (quote) => {
+                  await API.post(`/public/partner-agreement-sign/${token}/team-package`, {
+                    seats: quote.seats,
+                    confirmed: true,
+                    packageKey: quote.packageKey,
+                    annualPrice: quote.annualPrice,
+                  });
+                  setStep(4);
+                }}
+              />
             ) : null}
             {step === 4 ? (
               <form className="mt-4 space-y-3" onSubmit={submitSignature}>
@@ -264,5 +329,115 @@ export default function PartnerAgreementSign() {
         )}
       </div>
     </main>
+  );
+}
+
+function TeamUsersStep({
+  copy,
+  packages,
+  seats,
+  confirmed,
+  onSeats,
+  onConfirmed,
+  onBack,
+  onContinue,
+}: {
+  copy: Record<string, string>;
+  packages: TeamPackage[];
+  seats: number;
+  confirmed: boolean;
+  onSeats: (value: number) => void;
+  onConfirmed: (value: boolean) => void;
+  onBack: () => void;
+  onContinue: (quote: { packageKey: string; seats: number; annualPrice: number | null }) => Promise<void>;
+}) {
+  const quote = quoteFor(seats, packages, copy);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  return (
+    <section className="mt-4" data-testid="team-package-request">
+      <h2 className="text-xl font-black">{copy.stepTeam}</h2>
+      <p className="mt-2 text-sm leading-6">{copy.teamIntro}</p>
+      <label className="mt-3 block text-sm font-bold">
+        {copy.teamAsk}
+        <input
+          type="number"
+          min={0}
+          max={500}
+          value={seats}
+          data-testid="additional-users"
+          onChange={(event) => onSeats(Number(event.target.value))}
+          className="mt-1 w-28 rounded-xl border px-3 py-2"
+        />
+      </label>
+      {quote ? (
+        <dl className="mt-4 space-y-2 rounded-2xl bg-slate-50 p-4 text-sm" data-testid="team-quote">
+          <div className="flex justify-between gap-4">
+            <dt className="font-bold text-slate-500">{copy.quotePackage || "Package"}</dt>
+            <dd className="font-black" data-testid="quote-package">{quote.label}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="font-bold text-slate-500">{copy.quoteRequested || "Requested Users"}</dt>
+            <dd className="font-black" data-testid="quote-seats">{quote.seats}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="font-bold text-slate-500">{copy.quotePrice || "Annual Package Price"}</dt>
+            <dd className="font-black" data-testid="quote-price">{quote.priceLabel}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="font-bold text-slate-500">{copy.quotePrimary || "Primary Partner Account"}</dt>
+            <dd className="font-black">{copy.quotePrimaryValue || "Included separately"}</dd>
+          </div>
+          <p className="pt-1 text-xs font-semibold text-slate-500">{copy.separatePayment}</p>
+        </dl>
+      ) : null}
+      <ul className="mt-4 space-y-1 text-sm" data-testid="package-catalog">
+        <li className="font-black">{copy.availablePackages || "Available packages"}</li>
+        <li className={quote?.packageKey === "none" ? "font-black text-[#6D28D9]" : "font-semibold text-slate-600"}>
+          {copy.noPackage || "No additional package"} — {copy.priceZero || "USD $0"}
+        </li>
+        {packages.map((row) => (
+          <li key={row.tierKey} className={quote?.packageKey === (row.custom ? "custom" : row.tierKey) ? "font-black text-[#6D28D9]" : "font-semibold text-slate-600"}>
+            {row.label} — {row.priceLabel}
+          </li>
+        ))}
+      </ul>
+      {quote ? (
+        <label className="mt-4 flex items-start gap-2 text-sm font-bold">
+          <input type="checkbox" checked={confirmed} data-testid="confirm-package" onChange={(event) => onConfirmed(event.target.checked)} />
+          <span>
+            {fillConfirm(
+              copy.teamConfirm?.includes("{package}")
+                ? copy.teamConfirm
+                : "I confirm the package {package} for {seats} additional users at {price}. The Primary Partner account is included separately. This request does not activate additional users or charge payment.",
+              quote,
+            )}
+          </span>
+        </label>
+      ) : null}
+      {saveError ? <p className="mt-2 text-sm font-bold text-rose-700">{saveError}</p> : null}
+      <div className="mt-4 flex gap-2">
+        <button type="button" className="rounded-2xl border px-4 py-2 text-sm font-black" onClick={onBack}>{copy.back}</button>
+        <button
+          type="button"
+          disabled={!quote || !confirmed || saving}
+          className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-40"
+          onClick={async () => {
+            if (!quote) return;
+            setSaving(true);
+            setSaveError("");
+            try {
+              await onContinue(quote);
+            } catch {
+              setSaveError(copy.separatePayment || "The request could not be saved.");
+            } finally {
+              setSaving(false);
+            }
+          }}
+        >
+          {copy.continue}
+        </button>
+      </div>
+    </section>
   );
 }
