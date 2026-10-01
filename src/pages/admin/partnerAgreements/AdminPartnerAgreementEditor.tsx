@@ -6,6 +6,7 @@ import CountrySelect from "./CountrySelect";
 import CommercialTermsPanel, { resetCommercialModes } from "./CommercialTermsPanel";
 import SignatoriesPanel from "./SignatoriesPanel";
 import { agreementActionLabel, agreementStatusLabel, fill, subdivisionLabel } from "./partnerAgreementPageCopy.js";
+import { usePartnerAgreementPage } from "./usePartnerAgreementPage";
 import {
   PENDING_SIGNATURE_KEY,
   UNSAVED_PREVIEW_KEY,
