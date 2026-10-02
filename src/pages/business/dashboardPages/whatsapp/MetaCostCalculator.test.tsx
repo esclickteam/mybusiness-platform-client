@@ -28,8 +28,9 @@ describe("MetaCostCalculator", () => {
 
   it("recalculates when the country and volume change", () => {
     render(<MetaCostCalculator variant="public" />);
-    const country = screen.getAllByRole("combobox")[1] as HTMLSelectElement;
-    fireEvent.change(country, { target: { value: "IL" } });
+    const country = screen.getAllByRole("combobox")[1];
+    fireEvent.click(country);
+    fireEvent.click(screen.getByRole("option", { name: /Israel/ }));
     expect(screen.getAllByText("$35.30").length).toBeGreaterThan(0);
     const quantity = screen.getByDisplayValue("1000") as HTMLInputElement;
     fireEvent.change(quantity, { target: { value: "2" } });

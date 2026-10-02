@@ -146,18 +146,19 @@ html:has(.wa-page) {
 
 .wa-lang {
   margin-inline-start: auto;
+  flex: none;
 }
 
-.wa-lang select {
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--wa-line);
-  background: rgba(255, 255, 255, 0.04);
+.wa-page :focus-visible {
+  outline: 2px solid #5ef2b2;
+  outline-offset: 2px;
+}
+
+.wa-page select,
+.wa-page option {
+  color-scheme: dark;
+  background-color: #102033;
   color: #f3f7ff;
-  padding: 0 10px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 650;
 }
 
 .wa-sr {
@@ -1016,12 +1017,38 @@ html:has(.wa-page) {
 .wa-field textarea {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid rgba(156, 190, 230, 0.2);
-  background: rgba(4, 10, 18, 0.72);
-  color: var(--wa-ink);
+  border: 1px solid rgba(156, 190, 230, 0.28);
+  background: #102033;
+  color: #f3f7ff;
   font: inherit;
   font-size: 16px;
   padding: 12px 12px;
+  color-scheme: dark;
+}
+
+.wa-field input::placeholder,
+.wa-field textarea::placeholder,
+.wa-calc-field::placeholder {
+  color: #b7c8e0;
+}
+
+.wa-field .ms-trigger {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+.wa-field input:hover,
+.wa-field textarea:hover,
+.wa-calc-field:hover {
+  border-color: rgba(122, 231, 255, 0.7);
+}
+
+.wa-field input:-webkit-autofill,
+.wa-field textarea:-webkit-autofill,
+.wa-calc-field:-webkit-autofill {
+  -webkit-text-fill-color: #f3f7ff;
+  caret-color: #f3f7ff;
+  box-shadow: 0 0 0 1000px #102033 inset;
 }
 
 .wa-field textarea {
@@ -1152,6 +1179,7 @@ html:has(.wa-page) {
 }
 
 @media (max-width: 980px) {
+  .wa-desktop-cta { display: none; }
   .wa-menu { display: inline-flex; }
   .wa-nav-links .wa-btn-nav { display: inline-flex; width: 100%; }
   .wa-nav-links {
@@ -1240,6 +1268,10 @@ html:has(.wa-page) {
   .wa-dev-actions,
   .wa-form-actions { align-items: stretch; }
   .wa-nav .wa-btn-nav { width: auto; }
+  .wa-calc-field,
+  .wa-calc .ms-trigger {
+    font-size: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1305,13 +1337,35 @@ html:has(.wa-page) {
 .wa-calc-field {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid var(--wa-line);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--wa-ink);
+  border: 1px solid rgba(156, 190, 230, 0.28);
+  background: #102033;
+  color: #f3f7ff;
+  color-scheme: dark;
   padding: 10px 12px;
   font: inherit;
   font-size: 14px;
   font-weight: 650;
+}
+
+.wa-calc input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 2px;
+  accent-color: #5ef2b2;
+}
+
+.wa-calc-icon:hover:not(:disabled) {
+  border-color: rgba(122, 231, 255, 0.7);
+  background: #16304a;
+  color: #ffffff;
+}
+
+.wa-calc-icon:disabled {
+  opacity: 1;
+  color: #8ea3c2;
+  border-color: rgba(156, 190, 230, 0.16);
+  cursor: not-allowed;
 }
 
 .wa-calc-stat-value {

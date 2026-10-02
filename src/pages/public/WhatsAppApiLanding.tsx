@@ -36,6 +36,7 @@ import { LANGUAGE_META } from "../../i18n/languages";
 import { coerceSupportedLanguage, getTextDirection } from "../../i18n/localeUtils";
 import { changeAppLanguage } from "../../i18n/persistLanguage";
 import MetaCostCalculator from "../business/dashboardPages/whatsapp/MetaCostCalculator";
+import MenuSelect from "./MenuSelect";
 import "./whatsappApiLanding.css";
 
 const DOCS_URL = "https://api.bizuply.com/api/v1/whatsapp/docs";
@@ -717,22 +718,19 @@ export default function WhatsAppApiLanding() {
             {START_I18N[lang] || "Start now"}
           </button>
         </nav>
-        <label className="wa-lang">
+        <div className="wa-lang">
           <span className="wa-sr">{t("common.changeLanguage")}</span>
-          <select
+          <MenuSelect
+            fit
+            theme="dark"
             value={lang}
-            aria-label={t("common.changeLanguage")}
-            onChange={(event) => {
-              void changeAppLanguage(event.target.value);
+            ariaLabel={t("common.changeLanguage")}
+            options={LANGUAGE_META.map((item) => ({ value: item.code, label: item.nativeLabel }))}
+            onChange={(next) => {
+              void changeAppLanguage(next);
             }}
-          >
-            {LANGUAGE_META.map((item) => (
-              <option key={item.code} value={item.code}>
-                {item.nativeLabel}
-              </option>
-            ))}
-          </select>
-        </label>
+          />
+        </div>
         <button type="button" className="wa-btn wa-btn-primary wa-btn-nav wa-desktop-cta" onClick={() => applyIntent("starter", true)}>
           {START_I18N[lang] || "Start now"}
         </button>
@@ -1082,16 +1080,17 @@ export default function WhatsAppApiLanding() {
                         </div>
                         <div className="wa-field full">
                           <label htmlFor="wa-intent">Request</label>
-                          <select
+                          <MenuSelect
                             id="wa-intent"
-                            name="intent"
+                            theme="dark"
+                            ariaLabel="Request"
                             value={intent}
-                            onChange={(event) => applyIntent(event.target.value as Intent, false)}
-                          >
-                            {(Object.keys(INTENT_LABEL) as Intent[]).map((key) => (
-                              <option key={key} value={key}>{INTENT_LABEL[key]}</option>
-                            ))}
-                          </select>
+                            options={(Object.keys(INTENT_LABEL) as Intent[]).map((key) => ({
+                              value: key,
+                              label: INTENT_LABEL[key],
+                            }))}
+                            onChange={(next) => applyIntent(next as Intent, false)}
+                          />
                         </div>
                         <div className="wa-field full">
                           <label htmlFor="wa-message">Message</label>
