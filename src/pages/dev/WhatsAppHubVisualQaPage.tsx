@@ -415,10 +415,11 @@ export default function WhatsAppHubVisualQaPage() {
                     { type: "quick_reply", text: "מגיע" },
                     {
                       type: "url",
-                      text: "לפרטים",
-                      url: "https://example.com/event/{{1}}",
+                      text: "אישור הגעה",
+                      url: "https://evently360.com/invite/{{1}}",
                       urlType: "dynamic",
-                      exampleUrl: "https://example.com/event/42",
+                      exampleUrl:
+                        "https://evently360.com/invite/cmuq3dhv00004116n61fnzzqs",
                     },
                   ],
                 }}

@@ -1072,15 +1072,52 @@
   border-top: 1px solid #f0f2f5;
 }
 
-.wa-meta-bubble__buttons span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.wa-meta-bubble__btn {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
   min-height: 40px;
+  padding: 8px 10px;
   border-top: 1px solid #f0f2f5;
   color: #027eb5;
   font-size: 14px;
   font-weight: 600;
+  text-align: center;
+}
+
+.wa-meta-bubble__btn small {
+  max-width: 100%;
+  overflow: hidden;
+  color: #667781;
+  font-size: 10px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wa-meta-button-card__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.wa-meta-url-preview {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7f8fa;
+  font-size: 12px;
+}
+
+.wa-meta-url-preview strong,
+.wa-meta-url-preview b {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.wa-meta-button-issues {
+  display: grid;
+  gap: 6px;
 }
 
 .wa-meta-choice-list {

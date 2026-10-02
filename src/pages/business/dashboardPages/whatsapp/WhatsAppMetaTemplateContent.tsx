@@ -4,6 +4,7 @@ import type { TFunction } from "i18next";
 import i18n from "../../../../i18n/i18n";
 import {
   ChevronDown,
+  ChevronUp,
   Copy,
   CornerUpLeft,
   ExternalLink,
@@ -17,6 +18,12 @@ import {
   User,
   X,
 } from "lucide-react";
+import {
+  analyzeUrlButton,
+  applyUrlTypeChange,
+  buttonSetIssues,
+  moveButton,
+} from "./whatsappTemplateButtonModel";
 import type {
   WhatsAppHeaderType,
   WhatsAppTemplateButton,
@@ -662,8 +669,18 @@ export function WhatsAppMetaTemplateContent({
       <section className="wa-meta-content__block">
         <h5>{t("whatsapp.metaEditor.buttonsOptional")}</h5>
         <p className="wa-meta-help">
-{t("whatsapp.metaEditor.buttonsHelp", { count: MAX_BUTTONS })}
+          {t("whatsapp.metaEditor.buttonsHelp", { count: MAX_BUTTONS })}
         </p>
+        <p className="wa-meta-help">{t("whatsapp.metaEditor.buttonLimits")}</p>
+        {buttonSetIssues(buttons).length > 0 ? (
+          <div className="wa-meta-button-issues">
+            {buttonSetIssues(buttons).map((code) => (
+              <p key={code} className="wa-meta-alert wa-meta-alert--error">
+                {t(`whatsapp.wizard.errors.${code}`)}
+              </p>
+            ))}
+          </div>
+        ) : null}
         <div className="wa-meta-add-wrap">
           <button
             ref={addBtnRef}
@@ -705,22 +722,44 @@ export function WhatsAppMetaTemplateContent({
             </div>
           )}
         </div>
-        {buttons.map((btn, index) => (
+        {buttons.map((btn, index) => {
+          const urlInfo = btn.type === "url" ? analyzeUrlButton(btn) : null;
+          return (
           <div key={`${btn.type}-${index}`} className="wa-meta-button-card">
             <header>
               <strong>{buttonTypeLabel(btn.type, t)}</strong>
-              <button
-                type="button"
-                className="wa-meta-icon-btn"
-                onClick={() =>
-                  onChange({
-                    buttons: buttons.filter((_, i) => i !== index),
-                  })
-                }
-                aria-label={t("whatsapp.metaEditor.removeButton")}
-              >
-                <X className="h-4 w-4" />
-              </button>
+              <span className="wa-meta-button-card__actions">
+                <button
+                  type="button"
+                  className="wa-meta-icon-btn"
+                  disabled={index === 0}
+                  onClick={() => onChange({ buttons: moveButton(buttons, index, -1) })}
+                  aria-label={t("whatsapp.metaEditor.moveUp")}
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="wa-meta-icon-btn"
+                  disabled={index === buttons.length - 1}
+                  onClick={() => onChange({ buttons: moveButton(buttons, index, 1) })}
+                  aria-label={t("whatsapp.metaEditor.moveDown")}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="wa-meta-icon-btn"
+                  onClick={() =>
+                    onChange({
+                      buttons: buttons.filter((_, i) => i !== index),
+                    })
+                  }
+                  aria-label={t("whatsapp.metaEditor.removeButton")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </span>
             </header>
             {btn.type !== "copy_code" &&
               btn.type !== "request_contact_info" && (
@@ -739,26 +778,42 @@ export function WhatsAppMetaTemplateContent({
                 />
               </label>
             )}
-            {btn.type === "url" && (
+            {btn.type === "url" && urlInfo && (
               <>
                 <label>
                   <span className="wa-meta-label">{t("whatsapp.metaEditor.urlType")}</span>
                   <select
                     className="wa-meta-select"
-                    value={btn.urlType || "static"}
+                    value={urlInfo.urlType}
                     onChange={(e) =>
-                      updateButton(index, {
-                        urlType: e.target.value as "static" | "dynamic",
+                      onChange({
+                        buttons: buttons.map((button, i) =>
+                          i === index
+                            ? applyUrlTypeChange(
+                                button,
+                                e.target.value as "static" | "dynamic"
+                              )
+                            : button
+                        ),
                       })
                     }
                   >
                     <option value="static">{t("whatsapp.metaEditor.urlStatic")}</option>
                     <option value="dynamic">{t("whatsapp.metaEditor.urlDynamic")}</option>
                   </select>
+                  <p className="wa-meta-help">
+                    {urlInfo.urlType === "dynamic"
+                      ? t("whatsapp.metaEditor.urlDynamicHelp")
+                      : t("whatsapp.metaEditor.urlStaticHelp")}
+                  </p>
                 </label>
                 <label>
                   <div className="wa-meta-field-row">
-                    <span className="wa-meta-label">{t("whatsapp.metaEditor.websiteUrl")}</span>
+                    <span className="wa-meta-label">
+                      {urlInfo.urlType === "dynamic"
+                        ? t("whatsapp.metaEditor.urlTemplate")
+                        : t("whatsapp.metaEditor.websiteUrl")}
+                    </span>
                     <span className="wa-meta-counter">
                       {(btn.url || "").length}/{URL_MAX}
                     </span>
@@ -768,23 +823,64 @@ export function WhatsAppMetaTemplateContent({
                     dir="ltr"
                     maxLength={URL_MAX}
                     value={btn.url || ""}
-                    onChange={(e) => updateButton(index, { url: e.target.value })}
-                    placeholder="https://www.example.com"
+                    onChange={(e) => {
+                      const url = e.target.value;
+                      updateButton(index, {
+                        url,
+                        urlType: /\{\{/.test(url) ? "dynamic" : btn.urlType,
+                      });
+                    }}
+                    placeholder={
+                      urlInfo.urlType === "dynamic"
+                        ? "https://evently360.com/invite/{{1}}"
+                        : "https://evently360.com"
+                    }
                   />
+                  {urlInfo.urlType === "dynamic" ? (
+                    <button
+                      type="button"
+                      className="wa-meta-link-btn"
+                      onClick={() => {
+                        const current = String(btn.url || "").trim();
+                        if (/\{\{\s*1\s*\}\}$/.test(current)) return;
+                        const base = current.replace(/\{\{[^}]*\}\}/g, "").replace(/\/+$/, "");
+                        updateButton(index, {
+                          url: base ? `${base}/{{1}}` : "{{1}}",
+                          urlType: "dynamic",
+                        });
+                      }}
+                    >
+                      {t("whatsapp.metaEditor.addUrlVariable")}
+                    </button>
+                  ) : null}
                 </label>
-                {btn.urlType === "dynamic" && (
-                  <label>
-                    <span className="wa-meta-label">{t("whatsapp.metaEditor.sampleUrl")}</span>
-                    <input
-                      className="wa-meta-input"
-                      dir="ltr"
-                      value={btn.exampleUrl || ""}
-                      onChange={(e) =>
-                        updateButton(index, { exampleUrl: e.target.value })
-                      }
-                      placeholder="https://www.example.com/offer"
-                    />
-                  </label>
+                {urlInfo.urlType === "dynamic" && (
+                  <>
+                    <label>
+                      <span className="wa-meta-label">{t("whatsapp.metaEditor.sampleUrl")}</span>
+                      <input
+                        className="wa-meta-input"
+                        dir="ltr"
+                        maxLength={URL_MAX}
+                        value={btn.exampleUrl || ""}
+                        onChange={(e) =>
+                          updateButton(index, { exampleUrl: e.target.value })
+                        }
+                        placeholder="https://evently360.com/invite/cmuq3dhv00004116n61fnzzqs"
+                      />
+                      <p className="wa-meta-help">{t("whatsapp.metaEditor.sampleUrlHelp")}</p>
+                    </label>
+                    {urlInfo.previewUrl ? (
+                      <div className="wa-meta-url-preview">
+                        <span>{t("whatsapp.metaEditor.linkPreview")}</span>
+                        <strong dir="ltr">{urlInfo.previewUrl}</strong>
+                        <span>
+                          {t("whatsapp.metaEditor.sendValue")}{" "}
+                          <b dir="ltr">{urlInfo.suffix}</b>
+                        </span>
+                      </div>
+                    ) : null}
+                  </>
                 )}
               </>
             )}
@@ -822,7 +918,8 @@ export function WhatsAppMetaTemplateContent({
               </label>
             )}
           </div>
-        ))}
+          );
+        })}
       </section>
     </fieldset>
   );
