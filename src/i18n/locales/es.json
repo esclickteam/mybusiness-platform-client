@@ -9190,6 +9190,7 @@
         "META_EDIT_COOLDOWN": "Una plantilla aprobada se puede editar una vez cada 24 horas.",
         "META_FIELD_LOCKED": "Meta no permite cambiar el nombre, el idioma o la categoría después del envío.",
         "META_RATE_LIMIT": "Meta está limitando las llamadas. Inténtelo más tarde.",
+        "META_RATE_LIMIT_UNTIL": "Meta está limitando las llamadas. Puede intentarlo de nuevo a las {{time}}.",
         "URL_REQUIRED": "Falta la URL del botón.",
         "URL_NEEDS_HTTPS": "La URL debe empezar por https://.",
         "URL_INVALID": "La URL no es válida.",

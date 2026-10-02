@@ -9190,6 +9190,7 @@
         "META_EDIT_COOLDOWN": "يمكن تعديل قالب معتمد مرة كل 24 ساعة.",
         "META_FIELD_LOCKED": "لا تسمح Meta بتغيير الاسم أو اللغة أو الفئة بعد الإرسال.",
         "META_RATE_LIMIT": "Meta تحدّ من الطلبات. حاولوا لاحقًا.",
+        "META_RATE_LIMIT_UNTIL": "Meta تحدّ من الطلبات. يمكنكم المحاولة مجددًا في {{time}}.",
         "URL_REQUIRED": "رابط الزر مفقود.",
         "URL_NEEDS_HTTPS": "يجب أن يبدأ الرابط بـ https://.",
         "URL_INVALID": "الرابط غير صالح.",

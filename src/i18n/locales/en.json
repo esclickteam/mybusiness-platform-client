@@ -9332,6 +9332,7 @@
         "META_EDIT_COOLDOWN": "An approved template can be edited once every 24 hours.",
         "META_FIELD_LOCKED": "Meta does not allow the name, language, or category to change after submission.",
         "META_RATE_LIMIT": "Meta is limiting API calls. Try again later.",
+        "META_RATE_LIMIT_UNTIL": "Meta is limiting API calls. You can try again at {{time}}.",
         "URL_REQUIRED": "A website URL is required.",
         "URL_NEEDS_HTTPS": "The website URL must start with https://.",
         "URL_INVALID": "The website URL is not valid.",

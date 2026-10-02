@@ -9190,6 +9190,7 @@
         "META_EDIT_COOLDOWN": "Um modelo aprovado pode ser editado uma vez a cada 24 horas.",
         "META_FIELD_LOCKED": "A Meta não permite alterar nome, idioma ou categoria depois do envio.",
         "META_RATE_LIMIT": "A Meta está limitando as chamadas. Tente mais tarde.",
+        "META_RATE_LIMIT_UNTIL": "A Meta está limitando as chamadas. Você pode tentar de novo às {{time}}.",
         "URL_REQUIRED": "Falta a URL do botão.",
         "URL_NEEDS_HTTPS": "A URL precisa começar com https://.",
         "URL_INVALID": "A URL não é válida.",
