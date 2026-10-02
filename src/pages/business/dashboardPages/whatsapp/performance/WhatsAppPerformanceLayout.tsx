@@ -15,6 +15,7 @@ import { btnSecondary, cardBase, inputBase } from "../../../../../styles/bizuply
 import { useWhatsAppHubContext } from "../../../../dev/useWhatsAppHubContext";
 import { useWhatsAppVisualQaOverride } from "../../../../dev/whatsappVisualQaContext";
 import { downloadCsv, separatedTotals, toCsv } from "./performanceModel";
+import { reasonText } from "./performanceUi";
 import { buildPerformanceFixture } from "./performanceFixture";
 
 export type PerformanceContext = {
@@ -115,6 +116,10 @@ export function PerformanceToolbar({
   const lastSync = view?.sync.lastSuccessAt
     ? new Date(view.sync.lastSuccessAt).toLocaleString(locale)
     : t("whatsapp.performance.neverSynced");
+  const limitedUntil = view?.sync.rateLimitedUntil
+    ? new Date(view.sync.rateLimitedUntil)
+    : null;
+  const limited = Boolean(limitedUntil && limitedUntil.getTime() > Date.now());
 
   return (
     <div className={`${cardBase} space-y-3 p-3 sm:p-4`}>
@@ -128,7 +133,7 @@ export function PerformanceToolbar({
             <Download className="h-4 w-4" />
             {t("whatsapp.performance.exportCsv")}
           </button>
-          <button type="button" className={btnSecondary} onClick={onRefresh} disabled={syncing}>
+          <button type="button" className={btnSecondary} onClick={onRefresh} disabled={syncing || limited}>
             {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             {syncing ? t("whatsapp.performance.refreshing") : t("whatsapp.performance.refresh")}
           </button>
@@ -200,9 +205,19 @@ export function PerformanceToolbar({
           {view.range.clampReasons.map((code) => t(`whatsapp.performance.reasons.${code}`, { defaultValue: code })).join(" ")}
         </p>
       ) : null}
-      {view?.sync.lastError ? (
+      {limited ? (
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">
+          {view?.stale || view?.sync.lastSuccessAt
+            ? t("whatsapp.performance.staleData")
+            : t("whatsapp.performance.rateLimitEmpty")}{" "}
+          {t("whatsapp.performance.rateLimitRetry")} {limitedUntil?.toLocaleString(locale)}.
+          {view?.sync.usage?.callCount != null
+            ? ` ${t("whatsapp.performance.usage")}: ${view.sync.usage.callCount}%`
+            : ""}
+        </p>
+      ) : view?.sync.lastErrorCode ? (
         <p className="text-xs font-semibold text-rose-600">
-          {t("whatsapp.performance.syncError")}: {view.sync.lastError}
+          {reasonText(t, view.sync.lastErrorCode)}
         </p>
       ) : null}
     </div>
@@ -274,11 +289,15 @@ export default function WhatsAppPerformanceLayout() {
       const data = await syncWhatsAppPerformance(query);
       setView(data);
     } catch (err) {
-      const response = (err as { response?: { data?: { error?: string; view?: WhatsAppPerformanceView } } })
-        ?.response?.data;
+      const response = (err as {
+        response?: { data?: { error?: string; code?: string; view?: WhatsAppPerformanceView } };
+      })?.response?.data;
       if (response?.view) setView(response.view);
-      setError(response?.error || t("whatsapp.performance.syncError"));
-      toast.error(response?.error || t("whatsapp.performance.syncError"));
+      const message = response?.code
+        ? reasonText(t, response.code)
+        : response?.error || t("whatsapp.performance.syncError");
+      setError(message);
+      if (response?.code !== "META_RATE_LIMIT") toast.error(message);
     } finally {
       setSyncing(false);
     }
@@ -286,6 +305,14 @@ export default function WhatsAppPerformanceLayout() {
 
   useEffect(() => {
     if (visualQa || autoSyncRef.current || !view || syncing) return;
+    const limitedUntilMs = view.sync.rateLimitedUntil
+      ? new Date(view.sync.rateLimitedUntil).getTime()
+      : 0;
+    const attemptedMs = view.sync.lastAttemptAt
+      ? new Date(view.sync.lastAttemptAt).getTime()
+      : 0;
+    if (view.sync.lastErrorCode === "META_RATE_LIMIT" || limitedUntilMs > Date.now()) return;
+    if (attemptedMs && Date.now() - attemptedMs < 2 * 60 * 1000) return;
     if (!view.sync.lastSuccessAt && view.meta.messaging.reason === "NOT_SYNCED" && !view.demoData) {
       autoSyncRef.current = true;
       void refresh();
