@@ -25,6 +25,7 @@ export const KNOWN_TOP_SEGMENTS = new Set([
   "insights",
   "developers",
   "billing",
+  "meta-costs",
   "connection",
 ]);
 

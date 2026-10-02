@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   ArrowRight,
@@ -31,6 +32,10 @@ import {
   WHATSAPP_SEO_TITLE,
   isBizuplyWhatsAppHost,
 } from "../../lib/whatsappHost.mjs";
+import { LANGUAGE_META } from "../../i18n/languages";
+import { coerceSupportedLanguage, getTextDirection } from "../../i18n/localeUtils";
+import { changeAppLanguage } from "../../i18n/persistLanguage";
+import MetaCostCalculator from "../business/dashboardPages/whatsapp/MetaCostCalculator";
 import "./whatsappApiLanding.css";
 
 const DOCS_URL = "https://api.bizuply.com/api/v1/whatsapp/docs";
@@ -40,10 +45,92 @@ const NAV = [
   ["Product", "#product"],
   ["Features", "#features"],
   ["Pricing", "#pricing"],
+  ["Calculator", "#calculator"],
   ["Developers", "#developers"],
   ["FAQ", "#faq"],
   ["Contact", "#contact"],
 ] as const;
+
+const NAV_I18N: Record<string, Array<(typeof NAV)[number]>> = {
+  he: [
+    ["מוצר", "#product"],
+    ["יכולות", "#features"],
+    ["מחירים", "#pricing"],
+    ["מחשבון", "#calculator"],
+    ["מפתחים", "#developers"],
+    ["שאלות", "#faq"],
+    ["יצירת קשר", "#contact"],
+  ],
+  es: [
+    ["Producto", "#product"],
+    ["Funciones", "#features"],
+    ["Precios", "#pricing"],
+    ["Calculadora", "#calculator"],
+    ["Desarrolladores", "#developers"],
+    ["Preguntas", "#faq"],
+    ["Contacto", "#contact"],
+  ],
+  "pt-BR": [
+    ["Produto", "#product"],
+    ["Recursos", "#features"],
+    ["Preços", "#pricing"],
+    ["Calculadora", "#calculator"],
+    ["Desenvolvedores", "#developers"],
+    ["Perguntas", "#faq"],
+    ["Contato", "#contact"],
+  ],
+  ar: [
+    ["المنتج", "#product"],
+    ["المزايا", "#features"],
+    ["الأسعار", "#pricing"],
+    ["الحاسبة", "#calculator"],
+    ["المطورون", "#developers"],
+    ["الأسئلة", "#faq"],
+    ["تواصل", "#contact"],
+  ],
+};
+
+const HERO_I18N: Record<string, { kicker: string; title: string; accent: string; lead: string; start: string; demo: string }> = {
+  he: {
+    kicker: "WhatsApp Cloud API רשמי",
+    title: "גישה רשמית ל-WhatsApp API",
+    accent: "מהירה, ישירה, ובנויה לצמיחה.",
+    lead: "חברו את העסק או את הלקוחות ל-WhatsApp Cloud API הרשמי, עם קליטה מהירה, ניהול תבניות, webhooks וחוויית מפתחים עדכנית.",
+    start: "התחילו ב-29$ לחודש",
+    demo: "קביעת הדגמה",
+  },
+  es: {
+    kicker: "WhatsApp Cloud API oficial",
+    title: "Acceso oficial a la API de WhatsApp",
+    accent: "rápido, directo y listo para crecer.",
+    lead: "Conecte su negocio o el de sus clientes a la API oficial de WhatsApp Cloud, con alta rápida, plantillas, webhooks y una experiencia lista para desarrolladores.",
+    start: "Empezar por 29 USD/mes",
+    demo: "Reservar una demo",
+  },
+  "pt-BR": {
+    kicker: "WhatsApp Cloud API oficial",
+    title: "Acesso oficial à API do WhatsApp",
+    accent: "rápido, direto e feito para crescer.",
+    lead: "Conecte sua empresa ou seus clientes à API oficial do WhatsApp Cloud, com entrada rápida, modelos, webhooks e uma experiência pronta para desenvolvedores.",
+    start: "Começar por US$ 29/mês",
+    demo: "Agendar uma demo",
+  },
+  ar: {
+    kicker: "WhatsApp Cloud API الرسمي",
+    title: "وصول رسمي إلى واجهة WhatsApp",
+    accent: "سريع ومباشر ومبني للنمو.",
+    lead: "اربط نشاطك أو عملاءك بواجهة WhatsApp Cloud الرسمية، مع إعداد سريع وإدارة قوالب وwebhooks وتجربة جاهزة للمطورين.",
+    start: "ابدأ مقابل 29 دولارًا شهريًا",
+    demo: "احجز عرضًا",
+  },
+};
+
+const START_I18N: Record<string, string> = {
+  he: "התחילו עכשיו",
+  es: "Empezar",
+  "pt-BR": "Começar",
+  ar: "ابدأ الآن",
+};
 
 type IconType = React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
 type Intent = "starter" | "demo" | "growth";
@@ -433,6 +520,11 @@ function HeroStage() {
 }
 
 export default function WhatsAppApiLanding() {
+  const { i18n, t } = useTranslation();
+  const lang = coerceSupportedLanguage(i18n.language);
+  const dir = getTextDirection(lang);
+  const nav = NAV_I18N[lang] || NAV;
+  const hero = HERO_I18N[lang];
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [intent, setIntent] = useState<Intent>("starter");
@@ -442,8 +534,11 @@ export default function WhatsAppApiLanding() {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    document.documentElement.lang = "en";
-    document.documentElement.dir = "ltr";
+    document.documentElement.lang = lang;
+    document.documentElement.dir = dir;
+  }, [lang, dir]);
+
+  useEffect(() => {
     document.body.style.background = "#061018";
     document.documentElement.style.background = "#061018";
 
@@ -574,9 +669,9 @@ export default function WhatsAppApiLanding() {
   };
 
   return (
-    <div className="wa-page" dir="ltr" lang="en">
+    <div className="wa-page" dir={dir} lang={lang}>
       <Helmet>
-        <html lang="en" dir="ltr" />
+        <html lang={lang} dir={dir} />
         <title>{WHATSAPP_SEO_TITLE}</title>
         <meta name="description" content={WHATSAPP_SEO_DESCRIPTION} />
         <meta name="keywords" content={WHATSAPP_SEO_KEYWORDS} />
@@ -613,17 +708,33 @@ export default function WhatsAppApiLanding() {
           </span>
         </a>
         <nav className={menuOpen ? "wa-nav-links is-open" : "wa-nav-links"} aria-label="Page">
-          {NAV.map(([label, href]) => (
-            <a key={label} href={href} onClick={() => setMenuOpen(false)}>
+          {nav.map(([label, href]) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)}>
               {label}
             </a>
           ))}
           <button type="button" className="wa-btn wa-btn-primary wa-btn-nav" onClick={() => applyIntent("starter", true)}>
-            Start now
+            {START_I18N[lang] || "Start now"}
           </button>
         </nav>
+        <label className="wa-lang">
+          <span className="wa-sr">{t("common.changeLanguage")}</span>
+          <select
+            value={lang}
+            aria-label={t("common.changeLanguage")}
+            onChange={(event) => {
+              void changeAppLanguage(event.target.value);
+            }}
+          >
+            {LANGUAGE_META.map((item) => (
+              <option key={item.code} value={item.code}>
+                {item.nativeLabel}
+              </option>
+            ))}
+          </select>
+        </label>
         <button type="button" className="wa-btn wa-btn-primary wa-btn-nav wa-desktop-cta" onClick={() => applyIntent("starter", true)}>
-          Start now
+          {START_I18N[lang] || "Start now"}
         </button>
         <button
           type="button"
@@ -639,19 +750,28 @@ export default function WhatsAppApiLanding() {
       <main id="top">
         <section className="wa-wrap wa-hero">
           <div>
-            <p className="wa-kicker"><i /> Official WhatsApp Cloud API</p>
+            <p className="wa-kicker"><i /> {hero?.kicker || "Official WhatsApp Cloud API"}</p>
             <h1>
-              Official WhatsApp API access — <span className="wa-grad">fast, direct, and built for growth.</span>
+              {hero ? (
+                <>
+                  {hero.title} — <span className="wa-grad">{hero.accent}</span>
+                </>
+              ) : (
+                <>
+                  Official WhatsApp API access — <span className="wa-grad">fast, direct, and built for growth.</span>
+                </>
+              )}
             </h1>
             <p className="wa-lead">
-              Connect your business or clients to the official WhatsApp Cloud API with fast onboarding, template management, webhooks, and a modern developer-ready experience.
+              {hero?.lead ||
+                "Connect your business or clients to the official WhatsApp Cloud API with fast onboarding, template management, webhooks, and a modern developer-ready experience."}
             </p>
             <div className="wa-hero-actions">
               <button type="button" className="wa-btn wa-btn-primary" onClick={() => applyIntent("starter", true)}>
-                Get started for $29/mo <ArrowRight size={16} />
+                {hero?.start || "Get started for $29/mo"} <ArrowRight size={16} />
               </button>
               <button type="button" className="wa-btn wa-btn-ghost" onClick={() => applyIntent("demo", true)}>
-                Book a demo
+                {hero?.demo || "Book a demo"}
               </button>
             </div>
             <ul className="wa-trust">
@@ -848,6 +968,12 @@ export default function WhatsAppApiLanding() {
           </div>
         </section>
 
+        <section className="wa-section" id="calculator">
+          <div className="wa-wrap wa-reveal">
+            <MetaCostCalculator variant="public" />
+          </div>
+        </section>
+
         <section className="wa-section" id="compare" style={{ paddingTop: 0 }}>
           <div className="wa-wrap wa-reveal">
             <p className="wa-eyebrow">Why choose Bizuply</p>
@@ -998,6 +1124,7 @@ export default function WhatsAppApiLanding() {
           </div>
           <ul>
             <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#calculator">{nav.find((item) => item[1] === "#calculator")?.[0] || "Calculator"}</a></li>
             <li><a href="#developers">Developers</a></li>
             <li><a href={DOCS_URL}>API docs</a></li>
             <li><a href="https://bizuply.com">bizuply.com</a></li>

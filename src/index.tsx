@@ -67,8 +67,12 @@ if (onWhatsAppHost) {
   document.body.style.background = "#061018";
   document.documentElement.style.background = "#061018";
   document.body.setAttribute("data-theme", "dark");
-  document.documentElement.lang = "en";
-  document.documentElement.dir = "ltr";
+  const storedLang = localStorage.getItem("bizuply_lang_preference");
+  const waLang = ["en", "he", "es", "pt-BR", "ar"].includes(storedLang || "")
+    ? storedLang
+    : "en";
+  document.documentElement.lang = waLang || "en";
+  document.documentElement.dir = waLang === "he" || waLang === "ar" ? "rtl" : "ltr";
 } else if (onTravelHost) {
   document.body.style.background = "#f4f7fb";
   document.documentElement.style.background = "#f4f7fb";

@@ -178,6 +178,9 @@ const WhatsAppDevelopersTab = lazy(() =>
 const WhatsAppBillingTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppBillingTab")
 );
+const WhatsAppMetaCostsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppMetaCostsTab")
+);
 const WhatsAppMessagesLayout = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppMessagesLayout")
 );
@@ -583,6 +586,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="insights" element={<WhatsAppInsightsTab />} />
             <Route path="developers" element={<WhatsAppDevelopersTab />} />
             <Route path="billing" element={<WhatsAppBillingTab />} />
+            <Route path="meta-costs" element={<WhatsAppMetaCostsTab />} />
             <Route path="connection" element={<WhatsAppSettingsTab />} />
             <Route path="compose" element={<Navigate to="../messages/compose" replace />} />
             <Route path="lists" element={<Navigate to="../messages/lists" replace />} />
