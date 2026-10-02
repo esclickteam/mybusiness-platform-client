@@ -255,9 +255,22 @@ function apiErrorMessage(
   t: TFunction,
   fallback: string
 ): string {
-  const data = (err as { response?: { data?: { code?: string; error?: string } } })
-    ?.response?.data;
+  const data = (
+    err as {
+      response?: { data?: { code?: string; error?: string; retryAt?: string } };
+    }
+  )?.response?.data;
   const code = String(data?.code || "");
+  if (code === "META_RATE_LIMIT" && data?.retryAt) {
+    const when = new Date(data.retryAt);
+    if (!Number.isNaN(when.getTime())) {
+      const time = new Intl.DateTimeFormat(undefined, {
+        dateStyle: "short",
+        timeStyle: "short",
+      }).format(when);
+      return t("whatsapp.wizard.errors.META_RATE_LIMIT_UNTIL", { time });
+    }
+  }
   if (code) {
     const translated = t(`whatsapp.wizard.errors.${code}`, { defaultValue: "" });
     if (translated) return translated;
