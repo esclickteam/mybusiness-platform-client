@@ -8,6 +8,7 @@ import {
   OFFICIAL_RATE_CARD,
   selectableCountries,
 } from "../../../../lib/metaWhatsappPricing/calculate";
+import MenuSelect from "../../../public/MenuSelect";
 import type {
   MessageCategory,
   MetaQuote,
@@ -336,11 +337,13 @@ export default function MetaCostCalculator({
         <div className="grid gap-3 md:grid-cols-3">
           <label>
             <span className={label}>{t("whatsapp.metaCosts.currency")}</span>
-            <select className={field} value={currency} onChange={(event) => setCurrency(event.target.value)}>
-              {card.currencies.map((code) => (
-                <option key={code} value={code}>{code}</option>
-              ))}
-            </select>
+            <MenuSelect
+              theme={publicTheme ? "dark" : "light"}
+              ariaLabel={t("whatsapp.metaCosts.currency")}
+              value={currency}
+              options={card.currencies.map((code) => ({ value: code, label: code }))}
+              onChange={setCurrency}
+            />
           </label>
           <label>
             <span className={label}>{t("whatsapp.metaCosts.phoneNumbers")}</span>
@@ -380,46 +383,39 @@ export default function MetaCostCalculator({
             <div className="grid gap-3 md:grid-cols-[1.4fr_1fr_0.8fr_0.8fr_auto]">
               <label>
                 <span className={label}>{t("whatsapp.metaCosts.country")}</span>
-                <select
-                  className={field}
+                <MenuSelect
+                  theme={publicTheme ? "dark" : "light"}
+                  ariaLabel={t("whatsapp.metaCosts.country")}
                   value={line.countryIso}
-                  onChange={(event) =>
+                  options={visibleCountries.map((country) => ({
+                    value: country.iso,
+                    label: `${countryLabel(country.iso, country.name, locale, t("whatsapp.metaCosts.otherCountry"))}${country.callingCode ? ` +${country.callingCode}` : ""}`,
+                  }))}
+                  onChange={(next) =>
                     setLines((current) =>
-                      current.map((item) =>
-                        item.id === line.id ? { ...item, countryIso: event.target.value } : item
-                      )
+                      current.map((item) => (item.id === line.id ? { ...item, countryIso: next } : item))
                     )
                   }
-                >
-                  {visibleCountries.map((country) => (
-                    <option key={country.iso} value={country.iso}>
-                      {countryLabel(country.iso, country.name, locale, t("whatsapp.metaCosts.otherCountry"))}
-                      {country.callingCode ? ` +${country.callingCode}` : ""}
-                    </option>
-                  ))}
-                </select>
+                />
               </label>
               <label>
                 <span className={label}>{t("whatsapp.metaCosts.category")}</span>
-                <select
-                  className={field}
+                <MenuSelect
+                  theme={publicTheme ? "dark" : "light"}
+                  ariaLabel={t("whatsapp.metaCosts.category")}
                   value={line.category}
-                  onChange={(event) =>
+                  options={CATEGORIES.map((category) => ({
+                    value: category,
+                    label: t(`whatsapp.metaCosts.cat_${category}`),
+                  }))}
+                  onChange={(next) =>
                     setLines((current) =>
                       current.map((item) =>
-                        item.id === line.id
-                          ? { ...item, category: event.target.value as MessageCategory }
-                          : item
+                        item.id === line.id ? { ...item, category: next as MessageCategory } : item
                       )
                     )
                   }
-                >
-                  {CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {t(`whatsapp.metaCosts.cat_${category}`)}
-                    </option>
-                  ))}
-                </select>
+                />
               </label>
               <label>
                 <span className={label}>{t("whatsapp.metaCosts.quantity")}</span>
