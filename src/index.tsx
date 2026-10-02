@@ -21,6 +21,7 @@ import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
+import { isBizuplyWhatsAppHost } from "./lib/whatsappHost.mjs";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
 import App from "./App.jsx";
 
@@ -58,11 +59,17 @@ if (import.meta.env.PROD) {
 ========================================================== */
 
 const onPublicCustomerSite = isPublicCustomerSiteHost();
-const onTravelHost = isBizuplyTravelHost(
-  typeof window !== "undefined" ? window.location.hostname : ""
-);
+const bootHostname = typeof window !== "undefined" ? window.location.hostname : "";
+const onTravelHost = isBizuplyTravelHost(bootHostname);
+const onWhatsAppHost = isBizuplyWhatsAppHost(bootHostname);
 
-if (onTravelHost) {
+if (onWhatsAppHost) {
+  document.body.style.background = "#061018";
+  document.documentElement.style.background = "#061018";
+  document.body.setAttribute("data-theme", "dark");
+  document.documentElement.lang = "en";
+  document.documentElement.dir = "ltr";
+} else if (onTravelHost) {
   document.body.style.background = "#f4f7fb";
   document.documentElement.style.background = "#f4f7fb";
   document.body.setAttribute("data-theme", "light");
@@ -109,6 +116,9 @@ const queryClient = new QueryClient({
 ========================================================== */
 
 function AppLoader() {
+  if (isBizuplyWhatsAppHost(window.location.hostname)) {
+    return <div className="min-h-screen bg-[#061018]" />;
+  }
   if (isBizuplyTravelHost(window.location.hostname)) {
     return <div className="min-h-screen bg-[#f4f7fb]" />;
   }

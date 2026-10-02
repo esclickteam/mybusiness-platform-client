@@ -24,6 +24,7 @@ import {
   resolvePreferredLanguage,
 } from "./localeUtils";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
+import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
 import { SUPPORTED_LANGUAGES } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
@@ -35,7 +36,8 @@ const browserGeoDetector = {
 
     if (
       typeof window !== "undefined" &&
-      isBizuplyTravelHost(window.location.hostname)
+      (isBizuplyTravelHost(window.location.hostname) ||
+        isBizuplyWhatsAppHost(window.location.hostname))
     ) {
       return "en";
     }
@@ -144,7 +146,8 @@ if (
   import.meta.env.MODE !== "test" &&
   !hasManualLanguageChoice() &&
   !readGuidedDemoLocaleLock() &&
-  !isBizuplyTravelHost(window.location.hostname)
+  !isBizuplyTravelHost(window.location.hostname) &&
+  !isBizuplyWhatsAppHost(window.location.hostname)
 ) {
   void fetchGeoLanguage().then((geoLanguage) => {
     if (!geoLanguage || hasManualLanguageChoice() || readGuidedDemoLocaleLock()) return;

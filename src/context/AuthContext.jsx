@@ -45,6 +45,7 @@ import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
+import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
 import { syncLanguageOnLogin } from "../i18n/persistLanguage";
 import i18n from "../i18n/i18n";
 import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
@@ -741,8 +742,12 @@ export function AuthProvider({ children }) {
 
     // Published customer sites (custom domains / sites.*) never need auth.
     // Skip token refresh + /auth/me so the site can paint without Bizuply boot.
-    // travel.bizuply.com is a public partner landing page with no login.
-    if (isPublicCustomerSiteHost() || isBizuplyTravelHost(window.location.hostname)) {
+    // travel.bizuply.com and whatsapp.bizuply.com are public marketing pages.
+    if (
+      isPublicCustomerSiteHost() ||
+      isBizuplyTravelHost(window.location.hostname) ||
+      isBizuplyWhatsAppHost(window.location.hostname)
+    ) {
       finishLoggedOut();
       return;
     }
@@ -1165,7 +1170,11 @@ export function AuthProvider({ children }) {
     loading &&
     !initialized &&
     !isPublicCustomerSiteHost() &&
-    !(typeof window !== "undefined" && isBizuplyTravelHost(window.location.hostname))
+    !(
+      typeof window !== "undefined" &&
+      (isBizuplyTravelHost(window.location.hostname) ||
+        isBizuplyWhatsAppHost(window.location.hostname))
+    )
   ) {
     return <BizuplyLoader fullScreen label={i18n.t("common.loading")} />;
   }

@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
+import { shouldRenderWhatsAppLanding } from "./lib/whatsappHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
@@ -233,6 +234,7 @@ const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"))
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
 const PartnerHostHome = lazy(() => import("./pages/public/PartnerHostHome"));
 const TravelLanding = lazy(() => import("./pages/public/TravelLanding"));
+const WhatsAppApiLanding = lazy(() => import("./pages/public/WhatsAppApiLanding"));
 const PartnerCheckoutSuccess = lazy(() => import("./pages/public/PartnerCheckoutSuccess"));
 const PartnerMyPage = lazy(() => import("./pages/partner/PartnerMyPage"));
 const PartnerReferrals = lazy(() => import("./pages/partner/PartnerReferrals"));
@@ -841,7 +843,10 @@ export default function App() {
   const appLang = getHtmlLang(i18n.language);
 
   const isMiniSiteHost = isPublicMiniSiteHost();
-  const travelHost = isBizuplyTravelHost(getCurrentHostname());
+  const hostname = getCurrentHostname();
+  const travelHost = isBizuplyTravelHost(hostname);
+  const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname);
+  const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
@@ -908,27 +913,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (isMiniSiteHost || travelHost) return;
+    if (isMiniSiteHost || publicMarketingHost) return;
     void registerServiceWorker();
-  }, [isMiniSiteHost, travelHost]);
+  }, [isMiniSiteHost, publicMarketingHost]);
 
   useEffect(() => {
-    if (isMiniSiteHost || travelHost) return undefined;
+    if (isMiniSiteHost || publicMarketingHost) return undefined;
     return listenForPushSubscriptionChange();
-  }, [isMiniSiteHost, travelHost]);
+  }, [isMiniSiteHost, publicMarketingHost]);
 
   useEffect(() => {
-    if (isMiniSiteHost || travelHost || !user) return;
+    if (isMiniSiteHost || publicMarketingHost || !user) return;
     // Partner (and other non-tenant) sessions have no businessId — skip the
     // business notification-settings / push/subscribe bootstrap entirely.
     if (!canUseBusinessPushContext(user)) return;
     void ensurePushSubscription();
-  }, [isMiniSiteHost, travelHost, user]);
+  }, [isMiniSiteHost, publicMarketingHost, user]);
 
   useEffect(() => {
-    if (isMiniSiteHost || travelHost) return;
+    if (isMiniSiteHost || publicMarketingHost) return;
     preloadDashboardComponents();
-  }, [isMiniSiteHost, travelHost]);
+  }, [isMiniSiteHost, publicMarketingHost]);
+
+  if (whatsappLanding) {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[#061018]" />}>
+        <WhatsAppApiLanding />
+      </Suspense>
+    );
+  }
 
   if (travelHost) {
     return (

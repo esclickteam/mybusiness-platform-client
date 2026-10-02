@@ -9,10 +9,18 @@
           var earlyHost = String(location.hostname || "").toLowerCase();
           if (
             earlyHost === "travel.bizuply.com" ||
-            earlyHost === "www.travel.bizuply.com"
+            earlyHost === "www.travel.bizuply.com" ||
+            earlyHost === "whatsapp.bizuply.com" ||
+            earlyHost === "www.whatsapp.bizuply.com"
           ) {
             document.documentElement.lang = "en";
             document.documentElement.dir = "ltr";
+            if (
+              earlyHost === "whatsapp.bizuply.com" ||
+              earlyHost === "www.whatsapp.bizuply.com"
+            ) {
+              document.documentElement.setAttribute("data-wa-host", "true");
+            }
             return;
           }
 
@@ -72,7 +80,9 @@
           var host = String(location.hostname || "").toLowerCase();
           if (
             host === "travel.bizuply.com" ||
-            host === "www.travel.bizuply.com"
+            host === "www.travel.bizuply.com" ||
+            host === "whatsapp.bizuply.com" ||
+            host === "www.whatsapp.bizuply.com"
           ) {
             return;
           }
@@ -183,6 +193,16 @@
       (function () {
         var host = String(location.hostname || "").toLowerCase();
         if (
+          host === "whatsapp.bizuply.com" ||
+          host === "www.whatsapp.bizuply.com"
+        ) {
+          document.documentElement.style.background = "#061018";
+          if (document.body) document.body.style.backgroundColor = "#061018";
+          document.title =
+            "Official WhatsApp API Platform for Developers & Businesses | Bizuply";
+          return;
+        }
+        if (
           host === "travel.bizuply.com" ||
           host === "www.travel.bizuply.com"
         ) {
@@ -236,6 +256,12 @@
         color: var(--text);
         font-family: "Assistant", "Inter", system-ui, sans-serif;
         overflow-x: hidden;
+      }
+
+      html[data-wa-host="true"],
+      html[data-wa-host="true"] body {
+        background: #061018 !important;
+        color: #f3f7ff;
       }
 
       html[data-public-site="true"],

@@ -19,6 +19,7 @@ const PARTNER_HOST_BLOCKLIST = new Set([
   "status",
   "docs",
   "travel",
+  "whatsapp",
 ]);
 
 export function isPartnerWhiteLabelHostname(hostname) {

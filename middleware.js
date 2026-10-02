@@ -17,6 +17,12 @@ import {
   TRAVEL_SEO_TITLE,
   isBizuplyTravelHost,
 } from "./src/lib/travelHost.mjs";
+import {
+  WHATSAPP_SEO_DESCRIPTION,
+  WHATSAPP_SEO_KEYWORDS,
+  WHATSAPP_SEO_TITLE,
+  isBizuplyWhatsAppHost,
+} from "./src/lib/whatsappHost.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -117,7 +123,7 @@ function getHost(request) {
 
 function isCustomerSiteHost(host) {
   if (!host) return false;
-  if (isBizuplyTravelHost(host)) return false;
+  if (isBizuplyTravelHost(host) || isBizuplyWhatsAppHost(host)) return false;
   if (host === PUBLIC_SITE_DOMAIN || host === STAGING_PUBLIC_SITE_DOMAIN) return false;
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
@@ -466,6 +472,58 @@ function travelSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "travel" });
 }
 
+function whatsappHeadHtml() {
+  return [
+    `<title>${WHATSAPP_SEO_TITLE}</title>`,
+    `<meta name="description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
+    `<meta name="keywords" content="${WHATSAPP_SEO_KEYWORDS}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="https://whatsapp.bizuply.com/" />`,
+    `<meta property="og:title" content="${WHATSAPP_SEO_TITLE}" />`,
+    `<meta property="og:description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:url" content="https://whatsapp.bizuply.com/" />`,
+    `<meta property="og:locale" content="en_US" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${WHATSAPP_SEO_TITLE}" />`,
+    `<meta name="twitter:description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
+  ].join("\n");
+}
+
+function whatsappSeoFile(pathname) {
+  const isRobots = pathname === "/robots.txt";
+  const body = isRobots
+    ? "User-agent: *\nAllow: /\n\nSitemap: https://whatsapp.bizuply.com/sitemap.xml\n"
+    : `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://whatsapp.bizuply.com/</loc></url>\n</urlset>\n`;
+  return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
+}
+
+async function handleWhatsAppDocument(request) {
+  if (!isDocumentNavigation(request)) return passThrough();
+
+  try {
+    const htmlRes = await fetch(new URL("/index.html", request.url), {
+      headers: {
+        accept: "text/html",
+        "x-bizuply-seo-middleware": "1",
+      },
+    });
+    if (!htmlRes.ok) return passThrough();
+    const html = await htmlRes.text();
+    if (!html || !/<html[\s>]/i.test(html)) return passThrough();
+    return new Response(injectSeoHead(html, whatsappHeadHtml()), {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-seo-edge": "whatsapp",
+      },
+    });
+  } catch {
+    return passThrough();
+  }
+}
+
 async function handleTravelDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
 
@@ -495,6 +553,13 @@ async function handleTravelDocument(request) {
 export default async function middleware(request) {
   const host = getHost(request);
   const pathname = getPathname(request);
+
+  if (isBizuplyWhatsAppHost(host)) {
+    if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+      return whatsappSeoFile(pathname);
+    }
+    return handleWhatsAppDocument(request);
+  }
 
   if (isBizuplyTravelHost(host)) {
     if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
