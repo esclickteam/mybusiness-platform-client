@@ -9289,6 +9289,50 @@
         "document": "Document",
         "location": "Location"
       },
+      "editTitle": "Edit template",
+      "discard": "Discard changes",
+      "duplicate": "Duplicate as draft",
+      "duplicated": "A local copy was created. The original template was not deleted or resubmitted.",
+      "changesTitle": "What changed",
+      "noChanges": "No changes since this template was opened.",
+      "syncError": "Sync error: {{message}}",
+      "refreshed": "Status refreshed from Meta",
+      "refreshThrottled": "Refresh is limited so we stay within Meta's call limits. Try again in about half a minute.",
+      "localOnly": "This is a local draft. There is no Meta template to refresh yet.",
+      "filters": {
+        "local": "Local draft",
+        "syncError": "Sync error"
+      },
+      "locks": {
+        "pending": "Meta does not allow edits while a template is waiting for review. You can duplicate it into a new draft. The original is not deleted or resubmitted.",
+        "disabled": "Meta does not allow edits to a disabled or deleted template. You can duplicate the content into a new draft.",
+        "cooldown": "Meta allows an approved template to be edited once every 24 hours, and up to 10 times in 30 days.",
+        "approved": "Name, language, and category are locked. A content update is sent to Meta on the same template and goes back to review. The template is not deleted.",
+        "rejected": "Name, language, and category are locked. You can update the content and send that update to Meta on the same template.",
+        "generic": "Meta does not allow edits for this template status."
+      },
+      "changeFields": {
+        "headerType": "Header type",
+        "headerText": "Header text",
+        "headerMediaHandle": "Media",
+        "body": "Body",
+        "footer": "Footer",
+        "buttons": "Buttons",
+        "exampleValues": "Samples"
+      },
+      "errors": {
+        "MEDIA_SAMPLE_REQUIRED": "A media header cannot be submitted until the file upload succeeds.",
+        "FILE_TOO_LARGE": "The file is too large. Images up to 5MB, video or PDF up to 16MB.",
+        "UNSUPPORTED_MIME": "This file type is not supported. Use JPEG/PNG, MP4, or PDF.",
+        "EMPTY_FILE": "The file is empty.",
+        "RESUMABLE_UPLOAD_FAILED": "Uploading the file to Meta failed. Try again.",
+        "HEADER_MISSING_FROM_PAYLOAD": "Submission was blocked because the Meta request had no header.",
+        "HEADER_MEDIA_MISSING_FROM_PAYLOAD": "Submission was blocked because the media sample was missing from the Meta request.",
+        "META_EDIT_LOCKED_PENDING": "Meta does not allow edits while a template is pending review.",
+        "META_EDIT_COOLDOWN": "An approved template can be edited once every 24 hours.",
+        "META_FIELD_LOCKED": "Meta does not allow the name, language, or category to change after submission.",
+        "META_RATE_LIMIT": "Meta is limiting API calls. Try again later."
+      },
       "demoSaved": "Demo template saved. It was not sent to Meta."
     },
     "metaEditor": {
@@ -9307,6 +9351,16 @@
       "mediaIdVideo": "Video media ID",
       "mediaIdDocument": "Document media ID",
       "mediaIdPlaceholder": "Media ID received from upload",
+      "uploadDrop": "Drop a file here, or choose one from your computer",
+      "uploadChoose": "Choose file",
+      "uploadReplace": "Replace file",
+      "uploadRemove": "Remove file",
+      "uploadReady": "File ready",
+      "uploading": "Uploading…",
+      "uploadHintImage": "JPEG or PNG · up to 5MB",
+      "uploadHintVideo": "MP4 · up to 16MB",
+      "uploadHintDocument": "PDF · up to 16MB",
+      "emoji": "Emoji",
       "headerOptional": "Header · Optional",
       "headerPlaceholder": "Add a short text line for the message header",
       "addVariable": "Add variable",

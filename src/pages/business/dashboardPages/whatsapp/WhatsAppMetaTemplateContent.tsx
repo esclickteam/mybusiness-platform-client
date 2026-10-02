@@ -33,6 +33,7 @@ const FOOTER_MAX = 60;
 const BUTTON_TEXT_MAX = 25;
 const URL_MAX = 2000;
 const MAX_BUTTONS = 10;
+const EMOJIS = ["😀", "👍", "✅", "🎉", "❤️", "🔥", "⭐", "📍", "📅", "💬", "🙏", "✨"];
 
 function getVariableOptions(t: TFunction): Array<{ value: VariableType; label: string }> {
   return [
@@ -259,6 +260,12 @@ export function WhatsAppMetaTemplateContent({
   allowedButtons,
   bodyPlaceholder,
   onChange,
+  headerMediaFileName = "",
+  mediaUploading = false,
+  mediaError = "",
+  readOnly = false,
+  onUploadFile,
+  onClearMedia,
 }: {
   headerType: WhatsAppHeaderType;
   headerText: string;
@@ -271,6 +278,12 @@ export function WhatsAppMetaTemplateContent({
   showHeader?: boolean;
   allowedButtons: ButtonType[];
   bodyPlaceholder?: string;
+  headerMediaFileName?: string;
+  mediaUploading?: boolean;
+  mediaError?: string;
+  readOnly?: boolean;
+  onUploadFile?: (file: File) => void;
+  onClearMedia?: () => void;
   onChange: (patch: {
     headerType?: WhatsAppHeaderType;
     headerText?: string;
@@ -293,6 +306,9 @@ export function WhatsAppMetaTemplateContent({
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuUp, setMenuUp] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const media = mediaFromHeader(headerType);
   const variables = extractVariables(`${headerText}\n${body}`);
   const buttonMenu = getButtonMenu(t).filter((item) =>
@@ -399,8 +415,26 @@ export function WhatsAppMetaTemplateContent({
     });
   };
 
+  const accept =
+    media === "image"
+      ? "image/jpeg,image/png,.jpg,.jpeg,.png"
+      : media === "video"
+        ? "video/mp4,.mp4"
+        : "application/pdf,.pdf";
+  const limitHint =
+    media === "image"
+      ? t("whatsapp.metaEditor.uploadHintImage")
+      : media === "video"
+        ? t("whatsapp.metaEditor.uploadHintVideo")
+        : t("whatsapp.metaEditor.uploadHintDocument");
+
+  const takeFile = (file: File | undefined) => {
+    if (!file || readOnly) return;
+    onUploadFile?.(file);
+  };
+
   return (
-    <div className="wa-meta-content">
+    <fieldset className="wa-meta-content" disabled={readOnly}>
       <div className="wa-meta-content__intro">
         <h4>{t("whatsapp.metaEditor.content")}</h4>
         <p className="wa-meta-help">
@@ -427,24 +461,77 @@ export function WhatsAppMetaTemplateContent({
           />
 
           {(media === "image" || media === "video" || media === "document") && (
-            <label className="wa-meta-content__field">
-              <span className="wa-meta-label">
-                {media === "image"
-                  ? t("whatsapp.metaEditor.mediaIdImage")
-                  : media === "video"
-                    ? t("whatsapp.metaEditor.mediaIdVideo")
-                    : t("whatsapp.metaEditor.mediaIdDocument")}
-              </span>
-              <input
-                className="wa-meta-input"
-                dir="ltr"
-                value={headerMediaUrl}
-                onChange={(e) => onChange({ headerMediaUrl: e.target.value })}
-                placeholder={t("whatsapp.metaEditor.mediaIdPlaceholder")}
-              />
-            </label>
+            <div className="wa-meta-content__field">
+              <span className="wa-meta-label">{limitHint}</span>
+              <div
+                className={`wa-meta-dropzone ${dragOver ? "is-over" : ""} ${headerMediaUrl || headerMediaFileName ? "has-file" : ""}`}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  if (!readOnly) setDragOver(true);
+                }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setDragOver(false);
+                  takeFile(event.dataTransfer.files?.[0]);
+                }}
+              >
+                {headerMediaUrl && media === "image" ? (
+                  <img src={headerMediaUrl} alt="" />
+                ) : null}
+                {headerMediaUrl && media === "video" ? (
+                  <video src={headerMediaUrl} controls />
+                ) : null}
+                <div className="wa-meta-dropzone__copy">
+                  <strong>
+                    {headerMediaFileName ||
+                      (headerMediaUrl
+                        ? t("whatsapp.metaEditor.uploadReady")
+                        : t("whatsapp.metaEditor.uploadDrop"))}
+                  </strong>
+                  <span>{limitHint}</span>
+                </div>
+                <div className="wa-meta-dropzone__actions">
+                  <button
+                    type="button"
+                    className="wa-meta-btn wa-meta-btn--secondary"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={mediaUploading || readOnly}
+                  >
+                    {mediaUploading
+                      ? t("whatsapp.metaEditor.uploading")
+                      : headerMediaUrl || headerMediaFileName
+                        ? t("whatsapp.metaEditor.uploadReplace")
+                        : t("whatsapp.metaEditor.uploadChoose")}
+                  </button>
+                  {headerMediaUrl || headerMediaFileName ? (
+                    <button
+                      type="button"
+                      className="wa-meta-btn wa-meta-btn--ghost"
+                      onClick={() => onClearMedia?.()}
+                    >
+                      {t("whatsapp.metaEditor.uploadRemove")}
+                    </button>
+                  ) : null}
+                </div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={accept}
+                  hidden
+                  onChange={(event) => {
+                    takeFile(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+              </div>
+              {mediaError ? (
+                <p className="wa-meta-alert wa-meta-alert--error">{mediaError}</p>
+              ) : null}
+            </div>
           )}
 
+          {media === "none" && (
           <section className="wa-meta-content__block">
             <div className="wa-meta-field-row">
               <span className="wa-meta-label">{t("whatsapp.metaEditor.headerOptional")}</span>
@@ -468,6 +555,7 @@ export function WhatsAppMetaTemplateContent({
               {t("whatsapp.metaEditor.addVariable")}
             </button>
           </section>
+          )}
         </>
       )}
 
@@ -490,7 +578,26 @@ export function WhatsAppMetaTemplateContent({
             <button type="button" onClick={() => insertFormat("*", "*")}>
               {t("whatsapp.metaEditor.bold")}
             </button>
+            <button type="button" onClick={() => setEmojiOpen((open) => !open)}>
+              {t("whatsapp.metaEditor.emoji")}
+            </button>
           </div>
+          {emojiOpen ? (
+            <div className="wa-meta-emoji" role="listbox" aria-label={t("whatsapp.metaEditor.emoji")}>
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => {
+                    insertAt(bodyRef.current, body, emoji, "body");
+                    setEmojiOpen(false);
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <span className="wa-meta-counter">
             {body.length}/{BODY_MAX}
           </span>
@@ -717,7 +824,7 @@ export function WhatsAppMetaTemplateContent({
           </div>
         ))}
       </section>
-    </div>
+    </fieldset>
   );
 }
 

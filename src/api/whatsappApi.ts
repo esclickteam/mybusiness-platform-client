@@ -363,6 +363,23 @@ export type WhatsAppTemplate = {
   headerType?: WhatsAppHeaderType;
   headerText?: string;
   headerMediaUrl?: string;
+  headerMediaHandle?: string;
+  headerMediaFileName?: string;
+  headerMediaMime?: string;
+  headerMediaBytes?: number;
+  lastSyncError?: string;
+  lastMetaEditAt?: string | null;
+  editPolicy?: {
+    canEditName?: boolean;
+    canEditLanguage?: boolean;
+    canEditCategory?: boolean;
+    canEditContent?: boolean;
+    canSubmitToMeta?: boolean;
+    canSaveLocalDraft?: boolean;
+    canDuplicate?: boolean;
+    lockCode?: string;
+    lockMessage?: string;
+  };
   body: string;
   footer?: string;
   variables: string[];
@@ -1300,11 +1317,58 @@ export type WhatsAppTemplateSubmitPayload = {
   headerType?: WhatsAppHeaderType;
   headerText?: string;
   headerMediaUrl?: string;
+  headerMediaHandle?: string;
+  headerMediaFileName?: string;
+  headerMediaMime?: string;
+  headerMediaBytes?: number;
   body: string;
   footer?: string;
   exampleValues?: Record<string, string>;
   buttons?: WhatsAppTemplateButton[];
+  templateId?: string;
 };
+
+export async function uploadWhatsAppTemplateMedia(
+  businessId: string,
+  headerType: "image" | "video" | "document",
+  file: File
+) {
+  const form = new FormData();
+  form.append("businessId", businessId);
+  form.append("headerType", headerType);
+  form.append("file", file);
+  const { data } = await API.post("/whatsapp/templates/media", form);
+  return data as {
+    success: boolean;
+    headerType: "image" | "video" | "document";
+    headerMediaHandle: string;
+    headerMediaUrl: string;
+    headerMediaFileName: string;
+    headerMediaMime: string;
+    headerMediaBytes: number;
+  };
+}
+
+export async function duplicateWhatsAppTemplate(businessId: string, id: string) {
+  const { data } = await API.post(`/whatsapp/templates/${id}/duplicate`, {
+    businessId,
+  });
+  return data?.template as WhatsAppTemplate;
+}
+
+export async function refreshWhatsAppTemplate(businessId: string, id: string) {
+  const { data } = await API.post(`/whatsapp/templates/${id}/refresh`, {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    refreshed: boolean;
+    skipped?: boolean;
+    reason?: string;
+    retryAfterMs?: number;
+    template: WhatsAppTemplate;
+  };
+}
 
 export async function saveWhatsAppTemplateDraft(
   businessId: string,

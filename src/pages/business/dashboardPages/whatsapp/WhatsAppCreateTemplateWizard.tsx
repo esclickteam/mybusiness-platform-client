@@ -7,12 +7,23 @@ import { toast } from "react-toastify";
 import { demoToastSuccess } from "@/guidedDemo/demoToast";
 import { readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import {
+  duplicateWhatsAppTemplate,
   saveWhatsAppTemplateDraft,
   submitWhatsAppTemplateToMeta,
+  uploadWhatsAppTemplateMedia,
   type WhatsAppHeaderType,
+  type WhatsAppTemplate,
   type WhatsAppTemplateButton,
   type WhatsAppTemplateSubmitPayload,
 } from "@/api/whatsappApi";
+import {
+  buildTemplateSubmitPayload,
+  contentChangeKeys,
+  getTemplateEditPolicy,
+  isResumableHeaderHandle,
+  validateTemplateSampleFile,
+  type TemplateEditorSnapshot,
+} from "./whatsappTemplateEditorModel";
 import {
   metaButtonTypeLabel,
   WhatsAppMetaTemplateContent,
@@ -33,6 +44,16 @@ type FormState = {
   headerType: WhatsAppHeaderType;
   headerText: string;
   headerHandle: string;
+  headerPreviewUrl: string;
+  headerMediaFileName: string;
+  headerMediaMime: string;
+  headerMediaBytes: number;
+  templateId: string;
+  metaTemplateId: string;
+  metaStatus: string;
+  rejectionReason: string;
+  lastSyncError: string;
+  lastMetaEditAt: string;
   body: string;
   footer: string;
   securityRecommendation: boolean;
@@ -72,8 +93,8 @@ function getCategories(t: TFunction): Array<{
 }
 
 const SUBTYPE_VALUES: Record<MetaCategory, TemplateKind[]> = {
-  MARKETING: ["default", "catalog", "call_permission"],
-  UTILITY: ["default", "call_permission"],
+  MARKETING: ["default"],
+  UTILITY: ["default"],
   AUTHENTICATION: ["otp"],
 };
 
@@ -129,12 +150,78 @@ const emptyForm = (): FormState => ({
   headerType: "none",
   headerText: "",
   headerHandle: "",
+  headerPreviewUrl: "",
+  headerMediaFileName: "",
+  headerMediaMime: "",
+  headerMediaBytes: 0,
+  templateId: "",
+  metaTemplateId: "",
+  metaStatus: "LOCAL",
+  rejectionReason: "",
+  lastSyncError: "",
+  lastMetaEditAt: "",
   body: "",
   footer: "",
   securityRecommendation: false,
   buttons: [],
   exampleValues: {},
 });
+
+function formFromTemplate(template: WhatsAppTemplate): FormState {
+  const metaCategory = (["MARKETING", "UTILITY", "AUTHENTICATION"].includes(
+    String(template.metaCategory || "").toUpperCase()
+  )
+    ? String(template.metaCategory).toUpperCase()
+    : template.category === "promotion"
+      ? "MARKETING"
+      : "UTILITY") as MetaCategory;
+  return {
+    ...emptyForm(),
+    name: String(template.metaTemplateName || template.name || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, "_"),
+    language: template.language || "he",
+    metaCategory,
+    templateKind: metaCategory === "AUTHENTICATION" ? "otp" : "default",
+    variableType: template.variableType === "name" ? "name" : "number",
+    headerType: template.headerType || "none",
+    headerText: template.headerText || "",
+    headerHandle: template.headerMediaHandle || "",
+    headerPreviewUrl: template.headerMediaUrl || "",
+    headerMediaFileName: template.headerMediaFileName || "",
+    headerMediaMime: template.headerMediaMime || "",
+    headerMediaBytes: template.headerMediaBytes || 0,
+    templateId: template._id,
+    metaTemplateId: template.metaTemplateId || "",
+    metaStatus: template.metaStatus || "LOCAL",
+    rejectionReason: template.rejectionReason || "",
+    lastSyncError: template.lastSyncError || "",
+    lastMetaEditAt: template.lastMetaEditAt || "",
+    body: template.body || "",
+    footer: template.footer || "",
+    buttons: (template.buttons || []).map((button) => ({ ...button })),
+    exampleValues:
+      template.exampleValues && !(template.exampleValues instanceof Map)
+        ? { ...template.exampleValues }
+        : {},
+  };
+}
+
+function snapshotOf(form: FormState): TemplateEditorSnapshot {
+  return {
+    name: form.name,
+    language: form.language,
+    metaCategory: form.metaCategory,
+    headerType: form.headerType,
+    headerText: form.headerText,
+    headerMediaHandle: form.headerHandle,
+    headerMediaUrl: form.headerPreviewUrl,
+    body: form.body,
+    footer: form.footer,
+    buttons: form.buttons,
+    exampleValues: form.exampleValues,
+  };
+}
 
 function extractVariables(text: string): string[] {
   const matches = text.matchAll(/\{\{\s*([1-9]\d*)\s*\}\}/g);
@@ -168,12 +255,42 @@ function allowedButtons(category: MetaCategory): ButtonType[] {
   ];
 }
 
+function apiErrorMessage(
+  err: unknown,
+  t: TFunction,
+  fallback: string
+): string {
+  const data = (err as { response?: { data?: { code?: string; error?: string } } })
+    ?.response?.data;
+  const code = String(data?.code || "");
+  if (code) {
+    const translated = t(`whatsapp.wizard.errors.${code}`, { defaultValue: "" });
+    if (translated) return translated;
+  }
+  return data?.error || (err instanceof Error ? err.message : fallback);
+}
+
 export function WhatsAppCreateTemplateWizard({
   businessId,
+  initialTemplate = null,
+  initialStep = 0,
+  uploadSample,
   onClose,
   onSubmitted,
 }: {
   businessId: string;
+  initialTemplate?: WhatsAppTemplate | null;
+  initialStep?: Step;
+  uploadSample?: (
+    file: File,
+    headerType: "image" | "video" | "document"
+  ) => Promise<{
+    headerMediaHandle: string;
+    headerMediaUrl?: string;
+    headerMediaFileName?: string;
+    headerMediaMime?: string;
+    headerMediaBytes?: number;
+  }>;
   onClose: () => void;
   onSubmitted: () => void;
 }) {
@@ -183,9 +300,15 @@ export function WhatsAppCreateTemplateWizard({
   const categories = getCategories(t);
   const subtypesByCategory = getSubtypes(t);
   const steps = getSteps(t);
-  const [step, setStep] = useState<Step>(0);
-  const [form, setForm] = useState<FormState>(emptyForm);
+  const [step, setStep] = useState<Step>(initialTemplate ? 1 : initialStep);
+  const [form, setForm] = useState<FormState>(() =>
+    initialTemplate ? formFromTemplate(initialTemplate) : emptyForm()
+  );
+  const [baseline] = useState<FormState>(() =>
+    initialTemplate ? formFromTemplate(initialTemplate) : emptyForm()
+  );
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const variables = useMemo(
@@ -203,6 +326,17 @@ export function WhatsAppCreateTemplateWizard({
     return text;
   }, [form.body, form.exampleValues, variables, t]);
 
+  const policy = useMemo(
+    () =>
+      getTemplateEditPolicy({
+        metaStatus: form.metaStatus as WhatsAppTemplate["metaStatus"],
+        metaTemplateId: form.metaTemplateId,
+        lastMetaEditAt: form.lastMetaEditAt || null,
+      }),
+    [form.metaStatus, form.metaTemplateId, form.lastMetaEditAt]
+  );
+  const mediaHeader = ["image", "video", "document"].includes(form.headerType);
+  const mediaReady = !mediaHeader || isResumableHeaderHandle(form.headerHandle);
   const nameValid = /^[a-z0-9_]+$/.test(form.name) && form.name.length > 0;
   const canGoEdit = Boolean(form.metaCategory && form.templateKind);
   const canGoReview =
@@ -210,9 +344,9 @@ export function WhatsAppCreateTemplateWizard({
     Boolean(form.language) &&
     Boolean(form.body.trim()) &&
     (form.headerType !== "text" || Boolean(form.headerText.trim())) &&
-    (form.headerType === "none" ||
-      form.headerType === "text" ||
-      Boolean(form.headerHandle.trim()));
+    mediaReady &&
+    policy.canEditContent;
+  const changes = contentChangeKeys(snapshotOf(form), snapshotOf(baseline));
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -227,6 +361,8 @@ export function WhatsAppCreateTemplateWizard({
       headerType: value === "AUTHENTICATION" ? "none" : prev.headerType,
       headerText: value === "AUTHENTICATION" ? "" : prev.headerText,
       headerHandle: value === "AUTHENTICATION" ? "" : prev.headerHandle,
+      headerPreviewUrl: value === "AUTHENTICATION" ? "" : prev.headerPreviewUrl,
+      headerMediaFileName: value === "AUTHENTICATION" ? "" : prev.headerMediaFileName,
       body:
         value === "AUTHENTICATION" && !prev.body.trim()
           ? otpBodyDefault(t)
@@ -242,35 +378,82 @@ export function WhatsAppCreateTemplateWizard({
     }));
   };
 
-  const buildPayload = (): WhatsAppTemplateSubmitPayload => ({
-    name: form.name.trim(),
-    language: form.language,
-    metaCategory: form.metaCategory,
-    variableType: form.variableType,
-    headerType: form.headerType,
-    headerText: form.headerType === "text" ? form.headerText : undefined,
-    headerMediaUrl:
-      form.headerType === "image" ||
-      form.headerType === "video" ||
-      form.headerType === "document"
-        ? form.headerHandle
-        : undefined,
-    body: form.body,
-    footer: form.footer || undefined,
-    buttons: form.buttons,
-    exampleValues: form.exampleValues,
-  });
+  const buildPayload = (requireMedia = true): WhatsAppTemplateSubmitPayload =>
+    buildTemplateSubmitPayload({
+      templateId: form.templateId || undefined,
+      name: form.name.trim(),
+      language: form.language,
+      metaCategory: form.metaCategory,
+      variableType: form.variableType,
+      headerType: form.headerType,
+      headerText: form.headerText,
+      headerMediaUrl: form.headerPreviewUrl,
+      headerMediaHandle: form.headerHandle,
+      headerMediaFileName: form.headerMediaFileName,
+      headerMediaMime: form.headerMediaMime,
+      headerMediaBytes: form.headerMediaBytes,
+      body: form.body,
+      footer: form.footer,
+      buttons: form.buttons,
+      exampleValues: form.exampleValues,
+    }, { requireMedia });
+
+  const handleUpload = async (file: File) => {
+    const kind = form.headerType;
+    if (kind !== "image" && kind !== "video" && kind !== "document") return;
+    const problem = validateTemplateSampleFile(file, kind);
+    if (problem) {
+      const key =
+        problem === "too-large"
+          ? "whatsapp.wizard.errors.FILE_TOO_LARGE"
+          : problem === "mime"
+            ? "whatsapp.wizard.errors.UNSUPPORTED_MIME"
+            : "whatsapp.wizard.errors.EMPTY_FILE";
+      setError(t(key));
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    const localUrl = URL.createObjectURL(file);
+    try {
+      const uploaded = uploadSample
+        ? await uploadSample(file, kind)
+        : await uploadWhatsAppTemplateMedia(businessId, kind, file);
+      if (!isResumableHeaderHandle(uploaded.headerMediaHandle)) {
+        setError(t("whatsapp.wizard.errors.RESUMABLE_UPLOAD_FAILED"));
+        return;
+      }
+      setForm((prev) => ({
+        ...prev,
+        headerHandle: uploaded.headerMediaHandle,
+        headerPreviewUrl: uploaded.headerMediaUrl || localUrl,
+        headerMediaFileName: uploaded.headerMediaFileName || file.name,
+        headerMediaMime: uploaded.headerMediaMime || file.type,
+        headerMediaBytes: uploaded.headerMediaBytes || file.size,
+      }));
+    } catch (err) {
+      setForm((prev) => ({
+        ...prev,
+        headerHandle: "",
+        headerPreviewUrl: "",
+        headerMediaFileName: "",
+      }));
+      setError(apiErrorMessage(err, t, t("whatsapp.wizard.errors.RESUMABLE_UPLOAD_FAILED")));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSaveDraft = async () => {
     setSaving(true);
     setError(null);
     try {
-      await saveWhatsAppTemplateDraft(businessId, buildPayload());
+      await saveWhatsAppTemplateDraft(businessId, buildPayload(false));
       toast.success(t("whatsapp.wizard.draftSaved"));
       onSubmitted();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("whatsapp.wizard.draftFailed"));
+      setError(apiErrorMessage(err, t, t("whatsapp.wizard.draftFailed")));
     } finally {
       setSaving(false);
     }
@@ -280,9 +463,13 @@ export function WhatsAppCreateTemplateWizard({
     setSaving(true);
     setError(null);
     try {
+      if (!mediaReady) {
+        setError(t("whatsapp.wizard.errors.MEDIA_SAMPLE_REQUIRED"));
+        return;
+      }
       const result = await submitWhatsAppTemplateToMeta(
         businessId,
-        buildPayload()
+        buildPayload(true)
       );
       if (result.demoSafe) {
         demoToastSuccess(
@@ -317,7 +504,7 @@ export function WhatsAppCreateTemplateWizard({
       onSubmitted();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("whatsapp.wizard.submitFailed"));
+      setError(apiErrorMessage(err, t, t("whatsapp.wizard.submitFailed")));
     } finally {
       setSaving(false);
     }
@@ -330,7 +517,11 @@ export function WhatsAppCreateTemplateWizard({
       <header className="wa-meta-wizard__top">
         <div>
           <p className="wa-meta-kicker">{t("whatsapp.wizard.kicker")}</p>
-          <h3>{t("whatsapp.wizard.title")}</h3>
+          <h3>
+            {initialTemplate
+              ? t("whatsapp.wizard.editTitle")
+              : t("whatsapp.wizard.title")}
+          </h3>
         </div>
         <div className="wa-meta-wizard__top-actions">
           <span className="wa-meta-badge">{t("whatsapp.wizard.metaBadge")}</span>
@@ -363,7 +554,7 @@ export function WhatsAppCreateTemplateWizard({
         })}
       </ol>
 
-      <div className="wa-meta-wizard__body" dir="ltr">
+      <div className="wa-meta-wizard__body">
         <aside className="wa-meta-preview" dir={dir}>
           <div className="wa-meta-preview__chrome">
             <strong>{t("whatsapp.wizard.preview")}</strong>
@@ -375,13 +566,27 @@ export function WhatsAppCreateTemplateWizard({
                 <p className="wa-meta-bubble__header">{form.headerText}</p>
               )}
               {form.headerType === "image" && (
-                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.image")}</div>
+                <div className="wa-meta-bubble__media">
+                  {form.headerPreviewUrl ? (
+                    <img src={form.headerPreviewUrl} alt="" />
+                  ) : (
+                    t("whatsapp.wizard.media.image")
+                  )}
+                </div>
               )}
               {form.headerType === "video" && (
-                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.video")}</div>
+                <div className="wa-meta-bubble__media">
+                  {form.headerPreviewUrl ? (
+                    <video src={form.headerPreviewUrl} muted />
+                  ) : (
+                    t("whatsapp.wizard.media.video")
+                  )}
+                </div>
               )}
               {form.headerType === "document" && (
-                <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.document")}</div>
+                <div className="wa-meta-bubble__media">
+                  {form.headerMediaFileName || t("whatsapp.wizard.media.document")}
+                </div>
               )}
               {form.headerType === "location" && (
                 <div className="wa-meta-bubble__media">{t("whatsapp.wizard.media.location")}</div>
@@ -417,6 +622,7 @@ export function WhatsAppCreateTemplateWizard({
                     key={item.value}
                     type="button"
                     className={`wa-meta-choice ${form.metaCategory === item.value ? "is-selected" : ""}`}
+                    disabled={!policy.canEditCategory}
                     onClick={() => selectCategory(item.value)}
                   >
                     <span className="wa-meta-radio" />
@@ -438,8 +644,9 @@ export function WhatsAppCreateTemplateWizard({
                     <button
                       key={item.value}
                       type="button"
-                      className={`wa-meta-choice ${form.templateKind === item.value ? "is-selected" : ""}`}
-                      onClick={() => update("templateKind", item.value)}
+                    className={`wa-meta-choice ${form.templateKind === item.value ? "is-selected" : ""}`}
+                    disabled={!policy.canEditCategory}
+                    onClick={() => update("templateKind", item.value)}
                     >
                       <span className="wa-meta-radio" />
                       <span>
@@ -467,6 +674,7 @@ export function WhatsAppCreateTemplateWizard({
                   dir="ltr"
                   maxLength={NAME_MAX}
                   value={form.name}
+                  disabled={!policy.canEditName}
                   onChange={(e) =>
                     update("name", e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))
                   }
@@ -477,11 +685,26 @@ export function WhatsAppCreateTemplateWizard({
                 </p>
               </label>
 
+              {policy.lockMessageKey ? (
+                <p className="wa-meta-alert wa-meta-alert--warn">
+                  {t(policy.lockMessageKey)}
+                </p>
+              ) : null}
+              {form.lastSyncError ? (
+                <p className="wa-meta-alert wa-meta-alert--error">
+                  {t("whatsapp.wizard.syncError", { message: form.lastSyncError })}
+                </p>
+              ) : null}
+              {form.rejectionReason ? (
+                <p className="wa-meta-alert wa-meta-alert--error">{form.rejectionReason}</p>
+              ) : null}
+
               <label>
                 <span className="wa-meta-label">{t("whatsapp.wizard.language")}</span>
                 <select
                   className="wa-meta-select"
                   value={form.language}
+                  disabled={!policy.canEditLanguage}
                   onChange={(e) => update("language", e.target.value)}
                 >
                   {languages.map((lang) => (
@@ -539,7 +762,8 @@ export function WhatsAppCreateTemplateWizard({
               <WhatsAppMetaTemplateContent
                 headerType={form.headerType}
                 headerText={form.headerText}
-                headerMediaUrl={form.headerHandle}
+                headerMediaUrl={form.headerPreviewUrl}
+                headerMediaFileName={form.headerMediaFileName}
                 body={form.body}
                 footer={form.footer}
                 buttons={form.buttons}
@@ -547,21 +771,39 @@ export function WhatsAppCreateTemplateWizard({
                 variableType={form.variableType}
                 showHeader={form.metaCategory !== "AUTHENTICATION"}
                 allowedButtons={allowedButtons(form.metaCategory)}
+                mediaUploading={uploading}
+                mediaError={mediaHeader && !mediaReady && error ? error : ""}
+                readOnly={!policy.canEditContent}
                 bodyPlaceholder={
                   form.metaCategory === "AUTHENTICATION"
                     ? otpBodyDefault(t)
                     : t("whatsapp.wizard.bodyPlaceholder")
                 }
+                onUploadFile={(file) => void handleUpload(file)}
+                onClearMedia={() =>
+                  setForm((prev) => ({
+                    ...prev,
+                    headerHandle: "",
+                    headerPreviewUrl: "",
+                    headerMediaFileName: "",
+                    headerMediaMime: "",
+                    headerMediaBytes: 0,
+                  }))
+                }
                 onChange={(patch) =>
                   setForm((prev) => {
-                    const { headerMediaUrl, ...rest } = patch;
+                    const nextType = patch.headerType ?? prev.headerType;
+                    const mediaChanged =
+                      patch.headerType !== undefined && patch.headerType !== prev.headerType;
                     return {
                       ...prev,
-                      ...rest,
-                      headerHandle:
-                        headerMediaUrl !== undefined
-                          ? headerMediaUrl
-                          : prev.headerHandle,
+                      ...patch,
+                      headerHandle: mediaChanged ? "" : prev.headerHandle,
+                      headerPreviewUrl: mediaChanged ? "" : prev.headerPreviewUrl,
+                      headerMediaFileName: mediaChanged ? "" : prev.headerMediaFileName,
+                      headerMediaMime: mediaChanged ? "" : prev.headerMediaMime,
+                      headerMediaBytes: mediaChanged ? 0 : prev.headerMediaBytes,
+                      headerType: nextType,
                     };
                   })
                 }
@@ -627,6 +869,18 @@ export function WhatsAppCreateTemplateWizard({
                     : "—"}
                 </dd>
               </dl>
+              {initialTemplate ? (
+                <div>
+                  <h5>{t("whatsapp.wizard.changesTitle")}</h5>
+                  <p className="wa-meta-help">
+                    {changes.length
+                      ? changes
+                          .map((key) => t(`whatsapp.wizard.changeFields.${key}`))
+                          .join(" · ")
+                      : t("whatsapp.wizard.noChanges")}
+                  </p>
+                </div>
+              ) : null}
               <p className="wa-meta-alert wa-meta-alert--warn">
 {t("whatsapp.wizard.reviewWarn")}
               </p>
@@ -670,15 +924,51 @@ export function WhatsAppCreateTemplateWizard({
           )}
         </div>
         <div className="wa-meta-wizard__footer-cluster">
-          <button
-            type="button"
-            className="wa-meta-btn wa-meta-btn--secondary"
-            disabled={saving || !form.name}
-            onClick={handleSaveDraft}
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {t("whatsapp.wizard.saveDraft")}
-          </button>
+            <button
+              type="button"
+              className="wa-meta-btn wa-meta-btn--secondary"
+              disabled={saving || !form.name || !policy.canSaveLocalDraft}
+              onClick={handleSaveDraft}
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {t("whatsapp.wizard.saveDraft")}
+            </button>
+            {form.templateId ? (
+              <button
+                type="button"
+                className="wa-meta-btn wa-meta-btn--secondary"
+                disabled={saving}
+                onClick={async () => {
+                  setSaving(true);
+                  setError(null);
+                  try {
+                    await duplicateWhatsAppTemplate(businessId, form.templateId);
+                    toast.success(t("whatsapp.wizard.duplicated"));
+                    onSubmitted();
+                    onClose();
+                  } catch (err) {
+                    setError(apiErrorMessage(err, t, t("whatsapp.wizard.draftFailed")));
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+              >
+                {t("whatsapp.wizard.duplicate")}
+              </button>
+            ) : null}
+            {initialTemplate ? (
+              <button
+                type="button"
+                className="wa-meta-btn wa-meta-btn--ghost"
+                disabled={saving || changes.length === 0}
+                onClick={() => {
+                  setForm(baseline);
+                  setError(null);
+                }}
+              >
+                {t("whatsapp.wizard.discard")}
+              </button>
+            ) : null}
           <button
             type="button"
             className="wa-meta-btn wa-meta-btn--ghost"
