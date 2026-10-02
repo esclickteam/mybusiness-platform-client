@@ -1,7 +1,7 @@
 /**
  * Dev-only visual QA — no nested MemoryRouter (App already has a Router).
  */
-import React from "react";
+import React, { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n/i18n";
 import WhatsAppOverviewTab from "../business/dashboardPages/whatsapp/WhatsAppOverviewTab";
@@ -11,6 +11,7 @@ import WhatsAppPerformancePreview from "../business/dashboardPages/whatsapp/perf
 import WhatsAppBillingTab from "../business/dashboardPages/whatsapp/WhatsAppBillingTab";
 import WhatsAppDevelopersTab from "../business/dashboardPages/whatsapp/WhatsAppDevelopersTab";
 import WhatsAppTemplateDrawer from "../business/dashboardPages/whatsapp/WhatsAppTemplateDrawer";
+import WhatsAppCreateTemplateWizard from "../business/dashboardPages/whatsapp/WhatsAppCreateTemplateWizard";
 import type { WhatsAppConnection, WhatsAppTemplate } from "../../api/whatsappApi";
 import { WhatsAppVisualQaProvider } from "./whatsappVisualQaContext";
 import {
@@ -332,16 +333,18 @@ function MessagesMock() {
 }
 
 export default function WhatsAppHubVisualQaPage() {
+  useEffect(() => {
+    if (i18n.language !== "he") {
+      void i18n.changeLanguage("he");
+    }
+  }, []);
+
   if (!import.meta.env.DEV) {
     return (
       <div className="p-8 text-sm font-semibold text-slate-600">
         Visual QA is available in development builds only.
       </div>
     );
-  }
-
-  if (i18n.language !== "he") {
-    void i18n.changeLanguage("he");
   }
 
   const screen = new URLSearchParams(window.location.search)
@@ -371,6 +374,65 @@ export default function WhatsAppHubVisualQaPage() {
             <QaBlock label="templates" active="תבניות">
               <TemplatesTableMock />
             </QaBlock>
+          ) : null}
+          {show("template-create") ? (
+            <section data-qa-screen="template-create" className="mb-8 rounded-xl border border-dashed border-violet-200 bg-[#F5F7FB] p-3">
+              <WhatsAppCreateTemplateWizard
+                businessId="biz-visual-qa"
+                initialStep={1}
+                uploadSample={async (file) => ({
+                  headerMediaHandle: "4::aW1hZ2UvcG5n:ARbSampleHandle",
+                  headerMediaUrl: URL.createObjectURL(file),
+                  headerMediaFileName: file.name,
+                  headerMediaMime: file.type,
+                  headerMediaBytes: file.size,
+                })}
+                onClose={() => undefined}
+                onSubmitted={() => undefined}
+              />
+            </section>
+          ) : null}
+          {show("template-edit") ? (
+            <section data-qa-screen="template-edit" className="mb-8 rounded-xl border border-dashed border-violet-200 bg-[#F5F7FB] p-3">
+              <WhatsAppCreateTemplateWizard
+                businessId="biz-visual-qa"
+                initialTemplate={{
+                  ...MOCK_TEMPLATE,
+                  metaStatus: "APPROVED",
+                  metaTemplateId: "meta-template-1",
+                  metaCategory: "UTILITY",
+                  headerType: "image",
+                  headerText: "",
+                  headerMediaHandle: "4::aW1hZ2UvcG5n:ARbSampleHandle",
+                  headerMediaUrl:
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAC0CAIAAABqhmJGAAADXklEQVR42u3TwQkAIRAEQUMwPmO6OH359X/gBiEjBSZQznbr37jy5l5XHi/vS95mYF5eARuYl1fABublFbCBeQVsYF5eARuYl1fABublFbCD5hWwgXl5BWxgXl4BG5hXwAbm5RWwgXl5BWxgXl4BG5hXwAbm5RWwgXl5BWxgXl4B8/IK2MC8vAI2MC+vgA3MK2AD8/IK2MC8vAI2MC+vgB00r4ANzMsrYAPz8grYwLy8J2Afzcub6xUwL6+ADczLK2AD8/IK2MC8AjYwL6+ADczLK2AD8/IK2EHzCtjAvLwCNjAvr4ANzCtgA/PyCtjAvLwCNjAvr4ANzCtgA/PyCtjAvLwCNjAvr4B5eQVsYF5eARuYl1fABuYVsIF5eQVsYF5eARuYl1fADppXwAbm5RWwgXl5BWxgXt4K2Efz8uZ6BczLK2AD8/IK2MC8vAI2MK+ADczLK2AD8/IK2MC8vAJ20LwCNjAvr4ANzMsrYAPzCtjAvLwCNjAvr4ANzMsrYAPzCtjAvLwCNjAvr4ANzMsrYF5eARuYl1fABublFbCBeQVsYF5eARuYl1fABublFbCD5hWwgXl5BWxgXl4BG5iXtwL20by8uV4B8/IK2MC8vAI2MC+vgA3MK2AD8/IK2MC8vAI2MC+vgB00r4ANzMsrYAPz8grYwLwCNjAvr4ANzMsrYAPz8grYwLwCNjAvr4ANzMsrYAPz8gqYl1fABublFbCBeXkFbGBeARuYl1fABublFbCBeXkF7KB5BWxgXl4BG5iXV8AG5uWtgH00L2+uV8C8vAI2MC+vgA3MyytgA/MK2MC8vAI2MC+vgA3MyytgB80rYAPz8grYwLy8AjYwr4ANzMsrYAPz8grYwLy8AjYwr4ANzMsrYAPz8grYwLy8AublFbCBeXkFbGBeXgEbmFfABublFbCBeXkFbGBeXgE7aF4BG5iXV8AG5uUVsIF5eStgH83Lm+sVMC+vgA3MyytgA/PyCtjAvAI2MC+vgA3MyytgA/PyCthB8wrYwLy8AjYwL6+ADcwrYAPz8grYwLy8AjYwL6+ADcwrYAPz8grYwLy8AjYwL6+AeXkFbGBeXgEbmJdXwAbmFbCBeXkFbGBeXgEbmJdXwA6aV8AG5uUVsIF5eQVsYF7e836Qdqcd7G0mfwAAAABJRU5ErkJggg==",
+                  headerMediaFileName: "event-cover.png",
+                  headerMediaMime: "image/png",
+                  headerMediaBytes: 919,
+                  body: "שלום {{1}}, נשמח לראותכם באירוע.",
+                  exampleValues: { "1": "דנה" },
+                  buttons: [
+                    { type: "quick_reply", text: "מגיע" },
+                    {
+                      type: "url",
+                      text: "לפרטים",
+                      url: "https://example.com/event/{{1}}",
+                      urlType: "dynamic",
+                      exampleUrl: "https://example.com/event/42",
+                    },
+                  ],
+                }}
+                uploadSample={async (file) => ({
+                  headerMediaHandle: "4::aW1hZ2UvcG5n:ARbSampleHandle",
+                  headerMediaUrl: URL.createObjectURL(file),
+                  headerMediaFileName: file.name,
+                  headerMediaMime: file.type,
+                  headerMediaBytes: file.size,
+                })}
+                onClose={() => undefined}
+                onSubmitted={() => undefined}
+              />
+            </section>
           ) : null}
           {show("template-drawer") ? (
             <section

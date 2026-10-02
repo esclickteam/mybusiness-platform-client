@@ -8,24 +8,23 @@ import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
+  Copy,
   Loader2,
   Plus,
   RefreshCw,
   Send,
-  Settings2,
   Trash2,
 } from "lucide-react";
 import {
-  createWhatsAppTemplate,
   deleteWhatsAppTemplate,
+  duplicateWhatsAppTemplate,
   listWhatsAppTemplates,
+  refreshWhatsAppTemplate,
   syncWhatsAppTemplates,
-  updateWhatsAppTemplate,
-  type WhatsAppHeaderType,
   type WhatsAppMappingStatus,
   type WhatsAppTemplate,
-  type WhatsAppTemplateButton,
 } from "../../../../api/whatsappApi";
+import { lifecycleBucket } from "./whatsappTemplateEditorModel";
 import {
   btnPrimary,
   btnSecondary,
@@ -33,7 +32,6 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
-import { WhatsAppMetaTemplateContent } from "./WhatsAppMetaTemplateContent";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
 import WhatsAppTemplateDrawer from "./WhatsAppTemplateDrawer";
 import { formatWhatsAppTemplateCategory } from "../automations/whatsAppTemplateSelectFormat";
@@ -97,69 +95,6 @@ function getMappingStatusClass(tpl: WhatsAppTemplate): string {
 
 type OutletCtx = { businessId: string | null };
 
-const CATEGORIES = [
-  "appointment_reminder",
-  "promotion",
-  "follow_up",
-  "welcome",
-  "custom",
-] as const;
-
-const BODY_MAX = 1024;
-const HEADER_MAX = 60;
-const FOOTER_MAX = 60;
-
-type TemplateForm = {
-  name: string;
-  category: WhatsAppTemplate["category"];
-  language: string;
-  variableType: "number" | "name";
-  headerType: WhatsAppHeaderType;
-  headerText: string;
-  headerMediaUrl: string;
-  body: string;
-  footer: string;
-  exampleValues: Record<string, string>;
-  buttons: WhatsAppTemplateButton[];
-};
-
-const emptyForm: TemplateForm = {
-  name: "",
-  category: "custom",
-  language: "he",
-  variableType: "number",
-  headerType: "none",
-  headerText: "",
-  headerMediaUrl: "",
-  body: "",
-  footer: "",
-  exampleValues: {},
-  buttons: [],
-};
-
-function extractMetaVariables(body: string) {
-  const matches = Array.from(String(body).matchAll(/\{\{\s*(\d+)\s*\}\}/g));
-  const seen = new Set<string>();
-  const vars: string[] = [];
-  for (const match of matches) {
-    const key = match[1];
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    vars.push(key);
-  }
-  return vars.sort((a, b) => Number(a) - Number(b));
-}
-
-function normalizeExampleValues(
-  raw: WhatsAppTemplate["exampleValues"]
-): Record<string, string> {
-  if (!raw) return {};
-  if (raw instanceof Map) {
-    return Object.fromEntries(raw.entries());
-  }
-  return { ...raw };
-}
-
 export default function WhatsAppTemplatesTab() {
   const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -167,10 +102,8 @@ export default function WhatsAppTemplatesTab() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<TemplateForm>(emptyForm);
   const [showForm, setShowForm] = useState(false);
   const [mappingTemplate, setMappingTemplate] =
     useState<WhatsAppTemplate | null>(null);
@@ -181,15 +114,13 @@ export default function WhatsAppTemplatesTab() {
   );
   const previousMetaStatus = useRef<Record<string, string>>({});
 
-  const bodyVariables = useMemo(
-    () => extractMetaVariables(form.body),
-    [form.body]
-  );
-
   const filteredTemplates = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return templates.filter((tpl) => {
       const st = String(tpl.metaStatus || "").toUpperCase();
+      const bucket = lifecycleBucket(tpl);
+      if (statusFilter === "local" && bucket !== "local") return false;
+      if (statusFilter === "sync_error" && bucket !== "sync_error") return false;
       if (statusFilter === "approved" && st !== "APPROVED") return false;
       if (statusFilter === "pending" && st !== "PENDING" && st !== "IN_APPEAL") {
         return false;
@@ -215,33 +146,12 @@ export default function WhatsAppTemplatesTab() {
   useEffect(() => {
     if (searchParams.get("create") === "1") {
       setEditingId(null);
-      setForm(emptyForm);
       setShowForm(true);
       const next = new URLSearchParams(searchParams);
       next.delete("create");
       setSearchParams(next, { replace: true });
     }
   }, [searchParams, setSearchParams]);
-
-  useEffect(() => {
-    setForm((prev) => {
-      const nextExamples = { ...prev.exampleValues };
-      let changed = false;
-      bodyVariables.forEach((key) => {
-        if (nextExamples[key] == null) {
-          nextExamples[key] = "";
-          changed = true;
-        }
-      });
-      Object.keys(nextExamples).forEach((key) => {
-        if (!bodyVariables.includes(key)) {
-          delete nextExamples[key];
-          changed = true;
-        }
-      });
-      return changed ? { ...prev, exampleValues: nextExamples } : prev;
-    });
-  }, [bodyVariables]);
 
   const notifyApprovals = (rows: WhatsAppTemplate[]) => {
     const prev = previousMetaStatus.current;
@@ -327,74 +237,40 @@ export default function WhatsAppTemplatesTab() {
   }, [businessId, hasPendingReview]);
 
   const resetForm = () => {
-    setForm(emptyForm);
     setEditingId(null);
     setShowForm(false);
   };
 
   const startEdit = (tpl: WhatsAppTemplate) => {
     setEditingId(tpl._id);
-    setForm({
-      name: tpl.name,
-      category: tpl.category,
-      language: tpl.language || "he",
-      variableType: tpl.variableType || "number",
-      headerType: tpl.headerType || "none",
-      headerText: tpl.headerText || "",
-      headerMediaUrl: tpl.headerMediaUrl || "",
-      body: tpl.body,
-      footer: tpl.footer || "",
-      exampleValues: normalizeExampleValues(tpl.exampleValues),
-      buttons: (tpl.buttons || []).map((btn) => ({
-        type: btn.type || "url",
-        text: btn.text || "",
-        url: btn.url || "",
-        urlType: btn.urlType || "static",
-        exampleUrl: btn.exampleUrl || "",
-        phoneNumber: btn.phoneNumber || "",
-      })),
-    });
     setShowForm(true);
   };
 
-  const handleSave = async () => {
+  const handleDuplicate = async (id: string) => {
     if (!businessId) return;
-    if (!form.name.trim() || !form.body.trim()) {
-      toast.error(t("whatsapp.templates.required"));
-      return;
-    }
-
-    const payload = {
-      name: form.name.trim(),
-      category: form.category,
-      language: form.language,
-      variableType: form.variableType,
-      headerType: form.headerType,
-      headerText: form.headerText.trim().slice(0, HEADER_MAX),
-      headerMediaUrl: form.headerMediaUrl.trim(),
-      body: form.body.trim().slice(0, BODY_MAX),
-      footer: form.footer.trim().slice(0, FOOTER_MAX),
-      exampleValues: form.exampleValues,
-      buttons: form.buttons,
-    };
-
     try {
-      setSaving(true);
-      if (editingId) {
-        await updateWhatsAppTemplate(businessId, editingId, payload);
-        toast.success(t("whatsapp.templates.updated"));
-      } else {
-        await createWhatsAppTemplate(businessId, payload);
-        toast.success(t("whatsapp.templates.created"));
-      }
-      resetForm();
+      await duplicateWhatsAppTemplate(businessId, id);
+      toast.success(t("whatsapp.wizard.duplicated"));
       await load();
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.saveTemplate")
-      );
-    } finally {
-      setSaving(false);
+      toast.error(error?.response?.data?.error || t("whatsapp.wizard.draftFailed"));
+    }
+  };
+
+  const handleRefresh = async (id: string) => {
+    if (!businessId) return;
+    try {
+      const result = await refreshWhatsAppTemplate(businessId, id);
+      if (result.skipped && result.reason === "throttled") {
+        toast.info(t("whatsapp.wizard.refreshThrottled"));
+      } else if (result.skipped && result.reason === "local_draft") {
+        toast.info(t("whatsapp.wizard.localOnly"));
+      } else {
+        toast.success(t("whatsapp.wizard.refreshed"));
+      }
+      await load({ quiet: true });
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || t("whatsapp.errors.syncTemplates"));
     }
   };
 
@@ -474,7 +350,6 @@ export default function WhatsAppTemplatesTab() {
             className={btnPrimary}
             onClick={() => {
               setEditingId(null);
-              setForm(emptyForm);
               setShowForm(true);
             }}
           >
@@ -492,10 +367,12 @@ export default function WhatsAppTemplatesTab() {
         {(
           [
             ["all", t("whatsapp.hub.total")],
+            ["local", t("whatsapp.wizard.filters.local")],
             ["approved", t("whatsapp.hub.approved")],
             ["pending", t("whatsapp.hub.pending")],
             ["rejected", t("whatsapp.hub.rejected")],
             ["paused", t("whatsapp.templates.metaStatus.paused")],
+            ["sync_error", t("whatsapp.wizard.filters.syncError")],
           ] as const
         ).map(([key, label]) => (
           <button
@@ -522,102 +399,18 @@ export default function WhatsAppTemplatesTab() {
         />
       </div>
 
-      {showForm && !editingId && businessId && (
+      {showForm && businessId && (
         <WhatsAppCreateTemplateWizard
+          key={editingId || "new"}
           businessId={businessId}
+          initialTemplate={
+            editingId
+              ? templates.find((tpl) => tpl._id === editingId) || null
+              : null
+          }
           onClose={resetForm}
           onSubmitted={load}
         />
-      )}
-
-      {showForm && editingId && (
-        <section className={`${cardBase} space-y-5 p-4 sm:p-5`}>
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h3 className="text-base font-black text-slate-900">
-                {t("whatsapp.templates.editTitle")}
-              </h3>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                {t("whatsapp.templates.metaEditorHint")}
-              </p>
-            </div>
-              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
-                {t("whatsapp.templates.localDraftBadge")}
-              </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.templates.name")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.name}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
-            </label>
-            <label className="grid gap-1.5">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.templates.category")}
-              </span>
-              <select
-                className={inputBase}
-                value={form.category}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    category: e.target.value as WhatsAppTemplate["category"],
-                  }))
-                }
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {t(`whatsapp.categories.${cat}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <div className="wa-meta-wizard" style={{ border: 0, boxShadow: "none" }}>
-            <WhatsAppMetaTemplateContent
-              headerType={form.headerType}
-              headerText={form.headerText}
-              headerMediaUrl={form.headerMediaUrl}
-              body={form.body}
-              footer={form.footer}
-              buttons={form.buttons}
-              exampleValues={form.exampleValues}
-              variableType={form.variableType}
-              allowedButtons={[
-                "quick_reply",
-                "url",
-                "voice_call",
-                "phone_number",
-                "request_contact_info",
-              ]}
-              onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className={btnPrimary}
-              disabled={saving}
-              onClick={handleSave}
-            >
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {t("whatsapp.templates.save")}
-            </button>
-            <button type="button" className={btnSecondary} onClick={resetForm}>
-              {t("whatsapp.templates.cancel")}
-            </button>
-          </div>
-        </section>
       )}
 
       <div className={`${cardBase} overflow-hidden`}>
@@ -728,6 +521,27 @@ export default function WhatsAppTemplatesTab() {
                               {t("whatsapp.templates.send")}
                             </button>
                           ) : null}
+                          <button
+                            type="button"
+                            className={`${btnSecondary} !px-2 !py-1 text-[10px]`}
+                            onClick={() => startEdit(tpl)}
+                          >
+                            {t("whatsapp.templates.edit", { defaultValue: "Edit" })}
+                          </button>
+                          <button
+                            type="button"
+                            className={`${btnSecondary} !px-2 !py-1 text-[10px]`}
+                            onClick={() => void handleDuplicate(tpl._id)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                          <button
+                            type="button"
+                            className={`${btnSecondary} !px-2 !py-1 text-[10px]`}
+                            onClick={() => void handleRefresh(tpl._id)}
+                          >
+                            <RefreshCw className="h-3 w-3" />
+                          </button>
                           <button
                             type="button"
                             className={`${btnSecondary} !px-2 !py-1 text-[10px]`}
