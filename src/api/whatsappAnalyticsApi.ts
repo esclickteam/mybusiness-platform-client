@@ -41,6 +41,7 @@ export type WhatsAppPerformanceView = {
   demoData?: boolean;
   samplePreview?: boolean;
   sourcesMixed: false;
+  stale?: boolean;
   timezone: "UTC";
   skipped?: boolean;
   reason?: string;
@@ -79,6 +80,12 @@ export type WhatsAppPerformanceView = {
     messagingAvailable: boolean | null;
     messagingReason: string;
     wabaTimezone: string;
+    lastGraphCalls?: number | null;
+    usage?: {
+      callCount: number;
+      estimatedMinutes: number;
+      capturedAt: string | null;
+    } | null;
   };
   meta: {
     messaging: {

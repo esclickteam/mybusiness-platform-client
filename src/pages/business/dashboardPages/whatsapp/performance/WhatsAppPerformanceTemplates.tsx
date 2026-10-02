@@ -91,6 +91,11 @@ export function TemplatesBody({
           ) : null}
         </div>
       ) : null}
+      {templates.reason === "TEMPLATE_SYNC_QUEUED" ? (
+        <p className="text-xs font-semibold text-slate-500">
+          {reasonText(t, "TEMPLATE_SYNC_QUEUED")}
+        </p>
+      ) : null}
       {templates.reason === "TEMPLATE_ID_CAP" ? (
         <p className="text-xs font-semibold text-amber-700">
           {reasonText(t, "TEMPLATE_ID_CAP")}
