@@ -24,6 +24,7 @@ import {
   validateTemplateSampleFile,
   type TemplateEditorSnapshot,
 } from "./whatsappTemplateEditorModel";
+import { analyzeUrlButton, buttonSetIssues } from "./whatsappTemplateButtonModel";
 import {
   metaButtonTypeLabel,
   WhatsAppMetaTemplateContent,
@@ -246,13 +247,7 @@ function kindLabel(
 
 function allowedButtons(category: MetaCategory): ButtonType[] {
   if (category === "AUTHENTICATION") return ["copy_code"];
-  return [
-    "quick_reply",
-    "url",
-    "voice_call",
-    "phone_number",
-    "request_contact_info",
-  ];
+  return ["quick_reply", "url", "phone_number", "copy_code", "voice_call"];
 }
 
 function apiErrorMessage(
@@ -345,6 +340,7 @@ export function WhatsAppCreateTemplateWizard({
     Boolean(form.body.trim()) &&
     (form.headerType !== "text" || Boolean(form.headerText.trim())) &&
     mediaReady &&
+    buttonSetIssues(form.buttons).length === 0 &&
     policy.canEditContent;
   const changes = contentChangeKeys(snapshotOf(form), snapshotOf(baseline));
 
@@ -598,11 +594,17 @@ export function WhatsAppCreateTemplateWizard({
               <time>12:00</time>
               {form.buttons.length > 0 && (
                 <div className="wa-meta-bubble__buttons">
-                  {form.buttons.map((button, index) => (
-                    <span key={`${button.type}-${index}`}>
-                      {button.text || metaButtonTypeLabel(button.type, t)}
-                    </span>
-                  ))}
+                  {form.buttons.map((button, index) => {
+                    const urlInfo = button.type === "url" ? analyzeUrlButton(button) : null;
+                    return (
+                      <div key={`${button.type}-${index}`} className="wa-meta-bubble__btn">
+                        <span>{button.text || metaButtonTypeLabel(button.type, t)}</span>
+                        {urlInfo?.previewUrl ? (
+                          <small dir="ltr">{urlInfo.previewUrl}</small>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
