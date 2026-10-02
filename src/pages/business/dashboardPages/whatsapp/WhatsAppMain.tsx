@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import {
   Activity,
   BarChart3,
+  Calculator,
   Code2,
   LineChart,
   Inbox,
@@ -99,6 +100,12 @@ const MAIN_TABS: WhatsAppTab[] = [
     icon: Code2,
   },
   { path: "billing", to: "billing", labelKey: "whatsapp.nav.billing", icon: Wallet },
+  {
+    path: "meta-costs",
+    to: "meta-costs",
+    labelKey: "whatsapp.nav.metaCosts",
+    icon: Calculator,
+  },
 ];
 
 function readWaBillingFlag(searchParams: URLSearchParams) {
@@ -185,7 +192,12 @@ export default function WhatsAppMain() {
       });
       return;
     }
-    const allowWhenDisconnected = new Set(["connection", "billing", "developers"]);
+    const allowWhenDisconnected = new Set([
+      "connection",
+      "billing",
+      "developers",
+      "meta-costs",
+    ]);
     if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
       navigate(`${whatsappBasePath(location.pathname)}/connection`, {
         replace: true,

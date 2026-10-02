@@ -14,6 +14,7 @@ import clubPtBR from "./locales/club/pt-BR.json";
 import clubAr from "./locales/club/ar.json";
 import { saasMarketCopy } from "./saasMarketplace";
 import { withWhatsappPerformance } from "./whatsappPerformanceCopy";
+import { withMetaCostCopy } from "./metaCostCopy";
 import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
@@ -36,10 +37,16 @@ const browserGeoDetector = {
 
     if (
       typeof window !== "undefined" &&
-      (isBizuplyTravelHost(window.location.hostname) ||
-        isBizuplyWhatsAppHost(window.location.hostname))
+      isBizuplyTravelHost(window.location.hostname)
     ) {
       return "en";
+    }
+
+    if (
+      typeof window !== "undefined" &&
+      isBizuplyWhatsAppHost(window.location.hostname)
+    ) {
+      return getManualLanguageChoice() || "en";
     }
 
     const fromUrl = applyLanguageFromUrl();
@@ -61,32 +68,47 @@ i18n
   .init({
     resources: {
       en: {
-        translation: withWhatsappPerformance(
-          { ...en, club: clubEn, saasMarket: saasMarketCopy.en },
+        translation: withMetaCostCopy(
+          withWhatsappPerformance(
+            { ...en, club: clubEn, saasMarket: saasMarketCopy.en },
+            "en"
+          ),
           "en"
         ),
       },
       he: {
-        translation: withWhatsappPerformance(
-          { ...he, club: clubHe, saasMarket: saasMarketCopy.he },
+        translation: withMetaCostCopy(
+          withWhatsappPerformance(
+            { ...he, club: clubHe, saasMarket: saasMarketCopy.he },
+            "he"
+          ),
           "he"
         ),
       },
       es: {
-        translation: withWhatsappPerformance(
-          { ...es, club: clubEs, saasMarket: saasMarketCopy.es },
+        translation: withMetaCostCopy(
+          withWhatsappPerformance(
+            { ...es, club: clubEs, saasMarket: saasMarketCopy.es },
+            "es"
+          ),
           "es"
         ),
       },
       "pt-BR": {
-        translation: withWhatsappPerformance(
-          { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] },
+        translation: withMetaCostCopy(
+          withWhatsappPerformance(
+            { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] },
+            "pt-BR"
+          ),
           "pt-BR"
         ),
       },
       ar: {
-        translation: withWhatsappPerformance(
-          { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar },
+        translation: withMetaCostCopy(
+          withWhatsappPerformance(
+            { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar },
+            "ar"
+          ),
           "ar"
         ),
       },

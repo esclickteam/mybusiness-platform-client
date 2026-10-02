@@ -19,6 +19,7 @@ describe("resolveWhatsAppHubRedirect", () => {
       "insights",
       "developers",
       "billing",
+      "meta-costs",
       "connection",
     ]) {
       expect(resolveWhatsAppHubRedirect(`${base}/${tab}`)).toBeNull();

@@ -6,24 +6,6 @@
     <script>
       (function () {
         try {
-          var earlyHost = String(location.hostname || "").toLowerCase();
-          if (
-            earlyHost === "travel.bizuply.com" ||
-            earlyHost === "www.travel.bizuply.com" ||
-            earlyHost === "whatsapp.bizuply.com" ||
-            earlyHost === "www.whatsapp.bizuply.com"
-          ) {
-            document.documentElement.lang = "en";
-            document.documentElement.dir = "ltr";
-            if (
-              earlyHost === "whatsapp.bizuply.com" ||
-              earlyHost === "www.whatsapp.bizuply.com"
-            ) {
-              document.documentElement.setAttribute("data-wa-host", "true");
-            }
-            return;
-          }
-
           function normalize(raw) {
             if (!raw) return null;
             var value = String(raw).trim().replace(/_/g, "-");
@@ -36,6 +18,35 @@
             if (base === "pt") return region === "br" ? "pt-BR" : null;
             if (base === "en" || base === "he" || base === "es" || base === "ar") return base;
             return null;
+          }
+
+          var earlyHost = String(location.hostname || "").toLowerCase();
+          if (
+            earlyHost === "travel.bizuply.com" ||
+            earlyHost === "www.travel.bizuply.com"
+          ) {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+            return;
+          }
+          if (
+            earlyHost === "whatsapp.bizuply.com" ||
+            earlyHost === "www.whatsapp.bizuply.com"
+          ) {
+            document.documentElement.setAttribute("data-wa-host", "true");
+            var waLang = null;
+            try {
+              waLang = normalize(new URLSearchParams(location.search).get("lang"));
+            } catch (eWaUrl) {}
+            if (!waLang) {
+              try {
+                waLang = normalize(localStorage.getItem("bizuply_lang_preference"));
+              } catch (eWaStore) {}
+            }
+            if (!waLang) waLang = "en";
+            document.documentElement.lang = waLang;
+            document.documentElement.dir = waLang === "he" || waLang === "ar" ? "rtl" : "ltr";
+            return;
           }
 
           function readCookie(name) {
