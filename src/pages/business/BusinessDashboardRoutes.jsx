@@ -154,6 +154,18 @@ const WhatsAppHistoryTab = lazy(() =>
 const WhatsAppInboxTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppInboxTab")
 );
+const WhatsAppPerformanceLayout = lazy(() =>
+  import("./dashboardPages/whatsapp/performance/WhatsAppPerformanceLayout")
+);
+const WhatsAppPerformanceOverview = lazy(() =>
+  import("./dashboardPages/whatsapp/performance/WhatsAppPerformanceOverview")
+);
+const WhatsAppPerformanceMessages = lazy(() =>
+  import("./dashboardPages/whatsapp/performance/WhatsAppPerformanceMessages")
+);
+const WhatsAppPerformanceTemplates = lazy(() =>
+  import("./dashboardPages/whatsapp/performance/WhatsAppPerformanceTemplates")
+);
 const WhatsAppSettingsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
 );
@@ -560,6 +572,12 @@ const BusinessDashboardRoutes = () => {
               <Route path="compose" element={<WhatsAppComposeTab />} />
               <Route path="lists" element={<WhatsAppListsTab />} />
               <Route path="history" element={<WhatsAppHistoryTab />} />
+            </Route>
+            <Route path="performance" element={<WhatsAppPerformanceLayout />}>
+              <Route index element={<Navigate to="overview" replace />} />
+              <Route path="overview" element={<WhatsAppPerformanceOverview />} />
+              <Route path="messages" element={<WhatsAppPerformanceMessages />} />
+              <Route path="templates" element={<WhatsAppPerformanceTemplates />} />
             </Route>
             <Route path="inbox" element={<WhatsAppInboxTab />} />
             <Route path="insights" element={<WhatsAppInsightsTab />} />

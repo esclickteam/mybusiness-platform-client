@@ -13,6 +13,7 @@ import clubEs from "./locales/club/es.json";
 import clubPtBR from "./locales/club/pt-BR.json";
 import clubAr from "./locales/club/ar.json";
 import { saasMarketCopy } from "./saasMarketplace";
+import { withWhatsappPerformance } from "./whatsappPerformanceCopy";
 import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
@@ -57,11 +58,36 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: { ...en, club: clubEn, saasMarket: saasMarketCopy.en } },
-      he: { translation: { ...he, club: clubHe, saasMarket: saasMarketCopy.he } },
-      es: { translation: { ...es, club: clubEs, saasMarket: saasMarketCopy.es } },
-      "pt-BR": { translation: { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] } },
-      ar: { translation: { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar } },
+      en: {
+        translation: withWhatsappPerformance(
+          { ...en, club: clubEn, saasMarket: saasMarketCopy.en },
+          "en"
+        ),
+      },
+      he: {
+        translation: withWhatsappPerformance(
+          { ...he, club: clubHe, saasMarket: saasMarketCopy.he },
+          "he"
+        ),
+      },
+      es: {
+        translation: withWhatsappPerformance(
+          { ...es, club: clubEs, saasMarket: saasMarketCopy.es },
+          "es"
+        ),
+      },
+      "pt-BR": {
+        translation: withWhatsappPerformance(
+          { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] },
+          "pt-BR"
+        ),
+      },
+      ar: {
+        translation: withWhatsappPerformance(
+          { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar },
+          "ar"
+        ),
+      },
     },
 
     fallbackLng: FALLBACK_LANGUAGE,

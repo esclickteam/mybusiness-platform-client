@@ -14,6 +14,7 @@ describe("resolveWhatsAppHubRedirect", () => {
       "profile",
       "templates",
       "messages",
+      "performance",
       "inbox",
       "insights",
       "developers",

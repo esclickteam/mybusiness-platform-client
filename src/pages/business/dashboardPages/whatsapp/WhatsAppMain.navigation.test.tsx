@@ -83,6 +83,15 @@ function HubHarness({ initial }: { initial: string }) {
             />
           </Route>
           <Route
+            path="performance"
+            element={<div data-testid="tab-performance">performance</div>}
+          >
+            <Route
+              path="overview"
+              element={<div data-testid="tab-performance">performance</div>}
+            />
+          </Route>
+          <Route
             path="inbox"
             element={<div data-testid="tab-inbox">inbox</div>}
           />
@@ -141,6 +150,13 @@ describe("WhatsApp hub tab navigation", () => {
     );
     await waitFor(() =>
       expect(screen.getByTestId("tab-profile")).toBeInTheDocument()
+    );
+
+    fireEvent.click(
+      screen.getByRole("link", { name: /whatsapp\.nav\.performance/i })
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("tab-performance")).toBeInTheDocument()
     );
 
     fireEvent.click(screen.getByRole("link", { name: /whatsapp\.nav\.inbox/i }));
