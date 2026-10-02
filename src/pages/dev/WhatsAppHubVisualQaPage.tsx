@@ -7,6 +7,7 @@ import i18n from "../../i18n/i18n";
 import WhatsAppOverviewTab from "../business/dashboardPages/whatsapp/WhatsAppOverviewTab";
 import WhatsAppProfileTab from "../business/dashboardPages/whatsapp/WhatsAppProfileTab";
 import WhatsAppInsightsTab from "../business/dashboardPages/whatsapp/WhatsAppInsightsTab";
+import WhatsAppPerformancePreview from "../business/dashboardPages/whatsapp/performance/WhatsAppPerformancePreview";
 import WhatsAppBillingTab from "../business/dashboardPages/whatsapp/WhatsAppBillingTab";
 import WhatsAppDevelopersTab from "../business/dashboardPages/whatsapp/WhatsAppDevelopersTab";
 import WhatsAppTemplateDrawer from "../business/dashboardPages/whatsapp/WhatsAppTemplateDrawer";
@@ -71,6 +72,7 @@ const TABS = [
   "פרופיל",
   "תבניות",
   "הודעות",
+  "נתוני ביצועים",
   "Inbox",
   "Insights",
   "API / Developers",
@@ -392,6 +394,11 @@ export default function WhatsAppHubVisualQaPage() {
           {show("messages") ? (
             <QaBlock label="messages" active="הודעות">
               <MessagesMock />
+            </QaBlock>
+          ) : null}
+          {show("performance") ? (
+            <QaBlock label="performance" active="נתוני ביצועים">
+              <WhatsAppPerformancePreview />
             </QaBlock>
           ) : null}
           {show("insights") ? (

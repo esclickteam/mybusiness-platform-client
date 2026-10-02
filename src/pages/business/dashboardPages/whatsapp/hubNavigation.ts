@@ -20,6 +20,7 @@ export const KNOWN_TOP_SEGMENTS = new Set([
   "profile",
   "templates",
   "messages",
+  "performance",
   "inbox",
   "insights",
   "developers",
