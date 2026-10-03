@@ -64,6 +64,12 @@ const REGISTRATION_CONNECTION: WhatsAppConnection = {
   phonePlatformStatus: "CONNECTED",
   phonePlatformType: "CLOUD_API",
   codeVerificationStatus: "VERIFIED",
+  nameStatus: "APPROVED",
+  displayNameStatusRaw: "APPROVED",
+  displayNameStatus: "APPROVED",
+  displayNameVisibility: "profile_only",
+  businessVerificationStatus: "not_verified",
+  messagingLimitTier: "TIER_250",
   webhookSubscribed: true,
   canSendMessage: "AVAILABLE",
   readinessChecks: [

@@ -93,6 +93,12 @@ export type WhatsAppConnection = {
   nameStatusDisplay?: string;
   displayNameStatusRaw?: string;
   displayNameStatus?: string;
+  displayNameVisibility?:
+    | "visible"
+    | "profile_only"
+    | "pending"
+    | "rejected"
+    | "unknown";
   qualityRating?: string;
   messagingLimitTier?: string;
   metaBusinessId?: string;

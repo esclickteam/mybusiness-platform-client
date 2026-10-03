@@ -459,6 +459,14 @@ export default function WhatsAppProfileTab() {
                   </span>
                 ) : null}
               </div>
+              {connection?.displayNameVisibility &&
+              connection.displayNameVisibility !== "unknown" ? (
+                <p className="mt-2 text-xs font-semibold text-slate-600">
+                  {t(
+                    `whatsapp.hub.displayNameVisibility.${connection.displayNameVisibility}`
+                  )}
+                </p>
+              ) : null}
             </div>
 
             <div>

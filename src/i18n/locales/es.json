@@ -9564,6 +9564,12 @@
       "profileSyncWarning": "Guardado en local. Falló la sincronización con Meta:",
       "syncProfile": "Sincronizar perfil",
       "displayNameMetaStatus": "Estado de Meta",
+      "displayNameVisibility": {
+        "visible": "Meta permite mostrar el nombre del negocio en el encabezado del chat y en la lista.",
+        "profile_only": "El nombre está aprobado en el perfil, pero WhatsApp sigue mostrando el número de teléfono en el encabezado del chat y en la lista. Ocurre cuando la cuenta no está verificada en Meta y aún no alcanzó un límite de mensajería de alta calidad de unas 2.000 conversaciones. La verificación del negocio no es obligatoria: Meta también muestra el nombre tras un historial de envío de buena calidad. Bizuply no elige el encabezado.",
+        "pending": "El nombre para mostrar espera la aprobación de Meta. Hasta entonces, WhatsApp muestra el número de teléfono.",
+        "rejected": "Meta rechazó el nombre para mostrar. Actualícelo en WhatsApp Manager. Hasta entonces se muestra el número."
+      },
       "saveToMeta": "Guardar",
       "loading": "Cargando…",
       "noPhoto": "Sin foto",

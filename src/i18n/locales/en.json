@@ -8172,6 +8172,12 @@
       "profileSyncWarning": "Saved locally. Meta sync failed:",
       "syncProfile": "Sync profile",
       "displayNameMetaStatus": "Meta status",
+      "displayNameVisibility": {
+        "visible": "Meta allows the business name at the top of the chat and in the chat list.",
+        "profile_only": "The name is approved on the business profile, but WhatsApp still shows the phone number at the top of the chat and in the chat list. That happens when the account is not verified with Meta and has not yet reached a high-quality messaging limit of about 2,000 conversations. Business verification is optional: Meta also shows the name after a high-quality sending history. Bizuply does not choose the header.",
+        "pending": "The display name is waiting for Meta's approval. Until then, WhatsApp shows the phone number.",
+        "rejected": "Meta rejected the display name. Update it in WhatsApp Manager. Until then, the phone number is shown."
+      },
       "saveToMeta": "Save",
       "loading": "Loading…",
       "noPhoto": "No photo",
