@@ -213,6 +213,13 @@ export default function WhatsAppOverviewTab() {
       ) : null}
 
       {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
+      {connection?.displayNameVisibility &&
+      connection.displayNameVisibility !== "visible" &&
+      connection.displayNameVisibility !== "unknown" ? (
+        <div className={`${cardBase} border-sky-200 bg-sky-50/80 px-4 py-3 text-sm font-semibold text-sky-950`}>
+          {t(`whatsapp.hub.displayNameVisibility.${connection.displayNameVisibility}`)}
+        </div>
+      ) : null}
       {connection?.registrationActionRequired ? (
         <div className={`${cardBase} flex flex-wrap items-center justify-between gap-3 border-amber-200 bg-amber-50/80 px-4 py-3`}>
           <p className="text-sm font-bold text-amber-950">
