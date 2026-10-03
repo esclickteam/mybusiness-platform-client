@@ -937,7 +937,7 @@ export default function App() {
 
   if (whatsappLanding) {
     return (
-      <Suspense fallback={<div className="min-h-screen bg-[#061018]" />}>
+      <Suspense fallback={<div className="min-h-screen bg-[#05070d]" />}>
         <WhatsAppApiLanding />
       </Suspense>
     );

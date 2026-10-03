@@ -64,8 +64,8 @@ const onTravelHost = isBizuplyTravelHost(bootHostname);
 const onWhatsAppHost = isBizuplyWhatsAppHost(bootHostname);
 
 if (onWhatsAppHost) {
-  document.body.style.background = "#061018";
-  document.documentElement.style.background = "#061018";
+  document.body.style.background = "#05070d";
+  document.documentElement.style.background = "#05070d";
   document.body.setAttribute("data-theme", "dark");
   const storedLang = localStorage.getItem("bizuply_lang_preference");
   const waLang = ["en", "he", "es", "pt-BR", "ar"].includes(storedLang || "")
@@ -121,7 +121,7 @@ const queryClient = new QueryClient({
 
 function AppLoader() {
   if (isBizuplyWhatsAppHost(window.location.hostname)) {
-    return <div className="min-h-screen bg-[#061018]" />;
+    return <div className="min-h-screen bg-[#05070d]" />;
   }
   if (isBizuplyTravelHost(window.location.hostname)) {
     return <div className="min-h-screen bg-[#f4f7fb]" />;
