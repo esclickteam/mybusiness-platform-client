@@ -26,11 +26,11 @@ export default function SiteGenericPluginPanel({
         ? t("leftover.pluginGeneric.priceRange", {
             min: plugin.priceMonthly,
             max: plugin.priceMax,
-            defaultValue: "₪{{min}}–{{max}}/month",
+            defaultValue: "${{min}}–{{max}}/month",
           })
         : t("leftover.pluginGeneric.priceMonth", {
             price: plugin.priceMonthly,
-            defaultValue: "₪{{price}}/month",
+            defaultValue: "${{price}}/month",
           })
       : t("leftover.pluginGeneric.included", "Included in the plan"));
 

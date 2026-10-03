@@ -36,8 +36,8 @@ export type AutomationBillingUsageOverview = {
     name: string;
     nameHe?: string;
     status: string;
-    priceIls: number;
-    amountIls?: number;
+    amount: number;
+    currency: string;
     executionLimit: number;
     /** Alias of executionLimit for action-billing responses. */
     actionLimit?: number;

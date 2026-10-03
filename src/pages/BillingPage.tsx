@@ -467,13 +467,19 @@ export default function BillingPage() {
                   label={t("billing.summary.nextCharge")}
                   value={
                     summary?.nextChargeAmount != null
-                      ? `${formatBillingMoney(summary.nextChargeAmount, dateLocale, summary.currency)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
+                      ? `${formatBillingMoney(summary.nextChargeAmount, dateLocale, summary.nextChargeCurrency || summary.currency)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
                       : "—"
                   }
                 />
                 <StatChip
                   label={t("billing.totalPaid")}
-                  value={formatBillingMoney(summary?.totalPaid, dateLocale, summary?.currency)}
+                  value={
+                    Object.keys(summary?.totalPaidByCurrency || {}).length > 1
+                      ? Object.entries(summary?.totalPaidByCurrency || {})
+                          .map(([cur, amt]) => formatBillingMoney(amt, dateLocale, cur))
+                          .join(" + ")
+                      : formatBillingMoney(summary?.totalPaid, dateLocale, summary?.currency)
+                  }
                 />
                 <StatChip
                   label={t("billing.summary.activeSubscriptions")}
@@ -525,7 +531,7 @@ export default function BillingPage() {
                 </Field>
                 <Field label={t("billing.amount")}>
                   {formatBillingMoney(
-                    primaryPlan.priceIls,
+                    primaryPlan.price,
                     dateLocale,
                     primaryPlan.currency
                   )}
@@ -596,9 +602,9 @@ export default function BillingPage() {
                         <li key={li.sku}>
                           {chargeLabel({ sku: li.sku, name: li.name })} ·{" "}
                           {formatBillingMoney(
-                            li.amountIls,
+                            li.amount,
                             dateLocale,
-                            primaryPlan.currency
+                            li.currency || primaryPlan.currency
                           )}
                         </li>
                       ))}
@@ -1051,7 +1057,7 @@ function ServiceOrderCard({
         <div>
           <p className="text-base font-black text-slate-800">{so.serviceName}</p>
           <p className="mt-1 text-sm text-slate-600">
-            {formatBillingMoney(so.pricePaidIls, dateLocale, so.currency)} ·{" "}
+            {formatBillingMoney(so.pricePaid, dateLocale, so.currency)} ·{" "}
             {billingTypeLabel(so.billingType)}
           </p>
           <p className="mt-1 text-xs font-bold text-slate-500">

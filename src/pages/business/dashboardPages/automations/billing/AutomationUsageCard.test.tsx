@@ -27,7 +27,8 @@ function baseUsage(
       name: "Automation Basic",
       nameHe: "Automation Basic",
       status: "active",
-      priceIls: 39,
+      amount: 12,
+      currency: "usd",
       executionLimit: 2500,
     },
     usage: {
@@ -276,7 +277,8 @@ describe("AutomationUsageCard", () => {
           key: AUTOMATION_PLAN_KEYS.BASIC,
           name: "Automation Basic",
           status: "past_due",
-          priceIls: 39,
+          amount: 12,
+      currency: "usd",
           executionLimit: 2500,
         },
         subscription: {
@@ -302,7 +304,8 @@ describe("AutomationUsageCard", () => {
           key: AUTOMATION_PLAN_KEYS.BASIC,
           name: "Automation Basic",
           status: "unpaid",
-          priceIls: 39,
+          amount: 12,
+      currency: "usd",
           executionLimit: 2500,
         },
       })

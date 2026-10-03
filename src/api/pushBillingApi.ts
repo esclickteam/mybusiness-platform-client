@@ -73,9 +73,10 @@ export function normalizePushPlan(planKey: string | null | undefined): PushBilli
   return null;
 }
 
-export function pushPlanAmountIls(plan: PushBillingPlan | null | undefined): number | null {
-  if (plan === "monthly") return 29;
-  if (plan === "annual") return 228;
+/** Display price in USD (checkout is priced server-side from the Lemon catalog). */
+export function pushPlanAmount(plan: PushBillingPlan | null | undefined): number | null {
+  if (plan === "monthly") return 9;
+  if (plan === "annual") return 69;
   return null;
 }
 

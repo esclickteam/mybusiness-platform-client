@@ -33,7 +33,7 @@ export default function AdminPlans() {
         next[item.sku] = {
           nameHe: item.nameHe || "",
           nameEn: item.nameEn || "",
-          amountIls: Number(item.amountIls || 0),
+          amount: Number(item.amount || 0),
           billing: item.billing || "one_time",
           active: item.active !== false,
           partnerSellable: item.partnerSellable !== false,
@@ -70,7 +70,7 @@ export default function AdminPlans() {
       const res = await API.put(`/admin/pricing/${encodeURIComponent(sku)}`, {
         nameHe: draft.nameHe,
         nameEn: draft.nameEn,
-        amountIls: Number(draft.amountIls || 0),
+        amount: Number(draft.amount || 0),
         billing: draft.billing,
         active: !!draft.active,
         partnerSellable: draft.partnerSellable !== false,
@@ -85,7 +85,7 @@ export default function AdminPlans() {
           [sku]: {
             nameHe: updated.nameHe || "",
             nameEn: updated.nameEn || "",
-            amountIls: Number(updated.amountIls || 0),
+            amount: Number(updated.amount || 0),
             billing: updated.billing || "one_time",
             active: updated.active !== false,
             partnerSellable: updated.partnerSellable !== false,
@@ -115,7 +115,7 @@ export default function AdminPlans() {
               <th className="px-3 py-2 text-right font-medium">SKU</th>
               <th className="px-3 py-2 text-right font-medium">שם עברית</th>
               <th className="px-3 py-2 text-right font-medium">שם אנגלית</th>
-              <th className="px-3 py-2 text-right font-medium">מחיר ₪</th>
+              <th className="px-3 py-2 text-right font-medium">מחיר $</th>
               <th className="px-3 py-2 text-right font-medium">חיוב</th>
               <th className="px-3 py-2 text-right font-medium">פעיל</th>
               <th className="px-3 py-2 text-right font-medium">זמין לפרטנרים</th>
@@ -154,9 +154,9 @@ export default function AdminPlans() {
                       min={0}
                       step={1}
                       className="w-24 rounded border border-slate-200 px-2 py-1 font-semibold text-emerald-800"
-                      value={draft.amountIls ?? 0}
+                      value={draft.amount ?? 0}
                       onChange={(e) =>
-                        updateDraft(item.sku, { amountIls: Number(e.target.value || 0) })
+                        updateDraft(item.sku, { amount: Number(e.target.value || 0) })
                       }
                     />
                   </td>
@@ -238,7 +238,7 @@ export default function AdminPlans() {
               תמחור חבילות ואפסיילים
             </h1>
             <p className="mt-1 text-sm text-slate-600">
-              שינוי ידני נשמר במונגו ומשפיע על צ׳קאאוט Stripe (₪ / ILS).
+              שינוי ידני נשמר במונגו ומשפיע על הצ׳קאאוט ($ / USD).
             </p>
           </div>
           <button

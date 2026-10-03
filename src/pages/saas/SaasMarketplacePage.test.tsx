@@ -125,7 +125,7 @@ describe("SaaS marketplace page", () => {
       settings: {
         whatsappE164: "",
         usdToIlsRate: 3.7,
-        checkoutCurrency: "ILS",
+        checkoutCurrency: "USD",
         listCurrency: "USD",
       },
       products,

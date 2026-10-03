@@ -22,7 +22,7 @@ import { formatMarketMoney, planAmount } from "../../billing/billingMarkets";
 
 const LAUNCH_MARKER_KEY = "bizuply_service_checkout_launch";
 
-function money(value, locale, currency = "ILS") {
+function money(value, locale, currency = "USD") {
   return formatMarketMoney(Number(value || 0), currency, locale);
 }
 
@@ -124,7 +124,7 @@ export default function ServicePurchasePanel({
   const serviceKey = selectedTrack?.serviceKey || purchase?.serviceKey || restored || "";
   const contactOnly = Boolean(selectedTrack?.contact) || !serviceKey;
   const serviceBilling = selectedTrack?.billing || purchase?.billing || "one_time";
-  const baseAmount = selectedTrack?.amountIls ?? purchase?.amountIls ?? 0;
+  const baseAmount = selectedTrack?.amount ?? purchase?.amount ?? 0;
   const selectedAddOnOptions = useMemo(
     () =>
       (purchase?.addOnOptions || []).filter((option) =>
@@ -174,7 +174,7 @@ export default function ServicePurchasePanel({
 
   const addOnTotal = selectedAddOnOptions.reduce(
     (sum, option) =>
-      sum + option.amountIls * (quantities[option.addOnKey] || 1),
+      sum + option.amount * (quantities[option.addOnKey] || 1),
     0
   );
   const plan = planOptions.find(
@@ -193,19 +193,19 @@ export default function ServicePurchasePanel({
       purchaseMode === "bundle" &&
       !activePlan
   );
-  const planInIlsTotal = israelBilling && isNewPlan ? plan?.amount || 0 : 0;
+  const planTotal = isNewPlan ? plan?.amount || 0 : 0;
   const paymentToday =
-    baseAmount + addOnTotal + websiteAddonAmount + planInIlsTotal;
+    baseAmount + addOnTotal + websiteAddonAmount + planTotal;
   const monthlyTotal =
     (serviceBilling === "recurring_month" ? baseAmount : 0) +
-    (israelBilling && isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
   const yearlyTotal =
-    israelBilling && isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
+    isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
   const oneTimeTotal =
     (serviceBilling === "one_time" ? baseAmount : 0) +
     addOnTotal +
     websiteAddonAmount +
-    (israelBilling && isNewPlan && plan?.key === "website" ? plan.amount : 0);
+    (isNewPlan && plan?.key === "website" ? plan.amount : 0);
 
   const goToContact = () => {
     onClose();
@@ -489,7 +489,7 @@ export default function ServicePurchasePanel({
                   <span className="min-w-0">
                     <span className="block text-sm font-black leading-5 text-slate-900">
                       {t("pricing.websiteAddon.label", {
-                        price: money(WEBSITE_ADDON.price, locale, "ILS"),
+                        price: money(WEBSITE_ADDON.price, locale, WEBSITE_ADDON.currency),
                       })}
                     </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
@@ -534,7 +534,7 @@ export default function ServicePurchasePanel({
                                 {websiteAddonAmount > 0 ? (
                   <p data-testid="website-addon-summary" className="mt-2 text-xs text-emerald-700">
                     {t("billing.purchase.includesWebsiteAddon", {
-                      amount: money(WEBSITE_ADDON.price, locale),
+                      amount: money(WEBSITE_ADDON.price, locale, WEBSITE_ADDON.currency),
                     })}
                   </p>
                 ) : null}

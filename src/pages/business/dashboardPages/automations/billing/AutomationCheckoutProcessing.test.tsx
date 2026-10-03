@@ -30,7 +30,8 @@ function activeUsage(
       name: "Automation Basic",
       nameHe: "Automation Basic",
       status: "active",
-      priceIls: 39,
+      amount: 12,
+      currency: "usd",
       executionLimit: 2500,
     },
     usage: {

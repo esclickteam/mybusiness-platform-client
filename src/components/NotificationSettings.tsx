@@ -27,7 +27,7 @@ import {
   createPushBillingCheckout,
   getPushBillingStatus,
   normalizePushPlan,
-  pushPlanAmountIls,
+  pushPlanAmount,
   reactivatePushBilling,
   type PushBillingPlan,
   type PushBillingStatus,
@@ -332,7 +332,7 @@ export function NotificationSettingsPanel({
   const cancelAtPeriodEnd = Boolean(subscription?.cancelAtPeriodEnd);
   const periodEndLabel = formatDdMmYyyy(subscription?.currentPeriodEnd);
   const trialDaysLeft = daysRemaining(subscription?.currentPeriodEnd);
-  const firstChargeAmount = pushPlanAmountIls(plan);
+  const firstChargeAmount = pushPlanAmount(plan);
 
   const showPaywall = billingEnabled && !entitled;
   const showSubscriberPanel = billingEnabled && entitled;
@@ -692,7 +692,7 @@ export function NotificationSettingsPanel({
                 >
                   <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.monthly")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
-                    29 ₪{" "}
+                    $9{" "}
                     <span className="text-[10px] font-bold text-slate-500">
                       {t("notificationSettings.perMonth")}
                     </span>
@@ -717,7 +717,7 @@ export function NotificationSettingsPanel({
                   </span>
                   <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.annual")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
-                    19 ₪{" "}
+                    $5.75{" "}
                     <span className="text-[10px] font-bold text-slate-500">
                       {t("notificationSettings.perMonth")}
                     </span>

@@ -8,7 +8,9 @@ export type BillingOverview = {
     nextChargeAmount: number | null;
     nextChargeDate: string | null;
     totalPaid: number;
+    totalPaidByCurrency?: Record<string, number>;
     currency: string;
+    nextChargeCurrency?: string | null;
     activeSubscriptionsCount: number;
     activeServicesCount: number;
     pendingAttentionCount: number;
@@ -17,7 +19,7 @@ export type BillingOverview = {
   primaryPlan: {
     sku: string;
     name: string;
-    priceIls: number;
+    price: number;
     currency: string;
     billingType: string | null;
     status: string | null;
@@ -39,7 +41,8 @@ export type BillingOverview = {
       name: string;
       kind: string;
       billing: string;
-      amountIls: number;
+      amount: number;
+      currency: string;
       quantity: number;
     }>;
   } | null;
@@ -60,7 +63,7 @@ export type BillingOverview = {
     serviceName: string;
     category: string;
     billingType: string;
-    pricePaidIls: number;
+    pricePaid: number;
     currency: string;
     paymentStatus: string;
     fulfillmentStatus: string;
@@ -88,6 +91,7 @@ export type BillingOverview = {
     status: string;
     renewalStatus: string;
     lastRenewalPrice: number | null;
+    lastRenewalCurrency?: string | null;
     quoteExpiresAt: string | null;
     renewalPaid: boolean;
     renewalInProgress: boolean;
