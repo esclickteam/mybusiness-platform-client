@@ -147,8 +147,9 @@ export function SiteHeader({ lang }: { lang: string }) {
 
   useEffect(() => {
     if (!open) return undefined;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const scroller = document.documentElement;
+    const previous = scroller.style.overflow;
+    scroller.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpenOn(null);
@@ -157,7 +158,7 @@ export function SiteHeader({ lang }: { lang: string }) {
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = previous;
+      scroller.style.overflow = previous;
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
@@ -171,7 +172,7 @@ export function SiteHeader({ lang }: { lang: string }) {
       </a>
       <div className="wa-wrap wa-header-inner">
         <SiteLink to="/" className="wa-brand" aria-label="Bizuply WhatsApp API home">
-          <img src="/favicon-v2.png" alt="" width="30" height="30" />
+          <img src="/favicon-v2.png" alt="" width="34" height="34" />
           <span className="wa-brand-name">
             Bizuply <span>WhatsApp API</span>
           </span>

@@ -13,7 +13,7 @@ import {
 import { coerceSupportedLanguage, getTextDirection } from "../../i18n/localeUtils";
 import { SiteFooter, SiteHeader } from "./whatsapp/SiteChrome";
 import { SiteBaseProvider, SiteLink, englishOnly, useSiteHref, useSitePath } from "./whatsapp/siteConfig";
-import { useReveal } from "./whatsapp/ui";
+import { useCardSpotlight, useReveal } from "./whatsapp/ui";
 import OverviewPage from "./whatsapp/pages/OverviewPage";
 import "./whatsapp/whatsappSite.css";
 
@@ -203,6 +203,8 @@ export default function WhatsAppApiLanding() {
   const lang = coerceSupportedLanguage(i18n.language);
   const dir = getTextDirection(lang);
   const base = whatsappSiteBase(typeof window !== "undefined" ? window.location.hostname : "");
+
+  useCardSpotlight();
 
   useEffect(() => {
     document.documentElement.lang = lang;
