@@ -72,7 +72,7 @@ const STATUSES = [
 ] as const;
 
 const CHECKS = [
-  { text: "API key and scope verified", at: 2 },
+  { text: "API key verified", at: 2 },
   { text: "Template approved by Meta", at: 2 },
   { text: "Sent via WhatsApp Cloud API", at: 3 },
 ];

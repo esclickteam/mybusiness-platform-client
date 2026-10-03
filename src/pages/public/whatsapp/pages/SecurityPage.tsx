@@ -11,7 +11,7 @@ const CONTROLS = [
       "Keys are generated randomly and shown in full only once, when you create them.",
       "Only a SHA-256 hash and a short visible prefix are stored, never the key itself.",
       "Revoking or regenerating a key takes effect immediately.",
-      "Keys carry explicit scopes for reading templates, sending messages and reading status.",
+      "A dashboard key can list templates, send messages, and read delivery status.",
     ],
   },
   {

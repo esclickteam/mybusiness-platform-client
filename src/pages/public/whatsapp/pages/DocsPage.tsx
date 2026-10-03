@@ -36,7 +36,7 @@ const BUNDLED_ERRORS: ErrorCode[] = [
   { code: "API_KEY_REVOKED", httpStatus: 401, message: "API key has been revoked." },
   { code: "API_KEY_EXPIRED", httpStatus: 401, message: "API key has expired." },
   { code: "UNAUTHORIZED", httpStatus: 401, message: "Missing or invalid Authorization header." },
-  { code: "INSUFFICIENT_SCOPE", httpStatus: 403, message: "API key is missing the required scope." },
+  { code: "INSUFFICIENT_SCOPE", httpStatus: 403, message: "This API key cannot call this endpoint." },
   { code: "WHATSAPP_NOT_CONNECTED", httpStatus: 409, message: "WhatsApp is not connected for this business." },
   { code: "TEMPLATE_NOT_FOUND", httpStatus: 404, message: "The requested WhatsApp template was not found for this business." },
   { code: "TEMPLATE_NOT_APPROVED", httpStatus: 400, message: "The selected WhatsApp template is not approved." },
@@ -146,12 +146,10 @@ function ErrorTable({ rows }: { rows: Array<[number, string, string]> }) {
 function Endpoint({
   method,
   path,
-  scope,
   children,
 }: {
   method: "GET" | "POST";
   path: string;
-  scope: string;
   children?: React.ReactNode;
 }) {
   return (
@@ -159,7 +157,6 @@ function Endpoint({
       <div className="wa-endpoint-head">
         <span className={`wa-method is-${method.toLowerCase()}`}>{method}</span>
         <code>{path}</code>
-        <span className="wa-badge" style={{ marginInlineStart: "auto" }}>scope: {scope}</span>
       </div>
       {children}
     </>
@@ -170,7 +167,7 @@ const AUTH_ERRORS: Array<[number, string, string]> = [
   [401, "UNAUTHORIZED", "The Authorization header is missing or malformed."],
   [401, "INVALID_API_KEY", "The key does not exist."],
   [401, "API_KEY_REVOKED", "The key was revoked in the dashboard."],
-  [403, "INSUFFICIENT_SCOPE", "The key lacks the scope this endpoint needs."],
+  [403, "INSUFFICIENT_SCOPE", "This API key cannot call this endpoint. Create a new key in WhatsApp → API / Developers."],
   [429, "RATE_LIMIT_EXCEEDED", "Too many requests in the current window. Honour Retry-After."],
 ];
 
@@ -223,7 +220,7 @@ const SECTIONS: DocSection[] = [
     id: "authentication",
     group: "Start here",
     title: "Authentication",
-    keywords: "bearer token authorization header scopes businessId 401 403",
+    keywords: "bearer token authorization header businessId 401 403",
     render: () => (
       <>
         <p>
@@ -235,20 +232,9 @@ const SECTIONS: DocSection[] = [
           Each key belongs to exactly one Bizuply business, so the key tells us which WhatsApp number to use.{" "}
           <strong>Do not send a <code>businessId</code></strong> in the body or query string.
         </p>
-        <h3>Scopes</h3>
-        <div className="wa-table-wrap">
-          <table className="wa-table">
-            <thead>
-              <tr><th scope="col">Scope</th><th scope="col">Allows</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>whatsapp.templates.read</code></td><td>List templates and read template details</td></tr>
-              <tr><td><code>whatsapp.messages.send</code></td><td>Send approved template messages</td></tr>
-              <tr><td><code>whatsapp.messages.read</code></td><td>Read message status</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Keys created in the dashboard include all three scopes.</p>
+        <p>
+          A key created in the dashboard can list templates, send approved template messages, and read delivery status.
+        </p>
         <h3>Authentication errors</h3>
         <ErrorTable rows={AUTH_ERRORS} />
       </>
@@ -501,7 +487,7 @@ const SECTIONS: DocSection[] = [
     title: "List templates",
     keywords: "GET /templates list approved templates reference",
     render: () => (
-      <Endpoint method="GET" path="/templates" scope="whatsapp.templates.read">
+      <Endpoint method="GET" path="/templates">
         <p>Returns the business's templates with Meta status <code>APPROVED</code>. Pending and rejected templates are left out.</p>
         <p className="wa-fine">No parameters.</p>
         <div className="wa-endpoint-grid">
@@ -519,7 +505,7 @@ const SECTIONS: DocSection[] = [
     title: "Get a template",
     keywords: "GET /templates/{templateName} template detail variables header buttons reference",
     render: () => (
-      <Endpoint method="GET" path="/templates/{templateName}" scope="whatsapp.templates.read">
+      <Endpoint method="GET" path="/templates/{templateName}">
         <p>Returns header, body, footer, buttons and the ordered variable list for one approved template.</p>
         <ParamTable
           params={[
@@ -548,7 +534,7 @@ const SECTIONS: DocSection[] = [
     title: "Send a template message",
     keywords: "POST /messages/template send message reference idempotency",
     render: (spec) => (
-      <Endpoint method="POST" path="/messages/template" scope="whatsapp.messages.send">
+      <Endpoint method="POST" path="/messages/template">
         <p>
           Sends an approved template to one recipient. Returns <code>201</code> for a new send, or <code>200</code> for an
           idempotent replay. Limit: {spec.sendLimit} requests per {spec.windowSec} seconds per API key.
@@ -592,7 +578,7 @@ const SECTIONS: DocSection[] = [
     title: "Get message status",
     keywords: "GET /messages/{messageId} message status delivered read reference",
     render: () => (
-      <Endpoint method="GET" path="/messages/{messageId}" scope="whatsapp.messages.read">
+      <Endpoint method="GET" path="/messages/{messageId}">
         <p>Returns the current status and timestamps of a message sent through the API.</p>
         <ParamTable
           params={[
