@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, PlugZap, RefreshCw } from "lucide-react";
 import {
@@ -11,6 +11,7 @@ import {
 import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import {
+  connectionReadyLabel,
   formatMessagingLimit,
   formatQualityRating,
   qualityBadgeClass,
@@ -24,6 +25,7 @@ import {
   calmWhatsAppStatusRows,
   visibleWhatsAppAlerts,
 } from "./whatsappStatusUx";
+import { whatsappBasePath } from "./hubNavigation";
 
 function StatCard({
   label,
@@ -44,6 +46,7 @@ function StatCard({
 
 export default function WhatsAppOverviewTab() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const {
     businessId,
     connection,
@@ -210,6 +213,19 @@ export default function WhatsAppOverviewTab() {
       ) : null}
 
       {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}
+      {connection?.registrationActionRequired ? (
+        <div className={`${cardBase} flex flex-wrap items-center justify-between gap-3 border-amber-200 bg-amber-50/80 px-4 py-3`}>
+          <p className="text-sm font-bold text-amber-950">
+            {t("whatsapp.settings.completeRegistrationHint")}
+          </p>
+          <Link
+            to={`${whatsappBasePath(location.pathname)}/connection`}
+            className={btnPrimary}
+          >
+            {t("whatsapp.settings.completeConnectionTitle")}
+          </Link>
+        </div>
+      ) : null}
       {calmStatusRows ? <WhatsAppAccountStatusCard rows={calmStatusRows} /> : null}
 
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
@@ -232,12 +248,22 @@ export default function WhatsAppOverviewTab() {
                 </span>
                 <span
                   className={`rounded-md border px-1.5 py-0.5 text-[11px] font-bold ${toneBadgeClass(
-                    connection?.readyToSend ? "ok" : "warn"
+                    connectionReadyLabel(
+                      Boolean(connection?.connected),
+                      connection?.readyToSend,
+                      connection?.readiness,
+                      t
+                    ).tone
                   )}`}
                 >
-                  {connection?.readyToSend
-                    ? t("whatsapp.hub.ready")
-                    : t("whatsapp.hub.issue")}
+                  {
+                    connectionReadyLabel(
+                      Boolean(connection?.connected),
+                      connection?.readyToSend,
+                      connection?.readiness,
+                      t
+                    ).status
+                  }
                 </span>
               </div>
             </StatCard>

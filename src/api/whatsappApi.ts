@@ -73,6 +73,15 @@ export type WhatsAppConnection = {
   phonePlatformStatus?: string;
   codeVerificationStatus?: string;
   registrationLastError?: string;
+  registrationErrorCode?: string;
+  registrationActionRequired?: boolean;
+  registrationVerified?: boolean;
+  readinessChecks?: Array<{
+    key: string;
+    ok: boolean;
+    blocking?: boolean;
+    count?: number;
+  }>;
   registeredAt?: string | null;
   status: "connected" | "disconnected" | "error";
   phoneNumberId: string;

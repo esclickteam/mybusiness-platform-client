@@ -67,6 +67,25 @@ describe("whatsappStatusUx", () => {
     ]);
   });
 
+  it("keeps the registration alert when the phone is CONNECTED but not ready", () => {
+    const unfinished = {
+      ...connected,
+      readyToSend: false,
+      readiness: "registration_required" as const,
+      alerts: [
+        {
+          key: "phone_registration",
+          severity: "warning",
+          i18nKey: "whatsapp.alerts.phoneRegistrationRequired",
+        },
+      ],
+    };
+    expect(visibleWhatsAppAlerts(unfinished).map((row) => row.key)).toEqual([
+      "phone_registration",
+    ]);
+    expect(calmWhatsAppStatusRows(unfinished)).toBeNull();
+  });
+
   it("keeps a blocking banner when messaging is blocked", () => {
     const blocked = {
       ...connected,

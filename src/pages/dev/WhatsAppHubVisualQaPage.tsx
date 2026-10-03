@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n/i18n";
 import WhatsAppOverviewTab from "../business/dashboardPages/whatsapp/WhatsAppOverviewTab";
+import WhatsAppSettingsTab from "../business/dashboardPages/whatsapp/WhatsAppSettingsTab";
 import WhatsAppProfileTab from "../business/dashboardPages/whatsapp/WhatsAppProfileTab";
 import WhatsAppInsightsTab from "../business/dashboardPages/whatsapp/WhatsAppInsightsTab";
 import WhatsAppPerformancePreview from "../business/dashboardPages/whatsapp/performance/WhatsAppPerformancePreview";
@@ -45,6 +46,36 @@ const MOCK_CONNECTION: WhatsAppConnection = {
   lastError: "",
   connectedAt: new Date().toISOString(),
   businessVerificationStatus: "verified",
+};
+
+const REGISTRATION_CONNECTION: WhatsAppConnection = {
+  ...MOCK_CONNECTION,
+  verifiedName: "EVENTLY360",
+  wabaName: "EVENTLY360",
+  displayPhoneNumber: "+972 50-000-0000",
+  readyToSend: false,
+  readiness: "registration_required",
+  readinessLabel: "Phone registration required",
+  registrationStatus: "required",
+  phoneRegistered: false,
+  registrationActionRequired: true,
+  registrationVerified: false,
+  registrationErrorCode: "ACCOUNT_NOT_REGISTERED",
+  phonePlatformStatus: "CONNECTED",
+  phonePlatformType: "CLOUD_API",
+  codeVerificationStatus: "VERIFIED",
+  webhookSubscribed: true,
+  canSendMessage: "AVAILABLE",
+  readinessChecks: [
+    { key: "credentials", ok: true, blocking: true },
+    { key: "token", ok: true, blocking: true },
+    { key: "registration", ok: false, blocking: true },
+    { key: "ownership", ok: true, blocking: false },
+    { key: "webhook", ok: true, blocking: false },
+    { key: "billing", ok: true, blocking: false },
+    { key: "messaging", ok: true, blocking: true },
+    { key: "templates", ok: true, blocking: false, count: 2 },
+  ],
 };
 
 const MOCK_TEMPLATE: WhatsAppTemplate = {
@@ -360,6 +391,20 @@ export default function WhatsAppHubVisualQaPage() {
           {screen ? ` · ${screen}` : ""}
         </h1>
         <div className="mx-auto max-w-[1440px] space-y-6">
+          {show("finish") ? (
+            <section data-qa-screen="finish" className="mb-8">
+              <WhatsAppVisualQaProvider value={{ connection: REGISTRATION_CONNECTION }}>
+                <WhatsAppOverviewTab />
+              </WhatsAppVisualQaProvider>
+            </section>
+          ) : null}
+          {show("registration") ? (
+            <section data-qa-screen="registration" className="mb-8">
+              <WhatsAppVisualQaProvider value={{ connection: REGISTRATION_CONNECTION }}>
+                <WhatsAppSettingsTab />
+              </WhatsAppVisualQaProvider>
+            </section>
+          ) : null}
           {show("overview") ? (
             <QaBlock label="overview" active="סקירה">
               <WhatsAppOverviewTab />

@@ -29,6 +29,28 @@ export function isCloudApiPhoneConnected(
   return !platform || platform === "CLOUD_API" || platform === "NOT_APPLICABLE";
 }
 
+const REGISTRATION_ERROR_KEYS: Record<string, string> = {
+  REGISTER_PIN_MISMATCH: "whatsapp.settings.registrationErrorPinMismatch",
+  REGISTER_PIN_GUESSES_EXCEEDED: "whatsapp.settings.registrationErrorPinGuesses",
+  ACCOUNT_NOT_REGISTERED: "whatsapp.settings.registrationErrorNotRegistered",
+  REGISTER_RATE_LIMITED: "whatsapp.settings.registrationErrorRateLimit",
+  REGISTER_WAIT: "whatsapp.settings.registrationErrorWait",
+  TOKEN_AUTH_FAILED: "whatsapp.settings.registrationErrorToken",
+  MISSING_PERMISSION: "whatsapp.settings.registrationErrorPermission",
+  REGISTER_IN_PROGRESS: "whatsapp.settings.registrationErrorInProgress",
+  REGISTER_ATTEMPTS_EXCEEDED: "whatsapp.settings.registrationErrorAttempts",
+  REGISTER_WINDOW_EXPIRED: "whatsapp.settings.registrationErrorWindow",
+  REGISTER_PIN_MISSING: "whatsapp.settings.pinRequired",
+};
+
+export function registrationFailureMessage(
+  code: string | undefined,
+  t: (key: string, fallback?: string) => string
+): string {
+  const key = REGISTRATION_ERROR_KEYS[String(code || "")] || "whatsapp.settings.registrationErrorGeneric";
+  return t(key, t("whatsapp.settings.registrationErrorGeneric", "Registration did not finish."));
+}
+
 export function isWhatsAppReadyToSend(
   connection: WhatsAppConnection | null | undefined
 ): boolean {
@@ -68,7 +90,7 @@ export function visibleWhatsAppAlerts(
   return alerts
     .filter((row) => {
       if (row.key === "connection" && connection?.connected) return false;
-      if (row.key === "phone_registration" && (cloud || ready)) return false;
+      if (row.key === "phone_registration" && ready) return false;
       if (ready && !isRealSendBlock(connection, row)) return false;
       return true;
     })
