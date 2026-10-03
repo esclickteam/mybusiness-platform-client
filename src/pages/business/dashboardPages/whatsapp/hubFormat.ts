@@ -83,6 +83,12 @@ export function connectionReadyLabel(
   if (readyToSend || readiness === "ready") {
     return { status: tr(t, "whatsapp.hub.ready", "Ready"), tone: "ok" };
   }
+  if (readiness === "registration_required" || readiness === "registration_failed") {
+    return {
+      status: tr(t, "whatsapp.hub.registrationNeeded", "Finish connection"),
+      tone: readiness === "registration_failed" ? "bad" : "warn",
+    };
+  }
   if (readiness === "error" || readiness === "registration_failed") {
     return { status: tr(t, "whatsapp.hub.issue", "Issue"), tone: "bad" };
   }
