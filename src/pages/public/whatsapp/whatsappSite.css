@@ -1719,7 +1719,6 @@ html:has(.wa-page) {
 .wa-doc-section {
   padding: 28px 0 40px;
   border-bottom: 1px solid var(--wa-line);
-  scroll-margin-top: 88px;
 }
 
 .wa-doc-section:first-child {

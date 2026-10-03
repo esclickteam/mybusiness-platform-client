@@ -76,22 +76,41 @@ function SiteRoutes({ lang }: { lang: string }) {
 
   useLayoutEffect(() => {
     if (!location.hash) {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "instant" });
       return undefined;
     }
     const id = decodeURIComponent(location.hash.slice(1));
     let tries = 0;
     let timer = 0;
+    let settleTimer = 0;
+    let observer: ResizeObserver | null = null;
+    const events = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    const stopSettling = () => {
+      observer?.disconnect();
+      observer = null;
+      window.clearTimeout(settleTimer);
+      events.forEach((name) => window.removeEventListener(name, stopSettling));
+    };
     const attempt = () => {
       const node = document.getElementById(id);
-      if (node) {
-        node.scrollIntoView({ block: "start" });
+      if (!node) {
+        if (tries++ < 20) timer = window.setTimeout(attempt, 100);
         return;
       }
-      if (tries++ < 20) timer = window.setTimeout(attempt, 100);
+      node.scrollIntoView({ block: "start" });
+      const main = document.getElementById("main");
+      if (!main || typeof ResizeObserver === "undefined") return;
+      // Content above the target (live spec data, lazy chunks, fonts) can still grow; keep the target in view until the user scrolls.
+      observer = new ResizeObserver(() => node.scrollIntoView({ block: "start" }));
+      observer.observe(main);
+      events.forEach((name) => window.addEventListener(name, stopSettling, { passive: true }));
+      settleTimer = window.setTimeout(stopSettling, 2500);
     };
     attempt();
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      stopSettling();
+    };
   }, [location.pathname, location.hash]);
 
   const title = meta?.title || "Page not found | Bizuply WhatsApp API";
