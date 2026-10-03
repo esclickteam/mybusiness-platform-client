@@ -1,40 +1,27 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type UpgradeOfferCardProps = {
   onUpgrade: () => void | Promise<void>;
   onClose: () => void | Promise<void>;
-  expiresAt?: string | Date | null;
 };
 
 const EARLY_BIRD_DISMISSED_KEY = "bizuplyEarlyBirdDismissed";
 
-function formatTimeLeft(
-  ms: number,
-  t: (key: string, options?: Record<string, unknown>) => string,
-) {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-  return t("billing.earlyBird.timeLeft", { hours, minutes });
-}
-
+/**
+ * Plain Business-plan upgrade prompt. The checkout behind it charges the
+ * regular monthly price, so this card must not show a discount, a struck-through
+ * price or a countdown.
+ */
 export default function UpgradeOfferCard({
   onUpgrade,
   onClose,
-  expiresAt,
 }: UpgradeOfferCardProps) {
   const { t } = useTranslation();
-  const [now, setNow] = useState(Date.now());
   const [dismissed, setDismissed] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
-
-  useEffect(() => {
-    console.log("🎉 UpgradeOfferCard MOUNTED", { expiresAt });
-  }, [expiresAt]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -44,29 +31,6 @@ export default function UpgradeOfferCard({
 
     setDismissed(wasDismissed);
   }, []);
-
-  const fallbackExpiresAt = useMemo(() => {
-    return Date.now() + 48 * 60 * 60 * 1000;
-  }, []);
-
-  const targetTs = useMemo(() => {
-    if (!expiresAt) return fallbackExpiresAt;
-
-    const parsed = new Date(expiresAt).getTime();
-
-    return Number.isFinite(parsed) ? parsed : fallbackExpiresAt;
-  }, [expiresAt, fallbackExpiresAt]);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setNow(Date.now());
-    }, 60_000);
-
-    return () => window.clearInterval(id);
-  }, []);
-
-  const msLeft = Math.max(0, targetTs - now);
-  const isExpired = msLeft <= 0;
 
   const handleClose = async () => {
     // סוגר מיידית — לא מחכה לשרת
@@ -79,18 +43,18 @@ export default function UpgradeOfferCard({
     try {
       await onClose?.();
     } catch (error) {
-      console.warn("Early bird close failed, but modal is already closed:", error);
+      console.warn("Upgrade card close failed, but modal is already closed:", error);
     }
   };
 
   const handleUpgrade = async () => {
-    if (upgrading || isExpired) return;
+    if (upgrading) return;
 
     try {
       setUpgrading(true);
       await onUpgrade?.();
     } catch (error) {
-      console.error("Early bird upgrade failed:", error);
+      console.error("Upgrade checkout failed:", error);
       alert(t("billing.earlyBird.checkoutFailed"));
     } finally {
       setUpgrading(false);
@@ -160,28 +124,16 @@ export default function UpgradeOfferCard({
             text-sm font-extrabold text-violet-700
           "
         >
-          🎁 {t("billing.earlyBird.badge")}
+          {t("billing.earlyBird.badge")}
         </div>
 
         <h2 className="mb-2 text-3xl font-black tracking-tight text-slate-800">
-          {t("billing.earlyBird.titleLead")}{" "}
-          <span className="text-violet-700">₪119</span>
-          <span className="ml-2 align-middle text-lg font-black text-slate-400 line-through">
-            ₪149
-          </span>
+          {t("billing.earlyBird.titleLead")}
         </h2>
 
-        <p className="mb-4 text-sm font-bold text-emerald-600">
+        <p className="mb-4 text-lg font-black text-violet-700">
           {t("billing.earlyBird.save")}
         </p>
-
-        {!isExpired && (
-          <p className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-            {t("billing.earlyBird.endsIn", {
-              time: formatTimeLeft(msLeft, t),
-            })}
-          </p>
-        )}
 
         <p className="mb-4 text-[15px] leading-7 text-slate-600">
           {t("billing.earlyBird.body")}
@@ -198,7 +150,7 @@ export default function UpgradeOfferCard({
             e.stopPropagation();
             handleUpgrade();
           }}
-          disabled={isExpired || upgrading}
+          disabled={upgrading}
           className="
             relative z-[1000001]
             w-full rounded-2xl
