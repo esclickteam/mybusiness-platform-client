@@ -7,7 +7,11 @@ export const API_BASE_URL = "https://api.bizuply.com/api/v1/whatsapp";
 export const OPENAPI_PATH = "/api/v1/whatsapp/openapi.json";
 export const OPENAPI_URL = `${API_BASE_URL}/openapi.json`;
 export const API_REFERENCE_URL = `${API_BASE_URL}/docs/reference`;
-export const SIGN_IN_URL = "https://bizuply.com/login";
+const STAGING_CLIENT_URL =
+  import.meta.env.VITE_APP_ENV === "staging"
+    ? String(import.meta.env.VITE_CLIENT_URL || "").replace(/\/+$/, "")
+    : "";
+export const SIGN_IN_URL = `${STAGING_CLIENT_URL || "https://bizuply.com"}/login`;
 export const PRIVACY_URL = "https://bizuply.com/privacy";
 export const TERMS_URL = "https://bizuply.com/terms";
 export const ACCESSIBILITY_URL = "https://bizuply.com/accessibility";

@@ -70,7 +70,7 @@ export default function PricingPage() {
               ))}
             </ul>
             <div className="wa-actions">
-              <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
+              <SiteLink to="/get-started#request-access" className="wa-btn wa-btn-primary">
                 Connect WhatsApp <ArrowRight size={16} aria-hidden="true" />
               </SiteLink>
               <SiteLink to="/agencies" className="wa-btn wa-btn-ghost">Several numbers?</SiteLink>
