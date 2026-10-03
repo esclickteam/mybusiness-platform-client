@@ -460,7 +460,7 @@ const SECTIONS: DocSection[] = [
         </p>
         <ul>
           <li>If the number isn't connected, or the connection is incomplete, the API returns <code>409 WHATSAPP_NOT_CONNECTED</code>.</li>
-          <li>To use several numbers, connect each one in its own workspace and create a separate API key for each.</li>
+          <li>One subscription covers one number. Managing several numbers from one account isn't available yet; contact us if you need more than one.</li>
           <li>Connections are set up in the dashboard. There's no API to create or remove them.</li>
         </ul>
         <p>

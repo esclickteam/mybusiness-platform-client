@@ -21,6 +21,7 @@ import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContex
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
 import WhatsAppStatusAlerts from "./WhatsAppStatusAlerts";
 import WhatsAppAccountStatusCard from "./WhatsAppAccountStatusCard";
+import WhatsAppApiSetupGuide from "./WhatsAppApiSetupGuide";
 import {
   calmWhatsAppStatusRows,
   visibleWhatsAppAlerts,
@@ -227,6 +228,14 @@ export default function WhatsAppOverviewTab() {
         <div className={`${cardBase} border-rose-100 bg-rose-50/60 px-3 py-2 text-xs font-semibold text-rose-700`}>
           {error}
         </div>
+      ) : null}
+
+      {!visualQa ? (
+        <WhatsAppApiSetupGuide
+          businessId={businessId}
+          connected={Boolean(connection?.connected)}
+          messagesSent={msgStats.sent}
+        />
       ) : null}
 
       {connection?.connected ? <WhatsAppStatusAlerts alerts={statusAlerts} /> : null}

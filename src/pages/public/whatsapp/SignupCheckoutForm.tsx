@@ -1,6 +1,8 @@
 import React, { useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Loader2, Lock } from "lucide-react";
 import API from "../../../api";
+import { normalizeLanguage } from "../../../i18n/localeUtils";
 import { PRICE_PER_NUMBER_USD, SIGN_IN_URL, SUPPORT_EMAIL } from "./siteConfig";
 
 type FormState = {
@@ -27,6 +29,7 @@ function validate(form: FormState): Errors {
 /** New customer: create the account details, then pay the first month in Lemon Squeezy checkout. */
 export default function SignupCheckoutForm() {
   const id = useId();
+  const { i18n } = useTranslation();
   const [form, setForm] = useState<FormState>({ name: "", email: "", businessName: "", phone: "", password: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -55,7 +58,7 @@ export default function SignupCheckoutForm() {
         businessName: form.businessName.trim(),
         phone: form.phone.trim(),
         password: form.password,
-        language: "en",
+        language: normalizeLanguage(i18n.language) || "en",
       });
       if (!data?.url) throw new Error("missing_checkout_url");
       window.location.assign(data.url);
@@ -138,7 +141,7 @@ export default function SignupCheckoutForm() {
             {!submitting ? <ArrowRight size={16} aria-hidden="true" /> : null}
           </button>
           <span className="wa-fine" style={{ margin: 0 }}>
-            Your account is created after the first payment. Cancel anytime.
+            Covers one WhatsApp number. Your account is created after the first payment. Cancel anytime.
           </span>
         </div>
       </div>

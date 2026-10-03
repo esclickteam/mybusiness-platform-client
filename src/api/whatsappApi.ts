@@ -1790,6 +1790,11 @@ export type WhatsAppApiSubscriptionAccess = {
   } | null;
 };
 
+export async function getWhatsAppApiSubscriptionStatus(businessId: string) {
+  const { data } = await API.get("/whatsapp-api/status", { params: { businessId } });
+  return data as WhatsAppApiSubscriptionAccess & { success: boolean };
+}
+
 export async function startWhatsAppApiCheckout(businessId: string) {
   const { data } = await API.post("/whatsapp-api/checkout", { businessId });
   return data as { success: boolean; url: string };

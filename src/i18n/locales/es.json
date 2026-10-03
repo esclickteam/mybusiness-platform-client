@@ -2576,7 +2576,12 @@
     "resetFillAll": "Por favor, rellene todos los campos",
     "resetInvalidLink": "Enlace de restablecimiento de contraseña no válido",
     "newPassword": "Nueva contraseña",
-    "confirmPassword": "Confirmar contraseña"
+    "confirmPassword": "Confirmar contraseña",
+    "whatsappApiCheckout": {
+      "pending": "Pago recibido. Estamos activando tu cuenta de la API de WhatsApp. Suele tardar unos segundos.",
+      "ready": "Tu cuenta de la API de WhatsApp está lista. Inicia sesión con el correo y la contraseña que elegiste.",
+      "slow": "Pago recibido, pero la activación está tardando más de lo normal. Intenta iniciar sesión en un minuto o escribe a support@bizuply.com."
+    }
   },
   "pricing": {
     "seoTitle": "Paquetes de Servicio  BizUply",
@@ -8748,7 +8753,12 @@
         "not_configured": "No configurado",
         "active": "Activo",
         "configured": "Configurado"
-      }
+      },
+      "apiSubscriptionRequired": "Necesitas una suscripción activa a la API de WhatsApp ($29/mes) para crear claves de API y usar la API.",
+      "apiSubscriptionPaymentIssue": "El pago de la API de WhatsApp no se completó. Actualiza tu método de pago en Facturación para recuperar el acceso.",
+      "apiSubscriptionSubscribe": "Suscribirse · $29/mes",
+      "apiSubscriptionCheckoutError": "No se pudo abrir el pago. Inténtalo de nuevo.",
+      "apiNotConnectedHint": "Ya puedes crear una clave de API. El envío de mensajes funcionará cuando conectes un número en WhatsApp → Conexión."
     },
     "errors": {
       "loadCompose": "No se pudo cargar los datos de redacción de WhatsApp",
@@ -9640,6 +9650,57 @@
       "verificationManagedHint": "El estado de verificación puede afectar los límites de uso, pero no bloquea el envío mientras Meta lo permita.",
       "sendAvailableTitle": "El envío está disponible, sujeto a límites de Meta",
       "sendAvailableHint": "El sistema puede enviar mensajes. Meta puede limitar el volumen según el estado de la cuenta."
+    },
+    "apiSetup": {
+      "title": "Empieza con la API de WhatsApp",
+      "progress": "{{done}} de {{total}} pasos completados",
+      "welcomeTitle": "¡Bienvenido! Tu suscripción está activa.",
+      "welcomeText": "Sigue estos pasos para conectar tu número y enviar tu primer mensaje.",
+      "done": "Hecho",
+      "todo": "Pendiente",
+      "subscribe": "Suscribirse · $29/mes",
+      "checkoutError": "No se pudo abrir el pago. Inténtalo de nuevo.",
+      "oneNumber": "Tu suscripción incluye un número de WhatsApp.",
+      "subscription": {
+        "active": "Activa",
+        "renewsOn": "Activa · se renueva el {{date}}",
+        "endsOn": "Cancelada · acceso hasta el {{date}}",
+        "grace": "Problema de pago · actualiza tu tarjeta antes del {{date}} para mantener el acceso",
+        "inactive": "Sin suscripción activa"
+      },
+      "steps": {
+        "subscription": {
+          "title": "Suscripción a la API de WhatsApp",
+          "text": "",
+          "cta": "Ver facturación"
+        },
+        "connect": {
+          "title": "Conecta tu número de WhatsApp",
+          "text": "Inicia sesión con Meta y elige el número de tu empresa.",
+          "cta": "Conectar"
+        },
+        "apiKey": {
+          "title": "Crea una clave de API",
+          "text": "Sirve para autenticar las solicitudes de tu sistema.",
+          "cta": "Crear clave"
+        },
+        "webhook": {
+          "title": "Añade la URL de tu webhook",
+          "text": "Recibe los estados de entrega y lectura de tus mensajes.",
+          "cta": "Configurar webhook"
+        },
+        "firstMessage": {
+          "title": "Envía tu primer mensaje",
+          "text": "Usa una plantilla aprobada para iniciar una conversación.",
+          "cta": "Plantillas"
+        }
+      },
+      "links": {
+        "developers": "Claves de API y webhook",
+        "templates": "Plantillas",
+        "analytics": "Analíticas",
+        "docs": "Documentación de la API"
+      }
     }
   },
   "metaCampaigns": {
