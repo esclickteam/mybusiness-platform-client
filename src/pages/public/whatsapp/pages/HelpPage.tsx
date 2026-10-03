@@ -47,7 +47,7 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   {
     topic: "Numbers",
     q: "Can I connect more than one number?",
-    a: "Yes. Each workspace holds one WhatsApp number, so you connect additional numbers in additional workspaces. Each number is $29 per month and has its own API key and webhook.",
+    a: "Not from one account yet. Each subscription covers one WhatsApp number with its own API key and webhook. If you need several numbers today, contact us and we'll set them up for you.",
   },
   {
     topic: "Templates & messaging",

@@ -19,7 +19,7 @@ const INCLUDED = [
 const FAQ = [
   {
     q: "What does the $29 cover?",
-    a: "The Bizuply subscription for one connected WhatsApp number: onboarding, the API and webhooks, templates, inbox, analytics and the dashboard. Each additional number is another $29 per month.",
+    a: "The Bizuply subscription for one connected WhatsApp number: onboarding, the API and webhooks, templates, inbox, analytics and the dashboard. One subscription covers one number; managing several numbers from one account isn't available yet.",
   },
   {
     q: "Are Meta's messaging charges included?",
