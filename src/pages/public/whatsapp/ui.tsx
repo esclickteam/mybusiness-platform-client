@@ -297,25 +297,93 @@ export function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
-/** Fades `.wa-reveal` elements in as they scroll into view. Re-runs when `key` changes. */
+const AUTO_REVEAL = ".wa-section .wa-section-head, .wa-section :is(.wa-grid-2, .wa-grid-3, .wa-grid-4)";
+
+/**
+ * Fades `.wa-reveal` elements in as they scroll into view. Section heads and card grids that start below
+ * the fold are revealed too, including content mounted later by lazy pages. Re-runs when `key` changes.
+ */
 export function useReveal(key: string) {
   useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".wa-reveal:not(.is-in)"));
-    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
-      nodes.forEach((node) => node.classList.add("is-in"));
-      return undefined;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-in");
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    const main = document.getElementById("main");
+    if (!main) return undefined;
+    const instant = prefersReducedMotion() || typeof IntersectionObserver === "undefined";
+    const observer = instant
+      ? null
+      : new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-in");
+              observer?.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+        );
+    let frame = 0;
+    const scan = () => {
+      frame = 0;
+      main.querySelectorAll<HTMLElement>(AUTO_REVEAL).forEach((node) => {
+        if (node.dataset.waSeen) return;
+        node.dataset.waSeen = "1";
+        if (instant || node.closest(".wa-reveal")) return;
+        if (node.getBoundingClientRect().top < window.innerHeight) return;
+        node.classList.add("wa-reveal");
+      });
+      main.querySelectorAll<HTMLElement>(".wa-reveal:not(.is-in)").forEach((node) => {
+        if (observer) observer.observe(node);
+        else node.classList.add("is-in");
+      });
+    };
+    scan();
+    const mutations = new MutationObserver(() => {
+      if (!frame) frame = window.requestAnimationFrame(scan);
+    });
+    mutations.observe(main, { childList: true, subtree: true });
+    // A fast jump (End key, scrollbar drag) can skip an element without ever intersecting it.
+    let scrollFrame = 0;
+    const revealPassed = () => {
+      scrollFrame = 0;
+      main.querySelectorAll<HTMLElement>(".wa-reveal:not(.is-in)").forEach((node) => {
+        if (node.getBoundingClientRect().top < window.innerHeight) node.classList.add("is-in");
+      });
+    };
+    const onScroll = () => {
+      if (!scrollFrame) scrollFrame = window.requestAnimationFrame(revealPassed);
+    };
+    if (observer) window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(scrollFrame);
+      window.removeEventListener("scroll", onScroll);
+      mutations.disconnect();
+      observer?.disconnect();
+    };
   }, [key]);
+}
+
+/** Feeds the pointer position to hover cards as `--mx` / `--my` for their spotlight. */
+export function useCardSpotlight() {
+  useEffect(() => {
+    if (prefersReducedMotion() || !window.matchMedia?.("(hover: hover)").matches) return undefined;
+    let frame = 0;
+    let last: PointerEvent | null = null;
+    const paint = () => {
+      frame = 0;
+      const target = last?.target instanceof Element ? last.target.closest<HTMLElement>(".wa-card.is-hover") : null;
+      if (!target || !last) return;
+      const rect = target.getBoundingClientRect();
+      target.style.setProperty("--mx", `${last.clientX - rect.left}px`);
+      target.style.setProperty("--my", `${last.clientY - rect.top}px`);
+    };
+    const onMove = (event: PointerEvent) => {
+      last = event;
+      if (!frame) frame = window.requestAnimationFrame(paint);
+    };
+    document.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("pointermove", onMove);
+    };
+  }, []);
 }

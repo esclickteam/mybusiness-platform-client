@@ -136,9 +136,22 @@ export default function ApiFlowDemo() {
   const [playing, setPlaying] = useState(!reduced);
   const [visible, setVisible] = useState(true);
   const [motion, setMotion] = useState<{ pos: string; animate: boolean }>({ pos: CENTER[0], animate: false });
+  const [run, setRun] = useState(0);
   const root = useRef<HTMLDivElement>(null);
+  const stepList = useRef<HTMLOListElement>(null);
   const step = STEPS[index];
   const packet = reduced ? { pos: CENTER[step.to], animate: false } : motion;
+  const running = playing && visible && !reduced;
+
+  useEffect(() => {
+    const list = stepList.current;
+    const item = list?.children[index] as HTMLElement | undefined;
+    if (!list || !item || list.scrollWidth <= list.clientWidth) return;
+    list.scrollTo({
+      left: item.offsetLeft - (list.clientWidth - item.offsetWidth) / 2,
+      behavior: reduced ? "auto" : "smooth",
+    });
+  }, [index, reduced]);
 
   useEffect(() => {
     const node = root.current;
@@ -152,7 +165,7 @@ export default function ApiFlowDemo() {
     if (!playing || !visible) return undefined;
     const timer = window.setTimeout(() => setIndex((current) => (current + 1) % STEPS.length), STEP_MS);
     return () => window.clearTimeout(timer);
-  }, [index, playing, visible]);
+  }, [index, playing, visible, run]);
 
   useEffect(() => {
     if (reduced) return undefined;
@@ -191,6 +204,7 @@ export default function ApiFlowDemo() {
             className="wa-btn wa-btn-quiet wa-btn-sm"
             onClick={() => {
               setIndex(0);
+              setRun((value) => value + 1);
               setPlaying(!reduced);
             }}
           >
@@ -199,7 +213,7 @@ export default function ApiFlowDemo() {
         </div>
       </div>
 
-      <ol className="wa-demo-steps">
+      <ol className="wa-demo-steps" ref={stepList}>
         {STEPS.map((item, i) => (
           <li key={item.short}>
             <button
@@ -210,6 +224,14 @@ export default function ApiFlowDemo() {
             >
               <span className="n">0{i + 1}</span>
               <span className="t">{item.short}</span>
+              {i === index && running ? (
+                <span
+                  className="wa-demo-progress"
+                  key={`${index}-${run}`}
+                  style={{ animationDuration: `${STEP_MS}ms` }}
+                  aria-hidden="true"
+                />
+              ) : null}
             </button>
           </li>
         ))}

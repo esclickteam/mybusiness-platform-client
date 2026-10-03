@@ -20,15 +20,39 @@ describe("WhatsApp API site copy", () => {
   it("leads with the required headline, offer and CTAs", () => {
     const overview = read("whatsapp/pages/OverviewPage.tsx");
     expect(overview).toContain("WhatsApp API.");
-    expect(overview).toContain("One Connection.");
-    expect(overview).toContain("Unlimited Possibilities.");
-    expect(overview).toContain(
-      "Connect WhatsApp to your CRM, website, SaaS platform or custom business system using the official Meta WhatsApp Cloud API.",
-    );
+    expect(overview).toContain("Built for Your Business.");
+    expect(overview).toContain("Connect your CRM, website, SaaS platform or custom system to WhatsApp");
     expect(overview).toContain("Connect WhatsApp");
     expect(overview).toContain("Explore API");
+    expect(overview).toContain("/month per number");
     expect(read("whatsapp/siteConfig.tsx")).toMatch(/PRICE_PER_NUMBER_USD\s*=\s*29\b/);
-    expect(overview).toMatch(/Meta (messaging )?charges are (billed )?(separate|additional)/i);
+    expect(overview).toContain("Meta messaging fees are billed separately.");
+  });
+
+  it("shows the three benefits and the included plan features", () => {
+    const overview = read("whatsapp/pages/OverviewPage.tsx");
+    for (const text of [
+      "Official WhatsApp Cloud API",
+      "Integration using Meta's official Cloud API.",
+      "Connect Your Existing Systems",
+      "Connect your CRM, website or custom application using our API.",
+      "Transparent Pricing",
+      "$29/month per number, with Meta messaging fees billed separately.",
+      "WhatsApp Cloud API connection",
+      "API & Webhooks",
+      "Message templates",
+      "Management dashboard",
+      "Performance analytics",
+    ]) {
+      expect(overview).toContain(text);
+    }
+  });
+
+  it("labels the hero simulation as sample data and only shows status webhooks", () => {
+    const sim = read("whatsapp/HeroSimulation.tsx");
+    expect(sim).toContain("Illustration · sample data");
+    expect(sim).toMatch(/whatsapp\.message\.\$\{status\}/);
+    expect(sim).not.toMatch(/inbound|incoming|message\.received|customer repl/i);
   });
 
   it("routes every page in the primary navigation", () => {

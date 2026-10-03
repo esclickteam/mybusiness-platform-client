@@ -1,8 +1,10 @@
 import React from "react";
 import {
   ArrowRight,
+  BadgeCheck,
   BarChart3,
   Building2,
+  Calculator,
   Check,
   Code2,
   FileText,
@@ -11,16 +13,20 @@ import {
   Lock,
   Network,
   Plug,
+  ReceiptText,
   RefreshCw,
   ShieldCheck,
   Webhook,
+  Workflow,
 } from "lucide-react";
 import ApiFlowDemo from "../ApiFlowDemo";
+import HeroSimulation from "../HeroSimulation";
 import { CodeBlock, SectionHead } from "../ui";
 import { SiteLink, englishOnly } from "../siteConfig";
 
 type HeroCopy = {
-  lines: [string, string, string];
+  eyebrow: string;
+  lines: [string, string];
   lead: string;
   connect: string;
   explore: string;
@@ -30,54 +36,79 @@ type HeroCopy = {
 
 const HERO: Record<string, HeroCopy> = {
   en: {
-    lines: ["WhatsApp API.", "One Connection.", "Unlimited Possibilities."],
-    lead: "Connect WhatsApp to your CRM, website, SaaS platform or custom business system using the official Meta WhatsApp Cloud API.",
+    eyebrow: "Official WhatsApp Cloud API",
+    lines: ["WhatsApp API.", "Built for Your Business."],
+    lead: "Connect your CRM, website, SaaS platform or custom system to WhatsApp with a clean REST API and signed webhooks.",
     connect: "Connect WhatsApp",
     explore: "Explore API",
-    priceUnit: "/month per WhatsApp number",
-    metaNote: "Meta messaging charges are additional.",
+    priceUnit: "/month per number",
+    metaNote: "Meta messaging fees are billed separately.",
   },
   he: {
-    lines: ["WhatsApp API.", "חיבור אחד.", "אינסוף אפשרויות."],
-    lead: "חברו את WhatsApp ל-CRM, לאתר, לפלטפורמת SaaS או למערכת העסקית שלכם באמצעות WhatsApp Cloud API הרשמי של Meta.",
+    eyebrow: "WhatsApp Cloud API הרשמי",
+    lines: ["WhatsApp API.", "נבנה עבור העסק שלכם."],
+    lead: "חברו CRM, אתר, פלטפורמת SaaS או מערכת מותאמת ל-WhatsApp באמצעות REST API פשוט ו-Webhooks חתומים.",
     connect: "חיבור WhatsApp",
     explore: "גלו את ה-API",
-    priceUnit: "לחודש לכל מספר WhatsApp",
-    metaNote: "חיובי ההודעות של Meta נוספים.",
+    priceUnit: "לחודש לכל מספר",
+    metaNote: "עלויות ההודעות של Meta מחויבות בנפרד.",
   },
   es: {
-    lines: ["WhatsApp API.", "Una conexión.", "Posibilidades ilimitadas."],
-    lead: "Conecte WhatsApp a su CRM, sitio web, plataforma SaaS o sistema propio con la API oficial de WhatsApp Cloud de Meta.",
+    eyebrow: "WhatsApp Cloud API oficial",
+    lines: ["WhatsApp API.", "Diseñada para su negocio."],
+    lead: "Conecte su CRM, sitio web, plataforma SaaS o sistema propio a WhatsApp con una API REST clara y webhooks firmados.",
     connect: "Conectar WhatsApp",
     explore: "Explorar la API",
-    priceUnit: "/mes por número de WhatsApp",
-    metaNote: "Los cargos de mensajería de Meta son adicionales.",
+    priceUnit: "/mes por número",
+    metaNote: "Las tarifas de mensajería de Meta se facturan por separado.",
   },
   "pt-BR": {
-    lines: ["WhatsApp API.", "Uma conexão.", "Possibilidades ilimitadas."],
-    lead: "Conecte o WhatsApp ao seu CRM, site, plataforma SaaS ou sistema próprio usando a API oficial do WhatsApp Cloud da Meta.",
+    eyebrow: "WhatsApp Cloud API oficial",
+    lines: ["WhatsApp API.", "Feita para o seu negócio."],
+    lead: "Conecte seu CRM, site, plataforma SaaS ou sistema próprio ao WhatsApp com uma API REST clara e webhooks assinados.",
     connect: "Conectar WhatsApp",
     explore: "Explorar a API",
-    priceUnit: "/mês por número de WhatsApp",
-    metaNote: "As cobranças de mensagens da Meta são adicionais.",
+    priceUnit: "/mês por número",
+    metaNote: "As tarifas de mensagens da Meta são cobradas separadamente.",
   },
   ar: {
-    lines: ["WhatsApp API.", "اتصال واحد.", "إمكانيات بلا حدود."],
-    lead: "اربط WhatsApp بنظام CRM أو موقعك أو منصة SaaS أو نظامك الخاص عبر WhatsApp Cloud API الرسمي من Meta.",
+    eyebrow: "WhatsApp Cloud API الرسمية",
+    lines: ["WhatsApp API.", "مصممة لأعمالك."],
+    lead: "اربط نظام CRM أو موقعك أو منصة SaaS أو نظامك الخاص بـ WhatsApp عبر REST API واضحة وWebhooks موقّعة.",
     connect: "ربط WhatsApp",
     explore: "استكشف الواجهة",
-    priceUnit: "شهريًا لكل رقم WhatsApp",
-    metaNote: "رسوم المراسلة من Meta إضافية.",
+    priceUnit: "شهريًا لكل رقم",
+    metaNote: "رسوم المراسلة من Meta تُحتسب بشكل منفصل.",
   },
 };
 
-const FACTS = [
-  ["Official Cloud API", "Messages travel over Meta's WhatsApp Cloud API"],
-  ["REST + OpenAPI 3.0", "Bearer-key auth and a published spec"],
-  ["HMAC-SHA256", "Signed webhooks, retried with backoff"],
-  ["Idempotent sends", "Safe retries with an Idempotency-Key"],
-  ["47 Meta markets", "Priced in the public cost calculator"],
-] as const;
+const TRUST = ["REST + OpenAPI 3.0", "HMAC-signed webhooks", "Idempotent sends"];
+
+const BENEFITS = [
+  {
+    icon: BadgeCheck,
+    title: "Official WhatsApp Cloud API",
+    text: "Integration using Meta's official Cloud API.",
+  },
+  {
+    icon: Workflow,
+    title: "Connect Your Existing Systems",
+    text: "Connect your CRM, website or custom application using our API.",
+  },
+  {
+    icon: ReceiptText,
+    title: "Transparent Pricing",
+    text: "$29/month per number, with Meta messaging fees billed separately.",
+  },
+];
+
+const PLAN_INCLUDES = [
+  "WhatsApp Cloud API connection",
+  "API & Webhooks",
+  "Message templates",
+  "Management dashboard",
+  "Performance analytics",
+];
 
 const ONBOARDING = [
   ["Meta Business account", "Use an existing one or create it during signup."],
@@ -102,54 +133,73 @@ export default function OverviewPage({ lang }: { lang: string }) {
       <section className="wa-hero" aria-labelledby="wa-hero-title">
         <div className="wa-wrap">
           <div className="wa-hero-grid">
-            <div>
-              <p className="wa-eyebrow">Meta WhatsApp Cloud API</p>
+            <div className="wa-hero-copy">
+              <p className="wa-pill">
+                <span className="wa-pill-dot" aria-hidden="true" />
+                {hero.eyebrow}
+              </p>
               <h1 id="wa-hero-title" className="wa-display">
                 {hero.lines[0]}
                 <br />
-                {hero.lines[1]}
-                <br />
-                <span className="wa-accent">{hero.lines[2]}</span>
+                <span className="wa-accent">{hero.lines[1]}</span>
               </h1>
               <p className="wa-lead">{hero.lead}</p>
+              <div className="wa-hero-price" aria-label={`$29 ${hero.priceUnit}. ${hero.metaNote}`}>
+                <div className="wa-hero-price-main" aria-hidden="true">
+                  <strong>$29</strong>
+                  <span>{hero.priceUnit}</span>
+                </div>
+                <p aria-hidden="true">{hero.metaNote}</p>
+              </div>
               <div className="wa-actions">
-                <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
+                <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
                   {hero.connect} <ArrowRight size={16} aria-hidden="true" />
                 </SiteLink>
-                <SiteLink to="/docs" className="wa-btn wa-btn-ghost">
+                <SiteLink to="/docs" className="wa-btn wa-btn-ghost wa-btn-lg">
                   <Code2 size={16} aria-hidden="true" /> {hero.explore}
                 </SiteLink>
               </div>
+              <ul className="wa-hero-trust" {...en}>
+                {TRUST.map((item) => (
+                  <li key={item}><Check size={14} aria-hidden="true" /> {item}</li>
+                ))}
+              </ul>
             </div>
-            <aside className="wa-price-card" aria-label="Pricing summary">
-              <p className="wa-eyebrow" style={{ marginBottom: 0 }}>Pricing</p>
-              <div className="wa-price">
-                <strong>$29</strong>
-                <span>{hero.priceUnit}</span>
-              </div>
-              <p className="wa-fine" style={{ marginTop: 6, color: "var(--wa-amber)" }}>{hero.metaNote}</p>
-              <dl {...en}>
-                <div><dt>Bizuply subscription</dt><dd>$29 / number / month</dd></div>
-                <div><dt>Meta messaging</dt><dd>Per Meta's rate card</dd></div>
-                <div><dt>Included</dt><dd>API, webhooks, templates, dashboard</dd></div>
-              </dl>
-              <SiteLink to="/pricing#calculator" className="wa-link" style={{ marginTop: 16 }} {...en}>
-                Estimate your Meta costs <ArrowRight size={14} aria-hidden="true" />
-              </SiteLink>
-            </aside>
+            <div className="wa-hero-visual">
+              <HeroSimulation />
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div {...en}>
+      <section {...en} className="wa-section is-tight wa-benefits" aria-label="Key benefits">
+        <div className="wa-wrap">
+          <div className="wa-grid-3">
+            {BENEFITS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <article key={item.title} className="wa-card is-hover wa-benefit">
+                  <div className="wa-card-icon"><Icon size={20} aria-hidden="true" /></div>
+                  <h2 className="wa-h3">{item.title}</h2>
+                  <p>{item.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section {...en} className="wa-section is-band" aria-labelledby="wa-how">
+        <div className="wa-wrap">
+          <div className="wa-reveal">
+            <SectionHead
+              eyebrow="How it works"
+              title={<span id="wa-how">Follow one message from request to receipt.</span>}
+              lead="Step through a send in detail: the request your system makes, what Bizuply checks, how the message reaches WhatsApp, and how status updates come back as signed webhooks."
+            />
+          </div>
+          <div className="wa-reveal">
             <ApiFlowDemo />
-          </div>
-
-          <div className="wa-facts" role="list" aria-label="Platform facts" {...en}>
-            {FACTS.map(([title, text]) => (
-              <div className="wa-fact" role="listitem" key={title}>
-                <strong>{title}</strong>
-                <span>{text}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -296,7 +346,62 @@ export default function OverviewPage({ lang }: { lang: string }) {
         </div>
       </section>
 
-      <section {...en} className="wa-section is-band" aria-labelledby="wa-security">
+      <section {...en} className="wa-section is-band" aria-labelledby="wa-pricing">
+        <div className="wa-wrap">
+          <div className="wa-reveal">
+            <SectionHead
+              center
+              eyebrow="Transparent pricing"
+              title={<span id="wa-pricing">One plan. One price per number.</span>}
+              lead="A flat Bizuply subscription for each connected WhatsApp number. Meta's messaging fees are separate and billed by Meta."
+            />
+          </div>
+          <div className="wa-pricing-block wa-reveal">
+            <article className="wa-plan-card">
+              <div className="wa-plan-card-head">
+                <p className="wa-eyebrow">Bizuply plan</p>
+                <span className="wa-badge is-ok">Per WhatsApp number</span>
+              </div>
+              <div className="wa-price is-xl">
+                <strong>$29</strong>
+                <span>/month<br />per WhatsApp number</span>
+              </div>
+              <p className="wa-plan-note">Meta messaging fees are billed separately, in addition to the subscription.</p>
+              <ul className="wa-plan-list">
+                {PLAN_INCLUDES.map((item) => (
+                  <li key={item}><span aria-hidden="true"><Check size={14} /></span>{item}</li>
+                ))}
+              </ul>
+              <div className="wa-actions">
+                <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
+                  Connect WhatsApp <ArrowRight size={16} aria-hidden="true" />
+                </SiteLink>
+                <SiteLink to="/pricing" className="wa-btn wa-btn-ghost wa-btn-lg">Pricing details</SiteLink>
+              </div>
+            </article>
+            <div className="wa-plan-side">
+              <article className="wa-card">
+                <div className="wa-card-icon is-cyan"><ReceiptText size={20} aria-hidden="true" /></div>
+                <h3 className="wa-h3">Meta messaging fees</h3>
+                <p>
+                  Meta charges per message, based on the recipient's country and the message category. These charges go to
+                  the payment method on your WhatsApp Business Account, not to your Bizuply subscription.
+                </p>
+              </article>
+              <article className="wa-card is-hover">
+                <div className="wa-card-icon is-cyan"><Calculator size={20} aria-hidden="true" /></div>
+                <h3 className="wa-h3">Estimate your total</h3>
+                <p>Use Meta's published rate card to estimate messaging costs by country, category and volume.</p>
+                <SiteLink to="/pricing#calculator" className="wa-link" style={{ marginTop: 14 }}>
+                  Open the cost calculator <ArrowRight size={14} aria-hidden="true" />
+                </SiteLink>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section {...en} className="wa-section" aria-labelledby="wa-security">
         <div className="wa-wrap">
           <div className="wa-reveal">
             <SectionHead
@@ -325,7 +430,7 @@ export default function OverviewPage({ lang }: { lang: string }) {
         </div>
       </section>
 
-      <section {...en} className="wa-section" aria-labelledby="wa-analytics">
+      <section {...en} className="wa-section is-band" aria-labelledby="wa-analytics">
         <div className="wa-wrap wa-split wa-reveal">
           <div>
             <p className="wa-eyebrow">Performance analytics</p>
@@ -354,41 +459,6 @@ export default function OverviewPage({ lang }: { lang: string }) {
               <div><dt>Delivered</dt><dd>Live from Meta in your dashboard</dd></div>
               <div><dt>Read</dt><dd>Per day and per template</dd></div>
             </dl>
-          </div>
-        </div>
-      </section>
-
-      <section {...en} className="wa-section is-band" aria-labelledby="wa-pricing">
-        <div className="wa-wrap wa-reveal">
-          <SectionHead
-            eyebrow="Transparent pricing"
-            title={<span id="wa-pricing">Two separate costs, both shown up front.</span>}
-            lead="Bizuply charges a flat monthly fee per connected number. Meta charges for messages under its own rate card. We show them separately."
-          />
-          <div className="wa-cost-split">
-            <div className="wa-card is-featured">
-              <p className="wa-eyebrow">Bizuply subscription</p>
-              <div className="wa-price"><strong>$29</strong><span>/ month per number</span></div>
-              <p>API, webhooks, templates, analytics and the dashboard.</p>
-            </div>
-            <div className="op" aria-hidden="true">+</div>
-            <div className="wa-card">
-              <p className="wa-eyebrow" style={{ color: "var(--wa-cyan)" }}>Meta messaging</p>
-              <div className="wa-price"><strong style={{ fontSize: "2rem" }}>Per message</strong></div>
-              <p>Set by Meta per country and category, and billed to your WhatsApp Business Account.</p>
-            </div>
-            <div className="op" aria-hidden="true">=</div>
-            <div className="wa-card">
-              <p className="wa-eyebrow" style={{ color: "var(--wa-ink-2)" }}>Your estimate</p>
-              <div className="wa-price"><strong style={{ fontSize: "2rem" }}>Calculated</strong></div>
-              <p>Enter countries, categories and volumes to see your total.</p>
-            </div>
-          </div>
-          <div className="wa-actions">
-            <SiteLink to="/pricing#calculator" className="wa-btn wa-btn-primary">
-              Open the cost calculator <ArrowRight size={16} aria-hidden="true" />
-            </SiteLink>
-            <SiteLink to="/pricing" className="wa-btn wa-btn-ghost">Pricing details</SiteLink>
           </div>
         </div>
       </section>
@@ -434,7 +504,7 @@ export default function OverviewPage({ lang }: { lang: string }) {
           <div className="wa-cta">
             <div>
               <h2 className="wa-h2">Connect your first WhatsApp number.</h2>
-              <p className="wa-lead">$29/month per number. Meta messaging charges are additional.</p>
+              <p className="wa-lead">$29/month per number. Meta messaging fees are billed separately.</p>
             </div>
             <div className="wa-actions">
               <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
