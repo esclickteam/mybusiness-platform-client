@@ -18,10 +18,15 @@ import {
   isBizuplyTravelHost,
 } from "./src/lib/travelHost.mjs";
 import {
+  WHATSAPP_CANONICAL_URL,
+  WHATSAPP_PRODUCT_SCHEMA,
   WHATSAPP_SEO_DESCRIPTION,
   WHATSAPP_SEO_KEYWORDS,
   WHATSAPP_SEO_TITLE,
+  buildWhatsAppSitemapXml,
+  getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
+  whatsappCanonicalUrl,
 } from "./src/lib/whatsappHost.mjs";
 
 const PUBLIC_SITE_DOMAIN =
@@ -472,21 +477,34 @@ function travelSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "travel" });
 }
 
-function whatsappHeadHtml() {
+function escapeHtmlAttr(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function whatsappHeadHtml(pathname) {
+  const page = getWhatsAppPageMeta(pathname);
+  const title = escapeHtmlAttr(page?.title || WHATSAPP_SEO_TITLE);
+  const description = escapeHtmlAttr(page?.description || WHATSAPP_SEO_DESCRIPTION);
+  const canonical = page ? whatsappCanonicalUrl(pathname) : WHATSAPP_CANONICAL_URL;
   return [
-    `<title>${WHATSAPP_SEO_TITLE}</title>`,
-    `<meta name="description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
-    `<meta name="keywords" content="${WHATSAPP_SEO_KEYWORDS}" />`,
-    `<meta name="robots" content="index, follow" />`,
-    `<link rel="canonical" href="https://whatsapp.bizuply.com/" />`,
-    `<meta property="og:title" content="${WHATSAPP_SEO_TITLE}" />`,
-    `<meta property="og:description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
+    `<title>${title}</title>`,
+    `<meta name="description" content="${description}" />`,
+    `<meta name="keywords" content="${escapeHtmlAttr(WHATSAPP_SEO_KEYWORDS)}" />`,
+    `<meta name="robots" content="${page ? "index, follow" : "noindex, follow"}" />`,
+    `<link rel="canonical" href="${canonical}" />`,
+    `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:description" content="${description}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:url" content="https://whatsapp.bizuply.com/" />`,
+    `<meta property="og:url" content="${canonical}" />`,
     `<meta property="og:locale" content="en_US" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
-    `<meta name="twitter:title" content="${WHATSAPP_SEO_TITLE}" />`,
-    `<meta name="twitter:description" content="${WHATSAPP_SEO_DESCRIPTION}" />`,
+    `<meta name="twitter:title" content="${title}" />`,
+    `<meta name="twitter:description" content="${description}" />`,
+    `<script id="wa-product-schema" type="application/ld+json">${JSON.stringify(WHATSAPP_PRODUCT_SCHEMA).replace(/</g, "\\u003c")}</script>`,
   ].join("\n");
 }
 
@@ -494,7 +512,7 @@ function whatsappSeoFile(pathname) {
   const isRobots = pathname === "/robots.txt";
   const body = isRobots
     ? "User-agent: *\nAllow: /\n\nSitemap: https://whatsapp.bizuply.com/sitemap.xml\n"
-    : `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://whatsapp.bizuply.com/</loc></url>\n</urlset>\n`;
+    : buildWhatsAppSitemapXml();
   return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
 }
 
@@ -511,7 +529,7 @@ async function handleWhatsAppDocument(request) {
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
-    return new Response(injectSeoHead(html, whatsappHeadHtml()), {
+    return new Response(injectSeoHead(html, whatsappHeadHtml(getPathname(request))), {
       status: 200,
       headers: {
         "content-type": "text/html; charset=utf-8",

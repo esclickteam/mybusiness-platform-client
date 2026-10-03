@@ -4,9 +4,15 @@ import { describe, expect, it } from "vitest";
 import {
   WHATSAPP_SEO_DESCRIPTION,
   WHATSAPP_SEO_KEYWORDS,
+  WHATSAPP_PAGE_PATHS,
   WHATSAPP_SEO_TITLE,
+  buildWhatsAppSitemapXml,
+  getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
+  normalizeWhatsAppPath,
   shouldRenderWhatsAppLanding,
+  whatsappCanonicalUrl,
+  whatsappSiteBase,
 } from "./whatsappHost.mjs";
 
 describe("whatsapp host", () => {
@@ -31,14 +37,44 @@ describe("whatsapp host", () => {
     expect(shouldRenderWhatsAppLanding("whatsapp.bizuply.com", "/pricing")).toBe(true);
   });
 
+  it("previews under /whatsapp-api on Vercel preview hosts", () => {
+    expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/whatsapp-api/docs")).toBe(true);
+    expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/pricing")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-apis")).toBe(false);
+    expect(whatsappSiteBase("whatsapp.bizuply.com")).toBe("");
+    expect(whatsappSiteBase("localhost")).toBe("/whatsapp-api");
+  });
+
   it("keeps the public SEO copy used by the landing page", () => {
-    expect(WHATSAPP_SEO_TITLE).toBe(
-      "Official WhatsApp API Platform for Developers & Businesses | Bizuply",
-    );
-    expect(WHATSAPP_SEO_DESCRIPTION).toContain("official WhatsApp API");
+    expect(WHATSAPP_SEO_TITLE).toBe("WhatsApp API for Developers, Agencies & Businesses | Bizuply");
+    expect(WHATSAPP_SEO_DESCRIPTION).toContain("official WhatsApp Cloud API");
     expect(WHATSAPP_SEO_DESCRIPTION).toContain("webhooks");
+    expect(WHATSAPP_SEO_DESCRIPTION).toContain("$29/month per WhatsApp number");
+    expect(WHATSAPP_SEO_DESCRIPTION).toContain("Meta messaging charges are separate");
     expect(WHATSAPP_SEO_KEYWORDS).toContain("Embedded Signup");
     expect(WHATSAPP_SEO_KEYWORDS).toContain("WhatsApp API for agencies");
+  });
+
+  it("has metadata, canonical URLs and sitemap entries for every page", () => {
+    expect(WHATSAPP_PAGE_PATHS).toEqual([
+      "/",
+      "/developers",
+      "/agencies",
+      "/pricing",
+      "/docs",
+      "/help",
+      "/get-started",
+      "/security",
+    ]);
+    expect(normalizeWhatsAppPath("/docs/?x=1#ref")).toBe("/docs");
+    expect(normalizeWhatsAppPath("")).toBe("/");
+    expect(getWhatsAppPageMeta("/pricing/")?.title).toContain("Pricing");
+    expect(getWhatsAppPageMeta("/nope")).toBeNull();
+    expect(whatsappCanonicalUrl("/")).toBe("https://whatsapp.bizuply.com/");
+    expect(whatsappCanonicalUrl("/docs/")).toBe("https://whatsapp.bizuply.com/docs");
+    const sitemap = buildWhatsAppSitemapXml();
+    for (const p of WHATSAPP_PAGE_PATHS) expect(sitemap).toContain(`<loc>${whatsappCanonicalUrl(p)}</loc>`);
+    for (const p of WHATSAPP_PAGE_PATHS) expect(getWhatsAppPageMeta(p)?.description.length).toBeLessThan(260);
   });
 
   it("is wired through host routing, SEO, and partner exclusions", () => {
