@@ -375,27 +375,6 @@ export default function WhatsAppExternalApiSettingsCard({
                 })}
                 value={formatDate(settings.apiKey.createdAt, noActivity)}
               />
-              <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 sm:col-span-2">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                  {t("whatsapp.settings.apiSettingsScopes", {
-                    defaultValue: "Scopes",
-                  })}
-                </p>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {settings.apiKey.scopes.length ? (
-                    settings.apiKey.scopes.map((scope) => (
-                      <span
-                        key={scope}
-                        className="rounded-md border border-violet-100 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700"
-                      >
-                        {scope}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs font-semibold text-slate-500">—</span>
-                  )}
-                </div>
-              </div>
             </div>
           ) : null}
 

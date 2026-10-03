@@ -159,9 +159,6 @@ export default function WhatsAppSettingsTab() {
   const [staging, setStaging] = useState<WhatsAppStagingStatus | null>(null);
   const [stagingBusy, setStagingBusy] = useState(false);
   const [pendingRegisterPin, setPendingRegisterPin] = useState("");
-  const [inventoryNotes, setInventoryNotes] = useState<Record<string, string>>(
-    {}
-  );
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
     []
   );
@@ -234,31 +231,6 @@ export default function WhatsAppSettingsTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, visualQa]);
-
-  useEffect(() => {
-    if (!businessId || typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(
-        `wa-migration-inventory:${businessId}`
-      );
-      if (raw) setInventoryNotes(JSON.parse(raw));
-    } catch {
-      /* ignore */
-    }
-  }, [businessId]);
-
-  const persistInventoryNotes = (next: Record<string, string>) => {
-    setInventoryNotes(next);
-    if (!businessId || typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(
-        `wa-migration-inventory:${businessId}`,
-        JSON.stringify(next)
-      );
-    } catch {
-      /* ignore */
-    }
-  };
 
   useEffect(() => {
     if (!businessId || visualQa?.connection) return;
@@ -1503,80 +1475,6 @@ export default function WhatsAppSettingsTab() {
             {linked && businessId ? (
               <div className="rounded-xl border border-sky-100 bg-sky-50/70 px-4 py-3 text-sm font-semibold text-sky-900">
                 {t("whatsapp.hub.apiMovedHint")}
-              </div>
-            ) : null}
-
-            {linked ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                <p className="text-sm font-black text-slate-900">
-                  {t("whatsapp.settings.inventoryTitle")}
-                </p>
-                <p className="mt-1 text-xs font-medium text-slate-600">
-                  {t("whatsapp.settings.inventoryHint")}
-                </p>
-                <div className="mt-3 space-y-2">
-                  {(
-                    staging?.operatorInventoryChecklist || [
-                      { key: "channelId", label: "360dialog Channel ID" },
-                      { key: "wabaId", label: "Current WABA ID" },
-                      {
-                        key: "metaPortfolioId",
-                        label: "Meta Business Portfolio ID",
-                      },
-                      {
-                        key: "displayName",
-                        label: "Display name + approval status",
-                      },
-                      { key: "phoneStatus", label: "Phone status" },
-                      { key: "qualityRating", label: "Quality rating" },
-                      {
-                        key: "twoStepEnabled",
-                        label: "Two-step verification enabled/disabled",
-                      },
-                      {
-                        key: "pinKnown",
-                        label: "Whether PIN is known (yes/no only)",
-                      },
-                      {
-                        key: "templates",
-                        label: "Approved templates + languages",
-                      },
-                      {
-                        key: "webhookConfig",
-                        label: "Existing webhook configuration (URL only)",
-                      },
-                      { key: "hostingType", label: "Hosting type" },
-                      { key: "channelApiStatus", label: "Channel/API status" },
-                      {
-                        key: "billingStatus",
-                        label: "Billing/subscription status",
-                      },
-                      {
-                        key: "openRequests",
-                        label: "Open migration/name-change requests",
-                      },
-                    ]
-                  ).map((item) => (
-                    <label key={item.key} className="block text-xs font-semibold text-slate-700">
-                      {item.label}
-                      <input
-                        className={`${inputBase} mt-1 text-sm font-medium`}
-                        value={inventoryNotes[item.key] || ""}
-                        onChange={(e) =>
-                          persistInventoryNotes({
-                            ...inventoryNotes,
-                            [item.key]: e.target.value.slice(0, 500),
-                          })
-                        }
-                        placeholder={t("whatsapp.settings.inventoryPlaceholder")}
-                        dir="ltr"
-                      />
-                    </label>
-                  ))}
-                </div>
-                <p className="mt-2 text-[11px] font-medium text-slate-500">
-                  {t("whatsapp.settings.inventoryNoSecrets")}
-                </p>
               </div>
             ) : null}
 

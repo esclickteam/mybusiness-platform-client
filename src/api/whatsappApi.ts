@@ -1724,7 +1724,7 @@ export async function sendWhatsAppTest(
   return data;
 }
 
-/* ---- External Bizuply WhatsApp API Settings (360dialog-style) ---- */
+/* ---- External Bizuply WhatsApp API Settings ---- */
 
 export type WhatsAppExternalApiKeySummary = {
   id: string;
