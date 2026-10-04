@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, RefreshCw, RotateCcw, CreditCard } from "lucide-react";
 import {
@@ -33,6 +33,7 @@ export default function WhatsAppApiBillingActions({
   const { t } = useTranslation();
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
+  const inFlight = useRef(false);
   const { state } = portalSubscriptionState(access);
   const actions = access?.actions;
   if (!businessId || !actions) return null;
@@ -43,12 +44,14 @@ export default function WhatsAppApiBillingActions({
   if (!showReactivate && !showResume && !showUpdatePayment) return null;
 
   const run = async (kind: Exclude<Busy, null>, fn: () => Promise<void>) => {
-    if (busy) return;
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(kind);
     setError(null);
     try {
       await fn();
     } catch (err) {
+      inFlight.current = false;
       const code = errorCode(err);
       setError(
         code === "WHATSAPP_API_CHECKOUT_IN_PROGRESS"
@@ -72,6 +75,7 @@ export default function WhatsAppApiBillingActions({
     run("resume", async () => {
       const next = await resumeWhatsAppApiSubscription(businessId);
       onAccessChange(next);
+      inFlight.current = false;
       setBusy(null);
     });
 

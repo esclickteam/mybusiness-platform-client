@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import WhatsAppApiBillingActions from "./WhatsAppApiBillingActions";
 import type { WhatsAppApiSubscriptionAccess } from "../../../../../api/whatsappApiPortal";
 
@@ -86,6 +86,18 @@ describe("WhatsAppApiBillingActions", () => {
     resolve({ success: true, url: "https://lemon.test/checkout/1" });
     await waitFor(() => expect(navigateTo).toHaveBeenCalledWith("https://lemon.test/checkout/1"));
     expect((button as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("sends one checkout request even when clicks land before a re-render", () => {
+    api.startWhatsAppApiCheckout.mockReturnValue(new Promise(() => {}));
+    renderActions(expired);
+    const button = screen.getByTestId("wa-api-reactivate");
+    act(() => {
+      button.click();
+      button.click();
+      button.click();
+    });
+    expect(api.startWhatsAppApiCheckout).toHaveBeenCalledTimes(1);
   });
 
   it("explains an in-progress checkout and lets the customer try again", async () => {
