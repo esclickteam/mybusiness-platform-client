@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -46,6 +46,7 @@ import {
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
+import { isWhatsAppApiPortalUser } from "../../utils/whatsappApiPortal";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 /* ============================
@@ -212,6 +213,7 @@ export default function BusinessDashboardLayout() {
   const location = useLocation();
   const businessId = useDashboardBusinessId();
   const isAdmin = user?.role === "admin";
+  const apiPortal = isWhatsAppApiPortalUser(user);
   const layoutDir = getTextDirection(i18n.language);
   const isRtl = isRtlLanguage(i18n.language);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
@@ -825,6 +827,15 @@ export default function BusinessDashboardLayout() {
                   </span>
                 ) : null}
                 <GuidedDemoResetControl />
+                {apiPortal ? (
+                  <span
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800"
+                    data-testid="wa-api-portal-badge"
+                  >
+                    <MessageCircle size={14} aria-hidden />
+                    {t("whatsappApiPortal.productName")}
+                  </span>
+                ) : null}
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
                   <span className="font-black text-slate-800">
                     {isInvistimoAdmin

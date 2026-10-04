@@ -15,6 +15,11 @@ import {
   Megaphone,
   MessageCircle,
   Workflow,
+  PlugZap,
+  Code2,
+  LineChart,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
@@ -23,6 +28,11 @@ import {
   isWhatsappOnlyPackage,
   normalizeEnabledModules,
 } from "../utils/moduleAccess";
+import {
+  isWhatsAppApiPortalUser,
+  WHATSAPP_API_DOCS_URL,
+  WHATSAPP_API_HELP_URL,
+} from "../utils/whatsappApiPortal";
 import { normalizeBusinessId } from "../utils/notificationNavigation";
 
 /* =========================
@@ -42,6 +52,7 @@ type BusinessWorkspaceNavProps = {
 type NavItemProps = {
   label: string;
   to: string;
+  href?: string;
   icon: React.ElementType;
   exact?: boolean;
   onNavigate?: () => void;
@@ -53,6 +64,8 @@ type NavItemConfig = {
   labelKey: string;
   fallback: string;
   to: string;
+  /** External destination opened in a new tab instead of `to`. */
+  href?: string;
   icon: React.ElementType;
   exact?: boolean;
   moduleKey?: string | null;
@@ -100,12 +113,44 @@ function translate(t: TFunction, key: string, fallback: string): string {
 function NavItem({
   label,
   to,
+  href,
   icon: Icon,
   exact = false,
   onNavigate,
   collapsed = false,
   demoTarget = null,
 }: NavItemProps) {
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onNavigate}
+        title={collapsed ? label : undefined}
+        aria-label={label}
+        className={`
+          group relative flex items-center rounded-md border border-transparent transition-all duration-200
+          ${collapsed ? "mx-auto h-11 w-11 justify-center" : "h-11 gap-3 px-3"}
+          text-[13.5px] font-medium tracking-[-0.01em] text-slate-600
+          hover:border-violet-100/80 hover:bg-white/55 hover:text-slate-800
+        `}
+      >
+        <Icon
+          size={19}
+          strokeWidth={2}
+          className="shrink-0 text-slate-400 transition-colors group-hover:text-sky-600"
+        />
+        {!collapsed && (
+          <>
+            <span className="min-w-0 flex-1 truncate text-start">{label}</span>
+            <ExternalLink size={13} className="shrink-0 text-slate-300" aria-hidden />
+          </>
+        )}
+      </a>
+    );
+  }
+
   return (
     <NavLink
       to={to}
@@ -192,6 +237,9 @@ export default function BusinessWorkspaceNav({
       userId?: string | null;
       businessId?: string | null;
       isGuidedDemo?: boolean;
+      isShowcaseDemo?: boolean;
+      role?: string | null;
+      subscriptionPlan?: string | null;
     } | null;
   };
   const t = tProp || ((key: string) => tI18n(key));
@@ -346,7 +394,61 @@ export default function BusinessWorkspaceNav({
     },
   ];
 
-  const visibleItems = items.filter((item) => {
+  const whatsappBase = `${basePath}/dashboard/whatsapp`;
+  const apiPortalItems: NavItemConfig[] = [
+    {
+      labelKey: "whatsappApiPortal.nav.overview",
+      fallback: "Overview & setup",
+      to: `${whatsappBase}/overview`,
+      icon: LayoutDashboard,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.connection",
+      fallback: "Connection",
+      to: `${whatsappBase}/connection`,
+      icon: PlugZap,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.developers",
+      fallback: "API & webhooks",
+      to: `${whatsappBase}/developers`,
+      icon: Code2,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.templates",
+      fallback: "Templates",
+      to: `${whatsappBase}/templates`,
+      icon: MessageCircle,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.analytics",
+      fallback: "Analytics",
+      to: `${whatsappBase}/performance`,
+      icon: LineChart,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.billing",
+      fallback: "Billing & subscription",
+      to: `${whatsappBase}/billing`,
+      icon: CreditCard,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.docs",
+      fallback: "Documentation",
+      to: WHATSAPP_API_DOCS_URL,
+      href: WHATSAPP_API_DOCS_URL,
+      icon: BookOpen,
+    },
+    {
+      labelKey: "whatsappApiPortal.nav.support",
+      fallback: "Help & support",
+      to: WHATSAPP_API_HELP_URL,
+      href: WHATSAPP_API_HELP_URL,
+      icon: HelpCircle,
+    },
+  ];
+
+  const visibleItems = isWhatsAppApiPortalUser(user) ? apiPortalItems : items.filter((item) => {
     if (!item.moduleKey) {
       if (
         user?.isGuidedDemo &&
@@ -393,6 +495,7 @@ export default function BusinessWorkspaceNav({
             key={item.to}
             label={translate(t, item.labelKey, item.fallback)}
             to={item.to}
+            href={item.href}
             icon={item.icon}
             exact={item.exact}
             onNavigate={onNavigate}

@@ -1,8 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ExternalLink, KeyRound, Radio } from "lucide-react";
 import { getTextDirection } from "../../../../i18n/localeUtils";
-import { btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
+import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
+import { useAuth } from "../../../../context/AuthContext";
+import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import WhatsAppExternalApiSettingsCard from "./WhatsAppExternalApiSettingsCard";
 import WhatsAppChannelSettingsCard from "./WhatsAppChannelSettingsCard";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
@@ -51,6 +54,8 @@ export default function WhatsAppDevelopersTab() {
   const { t, i18n } = useTranslation();
   const { businessId, connection } = useWhatsAppHubContext();
   const visualQa = useWhatsAppVisualQaOverride();
+  const { user } = useAuth();
+  const apiPortal = !visualQa && isWhatsAppApiPortalUser(user);
 
   return (
     <div dir={getTextDirection(i18n.language)} className="space-y-5">
@@ -117,6 +122,19 @@ export default function WhatsAppDevelopersTab() {
               businessId={businessId}
               linked={Boolean(connection?.connected)}
             />
+            {apiPortal && !connection?.connected ? (
+              <div
+                className={`${cardBase} flex flex-wrap items-center justify-between gap-3 px-4 py-3`}
+                data-testid="wa-api-connect-first"
+              >
+                <p className="text-[13px] font-semibold text-slate-600">
+                  {t("whatsappApiPortal.developers.connectFirst")}
+                </p>
+                <Link to="../connection" className={`${btnPrimary} !px-3 !py-1.5 text-xs`}>
+                  {t("whatsappApiPortal.setup.steps.connect.cta")}
+                </Link>
+              </div>
+            ) : null}
           </section>
         </div>
       ) : null}

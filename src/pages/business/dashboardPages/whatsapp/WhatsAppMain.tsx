@@ -58,6 +58,7 @@ import {
   whatsappBasePath,
 } from "./hubNavigation";
 import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
+import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 
 type WhatsAppTab = {
@@ -145,6 +146,7 @@ export default function WhatsAppMain() {
   const [connectionLoading, setConnectionLoading] = useState(!visualQa);
   const [syncing, setSyncing] = useState(false);
   const guidedDemo = Boolean(user?.isGuidedDemo);
+  const apiPortal = isWhatsAppApiPortalUser(user);
 
   const pathAfterWhatsapp = useMemo(
     () => pathSegmentsAfterWhatsapp(location.pathname),
@@ -198,6 +200,7 @@ export default function WhatsAppMain() {
       "developers",
       "meta-costs",
     ]);
+    if (apiPortal) allowWhenDisconnected.add("overview");
     if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
       navigate(`${whatsappBasePath(location.pathname)}/connection`, {
         replace: true,
@@ -211,6 +214,7 @@ export default function WhatsAppMain() {
     location.pathname,
     navigate,
     guidedDemo,
+    apiPortal,
   ]);
 
   useEffect(() => {
@@ -448,6 +452,7 @@ export default function WhatsAppMain() {
             </div>
           </div>
 
+          {apiPortal ? null : (
           <nav aria-label={t("whatsapp.hub.title")} className="px-1.5 sm:px-2">
             <div className="flex flex-wrap items-stretch gap-0.5">
               {visibleTabs.map((tab) => {
@@ -485,6 +490,7 @@ export default function WhatsAppMain() {
               })}
             </div>
           </nav>
+          )}
         </header>
 
         <main className="w-full min-w-0">

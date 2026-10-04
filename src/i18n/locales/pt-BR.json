@@ -23015,5 +23015,89 @@
     "sidebarTitle": "Chat com o negócio",
     "businessFallback": "Negócio",
     "unknown": "Desconhecido"
+  },
+  "whatsappApiPortal": {
+    "productName": "WhatsApp API",
+    "developers": {
+      "connectFirst": "Conecte primeiro seu número de WhatsApp. As chaves de API e os webhooks ficam disponíveis depois que um número é conectado."
+    },
+    "nav": {
+      "overview": "Visão geral e configuração",
+      "connection": "Conexão",
+      "developers": "API e webhooks",
+      "templates": "Modelos",
+      "analytics": "Análises",
+      "billing": "Cobrança e assinatura",
+      "docs": "Documentação",
+      "support": "Ajuda e suporte"
+    },
+    "subscription": {
+      "title": "Assinatura da WhatsApp API",
+      "price": "US$ 29/mês",
+      "oneNumber": "Uma assinatura = um número de WhatsApp",
+      "manage": "Gerenciar assinatura",
+      "invoices": "Faturas e forma de pagamento",
+      "metaCosts": "Estimar custos da Meta",
+      "includes": {
+        "api": "Acesso à WhatsApp API da Bizuply, chaves de API e webhooks para um número conectado.",
+        "metaCosts": "As cobranças de mensagens do WhatsApp são faturadas diretamente pela Meta."
+      },
+      "state": {
+        "active": "Ativa",
+        "cancelsAtPeriodEnd": "Cancela no fim do período",
+        "pastDueGrace": "Pagamento em atraso",
+        "expired": "Expirada",
+        "none": "Sem assinatura",
+        "unknown": "Status indisponível"
+      },
+      "detail": {
+        "active": "Renova em {{date}}.",
+        "activeNoDate": "Sua assinatura está ativa.",
+        "cancelsAtPeriodEnd": "Cancelada. O acesso continua até {{date}}; depois a API deixa de funcionar.",
+        "pastDueGrace": "Seu último pagamento falhou. Atualize a forma de pagamento antes de {{date}} para manter o acesso.",
+        "expired": "O acesso terminou em {{date}}. Renove para usar a API novamente.",
+        "expiredNoDate": "Sua assinatura não está ativa. Renove para usar a API novamente.",
+        "none": "Não há assinatura ativa da WhatsApp API nesta conta.",
+        "unknown": "Não foi possível carregar o status da assinatura. Tente novamente mais tarde."
+      }
+    },
+    "setup": {
+      "title": "Comece a usar a WhatsApp API",
+      "progress": "{{done}} de {{total}} etapas concluídas",
+      "done": "Concluído",
+      "attention": "Requer atenção",
+      "todo": "Pendente",
+      "completeTitle": "Configuração concluída",
+      "showSteps": "Mostrar etapas de configuração",
+      "welcomeTitle": "Boas-vindas à Bizuply WhatsApp API",
+      "welcomeText": "Sua assinatura está pronta. Siga estas etapas para enviar sua primeira mensagem.",
+      "steps": {
+        "subscription": {
+          "title": "Assinatura ativa",
+          "text": "Sua assinatura de US$ 29/mês cobre um número de WhatsApp.",
+          "cta": "Ver assinatura"
+        },
+        "connect": {
+          "title": "Conecte seu número de WhatsApp",
+          "text": "Conecte um número pelo Meta Embedded Signup.",
+          "cta": "Conectar número"
+        },
+        "apiKey": {
+          "title": "Gere uma chave de API",
+          "text": "Crie uma chave para autenticar suas solicitações à API.",
+          "cta": "Criar chave de API"
+        },
+        "webhook": {
+          "title": "Configure seu webhook",
+          "text": "Receba no seu servidor os status das mensagens e as respostas.",
+          "cta": "Configurar webhook"
+        },
+        "firstMessage": {
+          "title": "Envie sua primeira mensagem",
+          "text": "Envie um modelo aprovado pela API.",
+          "cta": "Abrir guia da API"
+        }
+      }
+    }
   }
 }

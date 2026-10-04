@@ -477,6 +477,7 @@ export function AuthProvider({ children }) {
         businessId: normalizedUser.businessId,
         hasAccess: normalizedUser.hasAccess,
         enabledModules: normalizedUser.enabledModules,
+        subscriptionPlan: normalizedUser.subscriptionPlan,
         queryRedirect: urlRedirect,
         storedRedirect: peekPostLoginRedirect() || storedRedirect,
       });
@@ -1000,6 +1001,7 @@ export function AuthProvider({ children }) {
                 businessId: freshUser.businessId,
                 hasAccess: freshUser.hasAccess,
                 enabledModules: freshUser.enabledModules,
+                subscriptionPlan: freshUser.subscriptionPlan,
                 queryRedirect: sanitizeInternalRedirect(
                   new URLSearchParams(location.search).get("redirect")
                 ),

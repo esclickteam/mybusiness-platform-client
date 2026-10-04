@@ -3,6 +3,12 @@
  * Blocks open redirects; allows only same-origin internal paths.
  */
 
+import {
+  isWhatsAppApiPortalPathAllowed,
+  isWhatsAppApiPortalUser,
+  whatsappApiPortalHome,
+} from "./whatsappApiPortal.js";
+
 export const POST_LOGIN_REDIRECT_KEY = "postLoginRedirect";
 
 const BASE = "https://bizuply.com";
@@ -133,29 +139,53 @@ export function isCompatibleRedirect(role, path) {
   return true;
 }
 
+function isGenericAppPath(path) {
+  const pathname = String(path || "").split(/[?#]/)[0];
+  return (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname.startsWith("/business/")
+  );
+}
+
 export function resolvePostLoginDestination({
   role,
   businessId,
   hasAccess = true,
   enabledModules = null,
+  subscriptionPlan = null,
   queryRedirect = null,
   storedRedirect = null,
 } = {}) {
+  const normalizedRole = String(role || "").toLowerCase();
+  const apiPortal =
+    normalizedRole === "business" &&
+    Boolean(businessId) &&
+    hasAccess &&
+    isWhatsAppApiPortalUser({ role: normalizedRole, subscriptionPlan });
+
   const preferred =
     sanitizeInternalRedirect(queryRedirect) ||
     sanitizeInternalRedirect(storedRedirect);
 
   if (preferred && isCompatibleRedirect(role, preferred)) {
-    return alignRedirectBusinessId(preferred, businessId) || preferred;
+    const aligned = alignRedirectBusinessId(preferred, businessId) || preferred;
+    if (
+      !apiPortal ||
+      !isGenericAppPath(aligned) ||
+      (aligned.startsWith("/business/") && isWhatsAppApiPortalPathAllowed(aligned))
+    ) {
+      return aligned;
+    }
   }
 
-  const normalizedRole = String(role || "").toLowerCase();
   const roleHome = roleHomePath(normalizedRole);
   if (roleHome) return roleHome;
 
   if (normalizedRole === "business") {
     if (!hasAccess) return "/pricing";
     if (!businessId) return "/dashboard";
+    if (apiPortal) return whatsappApiPortalHome(businessId);
     const limited = Array.isArray(enabledModules) ? enabledModules : null;
     const isWebsiteOnly =
       Boolean(limited?.includes("website")) &&
