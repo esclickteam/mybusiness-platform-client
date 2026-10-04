@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowRight, Braces, Fingerprint, Gauge, KeyRound, Repeat, ScrollText } from "lucide-react";
-import { LIST_TEMPLATES_SAMPLES, SEND_SAMPLES, VERIFY_SAMPLES } from "../apiSamples";
-import { API_REFERENCE_URL, OPENAPI_URL, SiteLink } from "../siteConfig";
+import { SEND_RESPONSE, SEND_SAMPLES, VERIFY_SAMPLES } from "../apiSamples";
+import { API_BASE_URL, API_REFERENCE_URL, OPENAPI_URL, SiteLink } from "../siteConfig";
 import { Callout, CodeBlock, SectionHead } from "../ui";
 
 const ENDPOINTS = [
@@ -32,23 +32,30 @@ export default function DevelopersPage() {
             lead="A small REST API, an OpenAPI spec and signed webhooks. Send approved templates from any backend, track every message, and keep Meta credentials out of your code."
           />
           <div className="wa-actions" style={{ marginTop: -12 }}>
-            <SiteLink to="/docs" className="wa-btn wa-btn-primary">
-              Read the docs <ArrowRight size={16} aria-hidden="true" />
+            <SiteLink to="/docs" className="wa-btn wa-btn-primary wa-btn-lg">
+              Explore API <ArrowRight size={16} aria-hidden="true" />
             </SiteLink>
-            <a className="wa-btn wa-btn-ghost" href={OPENAPI_URL}>openapi.json</a>
+            <SiteLink to="/get-started" className="wa-link">Get Started <ArrowRight size={14} aria-hidden="true" /></SiteLink>
           </div>
         </div>
       </section>
 
       <section className="wa-section is-tight" aria-labelledby="wa-quickstart">
         <div className="wa-wrap">
-          <h2 id="wa-quickstart" className="wa-h2" style={{ marginBottom: 32 }}>Quickstart</h2>
+          <SectionHead
+            eyebrow="Quick Start"
+            title={<span id="wa-quickstart">Send your first message in four steps.</span>}
+          />
+          <div className="wa-endpoint-grid" style={{ marginBottom: 24 }}>
+            <CodeBlock title="Base URL" language="text" code={API_BASE_URL} />
+            <CodeBlock title="Authentication" language="http" code={"Authorization: Bearer $BIZUPLY_API_KEY"} />
+          </div>
           <div className="wa-split" style={{ alignItems: "start" }}>
             <ol className="wa-steps">
               <li className="wa-step">
                 <span className="wa-step-n" aria-hidden="true">01</span>
                 <div className="wa-step-body">
-                  <h3>Create an API key</h3>
+                  <h3>Generate an API key</h3>
                   <p>
                     In the Bizuply dashboard open <strong>WhatsApp → API / Developers</strong> and create a key. It's shown
                     once. Store it as <code>BIZUPLY_API_KEY</code> on your server.
@@ -58,6 +65,15 @@ export default function DevelopersPage() {
               <li className="wa-step">
                 <span className="wa-step-n" aria-hidden="true">02</span>
                 <div className="wa-step-body">
+                  <h3>Set your webhook URL</h3>
+                  <p>
+                    On the same screen, add your HTTPS endpoint, copy the signing secret and send a test event.
+                  </p>
+                </div>
+              </li>
+              <li className="wa-step">
+                <span className="wa-step-n" aria-hidden="true">03</span>
+                <div className="wa-step-body">
                   <h3>Pick an approved template</h3>
                   <p>
                     <code>GET /templates</code> returns templates Meta has approved, along with each one's language and
@@ -66,7 +82,7 @@ export default function DevelopersPage() {
                 </div>
               </li>
               <li className="wa-step">
-                <span className="wa-step-n" aria-hidden="true">03</span>
+                <span className="wa-step-n" aria-hidden="true">04</span>
                 <div className="wa-step-body">
                   <h3>Send and track</h3>
                   <p>
@@ -77,8 +93,8 @@ export default function DevelopersPage() {
               </li>
             </ol>
             <div style={{ display: "grid", gap: 16, minWidth: 0 }}>
-              <CodeBlock samples={LIST_TEMPLATES_SAMPLES} title="List templates" />
-              <CodeBlock samples={SEND_SAMPLES} title="Send a template" />
+              <CodeBlock samples={SEND_SAMPLES} title="First request · send a template" />
+              <CodeBlock title="Example response · 201 Created" language="json" code={SEND_RESPONSE} />
             </div>
           </div>
         </div>
@@ -118,7 +134,8 @@ export default function DevelopersPage() {
             </table>
           </div>
           <p className="wa-fine">
-            Prefer an interactive explorer? Open the <a className="wa-link" href={API_REFERENCE_URL}>OpenAPI reference</a>.
+            Prefer an interactive explorer? Open the <a className="wa-link" href={API_REFERENCE_URL}>OpenAPI reference</a> or
+            download <a className="wa-link" href={OPENAPI_URL}>openapi.json</a>.
           </p>
         </div>
       </section>
@@ -178,8 +195,10 @@ export default function DevelopersPage() {
               <p className="wa-lead">Connect a number, create a key and send your first approved template from your own code.</p>
             </div>
             <div className="wa-actions">
-              <SiteLink to="/get-started" className="wa-btn wa-btn-primary">Connect WhatsApp</SiteLink>
-              <SiteLink to="/docs" className="wa-btn wa-btn-ghost">Documentation</SiteLink>
+              <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
+                Get Started <ArrowRight size={16} aria-hidden="true" />
+              </SiteLink>
+              <SiteLink to="/docs" className="wa-link">Explore API <ArrowRight size={14} aria-hidden="true" /></SiteLink>
             </div>
           </div>
         </div>

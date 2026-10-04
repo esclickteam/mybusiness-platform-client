@@ -24,6 +24,23 @@ type ChromeCopy = {
   openMenu: string;
   closeMenu: string;
   skip: string;
+  footer: FooterCopy;
+};
+
+type FooterCopy = {
+  blurb: string;
+  product: string;
+  developers: string;
+  company: string;
+  legal: string;
+  calculator: string;
+  apiReference: string;
+  security: string;
+  privacy: string;
+  terms: string;
+  accessibility: string;
+  rights: string;
+  trademark: string;
 };
 
 const EN: ChromeCopy = {
@@ -36,10 +53,25 @@ const EN: ChromeCopy = {
     help: "Help Center",
   },
   login: "Log in",
-  start: "Get started",
+  start: "Get Started",
   openMenu: "Open menu",
   closeMenu: "Close menu",
   skip: "Skip to content",
+  footer: {
+    blurb: "WhatsApp Business API built on Meta's WhatsApp Cloud API, for developers, agencies and businesses. $29/month per WhatsApp number. Meta messaging fees are billed separately.",
+    product: "Product",
+    developers: "Developers",
+    company: "Company",
+    legal: "Legal",
+    calculator: "Cost calculator",
+    apiReference: "OpenAPI reference",
+    security: "Security",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    accessibility: "Accessibility",
+    rights: "All rights reserved.",
+    trademark: "WhatsApp and Meta are trademarks of Meta Platforms, Inc.",
+  },
 };
 
 const CHROME_I18N: Record<string, ChromeCopy> = {
@@ -58,6 +90,21 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
     openMenu: "פתיחת תפריט",
     closeMenu: "סגירת תפריט",
     skip: "דילוג לתוכן",
+    footer: {
+      blurb: "WhatsApp Business API מבוסס על WhatsApp Cloud API של Meta, למפתחים, לסוכנויות ולעסקים. ‎$29 לחודש לכל מספר WhatsApp. עלויות ההודעות של Meta מחויבות בנפרד.",
+      product: "מוצר",
+      developers: "מפתחים",
+      company: "חברה",
+      legal: "משפטי",
+      calculator: "מחשבון עלויות",
+      apiReference: "תיעוד OpenAPI",
+      security: "אבטחה",
+      privacy: "מדיניות פרטיות",
+      terms: "תנאי שימוש",
+      accessibility: "נגישות",
+      rights: "כל הזכויות שמורות.",
+      trademark: "WhatsApp ו-Meta הם סימנים מסחריים של Meta Platforms, Inc.",
+    },
   },
   es: {
     nav: {
@@ -73,6 +120,21 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
     openMenu: "Abrir menú",
     closeMenu: "Cerrar menú",
     skip: "Ir al contenido",
+    footer: {
+      blurb: "WhatsApp Business API basada en WhatsApp Cloud API de Meta, para desarrolladores, agencias y empresas. $29/mes por número de WhatsApp. Las tarifas de mensajería de Meta se facturan por separado.",
+      product: "Producto",
+      developers: "Desarrolladores",
+      company: "Empresa",
+      legal: "Legal",
+      calculator: "Calculadora de costos",
+      apiReference: "Referencia OpenAPI",
+      security: "Seguridad",
+      privacy: "Política de privacidad",
+      terms: "Términos del servicio",
+      accessibility: "Accesibilidad",
+      rights: "Todos los derechos reservados.",
+      trademark: "WhatsApp y Meta son marcas comerciales de Meta Platforms, Inc.",
+    },
   },
   "pt-BR": {
     nav: {
@@ -88,6 +150,21 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
     openMenu: "Abrir menu",
     closeMenu: "Fechar menu",
     skip: "Pular para o conteúdo",
+    footer: {
+      blurb: "WhatsApp Business API baseada na WhatsApp Cloud API da Meta, para desenvolvedores, agências e empresas. US$ 29/mês por número de WhatsApp. As tarifas de mensagens da Meta são cobradas separadamente.",
+      product: "Produto",
+      developers: "Desenvolvedores",
+      company: "Empresa",
+      legal: "Jurídico",
+      calculator: "Calculadora de custos",
+      apiReference: "Referência OpenAPI",
+      security: "Segurança",
+      privacy: "Política de Privacidade",
+      terms: "Termos de Serviço",
+      accessibility: "Acessibilidade",
+      rights: "Todos os direitos reservados.",
+      trademark: "WhatsApp e Meta são marcas comerciais da Meta Platforms, Inc.",
+    },
   },
   ar: {
     nav: {
@@ -103,6 +180,21 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
     skip: "تخطَّ إلى المحتوى",
+    footer: {
+      blurb: "WhatsApp Business API مبنية على WhatsApp Cloud API من Meta، للمطورين والوكالات والشركات. ‎$29 شهريًا لكل رقم WhatsApp. تُحتسب رسوم رسائل Meta بشكل منفصل.",
+      product: "المنتج",
+      developers: "المطورون",
+      company: "الشركة",
+      legal: "قانوني",
+      calculator: "حاسبة التكاليف",
+      apiReference: "مرجع OpenAPI",
+      security: "الأمان",
+      privacy: "سياسة الخصوصية",
+      terms: "شروط الخدمة",
+      accessibility: "إمكانية الوصول",
+      rights: "جميع الحقوق محفوظة.",
+      trademark: "WhatsApp وMeta علامتان تجاريتان لشركة Meta Platforms, Inc.",
+    },
   },
 };
 
@@ -229,6 +321,7 @@ export function SiteHeader({ lang }: { lang: string }) {
 
 export function SiteFooter({ lang }: { lang: string }) {
   const copy = useChromeCopy(lang);
+  const f = copy.footer;
   const year = new Date().getFullYear();
   return (
     <footer className="wa-footer">
@@ -241,50 +334,47 @@ export function SiteFooter({ lang }: { lang: string }) {
                 Bizuply <span>WhatsApp API</span>
               </span>
             </SiteLink>
-            <p>
-              WhatsApp Cloud API connectivity for developers, agencies and businesses. $29/month per WhatsApp number. Meta
-              messaging charges are separate.
-            </p>
+            <p>{f.blurb}</p>
           </div>
           <div>
-            <h2>Product</h2>
+            <h2>{f.product}</h2>
             <ul>
               <li><SiteLink to="/">{copy.nav.overview}</SiteLink></li>
               <li><SiteLink to="/pricing">{copy.nav.pricing}</SiteLink></li>
-              <li><SiteLink to="/pricing#calculator">Cost calculator</SiteLink></li>
-              <li><SiteLink to="/get-started">Connect WhatsApp</SiteLink></li>
+              <li><SiteLink to="/pricing#calculator">{f.calculator}</SiteLink></li>
+              <li><SiteLink to="/get-started">{copy.start}</SiteLink></li>
             </ul>
           </div>
           <div>
-            <h2>Developers</h2>
+            <h2>{f.developers}</h2>
             <ul>
               <li><SiteLink to="/developers">{copy.nav.developers}</SiteLink></li>
               <li><SiteLink to="/docs">{copy.nav.docs}</SiteLink></li>
-              <li><a href={API_REFERENCE_URL}>OpenAPI reference</a></li>
+              <li><a href={API_REFERENCE_URL}>{f.apiReference}</a></li>
               <li><a href={OPENAPI_URL}>openapi.json</a></li>
             </ul>
           </div>
           <div>
-            <h2>Company</h2>
+            <h2>{f.company}</h2>
             <ul>
               <li><SiteLink to="/agencies">{copy.nav.agencies}</SiteLink></li>
-              <li><SiteLink to="/security">Security</SiteLink></li>
+              <li><SiteLink to="/security">{f.security}</SiteLink></li>
               <li><SiteLink to="/help">{copy.nav.help}</SiteLink></li>
               <li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
             </ul>
           </div>
           <div>
-            <h2>Legal</h2>
+            <h2>{f.legal}</h2>
             <ul>
-              <li><a href={PRIVACY_URL}>Privacy Policy</a></li>
-              <li><a href={TERMS_URL}>Terms of Service</a></li>
-              <li><a href={ACCESSIBILITY_URL}>Accessibility</a></li>
+              <li><a href={PRIVACY_URL}>{f.privacy}</a></li>
+              <li><a href={TERMS_URL}>{f.terms}</a></li>
+              <li><a href={ACCESSIBILITY_URL}>{f.accessibility}</a></li>
             </ul>
           </div>
         </div>
         <div className="wa-footer-base">
-          <span>© {year} Bizuply LLC. All rights reserved.</span>
-          <span>WhatsApp and Meta are trademarks of Meta Platforms, Inc.</span>
+          <span>© {year} Bizuply LLC. {f.rights}</span>
+          <span>{f.trademark}</span>
         </div>
       </div>
     </footer>

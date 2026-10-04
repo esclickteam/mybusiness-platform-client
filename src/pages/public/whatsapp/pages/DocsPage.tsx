@@ -50,6 +50,9 @@ const BUNDLED_ERRORS: ErrorCode[] = [
   { code: "INTERNAL_ERROR", httpStatus: 500, message: "Internal server error." },
 ];
 
+/** Listed in the server catalog but never returned by the current API. */
+const UNRETURNED_ERROR_CODES = new Set(["IDEMPOTENCY_CONFLICT"]);
+
 const BUNDLED_SPEC: SpecInfo = {
   source: "bundled",
   version: "1.0.0",
@@ -67,7 +70,9 @@ function useSpec(): SpecInfo {
       .then((response) => (response.ok ? response.json() : null))
       .then((doc) => {
         if (cancelled || !doc) return;
-        const codes = Array.isArray(doc["x-bizuply-error-codes"]) ? (doc["x-bizuply-error-codes"] as ErrorCode[]) : [];
+        const codes = Array.isArray(doc["x-bizuply-error-codes"])
+          ? (doc["x-bizuply-error-codes"] as ErrorCode[]).filter((row) => !UNRETURNED_ERROR_CODES.has(row.code))
+          : [];
         const rate = doc["x-bizuply-rate-limit"] || {};
         if (!codes.length) return;
         setSpec({
@@ -199,6 +204,10 @@ const SECTIONS: DocSection[] = [
           <li>At least one template with Meta status <code>APPROVED</code>.</li>
           <li>An API key from <strong>WhatsApp → API / Developers</strong>.</li>
         </ol>
+        <div className="wa-actions">
+          <SiteLink to="/get-started" className="wa-btn wa-btn-primary">Get Started</SiteLink>
+          <a className="wa-link" href={SIGN_IN_URL}>Log in to generate an API key</a>
+        </div>
         <h3>Send your first message</h3>
         <ol>
           <li>List approved templates with <code>GET /templates</code>.</li>
@@ -295,7 +304,8 @@ const SECTIONS: DocSection[] = [
         <p>
           Send an <code>Idempotency-Key</code> header that's unique per message, such as your order ID plus the message type.
           If a retry reuses the key, you get the original result back with HTTP 200 and <code>"idempotent": true</code>,
-          and the message isn't sent twice.
+          and the message isn't sent twice. This applies even if the retried request body is different, so always use a new
+          key for a new message.
         </p>
         <CodeBlock title="Idempotent replay · 200 OK" language="json" code={SEND_REPLAY_RESPONSE} />
         <Callout tone="info">
@@ -454,7 +464,7 @@ const SECTIONS: DocSection[] = [
           <li>Connections are set up in the dashboard. There's no API to create or remove them.</li>
         </ul>
         <p>
-          See <SiteLink className="wa-link" to="/get-started">Connect WhatsApp</SiteLink> for the onboarding steps and the Meta
+          See <SiteLink className="wa-link" to="/get-started">Get Started</SiteLink> for the onboarding steps and the Meta
           checks that can apply.
         </p>
       </>

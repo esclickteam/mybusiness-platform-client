@@ -2713,6 +2713,10 @@ html:has(.wa-page) body {
   text-align: center;
 }
 
+.wa-page :is(.wa-btn, .wa-link) svg.lucide-arrow-right:dir(rtl) {
+  transform: scaleX(-1);
+}
+
 /* ---------- Reveal ---------- */
 
 .wa-reveal {

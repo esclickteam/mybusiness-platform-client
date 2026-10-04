@@ -39,8 +39,8 @@ const WORKFLOW = [
   },
   {
     icon: MessageSquare,
-    title: "Send and receive messages",
-    text: "Send approved templates from your platform through the API. Customer replies arrive in that client's Bizuply WhatsApp inbox.",
+    title: "Send messages and handle replies",
+    text: "Send approved templates from your platform through the API. Customer replies arrive in that client's Bizuply WhatsApp inbox, not in your webhook.",
   },
   {
     icon: BarChart3,
@@ -54,7 +54,7 @@ const AVAILABLE = [
   "An isolated API key per client, scoped to that business",
   "A separate webhook URL and signing secret per client",
   "Per-client templates, inbox, analytics and Meta cost view",
-  "$29/month per connected number",
+  "One subscription per number, $29/month each",
 ];
 
 const NOT_YET = [
@@ -79,7 +79,7 @@ export default function AgenciesPage() {
             <a href="#agency-contact" className="wa-btn wa-btn-primary">
               Talk to us about your clients <ArrowRight size={16} aria-hidden="true" />
             </a>
-            <SiteLink to="/docs" className="wa-btn wa-btn-ghost">Read the API docs</SiteLink>
+            <SiteLink to="/docs" className="wa-link">Explore API <ArrowRight size={14} aria-hidden="true" /></SiteLink>
           </div>
         </div>
       </section>
@@ -147,7 +147,7 @@ export default function AgenciesPage() {
         <div className="wa-wrap">
           <SectionHead
             eyebrow="Capability status"
-            title={<span id="wa-capability-status">What's available today, and what isn't yet.</span>}
+            title={<span id="wa-capability-status">What's available today, and what's coming later.</span>}
             lead="Plan your integration with the facts. We list multi-client features as available only once they actually ship."
           />
           <div className="wa-grid-2">
@@ -160,7 +160,7 @@ export default function AgenciesPage() {
               </ul>
             </article>
             <article className="wa-card">
-              <span className="wa-badge"><span className="wa-dot" /> Not available yet</span>
+              <span className="wa-badge"><span className="wa-dot" /> Coming soon</span>
               <ul className="wa-list is-muted">
                 {NOT_YET.map((item) => (
                   <li key={item}><Clock size={16} aria-hidden="true" /> {item}</li>

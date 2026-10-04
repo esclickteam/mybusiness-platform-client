@@ -13,13 +13,29 @@ const INCLUDED = [
   "Template creation and Meta review tracking",
   "WhatsApp inbox and message history",
   "Meta-synced analytics and cost view",
+  "Documentation, OpenAPI spec and code samples",
   "Email support",
+];
+
+const FACTS = [
+  "One subscription = one WhatsApp number",
+  "Meta messaging fees are separate",
+  "No free trial",
+  "Taxes may apply where required",
 ];
 
 const FAQ = [
   {
     q: "What does the $29 cover?",
-    a: "The Bizuply subscription for one connected WhatsApp number: onboarding, the API and webhooks, templates, inbox, analytics and the dashboard. Each additional number is another $29 per month.",
+    a: "The Bizuply subscription for one connected WhatsApp number: onboarding, the API and webhooks, templates, inbox, analytics, the dashboard and documentation. Each subscription covers one number; another number needs its own $29/month subscription.",
+  },
+  {
+    q: "Is there a free trial?",
+    a: "No. The subscription starts at $29 per month for one number. You can read the full documentation and estimate Meta costs before you sign up.",
+  },
+  {
+    q: "Do taxes apply?",
+    a: "Prices are shown in USD before tax. Sales tax or VAT may be added at checkout where required.",
   },
   {
     q: "Are Meta's messaging charges included?",
@@ -52,6 +68,17 @@ export default function PricingPage() {
             title="$29/month per WhatsApp number."
             lead="One flat Bizuply subscription for each connected number. Meta's messaging charges are separate, and the calculator below estimates them from Meta's published rate card."
           />
+          <div className="wa-actions">
+            <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
+              Start for $29 <ArrowRight size={16} aria-hidden="true" />
+            </SiteLink>
+            <a href="#calculator" className="wa-link">Estimate Meta costs <ArrowRight size={14} aria-hidden="true" /></a>
+          </div>
+          <ul className="wa-hero-trust" aria-label="Plan terms">
+            {FACTS.map((item) => (
+              <li key={item}><Check size={14} aria-hidden="true" /> {item}</li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -71,9 +98,9 @@ export default function PricingPage() {
             </ul>
             <div className="wa-actions">
               <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
-                Connect WhatsApp <ArrowRight size={16} aria-hidden="true" />
+                Start for $29 <ArrowRight size={16} aria-hidden="true" />
               </SiteLink>
-              <SiteLink to="/agencies" className="wa-btn wa-btn-ghost">Several numbers?</SiteLink>
+              <SiteLink to="/agencies" className="wa-link">Several numbers? <ArrowRight size={14} aria-hidden="true" /></SiteLink>
             </div>
           </article>
           <article className="wa-card wa-plan">

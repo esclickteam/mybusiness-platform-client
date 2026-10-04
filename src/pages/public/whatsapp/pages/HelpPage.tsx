@@ -11,18 +11,28 @@ const TOPICS: Topic[] = ["Getting started", "Meta & verification", "Numbers", "T
 const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   {
     topic: "Getting started",
+    q: "What is the WhatsApp Business API?",
+    a: "It's Meta's platform for businesses to message customers on WhatsApp from their own software, rather than from the WhatsApp Business app on a phone. Bizuply connects your number to it through Meta's WhatsApp Cloud API and gives you a REST API, signed webhooks and a dashboard.",
+  },
+  {
+    topic: "Getting started",
     q: "How do I start?",
-    a: "If you already have a Bizuply account, log in and open WhatsApp → Connection to start Meta's Embedded Signup. If you're new, send the onboarding request on the Connect WhatsApp page and we'll reply with access.",
+    a: "If you already have a Bizuply account, log in and open WhatsApp → Connection to start Meta's Embedded Signup. If you're new, send the onboarding request on the Get Started page and we'll reply with access.",
   },
   {
     topic: "Getting started",
-    q: "Is this the official WhatsApp API?",
-    a: "Yes. Messages are sent through Meta's official WhatsApp Cloud API, and numbers are connected through Meta's Embedded Signup. Bizuply provides the API, webhooks, dashboard and tools on top.",
+    q: "How does Bizuply relate to Meta?",
+    a: "Bizuply is built on Meta's WhatsApp Cloud API. Messages are sent through that API, and numbers are connected through Meta's Embedded Signup. Meta's policies, reviews, messaging limits and fees apply as usual. Bizuply provides the API, webhooks, dashboard and tools on top.",
   },
   {
     topic: "Getting started",
-    q: "Do I need to write code?",
-    a: "No, not to send from the dashboard. The API is for connecting WhatsApp to your own systems, such as a CRM, website, SaaS product or internal tools.",
+    q: "Do I need a developer?",
+    a: "Not to connect a number, manage templates or use the dashboard. To send messages from your own systems, such as a CRM, website, SaaS product or internal tools, someone needs to call the REST API and handle webhooks. The docs include cURL, JavaScript and Python examples.",
+  },
+  {
+    topic: "Getting started",
+    q: "Can agencies use Bizuply?",
+    a: "Yes. An agency can connect a client's number and build that client's integration on the API today. Each number is its own workspace with its own $29/month subscription, API key and webhook. An agency console, consolidated billing and multi-client API keys are not available yet.",
   },
   {
     topic: "Meta & verification",
@@ -46,8 +56,8 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   },
   {
     topic: "Numbers",
-    q: "Can I connect more than one number?",
-    a: "Yes. Each workspace holds one WhatsApp number, so you connect additional numbers in additional workspaces. Each number is $29 per month and has its own API key and webhook.",
+    q: "Can I manage multiple numbers?",
+    a: "Yes, one per workspace. One subscription covers one WhatsApp number, so each additional number goes in its own workspace with its own $29/month subscription, API key and webhook. There is no combined multi-number view yet.",
   },
   {
     topic: "Templates & messaging",
@@ -61,18 +71,33 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   },
   {
     topic: "Billing",
-    q: "What does Bizuply charge?",
-    a: "$29 per month per connected WhatsApp number. Meta's messaging charges are separate.",
+    q: "What does $29 include?",
+    a: "The Bizuply subscription for one connected WhatsApp number: Meta Embedded Signup onboarding, the REST API and API key, signed webhooks, template management, the inbox, Meta-synced analytics, the dashboard, documentation and email support. There's no free trial, Meta's messaging charges are separate, and taxes may apply where required.",
   },
   {
     topic: "Billing",
-    q: "How are Meta's charges billed?",
-    a: "In the standard setup, Meta bills messaging charges to the payment method on your WhatsApp Business Account. Use the cost calculator on the Pricing page to estimate them.",
+    q: "What does Meta charge separately?",
+    a: "Meta charges per template message, based on the recipient's country and the category: marketing, utility or authentication. Replies inside the 24-hour customer service window are generally free. In the standard setup, Meta bills these charges to the payment method on your WhatsApp Business Account. Use the cost calculator on the Pricing page to estimate them.",
   },
   {
     topic: "API & webhooks",
-    q: "Where do I get an API key?",
-    a: "In the dashboard under WhatsApp → API / Developers. The key is shown once. If you lose it, regenerate it; the previous key stops working immediately.",
+    q: "How do API keys work?",
+    a: "Create a key in the dashboard under WhatsApp → API / Developers and send it as a Bearer token in the Authorization header. Each key belongs to one workspace, so it always sends from that workspace's number. The key is shown once and stored only as a hash. Regenerating issues a new key and the previous one stops working immediately. Keep keys on your server, never in browser or mobile code.",
+  },
+  {
+    topic: "API & webhooks",
+    q: "How do webhooks work?",
+    a: "Set an HTTPS URL under WhatsApp → API / Developers. Bizuply then posts message status events (accepted, sent, delivered, read and failed) for messages you send through the API. Each request is signed with HMAC-SHA256 so you can verify it came from Bizuply, and failed deliveries are retried up to five times.",
+  },
+  {
+    topic: "API & webhooks",
+    q: "Can I connect my CRM?",
+    a: "Yes, if your CRM can call a REST API or run custom code, for example through its workflows or a small middleware service. Bizuply doesn't ship ready-made CRM connectors; you or your developer call the API and handle the status webhooks.",
+  },
+  {
+    topic: "API & webhooks",
+    q: "Can I connect my own SaaS product?",
+    a: "Yes. Your backend calls the Bizuply API with your workspace's API key to send approved templates and receives status webhooks. Each connected number has its own key, so a SaaS serving several businesses needs a workspace and subscription per number.",
   },
   {
     topic: "API & webhooks",
