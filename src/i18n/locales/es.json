@@ -23018,6 +23018,9 @@
   },
   "whatsappApiPortal": {
     "productName": "WhatsApp API",
+    "developers": {
+      "connectFirst": "Conecta primero tu número de WhatsApp. Las claves de API y los webhooks estarán disponibles cuando haya un número conectado."
+    },
     "nav": {
       "overview": "Resumen y configuración",
       "connection": "Conexión",

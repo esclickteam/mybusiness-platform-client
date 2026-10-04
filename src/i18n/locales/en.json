@@ -23353,6 +23353,9 @@
   },
   "whatsappApiPortal": {
     "productName": "WhatsApp API",
+    "developers": {
+      "connectFirst": "Connect your WhatsApp number first. API keys and webhooks become available once a number is connected."
+    },
     "nav": {
       "overview": "Overview & setup",
       "connection": "Connection",

@@ -23338,6 +23338,9 @@
   },
   "whatsappApiPortal": {
     "productName": "WhatsApp API",
+    "developers": {
+      "connectFirst": "יש לחבר קודם את מספר ה-WhatsApp. מפתחות API ו-Webhooks יהיו זמינים לאחר חיבור מספר."
+    },
     "nav": {
       "overview": "סקירה והגדרה",
       "connection": "חיבור",

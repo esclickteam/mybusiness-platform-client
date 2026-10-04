@@ -23018,6 +23018,9 @@
   },
   "whatsappApiPortal": {
     "productName": "WhatsApp API",
+    "developers": {
+      "connectFirst": "اربط رقم WhatsApp أولًا. تصبح مفاتيح API وWebhooks متاحة بعد ربط رقم."
+    },
     "nav": {
       "overview": "نظرة عامة وإعداد",
       "connection": "الاتصال",

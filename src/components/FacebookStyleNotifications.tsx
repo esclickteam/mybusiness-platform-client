@@ -34,6 +34,7 @@ import {
   type PushBillingStatus,
 } from "../api/pushBillingApi";
 import { getPushDiscoverabilityState } from "./notifications/pushDiscoverability";
+import { isWhatsAppApiPortalUser } from "../utils/whatsappApiPortal";
 import {
   PushBellDiscoverChip,
   PushCompactUpsellCard,
@@ -255,10 +256,11 @@ export default function FacebookStyleNotifications() {
     };
   }, [businessId, open]);
 
-  const pushDiscoverability = useMemo(
-    () => getPushDiscoverabilityState(pushBillingStatus),
-    [pushBillingStatus]
-  );
+  const apiPortal = isWhatsAppApiPortalUser(user);
+  const pushDiscoverability = useMemo(() => {
+    const state = getPushDiscoverabilityState(pushBillingStatus);
+    return apiPortal ? { ...state, showUpsell: false } : state;
+  }, [pushBillingStatus, apiPortal]);
 
   function openPushSettings() {
     setOpen(true);
