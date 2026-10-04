@@ -297,3 +297,59 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(metaCampaignsLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 });
+
+describe("BusinessWorkspaceNav WhatsApp API portal", () => {
+  const portalHrefs = () =>
+    Array.from(document.querySelectorAll("nav a")).map((a) => a.getAttribute("href"));
+
+  it("shows only the WhatsApp API sections to whatsapp_api customers", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        subscriptionPlan: "whatsapp_api",
+        enabledModules: ["dashboard", "billing", "whatsapp"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    const wa = `/business/${OTHER_BUSINESS_ID}/dashboard/whatsapp`;
+    expect(portalHrefs()).toEqual([
+      `${wa}/overview`,
+      `${wa}/connection`,
+      `${wa}/developers`,
+      `${wa}/templates`,
+      `${wa}/performance`,
+      `${wa}/billing`,
+      "https://whatsapp.bizuply.com/docs",
+      "https://whatsapp.bizuply.com/help",
+    ]);
+    for (const hidden of ["dashboard", "crm", "automations", "collab", "website", "global-club", "help-center"]) {
+      expect(navLink(OTHER_BUSINESS_ID, hidden)).toBeNull();
+    }
+    const docs = document.querySelector('a[href="https://whatsapp.bizuply.com/docs"]');
+    expect(docs).toHaveAttribute("target", "_blank");
+    expect(docs).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("keeps the regular navigation for Business Plan customers", async () => {
+    await renderNav({
+      user: { businessId: OTHER_BUSINESS_ID, role: "business", subscriptionPlan: "monthly" },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(navLink(OTHER_BUSINESS_ID, "dashboard")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "whatsapp/overview")).toBeNull();
+  });
+
+  it("keeps the regular navigation for admins viewing a whatsapp_api business", async () => {
+    await renderNav({
+      user: { role: "admin", subscriptionPlan: "whatsapp_api" },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(navLink(OTHER_BUSINESS_ID, "dashboard")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "whatsapp/overview")).toBeNull();
+  });
+});

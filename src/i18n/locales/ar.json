@@ -23015,5 +23015,86 @@
     "sidebarTitle": "محادثة مع النشاط",
     "businessFallback": "النشاط",
     "unknown": "غير معروف"
+  },
+  "whatsappApiPortal": {
+    "productName": "WhatsApp API",
+    "nav": {
+      "overview": "نظرة عامة وإعداد",
+      "connection": "الاتصال",
+      "developers": "API وWebhooks",
+      "templates": "القوالب",
+      "analytics": "التحليلات",
+      "billing": "الفوترة والاشتراك",
+      "docs": "التوثيق",
+      "support": "المساعدة والدعم"
+    },
+    "subscription": {
+      "title": "اشتراك WhatsApp API",
+      "price": "$29 شهريًا",
+      "oneNumber": "اشتراك واحد = رقم WhatsApp واحد",
+      "manage": "إدارة الاشتراك",
+      "invoices": "الفواتير وطريقة الدفع",
+      "metaCosts": "تقدير تكاليف Meta",
+      "includes": {
+        "api": "الوصول إلى WhatsApp API من Bizuply ومفاتيح API وWebhooks لرقم متصل واحد.",
+        "metaCosts": "تتم فوترة رسوم رسائل WhatsApp مباشرة من Meta."
+      },
+      "state": {
+        "active": "نشط",
+        "cancelsAtPeriodEnd": "يُلغى في نهاية الفترة",
+        "pastDueGrace": "دفعة متأخرة",
+        "expired": "منتهي",
+        "none": "لا يوجد اشتراك",
+        "unknown": "الحالة غير متاحة"
+      },
+      "detail": {
+        "active": "يتجدد في {{date}}.",
+        "activeNoDate": "اشتراكك نشط.",
+        "cancelsAtPeriodEnd": "تم الإلغاء. يستمر الوصول حتى {{date}}، ثم يتوقف API عن العمل.",
+        "pastDueGrace": "فشلت آخر دفعة. حدّث طريقة الدفع قبل {{date}} للحفاظ على الوصول.",
+        "expired": "انتهى الوصول في {{date}}. جدّد الاشتراك لاستخدام API مرة أخرى.",
+        "expiredNoDate": "اشتراكك غير نشط. جدّد الاشتراك لاستخدام API مرة أخرى.",
+        "none": "لا يوجد اشتراك WhatsApp API نشط في هذا الحساب.",
+        "unknown": "تعذّر تحميل حالة الاشتراك. حاول مرة أخرى لاحقًا."
+      }
+    },
+    "setup": {
+      "title": "ابدأ مع WhatsApp API",
+      "progress": "اكتملت {{done}} من {{total}} خطوات",
+      "done": "تم",
+      "attention": "يحتاج إلى انتباه",
+      "todo": "مطلوب",
+      "completeTitle": "اكتمل الإعداد",
+      "showSteps": "عرض خطوات الإعداد",
+      "welcomeTitle": "مرحبًا بك في WhatsApp API من Bizuply",
+      "welcomeText": "اشتراكك جاهز. اتبع هذه الخطوات لإرسال رسالتك الأولى.",
+      "steps": {
+        "subscription": {
+          "title": "الاشتراك نشط",
+          "text": "يغطي اشتراك $29 شهريًا رقم WhatsApp واحدًا.",
+          "cta": "عرض الاشتراك"
+        },
+        "connect": {
+          "title": "اربط رقم WhatsApp",
+          "text": "اربط رقمًا عبر Meta Embedded Signup.",
+          "cta": "ربط الرقم"
+        },
+        "apiKey": {
+          "title": "أنشئ مفتاح API",
+          "text": "أنشئ مفتاحًا لمصادقة طلبات API.",
+          "cta": "إنشاء مفتاح API"
+        },
+        "webhook": {
+          "title": "اضبط Webhook",
+          "text": "استقبل تحديثات حالة الرسائل والردود على خادمك.",
+          "cta": "إعداد Webhook"
+        },
+        "firstMessage": {
+          "title": "أرسل رسالتك الأولى",
+          "text": "أرسل قالبًا معتمدًا عبر API.",
+          "cta": "فتح دليل API"
+        }
+      }
+    }
   }
 }

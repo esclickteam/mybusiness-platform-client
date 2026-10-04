@@ -15,6 +15,11 @@ import {
   isDashboardPathAllowed,
   normalizeEnabledModules,
 } from "../../utils/moduleAccess";
+import {
+  isWhatsAppApiPortalPathAllowed,
+  isWhatsAppApiPortalUser,
+  whatsappApiPortalHome,
+} from "../../utils/whatsappApiPortal";
 import UpgradeRequired from "../../components/UpgradeRequired";
 
 /* Dashboard pages */
@@ -270,7 +275,8 @@ function WebsiteStudioRoute({ businessId }) {
 }
 
 /** Restore last in-session dashboard page when landing on bare /dashboard */
-function DashboardIndexRedirect({ businessId, enabledModules }) {
+function DashboardIndexRedirect({ businessId, enabledModules, apiPortal }) {
+  if (apiPortal) return <Navigate to="whatsapp/overview" replace />;
   const limited = normalizeEnabledModules(enabledModules);
   if (limited) {
     const defaultPath = getDefaultDashboardPath(businessId, limited);
@@ -297,9 +303,22 @@ function DashboardIndexRedirect({ businessId, enabledModules }) {
   return <Navigate to="dashboard" replace />;
 }
 
-function ModuleAccessGuard({ businessId, enabledModules, planLimited, children }) {
+function ModuleAccessGuard({
+  businessId,
+  enabledModules,
+  planLimited,
+  apiPortal,
+  children,
+}) {
   const location = useLocation();
   const limited = normalizeEnabledModules(enabledModules);
+
+  if (apiPortal) {
+    if (!isWhatsAppApiPortalPathAllowed(location.pathname)) {
+      return <Navigate to={whatsappApiPortalHome(businessId)} replace />;
+    }
+    return children;
+  }
 
   if (
     limited &&
@@ -337,6 +356,7 @@ const BusinessDashboardRoutes = () => {
   const lastBusinessRedirectRef = useRef("");
   const isAdmin = user?.role === "admin";
   const enabledModules = user?.enabledModules || null;
+  const apiPortal = isWhatsAppApiPortalUser(user);
 
   // Admin uses URL tenant; business owners use their own businessId
   const businessId =
@@ -380,7 +400,7 @@ const BusinessDashboardRoutes = () => {
   ]);
 
   useEffect(() => {
-    if (!businessId) return;
+    if (!businessId || apiPortal) return;
 
     queryClient.prefetchQuery({
       queryKey: ["businessProfile", businessId],
@@ -397,7 +417,7 @@ const BusinessDashboardRoutes = () => {
       queryFn: async () =>
         (await API.get(`/appointments?businessId=${businessId}`)).data,
     });
-  }, [businessId, queryClient]);
+  }, [businessId, apiPortal, queryClient]);
 
   if (!businessId) {
     return <BizuplyLoader fullScreen label="Loading business info..." />;
@@ -410,6 +430,7 @@ const BusinessDashboardRoutes = () => {
           businessId={businessId}
           enabledModules={enabledModules}
           planLimited={Boolean(user?.planLimited)}
+          apiPortal={apiPortal}
         >
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
@@ -419,6 +440,7 @@ const BusinessDashboardRoutes = () => {
               <DashboardIndexRedirect
                 businessId={businessId}
                 enabledModules={enabledModules}
+                apiPortal={apiPortal}
               />
             }
           />
@@ -693,9 +715,11 @@ const BusinessDashboardRoutes = () => {
             element={
               <Navigate
                 to={
-                  normalizeEnabledModules(enabledModules)
-                    ? `/business/${businessId}/dashboard/crm`
-                    : `/business/${businessId}/dashboard/dashboard`
+                  apiPortal
+                    ? whatsappApiPortalHome(businessId)
+                    : normalizeEnabledModules(enabledModules)
+                      ? `/business/${businessId}/dashboard/crm`
+                      : `/business/${businessId}/dashboard/dashboard`
                 }
                 replace
               />

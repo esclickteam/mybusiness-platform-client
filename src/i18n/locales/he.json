@@ -23335,5 +23335,86 @@
     "sidebarTitle": "צ'אט עם העסק",
     "businessFallback": "עסק",
     "unknown": "לא ידוע"
+  },
+  "whatsappApiPortal": {
+    "productName": "WhatsApp API",
+    "nav": {
+      "overview": "סקירה והגדרה",
+      "connection": "חיבור",
+      "developers": "API ו-Webhooks",
+      "templates": "תבניות",
+      "analytics": "אנליטיקה",
+      "billing": "חיוב ומנוי",
+      "docs": "תיעוד",
+      "support": "עזרה ותמיכה"
+    },
+    "subscription": {
+      "title": "מנוי WhatsApp API",
+      "price": "$29 לחודש",
+      "oneNumber": "מנוי אחד = מספר WhatsApp אחד",
+      "manage": "ניהול המנוי",
+      "invoices": "חשבוניות ואמצעי תשלום",
+      "metaCosts": "הערכת עלויות Meta",
+      "includes": {
+        "api": "גישה ל-WhatsApp API של Bizuply, מפתחות API ו-Webhooks למספר מחובר אחד.",
+        "metaCosts": "חיובי הודעות WhatsApp מחויבים ישירות על ידי Meta."
+      },
+      "state": {
+        "active": "פעיל",
+        "cancelsAtPeriodEnd": "מבוטל בסוף התקופה",
+        "pastDueGrace": "תשלום באיחור",
+        "expired": "פג תוקף",
+        "none": "אין מנוי",
+        "unknown": "הסטטוס אינו זמין"
+      },
+      "detail": {
+        "active": "יתחדש ב-{{date}}.",
+        "activeNoDate": "המנוי שלך פעיל.",
+        "cancelsAtPeriodEnd": "המנוי בוטל. הגישה נמשכת עד {{date}}, ולאחר מכן ה-API יפסיק לפעול.",
+        "pastDueGrace": "התשלום האחרון נכשל. יש לעדכן את אמצעי התשלום לפני {{date}} כדי לשמור על הגישה.",
+        "expired": "הגישה הסתיימה ב-{{date}}. יש לחדש את המנוי כדי להשתמש ב-API שוב.",
+        "expiredNoDate": "המנוי אינו פעיל. יש לחדש את המנוי כדי להשתמש ב-API שוב.",
+        "none": "אין מנוי WhatsApp API פעיל בחשבון הזה.",
+        "unknown": "לא הצלחנו לטעון את סטטוס המנוי. נסו שוב מאוחר יותר."
+      }
+    },
+    "setup": {
+      "title": "תחילת העבודה עם WhatsApp API",
+      "progress": "{{done}} מתוך {{total}} שלבים הושלמו",
+      "done": "הושלם",
+      "attention": "דורש תשומת לב",
+      "todo": "לביצוע",
+      "completeTitle": "ההגדרה הושלמה",
+      "showSteps": "הצגת שלבי ההגדרה",
+      "welcomeTitle": "ברוכים הבאים ל-WhatsApp API של Bizuply",
+      "welcomeText": "המנוי שלך מוכן. בצעו את השלבים הבאים כדי לשלוח את ההודעה הראשונה.",
+      "steps": {
+        "subscription": {
+          "title": "מנוי פעיל",
+          "text": "המנוי בעלות $29 לחודש כולל מספר WhatsApp אחד.",
+          "cta": "צפייה במנוי"
+        },
+        "connect": {
+          "title": "חיבור מספר WhatsApp",
+          "text": "חברו מספר באמצעות Meta Embedded Signup.",
+          "cta": "חיבור מספר"
+        },
+        "apiKey": {
+          "title": "יצירת מפתח API",
+          "text": "צרו מפתח לאימות בקשות ה-API שלכם.",
+          "cta": "יצירת מפתח API"
+        },
+        "webhook": {
+          "title": "הגדרת Webhook",
+          "text": "קבלו עדכוני סטטוס ותשובות להודעות בשרת שלכם.",
+          "cta": "הגדרת Webhook"
+        },
+        "firstMessage": {
+          "title": "שליחת ההודעה הראשונה",
+          "text": "שלחו תבנית מאושרת דרך ה-API.",
+          "cta": "פתיחת מדריך ה-API"
+        }
+      }
+    }
   }
 }

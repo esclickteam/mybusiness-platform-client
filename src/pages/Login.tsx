@@ -38,6 +38,7 @@ type LoginUser = {
   hasAccess?: boolean;
   mustChangePassword?: boolean;
   isTempPassword?: boolean;
+  subscriptionPlan?: string | null;
 };
 
 type LoginResponse = {
@@ -166,6 +167,7 @@ export default function Login() {
         businessId: loggedInUser?.businessId,
         hasAccess: loggedInUser?.hasAccess !== false,
         enabledModules: loggedInUser?.enabledModules ?? null,
+        subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
         queryRedirect,
         storedRedirect: loginResult?.redirectUrl || null,
       });

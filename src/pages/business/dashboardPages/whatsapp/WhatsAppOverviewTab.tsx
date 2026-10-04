@@ -26,6 +26,9 @@ import {
   visibleWhatsAppAlerts,
 } from "./whatsappStatusUx";
 import { whatsappBasePath } from "./hubNavigation";
+import { useAuth } from "../../../../context/AuthContext";
+import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
+import WhatsAppApiPortalOverview from "./portal/WhatsAppApiPortalOverview";
 
 function StatCard({
   label,
@@ -55,6 +58,8 @@ export default function WhatsAppOverviewTab() {
     syncing,
   } = useWhatsAppHubContext();
   const visualQa = useWhatsAppVisualQaOverride();
+  const { user } = useAuth();
+  const apiPortal = !visualQa && isWhatsAppApiPortalUser(user);
   const [health, setHealth] = useState<WhatsAppAccountHealth | null>(null);
   const [activity, setActivity] = useState<WhatsAppHubActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,6 +180,10 @@ export default function WhatsAppOverviewTab() {
   const busy = (connectionLoading && !connection) || loading;
   const statusAlerts = visibleWhatsAppAlerts(connection);
   const calmStatusRows = calmWhatsAppStatusRows(connection);
+  const portalAwaitingConnection = apiPortal && !connectionLoading && !connection?.connected;
+  const messageSent =
+    msgStats.sent > 0 ||
+    activity.some((event) => String(event.type || "").startsWith("message_"));
 
   return (
     <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview">
@@ -206,7 +215,15 @@ export default function WhatsAppOverviewTab() {
         </div>
       </div>
 
-      {error ? (
+      {apiPortal ? (
+        <WhatsAppApiPortalOverview
+          businessId={businessId}
+          connected={Boolean(connection?.connected)}
+          messageSent={messageSent}
+        />
+      ) : null}
+
+      {error && !portalAwaitingConnection ? (
         <div className={`${cardBase} border-rose-100 bg-rose-50/60 px-3 py-2 text-xs font-semibold text-rose-700`}>
           {error}
         </div>
@@ -235,6 +252,8 @@ export default function WhatsAppOverviewTab() {
       ) : null}
       {calmStatusRows ? <WhatsAppAccountStatusCard rows={calmStatusRows} /> : null}
 
+      {portalAwaitingConnection ? null : (
+      <>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {busy ? (
           Array.from({ length: 5 }).map((_, i) => (
@@ -381,12 +400,14 @@ export default function WhatsAppOverviewTab() {
             <h3 className="text-sm font-black text-slate-900">
               {t("whatsapp.hub.activityTitle")}
             </h3>
-            <Link
-              to="../messages/history"
-              className="text-[11px] font-black text-emerald-700"
-            >
-              {t("whatsapp.nav.history")} →
-            </Link>
+            {apiPortal ? null : (
+              <Link
+                to="../messages/history"
+                className="text-[11px] font-black text-emerald-700"
+              >
+                {t("whatsapp.nav.history")} →
+              </Link>
+            )}
           </div>
           <div className="mt-2 max-h-[280px] space-y-1.5 overflow-y-auto">
             {!activity.length ? (
@@ -428,6 +449,8 @@ export default function WhatsAppOverviewTab() {
           </div>
         </article>
       </div>
+      </>
+      )}
     </div>
   );
 }
