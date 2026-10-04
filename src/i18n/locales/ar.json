@@ -8545,6 +8545,8 @@
       "usingManagedTitle": "أنت تستخدم BizUply Managed WhatsApp",
       "usingManagedBody": "يمكن إرسال الأتمتة عبر رقم BizUply المركزي. يمكنك أيضًا توصيل رقم WhatsApp الخاص بهذا العمل - والذي لا يقطع أو يغير تطبيق WhatsApp المدار.",
       "connectOwnIntro": "لتوصيل رقم WhatsApp الخاص بهذا العمل (وابا منفصلة) ، تابع هنا. يتم تخزين الاتصال الخاص فقط لهذا العمل.",
+      "apiProductTitle": "واجهة WhatsApp Business API الخاصة بك",
+      "apiProductBody": "يتضمن اشتراكك رقم WhatsApp واحدًا. اربط رقم نشاطك التجاري عبر Meta لبدء إرسال الرسائل باستخدام مفتاح API الخاص بك.",
       "connectOwnCta": "قم بتوصيل رقم WhatsApp الخاص بهذا العمل",
       "managedHostTitle": "اتصال منصّة مُدار (BizUply Managed)",
       "managedHostBody": "الرقم هو اتصال المنصة المركزي. تقوم شركة العملاء التي تريد رقمها الخاص بتوصيلها من إعدادات هذا العمل - وليس هنا.",
