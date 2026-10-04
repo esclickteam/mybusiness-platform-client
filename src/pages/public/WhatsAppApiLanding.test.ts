@@ -21,9 +21,11 @@ describe("WhatsApp API site copy", () => {
     const overview = read("whatsapp/pages/OverviewPage.tsx");
     expect(overview).toContain("WhatsApp API.");
     expect(overview).toContain("Built for Your Business.");
-    expect(overview).toContain("Connect your CRM, website, SaaS platform or custom system to WhatsApp");
-    expect(overview).toContain("Connect WhatsApp");
+    expect(overview).toContain("Connect your CRM, website, SaaS platform or custom system to WhatsApp using API & Webhooks.");
+    expect(overview).toContain("Built on Meta's WhatsApp Cloud API");
+    expect(overview).toContain('start: "Get Started"');
     expect(overview).toContain("Explore API");
+    expect(overview).toContain("Start for $29");
     expect(overview).toContain("/month per number");
     expect(read("whatsapp/siteConfig.tsx")).toMatch(/PRICE_PER_NUMBER_USD\s*=\s*29\b/);
     expect(overview).toContain("Meta messaging fees are billed separately.");
@@ -32,8 +34,7 @@ describe("WhatsApp API site copy", () => {
   it("shows the three benefits and the included plan features", () => {
     const overview = read("whatsapp/pages/OverviewPage.tsx");
     for (const text of [
-      "Official WhatsApp Cloud API",
-      "Integration using Meta's official Cloud API.",
+      "Built on Meta's Cloud API",
       "Connect Your Existing Systems",
       "Connect your CRM, website or custom application using our API.",
       "Transparent Pricing",
@@ -43,8 +44,47 @@ describe("WhatsApp API site copy", () => {
       "Message templates",
       "Management dashboard",
       "Performance analytics",
+      "Documentation & OpenAPI",
     ]) {
       expect(overview).toContain(text);
+    }
+  });
+
+  it("states the pricing terms and the one-number scope", () => {
+    const pricing = read("whatsapp/pages/PricingPage.tsx");
+    for (const text of [
+      "Start for $29",
+      "One subscription = one WhatsApp number",
+      "Meta messaging fees are separate",
+      "No free trial",
+      "Taxes may apply where required",
+      "Documentation, OpenAPI spec and code samples",
+    ]) {
+      expect(pricing).toContain(text);
+    }
+    expect(site).not.toMatch(/wallet|auto[- ]?funding/i);
+  });
+
+  it("does not call the integration official", () => {
+    expect(site).not.toMatch(/\bofficial\b|הרשמי|\boficial\b|الرسمية/i);
+  });
+
+  it("answers the required Help Center questions", () => {
+    const help = read("whatsapp/pages/HelpPage.tsx");
+    for (const q of [
+      "What is the WhatsApp Business API?",
+      "Do I need a developer?",
+      "Can I use my existing number?",
+      "What does $29 include?",
+      "What does Meta charge separately?",
+      "Can I connect my CRM?",
+      "Can I connect my own SaaS product?",
+      "How do API keys work?",
+      "How do webhooks work?",
+      "Can I manage multiple numbers?",
+      "Can agencies use Bizuply?",
+    ]) {
+      expect(help).toContain(q);
     }
   });
 
@@ -61,7 +101,7 @@ describe("WhatsApp API site copy", () => {
       expect(shell).toContain(`case "${route}"`);
     }
     const chrome = read("whatsapp/SiteChrome.tsx");
-    for (const label of ["Overview", "Developers", "Agencies", "Pricing", "Documentation", "Help Center", "Log in", "Get started"]) {
+    for (const label of ["Overview", "Developers", "Agencies", "Pricing", "Documentation", "Help Center", "Log in", "Get Started"]) {
       expect(chrome).toContain(`"${label}"`);
     }
   });

@@ -2,9 +2,9 @@ import React, { Suspense, lazy, useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  WHATSAPP_CANONICAL_URL,
+  WHATSAPP_NOT_FOUND_META,
+  WHATSAPP_OG_IMAGE,
   WHATSAPP_PRODUCT_SCHEMA,
-  WHATSAPP_SEO_DESCRIPTION,
   WHATSAPP_SEO_KEYWORDS,
   getWhatsAppPageMeta,
   whatsappCanonicalUrl,
@@ -113,9 +113,9 @@ function SiteRoutes({ lang }: { lang: string }) {
     };
   }, [location.pathname, location.hash]);
 
-  const title = meta?.title || "Page not found | Bizuply WhatsApp API";
-  const description = meta?.description || WHATSAPP_SEO_DESCRIPTION;
-  const canonical = meta ? whatsappCanonicalUrl(path) : WHATSAPP_CANONICAL_URL;
+  const title = meta?.title || WHATSAPP_NOT_FOUND_META.title;
+  const description = meta?.description || WHATSAPP_NOT_FOUND_META.description;
+  const canonical = meta ? whatsappCanonicalUrl(path) : "";
 
   let page: React.ReactNode;
   switch (path) {
@@ -151,10 +151,15 @@ function SiteRoutes({ lang }: { lang: string }) {
     document.title = title;
     setHeadTag("meta", "name", "description", description);
     setHeadTag("meta", "name", "robots", meta ? "index, follow" : "noindex, follow");
-    setHeadTag("link", "rel", "canonical", canonical);
+    if (canonical) {
+      setHeadTag("link", "rel", "canonical", canonical);
+      setHeadTag("meta", "property", "og:url", canonical);
+    } else {
+      removeHeadTag("link", "rel", "canonical");
+      removeHeadTag("meta", "property", "og:url");
+    }
     setHeadTag("meta", "property", "og:title", title);
     setHeadTag("meta", "property", "og:description", description);
-    setHeadTag("meta", "property", "og:url", canonical);
     setHeadTag("meta", "name", "twitter:title", title);
     setHeadTag("meta", "name", "twitter:description", description);
   }, [title, description, canonical, meta]);
@@ -178,6 +183,10 @@ function setHeadTag(tag: "meta" | "link", key: "name" | "property" | "rel", keyV
     document.head.appendChild(node);
   }
   node.setAttribute(tag === "link" ? "href" : "content", value);
+}
+
+function removeHeadTag(tag: "meta" | "link", key: "name" | "property" | "rel", keyValue: string) {
+  document.head.querySelectorAll(`${tag}[${key}="${keyValue}"]`).forEach((node) => node.remove());
 }
 
 function ensureLink(rel: string, href: string, crossOrigin?: string) {
@@ -219,6 +228,11 @@ export default function WhatsAppApiLanding() {
     setHeadTag("meta", "property", "og:site_name", "Bizuply WhatsApp API");
     setHeadTag("meta", "property", "og:locale", "en_US");
     setHeadTag("meta", "name", "twitter:card", "summary_large_image");
+    setHeadTag("meta", "property", "og:image", WHATSAPP_OG_IMAGE.url);
+    setHeadTag("meta", "property", "og:image:width", String(WHATSAPP_OG_IMAGE.width));
+    setHeadTag("meta", "property", "og:image:height", String(WHATSAPP_OG_IMAGE.height));
+    setHeadTag("meta", "property", "og:image:alt", WHATSAPP_OG_IMAGE.alt);
+    setHeadTag("meta", "name", "twitter:image", WHATSAPP_OG_IMAGE.url);
     setHeadTag("meta", "name", "theme-color", BG);
     ensureLink("preconnect", "https://fonts.googleapis.com");
     ensureLink("preconnect", "https://fonts.gstatic.com", "");

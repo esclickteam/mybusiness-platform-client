@@ -11,7 +11,6 @@ import {
   Fingerprint,
   KeyRound,
   Lock,
-  Network,
   Plug,
   ReceiptText,
   RefreshCw,
@@ -28,7 +27,7 @@ type HeroCopy = {
   eyebrow: string;
   lines: [string, string];
   lead: string;
-  connect: string;
+  start: string;
   explore: string;
   priceUnit: string;
   metaNote: string;
@@ -36,46 +35,46 @@ type HeroCopy = {
 
 const HERO: Record<string, HeroCopy> = {
   en: {
-    eyebrow: "Official WhatsApp Cloud API",
+    eyebrow: "Built on Meta's WhatsApp Cloud API",
     lines: ["WhatsApp API.", "Built for Your Business."],
-    lead: "Connect your CRM, website, SaaS platform or custom system to WhatsApp with a clean REST API and signed webhooks.",
-    connect: "Connect WhatsApp",
+    lead: "Connect your CRM, website, SaaS platform or custom system to WhatsApp using API & Webhooks.",
+    start: "Get Started",
     explore: "Explore API",
     priceUnit: "/month per number",
     metaNote: "Meta messaging fees are billed separately.",
   },
   he: {
-    eyebrow: "WhatsApp Cloud API הרשמי",
+    eyebrow: "מבוסס על WhatsApp Cloud API של Meta",
     lines: ["WhatsApp API.", "נבנה עבור העסק שלכם."],
-    lead: "חברו CRM, אתר, פלטפורמת SaaS או מערכת מותאמת ל-WhatsApp באמצעות REST API פשוט ו-Webhooks חתומים.",
-    connect: "חיבור WhatsApp",
+    lead: "חברו CRM, אתר, פלטפורמת SaaS או מערכת מותאמת ל-WhatsApp באמצעות API ו-Webhooks.",
+    start: "התחילו עכשיו",
     explore: "גלו את ה-API",
     priceUnit: "לחודש לכל מספר",
     metaNote: "עלויות ההודעות של Meta מחויבות בנפרד.",
   },
   es: {
-    eyebrow: "WhatsApp Cloud API oficial",
+    eyebrow: "Basada en WhatsApp Cloud API de Meta",
     lines: ["WhatsApp API.", "Diseñada para su negocio."],
-    lead: "Conecte su CRM, sitio web, plataforma SaaS o sistema propio a WhatsApp con una API REST clara y webhooks firmados.",
-    connect: "Conectar WhatsApp",
+    lead: "Conecte su CRM, sitio web, plataforma SaaS o sistema propio a WhatsApp mediante API y webhooks.",
+    start: "Empezar",
     explore: "Explorar la API",
     priceUnit: "/mes por número",
     metaNote: "Las tarifas de mensajería de Meta se facturan por separado.",
   },
   "pt-BR": {
-    eyebrow: "WhatsApp Cloud API oficial",
+    eyebrow: "Baseada na WhatsApp Cloud API da Meta",
     lines: ["WhatsApp API.", "Feita para o seu negócio."],
-    lead: "Conecte seu CRM, site, plataforma SaaS ou sistema próprio ao WhatsApp com uma API REST clara e webhooks assinados.",
-    connect: "Conectar WhatsApp",
+    lead: "Conecte seu CRM, site, plataforma SaaS ou sistema próprio ao WhatsApp por meio de API e webhooks.",
+    start: "Começar",
     explore: "Explorar a API",
     priceUnit: "/mês por número",
     metaNote: "As tarifas de mensagens da Meta são cobradas separadamente.",
   },
   ar: {
-    eyebrow: "WhatsApp Cloud API الرسمية",
+    eyebrow: "مبنية على WhatsApp Cloud API من Meta",
     lines: ["WhatsApp API.", "مصممة لأعمالك."],
-    lead: "اربط نظام CRM أو موقعك أو منصة SaaS أو نظامك الخاص بـ WhatsApp عبر REST API واضحة وWebhooks موقّعة.",
-    connect: "ربط WhatsApp",
+    lead: "اربط نظام CRM أو موقعك أو منصة SaaS أو نظامك الخاص بـ WhatsApp عبر API وWebhooks.",
+    start: "ابدأ الآن",
     explore: "استكشف الواجهة",
     priceUnit: "شهريًا لكل رقم",
     metaNote: "رسوم المراسلة من Meta تُحتسب بشكل منفصل.",
@@ -87,8 +86,8 @@ const TRUST = ["REST + OpenAPI 3.0", "HMAC-signed webhooks", "Idempotent sends"]
 const BENEFITS = [
   {
     icon: BadgeCheck,
-    title: "Official WhatsApp Cloud API",
-    text: "Integration using Meta's official Cloud API.",
+    title: "Built on Meta's Cloud API",
+    text: "Messages go through Meta's WhatsApp Cloud API, with numbers connected via Meta Embedded Signup.",
   },
   {
     icon: Workflow,
@@ -108,6 +107,7 @@ const PLAN_INCLUDES = [
   "Message templates",
   "Management dashboard",
   "Performance analytics",
+  "Documentation & OpenAPI",
 ];
 
 const ONBOARDING = [
@@ -139,7 +139,7 @@ export default function OverviewPage({ lang }: { lang: string }) {
                 {hero.eyebrow}
               </p>
               <h1 id="wa-hero-title" className="wa-display">
-                {hero.lines[0]}
+                <bdi dir="ltr">{hero.lines[0]}</bdi>
                 <br />
                 <span className="wa-accent">{hero.lines[1]}</span>
               </h1>
@@ -153,7 +153,7 @@ export default function OverviewPage({ lang }: { lang: string }) {
               </div>
               <div className="wa-actions">
                 <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
-                  {hero.connect} <ArrowRight size={16} aria-hidden="true" />
+                  {hero.start} <ArrowRight size={16} aria-hidden="true" />
                 </SiteLink>
                 <SiteLink to="/docs" className="wa-btn wa-btn-ghost wa-btn-lg">
                   <Code2 size={16} aria-hidden="true" /> {hero.explore}
@@ -204,11 +204,11 @@ export default function OverviewPage({ lang }: { lang: string }) {
         </div>
       </section>
 
-      <section {...en} className="wa-section" aria-labelledby="wa-official">
+      <section {...en} className="wa-section" aria-labelledby="wa-meta">
         <div className="wa-wrap wa-split wa-reveal">
           <div>
-            <p className="wa-eyebrow">Official integration</p>
-            <h2 id="wa-official" className="wa-h2">Built on the official WhatsApp Cloud API.</h2>
+            <p className="wa-eyebrow">Meta integration</p>
+            <h2 id="wa-meta" className="wa-h2">Built on Meta's WhatsApp Cloud API.</h2>
             <p className="wa-lead">
               Every message is sent through Meta's WhatsApp Cloud API. Bizuply handles the Meta connection and gives your
               systems a simpler, stable API, so your code never touches Meta access tokens.
@@ -374,9 +374,9 @@ export default function OverviewPage({ lang }: { lang: string }) {
               </ul>
               <div className="wa-actions">
                 <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
-                  Connect WhatsApp <ArrowRight size={16} aria-hidden="true" />
+                  Start for $29 <ArrowRight size={16} aria-hidden="true" />
                 </SiteLink>
-                <SiteLink to="/pricing" className="wa-btn wa-btn-ghost wa-btn-lg">Pricing details</SiteLink>
+                <SiteLink to="/pricing" className="wa-link">Pricing details <ArrowRight size={14} aria-hidden="true" /></SiteLink>
               </div>
             </article>
             <div className="wa-plan-side">
@@ -488,8 +488,8 @@ export default function OverviewPage({ lang }: { lang: string }) {
               <div className="wa-card-icon"><Building2 size={20} aria-hidden="true" /></div>
               <h3 className="wa-h3">Agencies and software companies</h3>
               <p>
-                Connect each client's WhatsApp number with its own isolated API key and webhook, then plug it into the
-                systems you build for them.
+                Connect a client's WhatsApp number with its own subscription, isolated API key and webhook, then plug it
+                into the systems you build for them. Multi-client management is coming later.
               </p>
               <div className="wa-actions">
                 <SiteLink to="/agencies" className="wa-link">Bizuply for Agencies <ArrowRight size={14} aria-hidden="true" /></SiteLink>
@@ -508,9 +508,9 @@ export default function OverviewPage({ lang }: { lang: string }) {
             </div>
             <div className="wa-actions">
               <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
-                <Network size={16} aria-hidden="true" /> Connect WhatsApp
+                Get Started <ArrowRight size={16} aria-hidden="true" />
               </SiteLink>
-              <SiteLink to="/docs" className="wa-btn wa-btn-ghost">Explore API</SiteLink>
+              <SiteLink to="/docs" className="wa-link">Explore API <ArrowRight size={14} aria-hidden="true" /></SiteLink>
             </div>
           </div>
         </div>

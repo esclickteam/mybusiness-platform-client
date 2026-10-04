@@ -16,10 +16,22 @@ export const WHATSAPP_SEO_TITLE =
   "WhatsApp API for Developers, Agencies & Businesses | Bizuply";
 
 export const WHATSAPP_SEO_DESCRIPTION =
-  "Connect WhatsApp to your CRM, website, SaaS platform or custom system through the official WhatsApp Cloud API. API keys, signed webhooks, template management. $29/month per WhatsApp number; Meta messaging charges are separate.";
+  "WhatsApp Business API built on Meta's WhatsApp Cloud API. Connect your CRM, website, SaaS platform or custom system with API keys, signed webhooks and template management. $29/month per WhatsApp number; Meta messaging charges are separate.";
 
 export const WHATSAPP_SEO_KEYWORDS =
-  "WhatsApp API, official WhatsApp Cloud API, Embedded Signup, WhatsApp API provider, WhatsApp API for developers, WhatsApp API for agencies, WhatsApp webhooks, WhatsApp template messages";
+  "WhatsApp API, WhatsApp Business API, WhatsApp Cloud API, Embedded Signup, WhatsApp API provider, WhatsApp API for developers, WhatsApp API for agencies, WhatsApp webhooks, WhatsApp template messages";
+
+export const WHATSAPP_OG_IMAGE = {
+  url: `${WHATSAPP_CANONICAL_URL}whatsapp-og.png`,
+  width: 1200,
+  height: 630,
+  alt: "Bizuply WhatsApp API: $29/month per WhatsApp number. Meta messaging fees billed separately.",
+};
+
+export const WHATSAPP_NOT_FOUND_META = {
+  title: "Page not found | Bizuply WhatsApp API",
+  description: "This page doesn't exist on the Bizuply WhatsApp API site. Try the overview, documentation or Help Center.",
+};
 
 export const WHATSAPP_PRODUCT_SCHEMA = {
   "@context": "https://schema.org",
@@ -77,7 +89,7 @@ export const WHATSAPP_PAGES = {
       "Answers about onboarding, Meta verification, phone numbers, templates, billing and the WhatsApp API, plus how to reach Bizuply support.",
   },
   "/get-started": {
-    title: "Connect WhatsApp | Bizuply WhatsApp API",
+    title: "Get Started | Bizuply WhatsApp API",
     description:
       "What to expect when you connect a WhatsApp number through Meta Embedded Signup, which Meta checks apply, and how to request onboarding.",
   },

@@ -1,5 +1,5 @@
 import React from "react";
-import { Database, Fingerprint, Gauge, KeyRound, Lock, Mail, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Database, Fingerprint, Gauge, KeyRound, Lock, Mail, ShieldCheck, Users } from "lucide-react";
 import { PRIVACY_URL, SUPPORT_EMAIL, SiteLink, TERMS_URL } from "../siteConfig";
 import { Callout, SectionHead } from "../ui";
 
@@ -11,6 +11,7 @@ const CONTROLS = [
       "Keys are generated randomly and shown in full only once, when you create them.",
       "Only a SHA-256 hash and a short visible prefix are stored, never the key itself.",
       "Revoking or regenerating a key takes effect immediately.",
+      "The API is served over HTTPS, so keys and message data are encrypted in transit.",
       "A dashboard key can list templates, send messages, and read delivery status.",
     ],
   },
@@ -148,6 +149,23 @@ export default function SecurityPage() {
               Business terms and policies.
             </p>
           </article>
+        </div>
+      </section>
+
+      <section className="wa-section is-tight">
+        <div className="wa-wrap">
+          <div className="wa-cta">
+            <div>
+              <h2 className="wa-h2">Review the API before you connect.</h2>
+              <p className="wa-lead">Authentication, webhook signing and error handling are documented in full.</p>
+            </div>
+            <div className="wa-actions">
+              <SiteLink to="/docs" className="wa-btn wa-btn-primary">
+                Explore API <ArrowRight size={16} aria-hidden="true" />
+              </SiteLink>
+              <SiteLink to="/get-started" className="wa-link">Get Started <ArrowRight size={14} aria-hidden="true" /></SiteLink>
+            </div>
+          </div>
         </div>
       </section>
     </>

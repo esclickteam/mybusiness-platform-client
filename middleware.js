@@ -18,11 +18,10 @@ import {
   isBizuplyTravelHost,
 } from "./src/lib/travelHost.mjs";
 import {
-  WHATSAPP_CANONICAL_URL,
+  WHATSAPP_NOT_FOUND_META,
+  WHATSAPP_OG_IMAGE,
   WHATSAPP_PRODUCT_SCHEMA,
-  WHATSAPP_SEO_DESCRIPTION,
   WHATSAPP_SEO_KEYWORDS,
-  WHATSAPP_SEO_TITLE,
   buildWhatsAppSitemapXml,
   getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
@@ -487,25 +486,40 @@ function escapeHtmlAttr(value) {
 
 function whatsappHeadHtml(pathname) {
   const page = getWhatsAppPageMeta(pathname);
-  const title = escapeHtmlAttr(page?.title || WHATSAPP_SEO_TITLE);
-  const description = escapeHtmlAttr(page?.description || WHATSAPP_SEO_DESCRIPTION);
-  const canonical = page ? whatsappCanonicalUrl(pathname) : WHATSAPP_CANONICAL_URL;
+  const title = escapeHtmlAttr(page?.title || WHATSAPP_NOT_FOUND_META.title);
+  const description = escapeHtmlAttr(page?.description || WHATSAPP_NOT_FOUND_META.description);
+  const canonical = page ? whatsappCanonicalUrl(pathname) : "";
+  const image = escapeHtmlAttr(WHATSAPP_OG_IMAGE.url);
+  const imageAlt = escapeHtmlAttr(WHATSAPP_OG_IMAGE.alt);
   return [
     `<title>${title}</title>`,
     `<meta name="description" content="${description}" />`,
     `<meta name="keywords" content="${escapeHtmlAttr(WHATSAPP_SEO_KEYWORDS)}" />`,
     `<meta name="robots" content="${page ? "index, follow" : "noindex, follow"}" />`,
-    `<link rel="canonical" href="${canonical}" />`,
+    canonical ? `<link rel="canonical" href="${canonical}" />` : "",
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:url" content="${canonical}" />`,
+    `<meta property="og:site_name" content="Bizuply WhatsApp API" />`,
+    canonical ? `<meta property="og:url" content="${canonical}" />` : "",
     `<meta property="og:locale" content="en_US" />`,
+    `<meta property="og:image" content="${image}" />`,
+    `<meta property="og:image:width" content="${WHATSAPP_OG_IMAGE.width}" />`,
+    `<meta property="og:image:height" content="${WHATSAPP_OG_IMAGE.height}" />`,
+    `<meta property="og:image:alt" content="${imageAlt}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${title}" />`,
     `<meta name="twitter:description" content="${description}" />`,
-    `<script id="wa-product-schema" type="application/ld+json">${JSON.stringify(WHATSAPP_PRODUCT_SCHEMA).replace(/</g, "\\u003c")}</script>`,
-  ].join("\n");
+    `<meta name="twitter:image" content="${image}" />`,
+    `<link rel="icon" href="/favicon.ico" sizes="any" />`,
+    `<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />`,
+    `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png" />`,
+    page
+      ? `<script id="wa-product-schema" type="application/ld+json">${JSON.stringify(WHATSAPP_PRODUCT_SCHEMA).replace(/</g, "\\u003c")}</script>`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function whatsappSeoFile(pathname) {
@@ -529,8 +543,9 @@ async function handleWhatsAppDocument(request) {
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
-    return new Response(injectSeoHead(html, whatsappHeadHtml(getPathname(request))), {
-      status: 200,
+    const pathname = getPathname(request);
+    return new Response(injectSeoHead(html, whatsappHeadHtml(pathname)), {
+      status: getWhatsAppPageMeta(pathname) ? 200 : 404,
       headers: {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "public, max-age=0, must-revalidate",

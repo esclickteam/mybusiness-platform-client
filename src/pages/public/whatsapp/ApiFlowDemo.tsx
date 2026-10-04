@@ -38,7 +38,7 @@ const STEPS: Step[] = [
   {
     short: "Bizuply processes",
     title: "Bizuply validates and forwards the send",
-    text: "The API key, template approval and variable count are checked, the Idempotency-Key is recorded, and the message is sent through the official WhatsApp Cloud API.",
+    text: "The API key, template approval and variable count are checked, the Idempotency-Key is recorded, and the message is sent through Meta's WhatsApp Cloud API.",
     from: 1,
     to: 2,
     active: [1, 2],

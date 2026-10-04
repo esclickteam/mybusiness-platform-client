@@ -320,7 +320,9 @@ export default function MetaCostCalculator({
         </div>
         {quote?.stale ? <p className={alert}>{t("whatsapp.metaCosts.stale")}</p> : null}
         {refreshError || cardNote === "failed" ? (
-          <p className={alert}>{refreshError || t("whatsapp.metaCosts.refreshFailed")}</p>
+          <p className={alert}>
+            {publicTheme ? t("whatsapp.metaCosts.refreshFailed") : refreshError || t("whatsapp.metaCosts.refreshFailed")}
+          </p>
         ) : null}
         {cardNote === "bundled" && !quote?.stale ? (
           <p className={muted}>{t("whatsapp.metaCosts.usingBundled")}</p>
