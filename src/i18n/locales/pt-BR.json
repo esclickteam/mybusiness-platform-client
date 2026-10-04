@@ -8688,6 +8688,8 @@
       "usingManagedTitle": "Você está usando o BizUply Managed WhatsApp",
       "usingManagedBody": "As automações podem ser enviadas pelo número central da BizUply. Você também pode conectar o número do WhatsApp dessa empresa que não desconecte ou altere o WhatsApp gerenciado.",
       "connectOwnIntro": "Para conectar o número do WhatsApp dessa empresa (WABA separado), continue aqui. A conexão privada é armazenada apenas para este negócio.",
+      "apiProductTitle": "Sua WhatsApp Business API",
+      "apiProductBody": "Sua assinatura inclui um número de WhatsApp. Conecte o número da sua empresa pela Meta para começar a enviar mensagens com sua chave de API.",
       "connectOwnCta": "Conecte o número do WhatsApp desta empresa",
       "managedHostTitle": "Conexão gerenciada pela plataforma (gerenciada pela BizUply)",
       "managedHostBody": "O número mostrado é a conexão central da plataforma. Uma empresa cliente que quer seu próprio número conecta-o das configurações dessa empresa - não aqui.",

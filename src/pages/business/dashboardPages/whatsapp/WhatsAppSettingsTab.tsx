@@ -38,6 +38,7 @@ import {
 } from "../../../../api/whatsappApi";
 import { registrationFailureMessage } from "./whatsappStatusUx";
 import WhatsAppApiSetupGuide from "./WhatsAppApiSetupGuide";
+import { useAuth } from "../../../../context/AuthContext";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
@@ -144,6 +145,8 @@ function readinessTone(connection: WhatsAppConnection | null) {
 
 export default function WhatsAppSettingsTab() {
   const { t, i18n } = useTranslation();
+  const { user: authUser } = useAuth() as { user?: { subscriptionPlan?: string } | null };
+  const isStandaloneApiAccount = authUser?.subscriptionPlan === "whatsapp_api";
   const visualQa = useWhatsAppVisualQaOverride();
   const outlet = useOutletContext<OutletCtx | undefined>();
   const businessId = visualQa?.connection ? "visual-qa-biz" : outlet?.businessId;
@@ -924,7 +927,8 @@ export default function WhatsAppSettingsTab() {
   const isPlatformManaged = Boolean(connection?.isPlatformManagedConnection);
   const canDisconnect = connection?.canDisconnect !== false && !isPlatformManaged;
   const canConnectOwn = connection?.canConnectOwnNumber !== false && !isPlatformManaged;
-  const usingManagedWithoutPrivate = Boolean(connection?.usingManagedWithoutPrivate);
+  const usingManagedWithoutPrivate =
+    Boolean(connection?.usingManagedWithoutPrivate) && !isStandaloneApiAccount;
   const readyToSend = Boolean(connection?.readyToSend);
   const needsRegistration = Boolean(
     linked &&
@@ -978,6 +982,15 @@ export default function WhatsAppSettingsTab() {
                 </p>
                 <p className="mt-1 text-emerald-800">
                   {t("whatsapp.settings.usingManagedBody")}
+                </p>
+              </div>
+            ) : isStandaloneApiAccount ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-900">
+                <p className="font-black">
+                  {t("whatsapp.settings.apiProductTitle")}
+                </p>
+                <p className="mt-1 text-emerald-800">
+                  {t("whatsapp.settings.apiProductBody")}
                 </p>
               </div>
             ) : null}
