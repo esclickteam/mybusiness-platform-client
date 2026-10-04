@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import { useWhatsAppHubContext } from "../../../dev/useWhatsAppHubContext";
@@ -18,31 +18,42 @@ type CheckoutReturn = "processing" | "activated" | "delayed" | null;
 export default function WhatsAppBillingTab() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { connection, businessId } = useWhatsAppHubContext();
   const { user, refreshUser } = useAuth();
   const apiPortal = isWhatsAppApiPortalUser(user);
   const { access, loading, reload, setAccess } = useWhatsAppApiSubscription(businessId, apiPortal);
 
-  const [awaitingCheckout] = useState(() => apiPortal && searchParams.get("checkout") === "whatsapp_api");
   const [timedOut, setTimedOut] = useState(false);
   const polls = useRef(0);
   const finished = useRef(false);
   const activeNow = Boolean(access?.subscription?.active);
-  const checkoutReturn: CheckoutReturn = !awaitingCheckout
-    ? null
-    : activeNow
+  const checkoutParam = apiPortal && searchParams.get("checkout") === "whatsapp_api";
+  // Survives the remount that refreshing the account causes after activation.
+  const activatedState = apiPortal && (location.state as { waApiCheckout?: string } | null)?.waApiCheckout === "activated";
+  const checkoutReturn: CheckoutReturn = activatedState
+    ? activeNow
       ? "activated"
-      : timedOut
-        ? "delayed"
-        : "processing";
+      : null
+    : !checkoutParam
+      ? null
+      : activeNow
+        ? "activated"
+        : timedOut
+          ? "delayed"
+          : "processing";
 
   useEffect(() => {
-    if (checkoutReturn === "activated" && !finished.current) {
+    if (checkoutParam && activeNow && !finished.current) {
       finished.current = true;
       const next = new URLSearchParams(searchParams);
       next.delete("checkout");
-      setSearchParams(next, { replace: true });
+      const search = next.toString();
+      navigate(
+        { pathname: location.pathname, search: search ? `?${search}` : "" },
+        { replace: true, state: { waApiCheckout: "activated" } }
+      );
       Promise.resolve(refreshUser?.(true)).catch(() => {});
       return undefined;
     }
@@ -53,7 +64,7 @@ export default function WhatsAppBillingTab() {
       else reload();
     }, CHECKOUT_POLL_MS);
     return () => window.clearTimeout(timer);
-  }, [access, checkoutReturn, loading, refreshUser, reload, searchParams, setSearchParams]);
+  }, [activeNow, checkoutParam, checkoutReturn, loading, location.pathname, navigate, refreshUser, reload, searchParams]);
 
   const notice =
     checkoutReturn === "activated"
