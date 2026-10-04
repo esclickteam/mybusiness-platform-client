@@ -23053,12 +23053,31 @@
       "detail": {
         "active": "Se renueva el {{date}}.",
         "activeNoDate": "Tu suscripción está activa.",
-        "cancelsAtPeriodEnd": "Cancelada. El acceso continúa hasta el {{date}}; después la API dejará de funcionar.",
+        "cancelsAtPeriodEnd": "Tu suscripción terminará el {{date}}.",
         "pastDueGrace": "Tu último pago falló. Actualiza tu método de pago antes del {{date}} para mantener el acceso.",
         "expired": "El acceso terminó el {{date}}. Renueva para volver a usar la API.",
         "expiredNoDate": "Tu suscripción no está activa. Renueva para volver a usar la API.",
         "none": "No hay ninguna suscripción activa a WhatsApp API en esta cuenta.",
-        "unknown": "No pudimos cargar el estado de tu suscripción. Inténtalo más tarde."
+        "unknown": "No pudimos cargar el estado de tu suscripción. Inténtalo más tarde.",
+        "paymentOverdue": "Tu pago está vencido y el acceso a la API está en pausa. Actualiza tu método de pago para restablecerlo."
+      },
+      "actions": {
+        "reactivate": "Reactivar por $29/mes",
+        "openingCheckout": "Abriendo el pago…",
+        "sameWorkspace": "Reactiva este mismo espacio de trabajo. Tus claves de API, webhooks y conexión de WhatsApp se mantienen.",
+        "resume": "Reanudar suscripción",
+        "resuming": "Reanudando…",
+        "resumeHint": "¿Cambiaste de idea? Reanuda para seguir renovando a $29/mes sin un pago nuevo.",
+        "updatePayment": "Actualizar método de pago",
+        "updatePaymentHint": "Actualiza la tarjeta de la suscripción existente. No se crea una suscripción nueva.",
+        "checkoutInProgress": "Ya se está preparando un pago. Inténtalo de nuevo en un momento.",
+        "alreadyActive": "Tu suscripción ya está activa. Actualiza la página para verla.",
+        "error": "Algo salió mal. Inténtalo de nuevo."
+      },
+      "checkout": {
+        "processing": "Pago recibido. Activando tu suscripción…",
+        "activated": "Tu suscripción a WhatsApp API vuelve a estar activa.",
+        "delayed": "Seguimos esperando la confirmación del pago. Actualiza esta página en un minuto."
       }
     },
     "setup": {

@@ -25,6 +25,8 @@ type Props = {
   businessId: string | null | undefined;
   /** Compact strip for the overview; full card for the billing page. */
   compact?: boolean;
+  /** Billing actions rendered under the card body (full card only). */
+  footer?: React.ReactNode;
 };
 
 export function useSubscriptionCopy(access: WhatsAppApiSubscriptionAccess | null) {
@@ -34,7 +36,13 @@ export function useSubscriptionCopy(access: WhatsAppApiSubscriptionAccess | null
     ? new Date(date).toLocaleDateString(getIntlLocale(i18n.language), { dateStyle: "medium" })
     : "";
   const detailKey =
-    state === "active" && !formatted ? "activeNoDate" : state === "expired" && !formatted ? "expiredNoDate" : state;
+    state === "expired" && access?.actions?.updatePayment
+      ? "paymentOverdue"
+      : state === "active" && !formatted
+        ? "activeNoDate"
+        : state === "expired" && !formatted
+          ? "expiredNoDate"
+          : state;
   return {
     state,
     label: t(`whatsappApiPortal.subscription.state.${state}`),
@@ -42,7 +50,7 @@ export function useSubscriptionCopy(access: WhatsAppApiSubscriptionAccess | null
   };
 }
 
-export default function WhatsAppApiSubscriptionCard({ access, loading, businessId, compact = false }: Props) {
+export default function WhatsAppApiSubscriptionCard({ access, loading, businessId, compact = false, footer }: Props) {
   const { t } = useTranslation();
   const { state, label, detail } = useSubscriptionCopy(access);
   const billingTo = businessId ? `/business/${businessId}/dashboard/whatsapp/billing` : "#";
@@ -110,6 +118,7 @@ export default function WhatsAppApiSubscriptionCard({ access, loading, businessI
           <li>{t("whatsappApiPortal.subscription.includes.metaCosts")}</li>
         </ul>
       ) : null}
+      {!compact && !loading ? footer : null}
     </section>
   );
 }

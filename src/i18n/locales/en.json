@@ -23388,12 +23388,31 @@
       "detail": {
         "active": "Renews on {{date}}.",
         "activeNoDate": "Your subscription is active.",
-        "cancelsAtPeriodEnd": "Cancelled. Access continues until {{date}}, then the API stops working.",
+        "cancelsAtPeriodEnd": "Your subscription will end on {{date}}.",
         "pastDueGrace": "Your last payment failed. Update your payment method before {{date}} to keep access.",
         "expired": "Access ended on {{date}}. Renew to use the API again.",
         "expiredNoDate": "Your subscription is not active. Renew to use the API again.",
         "none": "There is no active WhatsApp API subscription on this account.",
-        "unknown": "We couldn't load your subscription status. Try again later."
+        "unknown": "We couldn't load your subscription status. Try again later.",
+        "paymentOverdue": "Your payment is overdue and API access is paused. Update your payment method to restore it."
+      },
+      "actions": {
+        "reactivate": "Reactivate for $29/month",
+        "openingCheckout": "Opening checkout…",
+        "sameWorkspace": "Reactivates this same workspace. Your API keys, webhooks and WhatsApp connection stay as they are.",
+        "resume": "Resume subscription",
+        "resuming": "Resuming…",
+        "resumeHint": "Changed your mind? Resume to keep renewing at $29/month with no new checkout.",
+        "updatePayment": "Update payment method",
+        "updatePaymentHint": "Update your card on the existing subscription. No new subscription is created.",
+        "checkoutInProgress": "A checkout is already being prepared. Try again in a moment.",
+        "alreadyActive": "Your subscription is already active. Refresh the page to see it.",
+        "error": "Something went wrong. Please try again."
+      },
+      "checkout": {
+        "processing": "Payment received. Activating your subscription…",
+        "activated": "Your WhatsApp API subscription is active again.",
+        "delayed": "We're still waiting for the payment confirmation. Refresh this page in a minute."
       }
     },
     "setup": {
