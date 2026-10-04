@@ -70,6 +70,16 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
     a: "In the standard setup, Meta bills messaging charges to the payment method on your WhatsApp Business Account. Use the cost calculator on the Pricing page to estimate them.",
   },
   {
+    topic: "Billing",
+    q: "What happens if I cancel?",
+    a: "You can cancel from your dashboard at any time. Your WhatsApp API access keeps working until the end of the period you've already paid for, and you can resume the subscription before then. After the paid period ends, API access stops until you subscribe again. Meta's charges for messages already sent are billed by Meta as usual.",
+  },
+  {
+    topic: "Billing",
+    q: "What happens if payment fails?",
+    a: "If a renewal payment fails, your access continues for a short grace period while you update your payment method. If the payment still hasn't gone through when the grace period ends, WhatsApp API access is paused until the subscription is paid.",
+  },
+  {
     topic: "API & webhooks",
     q: "Where do I get an API key?",
     a: "In the dashboard under WhatsApp → API / Developers. The key is shown once. If you lose it, regenerate it; the previous key stops working immediately.",
