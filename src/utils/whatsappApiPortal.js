@@ -33,6 +33,29 @@ export function whatsappApiPortalHome(businessId) {
   return `/business/${businessId}/dashboard/whatsapp/overview`;
 }
 
+export function whatsappApiPortalBillingPath(businessId) {
+  return `/business/${businessId}/dashboard/whatsapp/billing`;
+}
+
+/**
+ * Where a business account without access lands. Expired or unpaid API
+ * accounts stay in their portal (to see the state and billing) instead of
+ * the Business Plan pricing page.
+ */
+export function businessNoAccessPath(user) {
+  return isWhatsAppApiPortalUser(user) && user.businessId
+    ? whatsappApiPortalBillingPath(user.businessId)
+    : "/pricing";
+}
+
+/** A portal screen inside the business dashboard (not the public profile). */
+export function isWhatsAppApiPortalDashboardPath(pathname) {
+  return (
+    /^\/business\/[^/]+\/dashboard\/[^/?#]+/.test(String(pathname || "")) &&
+    isWhatsAppApiPortalPathAllowed(pathname)
+  );
+}
+
 export function isWhatsAppApiPortalPathAllowed(pathname) {
   const match = String(pathname || "").match(
     /\/business\/[^/]+\/dashboard(?:\/([^/?#]+))?(?:\/([^/?#]+))?/

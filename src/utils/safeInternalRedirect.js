@@ -4,8 +4,10 @@
  */
 
 import {
+  isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
+  whatsappApiPortalBillingPath,
   whatsappApiPortalHome,
 } from "./whatsappApiPortal.js";
 
@@ -158,10 +160,9 @@ export function resolvePostLoginDestination({
   storedRedirect = null,
 } = {}) {
   const normalizedRole = String(role || "").toLowerCase();
-  const apiPortal =
+  const portalAccount =
     normalizedRole === "business" &&
     Boolean(businessId) &&
-    hasAccess &&
     isWhatsAppApiPortalUser({ role: normalizedRole, subscriptionPlan });
 
   const preferred =
@@ -170,22 +171,24 @@ export function resolvePostLoginDestination({
 
   if (preferred && isCompatibleRedirect(role, preferred)) {
     const aligned = alignRedirectBusinessId(preferred, businessId) || preferred;
-    if (
-      !apiPortal ||
-      !isGenericAppPath(aligned) ||
-      (aligned.startsWith("/business/") && isWhatsAppApiPortalPathAllowed(aligned))
-    ) {
-      return aligned;
-    }
+    const keep = !portalAccount
+      ? true
+      : hasAccess
+        ? !isGenericAppPath(aligned) ||
+          (aligned.startsWith("/business/") && isWhatsAppApiPortalPathAllowed(aligned))
+        : isWhatsAppApiPortalDashboardPath(aligned);
+    if (keep) return aligned;
   }
 
   const roleHome = roleHomePath(normalizedRole);
   if (roleHome) return roleHome;
 
   if (normalizedRole === "business") {
+    if (portalAccount) {
+      return hasAccess ? whatsappApiPortalHome(businessId) : whatsappApiPortalBillingPath(businessId);
+    }
     if (!hasAccess) return "/pricing";
     if (!businessId) return "/dashboard";
-    if (apiPortal) return whatsappApiPortalHome(businessId);
     const limited = Array.isArray(enabledModules) ? enabledModules : null;
     const isWebsiteOnly =
       Boolean(limited?.includes("website")) &&

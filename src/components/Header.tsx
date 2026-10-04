@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { getTextDirection } from "../i18n/localeUtils";
+import { businessNoAccessPath } from "../utils/whatsappApiPortal";
 import "../styles/SiteHeader.css";
 
 type NavLink = {
@@ -38,7 +39,7 @@ export default function Header() {
     user?.role === "partner"
       ? "/partner/dashboard"
       : user?.role === "business" && !user?.hasAccess
-        ? "/pricing"
+        ? businessNoAccessPath(user)
         : "/dashboard";
 
   const isDashboard =

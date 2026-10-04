@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  businessNoAccessPath,
+  isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
   whatsappApiPortalHome,
@@ -142,7 +144,43 @@ describe("resolvePostLoginDestination for WhatsApp API customers", () => {
     );
   });
 
-  it("keeps the pricing gate for API customers without access", () => {
-    expect(resolvePostLoginDestination({ ...apiUser, hasAccess: false })).toBe("/pricing");
+  it("sends expired API customers to the portal billing page, not Business Plan pricing", () => {
+    const lapsed = { ...apiUser, hasAccess: false };
+    expect(resolvePostLoginDestination(lapsed)).toBe(dash("/whatsapp/billing"));
+    expect(resolvePostLoginDestination({ ...lapsed, storedRedirect: "/pricing" })).toBe(dash("/whatsapp/billing"));
+    expect(resolvePostLoginDestination({ ...lapsed, storedRedirect: dash("/crm/leads") })).toBe(
+      dash("/whatsapp/billing")
+    );
+    expect(resolvePostLoginDestination({ ...lapsed, queryRedirect: dash("/whatsapp/overview") })).toBe(
+      dash("/whatsapp/overview")
+    );
+  });
+
+  it("keeps the pricing gate for every other account without access", () => {
+    for (const subscriptionPlan of ["monthly", "crm_only", "trial", "free"]) {
+      expect(resolvePostLoginDestination({ role: "business", businessId: BIZ, hasAccess: false, subscriptionPlan })).toBe(
+        "/pricing"
+      );
+    }
+  });
+});
+
+describe("no-access landing", () => {
+  it("routes lapsed API accounts to their portal billing page and everyone else to pricing", () => {
+    expect(businessNoAccessPath({ role: "business", businessId: BIZ, subscriptionPlan: "whatsapp_api" })).toBe(
+      dash("/whatsapp/billing")
+    );
+    expect(businessNoAccessPath({ role: "business", businessId: BIZ, subscriptionPlan: "monthly" })).toBe("/pricing");
+    expect(businessNoAccessPath({ role: "business", subscriptionPlan: "whatsapp_api" })).toBe("/pricing");
+    expect(businessNoAccessPath(null)).toBe("/pricing");
+  });
+
+  it("lets lapsed API accounts stay only on portal screens inside the dashboard", () => {
+    for (const rest of ["/whatsapp/overview", "/whatsapp/billing", "/whatsapp/connection", "/billing"]) {
+      expect(isWhatsAppApiPortalDashboardPath(dash(rest))).toBe(true);
+    }
+    for (const path of [dash(""), dash("/crm/leads"), dash("/whatsapp/inbox"), `/business/${BIZ}`, "/pricing", "/dashboard"]) {
+      expect(isWhatsAppApiPortalDashboardPath(path)).toBe(false);
+    }
   });
 });
