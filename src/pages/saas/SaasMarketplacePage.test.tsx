@@ -161,7 +161,7 @@ describe("SaaS marketplace page", () => {
     const row = heading.closest("article");
     expect(row).toBeTruthy();
     const card = within(row as HTMLElement);
-    expect(card.getByRole("link", { name: "To the system" }).getAttribute("href")).toBe("/saas/northwind-desk");
+    expect(card.getByRole("link", { name: "More info" }).getAttribute("href")).toBe("/saas/northwind-desk");
     expect(card.getByText(named("Interactive Demo"))).toBeTruthy();
     expect(card.getByText(named("White Label"))).toBeTruthy();
     expect(card.queryByText(named("Partner Model Available"))).toBeNull();

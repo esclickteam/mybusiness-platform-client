@@ -1154,7 +1154,43 @@
 .saas-mobile-dots button.is-on {
   background: #24124d; color: white; border-color: #24124d;
 }
-.saas-feature-grid { display: grid; gap: 10px; margin: 12px 0 18px; padding: 0; list-style: none; }
+.saas-enquiry-story .saas-story-steps {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.saas-story-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: white;
+  border-radius: 18px;
+  padding: 14px 16px;
+  font-weight: 750;
+}
+.saas-story-steps span {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #24124d;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+.saas-product-faq { display: grid; gap: 12px; }
+.saas-product-faq article {
+  background: white;
+  border-radius: 18px;
+  padding: 16px 18px;
+}
+.saas-product-faq h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.saas-product-faq p { margin: 0; color: #475569; font-weight: 650; }
+.saas-audience-frame { min-height: 240px; border-radius: 28px; overflow: hidden; background: #0b1020; }
+.saas-preview-frame { overflow: hidden; border-radius: 28px; background: #0b1020; min-height: 220px; }
 .saas-feature-grid li { border-radius: 18px; background: white; padding: 14px 16px; font-weight: 750; }
 .saas-sticky-cta {
   position: sticky; bottom: 0; z-index: 20; display: flex; gap: 8px; justify-content: center;

@@ -87,7 +87,8 @@ export function isPublicDemoUrl(value?: string) {
       return false;
     }
     const path = `${parsed.pathname}${parsed.search}`;
-    if (parsed.pathname.startsWith("/saas-media/")) return false;
+    const bizuply = host === "bizuply.com" || host.endsWith(".bizuply.com");
+    if (bizuply && parsed.pathname.startsWith("/saas-media/")) return false;
     if (/^\/saas\/[a-z0-9-]+\/demo(?:\?|$)/i.test(path)) return false;
     return true;
   } catch {
@@ -97,6 +98,22 @@ export function isPublicDemoUrl(value?: string) {
 
 function httpUrl(value?: string) {
   return isPublicDemoUrl(value) ? String(value).trim() : "";
+}
+
+const DEMO_LOCALES = new Set(["en", "he", "ar", "es", "pt-BR"]);
+
+export function localizePublicDemoUrl(value?: string, lang?: string) {
+  const url = httpUrl(value);
+  if (!url) return "";
+  const raw = String(lang || "en");
+  const locale = raw === "pt" || raw.startsWith("pt-") ? "pt-BR" : DEMO_LOCALES.has(raw) ? raw : "en";
+  try {
+    const parsed = new URL(url);
+    parsed.pathname = parsed.pathname.replace(/^\/en(?=\/|$)/, `/${locale}`);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }
 
 export function templateExperienceHref(slug: string, mode: "admin" | "customer" | "full") {
@@ -128,17 +145,20 @@ export function isInAppDemo(url?: string) {
   return !value || value.startsWith("/saas/");
 }
 
-export function templateDemoLinks(product: {
-  supportsAdminDemo?: boolean;
-  supportsCustomerDemo?: boolean;
-  demoSelectorUrl?: string;
-  adminDemoUrl?: string;
-  customerDemoUrl?: string;
-}) {
+export function templateDemoLinks(
+  product: {
+    supportsAdminDemo?: boolean;
+    supportsCustomerDemo?: boolean;
+    demoSelectorUrl?: string;
+    adminDemoUrl?: string;
+    customerDemoUrl?: string;
+  },
+  lang?: string
+) {
   const links: TemplateDemoLink[] = [];
-  const admin = httpUrl(product.adminDemoUrl);
-  const customer = httpUrl(product.customerDemoUrl);
-  const explore = httpUrl(product.demoSelectorUrl);
+  const admin = localizePublicDemoUrl(product.adminDemoUrl, lang);
+  const customer = localizePublicDemoUrl(product.customerDemoUrl, lang);
+  const explore = localizePublicDemoUrl(product.demoSelectorUrl, lang);
   if (product.supportsAdminDemo && admin) links.push({ id: "admin", href: admin });
   if (product.supportsCustomerDemo && customer) links.push({ id: "customer", href: customer });
   if (explore) links.push({ id: "explore", href: explore });

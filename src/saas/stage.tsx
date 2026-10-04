@@ -311,13 +311,13 @@ export function ProductRow({
   index?: number;
   onDemo: (product: SaasProduct) => void;
 }) {
-  const { t } = useSaasLocale();
+  const { t, lang } = useSaasLocale();
   const reduce = useReducedMotion();
   const story = useStory(product);
   const live = demoTarget(product);
   const template = isSaasTemplate(product);
   const film = template ? cardFilm(product) : [];
-  const demoLinks = template ? templateDemoLinks(product) : [];
+  const demoLinks = template ? templateDemoLinks(product, lang) : [];
   const badges = template
     ? [
         demoLinks.length ? t("saasMarket.platforms.interactiveDemo") : t("saasMarket.platforms.demoPreparing"),
@@ -370,7 +370,7 @@ export function ProductRow({
             </button>
           ) : null}
           {template ? (
-            <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.toSystem")}</Link>
+            <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.moreInfo")}</Link>
           ) : (
             <Link to={`/saas/${product.slug}`}>{t("saasMarket.platforms.exploreNamed", { name: product.name })}</Link>
           )}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fetchSaasProduct } from "../../saas/api";
 import { SaasSeo, useSaasLocale } from "../../saas/chrome";
-import { isPublicDemoUrl, type SaasProduct } from "../../saas/logic";
+import { localizePublicDemoUrl, type SaasProduct } from "../../saas/logic";
 import "../../saas/saas.css";
 
 const MODES = ["admin", "customer", "full"] as const;
@@ -15,13 +15,12 @@ function modeOf(value: string | null): DemoMode {
 
 /**
  * Bizuply is only the launcher. Cross-site iframes block SameSite=Lax
- * BeautyFlow auth cookies ("Demo login failed"). Prefer top-level navigation
- * into the real BeautyFlow demo host.
+ * demo auth cookies. Prefer top-level navigation into the real hosted demo.
  */
 export default function SaasTemplateDemoPage() {
   const { slug = "" } = useParams();
   const [params, setParams] = useSearchParams();
-  const { t, dir, htmlLang } = useSaasLocale();
+  const { t, dir, htmlLang, lang } = useSaasLocale();
   const mode = modeOf(params.get("mode"));
   const [product, setProduct] = useState<SaasProduct | null>(null);
   const [missing, setMissing] = useState(false);
@@ -55,14 +54,14 @@ export default function SaasTemplateDemoPage() {
       : mode === "customer"
         ? product?.customerDemoUrl
         : product?.demoSelectorUrl;
-  const engine = isPublicDemoUrl(stored) ? String(stored) : "";
+  const engine = localizePublicDemoUrl(stored, lang);
 
   useEffect(() => {
     if (!engine || launching) return;
     setLaunching(true);
     setLaunchError("");
     try {
-      // Top-level navigation so BeautyFlow can set session cookies.
+      // Top-level navigation so the real demo host can set session cookies.
       window.location.replace(engine);
     } catch {
       setLaunchError(t("saasMarket.platforms.demoPreparing"));

@@ -28,6 +28,8 @@ export function useStory(product: SaasProduct) {
   const base = `saasMarket.products.${product.slug}`;
   const features = t(`${base}.features`, { returnObjects: true, defaultValue: product.features || [] });
   const useCases = t(`${base}.useCases`, { returnObjects: true, defaultValue: [] });
+  const rawShowcase = t(`${base}.showcase`, { returnObjects: true, defaultValue: null });
+  const showcase = rawShowcase && typeof rawShowcase === "object" && !Array.isArray(rawShowcase) ? rawShowcase : null;
   return {
     headline: t(`${base}.headline`, { defaultValue: product.headline }),
     subtitle: t(`${base}.subtitle`, { defaultValue: product.subtitle }),
@@ -38,6 +40,32 @@ export function useStory(product: SaasProduct) {
     seoDescription: t(`${base}.seoDescription`, { defaultValue: product.seoDescription || product.shortDescription }),
     features: Array.isArray(features) ? (features as string[]) : product.features || [],
     useCases: Array.isArray(useCases) ? (useCases as string[]) : [],
+    showcase: showcase as {
+      overviewTitle?: string;
+      overview?: string;
+      audienceTitle?: string;
+      audience?: string[];
+      storyTitle?: string;
+      storySubtitle?: string;
+      storySteps?: string[];
+      publicPreviewTitle?: string;
+      publicPreviewBody?: string;
+      adminPreviewTitle?: string;
+      adminPreviewBody?: string;
+      ownerTitle?: string;
+      ownerBody?: string;
+      ownerPoints?: string[];
+      whiteLabelTitle?: string;
+      whiteLabelBody?: string;
+      whiteLabelPoints?: string[];
+      brandingTitle?: string;
+      brandingBody?: string;
+      brandingPoints?: string[];
+      faqTitle?: string;
+      faq?: { q: string; a: string }[];
+      ctaTitle?: string;
+      ctaBody?: string;
+    } | null,
   };
 }
 
@@ -394,9 +422,9 @@ export function TemplateDemoDialog({
   product: SaasProduct | null;
   onClose: () => void;
 }) {
-  const { t } = useSaasLocale();
+  const { t, lang } = useSaasLocale();
   if (!product) return null;
-  const links = templateDemoLinks(product);
+  const links = templateDemoLinks(product, lang);
   const labels = {
     admin: t("saasMarket.templateDemo.admin"),
     customer: t("saasMarket.templateDemo.customer"),
@@ -425,6 +453,8 @@ export function TemplateDemoDialog({
                 <a
                   key={link.id}
                   href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
                   className="rounded-full bg-[#24124d] px-4 py-3 text-center text-sm font-black text-white"
                 >
                   {labels[link.id]}

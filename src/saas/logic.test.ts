@@ -13,6 +13,7 @@ import {
   cardFilm,
   isInAppDemo,
   isPublicDemoUrl,
+  localizePublicDemoUrl,
   templateDemoLinks,
   templateExperienceHref,
   templateShots,
@@ -144,6 +145,28 @@ describe("marketplace stays unlisted", () => {
     expect(isPublicDemoUrl("http://127.0.0.1:3456")).toBe(false);
     expect(isPublicDemoUrl("https://bizuply.com/saas/beautyflow/demo?mode=admin")).toBe(false);
     expect(isPublicDemoUrl("https://bizuply.com/saas-media/beautyflow/dashboard.png")).toBe(false);
+    expect(
+      isPublicDemoUrl("https://web-production-923d7.up.railway.app/saas-media/card-preview.png")
+    ).toBe(true);
+    expect(
+      localizePublicDemoUrl("https://web-production-923d7.up.railway.app/en/demo/enter?role=admin", "he")
+    ).toBe("https://web-production-923d7.up.railway.app/he/demo/enter?role=admin");
+    expect(
+      templateDemoLinks(
+        {
+          supportsAdminDemo: true,
+          supportsCustomerDemo: true,
+          adminDemoUrl: "https://web-production-923d7.up.railway.app/en/demo/enter?role=admin",
+          customerDemoUrl: "https://web-production-923d7.up.railway.app/en/demo/enter?role=customer",
+          demoSelectorUrl: "https://web-production-923d7.up.railway.app/en/demo",
+        },
+        "ar"
+      ).map((link) => link.href)
+    ).toEqual([
+      "https://web-production-923d7.up.railway.app/ar/demo/enter?role=admin",
+      "https://web-production-923d7.up.railway.app/ar/demo/enter?role=customer",
+      "https://web-production-923d7.up.railway.app/ar/demo",
+    ]);
     expect(templateExperienceHref("northwind-desk", "customer")).toBe("/saas/northwind-desk/demo?mode=customer");
     expect(isInAppDemo("/saas/northwind-desk/demo?mode=full")).toBe(true);
     expect(isInAppDemo("https://demo.example/admin")).toBe(false);
