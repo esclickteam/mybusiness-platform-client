@@ -39,6 +39,7 @@ type LoginUser = {
   hasAccess?: boolean;
   mustChangePassword?: boolean;
   isTempPassword?: boolean;
+  subscriptionPlan?: string | null;
 };
 
 type LoginResponse = {
@@ -204,6 +205,17 @@ export default function Login() {
         navigate(`/business/${loggedInUser.businessId}/dashboard/whatsapp/overview?welcome=whatsapp_api`, {
           replace: true,
         });
+        return;
+      }
+
+      if (
+        !queryRedirect &&
+        role === "business" &&
+        loggedInUser?.businessId &&
+        loggedInUser?.subscriptionPlan === "whatsapp_api"
+      ) {
+        clearPostLoginRedirect();
+        navigate(`/business/${loggedInUser.businessId}/dashboard/whatsapp/overview`, { replace: true });
         return;
       }
 
