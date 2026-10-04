@@ -37,6 +37,7 @@ import {
   type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
 import { registrationFailureMessage } from "./whatsappStatusUx";
+import WhatsAppApiSetupGuide from "./WhatsAppApiSetupGuide";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
@@ -953,6 +954,9 @@ export default function WhatsAppSettingsTab() {
 
   return (
     <div className="space-y-4" dir={getTextDirection(i18n.language)}>
+    {!visualQa && !linked ? (
+      <WhatsAppApiSetupGuide businessId={businessId} connected={false} messagesSent={0} />
+    ) : null}
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       <section
         id="whatsapp-connection-settings"
