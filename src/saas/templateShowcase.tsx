@@ -3,15 +3,23 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cardFilm, isPublicDemoUrl, templateShots, type SaasProduct, type SaasScreenshot } from "./logic";
 import { useSaasLocale } from "./chrome";
 
-const PREVIEW_TABS = [
-  { id: "dashboard", label: "dashboard" },
-  { id: "customers", label: "customers" },
-  { id: "bookings", label: "jobs" },
-  { id: "reports", label: "reports" },
-  { id: "branding", label: "branding" },
-] as const;
-
-const GALLERY_ORDER = ["dashboard", "customers", "admin", "reports", "mobile", "settings", "jobs", "services", "properties"];
+const GALLERY_ORDER = [
+  "dashboard",
+  "marketplace",
+  "properties",
+  "customers",
+  "admin",
+  "leads",
+  "enquiry",
+  "reports",
+  "mobile",
+  "settings",
+  "jobs",
+  "services",
+  "search",
+  "property",
+  "investor",
+];
 
 export function CardFilm({ product }: { product: SaasProduct }) {
   const frames = cardFilm(product);
@@ -60,16 +68,21 @@ export function PreviewTabs({ product }: { product: SaasProduct }) {
   const { t } = useSaasLocale();
   const reduce = useReducedMotion();
   const shots = templateShots(product);
-  const available = PREVIEW_TABS.filter((tab) => shots.some((shot) => shot.tab === tab.id));
-  const [active, setActive] = useState(available[0]?.id || "dashboard");
-  if (!available.length) return null;
-  const current = shots.find((shot) => shot.tab === active) || shots[0];
+  const tabs: { id: string; label: string }[] = [];
+  for (const shot of shots) {
+    const id = shot.tab || shot.key || shot.label;
+    if (!id || tabs.some((tab) => tab.id === id)) continue;
+    tabs.push({ id, label: shot.label || id });
+  }
+  const [active, setActive] = useState(tabs[0]?.id || "");
+  if (!tabs.length) return null;
+  const current = shots.find((shot) => (shot.tab || shot.key) === active) || shots[0];
   return (
     <section className="saas-showcase-block" id="preview">
       <p className="saas-kicker">{t("saasMarket.showcase.previewEyebrow")}</p>
       <h2 className="saas-title">{t("saasMarket.showcase.previewTitle")}</h2>
       <div className="saas-preview-tabs" role="tablist">
-        {available.map((tab) => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -78,7 +91,7 @@ export function PreviewTabs({ product }: { product: SaasProduct }) {
             className={tab.id === active ? "is-on" : ""}
             onClick={() => setActive(tab.id)}
           >
-            {t(`saasMarket.screens.${tab.label}`)}
+            {t(`saasMarket.screens.${tab.id}`, { defaultValue: tab.label })}
           </button>
         ))}
       </div>
@@ -96,6 +109,38 @@ export function PreviewTabs({ product }: { product: SaasProduct }) {
         </AnimatePresence>
       </div>
       {current.caption ? <p className="saas-showcase-caption">{current.caption}</p> : null}
+    </section>
+  );
+}
+
+export function AudiencePreview({
+  product,
+  audience,
+  title,
+  body,
+}: {
+  product: SaasProduct;
+  audience: "admin" | "customer";
+  title: string;
+  body?: string;
+}) {
+  const { t } = useSaasLocale();
+  const shot =
+    templateShots(product).find((item) => item.audience === audience) ||
+    (audience === "customer"
+      ? templateShots(product).find((item) => item.key === "marketplace")
+      : templateShots(product).find((item) => item.key === "leads" || item.key === "admin"));
+  if (!shot?.imageUrl) return null;
+  return (
+    <section className="saas-showcase-block" id={audience === "customer" ? "public-preview" : "admin-preview"}>
+      <p className="saas-kicker">
+        {audience === "customer" ? t("saasMarket.showcase.publicPreviewTitle") : t("saasMarket.showcase.adminPreviewTitle")}
+      </p>
+      <h2 className="saas-title">{title}</h2>
+      {body ? <p className="saas-lead">{body}</p> : null}
+      <div className="saas-preview-frame saas-audience-frame">
+        <img src={shot.imageUrl} alt={shot.caption || shot.label} />
+      </div>
     </section>
   );
 }
@@ -120,7 +165,7 @@ export function ScreenshotGallery({ product }: { product: SaasProduct }) {
           {shots.map((shot, index) => (
             <button key={`${shot.key}-${index}`} type="button" className={index === active ? "is-on" : ""} onClick={() => setActive(index)}>
               <img src={shot.imageUrl} alt="" />
-              <span>{shot.label}</span>
+              <span>{t(`saasMarket.screens.${shot.key}`, { defaultValue: shot.label })}</span>
             </button>
           ))}
         </div>
@@ -137,7 +182,7 @@ export function ScreenshotGallery({ product }: { product: SaasProduct }) {
                   return (
                     <button key={`${shot.imageUrl}-${index}`} type="button" onClick={() => { setActive(index); setOpen(index); }}>
                       <img src={shot.imageUrl} alt={shot.caption || shot.label} />
-                      <b>{shot.label}</b>
+                      <b>{t(`saasMarket.screens.${shot.key}`, { defaultValue: shot.label })}</b>
                       {shot.caption ? <span>{shot.caption}</span> : null}
                     </button>
                   );
@@ -309,7 +354,7 @@ export function MobilePreview({ product }: { product: SaasProduct }) {
             className={i === index ? "is-on" : ""}
             onClick={() => setIndex(i)}
           >
-            <span>{shot.label}</span>
+            <span>{t(`saasMarket.screens.${shot.key}`, { defaultValue: shot.label })}</span>
           </button>
         ))}
       </div>

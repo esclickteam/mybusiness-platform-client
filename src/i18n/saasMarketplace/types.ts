@@ -12,6 +12,33 @@ export type SaasCompareRow = {
   license: string;
   exclusive: string;
 };
+export type SaasProductShowcase = {
+  overviewTitle: string;
+  overview: string;
+  audienceTitle: string;
+  audience: string[];
+  storyTitle: string;
+  storySubtitle: string;
+  storySteps: string[];
+  publicPreviewTitle: string;
+  publicPreviewBody: string;
+  adminPreviewTitle: string;
+  adminPreviewBody: string;
+  ownerTitle: string;
+  ownerBody: string;
+  ownerPoints: string[];
+  whiteLabelTitle: string;
+  whiteLabelBody: string;
+  whiteLabelPoints: string[];
+  brandingTitle: string;
+  brandingBody: string;
+  brandingPoints: string[];
+  faqTitle: string;
+  faq: SaasFaq[];
+  ctaTitle: string;
+  ctaBody: string;
+};
+
 export type SaasProductStory = {
   headline: string;
   subtitle: string;
@@ -22,6 +49,7 @@ export type SaasProductStory = {
   seoDescription: string;
   features: string[];
   useCases: string[];
+  showcase?: SaasProductShowcase;
 };
 
 export type SaasMarketCopy = {
@@ -73,6 +101,7 @@ export type SaasMarketCopy = {
     interactiveDemo: string;
     demoPreparing: string;
     watchDemo: string;
+    moreInfo: string;
   };
   showcase: {
     exploreTitle: string;
@@ -86,6 +115,15 @@ export type SaasMarketCopy = {
     mobileTitle: string;
     partnership: string;
     close: string;
+    overviewTitle: string;
+    audienceTitle: string;
+    publicPreviewTitle: string;
+    adminPreviewTitle: string;
+    enquiryTitle: string;
+    ownerTitle: string;
+    brandingTitle: string;
+    faqTitle: string;
+    ctaTitle: string;
   };
   templateDemo: {
     title: string;
