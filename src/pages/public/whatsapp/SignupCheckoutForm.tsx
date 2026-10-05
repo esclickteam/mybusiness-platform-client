@@ -67,8 +67,7 @@ export default function SignupCheckoutForm() {
       if (code === "EMAIL_ALREADY_REGISTERED") {
         setFailure(
           <>
-            This email already has a Bizuply account. <a className="wa-link" href={SIGN_IN_URL}>Log in</a> to subscribe
-            from your dashboard.
+            This email already has an account. <a className="wa-link" href={SIGN_IN_URL}>Log in</a> to continue.
           </>
         );
       } else if (err?.response?.status === 400 && err.response.data?.error) {
@@ -101,7 +100,7 @@ export default function SignupCheckoutForm() {
   return (
     <form onSubmit={onSubmit} noValidate aria-describedby={`${id}-intro`}>
       <p id={`${id}-intro`} className="wa-fine" style={{ marginTop: 0, marginBottom: 18 }}>
-        Already a Bizuply customer? <a className="wa-link" href={SIGN_IN_URL}>Log in</a> and open WhatsApp → Connection.
+        Already have an account? <a className="wa-link" href={SIGN_IN_URL}>Log in</a> to the WhatsApp API portal.
       </p>
       <div className="wa-form">
         <div className="wa-field">

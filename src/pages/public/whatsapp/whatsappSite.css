@@ -2218,6 +2218,16 @@ html:has(.wa-page) body {
   color: var(--wa-ink);
 }
 
+@media (max-width: 640px) {
+  .wa-progress li:not(.is-current) > span {
+    display: none;
+  }
+
+  .wa-progress li.is-current > span {
+    white-space: nowrap;
+  }
+}
+
 /* ---------- Pricing ---------- */
 
 .wa-plan {
