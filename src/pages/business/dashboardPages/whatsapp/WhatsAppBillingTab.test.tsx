@@ -77,6 +77,7 @@ function renderAt(url: string) {
 }
 
 beforeEach(() => {
+  sessionStorage.clear();
   state.reload.mockReset();
   state.refreshUser.mockClear();
 });
@@ -110,16 +111,22 @@ describe("WhatsAppBillingTab checkout return", () => {
     expect(state.refreshUser).toHaveBeenCalledWith(true);
   });
 
-  it("keeps the activation notice after a remount (location state)", () => {
+  it("keeps the activation notice after a remount, and only for a few minutes", async () => {
+    state.access = expired;
+    const first = renderAt("/business/b1/dashboard/whatsapp/billing?checkout=whatsapp_api");
     state.access = active;
-    render(
-      <MemoryRouter initialEntries={[{ pathname: "/business/b1/dashboard/whatsapp/billing", state: { waApiCheckout: "activated" } }]}>
-        <Routes>
-          <Route path="/business/:businessId/dashboard/whatsapp/billing" element={<WhatsAppBillingTab />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    first.unmount();
+    renderAt("/business/b1/dashboard/whatsapp/billing?checkout=whatsapp_api");
+    await waitFor(() => expect(seen).toBe("/business/b1/dashboard/whatsapp/billing"));
+    cleanup();
+
+    renderAt("/business/b1/dashboard/whatsapp/billing");
     expect(screen.getByTestId("wa-api-checkout-return").getAttribute("data-state")).toBe("activated");
+    cleanup();
+
+    sessionStorage.setItem("waApiReactivated:b1", String(Date.now() - 6 * 60 * 1000));
+    renderAt("/business/b1/dashboard/whatsapp/billing");
+    expect(screen.queryByTestId("wa-api-checkout-return")).toBeNull();
   });
 
   it("shows no checkout notice on a normal visit", () => {
