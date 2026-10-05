@@ -208,17 +208,6 @@ export default function Login() {
         return;
       }
 
-      if (
-        !queryRedirect &&
-        role === "business" &&
-        loggedInUser?.businessId &&
-        loggedInUser?.subscriptionPlan === "whatsapp_api"
-      ) {
-        clearPostLoginRedirect();
-        navigate(`/business/${loggedInUser.businessId}/dashboard/whatsapp/overview`, { replace: true });
-        return;
-      }
-
       const finalRedirect = resolvePostLoginDestination({
         role: loggedInUser?.role,
         businessId: loggedInUser?.businessId,

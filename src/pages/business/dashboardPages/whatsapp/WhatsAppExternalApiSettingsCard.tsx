@@ -28,6 +28,8 @@ import {
   type WhatsAppExternalApiSettings,
 } from "../../../../api/whatsappApi";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import { useAuth } from "../../../../context/AuthContext";
+import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import {
   btnPrimary,
   btnSecondary,
@@ -64,6 +66,8 @@ export default function WhatsAppExternalApiSettingsCard({
   linked,
 }: Props) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const apiPortal = isWhatsAppApiPortalUser(user);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [settings, setSettings] = useState<WhatsAppExternalApiSettings | null>(
@@ -294,6 +298,7 @@ export default function WhatsAppExternalApiSettingsCard({
   };
 
   const noActivity = t("whatsapp.settings.noActivityYet");
+  if (!linked && !apiPortal) return null;
   const access = settings?.subscriptionAccess;
   const subscriptionBlocked = Boolean(access?.gateEnabled && !access.allowed);
   const paymentIssue = ["past_due", "unpaid"].includes(access?.subscription?.status || "");
