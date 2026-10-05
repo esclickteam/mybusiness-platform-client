@@ -955,7 +955,13 @@ export function AuthProvider({ children }) {
           } else {
             const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
             const isPricing = savedRedirect === "/pricing";
-            const shouldSkip = isPricing && freshUser.hasAccess;
+            // A portal page reopened with its own query (e.g. the Lemon checkout
+            // return) must keep that query instead of replaying the bare link.
+            const alreadyOnPortalPage =
+              isWhatsAppApiPortalUser(freshUser) &&
+              (alignRedirectBusinessId(savedRedirect, freshUser.businessId) || savedRedirect).split("?")[0] ===
+                location.pathname;
+            const shouldSkip = (isPricing && freshUser.hasAccess) || alreadyOnPortalPage;
 
             if (!shouldSkip) {
               navigate(
