@@ -141,8 +141,42 @@ export function WhatsAppNewMessageDialog({
   });
 
   const template = templates.find((row) => row.id === templateId);
-  const needsTemplate = Boolean(selected) && !sessionOpen;
-  const canPreview = Boolean(selected && (sessionOpen ? body.trim() : templateId));
+  const recipientCustomerId = selected?.adminCustomerId || "";
+  const canPreview = Boolean(selected && (templateId || (sessionOpen && body.trim())));
+  const canSendNow = Boolean(
+    recipientCustomerId && !sending && (templateId || (sessionOpen && body.trim()))
+  );
+
+  const fetchTemplatePreview = useCallback(
+    async (customerId: string, id: string, currentVars: Record<string, string>) => {
+      const { data } = await adminCrmApi.whatsappPreview(customerId, {
+        templateId: id,
+        vars: currentVars,
+        intent: "message",
+        managedConnectionId: connectionId,
+      });
+      return {
+        text: String(data.preview?.preview || ""),
+        mapped: (data.preview?.mapped || null) as Record<string, string> | null,
+      };
+    },
+    [connectionId]
+  );
+
+  useEffect(() => {
+    if (!open || !recipientCustomerId || !templateId) return;
+    let cancelled = false;
+    fetchTemplatePreview(recipientCustomerId, templateId, {})
+      .then(({ text, mapped }) => {
+        if (cancelled) return;
+        setPreview(text);
+        if (mapped) setVars(mapped);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [open, recipientCustomerId, templateId, fetchTemplatePreview]);
 
   async function saveContact(draft: WhatsAppContactDraft) {
     setSavingContact(true);
@@ -179,23 +213,18 @@ export function WhatsAppNewMessageDialog({
       setError(copy.ambiguousPhone);
       return;
     }
-    if (needsTemplate && !templateId) {
-      setError(copy.outsideWindow);
-      return;
-    }
     if (!templateId) {
+      if (!sessionOpen) {
+        setError(copy.outsideWindow);
+        return;
+      }
       setPreview(body.trim());
       return;
     }
     try {
-      const { data } = await adminCrmApi.whatsappPreview(selected.adminCustomerId, {
-        templateId,
-        vars,
-        intent: "message",
-        managedConnectionId: connectionId,
-      });
-      setPreview(data.preview?.preview || template?.body || "");
-      if (data.preview?.mapped) setVars(data.preview.mapped);
+      const { text, mapped } = await fetchTemplatePreview(selected.adminCustomerId, templateId, vars);
+      setPreview(text || template?.body || "");
+      if (mapped) setVars(mapped);
       setError("");
     } catch (err: any) {
       setError(err?.response?.data?.error || copy.sendFailed);
@@ -204,22 +233,29 @@ export function WhatsAppNewMessageDialog({
 
   async function send() {
     if (!selected?.adminCustomerId || sending) return;
-    if (!sessionOpen && !templateId) {
+    if (!templateId && !sessionOpen) {
       setError(copy.outsideWindow);
-      return;
-    }
-    if (templateId && !preview) {
-      setError(copy.previewTitle);
       return;
     }
     setSending(true);
     setError("");
     try {
+      let sendVars = vars;
+      if (templateId) {
+        const { text, mapped } = await fetchTemplatePreview(
+          selected.adminCustomerId,
+          templateId,
+          vars
+        );
+        if (mapped) sendVars = mapped;
+        setPreview(text || template?.body || "");
+        setVars(sendVars);
+      }
       const { data } = await adminCrmApi.whatsappSend(selected.adminCustomerId, {
         intent: "message",
         templateId: templateId || null,
-        body: sessionOpen && !templateId ? body.trim() : preview || body.trim(),
-        vars,
+        body: templateId ? "" : body.trim(),
+        vars: sendVars,
         previewConfirmed: true,
         managedConnectionId: connectionId,
       });
@@ -358,7 +394,12 @@ export function WhatsAppNewMessageDialog({
                   }}
                 />
               ) : null}
-              {!sessionOpen ? <p className="text-xs font-bold text-amber-800">{copy.outsideWindow}</p> : null}
+              {!sessionOpen && !templateId ? (
+                <p className="text-xs font-bold text-amber-800">{copy.outsideWindow}</p>
+              ) : null}
+              {!sessionOpen && templateId ? (
+                <p className="text-xs font-bold text-emerald-700">{copy.templateSendableOutsideWindow}</p>
+              ) : null}
               {preview ? (
                 <div className="rounded-xl bg-white px-3 py-2 text-sm whitespace-pre-wrap">
                   <p className="mb-1 text-xs font-black text-slate-500">{copy.previewTitle}</p>
@@ -381,7 +422,7 @@ export function WhatsAppNewMessageDialog({
           <button
             type="button"
             className="min-h-11 flex-1 rounded-full bg-[#7C4DFF] text-sm font-black text-white disabled:opacity-50"
-            disabled={!preview || sending || (needsTemplate && !templateId)}
+            disabled={!canSendNow}
             onClick={() => void send()}
           >
             {copy.send}
