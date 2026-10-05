@@ -208,11 +208,15 @@ export default function GetStartedPage() {
           {selfServe ? (
             <div>
               <p className="wa-eyebrow">Get started</p>
-              <h2 id="wa-request" className="wa-h2">Create your WhatsApp API account.</h2>
+              <h2 id="wa-request" className="wa-h2">Up and running in minutes.</h2>
               <p className="wa-lead">
-                $29/month. Meta messaging charges are additional. Pay securely with Lemon Squeezy; your WhatsApp API portal
-                is ready as soon as the payment goes through, and you can connect your number from WhatsApp → Connection.
+                ${PRICE_PER_NUMBER_USD}/month per WhatsApp number. Meta messaging charges are billed separately by Meta.
               </p>
+              <ol className="wa-list" style={{ marginTop: 20 }}>
+                <li><Check size={16} aria-hidden="true" /> Sign up with Google, Facebook, Microsoft or your email.</li>
+                <li><Check size={16} aria-hidden="true" /> Pay securely with Lemon Squeezy. Your WhatsApp API portal opens right away.</li>
+                <li><Check size={16} aria-hidden="true" /> Add your business details and connect your number inside the portal.</li>
+              </ol>
             </div>
           ) : (
             <div>
