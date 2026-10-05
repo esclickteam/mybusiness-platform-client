@@ -32,6 +32,7 @@ import {
 } from "./whatsAppWebScroll";
 import { conversationIdentity } from "./conversationIdentity";
 import { useAdminWhatsAppCopy } from "./adminWhatsAppInboxCopy";
+import { useRefreshOnOpen } from "./useRefreshOnOpen";
 
 type Template = {
   id: string;
@@ -191,6 +192,10 @@ export default function WhatsAppWebThread({
   const sendingRef = useRef(false);
   const loadGenRef = useRef(0);
   const composerFocusedRef = useRef(false);
+  const customerIdRef = useRef(customerId);
+  useEffect(() => {
+    customerIdRef.current = customerId;
+  }, [customerId]);
   const openedScrollKeyRef = useRef("");
   const failedPayloadsRef = useRef(new Map<string, Record<string, unknown>>());
   const { copy, dir } = useAdminWhatsAppCopy();
@@ -394,6 +399,29 @@ export default function WhatsAppWebThread({
   useEffect(() => {
     load();
   }, [load]);
+
+  const refreshTemplatesOnOpen = useRefreshOnOpen(async () => {
+    if (!customerId) return;
+    const requestedFor = customerId;
+    const { data: wa } = await adminCrmApi.whatsapp(customerId, {
+      managedConnectionId: threadConnectionId || undefined,
+    });
+    if (requestedFor !== customerIdRef.current || !wa?.bizuplyManaged) return;
+    const rows: Template[] = wa.bizuplyManaged.templates || [];
+    setData((prev: any) => ({
+      ...(prev || {}),
+      bizuplyManaged: {
+        ...(prev?.bizuplyManaged || {}),
+        templates: rows,
+        sessionWindowOpen: wa.bizuplyManaged.sessionWindowOpen,
+        lastInboundAt: wa.bizuplyManaged.lastInboundAt,
+      },
+    }));
+    if (templateId && !rows.some((row) => String(row.id) === String(templateId))) {
+      setTemplateId("");
+      setPreview("");
+    }
+  });
 
   useEffect(() => {
     const fromThread = resolveThreadConnectionId(
@@ -1133,6 +1161,8 @@ export default function WhatsAppWebThread({
           <select
             className="mb-2 min-h-10 w-full rounded-full border-none bg-white px-3 text-sm"
             value={templateId}
+            onFocus={refreshTemplatesOnOpen}
+            onMouseDown={refreshTemplatesOnOpen}
             onChange={(e) => {
               setTemplateId(e.target.value);
               setPreview("");
