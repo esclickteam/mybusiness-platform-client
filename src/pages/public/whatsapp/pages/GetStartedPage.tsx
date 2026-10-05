@@ -4,50 +4,58 @@ import { useLocation } from "react-router-dom";
 import API from "../../../../api";
 import ContactRequestForm from "../ContactRequestForm";
 import SignupCheckoutForm from "../SignupCheckoutForm";
-import { META_BUSINESS_VERIFICATION_URL, SIGN_IN_URL } from "../siteConfig";
+import { META_BUSINESS_VERIFICATION_URL, PRICE_PER_NUMBER_USD, SIGN_IN_URL, SUPPORT_EMAIL } from "../siteConfig";
 import { Callout, SectionHead } from "../ui";
 
 type Actor = "You" | "Meta" | "Bizuply";
+type Stage = { title: string; text: string; actors: Actor[]; meta?: boolean };
 
-const STAGES: Array<{ title: string; text: string; actors: Actor[]; meta?: boolean }> = [
-  {
-    title: "Get access to Bizuply",
-    text: "Existing customers log in. New customers send the request form below, and we reply with access to a workspace for your number.",
+const ACCOUNT_STAGE: Record<"selfServe" | "request", Stage> = {
+  selfServe: {
+    title: "Create your WhatsApp API account",
+    text: `Create your account and activate your $${PRICE_PER_NUMBER_USD}/month WhatsApp API subscription.`,
+    actors: ["You"],
+  },
+  request: {
+    title: "Request your WhatsApp API account",
+    text: `Send the request form below. We reply by email with access to your WhatsApp API account and its $${PRICE_PER_NUMBER_USD}/month subscription.`,
     actors: ["You", "Bizuply"],
   },
+};
+
+const NEXT_STAGES: Stage[] = [
   {
-    title: "Open Embedded Signup",
-    text: "In the dashboard go to WhatsApp → Connection and start Meta's Embedded Signup. You sign in with your Facebook account and choose, or create, the Meta Business account and WhatsApp Business Account.",
+    title: "Connect Meta",
+    text: "In the WhatsApp API portal, open WhatsApp → Connection and start Meta's Embedded Signup. Sign in with your Facebook account and choose, or create, the Meta Business account and WhatsApp Business Account.",
     actors: ["You", "Meta"],
     meta: true,
   },
   {
-    title: "Add and verify the phone number",
+    title: "Add and verify your WhatsApp number",
     text: "Enter the number and confirm you own it with a one-time code sent by SMS or voice call. Set the display name customers will see.",
     actors: ["You", "Meta"],
     meta: true,
   },
   {
-    title: "Meta reviews",
-    text: "Meta reviews the display name and may ask for business verification or review the account. Until then, messaging volume can be limited.",
-    actors: ["Meta"],
-    meta: true,
-  },
-  {
-    title: "Add a payment method in Meta",
-    text: "Meta bills messaging charges to the WhatsApp Business Account, so a valid payment method is needed for paid messages.",
+    title: "Complete Meta review and registration",
+    text: "Meta registers the number on the Cloud API and reviews the display name, and may ask for business verification. Add a payment method in Meta for messaging charges. Until review is done, messaging volume can be limited.",
     actors: ["You", "Meta"],
     meta: true,
   },
   {
-    title: "Create templates and an API key",
-    text: "Submit message templates for Meta's review, then create an API key and a webhook URL under WhatsApp → API / Developers.",
+    title: "Generate your API key and configure webhooks",
+    text: "In the portal, open WhatsApp → API / Developers to create an API key and set the webhook URL that receives incoming messages and delivery statuses.",
+    actors: ["You"],
+  },
+  {
+    title: "Send your first message",
+    text: "Submit a message template for Meta's review, then send your first message through the API. Conversations you start outside the 24-hour customer service window need an approved template.",
     actors: ["You", "Meta"],
   },
 ];
 
 const STATUSES = [
-  ["Connection", "Whether the WhatsApp Business Account and number are linked to your workspace and ready to send."],
+  ["Connection", "Whether the WhatsApp Business Account and number are linked to your WhatsApp API account and ready to send."],
   ["Phone number registration", "Whether the number is registered on the WhatsApp Cloud API."],
   ["Code verification", "Whether ownership of the number was confirmed with the one-time code."],
   ["Display name", "Meta's review status for the name shown to customers."],
@@ -84,6 +92,7 @@ function useSelfServeSignup() {
 
 export default function GetStartedPage() {
   const selfServe = useSelfServeSignup();
+  const STAGES = [ACCOUNT_STAGE[selfServe ? "selfServe" : "request"], ...NEXT_STAGES];
   const { hash } = useLocation();
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
@@ -96,14 +105,14 @@ export default function GetStartedPage() {
             as="h1"
             eyebrow="Connect WhatsApp"
             title="Connect your WhatsApp number."
-            lead="Numbers are connected through Meta's Embedded Signup inside the Bizuply dashboard. Here's what happens at each step, who acts, and which Meta checks can apply."
+            lead="Numbers are connected through Meta's Embedded Signup inside the WhatsApp API portal. Here's what happens at each step, who acts, and which Meta checks can apply."
           />
           <div className="wa-actions" style={{ marginTop: -12 }}>
-            <a className="wa-btn wa-btn-primary" href={SIGN_IN_URL}>
-              <LogIn size={16} aria-hidden="true" /> I have a Bizuply account
+            <a className="wa-btn wa-btn-ghost" href={SIGN_IN_URL}>
+              <LogIn size={16} aria-hidden="true" /> Log in
             </a>
-            <a className="wa-btn wa-btn-ghost" href="#request-access">
-              I'm new to Bizuply <ArrowRight size={16} aria-hidden="true" />
+            <a className="wa-btn wa-btn-primary" href="#request-access">
+              {selfServe ? `Get started for $${PRICE_PER_NUMBER_USD}` : "Request access"} <ArrowRight size={16} aria-hidden="true" />
             </a>
           </div>
         </div>
@@ -162,8 +171,9 @@ export default function GetStartedPage() {
               <Callout tone="info">
                 <p>
                   <strong>Using the number in the WhatsApp app today?</strong> Depending on what Meta supports for that number,
-                  you may need to migrate it or remove it from the app before it can be registered on the Cloud API. Tell us
-                  in the form and we'll check with you first.
+                  you may need to migrate it or remove it from the app before it can be registered on the Cloud API. Email{" "}
+                  <a className="wa-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> before you connect and we'll
+                  check it with you first.
                 </p>
               </Callout>
             </div>
@@ -175,8 +185,8 @@ export default function GetStartedPage() {
         <div className="wa-wrap">
           <SectionHead
             eyebrow="After you connect"
-            title={<span id="wa-status-ref">Statuses you'll see in the dashboard.</span>}
-            lead="WhatsApp → Connection shows Meta's live status for your account and number, with a message explaining what to do whenever action is needed."
+            title={<span id="wa-status-ref">Statuses you'll see in the portal.</span>}
+            lead="WhatsApp → Connection in the portal shows Meta's live status for your account and number, with a message explaining what to do whenever action is needed."
           />
           <div className="wa-table-wrap">
             <table className="wa-table">
@@ -197,16 +207,16 @@ export default function GetStartedPage() {
         <div className="wa-wrap wa-split" style={{ alignItems: "start" }}>
           {selfServe ? (
             <div>
-              <p className="wa-eyebrow">New to Bizuply</p>
-              <h2 id="wa-request" className="wa-h2">Create your account.</h2>
+              <p className="wa-eyebrow">Get started</p>
+              <h2 id="wa-request" className="wa-h2">Create your WhatsApp API account.</h2>
               <p className="wa-lead">
-                $29/month. Meta messaging charges are additional. Pay securely with Lemon Squeezy; your workspace is ready
-                as soon as the payment goes through, and you can connect your number from WhatsApp → Connection.
+                $29/month. Meta messaging charges are additional. Pay securely with Lemon Squeezy; your WhatsApp API portal
+                is ready as soon as the payment goes through, and you can connect your number from WhatsApp → Connection.
               </p>
             </div>
           ) : (
             <div>
-              <p className="wa-eyebrow">New to Bizuply</p>
+              <p className="wa-eyebrow">Get started</p>
               <h2 id="wa-request" className="wa-h2">Request onboarding.</h2>
               <p className="wa-lead">
                 $29/month per WhatsApp number. Meta messaging charges are additional. Send us your details and we'll reply by
