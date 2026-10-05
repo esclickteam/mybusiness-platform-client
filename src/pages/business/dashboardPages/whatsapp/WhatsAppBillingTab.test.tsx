@@ -1,5 +1,6 @@
+import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import WhatsAppBillingTab from "./WhatsAppBillingTab";
 import type { WhatsAppApiSubscriptionAccess } from "../../../../api/whatsappApiPortal";
@@ -11,6 +12,8 @@ vi.mock("react-i18next", () => ({
 
 const state = vi.hoisted(() => ({
   access: null as WhatsAppApiSubscriptionAccess | null,
+  serverAccess: null as WhatsAppApiSubscriptionAccess | null,
+  liveHook: false,
   reload: vi.fn(),
   refreshUser: vi.fn(async () => ({})),
 }));
@@ -19,19 +22,30 @@ vi.mock("../../../dev/useWhatsAppHubContext", () => ({
   useWhatsAppHubContext: () => ({ connection: null, businessId: "b1" }),
 }));
 vi.mock("../../../../context/AuthContext", () => ({
-  useAuth: () => ({ user: { role: "business", subscriptionPlan: "whatsapp_api", businessId: "b1" }, refreshUser: state.refreshUser }),
+  // A new function on every render, like the real AuthContext.
+  useAuth: () => ({
+    user: { role: "business", subscriptionPlan: "whatsapp_api", businessId: "b1" },
+    refreshUser: (force?: boolean) => state.refreshUser(force),
+  }),
 }));
 vi.mock("../../../../utils/whatsappApiPortal", () => ({ isWhatsAppApiPortalUser: () => true }));
 vi.mock("./billing/WhatsAppViaMetaCard", () => ({ default: () => null }));
 vi.mock("../../../../api/whatsappApiPortal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../../../api/whatsappApiPortal")>()),
-  useWhatsAppApiSubscription: () => ({
-    access: state.access,
-    loading: false,
-    unavailable: false,
-    reload: state.reload,
-    setAccess: vi.fn(),
-  }),
+  useWhatsAppApiSubscription: () => {
+    const [live, setLive] = React.useState(state.access);
+    const reload = React.useCallback(() => {
+      state.reload();
+      if (state.liveHook) setLive(state.serverAccess);
+    }, []);
+    return {
+      access: state.liveHook ? live : state.access,
+      loading: false,
+      unavailable: false,
+      reload,
+      setAccess: vi.fn(),
+    };
+  },
 }));
 
 const END = "2026-11-04T00:00:00.000Z";
@@ -54,7 +68,9 @@ const active: WhatsAppApiSubscriptionAccess = {
 let seen = "";
 function LocationProbe() {
   const loc = useLocation();
-  seen = `${loc.pathname}${loc.search}`;
+  React.useEffect(() => {
+    seen = `${loc.pathname}${loc.search}`;
+  }, [loc.pathname, loc.search]);
   return null;
 }
 
@@ -127,6 +143,29 @@ describe("WhatsAppBillingTab checkout return", () => {
     sessionStorage.setItem("waApiReactivated:b1", String(Date.now() - 6 * 60 * 1000));
     renderAt("/business/b1/dashboard/whatsapp/billing");
     expect(screen.queryByTestId("wa-api-checkout-return")).toBeNull();
+  });
+
+  it("keeps polling until the webhook activates the subscription", async () => {
+    vi.useFakeTimers();
+    try {
+      state.access = expired;
+      state.serverAccess = expired;
+      state.liveHook = true;
+      renderAt("/business/b1/dashboard/whatsapp/billing?checkout=whatsapp_api");
+      expect(screen.getByTestId("wa-api-checkout-return").getAttribute("data-state")).toBe("processing");
+      await act(async () => {
+        vi.advanceTimersByTime(7000);
+      });
+      expect(screen.getByTestId("wa-api-checkout-return").getAttribute("data-state")).toBe("processing");
+      state.serverAccess = active;
+      await act(async () => {
+        vi.advanceTimersByTime(3500);
+      });
+      expect(screen.getByTestId("wa-api-checkout-return").getAttribute("data-state")).toBe("activated");
+    } finally {
+      state.liveHook = false;
+      vi.useRealTimers();
+    }
   });
 
   it("shows no checkout notice on a normal visit", () => {

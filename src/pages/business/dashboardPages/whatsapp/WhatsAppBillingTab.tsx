@@ -64,25 +64,33 @@ export default function WhatsAppBillingTab() {
           ? "delayed"
           : "processing";
 
+  // refreshUser is recreated on every auth render; keep it out of effect deps.
+  const refreshUserRef = useRef(refreshUser);
   useEffect(() => {
-    if (checkoutParam && activeNow && !finished.current) {
-      finished.current = true;
-      if (businessId) markActivated(businessId);
-      const next = new URLSearchParams(searchParams);
-      next.delete("checkout");
-      const search = next.toString();
-      navigate({ pathname: location.pathname, search: search ? `?${search}` : "" }, { replace: true });
-      Promise.resolve(refreshUser?.(true)).catch(() => {});
-      return undefined;
-    }
-    if (checkoutReturn !== "processing" || loading) return undefined;
-    const timer = window.setTimeout(() => {
+    refreshUserRef.current = refreshUser;
+  }, [refreshUser]);
+
+  useEffect(() => {
+    if (!checkoutParam || !activeNow || finished.current) return;
+    finished.current = true;
+    if (businessId) markActivated(businessId);
+    const next = new URLSearchParams(searchParams);
+    next.delete("checkout");
+    const search = next.toString();
+    navigate({ pathname: location.pathname, search: search ? `?${search}` : "" }, { replace: true });
+    Promise.resolve(refreshUserRef.current?.(true)).catch(() => {});
+  }, [activeNow, businessId, checkoutParam, location.pathname, navigate, searchParams]);
+
+  const polling = checkoutReturn === "processing" && !loading;
+  useEffect(() => {
+    if (!polling) return undefined;
+    const timer = window.setInterval(() => {
       polls.current += 1;
       if (polls.current > CHECKOUT_POLL_LIMIT) setTimedOut(true);
       else reload();
     }, CHECKOUT_POLL_MS);
-    return () => window.clearTimeout(timer);
-  }, [activeNow, businessId, checkoutParam, checkoutReturn, loading, location.pathname, navigate, refreshUser, reload, searchParams]);
+    return () => window.clearInterval(timer);
+  }, [polling, reload]);
 
   const notice =
     checkoutReturn === "activated"
@@ -118,7 +126,7 @@ export default function WhatsAppBillingTab() {
                 businessId={businessId}
                 onAccessChange={(next) => {
                   setAccess(next);
-                  Promise.resolve(refreshUser?.(true)).catch(() => {});
+                  Promise.resolve(refreshUserRef.current?.(true)).catch(() => {});
                 }}
               />
             )
