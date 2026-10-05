@@ -9647,57 +9647,6 @@
       "blocking": "חוסם שליחה",
       "warning": "דורש תשומת לב",
       "info": "מידע"
-    },
-    "apiSetup": {
-      "title": "מתחילים עם WhatsApp API",
-      "progress": "{{done}} מתוך {{total}} שלבים הושלמו",
-      "welcomeTitle": "ברוכים הבאים! המנוי פעיל.",
-      "welcomeText": "בצעו את השלבים הבאים כדי לחבר את המספר ולשלוח את ההודעה הראשונה.",
-      "done": "הושלם",
-      "todo": "לביצוע",
-      "subscribe": "הצטרפות · $29 לחודש",
-      "checkoutError": "לא הצלחנו לפתוח את התשלום. נסו שוב.",
-      "oneNumber": "המנוי כולל מספר WhatsApp אחד.",
-      "subscription": {
-        "active": "פעיל",
-        "renewsOn": "פעיל · מתחדש ב-{{date}}",
-        "endsOn": "בוטל · גישה עד {{date}}",
-        "grace": "בעיה בתשלום · עדכנו את הכרטיס עד {{date}} כדי לשמור על הגישה",
-        "inactive": "אין מנוי פעיל"
-      },
-      "steps": {
-        "subscription": {
-          "title": "מנוי WhatsApp API",
-          "text": "",
-          "cta": "לחיובים"
-        },
-        "connect": {
-          "title": "חברו את מספר ה-WhatsApp",
-          "text": "התחברו עם Meta ובחרו את המספר העסקי.",
-          "cta": "חיבור"
-        },
-        "apiKey": {
-          "title": "צרו מפתח API",
-          "text": "המפתח מאמת את הבקשות שנשלחות מהמערכת שלכם.",
-          "cta": "יצירת מפתח"
-        },
-        "webhook": {
-          "title": "הוסיפו כתובת Webhook",
-          "text": "קבלו עדכוני מסירה וקריאה על ההודעות שאתם שולחים.",
-          "cta": "הגדרת Webhook"
-        },
-        "firstMessage": {
-          "title": "שלחו את ההודעה הראשונה",
-          "text": "השתמשו בתבנית מאושרת כדי לפתוח שיחה.",
-          "cta": "תבניות"
-        }
-      },
-      "links": {
-        "developers": "מפתחות API ו-Webhook",
-        "templates": "תבניות",
-        "analytics": "אנליטיקה",
-        "docs": "תיעוד ה-API"
-      }
     }
   },
   "metaCampaigns": {

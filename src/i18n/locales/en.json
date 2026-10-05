@@ -9658,57 +9658,6 @@
       "blocking": "Blocking",
       "warning": "Warning",
       "info": "Info"
-    },
-    "apiSetup": {
-      "title": "Get started with the WhatsApp API",
-      "progress": "{{done}} of {{total}} steps done",
-      "welcomeTitle": "Welcome! Your subscription is active.",
-      "welcomeText": "Follow the steps below to connect your number and send your first message.",
-      "done": "Done",
-      "todo": "To do",
-      "subscribe": "Subscribe · $29/month",
-      "checkoutError": "Could not open checkout. Please try again.",
-      "oneNumber": "Your subscription includes one WhatsApp number.",
-      "subscription": {
-        "active": "Active",
-        "renewsOn": "Active · renews on {{date}}",
-        "endsOn": "Cancelled · access until {{date}}",
-        "grace": "Payment issue · update your card by {{date}} to keep access",
-        "inactive": "No active subscription"
-      },
-      "steps": {
-        "subscription": {
-          "title": "WhatsApp API subscription",
-          "text": "",
-          "cta": "View billing"
-        },
-        "connect": {
-          "title": "Connect your WhatsApp number",
-          "text": "Sign in with Meta and choose the business number to use.",
-          "cta": "Connect"
-        },
-        "apiKey": {
-          "title": "Create an API key",
-          "text": "Use it to authenticate requests from your system.",
-          "cta": "Create key"
-        },
-        "webhook": {
-          "title": "Add your webhook URL",
-          "text": "Receive delivery and read updates for the messages you send.",
-          "cta": "Set webhook"
-        },
-        "firstMessage": {
-          "title": "Send your first message",
-          "text": "Use an approved template to start a conversation.",
-          "cta": "Templates"
-        }
-      },
-      "links": {
-        "developers": "API keys & webhook",
-        "templates": "Templates",
-        "analytics": "Analytics",
-        "docs": "API documentation"
-      }
     }
   },
   "metaCampaigns": {

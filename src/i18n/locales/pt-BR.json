@@ -9652,57 +9652,6 @@
       "verificationManagedHint": "O status de verificação pode afetar limites de uso, mas não bloqueia o envio enquanto a Meta permitir.",
       "sendAvailableTitle": "O envio está disponível, sujeito aos limites da Meta",
       "sendAvailableHint": "O sistema pode enviar mensagens. A Meta pode limitar o volume conforme o status da conta."
-    },
-    "apiSetup": {
-      "title": "Comece a usar a API do WhatsApp",
-      "progress": "{{done}} de {{total}} etapas concluídas",
-      "welcomeTitle": "Boas-vindas! Sua assinatura está ativa.",
-      "welcomeText": "Siga as etapas abaixo para conectar seu número e enviar a primeira mensagem.",
-      "done": "Concluído",
-      "todo": "Pendente",
-      "subscribe": "Assinar · US$ 29/mês",
-      "checkoutError": "Não foi possível abrir o pagamento. Tente novamente.",
-      "oneNumber": "Sua assinatura inclui um número do WhatsApp.",
-      "subscription": {
-        "active": "Ativa",
-        "renewsOn": "Ativa · renova em {{date}}",
-        "endsOn": "Cancelada · acesso até {{date}}",
-        "grace": "Problema no pagamento · atualize seu cartão até {{date}} para manter o acesso",
-        "inactive": "Nenhuma assinatura ativa"
-      },
-      "steps": {
-        "subscription": {
-          "title": "Assinatura da API do WhatsApp",
-          "text": "",
-          "cta": "Ver cobrança"
-        },
-        "connect": {
-          "title": "Conecte seu número do WhatsApp",
-          "text": "Entre com a Meta e escolha o número da sua empresa.",
-          "cta": "Conectar"
-        },
-        "apiKey": {
-          "title": "Crie uma chave de API",
-          "text": "Ela autentica as solicitações do seu sistema.",
-          "cta": "Criar chave"
-        },
-        "webhook": {
-          "title": "Adicione a URL do webhook",
-          "text": "Receba status de entrega e leitura das mensagens enviadas.",
-          "cta": "Configurar webhook"
-        },
-        "firstMessage": {
-          "title": "Envie sua primeira mensagem",
-          "text": "Use um modelo aprovado para iniciar uma conversa.",
-          "cta": "Modelos"
-        }
-      },
-      "links": {
-        "developers": "Chaves de API e webhook",
-        "templates": "Modelos",
-        "analytics": "Análises",
-        "docs": "Documentação da API"
-      }
     }
   },
   "metaCampaigns": {
