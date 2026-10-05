@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, Check, LogIn } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import API from "../../../../api";
 import ContactRequestForm from "../ContactRequestForm";
+import SignupCheckoutForm from "../SignupCheckoutForm";
 import { META_BUSINESS_VERIFICATION_URL, SIGN_IN_URL } from "../siteConfig";
 import { Callout, SectionHead } from "../ui";
 
@@ -63,7 +66,28 @@ const NEEDS = [
 
 const ACTOR_TONE: Record<Actor, string> = { You: "is-info", Meta: "is-warn", Bizuply: "is-ok" };
 
+function useSelfServeSignup() {
+  const [selfServe, setSelfServe] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    API.get("/whatsapp-api/availability")
+      .then(({ data }) => {
+        if (alive) setSelfServe(Boolean(data?.selfServe));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return selfServe;
+}
+
 export default function GetStartedPage() {
+  const selfServe = useSelfServeSignup();
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+  }, [hash, selfServe]);
   return (
     <>
       <section className="wa-page-hero">
@@ -171,16 +195,27 @@ export default function GetStartedPage() {
 
       <section className="wa-section" id="request-access" aria-labelledby="wa-request">
         <div className="wa-wrap wa-split" style={{ alignItems: "start" }}>
-          <div>
-            <p className="wa-eyebrow">New to Bizuply</p>
-            <h2 id="wa-request" className="wa-h2">Request onboarding.</h2>
-            <p className="wa-lead">
-              $29/month per WhatsApp number. Meta messaging charges are additional. Send us your details and we'll reply by
-              email with access and the next steps.
-            </p>
-          </div>
+          {selfServe ? (
+            <div>
+              <p className="wa-eyebrow">New to Bizuply</p>
+              <h2 id="wa-request" className="wa-h2">Create your account.</h2>
+              <p className="wa-lead">
+                $29/month. Meta messaging charges are additional. Pay securely with Lemon Squeezy; your workspace is ready
+                as soon as the payment goes through, and you can connect your number from WhatsApp → Connection.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className="wa-eyebrow">New to Bizuply</p>
+              <h2 id="wa-request" className="wa-h2">Request onboarding.</h2>
+              <p className="wa-lead">
+                $29/month per WhatsApp number. Meta messaging charges are additional. Send us your details and we'll reply by
+                email with access and the next steps.
+              </p>
+            </div>
+          )}
           <div className="wa-card">
-            <ContactRequestForm defaultIntent="connect" />
+            {selfServe ? <SignupCheckoutForm /> : <ContactRequestForm defaultIntent="connect" />}
           </div>
         </div>
       </section>

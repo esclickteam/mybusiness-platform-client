@@ -2576,7 +2576,12 @@
     "resetFillAll": "Por favor, rellene todos los campos",
     "resetInvalidLink": "Enlace de restablecimiento de contraseña no válido",
     "newPassword": "Nueva contraseña",
-    "confirmPassword": "Confirmar contraseña"
+    "confirmPassword": "Confirmar contraseña",
+    "whatsappApiCheckout": {
+      "pending": "Pago recibido. Estamos activando tu cuenta de la API de WhatsApp. Suele tardar unos segundos.",
+      "ready": "Tu cuenta de la API de WhatsApp está lista. Inicia sesión con el correo y la contraseña que elegiste.",
+      "slow": "Pago recibido, pero la activación está tardando más de lo normal. Intenta iniciar sesión en un minuto o escribe a support@bizuply.com."
+    }
   },
   "pricing": {
     "seoTitle": "Paquetes de Servicio  BizUply",
@@ -8543,6 +8548,8 @@
       "usingManagedTitle": "Estás usando WhatsApp administrado de BizUply",
       "usingManagedBody": "Las automatizaciones pueden enviarse a través del número central de BizUply. También puede conectar el número de WhatsApp de esta empresa, que no desconecta ni cambia WhatsApp administrado.",
       "connectOwnIntro": "Para conectar el número de WhatsApp de esta empresa (separa WABA), continúe aquí. La conexión privada se almacena solo para este negocio.",
+      "apiProductTitle": "Tu WhatsApp Business API",
+      "apiProductBody": "Tu suscripción incluye un número de WhatsApp. Conecta el número de tu negocio a través de Meta para empezar a enviar mensajes con tu clave de API.",
       "connectOwnCta": "Conecta el número de WhatsApp de esta empresa",
       "managedHostTitle": "Conexión administrada por la plataforma (administrada por BizUply)",
       "managedHostBody": "El número mostrado es la conexión central de la plataforma. Un negocio de clientes que quiere su propio número lo conecta desde la configuración de ese negocio, no aquí.",
@@ -8748,7 +8755,12 @@
         "not_configured": "No configurado",
         "active": "Activo",
         "configured": "Configurado"
-      }
+      },
+      "apiSubscriptionRequired": "Necesitas una suscripción activa a la API de WhatsApp ($29/mes) para crear claves de API y usar la API.",
+      "apiSubscriptionPaymentIssue": "El pago de la API de WhatsApp no se completó. Actualiza tu método de pago en Facturación para recuperar el acceso.",
+      "apiSubscriptionSubscribe": "Suscribirse · $29/mes",
+      "apiSubscriptionCheckoutError": "No se pudo abrir el pago. Inténtalo de nuevo.",
+      "apiNotConnectedHint": "Ya puedes crear una clave de API. El envío de mensajes funcionará cuando conectes un número en WhatsApp → Conexión."
     },
     "errors": {
       "loadCompose": "No se pudo cargar los datos de redacción de WhatsApp",

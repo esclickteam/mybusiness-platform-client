@@ -2576,7 +2576,12 @@
     "resetFillAll": "Please fill in all fields",
     "resetInvalidLink": "Invalid password reset link",
     "newPassword": "New password",
-    "confirmPassword": "Confirm password"
+    "confirmPassword": "Confirm password",
+    "whatsappApiCheckout": {
+      "pending": "Payment received. We're activating your WhatsApp API account. This usually takes a few seconds.",
+      "ready": "Your WhatsApp API account is ready. Sign in with the email and password you just chose.",
+      "slow": "Payment received. Activation is taking longer than usual. Try signing in in a minute, or contact support@bizuply.com."
+    }
   },
   "pricing": {
     "seoTitle": "Service Packages | BizUply",
@@ -8815,6 +8820,8 @@
       "usingManagedTitle": "You are using Bizuply Managed WhatsApp",
       "usingManagedBody": "Automations can send via the central Bizuply number. You can also connect this business's own WhatsApp number — that does not disconnect or change Managed WhatsApp.",
       "connectOwnIntro": "To connect this business's own WhatsApp number (separate WABA), continue here. The private connection is stored only for this business.",
+      "apiProductTitle": "Your WhatsApp Business API",
+      "apiProductBody": "Your subscription includes one WhatsApp number. Connect your business number through Meta to start sending messages with your API key.",
       "connectOwnCta": "Connect this business's WhatsApp number",
       "managedHostTitle": "Platform Managed connection (Bizuply Managed)",
       "managedHostBody": "The number shown is the platform central connection. A customer business that wants its own number connects it from that business's settings — not here.",
@@ -8872,7 +8879,12 @@
         "not_configured": "Not configured",
         "active": "Active",
         "configured": "Configured"
-      }
+      },
+      "apiSubscriptionRequired": "An active WhatsApp API subscription ($29/month) is required to create API keys and call the API.",
+      "apiSubscriptionPaymentIssue": "Your WhatsApp API payment didn't go through. Update your payment method in Billing to restore API access.",
+      "apiSubscriptionSubscribe": "Subscribe · $29/month",
+      "apiSubscriptionCheckoutError": "Could not open checkout. Please try again.",
+      "apiNotConnectedHint": "You can create an API key now. Sending messages starts working once a number is connected in WhatsApp → Connection."
     },
     "alerts": {
       "notConnected": "WhatsApp is not connected",

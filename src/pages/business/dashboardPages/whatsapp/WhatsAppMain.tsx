@@ -202,7 +202,7 @@ export default function WhatsAppMain() {
     ]);
     if (apiPortal) allowWhenDisconnected.add("overview");
     if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
-      navigate(`${whatsappBasePath(location.pathname)}/connection`, {
+      navigate(`${whatsappBasePath(location.pathname)}/connection${location.search}`, {
         replace: true,
       });
     }
@@ -212,6 +212,7 @@ export default function WhatsAppMain() {
     isConnected,
     topSegment,
     location.pathname,
+    location.search,
     navigate,
     guidedDemo,
     apiPortal,

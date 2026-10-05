@@ -22,11 +22,14 @@ import {
   regenerateWhatsAppExternalWebhookSecret,
   revealWhatsAppExternalWebhookSecret,
   revokeWhatsAppExternalApiKey,
+  startWhatsAppApiCheckout,
   testWhatsAppExternalWebhook,
   updateWhatsAppExternalWebhookUrl,
   type WhatsAppExternalApiSettings,
 } from "../../../../api/whatsappApi";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import { useAuth } from "../../../../context/AuthContext";
+import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import {
   btnPrimary,
   btnSecondary,
@@ -63,6 +66,8 @@ export default function WhatsAppExternalApiSettingsCard({
   linked,
 }: Props) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const apiPortal = isWhatsAppApiPortalUser(user);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [settings, setSettings] = useState<WhatsAppExternalApiSettings | null>(
@@ -273,8 +278,30 @@ export default function WhatsAppExternalApiSettingsCard({
     }
   };
 
+  const handleSubscribe = async () => {
+    if (!businessId || busy) return;
+    setBusy(true);
+    try {
+      const { url } = await startWhatsAppApiCheckout(businessId);
+      window.location.assign(url);
+    } catch (err) {
+      toast.error(
+        getApiErrorMessage(
+          err,
+          t("whatsapp.settings.apiSubscriptionCheckoutError", {
+            defaultValue: "Could not open checkout. Please try again.",
+          })
+        )
+      );
+      setBusy(false);
+    }
+  };
+
   const noActivity = t("whatsapp.settings.noActivityYet");
-  if (!linked) return null;
+  if (!linked && !apiPortal) return null;
+  const access = settings?.subscriptionAccess;
+  const subscriptionBlocked = Boolean(access?.gateEnabled && !access.allowed);
+  const paymentIssue = ["past_due", "unpaid"].includes(access?.subscription?.status || "");
 
   const apiKeyDisplay =
     settings?.apiKey?.maskedKey ||
@@ -319,6 +346,45 @@ export default function WhatsAppExternalApiSettingsCard({
         </div>
       ) : (
         <div className="mt-4 space-y-4">
+          {subscriptionBlocked ? (
+            <div
+              role="status"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13px] font-semibold text-amber-900"
+            >
+              <span className="flex items-start gap-2">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                {paymentIssue
+                  ? t("whatsapp.settings.apiSubscriptionPaymentIssue", {
+                      defaultValue:
+                        "Your WhatsApp API payment didn't go through. Update your payment method in Billing to restore API access.",
+                    })
+                  : t("whatsapp.settings.apiSubscriptionRequired", {
+                      defaultValue:
+                        "An active WhatsApp API subscription ($29/month) is required to create API keys and call the API.",
+                    })}
+              </span>
+              {!paymentIssue && access?.selfServe ? (
+                <button
+                  type="button"
+                  onClick={() => void handleSubscribe()}
+                  disabled={busy}
+                  className={`${btnPrimary} !px-3 !py-1.5 text-xs`}
+                >
+                  {t("whatsapp.settings.apiSubscriptionSubscribe", {
+                    defaultValue: "Subscribe · $29/month",
+                  })}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {!linked ? (
+            <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] font-semibold text-slate-600">
+              {t("whatsapp.settings.apiNotConnectedHint", {
+                defaultValue:
+                  "You can create an API key now. Sending messages starts working once a number is connected in WhatsApp → Connection.",
+              })}
+            </p>
+          ) : null}
           <Field
             label={t("whatsapp.settings.apiSettingsApiKey")}
             value={apiKeyDisplay}

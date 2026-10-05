@@ -2576,7 +2576,12 @@
     "resetFillAll": "יש למלא את כל השדות",
     "resetInvalidLink": "קישור איפוס הסיסמה אינו תקין",
     "newPassword": "סיסמה חדשה",
-    "confirmPassword": "אימות סיסמה"
+    "confirmPassword": "אימות סיסמה",
+    "whatsappApiCheckout": {
+      "pending": "התשלום התקבל. אנחנו מפעילים את חשבון ה-WhatsApp API שלכם. זה לוקח בדרך כלל כמה שניות.",
+      "ready": "חשבון ה-WhatsApp API מוכן. התחברו עם האימייל והסיסמה שבחרתם.",
+      "slow": "התשלום התקבל, אבל ההפעלה לוקחת יותר זמן מהרגיל. נסו להתחבר בעוד דקה או פנו ל-support@bizuply.com."
+    }
   },
   "pricing": {
     "seoTitle": "חבילות שירות | BizUply",
@@ -8835,6 +8840,8 @@
       "usingManagedTitle": "אתם משתמשים ב־וואטסאפ מנוהל של Bizuply",
       "usingManagedBody": "ניתן לשלוח אוטומציות דרך המספר המרכזי. אפשר גם לחבר מספר וואטסאפ פרטי של העסק — זה לא מנתק ולא משנה את החיבור המנוהל.",
       "connectOwnIntro": "לחיבור מספר וואטסאפ של העסק (חשבון עסקי נפרד) לחצו כאן. החיבור הפרטי נשמר רק לעסק הזה.",
+      "apiProductTitle": "ה-WhatsApp Business API שלכם",
+      "apiProductBody": "המנוי כולל מספר וואטסאפ אחד. חברו את מספר העסק דרך Meta כדי להתחיל לשלוח הודעות עם מפתח ה-API שלכם.",
       "connectOwnCta": "חבר מספר וואטסאפ של העסק",
       "managedHostTitle": "חיבור מרכזי מנוהל",
       "managedHostBody": "המספר המוצג הוא החיבור המרכזי של הפלטפורמה. עסק לקוח שמחבר מספר משלו עושה זאת מההגדרות של אותו עסק — לא מכאן.",
@@ -8861,7 +8868,12 @@
         "not_configured": "לא הוגדר",
         "active": "פעיל",
         "configured": "מוגדר"
-      }
+      },
+      "apiSubscriptionRequired": "כדי ליצור מפתחות API ולהשתמש ב-API נדרש מנוי WhatsApp API פעיל ($29 לחודש).",
+      "apiSubscriptionPaymentIssue": "התשלום על WhatsApp API לא עבר. עדכנו את אמצעי התשלום בעמוד החיובים כדי להחזיר את הגישה ל-API.",
+      "apiSubscriptionSubscribe": "הצטרפות · $29 לחודש",
+      "apiSubscriptionCheckoutError": "לא הצלחנו לפתוח את התשלום. נסו שוב.",
+      "apiNotConnectedHint": "אפשר ליצור מפתח API כבר עכשיו. שליחת הודעות תתחיל לעבוד אחרי חיבור מספר ב-WhatsApp ← חיבור."
     },
     "alerts": {
       "notConnected": "וואטסאפ אינו מחובר",

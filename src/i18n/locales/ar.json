@@ -2576,7 +2576,12 @@
     "resetFillAll": "يرجى ملء جميع الحقول",
     "resetInvalidLink": "رابط إعادة تعيين كلمة المرور غير صحيح",
     "newPassword": "كلمة المرور الجديدة",
-    "confirmPassword": "تأكيد كلمة المرور"
+    "confirmPassword": "تأكيد كلمة المرور",
+    "whatsappApiCheckout": {
+      "pending": "تم استلام الدفع. نقوم الآن بتفعيل حساب WhatsApp API الخاص بك، ويستغرق ذلك عادةً بضع ثوانٍ.",
+      "ready": "حساب WhatsApp API جاهز. سجّل الدخول بالبريد الإلكتروني وكلمة المرور اللذين اخترتهما.",
+      "slow": "تم استلام الدفع، لكن التفعيل يستغرق وقتًا أطول من المعتاد. حاول تسجيل الدخول بعد دقيقة أو راسل support@bizuply.com."
+    }
   },
   "pricing": {
     "seoTitle": "باقات الخدمات  BizUply",
@@ -8543,6 +8548,8 @@
       "usingManagedTitle": "أنت تستخدم BizUply Managed WhatsApp",
       "usingManagedBody": "يمكن إرسال الأتمتة عبر رقم BizUply المركزي. يمكنك أيضًا توصيل رقم WhatsApp الخاص بهذا العمل - والذي لا يقطع أو يغير تطبيق WhatsApp المدار.",
       "connectOwnIntro": "لتوصيل رقم WhatsApp الخاص بهذا العمل (وابا منفصلة) ، تابع هنا. يتم تخزين الاتصال الخاص فقط لهذا العمل.",
+      "apiProductTitle": "واجهة WhatsApp Business API الخاصة بك",
+      "apiProductBody": "يتضمن اشتراكك رقم WhatsApp واحدًا. اربط رقم نشاطك التجاري عبر Meta لبدء إرسال الرسائل باستخدام مفتاح API الخاص بك.",
       "connectOwnCta": "قم بتوصيل رقم WhatsApp الخاص بهذا العمل",
       "managedHostTitle": "اتصال منصّة مُدار (BizUply Managed)",
       "managedHostBody": "الرقم هو اتصال المنصة المركزي. تقوم شركة العملاء التي تريد رقمها الخاص بتوصيلها من إعدادات هذا العمل - وليس هنا.",
@@ -8748,7 +8755,12 @@
         "not_configured": "غير مضبوط",
         "active": "نشط",
         "configured": "مضبوط"
-      }
+      },
+      "apiSubscriptionRequired": "يلزم اشتراك WhatsApp API نشط (29 دولارًا شهريًا) لإنشاء مفاتيح API واستخدام الواجهة.",
+      "apiSubscriptionPaymentIssue": "لم تتم عملية دفع WhatsApp API. حدّث وسيلة الدفع في صفحة الفوترة لاستعادة الوصول.",
+      "apiSubscriptionSubscribe": "اشترك · 29 دولارًا شهريًا",
+      "apiSubscriptionCheckoutError": "تعذّر فتح صفحة الدفع. حاول مرة أخرى.",
+      "apiNotConnectedHint": "يمكنك إنشاء مفتاح API الآن. يبدأ إرسال الرسائل بعد ربط رقم من WhatsApp ← الربط."
     },
     "errors": {
       "loadCompose": "فشل في تحميل بيانات WhatsApp",

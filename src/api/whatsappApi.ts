@@ -1772,7 +1772,33 @@ export type WhatsAppExternalApiSettings = {
     windowMs: number;
     backend: string;
   };
+  subscriptionAccess?: WhatsAppApiSubscriptionAccess;
 };
+
+export type WhatsAppApiSubscriptionAccess = {
+  gateEnabled: boolean;
+  selfServe?: boolean;
+  allowed: boolean;
+  via: "subscription" | "plan" | null;
+  reason: string;
+  subscription: {
+    status: string;
+    active: boolean;
+    currentPeriodEnd?: string | null;
+    cancelAtPeriodEnd?: boolean;
+    graceEndsAt?: string | null;
+  } | null;
+};
+
+export async function getWhatsAppApiSubscriptionStatus(businessId: string) {
+  const { data } = await API.get("/whatsapp-api/status", { params: { businessId } });
+  return data as WhatsAppApiSubscriptionAccess & { success: boolean };
+}
+
+export async function startWhatsAppApiCheckout(businessId: string) {
+  const { data } = await API.post("/whatsapp-api/checkout", { businessId });
+  return data as { success: boolean; url: string };
+}
 
 export async function getWhatsAppExternalApiSettings(businessId: string) {
   const { data } = await API.get("/whatsapp/api-settings", {
