@@ -84,6 +84,27 @@ describe("WhatsAppApiSetupSteps", () => {
     expect(document.querySelectorAll("li[data-step]")).toHaveLength(5);
   });
 
+  it("links the business details step to the form on the same page", () => {
+    const list = steps();
+    list.splice(1, 0, { key: "details", status: "todo", to: "#wa-api-business-details" });
+    render(
+      <MemoryRouter>
+        <section id="wa-api-business-details">
+          <input aria-label="name" />
+        </section>
+        <WhatsAppApiSetupSteps steps={list} />
+      </MemoryRouter>
+    );
+    const target = document.getElementById("wa-api-business-details")!;
+    target.scrollIntoView = vi.fn();
+
+    const link = screen.getByText("whatsappApiPortal.setup.steps.details.cta").closest("a")!;
+    expect(link).toHaveAttribute("href", "#wa-api-business-details");
+    fireEvent.click(link);
+    expect(target.scrollIntoView).toHaveBeenCalled();
+    expect(document.activeElement).toBe(screen.getByLabelText("name"));
+  });
+
   it("keeps the full guide visible on the welcome visit", () => {
     renderSteps(steps(), true);
 

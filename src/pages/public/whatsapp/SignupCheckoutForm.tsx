@@ -1,39 +1,31 @@
 import React, { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Loader2, Lock } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import API from "../../../api";
 import { normalizeLanguage } from "../../../i18n/localeUtils";
 import { PRICE_PER_NUMBER_USD, SIGN_IN_URL, SUPPORT_EMAIL } from "./siteConfig";
 
-type FormState = {
-  name: string;
-  email: string;
-  businessName: string;
-  phone: string;
-  password: string;
-};
-
+type FormState = { email: string; password: string };
 type Errors = Partial<Record<keyof FormState, string>>;
 
 function validate(form: FormState): Errors {
   const errors: Errors = {};
-  if (!form.name.trim()) errors.name = "Enter your name.";
-  if (!form.email.trim()) errors.email = "Enter your work email.";
+  if (!form.email.trim()) errors.email = "Enter your email address.";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = "Enter a valid email address.";
-  if (!form.businessName.trim()) errors.businessName = "Enter your company name.";
-  if (!form.phone.trim()) errors.phone = "Enter a phone number.";
   if (form.password.length < 8) errors.password = "Use at least 8 characters.";
   return errors;
 }
 
-/** New customer: create the account details, then pay the first month in Lemon Squeezy checkout. */
+/** New customer: email + password, then the first month in Lemon Squeezy checkout. Business details come later, in the portal. */
 export default function SignupCheckoutForm() {
   const id = useId();
   const { i18n } = useTranslation();
-  const [form, setForm] = useState<FormState>({ name: "", email: "", businessName: "", phone: "", password: "" });
+  const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<Errors>({});
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [failure, setFailure] = useState<React.ReactNode>("");
+  const language = normalizeLanguage(i18n.language) || "en";
 
   const update = (name: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -53,12 +45,9 @@ export default function SignupCheckoutForm() {
     setSubmitting(true);
     try {
       const { data } = await API.post("/whatsapp-api/signup-checkout", {
-        name: form.name.trim(),
         email: form.email.trim(),
-        businessName: form.businessName.trim(),
-        phone: form.phone.trim(),
         password: form.password,
-        language: normalizeLanguage(i18n.language) || "en",
+        language,
       });
       if (!data?.url) throw new Error("missing_checkout_url");
       window.location.assign(data.url);
@@ -98,34 +87,37 @@ export default function SignupCheckoutForm() {
     ) : null;
 
   return (
-    <form onSubmit={onSubmit} noValidate aria-describedby={`${id}-intro`}>
-      <p id={`${id}-intro`} className="wa-fine" style={{ marginTop: 0, marginBottom: 18 }}>
-        Already have an account? <a className="wa-link" href={SIGN_IN_URL}>Log in</a> to the WhatsApp API portal.
-      </p>
-      <div className="wa-form">
+    <div className="wa-auth">
+      <h3 className="wa-auth-title">Create your WhatsApp API account</h3>
+      <p className="wa-auth-sub">${PRICE_PER_NUMBER_USD}/month per WhatsApp number. Cancel anytime.</p>
+
+      <form onSubmit={onSubmit} noValidate className="wa-auth-form">
         <div className="wa-field">
-          <label htmlFor={`${id}-name`}>Name</label>
-          <input {...field("name")} autoComplete="name" maxLength={120} required />
-          {error("name")}
-        </div>
-        <div className="wa-field">
-          <label htmlFor={`${id}-email`}>Work email</label>
+          <label htmlFor={`${id}-email`}>Email address</label>
           <input {...field("email")} type="email" autoComplete="email" maxLength={200} required />
           {error("email")}
         </div>
         <div className="wa-field">
-          <label htmlFor={`${id}-businessName`}>Company</label>
-          <input {...field("businessName")} autoComplete="organization" maxLength={160} required />
-          {error("businessName")}
-        </div>
-        <div className="wa-field">
-          <label htmlFor={`${id}-phone`}>Phone</label>
-          <input {...field("phone")} type="tel" autoComplete="tel" maxLength={40} required />
-          {error("phone")}
-        </div>
-        <div className="wa-field is-full">
           <label htmlFor={`${id}-password`}>Password</label>
-          <input {...field("password")} type="password" autoComplete="new-password" minLength={8} maxLength={128} required />
+          <div className="wa-auth-password">
+            <input
+              {...field("password")}
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={128}
+              required
+            />
+            <button
+              type="button"
+              className="wa-auth-reveal"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+            </button>
+          </div>
           {error("password")}
         </div>
         {failure ? (
@@ -133,17 +125,19 @@ export default function SignupCheckoutForm() {
             {failure}
           </p>
         ) : null}
-        <div className="wa-form-actions">
-          <button type="submit" className="wa-btn wa-btn-primary" disabled={submitting}>
-            {submitting ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} aria-hidden="true" />}
-            {submitting ? "Opening checkout…" : `Continue to payment · $${PRICE_PER_NUMBER_USD}/month`}
-            {!submitting ? <ArrowRight size={16} aria-hidden="true" /> : null}
-          </button>
-          <span className="wa-fine" style={{ margin: 0 }}>
-            Covers one WhatsApp number. Your account is created after the first payment. Cancel anytime.
-          </span>
-        </div>
-      </div>
-    </form>
+        <button type="submit" className="wa-btn wa-btn-primary wa-auth-submit" disabled={submitting}>
+          {submitting ? <Loader2 size={16} className="animate-spin" /> : null}
+          {submitting ? "Opening checkout…" : "Continue"}
+          {!submitting ? <ArrowRight size={16} aria-hidden="true" /> : null}
+        </button>
+        <p className="wa-auth-note">
+          <Lock size={13} aria-hidden="true" /> Next: secure ${PRICE_PER_NUMBER_USD}/month checkout with Lemon Squeezy.
+        </p>
+      </form>
+
+      <p className="wa-auth-switch">
+        Already have an account? <a className="wa-link" href={SIGN_IN_URL}>Log in</a>
+      </p>
+    </div>
   );
 }

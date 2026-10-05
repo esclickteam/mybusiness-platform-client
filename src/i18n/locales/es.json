@@ -23127,7 +23127,26 @@
           "title": "Envía tu primer mensaje",
           "text": "Envía una plantilla aprobada a través de la API.",
           "cta": "Abrir guía de la API"
+        },
+        "details": {
+          "title": "Añade los datos de tu empresa",
+          "text": "Tu nombre, el nombre de la empresa y el teléfono.",
+          "cta": "Añadir datos"
         }
+      },
+      "businessDetails": {
+        "title": "Añade los datos de tu empresa",
+        "text": "Para saber con quién trabajamos. Tarda menos de un minuto.",
+        "name": "Tu nombre",
+        "businessName": "Nombre de la empresa",
+        "phone": "Teléfono de la empresa",
+        "phoneHint": "Incluye el código de país, por ejemplo +34 600 123 456.",
+        "save": "Guardar datos",
+        "saving": "Guardando…",
+        "saved": "Datos de la empresa guardados.",
+        "required": "Obligatorio.",
+        "invalidPhone": "Introduce un número de teléfono válido.",
+        "error": "No pudimos guardar tus datos. Inténtalo de nuevo."
       }
     }
   }
