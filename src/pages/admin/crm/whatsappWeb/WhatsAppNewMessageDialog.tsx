@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import adminCrmApi from "../../../../api/adminCrmApi";
+import { useRefreshOnOpen } from "./useRefreshOnOpen";
 import type { AdminWhatsAppCopy } from "./adminWhatsAppInboxCopy";
 import type { WhatsAppInboxConnection } from "./whatsAppWebMessages";
 import { normalizeManagedConnectionId } from "./whatsAppWebMessages";
@@ -74,6 +75,7 @@ export function WhatsAppNewMessageDialog({
     setSelected(null);
     setCreating(false);
     setBody("");
+    setTemplates([]);
     setTemplateId("");
     setPreview("");
     setError("");
@@ -93,26 +95,50 @@ export function WhatsAppNewMessageDialog({
     return () => window.clearTimeout(handle);
   }, [open, query]);
 
+  const contextKeyRef = useRef("");
+  const selectedPhone = selected?.phone || "";
   useEffect(() => {
-    if (!open || !selected || !connectionId) return;
-    let cancelled = false;
-    adminCrmApi
-      .whatsappComposeContext({ phone: selected.phone, managedConnectionId: connectionId })
-      .then(({ data }) => {
-        if (cancelled) return;
+    contextKeyRef.current = open ? `${connectionId}::${selectedPhone}` : "";
+  }, [open, connectionId, selectedPhone]);
+
+  const fetchComposeContext = useCallback(
+    async (phone: string, managedConnectionId: string) => {
+      const key = `${managedConnectionId}::${phone}`;
+      const { data } = await adminCrmApi.whatsappComposeContext({ phone, managedConnectionId });
+      if (contextKeyRef.current !== key) return null;
+      return data as { sessionWindowOpen?: boolean; templates?: Template[] };
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!open || !connectionId) return;
+    fetchComposeContext(selectedPhone, connectionId)
+      .then((data) => {
+        if (!data) return;
         setSessionOpen(Boolean(data.sessionWindowOpen));
         setTemplates((data.templates || []) as Template[]);
         setTemplateId("");
         setPreview("");
       })
       .catch((err) => {
-        if (cancelled) return;
-        setError(err?.response?.data?.error || copy.sendFailed);
+        if (contextKeyRef.current !== `${connectionId}::${selectedPhone}`) return;
+        if (selectedPhone) setError(err?.response?.data?.error || copy.sendFailed);
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [open, selected, connectionId, copy.sendFailed]);
+  }, [open, selectedPhone, connectionId, copy.sendFailed, fetchComposeContext]);
+
+  const refreshTemplatesOnOpen = useRefreshOnOpen(async () => {
+    if (!open || !connectionId) return;
+    const data = await fetchComposeContext(selectedPhone, connectionId);
+    if (!data) return;
+    const rows = (data.templates || []) as Template[];
+    setSessionOpen(Boolean(data.sessionWindowOpen));
+    setTemplates(rows);
+    if (templateId && !rows.some((row) => row.id === templateId)) {
+      setTemplateId("");
+      setPreview("");
+    }
+  });
 
   const template = templates.find((row) => row.id === templateId);
   const needsTemplate = Boolean(selected) && !sessionOpen;
@@ -297,6 +323,8 @@ export function WhatsAppNewMessageDialog({
               <select
                 className="min-h-11 w-full rounded-xl border-none bg-white px-3 text-sm"
                 value={templateId}
+                onFocus={refreshTemplatesOnOpen}
+                onMouseDown={refreshTemplatesOnOpen}
                 onChange={(e) => {
                   setTemplateId(e.target.value);
                   setPreview("");
