@@ -24,7 +24,18 @@ export type WhatsAppApiSubscriptionAccess = {
   reason: string;
   subscription: WhatsAppApiSubscriptionSummary | null;
   actions?: WhatsAppApiBillingActions;
+  /** Standalone owners only; null for every other account. */
+  profile?: WhatsAppApiBusinessProfile | null;
 };
+
+export type WhatsAppApiBusinessProfile = {
+  pending: boolean;
+  name: string;
+  businessName: string;
+  phone: string;
+};
+
+export type WhatsAppApiBusinessProfileInput = Omit<WhatsAppApiBusinessProfile, "pending">;
 
 export type PortalSubscriptionState =
   | "active"
@@ -48,6 +59,11 @@ export async function startWhatsAppApiCheckout(businessId: string) {
 export async function resumeWhatsAppApiSubscription(businessId: string) {
   const { data } = await API.post("/whatsapp-api/resume", { businessId });
   return data as WhatsAppApiSubscriptionAccess & { success: boolean };
+}
+
+export async function updateWhatsAppApiBusinessProfile(businessId: string, profile: WhatsAppApiBusinessProfileInput) {
+  const { data } = await API.put("/whatsapp-api/profile", { businessId, ...profile });
+  return data as { success: boolean; profile: WhatsAppApiBusinessProfile };
 }
 
 export async function getWhatsAppApiPaymentMethodUrl(businessId: string) {

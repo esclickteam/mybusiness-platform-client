@@ -23127,7 +23127,26 @@
           "title": "Envie sua primeira mensagem",
           "text": "Envie um modelo aprovado pela API.",
           "cta": "Abrir guia da API"
+        },
+        "details": {
+          "title": "Adicione os dados da sua empresa",
+          "text": "Seu nome, o nome da empresa e o telefone.",
+          "cta": "Adicionar dados"
         }
+      },
+      "businessDetails": {
+        "title": "Adicione os dados da sua empresa",
+        "text": "Para sabermos com quem estamos trabalhando. Leva menos de um minuto.",
+        "name": "Seu nome",
+        "businessName": "Nome da empresa",
+        "phone": "Telefone da empresa",
+        "phoneHint": "Inclua o código do país, por exemplo +55 11 91234-5678.",
+        "save": "Salvar dados",
+        "saving": "Salvando…",
+        "saved": "Dados da empresa salvos.",
+        "required": "Obrigatório.",
+        "invalidPhone": "Digite um número de telefone válido.",
+        "error": "Não foi possível salvar seus dados. Tente novamente."
       }
     }
   }

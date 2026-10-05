@@ -213,7 +213,7 @@ export default function GetStartedPage() {
                 ${PRICE_PER_NUMBER_USD}/month per WhatsApp number. Meta messaging charges are billed separately by Meta.
               </p>
               <ol className="wa-list" style={{ marginTop: 20 }}>
-                <li><Check size={16} aria-hidden="true" /> Sign up with Google, Facebook, Microsoft or your email.</li>
+                <li><Check size={16} aria-hidden="true" /> Sign up with your email and a password.</li>
                 <li><Check size={16} aria-hidden="true" /> Pay securely with Lemon Squeezy. Your WhatsApp API portal opens right away.</li>
                 <li><Check size={16} aria-hidden="true" /> Add your business details and connect your number inside the portal.</li>
               </ol>

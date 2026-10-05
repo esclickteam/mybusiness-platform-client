@@ -2416,63 +2416,6 @@ html:has(.wa-page) body {
   text-align: center;
 }
 
-.wa-auth-providers {
-  display: grid;
-  gap: 10px;
-}
-
-.wa-auth-provider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 46px;
-  padding: 10px 14px;
-  border: 1px solid var(--wa-line-strong);
-  border-radius: 11px;
-  background: #0b1220;
-  color: var(--wa-ink);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 550;
-  cursor: pointer;
-  transition: border-color 0.2s var(--wa-ease), background 0.2s var(--wa-ease);
-}
-
-.wa-auth-provider:hover:not(:disabled) {
-  border-color: rgba(148, 170, 210, 0.4);
-  background: #101a2c;
-}
-
-.wa-auth-provider:focus-visible {
-  outline: none;
-  border-color: var(--wa-green);
-  box-shadow: 0 0 0 3px rgba(62, 224, 161, 0.18);
-}
-
-.wa-auth-provider:disabled {
-  cursor: progress;
-  opacity: 0.7;
-}
-
-.wa-auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--wa-faint);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.wa-auth-divider::before,
-.wa-auth-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--wa-line-strong);
-}
-
 .wa-auth-form {
   display: grid;
   gap: 14px;

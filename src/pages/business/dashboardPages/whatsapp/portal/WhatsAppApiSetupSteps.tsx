@@ -8,8 +8,9 @@ import { cardBase } from "../../../../../styles/bizuplyUi";
 export type SetupStepStatus = "done" | "attention" | "todo";
 
 export type SetupStep = {
-  key: "subscription" | "connect" | "apiKey" | "webhook" | "firstMessage";
+  key: "subscription" | "details" | "connect" | "apiKey" | "webhook" | "firstMessage";
   status: SetupStepStatus;
+  /** A route, or `#id` for a section on the same page. */
   to: string;
   detail?: string;
 };
@@ -45,6 +46,42 @@ function StepIcon({ status }: { status: SetupStepStatus }) {
   }
   return (
     <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-300" aria-label={t("whatsappApiPortal.setup.todo")} />
+  );
+}
+
+function StepLink({ step }: { step: SetupStep }) {
+  const { t } = useTranslation();
+  const className = "shrink-0 text-xs font-black text-emerald-700 hover:text-emerald-800";
+  const content = (
+    <>
+      {t(`whatsappApiPortal.setup.steps.${step.key}.cta`)}
+      <span className="ms-1 inline-block rtl:-scale-x-100" aria-hidden="true">
+        →
+      </span>
+    </>
+  );
+  if (step.to.startsWith("#")) {
+    const targetId = step.to.slice(1);
+    return (
+      <a
+        href={step.to}
+        className={className}
+        onClick={(event) => {
+          const target = document.getElementById(targetId);
+          if (!target) return;
+          event.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          target.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+        }}
+      >
+        {content}
+      </a>
+    );
+  }
+  return (
+    <Link to={step.to} className={className}>
+      {content}
+    </Link>
   );
 }
 
@@ -141,14 +178,7 @@ export default function WhatsAppApiSetupSteps({ steps, welcome = false }: Props)
                 </p>
               </div>
             </div>
-            {step.status !== "done" ? (
-              <Link to={step.to} className="shrink-0 text-xs font-black text-emerald-700 hover:text-emerald-800">
-                {t(`whatsappApiPortal.setup.steps.${step.key}.cta`)}
-                <span className="ms-1 inline-block rtl:-scale-x-100" aria-hidden="true">
-                  →
-                </span>
-              </Link>
-            ) : null}
+            {step.status !== "done" ? <StepLink step={step} /> : null}
           </li>
         ))}
       </ol>

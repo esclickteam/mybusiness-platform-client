@@ -23462,7 +23462,26 @@
           "title": "Send your first message",
           "text": "Send an approved template through the API.",
           "cta": "Open API guide"
+        },
+        "details": {
+          "title": "Add your business details",
+          "text": "Your name, business name and phone number.",
+          "cta": "Add details"
         }
+      },
+      "businessDetails": {
+        "title": "Add your business details",
+        "text": "So we know who we're working with. Takes less than a minute.",
+        "name": "Your name",
+        "businessName": "Business name",
+        "phone": "Business phone",
+        "phoneHint": "Include the country code, for example +1 555 123 4567.",
+        "save": "Save details",
+        "saving": "Saving…",
+        "saved": "Business details saved.",
+        "required": "Required.",
+        "invalidPhone": "Enter a valid phone number.",
+        "error": "We couldn't save your details. Please try again."
       }
     }
   }
