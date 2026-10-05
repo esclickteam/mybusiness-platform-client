@@ -23469,5 +23469,53 @@
         "error": "לא הצלחנו לשמור את הפרטים. נסו שוב."
       }
     }
+  },
+  "whatsappApiAuth": {
+    "providers": {
+      "google": "המשך עם Google",
+      "facebook": "המשך עם Facebook",
+      "microsoft": "המשך עם Microsoft"
+    },
+    "or": "או",
+    "email": "כתובת אימייל",
+    "password": "סיסמה",
+    "showPassword": "הצגת סיסמה",
+    "hidePassword": "הסתרת סיסמה",
+    "redirecting": "מעבירים אתכם…",
+    "botCheck": "השלימו את בדיקת האבטחה ונסו שוב.",
+    "botChecking": "בודקים את הדפדפן…",
+    "errors": {
+      "existing_account": "לאימייל הזה כבר יש חשבון Bizuply. התחברו בדרך שבה התחברתם בעבר, למשל באימייל וסיסמה.",
+      "email_unverified": "‏{{provider}} לא אישר את כתובת האימייל הזו. אמתו אותה ב-{{provider}}, או התחברו באימייל וסיסמה.",
+      "no_account": "אין עדיין חשבון WhatsApp API שמשתמש בהתחברות הזו של {{provider}}. צרו חשבון כדי להתחיל.",
+      "provider_mismatch": "החשבון הזה מקושר לחשבון {{provider}} אחר. התחברו איתו, או באימייל וסיסמה.",
+      "state_invalid": "תוקף ההתחברות פג. נסו שוב.",
+      "cancelled": "ההתחברות עם {{provider}} בוטלה.",
+      "provider_unavailable": "התחברות עם {{provider}} לא זמינה כרגע. התחברו באימייל וסיסמה.",
+      "provider_error": "לא הצלחנו לחבר אתכם עם {{provider}}. נסו שוב.",
+      "account_disabled": "החשבון הזה מושבת. פנו ל-support@bizuply.com.",
+      "rate_limited": "יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.",
+      "signup_closed": "ההרשמה אינה זמינה כרגע. נסו שוב מאוחר יותר.",
+      "session": "לא הצלחנו להשלים את ההתחברות. נסו שוב."
+    },
+    "login": {
+      "title": "התחברות לחשבון ה-WhatsApp API שלכם",
+      "subtitle": "ניהול מספרים, מפתחות API ו-Webhooks.",
+      "submit": "התחברות",
+      "submitting": "מתחברים…",
+      "forgot": "שכחתם סיסמה?",
+      "noAccount": "חדשים ב-Bizuply WhatsApp API?",
+      "signupCta": "יצירת חשבון",
+      "completing": "מחברים אתכם…",
+      "enterCredentials": "הזינו אימייל וסיסמה.",
+      "trust": "התחברות מאובטחת של Bizuply",
+      "privacy": "פרטיות",
+      "terms": "תנאים",
+      "help": "עזרה",
+      "businessLogin": "כניסה לחשבון עסקי ב-Bizuply"
+    },
+    "checkout": {
+      "readyProvider": "חשבון ה-WhatsApp API מוכן. המשיכו עם {{provider}} כדי לפתוח את הפורטל."
+    }
   }
 }

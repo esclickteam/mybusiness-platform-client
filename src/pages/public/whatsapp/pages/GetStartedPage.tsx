@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { ArrowRight, Check, LogIn } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import API from "../../../../api";
+import { useWhatsAppApiAuthConfig } from "../../../../components/whatsappApiAuth/authConfig";
 import ContactRequestForm from "../ContactRequestForm";
 import SignupCheckoutForm from "../SignupCheckoutForm";
 import { META_BUSINESS_VERIFICATION_URL, PRICE_PER_NUMBER_USD, SIGN_IN_URL, SUPPORT_EMAIL } from "../siteConfig";
@@ -74,24 +74,18 @@ const NEEDS = [
 
 const ACTOR_TONE: Record<Actor, string> = { You: "is-info", Meta: "is-warn", Bizuply: "is-ok" };
 
-function useSelfServeSignup() {
-  const [selfServe, setSelfServe] = useState(false);
-  useEffect(() => {
-    let alive = true;
-    API.get("/whatsapp-api/availability")
-      .then(({ data }) => {
-        if (alive) setSelfServe(Boolean(data?.selfServe));
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return selfServe;
+const PROVIDER_NAMES = { google: "Google", facebook: "Facebook", microsoft: "Microsoft" } as const;
+
+function signupMethodsText(providers: Array<keyof typeof PROVIDER_NAMES>): string {
+  if (!providers.length) return "Sign up with your email and a password.";
+  const names = providers.map((p) => PROVIDER_NAMES[p]);
+  const list = names.length > 1 ? `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}` : names[0];
+  return `Sign up with ${list}, or with your email and a password.`;
 }
 
 export default function GetStartedPage() {
-  const selfServe = useSelfServeSignup();
+  const authConfig = useWhatsAppApiAuthConfig();
+  const { selfServe } = authConfig;
   const STAGES = [ACCOUNT_STAGE[selfServe ? "selfServe" : "request"], ...NEXT_STAGES];
   const { hash } = useLocation();
   useEffect(() => {
@@ -213,7 +207,7 @@ export default function GetStartedPage() {
                 ${PRICE_PER_NUMBER_USD}/month per WhatsApp number. Meta messaging charges are billed separately by Meta.
               </p>
               <ol className="wa-list" style={{ marginTop: 20 }}>
-                <li><Check size={16} aria-hidden="true" /> Sign up with your email and a password.</li>
+                <li><Check size={16} aria-hidden="true" /> {signupMethodsText(authConfig.providers)}</li>
                 <li><Check size={16} aria-hidden="true" /> Pay securely with Lemon Squeezy. Your WhatsApp API portal opens right away.</li>
                 <li><Check size={16} aria-hidden="true" /> Add your business details and connect your number inside the portal.</li>
               </ol>
@@ -229,7 +223,7 @@ export default function GetStartedPage() {
             </div>
           )}
           <div className="wa-card">
-            {selfServe ? <SignupCheckoutForm /> : <ContactRequestForm defaultIntent="connect" />}
+            {selfServe ? <SignupCheckoutForm config={authConfig} /> : <ContactRequestForm defaultIntent="connect" />}
           </div>
         </div>
       </section>

@@ -56,7 +56,12 @@ import { AuthProvider, useAuth } from "./AuthContext";
 
 function LocationProbe() {
   const location = useLocation();
-  return <div data-testid="path">{location.pathname}</div>;
+  return (
+    <>
+      <div data-testid="path">{location.pathname}</div>
+      <div data-testid="search">{location.search}</div>
+    </>
+  );
 }
 
 function AuthProbe({ apiRef }) {
@@ -159,6 +164,44 @@ describe("AuthContext logout resilience", () => {
     expect(clearPushEnabledPreferenceCache).toHaveBeenCalled();
     expect(markRefreshDead).toHaveBeenCalled();
     expect(setAuthToken).toHaveBeenCalledWith(null);
+  });
+
+  it("sends WhatsApp API customers back to the WhatsApp API login, and others to /login", async () => {
+    const apiRef = { current: null };
+    const { getByTestId } = renderAuth(apiRef);
+    await waitFor(() => expect(apiRef.current?.initialized).toBe(true));
+
+    await act(async () => {
+      apiRef.current.loginWithToken(
+        { email: "api@example.com", role: "business", businessId: "biz-1", subscriptionPlan: "whatsapp_api", hasAccess: true },
+        "access-token-1",
+        { skipRedirect: true }
+      );
+    });
+    await waitFor(() => expect(apiRef.current?.user?.email).toBe("api@example.com"));
+    await act(async () => {
+      await apiRef.current.logout();
+    });
+    await waitFor(() => {
+      expect(getByTestId("path").textContent).toBe("/login");
+      expect(getByTestId("search").textContent).toBe("?product=whatsapp_api");
+    });
+
+    await act(async () => {
+      apiRef.current.loginWithToken(
+        { email: "crm@example.com", role: "business", businessId: "biz-2", subscriptionPlan: "monthly", hasAccess: true },
+        "access-token-2",
+        { skipRedirect: true }
+      );
+    });
+    await waitFor(() => expect(apiRef.current?.user?.email).toBe("crm@example.com"));
+    await act(async () => {
+      await apiRef.current.logout();
+    });
+    await waitFor(() => {
+      expect(getByTestId("path").textContent).toBe("/login");
+      expect(getByTestId("search").textContent).toBe("");
+    });
   });
 
   it("still completes logout when clearPushEnabledPreferenceCache throws", async () => {

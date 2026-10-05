@@ -1,9 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   businessNoAccessPath,
+  isWhatsAppApiLoginSearch,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
+  rememberLoginProduct,
   whatsappApiPortalHome,
 } from "./whatsappApiPortal";
 import { resolvePostLoginDestination } from "./safeInternalRedirect";
@@ -182,5 +184,39 @@ describe("no-access landing", () => {
     for (const path of [dash(""), dash("/crm/leads"), dash("/whatsapp/inbox"), `/business/${BIZ}`, "/pricing", "/dashboard"]) {
       expect(isWhatsAppApiPortalDashboardPath(path)).toBe(false);
     }
+  });
+});
+
+describe("product login", () => {
+  afterEach(() => localStorage.clear());
+
+  it("opens the WhatsApp API login for the product link and the $29 checkout return", () => {
+    expect(isWhatsAppApiLoginSearch("?product=whatsapp_api")).toBe(true);
+    expect(isWhatsAppApiLoginSearch("?product=whatsapp_api&oauth_error=no_account")).toBe(true);
+    expect(isWhatsAppApiLoginSearch("?checkout=whatsapp_api&email=a%40b.c&ref=1")).toBe(true);
+    expect(isWhatsAppApiLoginSearch("")).toBe(false);
+    expect(isWhatsAppApiLoginSearch("?checkout=success")).toBe(false);
+    expect(isWhatsAppApiLoginSearch("?redirect=/pricing")).toBe(false);
+  });
+
+  it("remembers WhatsApp API customers so logout and expired sessions return to their login", () => {
+    rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
+    expect(isWhatsAppApiLoginSearch("")).toBe(true);
+    expect(isWhatsAppApiLoginSearch("?product=business")).toBe(false);
+    expect(isWhatsAppApiLoginSearch("?checkout=success")).toBe(false);
+
+    for (const user of [
+      { role: "business", subscriptionPlan: "monthly" },
+      { role: "admin" },
+      { role: "partner" },
+    ]) {
+      rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
+      rememberLoginProduct(user);
+      expect(isWhatsAppApiLoginSearch("")).toBe(false);
+    }
+
+    rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
+    rememberLoginProduct(null);
+    expect(isWhatsAppApiLoginSearch("")).toBe(true);
   });
 });

@@ -33,6 +33,40 @@ export function whatsappApiPortalHome(businessId) {
   return `/business/${businessId}/dashboard/whatsapp/overview`;
 }
 
+/** The WhatsApp API product login; the standalone customers' sign-in page. */
+export const WHATSAPP_API_LOGIN_PATH = "/login?product=whatsapp_api";
+
+const LOGIN_PRODUCT_KEY = "bizuply_login_product";
+
+/** Remembers which login this browser's last account uses, so logout and expired sessions return there. */
+export function rememberLoginProduct(user) {
+  try {
+    if (isWhatsAppApiPortalUser(user)) localStorage.setItem(LOGIN_PRODUCT_KEY, WHATSAPP_API_PLAN);
+    else if (user) localStorage.removeItem(LOGIN_PRODUCT_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+export function prefersWhatsAppApiLogin() {
+  try {
+    return localStorage.getItem(LOGIN_PRODUCT_KEY) === WHATSAPP_API_PLAN;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * `/login?product=whatsapp_api`, the $29 checkout return, and a plain `/login` on a browser whose
+ * account is a WhatsApp API customer render the product login. `product=business` forces the CRM login.
+ */
+export function isWhatsAppApiLoginSearch(search) {
+  const params = new URLSearchParams(search || "");
+  const product = params.get("product");
+  if (product === WHATSAPP_API_PLAN || params.get("checkout") === WHATSAPP_API_PLAN) return true;
+  return !product && !params.get("checkout") && prefersWhatsAppApiLogin();
+}
+
 export function whatsappApiPortalBillingPath(businessId) {
   return `/business/${businessId}/dashboard/whatsapp/billing`;
 }

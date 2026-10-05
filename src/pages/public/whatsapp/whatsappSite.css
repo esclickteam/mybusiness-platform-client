@@ -2416,6 +2416,73 @@ html:has(.wa-page) body {
   text-align: center;
 }
 
+.wa-auth-providers {
+  display: grid;
+  gap: 10px;
+}
+
+.wa-auth-provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid var(--wa-line-strong);
+  border-radius: 11px;
+  background: #0b1220;
+  color: var(--wa-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: border-color 160ms var(--wa-ease), background 160ms var(--wa-ease);
+}
+
+.wa-auth-provider:hover:not(:disabled) {
+  border-color: rgba(148, 170, 210, 0.4);
+  background: #101a2c;
+}
+
+.wa-auth-provider:focus-visible {
+  outline: none;
+  border-color: var(--wa-green);
+  box-shadow: 0 0 0 3px rgba(62, 224, 161, 0.18);
+}
+
+.wa-auth-provider:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.wa-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--wa-faint);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.wa-auth-divider::before,
+.wa-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--wa-line-strong);
+}
+
+/* Interaction-only Turnstile: takes no space unless Cloudflare shows a challenge. */
+.wa-auth-turnstile:empty {
+  display: none;
+}
+
+.wa-auth-turnstile {
+  display: flex;
+  justify-content: center;
+}
+
 .wa-auth-form {
   display: grid;
   gap: 14px;
@@ -2468,6 +2535,151 @@ html:has(.wa-page) body {
   color: var(--wa-muted);
   font-size: 14px;
   text-align: center;
+}
+
+/* ---------- Product login (/login?product=whatsapp_api) ---------- */
+.wa-login {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.wa-login-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 20px 0;
+}
+
+.wa-page .wa-login-header .wa-lang {
+  display: block;
+}
+
+.wa-login-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 32px 16px 24px;
+}
+
+.wa-login-card {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  max-width: 440px;
+  padding: 34px 32px 30px;
+  border: 1px solid var(--wa-line-strong);
+  border-radius: var(--wa-radius-lg);
+  background: linear-gradient(180deg, rgba(17, 27, 45, 0.92), rgba(10, 16, 28, 0.94));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+}
+
+.wa-login-eyebrow {
+  justify-self: center;
+  margin: 0 0 -6px;
+  padding: 4px 10px;
+  border: 1px solid rgba(62, 224, 161, 0.28);
+  border-radius: 999px;
+  background: rgba(62, 224, 161, 0.08);
+  color: var(--wa-green);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.wa-login-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(92, 200, 232, 0.35);
+  border-radius: 11px;
+  background: rgba(92, 200, 232, 0.08);
+  color: #cdeffa;
+  font-size: 14px;
+  text-align: center;
+}
+
+.wa-login-status.is-ready {
+  border-color: rgba(62, 224, 161, 0.4);
+  background: rgba(62, 224, 161, 0.08);
+  color: #c9f7e4;
+}
+
+.wa-login-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wa-login-forgot {
+  font-size: 13px;
+}
+
+.wa-login-trust {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--wa-faint);
+  font-size: 12.5px;
+}
+
+.wa-login-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  padding: 18px 16px 28px;
+  font-size: 13px;
+}
+
+.wa-login-footer a {
+  color: var(--wa-muted);
+  text-decoration: none;
+}
+
+.wa-login-footer a:hover {
+  color: var(--wa-ink);
+}
+
+@media (max-width: 520px) {
+  .wa-login-header {
+    padding-top: 20px;
+  }
+
+  /* Clears the floating accessibility button in the bottom corner. */
+  .wa-login-footer {
+    padding-bottom: 88px;
+  }
+
+  .wa-login-main {
+    justify-content: flex-start;
+    padding-top: 22px;
+  }
+
+  .wa-login-card {
+    padding: 26px 20px 24px;
+    border-radius: 18px;
+  }
 }
 
 .wa-field input:-webkit-autofill,

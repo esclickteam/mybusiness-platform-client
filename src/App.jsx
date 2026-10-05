@@ -53,7 +53,7 @@ const AffiliateDashboardPage = lazy(() =>
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
-import { businessNoAccessPath } from "./utils/whatsappApiPortal";
+import { businessNoAccessPath, isWhatsAppApiLoginSearch } from "./utils/whatsappApiPortal";
 import { lazyWithPreload } from "./utils/lazyWithPreload";
 import { clearChunkReloadFlag, lazyWithRetry } from "./utils/lazyWithRetry";
 import {
@@ -859,6 +859,9 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
+  // The WhatsApp API product login is a standalone page with its own branding.
+  const isWhatsAppApiLogin =
+    location.pathname === "/login" && isWhatsAppApiLoginSearch(location.search);
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -979,6 +982,7 @@ export default function App() {
   // flip `loading`, and unmounting /login mid-submit drops the form error
   // state and makes it look like "nothing happened".
   if (loading && !initialized) {
+    if (isWhatsAppApiLogin) return <div className="min-h-screen bg-[#05070d]" />;
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real
     // page mounts. Every other route keeps the original full-screen loader.
@@ -1016,6 +1020,7 @@ export default function App() {
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
           !isPartnerSignRoute &&
+          !isWhatsAppApiLogin &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
@@ -1875,12 +1880,13 @@ export default function App() {
           !isPartnerSignRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
+          !isWhatsAppApiLogin &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
         <PreLoginBot />
       )}
 
@@ -1903,6 +1909,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
+        !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
