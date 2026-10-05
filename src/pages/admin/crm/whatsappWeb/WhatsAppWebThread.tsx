@@ -600,6 +600,9 @@ export default function WhatsAppWebThread({
         templateId,
         vars: mappedVars,
         intent,
+        managedConnectionId: replyLocked
+          ? threadConnectionId
+          : effectiveSendFromId || threadConnectionId || undefined,
       });
       setPreview(res.preview?.preview || "");
       if (res.preview?.mapped) setVars(res.preview.mapped);
@@ -628,6 +631,32 @@ export default function WhatsAppWebThread({
 
     sendingRef.current = true;
     setSending(true);
+    const sendConnectionId = replyLocked
+      ? threadConnectionId
+      : effectiveSendFromId || threadConnectionId || undefined;
+    let sendVars = mappedVars;
+    let confirmedPreview = preview;
+    if (!stagedFile && templateId && !confirmedPreview) {
+      try {
+        const { data: res } = await adminCrmApi.whatsappPreview(customerId, {
+          templateId,
+          vars: mappedVars,
+          intent,
+          managedConnectionId: sendConnectionId,
+        });
+        confirmedPreview = res.preview?.preview || "";
+        if (res.preview?.mapped) {
+          sendVars = res.preview.mapped;
+          setVars(res.preview.mapped);
+        }
+        setPreview(confirmedPreview);
+      } catch (err: any) {
+        sendingRef.current = false;
+        setSending(false);
+        onBanner(err?.response?.data?.error || copy.sendFailed);
+        return;
+      }
+    }
     const clientRequestId =
       typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
         ? crypto.randomUUID()
@@ -639,7 +668,7 @@ export default function WhatsAppWebThread({
       timestamp: new Date().toISOString(),
       bodyPreview: stagedFile
         ? stagedFile.filename
-        : text || selected?.body || "…",
+        : (templateId ? confirmedPreview : text) || selected?.body || "…",
       messageType: stagedFile?.messageType || "text",
       filename: stagedFile?.filename,
       caption: stagedFile && text ? text : "",
@@ -655,12 +684,10 @@ export default function WhatsAppWebThread({
     const retryPayload = {
       intent,
       templateId: templateId || null,
-      body: text,
-      vars: mappedVars,
-      preview,
-      managedConnectionId: replyLocked
-        ? threadConnectionId
-        : effectiveSendFromId || threadConnectionId || undefined,
+      body: templateId ? "" : text,
+      vars: sendVars,
+      preview: confirmedPreview,
+      managedConnectionId: sendConnectionId,
       threadId: threadId || undefined,
       stagedFile,
     };
@@ -685,19 +712,17 @@ export default function WhatsAppWebThread({
       const payload: Record<string, unknown> = {
         intent,
         templateId: templateId || null,
-        body: text,
-        vars: mappedVars,
+        body: templateId ? "" : text,
+        vars: sendVars,
         previewConfirmed: Boolean(
-          preview ||
+          confirmedPreview ||
             (!(selected?.variables || []).length &&
               !(selected?.headerVariables || []).length &&
               !(selected?.buttonVariables || []).length)
         ),
         demoModules: modules,
         paymentPlan,
-        managedConnectionId: replyLocked
-          ? threadConnectionId
-          : effectiveSendFromId || threadConnectionId || undefined,
+        managedConnectionId: sendConnectionId,
         threadId: threadId || undefined,
         clientRequestId,
       };
@@ -1080,12 +1105,12 @@ export default function WhatsAppWebThread({
             Send-from differs from this conversation&apos;s connection (
             {conversationViaLabel || threadConnectionId}
             ). Messages will leave from the selected number.
-            {!sessionOpen
+            {!sessionOpen && !templateId
               ? " Session window is closed on the selected connection — approved template required."
               : ""}
           </p>
         ) : null}
-        {!sendFromMismatch && !sessionOpen && customerId && canSend ? (
+        {!sendFromMismatch && !sessionOpen && !templateId && customerId && canSend ? (
           <p className="mb-2 px-2 text-xs font-bold text-amber-800">
             Session window closed on this connection — approved template required.
           </p>
@@ -1242,6 +1267,8 @@ export default function WhatsAppWebThread({
             <>
               <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">{copy.freeForm}</Badge>
             </>
+          ) : templateId ? (
+            copy.templateSendableOutsideWindow
           ) : (
             copy.outsideWindow
           )}

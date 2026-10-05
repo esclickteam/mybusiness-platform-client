@@ -38,6 +38,7 @@ export type AdminWhatsAppCopy = {
   contactSavedBanner: string;
   duplicatePhone: string;
   outsideWindow: string;
+  templateSendableOutsideWindow: string;
   unsavedHint: string;
   contactDetails: string;
   createRecipient: string;
@@ -97,6 +98,7 @@ const en: AdminWhatsAppCopy = {
   contactSavedBanner: "Recipient saved",
   duplicatePhone: "A recipient with this phone number is already saved",
   outsideWindow: "Free-form messages are only available inside the 24-hour window. Choose an approved template.",
+  templateSendableOutsideWindow: "Approved template — can be sent outside the 24-hour window.",
   unsavedHint: "This number is not saved yet.",
   contactDetails: "Contact",
   createRecipient: "Create recipient",
@@ -157,6 +159,7 @@ const he: AdminWhatsAppCopy = {
   contactSavedBanner: "הנמען נשמר",
   duplicatePhone: "כבר קיים נמען עם מספר הטלפון הזה",
   outsideWindow: "הודעה חופשית אפשרית רק בתוך חלון 24 השעות. בחרו תבנית מאושרת.",
+  templateSendableOutsideWindow: "תבנית מאושרת — אפשר לשלוח גם מחוץ לחלון 24 השעות.",
   unsavedHint: "המספר הזה עדיין לא שמור.",
   contactDetails: "איש קשר",
   createRecipient: "יצירת נמען",
@@ -217,6 +220,7 @@ const es: AdminWhatsAppCopy = {
   contactSavedBanner: "Destinatario guardado",
   duplicatePhone: "Ya hay un destinatario con este teléfono",
   outsideWindow: "Los mensajes libres solo se pueden enviar dentro de la ventana de 24 horas. Elige una plantilla aprobada.",
+  templateSendableOutsideWindow: "Plantilla aprobada: se puede enviar fuera de la ventana de 24 horas.",
   unsavedHint: "Este número todavía no está guardado.",
   contactDetails: "Contacto",
   createRecipient: "Crear destinatario",
@@ -277,6 +281,7 @@ const ptBR: AdminWhatsAppCopy = {
   contactSavedBanner: "Destinatário salvo",
   duplicatePhone: "Já existe um destinatário com este telefone",
   outsideWindow: "Mensagens livres só podem ser enviadas dentro da janela de 24 horas. Escolha um modelo aprovado.",
+  templateSendableOutsideWindow: "Modelo aprovado — pode ser enviado fora da janela de 24 horas.",
   unsavedHint: "Este número ainda não foi salvo.",
   contactDetails: "Contato",
   createRecipient: "Criar destinatário",
@@ -337,6 +342,7 @@ const ar: AdminWhatsAppCopy = {
   contactSavedBanner: "تم حفظ المستلم",
   duplicatePhone: "يوجد مستلم محفوظ بهذا الرقم",
   outsideWindow: "الرسائل الحرة متاحة فقط داخل نافذة 24 ساعة. اختر قالباً معتمداً.",
+  templateSendableOutsideWindow: "قالب معتمد — يمكن إرساله خارج نافذة 24 ساعة.",
   unsavedHint: "هذا الرقم غير محفوظ بعد.",
   contactDetails: "جهة الاتصال",
   createRecipient: "إنشاء مستلم",
